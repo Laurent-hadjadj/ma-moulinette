@@ -1137,9 +1137,12 @@ const afficheMesProjets = async function() {
         const element = document.getElementById(key);
         const mavenKey = element.dataset.mavenkey;
         $('#select-result').html(`<strong>${mavenKey}</strong>`);
+
         /* on active le bouton pour afficher les infos du projet */
-        $('.js-affiche-result').removeClass('affiche-result-disabled');
-        $('.js-affiche-result').addClass('affiche-result-enabled');
+        const $boutonAfficheIndicateur = $('.js-affiche-result');          $boutonAfficheIndicateur.removeClass('disabled-bouton');
+        $boutonAfficheIndicateur.attr('aria-label', "Affiche les données collectées.");
+        $boutonAfficheIndicateur.removeAttr('aria-disabled tabindex');
+
         /* On clique sur le bouton afficher les résultats */
         $('.js-affiche-result').trigger('click');
         setTimeout(function(){
@@ -1283,41 +1286,42 @@ $('select[name="projet"]').on('change', function () {
   });
 
   /* On débloque les boutons. */
+  const $boutonCollecteIndicateur = $('.js-analyse');
+  const $boutonAfficheIndicateur = $('.js-affiche-result');
+  const $boutonEnregistreIndicateur = $('.js-enregistrement')
 
-  /* Bouton : Lance la collecte. */
-  $('.js-analyse').removeClass('lance-analyse-disabled');
-  $('.js-analyse').addClass('lance-analyse-enabled');
-  $('.js-analyse').attr('aria-disabled', 'false');
+  const $boutonOuvreRepartition = $('.js-repartition-module');
+  const $boutonOuvreOwasp = $('.js-analyse-owasp');
+  const $boutonOuvreCosui = $('.js-cosui');
+  const $boutonOuvreSuivi = $('.js-tableau-de-bord');
 
-  /* Bouton : Affiche les résultats. */
-  $('.js-affiche-result').removeClass('affiche-result-disabled');
-  $('.js-affiche-result').addClass('affiche-result-enabled');
-  $('.js-affiche-result').attr('aria-disabled', 'false');
+  $boutonCollecteIndicateur.removeClass('clicked-true clicked-false disabled-bouton');
+  $boutonCollecteIndicateur.attr('aria-label', "Lancer la collecte pour ce projet.");
+  $boutonCollecteIndicateur.removeAttr('aria-disabled tabindex');
 
-  /* Bouton : Ouvre la page d'analyse OWASP. */
-  $('.js-analyse-owasp').removeClass('analyse-owasp-disabled');
-  $('.js-analyse-owasp').addClass('analyse-owasp-enabled');
-  $('.js-analyse-owasp').attr('aria-disabled', 'false');
+  $boutonAfficheIndicateur.removeClass('clicked-true clicked-false disabled-bouton');
+  $boutonAfficheIndicateur.attr('aria-label', "Affiche les données collectées.");
+  $boutonAfficheIndicateur.removeAttr('aria-disabled tabindex');
 
-  /* Bouton : Ouvre la page de suivi des indicateurs. */
-  $('.js-tableau-de-bord').removeClass('tableau-de-bord-disabled');
-  $('.js-tableau-de-bord' ).addClass('tableau-de-bord-enabled');
-  $('.js-tableau-de-bord').attr('aria-disabled', 'false');
+  $boutonEnregistreIndicateur.removeClass('clicked-true clicked-false disabled-bouton');
+  $boutonEnregistreIndicateur.attr('aria-label', "Enregistre les données collectées.");
+  $boutonEnregistreIndicateur.removeAttr('aria-disabled tabindex');
 
-  /* Bouton : Ouvre la page du Comité de Suivi. */
-  $('.js-cosui').removeClass('cosui-disabled');
-  $('.js-cosui' ).addClass('cosui-enabled');
-  $('.js-cosui').attr('aria-disabled', 'false');
+  $boutonOuvreRepartition.removeClass('disabled-bouton');
+  $boutonOuvreRepartition.attr('aria-label', "Ouvre la page de calcul de la répartition.");
+  $boutonOuvreRepartition.removeAttr('aria-disabled tabindex');
 
-  /* Bouton : Ouvre la page de répartition des indicateurs par Module. */
-  $('.js-repartition-module').removeClass('repartition-module-disabled');
-  $('.js-repartition-module' ).addClass('repartition-module-enabled');
-  $('.js-repartition-module').attr('aria-disabled', 'false');
+  $boutonOuvreCosui.removeClass('disabled-bouton');
+  $boutonOuvreCosui.attr('aria-label', "Ouvre la page COSUI.");
+  $boutonOuvreCosui.removeAttr('aria-disabled tabindex');
 
-  /* Bouton : active le bouton enregistrement. */
-  $('.js-enregistrement').removeClass('enregistrement-disabled');
-  $('.js-enregistrement' ).addClass('enregistrement-enabled');
-  $('.js-enregistrement').attr('aria-disabled', 'false');
+  $boutonOuvreSuivi.removeClass('disabled-bouton');
+  $boutonOuvreSuivi.attr('aria-label', "Ouvre la page de suivi du projet.");
+  $boutonOuvreSuivi.removeAttr('aria-disabled tabindex');
+
+  $boutonOuvreOwasp.removeClass('disabled-bouton');
+  $boutonOuvreOwasp.attr('aria-label', "Ouvre la page de suivi du projet.");
+  $boutonOuvreOwasp.removeAttr('aria-disabled tabindex');
 });
 
 /******************************************************/
@@ -1330,13 +1334,12 @@ $('select[name="projet"]').on('change', function () {
  * rework de la méthode : utilisation des promises
  */
 $('.js-analyse').on('click', function () {
-
   /** On vérifie le rôle */
   const userRating = document.querySelector('.js-user-rating');
   const roles = JSON.parse(userRating.dataset.user);
 
   if (!roles.includes('ROLE_COLLECTE') && !roles.includes('ROLE_BATCH') && !roles.includes('ROLE_GESTIONNAIRE')) {
-    showMessage('alert','<strong>[PROJET]</strong> Vous devez avoir au moins le rôle COLLECTE pour lancer la collecte des données.')
+    showMessage('alert','<strong>[PROJET]</strong> Vous devez avoir au moins le rôle COLLECTE pour lancer la collecte des données.');
     return;
   }
 
@@ -1355,9 +1358,6 @@ $('.js-analyse').on('click', function () {
   }
 
   log(' - ℹ️ On lance la collecte...');
-  /* On bloque le bouton afficher les résultats. */
-  $('.js-affiche-result').removeClass('affiche-result-enabled');
-  $('.js-affiche-result').addClass('affiche-result-disabled');
 
   async function fnAsync() {
     /* Analyse du projet */
