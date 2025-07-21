@@ -1254,6 +1254,86 @@ $('.gomme-svg').on('click', function () {
   $('.log').val('');
 });
 
+/******************************************************/
+/***                 Choix du projet                  */
+/******************************************************/
+/**
+ * description
+ * Événement : Affiche le nom de la clé du projet, active le bouton pour l'analyse.
+ */
+$('select[name="projet"]').on('change', function () {
+  $('#select-result').html(`<strong>${$('select[name="projet"]').val().trim()}</strong>`);
+
+  /** On enregistre la clé maven dans le session storage (utile pour la page Owasp) */
+  sessionStorage.setItem('ma_moulinette_projet', $('select[name="projet"]').val().trim());
+
+  /** On supprime la clé de collecte */
+  sessionStorage.setItem('ma_moulinette_collecte', 'Tout va bien!');
+
+  /* On regarde si le projet est en favori */
+  const data = { maven_key: $('#select-result').text().trim() };
+  const options = {
+    url: `${serveur()}/api/favori/check`, type: 'POST',
+          dataType: 'json', data: JSON.stringify(data), contentType };
+  $.ajax(options).then(t=> {
+    // 📌 Vérification des erreurs
+    const errorCodes = [http_400, http_401, http_403, http_500, http_503, http_504];
+    if (errorCodes.includes(t.code)){
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
+        sessionStorage.setItem('ma_moulinette_favori', 'Erreur check.');
+        return;
+      }
+
+    /* 0 (false) and 1 (true). */
+    if (t.code === http_200 && (t.favori === 0 || t.favori === false)) {
+      $('.favori-svg').removeClass('favori-svg-select');
+    }
+    if (t.code === http_200 && (t.favori === 1 || t.favori === true)) {
+      $('.favori-svg').addClass('favori-svg-select');
+    } else {
+      $('.favori-svg').removeClass('favori-svg-select');
+    }
+  });
+
+  /* On débloque les boutons. */
+
+  /* Bouton : Lance la collecte. */
+  $('.js-analyse').removeClass('lance-analyse-disabled');
+  $('.js-analyse').addClass('lance-analyse-enabled');
+  $('.js-analyse').attr('aria-disabled', 'false');
+
+  /* Bouton : Affiche les résultats. */
+  $('.js-affiche-result').removeClass('affiche-result-disabled');
+  $('.js-affiche-result').addClass('affiche-result-enabled');
+  $('.js-affiche-result').attr('aria-disabled', 'false');
+
+  /* Bouton : Ouvre la page d'analyse OWASP. */
+  $('.js-analyse-owasp').removeClass('analyse-owasp-disabled');
+  $('.js-analyse-owasp').addClass('analyse-owasp-enabled');
+  $('.js-analyse-owasp').attr('aria-disabled', 'false');
+
+  /* Bouton : Ouvre la page de suivi des indicateurs. */
+  $('.js-tableau-de-bord').removeClass('tableau-de-bord-disabled');
+  $('.js-tableau-de-bord' ).addClass('tableau-de-bord-enabled');
+  $('.js-tableau-de-bord').attr('aria-disabled', 'false');
+
+  /* Bouton : Ouvre la page du Comité de Suivi. */
+  $('.js-cosui').removeClass('cosui-disabled');
+  $('.js-cosui' ).addClass('cosui-enabled');
+  $('.js-cosui').attr('aria-disabled', 'false');
+
+  /* Bouton : Ouvre la page de répartition des indicateurs par Module. */
+  $('.js-repartition-module').removeClass('repartition-module-disabled');
+  $('.js-repartition-module' ).addClass('repartition-module-enabled');
+  $('.js-repartition-module').attr('aria-disabled', 'false');
+
+  /* Bouton : active le bouton enregistrement. */
+  $('.js-enregistrement').removeClass('enregistrement-disabled');
+  $('.js-enregistrement' ).addClass('enregistrement-enabled');
+  $('.js-enregistrement').attr('aria-disabled', 'false');
+});
 
 /******************************************************/
 /***        Lance la collecte des indicateurs         */
@@ -1350,87 +1430,6 @@ $('.js-analyse').on('click', function () {
   /* On active le bouton pour afficher les infos du projet. */
   $('.js-affiche-result').removeClass('affiche-result-disabled');
   $('.js-affiche-result').addClass('affiche-result-enabled');
-});
-
-/******************************************************/
-/***                 Choix du projet                  */
-/******************************************************/
-/**
- * description
- * Événement : Affiche le nom de la clé du projet, active le bouton pour l'analyse.
- */
-$('select[name="projet"]').on('change', function () {
-  $('#select-result').html(`<strong>${$('select[name="projet"]').val().trim()}</strong>`);
-
-  /** On enregistre la clé maven dans le session storage (utile pour la page Owasp) */
-  sessionStorage.setItem('ma_moulinette_projet', $('select[name="projet"]').val().trim());
-
-  /** On supprime la clé de collecte */
-  sessionStorage.setItem('ma_moulinette_collecte', 'Tout va bien!');
-
-  /* On regarde si le projet est en favori */
-  const data = { maven_key: $('#select-result').text().trim() };
-  const options = {
-    url: `${serveur()}/api/favori/check`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType };
-  $.ajax(options).then(t=> {
-    // 📌 Vérification des erreurs
-    const errorCodes = [http_400, http_401, http_403, http_500, http_503, http_504];
-    if (errorCodes.includes(t.code)){
-        const hasTrace = !!t.trace;
-        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
-        showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('ma_moulinette_favori', 'Erreur check.');
-        return;
-      }
-
-    /* 0 (false) and 1 (true). */
-    if (t.code === http_200 && (t.favori === 0 || t.favori === false)) {
-      $('.favori-svg').removeClass('favori-svg-select');
-    }
-    if (t.code === http_200 && (t.favori === 1 || t.favori === true)) {
-      $('.favori-svg').addClass('favori-svg-select');
-    } else {
-      $('.favori-svg').removeClass('favori-svg-select');
-    }
-  });
-
-  /* On débloque les boutons. */
-
-  /* Bouton : Lance la collecte. */
-  $('.js-analyse').removeClass('lance-analyse-disabled');
-  $('.js-analyse').addClass('lance-analyse-enabled');
-  $('.js-analyse').attr('aria-disabled', 'false');
-
-  /* Bouton : Affiche les résultats. */
-  $('.js-affiche-result').removeClass('affiche-result-disabled');
-  $('.js-affiche-result').addClass('affiche-result-enabled');
-  $('.js-affiche-result').attr('aria-disabled', 'false');
-
-  /* Bouton : Ouvre la page d'analyse OWASP. */
-  $('.js-analyse-owasp').removeClass('analyse-owasp-disabled');
-  $('.js-analyse-owasp').addClass('analyse-owasp-enabled');
-  $('.js-analyse-owasp').attr('aria-disabled', 'false');
-
-  /* Bouton : Ouvre la page de suivi des indicateurs. */
-  $('.js-tableau-de-bord').removeClass('tableau-de-bord-disabled');
-  $('.js-tableau-de-bord' ).addClass('tableau-de-bord-enabled');
-  $('.js-tableau-de-bord').attr('aria-disabled', 'false');
-
-  /* Bouton : Ouvre la page du Comité de Suivi. */
-  $('.js-cosui').removeClass('cosui-disabled');
-  $('.js-cosui' ).addClass('cosui-enabled');
-  $('.js-cosui').attr('aria-disabled', 'false');
-
-  /* Bouton : Ouvre la page de répartition des indicateurs par Module. */
-  $('.js-repartition-module').removeClass('repartition-module-disabled');
-  $('.js-repartition-module' ).addClass('repartition-module-enabled');
-  $('.js-repartition-module').attr('aria-disabled', 'false');
-
-  /* Bouton : active le bouton enregistrement. */
-  $('.js-enregistrement').removeClass('enregistrement-disabled');
-  $('.js-enregistrement' ).addClass('enregistrement-enabled');
-  $('.js-enregistrement').attr('aria-disabled', 'false');
 });
 
 /******************************************************/
