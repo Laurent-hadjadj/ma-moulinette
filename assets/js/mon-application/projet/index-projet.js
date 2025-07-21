@@ -1443,17 +1443,16 @@ $('.js-analyse').on('click', function () {
 $('.js-affiche-result').on('click', () => {
   /* On récupère la clé du projet. */
   const apiMaven = $('#select-result').text().trim();
-  console.log('api-maven',apiMaven);
+
   /** On regarde si tou vas bien ! */
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
-  console.log('collecte', collecte);
-  if (collecte===undefined || collecte!='Tout va bien!') {
-    const  t = {};
-    sessionStorage.setItem('peinture', `Pas de données. ${json_encode(t)}.`);
+  if (collecte === undefined || collecte != 'Tout va bien!') {
+    log(` - ❌ Une erreur s'est produite sur le projet ${apiMaven}.`);
+    log(`      Vous ne pouvez pas afficher les données collectées pour ce projet.`);
+    showMessage('primary', `<strong>${Peinture}</strong> Le processus d'affichage des données a été interrompu !<br>Choisissez un autre projet.`);
+    sessionStorage.setItem('peinture', `La collecte du projet a échoué.`);
     return;
   };
-
-  return;
 
   /* On appel une fonction externe. */
   if ( $('.js-affiche-result').hasClass('affiche-result-enabled')){
