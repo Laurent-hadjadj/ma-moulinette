@@ -322,7 +322,7 @@ export const remplissage = async function(maven_key) {
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
         sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur les mesures.');
-        log(' - ❌ [Peinture] Affichage des informations sur mesures en échec.');
+        log(' - ❌ [Peinture] Affichage des informations sur les mesures en échec.');
         return;
       }
 
@@ -411,10 +411,6 @@ export const remplissage = async function(maven_key) {
       return;
   }
 
-  /** Débloque le bouton afficher */
-  enableButtonAnalyse()
-  return;
-
   /**
    * On récupère les informations sur la dette technique et les anomalies.
    */
@@ -424,10 +420,13 @@ export const remplissage = async function(maven_key) {
 
     try {
       const t = await $.ajax(optionsAnomalie);
-      const errorCodes = [http_400, http_401, http_403, http_406, http_500];
+      const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
       if (errorCodes.includes(t.code)){
-          showMessage(t.type, typeMessage(t.message));
-          sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des anomalies.');
+          const hasTrace = !!t.trace;
+          const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+          showMessage(t.type, t.message, trace);
+          sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur les anomalies.');
+          log(' - ❌ [Peinture] Affichage des informations sur les anomalies en échec.');
           return;
         }
 
@@ -635,10 +634,20 @@ export const remplissage = async function(maven_key) {
       $('#note-reliability').html(`<span class="${couleur1}">${noteReliability}</span>`);
       $('#note-security').html(`<span class="${couleur2}">${noteSecurity}</span>`);
       $('#note-sqale').html(`<span class="${couleur3}">${noteSqale}</span>`);
+      log(' - 🎨 [Peinture] Affichage des informations sur les anomalies.');
     } catch(error) {
-      showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des Anomalies.<br>${error.message}`);
+          ErrorButtonAffiche();
+          const trace = prepareTechnicalDetails(error);
+          const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations sur les anomalies.";
+          showMessage('alert', message, trace);
+          sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Anomalie.');
+          log(' - ❌ [Peinture] Affichage des informations sur les Anomalies en échec.');
+          return;
     }
 
+      /** Débloque le bouton afficher */
+  enableButtonAnalyse()
+  return;
 
   /**
    * On récupère les hotspot.
