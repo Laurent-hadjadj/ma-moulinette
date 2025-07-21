@@ -672,39 +672,61 @@ class ApiPeintureController extends AbstractController
     public function peintureProjetHotspots(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
-        $hotspotsRepository = $this->em->getRepository(Hotspots::class);
+        $hotspotsRepos = $this->em->getRepository(Hotspots::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'maven_key') ) {
-            return new JsonResponse(['data' => $data,'code' => 400, 'type' => 'alert',
-            'message' => static::$reference . static::$erreur400], Response::HTTP_OK);
+               // Vérification de la validité du corps de la requête
+        if ($data === null || !property_exists($data, 'maven_key')) {
+            $this->logger->alert(static::$loggerE400, [
+                'data' => $request->getContent()
+            ]);
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'alert',
+                'message' => static::$reference . static::$erreur400,
+                'trace' => null
+            ], Response::HTTP_OK);
         }
+
+        /** On nettoie la clé */
+        $maven_key = htmlspecialchars($data->maven_key, ENT_QUOTES, 'UTF-8');
 
         /** On regarde si le projet existe */
-        $isValide = $this->isValideMavenKey->isValideInformation($data->maven_key);
+        $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
-            return new JsonResponse([
-                'code' => 404, 'type' => 'secondary',
-                'message' => static::$reference . static::$erreur404], Response::HTTP_OK);
-        }
+                return new JsonResponse([
+                    'code' => 404,
+                    'type' => 'secondary',
+                    'message' => static::$reference . static::$erreur404,
+                    'trace' => null
+                ], Response::HTTP_OK);
+            }
 
         /** On compte le nombre de hotspot au statut TO_REVIEW */
-        $map = ['maven_key' => $data->maven_key, 'status' => 'TO_REVIEW'];
-        $toReview = $hotspotsRepository->countHotspotsStatus($map);
+        $map = [ 'maven_key' => $maven_key, 'status' => 'TO_REVIEW' ];
+        $toReview = $hotspotsRepos->countHotspotsStatus($map);
         if ($toReview['code'] != 200) {
-            return new JsonResponse(['code' => $toReview['code'], 'type' => 'alert',
-            'message' => static::$reference . $toReview['erreur'], 'debug' => 'TO_REVIEW'], Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => $toReview['code'],
+                'type' => 'alert',
+                'message' => static::$reference . "La récupération des données a échouée pour countHotspotsStatus avec TO_REVIEW (Erreur {$toReview['code']}).",
+                'trace' => $toReview['erreur'],
+                'test' => 'TO_REVIEW'
+            ], Response::HTTP_OK);
         }
 
         /** On compte le nombre de hotspot au statut REVIEWED */
         $map = ['maven_key' => $data->maven_key, 'status' => 'REVIEWED'];
-        $reviewed = $hotspotsRepository->countHotspotsStatus($map);
+        $reviewed = $hotspotsRepos->countHotspotsStatus($map);
         if ($reviewed['code'] != 200) {
-            return new JsonResponse(['code' => $reviewed['code'], 'type' => 'alert',
-            'message' => static::$reference . $reviewed['erreur'], 'debug' => 'REVIEWED'], Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => $reviewed['code'],
+                'type' => 'alert',
+                'message' => static::$reference . "La récupération des données a échouée pour countHotspotsStatus avec REVIEWED (Erreur {$reviewed['code']}).", 'trace' => $reviewed['erreur'],
+                'test' => 'REVIEWED'
+            ], Response::HTTP_OK);
         }
 
         /** On calcul la note sonar */
@@ -714,7 +736,10 @@ class ApiPeintureController extends AbstractController
             $note = static::calculNoteHotspot($toReview['nombre'][0]['to_review'], $reviewed['nombre'][0]['reviewed']);
         }
 
-        return new JsonResponse(['code' => 200, 'note' => $note], Response::HTTP_OK);
+        return new JsonResponse([
+            'code' => 200,
+            'note' => $note
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -733,7 +758,7 @@ class ApiPeintureController extends AbstractController
     public function peintureProjetHotspotsDetails(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
-        $hotspotsRepository = $this->em->getRepository(Hotspots::class);
+        $hotspotsRepos = $this->em->getRepository(Hotspots::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -754,14 +779,14 @@ class ApiPeintureController extends AbstractController
 
         /** retourne une liste par niveau (1,2,3) du nombre de hotspot à vérifier */
         $map = ['maven_key' => $data->maven_key, 'status' => 'TO_REVIEW'];
-        $getToReview = $hotspotsRepository->selectHotspotsByNiveau($map);
+        $getToReview = $hotspotsRepos->selectHotspotsByNiveau($map);
         if ($getToReview['code'] != 200) {
             return new JsonResponse(['code' => $getToReview['code'], 'type' => 'alert',
             'message' => static::$reference . $getToReview['erreur'], 'debug' => 'TO_REVIEW'],
             Response::HTTP_OK);
         }
         $map = ['maven_key' => $data->maven_key, 'status' => 'REVIEWED'];
-        $getReviewed = $hotspotsRepository->selectHotspotsByNiveau($map);
+        $getReviewed = $hotspotsRepos->selectHotspotsByNiveau($map);
         if ($getReviewed['code'] != 200) {
             return new JsonResponse(['code' => $getReviewed['code'], 'type' => 'alert',
             'message' => static::$reference . $getReviewed['erreur'], 'debug' => 'REVIEWED'],
