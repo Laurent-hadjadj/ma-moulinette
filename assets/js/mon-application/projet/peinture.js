@@ -195,10 +195,13 @@ export const remplissage = async function(maven_key) {
 
   try {
     const t = await $.ajax(optionsTodo);
-    const errorCodes = [http_400, http_401, http_403, http_406, http_500];
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
     if (errorCodes.includes(t.code)){
-        showMessage(t.type, typeMessage(t.message));
-        sessionStorage.setItem('peinture', 'Erreur - récupération de la liste des to-dos.');
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
+        sessionStorage.setItem('peinture', 'Erreur - récupération des informations todo.');
+        log(' - ❌ [Peinture] Affichage des informations ToDO en échec.');
         return;
       }
 
@@ -235,8 +238,15 @@ export const remplissage = async function(maven_key) {
     t54.dataset.html=(t.html);
     t55.dataset.xml=(t.xml);
     t56.dataset.listeFichier=(t.details);
+    log(' - 🎨 [Peinture] Affichage des informations sur les todo.');
   } catch(error) {
-    showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des ToDo.<br>${error.message}`);
+      ErrorButtonAffiche();
+      const trace = prepareTechnicalDetails(error);
+      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations sur les todo.";
+      showMessage('alert', message, trace);
+      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc todo.');
+      log(' - ❌ [Peinture] Affichage des informations sur les todo en échec.');
+      return;
   }
 
   /** Débloque le bouton afficher */
