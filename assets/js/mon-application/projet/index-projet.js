@@ -35,8 +35,11 @@ import {serveur} from '../../common/properties.js';
 
 import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
+/** On importe le fonction de journalisation */
+import { log } from '../../common/log.js';
+
 /** On importe les constantes */
-import { http_200, http_400, http_401, http_403, http_404, http_406, http_500, http_503, http_504, deuxMille, cinqMille, contentType, paletteCouleur, matrice, dateOptions, troisMille } from '../../common/constante.js';
+import { http_200, http_400, http_401, http_403, http_404, http_406, http_500, http_503, http_504, deuxMille, cinqMille, contentType, paletteCouleur, matrice, troisMille } from '../../common/constante.js';
 
 /** On importe l'encoder */
 import {encode} from '../../common/encode.js';
@@ -153,24 +156,6 @@ const dessineMoiUnMouton = function(label, dataset) {
   if (charts===null){
     sessionStorage.setItem('ma_moulinette_info','Pour éviter une erreur SonarQube !!!');
   }
-};
-
-/**
- * [Description for log]
- * Affiche la log.
- *
- * @param string txt
- *
- * @return [type]
- *
- * Created at: 19/12/2022, 22:10:19 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
- */
-const log = function(txt) {
-  const textarea = document.getElementById('log');
-  textarea.scrollTop = textarea.scrollHeight;
-  textarea.value += `${new Intl.DateTimeFormat('default',
-  dateOptions).format(new Date())} ${txt}\n`;
 };
 
 /**
@@ -1440,7 +1425,7 @@ $('.js-analyse').on('click', function () {
  * description
  * On passe à la peinture
  */
-$('.js-affiche-result').on('click', () => {
+$('.js-affiche-result').on('click', async() => {
   /* On récupère la clé du projet. */
   const apiMaven = $('#select-result').text().trim();
 
@@ -1455,7 +1440,8 @@ $('.js-affiche-result').on('click', () => {
   };
 
   /** On appelle la fonction de remplissage */
-  const remplissage = await remplissage(apiMaven);
+  let response;
+  response = await remplissage(apiMaven);
 
   /* On appel une fonction externe. */
   if ( $('.js-affiche-result').hasClass('affiche-result-enabled')){
