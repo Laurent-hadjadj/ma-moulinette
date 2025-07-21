@@ -677,7 +677,7 @@ class ApiPeintureController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-               // Vérification de la validité du corps de la requête
+        // Vérification de la validité du corps de la requête
         if ($data === null || !property_exists($data, 'maven_key')) {
             $this->logger->alert(static::$loggerE400, [
                 'data' => $request->getContent()
@@ -718,7 +718,7 @@ class ApiPeintureController extends AbstractController
         }
 
         /** On compte le nombre de hotspot au statut REVIEWED */
-        $map = ['maven_key' => $data->maven_key, 'status' => 'REVIEWED'];
+        $map = [ 'maven_key' => $maven_key, 'status' => 'REVIEWED' ];
         $reviewed = $hotspotsRepos->countHotspotsStatus($map);
         if ($reviewed['code'] != 200) {
             return new JsonResponse([
