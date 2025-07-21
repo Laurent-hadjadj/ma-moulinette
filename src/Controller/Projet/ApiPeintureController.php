@@ -231,7 +231,7 @@ class ApiPeintureController extends AbstractController
 
          // Vérification de la validité du corps de la requête
         if ($data === null || !property_exists($data, 'maven_key')) {
-            $this->logger->warning('[Peinture] Requête mal formée : maven_key manquant ou invalide.', [
+            $this->logger->alert(static::$loggerE400, [
                 'data' => $request->getContent()
             ]);
             return new JsonResponse([
@@ -791,7 +791,7 @@ class ApiPeintureController extends AbstractController
 
         // Vérification de la validité du corps de la requête
         if ($data === null || !property_exists($data, 'maven_key')) {
-            $this->logger->warning('[Peinture] Requête mal formée : maven_key manquant ou invalide.', [
+            $this->logger->alert(static::$loggerE400, [
                 'data' => $request->getContent()
             ]);
             return new JsonResponse([
@@ -875,7 +875,7 @@ class ApiPeintureController extends AbstractController
 
         // Vérification de la validité du corps de la requête
         if ($data === null || !property_exists($data, 'maven_key')) {
-            $this->logger->warning('[Peinture] Requête mal formée : maven_key manquant ou invalide.', [
+            $this->logger->alert(static::$loggerE400, [
                 'data' => $request->getContent()
             ]);
             return new JsonResponse([
@@ -983,7 +983,7 @@ class ApiPeintureController extends AbstractController
 
        // Vérification de la validité du corps de la requête
         if ($data === null || !property_exists($data, 'maven_key')) {
-            $this->logger->warning('[Peinture] Requête mal formée : maven_key manquant ou invalide.', [
+            $this->logger->alert(static::$loggerE400, [
                 'data' => $request->getContent()
             ]);
             return new JsonResponse([
