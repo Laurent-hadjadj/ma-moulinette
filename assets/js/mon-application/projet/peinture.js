@@ -17,9 +17,12 @@ import {serveur} from '../../common/properties.js';
 
 import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
+/** On importe le fonction de journalisation */
+import { log } from '../../common/log.js';
+
 /** On importe les constantes */
-import {contentType, dateOptions, http_400, http_401, http_403, http_406, http_500,
-        un, deux, trois, quatre, cinq, dix, cent, dixMille} from '../../common/constante.js';
+import {contentType, dateOptions, http_400, http_401, http_403, http_404, http_406, http_500,
+        http_503, http_504, un, deux, trois, quatre, cinq, dix, cent, dixMille} from '../../common/constante.js';
 
 /**
  * [Description for remplissage]
@@ -32,8 +35,8 @@ import {contentType, dateOptions, http_400, http_401, http_403, http_406, http_5
  * Created at: 13/12/2022, 10:08:02 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
-export const remplissage = async function(mavenKey) {
-  const data = { maven_key: mavenKey };
+export const remplissage = async function(maven_key) {
+  const data = { maven_key };
 
   /**
    * On récupère les informations sur les versions, et le dernier audit.
@@ -44,18 +47,20 @@ export const remplissage = async function(mavenKey) {
 
   try {
         const t = await $.ajax(optionsInfo);
-        const errorCodes = [http_400, http_401, http_403, http_406, http_500];
-        if (errorCodes.includes(t.code)){
-            showMessage(t.type, typeMessage(t.message));
-            sessionStorage.setItem('peinture', 'Erreur - récupération des informations de la version.');
-            return;
-          }
+        const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+            if (errorCodes.includes(t.code)){
+                const hasTrace = !!t.trace;
+                const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+                showMessage(t.type, t.message, trace);
+                sessionStorage.setItem('peinture', 'Erreur - récupération des informations de la version.');
+                return;
+              }
 
         /** On affiche les informations du projet */
-        const nom = mavenKey.split(':');
+        const nom = maven_key.split(':');
         $('#nom-projet').html(nom[1]);
         $('#key-analyse').html(t.analyse_key);
-        $('#clef-projet').html(mavenKey);
+        $('#clef-projet').html(maven_key);
         $('#version-release').html(t.release);
         $('#version-snapshot').html(t.snapshot);
         $('#version-autre').html(t.autre);
@@ -78,9 +83,14 @@ export const remplissage = async function(mavenKey) {
         t3.dataset.autre=(t.autre);
         t4.dataset.dateVersion=(t.date);
       } catch(error) {
-        showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des informations du projet.<br>${error.message}`);
+            const trace = prepareTechnicalDetails(error);
+            const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage du bloc informations générales.";
+              showMessage('alert', message, trace);
+              sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Informations Générales.');
+              log(' - ❌ [Peinture] Affichage du bloc Informations générales en échec.');
+              return;
       }
-
+      return;
   /***
    * On récupère les exclusions noSonar
    */
