@@ -645,9 +645,6 @@ export const remplissage = async function(maven_key) {
           return;
     }
 
-      /** Débloque le bouton afficher */
-  enableButtonAnalyse()
-  return;
 
   /**
    * On récupère les hotspot.
@@ -656,38 +653,51 @@ export const remplissage = async function(maven_key) {
     url: `${serveur()}/api/peinture/projet/hotspots`, type: 'POST',
           dataType: 'json', data: JSON.stringify(data), contentType };
 
-  try {
-    const t = await $.ajax(optionsHotspots);
-    const errorCodes = [http_400, http_401, http_403, http_406, http_500];
-    if (errorCodes.includes(t.code)){
-        showMessage(t.type, typeMessage(t.message));
-        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - Erreur - récupération des hotspots.');
-        return;
+    try {
+      const t = await $.ajax(optionsHotspots);
+      const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+      if (errorCodes.includes(t.code)){
+          const hasTrace = !!t.trace;
+          const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+          showMessage(t.type, t.message, trace);
+          sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur les anomalies.');
+          log(' - ❌ [Peinture] Affichage des informations sur les menaces potentielles en échec.');
+          return;
       }
 
-    let couleur='';
+      let couleur='';
 
-    if (t.note === 'E') {
-        couleur = 'note-rouge';
-    }
-    if (t.note === 'D') {
-        couleur = 'note-orange';
-    }
-    if (t.note === 'C') {
-        couleur = 'note-jaune';
-    }
-    if (t.note === 'B') {
-        couleur = 'note-vert2';
+      if (t.note === 'E') {
+          couleur = 'note-rouge';
       }
-    if (t.note === 'A') {
-        couleur = 'note-vert1';
+      if (t.note === 'D') {
+          couleur = 'note-orange';
+      }
+      if (t.note === 'C') {
+          couleur = 'note-jaune';
+      }
+      if (t.note === 'B') {
+          couleur = 'note-vert2';
+        }
+      if (t.note === 'A') {
+          couleur = 'note-vert1';
+      }
+
+      $('#note-hotspot').html(`<span class="${couleur}">${t.note}</span>`);
+      log(' - 🎨 [Peinture] Affichage des informations sur les menaces potentielles.');
+    } catch(error) {
+          ErrorButtonAffiche();
+          const trace = prepareTechnicalDetails(error);
+          const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations sur les menaces potentielles.";
+          showMessage('alert', message, trace);
+          sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Anomalie.');
+          log(' - ❌ [Peinture] Affichage des informations sur les menaces potentielles en échec.');
+          return;
     }
 
-    $('#note-hotspot').html(`<span class="${couleur}">${t.note}</span>`);
-  } catch(error) {
-    showMessage('alert', `<strong>[Peinture]</strong> Une erreur inattendue s'est produite lors la récupération des Hotspots.<br>${error.message}`);
-  }
-
+          /** Débloque le bouton afficher */
+  enableButtonAnalyse()
+  return;
   /**
    * On récupère la sévérité par type.
    */
