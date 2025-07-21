@@ -1450,9 +1450,12 @@ $('.js-affiche-result').on('click', () => {
     log(` - ❌ Une erreur s'est produite sur le projet ${apiMaven}.`);
     log(`      Vous ne pouvez pas afficher les données collectées pour ce projet.`);
     showMessage('primary', `<strong>${Peinture}</strong> Le processus d'affichage des données a été interrompu !<br>Choisissez un autre projet.`);
-    sessionStorage.setItem('peinture', `La collecte du projet a échoué.`);
+    sessionStorage.setItem('ma_moulinette_peinture', `La collecte du projet a échoué.`);
     return;
   };
+
+  /** On appelle la fonction de remplissage */
+  const remplissage = await remplissage(apiMaven);
 
   /* On appel une fonction externe. */
   if ( $('.js-affiche-result').hasClass('affiche-result-enabled')){
