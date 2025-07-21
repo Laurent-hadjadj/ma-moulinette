@@ -188,14 +188,6 @@ textarea[readonly] {
 #bouton-cosui:hover,
 #bouton-analyse-owasp:hover { background-color: #006182; }
 
-.xlance-analyse-enabled,
-.xaffiche-liste-enabled,
-.xaffiche-result-enabled,
-.xanalyse-owasp-enabled,
-.xtableau-de-bord-enabled,
-.xcosui-enabled,
-.xrepartition-module-enabled,
-.xenregistrement-enabled,
 #fermer-liste-projet,
 #fermer-liste-hotspot,
 #fermer-liste-logger,
@@ -208,40 +200,12 @@ textarea[readonly] {
 }
 
 /* Gestion du hover sur les boutons */
-.xlance-analyse-enabled:hover,
-.xaffiche-liste-enabled:hover,
-.xaffiche-result-enabled:hover,
-.xanalyse-owasp-enabled:hover,
-.xtableau-de-bord-enabled:hover,
-.xcosui-enabled:hover,
-.xrepartition-module-enabled:hover,
-.xenregistrement-enabled:hover,
 #fermer-liste-projet:hover,
 #fermer-autre-version:hover,
 #fermer-liste-hotspot:hover,
 #fermer-liste-logger:hover,
 #fermer-dette-technique:hover,
 #fermer-liste-severity:hover { background-color: #006182; }
-
-/* Gestion des boutons désactivés */
-.xlance-analyse-disabled,
-.xaffiche-result-disabled,
-.xanalyse-owasp-disabled,
-.xtableau-de-bord-disabled,
-.xcosui-disabled,
-.xrepartition-module-disabled,
-.xenregistrement-disabled {
-  background-color: #4c7c8c;
-  cursor: not-allowed;
-}
-
-.xlance-analyse-disabled:hover,
-.xaffiche-result-disabled:hover,
-.xanalyse-owasp-disabled:hover,
-.xtableau-de-bord-disabled:hover,
-.xcosui-disabled:hover,
-.xrepartition-module-disabled:hover,
-.xenregistrement-disabled:hover { background-color: #006182; }
 
 /* select2 custom
  *  placeholder
