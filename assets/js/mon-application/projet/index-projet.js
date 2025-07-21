@@ -1366,7 +1366,7 @@ $('.js-analyse').on('click', function () {
   if (!collecte || collecte != 'Tout va bien!') {
     log(` - ❌ Une erreur s'est produite sur le projet ${idProject}.`);
     log(`      Vous ne pouvez pas relancer d'analyse pour ce projet.`);
-    showMessage('primary', `<strong>${collecte}</strong> Le processus de collecte a été interrompu !`);
+    showMessage('primary', `<strong>${collecte}</strong> Le processus de collecte a été interrompu !<br>Choisissez un autre projet.`);
   }
 
   log(' - ℹ️ On lance la collecte...');
