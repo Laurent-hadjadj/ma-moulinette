@@ -1440,20 +1440,18 @@ $('.js-affiche-result').on('click', async() => {
   };
 
   /** On appelle la fonction de remplissage */
-  let response;
-  response = await remplissage(apiMaven);
+  let p1 = 1, p2 = 1;
+  p1 = await remplissage(apiMaven);
+  if (p1 == 0){
+    p2 = await afficheHotspotDetails(apiMaven);
+  }
 
-  /* On appel une fonction externe. */
-  if ( $('.js-affiche-result').hasClass('affiche-result-enabled')){
-      /* On récupère les résultats. */
-      //remplissage(apiMaven);
-      //afficheHotspotDetails(apiMaven);
+  /** Si le remplissage et menace n'ont pas d'erreur on affiche un message */
+  if (p1 == 0 && p2 == 0){
+    showMessage('primary', "L'affichage des informations pour le projet est terminée.")
+    setTimeout( () => { hideMessage()}, troisMille);
+  }
 
-      if ($('#enregistrement').hasClass('enregistrement-disabled')){
-            $('#enregistrement').addClass('enregistrement');
-            $('#enregistrement').removeClass('enregistrement-disabled');
-        }
-    }
 });
 
 /******************************************************/
