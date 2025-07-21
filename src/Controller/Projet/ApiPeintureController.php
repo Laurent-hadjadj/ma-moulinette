@@ -591,32 +591,47 @@ class ApiPeintureController extends AbstractController
     public function peintureProjetAnomalieDetails(Request $request): response
     {
         /** On instancie l'entityRepository */
-        $anomalieDetailsRepository = $this->em->getRepository(AnomalieDetails::class);
+        $anomalieDetailsRepos = $this->em->getRepository(AnomalieDetails::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'maven_key') ) {
+        // Vérification de la validité du corps de la requête
+        if ($data === null || !property_exists($data, 'maven_key')) {
+            $this->logger->alert(static::$loggerE400, [
+                'data' => $request->getContent()
+            ]);
             return new JsonResponse([
-                'data' =>$data, 'code' => 400, 'type' =>'alert',
-                'message' => static::$reference . static::$erreur400], Response::HTTP_OK);
+                'code' => 400,
+                'type' => 'alert',
+                'message' => static::$reference . static::$erreur400,
+                'trace' => null
+            ], Response::HTTP_OK);
         }
+
+        /** On nettoie la clé */
+        $maven_key = htmlspecialchars($data->maven_key, ENT_QUOTES, 'UTF-8');
 
         /** On regarde si le projet existe */
-        $isValide = $this->isValideMavenKey->isValideInformation($data->maven_key);
+        $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
-            return new JsonResponse([
-                'code' => 404, 'type' => 'secondary',
-                'message' => static::$reference . static::$erreur404], Response::HTTP_OK);
-        }
-
+                return new JsonResponse([
+                    'code' => 404,
+                    'type' => 'secondary',
+                    'message' => static::$reference . static::$erreur404,
+                    'trace' => null
+                ], Response::HTTP_OK);
+            }
         /** On récupère les données pour le projet */
-        $map = ['maven_key' => $data->maven_key];
-        $details = $anomalieDetailsRepository->selectAnomalieDetailsMavenKey($map);
+        $map = [ 'maven_key' => $maven_key ];
+        $details = $anomalieDetailsRepos->selectAnomalieDetailsMavenKey($map);
         if ($details['code'] != 200) {
-            return new JsonResponse(['code' => $details['code'], 'type' =>'alert',
-                'message' => static::$reference . $details['erreur']], Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => $details['code'],
+                'type' =>'alert',
+                'message' => static::$reference . "La récupération des données a échouée pour selectAnomalieDetailsMavenKey (Erreur {$details['code']}).",
+                'trace' => $details['erreur']
+            ], Response::HTTP_OK);
         }
 
         $bugBlocker = $details['liste'][0]['bug_blocker'];
@@ -653,7 +668,8 @@ class ApiPeintureController extends AbstractController
             "codeSmellCritical" => $codeSmellCritical,
             "codeSmellMajor" => $codeSmellMajor,
             "codeSmellMinor" => $codeSmellMinor,
-            "codeSmellInfo" => $codeSmellInfo], Response::HTTP_OK);
+            "codeSmellInfo" => $codeSmellInfo
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -763,35 +779,58 @@ class ApiPeintureController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On teste si la clé est valide */
+        // Vérification de la validité du corps de la requête
         if ($data === null || !property_exists($data, 'maven_key')) {
+            $this->logger->alert(static::$loggerE400, [
+                'data' => $request->getContent()
+            ]);
             return new JsonResponse([
-                'data' => $data,'code' => 400, 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400], Response::HTTP_OK);
+                'code' => 400,
+                'type' => 'alert',
+                'message' => static::$reference . static::$erreur400,
+                'trace' => null
+            ], Response::HTTP_OK);
         }
+
+        /** On nettoie la clé */
+        $maven_key = htmlspecialchars($data->maven_key, ENT_QUOTES, 'UTF-8');
+
         /** On regarde si le projet existe */
-        $isValide = $this->isValideMavenKey->isValideInformation($data->maven_key);
+        $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
-            return new JsonResponse([
-                'code' => 404, 'type' => 'secondary',
-                'message' => static::$reference . static::$erreur404], Response::HTTP_OK);
+                return new JsonResponse([
+                    'code' => 404,
+                    'type' => 'secondary',
+                    'message' => static::$reference . static::$erreur404,
+                    'trace' => null
+                ], Response::HTTP_OK);
         }
 
         /** retourne une liste par niveau (1,2,3) du nombre de hotspot à vérifier */
-        $map = ['maven_key' => $data->maven_key, 'status' => 'TO_REVIEW'];
+        $map = [ 'maven_key' => $maven_key, 'status' => 'TO_REVIEW' ];
         $getToReview = $hotspotsRepos->selectHotspotsByNiveau($map);
         if ($getToReview['code'] != 200) {
-            return new JsonResponse(['code' => $getToReview['code'], 'type' => 'alert',
-            'message' => static::$reference . $getToReview['erreur'], 'debug' => 'TO_REVIEW'],
-            Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => $getToReview['code'],
+                'type' => 'alert',
+                'message' => static::$reference  . "La récupération des données a échouée pour selectHotspotsByNiveau avec TO_REVIEW (Erreur {$getToReview['code']}).",
+                'trace' => $getToReview['erreur'],
+                'test' => 'TO_REVIEW'
+            ], Response::HTTP_OK);
         }
+
         $map = ['maven_key' => $data->maven_key, 'status' => 'REVIEWED'];
         $getReviewed = $hotspotsRepos->selectHotspotsByNiveau($map);
         if ($getReviewed['code'] != 200) {
-            return new JsonResponse(['code' => $getReviewed['code'], 'type' => 'alert',
-            'message' => static::$reference . $getReviewed['erreur'], 'debug' => 'REVIEWED'],
-            Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => $getReviewed['code'],
+                'type' => 'alert',
+                'message' => static::$reference . "La récupération des données a échouée pour selectHotspotsByNiveau avec REVIEWED (Erreur {$getReviewed['code']}).",
+                'trace' => $getReviewed['erreur'],
+                'test' => 'REVIEWED'
+                ], Response::HTTP_OK);
         }
+
         $toReview = $reviewed = [];
         if ($getToReview){
             $toReview = static::vulnerabilityProbability($getToReview['liste']);
@@ -800,8 +839,8 @@ class ApiPeintureController extends AbstractController
             $reviewed = static::vulnerabilityProbability($getReviewed['liste']);
         }
 
-        return new JsonResponse(
-            ['code' => 200,
+        return new JsonResponse([
+            'code' => 200,
             'to_review_total' => $toReview['total'] ?? 0,
             'to_review_high' => $toReview['high'] ?? 0,
             'to_review_medium' => $toReview['medium'] ?? 0,
@@ -809,7 +848,8 @@ class ApiPeintureController extends AbstractController
             'reviewed_total' => $reviewed['total'] ?? 0,
             'reviewed_high' => $reviewed['high'] ?? 0,
             'reviewed_medium' => $reviewed['medium'] ?? 0,
-            'reviewed_low' => $reviewed['low'] ?? 0], Response::HTTP_OK
+            'reviewed_low' => $reviewed['low'] ?? 0
+            ], Response::HTTP_OK
         );
     }
 
