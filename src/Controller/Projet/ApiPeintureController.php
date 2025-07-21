@@ -145,7 +145,7 @@ class ApiPeintureController extends AbstractController
     public function projetMesApplicationsListe(Request $request, Security $security): JsonResponse
     {
         /** On instancie l'entityRepository */
-        $anomalieRepository = $this->em->getRepository(Anomalie::class);
+        $anomalieRepos = $this->em->getRepository(Anomalie::class);
 
         /** On décode le body */
         // TODO : data n'est pas utilisé pas pour le moment
@@ -164,7 +164,7 @@ class ApiPeintureController extends AbstractController
          * On n'utilise plus le critère liste = TRUE/FALSE car on utilise les préférences
          * de l'utilisateur. ex. "de.merv:2048"
          */
-        $request = $anomalieRepository->selectAnomalieByProjectName();
+        $request = $anomalieRepos->selectAnomalieByProjectName();
         if ($request['code'] != 200) {
             return new JsonResponse([
                 'code' => $request['code'],
@@ -447,33 +447,49 @@ class ApiPeintureController extends AbstractController
     public function peintureProjetAnomalie(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
-        $anomalieRepository = $this->em->getRepository(Anomalie::class);
-        $notesRepository = $this->em->getRepository(Notes::class);
+        $anomalieRepos = $this->em->getRepository(Anomalie::class);
+        $notesRepos = $this->em->getRepository(Notes::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-        /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'maven_key') ) {
+       // Vérification de la validité du corps de la requête
+        if ($data === null || !property_exists($data, 'maven_key')) {
+            $this->logger->alert(static::$loggerE400, [
+                'data' => $request->getContent()
+            ]);
             return new JsonResponse([
-                'data' => $data, 'code' => 400, 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400], Response::HTTP_OK);
+                'code' => 400,
+                'type' => 'alert',
+                'message' => static::$reference . static::$erreur400,
+                'trace' => null
+            ], Response::HTTP_OK);
         }
+
+        /** On nettoie la clé */
+        $maven_key = htmlspecialchars($data->maven_key, ENT_QUOTES, 'UTF-8');
 
         /** On regarde si le projet existe */
-        $isValide= $this->isValideMavenKey->isValideInformation($data->maven_key);
+        $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
-            return new JsonResponse([
-                'code' => 404, 'type' => 'secondary',
-                'message' => static::$reference . static::$erreur404,], response::HTTP_OK);
-        }
+                return new JsonResponse([
+                    'code' => 404,
+                    'type' => 'secondary',
+                    'message' => static::$reference . static::$erreur404,
+                    'trace' => null
+                ], Response::HTTP_OK);
+            }
 
         /** On récupère la dernière version et sa date de publication */
-        $map = ['maven_key' => $data->maven_key];
-        $anomalie = $anomalieRepository->selectAnomalie($map);
+        $map = [ 'maven_key' => $maven_key ];
+        $anomalie = $anomalieRepos->selectAnomalie($map);
         if ($anomalie['code'] != 200) {
-            return new JsonResponse(['code' => $anomalie['code'], 'type' => 'alert',
-                'message' => static::$reference. $anomalie['erreur']], Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => $anomalie['code'],
+                'type' => 'alert',
+                'message' => static::$reference . "La récupération des données a échouée pour selectAnomalie (Erreur {$anomalie['code']}).",
+                'trace' => $anomalie['erreur']
+            ], Response::HTTP_OK);
         }
 
         /**
@@ -513,11 +529,15 @@ class ApiPeintureController extends AbstractController
         $noteReliability = $noteSecurity = $noteSqale = 'N/A';
 
         foreach ($types as $type) {
-            $map = ['maven_key' => $data->maven_key, 'type' => $type];
-            $note = $notesRepository->selectNotesMavenType($map);
+            $map = [ 'maven_key' => $maven_key, 'type' => $type ];
+            $note = $notesRepos->selectNotesMavenType($map);
             if ($note['code'] != 200) {
-                return new JsonResponse(['code' => $note['code'], 'type' => 'alert',
-                'message' => static::$reference. $note['erreur']], Response::HTTP_OK);
+                return new JsonResponse([
+                    'code' => $note['code'],
+                    'type' => 'alert',
+                    'message' => static::$reference . "La récupération des données a échouée pour selectNotesMavenType (Erreur {$note['code']}).",
+                    'trace' => $note['erreur']
+                ], Response::HTTP_OK);
             }
 
             if (isset($note['liste'][0]['value'])) {
