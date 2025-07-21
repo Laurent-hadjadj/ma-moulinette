@@ -84,7 +84,10 @@ class ApiAccueilController extends AbstractController
 
         if ($result['code'] != 200) {
             $this->logger->error('[Accueil] SonarQube indisponible', $result);
-            return new JsonResponse(['code' => $result['code'], 'erreur' => $result['erreur']], Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => $result['code'],
+                'erreur' => $result['erreur']
+            ], Response::HTTP_OK);
         }
 
         $this->logger->debug('[Accueil] SonarQube est UP', $result);
@@ -106,8 +109,8 @@ class ApiAccueilController extends AbstractController
     public function accueilProjetListe(): JsonResponse
     {
         /** On instancie l'EntityRepository */
-        $listeProjetRepository = $this->em->getRepository(ListeProjet::class);
-        $propertiesRepository = $this->em->getRepository(Properties::class);
+        $listeProjetRepos = $this->em->getRepository(ListeProjet::class);
+        $propertiesRepos = $this->em->getRepository(Properties::class);
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
@@ -155,7 +158,7 @@ class ApiAccueilController extends AbstractController
         }
 
         /** On supprime les données de la table avant d'importer les données. */
-        $delete = $listeProjetRepository->deleteListeProjet();
+        $delete = $listeProjetRepos->deleteListeProjet();
         if ($delete['code'] != 200) {
             $this->logger->error('[Accueil] Échec suppression des anciens projets', $delete);
             return new JsonResponse([
@@ -205,7 +208,7 @@ class ApiAccueilController extends AbstractController
             'date_modification_projet' => $date
         ];
 
-        $r = $propertiesRepository->updatePropertiesProjet($map);
+        $r = $propertiesRepos->updatePropertiesProjet($map);
 
         if ($r['code'] != 200) {
             $this->logger->error('[Accueil] Échec updatePropertiesProjet', $r);
@@ -252,7 +255,7 @@ class ApiAccueilController extends AbstractController
     public function accueilProjetTags(): JsonResponse
     {
         /** On instancie l'EntityRepository */
-        $listeProjetRepository = $this->em->getRepository(ListeProjet::class);
+        $listeProjetRepos = $this->em->getRepository(ListeProjet::class);
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
@@ -265,7 +268,7 @@ class ApiAccueilController extends AbstractController
         }
 
         $this->logger->info('[Accueil] Comptage des tags de projets');
-        $tag = $listeProjetRepository->countListeProjetTags();
+        $tag = $listeProjetRepos->countListeProjetTags();
 
         if ($tag['code'] != 200) {
             $this->logger->error('[Accueil] Échec countListeProjetTags', $tag);
