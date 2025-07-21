@@ -112,8 +112,8 @@ class ApiProfilController extends AbstractController
     public function listeQualityProfiles(Security $security): JsonResponse
     {
         /** On instancie l'entityRepository */
-        $profilesRepository = $this->em->getRepository(Profiles::class);
-        $propertiesRepository = $this->em->getRepository(Properties::class);
+        $profilesRepos = $this->em->getRepository(Profiles::class);
+        $propertiesRepos = $this->em->getRepository(Properties::class);
 
         $this->logger->info('[Profil] Appel POST /api/quality/profiles', [
             'utilisateur' => $this->getUser()?->getUserIdentifier(),
@@ -173,7 +173,7 @@ class ApiProfilController extends AbstractController
             'date' => $date->format('Y-m-d H:i')]);
 
         /** On supprime les données de la table avant d'importer les données;*/
-        $r1 = $profilesRepository->deleteProfiles();
+        $r1 = $profilesRepos->deleteProfiles();
         if ($r1['code'] !== 200) {
             $this->logger->error('[Profil] Échec suppression des anciens profils (deleteProfiles)', [
             'erreur' => $r1['erreur'] ?? null]);
@@ -192,7 +192,7 @@ class ApiProfilController extends AbstractController
             'date_enregistrement' => $date
         ];
 
-        $r2 = $profilesRepository->insertProfiles($map);
+        $r2 = $profilesRepos->insertProfiles($map);
         if ($r2['code'] !== 200) {
             $this->logger->error('[Profil] Échec insertion des profils (insertProfiles)', [
             'erreur' => $r2['erreur'] ?? null]);
@@ -207,7 +207,7 @@ class ApiProfilController extends AbstractController
         }
 
         /** On récupère la nouvelle liste des profils */
-        $r3 = $profilesRepository->selectProfiles();
+        $r3 = $profilesRepos->selectProfiles();
         if ($r3['code'] !== 200) {
             $this->logger->error('[Profil] Échec récupération des profils après insertion (selectProfiles)', ['erreur' => $r3['erreur'] ?? null]);
 
@@ -227,7 +227,7 @@ class ApiProfilController extends AbstractController
                 'date_modification_profil' => $date
         ];
 
-        $r4 = $propertiesRepository->updatePropertiesProfiles($map);
+        $r4 = $propertiesRepos->updatePropertiesProfiles($map);
         if ($r4['code'] !== 200) {
             $this->logger->error('[Profil] Échec mise à jour des propriétés (updatePropertiesProfiles)', [
             'erreur' => $r4['erreur'] ?? null]);
@@ -265,7 +265,7 @@ class ApiProfilController extends AbstractController
     public function listeQualityLangage(): JsonResponse
     {
         /** On instancie la classe */
-        $profilesRepository = $this->em->getRepository(Profiles::class);
+        $profilesRepos = $this->em->getRepository(Profiles::class);
 
         $this->logger->info('[Profil] Requête POST /api/quality/langage');
 
@@ -273,7 +273,7 @@ class ApiProfilController extends AbstractController
         $listeDataset = [];
 
         /** On récupère la liste des langages */
-        $r1 = $profilesRepository->selectProfilesLanguage();
+        $r1 = $profilesRepos->selectProfilesLanguage();
         if ($r1['code'] !== 200) {
             $this->logger->error('[Profil] Échec récupération des profils par langage (selectProfilesLanguage)', [
             'erreur' => $r1['erreur'] ?? null]);
@@ -297,7 +297,7 @@ class ApiProfilController extends AbstractController
         ]);
 
         /** On récupère le nombre de règle de chaque profil */
-        $r2 = $profilesRepository->selectProfilesRuleCount();
+        $r2 = $profilesRepos->selectProfilesRuleCount();
         if ($r2['code'] !== 200 || empty($r2['data-set'])) {
             $this->logger->error('[Profil] Échec récupération du nombre de règles (selectProfilesRuleCount)', [
             'erreur' => $r2['erreur'] ?? null]);
@@ -561,7 +561,7 @@ class ApiProfilController extends AbstractController
     #[Route('/api/quality/off', name: 'liste_quality_off', methods: ['POST'])]
     public function listeQualityOff(Request $request): JsonResponse
     {
-        $profilesRepository = $this->em->getRepository(Profiles::class);
+        $profilesRepos = $this->em->getRepository(Profiles::class);
 
         $this->logger->info('Requête reçue sur /api/quality/off', [
         'raw_body' => $request->getContent()]);
@@ -585,8 +585,8 @@ class ApiProfilController extends AbstractController
         try {
                 $referential_default = 'false';
 
-                $liste = $profilesRepository->selectProfiles($referential_default, $langage);
-                $count = $profilesRepository->countProfiles($referential_default, $langage);
+                $liste = $profilesRepos->selectProfiles($referential_default, $langage);
+                $count = $profilesRepos->countProfiles($referential_default, $langage);
                 // Log des résultats
                 $this->logger->info('Profils non actifs récupérés', [
                     'langage' => $langage,
