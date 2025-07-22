@@ -95,15 +95,25 @@ class RepartitionTempRepository extends ServiceEntityRepository
                         if (!isset($issue['maven_key'], $issue['component'], $issue['type'], $issue['severity'], $issue['setup'])) {
                             continue;
                         }
+                        if (!isset($issue['maven_key'], $issue['component'], $issue['type'], $issue['severity'], $issue['setup'])) {
+                            continue;
+                        }
                         $placeholders[] = "(?, ?, ?, ?, ?)";
                         $params[] = $issue['maven_key'];
                         $params[] = $issue['component'];
-                        $params[] = $issue['type'];
+                        $params[] = $issue['category'];
                         $params[] = $issue['severity'];
                         $params[] = $issue['setup'];
                     }
+
+                    if (empty($placeholders)) {
+                        // To.do Mettre un logger 
+                        continue;
+                    }
+
                     // Ajoute la clause ON CONFLICT pour ignorer les duplicata
                     $fullSql = $sqlPrefix . implode(", ", $placeholders);
+                    dd($fullSql);
 
                     $connection->executeStatement($fullSql, $params);
                 }
