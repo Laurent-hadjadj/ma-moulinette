@@ -926,6 +926,7 @@ const projetNoSonar = async function(mavenKey){
 
   try {
     const t = await $.ajax(options);
+
     // 📌 Vérification des erreurs
     const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
     if (errorCodes.includes(t.code)){
@@ -1020,7 +1021,7 @@ const projetTodo = async function(mavenKey){
       } else {
         log(` -     ✅ Bravo !!! ${t.nombre} ToDo trouvé.`);
       }
-    if (t.nombre = 10000){
+    if (t.nombre == 10000){
       log(` -     🤬 Le nombre de Todo présent dans l'application dépasse les 10 000.`);
     }
 
@@ -1069,7 +1070,7 @@ const options = {
   try {
     const t = await $.ajax(options);
     // 📌 Vérification des erreurs
-    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+    const errorCodes = [http_400, http_401, http_403, http_500, http_503, http_504];
     if (errorCodes.includes(t.code)){
         const hasTrace = !!t.trace;
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
@@ -1483,44 +1484,44 @@ $('.js-analyse').on('click', function () {
 
   async function fnAsync() {
     /* Analyse du projet */
-    //await projetInformation(idProject);           /*(01)*/
-    //await projetMesure(idProject);                /*(02)*/
+    await projetInformation(idProject);           /*(01)*/
+    await projetMesure(idProject);                /*(02)*/
 
     /* Collecte des notes */
-    //await projetRating(idProject, 'reliability'); /*(03)*/
-    //await projetRating(idProject, 'security');    /*(03)*/
-    //await projetRating(idProject, 'sqale');      /*(03)*/
+    await projetRating(idProject, 'reliability'); /*(03)*/
+    await projetRating(idProject, 'security');    /*(03)*/
+    await projetRating(idProject, 'sqale');      /*(03)*/
 
     /* Analyse Sécurité et Owasp. */
-    //await projetOwasp(idProject);                 /*(04)*/
-    //await projetHotspot(idProject);               /*(05)*/
+    await projetOwasp(idProject);                 /*(04)*/
+    await projetHotspot(idProject);               /*(05)*/
 
     /* On récupère les infos sur les anomalies*/
-    //await projetAnomalie(idProject);              /*(06)*/
+    await projetAnomalie(idProject);              /*(06)*/
 
     /* On récupère le détails sur les anomalies*/
-    //await projetAnomalieDetails(idProject);       /*(07)*/
+    await projetAnomalieDetails(idProject);       /*(07)*/
 
     /* On efface les traces :)*/
-    //await projetHotspotOwasp(idProject, 'a0');    /*(08)*/
+    await projetHotspotOwasp(idProject, 'a0');    /*(08)*/
 
     /* On enregistre les résultats*/
-    //await projetHotspotOwasp(idProject, 'a1');    /*(09)*/
-    //await projetHotspotOwasp(idProject, 'a2');    /*(09)*/
-    //await projetHotspotOwasp(idProject, 'a3');    /*(09)*/
-    //await projetHotspotOwasp(idProject, 'a4');    /*(09)*/
-    //await projetHotspotOwasp(idProject, 'a5');    /*(09)*/
-    //await projetHotspotOwasp(idProject, 'a6');    /*(09)*/
-    //await projetHotspotOwasp(idProject, 'a7');    /*(09)*/
-    //await projetHotspotOwasp(idProject, 'a8');    /*(09)*/
-    //await projetHotspotOwasp(idProject, 'a9');    /*(09)*/
-    //await projetHotspotOwasp(idProject, 'a10');   /*(09)*/
+    await projetHotspotOwasp(idProject, 'a1');    /*(09)*/
+    await projetHotspotOwasp(idProject, 'a2');    /*(09)*/
+    await projetHotspotOwasp(idProject, 'a3');    /*(09)*/
+    await projetHotspotOwasp(idProject, 'a4');    /*(09)*/
+    await projetHotspotOwasp(idProject, 'a5');    /*(09)*/
+    await projetHotspotOwasp(idProject, 'a6');    /*(09)*/
+    await projetHotspotOwasp(idProject, 'a7');    /*(09)*/
+    await projetHotspotOwasp(idProject, 'a8');    /*(09)*/
+    await projetHotspotOwasp(idProject, 'a9');    /*(09)*/
+    await projetHotspotOwasp(idProject, 'a10');   /*(09)*/
 
     /* On enregistre le détails de chaque hotspot owasp. */
-    //await projetHotspotOwaspDetails(idProject);   /*(10)*/
+    await projetHotspotOwaspDetails(idProject);   /*(10)*/
 
     /* Récupération des signalements noSonar et SuppressWarning. */
-    //await projetNoSonar(idProject);               /*(11)*/
+    await projetNoSonar(idProject);               /*(11)*/
 
     /* Récupération des signalements To do (TS, JAVA, XML). */
     await projetTodo(idProject);                  /*(12)*/
