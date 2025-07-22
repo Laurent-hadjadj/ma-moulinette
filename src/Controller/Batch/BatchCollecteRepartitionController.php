@@ -146,6 +146,7 @@ class BatchCollecteRepartitionController extends AbstractController
      */
     private function batchCollecteAnomalie($mavenKey, $index, $batchSize, $category, $severity) :array
     {
+
          /** Sécurisation de l'URL */
         $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
         $url = $this->urlBuilder->build(
@@ -163,6 +164,7 @@ class BatchCollecteRepartitionController extends AbstractController
         );
 
         $result = $this->client->httpSonarQube($url);
+
         /** On catch les erreurs HTTP :) */
         if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
             return ['code' => $result['code'], 'erreur' => $result['erreur']];
@@ -315,7 +317,6 @@ class BatchCollecteRepartitionController extends AbstractController
 
         /** Initialisation des variables */
         $dateStart = time();
-
         /** Récupération de la première page */
         $result = $this->batchCollecteAnomalie($mavenKey, 1, 1, $category, $severity);
         $totalIssues = $result['total'] ?? 0;
@@ -356,7 +357,7 @@ class BatchCollecteRepartitionController extends AbstractController
                 $issues[] = [
                     'maven_key' => $mavenKey,
                     'component' => $issueData['component'],
-                    'category' => $issueData['category'],
+                    'category' => $category,
                     'severity' => $issueData['severity'],
                     'setup' => $setup,
                 ];
@@ -394,7 +395,6 @@ class BatchCollecteRepartitionController extends AbstractController
     {
         /** On instancie l'entityRepository */
         $repartitionTempRepository = $this->em->getRepository(RepartitionTemp::class);
-
         $map = ['maven_key' => $mavenKey, 'category' => $category, 'severity' => $severity, 'setup' => $setup];
         $repartition = $repartitionTempRepository->selectRepartitionByTypeAndSeverity($map);
         if ($repartition['code'] != 200) {
