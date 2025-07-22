@@ -107,7 +107,7 @@ class RepartitionTempRepository extends ServiceEntityRepository
                     }
 
                     if (empty($placeholders)) {
-                        // To.do Mettre un logger 
+                        // To.do Mettre un logger
                         continue;
                     }
 
@@ -188,13 +188,13 @@ class RepartitionTempRepository extends ServiceEntityRepository
         $sql = "SELECT *
                 FROM ma_moulinette.repartition_temp
                 WHERE maven_key = :maven_key
-                AND type = :type
+                AND type = :category
                 AND severity = :severity
                 AND setup = :setup";
         try {
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-                    $stmt->bindValue(':type', $map['type']);
+                    $stmt->bindValue(':category', $map['category']);
                     $stmt->bindValue(':severity', $map['severity']);
                     $stmt->bindValue(static::$setup, $map['setup']);
                 $liste = $stmt->executeQuery()->fetchAllAssociative();
