@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V2.4.0 - 16/07/2025              ##
+##               V2.4.1 - 22/07/2025              ##
 ##                                                ##
 ####################################################*/
 
@@ -52,6 +52,7 @@
 -- 06/07/2025 : Laurent HADJADJ - Ajout de la colonne id et suppression de containte d'unicité maven_key+setup pour la table repartition_temp.
 -- 07/07/2025 : Laurent HADJADJ - Suppression de la colonne init, ajout de reset_password et reset_password_count pour la table utilisateur.
 -- 16/07/2025 : Laurent HADJADJ - Ajout dans la relation mesures, files, classes et functions.
+-- 22/07/2025 : Laurent HADJADJ - Correction de plusieurs erreurs de syntaxe SQL.
 
 
 -- SCHEMA: ma_moulinette
@@ -646,7 +647,7 @@ ALTER TABLE ma_moulinette.hotspot_owasp OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.hotspot_owasp TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.id IS 'Identifiant unique pour chaque hotspot OWASP';
-COMMENT ON COLUMN ma_moulinette.hotspot_owasp.referentiel_owasp IS 'Référentiel OWASP 2017, 2021';
+COMMENT ON COLUMN ma_moulinette.hotspot_owasp.referential_owasp IS 'Référentiel OWASP 2017, 2021';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.maven_key IS 'Clé Maven du projet';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.version IS 'Version du hotspot OWASP';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.date_version IS 'Date de la version du hotspot OWASP';
@@ -910,7 +911,7 @@ DROP TABLE IF EXISTS ma_moulinette.owasp;
 CREATE TABLE IF NOT EXISTS ma_moulinette.owasp
 (
   id SERIAL PRIMARY KEY,
-  referential_owasp INTEGER DEFAULT 2017 NOT NULL
+  referential_owasp INTEGER DEFAULT 2017 NOT NULL,
   maven_key character varying(255) NOT NULL,
   version character varying(32) NOT NULL,
   date_version TIMESTAMPTZ NOT NULL,
@@ -1174,7 +1175,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.profiles_historique
     description text NOT NULL,
     detail bytea NOT NULL,
     date_enregistrement TIMESTAMPTZ NOT NULL
-)
+);
 
 ALTER TABLE ma_moulinette.profiles_historique OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.profiles_historique TO db_user;
