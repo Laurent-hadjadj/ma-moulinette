@@ -59,6 +59,7 @@ class ApiRepartitionController extends AbstractController
     {
         /** On décode le body */
         $data = json_decode($request->getContent());
+
         /** On teste si la clé est valide */
         if ($data === null ||
             !isset($data->maven_key, $data->category, $data->severity, $data->setup)) {
@@ -127,7 +128,7 @@ class ApiRepartitionController extends AbstractController
                 'message' => static::$reference . static::$erreur403], Response::HTTP_OK);
         }
 
-        $repartitionAnalyse = $this->batchCollecteRepartition->batchCollecteAnalyse($data->maven_key,  $data->calcul, $data->severity, $data->setup);
+        $repartitionAnalyse = $this->batchCollecteRepartition->batchCollecteRepartitionAnalyse($data->maven_key,  $data->category, $data->severity, $data->setup);
         if ($repartitionAnalyse['code'] !== 200){
             return new JsonResponse([
                 'code' => $repartitionAnalyse['code'],
