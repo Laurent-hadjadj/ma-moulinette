@@ -72,6 +72,7 @@ class RepartitionTempRepository extends ServiceEntityRepository
      */
     public function batchInsertIssuesSQL(array $issues): array
     {
+
         // Si $issues représente un enregistrement unique,
         // on le convertit en tableau d'enregistrements
         if (isset($issues['maven_key']) && !isset($issues[0])) {
@@ -92,12 +93,10 @@ class RepartitionTempRepository extends ServiceEntityRepository
                     $placeholders = [];
                     $params = [];
                     foreach ($chunk as $issue) {
-                        if (!isset($issue['maven_key'], $issue['component'], $issue['type'], $issue['severity'], $issue['setup'])) {
+                        if (!isset($issue['maven_key'], $issue['component'], $issue['category'], $issue['severity'], $issue['setup'])) {
                             continue;
                         }
-                        if (!isset($issue['maven_key'], $issue['component'], $issue['type'], $issue['severity'], $issue['setup'])) {
-                            continue;
-                        }
+
                         $placeholders[] = "(?, ?, ?, ?, ?)";
                         $params[] = $issue['maven_key'];
                         $params[] = $issue['component'];
@@ -113,7 +112,6 @@ class RepartitionTempRepository extends ServiceEntityRepository
 
                     // Ajoute la clause ON CONFLICT pour ignorer les duplicata
                     $fullSql = $sqlPrefix . implode(", ", $placeholders);
-                    dd($fullSql);
 
                     $connection->executeStatement($fullSql, $params);
                 }
