@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V2.4.1 - 22/07/2025              ##
+##               V2.4.2 - 22/07/2025              ##
 ##                                                ##
 ####################################################*/
 
@@ -53,7 +53,7 @@
 -- 07/07/2025 : Laurent HADJADJ - Suppression de la colonne init, ajout de reset_password et reset_password_count pour la table utilisateur.
 -- 16/07/2025 : Laurent HADJADJ - Ajout dans la relation mesures, files, classes et functions.
 -- 22/07/2025 : Laurent HADJADJ - Correction de plusieurs erreurs de syntaxe SQL.
-
+-- 22/07/2025 : Laurent HADJADJ - Correction de la colonne rules_update_at en rules_updated_at de la table profiles.
 
 -- SCHEMA: ma_moulinette
 
@@ -1144,7 +1144,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.profiles
   name character varying(128) NOT NULL,
   language_name character varying(64) NOT NULL,
   active_rule_count integer NOT NULL,
-  rules_update_at TIMESTAMPTZ NOT NULL,
+  rules_updated_at TIMESTAMPTZ NOT NULL,
   referential_default boolean NOT NULL,
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
@@ -1157,7 +1157,7 @@ COMMENT ON COLUMN ma_moulinette.profiles.key IS 'Clé unique du profil';
 COMMENT ON COLUMN ma_moulinette.profiles.name IS 'Nom du profil';
 COMMENT ON COLUMN ma_moulinette.profiles.language_name IS 'Nom du langage de programmation';
 COMMENT ON COLUMN ma_moulinette.profiles.active_rule_count IS 'Nombre de règles actives associées au profil';
-COMMENT ON COLUMN ma_moulinette.profiles.rules_update_at IS 'Date de la dernière mise à jour des règles';
+COMMENT ON COLUMN ma_moulinette.profiles.rules_updated_at IS 'Date de la dernière mise à jour des règles';
 COMMENT ON COLUMN ma_moulinette.profiles.referential_default IS 'Indique si le profil est le profil par défaut';
 COMMENT ON COLUMN ma_moulinette.profiles.date_enregistrement IS 'Date d’enregistrement du profil';
 

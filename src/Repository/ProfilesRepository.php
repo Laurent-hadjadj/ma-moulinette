@@ -110,7 +110,7 @@ class ProfilesRepository extends ServiceEntityRepository
     $sql = "SELECT name AS profil,
                 language_name AS langage,
                 active_rule_count AS rule,
-                rules_update_at AS date,
+                rules_updated_at AS date,
                 referential_default AS actif,
               (
                 SELECT COUNT(*)
