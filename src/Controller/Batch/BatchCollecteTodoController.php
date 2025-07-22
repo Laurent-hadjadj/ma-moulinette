@@ -13,14 +13,10 @@
 
 namespace App\Controller\Batch;
 
-/** Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-/** Accès aux tables */
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Todo;
-
-/** Client HTTP */
 use App\Service\Client;
 use App\Service\UrlBuilderService;
 
@@ -45,8 +41,49 @@ class BatchCollecteTodoController extends AbstractController
         private Client $client,
         private UrlBuilderService $urlBuilder
     ) {
-        $this->em = $em;
-        $this->client = $client;
+    }
+
+    /**
+     * [Description for batchCollecte]
+     *
+     * @param mixed $maven_key
+     * @param mixed $index
+     * @param mixed $batchSize
+     *
+     * @return array
+     *
+     * Created at: 22/07/2025 18:51:29 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function batchCollecte($maven_key, $index, $batchSize) :array
+    {
+
+        $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
+
+       /** Sécurisation de l'URL */
+        $url = $this->urlBuilder->build(
+            $this->getParameter(static::$sonarUrl),
+            '/api/issues/search',
+            [
+                'project' => $maven_key,
+                'rules' => 'javascript:S1135,xml:S1135,typescript:S1135,Web:S1135,java:S1135,php:s1135,ruby:s1135,python:s1135',
+                'p'=>$index,
+                'ps'=>$batchSize
+            ]
+        );
+
+        $result = $this->client->httpSonarQube($url);
+        /** On catch les erreurs HTTP :) */
+        if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503, 504])) {
+            return [
+                'code' => $result['code'],
+                'erreur' => $result['erreur']
+            ];
+        }
+
+        /** On renvoie le résultat */
+        return $result['json'];
     }
 
     /**
@@ -60,9 +97,9 @@ class BatchCollecteTodoController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function BatchCollecteTodo(string $mavenKey, string $modeCollecte, string $utilisateurCollecte): array
+    public function BatchCollecteTodo(string $maven_key, string $modeCollecte, string $utilisateurCollecte): array
     {
-        $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+        $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
 
         /** On instancie l'EntityRepository */
         $todoRepository = $this->em->getRepository(Todo::class);
@@ -70,46 +107,48 @@ class BatchCollecteTodoController extends AbstractController
         /** On créé un objet date. */
         $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
-        /** Sécurisation de l'URL */
-        $url = $this->urlBuilder->build(
-            $this->getParameter(static::$sonarUrl),
-            '/api/issues/search',
-            [
-                'project' => $maven_key,
-                'rules' => 'javascript:S1135,xml:S1135,typescript:S1135,Web:S1135,java:S1135,php:s1135,ruby:s1135,python:s1135',
-                'p'=>1,
-                'ps'=>500
-            ]
-        );
+        /** Récupération de la première page */
+        $result = $this->batchCollecte($maven_key, 1, 1);
+        $batchSize = 500;
+        $maxPages = 20;
 
-        /** On construit l'URL et on appel le WS. */
-        $result = $this->client->httpSonarQube($url);
-
-         /** On catch les erreurs HTTP 401 et 404, si possible :) */
-        if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503])) {
-            return ['code' => $result['code'], 'erreur' => $result['erreur']];
+        /** Si pas d'issues, on arrête */
+        if (empty($result['issues']) || $result['paging']['total'] === 0) {
+            return [
+                    'code' => 200,
+                    'total' => 0,
+                    ];
         }
 
-        /** On supprime les résultats pour la maven_key. */
+        // Avant d'insérer les nouveaux enregistrements :
         $map = ['maven_key' => $maven_key];
         $delete = $todoRepository->deleteTodoMavenKey($map);
         if ($delete['code'] !== 200) {
-            return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
+            return [
+                'code' => $delete['code'],
+                'erreur' => $delete['erreur']
+            ];
         }
 
         /** Si on a trouvé des to.do dans le code alors on les dénombre */
-        $todo = 0;
-        $mapData=[];
-        if ($result['json']['paging']['total'] !== 0) {
-            foreach ($result['json']['issues'] as $issue) {
-                $todo++;
-                $component = str_replace('$maven_key :', '', $issue['component']);
-                $line = empty($issue['line']) ? 0 : $issue['line'];
+        $mapData = [];
+        for ($i = 1; $i <= $maxPages; $i++) {
+            // Appel de l'API pour la page $i
+            $result = $this->batchCollecte($maven_key, $i, $batchSize);
+
+            // S'il n'y a plus d'issues, on sort de la boucle
+            if (empty($result['issues'])) {
+                break;
+            }
+
+            foreach ($result['issues'] as $issueData) {
+                $component = str_replace('$maven_key :', '', $issueData['component']);
+                $line = empty($issueData['line']) ? 0 : $issueData['line'];
 
                 /** On créé la map */
                 $mapData[] = [
-                    'maven_key' => $mavenKey,
-                    'rule' => $issue['rule'],
+                    'maven_key' => $maven_key,
+                    'rule' => $issueData['rule'],
                     'component' => $component,
                     'line' => $line,
                     'mode_collecte' => $modeCollecte,
@@ -117,18 +156,28 @@ class BatchCollecteTodoController extends AbstractController
                     'date_enregistrement' => $date
                 ];
             }
-        } else {
-            /** Il n'y a pas de To.do */
+
+            // Insérer les issues récupérées pour cette page
+            $batchInsert = $todoRepository->insertTodo($mapData);
+            if ($batchInsert['code'] !== 200) {
+                return [
+                    'code' => $batchInsert['code'],
+                    'type' => 'alert',
+                    'message' => "Une erreur est survenue lors de la mise à jour de la table ({$batchInsert['code']}).",
+                    'trace' => $batchInsert['erreur']
+                ];
+            }
+
+            // Réinitialise le tableau pour le prochain batch.
+            $mapData = [];
         }
 
-        /* On enregistre */
-        $insert = $todoRepository->insertTodo($mapData);
-        if ($insert['code'] != 200) {
-            return ['code' => $insert['code'], 'erreur' => $insert['erreur']
-            ];
-        }
-        $total = $result['json']['paging']['total'] ?? $todo;
         /** On enregistre les données */
-        return ['code' => 200, 'nombre' => $total, 'message' => ['todo' => $mapData], 'data' => ['todo' => $todo]];
+        return [
+            'code' => 200,
+            'nombre' => $result['paging']['total'] ?? 0,
+            'message' => ['todo' => $mapData],
+            'data' => ['todo' => $result['paging']['total']]
+        ];
     }
 }
