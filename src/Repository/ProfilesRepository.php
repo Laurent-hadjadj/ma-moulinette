@@ -107,17 +107,10 @@ class ProfilesRepository extends ServiceEntityRepository
    */
   public function selectProfiles($referential_default = 'true', $langage = null): array
   {
-    $sql1 = "SELECT name as profil,
-                language_name as langage,
-                active_rule_count as rule,
-                rules_updated_at as date,
-                referential_default as actif
-            FROM ma_moulinette.profiles
-            WHERE referential_default = :referential_default";
     $sql = "SELECT name AS profil,
                 language_name AS langage,
                 active_rule_count AS rule,
-                rules_updated_at AS date,
+                rules_update_at AS date,
                 referential_default AS actif,
               (
                 SELECT COUNT(*)
