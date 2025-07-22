@@ -63,8 +63,6 @@ class AccueilController extends AbstractController
         private UrlBuilderService $urlBuilder,
         private LoggerInterface $logger
     ) {
-        $this->em = $em;
-        $this->client = $client;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
@@ -323,7 +321,7 @@ class AccueilController extends AbstractController
         if (!$getProperties['request']) {
             $this->logger->warning('[Accueil] Table properties vide, initialisation.');
 
-            $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
+            $date = new \DateTime('now', new \DateTimeZone(static::$europeParis));
             $map = [
                 'projet_bd' => 0, 'projet_sonar' => 0,
                 'profil_bd' => 0, 'profil_sonar' => 0,
@@ -550,8 +548,8 @@ class AccueilController extends AbstractController
         ], 0);
 
         /** 1 - Les Dates  */
-        $dateModProjet = new \DateTimeImmutable($properties['date_modification_projet']);
-        $dateModProfil = new \DateTimeImmutable($properties['date_modification_profil']);
+        $dateModProjet = $properties['date_modification_projet'];
+        $dateModProfil = $properties['date_modification_profil'];
 
         $dateVerificationProjet = false;
         $dateVerificationProfil = false;
