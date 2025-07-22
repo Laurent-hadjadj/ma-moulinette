@@ -73,7 +73,7 @@ class BatchCollecteTodoController extends AbstractController
         /** Sécurisation de l'URL */
         $url = $this->urlBuilder->build(
             $this->getParameter(static::$sonarUrl),
-            '/api/project_analyses/search',
+            '/api/issues/search',
             [
                 'project' => $maven_key,
                 'rules' => 'javascript:S1135,xml:S1135,typescript:S1135,Web:S1135,java:S1135,php:s1135,ruby:s1135,python:s1135',
@@ -127,7 +127,8 @@ class BatchCollecteTodoController extends AbstractController
             return ['code' => $insert['code'], 'erreur' => $insert['erreur']
             ];
         }
+        $total = $result['json']['paging']['total'] ?? $todo;
         /** On enregistre les données */
-        return ['code' => 200, 'nombre' => $todo, 'message' => ['todo' => $mapData], 'data' => ['todo' => $todo]];
+        return ['code' => 200, 'nombre' => $total, 'message' => ['todo' => $mapData], 'data' => ['todo' => $todo]];
     }
 }
