@@ -726,7 +726,7 @@ class ApiCollecteController extends AbstractController
                 'message' => static::$reference . ($noSonar['message'] ?? $noSonar['erreur'])], Response::HTTP_OK);
         }
 
-        $nombre = $noSonar['message']['suppress_warning'] ?? 0 + $noSonar['message']['no_sonar'] ?? 0;
+        $nombre = $noSonar['message']['suppress_warning'] + $noSonar['message']['no_sonar'];
         return new JsonResponse([
             'code' => 200,
             'nombre' => $nombre,
