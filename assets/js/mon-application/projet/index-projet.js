@@ -816,7 +816,6 @@ const projetHotspotOwasp = async function(maven_key, menace) {
         log(` -     ⚠️ J'ai trouvé ${t.owasp2021} faille${s} OWASP ${menace} potentielle${s}.`);
       }
     } catch(error) {
-      console.log('catch');
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 08/09.";
       showMessage('alert', message, trace);
@@ -1122,11 +1121,17 @@ const options = {
 const finCollecte = function(maven_key){
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
+  const $boutonCollecteIndicateur = $('.js-analyse');
+  const aria_label = 'Lancer la collecte des indicateurs SonarQube';
+
   if (collecte === 'Tout va bien!') {
     log(` - ℹ️ (14) La collecte des données est terminée.`);
     showMessage('success', `<strong>${collecte}</strong> Le processus de collecte a été réalisé avec success pour le projet ${maven_key} !`);
     setTimeout( ()=> { hideMessage(); }, troisMille);
-  } else { }
+    enableButton($boutonCollecteIndicateur, aria_label);
+  } else {
+    sessionStorage.setItem('ma_moulinette_info', 'On ne devrait pas tomber dans cette branche.')
+  }
 
 }
 
