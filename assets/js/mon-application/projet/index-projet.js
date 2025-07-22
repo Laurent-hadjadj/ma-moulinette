@@ -1016,10 +1016,14 @@ const projetTodo = async function(mavenKey){
     if (t.code === http_200 && t.nombre !== 0) {
       let s='';
       if (t.nombre>1){ s = 's'; }
-        log(` -     ⚠️ J'ai trouvé ${t.nombre} ToDo${s} à vérifier.`);
+        log(` -     ⚠️ J'ai trouvé ${t.nombre} ToDo${s} à vérifier sur 10 000 possibles.`);
       } else {
         log(` -     ✅ Bravo !!! ${t.nombre} ToDo trouvé.`);
       }
+    if (t.nombre = 10000){
+      log(` -     🤬 Le nombre de Todo présent dans l'application dépasse les 10 000.`);
+    }
+
     } catch(error) {
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 12.";
