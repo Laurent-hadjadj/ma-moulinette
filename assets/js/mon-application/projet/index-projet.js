@@ -242,6 +242,46 @@ const selectProjet = async function() {
   }
 };
 
+/****************************************************/
+/*                Collecte des indicateurs          */
+/************************************************** */
+
+const enableButton = function(element, aria_label){
+  const $button = $(element);
+
+  $button.removeClass('clicked-true clicked-false disabled-bouton');
+  $button.attr('aria-label', aria_label);
+  $button.removeAttr('aria-disabled tabindex');
+}
+
+const enableLink = function(element, aria_label){
+  const $link = $(element);
+
+  $link.removeClass('disabled-bouton');
+  $link.attr('aria-label', aria_label);
+  $link.removeAttr('aria-disabled tabindex');
+}
+
+const disableButton = function(element, aria_label){
+  const $button = $(element);
+
+  /** Réinitialisation préalable de toutes les classes liées à l'état */
+  $button.removeClass('clicked-false clicked-true');
+
+  $button.addClass('disabled-bouton clicked-true');
+  $button.attr('aria-disabled', 'true');
+  $button.attr('aria-label', aria_label);
+  $button.attr('tabindex', '-1');
+}
+
+const errorButton = function(element, aria_label){
+  const $button = $(element);
+
+  $button.removeClass('clicked-true').addClass('clicked-false');
+  $button.attr('aria-label', aria_label);
+}
+
+
 /**
  * [Description for projetAnalyse]
  * Collecte les informations du projet (projet, version, date)
@@ -269,6 +309,9 @@ const projetInformation = async function(mavenKey) {
           dataType: 'json', data: JSON.stringify(data), contentType,
   };
 
+  const $boutonCollecteIndicateur = $('.js-analyse');
+  const aria_label = 'La collecte est interrompue.';
+
   try {
     const t = await $.ajax(options);
     // 📌 Vérification des erreurs
@@ -278,6 +321,7 @@ const projetInformation = async function(mavenKey) {
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
         sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 01');
+        errorButton($boutonCollecteIndicateur, aria_label);
         return;
       }
 
@@ -299,6 +343,7 @@ const projetInformation = async function(mavenKey) {
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 01');
       log(` - ❌ (01) Collecte des informations pour la version en échec.`);
+      errorButton($boutonCollecteIndicateur, aria_label);
       return;
   }
 };
@@ -327,7 +372,11 @@ const projetMesure = async function(mavenKey) {
   const data = { maven_key: mavenKey };
   const options = {
     url: `${serveur()}/api/collecte/mesure`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType };
+          dataType: 'json', data: JSON.stringify(data), contentType
+  };
+
+  const $boutonCollecteIndicateur = $('.js-analyse');
+  const aria_label = 'La collecte est interrompue.';
 
   try {
     const t = await $.ajax(options);
@@ -338,6 +387,7 @@ const projetMesure = async function(mavenKey) {
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
         sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 02');
+        errorButton($boutonCollecteIndicateur, aria_label);
         return;
       }
     if ( t.code === http_200){
@@ -352,6 +402,7 @@ const projetMesure = async function(mavenKey) {
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 02');
       log(` - ❌ (02) Collecte des mesures en échec.`);
+      errorButton($boutonCollecteIndicateur, aria_label);
       return;
   }
 };
@@ -382,7 +433,11 @@ const projetRating = async function(mavenKey, type) {
   const data = { maven_key: mavenKey, type };
   const options = {
     url: `${serveur()}/api/collecte/note`, type: 'POST',
-    dataType: 'json', data: JSON.stringify(data), contentType };
+    dataType: 'json', data: JSON.stringify(data), contentType
+  };
+
+  const $boutonCollecteIndicateur = $('.js-analyse');
+  const aria_label = 'La collecte est interrompue.';
 
   try {
     const t = await $.ajax(options);
@@ -393,6 +448,7 @@ const projetRating = async function(mavenKey, type) {
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
         sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 03');
+        errorButton($boutonCollecteIndicateur, aria_label);
         return;
       }
     if (t.code === http_200){
@@ -407,6 +463,7 @@ const projetRating = async function(mavenKey, type) {
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 03');
       log(` - ❌ (03) Collecte de la note pour ${t.message.note} en échec.`);
+      errorButton($boutonCollecteIndicateur, aria_label);
       return;
   }
 };
@@ -437,7 +494,11 @@ const projetOwasp = async function(mavenKey) {
   const data = { maven_key: mavenKey };
   const options = {
     url: `${serveur()}/api/collecte/owasp`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType };
+          dataType: 'json', data: JSON.stringify(data), contentType
+  };
+
+  const $boutonCollecteIndicateur = $('.js-analyse');
+  const aria_label = 'La collecte est interrompue.';
 
   try {
     const t = await $.ajax(options);
@@ -448,6 +509,7 @@ const projetOwasp = async function(mavenKey) {
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
         sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 04');
+        errorButton($boutonCollecteIndicateur, aria_label);
         return;
       }
 
@@ -483,6 +545,7 @@ const projetOwasp = async function(mavenKey) {
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 04');
       log(' - ❌ (04) Collecte des menaces OWASP en échec.');
+      errorButton($boutonCollecteIndicateur, aria_label);
       return;
   }
 };
@@ -514,7 +577,11 @@ const projetHotspot = async function(mavenKey) {
   const data = { maven_key: mavenKey};
   const options = {
     url: `${serveur()}/api/collecte/hotspot`, type: 'POST',
-    dataType: 'json', data: JSON.stringify(data), contentType };
+    dataType: 'json', data: JSON.stringify(data), contentType
+  };
+
+  const $boutonCollecteIndicateur = $('.js-analyse');
+  const aria_label = 'La collecte est interrompue.';
 
   try {
     const t = await $.ajax(options);
@@ -525,6 +592,7 @@ const projetHotspot = async function(mavenKey) {
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
         sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 05');
+        errorButton($boutonCollecteIndicateur, aria_label);
         return;
       }
 
@@ -547,6 +615,7 @@ const projetHotspot = async function(mavenKey) {
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 05');
       log(' - ❌ (05) Collecte des menaces potentielles en échec.');
+      errorButton($boutonCollecteIndicateur, aria_label);
       return;
   }
 };
@@ -577,7 +646,11 @@ const projetAnomalie = async function(mavenKey) {
   const data = { maven_key: mavenKey };
   const options = {
     url: `${serveur()}/api/collecte/anomalie`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType };
+          dataType: 'json', data: JSON.stringify(data), contentType
+  };
+
+  const $boutonCollecteIndicateur = $('.js-analyse');
+  const aria_label = 'La collecte est interrompue.';
 
   try {
     const t = await $.ajax(options);
@@ -588,6 +661,7 @@ const projetAnomalie = async function(mavenKey) {
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
         sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 06');
+        errorButton($boutonCollecteIndicateur, aria_label);
         return;
       }
 
@@ -603,6 +677,7 @@ const projetAnomalie = async function(mavenKey) {
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 06');
       log(' - ❌ (06) Collecte des anomalies en échec.');
+      errorButton($boutonCollecteIndicateur, aria_label);
       return;
     }
 };
@@ -632,7 +707,11 @@ const projetAnomalieDetails = async function(mavenKey) {
   const data = { maven_key: mavenKey };
   const options = {
     url: `${serveur()}/api/collecte/anomalie/detail`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType };
+          dataType: 'json', data: JSON.stringify(data), contentType
+  };
+
+  const $boutonCollecteIndicateur = $('.js-analyse');
+  const aria_label = 'La collecte est interrompue.';
 
   try {
     const t = await $.ajax(options);
@@ -643,6 +722,7 @@ const projetAnomalieDetails = async function(mavenKey) {
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
         sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 07');
+        errorButton($boutonCollecteIndicateur, aria_label);
         return;
       }
 
@@ -657,6 +737,7 @@ const projetAnomalieDetails = async function(mavenKey) {
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 07');
       log(` - ❌ (07) Je n'ai pas réussi à collecter les données.`);
+      errorButton($boutonCollecteIndicateur, aria_label);
       return;
   }
 };
@@ -673,7 +754,7 @@ const projetAnomalieDetails = async function(mavenKey) {
  * {mavenKey} = clé du projet
  * {owasp} = type d'indicateur OWASP
  *
- * @param string mavenKey
+ * @param string maven_key
  * @param string menace
  *
  * @return response
@@ -681,17 +762,21 @@ const projetAnomalieDetails = async function(mavenKey) {
  * Created at: 19/12/2022, 22:18:07 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
-const projetHotspotOwasp = async function(mavenKey, menace) {
+const projetHotspotOwasp = async function(maven_key, menace) {
   /** On vérifie s'il n'y a pas d'erreur lors du traitement */
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
   if (!collecte || collecte != 'Tout va bien!') {
     return;
   }
 
-  const data = { maven_key: mavenKey, menace };
+  const data = { maven_key, menace };
   const options = {
     url: `${serveur()}/api/collecte/hotspot/owasp`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType };
+          dataType: 'json', data: JSON.stringify(data), contentType
+  };
+
+  const $boutonCollecteIndicateur = $('.js-analyse');
+  const aria_label = 'La collecte est interrompue.';
 
   try {
     const t = await $.ajax(options);
@@ -702,11 +787,12 @@ const projetHotspotOwasp = async function(mavenKey, menace) {
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
         sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 08/09');
+        errorButton($boutonCollecteIndicateur, aria_label);
         return;
       }
 
       if (t.code === http_200 && t.info === 'effacement'){
-        log(' - ℹ️ (08) Les enregistrements ont été supprimé de la table hostspot_owasp.');
+        log(' - ℹ️ (08) Les enregistrements ont été supprimé de la table hotspot_owasp.');
         if (t.owasp2021 === 'NC') {
         log(` - 📌 (09) Le référentiel OWASP2021 n'est pas supporté par votre serveur SonarQube.`);
         }
@@ -730,11 +816,13 @@ const projetHotspotOwasp = async function(mavenKey, menace) {
         log(` -     ⚠️ J'ai trouvé ${t.owasp2021} faille${s} OWASP ${menace} potentielle${s}.`);
       }
     } catch(error) {
+      console.log('catch');
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 08/09.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 08/09');
       log(` - ❌ (08/09) Collecte des menaces potentielles Owasp en échec.`);
+      errorButton($boutonCollecteIndicateur, aria_label);
       return;
     }
 };
@@ -764,7 +852,11 @@ const projetHotspotOwaspDetails = async function(mavenKey) {
   const data = { maven_key: mavenKey };
   const options = {
     url: `${serveur()}/api/collecte/hotspot/detail`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType };
+          dataType: 'json', data: JSON.stringify(data), contentType
+  };
+
+  const $boutonCollecteIndicateur = $('.js-analyse');
+  const aria_label = 'La collecte est interrompue.';
 
   try {
     const t = await $.ajax(options);
@@ -775,6 +867,7 @@ const projetHotspotOwaspDetails = async function(mavenKey) {
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
         sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 10');
+        errorButton($boutonCollecteIndicateur, aria_label);
         return;
       }
 
@@ -795,6 +888,7 @@ const projetHotspotOwaspDetails = async function(mavenKey) {
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 10');
       log(` - ❌ (10) Collecte des informations détaillées pour les hotspots en échec.`);
+      errorButton($boutonCollecteIndicateur, aria_label);
       return;
   }
 };
@@ -824,7 +918,11 @@ const projetNoSonar = async function(mavenKey){
   const data = { maven_key: mavenKey };
   const options = {
     url: `${serveur()}/api/collecte/nosonar`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType };
+          dataType: 'json', data: JSON.stringify(data), contentType
+  };
+
+  const $boutonCollecteIndicateur = $('.js-analyse');
+  const aria_label = 'La collecte est interrompue.';
 
   try {
     const t = await $.ajax(options);
@@ -835,6 +933,7 @@ const projetNoSonar = async function(mavenKey){
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
         sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 11');
+        errorButton($boutonCollecteIndicateur, aria_label);
         return;
       }
 
@@ -859,6 +958,7 @@ const projetNoSonar = async function(mavenKey){
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 11');
       log (` - ❌ (11) Collecte des annotations NoSonar/SuppressWarning en échec.`);
+      errorButton($boutonCollecteIndicateur, aria_label);
       return;
   }
 };
@@ -888,7 +988,11 @@ const projetTodo = async function(mavenKey){
   const data = { maven_key: mavenKey };
   const options = {
     url: `${serveur()}/api/collecte/todo`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType };
+          dataType: 'json', data: JSON.stringify(data), contentType
+  };
+
+  const $boutonCollecteIndicateur = $('.js-analyse');
+  const aria_label = 'La collecte est interrompue.';
 
   try {
     const t = await $.ajax(options);
@@ -899,6 +1003,7 @@ const projetTodo = async function(mavenKey){
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
         sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 12');
+        errorButton($boutonCollecteIndicateur, aria_label);
         return;
       }
 
@@ -921,6 +1026,7 @@ const projetTodo = async function(mavenKey){
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 12');
       log (` - ❌ (12) Collecte des commentaires Todo.`);
+      errorButton($boutonCollecteIndicateur, aria_label);
       return;
     }
 };
@@ -950,7 +1056,11 @@ const projetLogger = async function(mavenKey){
 const data = { maven_key: mavenKey };
 const options = {
   url: `${serveur()}/api/collecte/logger`, type: 'POST',
-        dataType: 'json', data: JSON.stringify(data), contentType };
+        dataType: 'json', data: JSON.stringify(data), contentType
+  };
+
+  const $boutonCollecteIndicateur = $('.js-analyse');
+  const aria_label = 'La collecte est interrompue.';
 
   try {
     const t = await $.ajax(options);
@@ -961,6 +1071,7 @@ const options = {
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
         sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 13');
+        errorButton($boutonCollecteIndicateur, aria_label);
         return;
       }
 
@@ -989,6 +1100,7 @@ const options = {
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 13');
       log (` - ❌ (13) Collecte des Loggers en échec.`);
+      errorButton($boutonCollecteIndicateur, aria_label);
       return;
   }
 };
@@ -1009,7 +1121,8 @@ const finCollecte = function(maven_key){
     log(` - ℹ️ (14) La collecte des données est terminée.`);
     showMessage('success', `<strong>${collecte}</strong> Le processus de collecte a été réalisé avec success pour le projet ${maven_key} !`);
     setTimeout( ()=> { hideMessage(); }, troisMille);
-  }
+  } else { }
+
 }
 
 /**
@@ -1139,9 +1252,9 @@ const afficheMesProjets = async function() {
         $('#select-result').html(`<strong>${mavenKey}</strong>`);
 
         /* on active le bouton pour afficher les infos du projet */
-        const $boutonAfficheIndicateur = $('.js-affiche-result');          $boutonAfficheIndicateur.removeClass('disabled-bouton');
-        $boutonAfficheIndicateur.attr('aria-label', "Affiche les données collectées.");
-        $boutonAfficheIndicateur.removeAttr('aria-disabled tabindex');
+        const classe = '.js-affiche-result';
+        const aria_label = 'Affiche les données collectées.';
+        enableButton(classe, aria_label)
 
         /* On clique sur le bouton afficher les résultats */
         $('.js-affiche-result').trigger('click');
@@ -1285,43 +1398,45 @@ $('select[name="projet"]').on('change', function () {
     }
   });
 
-  /* On débloque les boutons. */
+  /* On débloque les boutons si besoin. */
+
+  /** Pas la peine de réactivé tous les bouton si le bouton est déjà enable */
   const $boutonCollecteIndicateur = $('.js-analyse');
-  const $boutonAfficheIndicateur = $('.js-affiche-result');
-  const $boutonEnregistreIndicateur = $('.js-enregistrement')
+  const $boutonAfficheIndicateur = $('.js-analyse-result');
+  const $boutonEnregistreIndicateur = $('.js-enregistrement');
 
   const $boutonOuvreRepartition = $('.js-repartition-module');
   const $boutonOuvreOwasp = $('.js-analyse-owasp');
   const $boutonOuvreCosui = $('.js-cosui');
   const $boutonOuvreSuivi = $('.js-tableau-de-bord');
 
-  $boutonCollecteIndicateur.removeClass('clicked-true clicked-false disabled-bouton');
-  $boutonCollecteIndicateur.attr('aria-label', "Lancer la collecte pour ce projet.");
-  $boutonCollecteIndicateur.removeAttr('aria-disabled tabindex');
+  if (!$boutonCollecteIndicateur.hasClass('disabled-bouton')){
+    $boutonCollecteIndicateur.removeClass('clicked-true clicked-false');
+    return;
+  }
 
-  $boutonAfficheIndicateur.removeClass('clicked-true clicked-false disabled-bouton');
-  $boutonAfficheIndicateur.attr('aria-label', "Affiche les données collectées.");
-  $boutonAfficheIndicateur.removeAttr('aria-disabled tabindex');
+  let aria_label;
 
-  $boutonEnregistreIndicateur.removeClass('clicked-true clicked-false disabled-bouton');
-  $boutonEnregistreIndicateur.attr('aria-label', "Enregistre les données collectées.");
-  $boutonEnregistreIndicateur.removeAttr('aria-disabled tabindex');
+  aria_label = 'Lancer la collecte pour ce projet.';
+  enableButton($boutonCollecteIndicateur, aria_label);
 
-  $boutonOuvreRepartition.removeClass('disabled-bouton');
-  $boutonOuvreRepartition.attr('aria-label', "Ouvre la page de calcul de la répartition.");
-  $boutonOuvreRepartition.removeAttr('aria-disabled tabindex');
+  aria_label = 'Affiche les données collectées.';
+  enableButton($boutonAfficheIndicateur, aria_label);
 
-  $boutonOuvreCosui.removeClass('disabled-bouton');
-  $boutonOuvreCosui.attr('aria-label', "Ouvre la page COSUI.");
-  $boutonOuvreCosui.removeAttr('aria-disabled tabindex');
+  aria_label = 'Enregistre les données collectées.';
+  enableButton($boutonEnregistreIndicateur, aria_label);
 
-  $boutonOuvreSuivi.removeClass('disabled-bouton');
-  $boutonOuvreSuivi.attr('aria-label', "Ouvre la page de suivi du projet.");
-  $boutonOuvreSuivi.removeAttr('aria-disabled tabindex');
+  aria_label = 'Ouvre la page de calcul de la répartition.';
+  enableLink($boutonOuvreRepartition, aria_label);
 
-  $boutonOuvreOwasp.removeClass('disabled-bouton');
-  $boutonOuvreOwasp.attr('aria-label', "Ouvre la page de suivi du projet.");
-  $boutonOuvreOwasp.removeAttr('aria-disabled tabindex');
+  aria_label = 'Ouvre la page COSUI.';
+  enableLink($boutonOuvreCosui, aria_label);
+
+  aria_label = 'Ouvre la page de suivi du projet.';
+  enableLink($boutonOuvreSuivi, aria_label);
+
+  aria_label = 'Ouvre la page de suivi du projet.';
+  enableLink($boutonOuvreOwasp, aria_label);
 });
 
 /******************************************************/
@@ -1337,6 +1452,7 @@ $('.js-analyse').on('click', function () {
   /** On vérifie le rôle */
   const userRating = document.querySelector('.js-user-rating');
   const roles = JSON.parse(userRating.dataset.user);
+  const $boutonCollecteIndicateur = $('.js-analyse');
 
   if (!roles.includes('ROLE_COLLECTE') && !roles.includes('ROLE_BATCH') && !roles.includes('ROLE_GESTIONNAIRE')) {
     showMessage('alert','<strong>[PROJET]</strong> Vous devez avoir au moins le rôle COLLECTE pour lancer la collecte des données.');
@@ -1354,50 +1470,53 @@ $('.js-analyse').on('click', function () {
   if (!collecte || collecte != 'Tout va bien!') {
     log(` - ❌ Une erreur s'est produite sur le projet ${idProject}.`);
     log(`      Vous ne pouvez pas relancer d'analyse pour ce projet.`);
-    showMessage('primary', `<strong>${collecte}</strong> Le processus de collecte a été interrompu !<br>Choisissez un autre projet.`);
+    showMessage('primary', `<strong>${collecte}</strong> Le processus de collecte a été interrompu !<br>   💡Choisissez un autre projet.`);
   }
 
   log(' - ℹ️ On lance la collecte...');
+  disableButton($boutonCollecteIndicateur, 'Le projet est en cours de collecte.');
+  $boutonCollecteIndicateur.addClass('clicked-true');
 
   async function fnAsync() {
     /* Analyse du projet */
-    await projetInformation(idProject);           /*(01)*/
-    await projetMesure(idProject);                /*(02)*/
+    //await projetInformation(idProject);           /*(01)*/
+    //await projetMesure(idProject);                /*(02)*/
 
     /* Collecte des notes */
-    await projetRating(idProject, 'reliability'); /*(03)*/
-    await projetRating(idProject, 'security');    /*(03)*/
-    await projetRating(idProject, 'sqale');      /*(03)*/
+    //await projetRating(idProject, 'reliability'); /*(03)*/
+    //await projetRating(idProject, 'security');    /*(03)*/
+    //await projetRating(idProject, 'sqale');      /*(03)*/
 
     /* Analyse Sécurité et Owasp. */
-    await projetOwasp(idProject);                 /*(04)*/
-    await projetHotspot(idProject);               /*(05)*/
+    //await projetOwasp(idProject);                 /*(04)*/
+    //await projetHotspot(idProject);               /*(05)*/
 
     /* On récupère les infos sur les anomalies*/
-    await projetAnomalie(idProject);              /*(06)*/
+    //await projetAnomalie(idProject);              /*(06)*/
 
     /* On récupère le détails sur les anomalies*/
-    await projetAnomalieDetails(idProject);       /*(07)*/
+    //await projetAnomalieDetails(idProject);       /*(07)*/
 
     /* On efface les traces :)*/
-    await projetHotspotOwasp(idProject, 'a0');    /*(08)*/
+    //await projetHotspotOwasp(idProject, 'a0');    /*(08)*/
 
     /* On enregistre les résultats*/
-    await projetHotspotOwasp(idProject, 'a1');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a2');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a3');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a4');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a5');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a6');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a7');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a8');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a9');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a10');   /*(09)*/
+    //await projetHotspotOwasp(idProject, 'a1');    /*(09)*/
+    //await projetHotspotOwasp(idProject, 'a2');    /*(09)*/
+    //await projetHotspotOwasp(idProject, 'a3');    /*(09)*/
+    //await projetHotspotOwasp(idProject, 'a4');    /*(09)*/
+    //await projetHotspotOwasp(idProject, 'a5');    /*(09)*/
+    //await projetHotspotOwasp(idProject, 'a6');    /*(09)*/
+    //await projetHotspotOwasp(idProject, 'a7');    /*(09)*/
+    //await projetHotspotOwasp(idProject, 'a8');    /*(09)*/
+    //await projetHotspotOwasp(idProject, 'a9');    /*(09)*/
+    //await projetHotspotOwasp(idProject, 'a10');   /*(09)*/
+
     /* On enregistre le détails de chaque hotspot owasp. */
-    await projetHotspotOwaspDetails(idProject);   /*(10)*/
+    //await projetHotspotOwaspDetails(idProject);   /*(10)*/
 
     /* Récupération des signalements noSonar et SuppressWarning. */
-    await projetNoSonar(idProject);               /*(11)*/
+    //await projetNoSonar(idProject);               /*(11)*/
 
     /* Récupération des signalements To do (TS, JAVA, XML). */
     await projetTodo(idProject);                  /*(12)*/
@@ -1409,12 +1528,8 @@ $('.js-analyse').on('click', function () {
     finCollecte(idProject);
   }
 
-  /* On appelle la fonction de récupération des sévérités pour les VULNERABILITY. */
+  /* On appelle la fonction de Collecte des indicateurs */
   fnAsync();
-
-  /* On active le bouton pour afficher les infos du projet. */
-  $('.js-affiche-result').removeClass('affiche-result-disabled');
-  $('.js-affiche-result').addClass('affiche-result-enabled');
 });
 
 /******************************************************/
