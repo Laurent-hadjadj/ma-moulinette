@@ -377,42 +377,60 @@ class ApiCollecteController extends AbstractController
     #[Route('/api/collecte/owasp', name: 'api_collecte_owasp', methods: ['POST'])]
     public function apiCollecteOwasp(Request $request): JsonResponse
     {
+        $this->logger->info("📥 [API] Requête reçue sur /api/collecte/owasp");
+
         /** On décode le body */
         $data = json_decode($request->getContent());
 
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key')) {
-            return new JsonResponse(
-                ['data' => $data, 'code' => 400, 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400],
-                Response::HTTP_OK);
+            $this->logger->warning("⚠️ Requête invalide : clé 'maven_key' manquante ou JSON mal formé.");
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'alert',
+                'message' => static::$reference . static::$erreur400,
+                'trace' => null
+            ], Response::HTTP_OK);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
-            return new JsonResponse(
-                ['code' => 403, 'type' => 'warning',
-                'message' => static::$reference . static::$erreur403],
-                Response::HTTP_OK);
+        $this->logger->warning("⛔ Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).");
+            return new JsonResponse([
+                'code' => 403,
+                'type' => 'warning',
+                'message' => static::$reference . static::$erreur403,
+                'trace' => null
+            ], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel();
+        $this->logger->info("👤 Collecte OWASP déclenchée par : {$utilisateur_collecte} pour le projet {$data->maven_key}");
 
         /** Signalement des Anomalies pour le projet */
         $owasp = $this->batchCollecteOwasp->batchCollecteOwasp($data->maven_key, 'COLLECTE', $utilisateur_collecte);
         if ($owasp['code'] != 200){
+            $this->logger->error("❌ Échec collecte OWASP pour {$data->maven_key} : {$owasp['code']} - " . ($owasp['message'] ?? 'Erreur inconnue'));
             return new JsonResponse([
-                'code' => $owasp['code'], 'type' => 'alert',
-                'message' => static::$reference . ($owasp['message'] ?? $owasp['erreur'])],
-                Response::HTTP_OK);
+                'code' => $owasp['code'],
+                'type' => 'alert',
+                'message' => static::$reference . ($owasp['message'] ?? "Collecte des menaces OWASP."),
+                'trace' => $owasp['erreur']
+            ], Response::HTTP_OK);
         }
+
+        $this->logger->info("ℹ️ Collecte OWASP terminée avec succès pour {$data->maven_key} : OWASP2017={$owasp['owasp2017']} / OWASP2021={$owasp['owasp2021']}");
+
         return new JsonResponse([
-            'code' => 200, 'owasp2017' => $owasp['owasp2017'],
+            'code' => 200,
+            'owasp2017' => $owasp['owasp2017'],
             'owasp2021' => $owasp['owasp2021'],
-            'message' => ['Nombre de faille OWASP 2017 : ' => $owasp['owasp2017'],
-            'Nombre de faille OWASP 2021 : ' => $owasp['owasp2021']]],
-            Response::HTTP_OK);
+            'message' => [
+                'Nombre de faille OWASP 2017 : ' => $owasp['owasp2017' ],
+                'Nombre de faille OWASP 2021 : ' => $owasp['owasp2021']
+            ]
+        ], Response::HTTP_OK);
     }
 
     /**
