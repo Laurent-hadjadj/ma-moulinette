@@ -13,18 +13,13 @@
 
 namespace App\Controller\Batch;
 
-/** Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
-/** Accès aux tables */
+use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Owasp;
 use App\Entity\InformationProjet;
-
-/** Client HTTP */
 use App\Service\Client;
 use App\Service\UrlBuilderService;
-use Soap\Url;
 
 /**
  * [Description BatchCollecteOwaspController]
@@ -46,10 +41,9 @@ class BatchCollecteOwaspController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private Client $client,
-        private UrlBuilderService $urlBuilder
-    ) {
-        $this->em = $em;
-        $this->client = $client;
+        private UrlBuilderService $urlBuilder,
+        private LoggerInterface $logger
+        ) {
     }
 
     /**
