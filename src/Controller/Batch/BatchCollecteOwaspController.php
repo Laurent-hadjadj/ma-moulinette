@@ -64,8 +64,8 @@ class BatchCollecteOwaspController extends AbstractController
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
 
         /** On instancie l'EntityRepository */
-        $informationProjet = $this->em->getRepository(InformationProjet::class);
-        $owaspRepository = $this->em->getRepository(Owasp::class);
+        $informationProjetRepos = $this->em->getRepository(InformationProjet::class);
+        $owaspRepos = $this->em->getRepository(Owasp::class);
 
         /** On contrôle la variable mavenKey */
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
@@ -109,7 +109,7 @@ class BatchCollecteOwaspController extends AbstractController
 
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
         $map = ['maven_key' => $maven_key];
-        $select_information = $informationProjet->selectInformationProjetProjectVersion($map);
+        $select_information = $informationProjetRepos->selectInformationProjetProjectVersion($map);
             if ($select_information['code'] != 200) {
             return ['code' => $select_information['code'], 'message' => $select_information['erreur']];
         }
@@ -201,13 +201,13 @@ class BatchCollecteOwaspController extends AbstractController
 
         /** On supprime les informations sur le projet pour la dernière analyse. */
         $map = ['maven_key' => $maven_key];
-        $delete = $owaspRepository->deleteOwaspMavenKey($map);
+        $delete = $owaspRepos->deleteOwaspMavenKey($map);
         if ($delete['code'] != 200) {
             return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
         }
 
         /** On enregistre */
-        $insert = $owaspRepository->insertOwasp($owaspDataList);
+        $insert = $owaspRepos->insertOwasp($owaspDataList);
         if ($insert['code'] != 200) {
             return ['code' => $insert['code'], 'erreur' => $insert['erreur']];
         }
