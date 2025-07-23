@@ -61,14 +61,13 @@ class BatchCollecteOwaspController extends AbstractController
      */
     public function BatchCollecteOwasp(string $maven_key, string $mode_collecte, string $utilisateur_collecte): array
     {
+        $this->logger->info("🛡️ [OWASP] Début de la collecte pour le projet {$maven_key} (mode: {$mode_collecte}, user: {$utilisateur_collecte})");
+
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
 
         /** On instancie l'EntityRepository */
         $informationProjetRepos = $this->em->getRepository(InformationProjet::class);
         $owaspRepos = $this->em->getRepository(Owasp::class);
-
-        /** On contrôle la variable mavenKey */
-        $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
 
         /** On récupère la version du serveur SonarQube */
         $sonar_version = $this->getParameter('sonar.version');
@@ -86,11 +85,17 @@ class BatchCollecteOwaspController extends AbstractController
             $queryParamsList['owasp2017']
         );
 
+        $this->logger->debug("Appel OWASP 2017 → {$url}");
         /** On appelle les requêtes HTTP pour chaque référentiel */
         $owasp2017 = $this->client->httpSonarQube($url);
+
         /** Il ne peut pas y avoir de 404, l'API renvoie toujours une response 200*/
         if (isset($owasp2017['code']) && in_array($owasp2017['code'], [401, 403, 404, 500, 503])) {
-            return ['code' => $owasp2017['code'], $owasp2017['erreur']];
+            $this->logger->error("❌ Erreur OWASP 2017 pour {$maven_key} : {$owasp2017['code']}");
+            return [
+                    'code' => $owasp2017['code'],
+                    $owasp2017['erreur']
+                ];
         }
 
         /** On execute si la version de SonarQube est >= 9 */
@@ -100,10 +105,15 @@ class BatchCollecteOwaspController extends AbstractController
             $this->getParameter(static::$sonarUrl),
             '/api/issues/search',
             $queryParamsList['owasp2021']
-        );
+            );
+
             $owasp2021 = $this->client->httpSonarQube($url);
             if (isset($owasp2021['code']) && in_array($owasp2021['code'], [401, 403, 404, 500, 503])) {
-            return ['code' => $owasp2021['code'], 'erreur' => $owasp2021['erreur']];
+                $this->logger->error("❌ Erreur OWASP 2021 pour {$maven_key} : {$owasp2021['code']}");
+                return [
+                    'code' => $owasp2021['code'],
+                    'erreur' => $owasp2021['erreur']
+                ];
             }
         }
 
@@ -111,12 +121,20 @@ class BatchCollecteOwaspController extends AbstractController
         $map = ['maven_key' => $maven_key];
         $select_information = $informationProjetRepos->selectInformationProjetProjectVersion($map);
             if ($select_information['code'] != 200) {
-            return ['code' => $select_information['code'], 'message' => $select_information['erreur']];
+                $this->logger->error("❌ Erreur OWASP 2021 pour {$maven_key} : {$owasp2021['code']}");
+                return [
+                    'code' => $select_information['code'],
+                    'message' => $select_information['erreur']
+                ];
         }
 
         /** Il n'y a pas de projet dans la table ou la collecte des informations du projet a planté ! */
         if (!$select_information['info']) {
-            return ['code' => 404, 'message' => static::$erreur404];
+            $this->logger->warning("⚠️ Aucun projet trouvé pour {$maven_key}");
+            return [
+                'code' => 404,
+                'message' => static::$erreur404
+            ];
         }
 
         /** On reconstruit les dates au format dateTime */
@@ -138,7 +156,8 @@ class BatchCollecteOwaspController extends AbstractController
             }
 
             /** On remplie le tableau pour les signalement a1 à a10 pour les clés de sévérité */
-            $owaspIssues = array_fill_keys(range(1, 10), array_fill_keys(['blocker', 'critical', 'major', 'info', 'minor'], 0));
+            $owaspIssues = array_fill_keys(range(1, 10), array_fill_keys(
+                ['blocker', 'critical', 'major', 'info', 'minor'], 0));
 
             /** Calcul du nombre d'issue par type de signalement OWASP et par type de sévérité */
             if ($referential['total'] != 0) {
@@ -200,18 +219,37 @@ class BatchCollecteOwaspController extends AbstractController
         }
 
         /** On supprime les informations sur le projet pour la dernière analyse. */
+        $this->logger->debug("🧹 Suppression OWASP existant pour {$maven_key}");
         $map = ['maven_key' => $maven_key];
         $delete = $owaspRepos->deleteOwaspMavenKey($map);
         if ($delete['code'] != 200) {
-            return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
+            $this->logger->error("❌ Échec suppression OWASP : {$delete['erreur']}");
+            return [
+                'code' => $delete['code'],
+                'erreur' => $delete['erreur']
+            ];
         }
 
         /** On enregistre */
+        $this->logger->debug("💾 Insertion des données OWASP pour {$maven_key}");
         $insert = $owaspRepos->insertOwasp($owaspDataList);
         if ($insert['code'] != 200) {
-            return ['code' => $insert['code'], 'erreur' => $insert['erreur']];
+            $this->logger->error("❌ Échec insertion OWASP : {$insert['erreur']}");
+            return [
+                'code' => $insert['code'],
+                'erreur' => $insert['erreur']
+            ];
         }
 
-        return ['code' => 200, 'owasp2017' => $total_2017, 'owasp2021' => $total_2021,'message' => ['nombre_2017' => $total_2017, 'nombre_2021' => $total_2021, 'data' => $owaspDataList]];
+        $this->logger->info("ℹ️ [OWASP] Collecte terminée pour {$maven_key}. Total 2017: {$total_2017}, 2021: {$total_2021}");
+        return [
+            'code' => 200,
+            'owasp2017' => $total_2017,
+            'owasp2021' => $total_2021,
+            'message' => [
+                'nombre_2017' => $total_2017,
+                'nombre_2021' => $total_2021,
+                'data' => $owaspDataList]
+            ];
     }
 }
