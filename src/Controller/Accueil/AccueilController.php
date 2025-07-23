@@ -548,14 +548,15 @@ class AccueilController extends AbstractController
         ], 0);
 
         /** 1 - Les Dates  */
-        $dateModProjet = $properties['date_modification_projet'];
-        $dateModProfil = $properties['date_modification_profil'];
+        $dateModProjet = new \DateTime($properties['date_modification_projet']);
+        $dateModProfil = new \DateTime($properties['date_modification_profil']);
 
         $dateVerificationProjet = false;
         $dateVerificationProfil = false;
 
         /** ----- Projet ------ */
         /** Si la base n'a pas été mise à jour, on récupère le nombre de projet */
+        // $dateModProjet doit être de type DateTimeInterface.
         if (date_diff($dateModProjet, $date)->format('%a') >=
         $this->getParameter('maj.projet')) {
             $this->logger->info('[Accueil] Vérification projet requise.');
