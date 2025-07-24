@@ -16,20 +16,16 @@ namespace App\Controller\Auth;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Annotation\Route;
-
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
-use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Utilisateur;
-
-use App\Form\RegistrationFormType;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
-
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-
-/** Logger */
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Psr\Log\LoggerInterface;
+use Doctrine\ORM\EntityManagerInterface;
+
+use App\Entity\Utilisateur;
+use App\Form\RegistrationFormType;
+
 
 /**
  * [Description RegistrationController]
@@ -48,8 +44,7 @@ class RegistrationController extends AbstractController
         private EntityManagerInterface $em,
         private LoggerInterface $logger,
     ) {
-        $this->em = $em;
-        $this->logger = $logger;
+        $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
