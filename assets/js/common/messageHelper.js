@@ -188,6 +188,7 @@ export const showMessage = function(type, message, technicalDetails = null) {
         info: 'ℹ️',
         primary: '📌',
         secondary: '📄',
+        critical: '🔴',
         debug: '🛠️',
         delete: '🗑️',
         notAuthorize: '🚫'
