@@ -8,71 +8,71 @@
         aria-labelledby="titre-affiche-liste-todo"
         aria-describedby="desc-affiche-liste-todo">
 
-      <header>
-        <h1 id="titre-affiche-liste-todo" class="h3 claire-hand" tabindex="-1"><span aria-hidden="true">ℹ️</span>Information</h1>
-        <h2 id="desc-affiche-liste-todo" class="h4 claire-hand"><span aria-hidden="true">📋</span>Détails des Tags Todo.</h2>
-        <span class="show-for-sr">
-          Cette page présente la répartition des todos en fonction du langage et les 10 premiers todo de la liste.
-        </span>
-      </header>
+  <header>
+    <h1 id="titre-affiche-liste-todo" class="h3 claire-hand" tabindex="-1"><span aria-hidden="true">ℹ️</span>Information</h1>
+    <h2 id="desc-affiche-liste-todo" class="h4 claire-hand"><span aria-hidden="true">📋</span>Détails des Tags Todo.</h2>
+    <span class="show-for-sr">
+      Cette page présente la répartition des todos en fonction du langage et les 10 premiers todo de la liste.
+    </span>
+  </header>
 
-      <table>
-        <caption class="claire-hand">Répartition des tags Todo par langage.</caption>
-        <thead>
-          <tr>
-            <th scope="col" class="open-sans text-left">Langage</th>
-            <th scope="col" class="open-sans text-right">Total</th>
-          </tr>
-        </thead>
-        <tbody id="tableau-liste-todo" class="open-sans">
-          <tr>
-            <td><strong>JAVA</strong></td>
-            <td id="js-java" class="text-center stat"></td>
-          </tr>
-          <tr>
-            <td><strong>JavaScript</strong></td>
-            <td id="js-javascript" class="text-center stat"></td>
-          </tr>
-          <tr>
-            <td><strong>TypeScript</strong></td>
-            <td id="js-typescript" class="text-center stat"></td>
-          </tr>
-          <tr>
-            <td><strong>HTML</strong></td>
-            <td id="js-html" class="text-center stat"></td>
-          </tr>
-          <tr>
-            <td><strong>XML</strong></td>
-            <td id="js-xml" class="text-center stat"></td>
-          </tr>
-        </tbody>
-      </table>
-      <br>
+  <table>
+    <caption class="claire-hand">Répartition des tags Todo par langage.</caption>
+    <thead>
+      <tr>
+        <th scope="col" class="open-sans text-left">Langage</th>
+        <th scope="col" class="open-sans text-right">Total</th>
+      </tr>
+    </thead>
+    <tbody id="tableau-liste-todo" class="open-sans">
+      <tr>
+        <td><strong>JAVA</strong></td>
+        <td id="js-java" class="text-center stat"></td>
+      </tr>
+      <tr>
+        <td><strong>JavaScript</strong></td>
+        <td id="js-javascript" class="text-center stat"></td>
+      </tr>
+      <tr>
+        <td><strong>TypeScript</strong></td>
+        <td id="js-typescript" class="text-center stat"></td>
+      </tr>
+      <tr>
+        <td><strong>HTML</strong></td>
+        <td id="js-html" class="text-center stat"></td>
+      </tr>
+      <tr>
+        <td><strong>XML</strong></td>
+        <td id="js-xml" class="text-center stat"></td>
+      </tr>
+    </tbody>
+  </table>
+  <br>
 
-      <table>
-        <caption class="claire-hand">Liste des fichiers par langage.</caption>
-        <thead>
-          <tr>
-            <th scope="col" class="open-sans text-left">Langage</th>
-            <th scope="col" class="open-sans text-center">Fichier</th>
-            <th scope="col" class="open-sans text-center">Ligne</th>
-          </tr>
-        </thead>
-        <tbody id="tableau-liste-detail" class="open-sans">
-          <tr>
-            <td class="text-center">---</td>
-            <td class="text-center">---</td>
-            <td class="text-center">---</td>
-          </tr>
-        </tbody>
-      </table>
+  <table>
+    <caption class="claire-hand">Liste des fichiers par langage.</caption>
+    <thead>
+      <tr>
+        <th scope="col" class="open-sans text-left">Langage</th>
+        <th scope="col" class="open-sans text-center">Fichier</th>
+        <th scope="col" class="open-sans text-center">Ligne</th>
+      </tr>
+    </thead>
+    <tbody id="tableau-liste-detail" class="open-sans">
+      <tr>
+        <td class="text-center">---</td>
+        <td class="text-center">---</td>
+        <td class="text-center">---</td>
+      </tr>
+    </tbody>
+  </table>
 
-      <footer class="grid-x grid-margin-x align-right margin-top-2">
-        <div class="cell shrink">
-          <button id="bouton-fermer-liste-todo" data-close
-                  class="button open-sans focus-light"
-                  type="button"
-                  aria-label="Ferme modale">❌ Fermer
-          </button>
-      </footer>
-    </div>
+  <footer class="grid-x grid-margin-x align-right margin-top-2">
+    <div class="cell shrink">
+      <button id="bouton-fermer-liste-todo" data-close
+              class="button open-sans focus-light"
+              type="button"
+              aria-label="Ferme modale">❌ Fermer
+      </button>
+  </footer>
+</dialog>
