@@ -108,7 +108,7 @@ class ResetPasswordController extends AbstractController
         $utilisateur = $token->getUser();
 
         if (!$utilisateur instanceof Utilisateur) {
-            $this->logger->error('[ResetPassword] Utilisateur non valide dans le token');
+            $this->logger->error('❌ [Reset-Password] Utilisateur non valide dans le token');
             throw new  UserNotFoundException('$user doit être une instance de User.');
         }
 
@@ -138,7 +138,7 @@ class ResetPasswordController extends AbstractController
                     if ($resetPasswordCount >= 5) {
                         return $this->redirectToRoute('logout');
                     }
-                    $this->logger->warning("[ResetPassword] Mot de passe incorrect pour $courriel (tentative n°$resetPasswordCount)");
+                    $this->logger->warning("⚠️ [Reset-Password] Mot de passe incorrect pour $courriel (tentative n°$resetPasswordCount)");
 
                     /** On prepare un message flash */
                     $titre = "Oups !!! ";
@@ -153,7 +153,7 @@ class ResetPasswordController extends AbstractController
                     $utilisateur->setActif(false);
                     $this->em->flush();
 
-                    $this->logger->info("[ResetPassword] le nombre de tentative a été incrémenté $courriel");
+                    $this->logger->info("ℹ️ [Reset-Password] le nombre de tentative a été incrémenté $courriel");
                     return $this->redirectToRoute('reset_mot_de_passe');
                 }
 
@@ -206,7 +206,7 @@ class ResetPasswordController extends AbstractController
 
         /** On teste si le body est correcte */
         if ($data === null || !property_exists($data, 'reset_password')) {
-            $this->logger->warning('[API ResetPassword] Body invalide dans la requête');
+            $this->logger->warning('⚠️ [API Reset-Password] Body invalide dans la requête');
             return $response->setData([
                 'code' => 400,
                 'type' => 'alert',
@@ -232,7 +232,7 @@ class ResetPasswordController extends AbstractController
 
         $r = $userEntity->updateUtilisateurResetPassword($map);
         if ($r['code'] != 200) {
-            $this->logger->error("[API ResetPassword] Erreur update BDD pour $courriel : " . $r['erreur']);
+            $this->logger->error("❌ [API Reset-Password] Erreur update BDD pour $courriel Erreur({$r['erreur']}.");
             return $response->setData([
                 'code' => $r['code'],
                 'type' => 'alert',
@@ -240,7 +240,7 @@ class ResetPasswordController extends AbstractController
                 'trace' => $r['erreur']], Response::HTTP_OK);
         }
 
-        $this->logger->info("[API ResetPassword] Succès update pour $courriel");
+        $this->logger->info("ℹ️ [API Reset-Password] Succès update pour $courriel");
         return $response->setData(['code' => 200], Response::HTTP_OK);
     }
 }
