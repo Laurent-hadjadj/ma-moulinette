@@ -177,7 +177,9 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => 406,
                 'type' => 'primary',
-                'message' => static::$reference . static::$erreur404], Response::HTTP_OK);
+                'message' => static::$reference . static::$erreur404,
+                'trace' => null
+            ], Response::HTTP_OK);
         }
 
         /** On récupère l'objet User du contexte de sécurité */
@@ -250,7 +252,7 @@ class ApiPeintureController extends AbstractController
         if ($isValide['code'] === 404) {
             return new JsonResponse([
                 'code' => 404,
-                'type' => 'secondary',
+                'type' => 'warning',
                 'message' => static::$reference . static::$erreur404,
                 'trace' => null
             ], Response::HTTP_OK);
@@ -334,7 +336,7 @@ class ApiPeintureController extends AbstractController
         if ($isValide['code'] === 404) {
                 return new JsonResponse([
                     'code' => 404,
-                    'type' => 'secondary',
+                    'type' => 'warning',
                     'message' => static::$reference . static::$erreur404,
                     'trace' => null
                 ], Response::HTTP_OK);
@@ -416,7 +418,7 @@ class ApiPeintureController extends AbstractController
         if ($isValide['code'] === 404) {
                 return new JsonResponse([
                     'code' => 404,
-                    'type' => 'secondary',
+                    'type' => 'warning',
                     'message' => static::$reference . static::$erreur404,
                     'trace' => null
                 ], Response::HTTP_OK);
@@ -559,7 +561,7 @@ class ApiPeintureController extends AbstractController
         if ($isValide['code'] === 404) {
                 return new JsonResponse([
                     'code' => 404,
-                    'type' => 'secondary',
+                    'type' => 'warning',
                     'message' => static::$reference . static::$erreur404,
                     'trace' => null
                 ], Response::HTTP_OK);
@@ -656,7 +658,7 @@ class ApiPeintureController extends AbstractController
         if ($isValide['code'] === 404) {
                 return new JsonResponse([
                     'code' => 404,
-                    'type' => 'secondary',
+                    'type' => 'warning',
                     'message' => static::$reference . static::$erreur404,
                     'trace' => null
                 ], Response::HTTP_OK);
@@ -742,7 +744,7 @@ class ApiPeintureController extends AbstractController
         if ($isValide['code'] === 404) {
                 return new JsonResponse([
                     'code' => 404,
-                    'type' => 'secondary',
+                    'type' => 'warning',
                     'message' => static::$reference . static::$erreur404,
                     'trace' => null
                 ], Response::HTTP_OK);
@@ -837,7 +839,7 @@ class ApiPeintureController extends AbstractController
         if ($isValide['code'] === 404) {
             return new JsonResponse([
                 'code' => 404,
-                'type' => 'secondary',
+                'type' => 'warning',
                 'message' => static::$reference . static::$erreur404,
                 'trace' => null
             ], Response::HTTP_OK);
@@ -921,7 +923,7 @@ class ApiPeintureController extends AbstractController
         if ($isValide['code'] === 404) {
                 return new JsonResponse([
                     'code' => 404,
-                    'type' => 'secondary',
+                    'type' => 'warning',
                     'message' => static::$reference . static::$erreur404,
                     'trace' => null
                 ], Response::HTTP_OK);
@@ -1029,7 +1031,7 @@ class ApiPeintureController extends AbstractController
         if ($isValide['code'] === 404) {
                 return new JsonResponse([
                     'code' => 404,
-                    'type' => 'secondary',
+                    'type' => 'warning',
                     'message' => static::$reference . static::$erreur404,
                     'trace' => null
                 ], Response::HTTP_OK);
