@@ -214,11 +214,11 @@ class BatchCollecteHotspotDetailController extends AbstractController
         /** On instancie l'EntityRepository */
         $hotspotsRepository = $this->em->getRepository(Hotspots::class);
         $hotspotDetailsRepository = $this->em->getRepository(HotspotDetails::class);
-        $informationProjet = $this->em->getRepository(InformationProjet::class);
+        $informationProjetRepos = $this->em->getRepository(InformationProjet::class);
 
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
         $map = ['maven_key'=>$mavenKey];
-        $information = $informationProjet->selectInformationProjetProjectVersion($map);
+        $information = $informationProjetRepos->selectInformationProjetVersion($map);
         if ($information['code'] != 200) {
             return ['code' => $information['code'], 'erreur' => $information['erreur']];
         }

@@ -118,8 +118,8 @@ class BatchCollecteOwaspController extends AbstractController
         }
 
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
-        $map = ['maven_key' => $maven_key];
-        $select_information = $informationProjetRepos->selectInformationProjetProjectVersion($map);
+        $map = [ 'maven_key' => $maven_key ];
+        $select_information = $informationProjetRepos->selectInformationProjetVersion($map);
             if ($select_information['code'] != 200) {
                 $this->logger->error("❌ Erreur OWASP 2021 pour {$maven_key} : {$owasp2021['code']}");
                 return [
@@ -130,7 +130,7 @@ class BatchCollecteOwaspController extends AbstractController
 
         /** Il n'y a pas de projet dans la table ou la collecte des informations du projet a planté ! */
         if (!$select_information['info']) {
-            $this->logger->warning("⚠️ Aucun projet trouvé pour {$maven_key}");
+            $this->logger->warning("⚠️ [Collecte OWASP] Aucun projet trouvé pour {$maven_key}");
             return [
                 'code' => 404,
                 'message' => static::$erreur404

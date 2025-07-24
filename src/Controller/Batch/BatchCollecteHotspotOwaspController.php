@@ -92,7 +92,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
         $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
 
         /** On instancie l'EntityRepository */
-        $informationProjetRepository = $this->em->getRepository(InformationProjet::class);
+        $informationProjetRepos = $this->em->getRepository(InformationProjet::class);
         $hotspotOwaspRepository = $this->em->getRepository(HotspotOwasp::class);
 
         /** On récupère la version du serveur SonarQube */
@@ -114,7 +114,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
 
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
         $map = ['maven_key' => $mavenKey];
-        $information = $informationProjetRepository->selectInformationProjetProjectVersion($map);
+        $information = $informationProjetRepos->selectInformationProjetVersion($map);
         if ($information['code'] != 200) {
             return ['code' => $information['code'], 'erreur' => $information['erreur']];
         }
@@ -163,7 +163,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
             return [
                 'referential_owasp' => $ref,
                 'maven_key' => $maven_key,
-                'version' => $information['info'][0]['project_version'],
+                'version' => $information['info'][0]['version'],
                 'date_version' => $dateVersion,
                 'menace' => $menace,
                 'security_category' => $data['securityCategory'] ?? 'NC',

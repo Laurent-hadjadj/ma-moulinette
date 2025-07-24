@@ -95,7 +95,7 @@ class BatchCollecteHotspotController extends AbstractController
 
          /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
         $map = ['maven_key' => $mavenKey];
-        $select = $informationProjet->selectInformationProjetProjectVersion($map);
+        $select = $informationProjet->selectInformationProjetVersion($map);
         if ($select['code'] != 200) {
             return ['code' => $select['code'], 'erreur' => $select['erreur']];
         }
@@ -148,7 +148,7 @@ class BatchCollecteHotspotController extends AbstractController
                 /** Ajout des hotspots à la liste à insérer */
                 $map[] = [
                     'maven_key' => $maven_key,
-                    'version' => $select['info'][0]['project_version'],
+                    'version' => $select['info'][0]['version'],
                     'date_version' => $dateVersion,
                     'hotspot_key' => $value['key'] ?? 'NC',
                     'security_category' => $value['securityCategory'] ?? 'NC',
