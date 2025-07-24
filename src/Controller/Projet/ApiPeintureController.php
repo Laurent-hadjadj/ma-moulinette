@@ -59,7 +59,7 @@ class ApiPeintureController extends AbstractController
     /** Définition des constantes */
     public static $reference = "<strong>[Peinture]</strong> ";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
-    public static $loggerE400 = "[Peinture] Requête mal formée : maven_key manquant ou invalide.";
+    public static $loggerE400 = "❌ [Peinture] Requête mal formée : maven_key manquant ou invalide.";
     public static $erreur404 = "Je n'ai pas trouvé les données. Vous devez lancer une collecte (Erreur 404).";
     public static $erreur500 = "Je n'ai pas trouvé d'analyse (Erreur 500).";
 

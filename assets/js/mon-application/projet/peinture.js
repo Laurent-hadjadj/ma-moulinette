@@ -24,7 +24,6 @@ import { log } from '../../common/log.js';
 import {contentType, dateOptions, http_400, http_401, http_403, http_404, http_406, http_500,
         http_503, http_504, un, deux, trois, quatre, cinq, dix, cent, dixMille} from '../../common/constante.js';
 
-
 /**
  * [Description for enableButtonAnalyse]
  *
@@ -67,7 +66,7 @@ const disableButtonAffiche = function(){
 /**
  * [Description for ErrorButtonAffiche]
  *
- * @return [type]
+ * @return void
  *
  * Created at: 21/07/2025 12:15:16 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -146,9 +145,9 @@ export const remplissage = async function(maven_key) {
             ErrorButtonAffiche();
             const trace = prepareTechnicalDetails(error);
             const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations sur les versions.";
-              showMessage('alert', message, trace);
+              showMessage('critical', message, trace);
               sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Informations.');
-              log(' - ❌ [Peinture] Affichage des informations sur les versions en échec.');
+              log(' - 🔴 [Peinture] Affichage des informations sur les versions en échec.');
               return;
       }
 
@@ -182,9 +181,9 @@ export const remplissage = async function(maven_key) {
           ErrorButtonAffiche();
           const trace = prepareTechnicalDetails(error);
           const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations noSonar.";
-            showMessage('alert', message, trace);
+            showMessage('critical', message, trace);
             sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc NoSonar.');
-            log(' - ❌ [Peinture] Affichage des informations NoSonar en échec.');
+            log(' - 🔴 [Peinture] Affichage des informations NoSonar en échec.');
             return;
     }
 
@@ -217,12 +216,26 @@ export const remplissage = async function(maven_key) {
     let l, cutRule, cutComponent;
     /** On efface le tableau */
     $('#tableau-liste-detail').html('');
-    t.details.liste.forEach(element => {
-      cutRule=element.rule.split(':');
-      cutComponent=element.component.split(':');
-      l=`<tr><td><strong>${cutRule[0]}</strong></td><td>${cutComponent[2]}</td><td>${element.line}</td></tr>`;
+    /** On affiche que les 10 premiers todo, fo pas déconner !!! */
+    let limit = 0;
+    let maxOccurrences = 10;
+    let maxLength = 80;
+
+    for (let i = 0; i < t.details.liste.length && limit < maxOccurrences; i++) {
+      let element = t.details.liste[i];
+      let cutRule = element.rule.split(':');
+      let cutComponentArray = element.component.split(':');
+
+       /** On raccourci la ligne à l’élément qui nous intéresse. */
+      cutComponent = (cutComponentArray.length == 1) ? cutComponentArray[0] : (cutComponentArray[2] || cutComponentArray[1]);
+
+      // Tronquer le début pour conserver les 30 derniers caractères
+      let truncatedLine = cutComponent.length > maxLength ? '...' + cutComponent.substring(cutComponent.length - maxLength) : cutComponent;
+
+      let l = `<tr><td><strong>${cutRule[0]}</strong></td><td>${truncatedLine}</td><td class="text-center">${element.line}</td></tr>`;
       $('#tableau-liste-detail').append(l);
-    });
+      limit++;
+    }
 
     const t50 = document.getElementById('todo-liste');
     const t51 = document.getElementById('js-java');
@@ -243,9 +256,9 @@ export const remplissage = async function(maven_key) {
       ErrorButtonAffiche();
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations sur les todo.";
-      showMessage('alert', message, trace);
+      showMessage('critical', message, trace);
       sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc todo.');
-      log(' - ❌ [Peinture] Affichage des informations sur les todo en échec.');
+      log(' - 🔴 [Peinture] Affichage des informations sur les todo en échec.');
       return;
   }
 
@@ -300,9 +313,9 @@ export const remplissage = async function(maven_key) {
       ErrorButtonAffiche();
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations sur les loggers JAVA.";
-      showMessage('alert', message, trace);
+      showMessage('critical', message, trace);
       sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Loggers.');
-      log(' - ❌ [Peinture] Affichage des informations sur les loggers JAVA en échec.');
+      log(' - 🔴 [Peinture] Affichage des informations sur les loggers JAVA en échec.');
       return;
   }
 
@@ -405,9 +418,9 @@ export const remplissage = async function(maven_key) {
       ErrorButtonAffiche();
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations sur les mesures.";
-      showMessage('alert', message, trace);
+      showMessage('critical', message, trace);
       sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Mesures.');
-      log(' - ❌ [Peinture] Affichage des informations sur les Mesures en échec.');
+      log(' - 🔴 [Peinture] Affichage des informations sur les Mesures en échec.');
       return;
   }
 
@@ -639,9 +652,9 @@ export const remplissage = async function(maven_key) {
           ErrorButtonAffiche();
           const trace = prepareTechnicalDetails(error);
           const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations sur les anomalies.";
-          showMessage('alert', message, trace);
+          showMessage('critical', message, trace);
           sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Anomalie.');
-          log(' - ❌ [Peinture] Affichage des informations sur les Anomalies en échec.');
+          log(' - 🔴 [Peinture] Affichage des informations sur les Anomalies en échec.');
           return;
     }
 
@@ -689,9 +702,9 @@ export const remplissage = async function(maven_key) {
           ErrorButtonAffiche();
           const trace = prepareTechnicalDetails(error);
           const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations sur les menaces potentielles.";
-          showMessage('alert', message, trace);
+          showMessage('critical', message, trace);
           sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Anomalie.');
-          log(' - ❌ [Peinture] Affichage des informations sur les menaces potentielles en échec.');
+          log(' - 🔴 [Peinture] Affichage des informations sur les menaces potentielles en échec.');
           return;
     }
 
@@ -770,9 +783,9 @@ export const remplissage = async function(maven_key) {
       ErrorButtonAffiche();
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations sur le détail des anomalies.";
-      showMessage('alert', message, trace);
+      showMessage('critical', message, trace);
       sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Anomalie.');
-      log(' - ❌ [Peinture] Affichage des informations sur le détail des anomalies en échec.');
+      log(' - 🔴 [Peinture] Affichage des informations sur le détail des anomalies en échec.');
       return;
   }
 
@@ -847,7 +860,7 @@ export const afficheHotspotDetails = async function (maven_key){
       ErrorButtonAffiche();
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations sur le détail des menaces potentielles.";
-      showMessage('alert', message, trace);
+      showMessage('critical', message, trace);
       sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Menaces potentielles.');
       log(' - ❌ [Peinture] Affichage des informations sur le détail des menaces potentielles en échec.');
       return;
