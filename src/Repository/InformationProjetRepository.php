@@ -96,34 +96,6 @@ class InformationProjetRepository extends ServiceEntityRepository
   }
 
 
-  /**
-   * [Description for countInformationProjetType]
-   * On retourne le nombre de version pour un type donné.
-   *
-   * @param array $map
-   *
-   * @return array
-   *
-   * Created at: 17/03/2024 22:18:09 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  public function countInformationProjetType($map): array
-  {
-    $sql = "SELECT type, COUNT(*) AS total
-            FROM ma_moulinette.information_projet
-            WHERE maven_key=:maven_key AND type=:type GROUP BY type";
-      try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-              $stmt->bindValue(':type', $map['type']);
-            $nombre = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Throwable $e) {
-          return $this->handleDatabaseException($e);
-      }
-      return ['code' => 200, 'nombre' => $nombre, 'erreur'=>''];
-  }
-
   public function selectInformationProjetType($map): array
   {
     $sql = "SELECT type, COUNT(type) AS total
