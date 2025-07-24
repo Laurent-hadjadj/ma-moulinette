@@ -526,6 +526,12 @@ textarea[readonly] {
   opacity: 1;
 }
 
+/* ====Tableau des todo === */
+#tableau-liste-detail td {
+	word-wrap: break-word; /* Permet le retour à la ligne automatique */
+	max-width: 300px; /* Limite la largeur maximale de la cellule */
+}
+
 /**
   * Propriétés pour les class en fonction des medias type
   *
