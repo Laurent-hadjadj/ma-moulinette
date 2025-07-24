@@ -1792,20 +1792,31 @@ $('.favori-svg').on('click', () => {
  * On affiche la répartition des versions
  */
 $('#js-version-autre').on('click', () => {
-  let version ;
-  if ($('select[name="projet"]').val() !== '' && $('select[name="projet"]').val() !== 'TheID') {
-    version = document.getElementById('version-autre');
-    if (version.dataset.label === undefined) {
-      return;
-    }
-    /**
-     * const label = version.dataset.label;
-     * const dataset = version.dataset.dataset;
-    */
-    const {label, dataset} = version.dataset;
-    dessineMoiUnMouton(JSON.parse(label), JSON.parse(dataset));
-    $('#modal-autre-version').foundation('open');
+  let label, dataset ;
+  $('#modal-autre-version').foundation('open');
+  const version = document.getElementById('version-autre');
+  (version.dataset.label === undefined) ? {label, dataset} = 0 :  {label, dataset} = version.dataset;
+  const canvasId = 'graphique-autre-version';
+  const canvas = document.getElementById(canvasId);
+  const emptyMessage = canvas?.nextElementSibling;
+  const hasNoData = !label?.length || !dataset?.length;
+
+  // Cas sans données : on affiche le message HTML
+  if (hasNoData) {
+    if (canvas) canvas.style.display = 'none';
+    if (emptyMessage) emptyMessage.style.display = 'flex';
+        return;
   }
+
+  // Cas avec données : on cache le message HTML
+  if (canvas) canvas.style.display = 'block';
+  if (emptyMessage) emptyMessage.style.display = 'none';
+
+  // Détruit l'ancien graphique si existant
+  const oldChart = Chart.getChart(canvasId);
+  if (oldChart) oldChart.destroy();
+
+    dessineMoiUnMouton(JSON.parse(label), JSON.parse(dataset));
 });
 
 /******************************************************/
