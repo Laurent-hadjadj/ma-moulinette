@@ -1744,7 +1744,7 @@ $('#js-affiche-liste-todo').on('click', function () {
  * On affiche la liste des logger par méthode
  */
 $('#js-affiche-detail-logger').on('click', function () {
-  $('#modal-liste-logger').foundation('open');
+  $('#modal-affiche-liste-logger').foundation('open');
 });
 
 /**
