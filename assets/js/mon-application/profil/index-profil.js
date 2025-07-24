@@ -397,7 +397,7 @@ $('#bouton-affiche-graphique').on('click', async () => {
   const canvasId = 'graphique-langage';
   const canvas = document.getElementById(canvasId);
   const emptyMessage = canvas?.nextElementSibling;
-    const hasNoData = !t.label?.length || !t.dataset?.length;
+  const hasNoData = !t.label?.length || !t.dataset?.length;
 
     // Cas sans données : on affiche le message HTML
     if (hasNoData) {
