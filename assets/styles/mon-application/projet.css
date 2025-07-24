@@ -179,6 +179,18 @@ textarea[readonly] {
   transition: background-color 0.2s ease-in-out;
 }
 
+#bouton-fermer-liste-todo
+{
+  min-width: 9rem;
+  font-size: 0.95rem;
+  border-radius: 0.375rem;
+  margin: 0 0.25rem 0.5rem 0.25rem;
+  padding: 0.8rem 0.6rem;
+  color: #fff;
+  text-align: center;
+  background-color: #00445b;
+}
+
 #bouton-collecte-indicateur:hover,
 #bouton-affiche-indicateur:hover,
 #bouton-affiche-liste:hover,
@@ -186,15 +198,15 @@ textarea[readonly] {
 #bouton-repartition-module:hover,
 #bouton-tableau-de-bord:hover,
 #bouton-cosui:hover,
-#bouton-analyse-owasp:hover { background-color: #006182; }
+#bouton-analyse-owasp:hover,
+#bouton-fermer-liste-todo:hover { background-color: #006182; }
 
 #fermer-liste-projet,
 #fermer-liste-hotspot,
 #fermer-liste-logger,
 #fermer-autre-version,
 #fermer-dette-technique,
-#fermer-liste-severity,
-#fermer-liste-todo {
+#fermer-liste-severity {
   color: #fff;
   background-color: #00445b;
 }
