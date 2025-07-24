@@ -187,7 +187,10 @@ export const showMessage = function(type, message, technicalDetails = null) {
         warning: '⚠️',
         info: 'ℹ️',
         primary: '📌',
-        secondary: '📄'
+        secondary: '📄',
+        debug: '🛠️',
+        delete: '🗑️',
+        notAuthorize: '🚫'
     };
 
     const icon = icons[type] || '🔔';
