@@ -261,7 +261,7 @@ export const remplissage = async function(maven_key) {
       log(' - 🔴 [Peinture] Affichage des informations sur les todo en échec.');
       return;
   }
-console.log("okl");
+
   /***
  * On récupère les logger
  */
