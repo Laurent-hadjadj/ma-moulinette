@@ -69,7 +69,7 @@ class ApiProjetController extends AbstractController
         $user = $security->getUser();
 
         if (!$user) {
-            $this->logger->error('[Favori] Aucun utilisateur connecté.');
+            $this->logger->error('🚫 [Favori] Aucun utilisateur connecté.');
             return new JsonResponse([
                 'code' => 401,
                 'type' => 'alert',
@@ -86,7 +86,7 @@ class ApiProjetController extends AbstractController
         $data = json_decode($payload);
 
         if ($data === null || !property_exists($data, 'maven_key') || !is_string($data->maven_key)) {
-            $this->logger->warning('[Favori] Requête mal formée ou maven_key manquante.', [
+            $this->logger->warning('⚠️ [Favori] Requête mal formée ou maven_key manquante.', [
                 'utilisateur' => $username,
                 'payload' => $payload
             ]);
@@ -102,7 +102,7 @@ class ApiProjetController extends AbstractController
             'courriel' => $courriel
         ];
 
-        $this->logger->info('[Favori] Début mise à jour du favori.', [
+        $this->logger->info('ℹ️ [Favori] Début mise à jour du favori.', [
             'utilisateur' => $username,
             'maven_key' => $data->maven_key
         ]);
@@ -110,7 +110,7 @@ class ApiProjetController extends AbstractController
         $requestUpdate = $utilisateurRepos->updateUtilisateurFavoriProjet($preference, $map);
 
         if ($requestUpdate['code'] !== 200) {
-            $this->logger->error('[Favori] Échec mise à jour du favori.', [
+            $this->logger->error('❌ [Favori] Échec mise à jour du favori.', [
                 'utilisateur' => $username,
                 'maven_key' => $data->maven_key,
                 'erreur' => $requestUpdate['erreur'] ?? 'non précisée'
@@ -123,7 +123,7 @@ class ApiProjetController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        $this->logger->info('[Favori] Mise à jour réussie.', [
+        $this->logger->info('ℹ️ [Favori] Mise à jour réussie.', [
             'utilisateur' => $username,
             'maven_key' => $data->maven_key,
             'statut' => $requestUpdate['statut']
@@ -154,7 +154,7 @@ class ApiProjetController extends AbstractController
         $user = $security->getUser();
 
         if (!$user) {
-            $this->logger->error('[Favori Check] Aucun utilisateur connecté.');
+            $this->logger->error('🚫 [Favori Check] Aucun utilisateur connecté.');
             return new JsonResponse([
                 'code' => 401,
                 'type' => 'alert',
@@ -167,7 +167,7 @@ class ApiProjetController extends AbstractController
         $data = json_decode($rawContent);
 
         if ($data === null || !property_exists($data, 'maven_key') || !is_string($data->maven_key)) {
-            $this->logger->warning('[Favori Check] Requête JSON invalide ou clé maven_key absente.', [
+            $this->logger->warning('⚠️ [Favori Check] Requête JSON invalide ou clé maven_key absente.', [
                 'utilisateur' => $username,
                 'payload' => $rawContent
             ]);
@@ -180,7 +180,7 @@ class ApiProjetController extends AbstractController
 
         $preference = $user->getPreference();
         if (!isset($preference['favori_projet']) || !is_array($preference['favori_projet'])) {
-            $this->logger->error('[Favori Check] Clé "favori_projet" manquante ou invalide dans les préférences.', [
+            $this->logger->error('❌ [Favori Check] Clé "favori_projet" manquante ou invalide dans les préférences.', [
                 'utilisateur' => $username,
                 'preferences' => $preference
             ]);
@@ -193,7 +193,7 @@ class ApiProjetController extends AbstractController
 
         $favori = in_array($data->maven_key, $preference['favori_projet']);
 
-        $this->logger->info('[Favori Check] Favori vérifié avec succès.', [
+        $this->logger->info('ℹ️ [Favori Check] Favori vérifié avec succès.', [
             'utilisateur' => $username,
             'maven_key' => $data->maven_key,
             'est_favori' => $favori
@@ -224,7 +224,7 @@ class ApiProjetController extends AbstractController
         $user = $security->getUser();
 
         if (!$user) {
-            $this->logger->error('[Projet Liste] Aucun utilisateur connecté.');
+            $this->logger->error('🚫 [Projet Liste] Aucun utilisateur connecté.');
             return new JsonResponse([
                 'code' => 401,
                 'type' => 'alert',
@@ -237,7 +237,7 @@ class ApiProjetController extends AbstractController
         $groupes = $user->getEquipe();
 
         if (empty($groupes)) {
-            $this->logger->warning("[Projet Liste] Aucun groupe associé à l'utilisateur.", [
+            $this->logger->warning("⚠️ [Projet Liste] Aucun groupe associé à l'utilisateur.", [
                 'utilisateur' => $username
             ]);
 
@@ -248,7 +248,7 @@ class ApiProjetController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        $this->logger->info('[Projet Liste] Groupes récupérés.', [
+        $this->logger->info('ℹ️ [Projet Liste] Groupes récupérés.', [
             'utilisateur' => $username,
             'groupes' => $groupes
         ]);
@@ -264,14 +264,14 @@ class ApiProjetController extends AbstractController
         $inTrim = rtrim($in, " OR ");
         $map = ['clause_where' => $inTrim];
 
-        $this->logger->debug('[Projet Liste] Clause WHERE construite.', [
+        $this->logger->debug('🛠️ [Projet Liste] Clause WHERE construite.', [
             'clause' => $inTrim
         ]);
 
         $requestListe = $listeProjetRepos->selectListeProjetByEquipe($map);
 
         if ($requestListe['code'] != 200) {
-            $this->logger->error("[Projet Liste] Erreur lors de la récupération des projets.", [
+            $this->logger->error("❌ [Projet Liste] Erreur lors de la récupération des projets.", [
                 'utilisateur' => $username,
                 'code' => $requestListe['code'],
                 'erreur' => $requestListe['erreur'] ?? 'Erreur inconnue'
@@ -288,7 +288,7 @@ class ApiProjetController extends AbstractController
         $projets = $requestListe['liste'];
 
         if (empty($projets)) {
-            $this->logger->notice('[Projet Liste] Aucun projet trouvé pour les groupes spécifiés.', [
+            $this->logger->notice('📄 [Projet Liste] Aucun projet trouvé pour les groupes spécifiés.', [
                 'utilisateur' => $username,
                 'groupes' => $groupes
             ]);
@@ -300,7 +300,7 @@ class ApiProjetController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        $this->logger->info('[Projet Liste] Projets récupérés avec succès.', [
+        $this->logger->info('ℹ️ [Projet Liste] Projets récupérés avec succès.', [
             'utilisateur' => $username,
             'nombre_projets' => count($projets)
         ]);
