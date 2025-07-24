@@ -95,23 +95,6 @@ class InformationProjetRepository extends ServiceEntityRepository
       return ['code' => 200, 'is_valide' => $isValide[0], 'erreur' => ''];
   }
 
-
-  public function selectInformationProjetType($map): array
-  {
-    $sql = "SELECT type, COUNT(type) AS total
-            FROM ma_moulinette.information_projet
-            WHERE maven_key=:maven_key
-            GROUP BY type";
-      try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-            $liste = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Throwable $e) {
-          return $this->handleDatabaseException($e);
-      }
-      return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
-  }
-
   /**
    * [Description for selectInformationProjetVersionLast]
    * Retourne la version du dernier projet.
