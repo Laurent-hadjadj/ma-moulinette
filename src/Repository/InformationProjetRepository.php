@@ -87,7 +87,7 @@ class InformationProjetRepository extends ServiceEntityRepository
             $isValide = $stmt->executeQuery()->fetchAllAssociative();
             /** j'ai pas trouvé de projet */
             if (!$isValide){
-              return ['code'=>404, 'erreur'=>"Je n'ai pas trouvé le projet dans la base de données."];
+              return ['code'=>404, 'erreur' => "Je n'ai pas trouvé le projet dans la base de données."];
             }
           } catch (\Throwable $e) {
               return $this->handleDatabaseException($e);
@@ -95,32 +95,6 @@ class InformationProjetRepository extends ServiceEntityRepository
       return ['code' => 200, 'is_valide' => $isValide[0], 'erreur' => ''];
   }
 
-  /**
-   * [Description for countInformationProjetAllType]
-   * Compte le nombre de version de type RELEASE, SNAPSHOT ou AUTRE
-   *
-   * @param array $map
-   *
-   * @return array
-   *
-   * Created at: 16/03/2024 21:43:04 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  public function countInformationProjetAllType($map): array
-  {
-    $sql = "SELECT COUNT(type) AS total
-            FROM ma_moulinette.information_projet
-            WHERE maven_key=:maven_key";
-      try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-            $nombre = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Throwable $e) {
-          return $this->handleDatabaseException($e);
-      }
-      return ['code' => 200, 'nombre' => $nombre, 'erreur' => ''];
-  }
 
   /**
    * [Description for countInformationProjetType]
