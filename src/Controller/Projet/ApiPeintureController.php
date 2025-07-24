@@ -256,95 +256,37 @@ class ApiPeintureController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        /** Toutes les versions par type (RELEASE, SNAPSHOT, AUTRE) */
+        /** Toutes les versions sonar par type (RELEASE, SNAPSHOT, AUTRE) */
         $map = ['maven_key' => $maven_key ];
-        $toutesLesVersions = $informationProjetRepos->countInformationProjetAllType($map);
-        if ($toutesLesVersions['code'] != 200) {
+        $version = $informationProjetRepos->selectInformationProjetVersion($map);
+        if ($version['code'] != 200) {
             return new JsonResponse([
-                'code' => $toutesLesVersions['code'],
+                'code' => $version['code'],
                 'type' => 'alert',
-                'message' => static::$reference . "La récupération des données a échouée pour countInformationProjetAllType (Erreur {$toutesLesVersions['code']}).",
-                'trace' => $toutesLesVersions['erreur'] ?? null
+                'message' => static::$reference . "La récupération des données a échouée pour selectInformationProjetVersion (Erreur {$version['code']}).",
+                'trace' => $version['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
-        /** Les releases */
-        $map = ['maven_key' => $maven_key, 'type' => 'RELEASE' ];
-        $release = $informationProjetRepos->countInformationProjetType($map);
-        if ($release['code'] != 200) {
-            return new JsonResponse([
-                'code' => $release['code'],
-                'type' => 'alert',
-                'message' => static::$reference . "La récupération des données a échouée pour countInformationProjetType (Erreur {$release['code']}).",
-                'trace' => $release['erreur'] ?? null
-            ], Response::HTTP_OK);
-        }
+        $release =  $version['info'][0]['version_release_sonar'] ?? 0;
+        $snapshot = $version['info'][0]['version_snapshot_sonar'] ?? 0;
+        $autre = $version['info'][0]['version_autre_sonar'] ?? 0;
 
-        /** La requête renvoie le type et un total si le type existe sinon rien*/
-        $releaseCount = isset($release['nombre'][0]['total']) ? $release['nombre'][0]['total'] : 0;
-
-        /** Les snapshots */
-        $map = [ 'maven_key' => $maven_key, 'type' => 'SNAPSHOT' ];
-        $snapshot = $informationProjetRepos->countInformationProjetType($map);
-        if ($snapshot['code'] != 200) {
-            return new JsonResponse([
-                'code' => $snapshot['code'],
-                'type' => 'alert',
-                'message' => static::$reference . "La récupération des données a échouée pour countInformationProjetType (Erreur {$snapshot['code']}).",
-                'trace' => $snapshot['erreur'] ?? null
-            ], Response::HTTP_OK);
-        }
-
-        $snapshotCount = isset($snapshot['nombre'][0]['total']) ? $snapshot['nombre'][0]['total'] : 0;
-
-        /** On calcul la valeur pour les autres types de version */
-        $toutesLesVersionsCount = isset($toutesLesVersions['nombre'][0]['total']) ? $toutesLesVersions['nombre'][0]['total'] : 0;
-
-        /** On calcule le nombre des autres versions disponibles */
-        $lesAutres = $toutesLesVersionsCount - $releaseCount - $snapshotCount;
-
-        /** On récupère le nombre de version par type pour le graphique */
-        $map = ['maven_key' => $maven_key ];
-        /** On renvoie un tableau avec type et total ['type' => RELEASE, 'total' => 12] pour chaque type de version */
-        $infoVersion = $informationProjetRepos->selectInformationProjetType($map);
-        if ($infoVersion['code'] != 200) {
-            return new JsonResponse([
-                'code' => $infoVersion['code'],
-                'type' => 'alert',
-                'message' => static::$reference . "La récupération des données a échouée pour selectInformationProjetType (Erreur {$infoVersion['code']}).",
-                'trace' => $infoVersion['erreur'] ?? null
-            ], Response::HTTP_OK);
-        }
-
-        $label = [];
-        $dataset = [];
-        foreach ($infoVersion['liste'] as $value) {
-            array_push($label, $value['type']);
-            array_push($dataset, $value['total']);
-        }
-
-        /** On récupère la dernière version et sa date de publication */
-        $map = [ 'maven_key' => $maven_key ];
-        $infoRelease = $informationProjetRepos->selectInformationProjetVersionLast($map);
-        if ($infoRelease['code'] != 200) {
-            return new JsonResponse([
-                'code' => $infoRelease['code'],
-                'type' => 'alert',
-                'message' => static::$reference . "La récupération des données a échouée pour selectInformationProjetType (Erreur {$infoRelease['code']}).",
-                'trace' => $infoRelease['erreur'] ?? null
-            ], Response::HTTP_OK);
-        }
+        /** On prépare les données pour le graphique */
+        $label = ['Release', 'Snapshot', 'Autre'];
+        $dataset = [$release, $snapshot, $autre];
 
         return new JsonResponse(
             [
                 'code' => 200,
-                'release' => $releaseCount,
-                'snapshot' => $snapshotCount,
-                'autre' => $lesAutres,
-                'label' => $label, 'dataset' => $dataset,
-                'projet' => $infoRelease['version'][0]['projet'],
-                'date' => $infoRelease['version'][0]['date'],
-                'analyse_key' => $infoRelease['version'][0]['analyse_key']
+                'release' => $release,
+                'snapshot' => $snapshot,
+                'autre' => $autre,
+                'label' => $label,
+                'dataset' => $dataset,
+                'projet' => $version['info'][0]['projet'] ?? 'N.C',
+                'date' => $version['info'][0]['date'] ?? '1971-07-04 00:00:00',
+                'analyse_key' => $version['info'][0]['analyse_key'] ?? 'N.C'
             ], Response::HTTP_OK
         );
     }
