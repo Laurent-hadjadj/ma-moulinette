@@ -179,7 +179,8 @@ textarea[readonly] {
   transition: background-color 0.2s ease-in-out;
 }
 
-#bouton-fermer-liste-todo
+#bouton-fermer-liste-todo,
+#bouton-fermer-liste-logger
 {
   min-width: 9rem;
   font-size: 0.95rem;
@@ -203,7 +204,6 @@ textarea[readonly] {
 
 #fermer-liste-projet,
 #fermer-liste-hotspot,
-#fermer-liste-logger,
 #fermer-autre-version,
 #fermer-dette-technique,
 #fermer-liste-severity {
@@ -215,7 +215,6 @@ textarea[readonly] {
 #fermer-liste-projet:hover,
 #fermer-autre-version:hover,
 #fermer-liste-hotspot:hover,
-#fermer-liste-logger:hover,
 #fermer-dette-technique:hover,
 #fermer-liste-severity:hover { background-color: #006182; }
 
