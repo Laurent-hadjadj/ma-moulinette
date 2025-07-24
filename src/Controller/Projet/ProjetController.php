@@ -95,11 +95,11 @@ class ProjetController extends AbstractController
     {
         $user = $security->getUser();
         if (!$user) {
-            $this->logger->warning('[Projet] Accès refusé : utilisateur non connecté.');
+            $this->logger->warning('⚠️ [Projet] Accès refusé : utilisateur non connecté.');
             throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 403).");
         }
 
-        $this->logger->info('[Projet] Chargement des préférences utilisateur.', [
+        $this->logger->info('ℹ️ [Projet] Chargement des préférences utilisateur.', [
             'user' => $user->getUserIdentifier()
         ]);
 
@@ -108,11 +108,11 @@ class ProjetController extends AbstractController
 
         if ($preference['statut']['bookmark'] ?? false) {
             $bookmark = $preference['bookmark'];
-            $this->logger->debug('[Projet] Préférence de bookmark activée.', [
+            $this->logger->debug('🛠️ [Projet] Préférence de bookmark activée.', [
                 'bookmark' => $bookmark
             ]);
         } else {
-            $this->logger->debug('[Projet] Aucun bookmark activé dans les préférences.');
+            $this->logger->debug('🛠️ [Projet] Aucun bookmark activé dans les préférences.');
         }
 
         $historiqueRepo = $this->em->getRepository(Historique::class);
@@ -122,12 +122,12 @@ class ProjetController extends AbstractController
         $countProjet = $historiqueRepo->countHistoriqueProjet($map);
 
         if ($countProjet === 0) {
-            $this->logger->info('[Projet] Le projet en bookmark est introuvable dans le catalogue.', [
+            $this->logger->info('ℹ️ [Projet] Le projet en bookmark est introuvable dans le catalogue.', [
                 'bookmark_maven_key' => $bookmark[0]
             ]);
             $bookmark = ['null'];
         } else {
-            $this->logger->info('[Projet] Projet trouvé en base.', [
+            $this->logger->info('ℹ️ [Projet] Projet trouvé en base.', [
                 'bookmark_maven_key' => $bookmark[0],
                 'projet_count' => $countProjet
             ]);
@@ -136,7 +136,7 @@ class ProjetController extends AbstractController
         $render = static::genericRender();
         $render['bookmark'] = $bookmark;
 
-        $this->logger->info('[Projet] Affichage de la page projet.');
+        $this->logger->info('ℹ️ [Projet] Affichage de la page projet.');
         return $this->render('projet/index.html.twig', $render);
     }
 
