@@ -1,57 +1,31 @@
-    <div id="modal-autre-version" class="reveal large" data-reveal data-close-on-click="true" data-animation-in="fade-in" data-animation-out="fade-out" aria-modal="true">
-      <h1 class="h2 claire-hand">Distribution des versions.</h1>
-      <br>
-      <div class="float-center graphique-autre-version-container">
-        <canvas id="graphique-autre-version" aria-label="Distribution des versions."></canvas>
-      </div>
-      <br>
-      {# fermeture de la fenêtre modale #}
-      <button id="fermer-autre-version" class="expanded button open-sans" data-close aria-label="Close reveal" type="button">Fermer
+<dialog id="modal-autre-version"
+        class="reveal"
+        data-close-on-click="true"
+        data-reveal
+        aria-modal="true"
+        aria-labelledby="titre-affiche-version-graphique"
+        aria-describedby="desc-affiche-version-graphique">
+
+  <h1 id="titre-affiche-version-graphique" class="h3 claire-hand"><span aria-hidden="true">ℹ️</span>Information</h1>
+  <h2 id="desc-affiche-version-graphique" class="h4 claire-hand"><span aria-hidden="true">📊</span>Répartition du nombre de règles par langage</h2>
+  <span class="show-for-sr">
+    Ce graphique présente la répartition des versions selon leurs tags : release, snapshot ou autre.
+  </span>
+
+  {# affiche Graphique #}
+  <div class="chart-container-donuts">
+    <canvas id="graphique-autre-version" aria-label="Distribution des versions">
+      Graphique non disponible sans JavaScript ou données manquantes.
+    </canvas>
+    <div class="chart-empty-message">Aucune donnée disponible pour ce graphique.</div>
+  </div>
+
+  <footer class="grid-x grid-margin-x align-right margin-top-2">
+    <div class="cell shrink">
+      <button id="bouton-fermer-autre-version-graphique" data-close
+              class="button open-sans focus-light"
+              type="button"
+              aria-label="Ferme modale">❌ Fermer
       </button>
-    </div>
-
-    {# Affichage du tableau des projets #}
-    <div id="modal-liste-projet" class="reveal" data-reveal data-close-on-click="true" data-animation-in="fade-in" data-animation-out="fade-out" aria-modal="true">
-      <h1 class="h2 claire-hand">Mes projets.</h1>
-      <h2 class="h4 claire-hand">
-        <span id="affiche-total-projet"></span>
-        trouvé(s).</h2>
-      <table>
-        <caption class="claire-hand">Liste des projets.</caption>
-        <thead>
-          <tr>
-            <th scope="col" class="open-sans text-center">Projet</th>
-            <th scope="col" class="open-sans text-center">Favori</th>
-            <th scope="col" class="open-sans text-center" colspan="6">Actions</th>
-          </tr>
-        </thead>
-        <tbody
-          id="tableau-liste-projet" class="open-sans">
-          {# On crée une pseudo ligne pour éviter une erreur HTML sur le tbody vide ! #}
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <p class="open-sans-bold information-statut" role="alert">Statut :
-        <span id="information-texte" class="information-texte"></span>
-      </p>
-
-      <button id="js-modifier-liste-projet" class="modifier-liste-projet">
-        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewbox="0 0 32 32" class="modifier-liste-projet-svg" aria-hidden="true">
-          <path d="M7.445 3.683v3.683h2.6l-.042.322c-.063.507-.3.954-.704 1.31-.571.512-.822.571-2.342.571-1.268 0-1.296 0-1.68-.184-.46-.21-.919-.65-1.128-1.085-.146-.296-.153-.42-.174-2.394l-.021-2.091-.634.4C1.27 5.519.128 7.354.01 9.537c-.077 1.447.32 2.782 1.198 4.045.37.526 1.282 1.388 1.868 1.743l.467.29V31.7h6.899l.014-2.584.02-2.578 10.58-.02 10.572-.013v-7.3h-3.763v-2.237h3.763V9.602h-3.763V7.366h3.763V0H7.445zm23.137.033V6.38h-17.61l-.356-.448c-.474-.598-1.184-1.223-1.916-1.677-.328-.204-.613-.375-.634-.375-.028 0-.042.56-.042 1.25v1.25H8.49V1.052h22.091zM3.124 8.517c.419 1.033 1.394 1.809 2.502 2.006.502.085 2.244.085 2.767-.007.885-.15 1.77-.73 2.223-1.466.349-.566.453-1.066.453-2.243l.007-1.052.363.368a5.36 5.36 0 011.49 4.005c-.11 1.987-1.24 3.69-3.059 4.637l-.473.243-.014 7.833-.021 7.84h-4.74l-.02-7.84-.014-7.846-.3-.138c-2.076-1-3.373-3.13-3.233-5.32a5.596 5.596 0 011.61-3.539l.216-.217.041 1.17c.035 1.007.063 1.224.202 1.566zm23.695-.033v1.118H14.024l-.084-.585a7.474 7.474 0 00-.41-1.559c-.029-.079.982-.092 6.627-.092h6.662zm3.763 4.801v2.697h-20.14l.007-.184c0-.145.084-.23.48-.467.565-.342 1.36-1.066 1.778-1.618.564-.743 1.052-1.822 1.185-2.598.02-.165.062-.349.076-.414.035-.106.495-.112 8.328-.112h8.286zM11.21 18.086v1.118h-.767v-2.236h.767zm15.61 0v1.118H12.254v-2.236h14.565zm3.763 4.801v2.697l-10.049-.013-10.056-.02-.021-2.683-.014-2.677h20.14z"/><path d="M24.938 3.716v.493h4.181v-.986h-4.181zM6.295 25.669c-.899.336-1.386.987-1.386 1.855 0 .625.202 1.052.703 1.48.467.401.955.559 1.568.506 1.82-.158 2.572-2.315 1.2-3.46a2.232 2.232 0 00-.635-.36c-.376-.12-1.143-.132-1.45-.02zm1.276 1.013c.341.244.467.467.467.842 0 .592-.419.987-1.046.987s-1.038-.388-1.038-.98c0-.619.495-1.06 1.136-1 .167.013.383.079.48.151zm17.367-13.43v.494h4.181v-.987h-4.181zm0 9.603v.493h4.181v-.987h-4.181z"/>
-        </svg>
-        <span class="color-bleu modifier-liste-label">Modifier ma liste.</span>
-      </button>
-
-      {# fermeture de la fenêtre modale #}
-      <button id="fermer-liste-projet" class="expanded button open-sans" data-close aria-label="Close reveal" type="button">Fermer</button>
-    </div>
+  </footer>
+</dialog>
