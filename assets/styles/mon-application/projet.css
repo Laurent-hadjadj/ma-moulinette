@@ -200,7 +200,8 @@ textarea[readonly] {
 #bouton-tableau-de-bord:hover,
 #bouton-cosui:hover,
 #bouton-analyse-owasp:hover,
-#bouton-fermer-liste-todo:hover { background-color: #006182; }
+#bouton-fermer-liste-todo:hover,
+#bouton-fermer-liste-logger:hover { background-color: #006182; }
 
 #fermer-liste-projet,
 #fermer-liste-hotspot,
