@@ -13,14 +13,10 @@
 
 namespace App\Controller\Batch;
 
-/** Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
-/** Accès aux tables */
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\InformationProjet;
 
-/** Client HTTP */
+use App\Entity\InformationProjet;
 use App\Service\Client;
 use App\Service\IsValideMavenKey;
 use App\Service\UrlBuilderService;
@@ -48,9 +44,6 @@ class BatchCollecteInformationProjetController extends AbstractController
         private UrlBuilderService $urlBuilder,
 
     ) {
-        $this->em = $em;
-        $this->isValidMavenKey = $isValidMavenKey;
-        $this->client = $client;
     }
 
     /**
@@ -77,8 +70,6 @@ class BatchCollecteInformationProjetController extends AbstractController
 
         /** Appelle le client HTTP */
         $result = $this->client->httpSonarQube($url);
-        /** "code" => 503
-         *  "erreur" => "Erreur 503 - La résolution DNS n'a pas permis d'accéder au serveur SonarQube." */
 
         /** On vérifie si le projet existe en locale dans la table information ou historique*/
         $requestInformation = $this->isValidMavenKey->isValideInformation($mavenKey);
@@ -178,7 +169,12 @@ class BatchCollecteInformationProjetController extends AbstractController
             }
             $autre = $total - ($release+$snapshot);
         }
-        return ['total' => $total, 'release' => $release, 'snapshot' => $snapshot, 'autre' => $autre];
+        return [
+                'total' => $total,
+                'release' => $release,
+                'snapshot' => $snapshot,
+                'autre' => $autre
+            ];
     }
 
     /**
@@ -191,51 +187,27 @@ class BatchCollecteInformationProjetController extends AbstractController
      * Created at: 09/12/2022, 17:13:32 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      */
-    public function batchInformationVersion(string $mavenKey): array
+    public function batchInformationVersion(string $maven_key): array
     {
         /** On instancie l'entityRepository */
-        $informationProjetRepository = $this->em->getRepository(InformationProjet::class);
+        $informationProjetRepos = $this->em->getRepository(InformationProjet::class);
 
-        /** On compte toutes les versions de type (RELEASE, SNAPSHOT, AUTRE) */
-        $map = ['maven_key' => $mavenKey];
-        $toutesLesVersions = $informationProjetRepository->countInformationProjetAllType($map);
-        if ($toutesLesVersions['code'] != 200) {
-            return ['code' => $toutesLesVersions['code'], 'erreur' => $toutesLesVersions['erreur']];
+        $map = ['maven_key' => $maven_key ];
+        $version = $informationProjetRepos->selectInformationProjetVersion($map);
+        if ($version['code'] != 200) {
+            return [
+                'code' => $version['code'],
+                'erreur' => $version['erreur']
+            ];
         }
-
-        /** On compte les releases */
-        $map = ['maven_key' => $mavenKey, 'type' => 'RELEASE'];
-        $release = $informationProjetRepository->countInformationProjetType($map);
-        if ($release['code'] != 200) {
-            return ['code' => $release['code'], 'erreur' => $release['erreur']];
-        }
-
-        /** On compte les snapshots */
-        $map = ['maven_key' => $mavenKey, 'type' => 'SNAPSHOT'];
-        $snapshot = $informationProjetRepository->countInformationProjetType($map);
-        if ($snapshot['code'] != 200) {
-            return ['code' => $snapshot['code'], 'erreur' => $snapshot['erreur']];
-        }
-
-        /** On récupère la dernière version et sa date de publication */
-        $map = ['maven_key' => $mavenKey];
-        $infoRelease=$informationProjetRepository->selectInformationProjetVersionLast($map);
-        if ($infoRelease['code'] != 200) {
-            return ['code' => $infoRelease['code'], 'erreur' => $infoRelease['erreur']];
-        }
-
-        $toutesLesVersions = isset($toutesLesVersions['nombre'][0]['total']) ? $toutesLesVersions['nombre'][0]['total'] : 0;
-        $release = isset($release['nombre'][0]['total']) ? $release['nombre'][0]['total'] : 0;
-        $snapshot = isset($snapshot['nombre'][0]['total']) ? $snapshot['nombre'][0]['total'] : 0;
-
-        /** On calcul la valeur pour les autres types de version */
-        $lesAutres = $toutesLesVersions - $release - $snapshot;
 
         return [
-                'analyse_key' => $infoRelease['version'][0]['analyse_key'],
-                'release' => $release, 'snapshot' => $snapshot, 'autre' => $lesAutres,
-                'projet' => $infoRelease['version'][0]['projet'],
-                'date' => $infoRelease['version'][0]['date'],
+                'analyse_key' => $version['info'][0]['analyse_key'] ?? 'inconnu',
+                'release' => $version['info'][0]['version_release_sonar'] ?? 0,
+                'snapshot' => $version['info'][0]['version_snapshot_sonar'] ?? 0,
+                'autre' => $version['info'][0]['version_autre_sonar'] ?? 0,
+                'projet' => $version['info'][0]['projet'] ?? 'inconnu',
+                'date' => $version['info'][0]['date'] ?? '1971-07-04 00:00:00',
                 ];
     }
 
@@ -255,7 +227,7 @@ class BatchCollecteInformationProjetController extends AbstractController
     public function batchCollecteInformation(string $mavenKey, string $modeCollecte, string $utilisateurCollecte): array
     {
         /** On instancie l'EntityRepository */
-        $informationProjetRepository = $this->em->getRepository(InformationProjet::class);
+        $informationProjetRepos = $this->em->getRepository(InformationProjet::class);
 
         /** On récupère les informations du projet */
         $isValide = $this->controlVersionProjet($mavenKey);
@@ -279,7 +251,7 @@ class BatchCollecteInformationProjetController extends AbstractController
             $keyAnalyseLocale = $local['analyse_key'] ?? $local['analyse_key'] ?? 'VIDE';
             $nameAnalyseLocale = $local['name'] ?? $local['maven_key'] ?? 'VIDE';
 
-            $versionMap=[
+            $versionMap = [
                 'SonarQube' => [
                         'key-analyse' => $keyAnalyseSonarQube,
                         'version' => $versionSonarQube,
@@ -293,7 +265,11 @@ class BatchCollecteInformationProjetController extends AbstractController
             ];
             /** Si le projet locale est à jour, pas la peine de lancer la collecte */
             if ($keyAnalyseSonarQube === $keyAnalyseLocale) {
-                return ['code' => 100, 'message' => 'Le projet est à jour', 'data' => $versionMap];
+                return [
+                    'code' => 100,
+                    'message' => 'Le projet est à jour',
+                    'data' => $versionMap
+                ];
             }
         }
 
@@ -302,10 +278,13 @@ class BatchCollecteInformationProjetController extends AbstractController
         $repartition = self::calculRepartitionProjet($analyses);
 
         /** On supprime les informations pour la maven_key. */
-        $map = ['maven_key' => $mavenKey];
-        $delete = $informationProjetRepository->deleteInformationProjetMavenKey($map);
+        $map = [ 'maven_key' => $mavenKey ];
+        $delete = $informationProjetRepos->deleteInformationProjetMavenKey($map);
         if ($delete['code'] != 200) {
-            return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
+            return [
+                'code' => $delete['code'],
+                'erreur' => $delete['erreur']
+            ];
         }
 
         /** On ajoute les informations du projet dans la table information_projet. */
@@ -320,7 +299,7 @@ class BatchCollecteInformationProjetController extends AbstractController
         }
         $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
-        $map=[
+        $map = [
                 'maven_key' => $mavenKey,
                 'analyse_key' => $result['key'],
                 'date' => $result['date'],
@@ -335,16 +314,20 @@ class BatchCollecteInformationProjetController extends AbstractController
                 'date_enregistrement' => $date
             ];
 
-        $insert = $informationProjetRepository->insertInformationProjet($map);
+        $insert = $informationProjetRepos->insertInformationProjet($map);
         if ($insert['code'] != 200) {
-            return ['code' => $insert['code'], 'erreur' => $insert['erreur']];
+            return [
+                'code' => $insert['code'],
+                'erreur' => $insert['erreur']
+            ];
         }
 
         /** On appel la méthode de traitement des données */
         $version = $this->batchInformationVersion($mavenKey);
 
         /** On prépare les données pour l'historique */
-        $data=[ 'analyse_key' => $version['analyse_key'],
+        $data = [
+                'analyse_key' => $version['analyse_key'],
                 'version_release' => $version['release'],
                 'version_snapshot' => $version['snapshot'],
                 'version_autre' => $version['autre'],
@@ -353,7 +336,8 @@ class BatchCollecteInformationProjetController extends AbstractController
                 'version_snapshot_sonar' => $repartition['snapshot'],
                 'version_autre_sonar' => $repartition['autre'],
                 'version' => $version['projet'],
-                'date_version' => $version['date']];
+                'date_version' => $version['date']
+            ];
 
         /** on injecte les résultats de SonarQube */
         $version['version_sonar'] = $repartition['total'];
@@ -361,7 +345,10 @@ class BatchCollecteInformationProjetController extends AbstractController
         $version['version_snapshot_sonar'] = $repartition['snapshot'];
         $version['version_autre_sonar'] = $repartition['autre'];
 
-        return [ 'code' => 200, 'message' => $version, 'data'=>$data ];
+        return [
+            'code' => 200,
+            'message' => $version,
+            'data'=>$data ];
     }
 
 }
