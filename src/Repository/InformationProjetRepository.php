@@ -109,7 +109,8 @@ class InformationProjetRepository extends ServiceEntityRepository
    */
   public function selectInformationProjetVersion($map): array
   {
-    $sql = "SELECT maven_key, project_version as version, date
+    $sql = "SELECT maven_key, analyse_key, project_version as version, date,
+                    type, version_sonar, version_release_sonar, version_snapshot_sonar, version_autre_sonar
             FROM ma_moulinette.information_projet
             WHERE maven_key=:maven_key";
       try {
@@ -120,7 +121,7 @@ class InformationProjetRepository extends ServiceEntityRepository
           $this->getEntityManager()->getConnection()->rollBack();
           return $this->handleDatabaseException($e);
       }
-      return ['code' => 200, 'versions' => $liste, 'erreur' => ''];
+      return ['code' => 200, 'info' => $liste, 'erreur' => ''];
   }
 
   /**
