@@ -94,14 +94,14 @@ class LoginController extends AbstractController
          * On affiche la page /accueil, Si on la page /login
          */
         if ($this->getUser()->getUserIdentifier()) {
-            $this->logger->info('[Auth] Utilisateur déjà authentifié - redirection vers le_prompt');
+            $this->logger->info('ℹ️ [Auth] Utilisateur déjà authentifié - redirection vers le_prompt');
             return $this->redirectToRoute('accueil');
         } else {
             $error = $this->authenticationUtils->getLastAuthenticationError();
             if ($error) {
-                $this->logger->warning('[Auth] Échec d\'authentification détecté : ' . $error->getMessage());
+                $this->logger->warning('⚠️ [Auth] Échec d\'authentification détecté : ' . $error->getMessage());
             } else {
-                $this->logger->info('[Auth] Affichage du formulaire de connexion');
+                $this->logger->info('ℹ️ [Auth] Affichage du formulaire de connexion');
             }
             $render=static::genericRender();
             $render['error'] = $this->authenticationUtils->getLastAuthenticationError();
@@ -126,15 +126,15 @@ class LoginController extends AbstractController
     {
         /** Si on est déjà connecté on redirige l'utilisateur sur la page prompt */
         if (!is_Null($this->getUser())) {
-            $this->logger->info('[Auth] Utilisateur connecté - redirection directe vers le_prompt');
+            $this->logger->info('ℹ️ [Auth] Utilisateur connecté - redirection directe vers le_prompt');
             return $this->redirectToRoute('accueil');
         }
 
         $error = $this->authenticationUtils->getLastAuthenticationError();
         if ($error) {
-            $this->logger->warning('[Auth] Échec d\'authentification : ' . $error->getMessage());
+            $this->logger->warning('⚠️ [Auth] Échec d\'authentification : ' . $error->getMessage());
         } else {
-            $this->logger->info('[Auth] Affichage de la page de connexion (login)');
+            $this->logger->info('ℹ️ [Auth] Affichage de la page de connexion (login)');
         }
 
         $render=static::genericRender();
@@ -156,7 +156,7 @@ class LoginController extends AbstractController
     #[Route('/logout', name: 'logout')]
     public function logout()
     {
-        $this->logger->info('[Auth] Déconnexion utilisateur – redirection vers login');
+        $this->logger->info('ℹ️ [Auth] Déconnexion utilisateur – redirection vers login');
         return new RedirectResponse($this->router->generate('login'));
     }
 }
