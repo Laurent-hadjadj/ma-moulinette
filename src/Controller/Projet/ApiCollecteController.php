@@ -522,11 +522,10 @@ class ApiCollecteController extends AbstractController
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel();
-                $this->logger->info('ℹ️ [Collecte] Début de collecte des menaces potentielles du projet.', [
-            'maven_key' => $data->maven_key,
-            'type' => $data->type,
-            'utilisateur' => $utilisateur_collecte
-        ]);
+            $this->logger->info('ℹ️ [Collecte] Début de collecte des menaces potentielles du projet.', [
+                'maven_key' => $data->maven_key,
+                'utilisateur' => $utilisateur_collecte
+            ]);
 
         /** Signalement Hotspots pour le projet */
         $hotspot = $this->batchCollecteHotspot->batchCollecteHotspot(
