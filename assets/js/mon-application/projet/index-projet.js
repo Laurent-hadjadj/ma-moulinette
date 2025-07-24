@@ -1733,9 +1733,9 @@ $('#js-affiche-detail-dette').on('click', () => {
  * description
  * On affiche la liste des tags to do par langage.
  */
-$('#js-affiche-detail-todo').on('click', function () {
+$('#js-affiche-liste-todo').on('click', function () {
   if ($('select[name="projet"]').val() !== '' && $('select[name="projet"]').val() !== 'TheID') {
-    $('#modal-affiche-todo').foundation('open');
+    $('#modal-affiche-liste-todo').foundation('open');
   }
 });
 
