@@ -185,7 +185,6 @@ class RegistrationController extends AbstractController
         $render['nom'] = 'HADJADJ';
         $render['prenom'] = 'Laurent';
         $render['courriel'] = 'laurent.hadjadj@ma-petite-entreprise.fr';
-        //$render['rgaa'] = $this->getParameter('rgaa');
         return $this->render('welcome/index.html.twig', $render);
     }
 
