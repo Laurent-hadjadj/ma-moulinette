@@ -150,35 +150,6 @@ class InformationProjetRepository extends ServiceEntityRepository
       return ['code' => 200, 'nombre' => $nombre, 'erreur'=>''];
   }
 
-  /**
-   * [Description for selectInformationProjetType]
-   *
-   * @param array $map
-   *
-   * @return array
-   *
-   * Created at: 17/03/2024 22:27:26 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  public function selectInformationProjetTypeIndexed($map): array
-  {
-    // TODO : deprecated remove in next release.
-
-    $sql = "SELECT type, COUNT(type) AS total
-            FROM ma_moulinette.information_projet
-            WHERE maven_key=:maven_key
-            GROUP BY type";
-      try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-            $liste = $stmt->executeQuery()->fetchAllAssociativeIndexed();
-      } catch (\Throwable $e) {
-          return $this->handleDatabaseException($e);
-      }
-      return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
-  }
-
   public function selectInformationProjetType($map): array
   {
     $sql = "SELECT type, COUNT(type) AS total
