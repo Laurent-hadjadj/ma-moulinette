@@ -96,34 +96,6 @@ class InformationProjetRepository extends ServiceEntityRepository
   }
 
   /**
-   * [Description for selectInformationProjetVersionLast]
-   * Retourne la version du dernier projet.
-   *
-   * @param array $map
-   *
-   * @return array
-   *
-   * Created at: 17/03/2024 22:34:34 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  public function selectInformationProjetVersionLast(array $map): array
-  {
-    $sql = "SELECT project_version as projet, date, analyse_key
-            FROM ma_moulinette.information_projet
-            WHERE maven_key=:maven_key
-            ORDER BY date DESC LIMIT 1";
-      try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-            $liste = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Throwable $e) {
-          return $this->handleDatabaseException($e);
-      }
-      return ['code' => 200, 'version' => $liste, 'erreur'=>''];
-  }
-
-  /**
    * [Description for selectInformationProjetVersion]
    * Retourne la liste des versions pour un projet.
    *
