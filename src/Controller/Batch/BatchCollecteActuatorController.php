@@ -105,7 +105,7 @@ class BatchCollecteActuatorController extends AbstractController
         try {
                 $actuatorInfo = $this->client->httpActuator($url, $actuatorUser, $actuatorPassword);
         } catch (\Throwable $e) {
-            $this->logger->critical("❌ [Actuator] Exception lors de l'appel HTTP", ['exception' => $e->getMessage()]);
+            $this->logger->critical("🔴 [Actuator] Exception lors de l'appel HTTP", ['exception' => $e->getMessage()]);
             return [
                 'code' => 500,
                 'type' => 'alert',
