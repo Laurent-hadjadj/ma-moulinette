@@ -922,7 +922,6 @@ class ApiCollecteController extends AbstractController
             $this->logger->error('❌ [Collecte] Échec de collecte du détail des menaces potentielles du projet.', [
                 'code' => $hotspotDetail['code'],
                 'maven_key' => $data->maven_key,
-                'type' => $data->type,
                 'erreur' => $hotspotDetail['erreur'] ?? static::$noSpecify
             ]);
 
