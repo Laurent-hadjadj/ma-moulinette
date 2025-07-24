@@ -929,7 +929,7 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => $hotspotDetail['code'],
                 'type' => 'alert',
-                'message' => static::$reference . ($hotspotDetail['message'] ?? $message), 'trace' => $hotspotDetail['erreur']
+                'message' => static::$reference . ($hotspotDetail['message'] ?? $message), 'trace' => $hotspotDetail['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
