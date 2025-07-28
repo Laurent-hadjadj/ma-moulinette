@@ -25,6 +25,7 @@ class AnomalieFixtures extends Fixture
   private static $frontend = 806;
   private static $backend = 0;
   private static $autre = 0;
+  private static $inconnue = 1;
   private static $blocker = 0;
   private static $critical = 0;
   private static $major = 4750;
@@ -67,6 +68,7 @@ class AnomalieFixtures extends Fixture
             ->setFrontend(static::$frontend)
             ->setBackend(static::$backend)
             ->setAutre(static::$autre)
+            ->setInconnue(static::$inconnue)
             ->setBlocker(static::$blocker)
             ->setCritical(static::$critical)
             ->setMajor(static::$major)
