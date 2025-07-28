@@ -176,7 +176,8 @@ textarea[readonly] {
 #bouton-fermer-liste-todo,
 #bouton-fermer-liste-logger,
 #bouton-fermer-autre-version-graphique,
-#bouton-fermer-dette-technique
+#bouton-fermer-dette-technique,
+#bouton-fermer-menace-potentielle
 {
   min-width: 9rem;
   font-size: 0.95rem;
@@ -199,10 +200,10 @@ textarea[readonly] {
 #bouton-fermer-liste-todo:hover,
 #bouton-fermer-liste-logger:hover,
 #bouton-fermer-autre-version-graphique:hover,
-#bouton-fermer-dette-technique:hover { background-color: #006182; }
+#bouton-fermer-dette-technique:hover,
+#bouton-fermer-menace-potentielle:hover { background-color: #006182; }
 
 #fermer-liste-projet,
-#fermer-liste-hotspot,
 #fermer-liste-severity {
   color: #fff;
   background-color: #00445b;
@@ -210,7 +211,6 @@ textarea[readonly] {
 
 /* Gestion du hover sur les boutons */
 #fermer-liste-projet:hover,
-#fermer-liste-hotspot:hover,
 #fermer-liste-severity:hover { background-color: #006182; }
 
 /* select2 custom
