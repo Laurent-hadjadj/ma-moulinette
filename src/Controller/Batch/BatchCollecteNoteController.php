@@ -66,7 +66,7 @@ class BatchCollecteNoteController extends AbstractController
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
 
         // Validation du type
-        if (!in_array($type, ['reliability', 'security', 'maintainability'])) {
+        if (!in_array($type, ['reliability', 'security', 'sqale'])) {
             $this->logger->error('❌ [Batch Note] Type de note invalide', ['type' => $type]);
             return [
                 'code' => 400,
