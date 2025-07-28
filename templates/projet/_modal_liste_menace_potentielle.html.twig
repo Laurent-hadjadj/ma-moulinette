@@ -1,25 +1,50 @@
-<div id="modal-liste-hotspot" class="reveal" data-reveal data-close-on-click="true" data-animation-in="fade-in" data-animation-out="fade-out" aria-modal="true">
-      <h1 class="h2 claire-hand">Risques de vulnérabilité.</h1>
-      <h2 class="h4 claire-hand">Hotspots à vérifier et déjà vérifiés.</h2>
-      <p class="open-sans"><span id="hotspot-total"></span> trouvé<span id="s"></span> à vérifier.</p>
-      <table>
-        <caption class="claire-hand">Répartition des hotspots.</caption>
-        <thead>
-          <tr>
-            <th scope="col" class="open-sans text-center note-rouge">HIGH</th>
-            <th scope="col" class="open-sans text-center note-orange">MEDIUM</th>
-            <th scope="col" class="open-sans text-center note-jaune">LOW</th>
-          </tr>
-        </thead>
-        <tbody id="tableau-liste-hotspot" class="open-sans">
-          <tr>
-            <td>--</td>
-            <td>--</td>
-            <td>--</td>
-          </tr>
-        </tbody>
-      </table>
-      <br>
-      {# fermeture de la fenêtre modale #}
-      <button id="fermer-liste-hotspot" class="expanded button open-sans" data-close aria-label="Close reveal" type="button">Fermer</button>
-    </div>
+<dialog id="modal-menace-potentielle"
+        class="reveal"
+        data-close-on-click="true"
+        data-reveal
+        aria-modal="true"
+        aria-labelledby="titre-affiche-menace-potentielle"
+        aria-describedby="desc-affiche-menace-potentielle">
+
+    <h1 id="titre-affiche-menace-potentielle" class="h3 claire-hand"><span aria-hidden="true">ℹ️</span>Information</h1>
+    <h2 id="desc-affiche-menace-potentielle" class="h4 claire-hand"><span aria-hidden="true">🛡️</span>Menace de sécurité potentielle</h2>
+    <span class="show-for-sr">
+      Cette page présente la répartition des menaces de sécurité potentielles.
+    </span>
+
+    <p class="open-sans"><span id="menace-potentielle-total">--</span> menace<span class="menace-potentielle-s"></span> potentielle<span class="menace-potentielle-s"></span> trouvé<span class="menace-potentielle-s"></span> à vérifier.</p>
+    <table>
+      <caption class="claire-hand">Répartition des menaces potentielles.</caption>
+      <thead>
+        <tr>
+          <th scope="col" aria-label="Statut de la menace"></th>
+          <th scope="col" class="open-sans text-center background-color-rouge color-blanc">HIGH</th>
+          <th scope="col" class="open-sans text-center background-color-orange color-blanc">MEDIUM</th>
+          <th scope="col" class="open-sans text-center background-color-jaune color-blanc">LOW</th>
+        </tr>
+      </thead>
+      <tbody id="tableau-menace-potentielle" class="open-sans">
+        <tr class="text-center">
+          <td class="text-left font-size-11">Review</td>
+          <td>--</td>
+          <td>--</td>
+          <td>--</td>
+        </tr>
+          <tr class="text-center">
+          <td class="text-left font-size-11">Reviewed</td>
+          <td>--</td>
+          <td>--</td>
+          <td>--</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <footer class="grid-x grid-margin-x align-right margin-top-2">
+      <div class="cell shrink">
+        <button id="bouton-fermer-menace-potentielle" data-close
+                class="button open-sans focus-light"
+                type="button"
+                aria-label="Ferme modale">❌ Fermer
+        </button>
+    </footer>
+  </dialog>
