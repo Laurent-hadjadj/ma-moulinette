@@ -1,30 +1,46 @@
- <div id="modal-dette-technique" class="reveal" data-reveal data-close-on-click="true" data-animation-in="fade-in" data-animation-out="fade-out" aria-modal="true">
-      <h1 class="h2 claire-hand">Dette technique.</h1>
-      <br>
-      <table>
-        <caption class="claire-hand">Répartition de la dette technique.</caption>
-        <thead>
-          <tr>
-            <th scope="col">Type</th>
-            <th scope="col">Dette</th>
-          </tr>
-        </thead>
-        <tbody class="open-sans">
-          <tr>
-            <td>Fiabilité</td>
-            <td id="js-dette-reliability"></td>
-          </tr>
-          <tr>
-            <td>Sécurité</td>
-            <td id="js-dette-vulnerability"></td>
-          </tr>
-          <tr>
-            <td>Maintenabilité</td>
-            <td id="js-dette-code-smell"></td>
-          </tr>
-        </tbody>
-      </table>
-      <br>
-      {# fermeture de la fenêtre modale #}
-      <button id="fermer-dette-technique" class="expanded button open-sans" data-close aria-label="Close reveal" type="button">Fermer</button>
-    </div>
+<dialog id="modal-dette-technique"
+        class="reveal"
+        data-close-on-click="true"
+        data-reveal
+        aria-modal="true"
+        aria-labelledby="titre-affiche-dette-technique"
+        aria-describedby="desc-affiche-dette-technique">
+
+    <h1 id="titre-affiche-dette-technique" class="h3 claire-hand"><span aria-hidden="true">ℹ️</span>Information</h1>
+    <h2 id="desc-affiche-dette-technique" class="h4 claire-hand"><span aria-hidden="true">📉</span>Dette technique</h2>
+    <span class="show-for-sr">
+      Cette page présente la répartition de la dette technique cumulée.
+    </span>
+    <table>
+      <caption class="claire-hand">Répartition de la dette technique.</caption>
+      <thead>
+        <tr>
+          <th scope="col">Type</th>
+          <th scope="col">Dette</th>
+        </tr>
+      </thead>
+      <tbody class="open-sans">
+        <tr>
+          <td>Fiabilité</td>
+          <td id="js-dette-reliability"></td>
+        </tr>
+        <tr>
+          <td>Sécurité</td>
+          <td id="js-dette-vulnerability"></td>
+        </tr>
+        <tr>
+          <td>Maintenabilité</td>
+          <td id="js-dette-code-smell"></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <footer class="grid-x grid-margin-x align-right margin-top-2">
+      <div class="cell shrink">
+        <button id="bouton-fermer-dette-technique" data-close
+                class="button open-sans focus-light"
+                type="button"
+                aria-label="Ferme modale">❌ Fermer
+        </button>
+    </footer>
+  </dialog>

@@ -175,7 +175,8 @@ textarea[readonly] {
 
 #bouton-fermer-liste-todo,
 #bouton-fermer-liste-logger,
-#bouton-fermer-autre-version-graphique
+#bouton-fermer-autre-version-graphique,
+#bouton-fermer-dette-technique
 {
   min-width: 9rem;
   font-size: 0.95rem;
@@ -197,11 +198,11 @@ textarea[readonly] {
 #bouton-analyse-owasp:hover,
 #bouton-fermer-liste-todo:hover,
 #bouton-fermer-liste-logger:hover,
-#bouton-fermer-autre-version-graphique:hover { background-color: #006182; }
+#bouton-fermer-autre-version-graphique:hover,
+#bouton-fermer-dette-technique:hover { background-color: #006182; }
 
 #fermer-liste-projet,
 #fermer-liste-hotspot,
-#fermer-dette-technique,
 #fermer-liste-severity {
   color: #fff;
   background-color: #00445b;
@@ -210,7 +211,6 @@ textarea[readonly] {
 /* Gestion du hover sur les boutons */
 #fermer-liste-projet:hover,
 #fermer-liste-hotspot:hover,
-#fermer-dette-technique:hover,
 #fermer-liste-severity:hover { background-color: #006182; }
 
 /* select2 custom
