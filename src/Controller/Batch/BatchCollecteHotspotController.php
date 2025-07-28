@@ -199,7 +199,7 @@ class BatchCollecteHotspotController extends AbstractController
             /** Ajout des hotspots à la liste à insérer */
             $map[] = [
                     'maven_key' => $maven_key,
-                    'version' => $select['info'][0]['project_version'],
+                    'version' => $select['info'][0]['version'],
                     'date_version' => $dateVersion,
                     'hotspot_key' => 'NC',
                     'security_category' => 'NC',
