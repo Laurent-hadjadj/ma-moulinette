@@ -37,6 +37,7 @@ class AnomalieCaseTest extends TestCase
     private static $frontend = 806;
     private static $backend = 0;
     private static $autre = 0;
+    private static $inconnue = 1;
     private static $blocker = 0;
     private static $critical = 0;
     private static $major = 4750;
@@ -66,6 +67,7 @@ class AnomalieCaseTest extends TestCase
         ->setFrontend(static::$frontend)
         ->setBackend(static::$backend)
         ->setAutre(static::$autre)
+        ->setInconnue(static::$inconnue)
         ->setBlocker(static::$blocker)
         ->setCritical(static::$critical)
         ->setMajor(static::$major)
@@ -162,6 +164,11 @@ class AnomalieCaseTest extends TestCase
     {
         $this->anomalie->setAutre(static::$autre);
         $this->assertEquals(static::$autre, $this->anomalie->getAutre());
+    }
+    public function testSettingAndGettingInconnue(): void
+    {
+        $this->anomalie->setInconnue(static::$inconnue);
+        $this->assertEquals(static::$inconnue, $this->anomalie->getInconnue());
     }
     public function testSettingAndGettingBlocker(): void
     {

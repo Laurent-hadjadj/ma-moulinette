@@ -246,6 +246,7 @@ class AnomalieRepositoryHandlerTest extends TestCase
       'frontend' => 806,
       'backend' => 0,
       'autre' => 0,
+      'inconnue' => 1,
       'blocker' => 0,
       'critical' => 0,
       'major' => 4750,

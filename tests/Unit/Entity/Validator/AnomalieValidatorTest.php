@@ -34,6 +34,7 @@ class AnomalieValidatorTest extends KernelTestCase
   private static $frontend = 806;
   private static $backend = 0;
   private static $autre = 0;
+  private static $inconnue = 1;
   private static $blocker = 0;
   private static $critical = 0;
   private static $major = 4750;
@@ -63,6 +64,7 @@ class AnomalieValidatorTest extends KernelTestCase
       ->setFrontend(static::$frontend)
       ->setBackend(static::$backend)
       ->setAutre(static::$autre)
+      ->setInconnue(static::$inconnue)
       ->setBlocker(static::$blocker)
       ->setCritical(static::$critical)
       ->setMajor(static::$major)
@@ -116,6 +118,7 @@ class AnomalieValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setFrontend(-1), 0);
     $this->assertHasErrors($this->getEntity()->setBackend(-1), 0);
     $this->assertHasErrors($this->getEntity()->setAutre(-1), 0);
+    $this->assertHasErrors($this->getEntity()->setInconnue(-1), 0);
     $this->assertHasErrors($this->getEntity()->setBlocker(-1), 0);
     $this->assertHasErrors($this->getEntity()->setCritical(-1), 0);
     $this->assertHasErrors($this->getEntity()->setMajor(-1), 0);

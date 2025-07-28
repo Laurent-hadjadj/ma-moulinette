@@ -117,7 +117,7 @@ class AnomalieRepositoryTest extends KernelTestCase
         'dette_vulnerability_minute' => 0, 'dette_code_smell_minute' => 7369,
         'dette_reliability' => '0h:5min', 'dette_vulnerability' => '0h:0min',
         'dette' => '4d, 19h:32min',  'dette_code_smell' => '5d, 2h:49min',
-        'frontend' => 806, 'backend' => 0, 'autre' => 0, 'blocker' => 0,
+        'frontend' => 806, 'backend' => 0, 'autre' => 0, 'inconnue' => 1, 'blocker' => 0,
         'critical' => 0, 'major' => 4750, 'info' => 0, 'minor' => 222,
         'bug' => 0, 'vulnerability' => 0, 'code_smell' => 801,
         'mode_collecte' => 'TRAITEMENT MANUEL', 'utilisateur_collecte' => 'laurent.hadjadj@ma-petite-entreprise.fr',  'date_enregistrement' => new \DateTimeImmutable('2024-06-28 17:55:45+02')];

@@ -57,7 +57,7 @@ class AnomalieKernelTest extends KernelTestCase
         $response = $anomalieRepository->findOneBy(['mavenKey' => static::$mavenKey]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
-        $this->assertCount(1, [$response], 'MAVENKEY: Aucune réponse trouvée');
+        $this->assertCount(1, [$response], 'maven_key: Aucune réponse trouvée');
     }
 
     public function testAnomalieCount(): void
@@ -70,6 +70,6 @@ class AnomalieKernelTest extends KernelTestCase
         $response = $anomalieRepository->findBy(['mavenKey' => static::$mavenKey]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
-        $this->assertCount(3, $response, 'MAVENKEY: Aucune réponse trouvée');
+        $this->assertCount(3, $response, 'maven_key: Aucune réponse trouvée');
     }
 }
