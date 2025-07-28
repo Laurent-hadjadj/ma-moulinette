@@ -34,6 +34,7 @@ class BatchCollecteRepartitionController extends AbstractController
     private static $reference = "<strong>[Répartition-Module]</strong> ";
     private static $beginRegEx = '/\b(?:';
     private static $endRegEx = ')\b/i';
+    private static $erreurInconnue = 'Erreur inconnue';
 
     /**
      * [Description for __construct]
@@ -504,7 +505,7 @@ class BatchCollecteRepartitionController extends AbstractController
         if ($repartition['code'] != 200) {
             $this->logger->error('❌ [Batch Répartition Analyse] Erreur lors de la récupération des issues temporaires', [
             'code' => $repartition['code'],
-            'erreur' => $repartition['erreur'] ?? 'Erreur inconnue'
+            'erreur' => $repartition['erreur'] ?? static::$erreurInconnue
         ]);
         return [
             'code' => $repartition['code'],
@@ -524,7 +525,7 @@ class BatchCollecteRepartitionController extends AbstractController
             return [
                 'code' => $analyse['code'],
                 'type' => $analyse['type'] ?? 'alert',
-                'message' => $analyse['message'] ?? 'Erreur inconnue',
+                'message' => $analyse['message'] ?? static::$erreurInconnue,
                 'trace' => $analyse['debug'] ?? null
             ];
         }
@@ -642,7 +643,7 @@ class BatchCollecteRepartitionController extends AbstractController
         if ($repartition['code'] != 200) {
             $this->logger->error('❌ [Batch Répartition MaJ] Échec de la mise à jour', [
                 'code' => $repartition['code'],
-                'erreur' => $repartition['erreur'] ?? 'Erreur inconnue'
+                'erreur' => $repartition['erreur'] ?? static::$erreurInconnue
             ]);
         return [
                 'code' => $repartition['code'],
