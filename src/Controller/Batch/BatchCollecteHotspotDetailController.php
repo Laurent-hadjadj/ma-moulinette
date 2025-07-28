@@ -306,7 +306,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
                 'mode_collecte' => $modeCollecte,
                 'utilisateur_collecte' => $utilisateurCollecte,
                 'maven_key' => $mavenKey,
-                'version' => $information['info'][0]['project_version'],
+                'version' => $information['info'][0]['version'],
                 'date_version' => $dateVersion,
                 'date_enregistrement'=> $date,
                 'hotspot_key' => $elt['hotspot_key']
