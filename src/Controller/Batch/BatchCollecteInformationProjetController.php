@@ -14,6 +14,7 @@
 namespace App\Controller\Batch;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\InformationProjet;
@@ -42,6 +43,7 @@ class BatchCollecteInformationProjetController extends AbstractController
         private IsValideMavenKey $isValidMavenKey,
         private Client $client,
         private UrlBuilderService $urlBuilder,
+        private LoggerInterface $logger
 
     ) {
     }
@@ -68,7 +70,7 @@ class BatchCollecteInformationProjetController extends AbstractController
             [ 'project' => $maven_key ]
         );
 
-        /** Appelle le client HTTP */
+        $this->logger->debug('[Batch controlVersionProjet] Appel API SonarQube', ['url' => $url]);
         $result = $this->client->httpSonarQube($url);
 
         /** On vérifie si le projet existe en locale dans la table information ou historique*/
@@ -98,6 +100,7 @@ class BatchCollecteInformationProjetController extends AbstractController
          * et sur le serveur.
          */
         if ($isFound && $inBase){
+            $this->logger->info('[controlVersionProjet] Projet présent en base et sur SonarQube', ['maven_key' => $maven_key]);
             return [
                 'code' => 200,
                 'message' => 'Le projet est présent en base et sur le serveur',
@@ -109,6 +112,7 @@ class BatchCollecteInformationProjetController extends AbstractController
 
         /** Le projet n'est pas présent en base mais existe sur le serveur */
         if ($isFound && $isNotInBase){
+            $this->logger->info('[controlVersionProjet] Projet uniquement sur SonarQube', ['maven_key' => $maven_key]);
             return [
                 'code' => 202,
                 'message' => "Le projet est présent en base mais pas sur le serveur.",
@@ -119,6 +123,7 @@ class BatchCollecteInformationProjetController extends AbstractController
 
         /** L'utilisateur n'a pas les droits SonarQube nécessaires. */
         if ($isNotAuthorize){
+            $this->logger->error('❌ [controlVersionProjet] Accès refusé à l’API Sonar (401)', ['maven_key' => $maven_key]);
             return [
                 'code' => 401,
                 'message' => "Le serveur SonarQube n'autorise pas l'utilisateur à se connecter à cette API (Erreur 401)."];
@@ -126,6 +131,7 @@ class BatchCollecteInformationProjetController extends AbstractController
 
         /** Le projet n'est pas disponible sur SonarQube */
         if ($isNotFound){
+            $this->logger->error('❌ [controlVersionProjet] Projet introuvable sur Sonar (404)', ['maven_key' => $maven_key]);
             return [
                 'code' => 404,
                 'message' => "Le projet n'existe pas sur le serveur SonarQube (Erreur 404)."];
@@ -133,11 +139,13 @@ class BatchCollecteInformationProjetController extends AbstractController
 
         /** Le projet n'est pas disponible sur SonarQube */
         if ($isNotAvailable){
+            $this->logger->error('❌ [controlVersionProjet] SonarQube indisponible (503)', ['maven_key' => $maven_key]);
             return [
                 'code' => 503,
                 'message' => "La résolution DNS n'a pas permis d'accéder au serveur SonarQube (Erreur 503)."];
         }
 
+        $this->logger->error('❌ [controlVersionProjet] Erreur inattendue', ['maven_key' => $maven_key]);
         return ['code' => 500, 'message' => 'Une erreur inattendue est survenue (Erreur500).'];
     }
 
@@ -169,6 +177,14 @@ class BatchCollecteInformationProjetController extends AbstractController
             }
             $autre = $total - ($release+$snapshot);
         }
+
+        $this->logger->debug('[calculRepartitionProjet] Répartition calculée', [
+            'total' => $total,
+            'release' => $release,
+            'snapshot' => $snapshot,
+            'autre' => $autre
+        ]);
+
         return [
                 'total' => $total,
                 'release' => $release,
@@ -192,9 +208,13 @@ class BatchCollecteInformationProjetController extends AbstractController
         /** On instancie l'entityRepository */
         $informationProjetRepos = $this->em->getRepository(InformationProjet::class);
 
-        $map = ['maven_key' => $maven_key ];
+        $map = [ 'maven_key' => $maven_key ];
         $version = $informationProjetRepos->selectInformationProjetVersion($map);
         if ($version['code'] != 200) {
+            $this->logger->error('❌ [InformationVersion] Erreur accès base', [
+                'maven_key' => $maven_key,
+                'erreur' => $version['erreur']
+            ]);
             return [
                 'code' => $version['code'],
                 'erreur' => $version['erreur']
@@ -224,13 +244,18 @@ class BatchCollecteInformationProjetController extends AbstractController
      * Created at: 09/12/2022, 16:42:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      */
-    public function batchCollecteInformation(string $mavenKey, string $modeCollecte, string $utilisateurCollecte): array
+    public function batchCollecteInformation(string $maven_key, string $modeCollecte, string $utilisateurCollecte): array
     {
-        /** On instancie l'EntityRepository */
         $informationProjetRepos = $this->em->getRepository(InformationProjet::class);
 
+        $this->logger->info('ℹ️ [Batch InformationProjet] Début de collecte', [
+            'maven_key' => $maven_key,
+            'mode_collecte' => $modeCollecte,
+            'utilisateur' => $utilisateurCollecte
+        ]);
+
         /** On récupère les informations du projet */
-        $isValide = $this->controlVersionProjet($mavenKey);
+        $isValide = $this->controlVersionProjet($maven_key);
         if (in_array($isValide['code'], [401, 404, 503, 500])) {
             return ['code' => $isValide['code'], 'message' => $isValide['message'] ];
         }
@@ -278,12 +303,13 @@ class BatchCollecteInformationProjetController extends AbstractController
         $repartition = self::calculRepartitionProjet($analyses);
 
         /** On supprime les informations pour la maven_key. */
-        $map = [ 'maven_key' => $mavenKey ];
+        $map = [ 'maven_key' => $maven_key ];
         $delete = $informationProjetRepos->deleteInformationProjetMavenKey($map);
         if ($delete['code'] != 200) {
+            $this->logger->error('❌ [Batch InformationProjet] Échec suppression ancienne version', $delete);
             return [
-                'code' => $delete['code'],
-                'erreur' => $delete['erreur']
+                    'code' => $delete['code'],
+                    'erreur' => $delete['erreur']
             ];
         }
 
@@ -300,7 +326,7 @@ class BatchCollecteInformationProjetController extends AbstractController
         $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         $map = [
-                'maven_key' => $mavenKey,
+                'maven_key' => $maven_key,
                 'analyse_key' => $result['key'],
                 'date' => $result['date'],
                 'project_version' => $result['projectVersion'],
@@ -316,6 +342,10 @@ class BatchCollecteInformationProjetController extends AbstractController
 
         $insert = $informationProjetRepos->insertInformationProjet($map);
         if ($insert['code'] != 200) {
+            $this->logger->error('❌ [Batch InformationProjet] Échec d’insertion en base', [
+                'maven_key' => $maven_key,
+                'erreur' => $insert['erreur']
+            ]);
             return [
                 'code' => $insert['code'],
                 'erreur' => $insert['erreur']
@@ -323,7 +353,7 @@ class BatchCollecteInformationProjetController extends AbstractController
         }
 
         /** On appel la méthode de traitement des données */
-        $version = $this->batchInformationVersion($mavenKey);
+        $version = $this->batchInformationVersion($maven_key);
 
         /** On prépare les données pour l'historique */
         $data = [
@@ -344,6 +374,12 @@ class BatchCollecteInformationProjetController extends AbstractController
         $version['version_release_sonar'] = $repartition['release'];
         $version['version_snapshot_sonar'] = $repartition['snapshot'];
         $version['version_autre_sonar'] = $repartition['autre'];
+
+        $this->logger->info('ℹ️ [Batch InformationProjet] Collecte terminée', [
+        'maven_key' => $maven_key,
+        'version' => $result['projectVersion'],
+        'analyse_key' => $result['key']
+        ]);
 
         return [
             'code' => 200,

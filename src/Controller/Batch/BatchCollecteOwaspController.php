@@ -16,6 +16,7 @@ namespace App\Controller\Batch;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
+
 use App\Entity\Owasp;
 use App\Entity\InformationProjet;
 use App\Service\Client;
@@ -61,7 +62,7 @@ class BatchCollecteOwaspController extends AbstractController
      */
     public function BatchCollecteOwasp(string $maven_key, string $mode_collecte, string $utilisateur_collecte): array
     {
-        $this->logger->info("🛡️ [OWASP] Début de la collecte pour le projet {$maven_key} (mode: {$mode_collecte}, user: {$utilisateur_collecte})");
+        $this->logger->info("🛡️ [Collecte OWASP] Début de la collecte pour le projet {$maven_key} (mode: {$mode_collecte}, user: {$utilisateur_collecte})");
 
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
 
@@ -85,13 +86,13 @@ class BatchCollecteOwaspController extends AbstractController
             $queryParamsList['owasp2017']
         );
 
-        $this->logger->debug("Appel OWASP 2017 → {$url}");
+        $this->logger->debug("[Collecte OWASP] Appel OWASP 2017 → {$url}");
         /** On appelle les requêtes HTTP pour chaque référentiel */
         $owasp2017 = $this->client->httpSonarQube($url);
 
         /** Il ne peut pas y avoir de 404, l'API renvoie toujours une response 200*/
         if (isset($owasp2017['code']) && in_array($owasp2017['code'], [401, 403, 404, 500, 503])) {
-            $this->logger->error("❌ Erreur OWASP 2017 pour {$maven_key} : {$owasp2017['code']}");
+            $this->logger->error("❌ [Collecte OWASP] Erreur OWASP 2017 pour {$maven_key} : {$owasp2017['code']}");
             return [
                     'code' => $owasp2017['code'],
                     $owasp2017['erreur']
@@ -109,7 +110,7 @@ class BatchCollecteOwaspController extends AbstractController
 
             $owasp2021 = $this->client->httpSonarQube($url);
             if (isset($owasp2021['code']) && in_array($owasp2021['code'], [401, 403, 404, 500, 503])) {
-                $this->logger->error("❌ Erreur OWASP 2021 pour {$maven_key} : {$owasp2021['code']}");
+                $this->logger->error("❌ [Collecte OWASP] Erreur OWASP 2021 pour {$maven_key} : {$owasp2021['code']}");
                 return [
                     'code' => $owasp2021['code'],
                     'erreur' => $owasp2021['erreur']
@@ -121,7 +122,7 @@ class BatchCollecteOwaspController extends AbstractController
         $map = [ 'maven_key' => $maven_key ];
         $select_information = $informationProjetRepos->selectInformationProjetVersion($map);
             if ($select_information['code'] != 200) {
-                $this->logger->error("❌ Erreur OWASP 2021 pour {$maven_key} : {$owasp2021['code']}");
+                $this->logger->error("❌ [Collecte OWASP] Erreur OWASP 2021 pour {$maven_key} : {$owasp2021['code']}");
                 return [
                     'code' => $select_information['code'],
                     'message' => $select_information['erreur']
@@ -219,11 +220,11 @@ class BatchCollecteOwaspController extends AbstractController
         }
 
         /** On supprime les informations sur le projet pour la dernière analyse. */
-        $this->logger->debug("🧹 Suppression OWASP existant pour {$maven_key}");
+        $this->logger->debug("🧹 [Collecte OWASP] Suppression OWASP existant pour {$maven_key}");
         $map = ['maven_key' => $maven_key];
         $delete = $owaspRepos->deleteOwaspMavenKey($map);
         if ($delete['code'] != 200) {
-            $this->logger->error("❌ Échec suppression OWASP : {$delete['erreur']}");
+            $this->logger->error("❌ [Collecte OWASP] Échec suppression OWASP : {$delete['erreur']}");
             return [
                 'code' => $delete['code'],
                 'erreur' => $delete['erreur']
@@ -241,7 +242,7 @@ class BatchCollecteOwaspController extends AbstractController
             ];
         }
 
-        $this->logger->info("ℹ️ [OWASP] Collecte terminée pour {$maven_key}. Total 2017: {$total_2017}, 2021: {$total_2021}");
+        $this->logger->info("ℹ️ [Collecte OWASP] Collecte terminée pour {$maven_key}. Total 2017: {$total_2017}, 2021: {$total_2021}");
         return [
             'code' => 200,
             'owasp2017' => $total_2017,

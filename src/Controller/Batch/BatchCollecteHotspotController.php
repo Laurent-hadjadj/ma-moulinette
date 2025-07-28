@@ -13,15 +13,12 @@
 
 namespace App\Controller\Batch;
 
-/** Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
-/** Accès aux tables */
+use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
+
 use App\Entity\Hotspots;
 use App\Entity\InformationProjet;
-
-/** Client HTTP */
 use App\Service\Client;
 use App\Service\UrlBuilderService;
 
@@ -44,10 +41,9 @@ class BatchCollecteHotspotController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private Client $client,
-        private UrlBuilderService $urlBuilder
+        private UrlBuilderService $urlBuilder,
+        private LoggerInterface $logger
     ) {
-        $this->em = $em;
-        $this->client = $client;
     }
 
     /**
@@ -87,47 +83,82 @@ class BatchCollecteHotspotController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function BatchCollecteHotspot(string $mavenKey, string $modeCollecte, string $utilisateurCollecte): array
+    public function BatchCollecteHotspot(string $maven_key, string $modeCollecte, string $utilisateurCollecte): array
     {
-        /** On instancie l'EntityRepository */
-        $hotspotsRepository = $this->em->getRepository(Hotspots::class);
-        $informationProjet = $this->em->getRepository(InformationProjet::class);
+        $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
+        $hotspotsRepos = $this->em->getRepository(Hotspots::class);
+        $informationProjetRepos = $this->em->getRepository(InformationProjet::class);
 
-         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
-        $map = ['maven_key' => $mavenKey];
-        $select = $informationProjet->selectInformationProjetVersion($map);
+        $this->logger->info('ℹ️ [Batch Hotspot] Début de collecte', [
+            'maven_key' => $maven_key,
+            'mode_collecte' => $modeCollecte,
+            'utilisateur' => $utilisateurCollecte
+        ]);
+
+        /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
+        $map = ['maven_key' => $maven_key];
+        $select = $informationProjetRepos->selectInformationProjetVersion($map);
         if ($select['code'] != 200) {
-            return ['code' => $select['code'], 'erreur' => $select['erreur']];
+            $this->logger->error('❌ [Batch Hotspot] Erreur lors de la récupération des infos projet', [
+                'maven_key' => $maven_key,
+                'erreur' => $select['erreur']
+        ]);
+            return [
+                'code' => $select['code'],
+                'erreur' => $select['erreur']
+            ];
         }
 
         /** pas d'information disponible */
-        if (!$select['info']) {
-            return ['code' => 404, 'erreur' => 'Aucune information trouvée sur le projet.'];
+            if (!$select['info']) {
+                $this->logger->info('ℹ️ [Batch Hotspot] Aucune information trouvée sur le projet', [
+                'maven_key' => $maven_key
+            ]);
+            return [
+                'code' => 404,
+                'erreur' => 'Aucune information trouvée sur le projet.'];
         }
 
         /** On reconstruit la date de version au format dateTime */
         $dateVersion = new \DateTimeImmutable($select['info'][0]['date'], new \DateTimeZone(static::$europeParis));
 
         /** Sécurisation de l'URL */
-        $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
         $url = $this->urlBuilder->build(
             $this->getParameter(static::$sonarUrl),
             '/api/hotspots/search',
             [ 'projectKey' => $maven_key, 'ps' => 500, 'p' => 1 ]
         );
+
+        $this->logger->debug("🛠️ [Batch Hotspot] Appel API SonarQube", ['url' => $url]);
         $result = $this->client->httpSonarQube($url);
         /** On catch les erreurs HTTP :) */
-        if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
-            return ['code' => $result['code'], 'erreur' => $result['erreur']];
+        if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503, 504])) {
+            $this->logger->error("❌ [Batch Hotspot] Erreur API SonarQube {$url}", [
+                'code' => $result['code'],
+                'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
+            ]);
+
+            return [
+                'code' => $result['code'],
+                'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
+            ];
         }
+
        /** Création de la date du jour */
         $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         /** On supprime les résultats pour la maven_key. */
-        $map = ['maven_key' => $maven_key];
-        $delete = $hotspotsRepository->deleteHotspotsMavenKey($map);
+        $map = [ 'maven_key' => $maven_key ];
+        $delete = $hotspotsRepos->deleteHotspotsMavenKey($map);
         if ($delete['code'] != 200) {
-            return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
+            $this->logger->error('❌ [Batch Hotspot] Échec de suppression des anciens hotspots', [
+                'maven_key' => $maven_key,
+                'erreur' => $delete['erreur']
+            ]);
+            return [
+                'code' => $delete['code'],
+                'erreur' => $delete['erreur']
+            ];
         }
 
         $map = [];
@@ -147,19 +178,19 @@ class BatchCollecteHotspotController extends AbstractController
 
                 /** Ajout des hotspots à la liste à insérer */
                 $map[] = [
-                    'maven_key' => $maven_key,
-                    'version' => $select['info'][0]['version'],
-                    'date_version' => $dateVersion,
-                    'hotspot_key' => $value['key'] ?? 'NC',
-                    'security_category' => $value['securityCategory'] ?? 'NC',
-                    'rule_key' => $value['ruleKey'] ?? 'NC',
-                    'probability' => $value['vulnerabilityProbability'],
-                    'status' => $value['status'] ?? 'NC',
-                    'resolution' => $value['resolution'] ?? '',
-                    'niveau' => $niveau,
-                    'mode_collecte' => $modeCollecte,
-                    'utilisateur_collecte' =>$utilisateurCollecte,
-                    'date_enregistrement' => $date
+                        'maven_key' => $maven_key,
+                        'version' => $select['info'][0]['version'],
+                        'date_version' => $dateVersion,
+                        'hotspot_key' => $value['key'] ?? 'NC',
+                        'security_category' => $value['securityCategory'] ?? 'NC',
+                        'rule_key' => $value['ruleKey'] ?? 'NC',
+                        'probability' => $value['vulnerabilityProbability'],
+                        'status' => $value['status'] ?? 'NC',
+                        'resolution' => $value['resolution'] ?? '',
+                        'niveau' => $niveau,
+                        'mode_collecte' => $modeCollecte,
+                        'utilisateur_collecte' =>$utilisateurCollecte,
+                        'date_enregistrement' => $date
                 ];
             }
         } else {
@@ -167,33 +198,57 @@ class BatchCollecteHotspotController extends AbstractController
             $niveau = $this->vulnerabilityProbability('NC');
             /** Ajout des hotspots à la liste à insérer */
             $map[] = [
-                'maven_key' => $maven_key,
-                'version' => $select['info'][0]['project_version'],
-                'date_version' => $dateVersion,
-                'hotspot_key' => 'NC',
-                'security_category' => 'NC',
-                'rule_key' => 'NC',
-                'probability' => 'NC',
-                'status' => 'NC',
-                'resolution' => '',
-                'niveau' => $niveau,
-                'mode_collecte' => $modeCollecte,
-                'utilisateur_collecte' => $utilisateurCollecte,
-                'date_enregistrement' => $date
+                    'maven_key' => $maven_key,
+                    'version' => $select['info'][0]['project_version'],
+                    'date_version' => $dateVersion,
+                    'hotspot_key' => 'NC',
+                    'security_category' => 'NC',
+                    'rule_key' => 'NC',
+                    'probability' => 'NC',
+                    'status' => 'NC',
+                    'resolution' => '',
+                    'niveau' => $niveau,
+                    'mode_collecte' => $modeCollecte,
+                    'utilisateur_collecte' => $utilisateurCollecte,
+                    'date_enregistrement' => $date
             ];
         }
 
          /** On enregistre les données */
-        $insert = $hotspotsRepository->insertHotspots($map);
+        $insert = $hotspotsRepos->insertHotspots($map);
         if ($insert['code'] !== 200) {
-            return ['code' => $insert['code'], 'erreur' => $insert['erreur']];
+            $this->logger->error('❌ [Batch Hotspot] Échec d’insertion en base', [
+                'maven_key' => $maven_key,
+                'erreur' => $insert['erreur']
+            ]);
+            return [
+                'code' => $insert['code'],
+                'erreur' => $insert['erreur']
+            ];
         }
 
         /** On prépare les données pour l'historique */
-        $data=[
-            'hotspot_high' => $high, 'hotspot_medium' => $medium,
-            'hotspot_low' => $low, 'nombre_hotspot' => $high+$medium+$low];
-    return ['code' => 200, 'message' => $map, 'data' => $data];
+        $data = [
+                'hotspot_high' => $high,
+                'hotspot_medium' => $medium,
+                'hotspot_low' => $low,
+                'nombre_hotspot' => $high+$medium+$low
+            ];
+
+        $this->logger->info('ℹ️ [Batch Hotspot] Collecte terminée avec succès', [
+            'maven_key' => $maven_key,
+            'utilisateur' => $utilisateurCollecte,
+            'nombre_total' => $high + $medium + $low,
+            'high' => $high,
+            'medium' => $medium,
+            'low' => $low
+        ]);
+
+        return [
+            'code' => 200,
+            'message' => $map,
+            'data' => $data
+        ];
     }
 
 }

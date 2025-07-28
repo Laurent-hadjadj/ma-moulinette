@@ -13,7 +13,6 @@
 
 namespace App\Controller\Batch;
 
-
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -60,13 +59,22 @@ class BatchCollecteNoteController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function batchCollecteNote(string $mavenKey, string $modeCollecte, string $utilisateurCollecte, string $type): array
+    public function batchCollecteNote(string $maven_key, string $modeCollecte, string $utilisateurCollecte, string $type): array
     {
         /** On instancie l'EntityRepository */
         $noteRepos = $this->em->getRepository(Notes::class);
+        $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
 
-        $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
-        $this->logger->info('[Collecte][Note] Démarrage de la collecte de note', [
+        // Validation du type
+        if (!in_array($type, ['reliability', 'security', 'maintainability'])) {
+            $this->logger->error('❌ [Batch Note] Type de note invalide', ['type' => $type]);
+            return [
+                'code' => 400,
+                'erreur' => "Type de note '$type' invalide."
+            ];
+        }
+
+        $this->logger->info('[Batch Note] Démarrage de la collecte', [
             'maven_key' => $maven_key,
             'type' => $type,
             'mode' => $modeCollecte,
@@ -83,25 +91,25 @@ class BatchCollecteNoteController extends AbstractController
             ]
         );
 
-        /** Appelle le client HTTP */
+        $this->logger->debug('[Batch Note] Appel API SonarQube', ['url' => $url]);
         $result = $this->client->httpSonarQube($url);
-        if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
-            $this->logger->error('[Collecte][Note] Erreur SonarQube', [
+        if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503, 504])) {
+            $this->logger->error('❌ [Batch Note] Erreur SonarQube', [
                 'url' => $url,
                 'code' => $result['code'],
-                'erreur' => $result['erreur'] ?? 'non spécifiée'
+                'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
             ]);
             return [
                 'code' => $result['code'],
-                'erreur' => $result['erreur']
+                'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
             ];
         }
 
         /** On supprime les résultats pour la maven_key. */
-        $map = ['maven_key' => $mavenKey, 'type' => $type];
+        $map = ['maven_key' => $maven_key, 'type' => $type];
         $delete = $noteRepos->deleteNotesMavenKey($map);
         if ($delete['code'] != 200) {
-            $this->logger->error('[Collecte][Note] Échec suppression ancienne note', [
+            $this->logger->error('❌ [Batch Note] Échec suppression ancienne note', [
                 'code' => $delete['code'],
                 'erreur' => $delete['erreur']
             ]);
@@ -130,7 +138,7 @@ class BatchCollecteNoteController extends AbstractController
 
             $insert = $noteRepos->insertNotes($map);
             if ($insert['code'] != 200) {
-                $this->logger->error('[Collecte][Note] Échec insertion note', [
+                $this->logger->error('❌ [Batch Note] Échec insertion note', [
                     'code' => $insert['code'],
                     'erreur' => $insert['erreur']
                 ]);
@@ -141,11 +149,21 @@ class BatchCollecteNoteController extends AbstractController
             }
         }
 
-        $noteMap = [1 => 'A', 2 => 'B', 3 => 'C', 4 => 'D', 5 => 'E'];
-        $note = $noteMap[$latestNote] ?? 'Z';
-        $data = ['note_' . $type => $note];
+        if ($latestNote === null) {
+            $this->logger->warning('⚠️ [Batch Note] Aucune note trouvée dans les mesures.', [
+                'maven_key' => $maven_key,
+                'type' => $type
+            ]);
+            return [
+                'code' => 204,
+                'erreur' => 'Aucune note disponible.'
+            ];
+        }
 
-        $this->logger->info('[Collecte][Note] Collecte réussie', [
+        $noteMap = [ 1 => 'A', 2 => 'B', 3 => 'C', 4 => 'D', 5 => 'E' ];
+        $note = $noteMap[$latestNote] ?? 'Z';
+
+        $this->logger->info('ℹ️ [Batch Note] Collecte réussie', [
             'note_brute' => $latestNote,
             'note_lettre' => $note,
             'type' => $type,
@@ -155,7 +173,7 @@ class BatchCollecteNoteController extends AbstractController
         return [
             'code' => 200,
             'message' => ['value' => $note],
-            'data' => $data
+            'data' => ["note_ {$type}" => $note]
         ];
     }
 
@@ -170,20 +188,20 @@ class BatchCollecteNoteController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function BatchCollecteNoteHotspot($mavenKey): array
+    public function BatchCollecteNoteHotspot($maven_key): array
     {
         $hotspotsRepos = $this->em->getRepository(Hotspots::class);
-        $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+        $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
 
-        $this->logger->info('[Collecte][Hotspot] Début collecte de la note hotspot.', [
+        $this->logger->info('ℹ️ [Batch Hotspot] Début collecte de la note hotspot.', [
             'maven_key' => $maven_key
         ]);
 
         // Première requête pour obtenir le nombre de hotspots à réviser
-        $map = ['maven_key' => $maven_key, 'status'=> 'TO_REVIEW'];
+        $map = [ 'maven_key' => $maven_key, 'status' => 'TO_REVIEW' ];
         $toReview = $hotspotsRepos->countHotspotsStatus($map);
         if ($toReview['code'] != 200) {
-            $this->logger->error('[Collecte][Hotspot] Erreur lors du comptage des hotspots TO_REVIEW.', [
+            $this->logger->error('❌ [Batch Hotspot] Erreur lors du comptage des hotspots TO_REVIEW.', [
                 'code' => $toReview['code'],
                 'erreur' => $toReview['erreur']
             ]);
@@ -194,13 +212,14 @@ class BatchCollecteNoteController extends AbstractController
         }
 
         // Deuxième requête pour les hotspots révisés
-        $map = ['maven_key' => $maven_key, 'status' => 'REVIEWED'];
+        $map = [ 'maven_key' => $maven_key, 'status' => 'REVIEWED' ];
         $reviewed = $hotspotsRepos->countHotspotsStatus($map);
         if ($reviewed['code'] != 200) {
-            $this->logger->error('[Collecte][Hotspot] Erreur lors du comptage des hotspots REVIEWED.', [
+            $this->logger->error('❌ [Batch Hotspot] Erreur lors du comptage des hotspots REVIEWED.', [
                 'code' => $reviewed['code'],
                 'erreur' => $reviewed['erreur']
             ]);
+
             return [
                 'code' => $reviewed['code'],
                 'erreur' => $reviewed['erreur']
@@ -210,25 +229,32 @@ class BatchCollecteNoteController extends AbstractController
         // Initialisation et calcul de la note
         $note = 'A';
         $ratio = null;
-        if (!empty($toReview['to_review']) && $toReview['to_review'] > 0) {
-            $toReviewCount = intval($toReview['to_review']);
-            $reviewedCount = intval($reviewed['reviewed']);
-            $ratio = ($reviewedCount * 100) / ($toReviewCount + $reviewedCount);
 
-            if ($ratio >= 80) {
-                $note = 'A';
-            } elseif ($ratio >= 70) {
-                $note = 'B';
-            } elseif ($ratio >= 50) {
-                $note = 'C';
-            } elseif ($ratio >= 30) {
-                $note = 'D';
+        if (!empty($toReview['to_review']) || !empty($reviewed['reviewed'])) {
+        $toReviewCount = intval($toReview['to_review'] ?? 0);
+        $reviewedCount = intval($reviewed['reviewed'] ?? 0);
+        $total = $toReviewCount + $reviewedCount;
+
+            if ($total > 0) {
+                $ratio = ($reviewedCount * 100) / $total;
+
+                if ($ratio >= 80) {
+                    $note = 'A';
+                } elseif ($ratio >= 70) {
+                    $note = 'B';
+                } elseif ($ratio >= 50) {
+                    $note = 'C';
+                } elseif ($ratio >= 30) {
+                    $note = 'D';
+                } else {
+                    $note = 'E';
+                }
             } else {
-                $note = 'E';
+                $this->logger->warning('⚠️ [Batch Hotspot] Aucun hotspot trouvé.', ['maven_key' => $maven_key]);
             }
         }
 
-        $this->logger->info('[Collecte][Hotspot] Note calculée avec succès.', [
+        $this->logger->info('ℹ️ [Batch Hotspot] Note calculée avec succès.', [
             'maven_key' => $maven_key,
             'to_review' => $toReview['to_review'] ?? 0,
             'reviewed' => $reviewed['reviewed'] ?? 0,

@@ -13,24 +13,16 @@
 
 namespace App\Controller\Batch;
 
-/** Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\SecurityBundle\Security;
-
-/** Gestion de accès aux API */
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
-/** Les services */
-use App\Service\FileLogger;
-
-/** Accès aux tables */
+use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Historique;
 
-/** Class API Batch */
+use App\Entity\Historique;
+use App\Service\FileLogger;
 use App\Controller\Batch\BatchCollecteInformationProjetController;
 use App\Controller\Batch\BatchCollecteMesureController;
 use App\Controller\Batch\BatchCollecteNoteController;
@@ -80,27 +72,13 @@ class BatchCollecteController extends AbstractController
         private BatchCollecteNoSonarController $batchCollecteNoSonar,
         private BatchCollecteTodoController $batchCollecteTodo
     ) {
-        $this->security = $security;
-        $this->em = $em;
-        $this->logger = $logger;
-        $this->batchCollecteInformation = $batchCollecteInformation;
-        $this->batchCollecteMesure = $batchCollecteMesure;
-        $this->batchCollecteNote = $batchCollecteNote;
-        $this->batchCollecteOwasp = $batchCollecteOwasp;
-        $this->batchCollecteHotspot = $batchCollecteHotspot;
-        $this->batchCollecteAnomalie = $batchCollecteAnomalie;
-        $this->batchCollecteAnomalieDetail = $batchCollecteAnomalieDetail;
-        $this->batchCollecteHotspotOwasp = $batchCollecteHotspotOwasp;
-        $this->batchCollecteHotspotDetail = $batchCollecteHotspotDetail;
-        $this->batchCollecteNoSonar = $batchCollecteNoSonar;
-        $this->batchCollecteTodo = $batchCollecteTodo;
     }
 
     #[Route('/api/collectes', name: 'api_collectes', methods: ['POST', 'GET'])]
     public function collecte(Request $request): Response
     {
         /** On instancie l'entityRepository */
-        $historiqueRepository = $this->em->getRepository(Historique::class);
+        $historiqueRepos = $this->em->getRepository(Historique::class);
 
         // récupérer les données transmises
         $maven_key = $request->request->get('maven_key');
@@ -120,10 +98,14 @@ class BatchCollecteController extends AbstractController
             !property_exists($data, 'maven_key') ||
             !property_exists($data, 'mode_collecte')) {
                 $collecte[]=["**** ERREUR : ".static::$erreur400];
-            return $response->setData(
-                [ 'data' => $data, 'code' => 400, 'message' => static::$erreur400, "Collecte" => $collecte], Response::HTTP_BAD_REQUEST);
+            return $response->setData([
+                    'code' => 400,
+                    'message' => static::$erreur400,
+                    'Collecte' => $collecte
+                ], Response::HTTP_BAD_REQUEST);
         }
         dd('ok');
+        
         /** On initialise la log */
         $collecte=[];
 
@@ -334,7 +316,7 @@ class BatchCollecteController extends AbstractController
             'mode_collecte'=>$modeCollecte, 'utilisateur_collecte'=>$utilisateurCollecte,
             'date_enregistrement' => $date]);
         /** Enregistrement dans le table historique */
-        $historique=$historiqueRepository->insertHistoriqueAjoutProjet($mapMerged);
+        $historique=$historiqueRepos->insertHistoriqueAjoutProjet($mapMerged);
         if ($historique['code']===200){
             $collecte[]=["13 - HISTORIQUE" => $mapMerged];
         } else {

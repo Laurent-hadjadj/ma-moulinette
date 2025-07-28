@@ -95,7 +95,7 @@ class ProjetController extends AbstractController
     {
         $user = $security->getUser();
         if (!$user) {
-            $this->logger->warning('⚠️ [Projet] Accès refusé : utilisateur non connecté.');
+            $this->logger->warning('🚫 [Projet] Accès refusé : utilisateur non connecté.');
             throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 403).");
         }
 

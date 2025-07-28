@@ -14,8 +14,9 @@
 namespace App\Controller\Batch;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
+use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
+
 use App\Entity\Todo;
 use App\Service\Client;
 use App\Service\UrlBuilderService;
@@ -39,7 +40,8 @@ class BatchCollecteTodoController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private Client $client,
-        private UrlBuilderService $urlBuilder
+        private UrlBuilderService $urlBuilder,
+        private LoggerInterface $logger
     ) {
     }
 
@@ -58,7 +60,6 @@ class BatchCollecteTodoController extends AbstractController
      */
     private function batchCollecte($maven_key, $index, $batchSize) :array
     {
-
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
 
        /** Sécurisation de l'URL */
@@ -68,19 +69,30 @@ class BatchCollecteTodoController extends AbstractController
             [
                 'project' => $maven_key,
                 'rules' => 'javascript:S1135,xml:S1135,typescript:S1135,Web:S1135,java:S1135,php:s1135,ruby:s1135,python:s1135',
-                'p'=>$index,
-                'ps'=>$batchSize
+                'p' => $index,
+                'ps' => $batchSize
             ]
         );
 
+        $this->logger->debug('[Batch Todo] Appel API SonarQube', ['url' => $url]);
         $result = $this->client->httpSonarQube($url);
+
         /** On catch les erreurs HTTP :) */
         if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503, 504])) {
+            $this->logger->error('❌ [Batch Todo] Erreur SonarQube', [
+                'url' => $url,
+                'code' => $result['code'],
+                'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
+            ]);
             return [
                 'code' => $result['code'],
-                'erreur' => $result['erreur']
+                'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
             ];
         }
+
+        $this->logger->debug('[Batch Todo] Résultat API SonarQube reçu', [
+            'total' => $result['json']['paging']['total'] ?? 'inconnu'
+        ]);
 
         /** On renvoie le résultat */
         return $result['json'];
@@ -100,12 +112,14 @@ class BatchCollecteTodoController extends AbstractController
     public function BatchCollecteTodo(string $maven_key, string $modeCollecte, string $utilisateurCollecte): array
     {
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
-
-        /** On instancie l'EntityRepository */
         $todoRepository = $this->em->getRepository(Todo::class);
-
-        /** On créé un objet date. */
         $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
+
+        $this->logger->info('ℹ️ [Batch Todo] Début de collecte', [
+            'maven_key' => $maven_key,
+            'mode_collecte' => $modeCollecte,
+            'utilisateur' => $utilisateurCollecte
+        ]);
 
         /** Récupération de la première page */
         $result = $this->batchCollecte($maven_key, 1, 1);
@@ -114,6 +128,10 @@ class BatchCollecteTodoController extends AbstractController
 
         /** Si pas d'issues, on arrête */
         if (empty($result['issues']) || $result['paging']['total'] === 0) {
+            $this->logger->info('ℹ️ [Batch Todo] Aucun TODO trouvé pour ce projet.', [
+                'maven_key' => $maven_key
+            ]);
+
             return [
                     'code' => 200,
                     'total' => 0,
@@ -121,9 +139,15 @@ class BatchCollecteTodoController extends AbstractController
         }
 
         // Avant d'insérer les nouveaux enregistrements :
-        $map = ['maven_key' => $maven_key];
+        $map = [ 'maven_key' => $maven_key ];
+        $this->logger->debug('[Batch Todo] Suppression des anciennes entrées TODO');
         $delete = $todoRepository->deleteTodoMavenKey($map);
         if ($delete['code'] !== 200) {
+            $this->logger->error('❌ [Batch Todo] Échec de suppression des anciennes entrées', [
+                'code' => $delete['code'],
+                'erreur' => $delete['erreur']
+            ]);
+
             return [
                 'code' => $delete['code'],
                 'erreur' => $delete['erreur']
@@ -138,6 +162,7 @@ class BatchCollecteTodoController extends AbstractController
 
             // S'il n'y a plus d'issues, on sort de la boucle
             if (empty($result['issues'])) {
+                $this->logger->debug("[Batch Todo] Aucune issue trouvée à la page {$i}, fin de boucle.");
                 break;
             }
 
@@ -160,6 +185,11 @@ class BatchCollecteTodoController extends AbstractController
             // Insérer les issues récupérées pour cette page
             $batchInsert = $todoRepository->insertTodo($mapData);
             if ($batchInsert['code'] !== 200) {
+                $this->logger->error('❌ [Batch Todo] Échec de l’insertion en base', [
+                    'code' => $batchInsert['code'],
+                    'erreur' => $batchInsert['erreur']
+                ]);
+
                 return [
                     'code' => $batchInsert['code'],
                     'type' => 'alert',
@@ -168,16 +198,22 @@ class BatchCollecteTodoController extends AbstractController
                 ];
             }
 
-            // Réinitialise le tableau pour le prochain batch.
             $mapData = [];
         }
+
+        $total = $result['paging']['total'] ?? 0;
+
+        $this->logger->info('ℹ️ [Batch Todo] Collecte terminée avec succès', [
+            'maven_key' => $maven_key,
+            'total_todo' => $total
+        ]);
 
         /** On enregistre les données */
         return [
             'code' => 200,
             'nombre' => $result['paging']['total'] ?? 0,
             'message' => ['todo' => $mapData],
-            'data' => ['todo' => $result['paging']['total']]
+            'data' => ['todo' => $total]
         ];
     }
 }

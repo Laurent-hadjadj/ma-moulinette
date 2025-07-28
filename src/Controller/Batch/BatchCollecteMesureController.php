@@ -54,10 +54,16 @@ class BatchCollecteMesureController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function BatchCollecteMesure(string $mavenKey, string $modeCollecte, string $utilisateurCollecte): array
+    public function BatchCollecteMesure(string $maven_key, string $modeCollecte, string $utilisateurCollecte): array
     {
         $mesuresRepos = $this->em->getRepository(Mesures::class);
-        $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+        $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
+
+        $this->logger->info('ℹ️ [Batch Mesure] Début de collecte', [
+            'maven_key' => $maven_key,
+            'mode_collecte' => $modeCollecte,
+            'utilisateur' => $utilisateurCollecte
+        ]);
 
         // [1] Récupération du projet
         $url = $this->urlBuilder->build(
@@ -65,16 +71,15 @@ class BatchCollecteMesureController extends AbstractController
             '/api/components/app',
             ['component' => $maven_key]
         );
-        $this->logger->info('[Collecte] Appel à SonarQube /components/app', [
-            'url' => $url,
-            'user' => $utilisateurCollecte
-        ]);
 
+        $this->logger->debug('[Batch Logger] Appel API SonarQube', ['url' => $url]);
         $result = $this->client->httpSonarQube($url);
-        if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
-            $this->logger->error('[Collecte] Erreur API SonarQube /components/app', [
+
+        if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503, 504])) {
+            $this->logger->error('❌ [Batch Mesure] Erreur SonarQube', [
+                'url' => $url,
                 'code' => $result['code'],
-                'erreur' => $result['erreur'] ?? 'inconnue'
+                'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
             ]);
             return [
                 'code' => $result['code'],
@@ -85,7 +90,7 @@ class BatchCollecteMesureController extends AbstractController
         // [2] Suppression des anciennes mesures
         $delete = $mesuresRepos->deleteMesuresMavenKey(['maven_key' => $maven_key]);
         if ($delete['code'] !== 200) {
-            $this->logger->error('[Collecte] Échec suppression mesures', [
+            $this->logger->error('❌ [Batch Mesure] Échec suppression mesures', [
                 'code' => $delete['code'],
                 'erreur' => $delete['erreur']
             ]);
@@ -94,7 +99,8 @@ class BatchCollecteMesureController extends AbstractController
                 'erreur' => $delete['erreur']
             ];
         }
-        $this->logger->info('[Collecte] Suppression ancienne mesure OK', ['maven_key' => $maven_key]);
+
+        $this->logger->info('ℹ️ [Batch Mesure] Suppression ancienne mesure OK', ['maven_key' => $maven_key]);
 
         // [3] Collecte secondaire : lignes de code, fichiers...
         $url = $this->urlBuilder->build(
@@ -102,7 +108,9 @@ class BatchCollecteMesureController extends AbstractController
             '/api/measures/component',
             ['component' => $maven_key, 'metricKeys' => 'ncloc,ncloc_language_distribution,classes,functions,files']
         );
-        $this->logger->info('[Collecte] Appel à SonarQube /measures/component (bloc 1)', ['url' => $url]);
+
+        $this->logger->debug('[Batch Mesure] Appel à SonarQube /measures/component (bloc 1)', ['url' => $url]);
+
         $result2 = $this->client->httpSonarQube($url);
 
         $ncloc = $classes = $functions = $files = 0;
@@ -133,10 +141,18 @@ class BatchCollecteMesureController extends AbstractController
                     arsort($distribution);
                     break;
                 default :
-                    $this->logger->error('[Batch Mesures - Erreur switch improbable.');
+                    $this->logger->error('❌ [Batch Mesure - Erreur switch improbable.');
                     break;
             }
         }
+
+        $this->logger->debug('[Batch Mesure] Résumé des métriques secondaires extraites', [
+            'ncloc' => $ncloc,
+            'classes' => $classes,
+            'functions' => $functions,
+            'files' => $files,
+            'distribution' => $distribution
+        ]);
 
         // [4] Récupération du SQALE ratio
         $url = $this->urlBuilder->build(
@@ -144,7 +160,10 @@ class BatchCollecteMesureController extends AbstractController
             '/api/measures/component',
             ['component' => $maven_key, 'metricKeys' => 'sqale_debt_ratio']
         );
-        $this->logger->info('[Collecte] Appel à SonarQube /measures/component (SQALE)', ['url' => $url]);
+
+        $this->logger->debug('[Batch Mesure] Appel à SonarQube /measures/component (SQALE)', ['url' => $url]);
+
+
         $result3 = $this->client->httpSonarQube($url);
         $sqaleRatio = floatval($result3['json']['component']['measures'][0]['value'] ?? -1);
 
@@ -177,7 +196,7 @@ class BatchCollecteMesureController extends AbstractController
 
         $insert = $mesuresRepos->insertMesures($mesureData);
         if ($insert['code'] !== 200) {
-            $this->logger->error('[Collecte] Échec insertion mesures', [
+            $this->logger->error('❌ [Batch Mesure] Échec insertion mesures', [
                 'maven_key' => $maven_key,
                 'erreur' => $insert['erreur']
             ]);
@@ -187,7 +206,7 @@ class BatchCollecteMesureController extends AbstractController
             ];
         }
 
-        $this->logger->info('[Collecte] Insertion mesures OK', [
+        $this->logger->info('ℹ️ [Batch Mesure] Insertion mesures OK', [
             'maven_key' => $maven_key,
             'lines' => $lines,
             'coverage' => $coverage

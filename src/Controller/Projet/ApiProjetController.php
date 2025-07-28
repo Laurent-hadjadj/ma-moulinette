@@ -69,7 +69,7 @@ class ApiProjetController extends AbstractController
         $user = $security->getUser();
 
         if (!$user) {
-            $this->logger->error('🚫 [Favori] Aucun utilisateur connecté.');
+            $this->logger->warning('🚫 [Favori] Aucun utilisateur connecté.');
             return new JsonResponse([
                 'code' => 401,
                 'type' => 'alert',
@@ -86,7 +86,7 @@ class ApiProjetController extends AbstractController
         $data = json_decode($payload);
 
         if ($data === null || !property_exists($data, 'maven_key') || !is_string($data->maven_key)) {
-            $this->logger->warning('⚠️ [Favori] Requête mal formée ou maven_key manquante.', [
+            $this->logger->error('❌  [Favori] Requête mal formée ou maven_key manquante.', [
                 'utilisateur' => $username,
                 'payload' => $payload
             ]);
@@ -154,7 +154,7 @@ class ApiProjetController extends AbstractController
         $user = $security->getUser();
 
         if (!$user) {
-            $this->logger->error('🚫 [Favori Check] Aucun utilisateur connecté.');
+            $this->logger->warning('🚫 [Favori Check] Aucun utilisateur connecté.');
             return new JsonResponse([
                 'code' => 401,
                 'type' => 'alert',
@@ -167,7 +167,7 @@ class ApiProjetController extends AbstractController
         $data = json_decode($rawContent);
 
         if ($data === null || !property_exists($data, 'maven_key') || !is_string($data->maven_key)) {
-            $this->logger->warning('⚠️ [Favori Check] Requête JSON invalide ou clé maven_key absente.', [
+            $this->logger->error('❌  [Favori Check] Requête JSON invalide ou clé maven_key absente.', [
                 'utilisateur' => $username,
                 'payload' => $rawContent
             ]);
@@ -288,7 +288,7 @@ class ApiProjetController extends AbstractController
         $projets = $requestListe['liste'];
 
         if (empty($projets)) {
-            $this->logger->notice('📄 [Projet Liste] Aucun projet trouvé pour les groupes spécifiés.', [
+            $this->logger->warning('⚠️ [Projet Liste] Aucun projet trouvé pour les groupes spécifiés.', [
                 'utilisateur' => $username,
                 'groupes' => $groupes
             ]);

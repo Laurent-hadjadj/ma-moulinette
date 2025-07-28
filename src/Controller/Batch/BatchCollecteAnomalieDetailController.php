@@ -13,17 +13,12 @@
 
 namespace App\Controller\Batch;
 
-/** Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
-/** Accès aux tables */
+use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
+
 use App\Entity\AnomalieDetails;
-
-/** Import des services */
 use App\Service\ExtractName;
-
-/** Client HTTP */
 use App\Service\Client;
 use App\Service\UrlBuilderService;
 
@@ -47,15 +42,14 @@ class BatchCollecteAnomalieDetailController extends AbstractController
         private EntityManagerInterface $em,
         private Client $client,
         private ExtractName $serviceExtractName,
-        private UrlBuilderService $urlBuilder
+        private UrlBuilderService $urlBuilder,
+        private LoggerInterface $logger
     ) {
-        $this->em = $em;
-        $this->client = $client;
-        $this->serviceExtractName = $serviceExtractName;
     }
 
     /**
      * [Description for makeRequest]
+     * On renvoi un tableau avec le résultat de la requête ou un tableau avec un code erreur.
      *
      * @param array $queryParams
      * @param string $tempoUrl
@@ -68,8 +62,6 @@ class BatchCollecteAnomalieDetailController extends AbstractController
      */
     private function makeRequest(array $queryParams): array
     {
-        /** On renvoi un tableau avec le résultat de la requête ou un tableau avec un code erreur. */
-
         /** Sécurisation de l'URL */
         $url = $this->urlBuilder->build(
             $this->getParameter(static::$sonarUrl),
@@ -77,10 +69,25 @@ class BatchCollecteAnomalieDetailController extends AbstractController
             $queryParams
         );
 
+        $this->logger->debug("🛠️ [Batch AnomalieDétail] Appel API SonarQube", ['url' => $url]);
         $result = $this->client->httpSonarQube($url);
-        if (isset($result['code']) && in_array($result['code'], [401, 403, 404, 500, 503])) {
-            return ['code' => $result['code'], 'erreur' => $result['erreur']];
+        if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503, 504])) {
+            $this->logger->error("❌ [Batch AnomalieDétail] Erreur API SonarQube.", [
+                'url' => $url,
+                'code' => $result['code'],
+                'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
+            ]);
+            return [
+                'code' => $result['code'],
+                'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
+            ];
         }
+
+        $this->logger->debug("🛠️ [Batch AnomalieDétail] Résultat JSON SonarQube reçu", [
+            'queryParams' => $queryParams,
+            'result' => $result['json'] ?? null
+        ]);
+
         return $result['json'] ?? [];
     }
 
@@ -98,12 +105,21 @@ class BatchCollecteAnomalieDetailController extends AbstractController
     public function mapSeverities(array $severities): array
     {
         // Initialisation du tableau de sévérités avec des valeurs par défaut
-        $severityMap = ['BLOCKER' => 0, 'CRITICAL' => 0, 'MAJOR' => 0, 'MINOR' => 0, 'INFO' => 0];
+        $severityMap = [
+            'BLOCKER' => 0,
+            'CRITICAL' => 0,
+            'MAJOR' => 0,
+            'MINOR' => 0,
+            'INFO' => 0
+        ];
         if (isset($severities['values'])) {
             foreach ($severities['values'] as $severity) {
                 $severityMap[$severity['val']] = $severity['count'];
             }
         }
+
+        $this->logger->debug("🛠️ [Batch AnomalieDétail] Mapping severities effectué", $severityMap);
+
         return $severityMap;
     }
 
@@ -120,16 +136,17 @@ class BatchCollecteAnomalieDetailController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function BatchCollecteAnomalieDetail(string $mavenKey, string $modeCollecte, string $utilisateurCollecte): array
+    public function BatchCollecteAnomalieDetail(string $maven_key, string $modeCollecte, string $utilisateurCollecte): array
     {
-        /** On instancie l'EntityRepository */
-        $anomalieDetailsRepository = $this->em->getRepository(AnomalieDetails::class);
-
-        /** On créé un objet date. */
+        $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
+        $anomalieDetailsRepos = $this->em->getRepository(AnomalieDetails::class);
         $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
-        /** On construit l'URL */
-        $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
+        $this->logger->info('ℹ️ [Batch AnomalieDétail] Début de collecte anomalies', [
+            'maven_key' => $maven_key,
+            'mode_collecte' => $modeCollecte,
+            'utilisateur' => $utilisateurCollecte
+        ]);
 
         /* Tableau des paramètres pour les requêtes HTTP */
         $queryParamsList = [
@@ -143,13 +160,15 @@ class BatchCollecteAnomalieDetailController extends AbstractController
         foreach ($queryParamsList as $key => $queryParams) {
             $results[$key] = self::makeRequest($queryParams);
             if (isset($results[$key]['code'])) {
+                $this->logger->error("❌ [Batch AnomalieDétail] Erreur pour le type {$key}", $results[$key]);
                 return [
                     'code' => $results[$key]['code'],
                     'erreur' => $results[$key]['erreur'],
-                    'type' => $key];
+                    'type' => $key
+                ];
             }
         }
-        $issueTypes = ['BUG', 'VULNERABILITY', 'CODE_SMELL'];
+        $issueTypes = [ 'BUG', 'VULNERABILITY', 'CODE_SMELL' ];
         $pagingTotals = [];
 
         /** On map pour chaque type les tableau de résultats qui nous intéresse */
@@ -161,14 +180,23 @@ class BatchCollecteAnomalieDetailController extends AbstractController
 
         /** Si la somme du total des anomalies est égale à zéro, on sort */
         if (array_sum($pagingTotals) === 0) {
-            return ['code' => 200, 'message' => "Pas d'anomalie trouvée.", 'data' => [] ];
+            $this->logger->info("ℹ️ [Batch AnomalieDétail] Aucune anomalie détectée", ['maven_key' => $maven_key]);
+            return [
+                'code' => 200,
+                'message' => "Pas d'anomalie trouvée.",
+                'data' => []
+            ];
         }
 
         /** On supprime l'enregistrement correspondant à la clé */
-        $map = ['maven_key' => $maven_key];
-        $delete = $anomalieDetailsRepository->deleteAnomalieDetailsMavenKey($map);
+        $map = [ 'maven_key' => $maven_key ];
+        $delete = $anomalieDetailsRepos->deleteAnomalieDetailsMavenKey($map);
         if ($delete['code'] != 200) {
-            return ['code' => $delete['code'], 'erreur' => $delete['erreur']];
+            $this->logger->error("❌ [Batch AnomalieDétail] Échec suppression ancienne donnée", $delete);
+            return [
+                'code' => $delete['code'],
+                'erreur' => $delete['erreur']
+            ];
         }
 
         /** On bind les résultats */
@@ -178,36 +206,42 @@ class BatchCollecteAnomalieDetailController extends AbstractController
 
         /** On prépare les données */
         $mapData = [
-            'maven_key' => $maven_key,
-            'name' =>$this->serviceExtractName->extractNameFromMavenKey($maven_key),
-            'bug_blocker' => $bugSeverities['BLOCKER'],
-            'bug_critical' => $bugSeverities['CRITICAL'],
-            'bug_major' => $bugSeverities['MAJOR'],
-            'bug_minor' => $bugSeverities['MINOR'],
-            'bug_info' => $bugSeverities['INFO'],
+                    'maven_key' => $maven_key,
+                    'name' =>$this->serviceExtractName->extractNameFromMavenKey($maven_key),
+                    'bug_blocker' => $bugSeverities['BLOCKER'],
+                    'bug_critical' => $bugSeverities['CRITICAL'],
+                    'bug_major' => $bugSeverities['MAJOR'],
+                    'bug_minor' => $bugSeverities['MINOR'],
+                    'bug_info' => $bugSeverities['INFO'],
 
-            'vulnerability_blocker' => $vulnerabilitySeverities['BLOCKER'],
-            'vulnerability_critical' => $vulnerabilitySeverities['CRITICAL'],
-            'vulnerability_major' => $vulnerabilitySeverities['MAJOR'],
-            'vulnerability_minor' => $vulnerabilitySeverities['MINOR'],
-            'vulnerability_info' => $vulnerabilitySeverities['INFO'],
+                    'vulnerability_blocker' => $vulnerabilitySeverities['BLOCKER'],
+                    'vulnerability_critical' => $vulnerabilitySeverities['CRITICAL'],
+                    'vulnerability_major' => $vulnerabilitySeverities['MAJOR'],
+                    'vulnerability_minor' => $vulnerabilitySeverities['MINOR'],
+                    'vulnerability_info' => $vulnerabilitySeverities['INFO'],
 
-            'code_smell_blocker' => $codeSmellSeverities['BLOCKER'],
-            'code_smell_critical' => $codeSmellSeverities['CRITICAL'],
-            'code_smell_major' => $codeSmellSeverities['MAJOR'],
-            'code_smell_minor' => $codeSmellSeverities['MINOR'],
-            'code_smell_info' => $codeSmellSeverities['INFO'],
+                    'code_smell_blocker' => $codeSmellSeverities['BLOCKER'],
+                    'code_smell_critical' => $codeSmellSeverities['CRITICAL'],
+                    'code_smell_major' => $codeSmellSeverities['MAJOR'],
+                    'code_smell_minor' => $codeSmellSeverities['MINOR'],
+                    'code_smell_info' => $codeSmellSeverities['INFO'],
 
-            'mode_collecte' => $modeCollecte,
-            'utilisateur_collecte' => $utilisateurCollecte,
-            'date_enregistrement' => $date];
+                    'mode_collecte' => $modeCollecte,
+                    'utilisateur_collecte' => $utilisateurCollecte,
+                    'date_enregistrement' => $date
+            ];
 
-            $insert = $anomalieDetailsRepository->insertAnomalieDetail($mapData);
+            $insert = $anomalieDetailsRepos->insertAnomalieDetail($mapData);
             if ($insert['code'] !== 200) {
-                return ['code' => $insert['code'], 'erreur' => $insert['erreur']];
+                $this->logger->error("❌ [Batch AnomalieDétail] Échec insertion", $insert);
+                return [
+                    'code' => $insert['code'],
+                    'erreur' => $insert['erreur']
+                ];
             }
 
-            $data =['bug_blocker' => $bugSeverities['BLOCKER'],
+            $data =[
+                    'bug_blocker' => $bugSeverities['BLOCKER'],
                     'bug_critical' => $bugSeverities['CRITICAL'],
                     'bug_major' => $bugSeverities['MAJOR'],
                     'bug_minor' => $bugSeverities['MINOR'],
@@ -221,8 +255,18 @@ class BatchCollecteAnomalieDetailController extends AbstractController
                     'code_smell_critical' => $codeSmellSeverities['CRITICAL'],
                     'code_smell_major' => $codeSmellSeverities['MAJOR'],
                     'code_smell_minor' => $codeSmellSeverities['MINOR'],
-                    'code_smell_info' => $codeSmellSeverities['INFO']];
+                    'code_smell_info' => $codeSmellSeverities['INFO']
+            ];
 
-        return ['code' => 200, 'message' => $mapData, 'data' => $data ];
+        $this->logger->info("ℹ️ [Batch AnomalieDétail] Collecte et insertion terminées", [
+            'maven_key' => $maven_key,
+            'data' => $mapData
+        ]);
+
+        return [
+            'code' => 200,
+            'message' => $mapData,
+            'data' => $data
+        ];
     }
 }
