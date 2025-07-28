@@ -1713,9 +1713,9 @@ $('#js-affiche-severity').on('click', function () {
  * description
  * On affiche la liste des hotspots
  */
-$('#js-affiche-detail-hotspot').on('click', function () {
+$('#js-affiche-modal-menace-potentielle').on('click', function () {
   if ($('select[name="projet"]').val() !== '' && $('select[name="projet"]').val() !== 'TheID') {
-      $('#modal-liste-hotspot').foundation('open');
+      $('#modal-menace-potentielle').foundation('open');
   }
 });
 
