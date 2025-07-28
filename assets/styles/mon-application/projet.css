@@ -404,17 +404,6 @@ textarea[readonly] {
   padding-right: 22px;
 }
 
-/* **** couleur sévérité **** */
-
-/* High */
-.rouge { color: #d4333f; }
-
-/* MEDIUM */
-.vert { color: #0a0; }
-
-/* LIGHT */
-.bleu { color: #00445b; }
-
 /* bouton actions pour la liste des projets */
 .capsule { padding-left: 0.1rem; }
 
