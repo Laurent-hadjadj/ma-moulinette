@@ -34,6 +34,8 @@ class BatchCollecteAnomalieController extends AbstractController
     public static $statuses = "OPEN,REOPENED";
     public static $statusesMin = "OPEN,CONFIRMED,REOPENED,RESOLVED";
     public static $statusesAll = "OPEN, CONFIRMED, REOPENED, RESOLVED, CLOSED";
+    private static $beginRegEx = '/\b(?:';
+    private static $endRegEx = ')\b/i';
 
     /**
      * [Description for __construct]
@@ -50,6 +52,92 @@ class BatchCollecteAnomalieController extends AbstractController
         private UrlBuilderService $urlBuilder,
         private LoggerInterface $logger
     ) {
+    }
+
+    /**
+     * [Description for batchAnalyseAnomalie]
+     * Calcule la répartition des anomalies par module
+     *
+     * @param mixed $facet
+     * @param mixed $maven_key
+     *
+     * @return array
+     *
+     * Created at: 28/07/2025 15:45:12 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function batchAnalyseAnomalie($facet, $maven_key): array
+    {
+        /** On récupère le nombre total d'anomalie par chemin,donc il suffit d'identifier la nature du chemin pour connaître le nombre d'anomalie par module. */
+
+        $this->logger->info('ℹ️ [Batch Anomalie] Début de l’analyse des répertoires', [
+            'nombre_directory' => count($facet['values'])
+        ]);
+
+        /** On calcule la répartition pour les application java et ?Php */
+        $scoreFrontend = $scoreBackend = $scoreAutre = $scoreInconnue = 0;
+
+        /** on récupère la liste des clés pour chaque module */
+        $listeFrontend = $this->getParameter('module.frontend');
+        $listeBackend = $this->getParameter('module.backend');
+        $listeAutre = $this->getParameter('module.autre');
+
+        $frontendKeywords = array_map('strtolower', array_map('trim', explode(',', $listeFrontend)));
+        $backendKeywords = array_map('strtolower', array_map('trim', explode(',', $listeBackend)));
+        $autreKeywords = array_map('strtolower', array_map('trim', explode(',', $listeAutre)));
+
+        // On prépare les regex pour une vérification rapide
+        // Utilisation de preg_quote pour échapper d'éventuels caractères spéciaux dans les mots-clés
+        $regexFrontend = static::$beginRegEx . implode('|', array_map('preg_quote', $frontendKeywords)) . static::$endRegEx;
+        $regexBackend  = static::$beginRegEx . implode('|', array_map('preg_quote', $backendKeywords)) . static::$endRegEx;
+        $regexAutre  = static::$beginRegEx . implode('|', array_map('preg_quote', $autreKeywords)) . static::$endRegEx;
+
+        try {
+            foreach ($facet['values'] as $directory) {
+                $path = str_replace($maven_key . ':', '', $directory['val']);
+                $count = $directory['count'];
+
+                // On vérifie si le chemin correspond à un module frontend
+                if (preg_match($regexFrontend, $path)) {
+                    $scoreFrontend += $count;
+                }
+                // Sinon, on vérifie s'il correspond à un module backend
+                elseif (preg_match($regexBackend, $path)) {
+                    $scoreBackend += $count;
+                } // Sinon, on vérifie s'il correspond à un module autre
+                elseif (preg_match($regexAutre, $path)) {
+                    $scoreAutre += $count;
+                } // Si aucune des regex ne matche, c'est considéré comme "inconnue"
+                else {
+                    $scoreInconnue += $count;
+                }
+            }
+        } catch (\Exception $e) {
+            $this->logger->critical("🔴 [Batch Anomalie] Exception lors de l'analyse du chemin", ['exception' => $e->getMessage()]);
+
+            return [
+                'code' => 500,
+                'type' => 'alert',
+                'message' => "Une erreur inétendue lors de l'analyse du chemin (<strong>batchAnalyseAnomalie</strong>) est survenue (Erreur 500).",
+                'trace' => $e
+            ];
+        }
+
+        $this->logger->info('ℹ️ [Batch Anomalie] Analyse du chemin.', [
+            'frontend' => $scoreFrontend,
+            'backend' => $scoreBackend,
+            'autre' => $scoreAutre,
+            'inconnue' => $scoreInconnue
+        ]);
+
+        return [
+                'code' => 200,
+                'frontend' => $scoreFrontend,
+                'backend' => $scoreBackend,
+                'autre' => $scoreAutre,
+                'inconnue' => $scoreInconnue
+            ];
     }
 
     /**
@@ -190,7 +278,6 @@ class BatchCollecteAnomalieController extends AbstractController
             /* On initialise les indicateurs de sévérité, de type et de répartition */
             $severities = ['BLOCKER' => 0, 'CRITICAL' => 0, 'MAJOR' => 0, 'INFO' => 0, 'MINOR' => 0];
             $types = ['BUG' => 0, 'VULNERABILITY' => 0, 'CODE_SMELL' => 0];
-            $modules = ['frontend' => 0, 'backend' => 0, 'autre' => 0, 'inconnue' => 0];
 
             /** On récupère les informations */
             foreach ($results['general']['facets'] as $facet) {
@@ -206,21 +293,10 @@ class BatchCollecteAnomalieController extends AbstractController
                         }
                         break;
                     case 'directories':
-                        foreach ($facet['values'] as $directory) {
-                            $file = str_replace($maven_key . ':', "", $directory['val']);
-                            $module = explode('/', $file)[0];
-                            $count = $directory['count'];
-                            if (in_array($module, ['du-presentation', 'rs-presentation', "$app-presentation", "$app-presentation-commun", "$app-presentation-ear", "$app-webapp"])) {
-                                $modules['frontend'] += ($module === "$app-presentation" || $module === "$app-presentation-commun" || $module === "$app-presentation-ear" || $module === "$app-webapp") ? 1 : $count;
-                            } elseif (in_array($module, ['rs-metier', "$app-metier", "$app-common", "$app-api", "$app-dao", "$app-metier-ear", "$app-service", "$app-serviceweb", "$app-middleoffice", "$app-metier-rest", "$app-entite", "$app-serviceweb-client"])) {
-                                $modules['backend'] += $count;
-                            } elseif (in_array($module, ["$app-batch", "$app-batchs", "$app-batch-envoi-dem-aval", "$app-batch-import-billets", "$app-rdd"])) {
-                                $modules['autre'] += $count;
-                            } else { $modules['inconnue'] += $count; }
-                        }
+                        $analyse = $this->batchAnalyseAnomalie($facet, $maven_key);
                         break;
                     default:
-                        break;
+                        $this->logger->critical("🔴 [Batch Anomalie] On ne devrait pas arriver dans le default du switch.]");
                     break;
                 }
             }
@@ -239,10 +315,10 @@ class BatchCollecteAnomalieController extends AbstractController
             'dette_vulnerability_minute' => $detteVulnerabilityMinute ?? 0,
             'dette_code_smell' => $detteCodeSmell ?? 0,
             'dette_code_smell_minute' => $detteCodeSmellMinute ?? 0,
-            'frontend' => $modules['frontend'] ?? 0,
-            'backend' => $modules['backend'] ?? 0,
-            'autre' => $modules['autre'] ?? 0,
-            'inconnue' => $modules['inconnue'] ?? 0,
+            'frontend' => $analyse['frontend'] ?? 0,
+            'backend' => $analyse['backend'] ?? 0,
+            'autre' => $analyse['autre'] ?? 0,
+            'inconnue' => $analyse['inconnue'] ?? 0,
             'blocker' => $severities['BLOCKER'] ?? 0,
             'critical' => $severities['CRITICAL'] ?? 0,
             'major' => $severities['MAJOR'] ?? 0,
@@ -272,10 +348,10 @@ class BatchCollecteAnomalieController extends AbstractController
                     'nombre_bug' => $types['BUG'] ?? 0,
                     'nombre_vulnerability' => $types['VULNERABILITY'] ?? 0,
                     'nombre_code_smell' => $types['CODE_SMELL'] ?? 0,
-                    'frontend' => $modules['frontend'] ?? 0,
-                    'backend' => $modules['backend'] ?? 0,
-                    'autre' => $modules['autre'] ?? 0,
-                    'inconnue' => $modules['inconnue'] ?? 0,
+                    'frontend' => $module['frontend'] ?? 0,
+                    'backend' => $module['backend'] ?? 0,
+                    'autre' => $module['autre'] ?? 0,
+                    'inconnue' => $module['inconnue'] ?? 0,
                     'nombre_anomalie_bloquant' => $severities['BLOCKER'] ?? 0,
                     'nombre_anomalie_critique' =>$severities['CRITICAL'] ?? 0,
                     'nombre_anomalie_info' =>$severities['INFO'] ?? 0,
