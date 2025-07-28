@@ -152,17 +152,17 @@ export const enregistrement = async function(mavenKey) {
   const noteSqale=$('#note-sqale').text().trim();
 
   /** On récupère les hotspots. */
-  const noteHotspot=$('#note-hotspot').text().trim();
+  const noteHotspot=$('#note-menace-potentielle').text().trim();
 
   /** On récupère les hotspot par sévérité */
-  const t24 = document.getElementById('hotspot-high');
-  const t25 = document.getElementById('hotspot-medium');
-  const t26 = document.getElementById('hotspot-low');
-  const t27 = document.getElementById('hotspot-total');
-  const hotspotHigh=t24.dataset.hotspotHigh;
-  const hotspotMedium=t25.dataset.hotspotMedium;
-  const hotspotLow=t26.dataset.hotspotLow;
-  const nombreHotspot=t27.dataset.nombreHotspot;
+  const t24 = document.getElementById('menace-potentielle-high');
+  const t25 = document.getElementById('menace-potentielle-medium');
+  const t26 = document.getElementById('menace-potentielle-low');
+  const t27 = document.getElementById('menace-potentielle-total');
+  const hotspotHigh = t24.dataset.hotspotHigh;
+  const hotspotMedium = t25.dataset.hotspotMedium;
+  const hotspotLow = t26.dataset.hotspotLow;
+  const nombreHotspot = t27.dataset.nombreHotspot;
 
   const t28 = document.getElementById('js-bug-blocker');
   const t29 = document.getElementById('js-bug-critical');
