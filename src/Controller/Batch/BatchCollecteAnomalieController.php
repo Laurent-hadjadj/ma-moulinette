@@ -348,10 +348,10 @@ class BatchCollecteAnomalieController extends AbstractController
                     'nombre_bug' => $types['BUG'] ?? 0,
                     'nombre_vulnerability' => $types['VULNERABILITY'] ?? 0,
                     'nombre_code_smell' => $types['CODE_SMELL'] ?? 0,
-                    'frontend' => $module['frontend'] ?? 0,
-                    'backend' => $module['backend'] ?? 0,
-                    'autre' => $module['autre'] ?? 0,
-                    'inconnue' => $module['inconnue'] ?? 0,
+                    'frontend' => $analyse['frontend'] ?? 0,
+                    'backend' => $analyse['backend'] ?? 0,
+                    'autre' => $analyse['autre'] ?? 0,
+                    'inconnue' => $analyse['inconnue'] ?? 0,
                     'nombre_anomalie_bloquant' => $severities['BLOCKER'] ?? 0,
                     'nombre_anomalie_critique' =>$severities['CRITICAL'] ?? 0,
                     'nombre_anomalie_info' =>$severities['INFO'] ?? 0,
@@ -362,8 +362,10 @@ class BatchCollecteAnomalieController extends AbstractController
         $this->logger->info('ℹ️ [Batch Anomalie] Collecte réussie', [
             'maven_key' => $maven_key,
             'violations' => $anomalieTotal ?? 0,
-            'frontend' => $modules['frontend'] ?? 0,
-            'backend' => $modules['backend'] ?? 0,
+            'frontend' => $analyse['frontend'] ?? 0,
+            'backend' => $analyse['backend'] ?? 0,
+            'autre' => $analyse['autre'] ?? 0,
+            'inconnue' => $analyse['inconnue'] ?? 0,
             'utilisateur' => $utilisateurCollecte
         ]);
 
