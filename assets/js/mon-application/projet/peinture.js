@@ -723,7 +723,7 @@ export const remplissage = async function(maven_key) {
           couleur = 'note-vert1';
       }
 
-      $('#note-hotspot').html(`<span class="${couleur}">${t.note}</span>`);
+      $('#note-menace-potentielle').html(`<span class="${couleur}">${t.note}</span>`);
       log(' - 🎨 [Peinture] Affichage des informations sur les menaces potentielles.');
     } catch(error) {
           ErrorButtonAffiche();
@@ -862,34 +862,43 @@ export const afficheHotspotDetails = async function (maven_key){
     }
 
     /* On efface les données.*/
-    $('#tableau-liste-hotspot').html('');
+    $('#tableau-menace-potentielle').html('');
     const str =`
-      <tr colspan="3" id="titre-hotspot-to-review" class="open-sans text-center">Risques de vulnérabilité à vérifier.</tr>
       <tr id="to-review">
-        <td id="hotspot-to-review-high" class="text-center stat" data-hotspot-to-review-high="${t.to_review_high}">
+        <td class="open-sans text-left">Review</td>
+        <td id="menace-potentielle-to-review-high" class="text-center stat" data-menace-potentielle-to-review-high="${t.to_review_high}">
           ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.to_review_high)}</td>
-        <td id="hotspot-to-review-medium" class="text-center stat" data-hotspot-to-review-medium="${t.to_review_medium}">
+        <td id="menace-potentielle-to-review-medium" class="text-center stat" data-menace-potentielle-to-review-medium="${t.to_review_medium}">
           ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.to_review_medium)}</td>
-        <td id="hotspot-to-review-low" class="text-center stat" data-hotspot-to-review-low="${t.to_review_low}">
+        <td id="menace-potentielle-to-review-low" class="text-center stat" data-menace-potentielle-to-review-low="${t.to_review_low}">
           ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.to_review_low)}</td>
       </tr>
-      <tr colspan="3" id="titre-hotspot-to-review" class="open-sans text-center">Risques de vulnérabilité déjà vérifiés.</tr>
       <tr id="reviewed">
-        <td id="hotspot-to-review-high" class="text-center stat" data-hotspot-to-review-high="${t.reviewed_high}">
+        <td class="open-sans text-left">Reviewed</td>
+        <td id="menace-potentielle-reviewed-high" class="text-center stat" data-menace-potentielle-reviewed-high="${t.reviewed_high}">
           ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.reviewed_high)}</td>
-        <td id="hotspot-to-review-medium" class="text-center stat" data-hotspot-to-review-medium="${t.reviewed_medium}">
+        <td id="menace-potentielle-reviewed-medium" class="text-center stat" data-menace-potentielle-reviewed-medium="${t.reviewed_medium}">
           ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.reviewed_medium)}</td>
-        <td id="hotspot-to-review-low" class="text-center stat" data-hotspot-to-review-low="${t.to_review_low}">
+        <td id="menace-potentielle-reviewed-low" class="text-center stat" data-menace-potentielle-reviewed-low="${t.to_review_low}">
           ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.reviewed_low)}</td>
       </tr>`;
 
-    $('#tableau-liste-hotspot').append(str);
-    $('#hotspot-total').html(`<span class="stat">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.to_review_total)}</span>`);
-    if (t.to_review_total > 0) {
-      $('#s').html('s');
+    $('#tableau-menace-potentielle').append(str);
+    //calcul du nombre de menace à examiner
+    const reviewed_total = parseInt(t.reviewed_high, 10) + parseInt(t.reviewed_medium,10) + parseInt(t.reviewed_low, 10);
+    const total = parseInt(t.to_review_total, 10) - parseInt(t.reviewed_total, 10);
+    let calcul = 0;
+    if (total > 0) {
+      calcul = 1 - (reviewed_total / parseInt(t.to_review_total, 10));
+    }
+    const repartition = new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(calcul);
+
+    $('#menace-potentielle-total').html(`<span class="stat">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(total)}</span> <span>(${repartition})`);
+    if (parseInt(t.to_review_total, 10) > 0) {
+      $('.menace-potentielle-s').html('s');
     }
 
-    const t1 = document.getElementById('hotspot-total');
+    const t1 = document.getElementById('menace-potentielle-total');
     t1.dataset.nombreHotspot=(t.to_review_high_total);
     log(' - 🎨 [Peinture] Mise à jour du tableau du détail des menaces potentielles.');
   } catch(error) {
