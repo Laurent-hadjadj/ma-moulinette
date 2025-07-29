@@ -13,23 +13,18 @@
 
 namespace App\Controller\Cosui;
 
-use App\Entity\Historique;
-use App\Entity\Repartition;
-use App\Service\ExtractName;
-
-/** Gestion de accès aux API */
-use App\Entity\RepartitionTemp;
-use Doctrine\ORM\EntityManagerInterface;
-
-/** Accès aux tables */
-use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 
-/** Import des services */
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use App\Entity\RepartitionTemp;
+use App\Entity\Historique;
+use App\Entity\Repartition;
+use App\Service\ExtractName;
 
 /**
  * [Description CosuiController]
@@ -62,8 +57,6 @@ class CosuiController extends AbstractController
         private ExtractName $serviceExtractName,
         private ParameterBagInterface $params)
     {
-        $this->em = $em;
-        $this->mr = $mr;
         $this->params = $params;
         $this->serviceExtractName = $serviceExtractName;
         $this->logoEntreprise = $params->get('logo.entreprise');
@@ -115,7 +108,7 @@ class CosuiController extends AbstractController
             'type' => $type,
             'titre' => static::$titre,
             'message' => $message,
-            'debug' => $debug] );
+            'debug' => $debug]);
         return $this->render(static::$page, $render);
     }
 
