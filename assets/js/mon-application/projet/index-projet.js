@@ -1639,7 +1639,8 @@ $('.js-cosui').on('click', () => {
   /** on créé un token pour encoder les paramètres */
   const param = `${salt}|${apiMaven}`;
   const a = encode(btoa(param));
-  location.href=`${serveur()}/projet/cosui?maven_key=${a}`;
+  const b = a.slice(0, -1);
+  location.href=`${serveur()}/projet/cosui?token=${b}`;
   } else {
     log(' - ERROR - [COSUI] - Vous devez choisir un projet dans la liste !! !');
     }
