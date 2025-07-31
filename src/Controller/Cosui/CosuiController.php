@@ -78,7 +78,7 @@ class CosuiController extends AbstractController
             'type' => $type,
             'titre' => static::$titre,
             'message' => $message,
-            'debug' => $trace ?? null,
+            'trace' => $trace ?? null,
         ]);
 
         return $this->render(static::$page, $render);
