@@ -62,7 +62,7 @@ class CosuiController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function addFlashAndRender(string $type, string $message, string $debug, array $render): Response
+    private function addFlashAndRender(string $type, string $message, string|null $trace, array $render): Response
     {
         if (!isset(static::$titre) || !isset(static::$page)) {
             $this->logger->error("Paramètre statique 'titre' ou 'page' non défini dans addFlashAndRender().");
@@ -71,14 +71,14 @@ class CosuiController extends AbstractController
         $this->logger->info("ℹ️ [COSUI] Ajout d’un message flash de type '{$type}' avec le titre : " . (static::$titre ?? '[non défini]'));
         $this->logger->debug("Contenu du message flash", [
             'message' => $message,
-            'debug' => $debug,
+            'trace' => $trace ?? 'Pas de traces',
             'render_keys' => array_keys($render),
         ]);
         $this->addFlash('notice', [
             'type' => $type,
             'titre' => static::$titre,
             'message' => $message,
-            'debug' => $debug,
+            'debug' => $trace ?? null,
         ]);
 
         return $this->render(static::$page, $render);
@@ -164,12 +164,12 @@ class CosuiController extends AbstractController
 
         try {
                 $result = $this->cosuiService->generateRender($maven_key);
-                if (isset($result['code']) && $result['code'] === 500) {
+                if (isset($result['code']) && $result['code'] !== 200) {
                     $this->logger->error($result['message'], [
                         'mavenKey' => $maven_key,
-                        'trace' => $result['trace']
+                        'trace' => $result['trace'] ?? 'Non disponible'
                     ]);
-                    return $this->addFlashAndRender($result['type'], $result['message'], $result['trace'], $render);
+                    return $this->addFlashAndRender($result['type'], $result['message'], $result['trace'] ?? '', $render);
                 }
         } catch (\RuntimeException $e) {
             return $this->addFlashAndRender('critical', 'Erreur lors de la génération COSUI', $e->getMessage(), $render);
