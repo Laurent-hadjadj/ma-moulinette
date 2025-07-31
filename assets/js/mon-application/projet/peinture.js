@@ -910,7 +910,7 @@ export const afficheHotspotDetails = async function (maven_key){
     }
 
     const t1 = document.getElementById('menace-potentielle-totale');
-    t1.dataset.menacePotentielleTotal = (total);
+    t1.dataset.menacePotentielleTotale = (total);
     log(' - 🎨 [Peinture] Mise à jour du tableau du détail des menaces potentielles.');
   } catch(error) {
     ErrorButtonAffiche();
