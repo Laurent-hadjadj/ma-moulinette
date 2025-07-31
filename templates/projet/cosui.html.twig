@@ -1,5 +1,6 @@
-{% set title = 'mes outils' %}
-{% set description = 'Ma Moulinette - Synthèse' %}
+{% set title = 'Comité de Suivi' %}
+{% set description = 'Ma Moulinette - COSUI' %}
+{% set type_content = "Application Ma-Moulinette, Comité de Suivi." %}
 {% set bottom="footer-fixed" %}
 
 {% if initial_code_smell_blocker == -1 %}
@@ -46,11 +47,13 @@
   <head>
     <title>{{ title }}</title>
     {{ include('head.html.twig') }}
-        {# Chargement des assets JS et CSS #}
+    {# Chargement des assets JS et CSS #}
     {% block importmap %}{{ importmap('cosui') }}{% endblock %}
   </head>
 
-  <body>
+  <body dir="ltr">
+    {# no-script #}
+    {{ include('no-script.html.twig') }}
     {# Chargement de la section header #}
     {{ include('header.html.twig') }}
 
@@ -64,25 +67,47 @@
       </nav>
     </header>
 
+    <header class="grid-container"
+            aria-labelledby="titre-cosui"
+            aria-describedby="desc-cosui">
+      <h1 id="titre-cosui" class="h3 claire-hand" aria-label="Collecte et analyse des indicateurs SonarQube" aria-describedby="titre-cosui"><span aria-hidden="true">📈</span>COmité de SUIvi</h1>
+      <h2 id="desc-cosui" class="h4 claire-hand"><span aria-hidden="true">📌</span>Suivi des indicateurs clés</h2>
+      <div class="show-for-sr">Cette page affiche pour le projet les indicateurs de suivi clés entre une version de référence et la version courante.</div>
+    </header>
+
     <main class="grid-container">
-      <h1 class="h2 claire-hand">COmité de SUIvi.</h1>
-      <h2 class="h3 claire-hand">Suivi des indicateurs.</h2>
-      <div id="collecte-animation" class="sp"></div>
       <p class="open-sans">
         <span class="open-sans">Setup :</span>
         <span id="js-setup" class="open-sans color-noir">{{setup}}</span>
       </p>
 
-      {# On affiche les messages #}
-      {% for message in app.flashes('notice') %}
-      <div class="callout alert-callout-border {{message.type}} cell" data-closable>
-        <p class="open-sans text-justify callout-message">
-            <strong>{{message.titre}}</strong> {{ message.message }}</p>
-        <button class="close-button {{message.type}}" aria-label="Dismiss alert" type="button" data-close>
+      {# Gestion des messages flash & JS #}
+      <section>
+        {% for message in app.flashes('notice') %}
+        <div class="callout {{ message.type }} alert-callout-border callout-ombre js-flash-box" role="alert" data-closable>
+          <p class="open-sans text-justify callout-message">
+              <strong>{{ message.titre }}</strong> {{ message.message }}
+          </p>
+          {% if message.debug %}
+            <p class="open-sans text-justify callout-message">
+              {{ message.debug }}
+            </p>
+          {% endif %}
+          <button class="close-button {{message.type}}"
+                  type="button"
+                  aria-label="Dismiss alert" data-close><span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        {% endfor %}
+
+        {# Message d'information JS#}
+        <div id="message-box" class="callout alert-callout-border callout-ombre hide" role="alert" data-closable>
+            <button id="message-button-close" class="close-button" aria-label="Close alert" type="button" data-close>
             <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      {% endfor %}
+            </button>
+            <p id="message-text"></p>
+        </div>
+      </section>
 
       <div class="grid-x">
         <p class="open-sans">Afficher les variations ?</p>
@@ -98,7 +123,7 @@
       <br>
       <div id="tableau-notes" class="table-scroll">
         <table>
-          <caption id="js-series" class=" no-caption" aria-hidden="true" data-initial="{{dataset1}}" data-actuel="{{dataset2}}" data-labela="{{label1}}" data-labelb="{{label2}}"></caption>
+          <caption id="js-series" class="no-caption" aria-hidden="true" data-initial="{{dataset1}}" data-actuel="{{dataset2}}" data-labela="{{label1}}" data-labelb="{{label2}}"></caption>
           <thead>
             <tr class="open-sans">
               <th colspan="1" scope="col" class="text-center">Application</th>
