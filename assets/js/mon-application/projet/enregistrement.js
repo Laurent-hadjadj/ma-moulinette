@@ -100,7 +100,7 @@ export const enregistrement = async function(maven_key) {
   const t7 = document.getElementById('nombre-ligne-de-code');
   const t7a = document.getElementById('nombre-fichier');
   const t7b = document.getElementById('nombre-classe');
-  const t7c = document.getElementById('nombre-function');
+  const t7c = document.getElementById('nombre-fonction');
 
   const t8 = document.getElementById('coverage');
   const t8a = document.getElementById('ratio-dette-technique');
