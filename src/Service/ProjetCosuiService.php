@@ -67,18 +67,20 @@ class ProjetCosuiService
         // 1. Données projet actuel
         $n = $this->notes($maven_key);
         if ($n['code'] !== 200) {
-            $message = '❌ [COSUI] Problème récupération des données projet actuel (notes)';
-            $this->logger->error($message);
+            $message = '❌ Problème récupération des données projet actuel (notes)';
+            $messageLog = '❌ [COSUI] Problème récupération des données projet actuel (notes)';
+            $this->logger->error($messageLog);
             return [
                 'code' => $n['code'],
                 'type' => 'error',
                 'message' => $message,
-                'trace' => $n['erreur'] ?? null
+                'trace' => $n['erreur'] ?? static::$erreurInconnue
             ];
         }
         if ($n['code'] == 200 && $n['result'] === false) {
-            $message = '⚠️ [COSUI] Aucune données présentent dans la table historique pour ce projet (Erreur 404).';
-            $this->logger->warning($message);
+            $message = '⚠️ Aucune données présentent dans la table historique pour ce projet (Erreur 404).';
+            $messageLog = '⚠️ [COSUI] Aucune données présentent dans la table historique pour ce projet (Erreur 404).';
+            $this->logger->warning($messageLog);
             return [
                 'code' => 404,
                 'type' => 'warning',
@@ -91,18 +93,20 @@ class ProjetCosuiService
         // 2. Données de référence
         $nn = $this->reference($maven_key);
         if ($nn['code'] !== 200) {
-            $message = "❌ [COSUI] Échec récupération des données de référence.";
-            $this->logger->error($message);
+            $message = "❌ Échec récupération des données de référence.";
+            $messageLog = "❌ [COSUI] Échec récupération des données de référence.";
+            $this->logger->error($messageLog);
             return [
                 'code' => $nn['code'],
                 'type' => 'error',
                 'message' => $message,
-                'trace' => $nn['erreur'] ?? null
+                'trace' => $nn['erreur'] ?? static::$erreurInconnue
             ];
         }
         if ($n['code'] == 200 && $nn['result'] === false) {
-            $message = '⚠️ [COSUI] Aucune données présentent dans la table historique pour ce projet (Erreur 404).';
-            $this->logger->warning($message);
+            $message = '⚠️ Aucune données présentent dans la table historique pour ce projet (Erreur 404).';
+            $messageLog = '⚠️ [COSUI] Aucune données présentent dans la table historique pour ce projet (Erreur 404).';
+            $this->logger->warning($messageLog);
             return [
                 'code' => 404,
                 'type' => 'warning',
@@ -117,8 +121,9 @@ class ProjetCosuiService
                 $setup = $this->setup($maven_key);
                 $render['setup'] = $setup[0] ?? 'NoN';
             } catch (\Throwable $e) {
-                $message = '🔴 [COSUI] Erreur lors de la récupération du setup';
-                $this->logger->error($message, ['exception' => $e->getMessage()]);
+                $message = '🔴 Erreur lors de la récupération du setup';
+                $messageLog = '🔴 [COSUI] Erreur lors de la récupération du setup';
+                $this->logger->critical($messageLog, ['exception' => $e->getMessage()]);
                 return [
                     'code' => 500,
                     'type' => 'critical',
@@ -136,8 +141,9 @@ class ProjetCosuiService
                 }
             }
             } catch (\Throwable $e) {
-        $message = '🔴 [COSUI] Erreur durant le traitement des anomalies';
-        $this->logger->error($message, ['exception' => $e->getMessage()]);
+        $message = '🔴 Erreur durant le traitement des anomalies.';
+        $messageLog = '🔴 [COSUI] Erreur durant le traitement des anomalies.';
+        $this->logger->critical($messageLog, ['exception' => $e->getMessage()]);
         return [
             'code' => 500,
             'type' => 'critical',
@@ -559,14 +565,15 @@ class ProjetCosuiService
         $repartitionRepos = $this->em->getRepository(Repartition::class);
         $getSetup = $repartitionRepos->findLatestSetupByMavenKey($maven_key);
         if ($getSetup['code'] != 200) {
-                    $message = "❌ [Cosui] Échec de récupération du dernier setup pour le projet.";
-                    $this->logger->error($message, $getSetup['erreur']);
-                    return [
-                        'code' => $getSetup['code'],
-                        'type' => 'alert',
-                        'message' => $message,
-                        'trace' => $getSetup['erreur']
-                    ];
+            $message = "❌ Échec de récupération du dernier setup pour le projet.";
+            $messageLog = "❌ [COSUI] Échec de récupération du dernier setup pour le projet.";
+            $this->logger->error($messageLog, $getSetup['erreur']);
+            return [
+                'code' => $getSetup['code'],
+                'type' => 'alert',
+                'message' => $message,
+                'trace' => $getSetup['erreur'] ?? static::$erreurInconnue
+            ];
                 }
         if ($getSetup['result'] === 'NaN') {
             $this->logger->warning("⚠️ [COSUI] Aucun setup trouvé pour ce maven_key", ['mavenKey' => $maven_key]);
@@ -675,16 +682,17 @@ class ProjetCosuiService
         $request = $historiqueRepos->selectHistoriqueProjetLast(['maven_key' => $maven_key]);
 
         if ($request['code'] !== 200) {
-            $message = "❌ [COSUI] Erreur lors de la récupération des notes.";
-            $this->logger->error($message, [
+            $message = "❌ Erreur lors de la récupération des notes.";
+            $messageLog = "❌ [COSUI] Erreur lors de la récupération des notes.";
+            $this->logger->error($messageLog, [
                 'maven_key' => $maven_key,
                 'code' => $request['code'],
-                'erreur' => $request['erreur'] ?? 'Non précisée'
+                'erreur' => $request['erreur'] ?? static::$erreurInconnue
             ]);
             return [
                 'code' => $request['code'],
                 'message' => $message,
-                'erreur' => $request['erreur'] ?? static::$erreurInconnue
+                'trace' => $request['erreur'] ?? static::$erreurInconnue
             ];
         }
 
@@ -760,7 +768,7 @@ class ProjetCosuiService
             return [
                 'maven_key' => $maven_key,
                 'code' => $request['code'],
-                'erreur' => $request['erreur'] ?? static::$erreurInconnue
+                'trace' => $request['erreur'] ?? static::$erreurInconnue
             ];
         }
 
