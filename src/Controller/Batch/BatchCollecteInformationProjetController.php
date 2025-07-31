@@ -70,7 +70,7 @@ class BatchCollecteInformationProjetController extends AbstractController
             [ 'project' => $maven_key ]
         );
 
-        $this->logger->debug('[Batch controlVersionProjet] Appel API SonarQube', ['url' => $url]);
+        $this->logger->debug('🛠️ [Batch controlVersionProjet] Appel API SonarQube', ['url' => $url]);
         $result = $this->client->httpSonarQube($url);
 
         /** On vérifie si le projet existe en locale dans la table information ou historique*/
@@ -178,7 +178,7 @@ class BatchCollecteInformationProjetController extends AbstractController
             $autre = $total - ($release+$snapshot);
         }
 
-        $this->logger->debug('[calculRepartitionProjet] Répartition calculée', [
+        $this->logger->debug('🛠️ [calculRepartitionProjet] Répartition calculée', [
             'total' => $total,
             'release' => $release,
             'snapshot' => $snapshot,

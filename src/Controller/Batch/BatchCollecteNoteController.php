@@ -91,7 +91,7 @@ class BatchCollecteNoteController extends AbstractController
             ]
         );
 
-        $this->logger->debug('[Batch Note] Appel API SonarQube', ['url' => $url]);
+        $this->logger->debug('🛠️ [Batch Note] Appel API SonarQube', ['url' => $url]);
         $result = $this->client->httpSonarQube($url);
         if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503, 504])) {
             $this->logger->error('❌ [Batch Note] Erreur SonarQube', [

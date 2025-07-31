@@ -66,11 +66,11 @@ class BatchCollecteLoggerController extends AbstractController
             $queryParams
         );
 
-        $this->logger->debug('[Batch Logger] Appel API SonarQube', ['url' => $url]);
+        $this->logger->debug('🛠️ [Batch Logger] Appel API SonarQube', ['url' => $url]);
         $result = $this->client->httpSonarQube($url);
 
         if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503, 504])) {
-            $this->logger->error('[Batch Logger] Erreur SonarQube', [
+            $this->logger->error('❌ [Batch Logger] Erreur SonarQube', [
                 'url' => $url,
                 'code' => $result['code'],
                 'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
@@ -140,7 +140,7 @@ class BatchCollecteLoggerController extends AbstractController
         /** Appels API et vérification des retours */
         $results = [];
         foreach ($method as $tracker) {
-            $this->logger->debug("[Batch Logger] Appel API Sonar : {$tracker}", ['params' => $queryParams[$tracker]]);
+            $this->logger->debug("🛠️ [Batch Logger] Appel API Sonar : {$tracker}", ['params' => $queryParams[$tracker]]);
             $results[$tracker] = self::makeRequest($queryParams[$tracker]);
 
             if (isset($results[$tracker]['code']) && $results[$tracker]['code'] !== 200) {

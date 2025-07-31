@@ -86,7 +86,7 @@ class BatchCollecteOwaspController extends AbstractController
             $queryParamsList['owasp2017']
         );
 
-        $this->logger->debug("[Collecte OWASP] Appel OWASP 2017 → {$url}");
+        $this->logger->debug("🛠️ [Collecte OWASP] Appel OWASP 2017 → {$url}");
         /** On appelle les requêtes HTTP pour chaque référentiel */
         $owasp2017 = $this->client->httpSonarQube($url);
 
@@ -220,7 +220,7 @@ class BatchCollecteOwaspController extends AbstractController
         }
 
         /** On supprime les informations sur le projet pour la dernière analyse. */
-        $this->logger->debug("🧹 [Collecte OWASP] Suppression OWASP existant pour {$maven_key}");
+        $this->logger->debug("🛠️ [Collecte OWASP] Suppression OWASP existant pour {$maven_key}");
         $map = ['maven_key' => $maven_key];
         $delete = $owaspRepos->deleteOwaspMavenKey($map);
         if ($delete['code'] != 200) {

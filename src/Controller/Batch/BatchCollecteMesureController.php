@@ -72,7 +72,7 @@ class BatchCollecteMesureController extends AbstractController
             ['component' => $maven_key]
         );
 
-        $this->logger->debug('[Batch Logger] Appel API SonarQube', ['url' => $url]);
+        $this->logger->debug('🛠️ [Batch Logger] Appel API SonarQube', ['url' => $url]);
         $result = $this->client->httpSonarQube($url);
 
         if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503, 504])) {
@@ -109,7 +109,7 @@ class BatchCollecteMesureController extends AbstractController
             ['component' => $maven_key, 'metricKeys' => 'ncloc,ncloc_language_distribution,classes,functions,files']
         );
 
-        $this->logger->debug('[Batch Mesure] Appel à SonarQube /measures/component (bloc 1)', ['url' => $url]);
+        $this->logger->debug('🛠️ [Batch Mesure] Appel à SonarQube /measures/component (bloc 1)', ['url' => $url]);
 
         $result2 = $this->client->httpSonarQube($url);
 
@@ -146,7 +146,7 @@ class BatchCollecteMesureController extends AbstractController
             }
         }
 
-        $this->logger->debug('[Batch Mesure] Résumé des métriques secondaires extraites', [
+        $this->logger->debug('🛠️ [Batch Mesure] Résumé des métriques secondaires extraites', [
             'ncloc' => $ncloc,
             'classes' => $classes,
             'functions' => $functions,
@@ -161,7 +161,7 @@ class BatchCollecteMesureController extends AbstractController
             ['component' => $maven_key, 'metricKeys' => 'sqale_debt_ratio']
         );
 
-        $this->logger->debug('[Batch Mesure] Appel à SonarQube /measures/component (SQALE)', ['url' => $url]);
+        $this->logger->debug('🛠️ [Batch Mesure] Appel à SonarQube /measures/component (SQALE)', ['url' => $url]);
 
 
         $result3 = $this->client->httpSonarQube($url);

@@ -82,7 +82,7 @@ class BatchCollecteNoSonarController extends AbstractController
             ]
         );
 
-        $this->logger->debug('[Batch Logger] Appel API SonarQube', ['url' => $url]);
+        $this->logger->debug('🛠️ [Batch Logger] Appel API SonarQube', ['url' => $url]);
         $result = $this->client->httpSonarQube($url);
 
          /** On catch les erreurs HTTP :) */
@@ -149,7 +149,7 @@ class BatchCollecteNoSonarController extends AbstractController
             /** Il n'y a pas de noSOnar ou de suppressWarning */
         }
 
-        $this->logger->debug('[Batch NoSonar] Résultats analysés', [
+        $this->logger->debug('🛠️ [Batch NoSonar] Résultats analysés', [
             'no_sonar' => $noSonar,
             'suppress_warning' => $suppressWarning,
             'inconnu' => $inconnu

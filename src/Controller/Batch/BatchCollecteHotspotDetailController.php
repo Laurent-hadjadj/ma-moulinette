@@ -89,12 +89,12 @@ class BatchCollecteHotspotDetailController extends AbstractController
             [ 'hotspot' => $hotspotKey ]
         );
 
-        $this->logger->debug("[Batch HotspotDétail] Appel API SonarQube", ['url' => $url]);
+        $this->logger->debug("🛠️ [Batch HotspotDétail] Appel API SonarQube", ['url' => $url]);
         $result = $this->client->httpSonarQube($url);
 
         /** On catch les erreurs HTTP  :) */
         if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503, 504])) {
-            $this->logger->error("[HotspotDetail] Erreur API SonarQube", [
+            $this->logger->error("❌ [HotspotDetail] Erreur API SonarQube", [
                 'url' => $url,
                 'code' => $result['code'],
                 'erreur' => $result['erreur'] ?? 'Erreur inconnue.'
@@ -107,7 +107,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
 
         /** On a pas trouvé de données */
         if (!array_key_exists('json', $result)){
-            $this->logger->error("[HotspotDetail] Résultat API invalide ou vide", [
+            $this->logger->error("❌ [HotspotDetail] Résultat API invalide ou vide", [
                 'hotspot_key' => $hotspotKey
             ]);
             return [

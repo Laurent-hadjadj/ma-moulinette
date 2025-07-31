@@ -147,7 +147,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
             $queryParamsList['owasp2017']
         );
 
-        $this->logger->debug('[HotspotOwasp] Requête OWASP 2017', ['url' => $url]);
+        $this->logger->debug('🛠️ [HotspotOwasp] Requête OWASP 2017', ['url' => $url]);
         $owasp2017 = $this->client->httpSonarQube($url);
         if (isset($owasp2017['code']) && in_array($owasp2017['code'], [400, 401, 403, 404, 500, 503, 504])) {
             $this->logger->error('❌ [HotspotOwasp] Erreur API OWASP 2021', $owasp2017);
@@ -167,7 +167,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
                 $queryParamsList['owasp2021']
             );
 
-            $this->logger->debug('[HotspotOwasp] Requête OWASP 2021', ['url' => $url]);
+            $this->logger->debug('🛠️ [HotspotOwasp] Requête OWASP 2021', ['url' => $url]);
             $owasp2021 = $this->client->httpSonarQube($url);
             if (isset($owasp2021['code']) && in_array($owasp2021['code'], [400, 401, 403, 404, 500, 503, 504])) {
                 $this->logger->error('❌ [HotspotOwasp] Erreur API OWASP 2021', $owasp2021);
