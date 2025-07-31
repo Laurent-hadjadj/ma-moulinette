@@ -58,6 +58,11 @@ class RepartitionRepository extends ServiceEntityRepository
           return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
       }
 
+      // state = '42703'
+      if ($e instanceof \Doctrine\DBAL\Exception\InvalidFieldNameException){
+        return ['code' => 42703, 'erreur' => "Un attribut n'est pas présent dans la relation."];
+      }
+
       return ['code' => 500, 'erreur' => $message];
   }
 
@@ -179,6 +184,17 @@ class RepartitionRepository extends ServiceEntityRepository
     return ['code' => 200, 'erreur' => ''];
   }
 
+  /**
+   * [Description for updateRepartition]
+   *
+   * @param array $map
+   *
+   * @return array
+   *
+   * Created at: 30/07/2025 09:11:10 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
   public function updateRepartition(array $map): array
   {
     // Requête pour récupérer l'ID de l'enregistrement concerné
@@ -276,4 +292,35 @@ class RepartitionRepository extends ServiceEntityRepository
     }
     return ['code' => 200, 'erreur' => ''];
   }
+
+  /**
+   * [Description for findLatestSetupByMavenKey]
+   *
+   * @param string $maven_key
+   *
+   * @return string|null
+   *
+   * Created at: 30/07/2025 09:23:35 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function findLatestSetupByMavenKey(string $maven_key): array
+  {
+      $sql = 'SELECT setup
+              FROM repartition
+              WHERE maven_key = :maven_key
+              ORDER BY
+              setup DESC LIMIT 1';
+
+      try {
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(static::$mavenKey, $maven_key);
+              $result = $stmt->executeQuery()->fetchOne();
+    } catch (\Throwable $e) {
+      $this->getEntityManager()->getConnection()->rollBack();
+        return $this->handleDatabaseException($e);
+    }
+    return ['code' => 200, 'result' => $result ?: 'NaN', 'erreur' => ''];
+  }
+
 }
