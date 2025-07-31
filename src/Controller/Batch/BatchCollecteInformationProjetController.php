@@ -226,7 +226,7 @@ class BatchCollecteInformationProjetController extends AbstractController
                 'release' => $version['info'][0]['version_release_sonar'] ?? 0,
                 'snapshot' => $version['info'][0]['version_snapshot_sonar'] ?? 0,
                 'autre' => $version['info'][0]['version_autre_sonar'] ?? 0,
-                'projet' => $version['info'][0]['projet'] ?? 'inconnu',
+                'projet_version' => $version['info'][0]['version'] ?? 'inconnu',
                 'date' => $version['info'][0]['date'] ?? '1971-07-04 00:00:00',
                 ];
     }
