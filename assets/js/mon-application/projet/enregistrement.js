@@ -152,17 +152,23 @@ export const enregistrement = async function(mavenKey) {
   const noteSqale=$('#note-sqale').text().trim();
 
   /** On récupère les hotspots. */
-  const noteHotspot=$('#note-menace-potentielle').text().trim();
+  const noteHotspot = $('#note-menace-potentielle').text().trim();
 
   /** On récupère les hotspot par sévérité */
-  const t24 = document.getElementById('menace-potentielle-high');
-  const t25 = document.getElementById('menace-potentielle-medium');
-  const t26 = document.getElementById('menace-potentielle-low');
-  const t27 = document.getElementById('menace-potentielle-total');
-  const hotspotHigh = t24.dataset.hotspotHigh;
-  const hotspotMedium = t25.dataset.hotspotMedium;
-  const hotspotLow = t26.dataset.hotspotLow;
-  const nombreHotspot = t27.dataset.nombreHotspot;
+  const t24 = document.getElementById('menace-potentielle-to-review-high');
+  const t25 = document.getElementById('menace-potentielle-to-review-medium');
+  const t26 = document.getElementById('menace-potentielle-to-review-low');
+  const t24b = document.getElementById('menace-potentielle-reviewed-high');
+  const t25b = document.getElementById('menace-potentielle-reviewed-medium');
+  const t26b = document.getElementById('menace-potentielle-reviewed-low');
+  const t27 = document.getElementById('menace-potentielle-totale');
+  const menacePotentielleToReviewHigh = t24.dataset.menacePotentielleToReviewHigh;
+  const menacePotentielleToReviewMedium = t25.dataset.menacePotentielleToReviewMedium;
+  const menacePotentielleToReviewLow = t26.dataset.menacePotentielleToReviewLow;
+  const menacePotentielleReviewedHigh = t24b.dataset.menacePotentielleReviewedHigh;
+  const menacePotentielleReviewedMedium = t25b.dataset.menacePotentielleReviewedMedium;
+  const menacePotentielleReviewedLow = t26b.dataset.menacePotentielleReviewedLow;
+  const menacePotentielleTotale = t27.dataset.menacePotentielleTotale;
 
   const t28 = document.getElementById('js-bug-blocker');
   const t29 = document.getElementById('js-bug-critical');
@@ -215,8 +221,14 @@ export const enregistrement = async function(mavenKey) {
     'nombre_anomalie_majeur': nombreAnomalieMajeur,
     'nombre_anomalie_mineur': nombreAnomalieMineur,
     'note_reliability': noteReliability, 'note_security':  noteSecurity,
-    'note_sqale': noteSqale, 'note_hotspot': noteHotspot, 'hotspot_high':  hotspotHigh,
-    'hotspot_medium': hotspotMedium, 'hotspot_low': hotspotLow, 'nombre_hotspot': nombreHotspot,
+    'note_sqale': noteSqale, 'note_hotspot': noteHotspot,
+    'menace_potentielle_to_review_high':  menacePotentielleToReviewHigh,
+    'menace_potentielle_to_review_medium': menacePotentielleToReviewMedium,
+    'menace_potentielle_to_review_low': menacePotentielleToReviewLow,
+    'menace_potentielle_reviewed_high':  menacePotentielleReviewedHigh,
+    'menace_potentielle_reviewed_medium': menacePotentielleReviewedMedium,
+    'hotspot_reviewed_low': menacePotentielleReviewedLow,
+    'menace_potentielle_totale': menacePotentielleTotale,
     'bug_blocker': bugBlocker, 'bug_critical': bugCritical, 'bug_major': bugMajor,
     'bug_minor': bugMinor, 'bug_info': bugInfo,
     'vulnerability_blocker': vulnerabilityBlocker, 'vulnerability_critical':  vulnerabilityCritical,
