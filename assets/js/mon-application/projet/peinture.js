@@ -550,7 +550,7 @@ export const remplissage = async function(maven_key) {
         if (p4 *cent > dix && p4 * cent < cent) {
           e4 = html01;
         }
-        if (p3 * cent < dix) {
+        if (p4 * cent < dix) {
           e4 = html02;
         }
         i4 = `<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.inconnue)}</span> ${e4}
