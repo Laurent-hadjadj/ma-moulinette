@@ -17,7 +17,7 @@ import $ from 'jquery';
 import {serveur} from '../../common/properties.js';
 
 /** On importe les constantes */
-import {dateOptions, contentType, http_200, http_400, http_401, http_403, http_500} from '../../common/constante.js';
+import {dateOptions, contentType, http_200, http_400, http_401, http_403, http_404, http_500, http_504} from '../../common/constante.js';
 
 import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
@@ -27,7 +27,7 @@ import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common
  *
  * @param mixed txt
  *
- * @return [type]
+ * @return void
  *
  * Created at: 13/12/2022, 12:58:45 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -246,9 +246,11 @@ export const enregistrement = async function(mavenKey) {
     try {
           const t = await $.ajax(options);
           // 📌 Vérification des erreurs
-          const errorCodes = [http_400, http_401, http_403, http_500];
+          const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_504];
           if (errorCodes.includes(t.code)){
-              showMessage(t.type, typeMessage(t.message));
+             const hasTrace = !!t.trace;
+              const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+              showMessage(t.type, t.message, trace);
               return;
             }
           if (t.code === http_200) {
@@ -263,7 +265,12 @@ export const enregistrement = async function(mavenKey) {
           const message=`Cette version existe déjà dans l'historique.`;
           showMessage('warning', `<strong>[Enregistrement]</strong> ${message}`);
           }
-      } catch (error) {
-        showMessage('alert', `<strong>[Enregistrement]</strong> Une erreur inattendue s'est produite lors de l'enregistrement des données.<br>${error.message}`);
+    } catch (error) {
+        const trace = prepareTechnicalDetails(error);
+        const message = "<strong>[Enregistrement]</strong> Une erreur inattendue s'est produite lors de l'enregistrement des données.";
+        showMessage('alert', message, trace);
+        sessionStorage.setItem('ma_moulinette_enregistrement', 'Erreur lors de la sauvegarde des données.');
+        log(` - 🔴 Enregistrement des données en échec.`);
+        return;
       }
-};
+}
