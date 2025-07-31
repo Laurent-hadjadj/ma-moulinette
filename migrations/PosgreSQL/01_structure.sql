@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V2.5.0 - 31/07/2025              ##
+##               V2.6.0 - 31/07/2025              ##
 ##                                                ##
 ####################################################*/
 
@@ -44,7 +44,7 @@
 -- 31/12/2024 : Laurent HADJADJ - Correction de la table activity_batch_report ;
 -- 03/01/2025 : Laurent HADJADJ - Bonne année 2025. Renommage de l'attribut start en mode_collecte  pour la table batch_traitement ;
 -- 20/01/2025 : Laurent HADJADJ - Ajout des colones classes, functions et files à la table historique ;
--- 27/01/2025 : Laurent HADJADJ - Ajout de la clé inconnue à la table historique, pour dénombrer la répartition des valeurs inconnues ;
+-- 27/01/2025 : Laurent HADJADJ - Ajout de la clé inconnu à la table historique, pour dénombrer la répartition des valeurs inconnus ;
 -- 06/02/2025 : Laurent HADJADJ - Ajout des attributs : version_sonar, version_release_sonar, version_snapshot_sonar, version_autre_sonar à la table information_version ;
 -- 11/02/2025 : Laurent HADJADJ - Modification du type pour l'attribut setup et ajout de mode_collecte et utilisateur_collecte à la table repartition ;
 -- 14/02/2025 : Laurent HADJADJ - Réorganisation de la table repartition en repartition_temp et repartition
@@ -55,6 +55,7 @@
 -- 22/07/2025 : Laurent HADJADJ - Correction de plusieurs erreurs de syntaxe SQL.
 -- 22/07/2025 : Laurent HADJADJ - Correction de la colonne rules_update_at en rules_updated_at de la table profiles.
 -- 22/07/2025 : Laurent HADJADJ - Renommage des hotspot_(high, medium, low) en menace_potentielle_(to_review, reviewed)_(high, medium, low) dans la table historique
+-- 22/07/2025 : Laurent HADJADJ - Ajout de l'attribut inconnu dans la relation anomalie + renommage de l'attribut inconnue en inconnu.
 
 -- SCHEMA: ma_moulinette
 
@@ -244,6 +245,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.anomalie
   frontend integer NOT NULL,
   backend integer NOT NULL,
   autre integer NOT NULL,
+  inconnu integer NOT NULL,
   blocker integer NOT NULL,
   critical integer NOT NULL,
   major integer NOT NULL,
@@ -274,7 +276,8 @@ COMMENT ON COLUMN ma_moulinette.anomalie.dette IS 'Dette générale';
 COMMENT ON COLUMN ma_moulinette.anomalie.dette_code_smell IS 'Dette des mauvaises pratiques';
 COMMENT ON COLUMN ma_moulinette.anomalie.frontend IS 'Problèmes liés au frontend';
 COMMENT ON COLUMN ma_moulinette.anomalie.backend IS 'Problèmes liés au backend';
-COMMENT ON COLUMN ma_moulinette.anomalie.autre IS 'Autres problèmes techniques';
+COMMENT ON COLUMN ma_moulinette.anomalie.autre IS 'Autres problèmes';
+COMMENT ON COLUMN ma_moulinette.anomalie.inconnu IS 'Problèmes inconnus';
 COMMENT ON COLUMN ma_moulinette.anomalie.blocker IS 'Problèmes bloquants';
 COMMENT ON COLUMN ma_moulinette.anomalie.critical IS 'Problèmes critiques';
 COMMENT ON COLUMN ma_moulinette.anomalie.major IS 'Problèmes majeurs';
@@ -454,7 +457,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.historique
   frontend integer NOT NULL,
   backend integer NOT NULL,
   autre integer NOT NULL,
-  inconnue integer NOT NULL,
+  inconnu integer NOT NULL,
   dette integer NOT NULL,
   sqale_debt_ratio double precision NOT NULL,
   nombre_anomalie_bloquant integer NOT NULL,
@@ -529,7 +532,7 @@ COMMENT ON COLUMN ma_moulinette.historique.nombre_code_smell IS 'Nombre total de
 COMMENT ON COLUMN ma_moulinette.historique.frontend IS 'Développements spécifiques frontend';
 COMMENT ON COLUMN ma_moulinette.historique.backend IS 'Développements spécifiques backend';
 COMMENT ON COLUMN ma_moulinette.historique.autre IS 'Développements spécifiques';
-COMMENT ON COLUMN ma_moulinette.historique.inconnue IS 'Développements indéterminés';
+COMMENT ON COLUMN ma_moulinette.historique.inconnu IS 'Développements indéterminés';
 COMMENT ON COLUMN ma_moulinette.historique.dette IS 'Somme de la dette technique accumulée';
 COMMENT ON COLUMN ma_moulinette.historique.sqale_debt_ratio IS 'Ratio de la dette technique (SQALE)';
 COMMENT ON COLUMN ma_moulinette.historique.nombre_anomalie_bloquant IS 'Nombre d’anomalies bloquantes';
@@ -1319,22 +1322,22 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.repartition
   autre_code_smell_major int DEFAULT 0,
   autre_code_smell_minor int DEFAULT 0,
   autre_code_smell_info int DEFAULT 0,
-  inconnue int DEFAULT 0,
-  inconnue_bug_blocker int DEFAULT 0,
-  inconnue_bug_critical int DEFAULT 0,
-  inconnue_bug_major int DEFAULT 0,
-  inconnue_bug_minor int DEFAULT 0,
-  inconnue_bug_info int DEFAULT 0,
-  inconnue_vulnerability_blocker int DEFAULT 0,
-  inconnue_vulnerability_critical int DEFAULT 0,
-  inconnue_vulnerability_major int DEFAULT 0,
-  inconnue_vulnerability_minor int DEFAULT 0,
-  inconnue_vulnerability_info int DEFAULT 0,
-  inconnue_code_smell_blocker int DEFAULT 0,
-  inconnue_code_smell_critical int DEFAULT 0,
-  inconnue_code_smell_major int DEFAULT 0,
-  inconnue_code_smell_minor int DEFAULT 0,
-  inconnue_code_smell_info int DEFAULT 0,
+  inconnu int DEFAULT 0,
+  inconnu_bug_blocker int DEFAULT 0,
+  inconnu_bug_critical int DEFAULT 0,
+  inconnu_bug_major int DEFAULT 0,
+  inconnu_bug_minor int DEFAULT 0,
+  inconnu_bug_info int DEFAULT 0,
+  inconnu_vulnerability_blocker int DEFAULT 0,
+  inconnu_vulnerability_critical int DEFAULT 0,
+  inconnu_vulnerability_major int DEFAULT 0,
+  inconnu_vulnerability_minor int DEFAULT 0,
+  inconnu_vulnerability_info int DEFAULT 0,
+  inconnu_code_smell_blocker int DEFAULT 0,
+  inconnu_code_smell_critical int DEFAULT 0,
+  inconnu_code_smell_major int DEFAULT 0,
+  inconnu_code_smell_minor int DEFAULT 0,
+  inconnu_code_smell_info int DEFAULT 0,
   setup bigint NOT NULL,
   control character varying(32) NOT NULL DEFAULT 'initial',
   mode_collecte character varying(32),
@@ -1369,7 +1372,7 @@ COMMENT ON COLUMN ma_moulinette.repartition.code_smell_info IS 'Nombre de mauvai
 COMMENT ON COLUMN ma_moulinette.repartition.frontend IS 'Répartition des anomalies de l’application frontend';
 COMMENT ON COLUMN ma_moulinette.repartition.backend IS 'Répartition des anomalies de l’application backend';
 COMMENT ON COLUMN ma_moulinette.repartition.autre IS 'Répartition des anomalies de l’application autres';
-COMMENT ON COLUMN ma_moulinette.repartition.inconnue IS 'Répartition des anomalies de l’application non définies';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnu IS 'Répartition des anomalies de l’application non définies';
 
 COMMENT ON COLUMN ma_moulinette.repartition.frontend_bug_blocker IS 'Nombre de bug bloquant (frontend)';
 COMMENT ON COLUMN ma_moulinette.repartition.frontend_bug_critical IS 'Nombre de bug critique (frontend)';
@@ -1425,23 +1428,23 @@ COMMENT ON COLUMN ma_moulinette.repartition.autre_code_smell_major IS 'Nombre de
 COMMENT ON COLUMN ma_moulinette.repartition.autre_code_smell_minor IS 'Nombre de code smell mineur (autre)';
 COMMENT ON COLUMN ma_moulinette.repartition.autre_code_smell_info IS 'Nombre de code smell informatif (autre)';
 
-COMMENT ON COLUMN ma_moulinette.repartition.inconnue_bug_blocker IS 'Nombre de bug bloquant (inconnue)';
-COMMENT ON COLUMN ma_moulinette.repartition.inconnue_bug_critical IS 'Nombre de bug critique (inconnue)';
-COMMENT ON COLUMN ma_moulinette.repartition.inconnue_bug_major IS 'Nombre de bug majeur (inconnue)';
-COMMENT ON COLUMN ma_moulinette.repartition.inconnue_bug_minor IS 'Nombre de bug mineur (inconnue)';
-COMMENT ON COLUMN ma_moulinette.repartition.inconnue_bug_info IS 'Nombre de bug informatif (inconnue)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnu_bug_blocker IS 'Nombre de bug bloquant (inconnu)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnu_bug_critical IS 'Nombre de bug critique (inconnu)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnu_bug_major IS 'Nombre de bug majeur (inconnu)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnu_bug_minor IS 'Nombre de bug mineur (inconnu)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnu_bug_info IS 'Nombre de bug informatif (inconnu)';
 
-COMMENT ON COLUMN ma_moulinette.repartition.inconnue_vulnerability_blocker IS 'Nombre de vulnérabilité bloquante (inconnue)';
-COMMENT ON COLUMN ma_moulinette.repartition.inconnue_vulnerability_critical IS 'Nombre de vulnérabilité critique (inconnue)';
-COMMENT ON COLUMN ma_moulinette.repartition.inconnue_vulnerability_major IS 'Nombre de vulnérabilité majeure (inconnue)';
-COMMENT ON COLUMN ma_moulinette.repartition.inconnue_vulnerability_minor IS 'Nombre de vulnérabilité mineure (inconnue)';
-COMMENT ON COLUMN ma_moulinette.repartition.inconnue_vulnerability_info IS 'Nombre de vulnérabilité informative (inconnue)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnu_vulnerability_blocker IS 'Nombre de vulnérabilité bloquante (inconnu)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnu_vulnerability_critical IS 'Nombre de vulnérabilité critique (inconnu)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnu_vulnerability_major IS 'Nombre de vulnérabilité majeure (inconnu)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnu_vulnerability_minor IS 'Nombre de vulnérabilité mineure (inconnu)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnu_vulnerability_info IS 'Nombre de vulnérabilité informative (inconnu)';
 
-COMMENT ON COLUMN ma_moulinette.repartition.inconnue_code_smell_blocker IS 'Nombre de code smell bloquant (inconnue)';
-COMMENT ON COLUMN ma_moulinette.repartition.inconnue_code_smell_critical IS 'Nombre de code smell critique (inconnue)';
-COMMENT ON COLUMN ma_moulinette.repartition.inconnue_code_smell_major IS 'Nombre de code smell majeur (inconnue)';
-COMMENT ON COLUMN ma_moulinette.repartition.inconnue_code_smell_minor IS 'Nombre de code smell mineur (inconnue)';
-COMMENT ON COLUMN ma_moulinette.repartition.inconnue_code_smell_info IS 'Nombre de code smell informatif (inconnue)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnu_code_smell_blocker IS 'Nombre de code smell bloquant (inconnu)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnu_code_smell_critical IS 'Nombre de code smell critique (inconnu)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnu_code_smell_major IS 'Nombre de code smell majeur (inconnu)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnu_code_smell_minor IS 'Nombre de code smell mineur (inconnu)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnu_code_smell_info IS 'Nombre de code smell informatif (inconnu)';
 
 COMMENT ON COLUMN ma_moulinette.repartition.setup IS 'Timestamp en milliseconde unique pour chaque analyse';
 COMMENT ON COLUMN ma_moulinette.repartition.control IS 'Indique l’état d’avancement du process';
