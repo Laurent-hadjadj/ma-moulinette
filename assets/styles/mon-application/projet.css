@@ -597,13 +597,13 @@ canvas {
 /* Media Medium */
 @media (40.025em <= width <= 64em) {
   .label-langage { font-size: 1.1rem; }
-  .callout-information { width: 18rem; }
+  .callout-information { width: 26rem; }
 }
 
 /* Media Large */
 @media (64.025em <= width <= 90em) {
   .label-langage { font-size: 1.2rem; }
-  .callout-information { width: 24rem; }
+  .callout-information { width: 26rem; }
 }
 
 /* Media Large */
