@@ -548,8 +548,11 @@ class AccueilController extends AbstractController
         ], 0);
 
         /** 1 - Les Dates  */
-        $dateModProjet = new \DateTime($properties['date_modification_projet']);
-        $dateModProfil = new \DateTime($properties['date_modification_profil']);
+        $dateModificationProjet = $properties['date_modification_projet'];
+        $dateModificationProfil = $properties['date_modification_profil'];
+
+        $dateModProjet = (gettype($dateModificationProjet) == 'object') ? $dateModificationProjet : new \DateTime($dateModificationProjet);
+        $dateModProfil = (gettype($dateModificationProfil) == 'object') ? $dateModificationProfil : new \DateTime($dateModificationProfil);
 
         $dateVerificationProjet = false;
         $dateVerificationProfil = false;
