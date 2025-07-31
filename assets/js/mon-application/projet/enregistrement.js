@@ -50,7 +50,7 @@ const log = function(txt) {
 * Created at: 13/12/2022, 12:59:18 (Europe/Paris)
 * @author     Laurent HADJADJ <laurent_h@me.com>
 */
-export const enregistrement = async function(mavenKey) {
+export const enregistrement = async function(maven_key) {
   /** On récupère les informations sur les versions */
   const nomProjet=$('#nom-projet').text().trim();
   /*
@@ -98,18 +98,25 @@ export const enregistrement = async function(mavenKey) {
     */
   const t6 = document.getElementById('nombre-ligne');
   const t7 = document.getElementById('nombre-ligne-de-code');
+  const t7a = document.getElementById('nombre-fichier');
+  const t7b = document.getElementById('nombre-classe');
+  const t7c = document.getElementById('nombre-function');
+
   const t8 = document.getElementById('coverage');
   const t8a = document.getElementById('ratio-dette-technique');
   const t9 = document.getElementById('duplicated-lines-density');
   const t10 = document.getElementById('tests');
   const t11 = document.getElementById('violations');
-  const nombreLigne=t6.dataset.nombreLigne;
-  const nombreLigneDeCode=t7.dataset.nombreLigneDeCode;
-  const coverage=t8.dataset.coverage;
-  const sqaleDebtRatio=t8a.dataset.sqaleDebtRatio;
-  const duplicated_lines_density=t9.dataset.duplicatedLinesDensity;
-  const tests=t10.dataset.tests;
-  const violations=t11.dataset.violations;
+  const nombreLigne = t6.dataset.nombreLigne;
+  const nombreLigneDeCode = t7.dataset.nombreLigneDeCode;
+  const nombreFichier = t7a.dataset.nombreFichier;
+  const nombreClasse = t7b.dataset.nombreClasse;
+  const nombreFonction = t7c.dataset.nombreFonction;
+  const coverage = t8.dataset.coverage;
+  const sqaleDebtRatio = t8a.dataset.sqaleDebtRatio;
+  const duplicated_lines_density = t9.dataset.duplicatedLinesDensity;
+  const tests = t10.dataset.tests;
+  const violations = t11.dataset.violations;
 
   /** On récupère les informations sur la dette technique et les anomalies. */
   /* Dette technique */
@@ -204,13 +211,15 @@ export const enregistrement = async function(mavenKey) {
 
   const data =
   {
-    'maven_key': mavenKey, 'nom_projet': nomProjet, 'analyse_key': analyseKey,
+    maven_key, 'nom_projet': nomProjet, 'analyse_key': analyseKey,
     'version_release': versionRelease, 'version_snapshot': versionSnapshot,
     'version_autre': versionAutre, version, 'date_version': dateVersion,
     'suppress_warning': suppressWarning, 'no_sonar': noSonar, todo,
     'logger_info': loggerInfo, 'logger_warn': loggerWarn, 'logger_error': loggerError,
     'logger_debug': loggerDebug,
-    'nombre_ligne_code': nombreLigneDeCode, 'nombre_ligne': nombreLigne, coverage, 'duplicated_lines_density':duplicated_lines_density,
+    'nombre_ligne_code': nombreLigneDeCode, 'nombre_ligne': nombreLigne,
+    'files': nombreFichier, 'classes': nombreClasse, 'functions': nombreFonction,
+    coverage, duplicated_lines_density,
     'sqale_debt_ratio': sqaleDebtRatio, 'tests': tests,
     'violations': violations, dette,
     'nombre_bug': nombreBug, 'nombre_vulnerability':nombreVulnerability,
@@ -248,7 +257,7 @@ export const enregistrement = async function(mavenKey) {
           // 📌 Vérification des erreurs
           const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_504];
           if (errorCodes.includes(t.code)){
-             const hasTrace = !!t.trace;
+            const hasTrace = !!t.trace;
               const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
               showMessage(t.type, t.message, trace);
               return;
