@@ -205,7 +205,6 @@ const dessineMoiUnRadar = function (dataset1, dataset2, label1, label2){
  * @type {"#js-oui-non"}
  */
 $(oui_non).on('click', function () {
-  console.log('up-down');
   if ($(oui_non).is(':checked')===true) {
     $(upDownEqual).removeClass('hide');
   }
