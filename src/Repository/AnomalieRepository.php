@@ -161,9 +161,9 @@ class AnomalieRepository extends ServiceEntityRepository
   public function insertAnomalie($map): array
   {
     $sql = "INSERT INTO ma_moulinette.anomalie
-              (maven_key, project_name, anomalie_total, dette_minute, dette_reliability_minute, dette_vulnerability_minute, dette_code_smell_minute, dette, dette_reliability, dette_vulnerability, dette_code_smell, frontend, backend, autre, inconnue, blocker, critical, major, info, minor, bug, vulnerability, code_smell, mode_collecte, utilisateur_collecte, date_enregistrement)
+              (maven_key, project_name, anomalie_total, dette_minute, dette_reliability_minute, dette_vulnerability_minute, dette_code_smell_minute, dette, dette_reliability, dette_vulnerability, dette_code_smell, frontend, backend, autre, inconnu, blocker, critical, major, info, minor, bug, vulnerability, code_smell, mode_collecte, utilisateur_collecte, date_enregistrement)
             VALUES
-              (:maven_key, :project_name, :anomalie_total, :dette_minute, :dette_reliability_minute, :dette_vulnerability_minute, :dette_code_smell_minute, :dette, :dette_reliability, :dette_vulnerability, :dette_code_smell, :frontend, :backend, :autre, :inconnue, :blocker, :critical, :major, :info, :minor, :bug, :vulnerability, :code_smell, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
+              (:maven_key, :project_name, :anomalie_total, :dette_minute, :dette_reliability_minute, :dette_vulnerability_minute, :dette_code_smell_minute, :dette, :dette_reliability, :dette_vulnerability, :dette_code_smell, :frontend, :backend, :autre, :inconnu, :blocker, :critical, :major, :info, :minor, :bug, :vulnerability, :code_smell, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
 
@@ -182,7 +182,7 @@ class AnomalieRepository extends ServiceEntityRepository
               $stmt->bindValue(':frontend', $map['frontend']);
               $stmt->bindValue(':backend', $map['backend']);
               $stmt->bindValue(':autre', $map['autre']);
-              $stmt->bindValue(':inconnue', $map['inconnue']);
+              $stmt->bindValue(':inconnu', $map['inconnu']);
               $stmt->bindValue(':blocker', $map['blocker']);
               $stmt->bindValue(':critical', $map['critical']);
               $stmt->bindValue(':major', $map['major']);

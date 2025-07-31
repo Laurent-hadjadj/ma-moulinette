@@ -34,7 +34,8 @@ class BatchCollecteRepartitionController extends AbstractController
     private static $reference = "<strong>[Répartition-Module]</strong> ";
     private static $beginRegEx = '/\b(?:';
     private static $endRegEx = ')\b/i';
-    private static $erreurInconnue = 'Erreur inconnue';
+    private static $erreurInconnue = 'Erreur inconnue.';
+    private static $erreurSonarInconnue = 'Erreur SonarQube inconnue.';
 
     /**
      * [Description for __construct]
@@ -72,7 +73,7 @@ class BatchCollecteRepartitionController extends AbstractController
         ]);
 
         /** On calcule la répartition pour les application java et ?Php */
-        $scoreFrontend = $scoreBackend = $scoreAutre = $scoreInconnue = 0;
+        $scoreFrontend = $scoreBackend = $scoreAutre = $scoreInconnu = 0;
 
         /** on récupère la liste des clés pour chaque module */
         $listeFrontend = $this->getParameter('module.frontend');
@@ -103,9 +104,9 @@ class BatchCollecteRepartitionController extends AbstractController
                 } // Sinon, on vérifie s'il correspond à un module autre
                 elseif (preg_match($regexAutre, $path)) {
                     $scoreAutre++;
-                } // Si aucune des regex ne matche, c'est considéré comme "inconnue"
+                } // Si aucune des regex ne matche, c'est considéré comme "inconnu"
                 else {
-                    $scoreInconnue++;
+                    $scoreInconnu++;
                 }
             }
         } catch (Exception $e) {
@@ -123,7 +124,7 @@ class BatchCollecteRepartitionController extends AbstractController
             'frontend' => $scoreFrontend,
             'backend' => $scoreBackend,
             'autre' => $scoreAutre,
-            'inconnue' => $scoreInconnue
+            'inconnu' => $scoreInconnu
         ]);
 
         return [
@@ -131,7 +132,7 @@ class BatchCollecteRepartitionController extends AbstractController
                 'frontend' => $scoreFrontend,
                 'backend' => $scoreBackend,
                 'autre' => $scoreAutre,
-                'inconnue' => $scoreInconnue
+                'inconnu' => $scoreInconnu
             ];
     }
 
@@ -185,11 +186,11 @@ class BatchCollecteRepartitionController extends AbstractController
             $this->logger->error('❌ [Batch Répartition] Erreur SonarQube', [
                 'url' => $url,
                 'code' => $result['code'],
-                'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
+                'erreur' => $result['erreur'] ?? static::$erreurInconnue
             ]);
             return [
                 'code' => $result['code'],
-                'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
+                'erreur' => $result['erreur'] ?? static::$erreurInconnue
             ];
         }
 
@@ -237,11 +238,11 @@ class BatchCollecteRepartitionController extends AbstractController
             $this->logger->error('❌ [Batch Répartition Information] Erreur SonarQube', [
                 'url' => $url,
                 'code' => $result['code'],
-                'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
+                'erreur' => $result['erreur'] ?? static::$erreurSonarInconnue
             ]);
             return [
                 'code' => $result['code'],
-                'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
+                'erreur' => $result['erreur'] ?? static::$erreurSonarInconnue
             ];
         }
 
@@ -596,31 +597,31 @@ class BatchCollecteRepartitionController extends AbstractController
 
         // On construit le statut à enregistrer dans l'attribut 'control'
         $controlStatut = [ 'complet (100%)', 'partiel (66%)', 'partiel (33%)' ];
-        $control = $controlStatut[$missingSets] ?? 'inconnu';
+        $control = $controlStatut[$missingSets] ?? 'inconnue';
 
         // Préparation des tableaux de champs pour chaque category
         $fieldsBug = [
-        'frontend_bug_blocker', 'backend_bug_blocker', 'autre_bug_blocker', 'inconnue_bug_blocker',
-        'frontend_bug_critical', 'backend_bug_critical', 'autre_bug_critical', 'inconnue_bug_critical',
-        'frontend_bug_major', 'backend_bug_major', 'autre_bug_major', 'inconnue_bug_major',
-        'frontend_bug_minor', 'backend_bug_minor', 'autre_bug_minor', 'inconnue_bug_minor',
-        'frontend_bug_info', 'backend_bug_info', 'autre_bug_info', 'inconnue_bug_info',
+        'frontend_bug_blocker', 'backend_bug_blocker', 'autre_bug_blocker', 'inconnu_bug_blocker',
+        'frontend_bug_critical', 'backend_bug_critical', 'autre_bug_critical', 'inconnu_bug_critical',
+        'frontend_bug_major', 'backend_bug_major', 'autre_bug_major', 'inconnu_bug_major',
+        'frontend_bug_minor', 'backend_bug_minor', 'autre_bug_minor', 'inconnu_bug_minor',
+        'frontend_bug_info', 'backend_bug_info', 'autre_bug_info', 'inconnu_bug_info',
         ];
 
         $fieldsVulnerability = [
-            'frontend_vulnerability_blocker', 'backend_vulnerability_blocker', 'autre_vulnerability_blocker', 'inconnue_vulnerability_blocker',
-            'frontend_vulnerability_critical', 'backend_vulnerability_critical', 'autre_vulnerability_critical', 'inconnue_vulnerability_critical',
-            'frontend_vulnerability_major', 'backend_vulnerability_major', 'autre_vulnerability_major', 'inconnue_vulnerability_major',
-            'frontend_vulnerability_minor', 'backend_vulnerability_minor', 'autre_vulnerability_minor', 'inconnue_vulnerability_minor',
-            'frontend_vulnerability_info', 'backend_vulnerability_info', 'autre_vulnerability_info', 'inconnue_vulnerability_info',
+            'frontend_vulnerability_blocker', 'backend_vulnerability_blocker', 'autre_vulnerability_blocker', 'inconnu_vulnerability_blocker',
+            'frontend_vulnerability_critical', 'backend_vulnerability_critical', 'autre_vulnerability_critical', 'inconnu_vulnerability_critical',
+            'frontend_vulnerability_major', 'backend_vulnerability_major', 'autre_vulnerability_major', 'inconnu_vulnerability_major',
+            'frontend_vulnerability_minor', 'backend_vulnerability_minor', 'autre_vulnerability_minor', 'inconnu_vulnerability_minor',
+            'frontend_vulnerability_info', 'backend_vulnerability_info', 'autre_vulnerability_info', 'inconnu_vulnerability_info',
         ];
 
         $fieldsCodeSmell = [
-            'frontend_code_smell_blocker', 'backend_code_smell_blocker', 'autre_code_smell_blocker', 'inconnue_code_smell_blocker',
-            'frontend_code_smell_critical', 'backend_code_smell_critical', 'autre_code_smell_critical', 'inconnue_code_smell_critical',
-            'frontend_code_smell_major', 'backend_code_smell_major', 'autre_code_smell_major', 'inconnue_code_smell_major',
-            'frontend_code_smell_minor', 'backend_code_smell_minor', 'autre_code_smell_minor', 'inconnue_code_smell_minor',
-            'frontend_code_smell_info', 'backend_code_smell_info', 'autre_code_smell_info', 'inconnue_code_smell_info',
+            'frontend_code_smell_blocker', 'backend_code_smell_blocker', 'autre_code_smell_blocker', 'inconnu_code_smell_blocker',
+            'frontend_code_smell_critical', 'backend_code_smell_critical', 'autre_code_smell_critical', 'inconnu_code_smell_critical',
+            'frontend_code_smell_major', 'backend_code_smell_major', 'autre_code_smell_major', 'inconnu_code_smell_major',
+            'frontend_code_smell_minor', 'backend_code_smell_minor', 'autre_code_smell_minor', 'inconnu_code_smell_minor',
+            'frontend_code_smell_info', 'backend_code_smell_info', 'autre_code_smell_info', 'inconnu_code_smell_info',
         ];
 
         // Initialisation du tableau $map qui contiendra toutes les clés attendues par la requête

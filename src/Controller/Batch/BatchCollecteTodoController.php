@@ -27,8 +27,9 @@ use App\Service\UrlBuilderService;
 class BatchCollecteTodoController extends AbstractController
 {
     /** Définition des constantes */
-    public static $sonarUrl = "sonar.url";
-    public static $europeParis = "Europe/Paris";
+    private static $sonarUrl = "sonar.url";
+    private static $europeParis = "Europe/Paris";
+    private static $erreurSonarInconnue = 'Erreur SonarQube inconnue.';
 
     /**
      * [Description for __construct]
@@ -82,11 +83,11 @@ class BatchCollecteTodoController extends AbstractController
             $this->logger->error('❌ [Batch Todo] Erreur SonarQube', [
                 'url' => $url,
                 'code' => $result['code'],
-                'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
+                'erreur' => $result['erreur'] ?? static::$erreurSonarInconnue
             ]);
             return [
                 'code' => $result['code'],
-                'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
+                'erreur' => $result['erreur'] ?? static::$erreurSonarInconnue
             ];
         }
 

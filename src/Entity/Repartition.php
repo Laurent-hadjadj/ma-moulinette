@@ -361,68 +361,68 @@ class Repartition
     */
     #[ORM\Column(type: Types::INTEGER,
         options: ['default' => 0, 'comment' => "Répartition des anomalies de l’application non définies"])]
-    private int $inconnue = 0;
+    private int $inconnu = 0;
 
-    // INCONNUE
+    // inconnu
     #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug bloquant (inconnue)'])]
-    private int $inconnueBugBlocker = 0;
-
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug critique (inconnue)'])]
-    private int $inconnueBugCritical = 0;
+        options: ['default' => 0, 'comment' => 'Nombre de bug bloquant (inconnu)'])]
+    private int $inconnuBugBlocker = 0;
 
     #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug majeur (inconnue)'])]
-    private int $inconnueBugMajor = 0;
+        options: ['default' => 0, 'comment' => 'Nombre de bug critique (inconnu)'])]
+    private int $inconnuBugCritical = 0;
 
     #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug mineur (inconnue)'])]
-    private int $inconnueBugMinor = 0;
+        options: ['default' => 0, 'comment' => 'Nombre de bug majeur (inconnu)'])]
+    private int $inconnuBugMajor = 0;
 
     #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug informatif (inconnue)'])]
-    private int $inconnueBugInfo = 0;
+        options: ['default' => 0, 'comment' => 'Nombre de bug mineur (inconnu)'])]
+    private int $inconnuBugMinor = 0;
 
     #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité bloquante (inconnue)'])]
-    private int $inconnueVulnerabilityBlocker = 0;
+        options: ['default' => 0, 'comment' => 'Nombre de bug informatif (inconnu)'])]
+    private int $inconnuBugInfo = 0;
 
     #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité critique (inconnue)'])]
-    private int $inconnueVulnerabilityCritical = 0;
+        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité bloquante (inconnu)'])]
+    private int $inconnuVulnerabilityBlocker = 0;
 
     #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité majeure (inconnue)'])]
-    private int $inconnueVulnerabilityMajor = 0;
+        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité critique (inconnu)'])]
+    private int $inconnuVulnerabilityCritical = 0;
 
     #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité mineure (inconnue)'])]
-    private int $inconnueVulnerabilityMinor = 0;
+        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité majeure (inconnu)'])]
+    private int $inconnuVulnerabilityMajor = 0;
 
     #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité informative (inconnue)'])]
-    private int $inconnueVulnerabilityInfo = 0;
+        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité mineure (inconnu)'])]
+    private int $inconnuVulnerabilityMinor = 0;
 
     #[ORM\Column(type: Types::INTEGER,
-    options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique bloquant (inconnue)'])]
-    private int $inconnueCodeSmellBlocker = 0;
+        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité informative (inconnu)'])]
+    private int $inconnuVulnerabilityInfo = 0;
 
     #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique critique (inconnue)'])]
-    private int $inconnueCodeSmellCritical = 0;
+    options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique bloquant (inconnu)'])]
+    private int $inconnuCodeSmellBlocker = 0;
 
     #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique majeur (inconnue)'])]
-    private int $inconnueCodeSmellMajor = 0;
+        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique critique (inconnu)'])]
+    private int $inconnuCodeSmellCritical = 0;
 
     #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique mineur (inconnue)'])]
-    private int $inconnueCodeSmellMinor = 0;
+        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique majeur (inconnu)'])]
+    private int $inconnuCodeSmellMajor = 0;
 
     #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique informatif (inconnue)'])]
-    private int $inconnueCodeSmellInfo = 0;
+        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique mineur (inconnu)'])]
+    private int $inconnuCodeSmellMinor = 0;
+
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique informatif (inconnu)'])]
+    private int $inconnuCodeSmellInfo = 0;
 
     /**
      * Timestamp en milliseconde unique pour chaque analyse.
@@ -1190,179 +1190,179 @@ class Repartition
         return $this;
     }
 
-    public function getInconnue(): int
+    public function getInconnu(): int
     {
-        return $this->inconnue;
+        return $this->inconnu;
     }
 
-    public function setInconnue(int $inconnue): self
+    public function setInconnu(int $inconnu): self
     {
-        $this->inconnue = $inconnue;
+        $this->inconnu = $inconnu;
         return $this;
     }
 
-    public function getInconnueBugBlocker(): int
+    public function getInconnuBugBlocker(): int
     {
-        return $this->inconnueBugBlocker;
+        return $this->inconnuBugBlocker;
     }
 
-    public function setInconnueBugBlocker(int $inconnueBugBlocker): self
+    public function setInconnuBugBlocker(int $inconnuBugBlocker): self
     {
-        $this->inconnueBugBlocker = $inconnueBugBlocker;
+        $this->inconnuBugBlocker = $inconnuBugBlocker;
         return $this;
     }
 
-    public function getInconnueBugCritical(): int
+    public function getInconnuBugCritical(): int
     {
-        return $this->inconnueBugCritical;
+        return $this->inconnuBugCritical;
     }
 
-    public function setInconnueBugCritical(int $inconnueBugCritical): self
+    public function setInconnuBugCritical(int $inconnuBugCritical): self
     {
-        $this->inconnueBugCritical = $inconnueBugCritical;
+        $this->inconnuBugCritical = $inconnuBugCritical;
         return $this;
     }
 
-    public function getInconnueBugMajor(): int
+    public function getInconnuBugMajor(): int
     {
-        return $this->inconnueBugMajor;
+        return $this->inconnuBugMajor;
     }
 
-    public function setInconnueBugMajor(int $inconnueBugMajor): self
+    public function setInconnuBugMajor(int $inconnuBugMajor): self
     {
-        $this->inconnueBugMajor = $inconnueBugMajor;
+        $this->inconnuBugMajor = $inconnuBugMajor;
         return $this;
     }
 
-    public function getInconnueBugMinor(): int
+    public function getInconnuBugMinor(): int
     {
-        return $this->inconnueBugMinor;
+        return $this->inconnuBugMinor;
     }
 
-    public function setInconnueBugMinor(int $inconnueBugMinor): self
+    public function setInconnuBugMinor(int $inconnuBugMinor): self
     {
-        $this->inconnueBugMinor = $inconnueBugMinor;
+        $this->inconnuBugMinor = $inconnuBugMinor;
         return $this;
     }
 
-    public function getInconnueBugInfo(): int
+    public function getInconnuBugInfo(): int
     {
-        return $this->inconnueBugInfo;
+        return $this->inconnuBugInfo;
     }
 
-    public function setInconnueBugInfo(int $inconnueBugInfo): self
+    public function setInconnuBugInfo(int $inconnuBugInfo): self
     {
-        $this->inconnueBugInfo = $inconnueBugInfo;
+        $this->inconnuBugInfo = $inconnuBugInfo;
         return $this;
     }
 
-    public function getInconnueVulnerabilityBlocker(): int
+    public function getInconnuVulnerabilityBlocker(): int
     {
-        return $this->inconnueVulnerabilityBlocker;
+        return $this->inconnuVulnerabilityBlocker;
     }
 
-    public function setInconnueVulnerabilityBlocker(int $inconnueVulnerabilityBlocker): self
+    public function setInconnuVulnerabilityBlocker(int $inconnuVulnerabilityBlocker): self
     {
-        $this->inconnueVulnerabilityBlocker = $inconnueVulnerabilityBlocker;
+        $this->inconnuVulnerabilityBlocker = $inconnuVulnerabilityBlocker;
         return $this;
     }
 
-    public function getInconnueVulnerabilityCritical(): int
+    public function getInconnuVulnerabilityCritical(): int
     {
-        return $this->inconnueVulnerabilityCritical;
+        return $this->inconnuVulnerabilityCritical;
     }
 
-    public function setInconnueVulnerabilityCritical(int $inconnueVulnerabilityCritical): self
+    public function setInconnuVulnerabilityCritical(int $inconnuVulnerabilityCritical): self
     {
-        $this->inconnueVulnerabilityCritical = $inconnueVulnerabilityCritical;
+        $this->inconnuVulnerabilityCritical = $inconnuVulnerabilityCritical;
         return $this;
     }
 
-    public function getInconnueVulnerabilityMajor(): int
+    public function getInconnuVulnerabilityMajor(): int
     {
-        return $this->inconnueVulnerabilityMajor;
+        return $this->inconnuVulnerabilityMajor;
     }
 
-    public function setInconnueVulnerabilityMajor(int $inconnueVulnerabilityMajor): self
+    public function setInconnuVulnerabilityMajor(int $inconnuVulnerabilityMajor): self
     {
-        $this->inconnueVulnerabilityMajor = $inconnueVulnerabilityMajor;
+        $this->inconnuVulnerabilityMajor = $inconnuVulnerabilityMajor;
         return $this;
     }
 
-    public function getInconnueVulnerabilityMinor(): int
+    public function getInconnuVulnerabilityMinor(): int
     {
-        return $this->inconnueVulnerabilityMinor;
+        return $this->inconnuVulnerabilityMinor;
     }
 
-    public function setInconnueVulnerabilityMinor(int $inconnueVulnerabilityMinor): self
+    public function setInconnuVulnerabilityMinor(int $inconnuVulnerabilityMinor): self
     {
-        $this->inconnueVulnerabilityMinor = $inconnueVulnerabilityMinor;
+        $this->inconnuVulnerabilityMinor = $inconnuVulnerabilityMinor;
         return $this;
     }
 
-    public function getInconnueVulnerabilityInfo(): int
+    public function getInconnuVulnerabilityInfo(): int
     {
-        return $this->inconnueVulnerabilityInfo;
+        return $this->inconnuVulnerabilityInfo;
     }
 
-    public function setInconnueVulnerabilityInfo(int $inconnueVulnerabilityInfo): self
+    public function setInconnuVulnerabilityInfo(int $inconnuVulnerabilityInfo): self
     {
-        $this->inconnueVulnerabilityInfo = $inconnueVulnerabilityInfo;
+        $this->inconnuVulnerabilityInfo = $inconnuVulnerabilityInfo;
         return $this;
     }
 
-    public function getInconnueCodeSmellBlocker(): int
+    public function getInconnuCodeSmellBlocker(): int
     {
-        return $this->inconnueCodeSmellBlocker;
+        return $this->inconnuCodeSmellBlocker;
     }
 
-    public function setInconnueCodeSmellBlocker(int $inconnueCodeSmellBlocker): self
+    public function setInconnuCodeSmellBlocker(int $inconnuCodeSmellBlocker): self
     {
-        $this->inconnueCodeSmellBlocker = $inconnueCodeSmellBlocker;
+        $this->inconnuCodeSmellBlocker = $inconnuCodeSmellBlocker;
         return $this;
     }
 
-    public function getInconnueCodeSmellCritical(): int
+    public function getInconnuCodeSmellCritical(): int
     {
-        return $this->inconnueCodeSmellCritical;
+        return $this->inconnuCodeSmellCritical;
     }
 
-    public function setInconnueCodeSmellCritical(int $inconnueCodeSmellCritical): self
+    public function setInconnuCodeSmellCritical(int $inconnuCodeSmellCritical): self
     {
-        $this->inconnueCodeSmellCritical = $inconnueCodeSmellCritical;
+        $this->inconnuCodeSmellCritical = $inconnuCodeSmellCritical;
         return $this;
     }
 
-    public function getInconnueCodeSmellMajor(): int
+    public function getInconnuCodeSmellMajor(): int
     {
-        return $this->inconnueCodeSmellMajor;
+        return $this->inconnuCodeSmellMajor;
     }
 
-    public function setInconnueCodeSmellMajor(int $inconnueCodeSmellMajor): self
+    public function setInconnuCodeSmellMajor(int $inconnuCodeSmellMajor): self
     {
-        $this->inconnueCodeSmellMajor = $inconnueCodeSmellMajor;
+        $this->inconnuCodeSmellMajor = $inconnuCodeSmellMajor;
         return $this;
     }
 
-    public function getInconnueCodeSmellMinor(): int
+    public function getInconnuCodeSmellMinor(): int
     {
-        return $this->inconnueCodeSmellMinor;
+        return $this->inconnuCodeSmellMinor;
     }
 
-    public function setInconnueCodeSmellMinor(int $inconnueCodeSmellMinor): self
+    public function setInconnuCodeSmellMinor(int $inconnuCodeSmellMinor): self
     {
-        $this->inconnueCodeSmellMinor = $inconnueCodeSmellMinor;
+        $this->inconnuCodeSmellMinor = $inconnuCodeSmellMinor;
         return $this;
     }
 
-    public function getInconnueCodeSmellInfo(): int
+    public function getInconnuCodeSmellInfo(): int
     {
-        return $this->inconnueCodeSmellInfo;
+        return $this->inconnuCodeSmellInfo;
     }
 
-    public function setInconnueCodeSmellInfo(int $inconnueCodeSmellInfo): self
+    public function setInconnuCodeSmellInfo(int $inconnuCodeSmellInfo): self
     {
-        $this->inconnueCodeSmellInfo = $inconnueCodeSmellInfo;
+        $this->inconnuCodeSmellInfo = $inconnuCodeSmellInfo;
         return $this;
     }
 

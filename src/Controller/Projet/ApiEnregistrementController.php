@@ -110,7 +110,7 @@ class ApiEnregistrementController extends AbstractController
             'vulnerability_minor' => $data->vulnerability_minor, 'vulnerability_info' => $data->vulnerability_info,
             'code_smell_blocker' => $data->code_smell_blocker, 'code_smell_critical' => $data->code_smell_critical, 'code_smell_major' => $data->code_smell_major,
             'code_smell_minor' => $data->code_smell_minor, 'code_smell_info' => $data->code_smell_info,
-            'frontend' => $data->frontend, 'backend' => $data->backend, 'autre' => $data->autre, 'inconnue' => $data->inconnue,
+            'frontend' => $data->frontend, 'backend' => $data->backend, 'autre' => $data->autre, 'inconnu' => $data->inconnu,
             'nombre_anomalie_bloquant' => $data->nombre_anomalie_bloquant, 'nombre_anomalie_critique' => $data->nombre_anomalie_critique,
             'nombre_anomalie_majeur' => $data->nombre_anomalie_majeur,
             'nombre_anomalie_mineur' => $data->nombre_anomalie_mineur, 'nombre_anomalie_info' => $data->nombre_anomalie_info,

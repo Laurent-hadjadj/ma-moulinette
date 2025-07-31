@@ -212,30 +212,30 @@ class RepartitionRepository extends ServiceEntityRepository
     */
     $fieldsBug = [
       // BUG
-      'frontend_bug_blocker', 'backend_bug_blocker', 'autre_bug_blocker', 'inconnue_bug_blocker',
-      'frontend_bug_critical', 'backend_bug_critical', 'autre_bug_critical', 'inconnue_bug_critical',
-      'frontend_bug_major', 'backend_bug_major', 'autre_bug_major', 'inconnue_bug_major',
-      'frontend_bug_minor', 'backend_bug_minor', 'autre_bug_minor', 'inconnue_bug_minor',
-      'frontend_bug_info', 'backend_bug_info', 'autre_bug_info', 'inconnue_bug_info',
+      'frontend_bug_blocker', 'backend_bug_blocker', 'autre_bug_blocker', 'inconnu_bug_blocker',
+      'frontend_bug_critical', 'backend_bug_critical', 'autre_bug_critical', 'inconnu_bug_critical',
+      'frontend_bug_major', 'backend_bug_major', 'autre_bug_major', 'inconnu_bug_major',
+      'frontend_bug_minor', 'backend_bug_minor', 'autre_bug_minor', 'inconnu_bug_minor',
+      'frontend_bug_info', 'backend_bug_info', 'autre_bug_info', 'inconnu_bug_info',
     ];
 
     $fieldsVulnerability = [
         // VULNERABILITY
-        'frontend_vulnerability_blocker', 'backend_vulnerability_blocker', 'autre_vulnerability_blocker', 'inconnue_vulnerability_blocker',
-        'frontend_vulnerability_critical', 'backend_vulnerability_critical', 'autre_vulnerability_critical', 'inconnue_vulnerability_critical',
-        'frontend_vulnerability_major', 'backend_vulnerability_major', 'autre_vulnerability_major', 'inconnue_vulnerability_major',
-        'frontend_vulnerability_minor', 'backend_vulnerability_minor', 'autre_vulnerability_minor', 'inconnue_vulnerability_minor',
-        'frontend_vulnerability_info', 'backend_vulnerability_info', 'autre_vulnerability_info', 'inconnue_vulnerability_info',
+        'frontend_vulnerability_blocker', 'backend_vulnerability_blocker', 'autre_vulnerability_blocker', 'inconnu_vulnerability_blocker',
+        'frontend_vulnerability_critical', 'backend_vulnerability_critical', 'autre_vulnerability_critical', 'inconnu_vulnerability_critical',
+        'frontend_vulnerability_major', 'backend_vulnerability_major', 'autre_vulnerability_major', 'inconnu_vulnerability_major',
+        'frontend_vulnerability_minor', 'backend_vulnerability_minor', 'autre_vulnerability_minor', 'inconnu_vulnerability_minor',
+        'frontend_vulnerability_info', 'backend_vulnerability_info', 'autre_vulnerability_info', 'inconnu_vulnerability_info',
     ];
 
     $fieldsCodeSmell = [
         // CODE_SMELL
-        'frontend_code_smell_blocker', 'backend_code_smell_blocker', 'autre_code_smell_blocker', 'inconnue_code_smell_blocker',
-        'frontend_code_smell_critical', 'backend_code_smell_critical', 'autre_code_smell_critical', 'inconnue_code_smell_critical',
-        'frontend_code_smell_major', 'backend_code_smell_major', 'autre_code_smell_major', 'inconnue_code_smell_major',
-        'frontend_code_smell_minor', 'backend_code_smell_minor', 'autre_code_smell_minor', 'inconnue_code_smell_minor',
+        'frontend_code_smell_blocker', 'backend_code_smell_blocker', 'autre_code_smell_blocker', 'inconnu_code_smell_blocker',
+        'frontend_code_smell_critical', 'backend_code_smell_critical', 'autre_code_smell_critical', 'inconnu_code_smell_critical',
+        'frontend_code_smell_major', 'backend_code_smell_major', 'autre_code_smell_major', 'inconnu_code_smell_major',
+        'frontend_code_smell_minor', 'backend_code_smell_minor', 'autre_code_smell_minor', 'inconnu_code_smell_minor',
         'frontend_code_smell_info', 'backend_code_smell_info',
-        'autre_code_smell_info', 'inconnue_code_smell_info',
+        'autre_code_smell_info', 'inconnu_code_smell_info',
     ];
 
     // Fusion de tous les champs dans un seul tableau

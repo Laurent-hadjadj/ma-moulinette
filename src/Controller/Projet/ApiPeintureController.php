@@ -466,7 +466,7 @@ class ApiPeintureController extends AbstractController
         $frontend = $anomalie['liste'][0]['frontend'] ?? 0;
         $backend = $anomalie['liste'][0]['backend'] ?? 0;
         $autre = $anomalie['liste'][0]['autre'] ?? 0;
-        $inconnue = $anomalie['liste'][0]['inconnue'] ?? 0;
+        $inconnu = $anomalie['liste'][0]['inconnu'] ?? 0;
 
         /* On récupère les notes (A-F) */
         $types = ['reliability', 'security', 'sqale'];
@@ -512,7 +512,7 @@ class ApiPeintureController extends AbstractController
             'major' => $severityMajor,
             'minor' => $severityMinor,
             'frontend' => $frontend, 'backend' => $backend,
-            'autre' => $autre, 'inconnue' => $inconnue,
+            'autre' => $autre, 'inconnu' => $inconnu,
             'noteReliability' => $noteReliability,
             'noteSecurity' => $noteSecurity,
             'noteSqale' => $noteSqale

@@ -136,7 +136,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
 
         /**************** Components ***************/
         /** On calcule la répartition pour les application java et ?Php */
-        $score_frontend = $score_backend = $score_autre = $score_inconnue = 0;
+        $score_frontend = $score_backend = $score_autre = $score_inconnu = 0;
         if (array_key_exists('json', $result) && array_key_exists('path', $result['json']['component'])) {
             $path = $result['json']['component']['path'];
         } elseif (array_key_exists('json', $result) && array_key_exists('component', $result['json'])) {
@@ -177,7 +177,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
             }
         }
         /* On calcule le score pour les clés non identifiées */
-        $score_inconnue = ($score_frontend === 0 && $score_backend === 0 && $score_autre === 0) ? 1 : 0;
+        $score_inconnu = ($score_frontend === 0 && $score_backend === 0 && $score_autre === 0) ? 1 : 0;
 
        /** On renvoie le tableau à insérer */
         return [
@@ -189,7 +189,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
             'frontend' => $score_frontend,
             'backend' => $score_backend,
             'autre' => $score_autre,
-            'inconnue' => $score_inconnue,
+            'inconnu' => $score_inconnu,
             'file_name' => $result['json']['component'] ? $result['json']['component']['name'] : 'NC',
             'file_path' => $path,
             'line' => empty($result['json']['line']) ? 0 : $result['json']['line'],

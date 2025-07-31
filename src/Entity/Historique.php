@@ -1152,12 +1152,12 @@ class Historique
         return $this;
     }
 
-    public function getinconnu(): ?int
+    public function getInconnu(): ?int
     {
         return $this->inconnu;
     }
 
-    public function setinconnu(int $inconnu): \App\Entity\Historique
+    public function setInconnu(int $inconnu): \App\Entity\Historique
     {
         $this->inconnu = $inconnu;
 

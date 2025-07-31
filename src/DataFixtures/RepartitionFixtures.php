@@ -76,22 +76,22 @@ class RepartitionFixtures extends Fixture
   private static $autreCodeSmellMajor = 0;
   private static $autreCodeSmellMinor = 0;
   private static $autreCodeSmellInfo = 0;
-  private static $inconnue = 0;
-  private static $inconnueBugBlocker = 0;
-  private static $inconnueBugCritical = 0;
-  private static $inconnueBugMajor = 0;
-  private static $inconnueBugMinor = 0;
-  private static $inconnueBugInfo = 0;
-  private static $inconnueVulnerabilityBlocker = 0;
-  private static $inconnueVulnerabilityCritical = 0;
-  private static $inconnueVulnerabilityMajor = 0;
-  private static $inconnueVulnerabilityMinor = 0;
-  private static $inconnueVulnerabilityInfo = 0;
-  private static $inconnueCodeSmellBlocker = 0;
-  private static $inconnueCodeSmellCritical = 0;
-  private static $inconnueCodeSmellMajor = 0;
-  private static $inconnueCodeSmellMinor = 1;
-  private static $inconnueCodeSmellInfo = 43;
+  private static $inconnu = 0;
+  private static $inconnuBugBlocker = 0;
+  private static $inconnuBugCritical = 0;
+  private static $inconnuBugMajor = 0;
+  private static $inconnuBugMinor = 0;
+  private static $inconnuBugInfo = 0;
+  private static $inconnuVulnerabilityBlocker = 0;
+  private static $inconnuVulnerabilityCritical = 0;
+  private static $inconnuVulnerabilityMajor = 0;
+  private static $inconnuVulnerabilityMinor = 0;
+  private static $inconnuVulnerabilityInfo = 0;
+  private static $inconnuCodeSmellBlocker = 0;
+  private static $inconnuCodeSmellCritical = 0;
+  private static $inconnuCodeSmellMajor = 0;
+  private static $inconnuCodeSmellMinor = 1;
+  private static $inconnuCodeSmellInfo = 43;
   private static $control = 'complet (100%)';
   private static $setup = '1739816022572';
   private static $modeCollecte = 'COLLECTE';
@@ -166,22 +166,22 @@ class RepartitionFixtures extends Fixture
         ->setAutreCodeSmellMajor(static::$autreCodeSmellMajor)
         ->setAutreCodeSmellMinor(static::$autreCodeSmellMinor)
         ->setAutreCodeSmellInfo(static::$autreCodeSmellInfo)
-        ->setInconnue(static::$inconnue)
-        ->setInconnueBugBlocker(static::$inconnueBugBlocker)
-        ->setInconnueBugCritical(static::$inconnueBugCritical)
-        ->setInconnueBugMajor(static::$inconnueBugMajor)
-        ->setInconnueBugMinor(static::$inconnueBugMinor)
-        ->setInconnueBugInfo(static::$inconnueBugInfo)
-        ->setInconnueVulnerabilityBlocker(static::$inconnueVulnerabilityBlocker)
-        ->setInconnueVulnerabilityCritical(static::$inconnueVulnerabilityCritical)
-        ->setInconnueVulnerabilityMajor(static::$inconnueVulnerabilityMajor)
-        ->setInconnueVulnerabilityMinor(static::$inconnueVulnerabilityMinor)
-        ->setInconnueVulnerabilityInfo(static::$inconnueVulnerabilityInfo)
-        ->setInconnueCodeSmellBlocker(static::$inconnueCodeSmellBlocker)
-        ->setInconnueCodeSmellCritical(static::$inconnueCodeSmellCritical)
-        ->setInconnueCodeSmellMajor(static::$inconnueCodeSmellMajor)
-        ->setInconnueCodeSmellMinor(static::$inconnueCodeSmellMinor)
-        ->setInconnueCodeSmellInfo(static::$inconnueCodeSmellInfo)
+        ->setInconnu(static::$inconnu)
+        ->setInconnuBugBlocker(static::$inconnuBugBlocker)
+        ->setInconnuBugCritical(static::$inconnuBugCritical)
+        ->setInconnuBugMajor(static::$inconnuBugMajor)
+        ->setInconnuBugMinor(static::$inconnuBugMinor)
+        ->setInconnuBugInfo(static::$inconnuBugInfo)
+        ->setInconnuVulnerabilityBlocker(static::$inconnuVulnerabilityBlocker)
+        ->setInconnuVulnerabilityCritical(static::$inconnuVulnerabilityCritical)
+        ->setInconnuVulnerabilityMajor(static::$inconnuVulnerabilityMajor)
+        ->setInconnuVulnerabilityMinor(static::$inconnuVulnerabilityMinor)
+        ->setInconnuVulnerabilityInfo(static::$inconnuVulnerabilityInfo)
+        ->setInconnuCodeSmellBlocker(static::$inconnuCodeSmellBlocker)
+        ->setInconnuCodeSmellCritical(static::$inconnuCodeSmellCritical)
+        ->setInconnuCodeSmellMajor(static::$inconnuCodeSmellMajor)
+        ->setInconnuCodeSmellMinor(static::$inconnuCodeSmellMinor)
+        ->setInconnuCodeSmellInfo(static::$inconnuCodeSmellInfo)
         ->setSetup(static::$setup)
         ->setControl(static::$control)
         ->setModeCollecte(static::$modeCollecte)

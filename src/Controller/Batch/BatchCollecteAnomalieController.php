@@ -76,7 +76,7 @@ class BatchCollecteAnomalieController extends AbstractController
         ]);
 
         /** On calcule la répartition pour les application java et ?Php */
-        $scoreFrontend = $scoreBackend = $scoreAutre = $scoreInconnue = 0;
+        $scoreFrontend = $scoreBackend = $scoreAutre = $scoreInconnu = 0;
 
         /** on récupère la liste des clés pour chaque module */
         $listeFrontend = $this->getParameter('module.frontend');
@@ -108,9 +108,9 @@ class BatchCollecteAnomalieController extends AbstractController
                 } // Sinon, on vérifie s'il correspond à un module autre
                 elseif (preg_match($regexAutre, $path)) {
                     $scoreAutre += $count;
-                } // Si aucune des regex ne matche, c'est considéré comme "inconnue"
+                } // Si aucune des regex ne matche, c'est considéré comme "inconnu"
                 else {
-                    $scoreInconnue += $count;
+                    $scoreInconnu += $count;
                 }
             }
         } catch (\Exception $e) {
@@ -128,7 +128,7 @@ class BatchCollecteAnomalieController extends AbstractController
             'frontend' => $scoreFrontend,
             'backend' => $scoreBackend,
             'autre' => $scoreAutre,
-            'inconnue' => $scoreInconnue
+            'inconnu' => $scoreInconnu
         ]);
 
         return [
@@ -136,7 +136,7 @@ class BatchCollecteAnomalieController extends AbstractController
                 'frontend' => $scoreFrontend,
                 'backend' => $scoreBackend,
                 'autre' => $scoreAutre,
-                'inconnue' => $scoreInconnue
+                'inconnu' => $scoreInconnu
             ];
     }
 
@@ -318,7 +318,7 @@ class BatchCollecteAnomalieController extends AbstractController
             'frontend' => $analyse['frontend'] ?? 0,
             'backend' => $analyse['backend'] ?? 0,
             'autre' => $analyse['autre'] ?? 0,
-            'inconnue' => $analyse['inconnue'] ?? 0,
+            'inconnu' => $analyse['inconnu'] ?? 0,
             'blocker' => $severities['BLOCKER'] ?? 0,
             'critical' => $severities['CRITICAL'] ?? 0,
             'major' => $severities['MAJOR'] ?? 0,
@@ -351,7 +351,7 @@ class BatchCollecteAnomalieController extends AbstractController
                     'frontend' => $analyse['frontend'] ?? 0,
                     'backend' => $analyse['backend'] ?? 0,
                     'autre' => $analyse['autre'] ?? 0,
-                    'inconnue' => $analyse['inconnue'] ?? 0,
+                    'inconnu' => $analyse['inconnu'] ?? 0,
                     'nombre_anomalie_bloquant' => $severities['BLOCKER'] ?? 0,
                     'nombre_anomalie_critique' =>$severities['CRITICAL'] ?? 0,
                     'nombre_anomalie_info' =>$severities['INFO'] ?? 0,
@@ -365,7 +365,7 @@ class BatchCollecteAnomalieController extends AbstractController
             'frontend' => $analyse['frontend'] ?? 0,
             'backend' => $analyse['backend'] ?? 0,
             'autre' => $analyse['autre'] ?? 0,
-            'inconnue' => $analyse['inconnue'] ?? 0,
+            'inconnu' => $analyse['inconnu'] ?? 0,
             'utilisateur' => $utilisateurCollecte
         ]);
 

@@ -342,12 +342,12 @@ class Anomalie
         return $this;
     }
 
-    public function getinconnu(): ?int
+    public function getInconnu(): ?int
     {
         return $this->inconnu;
     }
 
-    public function setinconnu(int $inconnu): static
+    public function setInconnu(int $inconnu): static
     {
         $this->inconnu = $inconnu;
 
