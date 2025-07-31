@@ -893,12 +893,12 @@ export const afficheHotspotDetails = async function (maven_key){
     }
     const repartition = new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(calcul);
 
-    $('#menace-potentielle-total').html(`<span class="stat">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(total)}</span> <span>(${repartition})`);
+    $('#menace-potentielle-totale').html(`<span class="stat">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(total)}</span> <span>(${repartition})`);
     if (parseInt(t.to_review_total, 10) > 0) {
       $('.menace-potentielle-s').html('s');
     }
 
-    const t1 = document.getElementById('menace-potentielle-total');
+    const t1 = document.getElementById('menace-potentielle-totale');
     t1.dataset.menacePotentielleTotal = (total);
     log(' - 🎨 [Peinture] Mise à jour du tableau du détail des menaces potentielles.');
   } catch(error) {

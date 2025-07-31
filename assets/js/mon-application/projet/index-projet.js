@@ -877,7 +877,7 @@ const projetHotspotOwaspDetails = async function(mavenKey) {
       log(` -     ✅ On a trouvé ${t.nombre} description${s}.`);
     }
     if (t.code===http_406){
-      log(` -     ✅ Aucune information n'est disponible pour les hotspots.`);
+      log(` -     📌 Aucune information n'est disponible pour les hotspots.`);
     }  else {
       log(` - ❌ (10) Collecte des informations détaillées pour les hotspots en échec.`);
     }
