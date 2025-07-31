@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V2.4.2 - 22/07/2025              ##
+##               V2.5.0 - 31/07/2025              ##
 ##                                                ##
 ####################################################*/
 
@@ -54,6 +54,7 @@
 -- 16/07/2025 : Laurent HADJADJ - Ajout dans la relation mesures, files, classes et functions.
 -- 22/07/2025 : Laurent HADJADJ - Correction de plusieurs erreurs de syntaxe SQL.
 -- 22/07/2025 : Laurent HADJADJ - Correction de la colonne rules_update_at en rules_updated_at de la table profiles.
+-- 22/07/2025 : Laurent HADJADJ - Renommage des hotspot_(high, medium, low) en menace_potentielle_(to_review, reviewed)_(high, medium, low) dans la table historique
 
 -- SCHEMA: ma_moulinette
 
@@ -465,10 +466,13 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.historique
   note_security character varying(16) NOT NULL,
   note_sqale character varying(16) NOT NULL,
   note_hotspot character varying(16) NOT NULL,
-  hotspot_high integer NOT NULL,
-  hotspot_medium integer NOT NULL,
-  hotspot_low integer NOT NULL,
-  nombre_hotspot integer NOT NULL,
+  menace_potentielle_to_review_high integer NOT NULL,
+  menace_potentielle_to_review_medium integer NOT NULL,
+  menace_potentielle_to_review_low integer NOT NULL,
+  menace_potentielle_reviewed_high integer NOT NULL,
+  menace_potentielle_reviewed_medium integer NOT NULL,
+  menace_potentielle_reviewed_low integer NOT NULL,
+  menace_potentielle_totale integer NOT NULL,
   initial boolean NOT NULL,
   bug_blocker integer NOT NULL,
   bug_critical integer NOT NULL,
@@ -536,11 +540,14 @@ COMMENT ON COLUMN ma_moulinette.historique.nombre_anomalie_mineur IS 'Nombre d�
 COMMENT ON COLUMN ma_moulinette.historique.note_reliability IS 'Note de fiabilité attribuée au projet';
 COMMENT ON COLUMN ma_moulinette.historique.note_security IS 'Note de sécurité attribuée au projet';
 COMMENT ON COLUMN ma_moulinette.historique.note_sqale IS 'Note SQALE attribuée au projet';
-COMMENT ON COLUMN ma_moulinette.historique.note_hotspot IS 'Note pour les hotspots de sécurité';
-COMMENT ON COLUMN ma_moulinette.historique.hotspot_high IS 'Nombre de hotspots de sécurité de niveau élevé';
-COMMENT ON COLUMN ma_moulinette.historique.hotspot_medium IS 'Nombre de hotspots de sécurité de niveau moyen';
-COMMENT ON COLUMN ma_moulinette.historique.hotspot_low IS 'Nombre de hotspots de sécurité de niveau faible';
-COMMENT ON COLUMN ma_moulinette.historique.nombre_hotspot IS 'Nombre total de hotspots de sécurité';
+COMMENT ON COLUMN ma_moulinette.historique.note_hotspot IS 'Note pour les menaces potentielles de sécurité';
+COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_to_review_high IS 'Nombre de menaces potentielles de sécurité de niveau élevé à vérifier';
+COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_to_review_medium IS 'Nombre de menaces potentielles de sécurité de niveau moyen à vérifier';
+COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_to_review_low IS 'Nombre de menaces potentielles de sécurité de niveau faible à vérifier';
+COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_reviewed_high IS 'Nombre de menaces potentielles de sécurité de niveau élevé vérifié';
+COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_reviewed_medium IS 'Nombre de menaces potentielles de sécurité de niveau moyen vérifié';
+COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_reviewed_low IS 'Nombre de menaces potentielles de sécurité de niveau faible vérifié';
+COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_totale IS 'Nombre total de menaces potentielles de sécurité vérifié';
 COMMENT ON COLUMN ma_moulinette.historique.initial IS 'Indique si c’est la version de référence';
 COMMENT ON COLUMN ma_moulinette.historique.bug_blocker IS 'Nombre de bugs bloquants';
 COMMENT ON COLUMN ma_moulinette.historique.bug_critical IS 'Nombre de bugs critiques';
