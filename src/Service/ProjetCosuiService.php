@@ -66,7 +66,7 @@ class ProjetCosuiService
 
         // 1. Données projet actuel
         $n = $this->notes($maven_key);
-        if ($n['code'] !== 200 || $n['result'] === false) {
+        if ($n['code'] !== 200) {
             $message = '❌ [COSUI] Problème récupération des données projet actuel (notes)';
             $this->logger->error($message);
             return [
@@ -76,11 +76,21 @@ class ProjetCosuiService
                 'trace' => $n['erreur'] ?? null
             ];
         }
+        if ($n['code'] == 200 && $n['result'] === false) {
+            $message = '⚠️ [COSUI] Aucune données présentent dans la table historique pour ce projet (Erreur 404).';
+            $this->logger->warning($message);
+            return [
+                'code' => 404,
+                'type' => 'warning',
+                'message' => $message,
+                'trace' => null
+            ];
+        }
         $this->injectNotesActuelles($render, $n);
 
         // 2. Données de référence
         $nn = $this->reference($maven_key);
-        if ($nn['code'] !== 200 || $nn['result'] === false) {
+        if ($nn['code'] !== 200) {
             $message = "❌ [COSUI] Échec récupération des données de référence.";
             $this->logger->error($message);
             return [
@@ -90,6 +100,16 @@ class ProjetCosuiService
                 'trace' => $nn['erreur'] ?? null
             ];
         }
+        if ($n['code'] == 200 && $nn['result'] === false) {
+            $message = '⚠️ [COSUI] Aucune données présentent dans la table historique pour ce projet (Erreur 404).';
+            $this->logger->warning($message);
+            return [
+                'code' => 404,
+                'type' => 'warning',
+                'message' => $message,
+                'trace' => null
+            ];
+        }
         $this->injectNotesReference($render, $nn);
 
         // 3. Setup
@@ -97,7 +117,7 @@ class ProjetCosuiService
                 $setup = $this->setup($maven_key);
                 $render['setup'] = $setup[0] ?? 'NoN';
             } catch (\Throwable $e) {
-                $message = '❌ [COSUI] Erreur lors de la récupération du setup';
+                $message = '🔴 [COSUI] Erreur lors de la récupération du setup';
                 $this->logger->error($message, ['exception' => $e->getMessage()]);
                 return [
                     'code' => 500,
@@ -116,7 +136,7 @@ class ProjetCosuiService
                 }
             }
             } catch (\Throwable $e) {
-        $message = '❌ [COSUI] Erreur durant le traitement des anomalies';
+        $message = '🔴 [COSUI] Erreur durant le traitement des anomalies';
         $this->logger->error($message, ['exception' => $e->getMessage()]);
         return [
             'code' => 500,
