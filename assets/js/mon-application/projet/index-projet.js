@@ -336,13 +336,12 @@ const projetInformation = async function(mavenKey) {
     } else {
       log(` - ❌ (01) Collecte des informations pour la version en échec.`);
     }
-
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
       const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 01.";
-      showMessage('alert', message, trace);
+      showMessage('critical', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 01');
-      log(` - ❌ (01) Collecte des informations pour la version en échec.`);
+      log(` - 🔴 (01) Collecte des informations pour la version en échec.`);
       errorButton($boutonCollecteIndicateur, aria_label);
       return;
   }
