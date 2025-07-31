@@ -151,13 +151,13 @@ class ApiCollecteController extends AbstractController
 
         $this->logger->info('ℹ️ [Collecte] Informations collectées avec succès.', [
             'maven_key' => $data->maven_key,
-            'project_name' => $information['message']['projet']
+            'projet_version' => $information['message']['version']
         ]);
 
         return new JsonResponse([
             'code' => 200,
             'message' => [
-                'projet' => $information['message']['projet'],
+                'projet_version' => $information['message']['version'],
                 'release' => $information['message']['release'],
                 'snapshot' => $information['message']['snapshot'],
                 'autre' => $information['message']['autre'],
