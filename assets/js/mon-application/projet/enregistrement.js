@@ -236,7 +236,7 @@ export const enregistrement = async function(maven_key) {
     'menace_potentielle_to_review_low': menacePotentielleToReviewLow,
     'menace_potentielle_reviewed_high':  menacePotentielleReviewedHigh,
     'menace_potentielle_reviewed_medium': menacePotentielleReviewedMedium,
-    'hotspot_reviewed_low': menacePotentielleReviewedLow,
+    'menace_potentielle_reviewed_low': menacePotentielleReviewedLow,
     'menace_potentielle_totale': menacePotentielleTotale,
     'bug_blocker': bugBlocker, 'bug_critical': bugCritical, 'bug_major': bugMajor,
     'bug_minor': bugMinor, 'bug_info': bugInfo,
