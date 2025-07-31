@@ -356,10 +356,7 @@ export const remplissage = async function(maven_key) {
         return;
       }
 
-    $('#nombre-ligne').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.lines));
-    $('#nombre-ligne-de-code').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.ncloc));
-
-    /** On affiche les langages supportés */
+        /** On affiche les langages supportés */
     const jsonObject=t.languages;
     let i=0;
     let total=0;
@@ -388,6 +385,13 @@ export const remplissage = async function(maven_key) {
           $('#distribution-langage').append(item);
       }
     }
+
+    $('#nombre-ligne').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.lines));
+    $('#nombre-ligne-de-code').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.ncloc));
+
+    $('#nombre-fichier').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.files));
+    $('#nombre-classe').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.classes));
+    $('#nombre-function').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.functions));
 
     $('#coverage').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseFloat(t.coverage)/cent));
     $('#ratio-dette-technique').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseFloat(t.sqale_debt_ratio)/cent));
