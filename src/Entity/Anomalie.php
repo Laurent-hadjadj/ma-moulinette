@@ -103,9 +103,9 @@ class Anomalie
     private $autre;
 
     #[ORM\Column(type: Types::INTEGER, nullable: false,
-    options: ['comment' => 'Problèmes inconnues'])]
+    options: ['comment' => 'Problèmes inconnus'])]
     #[Assert\NotNull]
-    private $inconnue;
+    private $inconnu;
 
     #[ORM\Column(type: Types::INTEGER, nullable: false,
         options: ['comment' => 'Problèmes bloquants'])]
@@ -342,14 +342,14 @@ class Anomalie
         return $this;
     }
 
-    public function getInconnue(): ?int
+    public function getinconnu(): ?int
     {
-        return $this->inconnue;
+        return $this->inconnu;
     }
 
-    public function setInconnue(int $inconnue): static
+    public function setinconnu(int $inconnu): static
     {
-        $this->inconnue = $inconnue;
+        $this->inconnu = $inconnu;
 
         return $this;
     }

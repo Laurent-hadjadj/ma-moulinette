@@ -497,7 +497,7 @@ export const remplissage = async function(maven_key) {
       const html01='<span style="color:#fff;">0</span>';
       const html02='<span style="color:#fff;">00</span>';
 
-      const totalModule = parseInt(t.frontend + t.backend + t.autre + t.inconnue, 10);
+      const totalModule = parseInt(t.frontend + t.backend + t.autre + t.inconnu, 10);
 
       if (totalModule !== 0) {
         if (t.frontend !== 0) {
@@ -545,43 +545,43 @@ export const remplissage = async function(maven_key) {
       }
       $('#nombre-autre').html(i3);
 
-      if (t.inconnue !== 0) {
-        p4 = t.inconnue / totalModule;
+      if (t.inconnu !== 0) {
+        p4 = t.inconnu / totalModule;
         if (p4 *cent > dix && p4 * cent < cent) {
           e4 = html01;
         }
         if (p4 * cent < dix) {
           e4 = html02;
         }
-        i4 = `<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.inconnue)}</span> ${e4}
-            <span>${new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(t.inconnue/totalModule)}</span>`;
+        i4 = `<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.inconnu)}</span> ${e4}
+            <span>${new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(t.inconnu/totalModule)}</span>`;
       } else {
         i4 = `<span>${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0)}</span>`;
       }
-      $('#nombre-inconnue').html(i4);
+      $('#nombre-inconnu').html(i4);
 
       /** Historique */
       const t17 = document.getElementById('nombre-frontend');
       const t18 = document.getElementById('nombre-backend');
       const t19 = document.getElementById('nombre-autre');
-      const t19a = document.getElementById('nombre-inconnue');
+      const t19a = document.getElementById('nombre-inconnu');
       t17.dataset.nombreFrontend = t.frontend;
       t18.dataset.nombreBackend = t.backend;
       t19.dataset.nombreAutre = t.autre;
-      t19a.dataset.nombreInconnue = t.inconnue;
+      t19a.dataset.nombreInconnu = t.inconnu;
       } else {
           $('#nombre-frontend').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0));
           $('#nombre-backend').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0));
           $('#nombre-autre').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0));
-          $('#nombre-inconnue').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0));
+          $('#nombre-inconnu').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(0));
           const t20 = document.getElementById('nombre-frontend');
           const t21 = document.getElementById('nombre-backend');
           const t22 = document.getElementById('nombre-autre');
-          const t22a = document.getElementById('nombre-inconnue');
+          const t22a = document.getElementById('nombre-inconnu');
           t20.dataset.nombreFrontend = 0;
           t21.dataset.nombreBackend = 0;
           t22.dataset.nombreAutre = 0;
-          t22a.dataset.nombreInconnue = 0;
+          t22a.dataset.nombreInconnu = 0;
           }
 
       /* Répartition des anomalies par sévérité */

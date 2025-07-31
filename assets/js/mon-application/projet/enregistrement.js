@@ -128,11 +128,11 @@ export const enregistrement = async function(mavenKey) {
   const t16 = document.getElementById('nombre-frontend');
   const t17 = document.getElementById('nombre-backend');
   const t18 = document.getElementById('nombre-autre');
-  const t18a = document.getElementById('nombre-inconnue');
+  const t18a = document.getElementById('nombre-inconnu');
   const frontend = t16.dataset.nombreFrontend;
   const backend = t17.dataset.nombreBackend;
   const autre = t18.dataset.nombreAutre;
-  const inconnue = t18a.dataset.nombreInconnue;
+  const inconnu = t18a.dataset.nombreInconnu;
 
   /* Répartition des anomalies par sévérité */
   const t19 = document.getElementById('nombre-anomalie-bloquant');
@@ -215,7 +215,7 @@ export const enregistrement = async function(mavenKey) {
     'violations': violations, dette,
     'nombre_bug': nombreBug, 'nombre_vulnerability':nombreVulnerability,
     'nombre_code_smell': nombreCodeSmell,
-    frontend,backend, autre, inconnue,
+    frontend,backend, autre, inconnu,
     'nombre_anomalie_bloquant': nombreAnomalieBloquant, 'nombre_anomalie_critique': nombreAnomalieCritique,
     'nombre_anomalie_info': nombreAnomalieInfo,
     'nombre_anomalie_majeur': nombreAnomalieMajeur,

@@ -184,7 +184,7 @@ class Historique
     #[ORM\Column(type: Types::INTEGER,
     options: ['comment' => 'développements indéterminées'])]
     #[Assert\NotNull]
-    private int $inconnue;
+    private int $inconnu;
 
     #[ORM\Column(type: Types::INTEGER,
         options: ['comment' => 'Somme de la dette technique accumulée'])]
@@ -1152,14 +1152,14 @@ class Historique
         return $this;
     }
 
-    public function getInconnue(): ?int
+    public function getinconnu(): ?int
     {
-        return $this->inconnue;
+        return $this->inconnu;
     }
 
-    public function setInconnue(int $inconnue): \App\Entity\Historique
+    public function setinconnu(int $inconnu): \App\Entity\Historique
     {
-        $this->inconnue = $inconnue;
+        $this->inconnu = $inconnu;
 
         return $this;
     }
