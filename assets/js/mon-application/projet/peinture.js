@@ -899,7 +899,7 @@ export const afficheHotspotDetails = async function (maven_key){
     }
 
     const t1 = document.getElementById('menace-potentielle-total');
-    t1.dataset.nombreHotspot=(t.to_review_high_total);
+    t1.dataset.menacePotentielleTotal = (total);
     log(' - 🎨 [Peinture] Mise à jour du tableau du détail des menaces potentielles.');
   } catch(error) {
     ErrorButtonAffiche();
