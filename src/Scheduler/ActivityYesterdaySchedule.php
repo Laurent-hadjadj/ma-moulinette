@@ -73,7 +73,7 @@ final class ActivityYesterdaySchedule implements ScheduleProviderInterface
 
         // Si la tâche est déjà en cours d'exécution, ne pas planifier une nouvelle
         if ($cacheItem) {
-            $this->logger->info('[ACTIVITY-SCHEDULER] Une exécution est déjà en cours.');
+            $this->logger->info('ℹ️ [ACTIVITY-SCHEDULER] Une exécution est déjà en cours.');
             return new Schedule(); // Aucune tâche à planifier
         }
 
@@ -83,7 +83,7 @@ final class ActivityYesterdaySchedule implements ScheduleProviderInterface
         /** On calcule la date et la plage à J-1 */
         $dates = $this->getYesterdayDates();
 
-        $this->logger->info('[ACTIVITY SCHEDULER] Le programme a été exécuté', [
+        $this->logger->info('ℹ️ [ACTIVITY SCHEDULER] Le programme a été exécuté', [
             'Début' => $dates['fromDate'], 'Fin' => $dates['toDate'], 'cron' => $cron]);
 
         /* Planification du message */

@@ -61,7 +61,7 @@ final class ActivityHandler
         $toDate = $message->getToDate();
 
         $this->logger->info('##########################################################');
-        $this->logger->info('ActivityHandler reçu', ['de' => $fromDate, 'à' => $toDate]);
+        $this->logger->info('ℹ️ ActivityHandler reçu', ['de' => $fromDate, 'à' => $toDate]);
         $this->logger->info('#########################################################');
 
         /** Initialisation */
@@ -90,11 +90,11 @@ final class ActivityHandler
 
                 if (empty($tasks)) {
                     // Aucune tâche récupérée, sortir de la boucle
-                    $this->logger->info("[ACTIVITY] - Aucune tâche trouvée à la page $pageIndex.");
+                    $this->logger->info("ℹ️ [ACTIVITY] - Aucune tâche trouvée à la page $pageIndex.");
                     break;
                 }
 
-                $this->logger->info('[ACTIVITY] - Page ' . $pageIndex . ' traitée avec ' . count($response['json']['tasks']) . ' tâches.');
+                $this->logger->info('ℹ️ [ACTIVITY] - Page ' . $pageIndex . ' traitée avec ' . count($response['json']['tasks']) . ' tâches.');
                 $infos['task_count'] += count($response['json']['tasks']);
 
                 // Étape 3 : Traiter chaque tâche
@@ -102,13 +102,13 @@ final class ActivityHandler
                 foreach ($tasks as $task) {
                     try {
                         $processTaskMessage = new ProcessTaskMessage($task);
-                        $this->logger->info('[ACTIVITY] - Traitement de la tâche', ['taskId' => $task['id']]);
+                        $this->logger->info('ℹ️ [ACTIVITY] - Traitement de la tâche', ['taskId' => $task['id']]);
                         $this->messengerBus->dispatch($this->createEnvelope($processTaskMessage));
-                        $this->logger->info('[ACTIVITY] - Message envoyé', ['taskId' => $task['id']]);
+                        $this->logger->info('ℹ️ [ACTIVITY] - Message envoyé', ['taskId' => $task['id']]);
                         $successfulTasksCount++;
                     } catch (\Throwable $e) {
-                        $this->logger->error('[ACTIVITY] - Erreur dans le traitement des tâches : ' . $e->getMessage());
-                        $errors[] = sprintf('[ACTIVITY] - %s', $e->getMessage());
+                        $this->logger->error('❌ [ACTIVITY] - Erreur dans le traitement des tâches : ' . $e->getMessage());
+                        $errors[] = sprintf('❌ [ACTIVITY] - %s', $e->getMessage());
                         break; /** on sort pour éviter la répétition des erreurs */
                     }
 
@@ -117,7 +117,7 @@ final class ActivityHandler
                 }
                 // Si SonarQube 8, arrêter après la première page (8 = string)
                 if ($this->params->get('sonar.version') == 8) {
-                    $this->logger->info("[ACTIVITY] - Version de Sonar détectée : " . $this->params->get('sonar.version'));
+                    $this->logger->info("ℹ️ [ACTIVITY] - Version de Sonar détectée : " . $this->params->get('sonar.version'));
                     $infos['page']= $pageIndex;
                     break; // Arrêt explicite
                 }
@@ -139,7 +139,7 @@ final class ActivityHandler
         $this->activityReportService->generateReport($infos, $successfulTasksCount, $errors);
 
         $this->logger->info('###########################################################');
-        $this->logger->info('[REPORT] Rapport batch enregistré', ['Taches' => count($tasks), 'Publié' => $successfulTasksCount ]);
+        $this->logger->info('ℹ️ [REPORT] Rapport batch enregistré', ['Taches' => count($tasks), 'Publié' => $successfulTasksCount ]);
         $this->logger->info('###########################################################');
         $this->logger->info('#                                                         #');
     }

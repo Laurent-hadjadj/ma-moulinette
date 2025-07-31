@@ -49,12 +49,12 @@ final class ProcessTaskHandler
         {
         $task = $message->getTask();
 
-        $this->logger->info('[ACTIVITY] Traitement de la tâche', ['taskId' => $task['id']]);
+        $this->logger->info('ℹ️ [ACTIVITY] Traitement de la tâche', ['taskId' => $task['id']]);
 
         // Validation : Vérifier si la tâche existe déjà dans la base
         $existingActivity = $this->em->getRepository(Activity::class)->findOneBy(['analyseId' => $task['id']]);
         if ($existingActivity) {
-            $this->logger->info('[ACTIVITY] La tâche existe déjà, elle ne sera pas insérée.', [
+            $this->logger->info('ℹ️ [ACTIVITY] La tâche existe déjà, elle ne sera pas insérée.', [
                 'taskId' => $task['id'],
             ]);
             return;
@@ -83,7 +83,7 @@ final class ProcessTaskHandler
             $this->em->persist($activity);
             $this->em->flush();
 
-        $this->logger->info('[ACTIVITY] Tâche enregistrée dans la table activity', [
+        $this->logger->info('ℹ️ [ACTIVITY] Tâche enregistrée dans la table activity', [
             'taskId' => $task['id'],
             'mavenKey' => $task['componentId'],
             'projectName' => $task['componentName'],

@@ -53,7 +53,7 @@ class UrlBuilderService
 
         // Validation de l'URL générée
         if (!filter_var($url, FILTER_VALIDATE_URL)) {
-            $this->logger->error('URLBuilder: URL invalide générée', [
+            $this->logger->error('❌ [URLBuilder] URL invalide générée', [
                 'baseUrl' => $baseUrl,
                 'path' => $path,
                 'queryParams' => $queryParams,
