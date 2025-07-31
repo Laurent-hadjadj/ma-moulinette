@@ -286,7 +286,7 @@ class ApiPeintureController extends AbstractController
                 'autre' => $autre,
                 'label' => $label,
                 'dataset' => $dataset,
-                'projet' => $version['info'][0]['projet'] ?? 'N.C',
+                'version' => $version['info'][0]['version'] ?? 'N.C',
                 'date' => $version['info'][0]['date'] ?? '1971-07-04 00:00:00',
                 'analyse_key' => $version['info'][0]['analyse_key'] ?? 'N.C'
             ], Response::HTTP_OK

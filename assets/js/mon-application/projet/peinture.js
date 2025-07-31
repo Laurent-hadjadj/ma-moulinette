@@ -131,7 +131,7 @@ export const remplissage = async function(maven_key) {
         const version = document.getElementById('version-autre');
         version.dataset.label = JSON.stringify(t.label);
         version.dataset.dataset = JSON.stringify(t.dataset);
-        $('#version').html(t.projet);
+        $('#version').html(t.version);
         $('#date-version').html(new Intl.DateTimeFormat('default', dateOptions).format(new Date(t.date)));
 
         /** Historique */
