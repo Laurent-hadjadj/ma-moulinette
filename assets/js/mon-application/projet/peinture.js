@@ -391,7 +391,7 @@ export const remplissage = async function(maven_key) {
 
     $('#nombre-fichier').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.files));
     $('#nombre-classe').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.classes));
-    $('#nombre-function').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.functions));
+    $('#nombre-fonction').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.functions));
 
     $('#coverage').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseFloat(t.coverage)/cent));
     $('#ratio-dette-technique').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseFloat(t.sqale_debt_ratio)/cent));
@@ -421,19 +421,26 @@ export const remplissage = async function(maven_key) {
     //Historique
     const t7 = document.getElementById('nombre-ligne');
     const t8 = document.getElementById('nombre-ligne-de-code');
+    const t8a = document.getElementById('nombre-fichier');
+    const t8b = document.getElementById('nombre-classe');
+    const t8c = document.getElementById('nombre-fonction');
+
     const t9 = document.getElementById('coverage');
     const t9a = document.getElementById('ratio-dette-technique');
     const t10 = document.getElementById('duplicated-lines-density');
     const t11 = document.getElementById('tests');
     const t12 = document.getElementById('violations');
 
-    t7.dataset.nombreLigne=(t.lines);
-    t8.dataset.nombreLigneDeCode=(t.ncloc);
-    t9.dataset.coverage=(t.coverage);
-    t9a.dataset.sqaleDebtRatio=(t.sqale_debt_ratio);
-    t10.dataset.duplicatedLinesDensity=(t.duplicated_lines_density);
-    t11.dataset.tests=(t.tests);
-    t12.dataset.violations=t.issues;
+    t7.dataset.nombreLigne = t.lines;
+    t8.dataset.nombreLigneDeCode = t.ncloc;
+    t8a.dataset.nombreFichier= t.files;
+    t8b.dataset.nombreClasse = t.classe;
+    t8c.dataset.nombreFonction = t.functions;
+    t9.dataset.coverage = t.coverage;
+    t9a.dataset.sqaleDebtRatio = t.sqale_debt_ratio;
+    t10.dataset.duplicatedLinesDensity = t.duplicated_lines_density;
+    t11.dataset.tests = t.tests;
+    t12.dataset.violations = t.issues;
     log(' - 🎨 [Peinture] Affichage des informations sur les mesures.');
   } catch(error) {
       ErrorButtonAffiche();
