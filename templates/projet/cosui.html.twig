@@ -88,9 +88,9 @@
           <p class="open-sans text-justify callout-message">
               <strong>{{ message.titre }}</strong> {{ message.message }}
           </p>
-          {% if message.debug %}
+          {% if message.trace %}
             <p class="open-sans text-justify callout-message">
-              {{ message.debug }}
+              {{ message.trace }}
             </p>
           {% endif %}
           <button class="close-button {{message.type}}"
