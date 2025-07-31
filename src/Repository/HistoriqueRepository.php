@@ -118,7 +118,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                     note_security as security, note_hotspot as hotspot,
                     note_sqale as sqale, nombre_bug as bug,
                     nombre_vulnerability as vulnerability,
-                    nombre_code_smell as code_smell, nombre_hotspot as hotspots
+                    nombre_code_smell as code_smell, menace_potentielle_totale as hotspots
                 FROM ma_moulinette.historique
                 WHERE ". $where ." ORDER BY date DESC limit 4";
 
@@ -249,7 +249,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         nombre_bug AS bug,
                         nombre_vulnerability AS faille,
                         nombre_code_smell AS mauvaise_pratique,
-                        nombre_hotspot,
+                        menace_potentielle_totale,
                         frontend AS presentation,
                         backend AS metier,
                         autre,
@@ -271,7 +271,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         nombre_bug AS bug,
                         nombre_vulnerability AS faille,
                         nombre_code_smell AS mauvaise_pratique,
-                        nombre_hotspot,
+                        menace_potentielle_totale,
                         frontend AS presentation,
                         backend AS metier,
                         autre,
@@ -529,8 +529,13 @@ class HistoriqueRepository extends ServiceEntityRepository
             frontend, backend, autre, inconnue,
             nombre_anomalie_bloquant, nombre_anomalie_critique, nombre_anomalie_majeur,
             nombre_anomalie_mineur, nombre_anomalie_info,
-            note_reliability, note_security, note_sqale, note_hotspot, nombre_hotspot,
-            hotspot_high, hotspot_medium, hotspot_low,
+            note_reliability, note_security, note_sqale, note_hotspot, menace_potentielle_totale,
+            menace_potentielle_to_review_high,
+            menace_potentielle_to_review_medium,
+            menace_potentielle_to_review_low,
+            menace_potentielle_reviewed_high,
+            menace_potentielle_reviewed_medium,
+            menace_potentielle_reviewed_low,
             initial,
             mode_collecte, utilisateur_collecte,
             actuator_info,
@@ -552,8 +557,13 @@ class HistoriqueRepository extends ServiceEntityRepository
                 :nombre_anomalie_bloquant, :nombre_anomalie_critique,
                 :nombre_anomalie_majeur, :nombre_anomalie_mineur,
                 :nombre_anomalie_info, :note_reliability, :note_security,
-                :note_sqale, :note_hotspot, :nombre_hotspot,
-                :hotspot_high, :hotspot_medium, :hotspot_low,
+                :note_sqale, :note_hotspot, :menace_potentielle_totale,
+                :menace_potentielle_to_review_high,
+                :menace_potentielle_to_review_medium,
+                :menace_potentielle_to_review_low,
+                :menace_potentielle_reviewed_high,
+                :menace_potentielle_reviewed_medium,
+                :menace_potentielle_reviewed_low,
                 :initial,
                 :mode_collecte, :utilisateur_collecte, '".json_encode($json)."',
                 :date_enregistrement)";
@@ -618,10 +628,13 @@ class HistoriqueRepository extends ServiceEntityRepository
                         $stmt->bindValue(':note_security', $map['note_security']);
                         $stmt->bindValue(':note_sqale', $map['note_sqale']);
                         $stmt->bindValue(':note_hotspot', $map['note_hotspot']);
-                        $stmt->bindValue(':nombre_hotspot', $map['nombre_hotspot']);
-                        $stmt->bindValue(':hotspot_high', $map['hotspot_high']);
-                        $stmt->bindValue(':hotspot_medium', $map['hotspot_medium']);
-                        $stmt->bindValue(':hotspot_low', $map['hotspot_low']);
+                        $stmt->bindValue(':menace_potentielle_totale', $map['menace_potentielle_totale']);
+                        $stmt->bindValue(':menace_potentielle_to_review_high', $map['menace_potentielle_to_review_high']);
+                        $stmt->bindValue(':menace_potentielle_to_review_medium', $map['menace_potentielle_to_review_medium']);
+                        $stmt->bindValue(':menace_potentielle_to_review_low', $map['menace_potentielle_to_review_low']);
+                        $stmt->bindValue(':menace_potentielle_reviewed_high', $map['menace_potentielle_reviewed_high']);
+                        $stmt->bindValue(':menace_potentielle_reviewed_medium', $map['menace_potentielle_reviewed_medium']);
+                        $stmt->bindValue(':menace_potentielle_reviewed_low', $map['menace_potentielle_reviewed_low']);
                         /** On ne peut pas binder la valeur d'un boolean en true/false
                          * car le type est toujours string/number ou dateTime */
                         $stmt->bindValue(':initial', 'false');
@@ -694,7 +707,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         bug_blocker, bug_critical, bug_major,
                         vulnerability_blocker, vulnerability_critical, vulnerability_major,
                         code_smell_blocker, code_smell_critical, code_smell_major,
-                        nombre_hotspot, coverage, sqale_debt_ratio
+                        menace_potentielle_totale, coverage, sqale_debt_ratio
                 FROM ma_moulinette.historique
                 WHERE maven_key=:maven_key
                 ORDER BY date_version DESC LIMIT 1";
@@ -729,7 +742,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         bug_blocker, bug_critical, bug_major,
                         vulnerability_blocker, vulnerability_critical, vulnerability_major,
                         code_smell_blocker, code_smell_critical, code_smell_major,
-                        nombre_hotspot, coverage, sqale_debt_ratio
+                        menace_potentielle_totale, coverage, sqale_debt_ratio
                 FROM ma_moulinette.historique
                 WHERE maven_key=:maven_key AND initial=true";
 
@@ -766,7 +779,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         note_sqale AS sqale, nombre_bug AS bug,
                         nombre_vulnerability AS vulnerability,
                         nombre_code_smell AS code_smell,
-                        nombre_hotspot AS hotspots,
+                        menace_potentielle_totale AS hotspots,
                 ROW_NUMBER() OVER (PARTITION BY maven_key ORDER BY date_version DESC) AS rn
                 FROM ma_moulinette.historique
                 WHERE maven_key IN (".$map['liste_projet']."))

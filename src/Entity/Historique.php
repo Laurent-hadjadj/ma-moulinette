@@ -242,24 +242,39 @@ class Historique
     private $noteHotspot;
 
     #[ORM\Column(type: Types::INTEGER,
-        options: ['comment' => 'Nombre de hotspots de sécurité de niveau élevé'])]
+        options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau élevé à vérifier'])]
     #[Assert\NotNull]
-    private $hotspotHigh;
+    private $menacePotentielleToReviewHigh;
 
     #[ORM\Column(type: Types::INTEGER,
-        options: ['comment' => 'Nombre de hotspots de sécurité de niveau moyen'])]
+        options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau moyen à vérifier'])]
     #[Assert\NotNull]
-    private $hotspotMedium;
+    private $menacePotentielleToReviewMedium;
 
     #[ORM\Column(type: Types::INTEGER,
-        options: ['comment' => 'Nombre de hotspots de sécurité de niveau faible'])]
+        options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau faible à vérifier'])]
     #[Assert\NotNull]
-    private $hotspotLow;
+    private $menacePotentielleToReviewLow;
 
     #[ORM\Column(type: Types::INTEGER,
-        options: ['comment' => 'Nombre total de hotspots de sécurité'])]
+        options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau élevé vérifié'])]
     #[Assert\NotNull]
-    private $nombreHotspot;
+    private $menacePotentielleReviewedHigh;
+
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau moyen vérifié'])]
+    #[Assert\NotNull]
+    private $menacePotentielleReviewedMedium;
+
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau faible vérifié'])]
+    #[Assert\NotNull]
+    private $menacePotentielleReviewedLow;
+
+    #[ORM\Column(type: Types::INTEGER,
+        options: ['comment' => 'Nombre total de menaces potentielles de sécurité'])]
+    #[Assert\NotNull]
+    private $menacePotentielleTotale;
 
     #[ORM\Column(type: Types::BOOLEAN,
         options: ['comment' => 'Indique si c\'est l\'initialisation du projet'])]
@@ -1502,23 +1517,105 @@ class Historique
     }
 
     /**
-     * [Description for getHotspotHigh]
+     * [Description for getMenacePotentielleReviewedHigh]
      *
      * @return int|null
      *
-     * Created at: 02/01/2023, 17:55:44 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * Created at: 31/07/2025 11:23:58 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getHotspotHigh(): ?int
+    public function getMenacePotentielleReviewedHigh(): ?int
     {
-        return $this->hotspotHigh;
+        return $this->menacePotentielleReviewedHigh;
+    }
+
+    /**
+     * [Description for setMenacePotentielleReviewedHigh]
+     *
+     * @param int $menacePotentielleReviewedHigh
+     *
+     * @return \App\Entity\Historique
+     *
+     * Created at: 31/07/2025 11:24:01 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setMenacePotentielleReviewedHigh(int $menacePotentielleReviewedHigh): \App\Entity\Historique
+    {
+        $this->menacePotentielleReviewedHigh = $menacePotentielleReviewedHigh;
+
+        return $this;
+    }
+
+    /**
+     * [Description for getMenacePotentielleReviewedMedium]
+     *
+     * @return int|null
+     *
+     * Created at: 31/07/2025 11:24:06 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getMenacePotentielleReviewedMedium(): ?int
+    {
+        return $this->menacePotentielleReviewedMedium;
+    }
+
+    /**
+     * [Description for setMenacePotentielleReviewedMedium]
+     *
+     * @param int $menacePotentielleReviewedMedium
+     *
+     * @return \App\Entity\Historique
+     *
+     * Created at: 31/07/2025 11:24:10 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setMenacePotentielleReviewedMedium(int $menacePotentielleReviewedMedium): \App\Entity\Historique
+    {
+        $this->menacePotentielleReviewedMedium = $menacePotentielleReviewedMedium;
+
+        return $this;
+    }
+
+    /**
+     * [Description for getMenacePotentielleReviewedLow]
+     *
+     * @return int|null
+     *
+     * Created at: 31/07/2025 11:24:16 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getMenacePotentielleReviewedLow(): ?int
+    {
+        return $this->menacePotentielleReviewedLow;
+    }
+
+    /**
+     * [Description for setMenacePotentielleReviewedLow]
+     *
+     * @param int $menacePotentielleReviewedLow
+     *
+     * @return \App\Entity\Historique
+     *
+     * Created at: 31/07/2025 11:24:19 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setMenacePotentielleReviewedLow(int $menacePotentielleReviewedLow): \App\Entity\Historique
+    {
+        $this->menacePotentielleReviewedLow = $menacePotentielleReviewedLow;
+
+        return $this;
     }
 
     /**
      * [Description for setHotspotHigh]
      *
-     * @param int $hotspotHigh
+     * @param int menacePotentielleToReviewHigh
      *
      * @return self
      *
@@ -1526,9 +1623,25 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setHotspotHigh(int $hotspotHigh): \App\Entity\Historique
+    public function getMenacePotentielleToReviewHigh(): ?int
     {
-        $this->hotspotHigh = $hotspotHigh;
+        return $this->menacePotentielleToReviewHigh;
+    }
+
+    /**
+     * [Description for setHotspotHigh]
+     *
+     * @param int menacePotentielleToReviewHigh
+     *
+     * @return self
+     *
+     * Created at: 02/01/2023, 17:55:46 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setMenacePotentielleToReviewHigh(int $menacePotentielleToReviewHigh): \App\Entity\Historique
+    {
+        $this->menacePotentielleToReviewHigh = $menacePotentielleToReviewHigh;
 
         return $this;
     }
@@ -1542,15 +1655,15 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getHotspotMedium(): ?int
+    public function getMenacePotentielleToReviewMedium(): ?int
     {
-        return $this->hotspotMedium;
+        return $this->menacePotentielleToReviewMedium;
     }
 
     /**
      * [Description for setHotspotMedium]
      *
-     * @param int $hotspotMedium
+     * @param int $menacePotentielleToReviewMedium
      *
      * @return self
      *
@@ -1558,9 +1671,9 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setHotspotMedium(int $hotspotMedium): \App\Entity\Historique
+    public function setMenacePotentielleToReviewMedium(int $menacePotentielleToReviewMedium): \App\Entity\Historique
     {
-        $this->hotspotMedium = $hotspotMedium;
+        $this->menacePotentielleToReviewMedium = $menacePotentielleToReviewMedium;
 
         return $this;
     }
@@ -1574,15 +1687,15 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getHotspotLow(): ?int
+    public function getMenacePotentielleToReviewLow(): ?int
     {
-        return $this->hotspotLow;
+        return $this->menacePotentielleToReviewLow;
     }
 
     /**
      * [Description for setHotspotLow]
      *
-     * @param int $hotspotLow
+     * @param int $menacePotentielleToReviewLow
      *
      * @return self
      *
@@ -1590,15 +1703,15 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setHotspotLow(int $hotspotLow): \App\Entity\Historique
+    public function setMenacePotentielleToReviewLow(int $menacePotentielleToReviewLow): \App\Entity\Historique
     {
-        $this->hotspotLow = $hotspotLow;
+        $this->menacePotentielleToReviewLow = $menacePotentielleToReviewLow;
 
         return $this;
     }
 
     /**
-     * [Description for getNombreHotspot]
+     * [Description for getMenacePotentielleTotale]
      *
      * @return int|null
      *
@@ -1606,15 +1719,15 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getNombreHotspot(): ?int
+    public function getMenacePotentielleTotale(): ?int
     {
-        return $this->nombreHotspot;
+        return $this->menacePotentielleTotale;
     }
 
     /**
-     * [Description for setHotspotTotal]
+     * [Description for setMenacePotentielleTotale]
      *
-     * @param int $nombreHotspot
+     * @param int $menacePotentielleTotale
      *
      * @return self
      *
@@ -1622,9 +1735,9 @@ class Historique
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setNombreHotspot(int $nombreHotspot): \App\Entity\Historique
+    public function setMenacePotentielleTotale(int $menacePotentielleTotale): \App\Entity\Historique
     {
-        $this->nombreHotspot = $nombreHotspot;
+        $this->menacePotentielleTotale = $menacePotentielleTotale;
 
         return $this;
     }
