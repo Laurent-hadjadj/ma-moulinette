@@ -327,7 +327,7 @@ const projetInformation = async function(mavenKey) {
 
     if (t.code === http_200){
       // 📌 Vérification des erreurs
-      log(` - ℹ️ (01) Collecte des informations pour la version : ${t.message.projet}`);
+      log(` - ℹ️ (01) Collecte des informations pour la version : ${t.message.projet_version}`);
       const release = parseInt(t.message.release, 10) || 0;
       const snapshot = parseInt(t.message.snapshot, 10) || 0;
       const autre = parseInt(t.message.autre, 10) || 0;
