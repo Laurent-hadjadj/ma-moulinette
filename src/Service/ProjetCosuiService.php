@@ -137,7 +137,7 @@ class ProjetCosuiService
                     $this->injectRepartition($render, $result, $prefix, $severity);
                 }
             }
-            } catch (\Throwable $e) {
+        } catch (\Throwable $e) {
         $message = '🔴 Erreur durant le traitement des anomalies.';
         $messageLog = '🔴 [COSUI] Erreur durant le traitement des anomalies.';
         $this->logger->critical($messageLog, ['exception' => $e->getMessage()]);
@@ -153,7 +153,6 @@ class ProjetCosuiService
         $this->construireRadarChart($render);
 
         $this->logger->info("ℹ️ [COSUI] Rendu généré avec succès pour {$maven_key}");
-
         return $render;
     }
 
