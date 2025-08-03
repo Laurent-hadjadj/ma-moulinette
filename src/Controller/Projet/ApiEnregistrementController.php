@@ -67,7 +67,7 @@ class ApiEnregistrementController extends AbstractController
     public function enregistrement(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
-        $historiqueRepository = $this->em->getRepository(Historique::class);
+        $historiqueRepos = $this->em->getRepository(Historique::class);
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
@@ -118,19 +118,32 @@ class ApiEnregistrementController extends AbstractController
                 'nombre_anomalie_majeur' => $data->nombre_anomalie_majeur,
                 'nombre_anomalie_mineur' => $data->nombre_anomalie_mineur, 'nombre_anomalie_info' => $data->nombre_anomalie_info,
                 'note_reliability' => $data->note_reliability, 'note_security' => $data->note_security,
-                'note_sqale' => $data->note_sqale, 'note_hotspot' => $data->note_hotspot, 'nombre_hotspot' => $data->nombre_hotspot,
-                'hotspot_high' => $data->hotspot_high, 'hotspot_medium' => $data->hotspot_medium, 'hotspot_low' => $data->hotspot_low,
+                'note_sqale' => $data->note_sqale, 'note_hotspot' => $data->note_hotspot, 'menace_potentielle_totale' => $data->menace_potentielle_totale,
+                'menace_potentielle_to_review_high' => $data->menace_potentielle_to_review_high,
+                'menace_potentielle_to_review_medium' => $data->menace_potentielle_to_review_medium,
+                'menace_potentielle_to_review_low' => $data->menace_potentielle_to_review_low,
+                'menace_potentielle_reviewed_high' => $data->menace_potentielle_reviewed_high,
+                'menace_potentielle_reviewed_medium' => $data->menace_potentielle_reviewed_medium,
+                'menace_potentielle_reviewed_low' => $data->menace_potentielle_reviewed_low,
                 'mode_collecte' => 'COLLECTE', 'utilisateur_collecte' => $utilisateur_collecte,
                 'date_enregistrement' => $dateEnregistrement
             ];
 
             /** Enregistrement dans le table historique */
-            $historique = $historiqueRepository->insertHistoriqueAjoutProjet($map, $json);
+            $historique = $historiqueRepos->insertHistoriqueAjoutProjet($map, $json);
             if ($historique['code'] != 200 && $historique['code'] != 23505) {
-                return new JsonResponse(['code' => $historique['code'], 'erreur' => $historique['erreur']]);
+                return new JsonResponse([
+                    'code' => $historique['code'],
+                    'type' => 'alert',
+                    'message' => "Une erreur lors de l'ajout de données est survenue (Erreur {$historique['code']}).",
+                    'trace' => $historique['erreur']
+                ], Response::HTTP_OK);
             }
             if ($historique['code'] === 23505){
-                return new JsonResponse(['code' => $historique['code'], 'erreur' => $historique['erreur']], Response::HTTP_OK);
+                return new JsonResponse([
+                    'code' => $historique['code'],
+                    'erreur' => $historique['erreur']
+                ], Response::HTTP_OK);
             }
         } catch (\Throwable $e) {
             $this->logger->critical("🔴 [Enregistrement] Erreur lors de l'enregistrement des données.", ['exception' => $e]);
