@@ -308,10 +308,10 @@ export const remplissage = async function(maven_key) {
     const logger4 = document.getElementById('js-logger-debug');
 
       /** Il n'y a pas de logger pour ce projet, i.e ce n'est peut être pas un projet java */
-    logger1.dataset.loggerInfo = (t.logger_info == -1) ? 'N.C' : t.logger_info;
-    logger2.dataset.loggerWarn = (t.logger_warn == -1) ? 'N.C' : t.logger_warn;
-    logger3.dataset.loggerError = (t.logger_error == -1) ? 'N.C' : t.logger_error;
-    logger4.dataset.loggerDebug = (t.logger_debug == -1) ? 'N.C' : t.logger_debug;
+    logger1.dataset.loggerInfo = (t.logger_info == -1) ? '0' : t.logger_info;
+    logger2.dataset.loggerWarn = (t.logger_warn == -1) ? '0' : t.logger_warn;
+    logger3.dataset.loggerError = (t.logger_error == -1) ? '0' : t.logger_error;
+    logger4.dataset.loggerDebug = (t.logger_debug == -1) ? '0' : t.logger_debug;
 
     $('#logger-liste').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format((t.total > 0) ? t.total : 0));
     $('#js-logger-total').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format((t.total > 0) ? t.total : 0));
