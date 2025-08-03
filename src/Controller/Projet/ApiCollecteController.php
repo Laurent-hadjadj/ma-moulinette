@@ -151,13 +151,13 @@ class ApiCollecteController extends AbstractController
 
         $this->logger->info('ℹ️ [Collecte] Informations collectées avec succès.', [
             'maven_key' => $data->maven_key,
-            'projet_version' => $information['message']['version']
+            'projet_version' => $information['message']['projet_version']
         ]);
 
         return new JsonResponse([
             'code' => 200,
             'message' => [
-                'projet_version' => $information['message']['version'],
+                'projet_version' => $information['message']['projet_version'],
                 'release' => $information['message']['release'],
                 'snapshot' => $information['message']['snapshot'],
                 'autre' => $information['message']['autre'],
@@ -1120,11 +1120,12 @@ class ApiCollecteController extends AbstractController
 
         $this->logger->info('ℹ️ [Collecte] Todos collectés avec succès.', [
             'maven_key' => $data->maven_key,
+            'todo' => $todo['total']
         ]);
 
         return new JsonResponse([
             'code' => 200,
-            'nombre' => $todo['nombre'],
+            'nombre' => $todo['total'],
             'message' => 'Données enregistrées dans la table Todo.'
         ], Response::HTTP_OK);
     }
