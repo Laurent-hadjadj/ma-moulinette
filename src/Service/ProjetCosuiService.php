@@ -38,7 +38,6 @@ class ProjetCosuiService
         $this->dateCopyright = date('Y');
     }
 
-    // ✅ ❌ ⚠️ ℹ️ 📌 📄 🔴 🛠️ 🗑️ 🚫
     /**
      * Génère le tableau final de rendu COSUI pour un projet donné.
      *
@@ -77,6 +76,7 @@ class ProjetCosuiService
                 'trace' => $n['erreur'] ?? static::$erreurInconnue
             ];
         }
+
         if ($n['code'] == 200 && $n['result'] === false) {
             $message = '⚠️ Aucune données présentent dans la table historique pour ce projet (Erreur 404).';
             $messageLog = '⚠️ [COSUI] Aucune données présentent dans la table historique pour ce projet (Erreur 404).';
@@ -88,6 +88,7 @@ class ProjetCosuiService
                 'trace' => null
             ];
         }
+
         $this->injectNotesActuelles($render, $n);
 
         // 2. Données de référence
@@ -103,18 +104,14 @@ class ProjetCosuiService
                 'trace' => $nn['erreur'] ?? static::$erreurInconnue
             ];
         }
-        if ($n['code'] == 200 && $nn['result'] === false) {
-            $message = '⚠️ Aucune données présentent dans la table historique pour ce projet (Erreur 404).';
-            $messageLog = '⚠️ [COSUI] Aucune données présentent dans la table historique pour ce projet (Erreur 404).';
+
+        if ($nn['code'] == 200 && $nn['result'] === false) {
+            $message = '⚠️ Aucune données de références présentent dans la table historique pour ce projet (Erreur 404).';
+            $messageLog = '⚠️ [COSUI] Aucune données de références présentent dans la table historique pour ce projet (Erreur 404).';
             $this->logger->warning($messageLog);
-            return [
-                'code' => 404,
-                'type' => 'warning',
-                'message' => $message,
-                'trace' => null
-            ];
+        } else {
+            $this->injectNotesReference($render, $nn);
         }
-        $this->injectNotesReference($render, $nn);
 
         // 3. Setup
         try {
@@ -676,7 +673,7 @@ class ProjetCosuiService
      */
     private function notes(string $maven_key): array
     {
-        $this->logger->debug("🛠️ [COSUI] Recherche des notes pour le projet", ['mavenKey' => $maven_key]);
+        $this->logger->debug("🛠️ [COSUI] Recherche des notes pour le projet", ['maven_key' => $maven_key]);
 
         $historiqueRepos = $this->em->getRepository(Historique::class);
         $request = $historiqueRepos->selectHistoriqueProjetLast(['maven_key' => $maven_key]);
@@ -696,8 +693,8 @@ class ProjetCosuiService
             ];
         }
 
-        if (empty($request['infos']) || !isset($request['infos'][0])) {
-            $this->logger->warning("⚠️ [COSUI] Aucune information trouvée pour le projet", ['mavenKey' => $maven_key]);
+        if (!is_array($request['infos']) || count($request['infos']) === 0) {
+            $this->logger->warning("⚠️ [COSUI] Aucune information trouvée pour le projet", ['maven_key' => $maven_key]);
             return ['code' => 200, 'result' => false];
         }
 
