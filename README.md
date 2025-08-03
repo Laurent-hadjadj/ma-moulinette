@@ -47,4 +47,6 @@ Compte **Admin** (cf. securite.md).
 - [x] Son identifiant de connexion est <admin@ma-moulinette.fr>.
 - [x] Son mot de passe est : `eYK8k4[T;99N!em^`
 
+Code Emoji : ✅ ❌ ⚠️ ℹ️ 📌 📄 🔴 🛠️ 🗑️ 🚫
+
 -**-- FIN --**-
