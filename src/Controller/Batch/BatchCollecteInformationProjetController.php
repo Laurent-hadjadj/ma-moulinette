@@ -365,7 +365,7 @@ class BatchCollecteInformationProjetController extends AbstractController
                 'version_release_sonar' => $repartition['release'],
                 'version_snapshot_sonar' => $repartition['snapshot'],
                 'version_autre_sonar' => $repartition['autre'],
-                'version' => $version['projet'],
+                'version' => $version['projet_version'],
                 'date_version' => $version['date']
             ];
 
