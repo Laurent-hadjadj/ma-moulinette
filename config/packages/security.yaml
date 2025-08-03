@@ -32,11 +32,15 @@ security:
             logout:
                 path: logout
                 target: login
+                # Supprime le cookie de session et remember_me au logout
+                invalidate_session: true
+                delete_cookies:
+                    REMEMBERME: ~
 
-            remember_me:
-                secret: '%kernel.secret%'
+            remember_me: false
+                #secret: '%kernel.secret%'
                 # si le mot de passe change, le cookie est invalide
-                signature_properties: [password]
+                #signature_properties: [password]
 
             # Maximum login par minutes
             # composer require symfony/rate-limiter
