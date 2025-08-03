@@ -79,6 +79,31 @@ const ErrorButtonAffiche = function(){
 }
 
 /**
+ * [Description for extraireNomProjet]
+ *
+ * @param mixed cle
+ *
+ * @return string
+ *
+ * Created at: 03/08/2025 18:59:20 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ */
+const extraireNomProjet = function(maven_key) {
+  if (maven_key.includes(':')) {
+    const parts = maven_key.split(':');
+    return parts[1] || parts[0]; // fallback si rien après :
+  }
+
+  if (maven_key.includes('.')) {
+    const parts = maven_key.split('.');
+    return parts[parts.length - 1];
+  }
+
+  return maven_key;
+}
+
+/**
  * [Description for remplissage]
  * Fonction de remplissage des tableaux.
  *
@@ -120,8 +145,9 @@ export const remplissage = async function(maven_key) {
           }
 
         /** On affiche les informations du projet */
-        const nom = maven_key.split(':');
-        $('#nom-projet').html(nom[1]);
+        const nom = extraireNomProjet(maven_key);
+
+        $('#nom-projet').html(nom);
         $('#key-analyse').html(t.analyse_key);
         $('#clef-projet').html(maven_key);
         $('#version-release').html(t.release);
