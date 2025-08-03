@@ -52,7 +52,8 @@ const log = function(txt) {
 */
 export const enregistrement = async function(maven_key) {
   /** On récupère les informations sur les versions */
-  const nomProjet=$('#nom-projet').text().trim();
+  const nomProjet = $('#nom-projet').text().trim();
+  console.log(nomProjet);
   /*
    * On enregistre des données brutes pour l'enregistrement.
    * On n'utilise jquery pour la gestion du data Attribute car ce n'est pas fiable.
