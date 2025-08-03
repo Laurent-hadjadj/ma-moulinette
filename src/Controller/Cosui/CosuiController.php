@@ -157,16 +157,17 @@ class CosuiController extends AbstractController
         $maven_key = $this->decodeToken($token);
         if (null === $maven_key) {
             $this->logger->error('❌ [COSUI] Échec du décodage du token');
-            return $this->addFlashAndRender('alert', static::$erreur400, 'decodage', $render);
+            return $this->addFlashAndRender('alert', static::$erreur400, 'Problème de décodage du token.', $render);
         }
 
         $this->logger->info('ℹ️ [COSUI] Token décodé, maven_key reçu', ['maven_key' => $maven_key]);
 
         try {
                 $result = $this->cosuiService->generateRender($maven_key);
+
                 if (isset($result['code']) && $result['code'] !== 200) {
                     $this->logger->error($result['message'], [
-                        'mavenKey' => $maven_key,
+                        'maven_key' => $maven_key,
                         'trace' => $result['trace'] ?? 'Non disponible'
                     ]);
                     return $this->addFlashAndRender($result['type'], $result['message'], $result['trace'] ?? '', $render);
