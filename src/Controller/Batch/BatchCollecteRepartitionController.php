@@ -75,6 +75,20 @@ class BatchCollecteRepartitionController extends AbstractController
         /** On calcule la répartition pour les application java et ?Php */
         $scoreFrontend = $scoreBackend = $scoreAutre = $scoreInconnu = 0;
 
+        if (empty($elements)){
+            $this->logger->info('ℹ️ [Batch Répartition Analyse] Tableau vide. Valeurs par défaut prisent.', [
+                'maven_key' => $maven_key
+        ]);
+
+        return [
+                'code' => 200,
+                'frontend' => $scoreFrontend,
+                'backend' => $scoreBackend,
+                'autre' => $scoreAutre,
+                'inconnu' => $scoreInconnu
+            ];
+        }
+
         /** on récupère la liste des clés pour chaque module */
         $listeFrontend = $this->getParameter('module.frontend');
         $listeBackend = $this->getParameter('module.backend');
@@ -281,7 +295,7 @@ class BatchCollecteRepartitionController extends AbstractController
             $this->logger->error('❌ [Batch Répartition Module] Erreur collecte : valeurs manquantes dans les facets', [
                     'maven_key' => $maven_key,
                     'category' => $category,
-                    'reponse' => $result
+                    'response' => $result
             ]);
             foreach($result['values'] as $value){
                 if ($value['val'] === 'INFO') {
@@ -495,7 +509,7 @@ class BatchCollecteRepartitionController extends AbstractController
         /** On instancie l'entityRepository */
         $repartitionTempRepos = $this->em->getRepository(RepartitionTemp::class);
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
-
+        //BUG BLOCKER "1754316568042" "fr.ma-moulinette:projet-paiement"
         $map = [
                 'maven_key' => $maven_key,
                 'category' => $category,
@@ -503,6 +517,7 @@ class BatchCollecteRepartitionController extends AbstractController
                 'setup' => $setup
         ];
         $repartition = $repartitionTempRepos->selectRepartitionByTypeAndSeverity($map);
+
         if ($repartition['code'] != 200) {
             $this->logger->error('❌ [Batch Répartition Analyse] Erreur lors de la récupération des issues temporaires', [
             'code' => $repartition['code'],
@@ -531,10 +546,10 @@ class BatchCollecteRepartitionController extends AbstractController
             ];
         }
 
-        $message = 'Répartition des anomalies par module terminée. ' . $setup;
+        $message = "Répartition des anomalies par module terminée ({$setup}).";
         $this->logger->info('ℹ️ [Batch Répartition Analyse] Fin de l’analyse réussie', [
-            'résultat' => $analyse
-        ]);
+            'résultat' => $analyse ]);
+
         return [
                 'code' => 200,
                 'message' => $message,
