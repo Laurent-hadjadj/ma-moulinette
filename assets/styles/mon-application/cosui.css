@@ -119,6 +119,11 @@
   align-items: center;
 }
 
+.container-application-version {
+  display: flex;
+  flex-direction: column;
+}
+
 /* Bouton information SVG */
 .information-svg {
   width: 100%;
