@@ -39,7 +39,7 @@ const maven_key = $('#js-app').data('application');
 const setup = $('#js-setup').text().trim();
 
 /** On initialise le tableau de résultats pour l'analyse */
-/** category, severity, frontend, backend, autre, inconnue, inconnue, idc */
+/** category, severity, frontend, backend, autre, inconnu, idc */
 let analyseCollecteRepartition = [];
 
 /**
@@ -125,6 +125,7 @@ const analyse = async function (maven_key, category, severity, css, setup) {
 
   // 📌 Configuration AJAX
   const data = { maven_key, category, severity, setup };
+
   const options = {
       url: `${serveur()}/api/repartition/analyse`,
       type: 'PUT',
@@ -137,6 +138,7 @@ const analyse = async function (maven_key, category, severity, css, setup) {
 
   // 🕵️‍♂️ Appel AJAX
   const t = await $.ajax(options);
+
   // 📌 Vérification des erreurs
   if (t.code !== http_200){
     showMessage(t.type, typeMessage(t.message));
@@ -145,7 +147,7 @@ const analyse = async function (maven_key, category, severity, css, setup) {
   }
 
   /** On calcule le total des anomalies analysé? */
-  const nombreTotalModule = +t.repartition.frontend + +t.repartition.backend + +t.repartition.autre + +t.repartition.inconnue;
+  const nombreTotalModule = +t.repartition.frontend + +t.repartition.backend + +t.repartition.autre + +t.repartition.inconnu;
 
   let idc = '-', calculIdc = 0, lowerCategory, capitalizeCategory;
   // 📌 Vérification de l'indice de confiance (idc)
@@ -186,15 +188,15 @@ const analyse = async function (maven_key, category, severity, css, setup) {
               <td class="text-center">${t.repartition.frontend}</td>
               <td class="text-center">${t.repartition.backend}</td>
               <td class="text-center">${t.repartition.autre}</td>
-              <td class="text-center">${t.repartition.inconnue}</td>
+              <td class="text-center">${t.repartition.inconnu}</td>
               <td class="text-center ${alertClass}">${idc}</td>
           </tr>`;
 
       $(`#${tableId}`).append(row);
 
       /** On enregistre les informations dans le tableau de résultat.*/
-      /** category, severity, frontend, backend, autre, inconnue, inconnue */
-      analyseCollecteRepartition.push([category, severity, t.repartition.frontend, t.repartition.backend, t.repartition.autre, t.repartition.inconnue]);
+      /** category, severity, frontend, backend, autre, inconnu, inconnu */
+      analyseCollecteRepartition.push([category, severity, t.repartition.frontend, t.repartition.backend, t.repartition.autre, t.repartition.inconnu]);
   }
 };
 
@@ -578,6 +580,7 @@ $('.bouton-analyse').on('click', async () =>{
     await analyse(maven_key, 'BUG', 'MAJOR','texte-orange', setup);
     await analyse(maven_key, 'BUG', 'MINOR', 'texte-vert', setup);
     await analyse(maven_key, 'BUG', 'INFO', 'texte-bleu', setup);
+
     if ( control === 'true') {
       showMessage('alert', 'Une erreur lors du calcul de la répartition pour la catégorie <strong>BUG</strong> a été rencontrée (Erreur 500).');
       return;
