@@ -135,7 +135,7 @@ class BatchCollecteTodoController extends AbstractController
 
             return [
                     'code' => 200,
-                    'total' => 0,
+                    'nombre' => 0,
                     ];
         }
 
@@ -202,19 +202,19 @@ class BatchCollecteTodoController extends AbstractController
             $mapData = [];
         }
 
-        $total = $result['paging']['total'] ?? 0;
+        $nombre = $result['paging']['total'] ?? 0;
 
         $this->logger->info('ℹ️ [Batch Todo] Collecte terminée avec succès', [
             'maven_key' => $maven_key,
-            'total_todo' => $total
+            'total_todo' => $nombre
         ]);
 
         /** On enregistre les données */
         return [
             'code' => 200,
             'nombre' => $result['paging']['total'] ?? 0,
-            'message' => ['todo' => $mapData],
-            'data' => ['todo' => $total]
+            'message' => 'Enregistrement des todos dans la tables.',
+            'data' => ['todo' => $nombre]
         ];
     }
 }
