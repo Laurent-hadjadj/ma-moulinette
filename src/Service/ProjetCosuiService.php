@@ -23,6 +23,7 @@ class ProjetCosuiService
     private string $dateCopyright;
 
     private static $erreurInconnue = 'Erreur inconnue';
+    private static $defaultVersion = '0.0.0';
 
     public function __construct(
         private readonly LoggerInterface $logger,
@@ -306,7 +307,7 @@ class ProjetCosuiService
      */
     public static function initializeReferenceRender(): array
     {
-        $defaultString = 'NaN';
+        $defaultString = static::$defaultVersion;
         $defaultDate = '01/01/1980';
         $defaultNote = 'F';
         $defaultCount = 0;
@@ -701,7 +702,7 @@ class ProjetCosuiService
 
         // Vérification du format de version
         $versionSplit = explode('-', $info['version']);
-        $version = $versionSplit[0] ?? '0.0.0';
+        $version = $versionSplit[0] ?? static::$defaultVersion;
         $type = $versionSplit[1] ?? 'undefined';
 
         $this->logger->info("ℹ️ [COSUI] Indicateurs qualité récupérés avec succès", [
@@ -775,7 +776,7 @@ class ProjetCosuiService
 
         $ref = $request['reference'][0];
         $versionSplit = explode('-', $ref['version'] ?? '');
-        $version = $versionSplit[0] ?? '0.0.0';
+        $version = $versionSplit[0] ?? static::$defaultVersion;
         $type = $versionSplit[1] ?? 'undefined';
 
         $this->logger->info("ℹ️ [COSUI] Données de référence récupérées", ['mavenKey' => $maven_key, 'version' => $version, 'type' => $type]);
