@@ -115,20 +115,24 @@ class ApiRepartitionController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null ||
             !isset($data->maven_key, $data->category, $data->severity, $data->setup)) {
-            return new JsonResponse(
-                ['data' => $data, 'code' => 400, 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400],
-                Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'alert',
+                'message' => static::$reference . static::$erreur400
+            ], Response::HTTP_OK);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
-            return new JsonResponse(
-                ['code' => 403, 'type' => 'warning',
-                'message' => static::$reference . static::$erreur403], Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => 403,
+                'type' => 'warning',
+                'message' => static::$reference . static::$erreur403
+            ], Response::HTTP_OK);
         }
 
-        $repartitionAnalyse = $this->batchCollecteRepartition->batchCollecteRepartitionAnalyse($data->maven_key,  $data->category, $data->severity, $data->setup);
+        $repartitionAnalyse = $this->batchCollecteRepartition->batchCollecteRepartitionAnalyse($data->maven_key, $data->category, $data->severity, $data->setup);
+
         if ($repartitionAnalyse['code'] !== 200){
             return new JsonResponse([
                 'code' => $repartitionAnalyse['code'],
@@ -163,21 +167,25 @@ class ApiRepartitionController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null ||
             !isset($data->maven_key, $data->setup, $data->calcul)) {
-            return new JsonResponse(
-                ['data' => $data, 'code' => 400, 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400],
-                Response::HTTP_OK);
+            return new JsonResponse([
+                'data' => $data,
+                'code' => 400,
+                'type' => 'alert',
+                'message' => static::$reference . static::$erreur400
+            ], Response::HTTP_OK);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
-            return new JsonResponse(
-                ['code' => 403, 'type' => 'warning',
-                'message' => static::$reference . static::$erreur403],
-                Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => 403,
+                'type' => 'warning',
+                'message' => static::$reference . static::$erreur403
+            ], Response::HTTP_OK);
         }
 
-        $repartitionMaJ = $this->batchCollecteRepartition->batchCollecteRepartitionMaJ($data->maven_key,  $data->calcul, $data->severity, $data->setup);
+        $repartitionMaJ = $this->batchCollecteRepartition->batchCollecteRepartitionMaJ($data->maven_key,  $data->calcul, $data->setup);
+
         if ($repartitionMaJ['code'] !== 200){
             return new JsonResponse([
                 'code' => $repartitionMaJ['code'],
