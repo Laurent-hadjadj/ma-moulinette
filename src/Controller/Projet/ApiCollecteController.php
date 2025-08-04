@@ -1120,12 +1120,12 @@ class ApiCollecteController extends AbstractController
 
         $this->logger->info('ℹ️ [Collecte] Todos collectés avec succès.', [
             'maven_key' => $data->maven_key,
-            'todo' => $todo['total']
+            'todo' => $todo['nombre']
         ]);
 
         return new JsonResponse([
             'code' => 200,
-            'nombre' => $todo['total'],
+            'nombre' => $todo['nombre'],
             'message' => 'Données enregistrées dans la table Todo.'
         ], Response::HTTP_OK);
     }
