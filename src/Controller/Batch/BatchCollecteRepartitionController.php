@@ -130,7 +130,7 @@ class BatchCollecteRepartitionController extends AbstractController
                 'code' => 500,
                 'type' => 'alert',
                 'message' => 'Une erreur inétendue lors de la réparation par module (<strong>batchAnalyseAnomalie</strong>) est survenue (Erreur 500).',
-                'debug' => $e
+                'trace' => $e->getMessage()
             ];
         }
 
@@ -192,7 +192,7 @@ class BatchCollecteRepartitionController extends AbstractController
             ]
         );
 
-        $this->logger->debug('[Batch Répartition] Appel API SonarQube', ['url' => $url]);
+        $this->logger->debug('🛠️ [Batch Répartition] Appel API SonarQube', ['url' => $url]);
         $result = $this->client->httpSonarQube($url);
 
         /** On catch les erreurs HTTP :) */
@@ -246,7 +246,7 @@ class BatchCollecteRepartitionController extends AbstractController
             ]
         );
 
-        $this->logger->debug('[Batch Répartition Information] Appel batchCollecteInformation', ['url' => $url]);
+        $this->logger->debug('🛠️ [Batch Répartition Information] Appel batchCollecteInformation', ['url' => $url]);
         $result = $this->client->httpSonarQube($url);
         if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503, 504])) {
             $this->logger->error('❌ [Batch Répartition Information] Erreur SonarQube', [
@@ -291,8 +291,8 @@ class BatchCollecteRepartitionController extends AbstractController
         /** On récupère le nombre d'anomalie pour la category */
         $total = 0;
         $result = $this->batchCollecteInformation($maven_key, $category);
-        if (!isset($result['values'])){
-            $this->logger->error('❌ [Batch Répartition Module] Erreur collecte : valeurs manquantes dans les facets', [
+        if (isset($result['values'])){
+            $this->logger->debug('🛠️ [Batch Répartition Module] Informations disponibles dans les facets : ', [
                     'maven_key' => $maven_key,
                     'category' => $category,
                     'response' => $result
@@ -447,7 +447,7 @@ class BatchCollecteRepartitionController extends AbstractController
 
             // S'il n'y a plus d'issues, on sort de la boucle
             if (empty($result['issues'])) {
-                $this->logger->debug('[Batch Répartition] Fin de la pagination (plus d’issues)', ['page' => $i]);
+                $this->logger->debug('🛠️ [Batch Répartition] Fin de la pagination (plus d’issues)', ['page' => $i]);
                 break;
             }
 
@@ -477,7 +477,7 @@ class BatchCollecteRepartitionController extends AbstractController
                     ];
             }
 
-            $this->logger->debug('[Batch Répartition] Insertion réussie', ['page' => $i, 'count' => count($issues)]);
+            $this->logger->debug('🛠️ [Batch Répartition] Insertion réussie', ['page' => $i, 'count' => count($issues)]);
 
             // Réinitialise le tableau pour le prochain batch.
             $issues = [];
@@ -652,7 +652,7 @@ class BatchCollecteRepartitionController extends AbstractController
         $this->flattenGroupData($groupedData['VULNERABILITY'], $fieldsVulnerability, $map);
         $this->flattenGroupData($groupedData['CODE_SMELL'], $fieldsCodeSmell, $map);
 
-        $this->logger->debug('[Batch Répartition MaJ] Données préparées pour update', ['payload' => $map]);
+        $this->logger->debug('🛠️ [Batch Répartition MaJ] Données préparées pour update', ['payload' => $map]);
 
         /** On met à jour la table */
         $repartition = $repartitionRepository->updateRepartition($map);
