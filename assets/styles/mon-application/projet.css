@@ -333,9 +333,6 @@ textarea[readonly] {
   word-break: break-all; /* Coupe les mots qui dépassent */
 }
 
-/* Taille de la police en small */
-.small { font-size: 1rem; }
-
 /* Propriété de la ligne */
 .ligne {
   margin: 0.1rem;
