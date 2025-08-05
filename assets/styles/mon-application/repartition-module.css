@@ -36,8 +36,7 @@
     width: 5rem;
   }
 
-  /* on aligne à droite */
-  .button { text-align: left; }
+  .stat-mini { font-size: 1.2rem; }
 }
 
 /* Media Small */
@@ -59,8 +58,7 @@
     width: 5rem;
   }
 
-  /* on aligne à droite */
-  .button { text-align: left; }
+  .stat-mini { font-size: 1.2rem; }
 }
 
 /* Media Small */
@@ -82,8 +80,7 @@
     width: 5rem;
   }
 
-  /* on aligne à droite */
-  .button { text-align: left; }
+  .stat-mini { font-size: 1.2rem; }
 }
 
 /* Media Small */
@@ -105,8 +102,7 @@
     width: 5rem;
   }
 
-  /* on aligne à droite */
-  .button { text-align: left; }
+  .stat-mini { font-size: 1.2rem; }
 }
 
 /* Media Medium */
@@ -133,11 +129,7 @@
     justify-content: space-around;
   }
 
-  .bouton-afficher-right { padding-right: 1rem; }
-  .bouton-afficher-left { padding-left: 1rem; }
-
-  /* on aligne au centre */
-  .button { text-align: center; }
+  .stat-mini { font-size: 1.5rem; }
 }
 
 /* Media Large */
@@ -164,8 +156,7 @@
     justify-content: space-around;
   }
 
-  /* on aligne au centre */
-  .button { text-align: center; }
+  .stat-mini { font-size: 2rem; }
 }
 
 /* Media Large */
@@ -192,8 +183,7 @@
     justify-content: space-around;
   }
 
-  /* on aligne au centre */
-  .button { text-align: center; }
+  .stat-mini { font-size: 2rem; }
 }
 
 /* Media Extra-Large */
@@ -220,8 +210,7 @@
     justify-content: space-around;
   }
 
-  /* on aligne au centre */
-  .button { text-align: center; }
+  .stat-mini { font-size: 2rem; }
 }
 
 @media (width >= 160.025em) {
@@ -247,17 +236,11 @@
     justify-content: space-around;
   }
 
-/* on aligne au centre */
-.button { text-align: center; }
+  .stat-mini { font-size: 2rem; }
 }
 
 /*************************          Global     *********************************/
 
-/* Surpression du style inline */
-.spinner-titre {
-  margin-left: 1rem;
-  margin-top: -3px;
-}
 .progress-meter-custom { width: 0%; }
 
 .je-dors {
@@ -266,36 +249,36 @@
 }
 
 /* Couleur des boutons */
-.bouton-collecte-bug,
-.bouton-collecte-vulnerability,
-.bouton-collecte-code-smell,
-.bouton-analyse {
-  color: #fff;
+#bouton-collecte-bug,
+#bouton-collecte-vulnerability,
+#bouton-collecte-code-smell,
+#bouton-analyse {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+
+  max-width: 16rem;
+  height: 3.5rem;
+  border-radius: 0.375rem;
+  font-size: 1.2rem;
+
   background-color: #00445b;
+  color: #ffffff;
+  text-decoration: none;
+
+  transition: background-color 0.2s ease-in-out;
 }
 
 /* Gestion du hover sur les boutons */
-.bouton-collecte-bug:hover,
-.bouton-collecte-vulnerability:hover,
-.bouton-collecte-code-smell:hover,
-.bouton-analyse:hover { background-color: #006182; }
+#bouton-collecte-bug:hover,
+#bouton-collecte-vulnerability:hover,
+#bouton-collecte-code-smell:hover,
+#bouton-analyse:hover { background-color: #006182; }
 
-/* Gestion des boutons désactivés */
-.bouton-collecte-bug-disabled,
-.bouton-collecte-vulnerability-disabled,
-.bouton-collecte-code-smell-disabled {
-  background-color: #4c7c8c;
-  cursor: not-allowed;
-  pointer-events: none;
-}
-
-.bouton-collecte-bug-disabled:hover,
-.bouton-collecte-vulnerability-disabled:hover,
-.bouton-collecte-code-smell-disabled:hover,
-.bouton-collecte-bug-disabled:focus,
-.bouton-collecte-vulnerability-disabled:focus,
-.bouton-collecte-code-smell-disabled:focus {
-  background-color: #4c7c8c !important;
+.container-bouton {
+  display: flex;
+  justify-content: center;
 }
 
 /* Information bug, vulnérabilité et code_smell  */
@@ -338,12 +321,6 @@
   padding-top: 0.2rem;
   display: flex;
   align-items: center;
-}
-
-/* Taille de pour les stats */
-.stat {
-  line-height: 0.9;
-  font-size: 2rem;
 }
 
 /* Progress */
