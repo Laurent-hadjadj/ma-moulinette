@@ -241,6 +241,11 @@
 
 /*************************          Global     *********************************/
 
+#titre-collecte, #titre-analyse {
+      display: flex;
+      gap: 0.5rem;
+}
+
 .je-dors {
   margin-left: 16px;
   margin-top: 4px;
@@ -320,10 +325,6 @@
   display: flex;
   align-items: center;
 }
-
-
-/* Ajoute un saut de ligne au dessous des boutons de collecte */
-.etape { padding-bottom: 1rem; }
 
 /* couleur sévérité */
 .texte-rouge { color: #971c09; }
