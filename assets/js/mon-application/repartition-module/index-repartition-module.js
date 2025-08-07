@@ -325,6 +325,15 @@ $('#bouton-collecte-bug').on('click', async () => {
       { key: 'INFO', value: +document.getElementById('bug-info').dataset.nombreBugInfo }
   ];
 
+  if (isNaN(severities[0]['value']) ||
+      isNaN(severities[1]['value']) ||
+      isNaN(severities[2]['value']) ||
+      isNaN(severities[3]['value']) ||
+      isNaN(severities[4]['value'])) {
+        showMessage('alert', "Impossible de récupérer les informations concernant cette catégorie.");
+      return;
+    }
+
   // Initialisation du timer
   const timerElement = document.getElementById('js-bug-time');
   timerElement.dataset.timer = 0;
@@ -340,7 +349,7 @@ $('#bouton-collecte-bug').on('click', async () => {
     if (statut === 'true'){
       /**l'appel AJAX a planté on arrête */
       $boutonCollecteBug.removeClass('clicked-true').addClass('clicked-false');
-      $('#collecte-bug').removeClass('bouton-collecte-bug-disabled').attr('aria-disabled', 'false');
+      $boutonCollecteBug.removeClass('bouton-collecte-bug-disabled').attr('aria-disabled', 'false');
       sessionStorage.setItem('erreur-collect-repartition', 'false');
       return;
     }
@@ -354,7 +363,7 @@ $('#bouton-collecte-bug').on('click', async () => {
   /** On réactive le bouton à la fin */
   setTimeout(function() {
         $boutonCollecteBug.removeClass('clicked-true disabled-bouton');
-        $boutonCollecteBug.attr('aria-label', "Lance la collecte des anomalies SonarQube de type mauvaise pratique.");
+        $boutonCollecteBug.attr('aria-label', "Lance la collecte des anomalies SonarQube de type fiabilité.");
         $boutonCollecteBug.removeAttr('aria-disabled tabindex');
         $('#etape-1').css('color', '#c45d4e');
   }, 3000);
@@ -363,8 +372,15 @@ $('#bouton-collecte-bug').on('click', async () => {
 
 /** On lance la collecte pour les VULNERABILITY */
 $('#collecte-vulnerability').on('click', async () => {
-    /** on désactive le bouton */
-    $('#collecte-vulnerability').addClass('bouton-collecte-vulnerability-disabled').attr('aria-disabled', 'true');
+  const $boutonCollecteVulnerability = $('#bouton-collecte-vulnerability');
+  const $jsCollecteVulnerability = $('#js-collecte-vulnerability');
+
+  /** On désactive le bouton */
+  $jsCollecteVulnerability.addClass('disabled-wrapper');
+  $boutonCollecteVulnerability.addClass('disabled-bouton clicked-true');
+  $boutonCollecteVulnerability.attr('aria-disabled', 'true');
+  $boutonCollecteVulnerability.attr('aria-label', "Collecte indisponible pour le moment.");
+  $boutonCollecteVulnerability.attr('tabindex', '-1');
 
   const total = +document.getElementById('nombre-vulnerability').dataset.nombreVulnerability;
 
@@ -395,8 +411,7 @@ $('#collecte-vulnerability').on('click', async () => {
   const timerElement = document.getElementById('js-vulnerability-time');
   timerElement.dataset.timer = 0;
 
-  let start = 0, stop = 0, counter = 0, tempo = 0;
-  let accumulatedPercent = 0;
+  let counter = 0, tempo = 0;
 
   // Calcul du total restant pour ajuster le dernier élément
   const lastSeverityIndex = severities.findLastIndex(sev => sev.value !== 0);
@@ -406,34 +421,25 @@ $('#collecte-vulnerability').on('click', async () => {
     let statut = sessionStorage.getItem('erreur-collect-repartition');
     if (statut === 'true'){
       /**l'appel AJAX a planté on arrête */
-      $('#collecte-vulnerability').removeClass('bouton-collecte-vulnerability-disabled').attr('aria-disabled', 'false');
+      $boutonCollecteVulnerability.removeClass('clicked-true').addClass('clicked-false');
+      $boutonCollecteVulnerability.removeClass('bouton-collecte-vulnerability-disabled').attr('aria-disabled', 'false');
       sessionStorage.setItem('erreur-collect-repartition', 'false');
       return;
     }
 
     const severity = severities[i];
     if (severity.value !== 0) {
-        start = stop;
-        if (i === lastSeverityIndex) {
-            stop = cent;
-        } else {
-            // Calcul normal des pourcentages
-            let calculatedStop = (severity.value / total) * cent;
-            stop = Math.round(accumulatedPercent + calculatedStop);
-            stop = Math.min(stop, 99);
-        }
-
-        // Mise à jour du cumul
-        accumulatedPercent = stop;
         counter += severity.value;
         tempo += +timerElement.dataset.timer;
-        await collecte(maven_key, 'VULNERABILITY', severity.key, counter, tempo);
+        const result = await collecte(maven_key, 'VULNERABILITY', severity.key, counter, tempo);
       }
     }
 
     /** On réactive le bouton à la fin */
     setTimeout(function() {
-      $('#collecte-vulnerability').removeClass('bouton-collecte-vulnerability-disabled').attr('aria-disabled', 'false');
+        $boutonCollecteVulnerability.removeClass('clicked-true disabled-bouton');
+        $boutonCollecteVulnerability.attr('aria-label', "Lance la collecte des anomalies SonarQube de type vulnérabilité.");
+        $boutonCollecteVulnerability.removeAttr('aria-disabled tabindex');
       $('#etape-2').css('color', '#c45d4e');
     }, 3000);
 
@@ -441,9 +447,16 @@ $('#collecte-vulnerability').on('click', async () => {
 
 /** On lance la collecte pour les CODE_SMELL */
 $('#collecte-code-smell').on('click', async () => {
+  const $boutonCollecteCodeSmell = $('#bouton-collecte-vulnerability');
+  const $jsCollecteCodeSmell = $('#js-collecte-vulnerability');
 
   /** On désactive le bouton */
-  $('#collecte-code-smell').addClass('bouton-collecte-code-smell-disabled').attr('aria-disabled', 'true');
+  $jsCollecteCodeSmell.addClass('disabled-wrapper');
+  $boutonCollecteCodeSmell.addClass('disabled-bouton clicked-true');
+  $boutonCollecteCodeSmell.attr('aria-disabled', 'true');
+  $boutonCollecteCodeSmell.attr('aria-label', "Collecte indisponible pour le moment.");
+  $boutonCollecteCodeSmell.attr('tabindex', '-1');
+
   const total = +document.getElementById('nombre-code-smell').dataset.nombreCodeSmell;
 
   if (total == 0){
@@ -461,11 +474,19 @@ $('#collecte-code-smell').on('click', async () => {
     { key: 'INFO', value: +document.getElementById('code-smell-info').dataset.nombreCodeSmellInfo }
   ];
 
+  if (isNaN(severities[0]['value']) ||
+      isNaN(severities[1]['value']) ||
+      isNaN(severities[2]['value']) ||
+      isNaN(severities[3]['value']) ||
+      isNaN(severities[4]['value'])) {
+        showMessage('alert', "Impossible de récupérer les informations concernant cette catégorie.");
+      return;
+    }
+
   const timerElement = document.getElementById('js-code-smell-time');
   timerElement.dataset.timer = 0;
 
-  let start = 0, stop = 0, counter = 0, tempo = 0;
-  let accumulatedPercent = 0;
+  let counter = 0, tempo = 0;
 
   // Trouver la dernière sévérité non vide
   const lastSeverityIndex = severities.findLastIndex(sev => sev.value !== 0);
@@ -475,33 +496,25 @@ $('#collecte-code-smell').on('click', async () => {
     let statut = sessionStorage.getItem('erreur-collect-repartition');
     if (statut === 'true'){
       /**l'appel AJAX a planté on arrête */
-      $('#collecte-code-smell').removeClass('bouton-collecte-code-smell-disabled').attr('aria-disabled', 'false');
+      $boutonCollecteCodeSmell.removeClass('clicked-true').addClass('clicked-false');
+      $boutonCollecteCodeSmell.removeClass('bouton-collecte-code-smell-disabled').attr('aria-disabled', 'false');
       sessionStorage.setItem('erreur-collect-repartition', 'false');
       return;
     }
 
     const severity = severities[i];
     if (severity.value !== 0) {
-        start = stop;
-        if (i === lastSeverityIndex) {
-            stop = cent;
-        } else {
-            // Calcul normal des pourcentages
-            let calculatedStop = (severity.value / total) * cent;
-            stop = Math.round(accumulatedPercent + calculatedStop);
-            stop = Math.min(stop, 99);
-        }
-
         // Mise à jour du cumul
-        accumulatedPercent = stop;
         counter += severity.value;
         tempo += +timerElement.dataset.timer;
-        await collecte(maven_key, 'CODE_SMELL', severity.key, counter, tempo);
+        const result = await collecte(maven_key, 'CODE_SMELL', severity.key, counter, tempo);
       }
     }
     /** On réactive le bouton à la fin */
     setTimeout(function() {
-      $('#collecte-code-smell').removeClass('bouton-collecte-code-smell-disabled').attr('aria-disabled', 'false');
+        $boutonCollecteCodeSmell.removeClass('clicked-true disabled-bouton');
+        $boutonCollecteCodeSmell.attr('aria-label', "Lance la collecte des anomalies SonarQube de type mauvaise-pratique.");
+        $boutonCollecteCodeSmell.removeAttr('aria-disabled tabindex');
       $('#etape-3').css('color', '#c45d4e');
     }, 3000);
 
