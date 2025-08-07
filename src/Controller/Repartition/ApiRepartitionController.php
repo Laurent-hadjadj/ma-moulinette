@@ -77,6 +77,7 @@ class ApiRepartitionController extends AbstractController
         }
 
         $repartitionCollecte = $this->batchCollecteRepartition->batchCollecteRepartition($data->maven_key,  $data->category, $data->severity, $data->setup);
+
         if ($repartitionCollecte['code'] !== 200){
             return new JsonResponse([
                 'code' => $repartitionCollecte['code'],
