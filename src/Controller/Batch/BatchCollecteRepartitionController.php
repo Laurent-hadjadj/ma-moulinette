@@ -415,12 +415,15 @@ class BatchCollecteRepartitionController extends AbstractController
 
             return [
                     'code' => 200,
-                    'total' => 0,
-                    'category' => $category,
-                    'severity' => $severity,
-                    'setup' => $setup,
-                    'temps' => 2
-                    ];
+                    'message' => '',
+                    'data' => ['
+                        total' => 0,
+                        'category' => $category,
+                        'severity' => $severity,
+                        'setup' => $setup,
+                        'temps' => 2,
+                    ]
+            ];
         }
 
         // Avant d'insérer les nouveaux enregistrements :
