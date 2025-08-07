@@ -416,8 +416,8 @@ class BatchCollecteRepartitionController extends AbstractController
             return [
                     'code' => 200,
                     'message' => '',
-                    'data' => ['
-                        total' => 0,
+                    'data' => [
+                        'total' => 0,
                         'category' => $category,
                         'severity' => $severity,
                         'setup' => $setup,
