@@ -116,7 +116,7 @@ const analyse = async function (maven_key, category, severity, css, setup) {
   // 📌 Vérification des erreurs
   if (t.code !== http_200){
     showMessage(t.type, typeMessage(t.message));
-    sessionStorage.setItem('erreur-analyse', 'true');
+    sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'true');
     return;
   }
 
@@ -217,7 +217,7 @@ const collecte = async function (maven_key, category, severity, counter, timer) 
   };
 
   // Configuration de la requête AJAX
-  sessionStorage.setItem('erreur-collect-repartition', 'false');
+  sessionStorage.setItem('ma_moulinette_erreur-collect-repartition', 'false');
   const data = JSON.stringify({ maven_key, category, severity, setup });
 
   const options = {
@@ -245,7 +245,7 @@ const collecte = async function (maven_key, category, severity, counter, timer) 
       if (response.code !== http_200){
         // 📌 Vérification des erreurs
         showMessage(response.type, typeMessage(response.message));
-        sessionStorage.setItem('erreur-collect-repartition', 'true')
+        sessionStorage.setItem('ma_moulinette_erreur-collect-repartition', 'true')
         $collecteAnimation1.removeClass('sp-volume');
         return;
       }
@@ -255,12 +255,12 @@ const collecte = async function (maven_key, category, severity, counter, timer) 
       // Mise à jour du timer dataset
       timerElement.dataset.timer = response.temps;
   } catch(error) {
-      sessionStorage.setItem('erreur-collect-repartition', 'true');
+      sessionStorage.setItem('ma_moulinette_erreur-collect-repartition', 'true');
       $collecteAnimation1.removeClass('sp-volume');
       const message = `Une erreur inconnue s'est produite (Erreur 500).`;
       const techDetails = prepareTechnicalDetails(error);
       showMessage('alert', message, techDetails);
-      sessionStorage.setItem('error', `Erreur lors de la collecte [${category}, ${severity}] : ${error.message}`);
+      sessionStorage.setItem('ma_moulinette_erreur-collect-repartition', `Erreur lors de la collecte [${category}, ${severity}] : ${error.message}`);
       return 1;
   }
 };
@@ -345,12 +345,12 @@ $('#bouton-collecte-bug').on('click', async () => {
 
   // Parcours des niveaux de sévérité
   for (let i = 0; i < severities.length; i++) {
-    let statut = sessionStorage.getItem('erreur-collect-repartition');
+    let statut = sessionStorage.getItem('ma_moulinette_erreur-collect-repartition');
     if (statut === 'true'){
       /**l'appel AJAX a planté on arrête */
       $boutonCollecteBug.removeClass('clicked-true').addClass('clicked-false');
       $boutonCollecteBug.removeClass('bouton-collecte-bug-disabled').attr('aria-disabled', 'false');
-      sessionStorage.setItem('erreur-collect-repartition', 'false');
+      sessionStorage.setItem('ma_moulinette_erreur-collect-repartition', 'false');
       return;
     }
 
@@ -418,12 +418,12 @@ $('#collecte-vulnerability').on('click', async () => {
 
   // Parcours des niveaux de sévérité
   for (let i = 0; i < severities.length; i++) {
-    let statut = sessionStorage.getItem('erreur-collect-repartition');
+    let statut = sessionStorage.getItem('ma_moulinette_erreur-collect-repartition');
     if (statut === 'true'){
       /**l'appel AJAX a planté on arrête */
       $boutonCollecteVulnerability.removeClass('clicked-true').addClass('clicked-false');
       $boutonCollecteVulnerability.removeClass('bouton-collecte-vulnerability-disabled').attr('aria-disabled', 'false');
-      sessionStorage.setItem('erreur-collect-repartition', 'false');
+      sessionStorage.setItem('ma_moulinette_erreur-collect-repartition', 'false');
       return;
     }
 
@@ -493,12 +493,12 @@ $('#collecte-code-smell').on('click', async () => {
 
   // Parcours des niveaux de sévérité
   for (let i = 0; i < severities.length; i++) {
-    let statut = sessionStorage.getItem('erreur-collect-repartition');
+    let statut = sessionStorage.getItem('ma_moulinette_erreur-collect-repartition');
     if (statut === 'true'){
       /**l'appel AJAX a planté on arrête */
       $boutonCollecteCodeSmell.removeClass('clicked-true').addClass('clicked-false');
       $boutonCollecteCodeSmell.removeClass('bouton-collecte-code-smell-disabled').attr('aria-disabled', 'false');
-      sessionStorage.setItem('erreur-collect-repartition', 'false');
+      sessionStorage.setItem('ma_moulinette_erreur-collect-repartition', 'false');
       return;
     }
 
@@ -524,13 +524,13 @@ $('.bouton-analyse').on('click', async () =>{
 
   let control, phase = 0;
 
-  control = sessionStorage.getItem('erreur-analyse');
+  control = sessionStorage.getItem('ma_moulinette_erreur-analyse-repartition');
 
   if (control === 'true') {
     showMessage('alert', 'Une erreur générale lors du calcul de la répartition a été rencontrée (Erreur 500).');
     return;
   } else {
-    sessionStorage.setItem('erreur-analyse', 'false');
+    sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
   }
 
   /** On lance la fonction asynchrone */
@@ -549,7 +549,7 @@ $('.bouton-analyse').on('click', async () =>{
     $('#tableau-1').removeClass('hide');
     $('#mon-bo-tableau1').html(tabTitre);
 
-    control = sessionStorage.getItem('erreur-analyse');
+    control = sessionStorage.getItem('ma_moulinette_erreur-analyse-repartition');
     await analyse(maven_key, 'BUG', 'BLOCKER', 'texte-rouge', setup);
     await analyse(maven_key, 'BUG', 'CRITICAL', 'texte-rouge', setup);
     await analyse(maven_key, 'BUG', 'MAJOR','texte-orange', setup);
@@ -560,14 +560,14 @@ $('.bouton-analyse').on('click', async () =>{
       showMessage('alert', 'Une erreur lors du calcul de la répartition pour la catégorie <strong>BUG</strong> a été rencontrée (Erreur 500).');
       return;
     } else {
-      sessionStorage.setItem('erreur-analyse', 'false');
+      sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
       phase++;
     }
 
     /** VULNERABILITY */
     $('#tableau-2').removeClass('hide');
     $('#mon-bo-tableau2').html(tabTitre);
-    control = sessionStorage.getItem('erreur-analyse');
+    control = sessionStorage.getItem('ma_moulinette_erreur-analyse-repartition');
     await analyse(maven_key, 'VULNERABILITY', 'BLOCKER', 'texte-rouge', setup);
     await analyse(maven_key, 'VULNERABILITY', 'CRITICAL', 'texte-rouge', setup);
     await analyse(maven_key, 'VULNERABILITY', 'MAJOR', 'texte-orange', setup);
@@ -577,14 +577,14 @@ $('.bouton-analyse').on('click', async () =>{
       showMessage('alert', 'Une erreur lors du calcul de la répartition pour la catégorie <strong>VULNERABILITY</strong> a été rencontrée (Erreur 500).');
       return;
     } else {
-      sessionStorage.setItem('erreur-analyse', 'false');
+      sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
       phase++;
     }
 
     /** CODE_SMELL */
     $('#tableau-3').removeClass('hide');
     $('#mon-bo-tableau3').html(tabTitre);
-    control = sessionStorage.getItem('erreur-analyse');
+    control = sessionStorage.getItem('ma_moulinette_erreur-analyse-repartition');
     await analyse(maven_key, 'CODE_SMELL', 'BLOCKER', 'texte-rouge', setup);
     await analyse(maven_key, 'CODE_SMELL', 'CRITICAL', 'texte-rouge', setup);
     await analyse(maven_key, 'CODE_SMELL', 'INFO', 'texte-bleu', setup);
@@ -593,7 +593,7 @@ $('.bouton-analyse').on('click', async () =>{
     if ( control === 'true') {
       showMessage('alert', 'Une erreur lors du calcul de la répartition pour la catégorie <strong>CODE SMELL</strong> a été rencontrée (Erreur 500).');
     } else {
-      sessionStorage.setItem('erreur-analyse', 'false');
+      sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
       phase++;
     }
 
