@@ -35,7 +35,7 @@ import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common
 import { contentType, zero, cent, mille, http_200} from '../../common/constante.js';
 
 /** On récupère la clé maven de la clé de l'application. */
-const maven_key = $('#js-app').data('application');
+const maven_key = $('#titre-repartition').data('application');
 const setup = $('#js-setup').text().trim();
 
 /** On initialise le tableau de résultats pour l'analyse */
@@ -63,12 +63,12 @@ const analyse = async function (maven_key, category, severity, css, setup) {
           'VULNERABILITY': 'Vulnérabilité :',
           'CODE_SMELL': 'Mauvaise Pratique :'
       };
-      $('#analyse-animation1').addClass('sp-volume');
+    $('#analyse-animation2').removeAttr('hidden');
       $('#analyse-texte').html(categories[a] + ' Analyse en cours...');
   };
 
   const stopAnalyse = () => {
-      $('#analyse-animation1').removeClass('sp-volume');
+      $('#analyse-animation2').attr('hidden');
       $('#analyse-texte').html('<span class="open-sans">statut : Fin du traitement.</span>');
   };
 
@@ -181,8 +181,6 @@ const analyse = async function (maven_key, category, severity, css, setup) {
  * @param string maven_key
  * @param string category
  * @param string severity
- * @param integer start
- * @param integer stop
  * @param integer counter
  * @param integer timer
  * @returns void
@@ -228,12 +226,12 @@ const collecte = async function (maven_key, category, severity, counter, timer) 
       contentType,
       beforeSend: function () {
           setTimeout(() => {
-              $('#collecte-animation1').addClass('sp-volume');
+              $('#collecte-animation1').attr('hidden');
           }, mille);
       },
       complete: function () {
           setTimeout(() => {
-              $('#collecte-animation1').removeClass('sp-volume');
+              $('#collecte-animation1').removeAttr('hidden');
               changeTimer(timer);
           }, mille);
       }
@@ -248,12 +246,18 @@ const collecte = async function (maven_key, category, severity, counter, timer) 
         sessionStorage.setItem('erreur-collect-repartition', 'true')
         return;
       }
+
       // Mise à jour du nombre d'anomalies
       $('#nombre-anomalie').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(counter));
       // Mise à jour du timer dataset
       timerElement.dataset.timer = response.temps;
   } catch(error) {
+      sessionStorage.setItem('erreur-collect-repartition', 'true')
+      const message = `Une erreur inconnue s'est produite (Erreur 500).`;
+      const techDetails = prepareTechnicalDetails(error);
+      showMessage('alert', message, techDetails);
       sessionStorage.setItem('error', `Erreur lors de la collecte [${category}, ${severity}] : ${error.message}`);
+      return 1;
   }
 };
 
@@ -289,7 +293,7 @@ const updateRepartition = async function(phase){
 
 /********************    Évènement    ************************/
 $('#bouton-collecte-bug').on('click', async () => {
-  const  $boutonCollecteBug = $('#bouton-collecte-bug');
+  const $boutonCollecteBug = $('#bouton-collecte-bug');
   const $jsCollecteBug = $('#js-collecte-bug');
 
   /** On désactive le bouton */
@@ -321,15 +325,14 @@ $('#bouton-collecte-bug').on('click', async () => {
   const timerElement = document.getElementById('js-bug-time');
   timerElement.dataset.timer = 0;
 
-  let start = 0, stop = 0, counter = 0, tempo = 0;
-  let accumulatedPercent = 0;
+  let counter = 0, tempo = 0;
 
   // Trouver la dernière sévérité non vide
   const lastSeverityIndex = severities.findLastIndex(sev => sev.value !== 0);
 
   // Parcours des niveaux de sévérité
   for (let i = 0; i < severities.length; i++) {
-    let statut = sessionStorage.getItem('erreur-collect-repartition');;
+    let statut = sessionStorage.getItem('erreur-collect-repartition');
     if (statut === 'true'){
       /**l'appel AJAX a planté on arrête */
       $boutonCollecteBug.removeClass('clicked-true').addClass('clicked-false');
@@ -338,23 +341,10 @@ $('#bouton-collecte-bug').on('click', async () => {
       return;
     }
 
-    const severity = severities[i];
-    if (severity.value !== 0) {
-        start = stop;
-        if (i === lastSeverityIndex) {
-            stop = cent;
-        } else {
-            // Calcul normal des pourcentages
-            let calculatedStop = (severity.value / total) * cent;
-            stop = Math.round(accumulatedPercent + calculatedStop);
-            stop = Math.min(stop, 99);
-        }
-
-      accumulatedPercent = stop;
+      const severity = severities[i];
       counter += severity.value;
       tempo += +timerElement.dataset.timer;
-      await collecte(maven_key, 'BUG', severity.key, counter, tempo);
-    }
+      const result = await collecte(maven_key, 'BUG', severity.key, counter, tempo);
   }
 
   /** On réactive le bouton à la fin */
