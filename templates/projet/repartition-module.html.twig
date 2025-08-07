@@ -15,7 +15,6 @@
   © 2024 - CC BY-SA-NC 4.0
 -->
 <html lang="fr">
-
   {# Chargement de la section HEAD #}
   <head>
     <title>{{ title }}</title>
@@ -237,10 +236,11 @@
 
       {# Boutons de collecte #}
       <h2 id="titre-collecte"
-          class="h4 claire-hand margin-top-05"
+          class="h4 claire-hand margin-top-1"
           aria-label="Étape 1 : Collecte des données.">
             <span aria-hidden="true">📥</span>1 - Collecte.
-            <output id="collecte-animation1" class="sp" aria-live="polite" hidden>
+            <output aria-live="polite" hidden>
+              <div id="collecte-animation1" class="sp sp-volume"></div>
               <span class="show-for-sr">Analyse en cours...</span>
             </output>
       </h2>
@@ -259,7 +259,7 @@
           </div>
 
           <div class="small-12 medium-4 large-4 cell">
-            <div class="container-bouton">
+            <div id="js-collecte-bug" class="container-bouton">
               <button id="bouton-collecte-bug"
                       class="button expanded open-sans focus-light"
                       type="button"
@@ -269,7 +269,7 @@
             </div>
           </div>
           <div class="small-12 medium-4 large-4 cell">
-            <div class="container-bouton">
+            <div id="js-collecte-vulnerability" class="container-bouton">
               <button id="bouton-collecte-vulnerability"
                       class="button expanded open-sans focus-light"
                       type="button"
@@ -278,8 +278,8 @@
               </button>
             </div>
           </div>
-          <div class="small-12 medium-4 large-4 bouton-afficher-left cell">
-            <div class="container-bouton">
+          <div class="small-12 medium-4 large-4 cell">
+            <div id="js-collecte-code-smell" class="container-bouton">
               <button id="bouton-collecte-code-smell"
                       class="button expanded open-sans focus-light"
                       type="button"
@@ -343,7 +343,6 @@
         </div>
         <div class="fieldset">
           <div class="grid-x cell">
-            <div id="analyse-animation" class="sp"></div>
             <div id="analyse-texte" class="open-sans je-dors">Statut : Je dors !!!</div>
           </div>
         </div>
