@@ -195,6 +195,8 @@ const collecte = async function (maven_key, category, severity, counter, timer) 
       return;
   }
 
+  const $collecteAnimation1 = $('#collecte-animation1');
+
   // Mapping pour simplifier la conversion de `category` en `categoryTime`
   const categoryMap = {
       'BUG': 'bug',
@@ -226,12 +228,12 @@ const collecte = async function (maven_key, category, severity, counter, timer) 
       contentType,
       beforeSend: function () {
           setTimeout(() => {
-              $('#collecte-animation1').attr('hidden');
+              $collecteAnimation1.addClass('sp-volume');
           }, mille);
       },
       complete: function () {
           setTimeout(() => {
-              $('#collecte-animation1').removeAttr('hidden');
+              $collecteAnimation1.removeClass('sp-volume');
               changeTimer(timer);
           }, mille);
       }
@@ -244,6 +246,7 @@ const collecte = async function (maven_key, category, severity, counter, timer) 
         // 📌 Vérification des erreurs
         showMessage(response.type, typeMessage(response.message));
         sessionStorage.setItem('erreur-collect-repartition', 'true')
+        $collecteAnimation1.removeClass('sp-volume');
         return;
       }
 
@@ -252,7 +255,8 @@ const collecte = async function (maven_key, category, severity, counter, timer) 
       // Mise à jour du timer dataset
       timerElement.dataset.timer = response.temps;
   } catch(error) {
-      sessionStorage.setItem('erreur-collect-repartition', 'true')
+      sessionStorage.setItem('erreur-collect-repartition', 'true');
+      $collecteAnimation1.removeClass('sp-volume');
       const message = `Une erreur inconnue s'est produite (Erreur 500).`;
       const techDetails = prepareTechnicalDetails(error);
       showMessage('alert', message, techDetails);
@@ -434,7 +438,6 @@ $('#collecte-vulnerability').on('click', async () => {
     }, 3000);
 
 });
-
 
 /** On lance la collecte pour les CODE_SMELL */
 $('#collecte-code-smell').on('click', async () => {
