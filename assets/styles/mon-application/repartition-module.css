@@ -241,8 +241,6 @@
 
 /*************************          Global     *********************************/
 
-.progress-meter-custom { width: 0%; }
-
 .je-dors {
   margin-left: 16px;
   margin-top: 4px;
@@ -323,23 +321,6 @@
   align-items: center;
 }
 
-/* Progress */
-.progress-meter {
-  background: #75060e;
-  transition: width 0.8s ease-in-out;
-}
-
-.progress-meter-text {
-  color: #fff;
-  margin-left: 1rem;
-  transition: width 0.4s ease;
-}
-
-.progress-stat {
-  font-size: 2rem;
-  margin-left: 1rem;
-  line-height: 0.5rem;
-}
 
 /* Ajoute un saut de ligne au dessous des boutons de collecte */
 .etape { padding-bottom: 1rem; }

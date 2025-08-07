@@ -43,32 +43,6 @@ const setup = $('#js-setup').text().trim();
 let analyseCollecteRepartition = [];
 
 /**
-  * [Description for updateProgressGradually]
-  *
-  * @param int start
-  * @param int stop
-  *
-  * @return void
-  *
-  * Created at: 12/02/2025 17:57:20 (Europe/Paris)
-  * @author     Laurent HADJADJ <laurent_h@me.com>
-  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-  */
-async function updateProgressGradually(start, stop) {
-  const steps = 10; // Nombre d’étapes intermédiaires pour lisser la progression
-  const stepDelay = 100; // 100ms entre chaque étape
-  let progress = start;
-
-  for (let i = 1; i <= steps; i++) {
-      progress = start + ((stop - start) * (i / steps));
-      $('.progress-meter').css('width', `${Math.round(progress)}%`);
-      $('.progress-meter-text').text(`${Math.round(progress)}%`);
-      await new Promise(resolve => setTimeout(resolve, stepDelay));
-  }
-}
-
-
-/**
  * analyse
  * On lance le service d'analyse des données pour le projet
  *
@@ -89,12 +63,12 @@ const analyse = async function (maven_key, category, severity, css, setup) {
           'VULNERABILITY': 'Vulnérabilité :',
           'CODE_SMELL': 'Mauvaise Pratique :'
       };
-      $('#analyse-animation').addClass('sp-volume');
+      $('#analyse-animation1').addClass('sp-volume');
       $('#analyse-texte').html(categories[a] + ' Analyse en cours...');
   };
 
   const stopAnalyse = () => {
-      $('#analyse-animation').removeClass('sp-volume');
+      $('#analyse-animation1').removeClass('sp-volume');
       $('#analyse-texte').html('<span class="open-sans">statut : Fin du traitement.</span>');
   };
 
@@ -219,7 +193,7 @@ const analyse = async function (maven_key, category, severity, css, setup) {
 const collecte = async function (maven_key, category, severity, counter, timer) {
   // Vérification immédiate pour éviter les traitements inutiles
   if (maven_key === 'NaN' || category === 'NaN') {
-      showMessage('warning', "Les paramètres pour récupérer les données sont incorrects (Erreur 500).");
+      showMessage('warning', "Les paramètres pour récupérer les données sont incorrects (Erreur 400).");
       return;
   }
 
@@ -254,12 +228,12 @@ const collecte = async function (maven_key, category, severity, counter, timer) 
       contentType,
       beforeSend: function () {
           setTimeout(() => {
-              $('#collecte-animation').addClass('sp-volume');
+              $('#collecte-animation1').addClass('sp-volume');
           }, mille);
       },
       complete: function () {
           setTimeout(() => {
-              $('#collecte-animation').removeClass('sp-volume');
+              $('#collecte-animation1').removeClass('sp-volume');
               changeTimer(timer);
           }, mille);
       }
@@ -314,21 +288,25 @@ const updateRepartition = async function(phase){
   }
 
 /********************    Évènement    ************************/
-$('#collecte-bug').on('click', async () => {
+$('#bouton-collecte-bug').on('click', async () => {
+  const  $boutonCollecteBug = $('#bouton-collecte-bug');
+  const $jsCollecteBug = $('#js-collecte-bug');
+
   /** On désactive le bouton */
-  $('#collecte-bug').addClass('bouton-collecte-bug-disabled').attr('aria-disabled', 'true');
+  $jsCollecteBug.addClass('disabled-wrapper');
+  $boutonCollecteBug.addClass('disabled-bouton clicked-true');
+  $boutonCollecteBug.attr('aria-disabled', 'true');
+  $boutonCollecteBug.attr('aria-label', "Collecte indisponible pour le moment.");
+  $boutonCollecteBug.attr('tabindex', '-1');
 
   /** On récupère le total et le setup */
   const total = +document.getElementById('nombre-bug').dataset.nombreBug;
 
   if (total == 0){
-    showMessage('warning', "Il n'y a pas de données à collecter pour cette catégorie (Erreur 404).");
+    showMessage('primary', "Il n'y a pas de données à collecter pour cette catégorie.");
     setTimeout(() => { hideMessage(); }, 3000);
     return;
   }
-
-  /** On réinitialise la barre de progression */
-  updateProgressGradually(zero, zero);
 
   // Récupération des valeurs depuis le DOM
   const severities = [
@@ -354,9 +332,9 @@ $('#collecte-bug').on('click', async () => {
     let statut = sessionStorage.getItem('erreur-collect-repartition');;
     if (statut === 'true'){
       /**l'appel AJAX a planté on arrête */
+      $boutonCollecteBug.removeClass('clicked-true').addClass('clicked-false');
       $('#collecte-bug').removeClass('bouton-collecte-bug-disabled').attr('aria-disabled', 'false');
       sessionStorage.setItem('erreur-collect-repartition', 'false');
-      updateProgressGradually(zero, zero);
       return;
     }
 
@@ -376,13 +354,14 @@ $('#collecte-bug').on('click', async () => {
       counter += severity.value;
       tempo += +timerElement.dataset.timer;
       await collecte(maven_key, 'BUG', severity.key, counter, tempo);
-      updateProgressGradually(start, stop);
     }
   }
 
   /** On réactive le bouton à la fin */
   setTimeout(function() {
-        $('#collecte-bug').removeClass('bouton-collecte-bug-disabled').attr('aria-disabled', 'false');
+        $boutonCollecteBug.removeClass('clicked-true disabled-bouton');
+        $boutonCollecteBug.attr('aria-label', "Lance la collecte des anomalies SonarQube de type mauvaise pratique.");
+        $boutonCollecteBug.removeAttr('aria-disabled tabindex');
         $('#etape-1').css('color', '#c45d4e');
   }, 3000);
 
@@ -400,9 +379,6 @@ $('#collecte-vulnerability').on('click', async () => {
     setTimeout(() => { hideMessage(); }, 3000);
     return;
   }
-
-  /** On réinitialise la barre de progression */
-  updateProgressGradually(zero, zero);
 
   /** On récupère les résultats bindés dans la page */
   const severities = [
@@ -438,7 +414,6 @@ $('#collecte-vulnerability').on('click', async () => {
       /**l'appel AJAX a planté on arrête */
       $('#collecte-vulnerability').removeClass('bouton-collecte-vulnerability-disabled').attr('aria-disabled', 'false');
       sessionStorage.setItem('erreur-collect-repartition', 'false');
-      updateProgressGradually(zero, zero);
       return;
     }
 
@@ -459,7 +434,6 @@ $('#collecte-vulnerability').on('click', async () => {
         counter += severity.value;
         tempo += +timerElement.dataset.timer;
         await collecte(maven_key, 'VULNERABILITY', severity.key, counter, tempo);
-        updateProgressGradually(start, stop);
       }
     }
 
@@ -503,9 +477,6 @@ $('#collecte-code-smell').on('click', async () => {
   // Trouver la dernière sévérité non vide
   const lastSeverityIndex = severities.findLastIndex(sev => sev.value !== 0);
 
-  /** On réinitialise la barre de progression */
-  updateProgressGradually(zero, zero);
-
   // Parcours des niveaux de sévérité
   for (let i = 0; i < severities.length; i++) {
     let statut = sessionStorage.getItem('erreur-collect-repartition');
@@ -513,7 +484,6 @@ $('#collecte-code-smell').on('click', async () => {
       /**l'appel AJAX a planté on arrête */
       $('#collecte-code-smell').removeClass('bouton-collecte-code-smell-disabled').attr('aria-disabled', 'false');
       sessionStorage.setItem('erreur-collect-repartition', 'false');
-      updateProgressGradually(zero, zero);
       return;
     }
 
@@ -534,7 +504,6 @@ $('#collecte-code-smell').on('click', async () => {
         counter += severity.value;
         tempo += +timerElement.dataset.timer;
         await collecte(maven_key, 'CODE_SMELL', severity.key, counter, tempo);
-        updateProgressGradually(start, stop);
       }
     }
     /** On réactive le bouton à la fin */
