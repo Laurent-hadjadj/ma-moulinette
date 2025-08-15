@@ -1372,6 +1372,8 @@ $('.gomme-svg').on('click', function () {
  * Événement : Affiche le nom de la clé du projet, active le bouton pour l'analyse.
  */
 $('select[name="projet"]').on('change', function () {
+  /** si la selection est null alors on ne fait rien */
+  if ($('select[name="projet"]').val() === null){ return; }
   $('#select-result').html(`<strong>${$('select[name="projet"]').val().trim()}</strong>`);
 
   /** On enregistre la clé maven dans le session storage (utile pour la page Owasp) */
