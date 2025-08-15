@@ -291,6 +291,19 @@ class BatchCollecteRepartitionController extends AbstractController
         /** On récupère le nombre d'anomalie pour la category */
         $total = 0;
         $result = $this->batchCollecteInformation($maven_key, $category);
+        if ($result['code'] != 200) {
+            $this->logger->error('❌ [Batch Répartition Module] Erreur lors de collecte des informations ', [
+                    'maven_key' => $maven_key,
+                    'category' => $category,
+                    'code' => $result['code'],
+                    'erreur' => $result['erreur']
+            ]);
+            return [
+                    'code' => $result['code'],
+                    'erreur' => $result['erreur']
+            ];
+        }
+        /** On traite les données */
         if (isset($result['values'])){
             $this->logger->debug('🛠️ [Batch Répartition Module] Informations disponibles dans les facets : ', [
                     'maven_key' => $maven_key,
