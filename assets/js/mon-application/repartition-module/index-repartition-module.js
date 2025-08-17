@@ -210,9 +210,9 @@ const collecte = async function (maven_key, category, severity, counter, timer) 
   const timerElement = document.getElementById(`js-${categoryTimeLower}-time`);
 
   // Fonction pour mettre à jour le timer
-  const changeTimer = value => {
-      const minute = Math.floor(value / 60);
-      const restSeconds = value % 60;
+  const changeTimer = timer => {
+      const minute = Math.floor(timer / 60);
+      const restSeconds = timer % 60;
       $(`#js-${categoryTimeLower}-time`).html(`${minute}.${restSeconds}`);
   };
 
