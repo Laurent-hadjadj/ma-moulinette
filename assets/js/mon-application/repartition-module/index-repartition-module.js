@@ -446,7 +446,7 @@ $('#bouton-collecte-vulnerability').on('click', async () => {
 });
 
 /** On lance la collecte pour les CODE_SMELL */
-$('#collecte-code-smell').on('click', async () => {
+$('#bouton-collecte-code-smell').on('click', async () => {
   const $boutonCollecteCodeSmell = $('#bouton-collecte-vulnerability');
   const $jsCollecteCodeSmell = $('#js-collecte-vulnerability');
 
