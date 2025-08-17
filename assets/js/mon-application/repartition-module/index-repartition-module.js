@@ -371,7 +371,7 @@ $('#bouton-collecte-bug').on('click', async () => {
 });
 
 /** On lance la collecte pour les VULNERABILITY */
-$('#collecte-vulnerability').on('click', async () => {
+$('#bouton-collecte-vulnerability').on('click', async () => {
   const $boutonCollecteVulnerability = $('#bouton-collecte-vulnerability');
   const $jsCollecteVulnerability = $('#js-collecte-vulnerability');
 
