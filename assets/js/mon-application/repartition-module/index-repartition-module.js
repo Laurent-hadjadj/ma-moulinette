@@ -311,8 +311,11 @@ $('#bouton-collecte-bug').on('click', async () => {
   const total = +document.getElementById('nombre-bug').dataset.nombreBug;
 
   if (total == 0){
-    showMessage('primary', "Il n'y a pas de données à collecter pour cette catégorie.");
+    showMessage('primary', "Il n'y a pas de données à collecter pour cette catégorie(Erreur 404).");
     setTimeout(() => { hideMessage(); }, 3000);
+    $jsCollecteBug.removeClass('disabled-wrapper');
+    $boutonCollecteBug.removeClass('disabled-wrapper clicked-true');
+    $boutonCollecteBug.attr('aria-disabled', 'false');
     return;
   }
 
@@ -331,6 +334,7 @@ $('#bouton-collecte-bug').on('click', async () => {
       isNaN(severities[3]['value']) ||
       isNaN(severities[4]['value'])) {
         showMessage('alert', "Impossible de récupérer les informations concernant cette catégorie.");
+        $boutonCollecteBug.removeClass('clicked-true').addClass('clicked-false');
       return;
     }
 
@@ -349,7 +353,6 @@ $('#bouton-collecte-bug').on('click', async () => {
     if (statut === 'true'){
       /**l'appel AJAX a planté on arrête */
       $boutonCollecteBug.removeClass('clicked-true').addClass('clicked-false');
-      $boutonCollecteBug.removeClass('bouton-collecte-bug-disabled').attr('aria-disabled', 'false');
       sessionStorage.setItem('ma_moulinette_erreur-collect-repartition', 'false');
       return;
     }
@@ -387,6 +390,9 @@ $('#bouton-collecte-vulnerability').on('click', async () => {
   if (total == 0){
     showMessage('warning', "Il n'y a pas de données à collecter pour cette catégorie (Erreur 404).");
     setTimeout(() => { hideMessage(); }, 3000);
+    $jsCollecteVulnerability.removeClass('disabled-wrapper');
+    $boutonCollecteVulnerability.removeClass('disabled-bouton clicked-true');
+    $boutonCollecteVulnerability.attr('aria-disabled', 'false');
     return;
   }
 
@@ -405,6 +411,7 @@ $('#bouton-collecte-vulnerability').on('click', async () => {
       isNaN(severities[3]['value']) ||
       isNaN(severities[4]['value'])) {
         showMessage('alert', "Impossible de récupérer les informations concernant cette catégorie.");
+        $boutonCollecteVulnerability.removeClass('clicked-true').addClass('clicked-false');
       return;
     }
 
@@ -422,7 +429,6 @@ $('#bouton-collecte-vulnerability').on('click', async () => {
     if (statut === 'true'){
       /**l'appel AJAX a planté on arrête */
       $boutonCollecteVulnerability.removeClass('clicked-true').addClass('clicked-false');
-      $boutonCollecteVulnerability.removeClass('bouton-collecte-vulnerability-disabled').attr('aria-disabled', 'false');
       sessionStorage.setItem('ma_moulinette_erreur-collect-repartition', 'false');
       return;
     }
@@ -447,8 +453,8 @@ $('#bouton-collecte-vulnerability').on('click', async () => {
 
 /** On lance la collecte pour les CODE_SMELL */
 $('#bouton-collecte-code-smell').on('click', async () => {
-  const $boutonCollecteCodeSmell = $('#bouton-collecte-vulnerability');
-  const $jsCollecteCodeSmell = $('#js-collecte-vulnerability');
+  const $boutonCollecteCodeSmell = $('#bouton-collecte-code-smell');
+  const $jsCollecteCodeSmell = $('#js-collecte-code-smell');
 
   /** On désactive le bouton */
   $jsCollecteCodeSmell.addClass('disabled-wrapper');
@@ -462,6 +468,9 @@ $('#bouton-collecte-code-smell').on('click', async () => {
   if (total == 0){
     showMessage('warning', "Il n'y a pas de données à collecter pour cette catégorie (Erreur 404).");
     setTimeout(() => { hideMessage(); }, 3000);
+    $jsCollecteCodeSmell.removeClass('disabled-wrapper');
+    $boutonCollecteCodeSmell.removeClass('disabled-bouton clicked-true');
+    $boutonCollecteCodeSmell.attr('aria-disabled', 'false');
     return;
   }
 
@@ -480,7 +489,8 @@ $('#bouton-collecte-code-smell').on('click', async () => {
       isNaN(severities[3]['value']) ||
       isNaN(severities[4]['value'])) {
         showMessage('alert', "Impossible de récupérer les informations concernant cette catégorie.");
-      return;
+        $boutonCollecteCodeSmell.removeClass('clicked-true').addClass('clicked-false');
+        return;
     }
 
   const timerElement = document.getElementById('js-code-smell-time');
@@ -497,7 +507,7 @@ $('#bouton-collecte-code-smell').on('click', async () => {
     if (statut === 'true'){
       /**l'appel AJAX a planté on arrête */
       $boutonCollecteCodeSmell.removeClass('clicked-true').addClass('clicked-false');
-      $boutonCollecteCodeSmell.removeClass('bouton-collecte-code-smell-disabled').attr('aria-disabled', 'false');
+      $boutonCollecteCodeSmell.attr('aria-disabled', 'false');
       sessionStorage.setItem('ma_moulinette_erreur-collect-repartition', 'false');
       return;
     }
@@ -517,7 +527,6 @@ $('#bouton-collecte-code-smell').on('click', async () => {
         $boutonCollecteCodeSmell.removeAttr('aria-disabled tabindex');
       $('#etape-3').css('color', '#c45d4e');
     }, 3000);
-
 });
 
 $('.bouton-analyse').on('click', async () =>{
