@@ -244,6 +244,8 @@
               <span class="show-for-sr">Analyse en cours...</span>
             </output>
       </h2>
+
+      {# Processus de collecte par type (bug, security, code_smell) #}
       <div id="collecte">
         <div class="grid-x cell">
           <div class="grid-x show-for-medium etape cell">
@@ -324,10 +326,13 @@
           class="h4 claire-hand"
           aria-label="Étape 2 : Analyse des données.">
         <span aria-hidden="true">⚙️</span>2 - Analyse.
-        <output id="collecte-animation2" class="sp" aria-live="polite" hidden>
-          <span class="visually-hidden">Analyse en cours...</span>
+        <output id="spinner-analyse-annonce" aria-live="polite">
+          <div id="analyse-animation" class="sp"></div>
+          <span class="show-for-sr">Analyse en cours...</span>
         </output>
       </h2>
+
+      {# Affichage des résultats #}
       <div id="Analyse-container">
         <div class="grid-x cell">
           <div class="small-12 medium-4 large-4 cell">
@@ -340,11 +345,6 @@
             </div>
           </div>
           <div class="small-12 medium-8 large-8 cell"></div>
-        </div>
-        <div class="fieldset">
-          <div class="grid-x cell">
-            <div id="analyse-texte" class="open-sans je-dors">Statut : Je dors !!!</div>
-          </div>
         </div>
 
         <div id="tableau-1" class="table-scroll hide">

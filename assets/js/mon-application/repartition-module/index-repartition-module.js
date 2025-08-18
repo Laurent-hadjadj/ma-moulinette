@@ -57,19 +57,12 @@ const analyse = async function (maven_key, category, severity, css, setup) {
   /**
    * 🏁 Animation de démarrage et de fin
    */
-  const startAnalyse = a => {
-      const categories = {
-          'BUG': 'Bug :',
-          'VULNERABILITY': 'Vulnérabilité :',
-          'CODE_SMELL': 'Mauvaise Pratique :'
-      };
-    $('#analyse-animation2').removeAttr('hidden');
-      $('#analyse-texte').html(categories[a] + ' Analyse en cours...');
+  const startAnalyse = () => {
+    $('#analyse-animation').addClass('sp-volume');
   };
 
   const stopAnalyse = () => {
-      $('#analyse-animation2').attr('hidden');
-      $('#analyse-texte').html('<span class="open-sans">statut : Fin du traitement.</span>');
+    $('#analyse-animation').removeClass('sp-volume');
   };
 
   // 📌 Récupération des données du DOM
@@ -530,7 +523,6 @@ $('#bouton-collecte-code-smell').on('click', async () => {
 });
 
 $('#bouton-analyse').on('click', async () =>{
-
   let control, phase = 0;
 
   control = sessionStorage.getItem('ma_moulinette_erreur-analyse-repartition');
