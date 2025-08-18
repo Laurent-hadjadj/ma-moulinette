@@ -529,7 +529,7 @@ $('#bouton-collecte-code-smell').on('click', async () => {
     }, 3000);
 });
 
-$('.bouton-analyse').on('click', async () =>{
+$('#bouton-analyse').on('click', async () =>{
 
   let control, phase = 0;
 
