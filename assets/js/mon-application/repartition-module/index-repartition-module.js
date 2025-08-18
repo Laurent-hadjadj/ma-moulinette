@@ -50,8 +50,12 @@ let analyseCollecteRepartition = [];
  * @param string category
  * @param string severity
  * @param string  css
+ * @param string  setup
  *
  * @returns void
+ *
+ * Created at: 19/12/2022, 22:46:29 (Europe/Paris)
+ * @author Laurent HADJADJ <laurent_h@me.com>
  */
 const analyse = async function (maven_key, category, severity, css, setup) {
   /**
@@ -176,6 +180,7 @@ const analyse = async function (maven_key, category, severity, css, setup) {
  * @param string severity
  * @param integer counter
  * @param integer timer
+ *
  * @returns void
  *
  * Created at: 19/12/2022, 22:46:29 (Europe/Paris)
@@ -604,8 +609,15 @@ $('#bouton-analyse').on('click', async () =>{
 
   /** On lance la fonction asynchrone */
   phase = await fnAsync();
+
   /** On met à jour */
   updateRepartition(phase);
+  showMessage('success', 'Mise à jour de la répartition des anomalies par module effectuée.');
+
+  setTimeout(function() {
+    hideMessage();
+  },3000)
+
   /** On réinitialise le tableau */
   analyseCollecteRepartition = [];
 });
