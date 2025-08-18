@@ -246,11 +246,6 @@
       gap: 0.5rem;
 }
 
-.je-dors {
-  margin-left: 16px;
-  margin-top: 4px;
-}
-
 /* Couleur des boutons */
 #bouton-collecte-bug,
 #bouton-collecte-vulnerability,
@@ -289,15 +284,15 @@
 
 /* Couleur pour la sévérité */
 .stats-list-bleu,
-  .stats-list-vert,
-  .stats-list-orange,
-  .stats-list-rouge-claire,
-  .stats-list-rouge-intense {
+.stats-list-vert,
+.stats-list-orange,
+.stats-list-rouge-claire,
+.stats-list-rouge-intense {
     border: 1px solid #cacaca;
     background-color: #fff;
     padding-left: 1rem;
     font-weight: bold;
-  }
+}
 
 .stats-list-vert { color: #187e3d;}
 .stats-list-orange { color: #c45d4e; }
