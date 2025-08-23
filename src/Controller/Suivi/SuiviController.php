@@ -351,7 +351,7 @@ class SuiviController extends AbstractController
                 'reference' => static::$reference,
                 'message' => "Les données ont été correctement récupérées."
             ]);
-            //dd($render);
+
             return $this->render(static::$page, $render);
         } catch (FetchDataException $e) {
             return $this->addFlashAndRender('alert', $e->getMessage(), $e->getDebug(), $e->getRender());
