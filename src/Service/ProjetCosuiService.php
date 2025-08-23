@@ -6,7 +6,6 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Psr\Log\LoggerInterface;
 
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ManagerRegistry;
 use App\Entity\Repartition;
 use App\Entity\Historique;
 
@@ -28,8 +27,7 @@ class ProjetCosuiService
     public function __construct(
         private readonly LoggerInterface $logger,
         private readonly ParameterBagInterface $params,
-        private EntityManagerInterface $em,
-        private ManagerRegistry $mr
+        private EntityManagerInterface $em
     ) {
         $this->logoEntreprise = $this->params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $this->params->get('marque.entreprise.short');
@@ -119,25 +117,37 @@ class ProjetCosuiService
                 $setup = $this->setup($maven_key);
                 $render['setup'] = $setup[0] ?? 'NoN';
             } catch (\Throwable $e) {
+                $render['setup'] = 'inconnu';
                 $message = '🔴 Erreur lors de la récupération du setup';
                 $messageLog = '🔴 [COSUI] Erreur lors de la récupération du setup';
                 $this->logger->critical($messageLog, ['exception' => $e->getMessage()]);
                 return [
-                    'code' => 500,
-                    'type' => 'critical',
-                    'message' => $message,
-                    'trace' => null
+                        'code' => 500,
+                        'type' => 'critical',
+                        'message' => $message,
+                        'trace' => null
                 ];
             }
 
         // 4. Traitement des anomalies
         try {
-            foreach (['BUG' => 'reliability', 'VULNERABILITY' => 'vulnerability', 'CODE_SMELL' => 'code_smell'] as $type => $prefix) {
-                foreach (['BLOCKER', 'CRITICAL', 'MAJOR'] as $severity) {
-                    $result = $this->traitement($maven_key, $render['setup'], $type, $severity);
-                    $this->injectRepartition($render, $result, $prefix, $severity);
+            foreach (['frontend', 'backend'] as $module) {
+                foreach (['bug', 'vulnerability', 'code_smell'] as $prefix) {
+                    foreach (['Blocker', 'Critical', 'Major'] as $severity) {
+                        $result = $this->traitement($maven_key, $render['setup'], $module, $prefix, $severity);
+                        $bloc = ($module == 'frontend') ? 'nombre_presentation' : 'nombre_metier';
+                        $value = $module.ucfirst($prefix).$severity;
+                        $map = [
+                                'module' => $bloc,
+                                'prefix' => $prefix,
+                                'severity' => strtolower($severity),
+                                'data' => $result[0][$value] ?? 0
+                            ];
+                        $this->injectRepartition($render, $map);
+                    }
                 }
             }
+
         } catch (\Throwable $e) {
         $message = '🔴 Erreur durant le traitement des anomalies.';
         $messageLog = '🔴 [COSUI] Erreur durant le traitement des anomalies.';
@@ -479,12 +489,10 @@ class ProjetCosuiService
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function injectRepartition(array &$render, array $data, string $prefix, string $severity): void
+    private function injectRepartition(array &$render, array $map): void
     {
-        $render["nombre_presentation_{$prefix}_" . strtolower($severity)] = $data['frontend'] ?? '--';
-        $render["nombre_metier_{$prefix}_" . strtolower($severity)] = $data['backend'] ?? '--';
-        $render["nombre_autre_{$prefix}_" . strtolower($severity)] = $data['autre'] ?? '--';
-        $render["nombre_inconnu_{$prefix}_" . strtolower($severity)] = $data['inconnu'] ?? '--';
+        $render["{$map['module']}_{$map['prefix']}_{$map['severity']}"] = $map['data'] ?? '--';
+        //if ($map['prefix'] == 'bug' && $map['severity'] == 'major') { dd($render); }
     }
 
     /**
@@ -561,6 +569,7 @@ class ProjetCosuiService
         $this->logger->debug("🛠️ [COSUI] Recherche du dernier setup pour le projet", ['maven_key' => $maven_key]);
         $repartitionRepos = $this->em->getRepository(Repartition::class);
         $getSetup = $repartitionRepos->findLatestSetupByMavenKey($maven_key);
+
         if ($getSetup['code'] != 200) {
             $message = "❌ Échec de récupération du dernier setup pour le projet.";
             $messageLog = "❌ [COSUI] Échec de récupération du dernier setup pour le projet.";
@@ -571,13 +580,14 @@ class ProjetCosuiService
                 'message' => $message,
                 'trace' => $getSetup['erreur'] ?? static::$erreurInconnue
             ];
-                }
+        }
+
         if ($getSetup['result'] === 'NaN') {
             $this->logger->warning("⚠️ [COSUI] Aucun setup trouvé pour ce maven_key", ['mavenKey' => $maven_key]);
             return ['NaN'];
         }
 
-        $setup = $getSetup[0]->getSetup();
+        $setup = $getSetup['result'];
 
         if ($setup === null) {
             $this->logger->error("❌ [COSUI] Setup null dans l'entité Repartition pour ce maven_key", ['maven_key' => $maven_key]);
@@ -586,7 +596,7 @@ class ProjetCosuiService
 
         $this->logger->info("ℹ️ [COSUI] Dernier setup récupéré avec succès",
             ['mavenKey' => $maven_key, 'setup' => $setup]);
-        return $setup;
+        return [$setup];
     }
 
     /**
@@ -785,7 +795,7 @@ class ProjetCosuiService
             'code' => 200,
             'result' => true,
             'initial_version_application' => $version,
-            'initial_date_version' => $ref['date_version'] ?? '',
+            'initial_date_application' => $ref['date_version'] ?? '',
             'initial_note_reliability' => $ref['note_reliability'] ?? null,
             'initial_note_security' => $ref['note_security'] ?? null,
             'initial_note_hotspot' => $ref['note_hotspot'] ?? null,
@@ -793,12 +803,12 @@ class ProjetCosuiService
             'initial_bug_blocker' => $ref['bug_blocker'] ?? 0,
             'initial_bug_critical' => $ref['bug_critical'] ?? 0,
             'initial_bug_major' => $ref['bug_major'] ?? 0,
-            'initial_vulnerability_blocker' => $ref['vulnerability_blocker'] ?? 0,
-            'initial_vulnerability_critical' => $ref['vulnerability_critical'] ?? 0,
-            'initial_vulnerability_major' => $ref['vulnerability_major'] ?? 0,
-            'initial_code_smell_blocker' => $ref['code_smell_blocker'] ?? 0,
-            'initial_code_smell_critical' => $ref['code_smell_critical'] ?? 0,
-            'initial_code_smell_major' => $ref['code_smell_major'] ?? 0,
+            'initial_vulnerability_blocker' => $ref['vulnerability_blocker'] ?? -1,
+            'initial_vulnerability_critical' => $ref['vulnerability_critical'] ?? -1,
+            'initial_vulnerability_major' => $ref['vulnerability_major'] ?? -1,
+            'initial_code_smell_blocker' => $ref['code_smell_blocker'] ?? -1,
+            'initial_code_smell_critical' => $ref['code_smell_critical'] ?? -1,
+            'initial_code_smell_major' => $ref['code_smell_major'] ?? -1,
             'initial_nombre_hotspot' => $ref['nombre_hotspot'] ?? 0,
             'initial_coverage' => $ref['coverage'] ?? 0,
             'initial_sqale_debt_ratio' => $ref['sqale_debt_ratio'] ?? 0
@@ -819,23 +829,32 @@ class ProjetCosuiService
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function traitement($maven_key, $setup): array
+    private function traitement(string $maven_key, string $setup, string $module, string $prefix, string $severity): array
     {
         if ($setup === 'NaN'){ return []; }
-
         /**
          * On récupère la répartition frontend, backend, autre et inconnu
          *  des BUG, VULNERABILITY, CODE_SMELL
          *  pour la severity : BLOCKER, CRITICAL, MAJOR,..
          */
-        $qb = $this->mr->createQueryBuilder('r')
-            ->select()
-            ->where('r.mavenKey = :mavenKey')
-            ->andWhere('r.setup = :setup')
-            ->setParameter('mavenKey', $maven_key)
-            ->setParameter('setup', $setup);
+        try {
+                $prefix = ($prefix == 'code_smell') ? 'CodeSmell' : ucfirst($prefix);
+                $severity = ucfirst($severity);
+                $columnName = "{$module}{$prefix}{$severity}";
 
-        return $qb->getQuery()->getArrayResult();
+                $qb = $this->em->createQueryBuilder()
+                        ->select("r.$columnName")
+                        ->from(Repartition::class, 'r')
+                        ->where('r.mavenKey = :mavenKey')
+                        ->andWhere('r.setup = :setup')
+                        ->setParameter('mavenKey', $maven_key)
+                        ->setParameter('setup', $setup);
+
+                return $qb->getQuery()->getArrayResult();
+        } catch(\Throwable $e) {
+            $this->logger->critical('Erreur dans le createQueryBuilder : ' . $e->getMessage());
+        }
+        return [];
     }
 
 }
