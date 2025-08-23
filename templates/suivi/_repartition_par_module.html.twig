@@ -75,12 +75,12 @@
         {% endif %}
       </tr>
       <tr>
-        <td class="text-left text-noir">Inconnue</td>
+        <td class="text-left text-noir">Inconnu</td>
         {% if suivi is not empty %}
           {% for i in 0..suivi|length-1 %}
             <td class="text-center">
-              {% if suivi[i]["inconnue"] != -1 %}
-                <span>{{suivi[i]["inconnue"]|format_number(locale='fr')}}</span>
+              {% if suivi[i]["inconnu"] != -1 %}
+                <span>{{suivi[i]["inconnu"]|format_number(locale='fr')}}</span>
               {% else %}
                 <span>&nbsp;-&nbsp;</span>
               {% endif %}
