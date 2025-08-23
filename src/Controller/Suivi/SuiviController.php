@@ -127,7 +127,7 @@ class SuiviController extends AbstractController
         $inTrim = rtrim($in, " OR ");
 
         /** On construit la requête de selection des projets en fonction de(s) (l')équipes */
-        $map=['clause_where' => $inTrim];
+        $map = ['clause_where' => $inTrim];
         $requestListe = $listeProjetRepository->selectListeProjetByEquipe($map);
         if ($requestListe['code'] != 200) {
             return ['code' => $requestListe['code']];
@@ -193,8 +193,11 @@ class SuiviController extends AbstractController
      */
     private function addFlashAndRender(string $type, string $message, string $debug, array $render): Response
     {
-        $this->addFlash('notice', ['type' => $type, 'reference' => static::$reference,
-        'message' => $message, 'debug' => $debug] );
+        $this->addFlash('notice', [
+            'type' => $type,
+            'reference' => static::$reference,
+            'message' => $message,
+            'debug' => $debug] );
         return $this->render(static::$page, $render);
     }
 
@@ -343,8 +346,12 @@ class SuiviController extends AbstractController
             $render['data3'] = json_encode($graphData['codeSmell']);
             $render['labels'] = json_encode($graphData['date']);
 
-            $this->addFlash('notice', ['type' => 'success', 'reference' => static::$reference, 'message' => "Les données ont été correctement récupérées."]);
-
+            $this->addFlash('notice', [
+                'type' => 'success',
+                'reference' => static::$reference,
+                'message' => "Les données ont été correctement récupérées."
+            ]);
+            //dd($render);
             return $this->render(static::$page, $render);
         } catch (FetchDataException $e) {
             return $this->addFlashAndRender('alert', $e->getMessage(), $e->getDebug(), $e->getRender());
