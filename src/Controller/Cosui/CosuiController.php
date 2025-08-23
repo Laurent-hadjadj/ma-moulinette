@@ -163,19 +163,19 @@ class CosuiController extends AbstractController
         $this->logger->info('ℹ️ [COSUI] Token décodé, maven_key reçu', ['maven_key' => $maven_key]);
 
         try {
-                $render = $this->cosuiService->generateRender($maven_key);
-
-                if (isset($render['code']) && $render['code'] !== 200) {
-                    $this->logger->error($render['message'], [
+                $result = $this->cosuiService->generateRender($maven_key);
+                if (isset($result['code']) && $result['code'] !== 200) {
+                    $this->logger->error($result['message'], [
                         'maven_key' => $maven_key,
-                        'trace' => $render['trace'] ?? 'Non disponible'
+                        'trace' => $result['trace'] ?? 'Non disponible'
                     ]);
-                    return $this->addFlashAndRender($render['type'], $render['message'], $render['trace'] ?? '', $render);
+                    return $this->addFlashAndRender($result['type'], $result['message'], $result['trace'] ?? '', $render);
                 }
         } catch (\RuntimeException $e) {
             return $this->addFlashAndRender('critical', 'Erreur lors de la génération COSUI', $e->getMessage(), $render);
         }
-        return $this->render(static::$page, $render);
+
+        return $this->render(static::$page, $result);
     }
 
 }
