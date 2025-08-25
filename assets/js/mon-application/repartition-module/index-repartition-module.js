@@ -118,7 +118,7 @@ const analyse = async function (maven_key, category, severity, css, setup) {
   }
 
   /** On calcule le total des anomalies analysé? */
-  const nombreTotalModule = +t.repartition.frontend + +t.repartition.backend + +t.repartition.autre + +t.repartition.inconnu;
+  const nombreTotalModule = +t.total
 
   let idc = '-', calculIdc = 0, lowerCategory, capitalizeCategory;
   // 📌 Vérification de l'indice de confiance (idc)
@@ -156,10 +156,10 @@ const analyse = async function (maven_key, category, severity, css, setup) {
       const row = `
           <tr>
               <td class="${css}"><strong>${severity}</strong></td>
-              <td class="text-center">${t.repartition.frontend}</td>
-              <td class="text-center">${t.repartition.backend}</td>
-              <td class="text-center">${t.repartition.autre}</td>
-              <td class="text-center">${t.repartition.inconnu}</td>
+              <td class="text-center">${t.frontend}</td>
+              <td class="text-center">${t.backend}</td>
+              <td class="text-center">${t.autre}</td>
+              <td class="text-center">${t.inconnu}</td>
               <td class="text-center ${alertClass}">${idc}</td>
           </tr>`;
 
@@ -167,7 +167,7 @@ const analyse = async function (maven_key, category, severity, css, setup) {
 
       /** On enregistre les informations dans le tableau de résultat.*/
       /** category, severity, frontend, backend, autre, inconnu, inconnu */
-      analyseCollecteRepartition.push([category, severity, t.repartition.frontend, t.repartition.backend, t.repartition.autre, t.repartition.inconnu]);
+      analyseCollecteRepartition.push([category, severity, t.frontend, t.backend, t.autre, t.inconnu]);
   }
 };
 
