@@ -87,7 +87,8 @@ class BatchCollecteRepartitionController extends AbstractController
                     'frontend' => $scoreFrontend,
                     'backend' => $scoreBackend,
                     'autre' => $scoreAutre,
-                    'inconnu' => $scoreInconnu
+                    'inconnu' => $scoreInconnu,
+                    'total' => $scoreFrontend + $scoreBackend, $scoreAutre, $scoreInconnu
                 ];
         }
 
