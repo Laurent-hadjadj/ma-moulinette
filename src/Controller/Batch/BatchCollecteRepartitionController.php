@@ -52,8 +52,9 @@ class BatchCollecteRepartitionController extends AbstractController
     ) {
     }
 
-        /**
+    /**
      * [Description for batchAnalyseAnomalie]
+     * Analyse le path et détermine le type de module
      *
      * @param mixed $elements
      * @param mixed $maven_key
@@ -67,6 +68,7 @@ class BatchCollecteRepartitionController extends AbstractController
      */
     private function batchAnalyseAnomalie($elements, $maven_key)
     {
+
         $this->logger->info('ℹ️ [Batch RépartitionAnalyse] Début de l’analyse des modules', [
             'maven_key' => $maven_key,
             'total_elements' => count($elements)
@@ -78,18 +80,18 @@ class BatchCollecteRepartitionController extends AbstractController
         if (empty($elements)){
             $this->logger->info('ℹ️ [Batch Répartition Analyse] Tableau vide. Valeurs par défaut prisent.', [
                 'maven_key' => $maven_key
-        ]);
+            ]);
 
-        return [
-                'code' => 200,
-                'frontend' => $scoreFrontend,
-                'backend' => $scoreBackend,
-                'autre' => $scoreAutre,
-                'inconnu' => $scoreInconnu
-            ];
+            return [
+                    'code' => 200,
+                    'frontend' => $scoreFrontend,
+                    'backend' => $scoreBackend,
+                    'autre' => $scoreAutre,
+                    'inconnu' => $scoreInconnu
+                ];
         }
 
-        /** on récupère la liste des clés pour chaque module */
+        /** On récupère la liste des clés pour chaque module */
         $listeFrontend = $this->getParameter('module.frontend');
         $listeBackend = $this->getParameter('module.backend');
         $listeAutre = $this->getParameter('module.autre');
@@ -107,8 +109,8 @@ class BatchCollecteRepartitionController extends AbstractController
         try {
             foreach ($elements as $element) {
                 $path = str_replace($maven_key . ':', '', $element['component']);
-
                 // On vérifie si le chemin correspond à un module frontend
+                //ex. test-presentation/test-presentation-webapp/src/main/java/fr/mamoulinette/testpresentation/util/BeanUtils.java
                 if (preg_match($regexFrontend, $path)) {
                     $scoreFrontend++;
                 }
@@ -534,7 +536,6 @@ class BatchCollecteRepartitionController extends AbstractController
                 'setup' => $setup
         ];
         $repartition = $repartitionTempRepos->selectRepartitionByTypeAndSeverity($map);
-
         if ($repartition['code'] != 200) {
             $this->logger->error('❌ [Batch Répartition Analyse] Erreur lors de la récupération des issues temporaires', [
             'code' => $repartition['code'],
@@ -548,8 +549,9 @@ class BatchCollecteRepartitionController extends AbstractController
         ];
         }
 
-        /** on appelle le service d'analyse */
+        /** On appelle le service d'analyse */
         $analyse = $this->batchAnalyseAnomalie($repartition['liste'], $maven_key);
+        dd('stop', $analyse);
         if ($analyse['code'] != 200) {
             $this->logger->error('❌ [Batch Répartition Analyse] Échec de l’analyse des anomalies', [
                 'code' => $analyse['code'],
