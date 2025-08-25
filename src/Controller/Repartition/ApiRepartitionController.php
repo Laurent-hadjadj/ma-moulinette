@@ -132,6 +132,7 @@ class ApiRepartitionController extends AbstractController
             ], Response::HTTP_OK);
         }
 
+        //BUG BLOCKER "1754316568042" "fr.ma-moulinette:ma-moulinette"
         $repartitionAnalyse = $this->batchCollecteRepartition->batchCollecteRepartitionAnalyse($data->maven_key, $data->category, $data->severity, $data->setup);
 
         if ($repartitionAnalyse['code'] !== 200){
@@ -144,8 +145,11 @@ class ApiRepartitionController extends AbstractController
 
         return new JsonResponse([
             'code' => 200,
-            'repartition' => $repartitionAnalyse['data']],
-            Response::HTTP_OK);
+            'frontend' => $repartitionAnalyse['frontend'],
+            'backend' => $repartitionAnalyse['backend'],
+            'autre' => $repartitionAnalyse['autre'],
+            'inconnu' => $repartitionAnalyse['inconnu']
+        ],  Response::HTTP_OK);
     }
 
     /**
