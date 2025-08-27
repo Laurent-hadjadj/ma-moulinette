@@ -199,7 +199,8 @@ class ApiRepartitionController extends AbstractController
                     'frontend' => $repartitionAnalyse['frontend'],
                     'backend' => $repartitionAnalyse['backend'],
                     'autre' => $repartitionAnalyse['autre'],
-                    'inconnu' => $repartitionAnalyse['inconnu']
+                    'inconnu' => $repartitionAnalyse['inconnu'],
+                    'total' => $repartitionAnalyse['total']
                 ],  Response::HTTP_OK);
         } catch (Exception $trace) {
             $this->logger->critical("🔴 [Répartition Analyse] Exception lors du traitement de répartition des anomalies par module (Erreur 500).", [

@@ -32,7 +32,7 @@ import {serveur} from '../../common/properties.js';
 import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
-import { contentType, zero, cent, mille, http_200} from '../../common/constante.js';
+import { contentType, zero, cent, mille, http_200, http_201} from '../../common/constante.js';
 
 /** On récupère la clé maven de la clé de l'application. */
 const maven_key = $('#titre-repartition').data('application');
@@ -111,12 +111,15 @@ const analyse = async function (maven_key, category, severity, css, setup) {
   const t = await $.ajax(options);
 
   // 📌 Vérification des erreurs
-  if (t.code !== http_200){
-    showMessage(t.type, typeMessage(t.message));
-    sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'true');
-    return;
+  if ((t.code ? t.code : null) !== http_200){
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'true');
+    return 99;
   }
 
+  console.log(t);
   /** On calcule le total des anomalies analysé? */
   const nombreTotalModule = +t.total
 
@@ -240,12 +243,22 @@ const collecte = async function (maven_key, category, severity, counter, timer) 
   // Exécution de la requête AJAX
   try {
       const response = await $.ajax(options);
-      if (response.code !== http_200){
+
+      if (response.code === http_201){
+        showMessage(response.type, response.message);
+        $collecteAnimation1.removeClass('sp-volume');
+        setTimeout(() => { hideMessage() }, 3000);
+        return 99;
+      }
+
+      if ((response.code ? response.code : null) !== http_200){
         // 📌 Vérification des erreurs
-        showMessage(response.type, typeMessage(response.message));
+        const hasTrace = !!response.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(response.trace) : null;
+        showMessage(response.type, response.message, trace);
         sessionStorage.setItem('ma_moulinette_erreur-collect-repartition', 'true')
         $collecteAnimation1.removeClass('sp-volume');
-        return;
+        return 99;
       }
 
       // Mise à jour du nombre d'anomalies
@@ -259,7 +272,7 @@ const collecte = async function (maven_key, category, severity, counter, timer) 
       const techDetails = prepareTechnicalDetails(error);
       showMessage('alert', message, techDetails);
       sessionStorage.setItem('ma_moulinette_erreur-collect-repartition', `Erreur lors de la collecte [${category}, ${severity}] : ${error.message}`);
-      return 1;
+      return 99;
   }
 };
 
@@ -287,10 +300,14 @@ const updateRepartition = async function(phase){
 
     // Exécution de la requête AJAX
     const t = await $.ajax(options);
-    if (t.code !== http_200){
-        // 📌 Vérification des erreurs
-        showMessage(t.type, typeMessage(t.message));
-      }
+
+    // 📌 Vérification des erreurs
+    if ((t.code ? t.code : null) !== http_200){
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
+      return 1;
+    }
   }
 
 /********************    Évènement    ************************/
@@ -534,7 +551,7 @@ $('#bouton-analyse').on('click', async () =>{
 
   if (control === 'true') {
     showMessage('alert', 'Une erreur générale lors du calcul de la répartition a été rencontrée (Erreur 500).');
-    return;
+    return 99;
   } else {
     sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
   }
@@ -542,7 +559,8 @@ $('#bouton-analyse').on('click', async () =>{
   /** On lance la fonction asynchrone */
   async function fnAsync() {
     let phase = 0;
-    const tabTitre=`<tr>
+    const tabTitre =
+    `<tr>
     <th scope="col"></th>
     <th scope="col" class="text-center"><strong>Application Présentation</strong></th>
     <th scope="col" class="text-center"><strong>Application Métier</strong></th>
@@ -555,33 +573,31 @@ $('#bouton-analyse').on('click', async () =>{
     $('#tableau-1').removeClass('hide');
     $('#mon-bo-tableau1').html(tabTitre);
 
-    control = sessionStorage.getItem('ma_moulinette_erreur-analyse-repartition');
     await analyse(maven_key, 'BUG', 'BLOCKER', 'texte-rouge', setup);
     await analyse(maven_key, 'BUG', 'CRITICAL', 'texte-rouge', setup);
     await analyse(maven_key, 'BUG', 'MAJOR','texte-orange', setup);
     await analyse(maven_key, 'BUG', 'MINOR', 'texte-vert', setup);
     await analyse(maven_key, 'BUG', 'INFO', 'texte-bleu', setup);
-
-    if ( control === 'true') {
-      showMessage('alert', 'Une erreur lors du calcul de la répartition pour la catégorie <strong>BUG</strong> a été rencontrée (Erreur 500).');
-      return;
+    control = sessionStorage.getItem('ma_moulinette_erreur-analyse-repartition');
+    if ( control == 'true') {
+      return 99;
     } else {
       sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
       phase++;
     }
+    return;
 
     /** VULNERABILITY */
     $('#tableau-2').removeClass('hide');
     $('#mon-bo-tableau2').html(tabTitre);
-    control = sessionStorage.getItem('ma_moulinette_erreur-analyse-repartition');
     await analyse(maven_key, 'VULNERABILITY', 'BLOCKER', 'texte-rouge', setup);
     await analyse(maven_key, 'VULNERABILITY', 'CRITICAL', 'texte-rouge', setup);
     await analyse(maven_key, 'VULNERABILITY', 'MAJOR', 'texte-orange', setup);
     await analyse(maven_key, 'VULNERABILITY', 'MINOR', 'texte-vert', setup);
     await analyse(maven_key, 'VULNERABILITY', 'INFO', 'texte-bleu', setup);
+    control = sessionStorage.getItem('ma_moulinette_erreur-analyse-repartition');
     if ( control === 'true') {
-      showMessage('alert', 'Une erreur lors du calcul de la répartition pour la catégorie <strong>VULNERABILITY</strong> a été rencontrée (Erreur 500).');
-      return;
+      return 99;
     } else {
       sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
       phase++;
@@ -590,14 +606,15 @@ $('#bouton-analyse').on('click', async () =>{
     /** CODE_SMELL */
     $('#tableau-3').removeClass('hide');
     $('#mon-bo-tableau3').html(tabTitre);
-    control = sessionStorage.getItem('ma_moulinette_erreur-analyse-repartition');
     await analyse(maven_key, 'CODE_SMELL', 'BLOCKER', 'texte-rouge', setup);
     await analyse(maven_key, 'CODE_SMELL', 'CRITICAL', 'texte-rouge', setup);
     await analyse(maven_key, 'CODE_SMELL', 'INFO', 'texte-bleu', setup);
     await analyse(maven_key, 'CODE_SMELL', 'MAJOR', 'texte-orange', setup);
     await analyse(maven_key, 'CODE_SMELL', 'MINOR', 'texte-vert', setup);
+
+    control = sessionStorage.getItem('ma_moulinette_erreur-analyse-repartition');
     if ( control === 'true') {
-      showMessage('alert', 'Une erreur lors du calcul de la répartition pour la catégorie <strong>CODE SMELL</strong> a été rencontrée (Erreur 500).');
+      return 99;
     } else {
       sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
       phase++;
@@ -608,15 +625,14 @@ $('#bouton-analyse').on('click', async () =>{
   }
 
   /** On lance la fonction asynchrone */
-  phase = await fnAsync();
+  const promise = await fnAsync();
+  if (promise === 99) { return; }
 
   /** On met à jour */
   updateRepartition(phase);
   showMessage('success', 'Mise à jour de la répartition des anomalies par module effectuée.');
 
-  setTimeout(function() {
-    hideMessage();
-  },3000)
+  setTimeout(function() { hideMessage();  },3000)
 
   /** On réinitialise le tableau */
   analyseCollecteRepartition = [];
