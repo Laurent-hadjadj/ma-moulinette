@@ -119,7 +119,6 @@ const analyse = async function (maven_key, category, severity, css, setup) {
     return 99;
   }
 
-  console.log(t);
   /** On calcule le total des anomalies analysé? */
   const nombreTotalModule = +t.total
 
