@@ -238,7 +238,10 @@
       <h2 id="titre-collecte"
           class="h4 claire-hand margin-top-1"
           aria-label="Étape 1 : Collecte des données.">
-            <span aria-hidden="true">📥</span>1 - Collecte.
+            <span aria-hidden="true">📥</span>1 - Collecte
+              <span class="tool-tip-repartition">ℹ️
+                <span class="tool-tip-text-repartition open-sans">Lance la collecte.</span>
+              </span>
             <output id="spinner-collecte-annonce" aria-live="polite">
               <div id="collecte-animation1" class="sp"></div>
               <span class="show-for-sr">Analyse en cours...</span>
@@ -323,9 +326,12 @@
 
       {# Analyse #}
       <h2 id="titre-analyse"
-          class="h4 claire-hand"
+          class="h4 claire-hand margin-top-1"
           aria-label="Étape 2 : Analyse des données.">
-        <span aria-hidden="true">⚙️</span>2 - Analyse.
+        <span aria-hidden="true">⚙️</span>2 - Analyse 
+          <span class="tool-tip-repartition">ℹ️
+            <span class="tool-tip-text-repartition open-sans">Affiche les derniers résultats.</span>
+          </span>
         <output id="spinner-analyse-annonce" aria-live="polite">
           <div id="analyse-animation" class="sp"></div>
           <span class="show-for-sr">Analyse en cours...</span>
@@ -342,7 +348,6 @@
                       type="button"
                       aria-label="Analyse et répartition des anomalies."><span aria-hidden="true">🗂️</span>Répartition
               </button>
-            </div>
           </div>
           <div class="small-12 medium-8 large-8 cell"></div>
         </div>
