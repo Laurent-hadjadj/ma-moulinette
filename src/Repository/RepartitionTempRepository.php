@@ -203,4 +203,36 @@ class RepartitionTempRepository extends ServiceEntityRepository
         return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
     }
 
+    /**
+     * [Description for checkExistData]
+     *
+     * @param array $map
+     *
+     * @return array
+     *
+     * Created at: 27/08/2025 15:57:07 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function checkExistData(array $map): array
+    {
+        $sql = "SELECT count(*) AS total
+                FROM ma_moulinette.repartition_temp
+                WHERE maven_key = :maven_key
+                AND type = :category
+                AND severity = :severity
+                AND setup = :setup";
+        try {
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                    $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+                    $stmt->bindValue(':category', $map['category']);
+                    $stmt->bindValue(':severity', $map['severity']);
+                    $stmt->bindValue(static::$setup, $map['setup']);
+                $result = $stmt->executeQuery()->fetchAllAssociative();
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
+        }
+
+        return ['code' => 200, 'total' => $result['0']['total'], 'erreur' => ''];
+    }
 }
