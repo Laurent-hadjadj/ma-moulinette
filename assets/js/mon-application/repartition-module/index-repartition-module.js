@@ -584,7 +584,6 @@ $('#bouton-analyse').on('click', async () =>{
       sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
       phase++;
     }
-    return;
 
     /** VULNERABILITY */
     $('#tableau-2').removeClass('hide');
