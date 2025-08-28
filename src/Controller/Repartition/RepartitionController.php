@@ -13,16 +13,17 @@
 
 namespace App\Controller\Repartition;
 
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Repartition;
-use App\Service\ExtractName;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Doctrine\ORM\EntityManagerInterface;
+
 use App\Controller\Batch\BatchCollecteRepartitionController;
+use App\Entity\Repartition;
+use App\Service\ExtractName;
 
 
 /**
