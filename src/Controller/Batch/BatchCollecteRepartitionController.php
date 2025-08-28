@@ -562,7 +562,8 @@ class BatchCollecteRepartitionController extends AbstractController
     public function batchCollecteRepartitionAnalyse(string $maven_key, string $category, string $severity, string $setup): array
     {
         if ($maven_key === 'N.C' ){
-            $this->logger->error("❌ [Batch Répartition Analyse] La valeur pour la 'maven_key' n'est pas définie.", [ 'maven_key' => $maven_key]);
+            $this->logger->error("❌ [Batch Répartition Analyse] La valeur pour la 'maven_key' n'est pas définie.", [
+                'maven_key' => $maven_key]);
 
             return [
                 'code' => 400,
@@ -664,6 +665,15 @@ class BatchCollecteRepartitionController extends AbstractController
             }
         }
 
+        /** Calcul du total par module */
+        $moduleData = ['frontend' => 0, 'backend' => 0, 'autre' => 0, 'inconnu' => 0];
+        foreach ($calcul as $subArray){
+            $moduleData['frontend'] += $subArray[2];
+            $moduleData['backend'] += $subArray[3];
+            $moduleData['autre'] += $subArray[4];
+            $moduleData['inconnu'] += $subArray[5];
+        }
+
         // Variable pour suivre le statut "partiel" : nombre de jeux incomplets (0, 1 ou 2, voire 3)
         $missingSets = 0;
 
@@ -686,12 +696,12 @@ class BatchCollecteRepartitionController extends AbstractController
 
         // Préparation des tableaux de champs pour chaque category
         $fieldsBug = [
-        'frontend_bug_blocker', 'backend_bug_blocker', 'autre_bug_blocker', 'inconnu_bug_blocker',
-        'frontend_bug_critical', 'backend_bug_critical', 'autre_bug_critical', 'inconnu_bug_critical',
-        'frontend_bug_major', 'backend_bug_major', 'autre_bug_major', 'inconnu_bug_major',
-        'frontend_bug_minor', 'backend_bug_minor', 'autre_bug_minor', 'inconnu_bug_minor',
-        'frontend_bug_info', 'backend_bug_info', 'autre_bug_info', 'inconnu_bug_info',
-        ];
+            'frontend_bug_blocker', 'backend_bug_blocker', 'autre_bug_blocker', 'inconnu_bug_blocker',
+            'frontend_bug_critical', 'backend_bug_critical', 'autre_bug_critical', 'inconnu_bug_critical',
+            'frontend_bug_major', 'backend_bug_major', 'autre_bug_major', 'inconnu_bug_major',
+            'frontend_bug_minor', 'backend_bug_minor', 'autre_bug_minor', 'inconnu_bug_minor',
+            'frontend_bug_info', 'backend_bug_info', 'autre_bug_info', 'inconnu_bug_info',
+            ];
 
         $fieldsVulnerability = [
             'frontend_vulnerability_blocker', 'backend_vulnerability_blocker', 'autre_vulnerability_blocker', 'inconnu_vulnerability_blocker',
@@ -721,6 +731,12 @@ class BatchCollecteRepartitionController extends AbstractController
         $this->flattenGroupData($groupedData['BUG'], $fieldsBug, $map);
         $this->flattenGroupData($groupedData['VULNERABILITY'], $fieldsVulnerability, $map);
         $this->flattenGroupData($groupedData['CODE_SMELL'], $fieldsCodeSmell, $map);
+
+        /** On enregistre dans la map le total pour chaque module */
+        $map['frontend'] = $moduleData['frontend'];
+        $map['backend'] = $moduleData['backend'];
+        $map['autre'] = $moduleData['autre'];
+        $map['inconnu'] = $moduleData['inconnu'];
 
         $this->logger->debug('🛠️ [Batch Répartition MaJ] Données préparées pour update', ['payload' => $map]);
 
