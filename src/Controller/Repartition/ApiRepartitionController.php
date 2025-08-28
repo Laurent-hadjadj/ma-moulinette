@@ -16,13 +16,14 @@ namespace App\Controller\Repartition;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Annotation\Route;
-
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Exception;
 use Psr\Log\LoggerInterface;
+use Doctrine\ORM\EntityManagerInterface;
 
+use App\Entity\Repartition;
 use App\Controller\Batch\BatchCollecteRepartitionController;
 
 /**
@@ -46,6 +47,7 @@ class ApiRepartitionController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function __construct(
+        private EntityManagerInterface $em,
         private BatchCollecteRepartitionController $batchCollecteRepartition,
         private LoggerInterface $logger,
         private Security $security,
@@ -156,6 +158,9 @@ class ApiRepartitionController extends AbstractController
             ], Response::HTTP_OK);
         }
 
+        // Instanciation des repositories
+        $repartitionRepos = $this->em->getRepository(Repartition::class);
+
         /** On décode le body */
         $data = json_decode($request->getContent());
 
@@ -182,11 +187,47 @@ class ApiRepartitionController extends AbstractController
             ], Response::HTTP_OK);
         }
 
+        /** On récupère la dernière analyse disponible ou on lance l'analyse depuis la table de répartition temporaire */
+        $checkIfExist = $repartitionRepos->findLatestMavenKeyWithControl($data->maven_key);
+
+        if ($checkIfExist['code'] != 200){
+            $this->logger->error("❌ [Répartition-Analyse] Échec de récupération des données de répartition.",
+                ['maven_key', $data->maven_key]);
+
+            return new JsonResponse([
+                'code' => $checkIfExist['code'],
+                'type' => 'alert',
+                'message' => "[Répartition-Analyse] Échec de récupération des données de répartition (Erreur {$checkIfExist['code']}).",
+                'trace' => $checkIfExist['erreur']
+            ], Response::HTTP_OK);
+        }
+
+        if (isset($checkIfExist['result']) && $checkIfExist['result'] != []){
+            $data = $checkIfExist['result'][0];
+            return new JsonResponse([
+                    'code' => 200,
+                    'frontend' => $data['frontend'],
+                    'backend' => $data['backend'],
+                    'autre' => $data['autre'],
+                    'inconnu' => $data['inconnu'],
+                    'total' => $data['frontend'] + $data['backend'] + $data['autre'] + $data['inconnu'],
+                    'setup' => $data['setup'],
+                    'date_enregistrement' => $data['date_enregistrement']
+                ],  Response::HTTP_OK);
+        }
+
         //BUG BLOCKER "1754316568042" "fr.ma-moulinette:ma-moulinette"
         try {
                 $repartitionAnalyse = $this->batchCollecteRepartition->batchCollecteRepartitionAnalyse($data->maven_key, $data->category, $data->severity, $data->setup);
 
                 if ($repartitionAnalyse['code'] !== 200){
+                    $this->logger->error("❌ [Répartition-Analyse] Échec de la collecte des anomalies.", [
+                        'maven_key' => $data->maven_key,
+                        'category' => $data->category,
+                        'severity' => $data->severity,
+                        'setup' => $data->setup
+                    ]);
+
                     return new JsonResponse([
                         'code' => $repartitionAnalyse['code'],
                         'type' => $repartitionAnalyse['type'] ?? 'alert',
@@ -264,6 +305,7 @@ class ApiRepartitionController extends AbstractController
             ], Response::HTTP_OK);
         }
 
+        /** Calcul = category, severity, frontend(2), backend(3), autre(4), inconnu(5) */
         $repartitionMaJ = $this->batchCollecteRepartition->batchCollecteRepartitionMaJ($data->maven_key,  $data->calcul, $data->setup);
 
         if ($repartitionMaJ['code'] !== 200){
