@@ -309,13 +309,43 @@ class RepartitionRepository extends ServiceEntityRepository
       $sql = 'SELECT setup
               FROM repartition
               WHERE maven_key = :maven_key
-              ORDER BY
-              setup DESC LIMIT 1';
+              ORDER BY setup DESC LIMIT 1';
 
       try {
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(static::$mavenKey, $maven_key);
               $result = $stmt->executeQuery()->fetchOne();
+    } catch (\Throwable $e) {
+      $this->getEntityManager()->getConnection()->rollBack();
+        return $this->handleDatabaseException($e);
+    }
+    return ['code' => 200, 'result' => $result ?: 'NaN', 'erreur' => ''];
+  }
+
+  /**
+   * [Description for findLatestMavenKeyWithControl]
+   *
+   * @param string $maven_key
+   *
+   * @return array
+   *
+   * Created at: 28/08/2025 10:31:46 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function findLatestMavenKeyWithControl(string $maven_key): array
+  {
+      $sql = 'SELECT *
+              FROM repartition
+              WHERE control = :control AND maven_key = :maven_key
+              ORDER BY date_enregistrement DESC
+              limit 1';
+
+      try {
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(static::$mavenKey, $maven_key);
+              $stmt->bindValue('control', "complet (100%)");
+              $result = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
       $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
