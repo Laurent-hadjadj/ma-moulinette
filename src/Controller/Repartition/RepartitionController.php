@@ -19,12 +19,12 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Controller\Batch\BatchCollecteRepartitionController;
 use App\Entity\Repartition;
 use App\Service\ExtractName;
-
 
 /**
  * [Description RepartitionController]
@@ -55,12 +55,11 @@ class RepartitionController extends AbstractController
         private EntityManagerInterface $em,
         private ExtractName $serviceExtractName,
         private ParameterBagInterface $params,
-        private BatchCollecteRepartitionController $batchCollecteRepartition)
+        private Security $security,
+        private BatchCollecteRepartitionController $batchCollecteRepartition,
+        private LoggerInterface $logger)
     {
-        $this->em = $em;
-        $this->serviceExtractName = $serviceExtractName;
         $this->params = $params;
-        $this->batchCollecteRepartition = $batchCollecteRepartition;
 
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
@@ -70,7 +69,7 @@ class RepartitionController extends AbstractController
         $this->dateCopyright = \date('Y');
     }
 
-        /**
+    /**
      * [Description for genericRender]
      *
      * @return array
@@ -91,6 +90,20 @@ class RepartitionController extends AbstractController
             'date_copyright' => $this->dateCopyright];
     }
 
+    /**
+     * [Description for addFlashAndRender]
+     *
+     * @param string $type
+     * @param string $message
+     * @param string $debug
+     * @param array $render
+     *
+     * @return Response
+     *
+     * Created at: 28/08/2025 08:52:59 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     private function addFlashAndRender(string $type, string $message, string $debug, array $render): Response
     {
         $this->addFlash('notice', ['type' => $type, 'titre' => static::$titre,
@@ -132,8 +145,18 @@ class RepartitionController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/repartition', name: 'repartition', methods: ['GET'])]
-    public function repartition(Security $security, Request $request): Response
+    public function repartition(Request $request): Response
     {
+        $user = $this->security->getUser();
+        if (!$user) {
+            $this->logger->warning('🚫 [Répartition] Accès refusé : utilisateur non connecté.');
+            throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 403).");
+        }
+
+        $this->logger->info('ℹ️ [Répartition] Chargement de la page.', [
+            'user' => $user->getUserIdentifier()
+        ]);
+
         // Instanciation des repositories
         $repartitionRepository = $this->em->getRepository(Repartition::class);
 
@@ -153,17 +176,24 @@ class RepartitionController extends AbstractController
 
         /** On teste si la clé est valide */
         if (empty($token)) {
+            $this->logger->error('❌ [Répartition] Requête JSON invalide ou clé maven_key absente.', [
+                'user' => $user->getUserIdentifier(),
+            ]);
             return $this->addFlashAndRender('alert', static::$erreur400, $debug, $render);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
+            $this->logger->warning("🚫 [Répartition] Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).");
             return $this->addFlashAndRender('warning', static::$erreur403, $debug, $render);
         }
 
         /** On récupère la maven_key du token */
         $mavenKey = $this->decodeToken($token);
         if (null === $mavenKey) {
+            $this->logger->error('❌ [Répartition] Décodage du token en erreur.', [
+                'token' => $token,
+            ]);
             return $this->addFlashAndRender('alert', static::$erreur400, $debug, $render);
         }
 
@@ -174,10 +204,12 @@ class RepartitionController extends AbstractController
         foreach ($categories as $category) {
             $information[$category] = $this->batchCollecteRepartition->CollecteRepartitionModule($mavenKey, $category);
             if ($information[$category]['code'] != 200){
+                $this->logger->error('❌ [Répartition] La collecte des données SonarQube à échouée.', [
+                'category' => $category,
+                ]);
                 return $this->addFlashAndRender('alert', "La collecte des données SonarQube à échouée.", $debug, $render);
             }
         }
-
 
         /** On enregistre le nom du projet */
         $app = $this->serviceExtractName->extractNameFromMavenKey($mavenKey);
@@ -213,12 +245,15 @@ class RepartitionController extends AbstractController
             'code_smell_info' => $information['CODE_SMELL']['info'] ?? 0,
 
             'mode_collecte' => 'COLLECTE',
-            'utilisateur_collecte' => $security->getUser()->getCourriel(),
+            'utilisateur_collecte' => $this->security->getUser()->getCourriel(),
             'date_enregistrement' => new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'))
         ];
 
         $repartition = $repartitionRepository->selectOrUpdateRepartitionInitial($map);
         if ($repartition['code'] != 200) {
+            $this->logger->error("❌ [Répartition] L'enregistrement des données initiales a échouées.", [
+                'erreur' => $repartition['erreur'],
+                ]);
             return $this->addFlashAndRender('alert', "L'enregistrement des données initiales a échouées.", $repartition['erreur'], $render);
         }
 
