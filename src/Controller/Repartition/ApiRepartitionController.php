@@ -13,13 +13,14 @@
 
 namespace App\Controller\Repartition;
 
-use Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Routing\Annotation\Route;
+
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Exception;
 use Psr\Log\LoggerInterface;
 
 use App\Controller\Batch\BatchCollecteRepartitionController;
@@ -161,7 +162,6 @@ class ApiRepartitionController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null ||
             !isset($data->maven_key, $data->category, $data->severity, $data->setup)) {
-
             $this->logger->error("❌ [Répartition-Analyse] Requête invalide : clé 'maven_key', 'category', 'severity' ou 'setup' manquante ou JSON mal formé.", [ 'payload' => $data ]);
 
             return new JsonResponse([
@@ -231,12 +231,20 @@ class ApiRepartitionController extends AbstractController
     #[Route('/api/repartition/analyse/mise-a-jour', name: 'repartition_analyse_maj', methods: ['PUT'])]
     public function apiRepartitionAnalyseMaj(Request $request): JsonResponse
     {
+        $user = $this->security->getUser();
+        if (!$user) {
+            $this->logger->warning('🚫 [Répartition-Mise-a-jour] Accès refusé : utilisateur non connecté.');
+            throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 403).");
+        }
+
         /** On décode le body */
         $data = json_decode($request->getContent());
 
         /** On teste si la clé est valide */
         if ($data === null ||
             !isset($data->maven_key, $data->setup, $data->calcul)) {
+            $this->logger->error("❌ [Répartition-Mise-a-jour] Requête invalide : clé 'maven_key', 'setup' ou calcul manquante ou JSON mal formé.", [ 'payload' => $data ]);
+
             return new JsonResponse([
                 'data' => $data,
                 'code' => 400,
@@ -247,6 +255,8 @@ class ApiRepartitionController extends AbstractController
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
+            $this->logger->warning("🚫 [Répartition-Mise-a-jour] Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).");
+
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
@@ -257,12 +267,20 @@ class ApiRepartitionController extends AbstractController
         $repartitionMaJ = $this->batchCollecteRepartition->batchCollecteRepartitionMaJ($data->maven_key,  $data->calcul, $data->setup);
 
         if ($repartitionMaJ['code'] !== 200){
+            $this->logger->error('❌ [Répartition-Mise-a-jour] Échec de la mise à jour des informations de répartition.', [
+                'maven_key' => $data->maven_key,
+                'calcul' => $data->calcul,
+                'setup' => $data->setup
+            ]);
+
             return new JsonResponse([
                 'code' => $repartitionMaJ['code'],
                 'type' => $repartitionMaJ['type'] ?? 'alert',
                 'message' => $repartitionMaJ['message'] ?? $repartitionMaJ['erreur']
             ], Response::HTTP_OK);
         }
+
+        $this->logger->info('ℹ️ [Répartition-Mise-a-jour] Enregistrement des données effectué.');
 
         return new JsonResponse(
             [
