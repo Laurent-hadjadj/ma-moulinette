@@ -210,6 +210,8 @@ class RepartitionRepository extends ServiceEntityRepository
     * On liste TOUTES les colonnes que l'on souhaite mettre à jour.
     * il y a 4 valeurs par sévérité pour par type (BUG, VULNERABILITY et CODE_SMELL).
     */
+    $fieldsModule = ['frontend', 'backend', 'autre', 'inconnu'];
+
     $fieldsBug = [
       // BUG
       'frontend_bug_blocker', 'backend_bug_blocker', 'autre_bug_blocker', 'inconnu_bug_blocker',
@@ -239,7 +241,7 @@ class RepartitionRepository extends ServiceEntityRepository
     ];
 
     // Fusion de tous les champs dans un seul tableau
-    $allFields = array_merge($fieldsBug, $fieldsVulnerability, $fieldsCodeSmell);
+    $allFields = array_merge($fieldsModule, $fieldsBug, $fieldsVulnerability, $fieldsCodeSmell);
 
     // Construction dynamique de la partie SET de la requête
     $setParts = [];
@@ -350,7 +352,7 @@ class RepartitionRepository extends ServiceEntityRepository
       $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
-    return ['code' => 200, 'result' => $result ?: 'NaN', 'erreur' => ''];
+    return ['code' => 200, 'result' => $result, 'erreur' => ''];
   }
 
 }
