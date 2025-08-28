@@ -158,7 +158,7 @@ class RepartitionController extends AbstractController
         ]);
 
         // Instanciation des repositories
-        $repartitionRepository = $this->em->getRepository(Repartition::class);
+        $repartitionRepos = $this->em->getRepository(Repartition::class);
 
         /** On charge le template du render */
         $render = static::genericRender();
@@ -249,7 +249,7 @@ class RepartitionController extends AbstractController
             'date_enregistrement' => new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'))
         ];
 
-        $repartition = $repartitionRepository->selectOrUpdateRepartitionInitial($map);
+        $repartition = $repartitionRepos->selectOrUpdateRepartitionInitial($map);
         if ($repartition['code'] != 200) {
             $this->logger->error("❌ [Répartition] L'enregistrement des données initiales a échouées.", [
                 'erreur' => $repartition['erreur'],
