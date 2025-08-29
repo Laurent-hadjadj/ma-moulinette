@@ -187,7 +187,7 @@ class ApiRepartitionController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        /** On récupère la dernière analyse disponible ou on lance l'analyse depuis la table de répartition temporaire */
+        /** On récupère la dernière analyse disponible ou on lance l'analyse depuis la table de répartition temporaire pour la category et la severity */
         $checkIfExist = $repartitionRepos->findLatestMavenKeyWithControl($data->maven_key);
 
         if ($checkIfExist['code'] != 200){
@@ -204,18 +204,19 @@ class ApiRepartitionController extends AbstractController
 
         if (isset($checkIfExist['result']) && $checkIfExist['result'] != []){
             $data = $checkIfExist['result'][0];
+            $date = (new \DateTime($data['date_enregistrement']))->format('Y-m-d H:i');
+            $message = "[Répartition-Analyse] Récupération des données de répartition pour le setup <strong>{$data['setup']}</strong> en date du <strong>{$date}</strong>";
+
             return new JsonResponse([
-                    'code' => 200,
-                    'frontend' => $data['frontend'],
-                    'backend' => $data['backend'],
-                    'autre' => $data['autre'],
-                    'inconnu' => $data['inconnu'],
-                    'total' => $data['frontend'] + $data['backend'] + $data['autre'] + $data['inconnu'],
-                    'setup' => $data['setup'],
-                    'date_enregistrement' => $data['date_enregistrement']
+                    'code' => 201,
+                    'type' => 'primary',
+                    'message' => $message,
+                    'data' => $data,
+                    'mode' => 'Historique',
+                    'date_enregistrement' => $date
                 ],  Response::HTTP_OK);
         }
-
+        dd("stop");
         //BUG BLOCKER "1754316568042" "fr.ma-moulinette:ma-moulinette"
         try {
                 $repartitionAnalyse = $this->batchCollecteRepartition->batchCollecteRepartitionAnalyse($data->maven_key, $data->category, $data->severity, $data->setup);
