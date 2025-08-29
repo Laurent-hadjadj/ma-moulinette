@@ -32,15 +32,148 @@ import {serveur} from '../../common/properties.js';
 import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
-import { contentType, zero, cent, mille, http_200, http_201} from '../../common/constante.js';
+import { dateOptions, contentType, zero, cent, mille, http_200, http_201} from '../../common/constante.js';
 
 /** On récupère la clé maven de la clé de l'application. */
 const maven_key = $('#titre-repartition').data('application');
 const setup = $('#js-setup').text().trim();
 
+/** En tête des tableaux d'analyse */
+const tabCategory =
+  `<tr>
+    <th scope="col"></th>
+    <th scope="col" class="text-center"><strong>Application Présentation</strong></th>
+    <th scope="col" class="text-center"><strong>Application Métier</strong></th>
+    <th scope="col" class="text-center"><strong>Autre</strong></th>
+    <th scope="col" class="text-center"><strong>Inconnue</strong></th>
+    <th scope="col" class="text-center tool-tip-repartition"><strong>IdC</strong><span class="tool-tip-text-repartition">Indice de Confiance</span></th>
+  </tr>`;
+
+const tabGlobal =
+  `<tr>
+    <th scope="col" class="text-center"><strong>Application Présentation</strong></th>
+    <th scope="col" class="text-center"><strong>Application Métier</strong></th>
+    <th scope="col" class="text-center"><strong>Autre</strong></th>
+    <th scope="col" class="text-center"><strong>Inconnue</strong></th>
+  </tr>`;
+
+  // 📌 Récupération des données du DOM
+  const elements = {
+      BUG: {
+          BLOCKER: document.getElementById('bug-bloquant'),
+          CRITICAL: document.getElementById('bug-critique'),
+          INFO: document.getElementById('bug-info'),
+          MAJOR: document.getElementById('bug-majeur'),
+          MINOR: document.getElementById('bug-mineur')
+      },
+      VULNERABILITY: {
+          BLOCKER: document.getElementById('vulnerability-bloquant'),
+          CRITICAL: document.getElementById('vulnerability-critique'),
+          INFO: document.getElementById('vulnerability-info'),
+          MAJOR: document.getElementById('vulnerability-majeur'),
+          MINOR: document.getElementById('vulnerability-mineur')
+      },
+      CODE_SMELL: {
+          BLOCKER: document.getElementById('code-smell-bloquant'),
+          CRITICAL: document.getElementById('code-smell-critique'),
+          INFO: document.getElementById('code-smell-info'),
+          MAJOR: document.getElementById('code-smell-majeur'),
+          MINOR: document.getElementById('code-smell-mineur')
+      }
+  };
+
+  const severities = [
+    { css: 'texte-rouge', severity: 'blocker' },
+    { css: 'texte-rouge', severity: 'critical' },
+    { css: 'texte-orange', severity: 'major' },
+    { css: 'texte-vert', severity: 'minor' },
+    { css: 'texte-bleu', severity: 'info' }
+  ];
+
 /** On initialise le tableau de résultats pour l'analyse */
 /** category, severity, frontend, backend, autre, inconnu, idc */
 let analyseCollecteRepartition = [];
+
+/**
+ * [Description for buildTabHistorique]
+ *
+ * @param mixed css
+ * @param mixed severity
+ * @param mixed frontend
+ * @param mixed backend
+ * @param mixed autre
+ * @param mixed inconnu
+ * @param mixed alertClass
+ * @param mixed idc
+ *
+ * @return [type]
+ *
+ * Created at: 29/08/2025 12:56:41 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ */
+const buildTabHistorique = function(css, severity, frontend, backend, autre, inconnu, calculIdc) {
+    let idc = '---';
+    if (calculIdc !== 0) {
+        idc = new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(calculIdc);
+    }
+    const alertClass = (calculIdc * cent != 100 && idc.trim() !== '---') ? 'texte-rouge' : 'texte-vert';
+
+    return `
+    <tr>
+        <td class="${css}"><strong>${severity}</strong></td>
+        <td class="text-center">${frontend}</td>
+        <td class="text-center">${backend}</td>
+        <td class="text-center">${autre}</td>
+        <td class="text-center">${inconnu}</td>
+        <td class="text-center ${alertClass}">${idc}</td>
+    </tr>`;
+}
+
+
+/**
+ * [Description for calculateIdc]
+ *
+ * @param mixed data
+ * @param mixed category
+ * @param mixed severity
+ * @param mixed elements
+ *
+ * @return number
+ *
+ * Created at: 29/08/2025 16:01:49 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ */
+const calculateIdc = (data, category, severity, elements) => {
+    const customCategory = (category !== 'code_smell') ? category : 'codeSmell';
+
+    const total = +data[`frontend_${category}_${severity}`] + +data[`backend_${category}_${severity}`] +
+                    +data[`autre_${category}_${severity}`] + +data[`inconnu_${category}_${severity}`];
+    return total !== 0 ? elements[category.toUpperCase()][severity.toUpperCase()].dataset[`nombre${customCategory.charAt(0).toUpperCase() + customCategory.slice(1)}${severity.charAt(0).toUpperCase() + severity.slice(1)}`] / total : 0;
+}
+
+/**
+ * [Description for generateTableRow]
+ *
+ * @param mixed css
+ * @param mixed category
+ * @param mixed severity
+ * @param mixed data
+ * @param mixed elements
+ *
+ * @return string
+ *
+ * Created at: 29/08/2025 16:00:51 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ */
+const generateTableRow = (css, category, severity, data, elements) => {
+    const calculIdc = calculateIdc(data, category, severity, elements);
+    return buildTabHistorique(css, severity.toUpperCase(), data[`frontend_${category}_${severity}`],
+                              data[`backend_${category}_${severity}`], data[`autre_${category}_${severity}`],
+                              data[`inconnu_${category}_${severity}`], calculIdc);
+}
 
 /**
  * analyse
@@ -69,31 +202,6 @@ const analyse = async function (maven_key, category, severity, css, setup) {
     $('#analyse-animation').removeClass('sp-volume');
   };
 
-  // 📌 Récupération des données du DOM
-  const elements = {
-      BUG: {
-          BLOCKER: document.getElementById('bug-bloquant'),
-          CRITICAL: document.getElementById('bug-critique'),
-          INFO: document.getElementById('bug-info'),
-          MAJOR: document.getElementById('bug-majeur'),
-          MINOR: document.getElementById('bug-mineur')
-      },
-      VULNERABILITY: {
-          BLOCKER: document.getElementById('vulnerability-bloquant'),
-          CRITICAL: document.getElementById('vulnerability-critique'),
-          INFO: document.getElementById('vulnerability-info'),
-          MAJOR: document.getElementById('vulnerability-majeur'),
-          MINOR: document.getElementById('vulnerability-mineur')
-      },
-      CODE_SMELL: {
-          BLOCKER: document.getElementById('code-smell-bloquant'),
-          CRITICAL: document.getElementById('code-smell-critique'),
-          INFO: document.getElementById('code-smell-info'),
-          MAJOR: document.getElementById('code-smell-majeur'),
-          MINOR: document.getElementById('code-smell-mineur')
-      }
-  };
-
   // 📌 Configuration AJAX
   const data = { maven_key, category, severity, setup };
 
@@ -111,7 +219,7 @@ const analyse = async function (maven_key, category, severity, css, setup) {
   const t = await $.ajax(options);
 
   // 📌 Vérification des erreurs
-  if ((t.code ? t.code : null) !== http_200){
+  if ((t.code ? t.code : null) !== http_200 && (t.code ? t.code : null) !== http_201){
       const hasTrace = !!t.trace;
       const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
       showMessage(t.type, t.message, trace);
@@ -119,10 +227,18 @@ const analyse = async function (maven_key, category, severity, css, setup) {
     return 99;
   }
 
-  /** On calcule le total des anomalies analysé? */
+  if (t.code === http_201){
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
+      return t; // On affiche les résultats seulement.
+  }
+
+  /** On calcule le total des anomalies analysé ? */
   const nombreTotalModule = +t.total
 
-  let idc = '-', calculIdc = 0, lowerCategory, capitalizeCategory;
+  let idc = '---', calculIdc = 0, lowerCategory, capitalizeCategory;
   // 📌 Vérification de l'indice de confiance (idc)
   if (elements[category][severity]) {
       const element = elements[category][severity];
@@ -141,29 +257,29 @@ const analyse = async function (maven_key, category, severity, css, setup) {
           idc = new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(calculIdc);
       }
 
-      const alertClass = (calculIdc * cent != 100 && idc.trim() !== '-') ? 'texte-rouge' : 'texte-vert';
+      const alertClass = (calculIdc * cent != 100 && idc.trim() !== '---') ? 'texte-rouge' : 'texte-vert';
 
       let tableId;
 
       //'const tableId = category === 'BUG' ? 'mon-bo-tableau1' : category === 'VULNERABILITY' ? 'mon-bo-tableau2' : 'mon-bo-tableau3';
       if (category === 'BUG') {
-          tableId = 'mon-bo-tableau1';
+          tableId = 'mon-bo-tableau-1';
       } else if (category === 'VULNERABILITY') {
-          tableId = 'mon-bo-tableau2';
+          tableId = 'mon-bo-tableau-2';
       } else {
-          tableId = 'mon-bo-tableau3';
+          tableId = 'mon-bo-tableau-3';
       }
 
       // 📌 Construction du tableau dynamique
       const row = `
-          <tr>
-              <td class="${css}"><strong>${severity}</strong></td>
-              <td class="text-center">${t.frontend}</td>
-              <td class="text-center">${t.backend}</td>
-              <td class="text-center">${t.autre}</td>
-              <td class="text-center">${t.inconnu}</td>
-              <td class="text-center ${alertClass}">${idc}</td>
-          </tr>`;
+        <tr>
+            <td class="${css}"><strong>${severity}</strong></td>
+            <td class="text-center">${t.frontend}</td>
+            <td class="text-center">${t.backend}</td>
+            <td class="text-center">${t.autre}</td>
+            <td class="text-center">${t.inconnu}</td>
+            <td class="text-center ${alertClass}">${idc}</td>
+        </tr>`;
 
       $(`#${tableId}`).append(row);
 
@@ -307,7 +423,7 @@ const updateRepartition = async function(phase){
         showMessage(t.type, t.message, trace);
       return 1;
     }
-  }
+}
 
 /********************    Évènement    ************************/
 $('#bouton-collecte-bug').on('click', async () => {
@@ -555,80 +671,109 @@ $('#bouton-analyse').on('click', async () =>{
     sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
   }
 
-  /** On lance la fonction asynchrone */
-  async function fnAsync() {
-    let phase = 0;
-    const tabTitre =
-    `<tr>
-    <th scope="col"></th>
-    <th scope="col" class="text-center"><strong>Application Présentation</strong></th>
-    <th scope="col" class="text-center"><strong>Application Métier</strong></th>
-    <th scope="col" class="text-center"><strong>Autre</strong></th>
-    <th scope="col" class="text-center"><strong>Inconnue</strong></th>
-    <th scope="col" class="text-center tool-tip-repartition"><strong>IdC</strong><span class="tool-tip-text-repartition">Indice de Confiance</span></th></tr>`;
+  /** On lance la fonction asynchrone d'analyse pour la category*/
+  async function analyseCategory(category) {
+    await analyse(maven_key, category, 'BLOCKER', 'texte-rouge', setup);
+    await analyse(maven_key, category, 'CRITICAL', 'texte-rouge', setup);
+    await analyse(maven_key, category, 'MAJOR','texte-orange', setup);
+    await analyse(maven_key, category, 'MINOR', 'texte-vert', setup);
+    await analyse(maven_key, category, 'INFO', 'texte-bleu', setup);
+  }
 
-    /** BLOCKER */
+  /** On vérifie so on a déjà une analyse complète pour ce projet  */
+  const checkIfExist = await analyse(maven_key, 'null', 'null', 'null', setup);
+  if (checkIfExist.code !== http_200 && checkIfExist.code != http_201){
+    // 📌 Vérification des erreurs
+    const hasTrace = !!response.trace;
+    const trace = hasTrace ? prepareTechnicalDetails(checkIfExist.trace) : null;
+    showMessage(checkIfExist.type, checkIfExist.message, trace);
+    sessionStorage.setItem('ma_moulinette_erreur-collect-repartition', 'true')
+    return;
+  }
+
+  if (checkIfExist.code === http_201){
+    /** On affiche le tableau */
+    $('#js-analyse-mode').html(checkIfExist.mode);
+    $('#js-analyse-setup').html(checkIfExist.setup);
+    $('#js-analyse-date').html(new Intl.DateTimeFormat('default', dateOptions).format(new Date(checkIfExist.date_enregistrement)));
+
+    $('#tableau-0').removeClass('hide');
+    $('#mon-bo-tableau-thead-0').html(tabGlobal);
+    // 📌 Construction du tableau dynamique
+    const row = `
+    <tr>
+      <td class="text-center stat-mini color-noir">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(checkIfExist.data.frontend)}</td>
+      <td class="text-center stat-mini color-noir">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(checkIfExist.data.backend)}</td>
+      <td class="text-center stat-mini color-noir">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(checkIfExist.data.autre)}</td>
+      <td class="text-center stat-mini color-noir">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(checkIfExist.data.inconnu)}</td>
+    </tr>`;
+
+    $(`#mon-bo-tableau-0`).html('');
+    $(`#mon-bo-tableau-0`).append(row);
+
+    let r = '';
+
     /** On affiche le tableau */
     $('#tableau-1').removeClass('hide');
-    $('#mon-bo-tableau1').html(tabTitre);
+    $('#mon-bo-tableau-thead-1').html(tabCategory);
+    $(`#mon-bo-tableau-1`).html('');
 
-    await analyse(maven_key, 'BUG', 'BLOCKER', 'texte-rouge', setup);
-    await analyse(maven_key, 'BUG', 'CRITICAL', 'texte-rouge', setup);
-    await analyse(maven_key, 'BUG', 'MAJOR','texte-orange', setup);
-    await analyse(maven_key, 'BUG', 'MINOR', 'texte-vert', setup);
-    await analyse(maven_key, 'BUG', 'INFO', 'texte-bleu', setup);
-    control = sessionStorage.getItem('ma_moulinette_erreur-analyse-repartition');
-    if ( control == 'true') {
-      return 99;
-    } else {
-      sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
-      phase++;
-    }
+    severities.forEach(sev => {
+      r += generateTableRow(sev.css, 'bug', sev.severity, checkIfExist.data, elements);
+    });
+    $(`#mon-bo-tableau-1`).html(r);
 
     /** VULNERABILITY */
     $('#tableau-2').removeClass('hide');
-    $('#mon-bo-tableau2').html(tabTitre);
-    await analyse(maven_key, 'VULNERABILITY', 'BLOCKER', 'texte-rouge', setup);
-    await analyse(maven_key, 'VULNERABILITY', 'CRITICAL', 'texte-rouge', setup);
-    await analyse(maven_key, 'VULNERABILITY', 'MAJOR', 'texte-orange', setup);
-    await analyse(maven_key, 'VULNERABILITY', 'MINOR', 'texte-vert', setup);
-    await analyse(maven_key, 'VULNERABILITY', 'INFO', 'texte-bleu', setup);
-    control = sessionStorage.getItem('ma_moulinette_erreur-analyse-repartition');
-    if ( control === 'true') {
-      return 99;
-    } else {
-      sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
-      phase++;
-    }
+    $('#mon-bo-tableau-2').html(tabCategory);
+    $(`#mon-bo-tableau-2`).html('');
+
+    r='';
+    severities.forEach(sev => {
+      r += generateTableRow(sev.css, 'vulnerability', sev.severity, checkIfExist.data, elements);
+    });
+    $(`#mon-bo-tableau-2`).html(r);
 
     /** CODE_SMELL */
     $('#tableau-3').removeClass('hide');
-    $('#mon-bo-tableau3').html(tabTitre);
-    await analyse(maven_key, 'CODE_SMELL', 'BLOCKER', 'texte-rouge', setup);
-    await analyse(maven_key, 'CODE_SMELL', 'CRITICAL', 'texte-rouge', setup);
-    await analyse(maven_key, 'CODE_SMELL', 'INFO', 'texte-bleu', setup);
-    await analyse(maven_key, 'CODE_SMELL', 'MAJOR', 'texte-orange', setup);
-    await analyse(maven_key, 'CODE_SMELL', 'MINOR', 'texte-vert', setup);
+    $('#mon-bo-tableau-3').html(tabCategory);
+    $('#mon-bo-tableau-3').html('');
 
-    control = sessionStorage.getItem('ma_moulinette_erreur-analyse-repartition');
-    if ( control === 'true') {
-      return 99;
-    } else {
-      sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
-      phase++;
-    }
+    r = '';
+    severities.forEach(sev => {
+      r += generateTableRow(sev.css, 'code_smell', sev.severity, checkIfExist.data, elements);
+    });
+    $(`#mon-bo-tableau-3`).html(r);
 
-    // On retourne la valeur phase si besoin
-    return phase;
+    return;
   }
 
   /** On lance la fonction asynchrone */
-  const promise = await fnAsync();
-  if (promise === 99) { return; }
+  //const promise = await fnAsync();
+  //if (promise === 100) { return; }
+  control = sessionStorage.getItem('ma_moulinette_erreur-analyse-repartition');
+  if ( control == 'true') {
+    phase = 1;
+    return 99;
+  } else {
+    sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
+    phase = 1;
+  }
+
+    /** On affiche le tableau */
+    $('#tableau-1').removeClass('hide');
+    $('#mon-bo-tableau1').html(tabTitre);
+    /** VULNERABILITY */
+    $('#tableau-2').removeClass('hide');
+    $('#mon-bo-tableau2').html(tabTitre);
+    /** CODE_SMELL */
+    $('#tableau-3').removeClass('hide');
+    $('#mon-bo-tableau3').html(tabTitre);
+
 
   /** On met à jour */
-  updateRepartition(phase);
-  showMessage('success', 'Mise à jour de la répartition des anomalies par module effectuée.');
+  //updateRepartition(phase);
+  //showMessage('success', 'Mise à jour de la répartition des anomalies par module effectuée.');
 
   setTimeout(function() { hideMessage();  },3000)
 
