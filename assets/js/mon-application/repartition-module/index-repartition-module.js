@@ -94,6 +94,10 @@ const tabGlobal =
 /** category, severity, frontend, backend, autre, inconnu, idc */
 let analyseCollecteRepartition = [];
 
+/** On initialise le control des erreurs à l'ouverture de la page  */
+sessionStorage.setItem('ma_moulinette_erreur-collecte-repartition', 'false');
+sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
+
 /**
  * [Description for buildTabHistorique]
  *
@@ -688,12 +692,10 @@ $('#bouton-analyse').on('click', async () =>{
 
   /** On vérifie so on a déjà une analyse complète pour ce projet  */
   const checkIfExist = await analyse(maven_key, 'CHECK', 'INFO', 'texte-vert', setup);
-  console.log('checkIfExist test-CHECK', checkIfExist);
 
   /** On affiche les données historisée ou on lance l'analyse*/
   if (typeof checkIfExist === 'object' && checkIfExist !== null) {
     if (checkIfExist.code !== http_200 && checkIfExist.code != http_201 && checkIfExist.code != http_202){
-      console.log('checkIfExist error', checkIfExist);
       // 📌 Vérification des erreurs
       const hasTrace = !!response.trace;
       const trace = hasTrace ? prepareTechnicalDetails(checkIfExist.trace) : null;
@@ -763,7 +765,6 @@ $('#bouton-analyse').on('click', async () =>{
   /** On lance l'analyse par catégorie et sévérité */
   if (checkIfExist === 100){
     control = sessionStorage.getItem('ma_moulinette_erreur-analyse-repartition');
-    console.log('http_202', control);
     if ( control == 'true') {
       phase = 1;
       return 99;
