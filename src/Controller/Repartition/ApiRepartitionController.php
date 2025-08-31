@@ -188,9 +188,10 @@ class ApiRepartitionController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-           /** On vérifie qu'une collecte a été lancé pour ce setup */
+        /** On vérifie qu'une collecte a été lancé pour ce setup */
         $checkIfExistSetup = $repartitionTempRepos->findOneBy(['setup' => $data->setup]);
-        if(is_null($checkIfExistSetup)){
+
+        if(is_null($checkIfExistSetup) && $data->category !== 'CHECK'){
             $this->logger->warning("⚠️ [Batch Répartition Analyse] La collecte n'a pas été lancée pour ce setup (Erreur 404).", [
                 'maven_key' => $data->maven_key,
                 'setup' => $data->setup]);
