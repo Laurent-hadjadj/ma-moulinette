@@ -32,7 +32,7 @@ import {serveur} from '../../common/properties.js';
 import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
-import { dateOptions, contentType, zero, cent, mille, http_200, http_201, http_202} from '../../common/constante.js';
+import { dateOptions, contentType, zero, cent, mille, http_200, http_201, http_202, http_404} from '../../common/constante.js';
 
 /** On récupère la clé maven de la clé de l'application. */
 const maven_key = $('#titre-repartition').data('application');
@@ -223,12 +223,15 @@ const analyse = async function (maven_key, category, severity, css, setup) {
   const t = await $.ajax(options);
 
   // 📌 Vérification des erreurs
-  if ((t.code ? t.code : null) !== http_200 && (t.code ? t.code : null) !== http_201 && (t.code ? t.code : null) !== http_202){
-      const hasTrace = !!t.trace;
-      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
-      showMessage(t.type, t.message, trace);
-      sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'true');
-    return 99;
+  if ((t.code ? t.code : null) !== http_200 &&
+      (t.code ? t.code : null) !== http_201 &&
+      (t.code ? t.code : null) !== http_202 &&
+      (t.code ? t.code : null) !== http_404){
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
+        sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'true');
+        return 99;
   }
 
   if (t.code === http_201){
@@ -244,9 +247,15 @@ const analyse = async function (maven_key, category, severity, css, setup) {
     return 100;
   }
 
+  /** On a pas de données pour ce setup, il faut lancer une collecte */
+  if (t.code === http_404){
+    const message = "[Répartition-Analyse] Il n'y a pas de données disponibles pour ce setup. Vous devez lancer une collecte avant de lancer une analyse (Erreur 404).";
+    showMessage('warning', message);
+    return 404;
+  }
+
   /** On calcule le total des anomalies analysé ? */
   const nombreTotalModule = +t.total
-
   let idc = '---', calculIdc = 0, lowerCategory, capitalizeCategory;
   // 📌 Vérification de l'indice de confiance (idc)
   if (elements[category][severity]) {
@@ -265,7 +274,6 @@ const analyse = async function (maven_key, category, severity, css, setup) {
           calculIdc = +nombreTotalModule / +element.dataset[`nombre${capitalizeCategory}${capitalizeSeverity}`];
           idc = new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(calculIdc);
       }
-
       const alertClass = (calculIdc * cent != 100 && idc.trim() !== '---') ? 'texte-rouge' : 'texte-vert';
 
       let tableId;
@@ -683,11 +691,12 @@ $('#bouton-analyse').on('click', async () =>{
 
   /** On lance la fonction asynchrone d'analyse pour la category*/
   async function analyseCategory(category) {
-    await analyse(maven_key, category, 'BLOCKER', 'texte-rouge', setup);
-    await analyse(maven_key, category, 'CRITICAL', 'texte-rouge', setup);
-    await analyse(maven_key, category, 'MAJOR','texte-orange', setup);
-    await analyse(maven_key, category, 'MINOR', 'texte-vert', setup);
-    await analyse(maven_key, category, 'INFO', 'texte-bleu', setup);
+    const a1 = await analyse(maven_key, category, 'BLOCKER', 'texte-rouge', setup);
+    const a2 = await analyse(maven_key, category, 'CRITICAL', 'texte-rouge', setup);
+    const a3 = await analyse(maven_key, category, 'MAJOR','texte-orange', setup);
+    const a4 = await analyse(maven_key, category, 'MINOR', 'texte-vert', setup);
+    const a5 = await analyse(maven_key, category, 'INFO', 'texte-bleu', setup);
+    return (+a1 + +a2 + +a3 + +a4 + +a5);
   }
 
   /** On vérifie so on a déjà une analyse complète pour ce projet  */
@@ -701,7 +710,7 @@ $('#bouton-analyse').on('click', async () =>{
       const trace = hasTrace ? prepareTechnicalDetails(checkIfExist.trace) : null;
       showMessage(checkIfExist.type, checkIfExist.message, trace);
       sessionStorage.setItem('ma_moulinette_erreur-collect-repartition', 'true')
-      return;
+      return 99;
     }
 
     /** On affiche les données historisées */
@@ -765,38 +774,43 @@ $('#bouton-analyse').on('click', async () =>{
   /** On lance l'analyse par catégorie et sévérité */
   if (checkIfExist === 100){
     control = sessionStorage.getItem('ma_moulinette_erreur-analyse-repartition');
+    // On sort si on a une erreur
     if ( control == 'true') {
-      phase = 1;
-      return 99;
-    } else {
       sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
-      phase = 1;
+      return 99;
     }
 
-    /** On affiche le tableau */
-    $('#tableau-1').removeClass('hide');
-    $('#mon-bo-tableau-1').html(tabCategory);
+    /** BUG */
     const r1 = await analyseCategory('BUG');
-    console.log(r1);
+    if (r1 === 0){
+      $('#tableau-1').removeClass('hide');
+      $('#mon-bo-tableau-1').html(tabCategory);
+      phase += 1;
+    }
 
     /** VULNERABILITY */
-    $('#tableau-2').removeClass('hide');
-    $('#mon-bo-tableau-2').html(tabCategory);
     const r2 = await analyseCategory('VULNERABILITY');
-    console.log(r2);
+    if (r2 === 0) {
+      $('#tableau-2').removeClass('hide');
+      $('#mon-bo-tableau-2').html(tabCategory);
+      phase += 1;
+    }
 
     /** CODE_SMELL */
-    $('#tableau-3').removeClass('hide');
-    $('#mon-bo-tableau-3').html(tabCategory);
     const r3 = await analyseCategory('CODE_SMELL');
-    console.log(r3);
+    if ( r3 === 0){
+      $('#tableau-3').removeClass('hide');
+      $('#mon-bo-tableau-3').html(tabCategory);
+      phase += 1;
+    }
   }
 
   /** On met à jour */
-  //updateRepartition(phase);
-  //showMessage('success', 'Mise à jour de la répartition des anomalies par module effectuée.');
-
-  setTimeout(function() { hideMessage();  },3000)
+  if (phase != 0){
+    updateRepartition(phase);
+    showMessage('success', 'Mise à jour de la répartition des anomalies par module effectuée.');
+    setTimeout(function() { hideMessage();  },3000);
+  }
 
   /** On réinitialise le tableau */
   analyseCollecteRepartition = [];

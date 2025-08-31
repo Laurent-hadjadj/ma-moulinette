@@ -24,6 +24,7 @@ use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\Repartition;
+use App\Entity\RepartitionTemp;
 use App\Controller\Batch\BatchCollecteRepartitionController;
 
 /**
@@ -37,7 +38,6 @@ class ApiRepartitionController extends AbstractController
     private static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
     public static $loggerE401 = "❌ [Répartition-Module] Aucun utilisateur connecté.";
     public static $loggerE403 = "🚫 [Répartition-Module] Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).";
-
 
     /**
      * [Description for __construct]
@@ -160,6 +160,7 @@ class ApiRepartitionController extends AbstractController
 
         // Instanciation des repositories
         $repartitionRepos = $this->em->getRepository(Repartition::class);
+        $repartitionTempRepos = $this->em->getRepository(RepartitionTemp::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -187,7 +188,21 @@ class ApiRepartitionController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        /** On récupère la dernière analyse disponible ou on lance l'analyse depuis la table de répartition temporaire pour la category et la severity */
+           /** On vérifie qu'une collecte a été lancé pour ce setup */
+        $checkIfExistSetup = $repartitionTempRepos->findOneBy(['setup' => $data->setup]);
+        if(is_null($checkIfExistSetup)){
+            $this->logger->warning("⚠️ [Batch Répartition Analyse] La collecte n'a pas été lancée pour ce setup (Erreur 404).", [
+                'maven_key' => $data->maven_key,
+                'setup' => $data->setup]);
+        return new JsonResponse([
+                'code' => 404,
+                'type' => 'warning',
+                'message' => "Erreur lors de la récupération des anomalies temporaires (Erreur 404).",
+                'trace' => null
+            ]);
+        }
+
+        /** On récupère la dernière analyse complète disponible pour le projet */
         $checkIfExist = $repartitionRepos->findLatestMavenKeyWithControl($data->maven_key);
 
         if ($checkIfExist['code'] != 200){
@@ -201,6 +216,7 @@ class ApiRepartitionController extends AbstractController
                 'trace' => $checkIfExist['erreur']
             ], Response::HTTP_OK);
         }
+
         /** Si on à une result avec un résultat, alors on a des données et si on a catégorie = CHECK alors on affiche les résultats déjà présent dans la table répartition. */
         if (isset($checkIfExist['result']) && $checkIfExist['result'] != [] && $data->category === 'CHECK'){
             $data = $checkIfExist['result'][0];
@@ -231,10 +247,9 @@ class ApiRepartitionController extends AbstractController
 
         //BUG BLOCKER "1754316568042" "fr.ma-moulinette:ma-moulinette"
         try {
-                $repartitionAnalyse = $this->batchCollecteRepartition->batchCollecteRepartitionAnalyse($data->maven_key, $data->category, $data->severity, $data->setup);
-                /*'if ($data->category != 'BUG') {
-                    dd($data->maven_key, $data->category, $data->severity, $data->setup, $repartitionAnalyse);
-                }*/
+                $repartitionAnalyse = $this->batchCollecteRepartition->batchCollecteRepartitionAnalyse(
+                    $data->maven_key, $data->category, $data->severity, $data->setup);
+
                 if ($repartitionAnalyse['code'] !== 200){
                     $this->logger->error("❌ [Répartition-Analyse] Échec de la collecte des anomalies.", [
                         'maven_key' => $data->maven_key,
@@ -257,7 +272,7 @@ class ApiRepartitionController extends AbstractController
                     'autre' => $repartitionAnalyse['autre'],
                     'inconnu' => $repartitionAnalyse['inconnu'],
                     'total' => $repartitionAnalyse['total']
-                ],  Response::HTTP_OK);
+                ], Response::HTTP_OK);
         } catch (Exception $trace) {
             $this->logger->critical("🔴 [Répartition Analyse] Exception lors du traitement de répartition des anomalies par module (Erreur 500).", [
                 'exception' => $trace->getMessage()
