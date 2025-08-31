@@ -154,7 +154,7 @@ const calculateIdc = (data, category, severity, elements) => {
 
     const total = +data[`frontend_${category}_${severity}`] + +data[`backend_${category}_${severity}`] +
                     +data[`autre_${category}_${severity}`] + +data[`inconnu_${category}_${severity}`];
-    return total !== 0 ? elements[category.toUpperCase()][severity.toUpperCase()].dataset[`nombre${customCategory.charAt(0).toUpperCase() + customCategory.slice(1)}${severity.charAt(0).toUpperCase() + severity.slice(1)}`] / total : 0;
+    return total !== 0 ? Number(total) / Number(elements[category.toUpperCase()][severity.toUpperCase()].dataset[`nombre${customCategory.charAt(0).toUpperCase() + customCategory.slice(1)}${severity.charAt(0).toUpperCase() + severity.slice(1)}`]) : 0;
 }
 
 /**
@@ -257,7 +257,7 @@ const analyse = async function (maven_key, category, severity, css, setup) {
   /** On calcule le total des anomalies analysé ? */
   const nombreTotalModule = +t.total
   let idc = '---', calculIdc = 0, lowerCategory, capitalizeCategory;
-  console.log(t.frontend);
+
   // 📌 Vérification de l'indice de confiance (idc)
   if (elements[category][severity]) {
       const element = elements[category][severity];
@@ -298,7 +298,6 @@ const analyse = async function (maven_key, category, severity, css, setup) {
             <td class="text-center">${t.inconnu}</td>
             <td class="text-center ${alertClass}">${idc}</td>
         </tr>`;
-      console.log(row);
       $(`#${tableId}`).append(row);
 
       /** On enregistre les informations dans le tableau de résultat.*/
