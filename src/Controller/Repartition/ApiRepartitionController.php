@@ -191,16 +191,17 @@ class ApiRepartitionController extends AbstractController
         /** On vérifie qu'une collecte a été lancé pour ce setup */
         $checkIfExistSetup = $repartitionTempRepos->findOneBy(['setup' => $data->setup]);
 
-        if(is_null($checkIfExistSetup) && $data->category !== 'CHECK'){
+        if(is_null($checkIfExistSetup)){
             $this->logger->warning("⚠️ [Batch Répartition Analyse] La collecte n'a pas été lancée pour ce setup (Erreur 404).", [
                 'maven_key' => $data->maven_key,
                 'setup' => $data->setup]);
-        return new JsonResponse([
-                'code' => 404,
-                'type' => 'warning',
-                'message' => "Erreur lors de la récupération des anomalies temporaires (Erreur 404).",
-                'trace' => null
-            ]);
+
+            return new JsonResponse([
+                    'code' => 404,
+                    'type' => 'warning',
+                    'message' => "Erreur lors de la récupération des anomalies temporaires (Erreur 404).",
+                    'trace' => null
+                ]);
         }
 
         /** On récupère la dernière analyse complète disponible pour le projet */
@@ -219,7 +220,8 @@ class ApiRepartitionController extends AbstractController
         }
 
         /** Si on à une result avec un résultat, alors on a des données et si on a catégorie = CHECK alors on affiche les résultats déjà présent dans la table répartition. */
-        if (isset($checkIfExist['result']) && $checkIfExist['result'] != [] && $data->category === 'CHECK'){
+        if (isset($checkIfExist['result']) && $checkIfExist['result'] != [] &&
+            $data->category === 'CHECK'){
             $data = $checkIfExist['result'][0];
             $date = (new \DateTime($data['date_enregistrement']))->format('Y-m-d H:i');
             $message = "[Répartition-Analyse] Récupération des données de répartition pour le setup <strong>{$data['setup']}</strong> en date du <strong>{$date}</strong>";
@@ -235,7 +237,8 @@ class ApiRepartitionController extends AbstractController
         }
 
         /** Il n'existe pas de données historisées pour ce setup, on retourne un code 202 pour lancer l'analyse */
-        if (isset($checkIfExist['result']) && $data->category === 'CHECK') {
+        if (isset($checkIfExist['result']) &&
+            $data->category !== 'CHECK') {
             $this->logger->info("📌 [Répartition-Analyse] Il n'existe pas de données historisées pour ce setup.",
                 [
                     'maven_key', $data->maven_key,
@@ -243,7 +246,10 @@ class ApiRepartitionController extends AbstractController
                 ]);
 
             /** On lance l'analyse par catégorie */
-            return new JsonResponse([ 'code' => 202, 'category' => 'CHECK' ], Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => 202,
+                'category' => 'CHECK'
+            ], Response::HTTP_OK);
         }
 
         //BUG BLOCKER "1754316568042" "fr.ma-moulinette:ma-moulinette"

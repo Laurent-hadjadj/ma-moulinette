@@ -221,7 +221,7 @@ const analyse = async function (maven_key, category, severity, css, setup) {
 
   // 🕵️‍♂️ Appel AJAX
   const t = await $.ajax(options);
-console.log(t);
+
   // 📌 Vérification des erreurs
   if ((t.code ? t.code : null) !== http_200 &&
       (t.code ? t.code : null) !== http_201 &&
@@ -232,6 +232,13 @@ console.log(t);
         showMessage(t.type, t.message, trace);
         sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'true');
         return 99;
+  }
+
+   /** On a pas de données pour ce setup, il faut lancer une collecte */
+  if (t.code === http_404){
+    const message = "[Répartition-Analyse] Il n'y a pas de données disponibles pour ce setup. Vous devez lancer une collecte avant de lancer une analyse (Erreur 404).";
+    showMessage('warning', message);
+    return 404;
   }
 
   if (t.code === http_201){
@@ -247,16 +254,10 @@ console.log(t);
     return 100;
   }
 
-  /** On a pas de données pour ce setup, il faut lancer une collecte */
-  if (t.code === http_404){
-    const message = "[Répartition-Analyse] Il n'y a pas de données disponibles pour ce setup. Vous devez lancer une collecte avant de lancer une analyse (Erreur 404).";
-    showMessage('warning', message);
-    return 404;
-  }
-
   /** On calcule le total des anomalies analysé ? */
   const nombreTotalModule = +t.total
   let idc = '---', calculIdc = 0, lowerCategory, capitalizeCategory;
+  console.log(t.frontend);
   // 📌 Vérification de l'indice de confiance (idc)
   if (elements[category][severity]) {
       const element = elements[category][severity];
@@ -297,7 +298,7 @@ console.log(t);
             <td class="text-center">${t.inconnu}</td>
             <td class="text-center ${alertClass}">${idc}</td>
         </tr>`;
-
+      console.log(row);
       $(`#${tableId}`).append(row);
 
       /** On enregistre les informations dans le tableau de résultat.*/
@@ -705,7 +706,9 @@ $('#bouton-analyse').on('click', async () =>{
 
   /** On affiche les données historisée ou on lance l'analyse*/
   if (typeof checkIfExist === 'object' && checkIfExist !== null) {
-    if (checkIfExist.code !== http_200 && checkIfExist.code != http_201 && checkIfExist.code != http_202){
+    if (checkIfExist.code != http_200 &&
+        checkIfExist.code != http_201 &&
+        checkIfExist.code != http_202){
       // 📌 Vérification des erreurs
       const hasTrace = !!response.trace;
       const trace = hasTrace ? prepareTechnicalDetails(checkIfExist.trace) : null;
@@ -773,7 +776,7 @@ $('#bouton-analyse').on('click', async () =>{
   }
 
   /** On lance l'analyse par catégorie et sévérité */
-  if (checkIfExist === 100){
+  if (checkIfExist === 100 ){
     control = sessionStorage.getItem('ma_moulinette_erreur-analyse-repartition');
     // On sort si on a une erreur
     if ( control == 'true') {
