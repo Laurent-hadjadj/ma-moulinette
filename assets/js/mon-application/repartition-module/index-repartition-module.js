@@ -32,7 +32,7 @@ import {serveur} from '../../common/properties.js';
 import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
-import { dateOptions, contentType, zero, cent, mille, http_200, http_201} from '../../common/constante.js';
+import { dateOptions, contentType, zero, cent, mille, http_200, http_201, http_202} from '../../common/constante.js';
 
 /** On récupère la clé maven de la clé de l'application. */
 const maven_key = $('#titre-repartition').data('application');
@@ -217,8 +217,9 @@ const analyse = async function (maven_key, category, severity, css, setup) {
 
   // 🕵️‍♂️ Appel AJAX
   const t = await $.ajax(options);
+
   // 📌 Vérification des erreurs
-  if ((t.code ? t.code : null) !== http_200 && (t.code ? t.code : null) !== http_201){
+  if ((t.code ? t.code : null) !== http_200 && (t.code ? t.code : null) !== http_201 && (t.code ? t.code : null) !== http_202){
       const hasTrace = !!t.trace;
       const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
       showMessage(t.type, t.message, trace);
@@ -232,6 +233,11 @@ const analyse = async function (maven_key, category, severity, css, setup) {
       showMessage(t.type, t.message, trace);
       sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
       return t; // On affiche les résultats seulement.
+  }
+
+  /** On lance l'analyse */
+  if (t.code === http_202 && t.category === 'CHECK'){
+    return 100;
   }
 
   /** On calcule le total des anomalies analysé ? */
@@ -682,9 +688,12 @@ $('#bouton-analyse').on('click', async () =>{
 
   /** On vérifie so on a déjà une analyse complète pour ce projet  */
   const checkIfExist = await analyse(maven_key, 'CHECK', 'INFO', 'texte-vert', setup);
+  console.log('checkIfExist test-CHECK', checkIfExist);
 
+  /** On affiche les données historisée ou on lance l'analyse*/
   if (typeof checkIfExist === 'object' && checkIfExist !== null) {
-    if (checkIfExist.code !== http_200 && checkIfExist.code != http_201){
+    if (checkIfExist.code !== http_200 && checkIfExist.code != http_201 && checkIfExist.code != http_202){
+      console.log('checkIfExist error', checkIfExist);
       // 📌 Vérification des erreurs
       const hasTrace = !!response.trace;
       const trace = hasTrace ? prepareTechnicalDetails(checkIfExist.trace) : null;
@@ -693,6 +702,7 @@ $('#bouton-analyse').on('click', async () =>{
       return;
     }
 
+    /** On affiche les données historisées */
     if (checkIfExist.code === http_201){
       /** On affiche le tableau */
       $('#js-analyse-mode').html(checkIfExist.mode);
@@ -730,7 +740,7 @@ $('#bouton-analyse').on('click', async () =>{
       $('#mon-bo-tableau-2').html(tabCategory);
       $(`#mon-bo-tableau-2`).html('');
 
-      r='';
+      r = '';
       severities.forEach(sev => {
         r += generateTableRow(sev.css, 'vulnerability', sev.severity, checkIfExist.data, elements);
       });
@@ -750,28 +760,36 @@ $('#bouton-analyse').on('click', async () =>{
     }
   }
 
-  /** On lance la fonction asynchrone */
-  //const promise = await fnAsync();
-  //if (promise === 100) { return; }
-  control = sessionStorage.getItem('ma_moulinette_erreur-analyse-repartition');
-  if ( control == 'true') {
-    phase = 1;
-    return 99;
-  } else {
-    sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
-    phase = 1;
-  }
+  /** On lance l'analyse par catégorie et sévérité */
+  if (checkIfExist === 100){
+    control = sessionStorage.getItem('ma_moulinette_erreur-analyse-repartition');
+    console.log('http_202', control);
+    if ( control == 'true') {
+      phase = 1;
+      return 99;
+    } else {
+      sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
+      phase = 1;
+    }
 
     /** On affiche le tableau */
-    //$('#tableau-1').removeClass('hide');
-    //$('#mon-bo-tableau-1').html(tabCategory);
+    $('#tableau-1').removeClass('hide');
+    $('#mon-bo-tableau-1').html(tabCategory);
+    const r1 = await analyseCategory('BUG');
+    console.log(r1);
+
     /** VULNERABILITY */
-    //$('#tableau-2').removeClass('hide');
-    //$('#mon-bo-tableau-2').html(tabCategory);
+    $('#tableau-2').removeClass('hide');
+    $('#mon-bo-tableau-2').html(tabCategory);
+    const r2 = await analyseCategory('VULNERABILITY');
+    console.log(r2);
+
     /** CODE_SMELL */
     $('#tableau-3').removeClass('hide');
     $('#mon-bo-tableau-3').html(tabCategory);
-    const r = analyseCategory('CODE_SMELL');
+    const r3 = await analyseCategory('CODE_SMELL');
+    console.log(r3);
+  }
 
   /** On met à jour */
   //updateRepartition(phase);
