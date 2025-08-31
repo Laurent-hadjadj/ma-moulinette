@@ -447,7 +447,7 @@ $('#bouton-collecte-bug').on('click', async () => {
   const total = +document.getElementById('nombre-bug').dataset.nombreBug;
 
   if (total == 0){
-    showMessage('primary', "Il n'y a pas de données à collecter pour cette catégorie(Erreur 404).");
+    showMessage('primary', "Il n'y a pas de données à collecter pour la catégorie <strong>Bug</strong>.");
     setTimeout(() => { hideMessage(); }, 3000);
     $jsCollecteBug.removeClass('disabled-wrapper');
     $boutonCollecteBug.removeClass('disabled-wrapper clicked-true');
@@ -524,7 +524,7 @@ $('#bouton-collecte-vulnerability').on('click', async () => {
   const total = +document.getElementById('nombre-vulnerability').dataset.nombreVulnerability;
 
   if (total == 0){
-    showMessage('warning', "Il n'y a pas de données à collecter pour cette catégorie (Erreur 404).");
+    showMessage('primary', "Il n'y a pas de données à collecter pour la catégorie <strong>Vulnerability</strong>.");
     setTimeout(() => { hideMessage(); }, 3000);
     $jsCollecteVulnerability.removeClass('disabled-wrapper');
     $boutonCollecteVulnerability.removeClass('disabled-bouton clicked-true');
@@ -602,7 +602,7 @@ $('#bouton-collecte-code-smell').on('click', async () => {
   const total = +document.getElementById('nombre-code-smell').dataset.nombreCodeSmell;
 
   if (total == 0){
-    showMessage('warning', "Il n'y a pas de données à collecter pour cette catégorie (Erreur 404).");
+    showMessage('primary', "Il n'y a pas de données à collecter pour la catégorie <strong>Code_Smell</strong>.");
     setTimeout(() => { hideMessage(); }, 3000);
     $jsCollecteCodeSmell.removeClass('disabled-wrapper');
     $boutonCollecteCodeSmell.removeClass('disabled-bouton clicked-true');
