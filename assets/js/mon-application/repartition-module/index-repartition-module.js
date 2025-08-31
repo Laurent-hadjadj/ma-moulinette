@@ -152,8 +152,8 @@ const buildTabHistorique = function(css, severity, frontend, backend, autre, inc
 const calculateIdc = (data, category, severity, elements) => {
     const customCategory = (category !== 'code_smell') ? category : 'codeSmell';
 
-    const total = +data[`frontend_${category}_${severity}`] + +data[`backend_${category}_${severity}`] +
-                    +data[`autre_${category}_${severity}`] + +data[`inconnu_${category}_${severity}`];
+    const total = Number(data[`frontend_${category}_${severity}`]) + Number(data[`backend_${category}_${severity}`]) +
+                    Number(data[`autre_${category}_${severity}`]) + Number(data[`inconnu_${category}_${severity}`]);
     return total !== 0 ? Number(total) / Number(elements[category.toUpperCase()][severity.toUpperCase()].dataset[`nombre${customCategory.charAt(0).toUpperCase() + customCategory.slice(1)}${severity.charAt(0).toUpperCase() + severity.slice(1)}`]) : 0;
 }
 
@@ -255,7 +255,7 @@ const analyse = async function (maven_key, category, severity, css, setup) {
   }
 
   /** On calcule le total des anomalies analysé ? */
-  const nombreTotalModule = +t.total
+  const nombreTotalModule = Number(t.total);
   let idc = '---', calculIdc = 0, lowerCategory, capitalizeCategory;
 
   // 📌 Vérification de l'indice de confiance (idc)
@@ -272,7 +272,7 @@ const analyse = async function (maven_key, category, severity, css, setup) {
       }
 
       if (element.dataset[`nombre${capitalizeCategory}${capitalizeSeverity}`] !== '0') {
-          calculIdc = +nombreTotalModule / +element.dataset[`nombre${capitalizeCategory}${capitalizeSeverity}`];
+          calculIdc = Number(nombreTotalModule) / Number(element.dataset[`nombre${capitalizeCategory}${capitalizeSeverity}`]);
           idc = new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(calculIdc);
       }
       const alertClass = (calculIdc * cent != 100 && idc.trim() !== '---') ? 'texte-rouge' : 'texte-vert';
@@ -456,7 +456,7 @@ $('#bouton-collecte-bug').on('click', async () => {
   $boutonCollecteBug.attr('tabindex', '-1');
 
   /** On récupère le total et le setup */
-  const total = +document.getElementById('nombre-bug').dataset.nombreBug;
+  const total = Number(document.getElementById('nombre-bug').dataset.nombreBug);
 
   if (total == 0){
     showMessage('primary', "Il n'y a pas de données à collecter pour la catégorie <strong>Bug</strong>.");
@@ -469,11 +469,11 @@ $('#bouton-collecte-bug').on('click', async () => {
 
   // Récupération des valeurs depuis le DOM
   const severities = [
-      { key: 'BLOCKER', value: +document.getElementById('bug-bloquant').dataset.nombreBugBlocker },
-      { key: 'CRITICAL', value: +document.getElementById('bug-critique').dataset.nombreBugCritical },
-      { key: 'MAJOR', value: +document.getElementById('bug-majeur').dataset.nombreBugMajor },
-      { key: 'MINOR', value: +document.getElementById('bug-mineur').dataset.nombreBugMinor },
-      { key: 'INFO', value: +document.getElementById('bug-info').dataset.nombreBugInfo }
+      { key: 'BLOCKER', value: Number(document.getElementById('bug-bloquant').dataset.nombreBugBlocker) },
+      { key: 'CRITICAL', value: Number(document.getElementById('bug-critique').dataset.nombreBugCritical) },
+      { key: 'MAJOR', value: Number(document.getElementById('bug-majeur').dataset.nombreBugMajor) },
+      { key: 'MINOR', value: Number(document.getElementById('bug-mineur').dataset.nombreBugMinor) },
+      { key: 'INFO', value: Number(document.getElementById('bug-info').dataset.nombreBugInfo) }
   ];
 
   if (isNaN(severities[0]['value']) ||
@@ -507,7 +507,7 @@ $('#bouton-collecte-bug').on('click', async () => {
 
       const severity = severities[i];
       counter += severity.value;
-      tempo += +timerElement.dataset.timer;
+      tempo += Number(timerElement.dataset.timer);
       const result = await collecte(maven_key, 'BUG', severity.key, counter, tempo);
   }
 
@@ -533,7 +533,7 @@ $('#bouton-collecte-vulnerability').on('click', async () => {
   $boutonCollecteVulnerability.attr('aria-label', "Collecte indisponible pour le moment.");
   $boutonCollecteVulnerability.attr('tabindex', '-1');
 
-  const total = +document.getElementById('nombre-vulnerability').dataset.nombreVulnerability;
+  const total = Number(document.getElementById('nombre-vulnerability').dataset.nombreVulnerability);
 
   if (total == 0){
     showMessage('primary', "Il n'y a pas de données à collecter pour la catégorie <strong>Vulnerability</strong>.");
@@ -546,11 +546,11 @@ $('#bouton-collecte-vulnerability').on('click', async () => {
 
   /** On récupère les résultats bindés dans la page */
   const severities = [
-    { key: 'BLOCKER', value: +document.getElementById('vulnerability-bloquant').dataset.nombreVulnerabilityBlocker },
-    { key: 'CRITICAL', value: +document.getElementById('vulnerability-critique').dataset.nombreVulnerabilityCritical },
-    { key: 'MAJOR', value: +document.getElementById('vulnerability-majeur').dataset.nombreVulnerabilityMajor },
-    { key: 'MINOR', value: +document.getElementById('vulnerability-mineur').dataset.nombreVulnerabilityMinor },
-    { key: 'INFO', value: +document.getElementById('vulnerability-info').dataset.nombreVulnerabilityInfo }
+    { key: 'BLOCKER', value: Number(document.getElementById('vulnerability-bloquant').dataset.nombreVulnerabilityBlocker) },
+    { key: 'CRITICAL', value: Number(document.getElementById('vulnerability-critique').dataset.nombreVulnerabilityCritical) },
+    { key: 'MAJOR', value: Number(document.getElementById('vulnerability-majeur').dataset.nombreVulnerabilityMajor) },
+    { key: 'MINOR', value: Number(document.getElementById('vulnerability-mineur').dataset.nombreVulnerabilityMinor) },
+    { key: 'INFO', value: Number(document.getElementById('vulnerability-info').dataset.nombreVulnerabilityInfo) }
   ];
 
   if (isNaN(severities[0]['value']) ||
@@ -584,7 +584,7 @@ $('#bouton-collecte-vulnerability').on('click', async () => {
     const severity = severities[i];
     if (severity.value !== 0) {
         counter += severity.value;
-        tempo += +timerElement.dataset.timer;
+        tempo += Number(timerElement.dataset.timer);
         const result = await collecte(maven_key, 'VULNERABILITY', severity.key, counter, tempo);
       }
     }
@@ -611,7 +611,7 @@ $('#bouton-collecte-code-smell').on('click', async () => {
   $boutonCollecteCodeSmell.attr('aria-label', "Collecte indisponible pour le moment.");
   $boutonCollecteCodeSmell.attr('tabindex', '-1');
 
-  const total = +document.getElementById('nombre-code-smell').dataset.nombreCodeSmell;
+  const total = Number(document.getElementById('nombre-code-smell').dataset.nombreCodeSmell);
 
   if (total == 0){
     showMessage('primary', "Il n'y a pas de données à collecter pour la catégorie <strong>Code_Smell</strong>.");
@@ -624,11 +624,11 @@ $('#bouton-collecte-code-smell').on('click', async () => {
 
   /** On récupère les résultats bindés dans la page */
   const severities = [
-    { key: 'BLOCKER', value: +document.getElementById('code-smell-bloquant').dataset.nombreCodeSmellBlocker },
-    { key: 'CRITICAL', value: +document.getElementById('code-smell-critique').dataset.nombreCodeSmellCritical },
-    { key: 'MAJOR', value: +document.getElementById('code-smell-majeur').dataset.nombreCodeSmellMajor },
-    { key: 'MINOR', value: +document.getElementById('code-smell-mineur').dataset.nombreCodeSmellMinor },
-    { key: 'INFO', value: +document.getElementById('code-smell-info').dataset.nombreCodeSmellInfo }
+    { key: 'BLOCKER', value: Number(document.getElementById('code-smell-bloquant').dataset.nombreCodeSmellBlocker) },
+    { key: 'CRITICAL', value: Number(document.getElementById('code-smell-critique').dataset.nombreCodeSmellCritical) },
+    { key: 'MAJOR', value: Number(document.getElementById('code-smell-majeur').dataset.nombreCodeSmellMajor) },
+    { key: 'MINOR', value: Number(document.getElementById('code-smell-mineur').dataset.nombreCodeSmellMinor) },
+    { key: 'INFO', value: Number(document.getElementById('code-smell-info').dataset.nombreCodeSmellInfo) }
   ];
 
   if (isNaN(severities[0]['value']) ||
@@ -664,7 +664,7 @@ $('#bouton-collecte-code-smell').on('click', async () => {
     if (severity.value !== 0) {
         // Mise à jour du cumul
         counter += severity.value;
-        tempo += +timerElement.dataset.timer;
+        tempo += Number(timerElement.dataset.timer);
         const result = await collecte(maven_key, 'CODE_SMELL', severity.key, counter, tempo);
       }
     }
@@ -696,7 +696,7 @@ $('#bouton-analyse').on('click', async () =>{
     const a3 = await analyse(maven_key, category, 'MAJOR','texte-orange', setup);
     const a4 = await analyse(maven_key, category, 'MINOR', 'texte-vert', setup);
     const a5 = await analyse(maven_key, category, 'INFO', 'texte-bleu', setup);
-    return (+a1 + +a2 + +a3 + +a4 + +a5);
+    return (Number(a1) + Number(a2) + Number(a3) + Number(a4) + Number(a5));
   }
 
   /** On vérifie so on a déjà une analyse complète pour ce projet  */
