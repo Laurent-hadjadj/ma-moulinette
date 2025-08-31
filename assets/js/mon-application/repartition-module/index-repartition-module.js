@@ -217,7 +217,6 @@ const analyse = async function (maven_key, category, severity, css, setup) {
 
   // 🕵️‍♂️ Appel AJAX
   const t = await $.ajax(options);
-
   // 📌 Vérification des erreurs
   if ((t.code ? t.code : null) !== http_200 && (t.code ? t.code : null) !== http_201){
       const hasTrace = !!t.trace;
@@ -287,6 +286,7 @@ const analyse = async function (maven_key, category, severity, css, setup) {
       /** category, severity, frontend, backend, autre, inconnu, inconnu */
       analyseCollecteRepartition.push([category, severity, t.frontend, t.backend, t.autre, t.inconnu]);
   }
+  return 0;
 };
 
 /**
@@ -681,71 +681,73 @@ $('#bouton-analyse').on('click', async () =>{
   }
 
   /** On vérifie so on a déjà une analyse complète pour ce projet  */
-  const checkIfExist = await analyse(maven_key, 'null', 'null', 'null', setup);
-  if (checkIfExist.code !== http_200 && checkIfExist.code != http_201){
-    // 📌 Vérification des erreurs
-    const hasTrace = !!response.trace;
-    const trace = hasTrace ? prepareTechnicalDetails(checkIfExist.trace) : null;
-    showMessage(checkIfExist.type, checkIfExist.message, trace);
-    sessionStorage.setItem('ma_moulinette_erreur-collect-repartition', 'true')
-    return;
-  }
+  const checkIfExist = await analyse(maven_key, 'CHECK', 'INFO', 'texte-vert', setup);
 
-  if (checkIfExist.code === http_201){
-    /** On affiche le tableau */
-    $('#js-analyse-mode').html(checkIfExist.mode);
-    $('#js-analyse-setup').html(checkIfExist.setup);
-    $('#js-analyse-date').html(new Intl.DateTimeFormat('default', dateOptions).format(new Date(checkIfExist.date_enregistrement)));
+  if (typeof checkIfExist === 'object' && checkIfExist !== null) {
+    if (checkIfExist.code !== http_200 && checkIfExist.code != http_201){
+      // 📌 Vérification des erreurs
+      const hasTrace = !!response.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(checkIfExist.trace) : null;
+      showMessage(checkIfExist.type, checkIfExist.message, trace);
+      sessionStorage.setItem('ma_moulinette_erreur-collect-repartition', 'true')
+      return;
+    }
 
-    $('#tableau-0').removeClass('hide');
-    $('#mon-bo-tableau-thead-0').html(tabGlobal);
-    // 📌 Construction du tableau dynamique
-    const row = `
-    <tr>
-      <td class="text-center stat-mini color-noir">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(checkIfExist.data.frontend)}</td>
-      <td class="text-center stat-mini color-noir">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(checkIfExist.data.backend)}</td>
-      <td class="text-center stat-mini color-noir">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(checkIfExist.data.autre)}</td>
-      <td class="text-center stat-mini color-noir">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(checkIfExist.data.inconnu)}</td>
-    </tr>`;
+    if (checkIfExist.code === http_201){
+      /** On affiche le tableau */
+      $('#js-analyse-mode').html(checkIfExist.mode);
+      $('#js-analyse-setup').html(checkIfExist.setup);
+      $('#js-analyse-date').html(new Intl.DateTimeFormat('default', dateOptions).format(new Date(checkIfExist.date_enregistrement)));
 
-    $(`#mon-bo-tableau-0`).html('');
-    $(`#mon-bo-tableau-0`).append(row);
+      $('#tableau-0').removeClass('hide');
+      $('#mon-bo-tableau-thead-0').html(tabGlobal);
+      // 📌 Construction du tableau dynamique
+      const row = `
+      <tr>
+        <td class="text-center stat-mini color-noir">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(checkIfExist.data.frontend)}</td>
+        <td class="text-center stat-mini color-noir">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(checkIfExist.data.backend)}</td>
+        <td class="text-center stat-mini color-noir">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(checkIfExist.data.autre)}</td>
+        <td class="text-center stat-mini color-noir">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(checkIfExist.data.inconnu)}</td>
+      </tr>`;
 
-    let r = '';
+      $(`#mon-bo-tableau-0`).html('');
+      $(`#mon-bo-tableau-0`).append(row);
 
-    /** On affiche le tableau */
-    $('#tableau-1').removeClass('hide');
-    $('#mon-bo-tableau-thead-1').html(tabCategory);
-    $(`#mon-bo-tableau-1`).html('');
+      let r = '';
 
-    severities.forEach(sev => {
-      r += generateTableRow(sev.css, 'bug', sev.severity, checkIfExist.data, elements);
-    });
-    $(`#mon-bo-tableau-1`).html(r);
+      /** On affiche le tableau */
+      $('#tableau-1').removeClass('hide');
+      $('#mon-bo-tableau-thead-1').html(tabCategory);
+      $(`#mon-bo-tableau-1`).html('');
 
-    /** VULNERABILITY */
-    $('#tableau-2').removeClass('hide');
-    $('#mon-bo-tableau-2').html(tabCategory);
-    $(`#mon-bo-tableau-2`).html('');
+      severities.forEach(sev => {
+        r += generateTableRow(sev.css, 'bug', sev.severity, checkIfExist.data, elements);
+      });
+      $(`#mon-bo-tableau-1`).html(r);
 
-    r='';
-    severities.forEach(sev => {
-      r += generateTableRow(sev.css, 'vulnerability', sev.severity, checkIfExist.data, elements);
-    });
-    $(`#mon-bo-tableau-2`).html(r);
+      /** VULNERABILITY */
+      $('#tableau-2').removeClass('hide');
+      $('#mon-bo-tableau-2').html(tabCategory);
+      $(`#mon-bo-tableau-2`).html('');
 
-    /** CODE_SMELL */
-    $('#tableau-3').removeClass('hide');
-    $('#mon-bo-tableau-3').html(tabCategory);
-    $('#mon-bo-tableau-3').html('');
+      r='';
+      severities.forEach(sev => {
+        r += generateTableRow(sev.css, 'vulnerability', sev.severity, checkIfExist.data, elements);
+      });
+      $(`#mon-bo-tableau-2`).html(r);
 
-    r = '';
-    severities.forEach(sev => {
-      r += generateTableRow(sev.css, 'code_smell', sev.severity, checkIfExist.data, elements);
-    });
-    $(`#mon-bo-tableau-3`).html(r);
+      /** CODE_SMELL */
+      $('#tableau-3').removeClass('hide');
+      $('#mon-bo-tableau-3').html(tabCategory);
+      $('#mon-bo-tableau-3').html('');
 
-    return;
+      r = '';
+      severities.forEach(sev => {
+        r += generateTableRow(sev.css, 'code_smell', sev.severity, checkIfExist.data, elements);
+      });
+      $(`#mon-bo-tableau-3`).html(r);
+      return 0;
+    }
   }
 
   /** On lance la fonction asynchrone */
@@ -761,15 +763,15 @@ $('#bouton-analyse').on('click', async () =>{
   }
 
     /** On affiche le tableau */
-    $('#tableau-1').removeClass('hide');
-    $('#mon-bo-tableau1').html(tabTitre);
+    //$('#tableau-1').removeClass('hide');
+    //$('#mon-bo-tableau-1').html(tabCategory);
     /** VULNERABILITY */
-    $('#tableau-2').removeClass('hide');
-    $('#mon-bo-tableau2').html(tabTitre);
+    //$('#tableau-2').removeClass('hide');
+    //$('#mon-bo-tableau-2').html(tabCategory);
     /** CODE_SMELL */
     $('#tableau-3').removeClass('hide');
-    $('#mon-bo-tableau3').html(tabTitre);
-
+    $('#mon-bo-tableau-3').html(tabCategory);
+    const r = analyseCategory('CODE_SMELL');
 
   /** On met à jour */
   //updateRepartition(phase);
