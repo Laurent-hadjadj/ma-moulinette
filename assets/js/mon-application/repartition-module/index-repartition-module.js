@@ -221,7 +221,7 @@ const analyse = async function (maven_key, category, severity, css, setup) {
 
   // 🕵️‍♂️ Appel AJAX
   const t = await $.ajax(options);
-
+console.log(t);
   // 📌 Vérification des erreurs
   if ((t.code ? t.code : null) !== http_200 &&
       (t.code ? t.code : null) !== http_201 &&
@@ -701,6 +701,7 @@ $('#bouton-analyse').on('click', async () =>{
 
   /** On vérifie so on a déjà une analyse complète pour ce projet  */
   const checkIfExist = await analyse(maven_key, 'CHECK', 'INFO', 'texte-vert', setup);
+  setTimeout(function() { hideMessage();  }, 5000);
 
   /** On affiche les données historisée ou on lance l'analyse*/
   if (typeof checkIfExist === 'object' && checkIfExist !== null) {
@@ -809,7 +810,7 @@ $('#bouton-analyse').on('click', async () =>{
   if (phase != 0){
     updateRepartition(phase);
     showMessage('success', 'Mise à jour de la répartition des anomalies par module effectuée.');
-    setTimeout(function() { hideMessage();  },3000);
+    setTimeout(function() { hideMessage();  }, 5000);
   }
 
   /** On réinitialise le tableau */
