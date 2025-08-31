@@ -575,14 +575,18 @@ class BatchCollecteRepartitionController extends AbstractController
         /** On instancie l'entityRepository */
         $repartitionTempRepos = $this->em->getRepository(RepartitionTemp::class);
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
+
         //BUG BLOCKER "1756045191468" "fr.ma-moulinette:ma-moulinette"
         $map = [
                 'maven_key' => $maven_key,
                 'category' => $category,
                 'severity' => $severity,
-                'setup' => $setup];
+                'setup' => $setup
+            ];
 
+        /** On récupère la liste des anomalies par catégorie et par severity */
         $repartition = $repartitionTempRepos->selectRepartitionByTypeAndSeverity($map);
+
         if ($repartition['code'] != 200) {
             $this->logger->error('❌ [Batch Répartition Analyse] Erreur lors de la récupération des issues temporaires', [
                 'code' => $repartition['code'],
