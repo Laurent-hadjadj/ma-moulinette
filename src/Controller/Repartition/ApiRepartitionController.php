@@ -191,19 +191,6 @@ class ApiRepartitionController extends AbstractController
         /** On vérifie qu'une collecte a été lancé pour ce setup */
         $checkIfExistSetup = $repartitionTempRepos->findOneBy(['setup' => $data->setup]);
 
-        if(is_null($checkIfExistSetup)){
-            $this->logger->warning("⚠️ [Batch Répartition Analyse] La collecte n'a pas été lancée pour ce setup (Erreur 404).", [
-                'maven_key' => $data->maven_key,
-                'setup' => $data->setup]);
-
-            return new JsonResponse([
-                    'code' => 404,
-                    'type' => 'warning',
-                    'message' => "Erreur lors de la récupération des anomalies temporaires (Erreur 404).",
-                    'trace' => null
-                ]);
-        }
-
         /** On récupère la dernière analyse complète disponible pour le projet */
         $checkIfExist = $repartitionRepos->findLatestMavenKeyWithControl($data->maven_key);
 
@@ -219,6 +206,18 @@ class ApiRepartitionController extends AbstractController
             ], Response::HTTP_OK);
         }
 
+        if(is_null($checkIfExistSetup) && $checkIfExist['result'] === []){
+            $this->logger->warning("⚠️ [Batch Répartition Analyse] La collecte n'a pas été lancée pour ce setup (Erreur 404).", [
+                'maven_key' => $data->maven_key,
+                'setup' => $data->setup]);
+
+            return new JsonResponse([
+                    'code' => 404,
+                    'type' => 'warning',
+                    'message' => "Erreur lors de la récupération des anomalies temporaires (Erreur 404).",
+                    'trace' => null
+                ]);
+        }
         /** Si on à une result avec un résultat, alors on a des données et si on a catégorie = CHECK alors on affiche les résultats déjà présent dans la table répartition. */
         if (isset($checkIfExist['result']) && $checkIfExist['result'] != [] &&
             $data->category === 'CHECK'){
