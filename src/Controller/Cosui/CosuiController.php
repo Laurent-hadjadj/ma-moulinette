@@ -164,6 +164,7 @@ class CosuiController extends AbstractController
 
         try {
                 $result = $this->cosuiService->generateRender($maven_key);
+
                 if (isset($result['code']) && $result['code'] !== 200) {
                     $this->logger->error($result['message'], [
                         'maven_key' => $maven_key,
