@@ -294,6 +294,17 @@ class ApiRepartitionController extends AbstractController
         }
     }
 
+    /**
+     * [Description for apiRepartitionHistorique]
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     *
+     * Created at: 01/09/2025 11:19:28 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     #[Route('/api/repartition/historique', name: 'repartition_historique', methods: ['PUT'])]
     public function apiRepartitionHistorique(Request $request): JsonResponse
     {
