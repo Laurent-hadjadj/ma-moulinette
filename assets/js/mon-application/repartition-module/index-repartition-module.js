@@ -32,7 +32,7 @@ import {serveur} from '../../common/properties.js';
 import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
-import { dateOptions, contentType, zero, cent, mille, http_200, http_201, http_202, http_404} from '../../common/constante.js';
+import { dateOptions, contentType, zero, cent, mille, http_200, http_201, http_202, http_404, http_500} from '../../common/constante.js';
 
 /** On récupère la clé maven de la clé de l'application. */
 const maven_key = $('#titre-repartition').data('application');
@@ -215,8 +215,8 @@ const analyse = async function (maven_key, category, severity, css, setup) {
       dataType: 'json',
       data: JSON.stringify(data),
       contentType,
-      beforeSend: () => setTimeout(() => startAnalyse(category), 1),
-      complete: () => setTimeout(stopAnalyse, 1)
+      beforeSend: () => setTimeout(() => startAnalyse(), 1),
+      complete: () => setTimeout(stopAnalyse(), 1)
   };
 
   // 🕵️‍♂️ Appel AJAX
@@ -224,34 +224,25 @@ const analyse = async function (maven_key, category, severity, css, setup) {
 
   // 📌 Vérification des erreurs
   if ((t.code ? t.code : null) !== http_200 &&
-      (t.code ? t.code : null) !== http_201 &&
       (t.code ? t.code : null) !== http_202 &&
       (t.code ? t.code : null) !== http_404){
         const hasTrace = !!t.trace;
         const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
         showMessage(t.type, t.message, trace);
         sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'true');
-        return 99;
+        return http_500;
   }
 
    /** On a pas de données pour ce setup, il faut lancer une collecte */
   if (t.code === http_404){
     const message = "[Répartition-Analyse] Il n'y a pas de données disponibles pour ce setup. Vous devez lancer une collecte avant de lancer une analyse (Erreur 404).";
     showMessage('warning', message);
-    return 404;
-  }
-
-  if (t.code === http_201){
-      const hasTrace = !!t.trace;
-      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
-      showMessage(t.type, t.message, trace);
-      sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
-      return t; // On affiche les résultats seulement.
+    return Number(t.code);
   }
 
   /** On lance l'analyse */
   if (t.code === http_202 && t.category === 'CHECK'){
-    return 100;
+    return Number(t.code);
   }
 
   /** On calcule le total des anomalies analysé ? */
@@ -277,9 +268,8 @@ const analyse = async function (maven_key, category, severity, css, setup) {
       }
       const alertClass = (calculIdc * cent != 100 && idc.trim() !== '---') ? 'texte-rouge' : 'texte-vert';
 
-      let tableId;
+      let table, theadId, tableId;
 
-      //'const tableId = category === 'BUG' ? 'mon-bo-tableau1' : category === 'VULNERABILITY' ? 'mon-bo-tableau2' : 'mon-bo-tableau3';
       if (category === 'BUG') {
           tableId = 'mon-bo-tableau-1';
       } else if (category === 'VULNERABILITY') {
@@ -304,7 +294,7 @@ const analyse = async function (maven_key, category, severity, css, setup) {
       /** category, severity, frontend, backend, autre, inconnu, inconnu */
       analyseCollecteRepartition.push([category, severity, t.frontend, t.backend, t.autre, t.inconnu]);
   }
-  return 0;
+  return Number(t.code);
 };
 
 /**
@@ -812,7 +802,7 @@ $('#bouton-analyse').on('click', async () =>{
 
   if (control === 'true') {
     showMessage('alert', 'Une erreur générale lors du calcul de la répartition a été rencontrée (Erreur 500).');
-    return 99;
+    return http_500;
   } else {
     sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
   }
@@ -824,43 +814,45 @@ $('#bouton-analyse').on('click', async () =>{
     const a3 = await analyse(maven_key, category, 'MAJOR','texte-orange', setup);
     const a4 = await analyse(maven_key, category, 'MINOR', 'texte-vert', setup);
     const a5 = await analyse(maven_key, category, 'INFO', 'texte-bleu', setup);
-    return (Number(a1) + Number(a2) + Number(a3) + Number(a4) + Number(a5));
+    return [Number(a1), Number(a2), Number(a3), Number(a4), Number(a5)];
   }
 
   /** On vérifie so on a déjà une analyse complète pour ce projet  */
-  const checkIfExist = await analyse(maven_key, 'CHECK', 'INFO', 'texte-vert', setup);
-  setTimeout(function() { hideMessage();  }, 5000);
+  const check = await analyse(maven_key, 'CHECK', 'INFO', 'texte-vert', setup);
 
   /** On lance l'analyse par catégorie et sévérité */
-  if (checkIfExist === 100 ){
+  if (check === http_202 ){
     control = sessionStorage.getItem('ma_moulinette_erreur-analyse-repartition');
     // On sort si on a une erreur
     if ( control == 'true') {
       sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
-      return 99;
+      return http_500;
     }
 
     /** BUG */
+    $('#mon-bo-tableau-1').html('');
     const r1 = await analyseCategory('BUG');
-    if (r1 === 0){
+    if (r1.every(value => value === http_200)){
       $('#tableau-1').removeClass('hide');
-      $('#mon-bo-tableau-1').html(tabCategory);
+      $('#mon-bo-tableau-thead-1').html(tabCategory);
       phase += 1;
     }
 
     /** VULNERABILITY */
+    $('#mon-bo-tableau-2').html('');
     const r2 = await analyseCategory('VULNERABILITY');
-    if (r2 === 0) {
+    if (r2.every(value => value === http_200)) {
       $('#tableau-2').removeClass('hide');
-      $('#mon-bo-tableau-2').html(tabCategory);
+      $('#mon-bo-tableau-thead-2').html(tabCategory);
       phase += 1;
     }
 
     /** CODE_SMELL */
+    $('#mon-bo-tableau-3').html('');
     const r3 = await analyseCategory('CODE_SMELL');
-    if ( r3 === 0){
+    if ( r3.every(value => value === http_200)){
       $('#tableau-3').removeClass('hide');
-      $('#mon-bo-tableau-3').html(tabCategory);
+      $('#mon-bo-tableau-thead-3').html(tabCategory);
       phase += 1;
     }
   }

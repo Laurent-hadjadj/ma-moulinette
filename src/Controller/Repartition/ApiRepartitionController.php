@@ -159,7 +159,6 @@ class ApiRepartitionController extends AbstractController
         }
 
         // Instanciation des repositories
-        $repartitionRepos = $this->em->getRepository(Repartition::class);
         $repartitionTempRepos = $this->em->getRepository(RepartitionTemp::class);
 
         /** On décode le body */
@@ -191,54 +190,22 @@ class ApiRepartitionController extends AbstractController
         /** On vérifie qu'une collecte a été lancé pour ce setup */
         $checkIfExistSetup = $repartitionTempRepos->findOneBy(['setup' => $data->setup]);
 
-        /** On récupère la dernière analyse complète disponible pour le projet */
-        $checkIfExist = $repartitionRepos->findLatestMavenKeyWithControl($data->maven_key);
-
-        if ($checkIfExist['code'] != 200){
-            $this->logger->error("❌ [Répartition-Analyse] Échec de récupération des données de répartition.",
-                ['maven_key', $data->maven_key]);
-
-            return new JsonResponse([
-                'code' => $checkIfExist['code'],
-                'type' => 'alert',
-                'message' => "[Répartition-Analyse] Échec de récupération des données de répartition (Erreur {$checkIfExist['code']}).",
-                'trace' => $checkIfExist['erreur']
-            ], Response::HTTP_OK);
-        }
-
-        if(is_null($checkIfExistSetup) && $checkIfExist['result'] === []){
-            $this->logger->warning("⚠️ [Batch Répartition Analyse] La collecte n'a pas été lancée pour ce setup (Erreur 404).", [
+        if(is_null($checkIfExistSetup)){
+            $this->logger->warning("⚠️ [Répartition Analyse] La collecte n'a pas été lancée pour ce setup (Erreur 404).", [
                 'maven_key' => $data->maven_key,
                 'setup' => $data->setup]);
 
             return new JsonResponse([
                     'code' => 404,
                     'type' => 'warning',
-                    'message' => "Erreur lors de la récupération des anomalies temporaires (Erreur 404).",
+                    'message' => "[Répartition Analyse] La collecte n'a pas été lancée pour ce setup (Erreur 404).",
                     'trace' => null
                 ]);
         }
-        /** Si on à une result avec un résultat, alors on a des données et si on a catégorie = CHECK alors on affiche les résultats déjà présent dans la table répartition. */
-        if (isset($checkIfExist['result']) && $checkIfExist['result'] != [] &&
-            $data->category === 'CHECK'){
-            $data = $checkIfExist['result'][0];
-            $date = (new \DateTime($data['date_enregistrement']))->format('Y-m-d H:i');
-            $message = "[Répartition-Analyse] Récupération des données de répartition pour le setup <strong>{$data['setup']}</strong> en date du <strong>{$date}</strong>";
 
-            return new JsonResponse([
-                    'code' => 201,
-                    'type' => 'primary',
-                    'message' => $message,
-                    'data' => $data,
-                    'mode' => 'Historique',
-                    'date_enregistrement' => $date
-                ],  Response::HTTP_OK);
-        }
-
-        /** Il n'existe pas de données historisées pour ce setup, on retourne un code 202 pour lancer l'analyse */
-        if (isset($checkIfExist['result']) &&
-            $data->category !== 'CHECK') {
-            $this->logger->info("📌 [Répartition-Analyse] Il n'existe pas de données historisées pour ce setup.",
+        /** on retourne un code 202 pour lancer l'analyse */
+        if ($data->category === 'CHECK') {
+            $this->logger->info("📌 [Répartition-Analyse] Il existe des données collectées pour ce setup.",
                 [
                     'maven_key', $data->maven_key,
                     'setup' => $data->setup
@@ -277,7 +244,8 @@ class ApiRepartitionController extends AbstractController
                     'backend' => $repartitionAnalyse['backend'],
                     'autre' => $repartitionAnalyse['autre'],
                     'inconnu' => $repartitionAnalyse['inconnu'],
-                    'total' => $repartitionAnalyse['total']
+                    'total' => $repartitionAnalyse['total'],
+                    'mode' => 'Manuel',
                 ], Response::HTTP_OK);
         } catch (Exception $trace) {
             $this->logger->critical("🔴 [Répartition Analyse] Exception lors du traitement de répartition des anomalies par module (Erreur 500).", [
