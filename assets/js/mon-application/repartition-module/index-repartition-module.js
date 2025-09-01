@@ -97,6 +97,7 @@ let analyseCollecteRepartition = [];
 /** On initialise le control des erreurs à l'ouverture de la page  */
 sessionStorage.setItem('ma_moulinette_erreur-collecte-repartition', 'false');
 sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
+sessionStorage.setItem('ma_moulinette_erreur-historique-repartition', 'false');
 
 /**
  * [Description for buildTabHistorique]
@@ -133,7 +134,6 @@ const buildTabHistorique = function(css, severity, frontend, backend, autre, inc
         <td class="text-center ${alertClass}">${idc}</td>
     </tr>`;
 }
-
 
 /**
  * [Description for calculateIdc]
@@ -308,6 +308,122 @@ const analyse = async function (maven_key, category, severity, css, setup) {
 };
 
 /**
+ * analyse
+ * On lance le service d'analyse des données pour le projet
+ *
+ * @param string mavenKey
+ * @param string category
+ * @param string severity
+ * @param string  css
+ * @param string  setup
+ *
+ * @returns void
+ *
+ * Created at: 19/12/2022, 22:46:29 (Europe/Paris)
+ * @author Laurent HADJADJ <laurent_h@me.com>
+ */
+const historique = async function (maven_key) {
+  /**
+   * 🏁 Animation de démarrage et de fin
+   */
+  const startHistorique = () => {
+    $('#analyse-animation').addClass('sp-volume');
+  };
+
+  const stopHistorique = () => {
+    $('#analyse-animation').removeClass('sp-volume');
+  };
+
+  // 📌 Configuration AJAX
+  const data = { maven_key };
+
+  const options = {
+      url: `${serveur()}/api/repartition/historique`,
+      type: 'PUT',
+      dataType: 'json',
+      data: JSON.stringify(data),
+      contentType,
+      beforeSend: () => setTimeout(() => startHistorique(), 1),
+      complete: () => setTimeout(stopHistorique(), 1)
+  };
+
+  // 🕵️‍♂️ Appel AJAX
+  const t = await $.ajax(options);
+
+  // 📌 Vérification des erreurs
+  if ((t.code ? t.code : null) !== http_200 && (t.code ? t.code : null) !== http_201){
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
+        sessionStorage.setItem('ma_moulinette_erreur-historique-repartition', 'true');
+        return Number(t.code);
+  }
+
+  if ((t.code ? t.code : null) === http_201){
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
+        sessionStorage.setItem('ma_moulinette_erreur-historique-repartition', 'false');
+  }
+
+  /** On affiche les données historisées */
+  $('#js-analyse-mode').html(t.mode);
+  $('#js-analyse-setup').html(t.data.setup);
+  $('#js-analyse-date').html(new Intl.DateTimeFormat('default', dateOptions).format(new Date(t.date_enregistrement)));
+
+  $('#tableau-0').removeClass('hide');
+  $('#mon-bo-tableau-thead-0').html(tabGlobal);
+  // 📌 Construction du tableau dynamique
+  const row = `
+  <tr>
+    <td class="text-center stat-mini color-noir">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.frontend)}</td>
+    <td class="text-center stat-mini color-noir">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.backend)}</td>
+    <td class="text-center stat-mini color-noir">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.autre)}</td>
+    <td class="text-center stat-mini color-noir">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.inconnu)}</td>
+  </tr>`;
+
+  $(`#mon-bo-tableau-0`).html('');
+  $(`#mon-bo-tableau-0`).append(row);
+
+  let r;
+
+  /** On affiche le tableau */
+  $('#tableau-1').removeClass('hide');
+  $('#mon-bo-tableau-thead-1').html(tabCategory);
+  $(`#mon-bo-tableau-1`).html('');
+
+  r = '';
+  severities.forEach(sev => {
+    r += generateTableRow(sev.css, 'bug', sev.severity, t.data, elements);
+  });
+  $(`#mon-bo-tableau-1`).html(r);
+
+  /** VULNERABILITY */
+  $('#tableau-2').removeClass('hide');
+  $('#mon-bo-tableau-thead-2').html(tabCategory);
+  $(`#mon-bo-tableau-2`).html('');
+
+  r = '';
+  severities.forEach(sev => {
+    r += generateTableRow(sev.css, 'vulnerability', sev.severity, t.data, elements);
+  });
+  $(`#mon-bo-tableau-2`).html(r);
+
+  /** CODE_SMELL */
+  $('#tableau-3').removeClass('hide');
+  $('#mon-bo-tableau-thead-3').html(tabCategory);
+  $('#mon-bo-tableau-3').html('');
+
+  r = '';
+  severities.forEach(sev => {
+    r += generateTableRow(sev.css, 'code_smell', sev.severity, t.data, elements);
+  });
+  $(`#mon-bo-tableau-3`).html(r);
+
+  return Number(http_201);
+};
+
+/**
  * [Description for collecte]
  * On lance la collecte et on affiche la répartition
  *
@@ -444,6 +560,10 @@ const updateRepartition = async function(phase){
 }
 
 /********************    Évènement    ************************/
+
+/********************************************************/
+/********            Collecte : Bug              ********/
+/********************************************************/
 $('#bouton-collecte-bug').on('click', async () => {
   const $boutonCollecteBug = $('#bouton-collecte-bug');
   const $jsCollecteBug = $('#js-collecte-bug');
@@ -521,7 +641,9 @@ $('#bouton-collecte-bug').on('click', async () => {
 
 });
 
-/** On lance la collecte pour les VULNERABILITY */
+/********************************************************/
+/********        Collecte : Vulnerability       ********/
+/********************************************************/
 $('#bouton-collecte-vulnerability').on('click', async () => {
   const $boutonCollecteVulnerability = $('#bouton-collecte-vulnerability');
   const $jsCollecteVulnerability = $('#js-collecte-vulnerability');
@@ -599,6 +721,9 @@ $('#bouton-collecte-vulnerability').on('click', async () => {
 
 });
 
+/********************************************************/
+/********        Collecte : Code Smell           ********/
+/********************************************************/
 /** On lance la collecte pour les CODE_SMELL */
 $('#bouton-collecte-code-smell').on('click', async () => {
   const $boutonCollecteCodeSmell = $('#bouton-collecte-code-smell');
@@ -677,6 +802,9 @@ $('#bouton-collecte-code-smell').on('click', async () => {
     }, 3000);
 });
 
+/********************************************************/
+/********                Analyse                 ********/
+/********************************************************/
 $('#bouton-analyse').on('click', async () =>{
   let control, phase = 0;
 
@@ -702,77 +830,6 @@ $('#bouton-analyse').on('click', async () =>{
   /** On vérifie so on a déjà une analyse complète pour ce projet  */
   const checkIfExist = await analyse(maven_key, 'CHECK', 'INFO', 'texte-vert', setup);
   setTimeout(function() { hideMessage();  }, 5000);
-
-  /** On affiche les données historisée ou on lance l'analyse*/
-  if (typeof checkIfExist === 'object' && checkIfExist !== null) {
-    if (checkIfExist.code != http_200 &&
-        checkIfExist.code != http_201 &&
-        checkIfExist.code != http_202){
-      // 📌 Vérification des erreurs
-      const hasTrace = !!response.trace;
-      const trace = hasTrace ? prepareTechnicalDetails(checkIfExist.trace) : null;
-      showMessage(checkIfExist.type, checkIfExist.message, trace);
-      sessionStorage.setItem('ma_moulinette_erreur-collect-repartition', 'true')
-      return 99;
-    }
-
-    /** On affiche les données historisées */
-    if (checkIfExist.code === http_201){
-      /** On affiche le tableau */
-      $('#js-analyse-mode').html(checkIfExist.mode);
-      $('#js-analyse-setup').html(checkIfExist.setup);
-      $('#js-analyse-date').html(new Intl.DateTimeFormat('default', dateOptions).format(new Date(checkIfExist.date_enregistrement)));
-
-      $('#tableau-0').removeClass('hide');
-      $('#mon-bo-tableau-thead-0').html(tabGlobal);
-      // 📌 Construction du tableau dynamique
-      const row = `
-      <tr>
-        <td class="text-center stat-mini color-noir">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(checkIfExist.data.frontend)}</td>
-        <td class="text-center stat-mini color-noir">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(checkIfExist.data.backend)}</td>
-        <td class="text-center stat-mini color-noir">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(checkIfExist.data.autre)}</td>
-        <td class="text-center stat-mini color-noir">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(checkIfExist.data.inconnu)}</td>
-      </tr>`;
-
-      $(`#mon-bo-tableau-0`).html('');
-      $(`#mon-bo-tableau-0`).append(row);
-
-      let r = '';
-
-      /** On affiche le tableau */
-      $('#tableau-1').removeClass('hide');
-      $('#mon-bo-tableau-thead-1').html(tabCategory);
-      $(`#mon-bo-tableau-1`).html('');
-
-      severities.forEach(sev => {
-        r += generateTableRow(sev.css, 'bug', sev.severity, checkIfExist.data, elements);
-      });
-      $(`#mon-bo-tableau-1`).html(r);
-
-      /** VULNERABILITY */
-      $('#tableau-2').removeClass('hide');
-      $('#mon-bo-tableau-2').html(tabCategory);
-      $(`#mon-bo-tableau-2`).html('');
-
-      r = '';
-      severities.forEach(sev => {
-        r += generateTableRow(sev.css, 'vulnerability', sev.severity, checkIfExist.data, elements);
-      });
-      $(`#mon-bo-tableau-2`).html(r);
-
-      /** CODE_SMELL */
-      $('#tableau-3').removeClass('hide');
-      $('#mon-bo-tableau-3').html(tabCategory);
-      $('#mon-bo-tableau-3').html('');
-
-      r = '';
-      severities.forEach(sev => {
-        r += generateTableRow(sev.css, 'code_smell', sev.severity, checkIfExist.data, elements);
-      });
-      $(`#mon-bo-tableau-3`).html(r);
-      return 0;
-    }
-  }
 
   /** On lance l'analyse par catégorie et sévérité */
   if (checkIfExist === 100 ){
@@ -817,4 +874,23 @@ $('#bouton-analyse').on('click', async () =>{
 
   /** On réinitialise le tableau */
   analyseCollecteRepartition = [];
+});
+
+/********************************************************/
+/********                Historique              ********/
+/********************************************************/
+$('#bouton-historique').on('click', async () =>{
+  const control = sessionStorage.getItem('ma_moulinette_erreur-historique-repartition');
+  if (control === 'true'){
+    showMessage('alert', 'Une erreur générale lors de la récupération des données historisées a été rencontrée (Erreur 500).');
+    return;
+  }
+
+  const result = await historique(maven_key);
+  if (result !== http_201){
+    sessionStorage.setItem('ma_moulinette_erreur-historique-repartition', 'true');
+  } else {
+    setTimeout( ()=>{ hideMessage(); }, 5000);
+    sessionStorage.setItem('ma_moulinette_erreur-historique-repartition', 'false');
+  }
 });

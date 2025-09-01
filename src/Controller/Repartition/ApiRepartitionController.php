@@ -294,6 +294,89 @@ class ApiRepartitionController extends AbstractController
         }
     }
 
+    #[Route('/api/repartition/historique', name: 'repartition_historique', methods: ['PUT'])]
+    public function apiRepartitionHistorique(Request $request): JsonResponse
+    {
+        $user = $this->security->getUser();
+        if (!$user) {
+            $this->logger->error(static::$loggerE401);
+            return new JsonResponse([
+                'code' => 401,
+                'type' => 'alert',
+                'message' => static::$reference . static::$erreur401
+            ], Response::HTTP_OK);
+        }
+
+        // Instanciation des repositories
+        $repartitionRepos = $this->em->getRepository(Repartition::class);
+
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On teste si la clé est valide */
+        if ($data === null ||
+            !isset($data->maven_key)) {
+            $this->logger->error("❌ [Répartition-Analyse] Requête invalide : clé 'maven_key' manquante ou JSON mal formé.", [ 'payload' => $data ]);
+
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'alert',
+                'message' => static::$reference . static::$erreur400,
+            ], Response::HTTP_OK);
+        }
+
+        /** On vérifie si l'utilisateur à un rôle Collecte ? */
+        if (!$this->isGranted('ROLE_COLLECTE')) {
+            $this->logger->error(static::$loggerE403, [ 'user' => $user ]);
+
+            return new JsonResponse([
+                'code' => 403,
+                'type' => 'warning',
+                'message' => static::$reference . static::$erreur403
+            ], Response::HTTP_OK);
+        }
+
+        /** On récupère la dernière analyse complète disponible pour le projet */
+        $checkIfExistHistorique = $repartitionRepos->findLatestMavenKeyWithControl($data->maven_key);
+
+        if ($checkIfExistHistorique['code'] != 200){
+            $this->logger->error("❌ [Répartition-Analyse] Échec de récupération des données de répartition.",
+                ['maven_key', $data->maven_key]);
+
+            return new JsonResponse([
+                'code' => $checkIfExistHistorique['code'],
+                'type' => 'alert',
+                'message' => "[Répartition-Analyse] Échec de récupération des données de répartition (Erreur {$checkIfExistHistorique['code']}).",
+                'trace' => $checkIfExistHistorique['erreur']
+            ], Response::HTTP_OK);
+        }
+
+        /** Si on à une result avec un résultat, alors on a des données alors on affiche les résultats déjà présent dans la table répartition. */
+        if (isset($checkIfExistHistorique['result']) && $checkIfExistHistorique['result'] === []){
+            $message = "[Répartition-Analyse] Il n'y a pas de données historisées disponibles. Vous devez lancer une nouvelle collecte et lancer une analyse (Erreur 404).";
+
+            return new JsonResponse([
+                'code' => 404,
+                'type' => 'warning',
+                'message' => $message,
+            ],  Response::HTTP_OK);
+        }
+
+        /** On a des données à envoyer */
+        $data = $checkIfExistHistorique['result'][0];
+        $date = (new \DateTime($data['date_enregistrement']))->format('Y-m-d H:i');
+        $message = "[Répartition-Analyse] Récupération des données de répartition pour le setup <strong>{$data['setup']}</strong> en date du <strong>{$date}</strong>";
+
+        return new JsonResponse([
+            'code' => 201,
+            'type' => 'primary',
+            'message' => $message,
+            'data' => $data,
+            'mode' => 'Historique',
+            'date_enregistrement' => $date
+        ],  Response::HTTP_OK);
+    }
+
     /**
      * [Description for apiRepartitionAnalyseMaj]
      *
