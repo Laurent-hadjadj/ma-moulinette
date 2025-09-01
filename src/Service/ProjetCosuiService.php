@@ -134,20 +134,26 @@ class ProjetCosuiService
             foreach (['frontend', 'backend'] as $module) {
                 foreach (['bug', 'vulnerability', 'code_smell'] as $prefix) {
                     foreach (['Blocker', 'Critical', 'Major'] as $severity) {
+                        // Appel de la méthode traitement pour obtenir les résultats
                         $result = $this->traitement($maven_key, $render['setup'], $module, $prefix, $severity);
+
+                        // Détermination du bloc en fonction du module
                         $bloc = ($module == 'frontend') ? 'nombre_presentation' : 'nombre_metier';
-                        $value = $module.ucfirst($prefix).$severity;
+
+                        // Création du tableau map avec les données nécessaires
                         $map = [
                                 'module' => $bloc,
                                 'prefix' => $prefix,
                                 'severity' => strtolower($severity),
-                                'data' => $result[0][$value] ?? 0
+                                'data' => $result[0]['value'] ?? 0
                             ];
+                        $this->logger->debug("🛠️ [COSUI] Valeur de map : ",$map);
+
+                        // Injection des données dans la structure de rendu
                         $this->injectRepartition($render, $map);
                     }
                 }
             }
-
         } catch (\Throwable $e) {
         $message = '🔴 Erreur durant le traitement des anomalies.';
         $messageLog = '🔴 [COSUI] Erreur durant le traitement des anomalies.';
@@ -479,9 +485,7 @@ class ProjetCosuiService
      * [Description for injectRepartition]
      *
      * @param array $render
-     * @param array $data
-     * @param string $prefix
-     * @param string $severity
+     * @param array $map
      *
      * @return void
      *
@@ -492,7 +496,8 @@ class ProjetCosuiService
     private function injectRepartition(array &$render, array $map): void
     {
         $render["{$map['module']}_{$map['prefix']}_{$map['severity']}"] = $map['data'] ?? '--';
-        //if ($map['prefix'] == 'bug' && $map['severity'] == 'major') { dd($render); }
+        $this->logger->debug("🛠️ [COSUI] Injection des données dans le render : ", [
+            "{$map['module']}_{$map['prefix']}_{$map['severity']}" => $map['data'] ]);
     }
 
     /**
@@ -843,16 +848,20 @@ class ProjetCosuiService
                 $columnName = "{$module}{$prefix}{$severity}";
 
                 $qb = $this->em->createQueryBuilder()
-                        ->select("r.$columnName")
+                        ->select("r.$columnName AS value")
                         ->from(Repartition::class, 'r')
                         ->where('r.mavenKey = :mavenKey')
                         ->andWhere('r.setup = :setup')
                         ->setParameter('mavenKey', $maven_key)
                         ->setParameter('setup', $setup);
+                $query = $qb->getQuery();
+		        $result = $query->getArrayResult();
+                //$trace = $querry->getSQL();
+                $this->logger->debug("🛠️ Query Result: " . json_encode($result));
 
-                return $qb->getQuery()->getArrayResult();
+                return $result;
         } catch(\Throwable $e) {
-            $this->logger->critical('Erreur dans le createQueryBuilder : ' . $e->getMessage());
+            $this->logger->critical('🔴 Erreur dans le createQueryBuilder : ' . $e->getMessage());
         }
         return [];
     }
