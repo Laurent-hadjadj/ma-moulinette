@@ -329,15 +329,15 @@ $('select[name="version"]').on('change', function () {
     }
     const tNotes1 = ['', 'a', 'b', 'c', 'd', 'e', 'z'];
     const tNotes2 = ['', 'A', 'B', 'C', 'D', 'E', 'Z'];
-    const couleurReliability = tNotes1[parseInt(t.data.reliability_rating,10)];
-    const couleurSecurity = tNotes1[parseInt(t.data.security_rating,10)];
-    const couleurSqale = tNotes1[parseInt(t.data.sqale_rating,10)];
-    const couleurHotspotsReview = tNotes1[parseInt(t.data.security_review_rating,10)];
+    const couleurReliability = tNotes1[Number(t.data.reliability_rating)];
+    const couleurSecurity = tNotes1[Number(t.data.security_rating)];
+    const couleurSqale = tNotes1[Number(t.data.sqale_rating)];
+    const couleurHotspotsReview = tNotes1[Number(t.data.security_review_rating)];
 
-    const reliability_rating = tNotes2[parseInt(t.data.reliability_rating,10)];
-    const security_rating = tNotes2[parseInt(t.data.security_rating,10)];
-    const sqale_rating = tNotes2[parseInt(t.data.sqale_rating,10)];
-    const security_review_rating = tNotes2[parseInt(t.data.security_review_rating,10)];
+    const reliability_rating = tNotes2[Number(t.data.reliability_rating)];
+    const security_rating = tNotes2[Number(t.data.security_rating)];
+    const sqale_rating = tNotes2[Number(t.data.sqale_rating)];
+    const security_review_rating = tNotes2[Number(t.data.security_review_rating)];
 
     /*  On affiche les notes */
     $('#reliability-rating').html(`<span class="note note-${couleurReliability}">${reliability_rating}</span>`);

@@ -71,12 +71,12 @@ const match=function(params, data) {
 const selectProjet=function() {
   let data={};
   /** On récupère le filtre */
-  const nombreEquipe=$("input[id^='check-']").length;
+  const nombreEquipe = $("input[id^='check-']").length;
   /** première valeur de la liste = 'null'  ? */
   data[0] = 'null';
-  for (let i=1; i<parseInt(nombreEquipe,10)+1; i++){
+  for (let i = 1; i < Number(nombreEquipe) + 1; i++){
     if ($(`#check-${i}`).prop('checked')) {
-      data[i]= $(`#check-${i}`).data('equipe');
+      data[i] = $(`#check-${i}`).data('equipe');
     }
   }
 
@@ -144,7 +144,7 @@ $('.js-preference-ajouter-favoris-enable').on('click', ()=> {
 
   /** On regarde si au moins une équipe est choisi */
   let nombreEquipeChecked=0;
-  for (let i=1; i<parseInt(nombreEquipe,10)+1; i++){
+  for (let i=1; i<Number(nombreEquipe)+1; i++){
     if ($(`#check-${i}`).prop('checked')) {
       nombreEquipeChecked =+1;
     }

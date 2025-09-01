@@ -218,23 +218,23 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
   let c=[], n=[];
 
   /* Détails A1 */
-  if (parseInt(r.a1Blocker + r.a1Critical + r.a1Major + r.a1Minor,10) === 0){
+  if (Number(r.a1Blocker + r.a1Critical + r.a1Major + r.a1Minor) === 0){
     c = couleur[un];
     n = note[un];
   }
-  if (parseInt(r.a1Minor,10) > 1) {
+  if (Number(r.a1Minor) > 1) {
     c = couleur[deux];
     n = note[deux];
   }
-  if (parseInt(r.a1Major,10) > 1) {
+  if (Number(r.a1Major) > 1) {
     c = couleur[trois];
     n = note[trois];
   }
-  if (parseInt(r.a1Critical,10) > 1) {
+  if (Number(r.a1Critical) > 1) {
     c = couleur[quatre];
     n = note[quatre];
   }
-  if (parseInt(r.a1Blocker,10) > 1) {
+  if (Number(r.a1Blocker) > 1) {
     c = couleur[cinq];
     n = note[cinq];
   }
@@ -242,23 +242,23 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
   injectionOwaspInfo(un, r.a1, c, n);
 
   /** Détails A2 */
-  if (parseInt(r.a2Blocker + r.a2Critical + r.a2Major + r.a2Minor,10) === 0) {
+  if (Number(r.a2Blocker + r.a2Critical + r.a2Major + r.a2Minor) === 0) {
     c = couleur[un];
     n = note[un];
   }
-  if (parseInt(r.a2Minor,10) > 1) {
+  if (Number(r.a2Minor) > 1) {
     c = couleur[deux];
     n = note[deux];
   }
-  if (parseInt(r.a2Major,10) > 1) {
+  if (Number(r.a2Major) > 1) {
     c = couleur[trois];
     n = note[trois];
   }
-  if (parseInt(r.a2Critical,10) > 1) {
+  if (Number(r.a2Critical) > 1) {
     c = couleur[quatre];
     n = note[quatre];
   }
-  if (parseInt(r.a2Blocker,10) > 1) {
+  if (Number(r.a2Blocker) > 1) {
     c = couleur[cinq];
     n = note[cinq];
   }
@@ -266,23 +266,23 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
   injectionOwaspInfo(deux, r.a2, c, n);
 
   /* Détails A3 */
-  if (parseInt(r.a3Blocker + r.a3Critical + r.a3Major + r.a3Minor,10) === 0) {
+  if (Number(r.a3Blocker + r.a3Critical + r.a3Major + r.a3Minor) === 0) {
     c = couleur[un];
     n = note[un];
   }
-  if (parseInt(r.a3Minor,10) > 1) {
+  if (Number(r.a3Minor) > 1) {
     c = couleur[deux];
     n = note[deux];
   }
-  if (parseInt(r.a3Major,10) > 1) {
+  if (Number(r.a3Major) > 1) {
     c = couleur[trois];
     n = note[trois];
   }
-  if (parseInt(r.a3Critical,10) > 1) {
+  if (Number(r.a3Critical) > 1) {
     c = couleur[quatre];
     n = note[quatre];
   }
-  if (parseInt(r.a3Blocker,10) > 1) {
+  if (Number(r.a3Blocker) > 1) {
     c = couleur[cinq];
     n = note[cinq];
   }
@@ -290,23 +290,23 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
   injectionOwaspInfo(trois, r.a3, c, n);
 
   /* Détails A4 */
-  if (parseInt(r.a4Blocker + r.a1Critical + r.a1Major + r.a1Minor,10) === 0) {
+  if (Number(r.a4Blocker + r.a1Critical + r.a1Major + r.a1Minor) === 0) {
     c = couleur[un];
     n = note[un];
   }
-  if (parseInt(r.a4Minor,10) > 1) {
+  if (Number(r.a4Minor) > 1) {
     c = couleur[deux];
     n = note[deux];
   }
-  if (parseInt(r.a4Major,10) > 1) {
+  if (Number(r.a4Major) > 1) {
     c = couleur[trois];
     n = note[trois];
   }
-  if (parseInt(r.a4Critical,10) > 1) {
+  if (Number(r.a4Critical) > 1) {
     c = couleur[quatre];
     n = note[quatre];
   }
-  if (parseInt(r.a4Blocker,10) > 1) {
+  if (Number(r.a4Blocker) > 1) {
     c = couleur[cinq];
     n = note[cinq];
   }
@@ -314,46 +314,46 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
   injectionOwaspInfo(quatre, r.a4, c, n);
 
   /* Détails A5 */
-  if (parseInt(r.a5Blocker + r.a5Critical + r.a5Major + r.a5Minor,10) === 0) {
+  if (Number(r.a5Blocker + r.a5Critical + r.a5Major + r.a5Minor) === 0) {
     c = couleur[un];
     n = note[un];
   }
-  if (parseInt(r.a5Minor,10) > 1) {
+  if (Number(r.a5Minor) > 1) {
     c = couleur[deux];
     n = note[deux];
   }
-  if (parseInt(r.a5Major,10) > 1) {
+  if (Number(r.a5Major) > 1) {
     c = couleur[trois];
     n = note[trois];
   }
-  if (parseInt(r.a5Critical,10) > 1) {
+  if (Number(r.a5Critical) > 1) {
     c = couleur[quatre];
     n = note[quatre];
   }
-  if (parseInt(r.a5Blocker,10) > 1) {
+  if (Number(r.a5Blocker) > 1) {
     c = couleur[cinq];
     n = note[cinq];
   }
   injectionOwaspInfo(cinq, r.a5, c, n);
 
   /* Détails A6 */
-  if (parseInt(r.a6Blocker + r.a6Critical + r.a6Major + r.a6Minor,10) === 0) {
+  if (Number(r.a6Blocker + r.a6Critical + r.a6Major + r.a6Minor) === 0) {
     c = couleur[un];
     n = note[un];
   }
-  if (parseInt(r.a6Minor,10) > 1) {
+  if (Number(r.a6Minor) > 1) {
     c = couleur[deux];
     n = note[deux];
   }
-  if (parseInt(r.a6Major,10) > 1) {
+  if (Number(r.a6Major) > 1) {
     c = couleur[trois];
     n = note[trois];
   }
-  if (parseInt(r.a6Critical,10) > 1) {
+  if (Number(r.a6Critical) > 1) {
     c = couleur[quatre];
     n = note[quatre];
   }
-  if (parseInt(r.a6Blocker,10) > 1) {
+  if (Number(r.a6Blocker) > 1) {
     c = couleur[cinq];
     n = note[cinq];
   }
@@ -361,23 +361,23 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
   injectionOwaspInfo(six, r.a6, c, n);
 
   /* Détails A7 */
-  if (parseInt(r.a7Blocker + r.a7Critical + r.a7Major + r.a7Minor,10) === 0) {
+  if (Number(r.a7Blocker + r.a7Critical + r.a7Major + r.a7Minor) === 0) {
     c = couleur[un];
     n = note[un];
   }
-  if (parseInt(r.a7Minor,10) > 1) {
+  if (Number(r.a7Minor) > 1) {
     c = couleur[deux];
     n = note[deux];
   }
-  if (parseInt(r.a7Major,10) > 1) {
+  if (Number(r.a7Major) > 1) {
     c = couleur[trois];
     n = note[trois];
   }
-  if (parseInt(r.a7Critical,10) > 1) {
+  if (Number(r.a7Critical) > 1) {
     c = couleur[quatre];
     n = note[quatre];
   }
-  if (parseInt(r.a7Blocker,10) > 1) {
+  if (Number(r.a7Blocker) > 1) {
     c = couleur[cinq];
     n = note[cinq];
   }
@@ -385,23 +385,23 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
   injectionOwaspInfo(sept, r.a7, c, n);
 
   /* Détails A8 */
-  if (parseInt(r.a8Blocker + r.a8Critical + r.a8Major + r.a8Minor,10) === 0) {
+  if (Number(r.a8Blocker + r.a8Critical + r.a8Major + r.a8Minor) === 0) {
     c = couleur[un];
     n = note[un];
   }
-  if (parseInt(r.a8Minor,10) > 1) {
+  if (Number(r.a8Minor) > 1) {
     c = couleur[deux];
     n = note[deux];
   }
-  if (parseInt(r.a8Major,10) > 1) {
+  if (Number(r.a8Major) > 1) {
     c = couleur[trois];
     n = note[trois];
   }
-  if (parseInt(r.a8Critical,10) > 1) {
+  if (Number(r.a8Critical) > 1) {
     c = couleur[quatre];
     n = note[quatre];
   }
-  if (parseInt(r.a8Blocker,10) > 1) {
+  if (Number(r.a8Blocker) > 1) {
     c = couleur[cinq];
     n = note[cinq];
   }
@@ -409,23 +409,23 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
   injectionOwaspInfo(huit, r.a8, c, n);
 
   /* Détails A9 */
-  if (parseInt(r.a9Blocker + r.a9Critical + r.a9Major + r.a9Minor,10) === 0) {
+  if (Number(r.a9Blocker + r.a9Critical + r.a9Major + r.a9Minor) === 0) {
     c = couleur[un];
     n = note[un];
   }
-  if (parseInt(r.a9Minor,10) > 1) {
+  if (Number(r.a9Minor) > 1) {
     c = couleur[deux];
     n = note[deux];
   }
-  if (parseInt(r.a9Major,10) > 1) {
+  if (Number(r.a9Major) > 1) {
     c = couleur[trois];
     n = note[trois];
   }
-  if (parseInt(r.a9Critical,10) > 1) {
+  if (Number(r.a9Critical) > 1) {
     c = couleur[quatre];
     n = note[quatre];
   }
-  if (parseInt(r.a9Blocker,10) > 1) {
+  if (Number(r.a9Blocker) > 1) {
     c = couleur[cinq];
     n = note[cinq];
   }
@@ -433,23 +433,23 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
   injectionOwaspInfo(neuf, r.a9, c, n);
 
   /* Détails A10 */
-  if (parseInt(r.a10Blocker + r.a10Critical + r.a10Major + r.a10Minor,10) === 0) {
+  if (Number(r.a10Blocker + r.a10Critical + r.a10Major + r.a10Minor) === 0) {
     c = couleur[un];
     n = note[un];
   }
-  if (parseInt(r.a10Minor,10) > 1) {
+  if (Number(r.a10Minor) > 1) {
     c = couleur[deux];
     n = note[deux];
   }
-  if (parseInt(r.a10Major,10) > 1) {
+  if (Number(r.a10Major) > 1) {
     c = couleur[trois];
     n = note[trois];
   }
-  if (parseInt(r.a10Critical,10) > 1) {
+  if (Number(r.a10Critical) > 1) {
     c = couleur[quatre];
     n = note[quatre];
   }
-  if (parseInt(r.a10Blocker,10) > 1) {
+  if (Number(r.a10Blocker) > 1) {
     c = couleur[cinq];
     n = note[cinq];
   }
@@ -503,7 +503,7 @@ const remplissageHotspotInfo = async function(maven_key, referential_owasp) {
 
   let leTaux=1, laNote=['a', 'A'];
   if ( nombreHotspot !==0 ) {
-    leTaux = 1 - (parseInt(hotspotToReview,10) / nombreHotspot);
+    leTaux = 1 - (Number(hotspotToReview) / nombreHotspot);
     laNote = calculNoteHotspot(leTaux);
   }
 
@@ -567,14 +567,14 @@ const remplissageHotspotListe = async function(maven_key, referential_owasp) {
     }
 
     let leTaux=1, laNote=['a','A'], formatage;
-    const nombreHotspot = parseInt(r.menaceA1+r.menaceA2+r.menaceA3+r.menaceA4+
+    const nombreHotspot = Number(r.menaceA1+r.menaceA2+r.menaceA3+r.menaceA4+
                             r.menaceA5+r.menaceA6+r.menaceA7+r.menaceA8+
-                            r.menaceA9+r.menaceA10,10);
+                            r.menaceA9+r.menaceA10);
     formatage = espace;
 
     if ( nombreHotspot !== 0 ){
       /* calcul A1 */
-      leTaux = 1 - (parseInt(r.menaceA1,10) / nombreHotspot);
+      leTaux = 1 - (Number(r.menaceA1) / nombreHotspot);
       laNote = calculNoteHotspot(leTaux);
       if ( (leTaux*cent)>dix && (leTaux*cent) < cent) {
         formatage = espace+espace+espace;
@@ -584,7 +584,7 @@ const remplissageHotspotListe = async function(maven_key, referential_owasp) {
       injectionHotspotListe(un, formatage, r.menaceA1, leTaux, laNote[0], laNote[1]);
 
       /* calcul A2*/
-      leTaux = 1 - (parseInt(r.menaceA2,10) / nombreHotspot);
+      leTaux = 1 - (Number(r.menaceA2) / nombreHotspot);
       laNote = calculNoteHotspot(leTaux);
       if ( (leTaux*cent)>dix && (leTaux*cent) < cent ) {
         formatage = espace + espace + espace;
@@ -826,7 +826,7 @@ const remplissageHotspotDetails = async function(maven_key, referential_owasp) {
       }
 
     /** Met à jour la répartition par module */
-    totalABC = parseInt((frontend + backend + autre),10);
+    totalABC = Number(frontend + backend + autre);
     const moduleVert = 'note-a';
     const moduleOrange = 'note-d';
     const moduleRouge = 'note-e';
@@ -834,7 +834,7 @@ const remplissageHotspotDetails = async function(maven_key, referential_owasp) {
     if ((frontend<dix)) {
       zero='00';
     }
-    if (frontend>neuf && frontend<cent) {
+    if (frontend > neuf && frontend < cent) {
       zero='0';
     }
 

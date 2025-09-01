@@ -231,10 +231,10 @@ let s1=[], s2=[];
 
 // ['Fiabilité','Vulnérabilité','Hotspot', 'Maintenabilité','Couverture','Dette']
 elm.dataset.initial.split(',').forEach(element => {
-  s1.push(parseInt(element,10));
+  s1.push(Number(element));
 });
 elm.dataset.actuel.split(',').forEach(element => {
-  s2.push(parseInt(element,10));
+  s2.push(Number(element));
 });
 
 dessineMoiUnRadar(s1, s2, elm.dataset.labela, elm.dataset.labelb);

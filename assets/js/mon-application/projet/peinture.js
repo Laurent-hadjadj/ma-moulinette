@@ -699,9 +699,9 @@ export const remplissage = async function(maven_key) {
         couleur3 = noteRouge;
       }
 
-      const noteReliability = tNotes[parseInt(t.noteReliability,10)];
-      const noteSecurity = tNotes[parseInt(t.noteSecurity,10)];
-      const noteSqale = tNotes[parseInt(t.noteSqale,10)];
+      const noteReliability = tNotes[Number(t.noteReliability)];
+      const noteSecurity = tNotes[Number(t.noteSecurity)];
+      const noteSqale = tNotes[Number(t.noteSqale)];
 
       $('#note-reliability').html(`<span class="${couleur1}">${noteReliability}</span>`);
       $('#note-security').html(`<span class="${couleur2}">${noteSecurity}</span>`);
@@ -922,11 +922,11 @@ export const afficheHotspotDetails = async function (maven_key){
 
     $('#tableau-menace-potentielle').append(str);
     //calcul du nombre de menace à examiner
-    const reviewed_total = parseInt(t.reviewed_high, 10) + parseInt(t.reviewed_medium,10) + parseInt(t.reviewed_low, 10);
-    const total = parseInt(t.to_review_total, 10) - parseInt(t.reviewed_total, 10);
+    const reviewed_total = Number(t.reviewed_high +t.reviewed_medium + t.reviewed_low);
+    const total = Number(t.to_review_total - t.reviewed_total);
     let calcul = 0;
     if (total > 0) {
-      calcul = 1 - (reviewed_total / parseInt(t.to_review_total, 10));
+      calcul = 1 - (reviewed_total / Number(t.to_review_total));
     }
     const repartition = new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(calcul);
 
