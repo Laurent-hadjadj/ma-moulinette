@@ -109,7 +109,7 @@ return [
         'version' => '5.2.12',
     ],
     'browser-update' => [
-        'version' => '3.3.59',
+        'version' => '3.3.60',
     ],
     'chart.js' => [
         'version' => '4.5.0',
@@ -136,7 +136,7 @@ return [
         'version' => '4.2.8',
     ],
     '@babel/runtime/helpers/typeof' => [
-        'version' => '7.27.6',
+        'version' => '7.28.3',
     ],
     'fflate' => [
         'version' => '0.8.2',
@@ -145,7 +145,7 @@ return [
         'version' => '1.4.1',
     ],
     'jspdf' => [
-        'version' => '3.0.1',
+        'version' => '3.0.2',
     ],
     'chartjs-adapter-date-fns' => [
         'version' => '3.0.0',
@@ -155,5 +155,17 @@ return [
     ],
     'date-fns/locale' => [
         'version' => '4.1.0',
+    ],
+    '@babel/runtime/helpers/slicedToArray' => [
+        'version' => '7.28.3',
+    ],
+    'fast-png' => [
+        'version' => '6.4.0',
+    ],
+    'iobuffer' => [
+        'version' => '5.4.0',
+    ],
+    'pako' => [
+        'version' => '2.1.0',
     ],
 ];
