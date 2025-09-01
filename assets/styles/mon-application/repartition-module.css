@@ -250,7 +250,8 @@
 #bouton-collecte-bug,
 #bouton-collecte-vulnerability,
 #bouton-collecte-code-smell,
-#bouton-analyse {
+#bouton-analyse,
+#bouton-historique {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -272,7 +273,8 @@
 #bouton-collecte-bug:hover,
 #bouton-collecte-vulnerability:hover,
 #bouton-collecte-code-smell:hover,
-#bouton-analyse:hover { background-color: #006182; }
+#bouton-analyse:hover,
+#bouton-historique:hover { background-color: #006182; }
 
 .container-bouton {
   display: flex;
