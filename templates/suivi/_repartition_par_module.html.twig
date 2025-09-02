@@ -14,7 +14,7 @@
             {% else %}
               {% set reference="null" %}
             {% endif %}
-            <th scope="col" class="open-sans text-center {{reference}}">
+            <th scope="col" class="open-sans text-right {{reference}}">
               {{suivi[i]["version"]}}
             </th>
           {% endfor %}
@@ -26,7 +26,7 @@
         <td class="text-left text-noir">Date</td>
         {% if suivi is not empty %}
           {% for i in 0..suivi|length-1 %}
-            <td class="text-center">
+            <td class="text-right">
               <span>{{suivi[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
             </td>
           {% endfor %}
@@ -36,7 +36,7 @@
         <td class="text-left text-noir">Présentation</td>
         {% if suivi is not empty %}
           {% for i in 0..suivi|length-1 %}
-            <td class="text-center">
+            <td class="text-right">
               {% if suivi[i]["presentation"]!=-1 %}
                 <span>{{suivi[i]["presentation"]|format_number(locale='fr')}}</span>
               {% else %}
@@ -50,7 +50,7 @@
         <td class="text-left text-noir">Métier</td>
         {% if suivi is not empty %}
           {% for i in 0..suivi|length-1 %}
-            <td class="text-center">
+            <td class="text-right">
               {% if suivi[i]["metier"]!=-1 %}
                 <span>{{suivi[i]["metier"]|format_number(locale='fr')}}</span>
               {% else %}
@@ -64,7 +64,7 @@
         <td class="text-left text-noir">Autre</td>
         {% if suivi is not empty %}
           {% for i in 0..suivi|length-1 %}
-            <td class="text-center">
+            <td class="text-right">
               {% if suivi[i]["autre"] != -1 %}
                 <span>{{suivi[i]["autre"]|format_number(locale='fr')}}</span>
               {% else %}
@@ -78,7 +78,7 @@
         <td class="text-left text-noir">Inconnu</td>
         {% if suivi is not empty %}
           {% for i in 0..suivi|length-1 %}
-            <td class="text-center">
+            <td class="text-right">
               {% if suivi[i]["inconnu"] != -1 %}
                 <span>{{suivi[i]["inconnu"]|format_number(locale='fr')}}</span>
               {% else %}
