@@ -62,6 +62,12 @@ import Chance from 'chance';
 import {remplissage, afficheHotspotDetails} from './peinture.js';
 import {enregistrement} from './enregistrement.js';
 
+/***************************************************************************/
+/***                                                                     ***/
+/***                       Variables globales                            ***/
+/***                                                                     ***/
+/***************************************************************************/
+
 /**
  * [Description for shuffle]
  * Mélangeur de couleur
@@ -226,6 +232,7 @@ const selectProjet = async function() {
     sessionStorage.setItem('ma_moulinette_error', "L'utilisateur n'est pas rattaché à une équipe ou à un projet.");
     return;
   }
+
   if (t.code === http_200){
     log(' - ℹ️ Je construit la liste des projets autorisés.');
     $('.js-projet').select2({
@@ -280,7 +287,6 @@ const errorButton = function(element, aria_label){
   $button.removeClass('clicked-true').addClass('clicked-false');
   $button.attr('aria-label', aria_label);
 }
-
 
 /**
  * [Description for projetAnalyse]
@@ -1820,17 +1826,19 @@ $('#js-version-autre').on('click', () => {
     dessineMoiUnMouton(JSON.parse(label), JSON.parse(dataset));
 });
 
+
 /******************************************************/
 /***                  Main                            */
 /******************************************************/
-const e = document.getElementById('feedback');
-const dernierBidule = e.dataset.bookmark;
 
-if (dernierBidule !== 'null'){
+/** On récupère le dernier projet sélectionné */
+const leDernierBidule = sessionStorage.getItem('ma_moulinette_projet');
+
+if (leDernierBidule !== null){
   /* On récupère le nom du projet */
-  const b = dernierBidule.split(':');
+  const b = leDernierBidule.split(':');
   const nom = b[1];
-  const $newOption = $("<option selected='selected'></option>").val(dernierBidule).text(nom);
+  const $newOption = $("<option selected='selected'></option>").val(leDernierBidule).text(nom);
 
   /* On  active le projet */
   $('select[name="projet"]').append($newOption).trigger('change');
