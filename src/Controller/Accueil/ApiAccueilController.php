@@ -14,7 +14,7 @@
 namespace App\Controller\Accueil;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -36,7 +36,7 @@ class ApiAccueilController extends AbstractController
     public static $dateFormatShort = "Y-m-d";
     public static $dateFormat = "Y-m-d H:i:s";
     public static $europeParis = "Europe/Paris";
-    public static $reference = '<strong>[Accueil]</strong> ';
+    public static $titre = '<strong>[Accueil]</strong> ';
     public static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
     public static $erreur404 = "Je n'ai pas trouvé de projets sur le serveur SonarQube (Erreur 404).";
 
@@ -54,6 +54,7 @@ class ApiAccueilController extends AbstractController
         private LoggerInterface $logger,
         private EntityManagerInterface $em,
         private UrlBuilderService $urlBuilder,
+        private Security $security
     ) {
     }
 
@@ -77,21 +78,26 @@ class ApiAccueilController extends AbstractController
             '/api/system/status'
         );
 
-        $this->logger->info('ℹ️ [Accueil] Vérification du statut SonarQube', ['url' => $url]);
+        $this->logger->info('[Accueil] ℹ️ Vérification du statut SonarQube', ['url' => $url]);
 
         /** On appel le client http */
         $result = $this->client->httpSonarQube($url);
 
         if ($result['code'] != 200) {
-            $this->logger->error('❌ [Accueil] SonarQube indisponible', $result['erreur']);
+            $this->logger->error('[Accueil] ❌ SonarQube indisponible', [
+                'erreur' => $result['erreur']
+            ]);
             return new JsonResponse([
                 'code' => $result['code'],
                 'erreur' => $result['erreur']
             ], Response::HTTP_OK);
         }
 
-        $this->logger->debug('🛠️ [Accueil] SonarQube est UP', $result);
-        return new JsonResponse(['code' => $result['code'], 'result' => $result]);
+        $this->logger->debug('[Accueil] 🛠️ SonarQube est UP', $result);
+        return new JsonResponse([
+            'code' => $result['code'],
+            'result' => $result]
+        );
     }
 
     /**
@@ -112,12 +118,22 @@ class ApiAccueilController extends AbstractController
         $listeProjetRepos = $this->em->getRepository(ListeProjet::class);
         $propertiesRepos = $this->em->getRepository(Properties::class);
 
+        $user = $this->security->getUser();
+        if (!$user) {
+            $this->logger->warning('[Accueil] 🚫 Accès refusé : utilisateur non connecté.');
+            throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 401).");
+        }
+
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
+            $this->logger->warning("[Accueil-projet] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).", [
+                'user' => $user->getUserIdentifier(),
+            ]);
+
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
-                'message' => static::$reference.static::$erreur403],
+                'message' => static::$titre.static::$erreur403],
                 Response::HTTP_OK);
         }
 
@@ -129,15 +145,15 @@ class ApiAccueilController extends AbstractController
         );
 
         /** On appel le client http */
-        $this->logger->info('ℹ️ [Accueil] Récupération des projets SonarQube', ['url' => $url]);
+        $this->logger->info('[Accueil-projet] ℹ️ Récupération des projets SonarQube', ['url' => $url]);
         $result = $this->client->httpSonarQube($url);
 
         if ($result['code'] != 200) {
-            $this->logger->error('❌ [Accueil] Erreur appel SonarQube', $result['erreur']);
+            $this->logger->error("[Accueil-projet] ❌ Erreur de l'appel à SonarQube", ['erreur' => $result['erreur']]);
             return new JsonResponse([
                 'code' => $result['code'],
                 'type' => 'alert',
-                'message' => static::$reference . $result['erreur']],
+                'message' => static::$titre . $result['erreur']],
                 Response::HTTP_OK);
         }
 
@@ -149,22 +165,22 @@ class ApiAccueilController extends AbstractController
 
         /** On vérifie que SonarQube a au moins 1 projet */
         if (array_key_exists('json', $result) && empty($result['json']['components'])){
-            $this->logger->warning('⚠️ [Accueil] Aucun projet Sonar trouvé');
+            $this->logger->warning('[Accueil-projet] ⚠️ Aucun projet Sonar trouvé.');
             return new JsonResponse([
                 'code' => 404,
                 'type' => 'warning',
-                'message' => static::$reference . static::$erreur404],
+                'message' => static::$titre . static::$erreur404],
                 Response::HTTP_OK);
         }
 
         /** On supprime les données de la table avant d'importer les données. */
         $delete = $listeProjetRepos->deleteListeProjet();
         if ($delete['code'] != 200) {
-            $this->logger->error('❌ [Accueil] Échec suppression des anciens projets', $delete['erreur']);
+            $this->logger->error('[Accueil-projet] ❌ Échec suppression des anciens projets', ['erreur' => $delete['erreur']]);
             return new JsonResponse([
                 'code' => $delete['code'],
                 'type' => 'alert',
-                'message' => static::$reference . "Échec de l’exécution de la requête deleteListeProjet ({$delete['code']}).",
+                'message' => static::$titre . "Échec de l’exécution de la requête deleteListeProjet ({$delete['code']}).",
                 'trace' => $delete['erreur']
             ], Response::HTTP_OK);
         }
@@ -179,7 +195,7 @@ class ApiAccueilController extends AbstractController
              *  "project": "fr.domaine:mon-application-SVN"
              */
             if (strpos($projet['key'], '-SVN') !== false) {
-                $this->logger->debug('🛠️ [Accueil] Projet ignoré (SVN)', ['key' => $projet['key']]);
+                $this->logger->debug('🛠️ [Accueil-projet] Projet ignoré (SVN)', ['key' => $projet['key']]);
                 continue;
             }
             $listeProjet = new ListeProjet();
@@ -211,16 +227,16 @@ class ApiAccueilController extends AbstractController
         $r = $propertiesRepos->updatePropertiesProjet($map);
 
         if ($r['code'] != 200) {
-            $this->logger->error('❌ [Accueil] Échec updatePropertiesProjet', $r['erreur']);
+            $this->logger->error('[Accueil-projet] ❌ Échec de la requête updatePropertiesProjet :', ['erreur' => $r['erreur']]);
             return new JsonResponse([
                 'code' => $r['code'],
                 'type' => 'alert',
-                'message' => static::$reference. "Échec de l’exécution de la requête updatePropertiesProjet ({$r['code']}).",
+                'message' => static::$titre. "Échec de l’exécution de la requête updatePropertiesProjet ({$r['code']}).",
                 'trace' => $r['erreur']
             ], Response::HTTP_OK);
         }
 
-        $this->logger->info('ℹ️ [Accueil] Mise à jour des projets terminée', [
+        $this->logger->info('[Accueil-projet] ℹ️ Mise à jour des projets terminée', [
             'nombre' => $nombre,
             'public' => $public,
             'private' => $private,
@@ -234,7 +250,7 @@ class ApiAccueilController extends AbstractController
             [
                 'code' => 200,
                 'type' => 'success',
-                'message' => static::$reference.$message,
+                'message' => static::$titre.$message,
                 'nombre' => $nombre,
                 'public' => $public,
                 'private' => $private,
@@ -257,30 +273,39 @@ class ApiAccueilController extends AbstractController
         /** On instancie l'EntityRepository */
         $listeProjetRepos = $this->em->getRepository(ListeProjet::class);
 
+        $user = $this->security->getUser();
+        if (!$user) {
+            $this->logger->warning('[Accueil] 🚫 Accès refusé : utilisateur non connecté.');
+            throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 401).");
+        }
+
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
-            $this->logger->warning('⚠️ [Accueil] Accès refusé pour la consultation des tags.');
+            $this->logger->warning("[Accueil-tags] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).", [
+                'user' => $user->getUserIdentifier(),
+            ]);
+
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
-                'message' => static::$reference.static::$erreur403
+                'message' => static::$titre.static::$erreur403
                 ], Response::HTTP_OK);
         }
 
-        $this->logger->info('ℹ️ [Accueil] Comptage des tags de projets');
+        $this->logger->info('[Accueil] ℹ️ Comptage des tags de projets');
         $tag = $listeProjetRepos->countListeProjetTags();
 
         if ($tag['code'] != 200) {
-            $this->logger->error('❌ [Accueil] Échec countListeProjetTags', $tag['erreur']);
+            $this->logger->error('[Accueil] ❌ Échec de la requête countListeProjetTags :', [ 'erreur' => $tag['erreur']]);
             return new JsonResponse([
                 'code' => $tag['code'],
                 'type' => 'alert',
-                'message' => static::$reference."Échec de l’exécution de la requête countListeProjetTags ({$tag['code']}).",
+                'message' => static::$titre."Échec de l’exécution de la requête countListeProjetTags ({$tag['code']}).",
                 'trace' => $tag['erreur']
             ], Response::HTTP_OK);
         }
 
-        $this->logger->debug('🛠️ [Accueil] Nombre de tags comptés', ['tags' => $tag['nombre'][0]['tag'] ?? 0]);
+        $this->logger->debug('[Accueil] 🛠️ Nombre de tags comptés', ['tags' => $tag['nombre'][0]['tag'] ?? 0]);
         return new JsonResponse([
             'code' => 200,
             'nombre_tag' => $tag['nombre'][0]['tag'] ?? 0
