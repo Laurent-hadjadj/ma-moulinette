@@ -38,7 +38,8 @@ class AccueilController extends AbstractController
 {
     private static $page = 'accueil/index.html.twig';
     private static $sonarUrl = 'sonar.url';
-    private static $oups = 'OUPS !!! ';
+    private static $titre = '[Accueil]';
+    private static $titreJS = '<strong>[Accueil]</strong> ';
     private static $europeParis = 'Europe/Paris';
     private static $erreur403 = 'Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).';
 
@@ -174,7 +175,7 @@ class AccueilController extends AbstractController
             $this->addFlash('notice',
                 [
                     'type' => 'alert',
-                    'titre' => static::$oups,
+                    'titre' => static::$titre,
                     'message' => $result['erreur']
                 ]);
             // On envoi -1 si on a une erreur HTTPClient
@@ -246,8 +247,8 @@ class AccueilController extends AbstractController
         if ($result['code'] !== 200) {
             $this->addFlash('notice', [
                 'type' => 'alert',
-                'titre' => static::$oups,
-                'message'=> $result['erreur']
+                'reference' => static::$titre,
+                'message' => $result['erreur']
                 ]);
             return -1;
         }
@@ -364,7 +365,7 @@ class AccueilController extends AbstractController
         $data = $repo->getMaMoulinetteVersion();
 
         $version = $data['request'][0]['version'] ?? '0.0.0';
-        $this->logger->debug('[Accueil] 🛠️ Version détectée : '.$version);
+        $this->logger->debug("[Accueil] 🛠️ Version détectée : {$version}");
         return $version;
     }
 
@@ -395,7 +396,7 @@ class AccueilController extends AbstractController
             $this->logger->warning('[Accueil] ⚠️ Utilisateur non connecté pour récupération des favoris projets.');
             return new JsonResponse([
                 'code' => 403,
-                'message' => static::$erreur403
+                'message' => static::$titreJS.static::$erreur403
             ], Response::HTTP_OK);
         }
         $preference = $user->getPreference();
@@ -611,11 +612,12 @@ class AccueilController extends AbstractController
             /**
              * Si le nombre de projetSonar est différent de projetBD alors on envoi un message à l'utilisateur pour qu'il mette à jour.
              */
-            $this->addFlash('info', [
-                                        'type' => 'primary',
-                                        'titre' => '[Accueil] ',
-                                        'message' => '📌 Vous devez mettre à jour le référentiel local pour les ',
-                                        'ref' => 'PROJETS'
+            $this->addFlash('info',
+                [
+                    'type' => 'primary',
+                    'titre' => static::$titre,
+                    'message' => '📌 Vous devez mettre à jour le référentiel local pour les ',
+                    'ref' => 'PROJETS'
             ]);
         } elseif ($dateVerificationProjet && $projetSonar === $projetBd && $projetSonar !== $properties['projet_sonar']) {
         /**
@@ -630,11 +632,12 @@ class AccueilController extends AbstractController
             /**
              * Si le nombre de projetSonar est différent de projetBD alors on envoi un message à l'utilisateur pour qu'il mette à jour.
              */
-            $this->addFlash('info', [
-                                        'type' => 'primary',
-                                        'titre' => '[Accueil] ',
-                                        'message' => '📌 Vous devez mettre à jour le référentiel local pour les ',
-                                        'ref' => 'PROFILS'
+            $this->addFlash('info',
+                [
+                    'type' => 'primary',
+                    'titre' => static::$titre,
+                    'message' => '📌 Vous devez mettre à jour le référentiel local pour les ',
+                    'ref' => 'PROFILS'
             ]);
         } elseif ($dateVerificationProfil && $profilSonar === $profilBd && $profilSonar !== $properties['profil_sonar']){
         /**
@@ -662,8 +665,9 @@ class AccueilController extends AbstractController
             $this->addFlash('notice',
                 [
                     'type' => 'warning',
-                    'titre' => 'OUPS !!! ',
-                    'message' => "La base de données est en version $versionBd. Vous devez passer le script de migration $versionApp."]);
+                    'titre' => static::$titre,
+                    'message' => "La base de données est en version $versionBd. Vous devez passer le script de migration $versionApp."
+                ]);
         }
 
         /** On va chercher les projets favoris ou les versions des projets */
