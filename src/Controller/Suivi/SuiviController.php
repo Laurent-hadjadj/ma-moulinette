@@ -19,6 +19,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\Historique;
@@ -32,11 +33,11 @@ class SuiviController extends AbstractController
 {
     /** Définition des constantes */
     public static $page= "suivi/index.html.twig";
-    public static $titre = "[Suivi]";
-    public static $erreur = "Une erreur s'est produite (erreur ";
-    public static $erreur400 = "La requête est incorrecte (Erreur 400).";
-    public static $erreur404 = "Vous devez être rattaché à une équipe (Erreur 404).";
-    public static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. ".
+    public static $titre = "[Suivi] ";
+    public static $erreur = "❌ Une erreur s'est produite ";
+    public static $erreur400 = "❌ La requête est incorrecte (Erreur 400).";
+    public static $erreur404 = "⚠️ Vous devez être rattaché à une équipe (Erreur 404).";
+    public static $erreur406 = "⚠️ Je n'ai pas trouvé de projets pour ton équipe. ".
     "Vérifies le nom du tag utilisé dans SonarQube (Erreur 406).";
 
     private $logoEntreprise;
@@ -56,7 +57,8 @@ class SuiviController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private Security $security,
-        private ParameterBagInterface $params
+        private ParameterBagInterface $params,
+        private LoggerInterface $logger,
     ) {
         $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
@@ -143,7 +145,10 @@ class SuiviController extends AbstractController
             }
         }
         if ($idFound === false) {
-            return ['code' => 406, 'message' => "Le projet n'est pas présent dans la liste de projets de l'utilisateur."];
+            $message = "⚠️ Le projet n'est pas présent dans la liste de projets de l'utilisateur.";
+            $this->logger->warning($message);
+
+            return [ 'code' => 406, 'message' => $message ];
         }
         return ['code' => 200];
     }
@@ -190,7 +195,8 @@ class SuiviController extends AbstractController
             'type' => $type,
             'titre' => static::$titre,
             'message' => $message,
-            'debug' => $debug] );
+            'debug' => $debug
+            ]);
         return $this->render(static::$page, $render);
     }
 
@@ -211,9 +217,13 @@ class SuiviController extends AbstractController
     {
         $data = $repository->$method($map);
         if ($data['code'] != 200) {
-            $message = static::$erreur . $data['code'] . ').';
-            $debug = $method.'--->'.$data['erreur'];
-            throw new FetchDataException($message, $debug, $this->getDefaultRender($map['maven_key']));
+            $this->logger->error(static::$titre.static::$erreur, ['method' => $method, 'erreur' => $data['erreur']]);
+
+            $debug = $method.' ---> '.$data['erreur'];
+            throw new FetchDataException(
+                static::$titre.static::$erreur."(Erreur {$data['code']}).",
+                $debug,
+                $this->getDefaultRender($map['maven_key']));
         }
         return $data;
     }
@@ -241,22 +251,6 @@ class SuiviController extends AbstractController
             $date[$i] = $graphRequest[$i]['date'];
         }
 
-        /** On ajoute une marge plus importante dans chartjs à la place */
-
-        // Ajout d'une valeur avant la première entrée (on utilise une date un jour avant la première)
-        //$firstDate = new \DateTime($graphRequest[0]['date']);
-        //$firstDate->modify('-1 day'); // Recule d'un jour
-        //array_unshift($bug, 0);  // Ajoute 0 au début de la série "bug"
-        //array_unshift($sec, 0);   // Ajoute 0 au début de la série "sec"
-        //array_unshift($codeSmell, 0);  // Ajoute 0 au début de la série "codeSmell"
-        //array_unshift($date, $firstDate->format('Y-m-d'));  // Ajoute la date modifiée
-
-        // Ajout d'une valeur après la dernière entrée (on utilise une date un jour après la dernière)
-        //$lastDate = new \DateTime($graphRequest[$nl - 1]['date']);
-        //$lastDate->modify('+1 day');  // Avance d'un jour
-        //$bug[$nl] = $sec[$nl] = $codeSmell[$nl] = 0;  // Valeur 0 pour le dernier point
-        //$date[$nl] = $lastDate->format('Y-m-d');  // Ajoute la date modifiée
-
         return ['bug' => $bug, 'sec' => $sec, 'codeSmell' => $codeSmell, 'date' => $date];
     }
 
@@ -278,15 +272,15 @@ class SuiviController extends AbstractController
         $session = $request->getSession();
 
         // Instanciation des repositories
-        $historiqueRepository = $this->em->getRepository(Historique::class);
+        $historiqueRepos = $this->em->getRepository(Historique::class);
 
         // Initialisation des variables
         $maven_key = $session->get('maven_key');
         $teams = $this->security->getUser()->getEquipe();
-        $debug='';
+        $debug = '';
 
         /** On charge le template du render */
-        $render=static::genericRender();
+        $render = static::genericRender();
         $render['suivi'] = $render['mesure'] = $render['severity'] = $render['details'] = [];
         $render['nom'] = 'N.C';
         $render['mavenKey'] = $maven_key ?? '';
@@ -294,24 +288,29 @@ class SuiviController extends AbstractController
 
         // Vérifications initiales
         if (empty($maven_key)) {
+            $this->logger->error(static::$titre.static::$erreur400);
             return $this->addFlashAndRender('alert', static::$erreur400, $debug, $render);
         }
 
         if (empty($teams)) {
+            $this->logger->warning(static::$titre.static::$erreur404);
             return $this->addFlashAndRender('warning', static::$erreur404, $debug, $render);
         }
 
         // Vérification du projet
         $listeProjet = self::listeProjet($maven_key, $teams);
         if ($listeProjet['code'] === 406) {
+            $this->logger->warning(static::$titre.$listeProjet['message']);
             return $this->addFlashAndRender('warning', $listeProjet['message'], $debug, $render);
         }
 
         // Vérification dans l'historique
         $map = ['maven_key' => $maven_key];
-        $liste = $historiqueRepository->countHistoriqueProjet($map);
+        $liste = $historiqueRepos->countHistoriqueProjet($map);
         if ($liste['code'] != 200 || $liste['nombre'] === 0) {
-            return $this->addFlashAndRender('warning', "Le projet n'a pas été sauvegardé dans l'historique.", $debug, $render);
+            $message = "⚠️ Le projet n'a pas été sauvegardé dans l'historique (Erreur 500).";
+            $this->logger->warning(static::$titre.$message);
+            return $this->addFlashAndRender('warning', $message, $debug, $render);
         }
 
         // Construction du tableau des données pour les requêtes
@@ -319,11 +318,11 @@ class SuiviController extends AbstractController
 
         try {
             // Récupération des données
-            $suivi = $this->fetchData($historiqueRepository, 'selectUnionHistoriqueProjet', $map);
-            $mesure = $this->fetchData($historiqueRepository, 'selectUnionHistoriqueMesure', $map);
-            $severity = $this->fetchData($historiqueRepository, 'selectUnionHistoriqueAnomalie', $map);
-            $details = $this->fetchData($historiqueRepository, 'selectUnionHistoriqueDetails', $map);
-            $graph = $this->fetchData($historiqueRepository, 'selectHistoriqueAnomalieGraphique', $map);
+            $suivi = $this->fetchData($historiqueRepos, 'selectUnionHistoriqueProjet', $map);
+            $mesure = $this->fetchData($historiqueRepos, 'selectUnionHistoriqueMesure', $map);
+            $severity = $this->fetchData($historiqueRepos, 'selectUnionHistoriqueAnomalie', $map);
+            $details = $this->fetchData($historiqueRepos, 'selectUnionHistoriqueDetails', $map);
+            $graph = $this->fetchData($historiqueRepos, 'selectHistoriqueAnomalieGraphique', $map);
 
             // Traitement des données graphiques
             $graphData = $this->processGraphData($graph['request']);
@@ -339,14 +338,21 @@ class SuiviController extends AbstractController
             $render['data3'] = json_encode($graphData['codeSmell']);
             $render['labels'] = json_encode($graphData['date']);
 
+            $message = "✅ Les données ont été correctement récupérées.";
+            $this->logger->info(static::$titre.$message);
             $this->addFlash('notice', [
                 'type' => 'success',
                 'titre' => static::$titre,
-                'message' => "Les données ont été correctement récupérées."
+                'message' => $message
             ]);
 
             return $this->render(static::$page, $render);
         } catch (FetchDataException $e) {
+            $this->logger->critical(
+                "🔴 une erreur inattendue s'est produite (Erreur 500).",[
+                    'message' => $e-getMessage(),
+                    'debug' => $e->getDebug()
+                ]);
             return $this->addFlashAndRender('alert', $e->getMessage(), $e->getDebug(), $e->getRender());
         }
     }
