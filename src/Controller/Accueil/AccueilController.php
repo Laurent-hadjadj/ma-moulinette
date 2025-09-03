@@ -42,6 +42,7 @@ class AccueilController extends AbstractController
     private static $titreJS = '<strong>[Accueil]</strong> ';
     private static $europeParis = 'Europe/Paris';
     private static $erreur403 = 'Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).';
+    private static $loggerE401 = "[Enregistrement] ❌ Aucun utilisateur connecté.";
 
     private $logoEntreprise;
     private $marqueEntrepriseShort;
@@ -62,7 +63,8 @@ class AccueilController extends AbstractController
         private Client $client,
         private ParameterBagInterface $params,
         private UrlBuilderService $urlBuilder,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        private Security $security
     ) {
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
@@ -381,8 +383,8 @@ class AccueilController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/accueil/favori/liste/projet', name: 'accueil_favori_liste_projet')]
-    private function getListeFavoriProjet(Security $security): JsonResponse
+    #[Route('/api/accueil/favori/liste/projet', name: 'accueil_favori_liste_projet', defaults: ['role' => 'ROLE_COLLECTE'])]
+    private function getListeFavoriProjet(): JsonResponse
     {
         /** On instancie l'entityRepository */
         $historiqueRepos = $this->em->getRepository(Historique::class);
@@ -391,14 +393,7 @@ class AccueilController extends AbstractController
         $nombreProjetFavori = $this->params->get('nombre.favori');
 
         /** On récupère l'objet User du contexte de sécurité */
-        $user = $security->getUser();
-        if (!$user) {
-            $this->logger->warning('[Accueil] ⚠️ Utilisateur non connecté pour récupération des favoris projets.');
-            return new JsonResponse([
-                'code' => 403,
-                'message' => static::$titreJS . static::$erreur403
-            ], Response::HTTP_OK);
-        }
+        $user = $this->security->getUser();
         $preference = $user->getPreference();
 
         $statutFavoriProjet = $preference['statut']['favori_projet'] ?? [];
@@ -479,14 +474,14 @@ class AccueilController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/accueil/favori/liste/version', name: 'accueil_favori_liste_version')]
-    private function getListeFavoriVersion(Security $security): JsonResponse
+    #[Route('/accueil/favori/liste/version', name: 'accueil_favori_liste_version', defaults: ['role' => 'ROLE_UTILISATEUR'])]
+    private function getListeFavoriVersion(): JsonResponse
     {
         /** On instancie l'entityRepository */
         $historiqueRepos = $this->em->getRepository(Historique::class);
 
         /** On récupère l'objet User du contexte de sécurité */
-        $preference = $security->getUser()->getPreference();
+        $preference = $this->security->getUser()->getPreference();
         $statutFavoriVersion = $preference['statut']['favori_version'];
         $listeFavoriVersion = $preference['favori_version'];
 
@@ -523,8 +518,8 @@ class AccueilController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/accueil', name: 'accueil', methods:'GET')]
-    public function index(Security $security, Request $request): Response
+    #[Route('/accueil', name: 'accueil', methods:'GET', defaults: ['role' => 'ROLE_UTILISATEUR'])]
+    public function index(): Response
     {
                 /**
          * Description du processus :
@@ -671,8 +666,8 @@ class AccueilController extends AbstractController
         }
 
         /** On va chercher les projets favoris ou les versions des projets */
-        $favoriProjet = json_decode($this->getListeFavoriProjet($security)->getContent());
-        $favoriVersion = json_decode($this->getListeFavoriVersion($security)->getContent());
+        $favoriProjet = json_decode($this->getListeFavoriProjet($this->security)->getContent());
+        $favoriVersion = json_decode($this->getListeFavoriVersion($this->security)->getContent());
 
         /** On a choisi la liste des projets favori
          *  sinon la liste des versions
