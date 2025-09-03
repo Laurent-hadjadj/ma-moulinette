@@ -53,16 +53,11 @@ class SuiviController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private $em;
-    private $security;
-
     public function __construct(
-        EntityManagerInterface $em,
-        Security $security,
+        private EntityManagerInterface $em,
+        private Security $security,
         private ParameterBagInterface $params
     ) {
-        $this->em = $em;
-        $this->security = $security;
         $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
