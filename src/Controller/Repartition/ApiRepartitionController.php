@@ -32,12 +32,12 @@ use App\Controller\Batch\BatchCollecteRepartitionController;
  */
 class ApiRepartitionController extends AbstractController
 {
-    private static $reference = "<strong>[Répartition-Module]</strong> ";
+    private static $titreJS = "<strong>[Répartition-Module]</strong> ";
     private static $erreur400 = "La requête est incorrecte (Erreur 400).";
     private static $erreur401 = "Utilisateur non authentifié (Erreur 401).";
     private static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
-    public static $loggerE401 = "❌ [Répartition-Module] Aucun utilisateur connecté.";
-    public static $loggerE403 = "🚫 [Répartition-Module] Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).";
+    public static $loggerE401 = "[Répartition-Module] ❌ Aucun utilisateur connecté.";
+    public static $loggerE403 = "[Répartition-Module] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).";
 
     /**
      * [Description for __construct]
@@ -76,7 +76,7 @@ class ApiRepartitionController extends AbstractController
             return new JsonResponse([
                 'code' => 401,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur401
+                'message' => static::$titreJS.static::$erreur401
             ], Response::HTTP_OK);
         }
 
@@ -87,12 +87,12 @@ class ApiRepartitionController extends AbstractController
         if ($data === null ||
             !isset($data->maven_key, $data->category, $data->severity, $data->setup)) {
 
-            $this->logger->error("❌ [Répartition-Collecte] Requête invalide : clé 'maven_key', 'category' ou 'severity' manquante ou JSON mal formé.", [ 'payload' => $data ]);
+            $this->logger->error("[Répartition-Collecte]❌ Requête invalide : clé 'maven_key', 'category', 'severity' ou 'setup' manquante ou JSON mal formé.", [ 'payload' => $data ]);
 
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400
+                'message' => static::$titreJS . static::$erreur400
             ], Response::HTTP_OK);
         }
 
@@ -103,14 +103,14 @@ class ApiRepartitionController extends AbstractController
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
-                'message' => static::$reference . static::$erreur403
+                'message' => static::$titreJS . static::$erreur403
             ], Response::HTTP_OK);
         }
 
         $repartitionCollecte = $this->batchCollecteRepartition->batchCollecteRepartition($data->maven_key,  $data->category, $data->severity, $data->setup);
 
         if ($repartitionCollecte['code'] !== 200){
-            $this->logger->error("❌ [Répartition-Collecte] Échec de la répartition par module (batchCollecteRepartition).", [
+            $this->logger->error("[Répartition-Collecte] ❌ Échec de la répartition par module (batchCollecteRepartition).", [
                 'maven_key' => $data->maven_key,
                 'category' => $data->category,
                 'severity' => $data->severity,
@@ -154,7 +154,7 @@ class ApiRepartitionController extends AbstractController
             return new JsonResponse([
                 'code' => 401,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur401
+                'message' => static::$titreJS . static::$erreur401
             ], Response::HTTP_OK);
         }
 
@@ -167,12 +167,12 @@ class ApiRepartitionController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null ||
             !isset($data->maven_key, $data->category, $data->severity, $data->setup)) {
-            $this->logger->error("❌ [Répartition-Analyse] Requête invalide : clé 'maven_key', 'category', 'severity' ou 'setup' manquante ou JSON mal formé.", [ 'payload' => $data ]);
+            $this->logger->error("[Répartition-Analyse] ❌ Requête invalide : clé 'maven_key', 'category', 'severity' ou 'setup' manquante ou JSON mal formé.", [ 'payload' => $data ]);
 
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400,
+                'message' => static::$titreJS . static::$erreur400,
             ], Response::HTTP_OK);
         }
 
@@ -183,7 +183,7 @@ class ApiRepartitionController extends AbstractController
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
-                'message' => static::$reference . static::$erreur403
+                'message' => static::$titreJS . static::$erreur403
             ], Response::HTTP_OK);
         }
 
@@ -191,9 +191,10 @@ class ApiRepartitionController extends AbstractController
         $checkIfExistSetup = $repartitionTempRepos->findOneBy(['setup' => $data->setup]);
 
         if(is_null($checkIfExistSetup)){
-            $this->logger->warning("⚠️ [Répartition Analyse] La collecte n'a pas été lancée pour ce setup (Erreur 404).", [
+            $this->logger->warning("[Répartition Analyse] ⚠️ La collecte n'a pas été lancée pour ce setup (Erreur 404).", [
                 'maven_key' => $data->maven_key,
-                'setup' => $data->setup]);
+                'setup' => $data->setup
+            ]);
 
             return new JsonResponse([
                     'code' => 404,
@@ -205,8 +206,7 @@ class ApiRepartitionController extends AbstractController
 
         /** on retourne un code 202 pour lancer l'analyse */
         if ($data->category === 'CHECK') {
-            $this->logger->info("📌 [Répartition-Analyse] Il existe des données collectées pour ce setup.",
-                [
+            $this->logger->info("[Répartition-Analyse] 📌 Il existe des données collectées pour ce setup.",[
                     'maven_key', $data->maven_key,
                     'setup' => $data->setup
                 ]);
@@ -224,7 +224,7 @@ class ApiRepartitionController extends AbstractController
                     $data->maven_key, $data->category, $data->severity, $data->setup);
 
                 if ($repartitionAnalyse['code'] !== 200){
-                    $this->logger->error("❌ [Répartition-Analyse] Échec de la collecte des anomalies.", [
+                    $this->logger->error("[Répartition-Analyse] ❌ Échec de la collecte des anomalies.", [
                         'maven_key' => $data->maven_key,
                         'category' => $data->category,
                         'severity' => $data->severity,
@@ -248,7 +248,7 @@ class ApiRepartitionController extends AbstractController
                     'mode' => 'Manuel',
                 ], Response::HTTP_OK);
         } catch (Exception $trace) {
-            $this->logger->critical("🔴 [Répartition Analyse] Exception lors du traitement de répartition des anomalies par module (Erreur 500).", [
+            $this->logger->critical("[Répartition Analyse] 🔴 Exception lors du traitement de répartition des anomalies par module (Erreur 500).", [
                 'exception' => $trace->getMessage()
             ]);
 
@@ -282,7 +282,7 @@ class ApiRepartitionController extends AbstractController
             return new JsonResponse([
                 'code' => 401,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur401
+                'message' => static::$titreJS . static::$erreur401
             ], Response::HTTP_OK);
         }
 
@@ -295,12 +295,12 @@ class ApiRepartitionController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null ||
             !isset($data->maven_key)) {
-            $this->logger->error("❌ [Répartition-Analyse] Requête invalide : clé 'maven_key' manquante ou JSON mal formé.", [ 'payload' => $data ]);
+            $this->logger->error("[Répartition-Analyse] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé.", [ 'payload' => $data ]);
 
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400,
+                'message' => static::$titreJS . static::$erreur400,
             ], Response::HTTP_OK);
         }
 
@@ -311,7 +311,7 @@ class ApiRepartitionController extends AbstractController
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
-                'message' => static::$reference . static::$erreur403
+                'message' => static::$titreJS . static::$erreur403
             ], Response::HTTP_OK);
         }
 
@@ -319,8 +319,8 @@ class ApiRepartitionController extends AbstractController
         $checkIfExistHistorique = $repartitionRepos->findLatestMavenKeyWithControl($data->maven_key);
 
         if ($checkIfExistHistorique['code'] != 200){
-            $this->logger->error("❌ [Répartition-Analyse] Échec de récupération des données de répartition.",
-                ['maven_key', $data->maven_key]);
+            $this->logger->error("[Répartition-Analyse] ❌ Échec de récupération des données de répartition.",
+            ['maven_key', $data->maven_key]);
 
             return new JsonResponse([
                 'code' => $checkIfExistHistorique['code'],
@@ -372,8 +372,8 @@ class ApiRepartitionController extends AbstractController
     {
         $user = $this->security->getUser();
         if (!$user) {
-            $this->logger->warning('🚫 [Répartition-Mise-a-jour] Accès refusé : utilisateur non connecté.');
-            throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 403).");
+            $this->logger->warning('[Répartition-Mise-a-jour] 🚫 Accès refusé : utilisateur non connecté.');
+            throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 401).");
         }
 
         /** On décode le body */
@@ -382,24 +382,26 @@ class ApiRepartitionController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null ||
             !isset($data->maven_key, $data->setup, $data->calcul)) {
-            $this->logger->error("❌ [Répartition-Mise-a-jour] Requête invalide : clé 'maven_key', 'setup' ou calcul manquante ou JSON mal formé.", [ 'payload' => $data ]);
+            $this->logger->error("❌ [Répartition-Mise-a-jour] Requête invalide : clé 'maven_key', 'setup' ou 'calcul' manquante ou JSON mal formé.", [
+                'payload' => $data
+            ]);
 
             return new JsonResponse([
                 'data' => $data,
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400
+                'message' => static::$titreJS . static::$erreur400
             ], Response::HTTP_OK);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
-            $this->logger->warning("🚫 [Répartition-Mise-a-jour] Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).");
+            $this->logger->warning("[Répartition-Mise-a-jour] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).");
 
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
-                'message' => static::$reference . static::$erreur403
+                'message' => static::$titreJS . static::$erreur403
             ], Response::HTTP_OK);
         }
 
@@ -407,7 +409,7 @@ class ApiRepartitionController extends AbstractController
         $repartitionMaJ = $this->batchCollecteRepartition->batchCollecteRepartitionMaJ($data->maven_key,  $data->calcul, $data->setup);
 
         if ($repartitionMaJ['code'] !== 200){
-            $this->logger->error('❌ [Répartition-Mise-a-jour] Échec de la mise à jour des informations de répartition.', [
+            $this->logger->error('[Répartition-Mise-a-jour] ❌ Échec de la mise à jour des informations de répartition.', [
                 'maven_key' => $data->maven_key,
                 'calcul' => $data->calcul,
                 'setup' => $data->setup
@@ -420,7 +422,7 @@ class ApiRepartitionController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        $this->logger->info('ℹ️ [Répartition-Mise-a-jour] Enregistrement des données effectué.');
+        $this->logger->info('[Répartition-Mise-a-jour] ℹ️ Enregistrement des données effectué.');
 
         return new JsonResponse(
             [

@@ -396,7 +396,7 @@ class AccueilController extends AbstractController
             $this->logger->warning('[Accueil] ⚠️ Utilisateur non connecté pour récupération des favoris projets.');
             return new JsonResponse([
                 'code' => 403,
-                'message' => static::$titreJS.static::$erreur403
+                'message' => static::$titreJS . static::$erreur403
             ], Response::HTTP_OK);
         }
         $preference = $user->getPreference();

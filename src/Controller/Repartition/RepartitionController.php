@@ -32,9 +32,9 @@ use App\Service\ExtractName;
 class RepartitionController extends AbstractController
 {
 
-    private static $titre = "[Répartition-Module]";
-    private static $erreur400 = "La requête est incorrecte (Erreur 400).";
-    private static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
+    private static $titreFlash = "[Répartition-Module]";
+    private static $erreur400 = "❌ La requête est incorrecte (Erreur 400).";
+    private static $erreur403 = "🚫 Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
     private static $page = 'projet/repartition-module.html.twig';
 
     private $logoEntreprise;
@@ -106,8 +106,12 @@ class RepartitionController extends AbstractController
      */
     private function addFlashAndRender(string $type, string $message, string $debug, array $render): Response
     {
-        $this->addFlash('notice', ['type' => $type, 'titre' => static::$titre,
-        'message' => $message, 'debug' => $debug] );
+        $this->addFlash('notice', [
+            'type' => $type,
+            'titre' => static::$titreFlash,
+            'message' => $message,
+            'debug' => $debug
+            ]);
         return $this->render(static::$page, $render);
     }
 
@@ -149,11 +153,11 @@ class RepartitionController extends AbstractController
     {
         $user = $this->security->getUser();
         if (!$user) {
-            $this->logger->warning('🚫 [Répartition] Accès refusé : utilisateur non connecté.');
-            throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 403).");
+            $this->logger->warning('[Répartition] 🚫 Accès refusé : utilisateur non connecté.');
+            throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 401).");
         }
 
-        $this->logger->info('ℹ️ [Répartition] Chargement de la page.', [
+        $this->logger->info('[Répartition] ℹ️ Chargement de la page.', [
             'user' => $user->getUserIdentifier()
         ]);
 
@@ -176,7 +180,7 @@ class RepartitionController extends AbstractController
 
         /** On teste si la clé est valide */
         if (empty($token)) {
-            $this->logger->error('❌ [Répartition] Requête JSON invalide ou clé maven_key absente.', [
+            $this->logger->error('[Répartition] ❌ Requête JSON invalide ou clé maven_key absente.', [
                 'user' => $user->getUserIdentifier(),
             ]);
             return $this->addFlashAndRender('alert', static::$erreur400, $debug, $render);
@@ -184,14 +188,14 @@ class RepartitionController extends AbstractController
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
-            $this->logger->warning("🚫 [Répartition] Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).");
+            $this->logger->warning("[Répartition] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).");
             return $this->addFlashAndRender('warning', static::$erreur403, $debug, $render);
         }
 
         /** On récupère la maven_key du token */
         $mavenKey = $this->decodeToken($token);
         if (null === $mavenKey) {
-            $this->logger->error('❌ [Répartition] Décodage du token en erreur.', [
+            $this->logger->error('[Répartition] ❌ Décodage du token en erreur.', [
                 'token' => $token,
             ]);
             return $this->addFlashAndRender('alert', static::$erreur400, $debug, $render);
@@ -204,10 +208,10 @@ class RepartitionController extends AbstractController
         foreach ($categories as $category) {
             $information[$category] = $this->batchCollecteRepartition->CollecteRepartitionModule($mavenKey, $category);
             if ($information[$category]['code'] != 200){
-                $this->logger->error('❌ [Répartition] La collecte des données SonarQube à échouée.', [
+                $this->logger->error('[Répartition] ❌ La collecte des données SonarQube à échouée.', [
                 'category' => $category,
                 ]);
-                return $this->addFlashAndRender('alert', "La collecte des données SonarQube à échouée.", $debug, $render);
+                return $this->addFlashAndRender('alert', "❌ La collecte des données SonarQube à échouée.", $debug, $render);
             }
         }
 
@@ -251,10 +255,10 @@ class RepartitionController extends AbstractController
 
         $repartition = $repartitionRepos->selectOrUpdateRepartitionInitial($map);
         if ($repartition['code'] != 200) {
-            $this->logger->error("❌ [Répartition] L'enregistrement des données initiales a échouées.", [
+            $this->logger->error("[Répartition] ❌ L'enregistrement des données initiales a échouées.", [
                 'erreur' => $repartition['erreur'],
                 ]);
-            return $this->addFlashAndRender('alert', "L'enregistrement des données initiales a échouées.", $repartition['erreur'], $render);
+            return $this->addFlashAndRender('alert', "❌ L'enregistrement des données initiales a échouées.", $repartition['erreur'], $render);
         }
 
         // Mise à jour du rendu

@@ -27,7 +27,7 @@ use App\Service\ProjetCosuiService;
 class CosuiController extends AbstractController
 {
 
-    private static $titre = '[COSUI]';
+    private static $titreFlash = '[COSUI]';
     private static $erreur400 = '❌ La requête est incorrecte (Erreur 400).';
     private static $erreur403 = '⚠️ Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).';
     private static $page = 'projet/cosui.html.twig';
@@ -64,11 +64,11 @@ class CosuiController extends AbstractController
      */
     private function addFlashAndRender(string $type, string $message, string|null $trace, array $render): Response
     {
-        if (!isset(static::$titre) || !isset(static::$page)) {
+        if (!isset(static::$titreFlash) || !isset(static::$page)) {
             $this->logger->error("Paramètre statique 'titre' ou 'page' non défini dans addFlashAndRender().");
         }
 
-        $this->logger->info("ℹ️ [COSUI] Ajout d’un message flash de type '{$type}' avec le titre : " . (static::$titre ?? '[non défini]'));
+        $this->logger->info("[COSUI] ℹ️ Ajout d’un message flash de type '{$type}' avec le titre : " . (static::$titreFlash ?? '[non défini]'));
         $this->logger->debug("Contenu du message flash", [
             'message' => $message,
             'trace' => $trace ?? 'Pas de traces',
@@ -77,7 +77,7 @@ class CosuiController extends AbstractController
 
         $this->addFlash('notice', [
             'type' => $type,
-            'titre' => static::$titre,
+            'titre' => static::$titreFlash,
             'message' => $message,
             'trace' => $trace ?? null,
         ]);
@@ -103,7 +103,7 @@ class CosuiController extends AbstractController
         //token=BGR2ZQL5ZQLjA3kzpv5gLF1go3IfnJ5yqUEyBzkyYJAbLKD=
         //1 - b64=OTE2MDY5MDYwN3xmci5tYS1tb3VsaW5ldHRlOmxlLWNoYXQ=
         //2 - rot13=BGR2ZQL5ZQLjA3kzpv5gLF1go3IfnJ5yqUEyBzkyYJAbLKD=
-        $this->logger->debug("Tentative de décodage du token", ['token_brut' => $token]);
+        $this->logger->debug("[COSUI] 🛠️ Tentative de décodage du token", ['token_brut' => $token]);
 
         $string = str_rot13($token);
         $decoded = base64_decode($string, true); // `true` => return false si invalide

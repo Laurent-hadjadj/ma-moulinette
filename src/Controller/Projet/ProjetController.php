@@ -29,10 +29,10 @@ use App\Service\MesProjets;
  */
 class ProjetController extends AbstractController
 {
-    public static $page= "projet/mes-projets.html.twig";
-    public static $titre = "[Mes-Projets] ";
-    public static $erreur404 = "Tu dois être rattaché à une équipe (Erreur 404).";
-    public static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. Vérifie le nom du tag utilisé dans SonarQube (Erreur 406).";
+    private static $page= "projet/mes-projets.html.twig";
+    private static $titreFlash = "[Mes-Projets]";
+    private static $erreur404 = "⚠️ Tu dois être rattaché à une équipe (Erreur 404).";
+    private static $erreur406 = "⚠️ Je n'ai pas trouvé de projets pour ton équipe. Vérifie le nom du tag utilisé dans SonarQube (Erreur 406).";
 
     private $logoEntreprise;
     private $marqueEntrepriseShort;
@@ -128,14 +128,24 @@ class ProjetController extends AbstractController
         if (empty($teams)) {
             /** On envoi un message à l'utilisateur */
             $render['liste_projet'] = [];
-            $this->addFlash('notice', ['type' => 'warning', 'titre' => static::$titre, 'message' => static::$erreur404, 'debug'=> $debug] );
+            $this->addFlash('notice', [
+                'type' => 'warning',
+                'titre' => static::$titreFlash,
+                'message' => static::$erreur404,
+                'debug'=> $debug
+            ]);
             return $this->render(static::$page, $render);
         }
 
         $mes_projets = $this->mesProjets->liste($teams);
         if ($mes_projets['code'] === 406 || !isset($mes_projets['projets'])) {
             $render['liste_projet'] = [];
-            $this->addFlash('notice', ['type' => 'warning', 'titre' => static::$titre, 'message' => $mes_projets['message'], 'debug' => $mes_projets['erreur']] );
+            $this->addFlash('notice',[
+                    'type' => 'warning',
+                    'titre' => static::$titreFlash,
+                    'message' => static::$erreur406,
+                    'debug' => $mes_projets['erreur']
+            ]);
             return $this->render(static::$page, $render);
         }
 
@@ -150,7 +160,12 @@ class ProjetController extends AbstractController
         $liste = $historiqueRepository->selectHistoriqueIndicateurs($rtrim);
         if ($liste['code'] != 200) {
             $render['liste_projet'] = [];
-            $this->addFlash('notice', ['type' => 'erreur', 'titre' => static::$titre, 'message' => static::$erreur404, 'debug'=>$liste['erreur']] );
+            $this->addFlash('notice', [
+                'type' => 'alert',
+                'titre' => static::$titreFlash,
+                'message' => static::$erreur404,
+                'debug' => $liste['erreur']
+            ]);
             return $this->render(static::$page, $render);
         }
 

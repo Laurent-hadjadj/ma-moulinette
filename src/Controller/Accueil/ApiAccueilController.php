@@ -32,13 +32,11 @@ use App\Service\UrlBuilderService;
 class ApiAccueilController extends AbstractController
 {
     /** Définition des constantes */
-    public static $sonarUrl = "sonar.url";
-    public static $dateFormatShort = "Y-m-d";
-    public static $dateFormat = "Y-m-d H:i:s";
-    public static $europeParis = "Europe/Paris";
-    public static $titreJS = '<strong>[Accueil]</strong> ';
-    public static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
-    public static $erreur404 = "Je n'ai pas trouvé de projets sur le serveur SonarQube (Erreur 404).";
+    private static $sonarUrl = "sonar.url";
+    private static $europeParis = "Europe/Paris";
+    private static $titreJS = '<strong>[Accueil]</strong> ';
+    private static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
+    private static $erreur404 = "Je n'ai pas trouvé de projets sur le serveur SonarQube (Erreur 404).";
 
     /**
      * [Description for __construct]
@@ -134,7 +132,7 @@ class ApiAccueilController extends AbstractController
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
-                'message' => static::$titreJS.static::$erreur403
+                'message' => static::$titreJS . static::$erreur403
             ], Response::HTTP_OK);
         }
 
@@ -154,7 +152,7 @@ class ApiAccueilController extends AbstractController
             return new JsonResponse([
                 'code' => $result['code'],
                 'type' => 'alert',
-                'message' => static::$titreJS.$result['erreur']
+                'message' => static::$titreJS . $result['erreur']
             ], Response::HTTP_OK);
         }
 
@@ -170,7 +168,7 @@ class ApiAccueilController extends AbstractController
             return new JsonResponse([
                 'code' => 404,
                 'type' => 'warning',
-                'message' => static::$titreJS.static::$erreur404
+                'message' => static::$titreJS . static::$erreur404
             ], Response::HTTP_OK);
         }
 
@@ -181,7 +179,7 @@ class ApiAccueilController extends AbstractController
             return new JsonResponse([
                 'code' => $delete['code'],
                 'type' => 'alert',
-                'message' => static::$titreJS."Échec de l’exécution de la requête deleteListeProjet ({$delete['code']}).",
+                'message' => static::$titreJS . "Échec de l’exécution de la requête deleteListeProjet ({$delete['code']}).",
                 'trace' => $delete['erreur']
             ], Response::HTTP_OK);
         }
@@ -232,7 +230,7 @@ class ApiAccueilController extends AbstractController
             return new JsonResponse([
                 'code' => $r['code'],
                 'type' => 'alert',
-                'message' => static::$titreJS."Échec de l’exécution de la requête updatePropertiesProjet ({$r['code']}).",
+                'message' => static::$titreJS . "Échec de l’exécution de la requête updatePropertiesProjet ({$r['code']}).",
                 'trace' => $r['erreur']
             ], Response::HTTP_OK);
         }
@@ -251,7 +249,7 @@ class ApiAccueilController extends AbstractController
             [
                 'code' => 200,
                 'type' => 'success',
-                'message' => static::$titreJS.$message,
+                'message' => static::$titreJS . $message,
                 'nombre' => $nombre,
                 'public' => $public,
                 'private' => $private,
@@ -289,7 +287,7 @@ class ApiAccueilController extends AbstractController
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
-                'message' => static::$titreJS.static::$erreur403
+                'message' => static::$titreJS . static::$erreur403
                 ], Response::HTTP_OK);
         }
 
@@ -301,7 +299,7 @@ class ApiAccueilController extends AbstractController
             return new JsonResponse([
                 'code' => $tag['code'],
                 'type' => 'alert',
-                'message' => static::$titreJS."Échec de l’exécution de la requête countListeProjetTags ({$tag['code']}).",
+                'message' => static::$titreJS . "Échec de l’exécution de la requête countListeProjetTags ({$tag['code']}).",
                 'trace' => $tag['erreur']
             ], Response::HTTP_OK);
         }
