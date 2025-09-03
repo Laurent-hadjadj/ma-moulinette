@@ -34,7 +34,7 @@ class SuiviController extends AbstractController
 {
     /** Définition des constantes */
     public static $page= "suivi/index.html.twig";
-    public static $reference = "[Suivi]";
+    public static $titre = "[Suivi]";
     public static $erreur = "Une erreur s'est produite (erreur ";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
     public static $erreur404 = "Vous devez être rattaché à une équipe (Erreur 404).";
@@ -195,7 +195,7 @@ class SuiviController extends AbstractController
     {
         $this->addFlash('notice', [
             'type' => $type,
-            'reference' => static::$reference,
+            'titre' => static::$titre,
             'message' => $message,
             'debug' => $debug] );
         return $this->render(static::$page, $render);
@@ -348,7 +348,7 @@ class SuiviController extends AbstractController
 
             $this->addFlash('notice', [
                 'type' => 'success',
-                'reference' => static::$reference,
+                'titre' => static::$titre,
                 'message' => "Les données ont été correctement récupérées."
             ]);
 
