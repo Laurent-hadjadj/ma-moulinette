@@ -48,8 +48,9 @@
       <div class="callout {{message.type}} alert-callout-border" role="alert" data-closable>
           <p class="open-sans text-justify callout-message color"><strong>{{message.titre}}</strong> {{ message.message }}</p>
           {% if app.environment == 'dev' and message.debug is defined %}
-            <p class"open-sans">{{message.debug}}</p>
+          <p class"open-sans">{{message.debug}}</p>
           {% endif %}
+
           <button class="close-button {{message.type}}" aria-label="Dismiss alert" type="button" data-close>
             <span aria-hidden="true">&times;</span>
           </button>
