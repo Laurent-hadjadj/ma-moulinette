@@ -176,7 +176,7 @@ class AccueilController extends AbstractController
                 [
                     'type' => 'alert',
                     'titre' => static::$titre,
-                    'message' => $result['erreur']
+                    'message' => "❌ {$result['erreur']}"
                 ]);
             // On envoi -1 si on a une erreur HTTPClient
             return -1;
@@ -248,7 +248,7 @@ class AccueilController extends AbstractController
             $this->addFlash('notice', [
                 'type' => 'alert',
                 'reference' => static::$titre,
-                'message' => $result['erreur']
+                'message' => "❌ {$result['erreur']}"
                 ]);
             return -1;
         }
@@ -666,7 +666,7 @@ class AccueilController extends AbstractController
                 [
                     'type' => 'warning',
                     'titre' => static::$titre,
-                    'message' => "La base de données est en version $versionBd. Vous devez passer le script de migration $versionApp."
+                    'message' => "⚠️ La base de données est en version $versionBd. Vous devez passer le script de migration $versionApp."
                 ]);
         }
 

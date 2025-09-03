@@ -28,8 +28,8 @@ class CosuiController extends AbstractController
 {
 
     private static $titre = '[COSUI]';
-    private static $erreur400 = 'La requête est incorrecte (Erreur 400).';
-    private static $erreur403 = 'Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).';
+    private static $erreur400 = '❌ La requête est incorrecte (Erreur 400).';
+    private static $erreur403 = '⚠️ Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).';
     private static $page = 'projet/cosui.html.twig';
 
     /**
@@ -74,6 +74,7 @@ class CosuiController extends AbstractController
             'trace' => $trace ?? 'Pas de traces',
             'render_keys' => array_keys($render),
         ]);
+
         $this->addFlash('notice', [
             'type' => $type,
             'titre' => static::$titre,
@@ -107,19 +108,19 @@ class CosuiController extends AbstractController
         $string = str_rot13($token);
         $decoded = base64_decode($string, true); // `true` => return false si invalide
         if ($decoded === false) {
-            $this->logger->warning("⚠️ [COSUI] Échec du décodage base64 du token", ['token_rot13' => $string]);
+            $this->logger->warning("[COSUI] ⚠️ Échec du décodage base64 du token", ['token_rot13' => $string]);
             return null;
         }
 
         $parts = preg_split("/[|]+/", $decoded);
 
         if (count($parts) !== 2) {
-            $this->logger->warning("⚠️ [COSUI] Format de token invalide après décodage", ['decoded' => $decoded]);
+            $this->logger->warning("[COSUI] ⚠️ Format de token invalide après décodage", ['decoded' => $decoded]);
             return null;
         }
 
         $result = strtolower($parts[1]);
-        $this->logger->info("ℹ️ [COSUI] Token décodé avec succès", ['valeur_extraite' => $result]);
+        $this->logger->info("[COSUI] ℹ️ Token décodé avec succès", ['valeur_extraite' => $result]);
 
         return $result;
     }
@@ -139,41 +140,45 @@ class CosuiController extends AbstractController
     #[Route('/projet/cosui', name: 'projet_cosui', methods: 'GET')]
     public function projetCosui(Request $request): Response
     {
-        $this->logger->info('ℹ️ [COSUI] Accès à /projet/cosui');
+        $this->logger->info('[COSUI] ℹ️ Accès à /projet/cosui');
 
         $render = $this->cosuiService->initialRender();
 
         $token = $request->get('token');
         if (empty($token)) {
-            $this->logger->warning('⚠️ [COSUI] Token manquant dans la requête');
+            $this->logger->warning('[COSUI] ⚠️ Token manquant dans la requête');
             return $this->addFlashAndRender('alert', static::$erreur400, 'token', $render);
         }
 
         if (!$this->isGranted('ROLE_COLLECTE')) {
-            $this->logger->warning('⚠️ [COSUI] Accès refusé : rôle COLLECTE manquant');
+            $this->logger->warning('[COSUI] ⚠️ Accès refusé : rôle COLLECTE manquant');
             return $this->addFlashAndRender('warning', static::$erreur403, 'auth', $render);
         }
 
         $maven_key = $this->decodeToken($token);
         if (null === $maven_key) {
-            $this->logger->error('❌ [COSUI] Échec du décodage du token');
+            $this->logger->error('[COSUI] ❌ Échec du décodage du token');
             return $this->addFlashAndRender('alert', static::$erreur400, 'Problème de décodage du token.', $render);
         }
 
-        $this->logger->info('ℹ️ [COSUI] Token décodé, maven_key reçu', ['maven_key' => $maven_key]);
+        $this->logger->info('[COSUI] ℹ️ Token décodé, maven_key reçu', ['maven_key' => $maven_key]);
 
         try {
                 $result = $this->cosuiService->generateRender($maven_key);
 
                 if (isset($result['code']) && $result['code'] !== 200) {
-                    $this->logger->error($result['message'], [
+                    $this->logger->error("[COSUI] ❌ {$result['message']}", [
                         'maven_key' => $maven_key,
                         'trace' => $result['trace'] ?? 'Non disponible'
                     ]);
-                    return $this->addFlashAndRender($result['type'], $result['message'], $result['trace'] ?? '', $render);
+                    return $this->addFlashAndRender(
+                        $result['type'],
+                        "❌ {$result['message']}",
+                        $result['trace'] ?? '',
+                        $render);
                 }
         } catch (\RuntimeException $e) {
-            return $this->addFlashAndRender('critical', 'Erreur lors de la génération COSUI', $e->getMessage(), $render);
+            return $this->addFlashAndRender('alert', '🔴 Erreur lors de la génération COSUI.', $e->getMessage(), $render);
         }
 
         return $this->render(static::$page, $result);
