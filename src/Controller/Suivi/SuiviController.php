@@ -14,17 +14,15 @@
 namespace App\Controller\Suivi;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\SecurityBundle\Security;
-
-use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Historique;
-use App\Entity\ListeProjet;
-
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\ORM\EntityManagerInterface;
 
+use App\Entity\Historique;
+use App\Entity\ListeProjet;
 use App\Exception\FetchDataException;
 
 /**
