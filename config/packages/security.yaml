@@ -23,6 +23,15 @@ security:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+
+        # 🔹 Firewall pour les API
+        api:
+            pattern: ^/api
+            stateless: false # ⚠️ session activée pour réutiliser le login
+            provider: app_utilisateur_provider
+            entry_point: App\Security\ApiSecurityHandler
+            access_denied_handler: App\Security\ApiSecurityHandler
+
         main:
             lazy: true
             provider: app_utilisateur_provider
@@ -48,16 +57,19 @@ security:
                 max_attempts: 3
                 interval: '15 minutes'
 
-    # Easy way to control access for large sections of your site
-    # Note: Only the *first* access control that matches will be used
     access_control:
-        #- { path: ^/admin, roles: ROLE_ADMIN }
+        # API
+        - { path: ^/api, roles: ROLE_UTILISATEUR }
+
+        # Web (public)
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
         - { path: ^/welcome, roles: PUBLIC_ACCESS }
         - { path: ^/plan-du-site, roles: PUBLIC_ACCESS }
         - { path: ^/mention-legal, roles: PUBLIC_ACCESS }
         - { path: ^/donnees-personnelles, roles: PUBLIC_ACCESS }
+
+        # Web (privé)
         - { path: ^/admin, roles: ROLE_UTILISATEUR }
         - { path: ^/, roles: ROLE_UTILISATEUR }
 
