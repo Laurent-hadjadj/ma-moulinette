@@ -71,7 +71,8 @@ class RegistrationController extends AbstractController
             'marque_entreprise_long' => $this->marqueEntrepriseLong,
             'env' => $this->environnement,
             'version' => $this->version,
-            'date_copyright' => $this->dateCopyright];
+            'date_copyright' => $this->dateCopyright
+        ];
     }
 
     /**
@@ -88,7 +89,8 @@ class RegistrationController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/register', name: 'register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, ValidatorInterface $validator): Response {
+    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, ValidatorInterface $validator): Response
+    {
         /**
          * Si on est déjà connecté
          * On affiche la page /accueil, Si on la page /login
@@ -99,7 +101,7 @@ class RegistrationController extends AbstractController
 
         /** On créé un objet utilisateur. */
         $utilisateur = new Utilisateur();
-        /** on prépare le formulaire. */
+        /** On prépare le formulaire. */
         $form = $this->createForm(RegistrationFormType::class, $utilisateur);
         /** On récupère la requête. */
         $form->handleRequest($request);
@@ -144,8 +146,10 @@ class RegistrationController extends AbstractController
                 if (count($errors) > 0) {
                     // Si des erreurs sont trouvées, afficher ces erreurs
                     foreach ($errors as $error) {
-                        $this->addFlash('error', ['type' => 'alert', 'message' => $error->getMessage()] );
+                        $this->logger->error("[Inscription] ❌ une erreur dans le formulaire a été détectée.", ['erreur' => $error->getMessage()]);
+                        $this->addFlash('notice', ['type' => 'alert', 'message' => $error->getMessage()] );
                     }
+
                     $render=static::genericRender();
                     $render['registrationForm'] = $form->createView();
                     return $this->render('auth/register.html.twig', $render);
@@ -154,14 +158,22 @@ class RegistrationController extends AbstractController
                 /** On enregistre */
                 $this->em->persist($utilisateur);
                 $this->em->flush();
-            }
 
-            /** On prepare un message flash */
-            $titre="[AUTH] ";
-            $message= "Votre compte a été correctement créé.";
-            $this->addFlash('notice', ['type'=>'primary', 'titre'=>$titre, 'message'=>$message]);
-            /** On préfère rediriger l'utilisateur sur la page de bienvenue */
-            return $this->redirectToRoute('welcome');
+                /** On prepare un message flash */
+                $message = "📌 Votre compte a été correctement créé.";
+                $this->addFlash('notice', [
+                    'type' => 'primary',
+                    'titre' => "[Inscription] ",
+                    'message' => $message
+                ]);
+
+                /** On préfère rediriger l'utilisateur sur la page de bienvenue */
+                return $this->redirectToRoute('welcome', [
+                    'nom' => $utilisateur->getNom(),
+                    'prenom' => $utilisateur->getPrenom(),
+                    'courriel' => $utilisateur->getCourriel()
+                ]);
+            }
         }
 
         $render=static::genericRender();
@@ -172,15 +184,18 @@ class RegistrationController extends AbstractController
     /**
      * [Description for welcome]
      *
-     * @return [type]
+     * @return render
      *
      * Created at: 15/12/2022, 21:07:13 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/welcome', name: 'welcome')]
-    public function welcome()
+    public function welcome(Request $request): Response
     {
+        //$content = $request->getContent();
+        //$data = $request->toArray();
+        //dd($data);
         $render=static::genericRender();
         $render['nom'] = 'HADJADJ';
         $render['prenom'] = 'Laurent';
