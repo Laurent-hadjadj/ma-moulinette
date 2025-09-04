@@ -24,19 +24,13 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-        # 🔹 Firewall pour les API
-        api:
-            pattern: ^/api
-            stateless: false # ⚠️ session activée pour réutiliser le login
-            provider: app_utilisateur_provider
-            entry_point: App\Security\ApiSecurityHandler
-            access_denied_handler: App\Security\ApiSecurityHandler
-
         main:
             lazy: true
             provider: app_utilisateur_provider
             custom_authenticator:
                 - App\Security\LoginFormAuthenticator
+            entry_point: App\Security\ApiSecurityHandler
+            access_denied_handler: App\Security\ApiSecurityHandler
 
             logout:
                 path: logout
@@ -72,6 +66,8 @@ security:
         # Web (privé)
         - { path: ^/admin, roles: ROLE_UTILISATEUR }
         - { path: ^/, roles: ROLE_UTILISATEUR }
+
+    #enable_authenticator_manager: true
 
 when@test:
     security:
