@@ -75,7 +75,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $resetPasswordCount = 1;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => "Date de modification"])]
-    private ?\DateTime $dateModification = null;
+    private ?\DateTimeInterface $dateModification = null;
 
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, options: ['comment' => "Date de création"])]
     private ?\DateTimeImmutable $dateEnregistrement = null;
@@ -242,17 +242,20 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      *
      * @param \DateTimeInterface $dateModification
      *
-     * @return self
+     * @return \App\Entity\Utilisateur
      *
-     * Created at: 02/01/2023, 18:11:59 (Europe/Paris)
+     * Created at: 04/09/2025 08:46:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function setDateModification(\DateTimeInterface $dateModification): \App\Entity\Utilisateur
     {
-        $this->dateModification = $dateModification;
+            if ($dateModification instanceof \DateTimeImmutable) {
+                    $dateModification = \DateTime::createFromImmutable($dateModification);
+            }
+            $this->dateModification = $dateModification;
 
-        return $this;
+            return $this;
     }
 
     /**
