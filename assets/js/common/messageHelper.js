@@ -136,6 +136,11 @@ export function prepareTechnicalDetails(traceCandidate) {
                         }
                 }
 
+                // On gère le cas d'une vraie exception 401 et 403 levée par le handler
+                if (data && data.type && data.code && data.message){
+                    return {code: data.code, type: data.type, message: data.message};
+                }
+
                 // Si data existe, construit une chaîne de sortie
                 if (data) {
                         let out = data.detail || data.title || traceCandidate.message || 'Erreur inconnue.';
