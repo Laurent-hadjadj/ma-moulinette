@@ -14,12 +14,13 @@
 namespace App\Controller\Accueil;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
+
 
 use App\Entity\ListeProjet;
 use App\Entity\Properties;
@@ -34,8 +35,7 @@ class ApiAccueilController extends AbstractController
     /** Définition des constantes */
     private static $sonarUrl = "sonar.url";
     private static $europeParis = "Europe/Paris";
-    private static $titreJS = '<strong>[Accueil]</strong> ';
-    private static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
+    private static $titreJS = "<strong>[Accueil]</strong> ";
     private static $erreur404 = "Je n'ai pas trouvé de projets sur le serveur SonarQube (Erreur 404).";
 
     /**
@@ -52,7 +52,6 @@ class ApiAccueilController extends AbstractController
         private LoggerInterface $logger,
         private EntityManagerInterface $em,
         private UrlBuilderService $urlBuilder,
-        private Security $security
     ) {
     }
 
@@ -110,31 +109,13 @@ class ApiAccueilController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/accueil/projet', name: 'accueil_projet_liste', methods: ['POST'])]
+    #[Route('/api/accueil/projet', name: 'accueil_projet_liste', methods: ['POST'], defaults: ['role' => 'ROLE_COLLECTE'])]
+    #[IsGranted('ROLE_COLLECTE')]
     public function accueilProjetListe(): JsonResponse
     {
         /** On instancie l'EntityRepository */
         $listeProjetRepos = $this->em->getRepository(ListeProjet::class);
         $propertiesRepos = $this->em->getRepository(Properties::class);
-
-        $user = $this->security->getUser();
-        if (!$user) {
-            $this->logger->warning('[Accueil] 🚫 Accès refusé : utilisateur non connecté.');
-            throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 401).");
-        }
-
-        /** On vérifie si l'utilisateur à un rôle Collecte ? */
-        if (!$this->isGranted('ROLE_COLLECTE')) {
-            $this->logger->warning("[Accueil-projet] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).", [
-                'user' => $user->getUserIdentifier(),
-            ]);
-
-            return new JsonResponse([
-                'code' => 403,
-                'type' => 'warning',
-                'message' => static::$titreJS . static::$erreur403
-            ], Response::HTTP_OK);
-        }
 
         /** Sécurisation de l'URL */
         $url = $this->urlBuilder->build(
@@ -266,30 +247,12 @@ class ApiAccueilController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/accueil/tags', name: 'accueil_projet_tags', methods: ['POST'])]
+    #[Route('/api/accueil/tags', name: 'accueil_projet_tags', methods: ['POST'], defaults: ['role' => 'ROLE_COLLECTE'])]
+    #[IsGranted('ROLE_COLLECTE')]
     public function accueilProjetTags(): JsonResponse
     {
         /** On instancie l'EntityRepository */
         $listeProjetRepos = $this->em->getRepository(ListeProjet::class);
-
-        $user = $this->security->getUser();
-        if (!$user) {
-            $this->logger->warning('[Accueil-tags] 🚫 Accès refusé : utilisateur non connecté.');
-            throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 401).");
-        }
-
-        /** On vérifie si l'utilisateur à un rôle Collecte ? */
-        if (!$this->isGranted('ROLE_COLLECTE')) {
-            $this->logger->warning("[Accueil-tags] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).", [
-                'user' => $user->getUserIdentifier(),
-            ]);
-
-            return new JsonResponse([
-                'code' => 403,
-                'type' => 'warning',
-                'message' => static::$titreJS . static::$erreur403
-                ], Response::HTTP_OK);
-        }
 
         $this->logger->info('[Accueil] ℹ️ Comptage des tags de projets');
         $tag = $listeProjetRepos->countListeProjetTags();

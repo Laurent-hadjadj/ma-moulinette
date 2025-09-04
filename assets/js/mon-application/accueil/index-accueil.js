@@ -82,7 +82,16 @@ const miseAJourListe = async function() {
   }
 
   const options = {
-    url: `${serveur()}/api/accueil/projet`, type: 'POST', dataType: 'json', contentType };
+    url: `${serveur()}/api/accueil/projet`,
+    type: 'POST',
+    dataType: 'json',
+    contentType,
+    headers: {
+                'Content-Type': 'application/json',
+                'X-API-Custom-403': 'true'
+            },
+  };
+
   try {
         const t = await $.ajax(options);
         // 📌 Vérification des erreurs
@@ -119,7 +128,11 @@ const miseAJourListe = async function() {
   } catch(error) {
     const message = `<strong>[Accueil]</strong> Une erreur inattendue s'est produite lors de la mise à jour des projets.`
     const trace = prepareTechnicalDetails(error);
-    showMessage('alert', message, trace);
+    if (typeof(trace) === 'object' && trace.message && trace.code && trace.type) {
+      showMessage(trace.type, trace.message);
+      return;
+    }
+    showMessage('critical', message, trace);
   }
 };
 
@@ -138,7 +151,15 @@ const miseAJourTags = async function() {
   }
 
   const options = {
-    url: `${serveur()}/api/accueil/tags`, type: 'POST', dataType: 'json', contentType };
+    url: `${serveur()}/api/accueil/tags`,
+    type: 'POST',
+    dataType: 'json',
+    contentType,
+    headers: {
+                'Content-Type': 'application/json',
+                'X-API-Custom-403': 'true'
+              },
+    };
 
     try {
       const t = await $.ajax(options);
@@ -156,6 +177,10 @@ const miseAJourTags = async function() {
     } catch (error) {
       const message = `<strong>[Accueil]</strong> Une erreur inattendue s'est produite lors de la récupération du nombre de tags.`;
       const trace = prepareTechnicalDetails(error);
+      if (typeof(trace) === 'object' && trace.message && trace.code && trace.type) {
+        showMessage(trace.type, trace.message);
+        return;
+      }
       showMessage('alert', message, trace);
     }
 };
@@ -202,6 +227,6 @@ $('.tableau-de-board-svg').on('click', function(e) {
   if (mavenKey !== ''){
     window.location.href = `/suivi/set?maven_key=${mavenKey}`;
     } else {
-      sessionStorage.set('error', "La clé maven n'est pas correcte !! !");
+      sessionStorage.set('ma_moulinette_accueil_error', "La clé maven n'est pas correcte !! !");
   }
 });

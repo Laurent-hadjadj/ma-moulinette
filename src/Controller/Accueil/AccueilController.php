@@ -15,6 +15,7 @@ namespace App\Controller\Accueil;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,11 +39,8 @@ class AccueilController extends AbstractController
 {
     private static $page = 'accueil/index.html.twig';
     private static $sonarUrl = 'sonar.url';
-    private static $titre = '[Accueil]';
-    private static $titreJS = '<strong>[Accueil]</strong> ';
+    private static $titreFlash = '[Accueil] ';
     private static $europeParis = 'Europe/Paris';
-    private static $erreur403 = 'Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).';
-    private static $loggerE401 = "[Enregistrement] ❌ Aucun utilisateur connecté.";
 
     private $logoEntreprise;
     private $marqueEntrepriseShort;
@@ -177,7 +175,7 @@ class AccueilController extends AbstractController
             $this->addFlash('notice',
                 [
                     'type' => 'alert',
-                    'titre' => static::$titre,
+                    'titre' => static::$titreFlash,
                     'message' => "❌ {$result['erreur']}"
                 ]);
             // On envoi -1 si on a une erreur HTTPClient
@@ -249,7 +247,7 @@ class AccueilController extends AbstractController
         if ($result['code'] !== 200) {
             $this->addFlash('notice', [
                 'type' => 'alert',
-                'reference' => static::$titre,
+                'titre' => static::$titreFlash,
                 'message' => "❌ {$result['erreur']}"
                 ]);
             return -1;
@@ -281,7 +279,8 @@ class AccueilController extends AbstractController
      */
     private function majProperties(string $type, int $bd, int $sonar)
     {
-        $this->logger->info('[Accueil] ℹ️ Mise à jour des propriétés.', ['type' => $type, 'bd' => $bd, 'sonar' => $sonar]);
+        $this->logger->info('[Accueil] ℹ️ Mise à jour des propriétés.', [
+            'type' => $type, 'bd' => $bd, 'sonar' => $sonar]);
         /** On instancie l'entityRepository */
         $propertiesRepos = $this->em->getRepository(Properties::class);
 
@@ -384,6 +383,7 @@ class AccueilController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/accueil/favori/liste/projet', name: 'accueil_favori_liste_projet', defaults: ['role' => 'ROLE_COLLECTE'])]
+    #[IsGranted('ROLE_COLLECTE')]
     private function getListeFavoriProjet(): JsonResponse
     {
         /** On instancie l'entityRepository */
@@ -474,7 +474,7 @@ class AccueilController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/accueil/favori/liste/version', name: 'accueil_favori_liste_version', defaults: ['role' => 'ROLE_UTILISATEUR'])]
+    #[Route('/accueil/favori/liste/version', name: 'accueil_favori_liste_version')]
     private function getListeFavoriVersion(): JsonResponse
     {
         /** On instancie l'entityRepository */
@@ -518,7 +518,7 @@ class AccueilController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/accueil', name: 'accueil', methods:'GET', defaults: ['role' => 'ROLE_UTILISATEUR'])]
+    #[Route('/accueil', name: 'accueil', methods:'GET')]
     public function index(): Response
     {
                 /**
@@ -610,7 +610,7 @@ class AccueilController extends AbstractController
             $this->addFlash('info',
                 [
                     'type' => 'primary',
-                    'titre' => static::$titre,
+                    'titre' => static::$titreFlash,
                     'message' => '📌 Vous devez mettre à jour le référentiel local pour les ',
                     'ref' => 'PROJETS'
             ]);
@@ -630,7 +630,7 @@ class AccueilController extends AbstractController
             $this->addFlash('info',
                 [
                     'type' => 'primary',
-                    'titre' => static::$titre,
+                    'titre' => static::$titreFlash,
                     'message' => '📌 Vous devez mettre à jour le référentiel local pour les ',
                     'ref' => 'PROFILS'
             ]);
@@ -640,7 +640,6 @@ class AccueilController extends AbstractController
         */
             $this->majProperties('profil', $profilBd, $profilSonar);
         }
-
 
         /** 4 - Visibility   */
         $public = $listeProjetRepo->countListeProjetVisibility('public')['request'][0]['visibility'] ?? 0;
@@ -660,7 +659,7 @@ class AccueilController extends AbstractController
             $this->addFlash('notice',
                 [
                     'type' => 'warning',
-                    'titre' => static::$titre,
+                    'titre' => static::$titreFlash,
                     'message' => "⚠️ La base de données est en version $versionBd. Vous devez passer le script de migration $versionApp."
                 ]);
         }
@@ -688,10 +687,10 @@ class AccueilController extends AbstractController
         }
 
         /** On récupère le rôle de l'utilisateur  */
-        $refreshBd = $this->isGranted('ROLE_COLLECTE');
+        $refreshBD = $this->isGranted('ROLE_COLLECTE');
 
         /** On met à jour les données avant d'afficher la page */
-        $render['refresh_bd'] = $refreshBd;
+        $render['refresh_bd'] = $refreshBD;
         $render['projet_bd'] = $projetBd;
         $render['projet_sonar'] = $projetSonar;
         $render['profil_bd'] = $profilBd;
@@ -704,7 +703,7 @@ class AccueilController extends AbstractController
         $render['nombre_projet_local'] = $projetBd;
         $render['nombre_tag'] = $tag['nombre'][0]['tag'];
 
-        $this->logger->info("[Accueil] ℹ️ Rendu final de la page d\'accueil.");
+        $this->logger->info("[Accueil] ℹ️ Rendu final de la page d'accueil.");
         return $this->render(static::$page, $render);
     }
 }
