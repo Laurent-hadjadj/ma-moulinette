@@ -47,7 +47,7 @@ class ApiSecurityHandler implements AuthenticationEntryPointInterface, AccessDen
      */
     public function start(Request $request, ?AuthenticationException $authException = null): Response
     {
-      $this->logger->warning('[API-Auth] ☠️ Tentative d’accès non autorisée à une API', [
+      $this->logger->error('[API-Auth] ☠️ Tentative d’accès non autorisée à une API', [
             'path' => $request->getPathInfo(),
             'ip' =>$request->getClientIp(),
             'message' => $authException?->getMessage(),
@@ -74,7 +74,7 @@ class ApiSecurityHandler implements AuthenticationEntryPointInterface, AccessDen
      */
     public function handle(Request $request, AccessDeniedException $accessDeniedException): Response
     {
-      $this->logger->warning('[API-Credential] 👻 Accès refusé à une ressource API', [
+      $this->logger->error('[API-Credential] 👻 Accès refusé à une ressource API', [
               'path' => $request->getPathInfo(),
               'ip' => $request->getClientIp(),
               'user' => $request->getUser(),
@@ -89,26 +89,19 @@ class ApiSecurityHandler implements AuthenticationEntryPointInterface, AccessDen
           : "Vous n’avez pas les droits pour accéder à cette ressource.";
 
         // Vérifie un header spécifique pour décider si on renvoie HTTP 200 ou 403
-        $useHttp200 = $request->headers->get('X-API-Return-200-On-403', false);
+        $useHttp200 = (bool) $request->headers->get('X-API-Custom-403', false);
 
         if ($useHttp200) {
             return new JsonResponse([
-                'type' => 'warning',
+                'type' => 'alert',
                 'code' => 403,
-                'message' => $message
+                'message' => $message,
             ], Response::HTTP_OK);
         }
 
       return new JsonResponse([
               'error' => 'Forbidden',
-              'message' => '[API-Credential] 👻 Vous n’avez pas les droits pour accéder à cette ressource.'
+              'message' => '[API-Credential] Vous n’avez pas les droits pour accéder à cette ressource.'
       ], Response::HTTP_FORBIDDEN);
     }
 }
-
-/*
-headers: {
-        'X-API-Return-200-On-403': '1',
-        'X-API-Required-Role': 'ROLE_TOTO'
-    },
-*/
