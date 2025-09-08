@@ -30,7 +30,7 @@
     {# Chargement de la section header #}
     {{ include('header.html.twig') }}
 
-    <header class="grid-container">
+    <header class="grid-container margin-top-1">
       <nav id="fil-ariane" aria-label="vous êtes ici :">
         <ol class="claire-hand breadcrumbs">
           <li><span class="show-for-sr">Vous êtes sur la page :</span>Accueil</li>
@@ -87,9 +87,9 @@
               <div class="referential-container">
                 <!-- Mise à jour de référentiel des projets SonarQube -->
                   {% if refresh_bd is same as(true) %}
-                    {% set statut="" %}
+                    {% set statut = "" %}
                   {% else %}
-                    {% set statut="bouton-disabled" %}
+                    {% set statut = "bouton-disabled" %}
                   {% endif %}
                   <button id="bouton-mise-a-jour-referential"
                           class="button open-sans {{ statut }} focus-dark-light"

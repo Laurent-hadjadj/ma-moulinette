@@ -30,7 +30,7 @@
     {# Chargement de la section header #}
     {{ include('header.html.twig') }}
 
-    <header class="grid-container">
+    <header class="grid-container margin-top-1">
       <nav id="fil-ariane" aria-label="vous êtes ici :">
         <ol class="claire-hand breadcrumbs">
           <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
@@ -310,7 +310,6 @@
     {# Affichage de la répartition des loggers  #}
     {{ include('/projet/_modal_liste_logger.html.twig') }}
 
-    <br><br>
     {# Chargement de la section footer #}
     {{ include('footer.html.twig') }}
   </body>
