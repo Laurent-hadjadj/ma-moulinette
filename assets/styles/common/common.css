@@ -1115,3 +1115,21 @@ input:checked ~ .switch-paddle-identifiant { background-color: #00445b; }
     z-index: 0;
   }
 }
+
+/* ======= formatage d'une liste (rapport de collecte) ======= */
+.data-list {
+		list-style-type: none;
+		padding: 0;
+}
+
+.data-list .lead {
+		margin: 5px 0;
+		padding: 10px;
+		background-color: #f9f9f9;
+		border: 1px solid #ddd;
+}
+
+.data-list .lead strong {
+		font-weight: bold;
+		color: #333;
+}
