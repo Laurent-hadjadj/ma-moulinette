@@ -146,8 +146,8 @@ class BatchTraitementRepository extends ServiceEntityRepository
   public function selectBatchTraitement($map): array
   {
     $sql = "SELECT id, demarrage, titre, portefeuille, nombre_projet as projet
-                      FROM batch_traitement
-                      WHERE titre = :titre";
+            FROM batch_traitement
+            WHERE titre = :titre";
     try {
           $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(':titre', $map['titre_portefeuille']);
