@@ -39,7 +39,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
      * Created at: 04/12/2022, 08:53:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      */
-    private function __construct(
+    public function __construct(
         private EntityManagerInterface $em,
         private Client $client,
         private UrlBuilderService $urlBuilder,
