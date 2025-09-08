@@ -28,9 +28,9 @@ use App\Service\UrlBuilderService;
 class BatchCollecteHotspotOwaspController extends AbstractController
 {
     /** Définition des constantes */
-    public static $sonarUrl = "sonar.url";
-    public static $europeParis = "Europe/Paris";
-    public static $erreur404 = "L'appel à l'API n'a pas abouti (Erreur 404).";
+    private static $sonarUrl = "sonar.url";
+    private static $europeParis = "Europe/Paris";
+    private static $erreur404 = "L'appel à l'API n'a pas abouti (Erreur 404).";
 
     /**
      * [Description for __construct]
@@ -39,7 +39,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
      * Created at: 04/12/2022, 08:53:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      */
-    public function __construct(
+    private function __construct(
         private EntityManagerInterface $em,
         private Client $client,
         private UrlBuilderService $urlBuilder,
@@ -88,7 +88,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
         $hotspotOwaspRepos = $this->em->getRepository(HotspotOwasp::class);
         $sonarVersion = $this->getParameter('sonar.version');
 
-        $this->logger->info('ℹ️ [Batch HotspotOwasp] Début de collecte', [
+        $this->logger->info('[Batch HotspotOwasp] ℹ️ Début de collecte', [
             'maven_key' => $maven_key,
             'mode_collecte' => $mode_collecte,
             'utilisateur' => $utilisateur_collecte,
@@ -99,8 +99,9 @@ class BatchCollecteHotspotOwaspController extends AbstractController
         if ($menace === 'a0') {
             $map = [ 'maven_key' => $maven_key ];
             $delete = $hotspotOwaspRepos->deleteHotspotOwaspMavenKey($map);
+
             if ($delete['code'] != 200) {
-                $this->logger->error('❌ [HotspotOwasp] Échec suppression A0', $delete);
+                $this->logger->error('[HotspotOwasp] ❌ Échec suppression A0', $delete);
                 return [
                     'code' => $delete['code'],
                     'erreur' => $delete['erreur']
@@ -108,22 +109,43 @@ class BatchCollecteHotspotOwaspController extends AbstractController
             }
 
             $message = 'A0 : Effacement des données de la table hotspotOwasp pour le projet.';
-            $this->logger->info('ℹ️ [HotspotOwasp] Suppression A0 effectuée', ['maven_key' => $maven_key]);
+            $this->logger->info('[HotspotOwasp] ℹ️ Suppression A0 effectuée', ['maven_key' => $maven_key]);
             /** si on est en version 8, on envoi pas de tableau owasp2021 */
             return ((int) $sonarVersion == 8) ?
-                ['code' => 200, 'info' => 'effacement', 'message' => $message, 'data' => []] : ['code' => 200, 'owasp_2021'=> [], 'data' => [], 'info' => 'effacement', 'message' => $message];
+                [
+                    'code' => 200,
+                    'owasp_2017'=> [], //ne sert a rien.
+                    'info' => 'effacement',
+                    'message' => $message,
+                    'data' => []
+                ] :
+                [
+                    'code' => 200,
+                    'owasp_2021'=> [],
+                    'info' => 'effacement',
+                    'message' => $message,
+                    'data' => []
+                ];
         }
 
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
         $map = [ 'maven_key' => $maven_key ];
         $information = $informationProjetRepos->selectInformationProjetVersion($map);
+
         if ($information['code'] != 200) {
-            $this->logger->error('❌ [HotspotOwasp] Erreur récupération info projet', $information);
-            return ['code' => $information['code'], 'erreur' => $information['erreur']];
+            $this->logger->error('[HotspotOwasp] ❌ Erreur de la requête selectInformationProjetVersion.', [
+            'code' => $information['code'],
+            'erreur' => $information['erreur']
+            ]);
+
+            return [
+                'code' => $information['code'],
+                'erreur' => $information['erreur']
+            ];
         }
 
         if (!$information['info']) {
-            $this->logger->warning('⚠️ [HotspotOwasp] Aucune information projet trouvée', ['maven_key' => $maven_key]);
+            $this->logger->warning('[HotspotOwasp] ⚠️ Aucune information projet trouvée', ['maven_key' => $maven_key]);
             return [
                 'code' => 404,
                 'message' => static::$erreur404
@@ -147,10 +169,15 @@ class BatchCollecteHotspotOwaspController extends AbstractController
             $queryParamsList['owasp2017']
         );
 
-        $this->logger->debug('🛠️ [HotspotOwasp] Requête OWASP 2017', ['url' => $url]);
+        $this->logger->debug('[HotspotOwasp] 🛠️ Requête OWASP 2017', ['url' => $url]);
         $owasp2017 = $this->client->httpSonarQube($url);
+
         if (isset($owasp2017['code']) && in_array($owasp2017['code'], [400, 401, 403, 404, 500, 503, 504])) {
-            $this->logger->error('❌ [HotspotOwasp] Erreur API OWASP 2021', $owasp2017);
+            $this->logger->error('[HotspotOwasp] ❌ Erreur API OWASP 2017', [
+                'code' => $owasp2017['code'],
+                'erreur' => $owasp2017['erreur']
+            ]);
+
             return [
                 'code' => $owasp2017['code'],
                 'erreur' => $owasp2017['erreur'],
@@ -167,10 +194,14 @@ class BatchCollecteHotspotOwaspController extends AbstractController
                 $queryParamsList['owasp2021']
             );
 
-            $this->logger->debug('🛠️ [HotspotOwasp] Requête OWASP 2021', ['url' => $url]);
+            $this->logger->debug('[HotspotOwasp] 🛠️ Requête OWASP 2021', ['url' => $url]);
             $owasp2021 = $this->client->httpSonarQube($url);
             if (isset($owasp2021['code']) && in_array($owasp2021['code'], [400, 401, 403, 404, 500, 503, 504])) {
-                $this->logger->error('❌ [HotspotOwasp] Erreur API OWASP 2021', $owasp2021);
+                $this->logger->error('[HotspotOwasp] ❌ Erreur API OWASP 2021', [
+                        'code' => $owasp2021['code'],
+                        'erreur' => $owasp2021['erreur'],
+                    ]);
+
                 return [
                         'code' => $owasp2021['code'],
                         'erreur' => $owasp2021['erreur'],
@@ -215,7 +246,11 @@ class BatchCollecteHotspotOwaspController extends AbstractController
         if ($hotspotDataList){
             $insert = $hotspotOwaspRepos->insertHotspotOwasp($hotspotDataList);
             if ($insert['code'] !== 200) {
-                $this->logger->error('❌ [HotspotOwasp] Échec d’insertion en base', $insert);
+                $this->logger->error('[HotspotOwasp] ❌ Échec de la requête insertHotspotOwasp', [
+                    'code' => $insert['code'],
+                    'erreur' => $insert['erreur']
+                ]);
+
                 return [
                     'code' => $insert['code'],
                     'erreur' => $insert['erreur']
@@ -223,8 +258,9 @@ class BatchCollecteHotspotOwaspController extends AbstractController
             }
         }
 
-        $this->logger->info('ℹ️ [HotspotOwasp] Collecte OWASP terminée avec succès', [
+        $this->logger->info('[HotspotOwasp] ℹ️ Collecte Hotspots OWASP terminée avec succès', [
             'maven_key' => $maven_key,
+            'info' => 'enregistrement',
             'menace' => $menace,
             'owasp_2017' => $owasp2017['json']['paging']['total'] ?? 0,
             'owasp_2021' => $owasp2021['json']['paging']['total'] ?? 'NC'
@@ -235,7 +271,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
                 'info' => 'enregistrement',
                 'owasp_2017' => $owasp2017['json']['paging']['total'],
                 'owasp_2021' => $owasp2021['json']['paging']['total'] ?? 'NC',
-                'message' => '',
+                'message' => 'La collecte des menaces Hotspots de catégorie OWASP est terminée.',
                 'data' => $hotspotDataList
             ];
     }

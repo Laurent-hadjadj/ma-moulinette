@@ -27,10 +27,6 @@ use App\Service\UrlBuilderService;
  */
 class BatchCollecteActuatorController extends AbstractController
 {
-    /** Définition des constantes */
-    public static $sonarUrl = "sonar.url";
-    public static $europeParis = "Europe/Paris";
-
     /**
      * [Description for __construct]
      * On ajoute un constructeur pour éviter à chaque fois d'injecter la même class
@@ -62,14 +58,16 @@ class BatchCollecteActuatorController extends AbstractController
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
         $actuatorRepos = $this->em->getRepository(Actuator::class);
 
-        $this->logger->info("ℹ️ [Batch Actuator] Lancement de la collecte pour {$maven_key}");
+        $this->logger->info("[Batch Actuator] ℹ️  Lancement de la collecte pour {$maven_key}");
 
         /** On regarde si, il y a une point d'accès défini pour le projet */
         $map = [ 'maven_key' => $maven_key ];
         $actuatorEndpoint = $actuatorRepos->findActuatorMavenKey($map);
 
         if (isset($actuatorEndpoint['code']) && in_array($actuatorEndpoint['code'], [23502, 23505, 500, 503])) {
-            $this->logger->error("❌ [Batch Actuator] Erreur de récupération du endpoint pour {$maven_key}", ['erreur' => $actuatorEndpoint['erreur']]);
+            $this->logger->error("[Batch Actuator] ❌ Erreur de récupération du endpoint pour {$maven_key}", [
+                'erreur' => $actuatorEndpoint['erreur']]);
+
             return [
                     'code' => $actuatorEndpoint['code'],
                     'erreur' => $actuatorEndpoint['erreur']
@@ -78,12 +76,11 @@ class BatchCollecteActuatorController extends AbstractController
 
         /** Il n'y a pas de endpoint pour ce projet */
         if ($actuatorEndpoint['code'] === 404){
-            $this->logger->warning("⚠️ [Batch Actuator] Aucun endpoint défini pour le projet {$maven_key}");
+            $this->logger->warning("[Batch Actuator] ⚠️ Aucun endpoint défini pour le projet {$maven_key}");
             return [
                     'code' => 404,
                     'type' => 'warning',
                     'message' => "Il n'y a pas de point-d'accès défini pour ce projet (Erreur 404).",
-                    'trace' => null
                 ];
         }
 
@@ -98,12 +95,14 @@ class BatchCollecteActuatorController extends AbstractController
             [ 'project' => $maven_key ]
         );
 
-        $this->logger->debug("🛠️ [Batch Actuator] Appel API SonarQube", ['url' => $url]);
+        $this->logger->debug("[Batch Actuator] 🛠️ Appel API SonarQube", ['url' => $url]);
         /** Appelle le clientActuator HTTP */
         try {
                 $actuatorInfo = $this->client->httpActuator($url, $actuatorUser, $actuatorPassword);
         } catch (\Throwable $e) {
-            $this->logger->critical("🔴 [Batch Actuator] Exception lors de l'appel HTTP", ['exception' => $e->getMessage()]);
+            $this->logger->critical("[Batch Actuator] 🔴 Exception lors de l'appel HTTP", [
+                'exception' => $e->getMessage()]);
+
             return [
                 'code' => 500,
                 'type' => 'alert',
@@ -111,23 +110,28 @@ class BatchCollecteActuatorController extends AbstractController
             ];
         }
 
-        $data = $actuatorInfo['json'];
+        $dataJson = $actuatorInfo['json'];
 
         /** On catch les erreurs HTTP  */
-        if (isset($data['code']) && in_array($data['code'], [400, 401, 403, 404, 500, 503, 504])) {
-                $this->logger->error("❌ [Batch Actuator] Erreur HTTP détectée", ['code' => $data['code'], 'details' => $data['erreur'] ?? 'non précisé']);
+        if (isset($dataJson['code']) && in_array($dataJson['code'], [400, 401, 403, 404, 500, 503, 504])) {
+                $this->logger->error("[Batch Actuator] ❌ Erreur HTTP détectée", [
+                    'code' => $dataJson['code'],
+                    'details' => $dataJson['erreur'] ?? 'non précisé'
+                ]);
+
                 return [
-                        'code' => $data['code'],
-                        'erreur' => [$data['erreur']]
+                        'code' => $dataJson['code'],
+                        'erreur' => $dataJson['erreur']
                     ];
         }
 
-        $this->logger->info("ℹ️ [Batch Actuator] Données reçues avec succès pour {$maven_key}");
+        $this->logger->info("[Batch Actuator] ℹ️ Données reçues avec succès pour {$maven_key}");
 
         /** On renvoi les résultats */
         return [
             'code' => 200,
-            'message' => $data
+            'message' => 'La collecte des informations Actuator pour le projet est terminée.',
+            'dataJson' => $dataJson
         ];
     }
 

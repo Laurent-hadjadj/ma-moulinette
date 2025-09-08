@@ -28,11 +28,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
  */
 class BatchController extends AbstractController
 {
-    public static $timeFormat = "%H:%I:%S";
-    public static $europeParis = "Europe/Paris";
-    public static $page = 'batch/index.html.twig';
-    public static $titre = 'Traitement';
-    public static $erreur403 = "Vous devez avoir le rôle 'BATCH' pour gérer les traitements [Erreur 403].";
+    private static $timeFormat = "%H:%I:%S";
+    private static $europeParis = "Europe/Paris";
+    private static $page = 'batch/index.html.twig';
+    private static $titre = 'Traitement';
+    private static $erreur403 = "Vous devez avoir le rôle 'BATCH' pour gérer les traitements [Erreur 403].";
 
     /**
      * [Description for __construct]
@@ -45,7 +45,6 @@ class BatchController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
     ) {
-        $this->em = $em;
     }
 
     /**

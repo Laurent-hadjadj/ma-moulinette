@@ -68,7 +68,7 @@ class BatchCollecteRepartitionController extends AbstractController
      */
     private function batchAnalyseAnomalie($elements, $maven_key)
     {
-        $this->logger->info('ℹ️ [Batch RépartitionAnalyse] Début de l’analyse des modules', [
+        $this->logger->info('[Batch RépartitionAnalyse] ℹ️ Début de l’analyse des modules', [
             'maven_key' => $maven_key,
             'total_elements' => count($elements)
         ]);
@@ -77,7 +77,7 @@ class BatchCollecteRepartitionController extends AbstractController
         $scoreFrontend = $scoreBackend = $scoreAutre = $scoreInconnu = 0;
 
         if (empty($elements)){
-            $this->logger->info('ℹ️ [Batch Répartition Analyse] Tableau vide. Valeurs par défaut prisent.', [
+            $this->logger->info('[Batch Répartition Analyse] ℹ️ Tableau vide. Valeurs par défaut prisent.', [
                 'maven_key' => $maven_key
             ]);
 
@@ -126,7 +126,7 @@ class BatchCollecteRepartitionController extends AbstractController
                 }
             }
         } catch (Exception $e) {
-            $this->logger->critical("🔴 [Batch Répartition] Exception lors de l'appel HTTP", ['exception' => $e->getMessage()]);
+            $this->logger->critical("[Batch Répartition] 🔴 Exception lors de l'appel HTTP", ['exception' => $e->getMessage()]);
 
             return [
                 'code' => 500,
@@ -136,7 +136,7 @@ class BatchCollecteRepartitionController extends AbstractController
             ];
         }
 
-        $this->logger->info('ℹ️ [Batch Répartition Analyse] Répartition calculée', [
+        $this->logger->info('[Batch Répartition Analyse] ℹ️ Répartition calculée', [
             'frontend' => $scoreFrontend,
             'backend' => $scoreBackend,
             'autre' => $scoreAutre,
@@ -200,7 +200,7 @@ class BatchCollecteRepartitionController extends AbstractController
 
         /** On catch les erreurs HTTP :) */
         if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503, 504])) {
-            $this->logger->error('❌ [Batch Répartition] Erreur SonarQube', [
+            $this->logger->error('[Batch Répartition] ❌ Erreur SonarQube', [
                 'url' => $url,
                 'code' => $result['code'],
                 'erreur' => $result['erreur'] ?? static::$erreurInconnue
@@ -211,7 +211,7 @@ class BatchCollecteRepartitionController extends AbstractController
             ];
         }
 
-        $this->logger->info('ℹ️ [Batch Répartition] Réponse API reçue avec succès', [
+        $this->logger->info('[Batch Répartition] ℹ️ Réponse API reçue avec succès', [
             'issues_count' => $result['json']['total'] ?? 'non défini',
             'maven_key' => $maven_key
         ]);
@@ -249,10 +249,10 @@ class BatchCollecteRepartitionController extends AbstractController
             ]
         );
 
-        $this->logger->debug('🛠️ [Batch Répartition Information] Appel batchCollecteInformation', ['url' => $url]);
+        $this->logger->debug('[Batch Répartition Information] 🛠️ Appel batchCollecteInformation', ['url' => $url]);
         $result = $this->client->httpSonarQube($url);
         if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503, 504])) {
-            $this->logger->error('❌ [Batch Répartition Information] Erreur SonarQube', [
+            $this->logger->error('[Batch Répartition Information] ❌ Erreur SonarQube', [
                 'url' => $url,
                 'code' => $result['code'],
                 'erreur' => $result['erreur'] ?? static::$erreurSonarInconnue
@@ -263,7 +263,7 @@ class BatchCollecteRepartitionController extends AbstractController
             ];
         }
 
-        $this->logger->info('ℹ️ [Batch Répartition] Résultat reçu dans batchCollecteInformation', [
+        $this->logger->info('[Batch Répartition] ℹ️ Résultat reçu dans batchCollecteInformation', [
             'facets' => $result['json']['facets'][0] ?? []
         ]);
 
@@ -286,7 +286,7 @@ class BatchCollecteRepartitionController extends AbstractController
      */
     public function collecteRepartitionModule(string $maven_key, string $category): array
     {
-        $this->logger->info('ℹ️ [Batch Répartition Module] Début collecte répartition module', [
+        $this->logger->info('[Batch Répartition Module] ℹ️ Début collecte répartition module', [
             'maven_key' => $maven_key,
             'category' => $category
         ]);
@@ -296,12 +296,13 @@ class BatchCollecteRepartitionController extends AbstractController
         $result = $this->batchCollecteInformation($maven_key, $category);
 
         if (isset($result['code']) && $result['code'] != 200) {
-            $this->logger->error('❌ [Batch Répartition Module] Erreur lors de collecte des informations ', [
+            $this->logger->error('[Batch Répartition Module] ❌ Erreur lors de collecte des informations ', [
                     'maven_key' => $maven_key,
                     'category' => $category,
                     'code' => $result['code'],
                     'erreur' => $result['erreur']
             ]);
+
             return [
                     'code' => $result['code'],
                     'erreur' => $result['erreur']
@@ -309,11 +310,12 @@ class BatchCollecteRepartitionController extends AbstractController
         }
         /** On traite les données */
         if (isset($result['values'])){
-            $this->logger->debug('🛠️ [Batch Répartition Module] Informations disponibles dans les facets : ', [
+            $this->logger->debug('[Batch Répartition Module] 🛠️ Informations disponibles dans les facets : ', [
                     'maven_key' => $maven_key,
                     'category' => $category,
                     'response' => $result
             ]);
+
             foreach($result['values'] as $value){
                 if ($value['val'] === 'INFO') {
                     $info = $value['count'] ?? 0;
@@ -334,7 +336,7 @@ class BatchCollecteRepartitionController extends AbstractController
             $total = $info + $minor + $major + $critical + $blocker;
         }
 
-        $this->logger->info('ℹ️ [Batch Répartition] Fin collecte répartition module', [
+        $this->logger->info('[Batch Répartition] ℹ️ Fin collecte répartition module', [
             'total' => $total,
             'info' => $info ?? 0,
             'minor' => $minor ?? 0,
@@ -403,7 +405,7 @@ class BatchCollecteRepartitionController extends AbstractController
      */
     public function batchCollecteRepartition(string $maven_key, string $category, string $severity, string $setup): array
     {
-        $this->logger->info('ℹ️ [Batch Répartition] Démarrage batchCollecteRepartition', [
+        $this->logger->info('[Batch Répartition] ℹ️ Démarrage batchCollecteRepartition', [
             'maven_key' => $maven_key,
             'category' => $category,
             'severity' => $severity,
@@ -425,7 +427,7 @@ class BatchCollecteRepartitionController extends AbstractController
         $checkExistData = $repartitionTempRepos->checkExistData($map);
 
         if ($checkExistData['total'] > 0){
-            $this->logger->info('ℹ️ [Batch Répartition] Les données pour ce setup existe déjà.');
+            $this->logger->info('[Batch Répartition] ℹ️ Les données pour ce setup existe déjà.');
 
             return [
                     'code' => 201,
@@ -444,7 +446,7 @@ class BatchCollecteRepartitionController extends AbstractController
 
         /** Si pas d'issues, on arrête */
         if (empty($result['issues'])) {
-            $this->logger->info('ℹ️ [Batch Répartition] Aucune issue trouvée', [
+            $this->logger->info('[Batch Répartition] ℹ️ Aucune issue trouvée', [
                 'maven_key' => $maven_key,
                 'category' => $category,
                 'severity' => $severity
@@ -468,7 +470,7 @@ class BatchCollecteRepartitionController extends AbstractController
         $delete = $repartitionTempRepos->deleteOldRecords($map);
 
         if ($delete['code'] !== 200) {
-            $this->logger->error('❌ [Batch Répartition] Échec suppression données temporaires', [
+            $this->logger->error('[Batch Répartition] ❌ Échec suppression données temporaires', [
                 'map' => $map,
                 'erreur' => $delete['erreur'] ?? null
             ]);
@@ -488,7 +490,7 @@ class BatchCollecteRepartitionController extends AbstractController
 
             // S'il n'y a plus d'issues, on sort de la boucle
             if (empty($result['issues'])) {
-                $this->logger->debug('🛠️ [Batch Répartition] Fin de la pagination (plus d’issues)', ['page' => $i]);
+                $this->logger->debug('[Batch Répartition] 🛠️ Fin de la pagination (plus d’issues)', ['page' => $i]);
                 break;
             }
 
@@ -505,7 +507,7 @@ class BatchCollecteRepartitionController extends AbstractController
             // Insérer les issues récupérées pour cette page
             $batchInsert = $repartitionTempRepos->batchInsertIssuesSQL($issues);
             if ($batchInsert['code'] !== 200) {
-                $this->logger->error('❌ [Batch Répartition] Échec insertion batch', [
+                $this->logger->error('[Batch Répartition] ❌ Échec de la requête batchInsertIssuesSQL', [
                     'page' => $i,
                     'erreur' => $batchInsert['erreur'] ?? null
                 ]);
@@ -537,7 +539,7 @@ class BatchCollecteRepartitionController extends AbstractController
                 ];
 
         $message =  "Collecte de " . $totalIssues . " pour la catégorie " . $category . " pour le setup : ". $setup;
-        $this->logger->info('ℹ️ [Batch Répartition] Fin batchCollecteRepartition', $data);
+        $this->logger->info('[Batch Répartition] ℹ️ Fin batchCollecteRepartition', $data);
         return [
             'code' => 200,
             'message' => $message,
@@ -562,7 +564,7 @@ class BatchCollecteRepartitionController extends AbstractController
     public function batchCollecteRepartitionAnalyse(string $maven_key, string $category, string $severity, string $setup): array
     {
         if ($maven_key === 'N.C' ){
-            $this->logger->error("❌ [Batch Répartition Analyse] La valeur pour la 'maven_key' n'est pas définie.", [
+            $this->logger->error("[Batch Répartition Analyse] ❌ La valeur pour la 'maven_key' n'est pas définie.", [
                 'maven_key' => $maven_key]);
 
             return [
@@ -588,7 +590,7 @@ class BatchCollecteRepartitionController extends AbstractController
         $repartition = $repartitionTempRepos->selectRepartitionByTypeAndSeverity($map);
 
         if ($repartition['code'] != 200) {
-            $this->logger->error('❌ [Batch Répartition Analyse] Erreur lors de la récupération des issues temporaires', [
+            $this->logger->error('[Batch Répartition Analyse] ❌ Erreur lors de la récupération des issues temporaires', [
                 'code' => $repartition['code'],
                 'erreur' => $repartition['erreur'] ?? static::$erreurInconnue
             ]);
@@ -605,7 +607,7 @@ class BatchCollecteRepartitionController extends AbstractController
         $analyse = $this->batchAnalyseAnomalie($repartition['liste'], $maven_key);
 
         if ($analyse['code'] != 200) {
-            $this->logger->error('❌ [Batch Répartition Analyse] Échec de l’analyse des anomalies', [
+            $this->logger->error('[Batch Répartition Analyse] ❌ Échec de l’analyse des anomalies', [
                 'code' => $analyse['code'],
                 'erreur' => $analyse['message'] ?? 'Erreur analyse inconnue'
             ]);
@@ -619,7 +621,7 @@ class BatchCollecteRepartitionController extends AbstractController
         }
 
         $message = "Répartition des anomalies par module terminée ({$setup}).";
-        $this->logger->info('ℹ️ [Batch Répartition Analyse] Fin de l’analyse réussie', [ 'résultat' => $analyse ]);
+        $this->logger->info('[Batch Répartition Analyse] ℹ️ Fin de l’analyse réussie', [ 'résultat' => $analyse ]);
 
         return [
                 'code' => 200,
@@ -651,7 +653,7 @@ class BatchCollecteRepartitionController extends AbstractController
         $repartitionRepository = $this->em->getRepository(Repartition::class);
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
 
-        $this->logger->info('ℹ️ [Batch Répartition MaJ] Début de la mise à jour', [
+        $this->logger->info('[Batch Répartition MaJ] ℹ️ Début de la mise à jour', [
             'maven_key' => $maven_key,
             'setup' => $setup,
             'total_calculs' => count($calcul)
@@ -688,7 +690,7 @@ class BatchCollecteRepartitionController extends AbstractController
                 $missingSets++;
                 // On vide les données de cette category pour éviter de les enregistrer
                 $groupedData[$category] = [];
-                $this->logger->warning('⚠️ [Batch Répartition MaJ] Données incomplètes détectées pour la catégorie', [
+                $this->logger->warning('[Batch Répartition MaJ] ⚠️ Données incomplètes détectées pour la catégorie', [
                     'category' => $category
                 ]);
             }
@@ -747,7 +749,7 @@ class BatchCollecteRepartitionController extends AbstractController
         /** On met à jour la table */
         $repartition = $repartitionRepository->updateRepartition($map);
         if ($repartition['code'] != 200) {
-            $this->logger->error('❌ [Batch Répartition MaJ] Échec de la mise à jour', [
+            $this->logger->error('[Batch Répartition MaJ] ❌ Échec de la mise à jour', [
                 'code' => $repartition['code'],
                 'erreur' => $repartition['erreur'] ?? static::$erreurInconnue
             ]);
@@ -759,7 +761,7 @@ class BatchCollecteRepartitionController extends AbstractController
         }
 
         $message = "Mise à jour des données pour le setup $setup";
-        $this->logger->info('ℹ️ [Batch Répartition MaJ] Mise à jour réussie', ['message' => $message]);
+        $this->logger->info('[Batch Répartition MaJ] ℹ️ Mise à jour réussie', ['message' => $message]);
 
         return [
                 'code' => 200,

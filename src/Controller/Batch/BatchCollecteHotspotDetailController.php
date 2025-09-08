@@ -65,6 +65,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
             'MEDIUM' => 2,
             'LOW' => 3,
         ];
+
         /** si on a pas de probabilité alors on renvoi -1 */
         return $levels[$probability] ?? -1;
     }
@@ -89,16 +90,17 @@ class BatchCollecteHotspotDetailController extends AbstractController
             [ 'hotspot' => $hotspotKey ]
         );
 
-        $this->logger->debug("🛠️ [Batch HotspotDétail] Appel API SonarQube", ['url' => $url]);
+        $this->logger->debug("[Batch HotspotDétail] 🛠️ Appel API SonarQube", ['url' => $url]);
         $result = $this->client->httpSonarQube($url);
 
         /** On catch les erreurs HTTP  :) */
         if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503, 504])) {
-            $this->logger->error("❌ [HotspotDetail] Erreur API SonarQube", [
+            $this->logger->error("[HotspotDetail] ❌ Erreur API SonarQube", [
                 'url' => $url,
                 'code' => $result['code'],
                 'erreur' => $result['erreur'] ?? 'Erreur inconnue.'
             ]);
+
             return [
                 'code' => $result['code'],
                 'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
@@ -107,9 +109,10 @@ class BatchCollecteHotspotDetailController extends AbstractController
 
         /** On a pas trouvé de données */
         if (!array_key_exists('json', $result)){
-            $this->logger->error("❌ [HotspotDetail] Résultat API invalide ou vide", [
+            $this->logger->error("[HotspotDetail] ❌ Résultat API invalide ou vide", [
                 'hotspot_key' => $hotspotKey
             ]);
+
             return [
                     'security_category' =>  'NC',
                     'severity' => 'NC',
@@ -203,7 +206,9 @@ class BatchCollecteHotspotDetailController extends AbstractController
     /**
      * [Description for batchCollecteHotspotDetails]
      *
-     * @param string $mavenKey
+     * @param string $maven_key
+     * @param string $mode_collecte
+     * @param string $utilisateur_collecte
      *
      * @return array
      *
@@ -211,27 +216,28 @@ class BatchCollecteHotspotDetailController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function batchCollecteHotspotDetail(string $maven_key, string $modeCollecte, string $utilisateurCollecte): array
+    public function batchCollecteHotspotDetail(string $maven_key, string $mode_collecte, string $utilisateur_collecte): array
     {
         $mavenKey = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
         $hotspotsRepos = $this->em->getRepository(Hotspots::class);
         $hotspotDetailsRepos = $this->em->getRepository(HotspotDetails::class);
         $informationProjetRepos = $this->em->getRepository(InformationProjet::class);
 
-        $this->logger->info('ℹ️ [Batch HotspotDétail] Début de collecte', [
+        $this->logger->info('[Batch HotspotDétail] ℹ️ Début de collecte du détail des hotspots.', [
             'maven_key' => $maven_key,
-            'mode_collecte' => $modeCollecte,
-            'utilisateur' => $utilisateurCollecte
+            'mode_collecte' => $mode_collecte,
+            'utilisateur' => $utilisateur_collecte
         ]);
 
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
         $map = [ 'maven_key'=> $maven_key ];
         $information = $informationProjetRepos->selectInformationProjetVersion($map);
         if ($information['code'] != 200) {
-            $this->logger->error('❌ [HotspotDetail] Erreur récupération projet', [
+            $this->logger->error('[HotspotDetail] ❌ Erreur récupération projet', [
                 'maven_key' => $maven_key,
                 'erreur' => $information['erreur']
             ]);
+
             return [
                 'code' => $information['code'],
                 'erreur' => $information['erreur']
@@ -239,9 +245,10 @@ class BatchCollecteHotspotDetailController extends AbstractController
         }
 
         if (empty($information['info'])) {
-            $this->logger->warning('⚠️ [HotspotDetail] Aucune information trouvée sur le projet', [
+            $this->logger->warning('[HotspotDetail] ⚠️ Aucune information trouvée sur le projet', [
                 'maven_key' => $maven_key
             ]);
+
             return [
                 'code' => 404,
                 'message' => "Aucune information n'a été trouvée (Erreur 404)."
@@ -257,11 +264,13 @@ class BatchCollecteHotspotDetailController extends AbstractController
         /** On récupère la liste des hotspots au status TO_REVIEW */
         $map = [ 'maven_key' => $mavenKey ];
         $liste = $hotspotsRepos->selectHotspotsToReview($map);
+
         if ($liste['code'] != 200) {
-            $this->logger->error('❌ [HotspotDetail] Erreur récupération liste TO_REVIEW', [
+            $this->logger->error('[HotspotDetail] ❌ Échec de la requête selectHotspotsToReview.', [
                 'maven_key' => $maven_key,
                 'erreur' => $liste['erreur']
             ]);
+
             return [
                 'code' => $liste['code'],
                 'erreur' => $liste['erreur']
@@ -271,7 +280,13 @@ class BatchCollecteHotspotDetailController extends AbstractController
         /** On supprime les résultats pour la maven_key. */
         $map = [ 'maven_key' => $mavenKey ];
         $delete = $hotspotDetailsRepos->deleteHotspotDetailsMavenKey($map);
+
         if ($delete['code'] != 200) {
+            $this->logger->error('[HotspotDetail] ❌ Échec de la requête deleteHotspotsDetailsMavenKey.', [
+                'maven_key' => $maven_key,
+                'erreur' => $delete['erreur']
+            ]);
+
             return [
                 'code' => $delete['code'],
                 'erreur' => $delete['erreur']
@@ -280,7 +295,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
 
         /** Si la liste des hotspots est vide on envoi un code http 406 */
         if (empty($liste['liste'])) {
-            $this->logger->warning('⚠️ [HotspotDetail] Liste TO_REVIEW vide', [
+            $this->logger->warning('[HotspotDetail] ⚠️ Liste TO_REVIEW vide', [
                 'maven_key' => $maven_key
             ]);
             return [
@@ -303,8 +318,8 @@ class BatchCollecteHotspotDetailController extends AbstractController
             $ligne++;
             $mapDataDetail = $this->hotspotDetail($mavenKey, $elt['hotspot_key']);
             $mapDataGeneral = [
-                'mode_collecte' => $modeCollecte,
-                'utilisateur_collecte' => $utilisateurCollecte,
+                'mode_collecte' => $mode_collecte,
+                'utilisateur_collecte' => $utilisateur_collecte,
                 'maven_key' => $mavenKey,
                 'version' => $information['info'][0]['version'],
                 'date_version' => $dateVersion,
@@ -317,20 +332,22 @@ class BatchCollecteHotspotDetailController extends AbstractController
 
         /** On enregistre les données */
         $insert = $hotspotDetailsRepos->insertHotspotDetails($mapData);
+
         if ($insert['code'] !== 200) {
-            $this->logger->error('❌ [HotspotDetail] Échec d’insertion des détails', [
+            $this->logger->error('[HotspotDetail] ❌ Échec de la requête insertHotspotDetails.', [
                 'maven_key' => $maven_key,
                 'erreur' => $insert['erreur']
             ]);
+
             return [
                 'code' => $insert['code'],
                 'erreur' => $insert['erreur']
             ];
         }
 
-        $this->logger->info('ℹ️ [HotspotDetail] Détails collectés et enregistrés', [
+        $this->logger->info('[HotspotDetail] ℹ️ Détails des hotspots collectés et enregistrés', [
             'maven_key' => $maven_key,
-            'utilisateur' => $utilisateurCollecte,
+            'utilisateur' => $utilisateur_collecte,
             'nombre_détails' => count($mapData)
         ]);
 

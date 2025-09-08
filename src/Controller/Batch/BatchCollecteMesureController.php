@@ -26,7 +26,7 @@ use App\Service\UrlBuilderService;
 class BatchCollecteMesureController extends AbstractController
 {
     /** Définition des constantes */
-    public static $sonarUrl = "sonar.url";
+    private static $sonarUrl = "sonar.url";
 
     /**
      * [Description for __construct]
@@ -46,7 +46,9 @@ class BatchCollecteMesureController extends AbstractController
     /**
      * [Description for BatchCollecteMesure]
      *
-     * @param string $mavenKey
+     * @param string $maven_key
+     * @param string $mode_collecte
+     * @param string $utilisateur_collecte
      *
      * @return array
      *
@@ -54,15 +56,15 @@ class BatchCollecteMesureController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function BatchCollecteMesure(string $maven_key, string $modeCollecte, string $utilisateurCollecte): array
+    public function BatchCollecteMesure(string $maven_key, string $mode_collecte, string $utilisateur_collecte): array
     {
         $mesuresRepos = $this->em->getRepository(Mesures::class);
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
 
-        $this->logger->info('ℹ️ [Batch Mesure] Début de collecte', [
+        $this->logger->info('[Batch Mesure] ℹ️ Début de collecte', [
             'maven_key' => $maven_key,
-            'mode_collecte' => $modeCollecte,
-            'utilisateur' => $utilisateurCollecte
+            'mode_collecte' => $mode_collecte,
+            'utilisateur' => $utilisateur_collecte
         ]);
 
         // [1] Récupération du projet
@@ -72,15 +74,16 @@ class BatchCollecteMesureController extends AbstractController
             ['component' => $maven_key]
         );
 
-        $this->logger->debug('🛠️ [Batch Logger] Appel API SonarQube', ['url' => $url]);
+        $this->logger->debug('[Batch Mesure] 🛠️ Appel API SonarQube', ['url' => $url]);
         $result = $this->client->httpSonarQube($url);
 
         if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503, 504])) {
-            $this->logger->error('❌ [Batch Mesure] Erreur SonarQube', [
+            $this->logger->error('[Batch Mesure] ❌  Erreur SonarQube', [
                 'url' => $url,
                 'code' => $result['code'],
                 'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
             ]);
+
             return [
                 'code' => $result['code'],
                 'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
@@ -88,29 +91,33 @@ class BatchCollecteMesureController extends AbstractController
         }
 
         // [2] Suppression des anciennes mesures
-        $delete = $mesuresRepos->deleteMesuresMavenKey(['maven_key' => $maven_key]);
+        $delete = $mesuresRepos->deleteMesuresMavenKey([ 'maven_key' => $maven_key ]);
         if ($delete['code'] !== 200) {
-            $this->logger->error('❌ [Batch Mesure] Échec suppression mesures', [
+            $this->logger->error('[Batch Mesure] ❌ Échec de suppression des mesures', [
                 'code' => $delete['code'],
                 'erreur' => $delete['erreur']
             ]);
+
             return [
                 'code' => $delete['code'],
                 'erreur' => $delete['erreur']
             ];
         }
 
-        $this->logger->info('ℹ️ [Batch Mesure] Suppression ancienne mesure OK', ['maven_key' => $maven_key]);
+        $this->logger->info('[Batch Mesure] ℹ️ Suppression des anciennes mesures OK', [
+            'maven_key' => $maven_key
+        ]);
 
         // [3] Collecte secondaire : lignes de code, fichiers...
         $url = $this->urlBuilder->build(
             $this->getParameter(static::$sonarUrl),
-            '/api/measures/component',
-            ['component' => $maven_key, 'metricKeys' => 'ncloc,ncloc_language_distribution,classes,functions,files']
+            '/api/measures/component', [
+                'component' => $maven_key,
+                'metricKeys' => 'ncloc,ncloc_language_distribution,classes,functions,files'
+                ]
         );
 
-        $this->logger->debug('🛠️ [Batch Mesure] Appel à SonarQube /measures/component (bloc 1)', ['url' => $url]);
-
+        $this->logger->debug('[Batch Mesure] 🛠️ Appel à SonarQube /measures/component (bloc 1)', ['url' => $url]);
         $result2 = $this->client->httpSonarQube($url);
 
         $ncloc = $classes = $functions = $files = 0;
@@ -141,12 +148,12 @@ class BatchCollecteMesureController extends AbstractController
                     arsort($distribution);
                     break;
                 default :
-                    $this->logger->error('❌ [Batch Mesure - Erreur switch improbable.');
+                    $this->logger->error('[Batch Mesure] ❌ Erreur switch improbable. tu peux jouer au LoTo.');
                     break;
             }
         }
 
-        $this->logger->debug('🛠️ [Batch Mesure] Résumé des métriques secondaires extraites', [
+        $this->logger->debug('[Batch Mesure] 🛠️ Résumé des métriques secondaires extraites', [
             'ncloc' => $ncloc,
             'classes' => $classes,
             'functions' => $functions,
@@ -157,13 +164,13 @@ class BatchCollecteMesureController extends AbstractController
         // [4] Récupération du SQALE ratio
         $url = $this->urlBuilder->build(
             $this->getParameter(static::$sonarUrl),
-            '/api/measures/component',
-            ['component' => $maven_key, 'metricKeys' => 'sqale_debt_ratio']
+            '/api/measures/component', [
+                'component' => $maven_key,
+                'metricKeys' => 'sqale_debt_ratio'
+            ]
         );
 
-        $this->logger->debug('🛠️ [Batch Mesure] Appel à SonarQube /measures/component (SQALE)', ['url' => $url]);
-
-
+        $this->logger->debug('[Batch Mesure] 🛠️ Appel à SonarQube /measures/component (SQALE)', ['url' => $url]);
         $result3 = $this->client->httpSonarQube($url);
         $sqaleRatio = floatval($result3['json']['component']['measures'][0]['value'] ?? -1);
 
@@ -189,24 +196,25 @@ class BatchCollecteMesureController extends AbstractController
             'duplicated_lines_density' => $duplicatedLinesDensity,
             'tests' => $tests,
             'issues' => $issues,
-            'mode_collecte' => $modeCollecte,
-            'utilisateur_collecte' => $utilisateurCollecte,
+            'mode_collecte' => $mode_collecte,
+            'utilisateur_collecte' => $utilisateur_collecte,
             'date_enregistrement' => $date
         ];
 
         $insert = $mesuresRepos->insertMesures($mesureData);
         if ($insert['code'] !== 200) {
-            $this->logger->error('❌ [Batch Mesure] Échec insertion mesures', [
+            $this->logger->error('[Batch Mesure] ❌ Échec de la requête insertMesures', [
                 'maven_key' => $maven_key,
                 'erreur' => $insert['erreur']
             ]);
+
             return [
                 'code' => $insert['code'],
                 'erreur' => $insert['erreur']
             ];
         }
 
-        $this->logger->info('ℹ️ [Batch Mesure] Insertion mesures OK', [
+        $this->logger->info('[Batch Mesure] ℹ️ Insertion mesures OK', [
             'maven_key' => $maven_key,
             'lines' => $lines,
             'coverage' => $coverage
@@ -214,11 +222,15 @@ class BatchCollecteMesureController extends AbstractController
 
         return [
             'code' => 200,
-            'message' => $mesureData,
-            'data' => [
+            'message' => "La mise à jour des mesures pour le projet est terminées.",
+            'data' => $mesureData,
+            'historique' => [
                 'nom_projet' => strtolower($result['json']['projectName'] ?? 'inconnu'),
                 'nombre_ligne' => $lines,
                 'nombre_ligne_code' => $ncloc,
+                'nombre_classes' => $classes,
+                'nombre_fonctions' => $functions,
+                'nombre_files' => $files,
                 'language_distribution' => $distribution,
                 'coverage' => $coverage,
                 'sqale_debt_ratio' => $sqaleRatio,

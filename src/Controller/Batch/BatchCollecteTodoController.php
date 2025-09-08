@@ -75,12 +75,12 @@ class BatchCollecteTodoController extends AbstractController
             ]
         );
 
-        $this->logger->debug('[Batch Todo] Appel API SonarQube', ['url' => $url]);
+        $this->logger->debug('[Batch Todo] 🛠️ Appel API SonarQube', ['url' => $url]);
         $result = $this->client->httpSonarQube($url);
 
         /** On catch les erreurs HTTP :) */
         if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503, 504])) {
-            $this->logger->error('❌ [Batch Todo] Erreur SonarQube', [
+            $this->logger->error('[Batch Todo] ❌ Erreur SonarQube', [
                 'url' => $url,
                 'code' => $result['code'],
                 'erreur' => $result['erreur'] ?? static::$erreurSonarInconnue
@@ -91,7 +91,7 @@ class BatchCollecteTodoController extends AbstractController
             ];
         }
 
-        $this->logger->debug('[Batch Todo] Résultat API SonarQube reçu', [
+        $this->logger->debug('[Batch Todo] 🛠️ Résultat API SonarQube reçu', [
             'total' => $result['json']['paging']['total'] ?? 'inconnu'
         ]);
 
@@ -102,7 +102,9 @@ class BatchCollecteTodoController extends AbstractController
     /**
      * [Description for BatchCollecteTodo]
      *
-     * @param string $mavenKey
+     * @param string $maven_key
+     * @param string $mode_collecte
+     * @param string $utilisateur_collecte
      *
      * @return array
      *
@@ -110,16 +112,16 @@ class BatchCollecteTodoController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function BatchCollecteTodo(string $maven_key, string $modeCollecte, string $utilisateurCollecte): array
+    public function BatchCollecteTodo(string $maven_key, string $mode_collecte, string $utilisateur_collecte): array
     {
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
         $todoRepository = $this->em->getRepository(Todo::class);
         $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
-        $this->logger->info('ℹ️ [Batch Todo] Début de collecte', [
+        $this->logger->info('[Batch Todo] ℹ️ Début de collecte des todo pour le projet', [
             'maven_key' => $maven_key,
-            'mode_collecte' => $modeCollecte,
-            'utilisateur' => $utilisateurCollecte
+            'mode_collecte' => $mode_collecte,
+            'utilisateur' => $utilisateur_collecte
         ]);
 
         /** Récupération de la première page */
@@ -129,7 +131,7 @@ class BatchCollecteTodoController extends AbstractController
 
         /** Si pas d'issues, on arrête */
         if (empty($result['issues']) || $result['paging']['total'] === 0) {
-            $this->logger->info('ℹ️ [Batch Todo] Aucun TODO trouvé pour ce projet.', [
+            $this->logger->info('[Batch Todo] ℹ️ Aucun TODO trouvé pour ce projet.', [
                 'maven_key' => $maven_key
             ]);
 
@@ -141,10 +143,12 @@ class BatchCollecteTodoController extends AbstractController
 
         // Avant d'insérer les nouveaux enregistrements :
         $map = [ 'maven_key' => $maven_key ];
-        $this->logger->debug('[Batch Todo] Suppression des anciennes entrées TODO');
+        $this->logger->debug('[Batch Todo] 🛠️ Suppression des anciennes entrées TODO');
+
         $delete = $todoRepository->deleteTodoMavenKey($map);
+
         if ($delete['code'] !== 200) {
-            $this->logger->error('❌ [Batch Todo] Échec de suppression des anciennes entrées', [
+            $this->logger->error('[Batch Todo] ❌ Échec de la requête deleteTodoMavenKe', [
                 'code' => $delete['code'],
                 'erreur' => $delete['erreur']
             ]);
@@ -163,7 +167,7 @@ class BatchCollecteTodoController extends AbstractController
 
             // S'il n'y a plus d'issues, on sort de la boucle
             if (empty($result['issues'])) {
-                $this->logger->debug("[Batch Todo] Aucune issue trouvée à la page {$i}, fin de boucle.");
+                $this->logger->debug("[Batch Todo] 🛠️ Aucune issue trouvée à la page {$i}, fin de boucle.");
                 break;
             }
 
@@ -177,16 +181,17 @@ class BatchCollecteTodoController extends AbstractController
                     'rule' => $issueData['rule'],
                     'component' => $component,
                     'line' => $line,
-                    'mode_collecte' => $modeCollecte,
-                    'utilisateur_collecte' => $utilisateurCollecte,
+                    'mode_collecte' => $mode_collecte,
+                    'utilisateur_collecte' => $utilisateur_collecte,
                     'date_enregistrement' => $date
                 ];
             }
 
             // Insérer les issues récupérées pour cette page
             $batchInsert = $todoRepository->insertTodo($mapData);
+
             if ($batchInsert['code'] !== 200) {
-                $this->logger->error('❌ [Batch Todo] Échec de l’insertion en base', [
+                $this->logger->error('[Batch Todo] ❌ Échec de la requête insertTodo', [
                     'code' => $batchInsert['code'],
                     'erreur' => $batchInsert['erreur']
                 ]);
@@ -204,7 +209,7 @@ class BatchCollecteTodoController extends AbstractController
 
         $nombre = $result['paging']['total'] ?? 0;
 
-        $this->logger->info('ℹ️ [Batch Todo] Collecte terminée avec succès', [
+        $this->logger->info('[Batch Todo] ℹ️ Collecte terminée avec succès', [
             'maven_key' => $maven_key,
             'total_todo' => $nombre
         ]);
@@ -213,8 +218,8 @@ class BatchCollecteTodoController extends AbstractController
         return [
             'code' => 200,
             'nombre' => $result['paging']['total'] ?? 0,
-            'message' => 'Enregistrement des todos dans la tables.',
-            'data' => ['todo' => $nombre]
+            'message' => 'La collecte des todo pour le projet est terminées.',
+            'historique' => ['todo' => $nombre]
         ];
     }
 }

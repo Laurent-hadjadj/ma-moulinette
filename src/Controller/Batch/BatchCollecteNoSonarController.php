@@ -27,8 +27,8 @@ use App\Service\UrlBuilderService;
 class BatchCollecteNoSonarController extends AbstractController
 {
     /** Définition des constantes */
-    public static $sonarUrl = "sonar.url";
-    public static $europeParis = "Europe/Paris";
+    private static $sonarUrl = "sonar.url";
+    private static $europeParis = "Europe/Paris";
 
     /**
      * [Description for __construct]
@@ -48,9 +48,9 @@ class BatchCollecteNoSonarController extends AbstractController
     /**
      * [Description for BatchCollecteNoSonar]
      *
-     * @param string $mavenKey
-     * @param string $modeCollecte
-     * @param string $utilisateurCollecte
+     * @param string $maven_key
+     * @param string $mode_collecte
+     * @param string $utilisateur_collecte
      *
      * @return array
      *
@@ -58,16 +58,16 @@ class BatchCollecteNoSonarController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function BatchCollecteNoSonar(string $maven_key, string $modeCollecte, string $utilisateurCollecte): array
+    public function BatchCollecteNoSonar(string $maven_key, string $mode_collecte, string $utilisateur_collecte): array
     {
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
         $noSonarRepository = $this->em->getRepository(NoSonar::class);
         $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
-        $this->logger->info('ℹ️ [Batch NoSonar] Début de collecte', [
+        $this->logger->info('[Batch NoSonar] ℹ️ Début de collecte des annotations noSonar et suppressWarning', [
             'maven_key' => $maven_key,
-            'mode_collecte' => $modeCollecte,
-            'utilisateur' => $utilisateurCollecte
+            'mode_collecte' => $mode_collecte,
+            'utilisateur' => $utilisateur_collecte
         ]);
 
         /** Sécurisation de l'URL */
@@ -82,12 +82,12 @@ class BatchCollecteNoSonarController extends AbstractController
             ]
         );
 
-        $this->logger->debug('🛠️ [Batch Logger] Appel API SonarQube', ['url' => $url]);
+        $this->logger->debug('[Batch Logger] 🛠️ Appel API SonarQube', ['url' => $url]);
         $result = $this->client->httpSonarQube($url);
 
          /** On catch les erreurs HTTP :) */
         if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503, 504])) {
-            $this->logger->error('❌ [Batch NoSonar] Erreur SonarQube', [
+            $this->logger->error('[Batch NoSonar] ❌ Erreur SonarQube', [
                 'url' => $url,
                 'code' => $result['code'],
                 'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
@@ -102,10 +102,11 @@ class BatchCollecteNoSonarController extends AbstractController
         $map = ['maven_key' => $maven_key];
         $delete = $noSonarRepository->deleteNoSonarMavenKey($map);
         if ($delete['code'] != 200) {
-            $this->logger->error('❌ [Batch NoSonar] Échec suppression NoSonar existants', [
+            $this->logger->error('[Batch NoSonar] ❌ Échec de la requête deleteNoSonarMavenKey', [
                 'maven_key' => $maven_key,
                 'erreur' => $delete['erreur']
             ]);
+
             return [
                 'code' => $delete['code'],
                 'erreur' => $delete['erreur']
@@ -140,16 +141,17 @@ class BatchCollecteNoSonarController extends AbstractController
                     'rule' => $issue["rule"],
                     'component' => $component,
                     'line' => $line,
-                    'mode_collecte' => $modeCollecte,
-                    'utilisateur_collecte' => $utilisateurCollecte,
+                    'mode_collecte' => $mode_collecte,
+                    'utilisateur_collecte' => $utilisateur_collecte,
                     'date_enregistrement' => $date
                 ];
             }
         } else {
             /** Il n'y a pas de noSOnar ou de suppressWarning */
+            $this->logger->info("[Batch NoSonar] ℹ️ Il n'y a pas de noSOnar ou de suppressWarning.");
         }
 
-        $this->logger->debug('🛠️ [Batch NoSonar] Résultats analysés', [
+        $this->logger->debug('[Batch NoSonar] 🛠️  Résultats analysés', [
             'no_sonar' => $noSonar,
             'suppress_warning' => $suppressWarning,
             'inconnu' => $inconnu
@@ -158,7 +160,7 @@ class BatchCollecteNoSonarController extends AbstractController
         /* On enregistre */
         $insert = $noSonarRepository->insertNoSonar($mapData);
         if ($insert['code'] != 200) {
-            $this->logger->error('❌ [Batch NoSonar] Échec insertion NoSonar', [
+            $this->logger->error('[Batch NoSonar] ❌ Échec de la requête insertNoSonar', [
                 'maven_key' => $maven_key,
                 'erreur' => $insert['erreur']
             ]);
@@ -168,23 +170,23 @@ class BatchCollecteNoSonarController extends AbstractController
             ];
         }
 
-        $this->logger->info('ℹ️ [Batch NoSonar] Insertion terminée avec succès', [
+        $this->logger->info('[Batch NoSonar] ℹ️ Insertion terminée avec succès', [
             'maven_key' => $maven_key,
             'no_sonar' => $noSonar,
-            'suppress_warning' => $suppressWarning
+            'suppress_warning' => $suppressWarning,
+            'autre' => $inconnu
         ]);
 
         /** On prépare les données pour l'historique */
-        $data = [
+        $historique = [
                 'suppress_warning' => $suppressWarning,
                 'no_sonar' => $noSonar,
-                'inconnu' => $inconnu
             ];
 
         return [
             'code' => 200,
-            'message' => $data,
-            'data' => $data
+            'message' => 'La collecte des annotations noSonar et suppressWarning est terminée.',
+            'historique' => $historique
         ];
     }
 }

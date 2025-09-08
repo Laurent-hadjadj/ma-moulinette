@@ -29,11 +29,11 @@ use App\Service\UrlBuilderService;
 class BatchCollecteAnomalieController extends AbstractController
 {
     /** Définition des constantes */
-    public static $sonarUrl = "sonar.url";
-    public static $europeParis = "Europe/Paris";
-    public static $statuses = "OPEN,REOPENED";
-    public static $statusesMin = "OPEN,CONFIRMED,REOPENED,RESOLVED";
-    public static $statusesAll = "OPEN, CONFIRMED, REOPENED, RESOLVED, CLOSED";
+    private static $sonarUrl = "sonar.url";
+    private static $europeParis = "Europe/Paris";
+    private static $statuses = "OPEN,REOPENED";
+    //'private static $statusesMin = "OPEN,CONFIRMED,REOPENED,RESOLVED";
+    //'private static $statusesAll = "OPEN, CONFIRMED, REOPENED, RESOLVED, CLOSED";
     private static $beginRegEx = '/\b(?:';
     private static $endRegEx = ')\b/i';
 
@@ -71,7 +71,7 @@ class BatchCollecteAnomalieController extends AbstractController
     {
         /** On récupère le nombre total d'anomalie par chemin,donc il suffit d'identifier la nature du chemin pour connaître le nombre d'anomalie par module. */
 
-        $this->logger->info('ℹ️ [Batch Anomalie] Début de l’analyse des répertoires', [
+        $this->logger->info('[Batch Anomalie] ℹ️ Début de l’analyse des répertoires', [
             'nombre_directory' => count($facet['values'])
         ]);
 
@@ -114,17 +114,17 @@ class BatchCollecteAnomalieController extends AbstractController
                 }
             }
         } catch (\Exception $e) {
-            $this->logger->critical("🔴 [Batch Anomalie] Exception lors de l'analyse du chemin", ['exception' => $e->getMessage()]);
+            $this->logger->critical("[Batch Anomalie] 🔴 Exception lors de l'analyse du chemin", [
+                'exception' => $e->getMessage()]);
 
             return [
                 'code' => 500,
-                'type' => 'alert',
+                'type' => 'critical',
                 'message' => "Une erreur inétendue lors de l'analyse du chemin (<strong>batchAnalyseAnomalie</strong>) est survenue (Erreur 500).",
-                'trace' => $e
             ];
         }
 
-        $this->logger->info('ℹ️ [Batch Anomalie] Analyse du chemin.', [
+        $this->logger->info('[Batch Anomalie] ℹ️ Analyse du chemin.', [
             'frontend' => $scoreFrontend,
             'backend' => $scoreBackend,
             'autre' => $scoreAutre,
@@ -162,19 +162,22 @@ class BatchCollecteAnomalieController extends AbstractController
                 $queryParams
             );
 
-            $this->logger->debug("🛠️ [Batch Anomalie] Appel API SonarQube", ['url' => $url]);
+            $this->logger->debug("[Batch Anomalie] 🛠️ Appel API SonarQube", ['url' => $url]);
             $result = $this->client->httpSonarQube($url);
+
             if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503, 504])) {
-                $this->logger->error("[Batch Anomalie] Erreur API SonarQube", [
+                $this->logger->error("[Batch Anomalie] ❌ Erreur API SonarQube", [
                     'url' => $url,
                     'code' => $result['code'],
                     'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
                 ]);
+
                 return [
                     'code' => $result['code'],
                     'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
                 ];
             }
+
             return $result['json'] ?? [];
         }
 
@@ -182,8 +185,8 @@ class BatchCollecteAnomalieController extends AbstractController
      * [Description for BatchCollecteAnomalie]
      *
      * @param string $mavenKey
-     * @param string $modeCollecte
-     * @param string $utilisateurCollecte
+     * @param string $mode_collecte
+     * @param string $utilisateur_collecte
      *
      * @return array
      *
@@ -191,15 +194,15 @@ class BatchCollecteAnomalieController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function BatchCollecteAnomalie(string $maven_key, string $modeCollecte, string $utilisateurCollecte): array
+    public function BatchCollecteAnomalie(string $maven_key, string $mode_collecte, string $utilisateur_collecte): array
     {
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
         $anomalieRepos = $this->em->getRepository(Anomalie::class);
 
-        $this->logger->info('ℹ️ [Batch Anomalie] Début de collecte', [
+        $this->logger->info('[Batch Anomalie] ℹ️ Début de la collecte des anomalies.', [
             'maven_key' => $maven_key,
-            'mode_collecte' => $modeCollecte,
-            'utilisateur' => $utilisateurCollecte
+            'mode_collecte' => $mode_collecte,
+            'utilisateur' => $utilisateur_collecte
         ]);
 
         /** On créé un objet date. */
@@ -226,8 +229,8 @@ class BatchCollecteAnomalieController extends AbstractController
         $results = [];
         $results['general'] = self::makeRequest($queryParamsList['general']);
         if (isset($results['general']['code'])) {
-            $this->logger->error('❌ [Batch Anomalie] Erreur API "general"', ['erreur' => $results['general']]);
-                return [
+            $this->logger->error("[Batch Anomalie] ❌ Erreur API [general]", ['erreur' => $results['general']]);
+            return [
                     'code' => $results['general']['code'],
                     'erreur' => $results['general']['erreur'],
                     'type' => 'general'
@@ -238,7 +241,7 @@ class BatchCollecteAnomalieController extends AbstractController
         foreach (['BUG', 'VULNERABILITY', 'CODE_SMELL'] as $type) {
             $results[$type] = $this->makeRequest($queryParamsList[$type]);
             if (isset($results[$type]['code'])) {
-                $this->logger->error("❌ [Batch Anomalie] Erreur API \"$type\"", ['erreur' => $results[$type]]);
+                $this->logger->error("[Batch Anomalie] ❌  Erreur API [$type]", ['erreur' => $results[$type]]);
                 return [
                     'code' => $results[$type]['code'],
                     'erreur' => $results[$type]['erreur'],
@@ -248,12 +251,15 @@ class BatchCollecteAnomalieController extends AbstractController
         }
 
         if ($results['general']['paging']['total'] != 0) {
+
             /** On supprime les résultats pour la maven_key. */
             $map = [ 'maven_key' => $maven_key ];
-            $this->logger->info('🧹 [batch Anomalie] Suppression des anomalies précédentes');
+
+            $this->logger->info('[batch Anomalie] 🧹 Suppression des anomalies précédentes');
             $delete = $anomalieRepos->deleteAnomalieMavenKey($map);
+
             if ($delete['code'] != 200) {
-                $this->logger->error('❌ [Batch Anomalie] Échec suppression anomalies précédentes', [
+                $this->logger->error('[Batch Anomalie] ❌ Échec suppression anomalies précédentes', [
                     'maven_key' => $maven_key,
                     'erreur' => $delete['erreur']
                 ]);
@@ -264,7 +270,7 @@ class BatchCollecteAnomalieController extends AbstractController
                 ];
             }
 
-            //** On récupère le nombre d'anomalie et la dette technique */
+            /** On récupère le nombre d'anomalie et la dette technique */
             $anomalieTotal = $results['general']['total'];
             $dette = $this->serviceDateTools->minutesTo($results['general']['effortTotal']);
             $detteMinute = $results['general']['effortTotal'];
@@ -296,7 +302,7 @@ class BatchCollecteAnomalieController extends AbstractController
                         $analyse = $this->batchAnalyseAnomalie($facet, $maven_key);
                         break;
                     default:
-                        $this->logger->critical("🔴 [Batch Anomalie] On ne devrait pas arriver dans le default du switch.]");
+                        $this->logger->critical("[Batch Anomalie] 🔴 On ne devrait pas arriver dans le default du switch.");
                     break;
                 }
             }
@@ -327,14 +333,14 @@ class BatchCollecteAnomalieController extends AbstractController
             'bug' => $types['BUG'] ?? 0,
             'vulnerability' => $types['VULNERABILITY'] ?? 0,
             'code_smell' => $types['CODE_SMELL'] ?? 0,
-            'mode_collecte' => $modeCollecte,
-            'utilisateur_collecte' => $utilisateurCollecte,
+            'mode_collecte' => $mode_collecte,
+            'utilisateur_collecte' => $utilisateur_collecte,
             'date_enregistrement' => $date
         ];
 
         $insert = $anomalieRepos->insertAnomalie($map);
         if ($insert['code'] !== 200) {
-            $this->logger->error('❌ [Batch Anomalie] Échec d’insertion en base', ['erreur' => $insert['erreur']]);
+            $this->logger->error('[Batch Anomalie] ❌ Échec d’insertion en base', ['erreur' => $insert['erreur']]);
             return [
                 'code' => $insert['code'],
                 'erreur' => $insert['erreur']
@@ -342,7 +348,7 @@ class BatchCollecteAnomalieController extends AbstractController
         }
 
         /** On prépare les données pour l'historique */
-        $data = [
+        $historique = [
                     'violations' => $anomalieTotal ?? 0,
                     'dette' => $detteMinute ?? 0,
                     'nombre_bug' => $types['BUG'] ?? 0,
@@ -359,14 +365,14 @@ class BatchCollecteAnomalieController extends AbstractController
                     'nombre_anomalie_mineur'=>$severities['MINOR'] ?? 0
                 ];
 
-        $this->logger->info('ℹ️ [Batch Anomalie] Collecte réussie', [
+        $this->logger->info('[Batch Anomalie] ℹ️ Collecte des anomalies réussie', [
             'maven_key' => $maven_key,
             'violations' => $anomalieTotal ?? 0,
             'frontend' => $analyse['frontend'] ?? 0,
             'backend' => $analyse['backend'] ?? 0,
             'autre' => $analyse['autre'] ?? 0,
             'inconnu' => $analyse['inconnu'] ?? 0,
-            'utilisateur' => $utilisateurCollecte
+            'utilisateur' => $utilisateur_collecte
         ]);
 
         $total = $anomalieTotal ?? 0;
@@ -374,9 +380,9 @@ class BatchCollecteAnomalieController extends AbstractController
         return [
             'code' => 200,
             'info' => $info,
-            'message' => $map,
-            'data' => $data
+            'message' => "La collecte des anomalies pour ce projet est terminé.",
+            'data' => $map,
+            'historique' => $historique
         ];
     }
-
 }
