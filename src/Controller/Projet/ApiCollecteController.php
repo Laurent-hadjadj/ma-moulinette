@@ -46,8 +46,8 @@ class ApiCollecteController extends AbstractController
     public static $reference = "<strong>[Collecte]</strong> ";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
     public static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
-    public static $loggerE400 = "❌ [Collecte] Requête invalide : clé 'maven_key' manquante ou JSON mal formé.";
-    public static $loggerE403 = "🚫 [Collecte] Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).";
+    public static $loggerE400 = "[Collecte] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé.";
+    public static $loggerE403 = "[Collecte] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).";
     public static $noSpecify = 'non spécifiée';
 
     public function __construct(
