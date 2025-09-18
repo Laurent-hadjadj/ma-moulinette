@@ -151,20 +151,24 @@ class ApiCollecteController extends AbstractController
 
         $this->logger->info('ℹ️ [Collecte] Informations collectées avec succès.', [
             'maven_key' => $data->maven_key,
-            'projet_version' => $information['message']['projet_version']
+            'version' => $information['historique']['version']
         ]);
+
+        $total_sonar =  $information['historique']['version_release_sonar'] +
+                        $information['historique']['version_snapshot_sonar'] +
+                        $information['historique']['version_autre_sonar'];
 
         return new JsonResponse([
             'code' => 200,
             'message' => [
-                'projet_version' => $information['message']['projet_version'],
-                'release' => $information['message']['release'],
-                'snapshot' => $information['message']['snapshot'],
-                'autre' => $information['message']['autre'],
-                'total_sonar' => $information['message']['version_sonar'],
-                'release_sonar' => $information['message']['version_release_sonar'],
-                'snapshot_sonar' => $information['message']['version_snapshot_sonar'],
-                'autre_sonar' => $information['message']['version_autre_sonar']
+                'projet_version' => $information['historique']['version'],
+                'release' => $information['historique']['version_release'],
+                'snapshot' => $information['historique']['version_snapshot'],
+                'autre' => $information['historique']['version_autre'],
+                'total_sonar' => $total_sonar,
+                'release_sonar' => $information['historique']['version_release_sonar'],
+                'snapshot_sonar' => $information['historique']['version_snapshot_sonar'],
+                'autre_sonar' => $information['historique']['version_autre_sonar']
             ]
         ], Response::HTTP_OK);
     }
@@ -252,25 +256,26 @@ class ApiCollecteController extends AbstractController
 
         $this->logger->info('ℹ️ [Collecte] Mesures collectées avec succès.', [
             'maven_key' => $data->maven_key,
-            'project_name' => $mesure['message']['project_name']
+            'project_name' => $mesure['data']['project_name']
         ]);
 
         /** on balance ton quoi :) */
         $information = [
-                    'maven_key' => $mesure['message']['maven_key'],
-                    'project_name' => $mesure['message']['project_name'],
-                    'lines' => $mesure['message']['lines'],
-                    'ncloc' => $mesure['message']['ncloc'],
-                    'classes' => $mesure['message']['classes'],
-                    'functions' => $mesure['message']['functions'],
-                    'files' => $mesure['message']['files'],
-                    'language_distribution' => $mesure['message']['language_distribution'],
-                    'sqale_debt_ratio' => $mesure['message']['sqale_debt_ratio'],
-                    'coverage' => $mesure['message']['coverage'],
-                    'duplicated_lines_density' => $mesure['message']['duplicated_lines_density'],
-                    'tests' => $mesure['message']['tests'],
-                    'issues' => $mesure['message']['issues']
+                    'maven_key' => $mesure['data']['maven_key'],
+                    'project_name' => $mesure['data']['project_name'],
+                    'lines' => $mesure['data']['lines'],
+                    'ncloc' => $mesure['data']['ncloc'],
+                    'classes' => $mesure['data']['classes'],
+                    'functions' => $mesure['data']['functions'],
+                    'files' => $mesure['data']['files'],
+                    'language_distribution' => $mesure['data']['language_distribution'],
+                    'sqale_debt_ratio' => $mesure['data']['sqale_debt_ratio'],
+                    'coverage' => $mesure['data']['coverage'],
+                    'duplicated_lines_density' => $mesure['data']['duplicated_lines_density'],
+                    'tests' => $mesure['data']['tests'],
+                    'issues' => $mesure['data']['issues']
                 ];
+
         return new JsonResponse([
             'code' => 200,
             'message' => $information
@@ -346,8 +351,8 @@ class ApiCollecteController extends AbstractController
             $data->type
         );
 
-        if ($note['code'] != 200) {
-            $this->logger->error('❌ [Collecte] Échec de collecte des notes du projet.', [
+        if ($note['code'] !== 200) {
+            $this->logger->error('[Collecte] ❌ Échec de collecte des notes du projet.', [
                 'code' => $note['code'],
                 'maven_key' => $data->maven_key,
                 'type' => $data->type,
@@ -365,13 +370,13 @@ class ApiCollecteController extends AbstractController
         $this->logger->info('ℹ️ [Collecte] Note collectée avec succès.', [
             'maven_key' => $data->maven_key,
             'type' => $data->type,
-            'note' => $note['message']['value'] ?? null
+            'note' => $note['historique']["note_{$data->type}"] ?? null
         ]);
 
         return new JsonResponse([
             'code' => 200,
             'type' => $data->type,
-            'message' => [ 'note' => $note['message']['value'] ]
+            'message' => [ 'note' => $note['historique']["note_{$data->type}"] ]
         ], Response::HTTP_OK);
     }
 
@@ -437,7 +442,7 @@ class ApiCollecteController extends AbstractController
             $utilisateur_collecte
         );
 
-        if ($owasp['code'] != 200){
+        if ($owasp['code'] !== 200){
             $this->logger->error('❌ [Collecte] Échec de collecte des menaces OWASP du projet.', [
                 'code' => $owasp['code'],
                 'maven_key' => $data->maven_key,
@@ -534,7 +539,7 @@ class ApiCollecteController extends AbstractController
             $utilisateur_collecte
         );
 
-        if ($hotspot['code'] != 200){
+        if ($hotspot['code'] !== 200){
             $this->logger->error('❌ [Collecte] Échec de collecte des menaces potentielles du projet.', [
                 'code' => $hotspot['code'],
                 'maven_key' => $data->maven_key,
@@ -552,20 +557,20 @@ class ApiCollecteController extends AbstractController
 
         $this->logger->info('ℹ️ [Collecte] Menaces potentielles collectées avec succès.', [
             'maven_key' => $data->maven_key,
-            'hotspot_high' => $hotspot['data']['hotspot_high'],
-            'hotspot_medium' => $hotspot['data']['hotspot_medium'],
-            'hotspot_low' => $hotspot['data']['hotspot_low'],
-            'nombre_hotspot' => $hotspot['data']['nombre_hotspot']
+            'hotspot_high' => $hotspot['historique']['hotspot_high'],
+            'hotspot_medium' => $hotspot['historique']['hotspot_medium'],
+            'hotspot_low' => $hotspot['historique']['hotspot_low'],
+            'nombre_hotspot' => $hotspot['historique']['nombre_hotspot']
         ]);
 
         return new JsonResponse([
             'code' => 200,
-            'nombre' => $hotspot['data']['nombre_hotspot'],
+            'nombre' => $hotspot['historique']['nombre_hotspot'],
             'message' => [
-                'hotspot_high' => $hotspot['data']['hotspot_high'],
-                'hotspot_medium' => $hotspot['data']['hotspot_medium'],
-                'hotspot_low' => $hotspot['data']['hotspot_low'],
-                'nombre_hotspot' => $hotspot['data']['nombre_hotspot']
+                'hotspot_high' => $hotspot['historique']['hotspot_high'],
+                'hotspot_medium' => $hotspot['historique']['hotspot_medium'],
+                'hotspot_low' => $hotspot['historique']['hotspot_low'],
+                'nombre_hotspot' => $hotspot['historique']['nombre_hotspot']
                 ]
             ], Response::HTTP_OK);
     }
@@ -633,7 +638,7 @@ class ApiCollecteController extends AbstractController
             $utilisateur_collecte
         );
 
-        if ($anomalie['code'] != 200){
+        if ($anomalie['code'] !== 200){
             $this->logger->error('❌ [Collecte] Échec de collecte des anomalies du projet.', [
                 'code' => $anomalie['code'],
                 'maven_key' => $data->maven_key,
@@ -650,20 +655,20 @@ class ApiCollecteController extends AbstractController
 
         $this->logger->info('ℹ️ [Collecte] Anomalies collectées avec succès.', [
             'maven_key' => $data->maven_key,
-            'violations' => $anomalie['data']['violations'],
-            'nombre_bug' => $anomalie['data']['nombre_bug'],
-            'nombre_vulnerability' => $anomalie['data']['nombre_vulnerability'],
-            'nombre_code_smell' => $anomalie['data']['nombre_code_smell']
+            'violations' => $anomalie['historique']['violations'],
+            'nombre_bug' => $anomalie['historique']['nombre_bug'],
+            'nombre_vulnerability' => $anomalie['historique']['nombre_vulnerability'],
+            'nombre_code_smell' => $anomalie['historique']['nombre_code_smell']
         ]);
 
         return new JsonResponse([
             'code' => 200,
             'info' => $anomalie['info'],
             'message' => [
-                'violations' => $anomalie['data']['violations'],
-                'nombre_bug' => $anomalie['data']['nombre_bug'],
-                'nombre_vulnerability' => $anomalie['data']['nombre_vulnerability'],
-                'nombre_code_smell' => $anomalie['data']['nombre_code_smell']
+                'violations' => $anomalie['historique']['violations'],
+                'nombre_bug' => $anomalie['historique']['nombre_bug'],
+                'nombre_vulnerability' => $anomalie['historique']['nombre_vulnerability'],
+                'nombre_code_smell' => $anomalie['historique']['nombre_code_smell']
             ]
         ], Response::HTTP_OK);
     }
@@ -730,7 +735,7 @@ class ApiCollecteController extends AbstractController
             $utilisateur_collecte
         );
 
-        if ($anomalieDetail['code'] != 200){
+        if ($anomalieDetail['code'] !== 200){
             $this->logger->error('❌ [Collecte] Échec de collecte du détail des anomalies pour le projet.', [
                 'code' => $anomalieDetail['code'],
                 'maven_key' => $data->maven_key,
@@ -754,7 +759,7 @@ class ApiCollecteController extends AbstractController
         return new JsonResponse([
             'code' => 200,
             'message' => ['chargement des anomalies détallées'],
-            'data' => $anomalieDetail['data']
+            'data' => $anomalieDetail['historique']
         ], Response::HTTP_OK);
     }
 
@@ -822,7 +827,7 @@ class ApiCollecteController extends AbstractController
             $data->menace
         );
 
-        if ($hotspotOwasp['code'] != 200){
+        if ($hotspotOwasp['code'] !== 200){
             $this->logger->error('❌ [Collecte] Échec de collecte des menaces OWASP potentielles du projet.', [
                 'code' => $hotspotOwasp['code'],
                 'maven_key' => $data->maven_key,
@@ -917,7 +922,7 @@ class ApiCollecteController extends AbstractController
             $utilisateur_collecte
         );
 
-        if ($hotspotDetail['code'] != 200){
+        if ($hotspotDetail['code'] !== 200){
             $this->logger->error('❌ [Collecte] Échec de collecte du détail des menaces potentielles du projet.', [
                 'code' => $hotspotDetail['code'],
                 'maven_key' => $data->maven_key,
@@ -1006,7 +1011,7 @@ class ApiCollecteController extends AbstractController
             $utilisateur_collecte
         );
 
-        if ($noSonar['code'] != 200){
+        if ($noSonar['code'] !== 200){
             $this->logger->error('❌ [Collecte] Échec de collecte des annotations noSonar et suppressWarning du projet.', [
                 'code' => $noSonar['code'],
                 'maven_key' => $data->maven_key,
@@ -1025,17 +1030,15 @@ class ApiCollecteController extends AbstractController
 
         $this->logger->info('ℹ️ [Collecte] NoSonar collectées avec succès.', [
             'maven_key' => $data->maven_key,
-            'suppress_warning' => $noSonar['message']['suppress_warning'] ?? 0,
-            'no_sonar' => $noSonar['message']['no_sonar'] ?? 0,
+            'suppress_warning' => $noSonar['historique']['suppress_warning'] ?? 0,
+            'no_sonar' => $noSonar['historique']['no_sonar'] ?? 0,
         ]);
 
-        $nombre = $noSonar['message']['suppress_warning'] + $noSonar['message']['no_sonar'];
+        $nombre = $noSonar['historique']['suppress_warning'] + $noSonar['historique']['no_sonar'];
         return new JsonResponse([
             'code' => 200,
             'nombre' => $nombre,
-            'message' => [
-                'suppress_warning' => $noSonar['message']['suppress_warning'] ?? 0,
-                'no_sonar' => $noSonar['message']['no_sonar'] ?? 0]
+            'historique' => $noSonar['historique']
             ], Response::HTTP_OK);
     }
 
@@ -1101,7 +1104,7 @@ class ApiCollecteController extends AbstractController
             $utilisateur_collecte
         );
 
-        if ($todo['code'] != 200){
+        if ($todo['code'] !== 200){
             $this->logger->error('❌ [Collecte] Échec de collecte des todos du projet.', [
                 'code' => $todo['code'],
                 'maven_key' => $data->maven_key,
@@ -1281,7 +1284,7 @@ class ApiCollecteController extends AbstractController
             $utilisateur_collecte
         );
 
-        if ($logger['code'] != 200){
+        if ($logger['code'] !== 200){
             $this->logger->error('❌ [Collecte] Échec de collecte des loggers du projet.', [
                 'code' => $logger['code'],
                 'maven_key' => $data->maven_key,
