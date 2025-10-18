@@ -343,7 +343,7 @@ class ApiOwaspPeintureController extends AbstractController
         /** On récupère la liste des hotspots par status de la table détails. */
         $map=['maven_key'=>$data->maven_key];
         $details=$hotspotDetails->selectHotspotDetailsByStatus($map);
-        dd($details);
+
         if ($details['code']!=200) {
             return new JsonResponse([
                 'maven_key' => $data->maven_key,
