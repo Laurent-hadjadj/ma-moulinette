@@ -146,7 +146,6 @@ class ResetPasswordController extends AbstractController
                     $message = "Votre mot de passe est incorrect (".$r." tentative".$s." restante".$s.").";
                     $this->addFlash('notice', [
                         'type' => 'warning',
-                        'reference' => static::$reference,
                         'message' => $message
                     ]);
 
@@ -174,9 +173,8 @@ class ResetPasswordController extends AbstractController
             /** On prepare un message flash */
             $message = "📌 Votre mot de passe a été changé avec succès.";
             $this->addFlash('notice', [
-                                        'type' => 'primary',
-                                        'reference' => static::$reference,
-                                        'message' => $message
+                'type' => 'primary',
+                'message' => $message
             ]);
             return $this->redirectToRoute('accueil');
         }
@@ -216,7 +214,7 @@ class ResetPasswordController extends AbstractController
             return $response->setData([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$titre.static::$erreur400,
+                'message' => static::$erreur400,
                 'trace' => null], Response::HTTP_OK);
             }
 
@@ -242,7 +240,7 @@ class ResetPasswordController extends AbstractController
             return $response->setData([
                 'code' => $r['code'],
                 'type' => 'alert',
-                'message' => static::$titre . `Échec de mise à jour du status de mise à jour du mot de passe (Erreur {$r['erreur']}).`,
+                'message' => "Échec de mise à jour du status de mise à jour du mot de passe (Erreur {$r['erreur']}).",
                 'trace' => $r['erreur']
             ], Response::HTTP_OK);
         }
