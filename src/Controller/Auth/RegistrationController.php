@@ -25,13 +25,16 @@ use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\Utilisateur;
 use App\Form\RegistrationFormType;
-
+use App\Service\TokenService;
 
 /**
  * [Description RegistrationController]
  */
 class RegistrationController extends AbstractController
 {
+    private static $titreFlash = "[Auth]";
+    private static $welcome = "welcome/index.html.twig";
+
     private $logoEntreprise;
     private $marqueEntrepriseShort;
     private $marqueEntrepriseLong;
@@ -43,6 +46,7 @@ class RegistrationController extends AbstractController
         private ParameterBagInterface $params,
         private EntityManagerInterface $em,
         private LoggerInterface $logger,
+        private TokenService $tokenService
     ) {
         $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
@@ -147,7 +151,10 @@ class RegistrationController extends AbstractController
                     // Si des erreurs sont trouvées, afficher ces erreurs
                     foreach ($errors as $error) {
                         $this->logger->error("[Inscription] ❌ une erreur dans le formulaire a été détectée.", ['erreur' => $error->getMessage()]);
-                        $this->addFlash('notice', ['type' => 'alert', 'message' => $error->getMessage()] );
+                        $this->addFlash('notice', [
+                            'type' => 'alert',
+                            'titre' => static::$titreFlash,
+                            'message' => $error->getMessage()] );
                     }
 
                     $render=static::genericRender();
@@ -163,20 +170,22 @@ class RegistrationController extends AbstractController
                 $message = "📌 Votre compte a été correctement créé.";
                 $this->addFlash('notice', [
                     'type' => 'primary',
-                    'titre' => "[Inscription] ",
+                    'titre' => static::$titreFlash,
                     'message' => $message
                 ]);
 
                 /** On préfère rediriger l'utilisateur sur la page de bienvenue */
-                return $this->redirectToRoute('welcome', [
-                    'nom' => $utilisateur->getNom(),
-                    'prenom' => $utilisateur->getPrenom(),
-                    'courriel' => $utilisateur->getCourriel()
+                $token = $this->tokenService->generateToken([
+                        'nom' => $utilisateur->getNom(),
+                        'prenom' => $utilisateur->getPrenom(),
+                        'courriel' => $utilisateur->getCourriel()
                 ]);
+
+                return $this->redirectToRoute('welcome', ['token' => $token]);
             }
         }
 
-        $render=static::genericRender();
+        $render = static::genericRender();
         $render['registrationForm'] = $form->createView();
         return $this->render('auth/register.html.twig', $render);
     }
@@ -193,14 +202,63 @@ class RegistrationController extends AbstractController
     #[Route('/welcome', name: 'welcome')]
     public function welcome(Request $request): Response
     {
-        //$content = $request->getContent();
-        //$data = $request->toArray();
-        //dd($data);
-        $render=static::genericRender();
+        $token = $request->query->get('token');
+
+        $render = static::genericRender();
         $render['nom'] = 'HADJADJ';
         $render['prenom'] = 'Laurent';
         $render['courriel'] = 'laurent.hadjadj@ma-petite-entreprise.fr';
-        return $this->render('welcome/index.html.twig', $render);
+
+        if (!$token) {
+            $this->logger->error("[Welcome] ❌ Requête mal formée : token manquant ou invalide.", [
+                'payload' =>  $token ?? 'inconnu']);
+
+            $this->addFlash('notice', [
+                    'type' => 'alert',
+                    'titre' => static::$titreFlash,
+                    'message' => "❌ La requête est incorrecte (Erreur 400)."
+                ]);
+
+            return $this->render(static::$welcome, $render);
+        }
+
+        try {
+                 /** Le token doit disposer d'un séparateur de type point */
+                $parts = explode('.', $token, 2);
+				if (count($parts) !== 2) {
+                    $this->logger->critical("[Welcome] ❌ Le token est incorrect ou mal formé.", [
+                        'token' =>  $token ?? 'trop pourri']);
+
+                    $this->addFlash('notice', [
+                        'type' => 'alert',
+                        'titre' => static::$titreFlash,
+                        'message' => "❌ L'enregistrement n'a pas abouti (Erreur 500)."
+                    ]);
+
+                    return $this->render(static::$welcome, $render);
+                }
+
+                /** On décode le token */
+                $data = $this->tokenService->decodeToken($token);
+        } catch (\InvalidArgumentException $e) {
+                $this->logger->critical("[Welcome] 🔴 Le token est incorrect ou mal formé.", [
+                    'token' =>  $token ?? 'trop pourri',
+                    'erreur'  => $e->getMessage()]);
+
+                $this->addFlash('notice', [
+                    'type' => 'alert',
+                    'titre' => static::$titreFlash,
+                    'message' => "🔴 Une erreur inconnue a été provoquée (Erreur 500)."
+                ]);
+
+                return $this->render(static::$welcome, $render);
+        }
+
+        $render['nom'] = $data['nom'];
+        $render['prenom'] = $data['prenom'];
+        $render['courriel'] = $data['courriel'];
+
+        return $this->render(static::$welcome, $render);
     }
 
 }
