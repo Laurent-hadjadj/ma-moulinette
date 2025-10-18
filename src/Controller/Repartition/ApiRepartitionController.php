@@ -32,7 +32,6 @@ use App\Controller\Batch\BatchCollecteRepartitionController;
  */
 class ApiRepartitionController extends AbstractController
 {
-    private static $titreJS = "<strong>[Répartition-Module]</strong> ";
     private static $erreur400 = "La requête est incorrecte (Erreur 400).";
     private static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
     private static $loggerE401 = "[Répartition-Module] 🚫 Aucun utilisateur connecté.";
@@ -87,7 +86,7 @@ class ApiRepartitionController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$titreJS . static::$erreur400
+                'message' => static::$erreur400
             ], Response::HTTP_OK);
         }
 
@@ -98,7 +97,7 @@ class ApiRepartitionController extends AbstractController
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
-                'message' => static::$titreJS . static::$erreur403
+                'message' => static::$erreur403
             ], Response::HTTP_OK);
         }
 
@@ -146,11 +145,7 @@ class ApiRepartitionController extends AbstractController
         $user = $this->security->getUser();
         if (!$user) {
             $this->logger->error(static::$loggerE401);
-            return new JsonResponse([
-                'code' => 401,
-                'type' => 'alert',
-                'message' => static::$titreJS . static::$erreur401
-            ], Response::HTTP_OK);
+            throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 401).");
         }
 
         // Instanciation des repositories
@@ -167,7 +162,7 @@ class ApiRepartitionController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$titreJS . static::$erreur400,
+                'message' => static::$erreur400,
             ], Response::HTTP_OK);
         }
 
@@ -178,7 +173,7 @@ class ApiRepartitionController extends AbstractController
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
-                'message' => static::$titreJS . static::$erreur403
+                'message' => static::$erreur403
             ], Response::HTTP_OK);
         }
 
@@ -274,11 +269,7 @@ class ApiRepartitionController extends AbstractController
         $user = $this->security->getUser();
         if (!$user) {
             $this->logger->error(static::$loggerE401);
-            return new JsonResponse([
-                'code' => 401,
-                'type' => 'alert',
-                'message' => static::$titreJS . static::$erreur401
-            ], Response::HTTP_OK);
+            throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 401).");
         }
 
         // Instanciation des repositories
@@ -295,7 +286,7 @@ class ApiRepartitionController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$titreJS . static::$erreur400,
+                'message' => static::$erreur400,
             ], Response::HTTP_OK);
         }
 
@@ -306,7 +297,7 @@ class ApiRepartitionController extends AbstractController
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
-                'message' => static::$titreJS . static::$erreur403
+                'message' => static::$erreur403
             ], Response::HTTP_OK);
         }
 
@@ -320,14 +311,14 @@ class ApiRepartitionController extends AbstractController
             return new JsonResponse([
                 'code' => $checkIfExistHistorique['code'],
                 'type' => 'alert',
-                'message' => "[Répartition-Analyse] Échec de récupération des données de répartition (Erreur {$checkIfExistHistorique['code']}).",
+                'message' => "Échec de récupération des données de répartition (Erreur {$checkIfExistHistorique['code']}).",
                 'trace' => $checkIfExistHistorique['erreur']
             ], Response::HTTP_OK);
         }
 
         /** Si on à une result avec un résultat, alors on a des données alors on affiche les résultats déjà présent dans la table répartition. */
         if (isset($checkIfExistHistorique['result']) && $checkIfExistHistorique['result'] === []){
-            $message = "[Répartition-Analyse] Il n'y a pas de données historisées disponibles. Vous devez lancer une nouvelle collecte et lancer une analyse (Erreur 404).";
+            $message = "Il n'y a pas de données historisées disponibles. Vous devez lancer une nouvelle collecte et lancer une analyse (Erreur 404).";
 
             return new JsonResponse([
                 'code' => 404,
@@ -339,7 +330,7 @@ class ApiRepartitionController extends AbstractController
         /** On a des données à envoyer */
         $data = $checkIfExistHistorique['result'][0];
         $date = (new \DateTime($data['date_enregistrement']))->format('Y-m-d H:i');
-        $message = "[Répartition-Analyse] Récupération des données de répartition pour le setup <strong>{$data['setup']}</strong> en date du <strong>{$date}</strong>";
+        $message = "Récupération des données de répartition pour le setup <strong>{$data['setup']}</strong> en date du <strong>{$date}</strong>";
 
         return new JsonResponse([
             'code' => 201,
@@ -385,7 +376,7 @@ class ApiRepartitionController extends AbstractController
                 'data' => $data,
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$titreJS . static::$erreur400
+                'message' => static::$erreur400
             ], Response::HTTP_OK);
         }
 
@@ -396,7 +387,7 @@ class ApiRepartitionController extends AbstractController
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
-                'message' => static::$titreJS . static::$erreur403
+                'message' => static::$erreur403
             ], Response::HTTP_OK);
         }
 
