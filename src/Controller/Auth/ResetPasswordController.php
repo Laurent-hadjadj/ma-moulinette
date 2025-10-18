@@ -37,7 +37,8 @@ class ResetPasswordController extends AbstractController
 {
     /** Définition des constantes */
     public static $europeParis = "Europe/Paris";
-    public static $reference = "<strong>[Auth]</strong> ";
+    public static $titreJS = "<strong>[Auth]</strong> ";
+    public static $titreFlash = "[Auth]";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
 
     private $logoEntreprise;
@@ -55,7 +56,6 @@ class ResetPasswordController extends AbstractController
         private UserPasswordHasherInterface $passwordHasher,
     ) {
         $this->utilisateurRepository = $utilisateurRepository;
-        $this->em = $em;
         $this->params = $params;
         $this->passwordHasher = $passwordHasher;
 
@@ -108,7 +108,7 @@ class ResetPasswordController extends AbstractController
         $utilisateur = $token->getUser();
 
         if (!$utilisateur instanceof Utilisateur) {
-            $this->logger->error('❌ [Reset-Password] Utilisateur non valide dans le token');
+            $this->logger->error('[Reset-Password] 🚫 Utilisateur non valide dans le token.');
             throw new  UserNotFoundException('$user doit être une instance de User.');
         }
 
@@ -138,14 +138,17 @@ class ResetPasswordController extends AbstractController
                     if ($resetPasswordCount >= 5) {
                         return $this->redirectToRoute('logout');
                     }
-                    $this->logger->warning("⚠️ [Reset-Password] Mot de passe incorrect pour $courriel (tentative n°$resetPasswordCount)");
+                    $this->logger->warning("[Reset-Password] ⚠️ Mot de passe incorrect pour $courriel (tentative n°$resetPasswordCount).");
 
                     /** On prepare un message flash */
-                    $titre = "Oups !!! ";
                     $r = 5-$resetPasswordCount;
                     $s = ($r === 1) ? '' : 's';
                     $message = "Votre mot de passe est incorrect (".$r." tentative".$s." restante".$s.").";
-                    $this->addFlash('notice', ['type' => 'warning', 'titre' => $titre, 'message' => $message]);
+                    $this->addFlash('notice', [
+                        'type' => 'warning',
+                        'reference' => static::$reference,
+                        'message' => $message
+                    ]);
 
                     /** On incrémente le nombre de tentative */
                     $utilisateur->setResetPasswordCount($resetPasswordCount + 1);
@@ -153,7 +156,7 @@ class ResetPasswordController extends AbstractController
                     $utilisateur->setActif(false);
                     $this->em->flush();
 
-                    $this->logger->info("ℹ️ [Reset-Password] le nombre de tentative a été incrémenté $courriel");
+                    $this->logger->info("[Reset-Password] ℹ️ le nombre de tentative a été incrémenté pour [$courriel].");
                     return $this->redirectToRoute('reset_mot_de_passe');
                 }
 
@@ -169,9 +172,12 @@ class ResetPasswordController extends AbstractController
             $this->em->flush();
 
             /** On prepare un message flash */
-            $titre = "[Auth] ";
-            $message = "Votre mot de passe a été changé avec succès.";
-            $this->addFlash('notice', ['type' => 'primary', 'titre' => $titre, 'message' => $message]);
+            $message = "📌 Votre mot de passe a été changé avec succès.";
+            $this->addFlash('notice', [
+                                        'type' => 'primary',
+                                        'reference' => static::$reference,
+                                        'message' => $message
+            ]);
             return $this->redirectToRoute('accueil');
         }
 
@@ -206,11 +212,11 @@ class ResetPasswordController extends AbstractController
 
         /** On teste si le body est correcte */
         if ($data === null || !property_exists($data, 'reset_password')) {
-            $this->logger->warning('⚠️ [API Reset-Password] Body invalide dans la requête');
+            $this->logger->error('[API Reset-Password] ❌ Body invalide dans la requête.');
             return $response->setData([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$reference.static::$erreur400,
+                'message' => static::$titre.static::$erreur400,
                 'trace' => null], Response::HTTP_OK);
             }
 
@@ -232,15 +238,16 @@ class ResetPasswordController extends AbstractController
 
         $r = $userEntity->updateUtilisateurResetPassword($map);
         if ($r['code'] != 200) {
-            $this->logger->error("❌ [API Reset-Password] Erreur update BDD pour $courriel Erreur({$r['erreur']}.");
+            $this->logger->error("[API Reset-Password] ❌ Erreur update BDD pour $courriel Erreur({$r['erreur']}).");
             return $response->setData([
                 'code' => $r['code'],
                 'type' => 'alert',
-                'message' => static::$reference . `Échec de mise à jour du status de mise à jour du mot de passe (Erreur {$r['erreur']}).`,
-                'trace' => $r['erreur']], Response::HTTP_OK);
+                'message' => static::$titre . `Échec de mise à jour du status de mise à jour du mot de passe (Erreur {$r['erreur']}).`,
+                'trace' => $r['erreur']
+            ], Response::HTTP_OK);
         }
 
-        $this->logger->info("ℹ️ [API Reset-Password] Succès update pour $courriel");
+        $this->logger->info("[API Reset-Password] ℹ️ Succès update pour $courriel");
         return $response->setData(['code' => 200], Response::HTTP_OK);
     }
 }
