@@ -27,8 +27,6 @@ use App\Entity\Profiles;
  */
 class ProfilController extends AbstractController
 {
-    private static $reference = '[Profil]';
-
     private $logoEntreprise;
     private $marqueEntrepriseShort;
     private $marqueEntrepriseLong;
@@ -90,7 +88,7 @@ class ProfilController extends AbstractController
     #[Route('/profil', name: 'profil', methods: 'GET')]
     public function index(): Response
     {
-        $this->logger->info('ℹ️ [Profil] Accès à la page /profil', [
+        $this->logger->info('[Profil] ℹ️ Accès à la page /profil', [
         'env' => $this->environnement]);
 
         /** On instancie l'EntityRepository */
@@ -101,39 +99,36 @@ class ProfilController extends AbstractController
                 $r = $profilesRepos->selectProfiles();
 
                 if ($r['code'] !== 200) {
-                    $this->logger->error('❌ [Profil] Erreur lors de la récupération des profils (selectProfiles)', [
+                    $this->logger->error('[Profil] ❌ Erreur lors de la récupération des profils (selectProfiles)', [
                         'code_retour' => $r['code'],
                         'message' => $r['erreur']
                     ]);
 
                     $this->addFlash('notice', [
                         'type' => 'alert',
-                        'titre'=> static::$reference,
                         'message' => "La liste des profils n'a pas été récupérée ({$r['code']})."
                     ]);
                 }
 
                 if (empty($r['liste'])) {
-                    $this->logger->warning('⚠️ [Profil] Liste des profils vide.');
+                    $this->logger->warning('[Profil] ⚠️ Liste des profils vide.');
 
                 $this->addFlash('notice', [
                     'type' => 'warning',
-                    'titre' => static::$reference,
                     'message' => "La liste des profils est vide. Vous devez la mettre à jour ! (Erreur 404)"]);
                 } else {
-                    $this->logger->info('ℹ️ [Profil] Profils récupérés avec succès', [
+                    $this->logger->info('[Profil] ℹ️ Profils récupérés avec succès', [
                         'nb_profils' => count($r['liste']),
                         'code_retour' => $r['code']
                     ]);
                 }
             } catch (\Throwable $e) {
-                $this->logger->critical('🔴 [Profil] Exception lors de l’appel à selectProfiles()', [
+                $this->logger->critical('[Profil] 🔴 Exception lors de l’appel à selectProfiles()', [
                     'exception' => $e->getMessage()
                 ]);
 
             $this->addFlash('notice', [
                 'type' => 'alert',
-                'titre'=> static::$reference,
                 'message' => "Une erreur technique est survenue lors de la récupération des profils (Erreur 500)."
             ]);
 
