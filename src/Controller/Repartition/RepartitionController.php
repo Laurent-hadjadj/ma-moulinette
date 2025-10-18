@@ -153,7 +153,7 @@ class RepartitionController extends AbstractController
     {
         $user = $this->security->getUser();
         if (!$user) {
-            $this->logger->warning('[Répartition] 🚫 Accès refusé : utilisateur non connecté.');
+            $this->logger->error('[Répartition] 🚫 Accès refusé : utilisateur non connecté.');
             throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 401).");
         }
 
