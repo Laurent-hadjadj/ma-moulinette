@@ -27,7 +27,6 @@ use App\Service\ProjetCosuiService;
 class CosuiController extends AbstractController
 {
 
-    private static $titreFlash = '[COSUI]';
     private static $erreur400 = '❌ La requête est incorrecte (Erreur 400).';
     private static $erreur403 = '⚠️ Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).';
     private static $page = 'projet/cosui.html.twig';
@@ -64,8 +63,8 @@ class CosuiController extends AbstractController
      */
     private function addFlashAndRender(string $type, string $message, string|null $trace, array $render): Response
     {
-        if (!isset(static::$titreFlash) || !isset(static::$page)) {
-            $this->logger->error("Paramètre statique 'titre' ou 'page' non défini dans addFlashAndRender().");
+        if (!isset(static::$page)) {
+            $this->logger->error("[COSUI] ❌ Paramètre statique 'page' non défini dans addFlashAndRender().");
         }
 
         $this->logger->info("[COSUI] ℹ️ Ajout d’un message flash de type '{$type}' avec le titre : " . (static::$titreFlash ?? '[non défini]'));
@@ -77,7 +76,6 @@ class CosuiController extends AbstractController
 
         $this->addFlash('notice', [
             'type' => $type,
-            'titre' => static::$titreFlash,
             'message' => $message,
             'trace' => $trace ?? null,
         ]);
@@ -140,11 +138,6 @@ class CosuiController extends AbstractController
     #[Route('/projet/cosui', name: 'projet_cosui', methods: 'GET')]
     public function projetCosui(Request $request): Response
     {
-        if (!$user) {
-            $this->logger->error('[Répartition] 🚫 Accès refusé : utilisateur non connecté.');
-            throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 401).");
-        }
-
         $this->logger->info('[COSUI] ℹ️ Accès à /projet/cosui');
 
         $render = $this->cosuiService->initialRender();
@@ -162,7 +155,7 @@ class CosuiController extends AbstractController
 
         $maven_key = $this->decodeToken($token);
         if (null === $maven_key) {
-            $this->logger->error('[COSUI] ❌ Échec du décodage du token');
+            $this->logger->error('[COSUI] ❌ Échec du décodage du token.');
             return $this->addFlashAndRender('alert', static::$erreur400, 'Problème de décodage du token.', $render);
         }
 
