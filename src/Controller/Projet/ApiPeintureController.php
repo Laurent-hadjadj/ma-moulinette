@@ -15,7 +15,6 @@ namespace App\Controller\Projet;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
-
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,7 +32,6 @@ use App\Entity\Notes;
 use App\Entity\Todo;
 use App\Entity\Logger;
 use App\Service\IsValideMavenKey;
-use App\Service\UrlBuilderService;
 
 /**
  * [Description ApiPeintureController]
@@ -52,16 +50,14 @@ class ApiPeintureController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private IsValideMavenKey $isValideMavenKey,
-        private UrlBuilderService $urlBuilderService,
         private LoggerInterface $logger,
     ) { }
 
     /** Définition des constantes */
-    public static $reference = "<strong>[Peinture]</strong> ";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
-    public static $loggerE400 = "❌ [Peinture] Requête mal formée : maven_key manquant ou invalide.";
     public static $erreur404 = "Je n'ai pas trouvé les données. Vous devez lancer une collecte (Erreur 404).";
     public static $erreur500 = "Je n'ai pas trouvé d'analyse (Erreur 500).";
+    public static $loggerE400 = "[Peinture] ❌ Requête mal formée : maven_key manquant ou invalide.";
 
     /**
      * [Description for calculNoteHotspot]
@@ -125,7 +121,12 @@ class ApiPeintureController extends AbstractController
         }
         $total = intval($high) + intval($medium) + intval($low);
 
-        return ['high' => $high, 'medium' => $medium, 'low' => $low, 'total' => $total];
+        return [
+                'high' => $high,
+                'medium' => $medium,
+                'low' => $low,
+                'total' => $total
+            ];
     }
 
     /**
@@ -154,9 +155,11 @@ class ApiPeintureController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null) {
             return new JsonResponse([
-                'data' => $data, 'code' => 400, 'type' =>'alert',
-                'message' => static::$reference . static::$erreur400],
-                Response::HTTP_OK);
+                'data' => $data,
+                'code' => 400,
+                'type' =>'alert',
+                'message' => static::$erreur400
+            ], Response::HTTP_OK);
         }
 
         /**
@@ -177,7 +180,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => 406,
                 'type' => 'primary',
-                'message' => static::$reference . static::$erreur404,
+                'message' => static::$erreur404,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -206,7 +209,10 @@ class ApiPeintureController extends AbstractController
                 ]);
             }
         }
-        return new JsonResponse(['code' => 200, 'projets' => $projets], Response::HTTP_OK);
+        return new JsonResponse([
+            'code' => 200,
+            'projets' => $projets
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -239,7 +245,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400,
+                'message' => static::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -253,7 +259,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => 404,
                 'type' => 'warning',
-                'message' => static::$reference . static::$erreur404,
+                'message' => static::$erreur404,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -265,7 +271,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => $version['code'],
                 'type' => 'alert',
-                'message' => static::$reference . "La récupération des données a échouée pour selectInformationProjetVersion (Erreur {$version['code']}).",
+                'message' => "La récupération des données a échouée pour selectInformationProjetVersion (Erreur {$version['code']}).",
                 'trace' => $version['erreur'] ?? null
             ], Response::HTTP_OK);
         }
@@ -323,7 +329,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400,
+                'message' => static::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -337,7 +343,7 @@ class ApiPeintureController extends AbstractController
                 return new JsonResponse([
                     'code' => 404,
                     'type' => 'warning',
-                    'message' => static::$reference . static::$erreur404,
+                    'message' => static::$erreur404,
                     'trace' => null
                 ], Response::HTTP_OK);
             }
@@ -349,7 +355,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => $request['code'],
                 'type' => 'alert',
-                'message' => static::$reference . "La récupération des données a échouée pour selectMesuresVersionLast (Erreur {$request['code']}).",
+                'message' => "La récupération des données a échouée pour selectMesuresVersionLast (Erreur {$request['code']}).",
                 'trace' => $request['erreur']
             ], Response::HTTP_OK);
         }
@@ -405,7 +411,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400,
+                'message' => static::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -419,7 +425,7 @@ class ApiPeintureController extends AbstractController
                 return new JsonResponse([
                     'code' => 404,
                     'type' => 'warning',
-                    'message' => static::$reference . static::$erreur404,
+                    'message' => static::$erreur404,
                     'trace' => null
                 ], Response::HTTP_OK);
             }
@@ -431,7 +437,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => $anomalie['code'],
                 'type' => 'alert',
-                'message' => static::$reference . "La récupération des données a échouée pour selectAnomalie (Erreur {$anomalie['code']}).",
+                'message' => "La récupération des données a échouée pour selectAnomalie (Erreur {$anomalie['code']}).",
                 'trace' => $anomalie['erreur']
             ], Response::HTTP_OK);
         }
@@ -479,7 +485,7 @@ class ApiPeintureController extends AbstractController
                 return new JsonResponse([
                     'code' => $note['code'],
                     'type' => 'alert',
-                    'message' => static::$reference . "La récupération des données a échouée pour selectNotesMavenType (Erreur {$note['code']}).",
+                    'message' => "La récupération des données a échouée pour selectNotesMavenType (Erreur {$note['code']}).",
                     'trace' => $note['erreur']
                 ], Response::HTTP_OK);
             }
@@ -548,7 +554,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400,
+                'message' => static::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -562,7 +568,7 @@ class ApiPeintureController extends AbstractController
                 return new JsonResponse([
                     'code' => 404,
                     'type' => 'warning',
-                    'message' => static::$reference . static::$erreur404,
+                    'message' => static::$erreur404,
                     'trace' => null
                 ], Response::HTTP_OK);
             }
@@ -573,7 +579,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => $details['code'],
                 'type' =>'alert',
-                'message' => static::$reference . "La récupération des données a échouée pour selectAnomalieDetailsMavenKey (Erreur {$details['code']}).",
+                'message' => "La récupération des données a échouée pour selectAnomalieDetailsMavenKey (Erreur {$details['code']}).",
                 'trace' => $details['erreur']
             ], Response::HTTP_OK);
         }
@@ -645,7 +651,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400,
+                'message' => static::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -659,7 +665,7 @@ class ApiPeintureController extends AbstractController
                 return new JsonResponse([
                     'code' => 404,
                     'type' => 'warning',
-                    'message' => static::$reference . static::$erreur404,
+                    'message' => static::$erreur404,
                     'trace' => null
                 ], Response::HTTP_OK);
             }
@@ -671,7 +677,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => $toReview['code'],
                 'type' => 'alert',
-                'message' => static::$reference . "La récupération des données a échouée pour countHotspotsStatus avec TO_REVIEW (Erreur {$toReview['code']}).",
+                'message' => "La récupération des données a échouée pour countHotspotsStatus avec TO_REVIEW (Erreur {$toReview['code']}).",
                 'trace' => $toReview['erreur'],
                 'test' => 'TO_REVIEW'
             ], Response::HTTP_OK);
@@ -684,7 +690,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => $reviewed['code'],
                 'type' => 'alert',
-                'message' => static::$reference . "La récupération des données a échouée pour countHotspotsStatus avec REVIEWED (Erreur {$reviewed['code']}).", 'trace' => $reviewed['erreur'],
+                'message' => "La récupération des données a échouée pour countHotspotsStatus avec REVIEWED (Erreur {$reviewed['code']}).", 'trace' => $reviewed['erreur'],
                 'test' => 'REVIEWED'
             ], Response::HTTP_OK);
         }
@@ -731,7 +737,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400,
+                'message' => static::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -745,7 +751,7 @@ class ApiPeintureController extends AbstractController
                 return new JsonResponse([
                     'code' => 404,
                     'type' => 'warning',
-                    'message' => static::$reference . static::$erreur404,
+                    'message' => static::$erreur404,
                     'trace' => null
                 ], Response::HTTP_OK);
         }
@@ -757,7 +763,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => $getToReview['code'],
                 'type' => 'alert',
-                'message' => static::$reference  . "La récupération des données a échouée pour selectHotspotsByNiveau avec TO_REVIEW (Erreur {$getToReview['code']}).",
+                'message' => "La récupération des données a échouée pour selectHotspotsByNiveau avec TO_REVIEW (Erreur {$getToReview['code']}).",
                 'trace' => $getToReview['erreur'],
                 'test' => 'TO_REVIEW'
             ], Response::HTTP_OK);
@@ -769,7 +775,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => $getReviewed['code'],
                 'type' => 'alert',
-                'message' => static::$reference . "La récupération des données a échouée pour selectHotspotsByNiveau avec REVIEWED (Erreur {$getReviewed['code']}).",
+                'message' => "La récupération des données a échouée pour selectHotspotsByNiveau avec REVIEWED (Erreur {$getReviewed['code']}).",
                 'trace' => $getReviewed['erreur'],
                 'test' => 'REVIEWED'
                 ], Response::HTTP_OK);
@@ -826,7 +832,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400,
+                'message' => static::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -840,7 +846,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => 404,
                 'type' => 'warning',
-                'message' => static::$reference . static::$erreur404,
+                'message' => static::$erreur404,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -854,7 +860,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => $rules['code'],
                 'type' => 'alert',
-                'message' => static::$reference . "La récupération des données a échouée pour selectNoSonarRuleGroupByRule (Erreur {$rules['code']}).",
+                'message' => "La récupération des données a échouée pour selectNoSonarRuleGroupByRule (Erreur {$rules['code']}).",
                 'trace' => $rules['erreur']
             ], Response::HTTP_OK);
         }
@@ -910,7 +916,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400,
+                'message' => static::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -924,7 +930,7 @@ class ApiPeintureController extends AbstractController
                 return new JsonResponse([
                     'code' => 404,
                     'type' => 'warning',
-                    'message' => static::$reference . static::$erreur404,
+                    'message' => static::$erreur404,
                     'trace' => null
                 ], Response::HTTP_OK);
             }
@@ -936,7 +942,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => $rules['code'],
                 'type' => 'alert',
-                'message' => static::$reference . "La récupération des données a échouée pour selectTodoRuleGroupByRule (Erreur {$rules['code']}).",
+                'message' => "La récupération des données a échouée pour selectTodoRuleGroupByRule (Erreur {$rules['code']}).",
                 'trace' => $rules['erreur']
             ], Response::HTTP_OK);
         }
@@ -972,7 +978,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => $details['code'],
                 'type' => 'alert',
-                'message' => static::$reference . "La récupération des données a échouée pour selectTodoComponentOrderByRule (Erreur {$rules['code']}).",
+                'message' => "La récupération des données a échouée pour selectTodoComponentOrderByRule (Erreur {$rules['code']}).",
                 'trace' => $details['erreur']
             ], Response::HTTP_OK);
         }
@@ -1018,7 +1024,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400,
+                'message' => static::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -1032,7 +1038,7 @@ class ApiPeintureController extends AbstractController
                 return new JsonResponse([
                     'code' => 404,
                     'type' => 'warning',
-                    'message' => static::$reference . static::$erreur404,
+                    'message' => static::$erreur404,
                     'trace' => null
                 ], Response::HTTP_OK);
             }
@@ -1044,7 +1050,7 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => $logger['code'],
                 'type' => 'alert',
-                'message' => static::$reference . "La récupération des données a échouée pour selectLogger (Erreur {$logger['code']}).",
+                'message' => "La récupération des données a échouée pour selectLogger (Erreur {$logger['code']}).",
                 'trace' => $logger['erreur']
             ], Response::HTTP_OK);
         }
