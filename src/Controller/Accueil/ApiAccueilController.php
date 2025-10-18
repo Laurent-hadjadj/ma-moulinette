@@ -35,7 +35,6 @@ class ApiAccueilController extends AbstractController
     /** Définition des constantes */
     private static $sonarUrl = "sonar.url";
     private static $europeParis = "Europe/Paris";
-    private static $titreJS = "<strong>[Accueil]</strong> ";
     private static $erreur404 = "Je n'ai pas trouvé de projets sur le serveur SonarQube (Erreur 404).";
 
     /**
@@ -133,7 +132,7 @@ class ApiAccueilController extends AbstractController
             return new JsonResponse([
                 'code' => $result['code'],
                 'type' => 'alert',
-                'message' => static::$titreJS . $result['erreur']
+                'message' => $result['erreur']
             ], Response::HTTP_OK);
         }
 
@@ -149,7 +148,7 @@ class ApiAccueilController extends AbstractController
             return new JsonResponse([
                 'code' => 404,
                 'type' => 'warning',
-                'message' => static::$titreJS . static::$erreur404
+                'message' => static::$erreur404
             ], Response::HTTP_OK);
         }
 
@@ -160,7 +159,7 @@ class ApiAccueilController extends AbstractController
             return new JsonResponse([
                 'code' => $delete['code'],
                 'type' => 'alert',
-                'message' => static::$titreJS . "Échec de l’exécution de la requête deleteListeProjet ({$delete['code']}).",
+                'message' => "Échec de l’exécution de la requête deleteListeProjet ({$delete['code']}).",
                 'trace' => $delete['erreur']
             ], Response::HTTP_OK);
         }
@@ -211,7 +210,7 @@ class ApiAccueilController extends AbstractController
             return new JsonResponse([
                 'code' => $r['code'],
                 'type' => 'alert',
-                'message' => static::$titreJS . "Échec de l’exécution de la requête updatePropertiesProjet ({$r['code']}).",
+                'message' => "Échec de l’exécution de la requête updatePropertiesProjet ({$r['code']}).",
                 'trace' => $r['erreur']
             ], Response::HTTP_OK);
         }
@@ -223,19 +222,15 @@ class ApiAccueilController extends AbstractController
             'sans_tags' => $emptyTags
         ]);
 
-        /** on renvoie les résultats */
-        $message = "Mise à jour de la liste des projets effectuée.";
-
-        return new JsonResponse(
-            [
+        return new JsonResponse([
                 'code' => 200,
                 'type' => 'success',
-                'message' => static::$titreJS . $message,
+                'message' => "Mise à jour de la liste des projets effectuée.",
                 'nombre' => $nombre,
                 'public' => $public,
                 'private' => $private,
                 'empty_tags' => $emptyTags
-            ], Response::HTTP_OK);
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -262,7 +257,7 @@ class ApiAccueilController extends AbstractController
             return new JsonResponse([
                 'code' => $tag['code'],
                 'type' => 'alert',
-                'message' => static::$titreJS . "Échec de l’exécution de la requête countListeProjetTags ({$tag['code']}).",
+                'message' =>"Échec de l’exécution de la requête countListeProjetTags ({$tag['code']}).",
                 'trace' => $tag['erreur']
             ], Response::HTTP_OK);
         }
@@ -271,7 +266,7 @@ class ApiAccueilController extends AbstractController
         return new JsonResponse([
             'code' => 200,
             'nombre_tag' => $tag['nombre'][0]['tag'] ?? 0
-            ], Response::HTTP_OK);
+        ], Response::HTTP_OK);
     }
 
 }
