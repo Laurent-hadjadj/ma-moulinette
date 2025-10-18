@@ -35,7 +35,6 @@ class BatchCrudController extends AbstractCrudController
     public function __construct(
         EntityManagerInterface $emm,
         TokenStorageInterface $token,
-
     ) {
         $this->emm = $emm;
         $this->token = $token;
