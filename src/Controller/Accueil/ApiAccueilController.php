@@ -14,14 +14,16 @@
 namespace App\Controller\Accueil;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-
+use App\Controller\Traits\RequireAuthenticatedClientTrait;
 use App\Entity\ListeProjet;
 use App\Entity\Properties;
 use App\Service\Client;
@@ -32,6 +34,10 @@ use App\Service\UrlBuilderService;
  */
 class ApiAccueilController extends AbstractController
 {
+    use RequireAuthenticatedClientTrait;
+
+    private $appClient;
+
     /** Définition des constantes */
     private static $sonarUrl = "sonar.url";
     private static $europeParis = "Europe/Paris";
@@ -48,10 +54,12 @@ class ApiAccueilController extends AbstractController
      */
     public function __construct(
         private Client $client,
+        private ParameterBagInterface $params,
         private LoggerInterface $logger,
         private EntityManagerInterface $em,
         private UrlBuilderService $urlBuilder,
     ) {
+        $this->appClient = $this->params->get('app.client');
     }
 
     /**
@@ -66,8 +74,13 @@ class ApiAccueilController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/status', name: 'api_sonar_status', methods: ['POST'])]
-    public function apiSonarStatus(): JsonResponse
+    public function apiSonarStatus(Request $request): JsonResponse
     {
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
+
         /** Sécurisation de l'URL */
         $url = $this->urlBuilder->build(
             $this->getParameter(static::$sonarUrl),
@@ -110,8 +123,13 @@ class ApiAccueilController extends AbstractController
      */
     #[Route('/api/accueil/projet', name: 'accueil_projet_liste', methods: ['POST'], defaults: ['role' => 'ROLE_COLLECTE'])]
     #[IsGranted('ROLE_COLLECTE')]
-    public function accueilProjetListe(): JsonResponse
+    public function accueilProjetListe(Request $request): JsonResponse
     {
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
+
         /** On instancie l'EntityRepository */
         $listeProjetRepos = $this->em->getRepository(ListeProjet::class);
         $propertiesRepos = $this->em->getRepository(Properties::class);
@@ -244,8 +262,13 @@ class ApiAccueilController extends AbstractController
      */
     #[Route('/api/accueil/tags', name: 'accueil_projet_tags', methods: ['POST'], defaults: ['role' => 'ROLE_COLLECTE'])]
     #[IsGranted('ROLE_COLLECTE')]
-    public function accueilProjetTags(): JsonResponse
+    public function accueilProjetTags(Request $request): JsonResponse
     {
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
+
         /** On instancie l'EntityRepository */
         $listeProjetRepos = $this->em->getRepository(ListeProjet::class);
 

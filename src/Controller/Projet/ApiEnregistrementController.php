@@ -15,6 +15,7 @@ namespace App\Controller\Projet;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -22,18 +23,23 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
+use App\Controller\Traits\RequireAuthenticatedClientTrait;
 use App\Entity\Historique;
+
 
 /**
  * [Description ApiEnregistrementController]
  */
 class ApiEnregistrementController extends AbstractController
 {
+    use RequireAuthenticatedClientTrait;
+
+    private $appClient;
+
     /** Définition des constantes */
     private static $europeParis = "Europe/Paris";
     private static $erreur400 = "La requête est incorrecte (Erreur 400).";
     private static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
-    private static $loggerE401 = "[Enregistrement] ❌ Aucun utilisateur connecté.";
     private static $loggerE403 = "[Enregistrement] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).";
 
     /**
@@ -45,9 +51,11 @@ class ApiEnregistrementController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
+        private ParameterBagInterface $params,
         private Security $security,
         private LoggerInterface $logger
     ) {
+        $this->appClient = $this->params->get('app.client');
     }
 
     /**
@@ -65,24 +73,24 @@ class ApiEnregistrementController extends AbstractController
     #[Route('/api/enregistrement', name: 'enregistrement', methods: ['PUT'])]
     public function enregistrement(Request $request): JsonResponse
     {
-        $user = $this->security->getUser();
-        if (!$user) {
-            $this->logger->error(static::$loggerE401);
-            throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 401).");
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
         }
+
+        $user = $this->security->getUser();
 
         /** On instancie l'entityRepository */
         $historiqueRepos = $this->em->getRepository(Historique::class);
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
-        $this->logger->error(static::$loggerE403, [ 'user' => $user ]);
+            $this->logger->error(static::$loggerE403, [ 'user' => $user ]);
 
-        return new JsonResponse(
-            [
-                'code' => 403,
-                'type'=>'warning',
-                'message' => static::$erreur403
+            return new JsonResponse([
+                    'code' => 403,
+                    'type'=>'warning',
+                    'message' => static::$erreur403
             ], Response::HTTP_OK);
         }
 
@@ -91,13 +99,13 @@ class ApiEnregistrementController extends AbstractController
 
         /** On teste si la clé est valide */
         if ($data === null) {
-        $this->logger->error("[Enregistrement] ❌ Requête invalide : clé 'data' manquante ou JSON mal formé.",
+            $this->logger->error("[Enregistrement] ❌ Requête invalide : clé 'data' manquante ou JSON mal formé.",
             [ 'payload' => $data ]);
 
-        return new JsonResponse([
-            'code' => 400,
-            'type' => 'alert',
-            'message' => static::$erreur400
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'alert',
+                'message' => static::$erreur400
             ], Response::HTTP_OK);
         }
 
