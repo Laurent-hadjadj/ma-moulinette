@@ -272,7 +272,7 @@ class BatchCollecteAnomalieDetailController extends AbstractController
         return [
             'code' => 200,
             'message' => "Collecte du détail des anomalies terminée.",
-            'data' => $historique
+            'historique' => $historique //avant 'data'
         ];
     }
 }
