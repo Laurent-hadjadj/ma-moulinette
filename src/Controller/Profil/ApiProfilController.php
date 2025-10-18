@@ -122,7 +122,7 @@ class ApiProfilController extends AbstractController
 
         /** si on est pas GESTIONNAIRE on ne fait rien. */
         if (!$security->isGranted('ROLE_GESTIONNAIRE')){
-            $this->logger->warning('🚫 [Profil] Accès refusé - rôle GESTIONNAIRE requis');
+            $this->logger->warning("[Profil] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_GESTIONNAIRE).");
             return new JsonResponse([
                 'code' => 403,
                 'alert' => 'warning',
