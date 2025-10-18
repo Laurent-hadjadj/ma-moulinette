@@ -39,7 +39,6 @@ class AccueilController extends AbstractController
 {
     private static $page = 'accueil/index.html.twig';
     private static $sonarUrl = 'sonar.url';
-    private static $titreFlash = '[Accueil] ';
     private static $europeParis = 'Europe/Paris';
 
     private $logoEntreprise;
@@ -175,7 +174,6 @@ class AccueilController extends AbstractController
             $this->addFlash('notice',
                 [
                     'type' => 'alert',
-                    'titre' => static::$titreFlash,
                     'message' => "❌ {$result['erreur']}"
                 ]);
             // On envoi -1 si on a une erreur HTTPClient
@@ -194,7 +192,8 @@ class AccueilController extends AbstractController
             }
         }
 
-        $this->logger->debug('[Accueil] 🛠️ Nombre de projets valides (hors SVN) trouvés sur SonarQube.', ['total' => $count]);
+        $this->logger->debug('[Accueil] 🛠️ Nombre de projets valides (hors SVN) trouvés sur SonarQube.', [
+            'total' => $count]);
         return $count;
     }
 
@@ -247,7 +246,6 @@ class AccueilController extends AbstractController
         if ($result['code'] !== 200) {
             $this->addFlash('notice', [
                 'type' => 'alert',
-                'titre' => static::$titreFlash,
                 'message' => "❌ {$result['erreur']}"
                 ]);
             return -1;
@@ -259,7 +257,8 @@ class AccueilController extends AbstractController
             $count = count($result['json']['profiles']);
         }
 
-        $this->logger->debug('[Accueil] 🛠️ Nombre de profils trouvés sur SonarQube.', ['total' => $count]);
+        $this->logger->debug('[Accueil] 🛠️ Nombre de profils trouvés sur SonarQube.', [
+            'total' => $count]);
         return $count;
     }
 
@@ -280,7 +279,10 @@ class AccueilController extends AbstractController
     private function majProperties(string $type, int $bd, int $sonar)
     {
         $this->logger->info('[Accueil] ℹ️ Mise à jour des propriétés.', [
-            'type' => $type, 'bd' => $bd, 'sonar' => $sonar]);
+            'type' => $type,
+            'bd' => $bd,
+            'sonar' => $sonar
+        ]);
         /** On instancie l'entityRepository */
         $propertiesRepos = $this->em->getRepository(Properties::class);
 
@@ -610,7 +612,6 @@ class AccueilController extends AbstractController
             $this->addFlash('info',
                 [
                     'type' => 'primary',
-                    'titre' => static::$titreFlash,
                     'message' => '📌 Vous devez mettre à jour le référentiel local pour les ',
                     'ref' => 'PROJETS'
             ]);
@@ -630,7 +631,6 @@ class AccueilController extends AbstractController
             $this->addFlash('info',
                 [
                     'type' => 'primary',
-                    'titre' => static::$titreFlash,
                     'message' => '📌 Vous devez mettre à jour le référentiel local pour les ',
                     'ref' => 'PROFILS'
             ]);
@@ -659,7 +659,6 @@ class AccueilController extends AbstractController
             $this->addFlash('notice',
                 [
                     'type' => 'warning',
-                    'titre' => static::$titreFlash,
                     'message' => "⚠️ La base de données est en version $versionBd. Vous devez passer le script de migration $versionApp."
                 ]);
         }
