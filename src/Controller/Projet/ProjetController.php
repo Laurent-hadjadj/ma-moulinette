@@ -91,11 +91,11 @@ class ProjetController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/projet', name: 'projet', methods: 'GET')]
-    public function index(Security $security): Response
+    public function index(): Response
     {
-        $user = $security->getUser();
+        $user = $this->security->getUser();
         if (!$user) {
-            $this->logger->warning('[Projet] 🚫 Accès refusé : utilisateur non connecté.');
+            $this->logger->error('[Projet] 🚫 Accès refusé : utilisateur non connecté.');
             throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 401).");
         }
 
