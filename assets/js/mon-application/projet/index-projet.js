@@ -952,8 +952,8 @@ const projetNoSonar = async function(mavenKey){
       let s='';
       if (t.nombre>1) { s='s'; }
       log(` -     ⚠️ J'ai trouvé ${t.nombre} exclusion${s}.`);
-      log(`           📌 NoSonar : ${t.message.no_sonar}`);
-      log(`           📌 Suppress warning : ${t.message.suppress_warning}`);
+      log(`           📌 NoSonar : ${t.historique.no_sonar}`);
+      log(`           📌 Suppress warning : ${t.historique.suppress_warning}`);
     } else {
       log(` -     ✅ Bravo !!! ${t.nombre} exclusion NoSonar trouvée.`);
     }
