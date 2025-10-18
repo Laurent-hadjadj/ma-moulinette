@@ -54,6 +54,7 @@ class ActuatorController extends AbstractController
         $this->em = $em;
         $this->client = $client;
         $this->paginator = $paginator;
+        $this->params = $params;
 
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
