@@ -72,7 +72,8 @@ class LoginController extends AbstractController
             'env' => $this->environnement,
             'version' => $this->version,
             'date_copyright' => $this->dateCopyright,
-            'rgaa' => $this->rgaa];
+            'rgaa' => $this->rgaa
+        ];
     }
 
     /**
