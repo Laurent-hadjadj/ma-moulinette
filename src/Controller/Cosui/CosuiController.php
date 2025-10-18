@@ -140,6 +140,11 @@ class CosuiController extends AbstractController
     #[Route('/projet/cosui', name: 'projet_cosui', methods: 'GET')]
     public function projetCosui(Request $request): Response
     {
+        if (!$user) {
+            $this->logger->error('[Répartition] 🚫 Accès refusé : utilisateur non connecté.');
+            throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 401).");
+        }
+
         $this->logger->info('[COSUI] ℹ️ Accès à /projet/cosui');
 
         $render = $this->cosuiService->initialRender();
@@ -151,7 +156,7 @@ class CosuiController extends AbstractController
         }
 
         if (!$this->isGranted('ROLE_COLLECTE')) {
-            $this->logger->warning('[COSUI] ⚠️ Accès refusé : rôle COLLECTE manquant');
+            $this->logger->warning("[COSUI] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).");
             return $this->addFlashAndRender('warning', static::$erreur403, 'auth', $render);
         }
 
