@@ -34,10 +34,9 @@ class ApiRepartitionController extends AbstractController
 {
     private static $titreJS = "<strong>[Répartition-Module]</strong> ";
     private static $erreur400 = "La requête est incorrecte (Erreur 400).";
-    private static $erreur401 = "Utilisateur non authentifié (Erreur 401).";
     private static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
-    public static $loggerE401 = "[Répartition-Module] ❌ Aucun utilisateur connecté.";
-    public static $loggerE403 = "[Répartition-Module] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).";
+    private static $loggerE401 = "[Répartition-Module] 🚫 Aucun utilisateur connecté.";
+    private static $loggerE403 = "[Répartition-Module] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).";
 
     /**
      * [Description for __construct]
@@ -73,11 +72,7 @@ class ApiRepartitionController extends AbstractController
         $user = $this->security->getUser();
         if (!$user) {
             $this->logger->error(static::$loggerE401);
-            return new JsonResponse([
-                'code' => 401,
-                'type' => 'alert',
-                'message' => static::$titreJS.static::$erreur401
-            ], Response::HTTP_OK);
+            throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 401).");
         }
 
         /** On décode le body */
@@ -87,7 +82,7 @@ class ApiRepartitionController extends AbstractController
         if ($data === null ||
             !isset($data->maven_key, $data->category, $data->severity, $data->setup)) {
 
-            $this->logger->error("[Répartition-Collecte]❌ Requête invalide : clé 'maven_key', 'category', 'severity' ou 'setup' manquante ou JSON mal formé.", [ 'payload' => $data ]);
+            $this->logger->error("[Répartition-Collecte] ❌ Requête invalide : clé 'maven_key', 'category', 'severity' ou 'setup' manquante ou JSON mal formé.", [ 'payload' => $data ]);
 
             return new JsonResponse([
                 'code' => 400,
@@ -372,7 +367,7 @@ class ApiRepartitionController extends AbstractController
     {
         $user = $this->security->getUser();
         if (!$user) {
-            $this->logger->warning('[Répartition-Mise-a-jour] 🚫 Accès refusé : utilisateur non connecté.');
+            $this->logger->error('[Répartition-Mise-a-jour] 🚫 Accès refusé : utilisateur non connecté.');
             throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 401).");
         }
 
