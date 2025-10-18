@@ -16,11 +16,9 @@ namespace App\Controller\Owasp;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Annotation\Route;
-
 use Symfony\Component\HttpFoundation\Response;
-
-// Accès aux tables
 use Doctrine\ORM\EntityManagerInterface;
+
 use App\Entity\OwaspTop10;
 
 /**
@@ -29,8 +27,7 @@ use App\Entity\OwaspTop10;
 class OwaspController extends AbstractController
 {
 
-    public static $oups = "[OUPS !!!]";
-    public static $page = "owasp/index.html.twig";
+    private static $page = "owasp/index.html.twig";
 
     private $logoEntreprise;
     private $marqueEntrepriseShort;
@@ -50,7 +47,7 @@ class OwaspController extends AbstractController
         private ParameterBagInterface $params,
         private EntityManagerInterface $em)
     {
-        $this->em = $em;
+        $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
@@ -77,7 +74,8 @@ class OwaspController extends AbstractController
             'marque_entreprise_long' => $this->marqueEntrepriseLong,
             'env' => $this->environnement,
             'version' => $this->version,
-            'date_copyright' => $this->dateCopyright];
+            'date_copyright' => $this->dateCopyright
+        ];
     }
 
     /**
@@ -95,32 +93,38 @@ class OwaspController extends AbstractController
         /** On charge le template du render */
         $render=static::genericRender();
 
-        /** On instancie l'entityRepository */
-        $owaspTop10Repository = $this->em->getRepository(OwaspTop10::class);
+        /** On instancie l'entityRepos */
+        $owaspTop10Repos = $this->em->getRepository(OwaspTop10::class);
 
         /** On récupère les informations du projet de la table historique */
-        $map=['referential_version' => 2017];
-        $owasp_2017=$owaspTop10Repository->selectOwaspTop10Referential($map);
+        $map = ['referential_version' => 2017];
+        $owasp_2017 = $owaspTop10Repos->selectOwaspTop10Referential($map);
         if ($owasp_2017['code'] != 200) {
-            $titre=static::$oups;
             $message = $owasp_2017['erreur'];
-            $this->addFlash('notice', ['type'=>'alert', 'titre'=>$titre, 'message'=>$message]);
+            $this->addFlash('notice', [
+                'type' => 'alert',
+                'message' => $message
+            ]);
             return $this->render(static::$page, $render);
         }
 
         $map=['referential_version' => 2021];
-        $owasp_2021=$owaspTop10Repository->selectOwaspTop10Referential($map);
+        $owasp_2021=$owaspTop10Repos->selectOwaspTop10Referential($map);
         if ($owasp_2021['code'] != 200) {
-            $titre=static::$oups;
             $message = $owasp_2021['erreur'];
-            $this->addFlash('notice', ['type'=>'alert', 'titre'=>$titre, 'message'=>$message]);
+            $this->addFlash('notice', [
+                'type'=>'alert',
+                'message'=>$message
+            ]);
             return $this->render(static::$page, $render);
         }
 
         if (count($owasp_2017['liste']) === 0 && count($owasp_2021['liste']) === 0){
-            $titre = "[Notice]";
             $message = "Les informations concernant les référentiels OWASP n'ont pas été trouvés.";
-            $this->addFlash('notice', ['type'=>'warning', 'titre'=>$titre, 'message'=>$message]);
+            $this->addFlash('notice', [
+                'type'=>'warning',
+                'message'=>$message
+            ]);
         }
 
         $render['sonar_version'] = $this->getParameter('sonar.version');
@@ -145,18 +149,20 @@ class OwaspController extends AbstractController
     public function details(int $id): Response
     {
         /** On charge le template du render */
-        $render=static::genericRender();
+        $render = static::genericRender();
 
         /** On instancie l'entityRepository */
-        $owaspTop10Repository = $this->em->getRepository(OwaspTop10::class);
+        $owaspTop10Repos = $this->em->getRepository(OwaspTop10::class);
 
         /** On récupère les informations du projet de la table historique */
         $map = [ 'menace' => $id ];
-        $liste=$owaspTop10Repository->selectOwaspTop10Details($map);
+        $liste=$owaspTop10Repos->selectOwaspTop10Details($map);
         if ($liste['code'] != 200) {
-            $titre=static::$oups;
             $message = $liste['erreur'];
-            $this->addFlash('notice', ['type'=>'alert', 'titre'=>$titre, 'message'=>$message]);
+            $this->addFlash('notice', [
+                'type' => 'alert',
+                'message'=>$message
+            ]);
             return $this->render(static::$page, $render);
         }
         $render['menace'] = $id;
