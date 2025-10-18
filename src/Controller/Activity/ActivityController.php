@@ -17,11 +17,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
+
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Activity;
 use App\Entity\ActivityHistorique;
 use App\Service\Client;
-
 
 /**
  * [Description ActivityController]
@@ -29,9 +29,8 @@ use App\Service\Client;
 class ActivityController extends AbstractController
 {
 
-    public static $sonarUrl = "sonar.url";
-    public static $page = "activity/index.html.twig";
-    public static $reference = "[ACTIVITÉ]";
+    private static $sonarUrl = "sonar.url";
+    private static $page = "activity/index.html.twig";
 
     private $logoEntreprise;
     private $marqueEntrepriseShort;
@@ -53,8 +52,7 @@ class ActivityController extends AbstractController
         private Client $client
         )
     {
-        $this->em = $em;
-        $this->client = $client;
+        $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
@@ -97,8 +95,8 @@ class ActivityController extends AbstractController
     public function index()
     {
         /** On instancie l'EntityRepository */
-        $activityRepository = $this->em->getRepository(Activity::class);
-        $activityHistoriqueRepository = $this->em->getRepository(ActivityHistorique::class);
+        $activityRepos = $this->em->getRepository(Activity::class);
+        $activityHistoriqueRepos = $this->em->getRepository(ActivityHistorique::class);
 
         // On récupère l'année actuelle
         $actualDate = new \DateTime('now', new \DateTimeZone('Europe/Paris'));
@@ -123,22 +121,21 @@ class ActivityController extends AbstractController
         if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503, 504])) {
             $this->addFlash('notice', [
                 'type' => 'alert',
-                'titre' => static::$reference,
                 'message' => $result['erreur']
             ]);
+
             $render = static::genericRender();
             $render['data'] = [$data];
             return $this->render(static::$page, $render);
         }
 
         /** On vérifie si pour l'année courante, il y des enregistrement ou non  */
-        $listeAnalyse=$activityRepository->selectActivity($actualYear)['liste'];
+        $listeAnalyse=$activityRepos->selectActivity($actualYear)['liste'];
         if (empty($listeAnalyse)) {
             // Ajoute un message flash pour informer l'utilisateur que la liste des analyses est vide pour l'année courante.
             $this->addFlash('notice', [
                 'type' => 'warning',
-                'titre' => static::$reference,
-                'message' => "La liste des analyses SonarQube est vide. Veuillez rafraîchir la liste."
+                'message' => "⚠️ La liste des analyses SonarQube est vide. Veuillez rafraîchir la liste."
             ]);
 
             $render = static::genericRender();
@@ -147,7 +144,7 @@ class ActivityController extends AbstractController
         }
 
         /** On prend la date la plus récente en base et la dernière de l'analyse */
-        $dateBase = new \DateTime($activityRepository->dernierDate()['liste']['date']);
+        $dateBase = new \DateTime($activityRepos->dernierDate()['liste']['date']);
         $dateSonar = new \DateTime($result['json']['tasks'][0]['executedAt']);
 
         /** Si SonarQube contient des nouvelles tâches */
@@ -155,28 +152,28 @@ class ActivityController extends AbstractController
             // Ici on calcule l'interval de jour entre la base et sonar
             $interval = $dateBase->diff(new \DateTime($result['tasks'][0]['executedAt']))->format('%d');
             $this->addFlash('notice', [
-                'type'=>'warning',
-                'titre'=>static::$reference,
-                'message'=>"Vous pouvez mettre à jour la liste des analyses SonarQube. Il y a " .$interval. " jours de retard"]);
+                'type' => 'warning',
+                'message' => "⚠️ Vous pouvez mettre à jour la liste des analyses SonarQube. Il y a " .$interval. " jours de retard."
+            ]);
         }
 
         /** Si SonarQube ne contient pas de nouvelles tâches */
         if ($dateSonar == $dateBase){
             $this->addFlash('notice', [
-                'type'=>'default',
-                'titre'=> static::$reference,
-                'message'=>" La liste des analyses SonarQube est à jour."]);
+                'type' => 'default',
+                'message' => "📌 La liste des analyses SonarQube est à jour."
+            ]);
         }
 
         /** On récupère la listes des données statistiques. On suppose que la mise à jour a été faite. */
-        $listeHistorique = $activityHistoriqueRepository->selectActivity();
+        $listeHistorique = $activityHistoriqueRepos->selectActivity();
         if (empty($listeHistorique['liste'])){
             $this->addFlash('notice', [
                 'type' => 'alert',
-                'titre' => static::$reference,
-                'message' => "L'historique n'a pas correctement été initialisé pour cette année."
+                'message' => "❌ L'historique n'a pas correctement été initialisé pour cette année."
             ]);
-            $render=static::genericRender();
+
+            $render = static::genericRender();
             $render['data'] = [$data];
             return $this->render(static::$page, $render);
         }
@@ -189,7 +186,7 @@ class ActivityController extends AbstractController
         // On injecte la date d'enregistrement à condition que la mise à jour ait été faite !
         $listeHistorique['liste'][0]["date_enregistrement"] ? (new \DateTime($result['request'][0]["date_enregistrement"]))->format('d-m-Y H:i:s') : (new \DateTime('01/01/1980 00:00:00'))->format('d-m-Y H:i:s');
 
-        $render=static::genericRender();
+        $render = static::genericRender();
         return $this->render(static::$page, $render);
     }
 
