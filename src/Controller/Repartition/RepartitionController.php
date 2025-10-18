@@ -32,7 +32,6 @@ use App\Service\ExtractName;
 class RepartitionController extends AbstractController
 {
 
-    private static $titreFlash = "[Répartition-Module]";
     private static $erreur400 = "❌ La requête est incorrecte (Erreur 400).";
     private static $erreur403 = "🚫 Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
     private static $page = 'projet/repartition-module.html.twig';
@@ -108,7 +107,6 @@ class RepartitionController extends AbstractController
     {
         $this->addFlash('notice', [
             'type' => $type,
-            'titre' => static::$titreFlash,
             'message' => $message,
             'debug' => $debug
             ]);
