@@ -30,10 +30,13 @@ use App\Entity\Historique;
 class ApiEnregistrementController extends AbstractController
 {
     /** Définition des constantes */
-    public static $europeParis = "Europe/Paris";
-    public static $reference = "<strong>[Enregistrement]</strong> ";
-    public static $erreur400 = "La requête est incorrecte (Erreur 400).";
-    public static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
+    private static $europeParis = "Europe/Paris";
+    private static $titreJS = "<strong>[Enregistrement]</strong> ";
+    private static $erreur400 = "La requête est incorrecte (Erreur 400).";
+    private static $erreur401 = "Utilisateur non authentifié (Erreur 401).";
+    private static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
+    private static $loggerE401 = "[Enregistrement] ❌ Aucun utilisateur connecté.";
+    private static $loggerE403 = "[Enregistrement] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).";
 
     /**
      * [Description for __construct]
@@ -47,8 +50,6 @@ class ApiEnregistrementController extends AbstractController
         private Security $security,
         private LoggerInterface $logger
     ) {
-        $this->em = $em;
-        $this->security = $security;
     }
 
     /**
@@ -66,27 +67,43 @@ class ApiEnregistrementController extends AbstractController
     #[Route('/api/enregistrement', name: 'enregistrement', methods: ['PUT'])]
     public function enregistrement(Request $request): JsonResponse
     {
+        $user = $this->security->getUser();
+        if (!$user) {
+            $this->logger->error(static::$loggerE401);
+            return new JsonResponse([
+                'code' => 401,
+                'type' => 'alert',
+                'message' => static::$titreJS . static::$erreur401
+            ], Response::HTTP_OK);
+        }
+
         /** On instancie l'entityRepository */
         $historiqueRepos = $this->em->getRepository(Historique::class);
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
         if (!$this->isGranted('ROLE_COLLECTE')) {
+        $this->logger->error(static::$loggerE403, [ 'user' => $user ]);
+
         return new JsonResponse(
             [
                 'code' => 403,
                 'type'=>'warning',
-                'message' => static::$reference . static::$erreur403
+                'message' => static::$titreJS . static::$erreur403
             ], Response::HTTP_OK);
         }
 
         /** On décode le body. */
         $data = json_decode($request->getContent());
+
         /** On teste si la clé est valide */
         if ($data === null) {
+        $this->logger->error("[Enregistrement] ❌ Requête invalide : clé 'data' manquante ou JSON mal formé.",
+            [ 'payload' => $data ]);
+
         return new JsonResponse([
             'code' => 400,
             'type' => 'alert',
-            'message' => static::$reference . static::$erreur400
+            'message' => static::$titreJS . static::$erreur400
             ], Response::HTTP_OK);
         }
 
@@ -97,7 +114,8 @@ class ApiEnregistrementController extends AbstractController
 
         try {
             $json = '{}';
-            $map = ['maven_key' => $data->maven_key, 'analyse_key' => $data->analyse_key,
+            $map = [
+                'maven_key' => $data->maven_key, 'analyse_key' => $data->analyse_key,
                 'version' => $data->version, 'date_version' => $data->date_version,
                 'nom_projet' => $data->nom_projet, 'version_release' => $data->version_release, 'version_snapshot' => $data->version_snapshot, 'version_autre' => $data->version_autre,
                 'suppress_warning' => $data->suppress_warning, 'no_sonar' => $data->no_sonar,
@@ -132,27 +150,39 @@ class ApiEnregistrementController extends AbstractController
             /** Enregistrement dans le table historique */
             $historique = $historiqueRepos->insertHistoriqueAjoutProjet($map, $json);
             if ($historique['code'] != 200 && $historique['code'] != 23505) {
+                $this->logger->error("[Enregistrement] ❌ Échec de la requête insertHistoriqueAjoutProjet.", [
+                    'code' => $historique['code'],
+                    'erreur' => $historique['erreur'] ?? "aucun message d'erreur remonté"
+                ]);
+
                 return new JsonResponse([
                     'code' => $historique['code'],
                     'type' => 'alert',
-                    'message' => "Une erreur lors de l'ajout de données est survenue (Erreur {$historique['code']}).",
+                    'message' => static::$titreJS . "Une erreur lors de l'ajout de données est survenue (Erreur {$historique['code']}).",
                     'trace' => $historique['erreur']
                 ], Response::HTTP_OK);
             }
+
             if ($historique['code'] === 23505){
+                $this->logger->info("[Enregistrement] ❌ détection de doublon.", [
+                    'code' => $historique['code'],
+                    'erreur' => $historique['erreur'],
+                    'payload' => $map
+                ]);
+
                 return new JsonResponse([
                     'code' => $historique['code'],
                     'erreur' => $historique['erreur']
                 ], Response::HTTP_OK);
             }
         } catch (\Throwable $e) {
-            $this->logger->critical("🔴 [Enregistrement] Erreur lors de l'enregistrement des données.", ['exception' => $e]);
+            $this->logger->critical("[Enregistrement] 🔴 Erreur lors de l'enregistrement des données.", ['exception' => $e]);
             return new JsonResponse([
                 'code' => 500,
                 'type' => 'critical',
                 'message' => "[Enregistrement] Erreur lors de l'enregistrement des données.",
                 'trace' => $e->getMessage()
-            ],Response::HTTP_OK);
+            ], Response::HTTP_OK);
         }
 
     /** Tout va bien ! */
