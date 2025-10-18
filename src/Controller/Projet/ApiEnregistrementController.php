@@ -31,9 +31,7 @@ class ApiEnregistrementController extends AbstractController
 {
     /** Définition des constantes */
     private static $europeParis = "Europe/Paris";
-    private static $titreJS = "<strong>[Enregistrement]</strong> ";
     private static $erreur400 = "La requête est incorrecte (Erreur 400).";
-    private static $erreur401 = "Utilisateur non authentifié (Erreur 401).";
     private static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
     private static $loggerE401 = "[Enregistrement] ❌ Aucun utilisateur connecté.";
     private static $loggerE403 = "[Enregistrement] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).";
@@ -70,11 +68,7 @@ class ApiEnregistrementController extends AbstractController
         $user = $this->security->getUser();
         if (!$user) {
             $this->logger->error(static::$loggerE401);
-            return new JsonResponse([
-                'code' => 401,
-                'type' => 'alert',
-                'message' => static::$titreJS . static::$erreur401
-            ], Response::HTTP_OK);
+            throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 401).");
         }
 
         /** On instancie l'entityRepository */
@@ -88,7 +82,7 @@ class ApiEnregistrementController extends AbstractController
             [
                 'code' => 403,
                 'type'=>'warning',
-                'message' => static::$titreJS . static::$erreur403
+                'message' => static::$erreur403
             ], Response::HTTP_OK);
         }
 
@@ -103,12 +97,13 @@ class ApiEnregistrementController extends AbstractController
         return new JsonResponse([
             'code' => 400,
             'type' => 'alert',
-            'message' => static::$titreJS . static::$erreur400
+            'message' => static::$erreur400
             ], Response::HTTP_OK);
         }
 
         /** On créé un objet date Immutable, avec la date courante. */
         $dateEnregistrement = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
+
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel();
 
@@ -158,7 +153,7 @@ class ApiEnregistrementController extends AbstractController
                 return new JsonResponse([
                     'code' => $historique['code'],
                     'type' => 'alert',
-                    'message' => static::$titreJS . "Une erreur lors de l'ajout de données est survenue (Erreur {$historique['code']}).",
+                    'message' => "Une erreur lors de l'ajout de données est survenue (Erreur {$historique['code']}).",
                     'trace' => $historique['erreur']
                 ], Response::HTTP_OK);
             }
@@ -180,7 +175,7 @@ class ApiEnregistrementController extends AbstractController
             return new JsonResponse([
                 'code' => 500,
                 'type' => 'critical',
-                'message' => "[Enregistrement] Erreur lors de l'enregistrement des données.",
+                'message' => "Erreur globale lors de l'enregistrement des données.",
                 'trace' => $e->getMessage()
             ], Response::HTTP_OK);
         }
