@@ -32,7 +32,6 @@ use App\Service\TokenService;
  */
 class RegistrationController extends AbstractController
 {
-    private static $titreFlash = "[Auth]";
     private static $welcome = "welcome/index.html.twig";
 
     private $logoEntreprise;
@@ -150,14 +149,17 @@ class RegistrationController extends AbstractController
                 if (count($errors) > 0) {
                     // Si des erreurs sont trouvées, afficher ces erreurs
                     foreach ($errors as $error) {
-                        $this->logger->error("[Inscription] ❌ une erreur dans le formulaire a été détectée.", ['erreur' => $error->getMessage()]);
+                        $this->logger->error("[Inscription] ❌ une erreur dans le formulaire a été détectée.", [
+                            'erreur' => $error->getMessage()
+                        ]);
+
                         $this->addFlash('notice', [
                             'type' => 'alert',
-                            'titre' => static::$titreFlash,
-                            'message' => $error->getMessage()] );
+                            'message' => $error->getMessage()
+                        ]);
                     }
 
-                    $render=static::genericRender();
+                    $render = static::genericRender();
                     $render['registrationForm'] = $form->createView();
                     return $this->render('auth/register.html.twig', $render);
                 }
@@ -170,7 +172,6 @@ class RegistrationController extends AbstractController
                 $message = "📌 Votre compte a été correctement créé.";
                 $this->addFlash('notice', [
                     'type' => 'primary',
-                    'titre' => static::$titreFlash,
                     'message' => $message
                 ]);
 
@@ -215,7 +216,6 @@ class RegistrationController extends AbstractController
 
             $this->addFlash('notice', [
                     'type' => 'alert',
-                    'titre' => static::$titreFlash,
                     'message' => "❌ La requête est incorrecte (Erreur 400)."
                 ]);
 
@@ -225,14 +225,13 @@ class RegistrationController extends AbstractController
         try {
                  /** Le token doit disposer d'un séparateur de type point */
                 $parts = explode('.', $token, 2);
-				if (count($parts) !== 2) {
-                    $this->logger->critical("[Welcome] ❌ Le token est incorrect ou mal formé.", [
+                if (count($parts) !== 2) {
+                    $this->logger->critical("[Welcome] 🔴 Le token est incorrect ou mal formé.", [
                         'token' =>  $token ?? 'trop pourri']);
 
                     $this->addFlash('notice', [
                         'type' => 'alert',
-                        'titre' => static::$titreFlash,
-                        'message' => "❌ L'enregistrement n'a pas abouti (Erreur 500)."
+                        'message' => "🔴 L'enregistrement n'a pas abouti (Erreur 500)."
                     ]);
 
                     return $this->render(static::$welcome, $render);
@@ -247,7 +246,6 @@ class RegistrationController extends AbstractController
 
                 $this->addFlash('notice', [
                     'type' => 'alert',
-                    'titre' => static::$titreFlash,
                     'message' => "🔴 Une erreur inconnue a été provoquée (Erreur 500)."
                 ]);
 
