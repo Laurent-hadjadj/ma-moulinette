@@ -224,7 +224,7 @@ class ApiProfilController extends AbstractController
         ]);
 
         $result = $this->client->httpSonarQube($url);
-        if (in_array($result['code'] ?? -1, [400, 401, 403, 404, 500, 503, 504])) {
+        if (in_array($result['code'] ?? -1, [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
             $this->logger->error('[Profil] ❌ Erreur retour API SonarQube', [
             'code' => $result['code'],
             'erreur' => $result['erreur'] ?? null,
@@ -533,7 +533,7 @@ class ApiProfilController extends AbstractController
         $this->logger->info('[Profil-Détail] ℹ️ Appel API SonarQube', ['url' => $url]);
 
         $result = $this->client->httpSonarQube($url);
-        if (in_array($result['code'] ?? -1, [400, 401, 403, 404, 500, 503, 504])) {
+        if (in_array($result['code'] ?? -1, [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
             $this->logger->error('[Profil-Détail] ❌ Erreur API SonarQube.', [
                 'code' => $result['code'],
                 'url' => $url,

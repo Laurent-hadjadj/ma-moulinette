@@ -117,11 +117,12 @@ class ActivityController extends AbstractController
         $url = $this->getParameter(static::$sonarUrl);
         $queryParams = ['ps' => 1];
         $result = $this->client->httpActivity("$url/api/ce/activity?".http_build_query($queryParams));
-        /** On catch les erreurs HTTP 401 et 404, si possible :) */
-        if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503, 504])) {
+
+        /** On catch les erreurs HTTP */
+        if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
             $this->addFlash('notice', [
                 'type' => 'alert',
-                'message' => $result['erreur']
+                'message' => '❌' . $result['erreur'],
             ]);
 
             $render = static::genericRender();

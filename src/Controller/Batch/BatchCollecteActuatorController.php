@@ -113,7 +113,7 @@ class BatchCollecteActuatorController extends AbstractController
         $dataJson = $actuatorInfo['json'];
 
         /** On catch les erreurs HTTP  */
-        if (isset($dataJson['code']) && in_array($dataJson['code'], [400, 401, 403, 404, 500, 503, 504])) {
+        if (isset($dataJson['code']) && in_array($dataJson['code'], [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
                 $this->logger->error("[Batch Actuator] ❌ Erreur HTTP détectée", [
                     'code' => $dataJson['code'],
                     'details' => $dataJson['erreur'] ?? 'non précisé'

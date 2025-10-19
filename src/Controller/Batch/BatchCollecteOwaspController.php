@@ -91,7 +91,7 @@ class BatchCollecteOwaspController extends AbstractController
         $owasp2017 = $this->client->httpSonarQube($url);
 
         /** Il ne peut pas y avoir de 404, l'API renvoie toujours une response 200*/
-        if (isset($owasp2017['code']) && in_array($owasp2017['code'], [401, 403, 404, 500, 503])) {
+        if (isset($owasp2017['code']) && in_array($owasp2017['code'], [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
             $this->logger->error("[Batch OWASP] ❌ Erreur OWASP 2017 pour {$maven_key} : {$owasp2017['code']}");
             return [
                     'code' => $owasp2017['code'],
@@ -109,7 +109,7 @@ class BatchCollecteOwaspController extends AbstractController
             );
 
             $owasp2021 = $this->client->httpSonarQube($url);
-            if (isset($owasp2021['code']) && in_array($owasp2021['code'], [401, 403, 404, 500, 503])) {
+            if (isset($owasp2021['code']) && in_array($owasp2021['code'], [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
                 $this->logger->error("[Batch OWASP] ❌ Erreur OWASP 2021 pour {$maven_key} : {$owasp2021['code']}");
                 return [
                     'code' => $owasp2021['code'],

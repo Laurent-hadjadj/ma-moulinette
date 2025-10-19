@@ -94,7 +94,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
         $result = $this->client->httpSonarQube($url);
 
         /** On catch les erreurs HTTP  :) */
-        if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503, 504])) {
+        if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
             $this->logger->error("[HotspotDetail] ❌ Erreur API SonarQube", [
                 'url' => $url,
                 'code' => $result['code'],

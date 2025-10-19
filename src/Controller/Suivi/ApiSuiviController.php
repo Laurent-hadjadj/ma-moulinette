@@ -118,9 +118,10 @@ class ApiSuiviController extends AbstractController
         /** Appelle le client HTTP */
         $queryParams = ['project' => $data->maven_key, 'p'=>1, 'ps'=>100 ];
         $result = $this->client->httpSonarQube("$tempoUrl/api/project_analyses/search?".http_build_query($queryParams));
-        if (in_array($result['code'] ?? -1, [503, 504])) {
+        if (in_array($result['code'] ?? -1, [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
             return new JsonResponse([
-                'code' => 500, 'type' => 'alert',
+                'code' => $result['code'],
+                'type' => 'alert',
                 'message' => static::$reference . static::$erreur500], Response::HTTP_OK);
         }
         //analyses/date "date" => "2024-11-15T15:52:03+0100"

@@ -72,7 +72,7 @@ class BatchCollecteAnomalieDetailController extends AbstractController
         $this->logger->debug("[Batch AnomalieDétail] 🛠️ Appel API SonarQube", ['url' => $url]);
         $result = $this->client->httpSonarQube($url);
 
-        if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 500, 503, 504])) {
+        if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
             $this->logger->error("[Batch AnomalieDétail] ❌ Erreur API SonarQube.", [
                 'url' => $url,
                 'code' => $result['code'],
