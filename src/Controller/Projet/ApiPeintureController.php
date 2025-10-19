@@ -15,6 +15,7 @@ namespace App\Controller\Projet;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,6 +23,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
+use App\Controller\Traits\RequireAuthenticatedClientTrait;
 use App\Entity\InformationProjet;
 use App\Entity\Anomalie;
 use App\Entity\AnomalieDetails;
@@ -38,6 +40,10 @@ use App\Service\IsValideMavenKey;
  */
 class ApiPeintureController extends AbstractController
 {
+    use RequireAuthenticatedClientTrait;
+
+    private $appClient;
+
     /**
      * [Description for __construct]
      *
@@ -51,12 +57,17 @@ class ApiPeintureController extends AbstractController
         private EntityManagerInterface $em,
         private IsValideMavenKey $isValideMavenKey,
         private LoggerInterface $logger,
-    ) { }
+        private ParameterBagInterface $params,
+
+    ) {
+        $this->appClient = $this->params->get('app.client');
+    }
 
     /** Définition des constantes */
     private static $erreur400 = "La requête est incorrecte (Erreur 400).";
     private static $erreur404 = "Je n'ai pas trouvé les données. Vous devez lancer une collecte (Erreur 404).";
-    private static $loggerE400 = "[Peinture] ❌ Requête mal formée : maven_key manquant ou invalide.";
+    private static $loggerE400 = "[Collecte-Peinture] ❌ Requête mal formée : maven_key manquant ou invalide.";
+    private static $loggerE404 = "[Collecte-Peinture] ⚠️ Le projet n'a pas été trouvé ou la clé n'est pas correcte.";
 
     /**
      * [Description for calculNoteHotspot]
@@ -145,6 +156,11 @@ class ApiPeintureController extends AbstractController
     public function projetMesApplicationsListe(Request $request, Security $security): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/projet/mes-applications/liste");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
 
         /** On instancie l'entityRepository */
         $anomalieRepos = $this->em->getRepository(Anomalie::class);
@@ -246,6 +262,11 @@ class ApiPeintureController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/version");
 
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
+
         /** On instancie l'entityRepository */
         $informationProjetRepos = $this->em->getRepository(InformationProjet::class);
 
@@ -272,8 +293,8 @@ class ApiPeintureController extends AbstractController
         /** On regarde si le projet existe */
         $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
-            $this->logger->warning("[Collecte-Peinture] ⚠️ Le projet n'a pas été trouvé.",
-            [ 'maven_key' => $maven_key ?? null ]);
+            $this->logger->warning(static::$loggerE404, [
+                'maven_key' => $maven_key ?? null ]);
 
             return new JsonResponse([
                 'code' => 404,
@@ -343,6 +364,11 @@ class ApiPeintureController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/mesures");
 
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
+
         /** On instancie l'entityRepository */
         $mesuresRepos = $this->em->getRepository(Mesures::class);
 
@@ -369,7 +395,8 @@ class ApiPeintureController extends AbstractController
         /** On regarde si le projet existe */
         $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
-            $this->logger->warning("[Collecte-Peinture] ⚠️ Le projet n'a pas été trouvé.", [ 'maven_key' => $maven_key ?? null ]);
+            $this->logger->warning(static::$loggerE404, [
+                'maven_key' => $maven_key ?? null ]);
 
             return new JsonResponse([
                     'code' => 404,
@@ -427,6 +454,13 @@ class ApiPeintureController extends AbstractController
     #[Route('/api/peinture/projet/anomalie', name: 'peinture_projet_anomalie', methods: ['POST'])]
     public function peintureProjetAnomalie(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/anomalie");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
+
         /** On instancie l'entityRepository */
         $anomalieRepos = $this->em->getRepository(Anomalie::class);
         $notesRepos = $this->em->getRepository(Notes::class);
@@ -453,7 +487,8 @@ class ApiPeintureController extends AbstractController
         /** On regarde si le projet existe */
         $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
-            $this->logger->warning("[Collecte-Peinture] ⚠️ Le projet n'a pas été trouvé.", [ 'maven_key' => $maven_key ?? null ]);
+            $this->logger->warning(static::$loggerE404, [
+                'maven_key' => $maven_key ?? null ]);
 
             return new JsonResponse([
                     'code' => 404,
@@ -573,6 +608,14 @@ class ApiPeintureController extends AbstractController
     #[Route('/api/peinture/projet/anomalie/details', name: 'peinture_projet_anomalie_details', methods: ['POST'])]
     public function peintureProjetAnomalieDetails(Request $request): response
     {
+
+        $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/anomalie/details");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
+
         /** On instancie l'entityRepository */
         $anomalieDetailsRepos = $this->em->getRepository(AnomalieDetails::class);
 
@@ -599,7 +642,8 @@ class ApiPeintureController extends AbstractController
         /** On regarde si le projet existe */
         $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
-            $this->logger->warning("[Collecte-Peinture] ⚠️ Le projet n'a pas été trouvé.", [ 'maven_key' => $maven_key ?? null ]);
+            $this->logger->warning(static::$loggerE404, [
+                'maven_key' => $maven_key ?? null ]);
 
             return new JsonResponse([
                 'code' => 404,
@@ -673,6 +717,13 @@ class ApiPeintureController extends AbstractController
     #[Route('/api/peinture/projet/hotspots', name: 'peinture_projet_hotspots', methods: ['POST'])]
     public function peintureProjetHotspots(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/hotspots");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
+
         /** On instancie l'entityRepository */
         $hotspotsRepos = $this->em->getRepository(Hotspots::class);
 
@@ -699,7 +750,8 @@ class ApiPeintureController extends AbstractController
         /** On regarde si le projet existe */
         $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
-            $this->logger->warning("[Collecte-Peinture] ⚠️ Le projet n'a pas été trouvé.", [ 'maven_key' => $maven_key ?? null ]);
+            $this->logger->warning(static::$loggerE404, [
+                'maven_key' => $maven_key ?? null ]);
 
             return new JsonResponse([
                 'code' => 404,
@@ -762,6 +814,13 @@ class ApiPeintureController extends AbstractController
     #[Route('/api/peinture/projet/hotspots/details', name: 'peinture_projet_hotspots_details', methods: ['POST'])]
     public function peintureProjetHotspotsDetails(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/hotspots/details");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
+
         /** On instancie l'entityRepository */
         $hotspotsRepos = $this->em->getRepository(Hotspots::class);
 
@@ -788,7 +847,8 @@ class ApiPeintureController extends AbstractController
         /** On regarde si le projet existe */
         $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
-            $this->logger->warning("[Collecte-Peinture] ⚠️ Le projet n'a pas été trouvé.", [ 'maven_key' => $maven_key ?? null ]);
+            $this->logger->warning(static::$loggerE404, [
+                'maven_key' => $maven_key ?? null ]);
 
             return new JsonResponse([
                 'code' => 404,
@@ -860,6 +920,13 @@ class ApiPeintureController extends AbstractController
     #[Route('/api/peinture/projet/nosonar', name: 'peinture_projet_nosonar', methods: ['POST'])]
     public function peintureProjetNoSonar(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/nosonar");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
+
         /** On instancie l'entityRepository */
         $noSonarRepos = $this->em->getRepository(NoSonar::class);
 
@@ -886,7 +953,8 @@ class ApiPeintureController extends AbstractController
         /** On regarde si le projet existe */
         $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
-            $this->logger->warning("[Collecte-Peinture] ⚠️ Le projet n'a pas été trouvé.", [ 'maven_key' => $maven_key ?? null ]);
+            $this->logger->warning(static::$loggerE404, [
+                'maven_key' => $maven_key ?? null ]);
 
             return new JsonResponse([
                 'code' => 404,
@@ -947,6 +1015,13 @@ class ApiPeintureController extends AbstractController
     #[Route('/api/peinture/projet/todo', name: 'peinture_projet_todo', methods: ['POST'])]
     public function peintureProjetTodo(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/todo");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
+
         /** On instancie l'entityRepository */
         $todoRepos = $this->em->getRepository(Todo::class);
 
@@ -973,7 +1048,7 @@ class ApiPeintureController extends AbstractController
         /** On regarde si le projet existe */
         $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
-            $this->logger->warning("[Collecte-Peinture] ⚠️ Le projet n'a pas été trouvé.", [ 'maven_key' => $maven_key ?? null ]);
+            $this->logger->warning(static::$loggerE404, [ 'maven_key' => $maven_key ?? null ]);
 
             return new JsonResponse([
                 'code' => 404,
@@ -1058,6 +1133,13 @@ class ApiPeintureController extends AbstractController
     #[Route('/api/peinture/projet/logger', name: 'peinture_projet_logger', methods: ['POST'])]
     public function peintureProjetLogger(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/logger");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
+
         /** On instancie l'entityRepository */
         $loggerRepository = $this->em->getRepository(Logger::class);
 
@@ -1084,7 +1166,7 @@ class ApiPeintureController extends AbstractController
         /** On regarde si le projet existe */
         $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
-            $this->logger->warning("[Collecte-Peinture] ⚠️ Le projet n'a pas été trouvé.", [ 'maven_key' => $maven_key ?? null ]);
+            $this->logger->warning(static::$loggerE404, [ 'maven_key' => $maven_key ?? null ]);
 
             return new JsonResponse([
                 'code' => 404,
