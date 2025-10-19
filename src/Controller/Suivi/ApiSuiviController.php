@@ -7,16 +7,15 @@ namespace App\Controller\Suivi;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\SecurityBundle\Security;
-
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\ORM\EntityManagerInterface;
+
 use App\Service\Client;
 use App\Entity\Historique;
 use App\Entity\Utilisateur;
 use App\Entity\InformationProjet;
-
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * [Description ApiSuiviController]
@@ -27,7 +26,6 @@ class ApiSuiviController extends AbstractController
     public static $europeParis = "Europe/Paris";
     public static $dateFormatTimezone = "Y-m-d\TH:i:sO";
     public static $sonarUrl = "sonar.url";
-    public static $reference = "[Suivi]";
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
     public static $erreur403 = "Vous devez avoir le rôle GESTIONNAIRE pour réaliser cette action (Erreur 403).";
     public static $erreur404 = "Vous devez être rattaché à une équipe (Erreur 404).";
@@ -44,9 +42,6 @@ class ApiSuiviController extends AbstractController
         Client $client,
         Security $security
     ) {
-        $this->em = $em;
-        $this->client = $client;
-        $this->security = $security;
     }
 
     /**
@@ -72,17 +67,20 @@ class ApiSuiviController extends AbstractController
         $data = json_decode($request->getContent());
         if ($data === null || !property_exists($data, 'maven_key')) {
             return new JsonResponse([
-                'code' => 400, 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400], Response::HTTP_OK);
+                'code' => 400,
+                'type' => 'alert',
+                'message' => static::$erreur400
+            ], Response::HTTP_OK);
         }
 
         /** On vérifie  */
         $map = ['maven_key' => $data->maven_key];
         $request = $informationProjetRepository->selectInformationProjetVersion($map);
-        if ($request['code'] != 200) {
+        if ($request['code'] !== 200) {
             return new JsonResponse([
-                'maven_key' => $data->maven_key, 'code'=>$request['code'],
-                'erreur' => $request['erreur']], Response::HTTP_OK);
+                'code'=>$request['code'],
+                'erreur' => $request['erreur']
+            ], Response::HTTP_OK);
         }
 
         $liste = [];
@@ -98,18 +96,23 @@ class ApiSuiviController extends AbstractController
             $id++;
         }
 
-        return new JsonResponse(['code' => 200, 'liste' => $liste], Response::HTTP_OK);
+        return new JsonResponse([
+            'code' => 200,
+            'liste' => $liste
+        ], Response::HTTP_OK);
     }
 
-    #[Route('/api/liste/v2.0/version', name: 'liste_v1_version', methods: ['POST'])]
+    #[Route('/api/liste/v2.0/version', name: 'liste_v2_version', methods: ['POST'])]
     public function listeVersionV2(Request $request): JsonResponse
     {
         /** On récupère le job et le type (manuel ou automatique) */
         $data = json_decode($request->getContent());
         if ($data === null || !property_exists($data, 'maven_key')) {
             return new JsonResponse([
-                'code' => 400, 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400], Response::HTTP_OK);
+                'code' => 400,
+                'type' => 'alert',
+                'message' => static::$erreur400
+            ], Response::HTTP_OK);
         }
 
         /** On construit l'URL */
@@ -122,7 +125,8 @@ class ApiSuiviController extends AbstractController
             return new JsonResponse([
                 'code' => $result['code'],
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur500], Response::HTTP_OK);
+                'message' => static::$erreur500
+            ], Response::HTTP_OK);
         }
         //analyses/date "date" => "2024-11-15T15:52:03+0100"
         //analyses/projectVersion "projectVersion" => "1.1.0-RELEASE"
@@ -139,7 +143,10 @@ class ApiSuiviController extends AbstractController
             $id++;
         }
 
-        return new JsonResponse(['code' => 200, 'liste' => $liste], Response::HTTP_OK);
+        return new JsonResponse([
+            'code' => 200,
+            'liste' => $liste
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -164,7 +171,8 @@ class ApiSuiviController extends AbstractController
             !property_exists($data, 'date')) {
             return new JsonResponse([
                 'code' => 400, 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400], Response::HTTP_OK);
+                'message' => static::$erreur400
+            ], Response::HTTP_OK);
         }
 
         /**  On a pas besoin d'encodé la date */
@@ -328,8 +336,10 @@ class ApiSuiviController extends AbstractController
         $data = json_decode($request->getContent());
         if ($data === null || !property_exists($data, 'maven_key')) {
             return new JsonResponse([
-                'code' => 400, 'type' => 'alert', 'reference' => static::$reference,
-                'message' => static::$erreur400], Response::HTTP_OK);
+                'code' => 400,
+                'type' => 'alert',
+                'message' => static::$erreur400
+            ], Response::HTTP_OK);
         }
 
         /** On créé objet date */
@@ -476,15 +486,20 @@ class ApiSuiviController extends AbstractController
         $data = json_decode($request->getContent());
         if ($data === null || !property_exists($data, 'maven_key')) {
             return new JsonResponse([
-                'code' => 400, 'type' => 'alert', 'reference' => static::$reference,
-                'message' => static::$erreur400], Response::HTTP_OK);
+                'code' => 400,
+                'type' => 'alert',
+                'message' => static::$erreur400
+            ], Response::HTTP_OK);
         }
 
         /**  On récupère les versions et la date pour la clé du projet. */
-        $map=['maven_key'=>$data->maven_key];
+        $map = ['maven_key' => $data->maven_key];
         $request=$historiqueRepository->selectHistoriqueProjetByDate($map);
         if ($request['code']!=200) {
-            return new JsonResponse(['code' => $request['code'], 'message'=>$request['erreur']],Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => $request['code'],
+                'message'=>$request['erreur']
+            ],Response::HTTP_OK);
         }
 
         /** On récupère les préférences de l'utilisateur */
@@ -503,7 +518,11 @@ class ApiSuiviController extends AbstractController
                 $version['favori'] = false;
             }
         }
-        return new JsonResponse(['code' => 200, 'versions' => $request['version'], 'preference_favori' => $preferenceFavoriVersion], Response::HTTP_OK);
+        return new JsonResponse([
+            'code' => 200,
+            'versions' => $request['version'],
+            'preference_favori' => $preferenceFavoriVersion
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -602,22 +621,29 @@ class ApiSuiviController extends AbstractController
             !property_exists($data, 'version') ||
             !property_exists($data, 'date_version')) {
             return new JsonResponse([
-                'code' => 400, 'type' => 'alert', 'reference' => static::$reference,
-                'message' => static::$erreur400], Response::HTTP_OK);
+                'code' => 400,
+                'type' => 'alert',
+                'message' => static::$erreur400
+            ], Response::HTTP_OK);
         }
 
          /** si on est pas GESTIONNAIRE on ne fait rien. */
         if (!$this->security->isGranted('ROLE_GESTIONNAIRE')){
-            return new JsonResponse(['type'=>'warning', 'code' => 403,
-                'reference' => static::$reference, 'message' => static::$erreur403], Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => 403,
+                'type' => 'warning',
+                'message' => static::$erreur403
+            ], Response::HTTP_OK);
         }
 
         /** On créé la map pour la requête de mise à jour */
         $map=[ 'initial'=>$data->initial, 'maven_key'=>$data->maven_key, 'version'=>$data->version, 'date_version'=>$data->date_version];
         $request=$historiqueRepository->updateHistoriqueReference($map);
         if ($request['code']!=200) {
-            return new JsonResponse(['maven-Key' => $data->maven_key,
-                'code'=>$request['code'], 'erreur' => $request['erreur']],Response::HTTP_OK);
+            return new JsonResponse([
+                'code'=>$request['code'],
+                'erreur' => $request['erreur']
+            ],Response::HTTP_OK);
         }
 
         /** Tout c'est bien passé */
@@ -654,14 +680,19 @@ class ApiSuiviController extends AbstractController
             !property_exists($data, 'version') ||
             !property_exists($data, 'date_version')) {
                 return new JsonResponse([
-                    'code' => 400, 'type' => 'alert', 'reference' => static::$reference,
-                    'message' => static::$erreur400], Response::HTTP_OK);
+                    'code' => 400,
+                    'type' => 'alert',
+                    'message' => static::$erreur400
+                ], Response::HTTP_OK);
             }
 
         /** si on est pas GESTIONNAIRE on ne fait rien. */
         if (!$this->security->isGranted('ROLE_GESTIONNAIRE')){
-            return new JsonResponse(['type'=>'warning', 'code' => 403,
-            'reference' => static::$reference, 'message' => static::$erreur403], Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => 403,
+                'type'=>'warning',
+                'message' => static::$erreur403
+            ], Response::HTTP_OK);
         }
 
         /** On supprime la version du projet */
@@ -669,7 +700,9 @@ class ApiSuiviController extends AbstractController
         $request=$historiqueRepository->deleteHistoriqueProjet($map);
         if ($request['code']!=200) {
             return new JsonResponse([
-                'maven_key' => $data->maven_key, 'code'=>$request['code'], 'erreur' => $request['erreur']], Response::HTTP_OK);
+                'code'=>$request['code'],
+                'erreur' => $request['erreur']
+            ], Response::HTTP_OK);
         }
 
         /** On récupère l'objet User du contexte de sécurité */
@@ -688,6 +721,9 @@ class ApiSuiviController extends AbstractController
         }
 
         /** Tout c'est bien passé */
-        return new JsonResponse(['code' => 200, 'message'=>$message], Response::HTTP_OK);
+        return new JsonResponse([
+            'code' => 200,
+            'message'=>$message
+        ], Response::HTTP_OK);
     }
 }
