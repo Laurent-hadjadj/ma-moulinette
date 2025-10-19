@@ -93,12 +93,6 @@ class ProjetController extends AbstractController
     #[Route('/projet', name: 'projet', methods: 'GET')]
     public function index(): Response
     {
-        $user = $this->security->getUser();
-        if (!$user) {
-            $this->logger->error('[Projet] 🚫 Accès refusé : utilisateur non connecté.');
-            throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 401).");
-        }
-
         $render = static::genericRender();
 
         $this->logger->info('[Projet] ℹ️ Affichage de la page projet.');
@@ -118,7 +112,7 @@ class ProjetController extends AbstractController
     public function mesProjets(): Response
     {
         /** On instancie l'entityRepository */
-        $historiqueRepository = $this->em->getRepository(Historique::class);
+        $historiqueRepos = $this->em->getRepository(Historique::class);
 
         $render = static::genericRender();
         $teams = $this->security->getUser()->getEquipe();
@@ -155,7 +149,7 @@ class ProjetController extends AbstractController
 
         /** On supprime la dernière virgule */
         $rtrim = rtrim($c, " ,");
-        $liste = $historiqueRepository->selectHistoriqueIndicateurs($rtrim);
+        $liste = $historiqueRepos->selectHistoriqueIndicateurs($rtrim);
         if ($liste['code'] != 200) {
             $render['liste_projet'] = [];
             $this->addFlash('notice', [
