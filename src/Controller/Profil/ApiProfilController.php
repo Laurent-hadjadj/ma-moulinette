@@ -39,8 +39,6 @@ class ApiProfilController extends AbstractController
     public static $dateFormatShort = "Y-m-d";
     public static $sonarUrl = "sonar.url";
     public static $page = "profil/details.html.twig";
-    public static $reference = '<strong>[Profil]</strong> ';
-    public static $referenceDetail = '[Détails]';
     public static $erreur400 = "La requête est incorrecte (Erreur 400).";
     public static $erreur403 = "Vous devez avoir le rôle GESTIONNAIRE pour réaliser cette action (Erreur 403).";
     public static $erreur404 = "Vous devez au moins avoir un profil déclaré sur le serveur SonarQube (Erreur 404).";
@@ -94,7 +92,8 @@ class ApiProfilController extends AbstractController
             'marque_entreprise_long' => $this->marqueEntrepriseLong,
             'env' => $this->environnement,
             'version' => $this->version,
-            'date_copyright' => $this->dateCopyright];
+            'date_copyright' => $this->dateCopyright
+        ];
     }
 
     /**
@@ -126,7 +125,7 @@ class ApiProfilController extends AbstractController
             return new JsonResponse([
                 'code' => 403,
                 'alert' => 'warning',
-                'message' => static::$reference . static::$erreur403],
+                'message' => static::$erreur403],
                 Response::HTTP_OK);
         }
 
@@ -150,8 +149,8 @@ class ApiProfilController extends AbstractController
             return new JsonResponse([
                 'code' => $result['code'],
                 'alert' => 'alert',
-                'message' => static::$reference . $result['erreur'] ?? 'Erreur SonarQube'],
-                Response::HTTP_OK);
+                'message' => $result['erreur'] ?? 'Erreur SonarQube'
+            ], Response::HTTP_OK);
         }
 
         /** On Vérifie qu'il existe au moins un profil */
@@ -160,8 +159,8 @@ class ApiProfilController extends AbstractController
             return new JsonResponse([
                 'code' => 404,
                 'type' => 'warning',
-                'message' => static::$reference . static::$erreur404],
-                Response::HTTP_OK);
+                'message' => static::$erreur404
+            ], Response::HTTP_OK);
         }
 
         /*** Super on a récupéré la liste des profils par langage */
@@ -181,9 +180,9 @@ class ApiProfilController extends AbstractController
             return new JsonResponse([
                 'code' => $r1['code'],
                 'type' => 'alert',
-                'message' => static::$reference . $message,
-                'trace' => $r1['erreur'] ?? null],
-                Response::HTTP_OK);
+                'message' => $message,
+                'trace' => $r1['erreur'] ?? null
+            ], Response::HTTP_OK);
         }
 
         /** On insert les profils dans la table profiles. */
@@ -201,9 +200,9 @@ class ApiProfilController extends AbstractController
             return new JsonResponse([
                 'code' => $r2['code'],
                 'type' => 'alert',
-                'message' => static::$reference . $message,
-                'trace' => $r2['erreur'] ?? null],
-                Response::HTTP_OK);
+                'message' => $message,
+                'trace' => $r2['erreur'] ?? null
+            ], Response::HTTP_OK);
         }
 
         /** On récupère la nouvelle liste des profils */
@@ -215,9 +214,9 @@ class ApiProfilController extends AbstractController
             return new JsonResponse([
                 'code' => $r3['code'],
                 'type' => 'alert',
-                'message' => static::$reference . $message,
-                'trace' => $r3['erreur'] ?? null],
-                Response::HTTP_OK);
+                'message' => $message,
+                'trace' => $r3['erreur'] ?? null
+            ], Response::HTTP_OK);
         }
 
         /** On met à jour la table propriétés */
@@ -235,9 +234,9 @@ class ApiProfilController extends AbstractController
             return new JsonResponse([
                 'code' => $r4['code'],
                 'type' => 'alert',
-                'message' => static::$reference . $message,
-                'trace' => $r4['erreur'] ?? null],
-                Response::HTTP_OK);
+                'message' => $message,
+                'trace' => $r4['erreur'] ?? null
+            ], Response::HTTP_OK);
         }
 
         $this->logger->info('ℹ️ [Profil] Mise à jour des profils qualité réussie', [
@@ -246,8 +245,8 @@ class ApiProfilController extends AbstractController
 
         return new JsonResponse([
             'code' => 200,
-            'liste_profil' => $r3['liste']],
-            Response::HTTP_OK);
+            'liste_profil' => $r3['liste']
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -281,9 +280,9 @@ class ApiProfilController extends AbstractController
             return new JsonResponse([
                 'code' => $r1['code'],
                 'type' => 'alert',
-                'message' => static::$reference . $message,
-                'trace' => $r1['erreur'] ?? null],
-                Response::HTTP_OK);
+                'message' => $message,
+                'trace' => $r1['erreur'] ?? null
+            ], Response::HTTP_OK);
         }
 
         /** On créé la liste des libellés et des données */
@@ -304,7 +303,7 @@ class ApiProfilController extends AbstractController
             return new JsonResponse([
                 'code' => $r2['code'] ?? 500,
                 'type' => 'alert',
-                'message' => static::$reference . "Une erreur s'est produite lors de la récupération des données (Erreur 500).",
+                'message' => "Une erreur s'est produite lors de la récupération des données (Erreur 500).",
                 'trace' => $r2['erreur'] ?? null,
             ], Response::HTTP_OK);
         }
@@ -408,8 +407,12 @@ class ApiProfilController extends AbstractController
         ];
 
         if (count($explode) !== 3) {
-            $this->logger->warning('⚠️ [Profil Détail] Token invalide.', ['token' => $token]);
-            $this->addFlash('notice', ['type' => 'alert', 'titre' => static::$referenceDetail, 'message' => "Le token fourni est invalide ou mal formé (Erreur 400)."]);
+            $this->logger->warning('⚠️ [Profil Détail] Token invalide.', [
+                'token' => $token
+            ]);
+            $this->addFlash('notice', [
+                'type' => 'alert',
+                'message' => "⚠️ Le token fourni est invalide ou mal formé (Erreur 422)."]);
             return $this->render(static::$page, $render);
         }
 
@@ -423,7 +426,10 @@ class ApiProfilController extends AbstractController
 
         if (!in_array($language, [...$sonarLanguage, ...$maMoulinetteLanguage])) {
             $this->logger->warning('⚠️ [Profil Détail] Langage non supporté.', ['langage' => $language]);
-            $this->addFlash('notice', ['type' => 'alert', 'titre' => static::$referenceDetail, 'message' => "Le langage sélectionné n'est pas supporté (Erreur 404)."]);
+            $this->addFlash('notice', [
+                'type' => 'warning',
+                'message' => "⚠️ Le langage sélectionné n'est pas supporté (Erreur 404)."
+            ]);
             return $this->render(static::$page, $render);
         }
 
@@ -447,8 +453,14 @@ class ApiProfilController extends AbstractController
 
         $result = $this->client->httpSonarQube($url);
         if (in_array($result['code'] ?? -1, [400, 401, 403, 404, 500, 503, 504])) {
-            $this->logger->error('❌ [Profil Détail] Erreur API SonarQube.', ['url' => $url, 'result' => $result]);
-            $this->addFlash('notice', ['type' => 'alert', 'titre' => static::$referenceDetail, 'message' => $result['erreur']]);
+            $this->logger->error('[Profil Détail] ❌ Erreur API SonarQube.', [
+                'url' => $url,
+                'result' => $result
+            ]);
+            $this->addFlash('notice', [
+                'type' => 'alert',
+                'message' => '❌' . $result['erreur']
+            ]);
             return $this->render(static::$page, $render);
         }
 
@@ -576,7 +588,7 @@ class ApiProfilController extends AbstractController
             return new JsonResponse([
                     'code' => 400,
                     'type' => 'alert',
-                    'message' => static::$reference . static::$erreur400
+                    'message' => static::$erreur400
                 ], Response::HTTP_OK);
         }
 
