@@ -87,13 +87,12 @@ class ApiProjetController extends AbstractController
         $preference = $user->getPreference();
 
         $utilisateurRepos = $this->em->getRepository(Utilisateur::class);
-        $payload = $request->getContent();
-        $data = json_decode($payload);
+        $data = json_decode($request->getContent());
 
         if ($data === null || !property_exists($data, 'maven_key') || !is_string($data->maven_key)) {
             $this->logger->error("[Favori] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé.", [
                 'utilisateur' => $username,
-                'payload' => $payload
+                'payload' => $data
             ]);
 
             return new JsonResponse([
@@ -121,6 +120,7 @@ class ApiProjetController extends AbstractController
                 'maven_key' => $data->maven_key,
                 'erreur' => $requestUpdate['erreur'] ?? 'non précisée'
             ]);
+
             return new JsonResponse([
                 'code' => $requestUpdate['code'],
                 'type' => 'alert',
@@ -166,13 +166,12 @@ class ApiProjetController extends AbstractController
 
         $user = $this->security->getUser();
         $username = $user->getUserIdentifier();
-        $rawContent = $request->getContent();
-        $data = json_decode($rawContent);
+        $data = json_decode($request->getContent());
 
         if ($data === null || !property_exists($data, 'maven_key') || !is_string($data->maven_key)) {
             $this->logger->error("[Favori-Check] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé.", [
                 'utilisateur' => $username,
-                'payload' => $rawContent
+                'payload' => $data
             ]);
 
             return new JsonResponse([
@@ -184,7 +183,7 @@ class ApiProjetController extends AbstractController
 
         $preference = $user->getPreference();
         if (!isset($preference['favori_projet']) || !is_array($preference['favori_projet'])) {
-            $this->logger->error("[Favori-Check] ❌ Requête invalide : clé 'favori_projet' ou 'favori_projet' manquante ou JSON mal formé. ", [
+            $this->logger->error("[Favori-Check] ❌ Requête invalide : clé 'favori_projet', 'favori_projet' manquante ou JSON mal formé. ", [
                 'utilisateur' => $username,
                 'preferences' => $preference
             ]);
@@ -266,7 +265,8 @@ class ApiProjetController extends AbstractController
         $inTrim = rtrim($in, " OR ");
         $map = ['clause_where' => $inTrim];
 
-        $this->logger->debug('[Projet-Liste] 🛠️ Clause WHERE construite.', ['clause' => $inTrim]);
+        $this->logger->debug('[Projet-Liste] 🛠️ Clause WHERE construite.', [
+            'clause' => $inTrim]);
 
         $requestListe = $listeProjetRepos->selectListeProjetByEquipe($map);
 
