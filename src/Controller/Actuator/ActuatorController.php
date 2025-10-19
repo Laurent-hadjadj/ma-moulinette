@@ -16,27 +16,24 @@ namespace App\Controller\Actuator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Annotation\Route;
-
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
+use Knp\Component\Pager\PaginatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
+
 use App\Entity\Actuator;
 use App\Entity\ActuatorInfo;
-
 use App\Form\ActuatorFormType;
-
 use App\Service\Client;
 
-use Knp\Component\Pager\PaginatorInterface;
-
+/**
+ * [Description ActuatorController]
+ */
 class ActuatorController extends AbstractController
 {
-    public static $index = 'actuator/index.html.twig';
-    public static $europeParis = "Europe/Paris";
-    public static $request = "requête : ";
-    public static $titre = 'Traitement';
-    public static $erreur403 = "Vous devez avoir le rôle 'ACTUATOR' pour accéder à cette page (Erreur 403).";
+    private static $index = 'actuator/index.html.twig';
+    private static $europeParis = "Europe/Paris";
+    private static $erreur403 = "⚠️ Vous devez avoir le rôle 'ACTUATOR' pour accéder à cette page (Erreur 403).";
 
     private $logoEntreprise;
     private $marqueEntrepriseShort;
@@ -51,8 +48,6 @@ class ActuatorController extends AbstractController
         private PaginatorInterface $paginator,
         private ParameterBagInterface $params
     ) {
-        $this->em = $em;
-        $this->client = $client;
         $this->paginator = $paginator;
         $this->params = $params;
 
@@ -100,17 +95,23 @@ class ActuatorController extends AbstractController
 
         /** Vérifier si l'utilisateur a le rôle 'ROLE_ACTUATOR'. */
         if (!$this->isGranted('ROLE_ACTUATOR')) {
-            $this->addFlash('notice', ['type'=>'alert', 'titre'=>static::$titre, 'message'=>static::$erreur403]);
+            $this->addFlash('notice', [
+                'type' => 'warning',
+                'message' => static::$erreur403
+            ]);
             return $this->render(static::$index, $render);
         }
 
-        if ($sortColumn==='date_enregistrement' || $sortColumn==='date_modification' ) {
+        if ($sortColumn === 'date_enregistrement' || $sortColumn==='date_modification' ) {
             $paginatorQuery=$actuatorRepository->findActuatorOrderByDate($sortDirection);
         } else {
-            $paginatorQuery=$actuatorRepository->findActuatorOrderBy($sortColumn, $sortDirection);
+            $paginatorQuery = $actuatorRepository->findActuatorOrderBy($sortColumn, $sortDirection);
         }
-        if ($paginatorQuery['code']!=200) {
-            $this->addFlash('notice', ['type'=>'warning', 'titre'=>static::$titre, 'message'=>$paginatorQuery['erreur']]);
+        if ($paginatorQuery['code'] != 200) {
+            $this->addFlash('notice', [
+                'type' => 'warning',
+                'message' => '⚠️' . $paginatorQuery['erreur']
+            ]);
             return $this->render(static::$index, $render);
         }
 
@@ -135,7 +136,10 @@ class ActuatorController extends AbstractController
 
         // Vérifier si l'utilisateur a le rôle 'ROLE_ACTUATOR'.
         if (!$this->isGranted('ROLE_ACTUATOR')) {
-            $this->addFlash('notice', ['type'=>'alert', 'titre'=>static::$titre, 'message'=>static::$erreur403]);
+            $this->addFlash('notice', [
+                'type' => 'warning',
+                'message' => static::$erreur403
+            ]);
             return $this->render('actuator/ajouter.html.twig', $render);
         }
 
