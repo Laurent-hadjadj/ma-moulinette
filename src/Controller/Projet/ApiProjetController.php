@@ -65,6 +65,8 @@ class ApiProjetController extends AbstractController
     #[Route('/api/favori', name: 'favori', methods: ['POST'])]
     public function favori(Security $security, Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/favori");
+
         $user = $security->getUser();
 
         if (!$user) {
@@ -102,7 +104,7 @@ class ApiProjetController extends AbstractController
             'courriel' => $courriel
         ];
 
-        $this->logger->info('ℹ️ [Favori] Début mise à jour du favori.', [
+        $this->logger->info('[Favori] ℹ️ Début mise à jour du favori.', [
             'utilisateur' => $username,
             'maven_key' => $data->maven_key
         ]);
@@ -151,10 +153,12 @@ class ApiProjetController extends AbstractController
     #[Route('/api/favori/check', name: 'favori_check', methods: ['POST'])]
     public function favoriCheck(Security $security, Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/favori/check");
+
         $user = $security->getUser();
 
         if (!$user) {
-            $this->logger->warning('[Favori Check]  🚫 Aucun utilisateur connecté.');
+            $this->logger->warning('[Favori Check] 🚫 Aucun utilisateur connecté.');
             return new JsonResponse([
                 'code' => 401,
                 'type' => 'alert',
@@ -167,7 +171,7 @@ class ApiProjetController extends AbstractController
         $data = json_decode($rawContent);
 
         if ($data === null || !property_exists($data, 'maven_key') || !is_string($data->maven_key)) {
-            $this->logger->error("[Favori Check] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé.", [
+            $this->logger->error("[Favori-Check] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé.", [
                 'utilisateur' => $username,
                 'payload' => $rawContent
             ]);
@@ -181,7 +185,7 @@ class ApiProjetController extends AbstractController
 
         $preference = $user->getPreference();
         if (!isset($preference['favori_projet']) || !is_array($preference['favori_projet'])) {
-            $this->logger->error("[Favori Check] ❌ Requête invalide : clé 'favori_projet' ou 'favori_projet' manquante ou JSON mal formé. ", [
+            $this->logger->error("[Favori-Check] ❌ Requête invalide : clé 'favori_projet' ou 'favori_projet' manquante ou JSON mal formé. ", [
                 'utilisateur' => $username,
                 'preferences' => $preference
             ]);
@@ -195,7 +199,7 @@ class ApiProjetController extends AbstractController
 
         $favori = in_array($data->maven_key, $preference['favori_projet']);
 
-        $this->logger->info('[Favori Check] ℹ️ Favori vérifié avec succès.', [
+        $this->logger->info('[Favori-Check] ℹ️ Favori vérifié avec succès.', [
             'utilisateur' => $username,
             'maven_key' => $data->maven_key,
             'est_favori' => $favori
@@ -223,6 +227,8 @@ class ApiProjetController extends AbstractController
     #[Route('/api/projet/liste', name: 'projet_liste', methods: ['POST'])]
     public function liste_projet(Security $security): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/projet/liste");
+
         $user = $security->getUser();
 
         if (!$user) {
@@ -267,12 +273,12 @@ class ApiProjetController extends AbstractController
         $inTrim = rtrim($in, " OR ");
         $map = ['clause_where' => $inTrim];
 
-        $this->logger->debug('[Projet Liste] 🛠️ Clause WHERE construite.', ['clause' => $inTrim]);
+        $this->logger->debug('[Projet-Liste] 🛠️ Clause WHERE construite.', ['clause' => $inTrim]);
 
         $requestListe = $listeProjetRepos->selectListeProjetByEquipe($map);
 
         if ($requestListe['code'] != 200) {
-            $this->logger->error("[Projet Liste] ❌ Erreur lors de la récupération des projets.", [
+            $this->logger->error("[Projet-Liste] ❌ Erreur lors de la récupération des projets.", [
                 'utilisateur' => $username,
                 'code' => $requestListe['code'],
                 'erreur' => $requestListe['erreur'] ?? 'Erreur inconnue'
@@ -289,7 +295,7 @@ class ApiProjetController extends AbstractController
         $projets = $requestListe['liste'];
 
         if (empty($projets)) {
-            $this->logger->warning('[Projet Liste] ⚠️ Aucun projet trouvé pour les groupes spécifiés.', [
+            $this->logger->warning('[Projet-Liste] ⚠️ Aucun projet trouvé pour les groupes spécifiés.', [
                 'utilisateur' => $username,
                 'groupes' => $groupes
             ]);
@@ -301,7 +307,7 @@ class ApiProjetController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        $this->logger->info('[Projet Liste] ℹ️ Projets récupérés avec succès.', [
+        $this->logger->info('[Projet-Liste] ℹ️ Projets récupérés avec succès.', [
             'utilisateur' => $username,
             'nombre_projets' => count($projets)
         ]);
