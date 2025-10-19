@@ -15,12 +15,15 @@ namespace App\Controller\Projet;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
+
+use App\Controller\Traits\RequireAuthenticatedClientTrait;
 use App\Entity\Utilisateur;
 use App\Entity\ListeProjet;
 
@@ -29,9 +32,12 @@ use App\Entity\ListeProjet;
  */
 class ApiProjetController extends AbstractController
 {
+    use RequireAuthenticatedClientTrait;
+
+    private $appClient;
+
     /** Définition des constantes */
     private static $erreur400 = "La requête est incorrecte (Erreur 400).";
-    private static $erreur401 = "Utilisateur non authentifié (Erreur 401).";
     private static $erreur404 = "Vous devez être rattaché à une équipe (Erreur 404).";
     private static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. ".
     "Vérifie le nom du tag utilisé dans SonarQube (Erreur 406).";
@@ -45,8 +51,11 @@ class ApiProjetController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        private Security $security,
+        private ParameterBagInterface $params,
     ) {
+        $this->appClient = $this->params->get('app.client');
     }
 
     /**
@@ -63,21 +72,16 @@ class ApiProjetController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/favori', name: 'favori', methods: ['POST'])]
-    public function favori(Security $security, Request $request): JsonResponse
+    public function favori(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/favori");
 
-        $user = $security->getUser();
-
-        if (!$user) {
-            $this->logger->warning('[Favori] 🚫 Aucun utilisateur connecté.');
-            return new JsonResponse([
-                'code' => 401,
-                'type' => 'alert',
-                'message' => static::$erreur401
-            ], Response::HTTP_OK);
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
         }
 
+        $user = $this->security->getUser();
         $username = $user->getUserIdentifier();
         $courriel = $user->getCourriel();
         $preference = $user->getPreference();
@@ -151,21 +155,16 @@ class ApiProjetController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/favori/check', name: 'favori_check', methods: ['POST'])]
-    public function favoriCheck(Security $security, Request $request): JsonResponse
+    public function favoriCheck(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/favori/check");
 
-        $user = $security->getUser();
-
-        if (!$user) {
-            $this->logger->warning('[Favori Check] 🚫 Aucun utilisateur connecté.');
-            return new JsonResponse([
-                'code' => 401,
-                'type' => 'alert',
-                'message' => static::$erreur401
-            ], Response::HTTP_OK);
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
         }
 
+        $user = $this->security->getUser();
         $username = $user->getUserIdentifier();
         $rawContent = $request->getContent();
         $data = json_decode($rawContent);
@@ -225,28 +224,22 @@ class ApiProjetController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/projet/liste', name: 'projet_liste', methods: ['POST'])]
-    public function liste_projet(Security $security): JsonResponse
+    public function liste_projet(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/projet/liste");
 
-        $user = $security->getUser();
-
-        if (!$user) {
-            $this->logger->error('[Projet Liste] 🚫 Aucun utilisateur connecté.');
-
-            return new JsonResponse([
-                'code' => 401,
-                'type' => 'alert',
-                'message' => static::$erreur401
-            ], Response::HTTP_OK);
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
         }
 
+        $user = $this->security->getUser();
         $username = $user->getUserIdentifier();
         $listeProjetRepos = $this->em->getRepository(ListeProjet::class);
         $groupes = $user->getEquipe();
 
         if (empty($groupes)) {
-            $this->logger->warning("[Projet Liste] ⚠️ Aucun groupe associé à l'utilisateur.", [
+            $this->logger->warning("[Projet-Liste] ⚠️ Aucun groupe associé à l'utilisateur.", [
                 'utilisateur' => $username
             ]);
 
@@ -257,7 +250,7 @@ class ApiProjetController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        $this->logger->info('[Projet Liste]  ℹ️ Groupes récupérés.', [
+        $this->logger->info('[Projet-Liste]  ℹ️ Groupes récupérés.', [
             'utilisateur' => $username,
             'groupes' => $groupes
         ]);
