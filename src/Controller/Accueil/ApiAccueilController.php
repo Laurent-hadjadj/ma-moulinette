@@ -76,6 +76,8 @@ class ApiAccueilController extends AbstractController
     #[Route('/api/status', name: 'api_sonar_status', methods: ['POST'])]
     public function apiSonarStatus(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/status");
+
         // Vérifie X-App-Client
         if ($resp = $this->checkApiClient($request, $this->appClient)) {
             return $resp; // renvoie 403 si pas ok
@@ -87,19 +89,21 @@ class ApiAccueilController extends AbstractController
             '/api/system/status'
         );
 
-        $this->logger->info('[Accueil] ℹ️ Vérification du statut SonarQube', ['url' => $url]);
-
         /** On appel le client http */
         $result = $this->client->httpSonarQube($url);
 
-        if ($result['code'] != 200) {
-            $this->logger->error('[Accueil] ❌ SonarQube indisponible', [
-                'erreur' => $result['erreur']
+        if ($result['code'] !== 200) {
+            $this->logger->critical('[Accueil] 🔴 SonarQube indisponible', [
+                'code' => $result['code'],
+                'url' => $url,
+                'erreur' => $result['erreur'] ?? null
             ]);
+
             return new JsonResponse([
                 'code' => $result['code'],
-                'type' => 'alert',
-                'erreur' => $result['erreur']
+                'type' => 'critical',
+                'message' => "Le serveur SonarQube n'est pas disponible (Erreur {$result['code']}).",
+                'trace' => $result['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
@@ -125,6 +129,8 @@ class ApiAccueilController extends AbstractController
     #[IsGranted('ROLE_COLLECTE')]
     public function accueilProjetListe(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/accueil/projet");
+
         // Vérifie X-App-Client
         if ($resp = $this->checkApiClient($request, $this->appClient)) {
             return $resp; // renvoie 403 si pas ok
@@ -146,11 +152,17 @@ class ApiAccueilController extends AbstractController
         $result = $this->client->httpSonarQube($url);
 
         if ($result['code'] != 200) {
-            $this->logger->error("[Accueil-projet] ❌ Erreur de l'appel à SonarQube", ['erreur' => $result['erreur']]);
+            $this->logger->error("[Accueil-projet] ❌ Erreur de l'appel à SonarQube.", [
+                'code' => $result['code'],
+                'url' => $url,
+                'erreur' => $result['erreur'] ?? null
+            ]);
+
             return new JsonResponse([
                 'code' => $result['code'],
                 'type' => 'alert',
-                'message' => $result['erreur']
+                'message' => "Une erreur est survenue lors de la recherche des projets depuis le serveur SonarQube (Erreur {$result['code']}).",
+                'trace' => $result['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
@@ -163,22 +175,28 @@ class ApiAccueilController extends AbstractController
         /** On vérifie que SonarQube a au moins 1 projet */
         if (array_key_exists('json', $result) && empty($result['json']['components'])){
             $this->logger->warning('[Accueil-projet] ⚠️ Aucun projet Sonar trouvé.');
+
             return new JsonResponse([
                 'code' => 404,
                 'type' => 'warning',
-                'message' => static::$erreur404
+                'message' => "Aucun projet sonar trouvé (Erreur 404).",
+                'trace' => static::$erreur404
             ], Response::HTTP_OK);
         }
 
         /** On supprime les données de la table avant d'importer les données. */
         $delete = $listeProjetRepos->deleteListeProjet();
-        if ($delete['code'] != 200) {
-            $this->logger->error('[Accueil-projet] ❌ Échec suppression des anciens projets', ['erreur' => $delete['erreur']]);
+        if ($delete['code'] !== 200) {
+            $this->logger->error('[Accueil-projet] ❌ Échec de la requête deleteListeProjet.', [
+                'code' => $delete['code'],
+                'erreur' => $delete['erreur'] ?? null
+            ]);
+
             return new JsonResponse([
                 'code' => $delete['code'],
                 'type' => 'alert',
-                'message' => "Échec de l’exécution de la requête deleteListeProjet ({$delete['code']}).",
-                'trace' => $delete['erreur']
+                'message' => "La suppression de la liste des projets a échouée ({$delete['code']}).",
+                'trace' => $delete['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
@@ -224,12 +242,17 @@ class ApiAccueilController extends AbstractController
         $r = $propertiesRepos->updatePropertiesProjet($map);
 
         if ($r['code'] != 200) {
-            $this->logger->error('[Accueil-projet] ❌ Échec de la requête updatePropertiesProjet :', ['erreur' => $r['erreur']]);
+            $this->logger->error('[Accueil-projet] ❌ Échec de la requête updatePropertiesProjet.', [
+                'code' => $r['code'],
+                'map' => $map ?? null,
+                'erreur' => $r['erreur'] ?? null
+            ]);
+
             return new JsonResponse([
                 'code' => $r['code'],
                 'type' => 'alert',
-                'message' => "Échec de l’exécution de la requête updatePropertiesProjet ({$r['code']}).",
-                'trace' => $r['erreur']
+                'message' => "La mise à jour des méta-données du projet a échouée ({$r['code']}).",
+                'trace' => $r['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
@@ -264,6 +287,8 @@ class ApiAccueilController extends AbstractController
     #[IsGranted('ROLE_COLLECTE')]
     public function accueilProjetTags(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/accueil/tags");
+
         // Vérifie X-App-Client
         if ($resp = $this->checkApiClient($request, $this->appClient)) {
             return $resp; // renvoie 403 si pas ok
@@ -272,16 +297,20 @@ class ApiAccueilController extends AbstractController
         /** On instancie l'EntityRepository */
         $listeProjetRepos = $this->em->getRepository(ListeProjet::class);
 
-        $this->logger->info('[Accueil] ℹ️ Comptage des tags de projets');
+        $this->logger->info('[Accueil] ℹ️ Comptage des tags des projets.');
         $tag = $listeProjetRepos->countListeProjetTags();
 
         if ($tag['code'] != 200) {
-            $this->logger->error('[Accueil] ❌ Échec de la requête countListeProjetTags :', [ 'erreur' => $tag['erreur']]);
+            $this->logger->error('[Accueil] ❌ Échec de la requête countListeProjetTags.', [
+                'code' => $tag['code'],
+                'erreur' => $tag['erreur'] ?? null
+            ]);
+
             return new JsonResponse([
                 'code' => $tag['code'],
                 'type' => 'alert',
-                'message' =>"Échec de l’exécution de la requête countListeProjetTags ({$tag['code']}).",
-                'trace' => $tag['erreur']
+                'message' =>"Le dénombrement des tags de projets n'a pas abouti ({$tag['code']}).",
+                'trace' => $tag['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
