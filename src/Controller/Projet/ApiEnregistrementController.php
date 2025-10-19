@@ -73,6 +73,8 @@ class ApiEnregistrementController extends AbstractController
     #[Route('/api/enregistrement', name: 'enregistrement', methods: ['PUT'])]
     public function enregistrement(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/enregistrement");
+
         // Vérifie X-App-Client
         if ($resp = $this->checkApiClient($request, $this->appClient)) {
             return $resp; // renvoie 403 si pas ok
