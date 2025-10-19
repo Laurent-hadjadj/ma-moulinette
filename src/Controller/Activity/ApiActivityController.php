@@ -164,6 +164,8 @@ class ApiActivityController extends AbstractController
     #[Route('/api/activity/sauvegarde', name: 'sauvegarde_historique', methods: ['POST'])]
     public function sauvegardeHistorique(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/activity/sauvegarde");
+
         // Vérifie X-App-Client
         if ($resp = $this->checkApiClient($request, $this->appClient)) {
             return $resp; // renvoie 403 si pas ok
@@ -194,7 +196,7 @@ class ApiActivityController extends AbstractController
         $queryParams = ['p' => 1, 'ps' => 1];
         $result = $this->client->httpActivity("$url/api/ce/activity?" . http_build_query($queryParams));
 
-        if (isset($result['code']) && in_array($result['code'], [400, 401, 404, 500, 503, 504])) {
+        if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
             return new JsonResponse([
                 'code' => $result['code'],
                 'type' => 'alert',
