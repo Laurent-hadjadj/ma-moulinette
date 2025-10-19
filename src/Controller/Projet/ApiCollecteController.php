@@ -14,6 +14,7 @@
 namespace App\Controller\Projet;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,6 +22,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\SecurityBundle\Security;
 use Psr\Log\LoggerInterface;
 
+use App\Controller\Traits\RequireAuthenticatedClientTrait;
 /** Gestion de accès aux API */
 use App\Controller\Batch\BatchCollecteInformationProjetController;
 use App\Controller\Batch\BatchCollecteMesureController;
@@ -41,13 +43,16 @@ use App\Controller\Batch\BatchCollecteLoggerController;
  */
 class ApiCollecteController extends AbstractController
 {
+    use RequireAuthenticatedClientTrait;
+
+    private $appClient;
+
     /** Définition des constantes */
-    public static $reference = "<strong>[Collecte]</strong> ";
-    public static $erreur400 = "La requête est incorrecte (Erreur 400).";
-    public static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
-    public static $loggerE400 = "[Collecte] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé.";
-    public static $loggerE403 = "[Collecte] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).";
-    public static $noSpecify = 'non spécifiée';
+    private static $erreur400 = "La requête est incorrecte (Erreur 400).";
+    private static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
+    private static $loggerE400 = "[Collecte] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé.";
+    private static $loggerE403 = "[Collecte] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).";
+    private static $noSpecify = 'non spécifiée';
 
     public function __construct(
         private BatchCollecteInformationProjetController $batchCollecteInformation,
@@ -63,9 +68,11 @@ class ApiCollecteController extends AbstractController
         private BatchCollecteTodoController $batchCollecteTodo,
         private BatchCollecteActuatorController $batchCollecteActuator,
         private BatchCollecteLoggerController $batchCollecteLogger,
+        private ParameterBagInterface $params,
         private Security $security,
         private LoggerInterface $logger,
     ) {
+        $this->appClient = $this->params->get('app.client');
     }
 
     /**
@@ -82,7 +89,12 @@ class ApiCollecteController extends AbstractController
     #[Route('/api/collecte/information', name: 'api_collecte_information', methods: ['POST'])]
     public function apiCollecteInformation(Request $request): JsonResponse
     {
-        $this->logger->info("📥 [API] Requête reçue sur /api/collecte/information");
+        $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/information");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
 
         // On décode le body
         $data = json_decode($request->getContent());
@@ -90,7 +102,7 @@ class ApiCollecteController extends AbstractController
         // Vérification de la validité du corps de la requête
         if (!is_object($data) || !property_exists($data, 'maven_key')) {
             $this->logger->alert(static::$loggerE400, [
-                'data' => $request->getContent()
+                'payload' => $request->getContent()
             ]);
 
             return new JsonResponse([
@@ -111,14 +123,14 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'type' => 'warning',
                 'code' => 403,
-                'message' => static::$reference . static::$erreur403,
+                'message' => static::$erreur403,
                 'trace' => null
             ], Response::HTTP_OK);
         }
 
         // Récupération du courriel pour la collecte
         $utilisateur_collecte = $this->security->getUser()->getCourriel();
-        $this->logger->info('ℹ️ [Collecte] Début de collecte des informations du projet.', [
+        $this->logger->info('[Collecte] ℹ️ Début de collecte des informations du projet.', [
             'maven_key' => $data->maven_key,
             'utilisateur' => $utilisateur_collecte
         ]);
@@ -132,7 +144,7 @@ class ApiCollecteController extends AbstractController
 
         // Gestion des erreurs de collecte
         if (($information['code'] ?? 500) !== 200) {
-            $this->logger->error('❌ [Collecte] Échec de la collecte des informations du projet.', [
+            $this->logger->error('[Collecte] ❌ Échec de la collecte des informations du projet.', [
                 'maven_key' => $data->maven_key,
                 'code' => $information['code'] ?? 'inconnu',
                 'message' => $information['message'] ?? 'absent',
@@ -143,12 +155,12 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => $information['code'] ?? 500,
                 'type' => 'warning',
-                'message' => static::$reference . ($information['message'] ?? $message),
+                'message' => $information['message'] ?? $message,
                 'trace' => $information['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
-        $this->logger->info('ℹ️ [Collecte] Informations collectées avec succès.', [
+        $this->logger->info('[Collecte] ℹ️ Informations collectées avec succès.', [
             'maven_key' => $data->maven_key,
             'version' => $information['historique']['version']
         ]);
@@ -186,7 +198,12 @@ class ApiCollecteController extends AbstractController
     #[Route('/api/collecte/mesure', name: 'api_collecte_mesure', methods: ['POST'])]
     public function apiCollecteMesure(Request $request): JsonResponse
     {
-        $this->logger->info("📥 [API] Requête reçue sur /api/collecte/mesure");
+        $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/mesure");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -201,7 +218,7 @@ class ApiCollecteController extends AbstractController
                 [
                     'code' => 400,
                     'type' => 'alert',
-                    'message' => static::$reference . static::$erreur400,
+                    'message' => static::$erreur400,
                     'trace' => null
                 ], Response::HTTP_OK);
         }
@@ -217,14 +234,14 @@ class ApiCollecteController extends AbstractController
                 [
                     'code' => 403,
                     'type' => 'warning',
-                    'message' => static::$reference . static::$erreur403,
+                    'message' => static::$erreur403,
                     'trace' => null
                 ], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
-        $this->logger->info('ℹ️ [Collecte] Début de collecte des mesures du projet.', [
+        $this->logger->info('[Collecte] ℹ️ Début de collecte des mesures du projet.', [
             'maven_key' => $data->maven_key,
             'utilisateur' => $utilisateur_collecte
         ]);
@@ -237,7 +254,7 @@ class ApiCollecteController extends AbstractController
         );
 
         if (($mesure['code'] ?? 500) !== 200) {
-            $this->logger->error('❌ [Collecte] Échec de la collecte des mesures.', [
+            $this->logger->error('[Collecte] ❌ Échec de la collecte des mesures.', [
                 'maven_key' => $data->maven_key,
                 'code' => $mesure['code'] ?? 'inconnu',
                 'message' => $mesure['message'] ?? 'absent',
@@ -248,12 +265,12 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => $mesure['code'],
                 'type' => 'alert',
-                'message' => static::$reference . ($mesure['message'] ?? $message),
+                'message' => $mesure['message'] ?? $message,
                 'trace' => $mesure['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
-        $this->logger->info('ℹ️ [Collecte] Mesures collectées avec succès.', [
+        $this->logger->info('[Collecte] ℹ️ Mesures collectées avec succès.', [
             'maven_key' => $data->maven_key,
             'project_name' => $mesure['data']['project_name']
         ]);
@@ -295,7 +312,12 @@ class ApiCollecteController extends AbstractController
     #[Route('/api/collecte/note', name: 'api_collecte_note', methods: ['POST'])]
     public function apiCollecteNote(Request $request): JsonResponse
     {
-        $this->logger->info("📥 [API] Requête reçue sur /api/collecte/note");
+        $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/note");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -307,14 +329,13 @@ class ApiCollecteController extends AbstractController
             !property_exists($data, 'type') ||
             !in_array($data->type, ['reliability', 'security', 'sqale'])
         ) {
-            $this->logger->alert(static::$loggerE400, [
-                'data' => $request->getContent()
-            ]);
+            $this->logger->alert("[Collecte] ❌ Requête invalide : clé 'maven_key', 'type', 'reliability', 'security', 'sqale' manquante ou JSON mal formé.",
+            [ 'payload' => $data ]);
 
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400,
+                'message' => static::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -329,14 +350,14 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
-                'message' => static::$reference . static::$erreur403,
+                'message' => static::$erreur403,
                 'trace' => null
             ], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel();
-        $this->logger->info('ℹ️ [Collecte] Début de collecte des notes du projet.', [
+        $this->logger->info('[Collecte] ℹ️ Début de collecte des notes du projet.', [
             'maven_key' => $data->maven_key,
             'type' => $data->type,
             'utilisateur' => $utilisateur_collecte
@@ -361,12 +382,12 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => $note['code'],
                 'type' => 'alert',
-                'message' => static::$reference . ($note['message'] ?? 'Collecte des notes du projet.'),
+                'message' => $note['message'] ?? 'Collecte des notes du projet.',
                 'trace' => $note['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
-        $this->logger->info('ℹ️ [Collecte] Note collectée avec succès.', [
+        $this->logger->info('[Collecte] ℹ️ Note collectée avec succès.', [
             'maven_key' => $data->maven_key,
             'type' => $data->type,
             'note' => $note['historique']["note_{$data->type}"] ?? null
@@ -393,7 +414,12 @@ class ApiCollecteController extends AbstractController
     #[Route('/api/collecte/owasp', name: 'api_collecte_owasp', methods: ['POST'])]
     public function apiCollecteOwasp(Request $request): JsonResponse
     {
-        $this->logger->info("📥 [API] Requête reçue sur /api/collecte/owasp");
+        $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/owasp");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -407,7 +433,7 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400,
+                'message' => static::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -422,14 +448,14 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
-                'message' => static::$reference . static::$erreur403,
+                'message' => static::$erreur403,
                 'trace' => null
             ], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel();
-        $this->logger->info('ℹ️ [Collecte] Début de collecte des menaces OWASP du projet.', [
+        $this->logger->info('[Collecte] ℹ️ Début de collecte des menaces OWASP du projet.', [
             'maven_key' => $data->maven_key,
             'utilisateur' => $utilisateur_collecte
         ]);
@@ -442,7 +468,7 @@ class ApiCollecteController extends AbstractController
         );
 
         if ($owasp['code'] !== 200){
-            $this->logger->error('❌ [Collecte] Échec de collecte des menaces OWASP du projet.', [
+            $this->logger->error('[Collecte] ❌ Échec de collecte des menaces OWASP du projet.', [
                 'code' => $owasp['code'],
                 'maven_key' => $data->maven_key,
                 'type' => $data->type,
@@ -453,12 +479,12 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => $owasp['code'],
                 'type' => 'alert',
-                'message' => static::$reference . ($owasp['message'] ?? $message),
+                'message' => $owasp['message'] ?? $message,
                 'trace' => $owasp['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
-        $this->logger->info('ℹ️ [Collecte] Menaces OWASP collectées avec succès.', [
+        $this->logger->info('[Collecte] ℹ️ Menaces OWASP collectées avec succès.', [
             'maven_key' => $data->maven_key,
             'OWASP2017' => $owasp['owasp2017'],
             'OWASP2021' => $owasp['owasp2021']
@@ -490,7 +516,12 @@ class ApiCollecteController extends AbstractController
     #[Route('/api/collecte/hotspot', name: 'api_collecte_hotspot', methods: ['POST'])]
     public function apiCollecteHotspot(Request $request): JsonResponse
     {
-        $this->logger->info("📥 [API] Requête reçue sur /api/collecte/hotspot");
+        $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/hotspot");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -504,7 +535,7 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400,
+                'message' => static::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -519,14 +550,14 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
-                'message' => static::$reference . static::$erreur403,
+                'message' => static::$erreur403,
                 'trace' => null
             ], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel();
-            $this->logger->info('ℹ️ [Collecte] Début de collecte des menaces potentielles du projet.', [
+            $this->logger->info('[Collecte] ℹ️ Début de collecte des menaces potentielles du projet.', [
                 'maven_key' => $data->maven_key,
                 'utilisateur' => $utilisateur_collecte
             ]);
@@ -539,7 +570,7 @@ class ApiCollecteController extends AbstractController
         );
 
         if ($hotspot['code'] !== 200){
-            $this->logger->error('❌ [Collecte] Échec de collecte des menaces potentielles du projet.', [
+            $this->logger->error('[Collecte] ❌ Échec de collecte des menaces potentielles du projet.', [
                 'code' => $hotspot['code'],
                 'maven_key' => $data->maven_key,
                 'type' => $data->type,
@@ -548,13 +579,14 @@ class ApiCollecteController extends AbstractController
 
             $message = 'Collecte des menaces potentielles du projet.';
             return new JsonResponse([
-                'code' => $hotspot['code'], 'type' => 'alert',
-                'message' => static::$reference . ($hotspot['message'] ?? $message),
+                'code' => $hotspot['code'],
+                'type' => 'alert',
+                'message' => $hotspot['message'] ?? $message,
                 'trace' => $hotspot['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
-        $this->logger->info('ℹ️ [Collecte] Menaces potentielles collectées avec succès.', [
+        $this->logger->info('[Collecte] ℹ️ Menaces potentielles collectées avec succès.', [
             'maven_key' => $data->maven_key,
             'hotspot_high' => $hotspot['historique']['hotspot_high'],
             'hotspot_medium' => $hotspot['historique']['hotspot_medium'],
@@ -588,7 +620,12 @@ class ApiCollecteController extends AbstractController
     #[Route('/api/collecte/anomalie', name: 'api_collecte_anomalie', methods: ['POST'])]
     public function apiCollecteAnomalie(Request $request): JsonResponse
     {
-        $this->logger->info("📥 [API] Requête reçue sur /api/collecte/anomalie");
+        $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/anomalie");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -602,7 +639,7 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message'=> static::$reference . static::$erreur400,
+                'message'=> static::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -617,14 +654,14 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
-                'message' => static::$reference . static::$erreur403,
+                'message' => static::$erreur403,
                 'trace' => null
             ], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel();
-        $this->logger->info('ℹ️ [Collecte] Début de collecte des anomalies du projet.', [
+        $this->logger->info('[Collecte] ℹ️ Début de collecte des anomalies du projet.', [
             'maven_key' => $data->maven_key,
             'utilisateur' => $utilisateur_collecte
         ]);
@@ -638,7 +675,7 @@ class ApiCollecteController extends AbstractController
         );
 
         if ($anomalie['code'] !== 200){
-            $this->logger->error('❌ [Collecte] Échec de collecte des anomalies du projet.', [
+            $this->logger->error('[Collecte] ❌ Échec de collecte des anomalies du projet.', [
                 'code' => $anomalie['code'],
                 'maven_key' => $data->maven_key,
                 'erreur' => $anomalie['erreur'] ?? static::$noSpecify
@@ -648,11 +685,12 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => $anomalie['code'],
                 'type' => 'alert',
-                'message' => static::$reference . ($anomalie['message'] ?? $message),'trace' => $anomalie['erreur'] ?? null
+                'message' => $anomalie['message'] ?? $message,
+                'trace' => $anomalie['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
-        $this->logger->info('ℹ️ [Collecte] Anomalies collectées avec succès.', [
+        $this->logger->info('[Collecte] ℹ️ Anomalies collectées avec succès.', [
             'maven_key' => $data->maven_key,
             'violations' => $anomalie['historique']['violations'],
             'nombre_bug' => $anomalie['historique']['nombre_bug'],
@@ -686,7 +724,12 @@ class ApiCollecteController extends AbstractController
     #[Route('/api/collecte/anomalie/detail', name: 'api_collecte_anomalie_detail', methods: ['POST'])]
     public function apiCollecteAnomalieDetail(Request $request): JsonResponse
     {
-        $this->logger->info("📥 [API] Requête reçue sur /api/collecte/anomalie/detail");
+        $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/anomalie/detail");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -700,7 +743,7 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message'=> static::$reference . static::$erreur400,
+                'message'=> static::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -715,14 +758,14 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
-                'message' => static::$reference . static::$erreur403,
+                'message' => static::$erreur403,
                 'trace' => null
             ], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel();
-        $this->logger->info('ℹ️ [Collecte] Début de collecte du détail des anomalies pour le projet.', [
+        $this->logger->info('[Collecte] ℹ️ Début de collecte du détail des anomalies pour le projet.', [
             'maven_key' => $data->maven_key,
             'utilisateur' => $utilisateur_collecte
         ]);
@@ -735,7 +778,7 @@ class ApiCollecteController extends AbstractController
         );
 
         if ($anomalieDetail['code'] !== 200){
-            $this->logger->error('❌ [Collecte] Échec de collecte du détail des anomalies pour le projet.', [
+            $this->logger->error('[Collecte] ❌ Échec de collecte du détail des anomalies pour le projet.', [
                 'code' => $anomalieDetail['code'],
                 'maven_key' => $data->maven_key,
                 'type' => $data->type,
@@ -747,11 +790,12 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => $anomalieDetail['code'],
                 'type' => 'alert',
-                'message' => static::$reference . ($anomalieDetail['message'] ?? $message), 'trace' => $anomalieDetail['erreur'] ?? null
+                'message' => $anomalieDetail['message'] ?? $message,
+                'trace' => $anomalieDetail['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
-        $this->logger->info('ℹ️ [Collecte] Détails des anomalies collectées avec succès.', [
+        $this->logger->info('[Collecte] ℹ️ Détails des anomalies collectées avec succès.', [
             'maven_key' => $data->maven_key,
         ]);
 
@@ -776,7 +820,12 @@ class ApiCollecteController extends AbstractController
     #[Route('/api/collecte/hotspot/owasp', name: 'api_collecte_hotspot_owasp', methods: ['POST'])]
     public function apiCollecteHotspotOwasp(Request $request): JsonResponse
     {
-        $this->logger->info("📥 [API] Requête reçue sur /api/collecte/hotspot/owasp");
+        $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/hotspot/owasp");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -785,14 +834,13 @@ class ApiCollecteController extends AbstractController
         if (!is_object($data) ||
             !property_exists($data, 'maven_key') ||
             !property_exists($data, 'menace')) {
-            $this->logger->alert(static::$loggerE400, [
-                'data' => $request->getContent()
-            ]);
+            $this->logger->alert("[Collecte] ❌ Requête invalide : clé 'maven_key', 'menace', manquante ou JSON mal formé.",
+            [ 'payload' => $data ]);
 
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message'=> static::$reference . static::$erreur400,
+                'message'=> static::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -807,14 +855,14 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
-                'message' => static::$reference . static::$erreur403,
+                'message' => static::$erreur403,
                 'trace' => null
             ], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel();
-        $this->logger->info('ℹ️ [Collecte] Début de collecte des menaces OWASP potentielles du projet.', [
+        $this->logger->info('[Collecte] ℹ️ Début de collecte des menaces OWASP potentielles du projet.', [
             'maven_key' => $data->maven_key,
             'utilisateur' => $utilisateur_collecte
         ]);
@@ -827,7 +875,7 @@ class ApiCollecteController extends AbstractController
         );
 
         if ($hotspotOwasp['code'] !== 200){
-            $this->logger->error('❌ [Collecte] Échec de collecte des menaces OWASP potentielles du projet.', [
+            $this->logger->error('[Collecte] ❌ Échec de collecte des menaces OWASP potentielles du projet.', [
                 'code' => $hotspotOwasp['code'],
                 'maven_key' => $data->maven_key,
                 'type' => $data->type,
@@ -838,11 +886,12 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => $hotspotOwasp['code'],
                 'type' => 'alert',
-                'message' => static::$reference . ($hotspotOwasp['message'] ?? $message), 'trace' => $hotspotOwasp['erreur']
+                'message' => $hotspotOwasp['message'] ?? $message,
+                'trace' => $hotspotOwasp['erreur']
             ], Response::HTTP_OK);
         }
 
-        $this->logger->info('ℹ️ [Collecte] Menaces OWASP potentielles collectées avec succès.', [
+        $this->logger->info('[Collecte] ℹ️ Menaces OWASP potentielles collectées avec succès.', [
             'maven_key' => $data->maven_key,
             'info' => $hotspotOwasp['info'],
             'owasp2017' => $hotspotOwasp['owasp_2017'] ?? 'NC',
@@ -873,7 +922,12 @@ class ApiCollecteController extends AbstractController
     #[Route('/api/collecte/hotspot/detail', name: 'api_collecte_hotspot_detail', methods: ['POST'])]
     public function apiCollecteHotspotDetail(Request $request): JsonResponse
     {
-        $this->logger->info("📥 [API] Requête reçue sur /api/collecte/hotspot/detail");
+        $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/hotspot/detail");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -887,7 +941,7 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400,
+                'message' => static::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -902,14 +956,14 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
-                'message' => static::$reference . static::$erreur403,
+                'message' => static::$erreur403,
                 'trace' => null
             ], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel();
-        $this->logger->info('ℹ️ [Collecte] Début de collecte du détail des menaces potentielle du projet.', [
+        $this->logger->info('[Collecte] ℹ️ Début de collecte du détail des menaces potentielle du projet.', [
             'maven_key' => $data->maven_key,
             'utilisateur' => $utilisateur_collecte
         ]);
@@ -922,7 +976,7 @@ class ApiCollecteController extends AbstractController
         );
 
         if ($hotspotDetail['code'] !== 200){
-            $this->logger->error('❌ [Collecte] Échec de collecte du détail des menaces potentielles du projet.', [
+            $this->logger->error('[Collecte] ❌ Échec de collecte du détail des menaces potentielles du projet.', [
                 'code' => $hotspotDetail['code'],
                 'maven_key' => $data->maven_key,
                 'erreur' => $hotspotDetail['erreur'] ?? static::$noSpecify
@@ -932,11 +986,12 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => $hotspotDetail['code'],
                 'type' => 'alert',
-                'message' => static::$reference . ($hotspotDetail['message'] ?? $message), 'trace' => $hotspotDetail['erreur'] ?? null
+                'message' => $hotspotDetail['message'] ?? $message,
+                'trace' => $hotspotDetail['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
-        $this->logger->info('ℹ️ [Collecte] Menaces potentielles collectées avec succès.', [
+        $this->logger->info('[Collecte] ℹ️ Menaces potentielles collectées avec succès.', [
             'maven_key' => $data->maven_key,
             'nombre' => $hotspotDetail['nombre'],
         ]);
@@ -962,7 +1017,12 @@ class ApiCollecteController extends AbstractController
     #[Route('/api/collecte/nosonar', name: 'api_collecte_nosonar', methods: ['POST'])]
     public function apiCollecteNoSonar(Request $request): JsonResponse
     {
-        $this->logger->info("📥 [API] Requête reçue sur /api/collecte/nosonar");
+        $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/nosonar");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -976,7 +1036,7 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400,
+                'message' => static::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -991,14 +1051,14 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
-                'message' => static::$reference . static::$erreur403,
+                'message' => static::$erreur403,
                 'trace' => null
             ], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
-        $this->logger->info('ℹ️ [Collecte] Début de collecte des noSonar du projet.', [
+        $this->logger->info('[Collecte] ℹ️ Début de collecte des noSonar du projet.', [
             'maven_key' => $data->maven_key,
             'utilisateur' => $utilisateur_collecte
         ]);
@@ -1011,7 +1071,7 @@ class ApiCollecteController extends AbstractController
         );
 
         if ($noSonar['code'] !== 200){
-            $this->logger->error('❌ [Collecte] Échec de collecte des annotations noSonar et suppressWarning du projet.', [
+            $this->logger->error('[Collecte] ❌ Échec de collecte des annotations noSonar et suppressWarning du projet.', [
                 'code' => $noSonar['code'],
                 'maven_key' => $data->maven_key,
                 'type' => $data->type,
@@ -1022,12 +1082,12 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => $noSonar['code'],
                 'type' => 'alert',
-                'message' => static::$reference . ($noSonar['message'] ?? $message),
+                'message' => $noSonar['message'] ?? $message,
                 'trace' => $noSonar['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
-        $this->logger->info('ℹ️ [Collecte] NoSonar collectées avec succès.', [
+        $this->logger->info('[Collecte] ℹ️ NoSonar collectées avec succès.', [
             'maven_key' => $data->maven_key,
             'suppress_warning' => $noSonar['historique']['suppress_warning'] ?? 0,
             'no_sonar' => $noSonar['historique']['no_sonar'] ?? 0,
@@ -1055,7 +1115,12 @@ class ApiCollecteController extends AbstractController
     #[Route('/api/collecte/todo', name: 'api_collecte_todo', methods: ['POST'])]
     public function apiCollecteTodo(Request $request): response
     {
-        $this->logger->info("📥 [API] Requête reçue sur /api/collecte/todo");
+        $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/todo");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -1069,7 +1134,7 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400,
+                'message' => static::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -1084,14 +1149,14 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
-                'message' => static::$reference . static::$erreur403,
+                'message' => static::$erreur403,
                 'trace' => null
             ], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel() ?? 'null';
-        $this->logger->info('ℹ️ [Collecte] Début de collecte des todos du projet.', [
+        $this->logger->info('[Collecte] ℹ️ Début de collecte des todos du projet.', [
             'maven_key' => $data->maven_key,
             'utilisateur' => $utilisateur_collecte
         ]);
@@ -1104,7 +1169,7 @@ class ApiCollecteController extends AbstractController
         );
 
         if ($todo['code'] !== 200){
-            $this->logger->error('❌ [Collecte] Échec de collecte des todos du projet.', [
+            $this->logger->error('[Collecte] ❌ Échec de collecte des todos du projet.', [
                 'code' => $todo['code'],
                 'maven_key' => $data->maven_key,
                 'type' => $data->type,
@@ -1115,12 +1180,12 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => $todo['code'],
                 'type' => 'alert',
-                'message' => static::$reference . ($todo['message'] ?? $message),
+                'message' => $todo['message'] ?? $message,
                 'trace' => $todo['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
-        $this->logger->info('ℹ️ [Collecte] Todos collectés avec succès.', [
+        $this->logger->info('[Collecte] ℹ️ Todos collectés avec succès.', [
             'maven_key' => $data->maven_key,
             'todo' => $todo['nombre']
         ]);
@@ -1146,7 +1211,12 @@ class ApiCollecteController extends AbstractController
     #[Route('/api/collecte/actuator/info', name: 'api_collecte_actuator_info', methods: ['POST'])]
     public function apiCollecteActuator(Request $request): JsonResponse
     {
-        $this->logger->info("📥 [API] Requête reçue sur /api/collecte/actuator/info");
+        $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/actuator/info");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -1160,7 +1230,7 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400,
+                'message' => static::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -1175,14 +1245,14 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
-                'message' => static::$reference . static::$erreur403,
+                'message' => static::$erreur403,
                 'trace' => null
             ], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel();
-        $this->logger->info('ℹ️ [Collecte] Début de collecte des informations Actuator du projet JAVA.', [
+        $this->logger->info('[Collecte] ℹ️ Début de collecte des informations Actuator du projet JAVA.', [
             'maven_key' => $data->maven_key,
             'utilisateur' => $utilisateur_collecte
         ]);
@@ -1195,7 +1265,7 @@ class ApiCollecteController extends AbstractController
         );
 
         if ($actuatorInfo['code'] !== 200){
-            $this->logger->error('❌ [Collecte] Échec de collecte des informations Actuator du projet JAVA.', [
+            $this->logger->error('[Collecte] ❌ Échec de collecte des informations Actuator du projet JAVA.', [
                 'code' => $actuatorInfo['code'],
                 'maven_key' => $data->maven_key,
                 'type' => $data->type,
@@ -1206,11 +1276,12 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => $actuatorInfo['code'],
                 'type' => 'alert',
-                'message' => static::$reference . ($actuatorInfo['message'] ?? $message),'trace' => $actuatorInfo['erreur']
+                'message' => $actuatorInfo['message'] ?? $message,
+                'trace' => $actuatorInfo['erreur']
             ], Response::HTTP_OK);
         }
 
-        $this->logger->info('ℹ️ [Collecte] Actuator Infos collectés avec succès.', [
+        $this->logger->info('[Collecte] ℹ️ Actuator Infos collectés avec succès.', [
             'maven_key' => $data->maven_key,
         ]);
 
@@ -1235,7 +1306,12 @@ class ApiCollecteController extends AbstractController
     #[Route('/api/collecte/logger', name: 'api_collecte_logger', methods: ['POST'])]
     public function apiCollecteLogger(Request $request): JsonResponse
     {
-        $this->logger->info("📥 [API] Requête reçue sur /api/collecte/logger");
+        $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/logger");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -1249,7 +1325,7 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400,
+                'message' => static::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -1264,14 +1340,14 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
-                'message' => static::$reference . static::$erreur403,
+                'message' => static::$erreur403,
                 'trace' => null
             ], Response::HTTP_OK);
         }
 
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel();
-        $this->logger->info('ℹ️ [Collecte] Début de collecte des loggers du projet.', [
+        $this->logger->info('[Collecte] ℹ️ Début de collecte des loggers du projet.', [
             'maven_key' => $data->maven_key,
             'utilisateur' => $utilisateur_collecte
         ]);
@@ -1284,7 +1360,7 @@ class ApiCollecteController extends AbstractController
         );
 
         if ($logger['code'] !== 200){
-            $this->logger->error('❌ [Collecte] Échec de collecte des loggers du projet.', [
+            $this->logger->error('[Collecte] ❌ Échec de collecte des loggers du projet.', [
                 'code' => $logger['code'],
                 'maven_key' => $data->maven_key,
                 'erreur' => $logger['erreur'] ?? static::$noSpecify
@@ -1294,12 +1370,12 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => $logger['code'],
                 'type' => 'alert',
-                'message' => static::$reference . ($logger['message'] ?? $message),
+                'message' => $logger['message'] ?? $message,
                 'trace' => $logger['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
-        $this->logger->info('ℹ️ [Collecte] Loggers collectés avec succès.', [
+        $this->logger->info('[Collecte] ℹ️ Loggers collectés avec succès.', [
             'maven_key' => $data->maven_key,
         ]);
 
