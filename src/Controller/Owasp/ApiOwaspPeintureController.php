@@ -254,7 +254,7 @@ class ApiOwaspPeintureController extends AbstractController
 
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key')) {
-            $this->logger->alert("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé.", [
+            $this->logger->alert("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé..", [
                 'payload' => $data
             ]);
 
@@ -564,7 +564,7 @@ class ApiOwaspPeintureController extends AbstractController
         $high = $hotspotOwaspRepos->countHotspotOwaspMenaceByStatus($map);
 
         if ($high['code'] != 200) {
-            $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête selectHotspotDetailsByStatus.', [
+            $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête countHotspotOwaspMenaceByStatus.', [
                 'code' => $high['code'],
                 'erreur' => $high['erreur'],
                 'maven_key' => $data->maven_key,
@@ -588,7 +588,7 @@ class ApiOwaspPeintureController extends AbstractController
         ];
         $medium = $hotspotOwaspRepos->countHotspotOwaspMenaceByStatus($map);
         if ($medium['code'] != 200) {
-            $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête selectHotspotDetailsByStatus.', [
+            $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête countHotspotOwaspMenaceByStatus.', [
                 'code' => $medium['code'],
                 'erreur' => $medium['erreur'],
                 'maven_key' => $data->maven_key,
