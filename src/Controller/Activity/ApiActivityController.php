@@ -331,6 +331,8 @@ class ApiActivityController extends AbstractController
     #[Route('/api/activity/dessin', name: 'api_dessin', methods: ['POST'])]
     public function apiDessin(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/activity/dessin");
+
         // Vérifie X-App-Client
         if ($resp = $this->checkApiClient($request, $this->appClient)) {
             return $resp; // renvoie 403 si pas ok
