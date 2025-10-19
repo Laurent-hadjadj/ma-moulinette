@@ -14,12 +14,15 @@
 namespace App\Controller\Owasp;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 use Doctrine\ORM\EntityManagerInterface;
+
+use App\Controller\Traits\RequireAuthenticatedClientTrait;
 use App\Entity\Owasp;
 use App\Entity\HotspotOwasp;
 use App\Entity\HotspotDetails;
@@ -29,6 +32,10 @@ use App\Entity\HotspotDetails;
  */
 class ApiOwaspPeintureController extends AbstractController
 {
+    use RequireAuthenticatedClientTrait;
+
+    private $appClient;
+
     /** Définition des constantes */
     private static $erreur400 = "La requête est incorrecte (Erreur 400).";
 
@@ -41,9 +48,11 @@ class ApiOwaspPeintureController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function __construct(private EntityManagerInterface $em)
+    public function __construct(
+        private EntityManagerInterface $em,
+        private ParameterBagInterface $params)
     {
-        $this->em = $em;
+        $this->appClient = $this->params->get('app.client');
     }
 
     /**
@@ -61,8 +70,13 @@ class ApiOwaspPeintureController extends AbstractController
     #[Route('/api/peinture/owasp/liste', name: 'peinture_owasp_liste', methods: ['POST'])]
     public function peintureOwaspListe(Request $request): JsonResponse
     {
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
+
         /** On instancie l'entityRepository */
-        $owaspRepository = $this->em->getRepository(Owasp::class);
+        $owaspRepos = $this->em->getRepository(Owasp::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -79,7 +93,7 @@ class ApiOwaspPeintureController extends AbstractController
 
         /** On récupère les failles owasp */
         $map=['maven_key' => $data->maven_key, 'referential_owasp' => $data->referential_owasp];
-        $request=$owaspRepository->selectOwaspOrderByDateEnregistrement($map);
+        $request=$owaspRepos->selectOwaspOrderByDateEnregistrement($map);
         if ($request['code'] != 200) {
             return new JsonResponse([
                 'maven_key' => $data->maven_key,
@@ -168,8 +182,13 @@ class ApiOwaspPeintureController extends AbstractController
     #[Route('/api/peinture/owasp/hotspot/info', name: 'peinture_owasp_hotspot_info', methods: ['POST'])]
     public function peintureOwaspHotspotInfo(Request $request): JsonResponse
     {
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
+
         /** On instancie l'entityRepository */
-        $hotspotOwasp = $this->em->getRepository(HotspotOwasp::class);
+        $hotspotOwaspRepos = $this->em->getRepository(HotspotOwasp::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -185,8 +204,8 @@ class ApiOwaspPeintureController extends AbstractController
         }
 
         /** On compte le nombre de hotspot REVIEWED */
-        $map=['maven_key'=>$data->maven_key, 'status'=>'REVIEWED'];
-        $reviewed=$hotspotOwasp->countHotspotOwaspStatus($map);
+        $map = ['maven_key'=>$data->maven_key, 'status'=>'REVIEWED'];
+        $reviewed = $hotspotOwaspRepos->countHotspotOwaspStatus($map);
         if ($reviewed['code']!=200) {
             return new JsonResponse([
                 'maven_key' => $data->maven_key,
@@ -195,8 +214,8 @@ class ApiOwaspPeintureController extends AbstractController
         }
 
         /** On compte le nombre de hotspot TO_REVIEW */
-        $map=['maven_key'=>$data->maven_key, 'status'=>'TO_REVIEW'];
-        $toReview=$hotspotOwasp->countHotspotOwaspStatus($map);
+        $map = ['maven_key'=>$data->maven_key, 'status'=>'TO_REVIEW'];
+        $toReview = $hotspotOwaspRepos->countHotspotOwaspStatus($map);
         if ($toReview['code']!=200) {
             return new JsonResponse([
                 'maven_key' => $data->maven_key,'code'=>$toReview['code'],
@@ -205,7 +224,7 @@ class ApiOwaspPeintureController extends AbstractController
 
         /** On récupère le nombre de hotspot owasp par niveau de sévérité potentiel. */
         $map=['maven_key'=>$data->maven_key];
-        $probability=$hotspotOwasp->countHotspotOwaspProbability($map);
+        $probability=$hotspotOwaspRepos->countHotspotOwaspProbability($map);
         if ($probability['code']!=200) {
             return new JsonResponse([
                 'maven_key' => $data->maven_key, 'code'=>$probability['code'],
@@ -249,8 +268,13 @@ class ApiOwaspPeintureController extends AbstractController
     #[Route('/api/peinture/owasp/hotspot/liste', name: 'peinture_owasp_hotspot_liste', methods: ['POST'])]
     public function peintureOwaspHotspotListe(Request $request): JsonResponse
     {
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
+
         /** On instancie l'entityRepository */
-        $hotspotOwasp = $this->em->getRepository(HotspotOwasp::class);
+        $hotspotOwaspRepos = $this->em->getRepository(HotspotOwasp::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -266,7 +290,7 @@ class ApiOwaspPeintureController extends AbstractController
 
         /** On compte le nombre de hotspot de type OWASP au statut TO_REVIEWED */
         $map=['maven_key'=>$data->maven_key];
-        $menaces=$hotspotOwasp->countHotspotOwaspMenaces($map);
+        $menaces=$hotspotOwaspRepos->countHotspotOwaspMenaces($map);
         if ($menaces['code'] != 200) {
             return new JsonResponse([
                 'maven_key' => $data->maven_key,
@@ -334,8 +358,13 @@ class ApiOwaspPeintureController extends AbstractController
     #[Route('/api/peinture/owasp/hotspot/details', name: 'peinture_owasp_hotspot_details', methods: ['POST'])]
     public function peintureOwaspHotspotDetails(Request $request): JsonResponse
     {
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
+
         /** On instancie l'entityRepository */
-        $hotspotDetails = $this->em->getRepository(HotspotDetails::class);
+        $hotspotDetailsRepos = $this->em->getRepository(HotspotDetails::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -351,7 +380,7 @@ class ApiOwaspPeintureController extends AbstractController
 
         /** On récupère la liste des hotspots par status de la table détails. */
         $map=['maven_key' => $data->maven_key];
-        $details=$hotspotDetails->selectHotspotDetailsByStatus($map);
+        $details=$hotspotDetailsRepos->selectHotspotDetailsByStatus($map);
 
         if ($details['code'] != 200) {
             return new JsonResponse([
@@ -379,8 +408,13 @@ class ApiOwaspPeintureController extends AbstractController
     #[Route('/api/peinture/owasp/hotspot/severity', name: 'peinture_owasp_hotspot_severity', methods: ['POST'])]
     public function peintureOwaspSeverity(Request $request): JsonResponse
     {
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
+
         /** On instancie l'entityRepository */
-        $hotspotOwasp = $this->em->getRepository(HotspotOwasp::class);
+        $hotspotOwaspRepos = $this->em->getRepository(HotspotOwasp::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -396,7 +430,7 @@ class ApiOwaspPeintureController extends AbstractController
 
         /** On compte le nombre de faille OWASP au statut HIGH */
         $map=['maven_key'=>$data->maven_key, 'menace'=>$data->menace, 'probability'=>'HIGH'];
-        $high=$hotspotOwasp->countHotspotOwaspMenaceByStatus($map);
+        $high=$hotspotOwaspRepos->countHotspotOwaspMenaceByStatus($map);
         if ($high['code']!=200) {
             return new JsonResponse([
                 'maven_key' => $data->maven_key,
@@ -407,7 +441,7 @@ class ApiOwaspPeintureController extends AbstractController
 
         /** On compte le nombre de faille OWASP au statut MEDIUM */
         $map=['maven_key'=>$data->maven_key, 'menace'=>$data->menace, 'probability'=>'MEDIUM'];
-        $medium=$hotspotOwasp->countHotspotOwaspMenaceByStatus($map);
+        $medium=$hotspotOwaspRepos->countHotspotOwaspMenaceByStatus($map);
         if ($medium['code']!=200) {
             return new JsonResponse([
                 'maven_key' => $data->maven_key,
@@ -422,7 +456,7 @@ class ApiOwaspPeintureController extends AbstractController
             'menace' => $data->menace,
             'probability' => 'LOW'
         ];
-        $low=$hotspotOwasp->countHotspotOwaspMenaceByStatus($map);
+        $low=$hotspotOwaspRepos->countHotspotOwaspMenaceByStatus($map);
         if ($low['code']!=200) {
             return new JsonResponse([
                 'maven_key' => $data->maven_key,
