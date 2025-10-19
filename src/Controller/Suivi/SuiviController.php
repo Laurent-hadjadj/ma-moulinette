@@ -33,8 +33,7 @@ class SuiviController extends AbstractController
 {
     /** Définition des constantes */
     public static $page= "suivi/index.html.twig";
-    public static $titre = "[Suivi] ";
-    public static $erreur = "❌ Une erreur s'est produite ";
+    //public static $erreur = "❌ Une erreur s'est produite ";
     public static $erreur400 = "❌ La requête est incorrecte (Erreur 400).";
     public static $erreur404 = "⚠️ Vous devez être rattaché à une équipe (Erreur 404).";
     public static $erreur406 = "⚠️ Je n'ai pas trouvé de projets pour ton équipe. ".
@@ -87,7 +86,8 @@ class SuiviController extends AbstractController
             'marque_entreprise_long' => $this->marqueEntrepriseLong,
             'env' => $this->environnement,
             'version' => $this->version,
-            'date_copyright' => $this->dateCopyright];
+            'date_copyright' => $this->dateCopyright
+        ];
     }
 
     /**
@@ -132,7 +132,10 @@ class SuiviController extends AbstractController
 
         /** j'ai pas trouvé de projet pour cette équipe. */
         if (empty($projets)) {
-            return ['code' => 406, 'message' => static::$erreur406];
+            return [
+                'code' => 406,
+                'message' => static::$erreur406
+            ];
         }
 
         $searchId = $maven_key;
@@ -145,10 +148,13 @@ class SuiviController extends AbstractController
             }
         }
         if ($idFound === false) {
-            $message = "⚠️ Le projet n'est pas présent dans la liste de projets de l'utilisateur.";
+            $message = "[Suivi] ⚠️ Le projet n'est pas présent dans la liste de projets de l'utilisateur.";
             $this->logger->warning($message);
 
-            return [ 'code' => 406, 'message' => $message ];
+            return [
+                'code' => 406,
+                'message' => $message
+            ];
         }
         return ['code' => 200];
     }
@@ -193,7 +199,6 @@ class SuiviController extends AbstractController
     {
         $this->addFlash('notice', [
             'type' => $type,
-            'titre' => static::$titre,
             'message' => $message,
             'debug' => $debug
             ]);
@@ -217,13 +222,13 @@ class SuiviController extends AbstractController
     {
         $data = $repository->$method($map);
         if ($data['code'] != 200) {
-            $this->logger->error(static::$titre.static::$erreur, ['method' => $method, 'erreur' => $data['erreur']]);
+            $this->logger->error("[Suivi] ❌ Une erreur s'est produite.", [
+                'method' => $method,
+                'erreur' => $data['erreur']
+            ]);
 
             $debug = $method.' ---> '.$data['erreur'];
-            throw new FetchDataException(
-                static::$titre.static::$erreur."(Erreur {$data['code']}).",
-                $debug,
-                $this->getDefaultRender($map['maven_key']));
+            throw new FetchDataException("❌ Une erreur s'est produite (Erreur {$data['code']}).", $debug, $this->getDefaultRender($map['maven_key']));
         }
         return $data;
     }
@@ -288,19 +293,19 @@ class SuiviController extends AbstractController
 
         // Vérifications initiales
         if (empty($maven_key)) {
-            $this->logger->error(static::$titre.static::$erreur400);
+            $this->logger->error('[Suivi] ❌ ' . static::$erreur400);
             return $this->addFlashAndRender('alert', static::$erreur400, $debug, $render);
         }
 
         if (empty($teams)) {
-            $this->logger->warning(static::$titre.static::$erreur404);
+            $this->logger->warning('[Suivi] ❌ ' . static::$erreur404);
             return $this->addFlashAndRender('warning', static::$erreur404, $debug, $render);
         }
 
         // Vérification du projet
         $listeProjet = self::listeProjet($maven_key, $teams);
         if ($listeProjet['code'] === 406) {
-            $this->logger->warning(static::$titre.$listeProjet['message']);
+            $this->logger->warning('[Suivi] ⚠️ ' . $listeProjet['message']);
             return $this->addFlashAndRender('warning', $listeProjet['message'], $debug, $render);
         }
 
@@ -309,7 +314,7 @@ class SuiviController extends AbstractController
         $liste = $historiqueRepos->countHistoriqueProjet($map);
         if ($liste['code'] != 200 || $liste['nombre'] === 0) {
             $message = "⚠️ Le projet n'a pas été sauvegardé dans l'historique (Erreur 500).";
-            $this->logger->warning(static::$titre.$message);
+            $this->logger->warning('[Suivi] ' . $message);
             return $this->addFlashAndRender('warning', $message, $debug, $render);
         }
 
@@ -339,17 +344,16 @@ class SuiviController extends AbstractController
             $render['labels'] = json_encode($graphData['date']);
 
             $message = "✅ Les données ont été correctement récupérées.";
-            $this->logger->info(static::$titre.$message);
+            $this->logger->info('[Suivi] ' . $message);
             $this->addFlash('notice', [
                 'type' => 'success',
-                'titre' => static::$titre,
                 'message' => $message
             ]);
 
             return $this->render(static::$page, $render);
         } catch (FetchDataException $e) {
             $this->logger->critical(
-                "🔴 une erreur inattendue s'est produite (Erreur 500).",[
+                "[Suivi] 🔴 une erreur inattendue s'est produite (Erreur 500).", [
                     'message' => $e-getMessage(),
                     'debug' => $e->getDebug()
                 ]);
