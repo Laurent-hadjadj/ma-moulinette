@@ -30,7 +30,6 @@ use App\Service\MesProjets;
 class ProjetController extends AbstractController
 {
     private static $page= "projet/mes-projets.html.twig";
-    private static $titreFlash = "[Mes-Projets]";
     private static $erreur404 = "⚠️ Tu dois être rattaché à une équipe (Erreur 404).";
     private static $erreur406 = "⚠️ Je n'ai pas trouvé de projets pour ton équipe. Vérifie le nom du tag utilisé dans SonarQube (Erreur 406).";
 
@@ -75,7 +74,8 @@ class ProjetController extends AbstractController
             'marque_entreprise_long' => $this->marqueEntrepriseLong,
             'env' => $this->environnement,
             'version' => $this->version,
-            'date_copyright' => $this->dateCopyright];
+            'date_copyright' => $this->dateCopyright
+        ];
     }
 
     /**
@@ -130,7 +130,6 @@ class ProjetController extends AbstractController
             $render['liste_projet'] = [];
             $this->addFlash('notice', [
                 'type' => 'warning',
-                'titre' => static::$titreFlash,
                 'message' => static::$erreur404,
                 'debug'=> $debug
             ]);
@@ -142,7 +141,6 @@ class ProjetController extends AbstractController
             $render['liste_projet'] = [];
             $this->addFlash('notice',[
                     'type' => 'warning',
-                    'titre' => static::$titreFlash,
                     'message' => static::$erreur406,
                     'debug' => $mes_projets['erreur']
             ]);
@@ -162,7 +160,6 @@ class ProjetController extends AbstractController
             $render['liste_projet'] = [];
             $this->addFlash('notice', [
                 'type' => 'alert',
-                'titre' => static::$titreFlash,
                 'message' => static::$erreur404,
                 'debug' => $liste['erreur']
             ]);
