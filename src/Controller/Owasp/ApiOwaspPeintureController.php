@@ -17,11 +17,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-
-// Gestion de accès aux API
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-// Accès aux tables
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Owasp;
 use App\Entity\HotspotOwasp;
@@ -33,8 +30,7 @@ use App\Entity\HotspotDetails;
 class ApiOwaspPeintureController extends AbstractController
 {
     /** Définition des constantes */
-    public static $reference = "<strong>[OWASP]</strong>";
-    public static $erreur400 = "La requête est incorrecte (Erreur 400).";
+    private static $erreur400 = "La requête est incorrecte (Erreur 400).";
 
     /**
      * [Description for __construct]
@@ -74,17 +70,22 @@ class ApiOwaspPeintureController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key')
         || !property_exists($data, 'referential_owasp')) {
-            return new JsonResponse(
-                ['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference, 'message'=> static::$erreur400], Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => 400,
+                'type'=>'alert',
+                'message'=> static::$erreur400
+            ], Response::HTTP_OK);
         }
 
         /** On récupère les failles owasp */
         $map=['maven_key' => $data->maven_key, 'referential_owasp' => $data->referential_owasp];
         $request=$owaspRepository->selectOwaspOrderByDateEnregistrement($map);
-        if ($request['code']!=200) {
+        if ($request['code'] != 200) {
             return new JsonResponse([
-                'maven_key' => $data->maven_key, 'code'=>$request['code'],
-                'erreur' => $request['erreur']], Response::HTTP_OK);
+                'maven_key' => $data->maven_key,
+                'code'=>$request['code'],
+                'erreur' => $request['erreur']
+            ], Response::HTTP_OK);
         }
 
         /** si on ne trouve pas la liste on retourne une erreur HTTP 406 */
@@ -176,8 +177,11 @@ class ApiOwaspPeintureController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key')) {
             return new JsonResponse(
-                ['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                'message'=> static::$erreur400], Response::HTTP_OK);
+                [
+                    'code' => 400,
+                    'type'=>'alert',
+                    'message'=> static::$erreur400
+                ], Response::HTTP_OK);
         }
 
         /** On compte le nombre de hotspot REVIEWED */
@@ -253,19 +257,22 @@ class ApiOwaspPeintureController extends AbstractController
 
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key') ) {
-        return new JsonResponse(
-            ['data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-            'message'=> static::$erreur400], Response::HTTP_OK);
+        return new JsonResponse([
+            'code' => 400,
+            'type'=>'alert',
+            'message'=> static::$erreur400
+        ], Response::HTTP_OK);
         }
 
         /** On compte le nombre de hotspot de type OWASP au statut TO_REVIEWED */
         $map=['maven_key'=>$data->maven_key];
         $menaces=$hotspotOwasp->countHotspotOwaspMenaces($map);
-        if ($menaces['code']!=200) {
+        if ($menaces['code'] != 200) {
             return new JsonResponse([
                 'maven_key' => $data->maven_key,
-                'code'=>$menaces['code'], 'erreur' => $menaces['erreur']],
-                Response::HTTP_OK);
+                'code' => $menaces['code'],
+                'erreur' => $menaces['erreur']
+            ], Response::HTTP_OK);
         }
 
         $menaceA1 = $menaceA2 = $menaceA3 = $menaceA4 = $menaceA5 = $menaceA6 = $menaceA7 = $menaceA8 = $menaceA9 = $menaceA10 = 0;
@@ -336,19 +343,22 @@ class ApiOwaspPeintureController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key')) {
             return new JsonResponse([
-                'data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                'message'=> static::$erreur400], Response::HTTP_OK);
+                'code' => 400,
+                'type' => 'alert',
+                'message' => static::$erreur400
+            ], Response::HTTP_OK);
         }
 
         /** On récupère la liste des hotspots par status de la table détails. */
-        $map=['maven_key'=>$data->maven_key];
+        $map=['maven_key' => $data->maven_key];
         $details=$hotspotDetails->selectHotspotDetailsByStatus($map);
 
-        if ($details['code']!=200) {
+        if ($details['code'] != 200) {
             return new JsonResponse([
                 'maven_key' => $data->maven_key,
-                'code'=>$details['code'], 'erreur' => $details['erreur']],
-                Response::HTTP_OK);
+                'code' => $details['code'],
+                'erreur' => $details['erreur']
+            ], Response::HTTP_OK);
         }
 
         return new JsonResponse(['details' => $details], Response::HTTP_OK);
@@ -378,8 +388,10 @@ class ApiOwaspPeintureController extends AbstractController
         /** On teste si le body est correcte */
         if ($data === null || !property_exists($data, 'maven_key')) {
             return new JsonResponse([
-                'data'=>$data,'code'=>400, 'type'=>'alert','reference'=> static::$reference,
-                'message'=> static::$erreur400], Response::HTTP_OK);
+                'code' => 400,
+                'type' => 'alert',
+                'message'=> static::$erreur400
+            ], Response::HTTP_OK);
         }
 
         /** On compte le nombre de faille OWASP au statut HIGH */
@@ -388,8 +400,9 @@ class ApiOwaspPeintureController extends AbstractController
         if ($high['code']!=200) {
             return new JsonResponse([
                 'maven_key' => $data->maven_key,
-                'code'=>$high['code'], 'erreur' => $high['erreur']],
-                Response::HTTP_OK);
+                'code' => $high['code'],
+                'erreur' => $high['erreur']
+            ], Response::HTTP_OK);
         }
 
         /** On compte le nombre de faille OWASP au statut MEDIUM */
@@ -398,17 +411,24 @@ class ApiOwaspPeintureController extends AbstractController
         if ($medium['code']!=200) {
             return new JsonResponse([
                 'maven_key' => $data->maven_key,
-                'code'=>$medium['code'], 'erreur' => $medium['erreur']],
-                Response::HTTP_OK);
+                'code' => $medium['code'],
+                'erreur' => $medium['erreur']
+            ], Response::HTTP_OK);
         }
 
         /**  On compte le nombre de faille OWASP au statut LOW */
-        $map=['maven_key'=>$data->maven_key, 'menace'=>$data->menace, 'probability'=>'LOW'];
+        $map=[
+            'maven_key' => $data->maven_key,
+            'menace' => $data->menace,
+            'probability' => 'LOW'
+        ];
         $low=$hotspotOwasp->countHotspotOwaspMenaceByStatus($map);
         if ($low['code']!=200) {
             return new JsonResponse([
                 'maven_key' => $data->maven_key,
-                'code'=>$low['code'], 'erreur' => $low['erreur']], Response::HTTP_OK);
+                'code'=>$low['code'],
+                'erreur' => $low['erreur']
+            ], Response::HTTP_OK);
         }
 
         /**
