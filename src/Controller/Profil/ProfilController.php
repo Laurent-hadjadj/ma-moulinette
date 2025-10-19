@@ -73,7 +73,8 @@ class ProfilController extends AbstractController
             'marque_entreprise_long' => $this->marqueEntrepriseLong,
             'env' => $this->environnement,
             'version' => $this->version,
-            'date_copyright' => $this->dateCopyright];
+            'date_copyright' => $this->dateCopyright
+        ];
     }
 
     /**
@@ -106,7 +107,7 @@ class ProfilController extends AbstractController
 
                     $this->addFlash('notice', [
                         'type' => 'alert',
-                        'message' => "La liste des profils n'a pas été récupérée ({$r['code']})."
+                        'message' => "❌ La liste des profils n'a pas été récupérée ({$r['code']})."
                     ]);
                 }
 
@@ -115,7 +116,8 @@ class ProfilController extends AbstractController
 
                 $this->addFlash('notice', [
                     'type' => 'warning',
-                    'message' => "La liste des profils est vide. Vous devez la mettre à jour ! (Erreur 404)"]);
+                    'message' => "⚠️ La liste des profils est vide. Vous devez la mettre à jour ! (Erreur 404)"
+                ]);
                 } else {
                     $this->logger->info('[Profil] ℹ️ Profils récupérés avec succès', [
                         'nb_profils' => count($r['liste']),
@@ -129,7 +131,7 @@ class ProfilController extends AbstractController
 
             $this->addFlash('notice', [
                 'type' => 'alert',
-                'message' => "Une erreur technique est survenue lors de la récupération des profils (Erreur 500)."
+                'message' => "❌ Une erreur technique est survenue lors de la récupération des profils (Erreur 500)."
             ]);
 
             $render = static::genericRender();
