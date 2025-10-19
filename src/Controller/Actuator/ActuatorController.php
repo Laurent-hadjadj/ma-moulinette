@@ -77,7 +77,8 @@ class ActuatorController extends AbstractController
             'marque_entreprise_long' => $this->marqueEntrepriseLong,
             'env' => $this->environnement,
             'version' => $this->version,
-            'date_copyright' => $this->dateCopyright];
+            'date_copyright' => $this->dateCopyright
+        ];
     }
 
     #[Route('/actuator', name: 'actuator', methods:'GET')]
