@@ -15,6 +15,7 @@ namespace App\Controller\Repartition;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,6 +24,7 @@ use Exception;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
+use App\Controller\Traits\RequireAuthenticatedClientTrait;
 use App\Entity\Repartition;
 use App\Entity\RepartitionTemp;
 use App\Controller\Batch\BatchCollecteRepartitionController;
@@ -32,9 +34,12 @@ use App\Controller\Batch\BatchCollecteRepartitionController;
  */
 class ApiRepartitionController extends AbstractController
 {
+    use RequireAuthenticatedClientTrait;
+
+    private $appClient;
+
     private static $erreur400 = "La requête est incorrecte (Erreur 400).";
     private static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
-    private static $loggerE401 = "[Répartition-Module] 🚫 Aucun utilisateur connecté.";
     private static $loggerE403 = "[Répartition-Module] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).";
 
     /**
@@ -49,8 +54,12 @@ class ApiRepartitionController extends AbstractController
         private BatchCollecteRepartitionController $batchCollecteRepartition,
         private LoggerInterface $logger,
         private Security $security,
+        private ParameterBagInterface $params,
+
     ) {
         $this->batchCollecteRepartition = $batchCollecteRepartition;
+        $this->appClient = $this->params->get('app.client');
+
     }
 
     /**
@@ -68,11 +77,14 @@ class ApiRepartitionController extends AbstractController
     #[Route('/api/repartition/collecte', name: 'api_repartition_collecte', methods: ['PUT'])]
     public function apiRepartitionCollecte(Request $request): JsonResponse
     {
-        $user = $this->security->getUser();
-        if (!$user) {
-            $this->logger->error(static::$loggerE401);
-            throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 401).");
+        $this->logger->info("[API] 📥 Requête reçue sur /api/repartition/collecte");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
         }
+
+        $user = $this->security->getUser();
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -80,7 +92,6 @@ class ApiRepartitionController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null ||
             !isset($data->maven_key, $data->category, $data->severity, $data->setup)) {
-
             $this->logger->error("[Répartition-Collecte] ❌ Requête invalide : clé 'maven_key', 'category', 'severity' ou 'setup' manquante ou JSON mal formé.", [ 'payload' => $data ]);
 
             return new JsonResponse([
@@ -142,11 +153,14 @@ class ApiRepartitionController extends AbstractController
     #[Route('/api/repartition/analyse', name: 'repartition_analyse', methods: ['PUT'])]
     public function apiRepartitionAnalyse(Request $request): JsonResponse
     {
-        $user = $this->security->getUser();
-        if (!$user) {
-            $this->logger->error(static::$loggerE401);
-            throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 401).");
+        $this->logger->info("[API] 📥 Requête reçue sur /api/repartition/analyse");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
         }
+
+        $user = $this->security->getUser();
 
         // Instanciation des repositories
         $repartitionTempRepos = $this->em->getRepository(RepartitionTemp::class);
@@ -189,7 +203,7 @@ class ApiRepartitionController extends AbstractController
             return new JsonResponse([
                     'code' => 404,
                     'type' => 'warning',
-                    'message' => "[Répartition Analyse] La collecte n'a pas été lancée pour ce setup (Erreur 404).",
+                    'message' => "La collecte n'a pas été lancée pour ce setup (Erreur 404).",
                     'trace' => null
                 ]);
         }
@@ -238,7 +252,7 @@ class ApiRepartitionController extends AbstractController
                     'mode' => 'Manuel',
                 ], Response::HTTP_OK);
         } catch (Exception $trace) {
-            $this->logger->critical("[Répartition Analyse] 🔴 Exception lors du traitement de répartition des anomalies par module (Erreur 500).", [
+            $this->logger->critical("[Répartition-Analyse] 🔴 Exception lors du traitement de répartition des anomalies par module (Erreur 500).", [
                 'exception' => $trace->getMessage()
             ]);
 
@@ -266,11 +280,14 @@ class ApiRepartitionController extends AbstractController
     #[Route('/api/repartition/historique', name: 'repartition_historique', methods: ['PUT'])]
     public function apiRepartitionHistorique(Request $request): JsonResponse
     {
-        $user = $this->security->getUser();
-        if (!$user) {
-            $this->logger->error(static::$loggerE401);
-            throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 401).");
+        $this->logger->info("[API] 📥 Requête reçue sur /api/repartition/historique");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
         }
+
+        $user = $this->security->getUser();
 
         // Instanciation des repositories
         $repartitionRepos = $this->em->getRepository(Repartition::class);
@@ -356,10 +373,11 @@ class ApiRepartitionController extends AbstractController
     #[Route('/api/repartition/analyse/mise-a-jour', name: 'repartition_analyse_maj', methods: ['PUT'])]
     public function apiRepartitionAnalyseMaj(Request $request): JsonResponse
     {
-        $user = $this->security->getUser();
-        if (!$user) {
-            $this->logger->error('[Répartition-Mise-a-jour] 🚫 Accès refusé : utilisateur non connecté.');
-            throw $this->createAccessDeniedException("Utilisateur non authentifié (Erreur 401).");
+        $this->logger->info("[API] 📥 Requête reçue sur /api/repartition/analyse/mise-a-jour");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
         }
 
         /** On décode le body */
@@ -368,7 +386,7 @@ class ApiRepartitionController extends AbstractController
         /** On teste si la clé est valide */
         if ($data === null ||
             !isset($data->maven_key, $data->setup, $data->calcul)) {
-            $this->logger->error("❌ [Répartition-Mise-a-jour] Requête invalide : clé 'maven_key', 'setup' ou 'calcul' manquante ou JSON mal formé.", [
+            $this->logger->error("[Répartition-Mise-a-jour] ❌  Requête invalide : clé 'maven_key', 'setup' ou 'calcul' manquante ou JSON mal formé.", [
                 'payload' => $data
             ]);
 
