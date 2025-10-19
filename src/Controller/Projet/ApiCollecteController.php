@@ -102,7 +102,7 @@ class ApiCollecteController extends AbstractController
         // Vérification de la validité du corps de la requête
         if (!is_object($data) || !property_exists($data, 'maven_key')) {
             $this->logger->alert(static::$loggerE400, [
-                'payload' => $request->getContent()
+                'payload' => $data ?? null
             ]);
 
             return new JsonResponse([
@@ -211,7 +211,7 @@ class ApiCollecteController extends AbstractController
         /** On teste si la clé est valide */
         if (!is_object($data) || !property_exists($data, 'maven_key') ) {
             $this->logger->alert(static::$loggerE400, [
-                'data' => $request->getContent()
+                'payload' => $data ?? null
             ]);
 
             return new JsonResponse(
@@ -330,7 +330,7 @@ class ApiCollecteController extends AbstractController
             !in_array($data->type, ['reliability', 'security', 'sqale'])
         ) {
             $this->logger->alert("[Collecte] ❌ Requête invalide : clé 'maven_key', 'type', 'reliability', 'security', 'sqale' manquante ou JSON mal formé.",
-            [ 'payload' => $data ]);
+            [ 'payload' => $data ?? null ]);
 
             return new JsonResponse([
                 'code' => 400,
@@ -427,7 +427,7 @@ class ApiCollecteController extends AbstractController
         /** On teste si la clé est valide */
         if (!is_object($data) || !property_exists($data, 'maven_key')) {
             $this->logger->alert(static::$loggerE400, [
-                'data' => $request->getContent()
+                'payload' => $data ?? null
             ]);
 
             return new JsonResponse([
@@ -529,7 +529,7 @@ class ApiCollecteController extends AbstractController
         /** On teste si la clé est valide */
         if (!is_object($data) || !property_exists($data, 'maven_key')) {
             $this->logger->alert(static::$loggerE400, [
-                'data' => $request->getContent()
+                'payload' => $data ?? null
             ]);
 
             return new JsonResponse([
@@ -633,7 +633,7 @@ class ApiCollecteController extends AbstractController
         /** On teste si la clé est valide */
         if (!is_object($data) || !property_exists($data, 'maven_key')) {
             $this->logger->alert(static::$loggerE400, [
-                'data' => $request->getContent()
+                'payload' => $data ?? null
             ]);
 
             return new JsonResponse([
@@ -737,7 +737,7 @@ class ApiCollecteController extends AbstractController
         /** On teste si la clé est valide */
         if (!is_object($data) || !property_exists($data, 'maven_key')) {
             $this->logger->alert(static::$loggerE400, [
-                'data' => $request->getContent()
+                'payload' => $data ?? null
             ]);
 
             return new JsonResponse([
@@ -835,7 +835,7 @@ class ApiCollecteController extends AbstractController
             !property_exists($data, 'maven_key') ||
             !property_exists($data, 'menace')) {
             $this->logger->alert("[Collecte] ❌ Requête invalide : clé 'maven_key', 'menace', manquante ou JSON mal formé.",
-            [ 'payload' => $data ]);
+            [ 'payload' => $data ?? null ]);
 
             return new JsonResponse([
                 'code' => 400,
@@ -935,7 +935,7 @@ class ApiCollecteController extends AbstractController
         /** On teste si la clé est valide */
         if (!is_object($data) || !property_exists($data, 'maven_key')) {
             $this->logger->alert(static::$loggerE400, [
-                'data' => $request->getContent()
+                'payload' => $data ?? null
             ]);
 
             return new JsonResponse([
@@ -1030,7 +1030,7 @@ class ApiCollecteController extends AbstractController
         /** On teste si la clé est valide */
         if (!is_object($data) || !property_exists($data, 'maven_key')) {
             $this->logger->alert(static::$loggerE400, [
-                'data' => $request->getContent()
+                'payload' => $data ?? null
             ]);
 
             return new JsonResponse([
@@ -1128,7 +1128,7 @@ class ApiCollecteController extends AbstractController
         /** On teste si la clé est valide */
         if (!is_object($data) || !property_exists($data, 'maven_key')) {
             $this->logger->alert(static::$loggerE400, [
-                'data' => $request->getContent()
+                'payload' => $data ?? null
             ]);
 
             return new JsonResponse([
@@ -1224,7 +1224,7 @@ class ApiCollecteController extends AbstractController
         /** On teste si la clé est valide */
         if (!is_object($data) || !property_exists($data, 'maven_key')) {
             $this->logger->alert(static::$loggerE400, [
-                'data' => $request->getContent()
+                'payload' => $data ?? null
             ]);
 
             return new JsonResponse([
@@ -1319,7 +1319,7 @@ class ApiCollecteController extends AbstractController
         /** On teste si la clé est valide */
         if (!is_object($data) || !property_exists($data, 'maven_key')) {
             $this->logger->alert(static::$loggerE400, [
-                'data' => $request->getContent()
+                'payload' => $data ?? null
             ]);
 
             return new JsonResponse([
