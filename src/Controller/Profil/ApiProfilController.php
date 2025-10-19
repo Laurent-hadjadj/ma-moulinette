@@ -23,6 +23,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
+use App\Controller\Traits\RequireAuthenticatedClientTrait;
 use App\Entity\Properties;
 use App\Entity\Profiles;
 use App\Entity\ProfilesHistorique;
@@ -34,6 +35,10 @@ use App\Service\UrlBuilderService;
  */
 class ApiProfilController extends AbstractController
 {
+    use RequireAuthenticatedClientTrait;
+
+    private $appClient;
+
     /** Définition des constantes */
     private static $europeParis = "Europe/Paris";
     private static $dateFormatShort = "Y-m-d";
@@ -61,10 +66,12 @@ class ApiProfilController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private Client $client,
+        private Security $security,
         private ParameterBagInterface $params,
         private LoggerInterface $logger,
         private UrlBuilderService $urlBuilder,
     ) {
+        $this->appClient = $this->params->get('app.client');
         $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
@@ -72,6 +79,79 @@ class ApiProfilController extends AbstractController
         $this->environnement = $params->get('environnement');
         $this->version = $params->get('version');
         $this->dateCopyright = \date('Y');
+    }
+
+    /**
+     * [Description for getCount]
+     *
+     * @param mixed $repo
+     * @param string $language
+     * @param string $action
+     *
+     * @return int
+     *
+     * Created at: 19/10/2025 10:49:23 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function getCount($repo, string $language, string $action): int
+    {
+        $result = $repo->selectProfilesHistoriqueAction([
+            'language' => $language,
+            'action' => $action
+        ]);
+
+        return $result['nombre'][0]['nombre'] ?? 0;
+    }
+
+    /**
+     * [Description for getDateTri]
+     *
+     * @param mixed $repo
+     * @param string $language
+     * @param string $tri
+     *
+     * @return array|null
+     *
+     * Created at: 19/10/2025 10:49:26 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function getDateTri($repo, string $language, string $tri): ?array
+    {
+        $result = $repo->selectProfilesHistoriqueDateTri([
+            'language' => $language,
+            'tri' => $tri,
+            'limit' => 1
+        ]);
+        return $result['liste'][0] ?? null;
+    }
+
+    /**
+     * [Description for genericDetailsRender]
+     *
+     * @return array
+     *
+     * Created at: 19/10/2025 10:49:30 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function genericDetailsRender(): array
+    {
+        return [
+            'profil' => 'NC',
+            'langage' => 'aucun',
+            'opened' => 0,
+            'closed' => 0,
+            'updated' => 0,
+            'total_rule' => null,
+            'premier' => null,
+            'dernier' => null,
+            'date_groupe' => null,
+            'nombre_groupe' => null,
+            'liste' => null,
+            'badge' => null
+        ];
     }
 
     /**
@@ -108,25 +188,28 @@ class ApiProfilController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/quality/profiles', name: 'liste_quality_profiles', methods: ['POST'])]
-    public function listeQualityProfiles(Security $security): JsonResponse
+    public function listeQualityProfiles(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/quality/profiles");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
+
         /** On instancie l'entityRepository */
         $profilesRepos = $this->em->getRepository(Profiles::class);
         $propertiesRepos = $this->em->getRepository(Properties::class);
 
-        $this->logger->info('[Profil] ℹ️ Appel POST /api/quality/profiles', [
-            'utilisateur' => $this->getUser()?->getUserIdentifier(),
-            'environnement' => $this->environnement
-        ]);
-
         /** si on est pas GESTIONNAIRE on ne fait rien. */
-        if (!$security->isGranted('ROLE_GESTIONNAIRE')){
+        if (!$this->security->isGranted('ROLE_GESTIONNAIRE')){
             $this->logger->warning("[Profil] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_GESTIONNAIRE).");
+
             return new JsonResponse([
                 'code' => 403,
                 'alert' => 'warning',
-                'message' => static::$erreur403],
-                Response::HTTP_OK);
+                'message' => static::$erreur403
+            ], Response::HTTP_OK);
         }
 
         /** Sécurisation de l'URL */
@@ -136,8 +219,9 @@ class ApiProfilController extends AbstractController
         );
 
         /** On définit l'URL et on ajoute le nom des profils SonarQube*/
-        $this->logger->info('[Profil] ℹ️ Appel à SonarQube pour récupérer les profils qualité',
-        [ 'url' => $url]);
+        $this->logger->info('[Profil] ℹ️ Appel à SonarQube pour récupérer les profils qualité',[
+            'url' => $url
+        ]);
 
         $result = $this->client->httpSonarQube($url);
         if (in_array($result['code'] ?? -1, [400, 401, 403, 404, 500, 503, 504])) {
@@ -174,9 +258,13 @@ class ApiProfilController extends AbstractController
         /** On supprime les données de la table avant d'importer les données;*/
         $r1 = $profilesRepos->deleteProfiles();
         if ($r1['code'] !== 200) {
-            $this->logger->error('[Profil] ❌ Échec suppression des anciens profils (deleteProfiles)', [
-            'erreur' => $r1['erreur'] ?? null]);
-            $message = "Une erreur s'est produite lors de la suppression des données (Erreur 500).";
+            $this->logger->error('[Profil] ❌ Échec de la requête deleteProfiles.', [
+            'code' => $r1['code'],
+            'total' => $profilsCount ?? 'inconnu',
+            'erreur' => $r1['erreur'] ?? null
+        ]);
+
+            $message = "Une erreur s'est produite lors de la suppression des données (Erreur {$r1['code']}).";
             return new JsonResponse([
                 'code' => $r1['code'],
                 'type' => 'alert',
@@ -193,10 +281,13 @@ class ApiProfilController extends AbstractController
 
         $r2 = $profilesRepos->insertProfiles($map);
         if ($r2['code'] !== 200) {
-            $this->logger->error('[Profil] ❌ Échec insertion des profils (insertProfiles)', [
-            'erreur' => $r2['erreur'] ?? null]);
+            $this->logger->error('[Profil] ❌ Échec de la requête insertProfiles.', [
+                'code' => $r2['code'],
+                'profiles' => $result['json']['profiles'] ?? 'inconnu',
+                'erreur' => $r2['erreur'] ?? null
+            ]);
 
-            $message = "Une erreur s'est produite lors de l'enregistrement des profils (Erreur 500).";
+            $message = "Une erreur s'est produite lors de l'enregistrement des profils (Erreur {$r2['code']}).";
             return new JsonResponse([
                 'code' => $r2['code'],
                 'type' => 'alert',
@@ -208,7 +299,9 @@ class ApiProfilController extends AbstractController
         /** On récupère la nouvelle liste des profils */
         $r3 = $profilesRepos->selectProfiles();
         if ($r3['code'] !== 200) {
-            $this->logger->error('[Profil] ❌ Échec récupération des profils après insertion (selectProfiles)', ['erreur' => $r3['erreur'] ?? null]);
+            $this->logger->error('[Profil] ❌ Échec de la requête selectProfiles.', [
+                'code' => $r3['code'],
+                'erreur' => $r3['erreur'] ?? null]);
 
             $message = "Une erreur s'est produite lors de la recherche des informations (Erreur 500).";
             return new JsonResponse([
@@ -222,14 +315,17 @@ class ApiProfilController extends AbstractController
         /** On met à jour la table propriétés */
         $map = [
                 'profil_bd' => $r2['nombre'],
-                'profil_sonar'=>$r2['nombre'],
+                'profil_sonar'=> $r2['nombre'],
                 'date_modification_profil' => $date
         ];
 
         $r4 = $propertiesRepos->updatePropertiesProfiles($map);
         if ($r4['code'] !== 200) {
-            $this->logger->error('[Profil] ❌ Échec de la mise à jour des propriétés (updatePropertiesProfiles)', [
+            $this->logger->error('[Profil] ❌ Échec de la requête updatePropertiesProfiles', [
+            'code' => $r4['code'],
+            'data' => $map ?? 'inconnu',
             'erreur' => $r4['erreur'] ?? null]);
+
             $message = "Une erreur s'est produite lors de la mise à jour des données (Erreur 500).";
             return new JsonResponse([
                 'code' => $r4['code'],
@@ -240,8 +336,9 @@ class ApiProfilController extends AbstractController
         }
 
         $this->logger->info('[Profil] ℹ️ Mise à jour des profils qualité réussie', [
-        'total' => count($r3['liste']),
-        'date' => $date->format('Y-m-d H:i')]);
+            'total' => count($r3['liste']),
+            'date' => $date->format('Y-m-d H:i')
+        ]);
 
         return new JsonResponse([
             'code' => 200,
@@ -261,12 +358,17 @@ class ApiProfilController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/quality/langage', name: 'liste_quality_langage', methods: ['POST'])]
-    public function listeQualityLangage(): JsonResponse
+    public function listeQualityLangage(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/quality/langage");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
+
         /** On instancie la classe */
         $profilesRepos = $this->em->getRepository(Profiles::class);
-
-        $this->logger->info('[Profil] ℹ️ Requête POST /api/quality/langage');
 
         $listeLabel = [];
         $listeDataset = [];
@@ -274,11 +376,12 @@ class ApiProfilController extends AbstractController
         /** On récupère la liste des langages */
         $r1 = $profilesRepos->selectProfilesLanguage();
         if ($r1['code'] !== 200) {
-            $this->logger->error('[Profil] ❌ Échec de la récupération des profils par langage (selectProfilesLanguage)', [
-            'erreur' => $r1['erreur'] ?? null
+            $this->logger->error('[Profil] ❌ Échec de la requête selectProfilesLanguage.', [
+                'code' => $r1['code'],
+                'erreur' => $r1['erreur'] ?? null
             ]);
 
-            $message = "Une erreur s'est produite lors du chargement des données concernant les langages (Erreur 500).";
+            $message = "Une erreur s'est produite lors du chargement des données concernant les langages (Erreur {$r1['code']}).";
             return new JsonResponse([
                 'code' => $r1['code'],
                 'type' => 'alert',
@@ -300,13 +403,14 @@ class ApiProfilController extends AbstractController
         /** On récupère le nombre de règle de chaque profil */
         $r2 = $profilesRepos->selectProfilesRuleCount();
         if ($r2['code'] !== 200 || empty($r2['data-set'])) {
-            $this->logger->error('[Profil] ❌ Échec de la récupération du nombre de règles (selectProfilesRuleCount)', [
-            'erreur' => $r2['erreur'] ?? null]);
+            $this->logger->error('[Profil] ❌ Échec de la requête selectProfilesRuleCount.', [
+                'code' => $r2['code'],
+                'erreur' => $r2['erreur'] ?? null]);
 
             return new JsonResponse([
                 'code' => $r2['code'] ?? 500,
                 'type' => 'alert',
-                'message' => "Une erreur s'est produite lors de la récupération des données (Erreur 500).",
+                'message' => "Une erreur s'est produite lors de la récupération des données (Erreur {$r2['code']}).",
                 'trace' => $r2['erreur'] ?? null,
             ], Response::HTTP_OK);
         }
@@ -322,46 +426,8 @@ class ApiProfilController extends AbstractController
         return new JsonResponse([
             'code' => '200',
             'label' => $listeLabel,
-            'dataset' => $listeDataset],
-            Response::HTTP_OK);
-    }
-
-    private function getCount($repo, string $language, string $action): int
-    {
-        $result = $repo->selectProfilesHistoriqueAction([
-            'language' => $language,
-            'action' => $action
-        ]);
-
-        return $result['nombre'][0]['nombre'] ?? 0;
-    }
-
-    private function getDateTri($repo, string $language, string $tri): ?array
-    {
-        $result = $repo->selectProfilesHistoriqueDateTri([
-            'language' => $language,
-            'tri' => $tri,
-            'limit' => 1
-        ]);
-        return $result['liste'][0] ?? null;
-    }
-
-    private function genericDetailsRender(): array
-    {
-        return [
-            'profil' => 'NC',
-            'langage' => 'aucun',
-            'opened' => 0,
-            'closed' => 0,
-            'updated' => 0,
-            'total_rule' => null,
-            'premier' => null,
-            'dernier' => null,
-            'date_groupe' => null,
-            'nombre_groupe' => null,
-            'liste' => null,
-            'badge' => null
-        ];
+            'dataset' => $listeDataset
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -379,13 +445,18 @@ class ApiProfilController extends AbstractController
     #[Route('/profil/details', name: 'profil_details', methods: ['GET'])]
     public function profilDetails(Request $request)
     {
-        $this->logger->info('[Profil Détail] ℹ️ Début du traitement de la méthode profilDetails');
+        $this->logger->info("[API] 📥 Requête reçue sur /profil/details");
+
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
 
         $profilesHistoriqueRepository = $this->em->getRepository(ProfilesHistorique::class);
 
         $token = $request->get('token');
         if (empty($token)) {
-            $this->logger->warning('[Profil Détail] ⚠️  Token vide ou manquant');
+            $this->logger->warning('[Profil-Détail] ⚠️ Token vide ou manquant');
             return $this->render(static::$page, ['profil' => 'NC']);
         }
 
@@ -396,7 +467,7 @@ class ApiProfilController extends AbstractController
             $decode = base64_decode($string);
             $explode = preg_split("/[|]+/", $decode);
         } catch (\Throwable $e) {
-            $this->logger->error('[Profil Détail] ❌ Erreur lors du décodage du token.', ['exception' => $e]);
+            $this->logger->error('[Profil-Détail] ❌ Erreur lors du décodage du token.', ['exception' => $e]);
             return $this->redirectToRoute('profil');
         }
 
@@ -412,7 +483,7 @@ class ApiProfilController extends AbstractController
         ];
 
         if (count($explode) !== 3) {
-            $this->logger->warning('[Profil Détail] ⚠️ Token invalide.', [
+            $this->logger->warning('[Profil-Détail] ⚠️ Token invalide.', [
                 'token' => $token
             ]);
             $this->addFlash('notice', [
@@ -422,7 +493,11 @@ class ApiProfilController extends AbstractController
         }
 
         [$salt, $language, $profil] = $explode;
-        $this->logger->debug("🛠️ [Profil Détail] Décomposition du token", ['salt' => $salt, 'language' => $language, 'profil' => $profil]);
+        $this->logger->debug("[Profil-Détail] 🛠️ Décomposition du token", [
+            'salt' => $salt,
+            'language' => $language,
+            'profil' => $profil
+        ]);
 
         $language = strtolower($language);
 
@@ -430,7 +505,8 @@ class ApiProfilController extends AbstractController
         $maMoulinetteLanguage = ['java properties', 'javascript', 'html', 'typescript', 'python', 'groovy'];
 
         if (!in_array($language, [...$sonarLanguage, ...$maMoulinetteLanguage])) {
-            $this->logger->warning('[Profil Détail] ⚠️ Langage non supporté.', ['langage' => $language]);
+            $this->logger->warning('[Profil-Détail] ⚠️ Langage non supporté.', ['langage' => $language]);
+
             $this->addFlash('notice', [
                 'type' => 'warning',
                 'message' => "⚠️ Le langage sélectionné n'est pas supporté (Erreur 404)."
@@ -454,14 +530,16 @@ class ApiProfilController extends AbstractController
         '/api/qualityprofiles/changelog',
         ['language' => $language, 'qualityProfile' => $profil, 'ps' => 500, 'p' => 1]);
 
-        $this->logger->info('[Profil Détail] ℹ️ Appel API SonarQube', ['url' => $url]);
+        $this->logger->info('[Profil-Détail] ℹ️ Appel API SonarQube', ['url' => $url]);
 
         $result = $this->client->httpSonarQube($url);
         if (in_array($result['code'] ?? -1, [400, 401, 403, 404, 500, 503, 504])) {
-            $this->logger->error('[Profil Détail] ❌ Erreur API SonarQube.', [
+            $this->logger->error('[Profil-Détail] ❌ Erreur API SonarQube.', [
+                'code' => $result['code'],
                 'url' => $url,
                 'result' => $result
             ]);
+
             $this->addFlash('notice', [
                 'type' => 'alert',
                 'message' => '❌' . $result['erreur']
@@ -490,7 +568,10 @@ class ApiProfilController extends AbstractController
                 ];
                 $profilesHistoriqueRepository->insertProfilesHistorique($map);
             } catch (\Throwable $e) {
-                $this->logger->error("[Profil Détail] ❌ Insertion de l'historique échouée.", ['event' => $event, 'exception' => $e]);
+                $this->logger->error("[Profil-Détail] ❌ Insertion de la requête insertProfilesHistorique.", [
+                    'map' => $map ?? 'inconnu',
+                    'exception' => $e
+                ]);
             }
         }
 
@@ -558,7 +639,10 @@ class ApiProfilController extends AbstractController
         $render['liste'] = $liste;
         $render['badge'] = $badges;
 
-        $this->logger->info('[Profil Détail] ℹ️ Données prêtes à être affichées', ['profil' => $profil, 'langage' => $language]);
+        $this->logger->info('[Profil Détail] ℹ️ Données prêtes à être affichées', [
+            'profil' => $profil,
+            'langage' => $language
+        ]);
 
         return $this->render(static::$page, $render);
     }
@@ -578,18 +662,22 @@ class ApiProfilController extends AbstractController
     #[Route('/api/quality/off', name: 'liste_quality_off', methods: ['POST'])]
     public function listeQualityOff(Request $request): JsonResponse
     {
-        $profilesRepos = $this->em->getRepository(Profiles::class);
+        $this->logger->info("[API] 📥 Requête reçue sur /api/quality/off");
 
-        $this->logger->info('[Profil] ℹ️ Requête reçue sur /api/quality/off', [
-        'raw_body' => $request->getContent()]);
+        // Vérifie X-App-Client
+        if ($resp = $this->checkApiClient($request, $this->appClient)) {
+            return $resp; // renvoie 403 si pas ok
+        }
+
+        $profilesRepos = $this->em->getRepository(Profiles::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
 
       /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'langage')) {
-            $this->logger->error('[Profil] ❌ Requête invalide : langage manquant ou malformé', [
-            'data' => $data]);
+            $this->logger->error("[Profil] ❌ Requête invalide : 'langage' manquant ou malformé", ['data' => $data]);
+
             return new JsonResponse([
                     'code' => 400,
                     'type' => 'alert',
@@ -607,7 +695,8 @@ class ApiProfilController extends AbstractController
                 // Log des résultats
                 $this->logger->info('[Profil] ℹ️ non actifs récupérés', [
                     'langage' => $langage,
-                    'count' => $count['request'][0]['total'] ?? 0 ]);
+                    'count' => $count['request'][0]['total'] ?? 0
+                ]);
 
                 return new JsonResponse([
                     'code' => 200,
