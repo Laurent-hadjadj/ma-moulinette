@@ -36,7 +36,6 @@ use App\Controller\Batch\BatchCollecteTodoController;
 use App\Controller\Batch\BatchCollecteActuatorController;
 use App\Controller\Batch\BatchCollecteLoggerController;
 
-
 /**
  * [Description ApiMesureController]
  */
@@ -97,7 +96,7 @@ class ApiCollecteController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$reference . static::$erreur400,
+                'message' => static::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
