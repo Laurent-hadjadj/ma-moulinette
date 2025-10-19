@@ -65,7 +65,7 @@ class ApiOwaspPeintureController extends AbstractController
         $i = 1;
         $total = 0;
         for($i; $i<11; $i++){
-            if ($severity != null) {
+            if ($severity !== null) {
                 $total += $liste["a{$i}{$severity}"];
             } else {
                 $total += $liste["a{$i}"];
@@ -89,7 +89,7 @@ class ApiOwaspPeintureController extends AbstractController
     #[Route('/api/peinture/owasp/liste', name: 'peinture_owasp_liste', methods: ['POST'])]
     public function peintureOwaspListe(Request $request): JsonResponse
     {
-        $this->logger->info("📥 [API] Requête reçue sur /api/peinture/owasp/liste");
+        $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/owasp/liste");
 
         // Vérifie X-App-Client
         if ($resp = $this->checkApiClient($request, $this->appClient)) {
@@ -123,18 +123,19 @@ class ApiOwaspPeintureController extends AbstractController
             'referential_owasp' => $data->referential_owasp
         ];
         $request = $owaspRepos->selectOwaspOrderByDateEnregistrement($map);
-        if ($request['code'] != 200) {
-            $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête selectOwaspOrderByDateEnregistrement.',[
+        if ($request['code'] !== 200) {
+            $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête selectOwaspOrderByDateEnregistrement.', [
                 'code' => $request['code'],
-                'erreur' => $request['erreur'],
-                'maven_key' => $data->maven_key
+                'erreur' => $request['erreur'] ?? null,
+                'maven_key' => $data->maven_key,
+                'referential_owasp' => $data->referential_owasp
             ]);
 
             return new JsonResponse([
                 'code' => $request['code'],
                 'type' => 'alert',
                 'message' => "Une Erreur est survenue lors de la récupération des données ({$request['code']}).",
-                'trace' => $request['erreur']
+                'trace' => $request['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
@@ -241,6 +242,8 @@ class ApiOwaspPeintureController extends AbstractController
     #[Route('/api/peinture/owasp/hotspot/info', name: 'peinture_owasp_hotspot_info', methods: ['POST'])]
     public function peintureOwaspHotspotInfo(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/owasp/hotspot/info");
+
         // Vérifie X-App-Client
         if ($resp = $this->checkApiClient($request, $this->appClient)) {
             return $resp; // renvoie 403 si pas ok
@@ -271,10 +274,10 @@ class ApiOwaspPeintureController extends AbstractController
             'status' => 'REVIEWED'
         ];
         $reviewed = $hotspotOwaspRepos->countHotspotOwaspStatus($map);
-        if ($reviewed['code'] != 200) {
+        if ($reviewed['code'] !== 200) {
             $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête countHotspotOwaspStatus.', [
                 'code' => $reviewed['code'],
-                'erreur' => $reviewed['erreur'],
+                'erreur' => $reviewed['erreur'] ?? null,
                 'maven_key' => $data->maven_key,
                 'status' => 'REVIEWED'
             ]);
@@ -283,7 +286,7 @@ class ApiOwaspPeintureController extends AbstractController
                 'code' => $reviewed['code'],
                 'type' => 'alert',
                 'message' => "Une Erreur est survenue lors de la récupération des données pour les menaces au statut 'REVIEW' ({$reviewed['code']}).",
-                'trace' => $reviewed['erreur']
+                'trace' => $reviewed['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
@@ -293,10 +296,11 @@ class ApiOwaspPeintureController extends AbstractController
             'status'=> 'TO_REVIEW'
         ];
         $toReview = $hotspotOwaspRepos->countHotspotOwaspStatus($map);
-        if ($toReview['code'] != 200) {
+
+        if ($toReview['code'] !== 200) {
             $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête countHotspotOwaspStatus.', [
                 'code' => $toReview['code'],
-                'erreur' => $toReview['erreur'],
+                'erreur' => $toReview['erreur'] ?? null,
                 'maven_key' => $data->maven_key,
                 'status' => 'TO_REVIEW'
             ]);
@@ -305,17 +309,18 @@ class ApiOwaspPeintureController extends AbstractController
                 'code'=>$toReview['code'],
                 'type' => 'alert',
                 'message' => "Une Erreur est survenue lors de la récupération des données pour les menaces au statut 'TO_REVIEW' ({$toReview['code']}).",
-                'trace' => $toReview['erreur']
+                'trace' => $toReview['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
         /** On récupère le nombre de hotspot owasp par niveau de sévérité potentiel. */
         $map = ['maven_key' => $data->maven_key];
         $probability = $hotspotOwaspRepos->countHotspotOwaspProbability($map);
-        if ($probability['code'] != 200) {
+
+        if ($probability['code'] !== 200) {
             $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête countHotspotOwaspProbability.', [
                 'code' => $probability['code'],
-                'erreur' => $probability['erreur'],
+                'erreur' => $probability['erreur'] ?? null,
                 'maven_key' => $data->maven_key,
             ]);
 
@@ -323,7 +328,7 @@ class ApiOwaspPeintureController extends AbstractController
                 'code' => $probability['code'],
                 'type' => 'alert',
                 'message' => "Une Erreur est survenue lors de la récupération des probabilité ({$probability['code']}).",
-                'trace' => $probability['erreur']
+                'trace' => $probability['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
@@ -364,6 +369,8 @@ class ApiOwaspPeintureController extends AbstractController
     #[Route('/api/peinture/owasp/hotspot/liste', name: 'peinture_owasp_hotspot_liste', methods: ['POST'])]
     public function peintureOwaspHotspotListe(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/owasp/hotspot/liste");
+
         // Vérifie X-App-Client
         if ($resp = $this->checkApiClient($request, $this->appClient)) {
             return $resp; // renvoie 403 si pas ok
@@ -391,17 +398,18 @@ class ApiOwaspPeintureController extends AbstractController
         /** On compte le nombre de hotspot de type OWASP au statut TO_REVIEWED */
         $map = ['maven_key' => $data->maven_key];
         $menaces = $hotspotOwaspRepos->countHotspotOwaspMenaces($map);
-        if ($menaces['code'] != 200) {
+
+        if ($menaces['code'] !== 200) {
             $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête countHotspotOwaspProbability.', [
                 'code' => $menaces['code'],
-                'erreur' => $menaces['erreur'],
+                'erreur' => $menaces['erreur'] ?? null,
                 'maven_key' => $data->maven_key,
             ]);
 
             return new JsonResponse([
                 'code' => $menaces['code'],
                 'message' => "Une Erreur est survenue lors de la récupération des données pour les menaces potentielles au statut 'TO_REVIEWED' ({$menaces['code']}).",
-                'erreur' => $menaces['erreur']
+                'erreur' => $menaces['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
@@ -465,6 +473,8 @@ class ApiOwaspPeintureController extends AbstractController
     #[Route('/api/peinture/owasp/hotspot/details', name: 'peinture_owasp_hotspot_details', methods: ['POST'])]
     public function peintureOwaspHotspotDetails(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/owasp/hotspot/details");
+
         // Vérifie X-App-Client
         if ($resp = $this->checkApiClient($request, $this->appClient)) {
             return $resp; // renvoie 403 si pas ok
@@ -493,10 +503,10 @@ class ApiOwaspPeintureController extends AbstractController
         $map = ['maven_key' => $data->maven_key];
         $details = $hotspotDetailsRepos->selectHotspotDetailsByStatus($map);
 
-        if ($details['code'] != 200) {
+        if ($details['code'] !== 200) {
             $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête selectHotspotDetailsByStatus.', [
                 'code' => $details['code'],
-                'erreur' => $details['erreur'],
+                'erreur' => $details['erreur'] ?? null,
                 'maven_key' => $data->maven_key,
             ]);
 
@@ -504,7 +514,7 @@ class ApiOwaspPeintureController extends AbstractController
                 'code' => $details['code'],
                 'type' => 'alert',
                 'message' => "Une Erreur est survenue lors de la récupération du détail des menaces ({$details['code']}).",
-                'trace' => $details['erreur']
+                'trace' => $details['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
@@ -529,6 +539,8 @@ class ApiOwaspPeintureController extends AbstractController
     #[Route('/api/peinture/owasp/hotspot/severity', name: 'peinture_owasp_hotspot_severity', methods: ['POST'])]
     public function peintureOwaspSeverity(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/owasp/hotspot/severity");
+
         // Vérifie X-App-Client
         if ($resp = $this->checkApiClient($request, $this->appClient)) {
             return $resp; // renvoie 403 si pas ok
@@ -563,10 +575,10 @@ class ApiOwaspPeintureController extends AbstractController
         ];
         $high = $hotspotOwaspRepos->countHotspotOwaspMenaceByStatus($map);
 
-        if ($high['code'] != 200) {
+        if ($high['code'] !== 200) {
             $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête countHotspotOwaspMenaceByStatus.', [
                 'code' => $high['code'],
-                'erreur' => $high['erreur'],
+                'erreur' => $high['erreur'] ?? null,
                 'maven_key' => $data->maven_key,
                 'probability' => 'HIGH',
                 'menace' => $data->menace
@@ -576,7 +588,7 @@ class ApiOwaspPeintureController extends AbstractController
                 'code' => $high['code'],
                 'type' => 'alert',
                 'message' => "Une Erreur est survenue lors de la récupération des données des menaces potentielles de probabilité <strong>High</strong> ({$high['code']}).",
-                'trace' => $high['erreur']
+                'trace' => $high['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
@@ -587,10 +599,11 @@ class ApiOwaspPeintureController extends AbstractController
             'probability' => 'MEDIUM'
         ];
         $medium = $hotspotOwaspRepos->countHotspotOwaspMenaceByStatus($map);
-        if ($medium['code'] != 200) {
+
+        if ($medium['code'] !== 200) {
             $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête countHotspotOwaspMenaceByStatus.', [
                 'code' => $medium['code'],
-                'erreur' => $medium['erreur'],
+                'erreur' => $medium['erreur'] ?? null,
                 'maven_key' => $data->maven_key,
                 'probability' => 'MEDIUM',
                 'menace' => $data->menace
@@ -600,7 +613,7 @@ class ApiOwaspPeintureController extends AbstractController
                 'maven_key' => $data->maven_key,
                 'code' => $medium['code'],
                 'message' => "Une Erreur est survenue lors de la récupération des données des menaces potentielles de probabilité <strong>Medium</strong> ({$medium['code']}).",
-                'trace' => $medium['erreur']
+                'trace' => $medium['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
@@ -611,12 +624,13 @@ class ApiOwaspPeintureController extends AbstractController
             'probability' => 'LOW'
         ];
         $low = $hotspotOwaspRepos->countHotspotOwaspMenaceByStatus($map);
-        if ($low['code'] != 200) {
+
+        if ($low['code'] !== 200) {
             return new JsonResponse([
                 'maven_key' => $data->maven_key,
                 'code' => $low['code'],
                 "Une Erreur est survenue lors de la récupération des données des menaces potentielles de probabilité <strong>Low</strong> ({$low['code']}).",
-                'trace' => $low['erreur']
+                'trace' => $low['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
