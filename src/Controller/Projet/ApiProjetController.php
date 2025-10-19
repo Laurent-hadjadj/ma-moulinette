@@ -30,7 +30,6 @@ use App\Entity\ListeProjet;
 class ApiProjetController extends AbstractController
 {
     /** Définition des constantes */
-    private static $titreJS = "<strong>[Projet]</strong> ";
     private static $erreur400 = "La requête est incorrecte (Erreur 400).";
     private static $erreur401 = "Utilisateur non authentifié (Erreur 401).";
     private static $erreur404 = "Vous devez être rattaché à une équipe (Erreur 404).";
@@ -73,7 +72,7 @@ class ApiProjetController extends AbstractController
             return new JsonResponse([
                 'code' => 401,
                 'type' => 'alert',
-                'message' => static::$titreJS.static::$erreur401
+                'message' => static::$erreur401
             ], Response::HTTP_OK);
         }
 
@@ -94,7 +93,7 @@ class ApiProjetController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$titreJS . static::$erreur400,
+                'message' => static::$erreur400,
             ], Response::HTTP_OK);
         }
 
@@ -119,7 +118,7 @@ class ApiProjetController extends AbstractController
             return new JsonResponse([
                 'code' => $requestUpdate['code'],
                 'type' => 'alert',
-                'message' => static::$titreJS . "La mise à jour du projet en favori a échoué (Erreur 500).",
+                'message' => "La mise à jour du projet en favori a échoué (Erreur 500).",
                 'trace' => $requestUpdate['erreur']
             ], Response::HTTP_OK);
         }
@@ -159,7 +158,7 @@ class ApiProjetController extends AbstractController
             return new JsonResponse([
                 'code' => 401,
                 'type' => 'alert',
-                'message' => static::$titreJS . static::$erreur401
+                'message' => static::$erreur401
             ], Response::HTTP_OK);
         }
 
@@ -176,7 +175,7 @@ class ApiProjetController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message'=> static::$titreJS . static::$erreur400,
+                'message'=> static::$erreur400,
             ], Response::HTTP_OK);
         }
 
@@ -190,7 +189,7 @@ class ApiProjetController extends AbstractController
             return new JsonResponse([
                 'code' => 500,
                 'type' => 'alert',
-                'message' => static::$titreJS . "Impossible d'accéder aux favoris de l'utilisateur (Erreur 500)."
+                'message' => "Impossible d'accéder aux favoris de l'utilisateur (Erreur 500)."
             ], Response::HTTP_OK);
         }
 
@@ -232,7 +231,7 @@ class ApiProjetController extends AbstractController
             return new JsonResponse([
                 'code' => 401,
                 'type' => 'alert',
-                'message' => static::$titreJS . static::$erreur401
+                'message' => static::$erreur401
             ], Response::HTTP_OK);
         }
 
@@ -248,7 +247,7 @@ class ApiProjetController extends AbstractController
             return new JsonResponse([
                 'code' => 404,
                 'type' => 'alert',
-                'message' => static::$titreJS . static::$erreur404
+                'message' => static::$erreur404
             ], Response::HTTP_OK);
         }
 
@@ -282,7 +281,7 @@ class ApiProjetController extends AbstractController
             return new JsonResponse([
                 'code' => $requestListe['code'],
                 'type' => 'alert',
-                'message' => static::$titreJS . "Une erreur s'est produite lors de la construction de la liste des projets (Erreur 500).",
+                'message' => "Une erreur s'est produite lors de la construction de la liste des projets (Erreur 500).",
                 'trace' => $requestListe['erreur'] ?? null
             ], Response::HTTP_OK);
         }
@@ -298,7 +297,7 @@ class ApiProjetController extends AbstractController
             return new JsonResponse([
                 'code' => 406,
                 'type' => 'warning',
-                'message' => static::$titreJS . static::$erreur406
+                'message' => static::$erreur406
             ], Response::HTTP_OK);
         }
 
