@@ -100,7 +100,7 @@ class OwaspController extends AbstractController
         $map = ['referential_version' => 2017];
         $owasp_2017 = $owaspTop10Repos->selectOwaspTop10Referential($map);
         if ($owasp_2017['code'] != 200) {
-            $message = $owasp_2017['erreur'];
+            $message = '❌' . $owasp_2017['erreur'];
             $this->addFlash('notice', [
                 'type' => 'alert',
                 'message' => $message
@@ -111,7 +111,7 @@ class OwaspController extends AbstractController
         $map=['referential_version' => 2021];
         $owasp_2021=$owaspTop10Repos->selectOwaspTop10Referential($map);
         if ($owasp_2021['code'] != 200) {
-            $message = $owasp_2021['erreur'];
+            $message = '❌' . $owasp_2021['erreur'];
             $this->addFlash('notice', [
                 'type'=>'alert',
                 'message'=>$message
@@ -120,7 +120,7 @@ class OwaspController extends AbstractController
         }
 
         if (count($owasp_2017['liste']) === 0 && count($owasp_2021['liste']) === 0){
-            $message = "Les informations concernant les référentiels OWASP n'ont pas été trouvés.";
+            $message = "⚠️ Les informations concernant les référentiels OWASP n'ont pas été trouvés.";
             $this->addFlash('notice', [
                 'type'=>'warning',
                 'message'=>$message
@@ -156,12 +156,12 @@ class OwaspController extends AbstractController
 
         /** On récupère les informations du projet de la table historique */
         $map = [ 'menace' => $id ];
-        $liste=$owaspTop10Repos->selectOwaspTop10Details($map);
+        $liste = $owaspTop10Repos->selectOwaspTop10Details($map);
         if ($liste['code'] != 200) {
-            $message = $liste['erreur'];
+            $message = '❌' . $liste['erreur'];
             $this->addFlash('notice', [
                 'type' => 'alert',
-                'message'=>$message
+                'message' => $message
             ]);
             return $this->render(static::$page, $render);
         }
