@@ -32,9 +32,9 @@ use Symfony\Component\Routing\RouterInterface;
 use App\Repository\UtilisateurRepository;
 
 /**
- * [Description LoginFormAuthenticator]
+ * [Description CustomAuthenticator]
  */
-class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
+class CustomAuthenticator extends AbstractLoginFormAuthenticator
 {
 
     public const LOGIN_ROUTE = 'login';
