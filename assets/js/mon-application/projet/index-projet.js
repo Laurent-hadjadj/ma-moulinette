@@ -23,6 +23,7 @@ import '../../select2/i18n/fr.js'
 /** Intégration de jquery */
 import $ from 'jquery';
 window.$ = $;
+let token = null;
 
 import 'what-input';
 import 'foundation-sites';
@@ -44,6 +45,16 @@ import { http_200, http_400, http_401, http_403, http_404, http_406, http_500, h
 /** On importe l'encoder */
 import {encode} from '../../common/encode.js';
 
+import("../../common/secrets.local.js").then((module) => {
+  token = module.token;
+}).catch((error) => {
+      const trace = prepareTechnicalDetails(error);
+      const message = "Le module n'a pas été chargé correctement (Erreur 500).";
+      showMessage('critical', message, trace);
+      sessionStorage.setItem('ma_moulinette_error', 'Error loading the module');
+    return;
+});
+console.log('toto', toto);
 import {Chart, registerables} from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
@@ -216,13 +227,18 @@ const match = function(params, data) {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const selectProjet = async function() {
+  console.log("xxxx", token);
   const options = {
     url: `${serveur()}/api/projet/liste`,
     type: 'POST',
     dataType: 'json',
-    contentType
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-App-Client': token
+    },
   };
-
+  console.log(options);
   const t = await $.ajax(options);
   // 📌 Vérification des erreurs
   if (t.code !== http_200){
@@ -311,8 +327,15 @@ const projetInformation = async function(mavenKey) {
 
   const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/collecte/information`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType,
+    url: `${serveur()}/api/collecte/information`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-App-Client': token
+    },
   };
 
   const $boutonCollecteIndicateur = $('.js-analyse');
@@ -376,8 +399,15 @@ const projetMesure = async function(mavenKey) {
 
   const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/collecte/mesure`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType
+    url: `${serveur()}/api/collecte/mesure`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-App-Client': token
+    },
   };
 
   const $boutonCollecteIndicateur = $('.js-analyse');
@@ -437,8 +467,15 @@ const projetRating = async function(mavenKey, type) {
 
   const data = { maven_key: mavenKey, type };
   const options = {
-    url: `${serveur()}/api/collecte/note`, type: 'POST',
-    dataType: 'json', data: JSON.stringify(data), contentType
+    url: `${serveur()}/api/collecte/note`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-App-Client': token
+    },
   };
 
   const $boutonCollecteIndicateur = $('.js-analyse');
@@ -498,8 +535,15 @@ const projetOwasp = async function(mavenKey) {
 
   const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/collecte/owasp`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType
+    url: `${serveur()}/api/collecte/owasp`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-App-Client': token
+    },
   };
 
   const $boutonCollecteIndicateur = $('.js-analyse');
@@ -581,8 +625,15 @@ const projetHotspot = async function(mavenKey) {
 
   const data = { maven_key: mavenKey};
   const options = {
-    url: `${serveur()}/api/collecte/hotspot`, type: 'POST',
-    dataType: 'json', data: JSON.stringify(data), contentType
+    url: `${serveur()}/api/collecte/hotspot`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-App-Client': token
+    },
   };
 
   const $boutonCollecteIndicateur = $('.js-analyse');
@@ -650,8 +701,15 @@ const projetAnomalie = async function(mavenKey) {
 
   const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/collecte/anomalie`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType
+    url: `${serveur()}/api/collecte/anomalie`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-App-Client': token
+    },
   };
 
   const $boutonCollecteIndicateur = $('.js-analyse');
@@ -711,8 +769,15 @@ const projetAnomalieDetails = async function(mavenKey) {
 
   const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/collecte/anomalie/detail`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType
+    url: `${serveur()}/api/collecte/anomalie/detail`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-App-Client': token
+    },
   };
 
   const $boutonCollecteIndicateur = $('.js-analyse');
@@ -776,8 +841,15 @@ const projetHotspotOwasp = async function(maven_key, menace) {
 
   const data = { maven_key, menace };
   const options = {
-    url: `${serveur()}/api/collecte/hotspot/owasp`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType
+    url: `${serveur()}/api/collecte/hotspot/owasp`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-App-Client': token
+    },
   };
 
   const $boutonCollecteIndicateur = $('.js-analyse');
@@ -855,8 +927,15 @@ const projetHotspotOwaspDetails = async function(mavenKey) {
 
   const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/collecte/hotspot/detail`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType
+    url: `${serveur()}/api/collecte/hotspot/detail`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-App-Client': token
+    },
   };
 
   const $boutonCollecteIndicateur = $('.js-analyse');
@@ -921,8 +1000,15 @@ const projetNoSonar = async function(mavenKey){
 
   const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/collecte/nosonar`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType
+    url: `${serveur()}/api/collecte/nosonar`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-App-Client': token
+    },
   };
 
   const $boutonCollecteIndicateur = $('.js-analyse');
@@ -992,8 +1078,15 @@ const projetTodo = async function(mavenKey){
 
   const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/collecte/todo`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType
+    url: `${serveur()}/api/collecte/todo`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-App-Client': token
+    },
   };
 
   const $boutonCollecteIndicateur = $('.js-analyse');
@@ -1064,8 +1157,15 @@ const projetLogger = async function(mavenKey){
 
 const data = { maven_key: mavenKey };
 const options = {
-  url: `${serveur()}/api/collecte/logger`, type: 'POST',
-        dataType: 'json', data: JSON.stringify(data), contentType
+  url: `${serveur()}/api/collecte/logger`,
+  type: 'POST',
+  dataType: 'json',
+  data: JSON.stringify(data),
+  contentType,
+      headers: {
+      'X-API-Custom-403': 'true',
+      'X-App-Client': token
+    },
   };
 
   const $boutonCollecteIndicateur = $('.js-analyse');
@@ -1152,8 +1252,15 @@ const finCollecte = function(maven_key){
  */
 const afficheMesProjets = async function() {
   const options = {
-    url: `${serveur()}/api/projet/mes-applications/liste`, type: 'POST',
-    dataType: 'json', contentType };
+    url: `${serveur()}/api/projet/mes-applications/liste`,
+    type: 'POST',
+    dataType: 'json',
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-App-Client': token
+    },
+  };
 
   try {
     const t = await $.ajax(options);
@@ -1391,8 +1498,17 @@ $('select[name="projet"]').on('change', function () {
   /* On regarde si le projet est en favori */
   const data = { maven_key: $('#select-result').text().trim() };
   const options = {
-    url: `${serveur()}/api/favori/check`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType };
+    url: `${serveur()}/api/favori/check`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+      headers: {
+      'X-API-Custom-403': 'true',
+      'X-App-Client': token
+    },
+  };
+
   $.ajax(options).then(t=> {
     // 📌 Vérification des erreurs
     const errorCodes = [http_400, http_401, http_403, http_500, http_503, http_504];
@@ -1770,8 +1886,17 @@ $('.favori-svg').on('click', () => {
 
     const data = { maven_key: $('#select-result').text().trim() };
     const options = {
-      url: `${serveur()}/api/favori`, type: 'POST',
-      dataType: 'json',  data: JSON.stringify(data), contentType };
+      url: `${serveur()}/api/favori`,
+      type: 'POST',
+      dataType: 'json',
+      data: JSON.stringify(data),
+      contentType,
+      headers: {
+      'X-API-Custom-403': 'true',
+      'X-App-Client': token
+      },
+    };
+
     $.ajax(options).then( t => {
       // 📌 Vérification des erreurs
       const errorCodes = [http_400, http_401, http_403, http_500, http_503, http_504];

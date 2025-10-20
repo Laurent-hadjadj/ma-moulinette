@@ -36,6 +36,17 @@ import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common
 /** On importe les constantes */
 import { http_400, http_401, http_403, http_404, http_500, http_504, contentType } from '../../common/constante.js';
 
+let token;
+import("../../common/secrets.local.js").then((module) => {
+  token = module.token;
+}).catch((error) => {
+      const trace = prepareTechnicalDetails(error);
+      const message = "Le module n'a pas été chargé correctement (Erreur 500).";
+      showMessage('critical', message, trace);
+      sessionStorage.setItem('ma_moulinette_error', 'Error loading the module');
+    return;
+  });
+
 /**
   * [Description for sonarIsUp]
   * Vérifie si le serveur SonarQube est UP
@@ -49,11 +60,19 @@ const sonarIsUp = async function() {
   if ($('#bouton-mise-a-jour-referential').hasClass('bouton-disabled')){
     return { code: http_401 };
   }
-
+  console.log(token);
   const options = {
-    url: `${serveur()}/api/status`, type: 'POST', dataType: 'json',  contentType };
-  try
-  {
+    url: `${serveur()}/api/status`,
+    type: 'POST',
+    dataType: 'json',
+    contentType,
+    headers: {
+                  'X-API-Custom-403': 'true',
+                  'X-App-Client': token
+              },
+  };
+
+  try {
     return await $.ajax(options);
   } catch(error) {
     // 📌 Vérification des erreurs
@@ -87,8 +106,8 @@ const miseAJourListe = async function() {
     dataType: 'json',
     contentType,
     headers: {
-                'Content-Type': 'application/json',
-                'X-API-Custom-403': 'true'
+                'X-API-Custom-403': 'true',
+                'X-App-Client': token
             },
   };
 
@@ -156,9 +175,9 @@ const miseAJourTags = async function() {
     dataType: 'json',
     contentType,
     headers: {
-                'Content-Type': 'application/json',
-                'X-API-Custom-403': 'true'
-              },
+                'X-API-Custom-403': 'true',
+                'X-App-Client': token
+            },
     };
 
     try {

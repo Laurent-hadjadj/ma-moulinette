@@ -24,6 +24,17 @@ import { log } from '../../common/log.js';
 import {contentType, dateOptions, http_400, http_401, http_403, http_404, http_406, http_500,
         http_503, http_504, un, deux, trois, quatre, cinq, dix, cent, dixMille} from '../../common/constante.js';
 
+let token;
+import("../../common/secrets.local.js").then((module) => {
+  token = module.token;
+}).catch((error) => {
+      const trace = prepareTechnicalDetails(error);
+      const message = "Le module n'a pas été chargé correctement (Erreur 500).";
+      showMessage('critical', message, trace);
+      sessionStorage.setItem('ma_moulinette_error', 'Error loading the module');
+    return;
+  });
+
 /**
  * [Description for enableButtonAnalyse]
  *
@@ -124,8 +135,16 @@ export const remplissage = async function(maven_key) {
    * On récupère les informations sur les versions, et le dernier audit.
    */
   const optionsInfo = {
-    url: `${serveur()}/api/peinture/projet/version`, type: 'POST',
-    dataType: 'json', data: JSON.stringify(data), contentType };
+    url: `${serveur()}/api/peinture/projet/version`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+      headers: {
+      'X-API-Custom-403': 'true',
+      'X-App-Client': token
+    },
+  };
 
   try {
         const t = await $.ajax(optionsInfo);
@@ -182,12 +201,20 @@ export const remplissage = async function(maven_key) {
               return;
       }
 
-  /***
-   * On récupère les exclusions noSonar
-   */
-  const optionsNoSonar = {
-    url: `${serveur()}/api/peinture/projet/nosonar`, type: 'POST',
-    dataType: 'json', data: JSON.stringify(data), contentType };
+    /***
+     * On récupère les exclusions noSonar
+     */
+    const optionsNoSonar = {
+      url: `${serveur()}/api/peinture/projet/nosonar`,
+      type: 'POST',
+      dataType: 'json',
+      data: JSON.stringify(data),
+      contentType,
+        headers: {
+        'X-API-Custom-403': 'true',
+        'X-App-Client': token
+      },
+    };
 
     try {
       const t = await $.ajax(optionsNoSonar);
@@ -225,8 +252,16 @@ export const remplissage = async function(maven_key) {
 
   /** On récupère les to.do tags */
   const optionsTodo = {
-    url: `${serveur()}/api/peinture/projet/todo`, type: 'POST',
-    dataType: 'json', data: JSON.stringify(data), contentType };
+    url: `${serveur()}/api/peinture/projet/todo`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+      headers: {
+      'X-API-Custom-403': 'true',
+      'X-App-Client': token
+    },
+  };
 
   try {
     const t = await $.ajax(optionsTodo);
@@ -307,8 +342,16 @@ export const remplissage = async function(maven_key) {
  * On récupère les logger
  */
   const optionsLogger = {
-    url: `${serveur()}/api/peinture/projet/logger`, type: 'POST',
-    dataType: 'json', data: JSON.stringify(data), contentType };
+    url: `${serveur()}/api/peinture/projet/logger`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+      headers: {
+      'X-API-Custom-403': 'true',
+      'X-App-Client': token
+    },
+  };
 
   try {
     const t = await $.ajax(optionsLogger);
@@ -362,8 +405,12 @@ export const remplissage = async function(maven_key) {
    * lignes, coverage fonctionnelle, ration de dette technique, duplication, tests unitaires et le nombre de défaut.
    */
   const optionsMesures = {
-    url: `${serveur()}/api/peinture/projet/mesures`, type: 'POST',
-    dataType: 'json', data: JSON.stringify(data), contentType };
+    url: `${serveur()}/api/peinture/projet/mesures`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType
+  };
 
   try {
     const t = await $.ajax(optionsMesures);
@@ -482,8 +529,12 @@ export const remplissage = async function(maven_key) {
    * On récupère les informations sur la dette technique et les anomalies.
    */
   const optionsAnomalie = {
-    url: `${serveur()}/api/peinture/projet/anomalie`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType };
+    url: `${serveur()}/api/peinture/projet/anomalie`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType
+  };
 
     try {
       const t = await $.ajax(optionsAnomalie);
@@ -718,12 +769,20 @@ export const remplissage = async function(maven_key) {
     }
 
 
-  /**
-   * On récupère les hotspot.
-   */
-  const optionsHotspots = {
-    url: `${serveur()}/api/peinture/projet/hotspots`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType };
+    /**
+     * On récupère les hotspot.
+     */
+    const optionsHotspots = {
+      url: `${serveur()}/api/peinture/projet/hotspots`,
+      type: 'POST',
+      dataType: 'json',
+      data: JSON.stringify(data),
+      contentType,
+        headers: {
+        'X-API-Custom-403': 'true',
+        'X-App-Client': token
+      },
+    };
 
     try {
       const t = await $.ajax(optionsHotspots);
@@ -776,8 +835,16 @@ export const remplissage = async function(maven_key) {
    * On récupère la sévérité par type.
    */
   const optionsAnomaliesDetails = {
-    url: `${serveur()}/api/peinture/projet/anomalie/details`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType };
+    url: `${serveur()}/api/peinture/projet/anomalie/details`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+      headers: {
+      'X-API-Custom-403': 'true',
+      'X-App-Client': token
+    },
+  };
 
   try {
     const t = await $.ajax(optionsAnomaliesDetails);
@@ -878,8 +945,16 @@ export const afficheHotspotDetails = async function (maven_key){
   /* On récupère la répartition des hotspot. */
   const data = { maven_key };
   const options = {
-    url: `${serveur()}/api/peinture/projet/hotspots/details`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType };
+    url: `${serveur()}/api/peinture/projet/hotspots/details`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+      headers: {
+      'X-API-Custom-403': 'true',
+      'X-App-Client': token
+    },
+  };
 
   try {
     const t = await $.ajax(options);

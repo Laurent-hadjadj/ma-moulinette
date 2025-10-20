@@ -10,17 +10,18 @@
  */
 
 /** Liste des constantes HTTP */
-export const http_200=200;
-export const http_201=201;
-export const http_202=202;
-export const http_400=400;
-export const http_401=401;
-export const http_403=403;
-export const http_404=404;
-export const http_406=406;
-export const http_500=500;
-export const http_503=503;
-export const http_504=504;
+export const http_200=Number(200);
+export const http_201=Number(201);
+export const http_202=Number(202);
+export const http_400=Number(400);
+export const http_401=Number(401);
+export const http_403=Number(403);
+export const http_404=Number(404);
+export const http_406=Number(406);
+export const http_422=Number(422);
+export const http_500=Number(500);
+export const http_503=Number(503);
+export const http_504=Number(504);
 
 /** Liste des constantes clientHTML */
 export const contentType = 'application/json; charset=utf-8';

@@ -35,6 +35,17 @@ import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common
 /** On importe les constantes */
 import { http_200, http_400, http_401, http_403, http_404, http_500, contentType, paletteCouleur, matrice, dateOptions, dateOptionsShort } from '../../common/constante.js';
 
+let token;
+import("../../common/secrets.local.js").then((module) => {
+  token = module.token;
+}).catch((error) => {
+      const trace = prepareTechnicalDetails(error);
+      const message = "Le module n'a pas été chargé correctement (Erreur 500).";
+      showMessage('critical', message, trace);
+      sessionStorage.setItem('ma_moulinette_error', 'Error loading the module');
+    return;
+  });
+
 import {encode} from '../../common/encode.js';
 import {Chart, registerables} from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -75,7 +86,11 @@ const refreshQuality = async function() {
         url: `${serveur()}/api/quality/profiles`,
         type: 'POST',
         dataType: 'json',
-        contentType
+        contentType,
+        headers: {
+                  'X-API-Custom-403': 'true',
+                  'X-App-Client': token
+              },
       };
 
   let response;
@@ -217,7 +232,11 @@ const autreProfil = async function(langage) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(dataRefresh),
-    contentType
+    contentType,
+    headers: {
+                  'X-API-Custom-403': 'true',
+                  'X-App-Client': token
+              },
   };
 
   const t = await $.ajax(optionsRefresh);
@@ -382,7 +401,12 @@ $('#bouton-affiche-graphique').on('click', async () => {
         url: `${serveur()}/api/quality/langage`,
         type: 'POST',
         dataType: 'json',
-        contentType };
+        contentType,
+        headers: {
+                    'X-API-Custom-403': 'true',
+                    'X-App-Client': token
+                },
+  };
 
   const t = await $.ajax(options);
   if (t.code != http_200){
