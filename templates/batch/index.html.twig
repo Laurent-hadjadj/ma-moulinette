@@ -35,19 +35,10 @@
       </nav>
     </header>
 
+    {# Message d'information php #}
+    {{ include('_message.html.twig') }}
+
     <main class="grid-container">
-      {# On affiche les messages #}
-      {% for message in app.flashes('message') %}
-        <div class="callout primary alert-callout-border {{message.type}}" data-closable>
-          <p class="open-sans text-justify callout-message">
-            <strong>{{message.titre}}</strong>
-            :
-            {{ message.message }}<br>{{message.erreur|default('') }}</p>
-          <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-      {% endfor %}
       {# Message d'information #}
       <div id="callout-projet-message" class="callout alert-callout-border hide" data-closable>
         <p class="open-sans text-justify js-message">
