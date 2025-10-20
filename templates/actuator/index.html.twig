@@ -30,7 +30,6 @@
   <body dir="ltr">
     {# Chargement de la section header #}
     {{ include('header.html.twig') }}
-    <br>
 
     <header class="grid-container margin-top-1">
       <nav id="fil-ariane" aria-label="vous êtes ici :">
@@ -44,20 +43,10 @@
       </nav>
     </header>
 
-    <main
-      class="grid-container">
-      {# Messages flash #}
-      {% for message in app.flashes('notice') %}
-        <div class="callout {{message.type}} alert-callout-border" data-closable>
-          <p class="open-sans text-justify callout-message">
-            <strong>{{message.titre}}</strong>
-            {{ message.message }}</p>
-          <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-      {% endfor %}
+    {# Message d'information php #}
+    {{ include('_message.html.twig') }}
 
+    <main class="grid-container">
       <h1 class="h4 claire-hand">Actuator</h1>
       <div class="small-12 cell">
         <div class="callout">
