@@ -14,17 +14,16 @@
 namespace App\Service;
 
 /** Gestion de accès aux API */
-use Symfony\Contracts\HttpClient\HttpClientInterface;
-use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-
-use \Symfony\Component\HttpClient\Exception\TimeoutException;
+use Symfony\Component\HttpClient\Exception\TimeoutException;
 use Symfony\Component\HttpClient\Exception\ClientException;
 use Symfony\Component\HttpClient\Exception\ServerException;
 use Symfony\Component\HttpClient\Exception\TransportException;
-
-/** Logger */
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Contracts\HttpClient\Exception\HttpExceptionInterface;
 use Psr\Log\LoggerInterface;
+
+use App\Exception\UnexpectedExecutionPathException;
 
 /**
  * [Description Client]
@@ -32,21 +31,23 @@ use Psr\Log\LoggerInterface;
 class Client
 {
     /** Définition des constantes */
-    public static $erreur400 = "Erreur 400 - La requête est incorrecte.";
-    public static $erreur401 = "Erreur 401 - Erreur d'Authentification. La clé n'est pas correcte.";
-    public static $erreur403 = "Erreur 403 - Vous n’êtes pas autorisé à vous connecter.";
-    public static $erreur404 = "Erreur 404 - Le service n'a pas trouvé les éléments.";
-    public static $erreur407 = "Erreur 407 - La requête n'a pas été appliquée à cause d'un manque d'authentification.";
-    public static $erreur414 = "Erreur 414 - L'URI demandée par le client est plus trop longue.";
-    public static $erreur418 = "Erreur 418 - « Je suis une théière », je refuse de préparer du café.";
-    public static $erreur429 = "Erreur 429 - Le client a envoyé trop de requêtes en un temps donné.";
-    public static $erreur500 = "Erreur 500 - Le serveur a rencontré un problème inattendu qui l'empêche de répondre à la requête.";
-    public static $erreur502 = "Erreur 502 - Le serveur, agissant comme une passerelle ou un proxy, a reçu une réponse invalide.";
-    public static $erreur505 = "Erreur 505 - La version du protocole HTTP utilisée dans la requête n'est pas prise en charge par le serveur.";
-    public static $erreur504 = "Erreur 504 - Temps d’attente d’une réponse écoulé...";
+    private static $erreur400 = "La requête est incorrecte  (Erreur 400).";
+    private static $erreur401 = "Erreur d'Authentification. La clé n'est pas correcte  (Erreur 401).";
+    private static $erreur403 = "Vous n’êtes pas autorisé à vous connecter (Erreur 403).";
+    private static $erreur404 = "Le service n'a pas trouvé les éléments (Erreur 404).";
+    private static $erreur407 = "La requête n'a pas été appliquée à cause d'un manque d'authentification (Erreur 407).";
+    private static $erreur414 = "L'URI demandée par le client est plus trop longue (Erreur 414).";
+    private static $erreur418 = "«Je suis une théière », je refuse de préparer du café (Erreur 418).";
+    private static $erreur422 = " (Erreur 422).";
+    private static $erreur429 = "Le client a envoyé trop de requêtes en un temps donné (Erreur 429).";
+    private static $erreur500 = "Le serveur a rencontré un problème inattendu qui l'empêche de répondre à la requête (Erreur 500).";
+    private static $erreur502 = "Le serveur, agissant comme une passerelle ou un proxy, a reçu une réponse invalide (Erreur 502).";
+    private static $erreur504 = "Temps d’attente d’une réponse écoulé... (Erreur 504).";
+    private static $erreur505 = "La version du protocole HTTP utilisée dans la requête n'est pas prise en charge par le serveur (Erreur 505).";
 
-    public static $responseData="Response Data: ";
-    public static $erreurTransport = "Erreur de transport : ";
+    private static $responseData = "Response Data: ";
+
+    private static $exceptionInattendu = "Chemin d'exécution inattendu dans ";
 
     public function __construct(
         private HttpClientInterface $client,
@@ -55,47 +56,99 @@ class Client
     ) {
         $this->client = $client;
         $this->params = $params;
-        $this->logger = $logger;
     }
 
+    /**
+     * [Description for handleTimeoutException]
+     *
+     * @param TimeoutException $e
+     *
+     * @return array
+     *
+     * Created at: 30/12/2024 08:05:07 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     private function handleTimeoutException(TimeoutException $e): array {
-        $this->logger->error(static::$erreurTransport . $e->getMessage());
+        $this->logger->error("[handleTimeoutException] ❌ ". static::$erreur504, [
+                'code' => 504,
+                'erreur' => $e->getMessage() ? $e->getMessage() : null,
+            ]);
         return ['code' => 504, 'erreur' => static::$erreur504];
     }
 
     private const ERROR_TRANSPORT_MESSAGES = [
-        'Failed to open stream' => "Erreur 503 - Le service est actuellement indisponible. Impossible d'établir une connexion.",
-        'Could not resolve host' => "Erreur 503 - La résolution DNS n'a pas permis d'accéder au serveur SonarQube.",
-        'Invalid HTTP proxy' => "Erreur 503 - L'adresse définit pour le proxy n'est pas correcte."
+        'Failed to open stream' => "Le service est actuellement indisponible. Impossible d'établir une connexion (Erreur 503).",
+        'Could not resolve host' => "La résolution DNS n'a pas permis d'accéder au serveur SonarQube (Erreur 503).",
+        'Invalid HTTP proxy' => "L'adresse définit pour le proxy n'est pas correcte (Erreur 503)."
     ];
 
+    /**
+     * [Description for handleTransportException]
+     *
+     * @param TransportException $e
+     *
+     * @return array
+     *
+     * Created at: 30/12/2024 08:05:14 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     private function handleTransportException(TransportException $e): array {
-        $errorMessage = "Erreur 503|504 de transport non spécifiée. | Détails : " . $e->getMessage();
-        $customMessage = false;
+        $errorMessage = "Erreur 503|504 de transport non spécifiée.";
+        $message = $e->getMessage();
+        $isCustomMessage = false;
 
         foreach (self::ERROR_TRANSPORT_MESSAGES as $key => $customMsg) {
-            if (strpos($errorMessage, $key) !== false) {
+            if (strpos($message, $key) !== false) {
                 $errorMessage = $customMsg;
-                $customMessage = true;
+                $isCustomMessage = true;
                 break;
             }
         }
 
-        if ($customMessage) {
-            $this->logger->error(static::$erreurTransport . $errorMessage);
+        if ($isCustomMessage) {
             $code = 503;
+            $this->logger->error("[handleTransportException] ❌ $errorMessage", [
+                'code' => $code,
+                'erreur' => $e->getMessage() ? $e->getMessage() : null,
+            ]);
         } else {
-            $this->logger->error(static::$erreurTransport . $errorMessage . " | Détails : " . $e->getMessage());
             $code = 504;
+            $this->logger->error("[handleTransportException] ❌ $errorMessage", [
+                'code' => $code,
+                'erreur' => $e->getMessage() ? $e->getMessage():null,
+            ]);
         }
 
-        return ['code' => $code, 'erreur' => $errorMessage];
+        return [ 'code' => $code, 'erreur' => $errorMessage ];
     }
 
+    /**
+     * [Description for handleClientException]
+     *
+     * @param ClientException $e
+     *
+     * @return array
+     *
+     * Created at: 30/12/2024 08:05:18 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     private function handleClientException(HttpExceptionInterface $e): array {
         $response = $e->getResponse();
         $body = $response->getContent(false);
         $errorCode = $e->getCode();
+        $firstTenLines = null;
+
+        // Décoder le JSON en tableau associatif
+        $data = json_decode($body, true);
+        // Vérifier si 'detail' existe dans les données
+        if (isset($data['detail']) && is_array($data['detail'])) {
+            $firstTenLines = substr($body, 0, 1000);
+        } else {
+            $this->logger->error("[handleClientException] ❌ Aucune donnée dans le bloc 'detail'.");
+        }
 
         $errorMessage = match ($errorCode) {
             400 => static::$erreur400,
@@ -105,29 +158,69 @@ class Client
             407 => static::$erreur407,
             414 => static::$erreur414,
             418 => static::$erreur418,
+            422 => static::$erreur422,
             429 => static::$erreur429,
-            default => "Erreur du client non spécifiée.",
+            default => "Erreur du client non spécifiée (Erreur {$errorCode}).",
         };
 
-        $this->logger->error("Erreur ".$errorCode . " du client : " . $body);
+        $this->logger->error("[handleClientException] ❌ Une erreur non spécifiée est survenue. ", [
+            'code' => $errorCode,
+            'body' => $firstTenLines
+        ]);
         return ['code' => $errorCode, 'erreur' => $errorMessage];
     }
 
-    private function handleServerException(HttpExceptionInterface $e): array {
+    /**
+     * [Description for handleServerException]
+     *
+     * @param ServerException $e
+     *
+     * @return array
+     *
+     * Created at: 30/12/2024 08:05:22 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function handleServerException(ServerException $e): array {
         $response = $e->getResponse();
         $body = $response->getContent(false);
         $errorCode = $e->getCode();
+        $firstTenLines = null;
+
+        // Décoder le JSON en tableau associatif
+        $data = json_decode($body, true);
+        // Vérifier si 'detail' existe dans les données
+        if (isset($data['detail']) && is_array($data['detail'])) {
+            $firstTenLines = substr($body, 0, 1000);
+        } else {
+            $this->logger->error("[handleServerException] ❌ Aucune donnée dans le bloc 'detail'.");
+        }
 
         $errorMessage = match ($errorCode) {
             500 => static::$erreur500,
             502 => static::$erreur502,
             505 => static::$erreur505,
-            default => "Erreur du serveur non spécifiée.",
+            default => "Une erreur non spécifiée est survenue (Erreur {$errorCode}).",
         };
-        $this->logger->error("Erreur ".$errorCode . " du serveur : " . $body);
+
+        $this->logger->error("[handleServerException] ❌ Une erreur non spécifiée est survenue. ", [
+            'code' => $errorCode,
+            'body' => $firstTenLines
+        ]);
         return ['code' => $errorCode, 'erreur' => $errorMessage];
     }
 
+    /**
+     * [Description for handleGenericException]
+     *
+     * @param \Exception $e
+     *
+     * @return array
+     *
+     * Created at: 19/10/2025 09:09:55 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     private function handleGenericException(\Exception $e): array {
         $this->logger->error("Une erreur inattendue du serveur s'est produite : " . $e->getMessage());
 
@@ -141,7 +234,7 @@ class Client
             strpos($e->getMessage(), $messages['key1']) !== false => "La variable 'CIPHERS' n'a pas été définie correctement.",
             strpos($e->getMessage(), $messages['key2']) !== false => "La variable 'VERIFY_HOST' n'a pas été définie correctement.",
             strpos($e->getMessage(), $messages['key3']) !== false => "La variable 'VERIFY_PEER' n'a pas été définie correctement.",
-            default => "Une erreur inattendue du serveur s'est produite (Erreur 500).",
+            default => ['code' => 500, 'erreur' =>"Une erreur inattendue du serveur s'est produite (Erreur 500)."],
         };
         return ['code' => 500, 'erreur' => $message];
     }
@@ -246,6 +339,10 @@ class Client
         } catch (\Exception $e) {
             return $this->handleGenericException($e);
         }
+
+        // Ce point ne devrait jamais être atteint, donc on peut lancer une exception.
+        throw new UnexpectedExecutionPathException(static::$exceptionInattendu . __METHOD__);
+        return [];
     }
 
     /**
@@ -334,7 +431,7 @@ class Client
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function httpActivity($url): array
+    public function httpActivity(string $url): array
     {
         if (empty($this->params->get('sonar.activity.token')) && empty($this->params->get('sonar.activity.user'))){
             return ['code'=> 401, 'erreur' => static::$erreur401];
@@ -404,6 +501,10 @@ class Client
         } catch (\Exception $e) {
             return $this->handleGenericException($e);
         }
+
+        // Ce point ne devrait jamais être atteint, donc on peut lancer une exception.
+        throw new UnexpectedExecutionPathException(static::$exceptionInattendu . __METHOD__);
+        return [];
     }
 
 }
