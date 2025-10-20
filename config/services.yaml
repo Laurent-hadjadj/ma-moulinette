@@ -13,7 +13,9 @@ imports:
 
 parameters:
     # API Secure
-    client: '%env(CLIENT)%'
+    app.client_token: '%env(APP_CLIENT_TOKEN)%'
+    app.allowed_origins: '%env(csv:APP_ALLOWED_ORIGINS)%'
+
 
     # Configuration SonarQube
     sonar.url: '%env(SONAR_URL)%'
@@ -90,4 +92,10 @@ services:
     # -----------------------------------------------------------------------
     # Services explicites
     # -----------------------------------------------------------------------
+    App\EventSubscriber\ApiClientHeaderSubscriber:
+        arguments:
+            $appClientToken: '%app.client_token%'
+            $allowedOrigins: '%app.allowed_origins%'
+            $internalHeaderName: 'X-Internal-Front'
+            $internalHeaderValue: 'front-app'
 ...
