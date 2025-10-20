@@ -15,7 +15,6 @@ namespace App\Controller\Activity;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +23,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-use App\Controller\Traits\RequireAuthenticatedClientTrait;
+
 use App\Entity\Activity;
 use App\Entity\ActivityHistorique;
 use App\Message\ActivityMessage;
@@ -35,10 +34,6 @@ use App\Service\Client;
  */
 class ApiActivityController extends AbstractController
 {
-    use RequireAuthenticatedClientTrait;
-
-    private $appClient;
-
     /** Définition des constantes */
     private static $sonarUrl = "sonar.url";
     private static $plus7days = "+7 days";
@@ -59,12 +54,10 @@ class ApiActivityController extends AbstractController
         private EntityManagerInterface $em,
         private Client $client,
         private MessageBusInterface $messageBus,
-        private ParameterBagInterface $params,
         private Security $security,
         private LoggerInterface $logger
     ) {
         $this->messageBus = $messageBus;
-        $this->appClient = $this->params->get('client');
     }
 
     /**
@@ -165,11 +158,6 @@ class ApiActivityController extends AbstractController
     public function sauvegardeHistorique(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/activity/sauvegarde");
-
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
 
         $user = $this->security->getUser();
 
@@ -334,11 +322,6 @@ class ApiActivityController extends AbstractController
     public function apiDessin(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/activity/dessin");
-
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
 
         /**On récupère la date actuelle */
         $dateActuelle = new \DateTime('now');

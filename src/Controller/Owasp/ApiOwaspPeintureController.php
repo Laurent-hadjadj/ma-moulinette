@@ -14,7 +14,6 @@
 namespace App\Controller\Owasp;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -22,7 +21,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-use App\Controller\Traits\RequireAuthenticatedClientTrait;
+
 use App\Entity\Owasp;
 use App\Entity\HotspotOwasp;
 use App\Entity\HotspotDetails;
@@ -32,21 +31,14 @@ use App\Entity\HotspotDetails;
  */
 class ApiOwaspPeintureController extends AbstractController
 {
-    use RequireAuthenticatedClientTrait;
-
-    private $appClient;
-
     /** Définition des constantes */
     private static $erreur400 = "La requête est incorrecte (Erreur 400).";
 
     public function __construct(
         private EntityManagerInterface $em,
-        private ParameterBagInterface $params,
         private LoggerInterface $logger,
-)
-    {
-        $this->appClient = $this->params->get('client');
-    }
+    )
+    {}
 
     /**
      * [Description for total]
@@ -90,11 +82,6 @@ class ApiOwaspPeintureController extends AbstractController
     public function peintureOwaspListe(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/owasp/liste");
-
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
 
         /** On instancie l'entityRepository */
         $owaspRepos = $this->em->getRepository(Owasp::class);
@@ -244,11 +231,6 @@ class ApiOwaspPeintureController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/owasp/hotspot/info");
 
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
-
         /** On instancie l'entityRepository */
         $hotspotOwaspRepos = $this->em->getRepository(HotspotOwasp::class);
 
@@ -371,11 +353,6 @@ class ApiOwaspPeintureController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/owasp/hotspot/liste");
 
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
-
         /** On instancie l'entityRepository */
         $hotspotOwaspRepos = $this->em->getRepository(HotspotOwasp::class);
 
@@ -475,11 +452,6 @@ class ApiOwaspPeintureController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/owasp/hotspot/details");
 
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
-
         /** On instancie l'entityRepository */
         $hotspotDetailsRepos = $this->em->getRepository(HotspotDetails::class);
 
@@ -540,11 +512,6 @@ class ApiOwaspPeintureController extends AbstractController
     public function peintureOwaspSeverity(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/owasp/hotspot/severity");
-
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
 
         /** On instancie l'entityRepository */
         $hotspotOwaspRepos = $this->em->getRepository(HotspotOwasp::class);

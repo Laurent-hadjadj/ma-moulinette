@@ -15,7 +15,6 @@ namespace App\Controller\Repartition;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,7 +23,7 @@ use Exception;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-use App\Controller\Traits\RequireAuthenticatedClientTrait;
+
 use App\Entity\Repartition;
 use App\Entity\RepartitionTemp;
 use App\Controller\Batch\BatchCollecteRepartitionController;
@@ -34,10 +33,6 @@ use App\Controller\Batch\BatchCollecteRepartitionController;
  */
 class ApiRepartitionController extends AbstractController
 {
-    use RequireAuthenticatedClientTrait;
-
-    private $appClient;
-
     private static $erreur400 = "La requête est incorrecte (Erreur 400).";
     private static $erreur403 = "Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
     private static $loggerE403 = "[Répartition-Module] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).";
@@ -54,12 +49,8 @@ class ApiRepartitionController extends AbstractController
         private BatchCollecteRepartitionController $batchCollecteRepartition,
         private LoggerInterface $logger,
         private Security $security,
-        private ParameterBagInterface $params,
-
     ) {
         $this->batchCollecteRepartition = $batchCollecteRepartition;
-        $this->appClient = $this->params->get('client');
-
     }
 
     /**
@@ -154,11 +145,6 @@ class ApiRepartitionController extends AbstractController
     public function apiRepartitionAnalyse(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/repartition/analyse");
-
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
 
         $user = $this->security->getUser();
 
@@ -282,11 +268,6 @@ class ApiRepartitionController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/repartition/historique");
 
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
-
         $user = $this->security->getUser();
 
         // Instanciation des repositories
@@ -374,11 +355,6 @@ class ApiRepartitionController extends AbstractController
     public function apiRepartitionAnalyseMaj(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/repartition/analyse/mise-a-jour");
-
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
 
         /** On décode le body */
         $data = json_decode($request->getContent());

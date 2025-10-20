@@ -22,7 +22,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\SecurityBundle\Security;
 use Psr\Log\LoggerInterface;
 
-use App\Controller\Traits\RequireAuthenticatedClientTrait;
 /** Gestion de accès aux API */
 use App\Controller\Batch\BatchCollecteInformationProjetController;
 use App\Controller\Batch\BatchCollecteMesureController;
@@ -43,9 +42,6 @@ use App\Controller\Batch\BatchCollecteLoggerController;
  */
 class ApiCollecteController extends AbstractController
 {
-    use RequireAuthenticatedClientTrait;
-
-    private $appClient;
 
     /** Définition des constantes */
     private static $erreur400 = "La requête est incorrecte (Erreur 400).";
@@ -68,11 +64,9 @@ class ApiCollecteController extends AbstractController
         private BatchCollecteTodoController $batchCollecteTodo,
         private BatchCollecteActuatorController $batchCollecteActuator,
         private BatchCollecteLoggerController $batchCollecteLogger,
-        private ParameterBagInterface $params,
         private Security $security,
         private LoggerInterface $logger,
     ) {
-        $this->appClient = $this->params->get('client');
     }
 
     /**
@@ -90,11 +84,6 @@ class ApiCollecteController extends AbstractController
     public function apiCollecteInformation(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/information");
-
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
 
         // On décode le body
         $data = json_decode($request->getContent());
@@ -199,11 +188,6 @@ class ApiCollecteController extends AbstractController
     public function apiCollecteMesure(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/mesure");
-
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -314,11 +298,6 @@ class ApiCollecteController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/note");
 
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
-
         /** On décode le body */
         $data = json_decode($request->getContent());
 
@@ -416,11 +395,6 @@ class ApiCollecteController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/owasp");
 
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
-
         /** On décode le body */
         $data = json_decode($request->getContent());
 
@@ -517,11 +491,6 @@ class ApiCollecteController extends AbstractController
     public function apiCollecteHotspot(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/hotspot");
-
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -622,11 +591,6 @@ class ApiCollecteController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/anomalie");
 
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
-
         /** On décode le body */
         $data = json_decode($request->getContent());
 
@@ -726,11 +690,6 @@ class ApiCollecteController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/anomalie/detail");
 
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
-
         /** On décode le body */
         $data = json_decode($request->getContent());
 
@@ -821,11 +780,6 @@ class ApiCollecteController extends AbstractController
     public function apiCollecteHotspotOwasp(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/hotspot/owasp");
-
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -924,11 +878,6 @@ class ApiCollecteController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/hotspot/detail");
 
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
-
         /** On décode le body */
         $data = json_decode($request->getContent());
 
@@ -1018,11 +967,6 @@ class ApiCollecteController extends AbstractController
     public function apiCollecteNoSonar(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/nosonar");
-
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -1117,11 +1061,6 @@ class ApiCollecteController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/todo");
 
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
-
         /** On décode le body */
         $data = json_decode($request->getContent());
 
@@ -1213,11 +1152,6 @@ class ApiCollecteController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/actuator/info");
 
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
-
         /** On décode le body */
         $data = json_decode($request->getContent());
 
@@ -1307,11 +1241,6 @@ class ApiCollecteController extends AbstractController
     public function apiCollecteLogger(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/logger");
-
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
 
         /** On décode le body */
         $data = json_decode($request->getContent());

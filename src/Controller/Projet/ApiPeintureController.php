@@ -15,7 +15,6 @@ namespace App\Controller\Projet;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,7 +22,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-use App\Controller\Traits\RequireAuthenticatedClientTrait;
 use App\Entity\InformationProjet;
 use App\Entity\Anomalie;
 use App\Entity\AnomalieDetails;
@@ -40,10 +38,6 @@ use App\Service\IsValideMavenKey;
  */
 class ApiPeintureController extends AbstractController
 {
-    use RequireAuthenticatedClientTrait;
-
-    private $appClient;
-
     /**
      * [Description for __construct]
      *
@@ -57,10 +51,7 @@ class ApiPeintureController extends AbstractController
         private EntityManagerInterface $em,
         private IsValideMavenKey $isValideMavenKey,
         private LoggerInterface $logger,
-        private ParameterBagInterface $params,
-
     ) {
-        $this->appClient = $this->params->get('client');
     }
 
     /** Définition des constantes */
@@ -156,11 +147,6 @@ class ApiPeintureController extends AbstractController
     public function projetMesApplicationsListe(Request $request, Security $security): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/projet/mes-applications/liste");
-
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
 
         /** On instancie l'entityRepository */
         $anomalieRepos = $this->em->getRepository(Anomalie::class);
@@ -262,11 +248,6 @@ class ApiPeintureController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/version");
 
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
-
         /** On instancie l'entityRepository */
         $informationProjetRepos = $this->em->getRepository(InformationProjet::class);
 
@@ -364,11 +345,6 @@ class ApiPeintureController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/mesures");
 
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
-
         /** On instancie l'entityRepository */
         $mesuresRepos = $this->em->getRepository(Mesures::class);
 
@@ -455,11 +431,6 @@ class ApiPeintureController extends AbstractController
     public function peintureProjetAnomalie(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/anomalie");
-
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
 
         /** On instancie l'entityRepository */
         $anomalieRepos = $this->em->getRepository(Anomalie::class);
@@ -611,11 +582,6 @@ class ApiPeintureController extends AbstractController
 
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/anomalie/details");
 
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
-
         /** On instancie l'entityRepository */
         $anomalieDetailsRepos = $this->em->getRepository(AnomalieDetails::class);
 
@@ -719,11 +685,6 @@ class ApiPeintureController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/hotspots");
 
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
-
         /** On instancie l'entityRepository */
         $hotspotsRepos = $this->em->getRepository(Hotspots::class);
 
@@ -815,11 +776,6 @@ class ApiPeintureController extends AbstractController
     public function peintureProjetHotspotsDetails(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/hotspots/details");
-
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
 
         /** On instancie l'entityRepository */
         $hotspotsRepos = $this->em->getRepository(Hotspots::class);
@@ -922,11 +878,6 @@ class ApiPeintureController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/nosonar");
 
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
-
         /** On instancie l'entityRepository */
         $noSonarRepos = $this->em->getRepository(NoSonar::class);
 
@@ -1016,11 +967,6 @@ class ApiPeintureController extends AbstractController
     public function peintureProjetTodo(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/todo");
-
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
 
         /** On instancie l'entityRepository */
         $todoRepos = $this->em->getRepository(Todo::class);
@@ -1134,11 +1080,6 @@ class ApiPeintureController extends AbstractController
     public function peintureProjetLogger(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/logger");
-
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
 
         /** On instancie l'entityRepository */
         $loggerRepository = $this->em->getRepository(Logger::class);

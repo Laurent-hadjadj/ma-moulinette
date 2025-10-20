@@ -23,7 +23,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-use App\Controller\Traits\RequireAuthenticatedClientTrait;
+
 use App\Entity\Properties;
 use App\Entity\Profiles;
 use App\Entity\ProfilesHistorique;
@@ -35,10 +35,6 @@ use App\Service\UrlBuilderService;
  */
 class ApiProfilController extends AbstractController
 {
-    use RequireAuthenticatedClientTrait;
-
-    private $appClient;
-
     /** Définition des constantes */
     private static $europeParis = "Europe/Paris";
     private static $dateFormatShort = "Y-m-d";
@@ -71,7 +67,6 @@ class ApiProfilController extends AbstractController
         private LoggerInterface $logger,
         private UrlBuilderService $urlBuilder,
     ) {
-        $this->appClient = $this->params->get('client');
         $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
@@ -191,11 +186,6 @@ class ApiProfilController extends AbstractController
     public function listeQualityProfiles(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/quality/profiles");
-
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
 
         /** On instancie l'entityRepository */
         $profilesRepos = $this->em->getRepository(Profiles::class);
@@ -363,11 +353,6 @@ class ApiProfilController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/quality/langage");
 
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
-
         /** On instancie la classe */
         $profilesRepos = $this->em->getRepository(Profiles::class);
 
@@ -447,11 +432,6 @@ class ApiProfilController extends AbstractController
     public function profilDetails(Request $request)
     {
         $this->logger->info("[API] 📥 Requête reçue sur /profil/details");
-
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
 
         $profilesHistoriqueRepository = $this->em->getRepository(ProfilesHistorique::class);
 
@@ -664,11 +644,6 @@ class ApiProfilController extends AbstractController
     public function listeQualityOff(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/quality/off");
-
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
 
         $profilesRepos = $this->em->getRepository(Profiles::class);
 
