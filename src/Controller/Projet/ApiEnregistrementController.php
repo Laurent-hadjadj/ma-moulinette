@@ -55,7 +55,7 @@ class ApiEnregistrementController extends AbstractController
         private Security $security,
         private LoggerInterface $logger
     ) {
-        $this->appClient = $this->params->get('app.client');
+        $this->appClient = $this->params->get('client');
     }
 
     /**
