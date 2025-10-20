@@ -36,6 +36,9 @@
       </nav>
     </header>
 
+    {# Message d'information php #}
+    {{ include('_message.html.twig') }}
+
     <main class="grid-container">
       <h1 class="h2 claire-hand">Suivi des analyses SonarQube</h1>
       <h2 class="claire-hand h4">Tableau de bord consolidé. </h2>
@@ -43,28 +46,6 @@
       <p id="js-date-enregistrement" class="h4 open-sans">
           <strong>Dernière date d'enregistrement : </strong> {{data[0]['date_enregistrement']}}
       </p>
-
-      {# Message d'information php #}
-      <div class="grid-x">
-        {% for message in app.flashes('notice') %}
-        <div class="callout alert-callout-border {{message.type}} callout-ombre cell" role="alert" data-closable>
-          <p class="open-sans text-justify callout-message">
-            <strong>{{message.titre}}</strong> {{ message.message }} <br> {{message.debug|default('')}}
-          </p>
-          <button class="close-button {{message.type}}" aria-label="Fermeture" type="button" data-close>
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        {% endfor %}
-      </div>
-
-      {# Message d'alerte #}
-      <div id="message-box" class="callout alert-callout-border callout-ombre hide" role="alert" data-closable>
-        <p id="message-text" class="open-sans text-justify callout-message"></p>
-        <button id="close-button" class="close-button" aria-label="Close alert" type="button" data-close>
-        <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
 
       <div class="grid-x grid-padding-x">
         <div class="cell small-12 medium-6 large-6">
