@@ -15,7 +15,6 @@ namespace App\Controller\Projet;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,7 +22,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-use App\Controller\Traits\RequireAuthenticatedClientTrait;
 use App\Entity\Utilisateur;
 use App\Entity\ListeProjet;
 
@@ -32,10 +30,6 @@ use App\Entity\ListeProjet;
  */
 class ApiProjetController extends AbstractController
 {
-    use RequireAuthenticatedClientTrait;
-
-    private $appClient;
-
     /** Définition des constantes */
     private static $erreur400 = "La requête est incorrecte (Erreur 400).";
     private static $erreur404 = "Vous devez être rattaché à une équipe (Erreur 404).";
@@ -53,9 +47,7 @@ class ApiProjetController extends AbstractController
         private EntityManagerInterface $em,
         private LoggerInterface $logger,
         private Security $security,
-        private ParameterBagInterface $params,
     ) {
-        $this->appClient = $this->params->get('client');
     }
 
     /**
@@ -75,11 +67,6 @@ class ApiProjetController extends AbstractController
     public function favori(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/favori");
-
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
 
         $user = $this->security->getUser();
         $username = $user->getUserIdentifier();
@@ -159,11 +146,6 @@ class ApiProjetController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/favori/check");
 
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
-
         $user = $this->security->getUser();
         $username = $user->getUserIdentifier();
         $data = json_decode($request->getContent());
@@ -226,11 +208,6 @@ class ApiProjetController extends AbstractController
     public function liste_projet(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/projet/liste");
-
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
 
         $user = $this->security->getUser();
         $username = $user->getUserIdentifier();
