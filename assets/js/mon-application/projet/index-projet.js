@@ -45,16 +45,6 @@ import { http_200, http_400, http_401, http_403, http_404, http_406, http_500, h
 /** On importe l'encoder */
 import {encode} from '../../common/encode.js';
 
-import("../../common/secrets.local.js").then((module) => {
-  token = module.token;
-}).catch((error) => {
-      const trace = prepareTechnicalDetails(error);
-      const message = "Le module n'a pas été chargé correctement (Erreur 500).";
-      showMessage('critical', message, trace);
-      sessionStorage.setItem('ma_moulinette_error', 'Error loading the module');
-    return;
-});
-console.log('toto', toto);
 import {Chart, registerables} from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 
@@ -227,7 +217,6 @@ const match = function(params, data) {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const selectProjet = async function() {
-  console.log("xxxx", token);
   const options = {
     url: `${serveur()}/api/projet/liste`,
     type: 'POST',
@@ -235,10 +224,10 @@ const selectProjet = async function() {
     contentType,
     headers: {
       'X-API-Custom-403': 'true',
-      'X-App-Client': token
+      'X-Internal-Front': 'front-app'
     },
   };
-  console.log(options);
+
   const t = await $.ajax(options);
   // 📌 Vérification des erreurs
   if (t.code !== http_200){
