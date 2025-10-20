@@ -12,7 +12,7 @@ framework:
         app: cache.adapter.filesystem
 
     # the IP address (or range) of your proxy
-    trusted_hosts: '%env(csv:TRUSTED_HOSTS)%'
+    trusted_hosts: ['%env(TRUST_HOST1)%', '%env(TRUST_HOST1)%']
     trusted_proxies: '%env(TRUSTED_PROXIES)%'
     trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-prefix']
 
