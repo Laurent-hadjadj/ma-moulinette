@@ -71,7 +71,7 @@ class ApiProfilController extends AbstractController
         private LoggerInterface $logger,
         private UrlBuilderService $urlBuilder,
     ) {
-        $this->appClient = $this->params->get('app.client');
+        $this->appClient = $this->params->get('client');
         $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
@@ -224,6 +224,7 @@ class ApiProfilController extends AbstractController
         ]);
 
         $result = $this->client->httpSonarQube($url);
+
         if (in_array($result['code'] ?? -1, [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
             $this->logger->error('[Profil] ❌ Erreur retour API SonarQube', [
             'code' => $result['code'],
