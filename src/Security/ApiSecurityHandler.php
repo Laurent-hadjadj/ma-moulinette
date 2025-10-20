@@ -21,6 +21,7 @@ use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 use Symfony\Component\Security\Http\Authorization\AccessDeniedHandlerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 /**
  * [Description ApiSecurityHandler]
@@ -28,7 +29,10 @@ use Symfony\Component\Security\Http\Authorization\AccessDeniedHandlerInterface;
 class ApiSecurityHandler implements AuthenticationEntryPointInterface, AccessDeniedHandlerInterface
 {
 
-    public function __construct(private LoggerInterface $logger)
+    public function __construct(
+      private LoggerInterface $logger,
+      private TokenStorageInterface $tokenStorage
+    )
     {
     }
 
@@ -53,10 +57,19 @@ class ApiSecurityHandler implements AuthenticationEntryPointInterface, AccessDen
             'message' => $authException?->getMessage(),
         ]);
 
+        // Vérifie un header spécifique pour décider si on renvoie HTTP 200 ou 403
+        $useHttp200 = (bool) $request->headers->get('x-api-custom-401', false);
+
+        $web_message = 'Votre session a expiré. Vous allez être redirigé dans quelques secondes sur la page de connexion (Erreur 401).';
+        $api_message = '[API-Core] ☠️ Vous devez être authentifié pour accéder à cette ressource (Erreur 401).';
+
+        $x_api_custom_401 = $useHttp200 ? 'X-Api-Custom-401' : 'status';
+
         return new JsonResponse([
-            'error' => 'Unauthorized',
-            'message' => '[API-Core] ☠️ Vous devez être authentifié pour accéder à cette ressource (Erreur 401).'
-        ], Response::HTTP_UNAUTHORIZED);
+            $x_api_custom_401 => $useHttp200 ? true : 'unauthorized',
+            'code' => 401,
+            'message' => $useHttp200 ? $web_message : $api_message,
+        ], $useHttp200 ? Response::HTTP_OK : Response::HTTP_UNAUTHORIZED);
     }
 
     /**
@@ -74,6 +87,14 @@ class ApiSecurityHandler implements AuthenticationEntryPointInterface, AccessDen
      */
     public function handle(Request $request, AccessDeniedException $accessDeniedException): Response
     {
+      $token = $this->tokenStorage->getToken();
+      $user = $token?->getUser();
+
+      // Si pas de token ou anonyme -> session expirée -> 401
+      if (!$token || !$user || $user === 'anon.') {
+          return $this->start($request, null); // renvoie 401
+      }
+
       $this->logger->error('[API-Credential] 👻 Accès refusé à une ressource API', [
               'path' => $request->getPathInfo(),
               'ip' => $request->getClientIp(),
@@ -84,24 +105,18 @@ class ApiSecurityHandler implements AuthenticationEntryPointInterface, AccessDen
       // Récupère le rôle requis depuis l'attribut de la route
         $requiredRole = $request->attributes->get('role');
 
-        $message = $requiredRole
+        $web_message = $requiredRole
           ? "Vous devez avoir le rôle <strong>$requiredRole</strong> pour accéder à cette ressource (Erreur 403)."
           : "Vous n’avez pas les droits pour accéder à cette ressource.";
+        $api_message = '[API-Credential] Vous n’avez pas les droits pour accéder à cette ressource.';
 
         // Vérifie un header spécifique pour décider si on renvoie HTTP 200 ou 403
-        $useHttp200 = (bool) $request->headers->get('X-API-Custom-403', false);
+        $useHttp200 = (bool) $request->headers->get('X-Api-Custom-403', false);
 
-        if ($useHttp200) {
-            return new JsonResponse([
-                'type' => 'alert',
-                'code' => 403,
-                'message' => $message,
-            ], Response::HTTP_OK);
-        }
-
-      return new JsonResponse([
-              'error' => 'Forbidden',
-              'message' => '[API-Credential] Vous n’avez pas les droits pour accéder à cette ressource.'
-      ], Response::HTTP_FORBIDDEN);
+        return new JsonResponse([
+            'x-api-custom-403' => true,
+            'code' => 403,
+            'message' => $useHttp200 ? $web_message : $api_message,
+        ], $useHttp200 ? Response::HTTP_OK : Response::HTTP_FORBIDDEN);
     }
 }
