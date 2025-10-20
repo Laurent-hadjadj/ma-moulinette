@@ -64,7 +64,7 @@ class ApiActivityController extends AbstractController
         private LoggerInterface $logger
     ) {
         $this->messageBus = $messageBus;
-        $this->appClient = $this->params->get('app.client');
+        $this->appClient = $this->params->get('client');
     }
 
     /**
