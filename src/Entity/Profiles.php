@@ -31,11 +31,11 @@ class Profiles
         options: ['comment' => 'Identifiant unique pour chaque profil'])]
     private $id;
 
-    #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
+    #[ORM\Column(type: Types::STRING, length: 56, nullable: false,
         options: ['comment' => 'Clé unique du profil'])]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 255,
-        maxMessage: "La clé du profil ne doit pas dépasser 32 caractères.")]
+    #[Assert\Length(max: 56,
+        maxMessage: "La clé du profil ne doit pas dépasser 56 caractères.")]
     private $key;
 
     #[ORM\Column(type: Types::STRING, length: 128, nullable: false,
