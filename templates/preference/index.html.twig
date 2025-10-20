@@ -13,8 +13,7 @@
   © 2024 - CC BY-SA-NC 4.0
 -->
 
-<html
-	lang="fr">
+<html	lang="fr">
 
 	{# Chargement de la section HEAD #}
 	<head>
@@ -28,19 +27,18 @@
 	<body>
 		{# Chargement de la section header #}
 		{{ include('header.html.twig') }}
-		<br>
 
 		<header class="grid-container margin-top-1">
 			<nav aria-label="Ici : " role="navigation">
 				<ul class="claire-hand breadcrumbs">
-					<li>
-						<a href="{{ path('accueil', {}) }}">Accueil</a>
-					</li>
-					<li>
-						<span class="show-for-sr">Current:</span>Mes préférences</li>
+					<li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+					<li><span class="show-for-sr">Current:</span>Mes préférences</li>
 				</ul>
 			</nav>
 		</header>
+
+		{# Message d'information php #}
+    {{ include('_message.html.twig') }}
 
 		<div class="grid-container">
 			<h1 class="h4 claire-hand">Mes Informations personnelles.</h1>
