@@ -42,21 +42,10 @@
       </nav>
     </header>
 
+    {# Message d'information php #}
+    {{ include('_message.html.twig') }}
+
     <main class="grid-container" role="main">
-      {# On affiche les messages #}
-      {% for message in app.flashes('notice') %}
-      <div class="callout {{message.type}} alert-callout-border" role="alert" data-closable>
-          <p class="open-sans text-justify callout-message color"><strong>{{message.titre}}</strong> {{ message.message }}</p>
-          {% if app.environment == 'dev' and message.debug is defined %}
-          <p class"open-sans">{{message.debug}}</p>
-          {% endif %}
-
-          <button class="close-button {{message.type}}" aria-label="Dismiss alert" type="button" data-close>
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-      {% endfor %}
-
       <h1 class="h3 claire-hand"><span aria-hidden="true">🔒</span>Modification du mot de passe</h1>
       <div class="grid-x">
         {# Formulaire de changement de mot de passe #}
