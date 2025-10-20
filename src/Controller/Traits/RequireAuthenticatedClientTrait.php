@@ -25,15 +25,15 @@ trait RequireAuthenticatedClientTrait
      * Vérifie l'en-tête X-App-Client.
      *
      * @param Request $request
-     * @param string  $appClient  La valeur attendue (ex: depuis les paramètres de config)
+     * @param string  $token  La valeur attendue (ex: depuis les paramètres de config)
      *
      * @return JsonResponse|null
      */
-    public function checkApiClient(Request $request, string $appClient): ?JsonResponse
+    public function checkApiClient(Request $request, string $token): ?JsonResponse
     {
         $clientHeader = $request->headers->get('X-App-Client');
 
-        if ($clientHeader !== $appClient) {
+        if ($clientHeader !== $token) {
             return new JsonResponse([
                 'code'    => 403,
                 'message' => '[API-Credential] 👻 Vous n’avez pas les droits pour accéder à cette ressource.'
