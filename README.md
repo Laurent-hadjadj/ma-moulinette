@@ -7,7 +7,7 @@
 ┃┃┃┃┃┃━━┃┃━━┃┗━┛┃\
 ┃┗┛┗┛┃━━┃┃━━┃┏━━┛\
 ┗┓┏┓┏┛━┏┫┣┓━┃┃\
-━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.0.0 Release on December 2024 !
+━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.0.0 Release on December 2025 !
 
 Ma Moulinette est une application, locale (pour le moment...), qui a pour objectif de simplifier la consultation et le suivi des principaux indicateurs collectés et calculés depuis un serveur SonarQube.
 
@@ -47,6 +47,6 @@ Compte **Admin** (cf. securite.md).
 - [x] Son identifiant de connexion est <admin@ma-moulinette.fr>.
 - [x] Son mot de passe est : `eYK8k4[T;99N!em^`
 
-Code Emoji : ✅ ❌ ⚠️ ℹ️ 📌 📄 🔴 🛠️ 🗑️ 🚫
+Code Emoji : ☠️ ✅ ❌ ⚠️ ℹ️ 📌 📄 🔴 🛠️ 🗑️ 🚫
 
 -**-- FIN --**-
