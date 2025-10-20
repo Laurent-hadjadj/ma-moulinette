@@ -59,7 +59,7 @@ class ApiAccueilController extends AbstractController
         private EntityManagerInterface $em,
         private UrlBuilderService $urlBuilder,
     ) {
-        $this->appClient = $this->params->get('app.client');
+        $this->appClient = $this->params->get('client');
     }
 
     /**
