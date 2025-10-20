@@ -58,7 +58,7 @@ class ApiRepartitionController extends AbstractController
 
     ) {
         $this->batchCollecteRepartition = $batchCollecteRepartition;
-        $this->appClient = $this->params->get('app.client');
+        $this->appClient = $this->params->get('client');
 
     }
 
