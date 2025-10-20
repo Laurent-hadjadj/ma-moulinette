@@ -13,22 +13,22 @@
 
 namespace App\Security;
 
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Exception\UserNotFoundException;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Authenticator\AbstractLoginFormAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\CsrfTokenBadge;
+use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
-use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge;
-use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
-use Symfony\Component\Security\Http\Util\TargetPathTrait;
-use Doctrine\ORM\EntityManagerInterface;
-
+use Symfony\Component\Routing\RouterInterface;
 use App\Repository\UtilisateurRepository;
 
 /**
@@ -36,25 +36,15 @@ use App\Repository\UtilisateurRepository;
  */
 class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
 {
-    use TargetPathTrait;
 
     public const LOGIN_ROUTE = 'login';
 
-    private UtilisateurRepository $utilisateurRepository;
-    private UrlGeneratorInterface $urlGenerator;
-    private UserPasswordHasherInterface $passwordHasher;
-    private EntityManagerInterface $em;
-
     public function __construct(
-        UtilisateurRepository $utilisateurRepository,
-        UrlGeneratorInterface $urlGenerator,
-        UserPasswordHasherInterface $passwordHasher,
-        EntityManagerInterface $em,
+        private UtilisateurRepository $utilisateurRepository,
+        private EntityManagerInterface $em,
+        private UserPasswordHasherInterface $passwordHasher,
+        private RouterInterface $router
     ) {
-        $this->utilisateurRepository = $utilisateurRepository;
-        $this->urlGenerator = $urlGenerator;
-        $this->em = $em;
-        $this->passwordHasher = $passwordHasher;
     }
 
     /**
@@ -82,7 +72,7 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
         ]);
 
         if (!$utilisateur) {
-            throw new UserNotFoundException('Identifiant invalide ou utilisateur inactif.');
+            throw new CustomUserMessageAuthenticationException('Identifiant invalide ou utilisateur inactif.');
         }
         if ($this->passwordHasher->isPasswordValid($utilisateur, $passwordNormalized)) {
             // OK — rien à faire
@@ -95,11 +85,10 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
               // Ajout d'un message flash
             $request->getSession()->getFlashBag()->add('notice', [
                 'type' => 'success',
-                'titre' => 'Mot de passe mis à jour',
                 'message' => 'Votre mot de passe a été automatiquement mis à jour pour garantir une meilleure compatibilité.'
             ]);
         } else {
-            throw new UserNotFoundException('Mot de passe incorrect.');
+            throw new CustomUserMessageAuthenticationException('Mot de passe incorrect.');
         }
         // On cherche si l'utilisateur existe !
         return new SelfValidatingPassport(
@@ -130,25 +119,59 @@ class LoginFormAuthenticator extends AbstractLoginFormAuthenticator
      */
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        (bool) $resetPassword = $token->getUser()->isResetPassword();
-        $targetPath = $this->getTargetPath($request->getSession(), $firewallName);
-        /** si target n'est pas null,
-         * on est déjà connecté, on ne peut pas se reconnecter */
-        if ($targetPath) {
-            return new RedirectResponse($targetPath);
+        $user = $token->getUser();
+        if ($user instanceof \App\Entity\Utilisateur && $user->isResetPassword()) {
+            return new RedirectResponse($this->router->generate('reset_mot_de_passe'));
         }
-        /** Ce n'est pas la première connexion ! */
-        if ($resetPassword === false){
-            return new RedirectResponse($this->urlGenerator->generate('accueil'));
-        } else {
-            return new RedirectResponse($this->urlGenerator->generate('reset_mot_de_passe'));
-        }
+
+        return new RedirectResponse($this->router->generate('accueil'));
     }
 
-    // retourne l'URL de connexion
+    /**
+     * [Description for getLoginUrl]
+     *
+     * @param Request $request
+     *
+     * @return string
+     *
+     * Created at: 26/09/2025 10:08:42 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     protected function getLoginUrl(Request $request): string
     {
-        return $this->urlGenerator->generate(self::LOGIN_ROUTE);
+        return $this->router->generate(self::LOGIN_ROUTE);
+    }
+
+    /**
+     * [Description for start]
+     *
+     * @param Request $request
+     * @param AuthenticationException|null $authException
+     *
+     * @return Response
+     *
+     * Created at: 26/09/2025 10:08:46 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function start(Request $request, ?AuthenticationException $authException = null): Response
+    {
+        // Si requête AJAX / JSON -> renvoyer JSON (pour les front-end fetch/ajax)
+        if ($request->isXmlHttpRequest() || str_contains($request->headers->get('Accept', ''), 'application/json')) {
+            return new JsonResponse([
+                'x-api-custom-401' => true,
+                'code' => 401,
+                'message' => 'Votre session a expiré. Veuillez vous reconnecter.'
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+
+        // Sinon redirection classique vers la page de login
+        $request->getSession()->getFlashBag()->add('notice', [
+                'type' => 'warning',
+                'message' =>  'Votre session a expiré, veuillez vous reconnecter (Erreur 401).'
+        ]);
+        return new RedirectResponse($this->getLoginUrl($request));
     }
 
 }
