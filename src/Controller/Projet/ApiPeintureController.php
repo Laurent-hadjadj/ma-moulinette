@@ -60,7 +60,7 @@ class ApiPeintureController extends AbstractController
         private ParameterBagInterface $params,
 
     ) {
-        $this->appClient = $this->params->get('app.client');
+        $this->appClient = $this->params->get('client');
     }
 
     /** Définition des constantes */
