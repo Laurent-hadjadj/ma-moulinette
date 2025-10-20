@@ -55,7 +55,7 @@ class ApiProjetController extends AbstractController
         private Security $security,
         private ParameterBagInterface $params,
     ) {
-        $this->appClient = $this->params->get('app.client');
+        $this->appClient = $this->params->get('client');
     }
 
     /**
