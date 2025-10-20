@@ -23,7 +23,6 @@ use Exception;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-
 use App\Entity\Repartition;
 use App\Entity\RepartitionTemp;
 use App\Controller\Batch\BatchCollecteRepartitionController;
@@ -69,11 +68,6 @@ class ApiRepartitionController extends AbstractController
     public function apiRepartitionCollecte(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/repartition/collecte");
-
-        // Vérifie X-App-Client
-        if ($resp = $this->checkApiClient($request, $this->appClient)) {
-            return $resp; // renvoie 403 si pas ok
-        }
 
         $user = $this->security->getUser();
 
