@@ -24,32 +24,50 @@ security:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
 
-        main:
+        # Firewall pour les API : renvoie JSON via ApiSecurityHandler
+        api:
+            pattern: ^/api
+            # On partage le contexte de sécurité 'main' pour réutiliser la session/login
+            context: main
             lazy: true
             provider: app_utilisateur_provider
-            custom_authenticator:
-                - App\Security\LoginFormAuthenticator
-            #entry_point: App\Security\ApiSecurityHandler
-            #access_denied_handler: App\Security\ApiSecurityHandler
+            entry_point: App\Security\ApiSecurityHandler
+            access_denied_handler: App\Security\ApiSecurityHandler
+
+        # Firewall principal (web)
+        main:
+            pattern: ^/
+            lazy: true
+            provider: app_utilisateur_provider
+
+            # Authentification formulaire + notre custom authenticator
+            form_login:
+                login_path: login
+                check_path: login
+
+            custom_authenticators:
+                - App\Security\CustomAuthenticator
+
+            # L'entry point pour la partie "web" = notre CustomAuthenticator
+            entry_point: App\Security\CustomAuthenticator
 
             logout:
                 path: logout
                 target: login
-                # on détruit la session de l'utilisateur.
                 invalidate_session: true
                 delete_cookies:
                     REMEMBERME: ~
-
-            remember_me: false
-                #secret: '%kernel.secret%'
-                # si le mot de passe change, le cookie est invalide
-                #signature_properties: [password]
 
             # Maximum login par minutes
             # composer require symfony/rate-limiter
             login_throttling:
                 max_attempts: 3
                 interval: '15 minutes'
+
+            remember_me: false
+                #secret: '%kernel.secret%'
+                # si le mot de passe change, le cookie est invalide
+                #signature_properties: [password]
 
     access_control:
         # API
@@ -64,7 +82,7 @@ security:
         - { path: ^/donnees-personnelles, roles: PUBLIC_ACCESS }
 
         # Web (privé)
-        - { path: ^/admin, roles: ROLE_UTILISATEUR }
+        - { path: ^/admin, roles: ROLE_GESTIONNAIRE }
         - { path: ^/, roles: ROLE_UTILISATEUR }
 
 when@test:
