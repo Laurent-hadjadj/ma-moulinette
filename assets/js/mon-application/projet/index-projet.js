@@ -323,7 +323,7 @@ const projetInformation = async function(mavenKey) {
     contentType,
     headers: {
       'X-API-Custom-403': 'true',
-      'X-App-Client': token
+      'X-Internal-Front': 'front-app'
     },
   };
 
@@ -395,7 +395,7 @@ const projetMesure = async function(mavenKey) {
     contentType,
     headers: {
       'X-API-Custom-403': 'true',
-      'X-App-Client': token
+      'X-Internal-Front': 'front-app'
     },
   };
 
@@ -463,7 +463,7 @@ const projetRating = async function(mavenKey, type) {
     contentType,
     headers: {
       'X-API-Custom-403': 'true',
-      'X-App-Client': token
+      'X-Internal-Front': 'front-app'
     },
   };
 
@@ -531,7 +531,7 @@ const projetOwasp = async function(mavenKey) {
     contentType,
     headers: {
       'X-API-Custom-403': 'true',
-      'X-App-Client': token
+      'X-Internal-Front': 'front-app'
     },
   };
 
@@ -621,7 +621,7 @@ const projetHotspot = async function(mavenKey) {
     contentType,
     headers: {
       'X-API-Custom-403': 'true',
-      'X-App-Client': token
+      'X-Internal-Front': 'front-app'
     },
   };
 
@@ -697,7 +697,7 @@ const projetAnomalie = async function(mavenKey) {
     contentType,
     headers: {
       'X-API-Custom-403': 'true',
-      'X-App-Client': token
+      'X-Internal-Front': 'front-app'
     },
   };
 
@@ -765,7 +765,7 @@ const projetAnomalieDetails = async function(mavenKey) {
     contentType,
     headers: {
       'X-API-Custom-403': 'true',
-      'X-App-Client': token
+      'X-Internal-Front': 'front-app'
     },
   };
 
@@ -837,7 +837,7 @@ const projetHotspotOwasp = async function(maven_key, menace) {
     contentType,
     headers: {
       'X-API-Custom-403': 'true',
-      'X-App-Client': token
+      'X-Internal-Front': 'front-app'
     },
   };
 
@@ -923,7 +923,7 @@ const projetHotspotOwaspDetails = async function(mavenKey) {
     contentType,
     headers: {
       'X-API-Custom-403': 'true',
-      'X-App-Client': token
+      'X-Internal-Front': 'front-app'
     },
   };
 
@@ -996,7 +996,7 @@ const projetNoSonar = async function(mavenKey){
     contentType,
     headers: {
       'X-API-Custom-403': 'true',
-      'X-App-Client': token
+      'X-Internal-Front': 'front-app'
     },
   };
 
@@ -1074,7 +1074,7 @@ const projetTodo = async function(mavenKey){
     contentType,
     headers: {
       'X-API-Custom-403': 'true',
-      'X-App-Client': token
+      'X-Internal-Front': 'front-app'
     },
   };
 
@@ -1153,7 +1153,7 @@ const options = {
   contentType,
       headers: {
       'X-API-Custom-403': 'true',
-      'X-App-Client': token
+      'X-Internal-Front': 'front-app'
     },
   };
 
@@ -1247,7 +1247,7 @@ const afficheMesProjets = async function() {
     contentType,
     headers: {
       'X-API-Custom-403': 'true',
-      'X-App-Client': token
+      'X-Internal-Front': 'front-app'
     },
   };
 
@@ -1494,7 +1494,7 @@ $('select[name="projet"]').on('change', function () {
     contentType,
       headers: {
       'X-API-Custom-403': 'true',
-      'X-App-Client': token
+      'X-Internal-Front': 'front-app'
     },
   };
 
@@ -1882,7 +1882,7 @@ $('.favori-svg').on('click', () => {
       contentType,
       headers: {
       'X-API-Custom-403': 'true',
-      'X-App-Client': token
+      'X-Internal-Front': 'front-app'
       },
     };
 
