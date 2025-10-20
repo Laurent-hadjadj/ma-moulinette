@@ -1,6 +1,6 @@
 ---
 security:
-    # On lève une exception si l'utilisateur n'existe pas
+    # On ne lève pas une exception si l'utilisateur n'existe pas
     hide_user_not_found: false
 
     role_hierarchy:
@@ -29,13 +29,13 @@ security:
             provider: app_utilisateur_provider
             custom_authenticator:
                 - App\Security\LoginFormAuthenticator
-            entry_point: App\Security\ApiSecurityHandler
-            access_denied_handler: App\Security\ApiSecurityHandler
+            #entry_point: App\Security\ApiSecurityHandler
+            #access_denied_handler: App\Security\ApiSecurityHandler
 
             logout:
                 path: logout
                 target: login
-                # Supprime le cookie de session et remember_me au logout
+                # on détruit la session de l'utilisateur.
                 invalidate_session: true
                 delete_cookies:
                     REMEMBERME: ~
@@ -66,8 +66,6 @@ security:
         # Web (privé)
         - { path: ^/admin, roles: ROLE_UTILISATEUR }
         - { path: ^/, roles: ROLE_UTILISATEUR }
-
-    #enable_authenticator_manager: true
 
 when@test:
     security:
