@@ -1,32 +1,34 @@
 # Liste des évolutions et défauts corrigés
 
-## v2.0.0 - 01/12/2024 - WiP
+## v2.0.0 - 01/12/2025 - WiP
 
 ### Framework
 
 * Migration PHP 8.3.0 NTS ;
 * Migration symfony/core 6.4 (6.4.8) ;
 * Migration symfony/core 6.4 vers 7.1 (7.1.6) ;
-* Migrayion Symfony/core 7.1 vers 7.2 (7.2.1) ;
-* Décommissionnement de webpack pour asset-mapper ;
-* Redimensionnement de toutes les images SVG à leur taille nominale (512 -> 92/72/64/32...) ;
-* Normalisation des messages flash ;
+* Migration Symfony/core 7.1 vers 7.2 (7.2.1) ;
+* Migration Symfony/core 7.2 vers 7.3 (7.3.3) ;
 * Migration de la base SQLite vers PostgreSQL ;
-* Mise à jour Twig 3 (3.10.3) ;
-* Mise à jour doctrine/dbal 4 (4.0.5) ;
+* Migration : La documentation au format markdown utilise mkDocs pour la consultation ;
+* Mise à jour Twig 3 (3.21.3) ;
+* Mise à jour doctrine/dbal 4 (4.3.22) ;
 * Mise à jour doctrine/orm 3 (3.2.3) ;
-* Mise à jour easycorp/easyadmin-bundle 4 (4.13.5) ;
-* Mise à jour de twig/twig 3.10 (3.10.3) ;
-* Mise à jour de phpstan/phpstan 1.11 (1.11.11) ;
-* Mise à jour de phpunit/phpunit 9.6 (9.6.21) ;
+* Mise à jour easycorp/easyadmin-bundle 4 (4.24.9) ;
+* Mise à jour de phpstan/phpstan 1.12 (1.12.28) ;
+* Mise à jour de phpunit/phpunit 9.6 (9.6.25) ;
 * ~~Intégration de php-amqplib/php-amqplib 3.7 (3.7.1)~~ ;
-* Intégration de knplabs/knp-paginator-bundle 6.6 (6.6.1) ;
+* Intégration de knplabs/knp-paginator-bundle 6 (6.9.1) ;
 
 ### Transverse
 
 * Décommissionnement de SQLite ;
 * Décommissionnement du 'mode' Test. Utilisation d'une base de données pour les tests ;
-* Migration : La documentation au format markdown utilise mkDocs pour la consultation ;
+* Décommissionnement de webpack pour asset-mapper ;
+* Redimensionnement de toutes les images SVG à leur taille nominale (512 -> 92/72/64/32...) ;
+* Intégration des Emoji en substitution des SVG ;
+* Normalisation des messages flash ;
+* Normalisation des messages JS ;
 * Refactor : mises à jour des commentaires ;
 * Refactor : regroupement des classes dans des packages ;
 * Refactor : réécritures des processus de Collecte. Suppression de la duplication de code. Processus commun pour les batch et la collecte utilisateur ;
@@ -37,12 +39,11 @@
 * Refactor : Bind et cast des paramètres avant injection dans les requêtes ;
 * Refactor : Mise en place du rollback sur les requêtes de type INSERT, DELETE et UPDATE ;
 * Refactor : Ajout d'une exception en cas d'absence de la BD sur toutes les requêtes SQL ;
-* Refactor : Ajout de traces lors des appel HTTP 200, 400, 401 et 404.
+* Refactor : Ajout de traces lors des appel HTTP 200, 400, 401,404, 500 et 503 ;
 * Refactor : Définition de la timezone [Europe/Paris] pour la gestion des dates ;
 * Refactor : Utilisation de DATETIME_IMMUTABLE à la place de DATETIME ;
 * Refactor : Réécriture de la classe Client ;
-* Refactor : Réécriture du système de messages en Javascript ;
-
+* Refactor : Ajout des logs applicatives dans toutes les classes ;
 * Code Clean W3C & SonarQube ;
 
 ### Composants
@@ -80,6 +81,7 @@
 
 * [Page_Préférence] Ajout du support des versions de projet en favoris ;
 * [Page_Préférence] Ajout du support de la version des projets favoris ou des versions du projet favoris ;
+* [Page_Préférence] Suppression du bookmark en préférence pour l'utilisation dans la sessionStorage.
 
 > Templates
 
@@ -119,12 +121,11 @@
 > Page Projet
 
 * [Page_Projet] Lors de la collecte des données, le ratio de dette technique est récupéré (table mesure) ;
-* [Page_Suivi] Lors de l'intégration d'une version dans l'historique, le ratio de dette technique est récupéré depuis le serveur ;
 * [Page_Projet] Lors de la collecte des données, les données de la version courante est conservée.
 * [Page_Projet] Refactoring des traitements de collecte (message, catch des erreurs).
 * [Page_Projet] Si une erreur est détectée lors de la collecte, on arrête la collecte (i.e on ne lance pas les autres traitements).
 * [Page_Projet] Lors de la collecte, on récupère les données actuator et les données du Logger Java ;
-* * [Page_projet] Réorganisation de la page avec un bloc centrale horizontal et trois colonnes
+* [Page_projet] Réorganisation de la page avec un bloc centrale horizontal et trois colonnes
 * [Page_Projet] Ajout du nombre de version de type "autre" ;
 * [Page_Projet] Suppression de l'icône animée lors de la collecte ;
 * [Page_Projet] Correction alignement de la colone type du tableau de présentation de la dette technique ;
@@ -137,9 +138,13 @@
 * [Page_Projet] Ajout d'un tool-tip sur les langage avec ne nombre de ligne et la part en %.
 * [Page_Projet] Coverage -> Ajout des indicateurs suivants : skipped_tests,test_errors,test_failures,test_success_density;
 * [Page_Projet] Size -> Ajout des indicateurs suivants : classes,comment_lines comment_lines_density,files,functions;
+* [Page_projet] Utilisation d'un bookmark de session pour conserver le dernier projet sélectionnée ;
+* [Page_Projet] Ajout d'un tableau des noSonar avec le détails.
 
 > Page de suivi des indicateurs
 
+* [Page_Suivi] Lors de l'intégration d'une version dans l'historique, le ratio de dette technique est récupéré depuis le serveur ;
+* [Page_Suivi] Ajout du tableau des mesures (fichier, lignes, code, classe, méthode) ;
 * [Page_Suivi_Modification] Une seule version de référence pour un projet.
 * [Page_Suivi_Modification] Changer la version de référence nécessite le role GESTIONNAIRE (i.e. impact sur les calcul).
 * [Page_Suivi_Modification] Un utilisateur peut avoir une ou plusieurs versions du même projet en favori (impact Accueil)
