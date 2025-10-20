@@ -12,6 +12,9 @@ imports:
 # ---------------------------------------------------------------------------
 
 parameters:
+    # API Secure
+    client: '%env(CLIENT)%'
+
     # Configuration SonarQube
     sonar.url: '%env(SONAR_URL)%'
     sonar.version: '%env(SONAR_VERSION)%'
