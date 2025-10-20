@@ -106,8 +106,8 @@
             </div>
             <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
           </form>
-          {% if erreur %}
-            <output class="label alert" role="alert">{{ erreur.messageKey|trans(erreur.messageData, 'security') }}
+          {% if error %}
+            <output class="label alert" role="alert">{{ error.messageKey|trans(error.messageData, 'security') }}
             </output>
           {% endif %}
         </div>
