@@ -96,3 +96,7 @@ phpstan.neon
 /public/assets/
 /assets/vendor/
 ###< symfony/asset-mapper ###
+
+###> js/secrets ###
+**/secrets.local.js
+###< js/secrets ###
