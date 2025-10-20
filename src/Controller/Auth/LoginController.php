@@ -134,13 +134,13 @@ class LoginController extends AbstractController
 
         $error = $this->authenticationUtils->getLastAuthenticationError();
         if ($error) {
-            $this->logger->warning("[Auth] ⚠️ Échec d'authentification : " . ['erreur' => $error->getMessage()]);
+            $this->logger->warning("[Auth] ⚠️ Échec d'authentification : ", ['erreur' => $error->getMessage()]);
         } else {
             $this->logger->info('[Auth] ℹ️ Affichage de la page de connexion (login).');
         }
 
         $render=static::genericRender();
-        $render['erreur'] = $this->authenticationUtils->getLastAuthenticationError();
+        $render['error'] = $this->authenticationUtils->getLastAuthenticationError();
         $render['type_footer'] = 'complet';
 
         return $this->render('auth/login.html.twig', $render);
