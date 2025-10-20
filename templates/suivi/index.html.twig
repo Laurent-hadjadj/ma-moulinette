@@ -1,5 +1,6 @@
-{% set title = 'Suivi des versions' %}
+{% set title = 'Suivi des indicateurs du projet' %}
 {% set description = 'Ma Moulinette - Suivi des versions.' %}
+{% set type_content = "Application Ma-Moulinette, Suivi des indicateurs SonarQube le projet." %}
 {% set bottom="footer-fixed" %}
 <!DOCTYPE html>
 <!--
@@ -18,53 +19,59 @@
   <head>
     <title>{{ title }}</title>
     {{ include('head.html.twig') }}
+    {# Chargement des assets JS et CSS #}
     {% block importmap %}{{ importmap('suivi') }}{% endblock %}
   </head>
 
-  <body>
+  <body dir="ltr">
+    {# no-script #}
+    {{ include('no-script.html.twig') }}
     {# Chargement de la section header #}
     {{ include('header.html.twig') }}
-    <header class="grid-container">
+
+    <header class="grid-container margin-top-1">
       <nav aria-label="vous êtes Ici : ">
         <ul class="claire-hand breadcrumbs">
           <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
           <li><a href="{{ path('projet', {}) }}">Projet</a></li>
-          <li><span class="show-for-sr">Vous êtes Ici :</span>Suivi</li>
+          <li><span class="show-for-sr">Vous êtes sur la page : suivi</span>Suivi</li>
         </ul>
       </nav>
     </header>
 
-    <div class="grid-container grid-x">
-    {% for message in app.flashes('notice') %}
-      <div class="callout {{message.type}} alert-callout-border callout-ombre" data-closable>
-        <p class="open-sans text-justify callout-message"><strong>{{message.reference}}</strong> {{ message.message }}</p>
-        {% if app.environment == 'dev' and message.debug is defined %}
-          <p class"open-sans">{{message.debug}}</p>
-        {% endif %}
-        <button class="close-button {{message.type}}" aria-label="Dismiss alert" type="button" data-close>
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-    {% endfor %}
-    </div>
+    {# Message d'information php #}
+    {{ include('_message.html.twig') }}
+
+    <header class="grid-container"
+              aria-labelledby="titre-sonarqube">
+      <h1 id="titre-sonarqube" class="h3 claire-hand" aria-label="Collecte et analyse des indicateurs SonarQube" aria-describedby="titre-sonarqube"><span aria-hidden="true">📊</span>Collecte et analyse des indicateurs SonarQube</h1>
+      <div class="show-for-sr">Sur cette page, vous pouvez collecter et visualiser les métriques clés de vos projets SonarQube.</div>
+    </header>
 
     {# En-tête #}
-    <div id="element1-to-print" class="pleine-page">
-      <h2 id="js-nom" class="claire-hand" data-maven="{{mavenKey}}">{{nom}}</h2>
-      <div class="cell">
-        <h1 class="h4 claire-hand">
-          <span id="affiche-total-profil" class="stat">
-            {% set nombre=suivi|length %}
-            {% if nombre>1 %}
-              {% set s="s"%}
-            {% else %}
-              {% set s="" %}
-            {% endif %}
-            {{nombre | default('0') }}</span>
-          version{{s}} sélectionné{{s}}.
-        </h1>
+    <header id="element1-to-print" class="pleine-page">
+      <h1 id="titre-js-nom" class="h3 claire-hand"
+          aria-label="Tableaux de suivi du projet"
+          aria-describedby="titre-js-nom"
+          data-maven="{{mavenKey}}"><span aria-hidden="true">🧭</span>Suivi des indicateurs pour {{nom}}
+      </h1>
+      <div class="show-for-sr">
+        Cette page présente les principaux indicateurs de suivi du projet et permet de générer un rapport PDF, d'ajouter une version dans l'historique et de modifier la version de référence ou favorite.
       </div>
-    </div>
+
+      {% set nombre=suivi|length %}
+      {% if nombre>1 %}
+        {% set s="s"%}
+      {% else %}
+        {% set s="" %}
+      {% endif %}
+      <h2 class="h4 claire-hand">
+          <span id="affiche-total-profil" class="mini-stat">
+            <span aria-hidden="true">🗂️</span>{{nombre | default('0') }}</span>
+            <span>version{{s}} sélectionnée{{s}} pour ce projet.</span>
+          </span>
+      </h2>
+    </header>
 
     {# Affichage du suivi des anomalies #}
     {{ include('/suivi/_suivi_anomalie.html.twig') }}
@@ -85,7 +92,6 @@
     {{ include('/suivi/_modale_ajouter_une_analyse.html.twig') }}
     {{ include('/suivi/_modale_modifier_les_versions.html.twig') }}
 
-    <br><br>
     {# Chargement de la section footer #}
     {{ include('footer.html.twig') }}
   </body>
