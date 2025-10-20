@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V2.6.0 - 31/07/2025              ##
+##               V2.6.1 - 20/10/2025              ##
 ##                                                ##
 ####################################################*/
 
@@ -56,6 +56,7 @@
 -- 22/07/2025 : Laurent HADJADJ - Correction de la colonne rules_update_at en rules_updated_at de la table profiles.
 -- 22/07/2025 : Laurent HADJADJ - Renommage des hotspot_(high, medium, low) en menace_potentielle_(to_review, reviewed)_(high, medium, low) dans la table historique
 -- 22/07/2025 : Laurent HADJADJ - Ajout de l'attribut inconnu dans la relation anomalie + renommage de l'attribut inconnue en inconnu.
+-- 22/07/2025 : Laurent HADJADJ - Augmentation de la taille de l'attribut Key de la table profil (32 -> 56). Changement SonarQube en version 25.10 
 
 -- SCHEMA: ma_moulinette
 
@@ -1145,12 +1146,13 @@ COMMENT ON COLUMN ma_moulinette.portefeuille_historique.detail IS 'Détails supp
 COMMENT ON COLUMN ma_moulinette.portefeuille_historique.date_enregistrement IS 'Date d’enregistrement de l’entrée historique dans la base de données';
 
 -- Table: ma_moulinette.profiles
+-- Mise à jour SonarQube de key (32-->56) en version 25.10
 
 DROP TABLE IF EXISTS ma_moulinette.profiles;
 CREATE TABLE IF NOT EXISTS ma_moulinette.profiles
 (
   id SERIAL PRIMARY KEY,
-  key character varying(32) NOT NULL,
+  key character varying(56) NOT NULL,
   name character varying(128) NOT NULL,
   language_name character varying(64) NOT NULL,
   active_rule_count integer NOT NULL,
