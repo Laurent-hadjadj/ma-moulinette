@@ -45,6 +45,9 @@
       </nav>
     </header>
 
+    {# Message d'information php #}
+    {{ include('_message.html.twig') }}
+
     <div class="grid-container grid-x">
       <h1 class="h2 claire-hand">Vulnérabilités OWASP et points chauds.</h1>
       <div id="js-serveur" class="cell" data-serveur="{{ serveur|default('none') }}">
@@ -54,16 +57,6 @@
         <br>
         <div id="message"></div>
       </div>
-
-      {# On affiche les messages #}
-      {% for message in app.flashes('notice') %}
-      <div class="callout alert-callout-border {{message.type}} cell" data-closable>
-        <p class="open-sans text-justify callout-message">
-            <strong>{{message.titre}}</strong> {{ message.message }}</p>
-        <button class="close-button {{message.type}}" aria-label="Dismiss alert" type="button" data-close><span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      {% endfor %}
 
       <div id="version-buttons">
         <button id="version-2017" class="version-button {{referential_2017}}">Version 2017</button>
