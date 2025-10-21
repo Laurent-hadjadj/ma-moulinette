@@ -53,9 +53,9 @@ class PreferenceController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        private ParameterBagInterface $params)
+        private ParameterBagInterface $params,
+        private Security $security)
     {
-        $this->em = $em;
         $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
@@ -83,15 +83,14 @@ class PreferenceController extends AbstractController
             'marque_entreprise_long' => $this->marqueEntrepriseLong,
             'env' => $this->environnement,
             'version' => $this->version,
-            'date_copyright' => $this->dateCopyright];
+            'date_copyright' => $this->dateCopyright
+        ];
     }
 
     /**
      * [Description for apiPreferenceStatut]
      * On met à jour le statut pour la catégorie
      *
-     * @param Security $security
-     * @param Client $client
      * @param Request $request
      *
      * @return JsonResponse
@@ -101,7 +100,7 @@ class PreferenceController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/preference/statut', name: 'api_preference_statut', methods:'POST')]
-    public function apiPreferenceStatut(Security $security, Request $request): JsonResponse
+    public function apiPreferenceStatut(Request $request): JsonResponse
     {
         /** On récupère le filtre de recherche */
         $data = json_decode($request->getContent());
@@ -109,8 +108,8 @@ class PreferenceController extends AbstractController
         $categorie = $data->categorie;
 
         /** On récupère l'objet User du contexte de sécurité */
-        $preference = $security->getUser()->getPreference();
-        $courriel = $security->getUser()->getCourriel();
+        $preference = $this->security->getUser()->getPreference();
+        $courriel = $this->security->getUser()->getCourriel();
 
         /** On récupères les préférences */
         $statut = $preference['statut'];
@@ -141,7 +140,10 @@ class PreferenceController extends AbstractController
         $exec->fetchAllAssociative();
 
 
-        $data = ['statut' => $statut, 'categorie' => $categorie];
+        $data = [
+            'statut' => $statut, 
+            'categorie' => $categorie
+        ];
         return new JsonResponse($data,Response::HTTP_OK);
     }
 
@@ -149,8 +151,7 @@ class PreferenceController extends AbstractController
      * [Description for apiPreferenceFavoriDelete]
      * On supprime un favori de la liste
      *
-     * @param Security $security
-      * @param Request $request
+     * @param Request $request
      *
      * @return Response
      *
@@ -159,15 +160,15 @@ class PreferenceController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/preference/favori/delete', name: 'api_preference_favori_delete', methods:'POST')]
-    public function apiPreferenceFavoriDelete(Security $security, Request $request): JsonResponse
+    public function apiPreferenceFavoriDelete(Request $request): JsonResponse
     {
         /** On bind les arguments passés depuis l'URL */
         $data = json_decode($request->getContent());
         $mavenKey = $data->mavenKey;
 
         /** On récupère l'objet User du contexte de sécurité */
-        $preference = $security->getUser()->getPreference();
-        $courriel = $security->getUser()->getCourriel();
+        $preference = $this->security->getUser()->getPreference();
+        $courriel = $this->security->getUser()->getCourriel();
 
         /** On récupères les préférences */
         $statut = $preference['statut'];
@@ -202,7 +203,6 @@ class PreferenceController extends AbstractController
      * [Description for apiPreferenceVersionDelete]
      * On supprime la version de la liste des versions
      *
-     * @param Security $security
      * @param Request $request
      *
      * @return JsonResponse
@@ -212,7 +212,7 @@ class PreferenceController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/preference/version/delete', name: 'api_preference_version_delete', methods:'POST')]
-    public function apiPreferenceVersionDelete(Security $security, Request $request): JsonResponse
+    public function apiPreferenceVersionDelete(Request $request): JsonResponse
     {
         /** On bind les arguments passés depuis l'URL */
         $data = json_decode($request->getContent());
@@ -221,8 +221,8 @@ class PreferenceController extends AbstractController
         $version = $data->version;
 
         /** On récupère l'objet User du contexte de sécurité */
-        $preference = $security->getUser()->getPreference();
-        $courriel = $security->getUser()->getCourriel();
+        $preference = $this->security->getUser()->getPreference();
+        $courriel = $this->security->getUser()->getCourriel();
 
         /** On récupères les préférences */
         $statut = $preference['statut'];
@@ -236,7 +236,7 @@ class PreferenceController extends AbstractController
 
         /** On construit la nouvelle liste */
         $nouvelleListeVersion = array_diff($preference['version'][$index][$mavenKey], [$version]);
-        $nouvelleVersion = [$mavenKey => $nouvelleListeVersion];
+        $nouvelleVersion = [ $mavenKey => $nouvelleListeVersion ];
         /** On reconstruit la liste des versions */
         $object = [];
         foreach ($preference['version'] as $key => $value) {
@@ -273,7 +273,6 @@ class PreferenceController extends AbstractController
      * [Description for apiPreferenceCategorie]
      * Renvoi le statut et les préférences d'une catégorie
      *
-     * @param Security $security
      * @param Request $request
      *
      * @return JsonResponse
@@ -283,15 +282,18 @@ class PreferenceController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/preference/categorie', name: 'api_preference_categorie', methods:'GET')]
-    public function apiPreferenceCategorie(Security $security, Request $request): JsonResponse
+    public function apiPreferenceCategorie(Request $request): JsonResponse
     {
         /** On bind les arguments passés depuis l'URL */
         $categorie = $request->get('categorie');
 
         /** On récupère l'objet User du contexte de sécurité */
-        $preference = $security->getUser()->getPreference();
+        $preference = $this->security->getUser()->getPreference();
 
-        $data = ['statut' => $preference['statut'], $categorie => $preference[$categorie]];
+        $data = [
+            'statut' => $preference['statut'],
+            $categorie => $preference[$categorie]
+        ];
         return new JsonResponse($data, Response::HTTP_OK);
     }
 
@@ -299,8 +301,6 @@ class PreferenceController extends AbstractController
      * [Description for index]
      *  Affiche la page des préférences
      *
-     * @param Security $security
-     * @param Client $client
      * @param Request $request
      *
      * @return Response
@@ -310,20 +310,20 @@ class PreferenceController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/preferences', name: 'preferences', methods:'GET')]
-    public function index(Security $security): Response
+    public function index(): Response
     {
         /** On bind les informations utilisateur */
-        $prenom = $security->getUser()->getPrenom();
-        $nom = $security->getUser()->getNom();
-        $avatar = $security->getUser()->getAvatar();
-        $courriel = $security->getUser()->getCourriel();
-        $roles = $security->getUser()->getRoles();
-        $equipes = $security->getUser()->getEquipe();
+        $prenom = $this->security->getUser()->getPrenom();
+        $nom = $this->security->getUser()->getNom();
+        $avatar = $this->security->getUser()->getAvatar();
+        $courriel = $this->security->getUser()->getCourriel();
+        $roles = $this->security->getUser()->getRoles();
+        $equipes = $this->security->getUser()->getEquipe();
         if (empty($equipes)) {
             $equipes[0] = "null";
         }
 
-        $preferences = $security->getUser()->getPreference();
+        $preferences = $this->security->getUser()->getPreference();
         /** Valeur par défaut */
         $descriptionSuiviProjet = "Liste des projets à suivre.";
         $descriptionFavoriProjet = "Liste des projets favoris.";
@@ -340,7 +340,7 @@ class PreferenceController extends AbstractController
         ];
 
          /** On charge le template du render */
-        $render=static::genericRender();
+        $render = static::genericRender();
         $render['prenom'] = $prenom;
         $render['nom'] = $nom;
         $render['avatar'] = $avatar;
