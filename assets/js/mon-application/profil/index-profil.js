@@ -89,7 +89,7 @@ const refreshQuality = async function() {
         contentType,
         headers: {
                   'X-API-Custom-403': 'true',
-                  'X-App-Client': token
+                  'X-Internal-Front': 'front-app'
               },
       };
 
@@ -235,7 +235,7 @@ const autreProfil = async function(langage) {
     contentType,
     headers: {
                   'X-API-Custom-403': 'true',
-                  'X-App-Client': token
+                  'X-Internal-Front': 'front-app'
               },
   };
 
@@ -404,7 +404,7 @@ $('#bouton-affiche-graphique').on('click', async () => {
         contentType,
         headers: {
                     'X-API-Custom-403': 'true',
-                    'X-App-Client': token
+                    'X-Internal-Front': 'front-app'
                 },
   };
 

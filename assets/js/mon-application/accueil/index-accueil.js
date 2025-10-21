@@ -68,7 +68,7 @@ const sonarIsUp = async function() {
     contentType,
     headers: {
                   'X-API-Custom-403': 'true',
-                  'X-App-Client': token
+                  'X-Internal-Front': 'front-app'
               },
   };
 
@@ -107,7 +107,7 @@ const miseAJourListe = async function() {
     contentType,
     headers: {
                 'X-API-Custom-403': 'true',
-                'X-App-Client': token
+                'X-Internal-Front': 'front-app'
             },
   };
 
@@ -176,7 +176,7 @@ const miseAJourTags = async function() {
     contentType,
     headers: {
                 'X-API-Custom-403': 'true',
-                'X-App-Client': token
+                'X-Internal-Front': 'front-app'
             },
     };
 
