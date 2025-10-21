@@ -234,8 +234,9 @@ class ClientService
             strpos($e->getMessage(), $messages['key1']) !== false => "La variable 'CIPHERS' n'a pas été définie correctement.",
             strpos($e->getMessage(), $messages['key2']) !== false => "La variable 'VERIFY_HOST' n'a pas été définie correctement.",
             strpos($e->getMessage(), $messages['key3']) !== false => "La variable 'VERIFY_PEER' n'a pas été définie correctement.",
-            default => ['code' => 500, 'erreur' =>"Une erreur inattendue du serveur s'est produite (Erreur 500)."],
+            default => "Une erreur globale inattendue du serveur s'est produite (Erreur 500).",
         };
+
         return ['code' => 500, 'erreur' => $message];
     }
 
@@ -305,26 +306,35 @@ class ClientService
                 $options['proxy']=$proxy;
             }
 
-            $response = $this->client->request('GET', $url, $options);
+            $json = null;
 
-            /** Si tout va bien, ajoute une trace dans les logs */
-            $responseJson = $response->getContent();
+            $response = $this->client->request('GET', $url, $options);
+            $statusCode = $response->getStatusCode();
+
+            // On récupère toujours le corps brut, sans lever d'exception
+            $responseBody = $response->getContent(false);
+
+            try {
+                $json = json_decode($responseBody, true, 512, JSON_THROW_ON_ERROR);
+            } catch (\JsonException $e) {
+                // pas un JSON valide : on créé un tableau pour le texte brute
+                $json = $json = !empty(trim($responseBody)) ? ['texte' => $responseBody] : ['texte' => null];
+            }
 
             /** Extraire les informations de la réponse */
             $httpMethod = $response->getInfo('http_method');
             $httpCode = $response->getInfo('http_code');
             $totalTime = $response->getInfo('total_time');
-            $url = $response->getInfo('url') . " - " .
-                static::$responseData . substr($responseJson, 0, 100);
+            $url = $response->getInfo('url') . " - " . static::$responseData . substr($responseBody, 0, 100);
 
             // Log des informations
             $message = "[" . $httpMethod . "] - " . $httpCode . " - " . $totalTime . " - " . $url;
+            $this->logger->info("[API-INFO] 📶 $message");
 
-            $this->logger->info($message);
             return [
+                'code' => $statusCode,
                 'message' => $message,
-                'code' => $response->getStatusCode(),
-                'json' => json_decode($responseJson, true, 512, JSON_THROW_ON_ERROR)
+                'json' =>  $json
             ];
         } catch (TimeoutException $e) {
             return $this->handleTimeoutException($e);
@@ -342,7 +352,6 @@ class ClientService
 
         // Ce point ne devrait jamais être atteint, donc on peut lancer une exception.
         throw new UnexpectedExecutionPathException(static::$exceptionInattendu . __METHOD__);
-        return [];
     }
 
     /**
@@ -504,7 +513,6 @@ class ClientService
 
         // Ce point ne devrait jamais être atteint, donc on peut lancer une exception.
         throw new UnexpectedExecutionPathException(static::$exceptionInattendu . __METHOD__);
-        return [];
     }
 
 }
