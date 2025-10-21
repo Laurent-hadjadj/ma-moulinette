@@ -249,9 +249,17 @@ export const enregistrement = async function(maven_key) {
     'code_smell_minor': codeSmellMinor, 'code_smell_info': codeSmellInfo,
     initial: 0 };
 
-  const options = {
-    url: `${serveur()}/api/enregistrement`, type: 'PUT',
-    dataType: 'json', data: JSON.stringify(data), contentType };
+    const options = {
+      url: `${serveur()}/api/enregistrement`,
+      type: 'PUT',
+      dataType: 'json',
+      data: JSON.stringify(data),
+      contentType,
+      headers: {
+        'X-API-Custom-403': 'true',
+        'X-Internal-Front': 'front-app'
+      },
+    };
 
     try {
           const t = await $.ajax(options);
