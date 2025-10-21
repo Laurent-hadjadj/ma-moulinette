@@ -274,19 +274,19 @@ export const enregistrement = async function(maven_key) {
           if (t.code === http_200) {
             const message='Enregistrement des informations effectué.';
             log(` - INFO : ${message}`);
-            showMessage('success', `<strong>[Enregistrement]</strong> ${message}`);
+            showMessage('success', `${message}`);
             setTimeout(() => { hideMessage(); }, 5000);
             return;
           }
 
         if (t.code === 23505) {
           const message=`Cette version existe déjà dans l'historique.`;
-          showMessage('warning', `<strong>[Enregistrement]</strong> ${message}`);
+          showMessage('warning', `${message}`);
           }
     } catch (error) {
         const trace = prepareTechnicalDetails(error);
-        const message = "<strong>[Enregistrement]</strong> Une erreur inattendue s'est produite lors de l'enregistrement des données.";
-        showMessage('alert', message, trace);
+        const message = "Une erreur inattendue s'est produite lors de l'enregistrement des données (Erreur 500).";
+        showMessage('critical', message, trace);
         sessionStorage.setItem('ma_moulinette_enregistrement', 'Erreur lors de la sauvegarde des données.');
         log(` - 🔴 Enregistrement des données en échec.`);
         return;

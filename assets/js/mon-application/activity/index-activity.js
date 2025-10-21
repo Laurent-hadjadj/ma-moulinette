@@ -81,7 +81,7 @@ const refreshActivity=async function() {
 
         // 📌 Vérification des erreurs
         if (t.code === http_403) {
-          showMessage('warning', `<strong>[ACTIVITÉ]</strong> - Vous n'êtes pas autorisé à effectuer cette opération (Erreur 403).`);
+          showMessage('warning', `Vous n'êtes pas autorisé à effectuer cette opération (Erreur 403).`);
           return;
         }
 
@@ -113,7 +113,7 @@ const refreshActivity=async function() {
       } catch(error) {
         // Gestion des erreurs
         sessionStorage.setItem('ma_moulinette_error', `Erreur lors de la récupération des données : ${JSON.stringify(error, null, 2)}`);
-        showMessage('alert', '<strong>[ACTIVITÉ]</strong> - Une erreur est survenue lors de la mise à jour.');
+        showMessage('critical', 'Une erreur globale est survenue lors de la mise à jour (Erreur 500).');
       } finally {
         // Cacher le spinner
         $spinner.hide();

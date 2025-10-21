@@ -77,12 +77,12 @@ const sonarIsUp = async function() {
   } catch(error) {
     // 📌 Vérification des erreurs
     if (error.status === http_404){
-      const message = `<strong>[Accueil]</strong> La requête est incorrecte (Erreur 404).`;
+      const message = `La requête est incorrecte (Erreur 404).`;
       showMessage('alert', message);
     }
     if (error.status === http_500 || error.status === 'DOWN'){
-      const message = `<strong>[Accueil]</strong> État du serveur SonarQube : <strong>DOWN</strong>.`;
-      showMessage('alert', message);
+      const message = `État du serveur SonarQube : <strong>DOWN</strong> (Erreur 500).`;
+      showMessage('critical', message);
     }
     return;
   }
@@ -145,7 +145,7 @@ const miseAJourListe = async function() {
           showMessage(t.type, t.message, trace);
           setTimeout(() => { hideMessage(); }, 5000);
   } catch(error) {
-    const message = `<strong>[Accueil]</strong> Une erreur inattendue s'est produite lors de la mise à jour des projets.`
+    const message = `Une erreur inattendue s'est produite lors de la mise à jour des projets (Erreur 500).`
     const trace = prepareTechnicalDetails(error);
     if (typeof(trace) === 'object' && trace.message && trace.code && trace.type) {
       showMessage(trace.type, trace.message);
@@ -194,13 +194,13 @@ const miseAJourTags = async function() {
       /** On affiche le nombre de tags */
       $('#js-tag-nombre').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nombre_tag));
     } catch (error) {
-      const message = `<strong>[Accueil]</strong> Une erreur inattendue s'est produite lors de la récupération du nombre de tags.`;
+      const message = `Une erreur inattendue s'est produite lors de la récupération du nombre de tags (Erreur 500).`;
       const trace = prepareTechnicalDetails(error);
       if (typeof(trace) === 'object' && trace.message && trace.code && trace.type) {
         showMessage(trace.type, trace.message);
         return;
       }
-      showMessage('alert', message, trace);
+      showMessage('critical', message, trace);
     }
 };
 

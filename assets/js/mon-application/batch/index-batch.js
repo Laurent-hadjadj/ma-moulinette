@@ -194,7 +194,7 @@ const traitementManuel = async function(id, titrePortefeuille, portefeuille){
     return;
   }
 
-  showMessage('default', `<strong>Traitement</strong> La collecte pour les projets de ${portefeuille} est terminée.<br>Vous pouvez consulter le journal des traitements.`);
+  showMessage('default', `La collecte pour les projets de ${portefeuille} est terminée.<br>Vous pouvez consulter le journal des traitements.`);
   $(`#i-am-human-${id}`).removeClass('blink');
 }
 
@@ -284,7 +284,7 @@ const effaceJournal = async function(portefeuille, type){
     return t.code;
   }
 
-  afficheMessage('success', `<strong>Traitement :</strong> Le journal pour le portefeuille ${portefeuille} a été supprimé.` );
+  afficheMessage('success', `Le journal pour le portefeuille ${portefeuille} a été supprimé.` );
 }
 
 /**

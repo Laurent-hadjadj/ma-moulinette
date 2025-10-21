@@ -194,7 +194,7 @@ export const remplissage = async function(maven_key) {
       } catch(error) {
             ErrorButtonAffiche();
             const trace = prepareTechnicalDetails(error);
-            const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations sur les versions.";
+            const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les versions (Erreur 500).";
               showMessage('critical', message, trace);
               sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Informations.');
               log(' - 🔴 [Peinture] Affichage des informations sur les versions en échec.');
@@ -243,7 +243,7 @@ export const remplissage = async function(maven_key) {
     } catch(error) {
           ErrorButtonAffiche();
           const trace = prepareTechnicalDetails(error);
-          const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations noSonar.";
+          const message = "Une erreur inattendue s'est produite lors l'affichage des informations noSonar (Erreur 500).";
             showMessage('critical', message, trace);
             sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc NoSonar.');
             log(' - 🔴 [Peinture] Affichage des informations NoSonar en échec.');
@@ -331,7 +331,7 @@ export const remplissage = async function(maven_key) {
   } catch(error) {
       ErrorButtonAffiche();
       const trace = prepareTechnicalDetails(error);
-      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations sur les todo.";
+      const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les todo (Erreur 500).";
       showMessage('critical', message, trace);
       sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc todo.');
       log(' - 🔴 [Peinture] Affichage des informations sur les todo en échec.');
@@ -393,7 +393,7 @@ export const remplissage = async function(maven_key) {
   } catch(error) {
       ErrorButtonAffiche();
       const trace = prepareTechnicalDetails(error);
-      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations sur les loggers JAVA.";
+      const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les loggers JAVA (Erreur 500).";
       showMessage('critical', message, trace);
       sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Loggers.');
       log(' - 🔴 [Peinture] Affichage des informations sur les loggers JAVA en échec.');
@@ -522,7 +522,7 @@ export const remplissage = async function(maven_key) {
   } catch(error) {
       ErrorButtonAffiche();
       const trace = prepareTechnicalDetails(error);
-      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations sur les mesures.";
+      const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les mesures (Erreur 500).";
       showMessage('critical', message, trace);
       sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Mesures.');
       log(' - 🔴 [Peinture] Affichage des informations sur les Mesures en échec.');
@@ -769,7 +769,7 @@ export const remplissage = async function(maven_key) {
     } catch(error) {
           ErrorButtonAffiche();
           const trace = prepareTechnicalDetails(error);
-          const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations sur les anomalies.";
+          const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les anomalies (Erreur 500).";
           showMessage('critical', message, trace);
           sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Anomalie.');
           log(' - 🔴 [Peinture] Affichage des informations sur les Anomalies en échec.');
@@ -832,7 +832,7 @@ export const remplissage = async function(maven_key) {
     } catch(error) {
           ErrorButtonAffiche();
           const trace = prepareTechnicalDetails(error);
-          const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations sur les menaces potentielles.";
+          const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les menaces potentielles (Erreur 500).";
           showMessage('critical', message, trace);
           sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Anomalie.');
           log(' - 🔴 [Peinture] Affichage des informations sur les menaces potentielles en échec.');
@@ -926,7 +926,7 @@ export const remplissage = async function(maven_key) {
   } catch(error) {
       ErrorButtonAffiche();
       const trace = prepareTechnicalDetails(error);
-      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations sur le détail des anomalies.";
+      const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur le détail des anomalies (Erreur 500).";
       showMessage('critical', message, trace);
       sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Anomalie.');
       log(' - 🔴 [Peinture] Affichage des informations sur le détail des anomalies en échec.');
@@ -1024,7 +1024,7 @@ export const afficheHotspotDetails = async function (maven_key){
   } catch(error) {
     ErrorButtonAffiche();
     const trace = prepareTechnicalDetails(error);
-    const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors l'affichage des informations sur le détail des menaces potentielles.";
+    const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur le détail des menaces potentielles (Erreur 500).";
     showMessage('critical', message, trace);
     sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Menaces potentielles.');
     log(' - ❌ [Peinture] Affichage des informations sur le détail des menaces potentielles en échec.');

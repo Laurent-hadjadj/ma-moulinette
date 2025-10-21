@@ -67,9 +67,9 @@ import { showMessage, prepareTechnicalDetails } from '../common/messageHelper.js
             }
 
           // Gestion d'erreurs génériques
-          const message = `<strong>[Info-Utilisateur]</strong> - Une erreur inattendue est survenue.`;
+          const message = `Une erreur inattendue est survenue (Erreur 500).`;
           const trace = prepareTechnicalDetails(erreur);
-          showMessage('alert', message, trace);
+          showMessage('critical', message, trace);
     }
   }
 

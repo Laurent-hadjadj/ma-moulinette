@@ -160,7 +160,7 @@ $('.js-preference-ajouter-favoris-enable').on('click', ()=> {
   }
 
   if(nombreEquipeChecked===0) {
-    const message="<strong>[Préférence-004]</strong> Vous devez choisir au moins une équipe !";
+    const message = "Vous devez choisir au moins une équipe !";
     /** On affiche un message */
     if ($('#callout-message').hasClass('hide')) {
       $('#callout-message').addClass('alert');

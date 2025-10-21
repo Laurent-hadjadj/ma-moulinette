@@ -192,7 +192,7 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
     showMessage('primary', `Les données ont été trouvées.`);
   }
   if (r.code === http_400) {
-    showMessage('alert', `<strong>[Owasp]</strong> La requête n'est pas conforme (Erreur 400) !`);
+    showMessage('alert', `La requête n'est pas conforme (Erreur 400).`);
     videLeTableau();
     return;
   }
@@ -497,7 +497,7 @@ const remplissageHotspotInfo = async function(maven_key, referential_owasp) {
 
   const r = await $.ajax(options);
   if (r.code===http_400) {
-    const message=`<strong>[hotspot]</strong> La requête n'est pas conforme (Erreur 400) !`;
+    const message=`La requête n'est pas conforme (Erreur 400).`;
     showMessage('alert', message);
     videLeTableau();
     return;
@@ -584,7 +584,7 @@ const remplissageHotspotListe = async function(maven_key, referential_owasp) {
 
     const r = await $.ajax(options);
     if (r.code===http_400) {
-      const message=`<strong>[Hotspot]</strong> La requête n'est pas conforme (Erreur 400) !`;
+      const message=`La requête n'est pas conforme (Erreur 400).`;
       showMessage('alert', message);
       videLeTableau();
       return;
@@ -798,7 +798,7 @@ const remplissageHotspotDetails = async function(maven_key, referential_owasp) {
 
   const r =await  $.ajax(options)
   if (r.code === http_400) {
-    const message = `<strong>[Details]</strong> La requête n'est pas conforme (Erreur 400) !`;
+    const message = `La requête n'est pas conforme (Erreur 400).`;
     showMessage('alert', message);
     videLeTableau();
     return;

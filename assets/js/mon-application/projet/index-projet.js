@@ -356,7 +356,7 @@ const projetInformation = async function(mavenKey) {
     }
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
-      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 01.";
+      const message = "Une erreur inattendue s'est produite lors de la phase 01.";
       showMessage('critical', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 01');
       log(` - 🔴 (01) Collecte des informations pour la version en échec.`);
@@ -422,7 +422,7 @@ const projetMesure = async function(mavenKey) {
     }
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
-      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 02.";
+      const message = "Une erreur inattendue s'est produite lors de la phase 02.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 02');
       log(` - ❌ (02) Collecte des mesures en échec.`);
@@ -490,7 +490,7 @@ const projetRating = async function(mavenKey, type) {
     }
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
-      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 03.";
+      const message = "Une erreur inattendue s'est produite lors de la phase 03.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 03');
       log(` - ❌ (03) Collecte de la note pour ${t.message.note} en échec.`);
@@ -579,7 +579,7 @@ const projetOwasp = async function(mavenKey) {
     }
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
-      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 04.";
+      const message = "Une erreur inattendue s'est produite lors de la phase 04.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 04');
       log(' - ❌ (04) Collecte des menaces OWASP en échec.');
@@ -656,7 +656,7 @@ const projetHotspot = async function(mavenKey) {
     }
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
-      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 05.";
+      const message = "Une erreur inattendue s'est produite lors de la phase 05.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 05');
       log(' - ❌ (05) Collecte des menaces potentielles en échec.');
@@ -725,7 +725,7 @@ const projetAnomalie = async function(mavenKey) {
       }
     } catch(error) {
       const trace = prepareTechnicalDetails(error);
-      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 06.";
+      const message = "Une erreur inattendue s'est produite lors de la phase 06.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 06');
       log(' - ❌ (06) Collecte des anomalies en échec.');
@@ -792,7 +792,7 @@ const projetAnomalieDetails = async function(mavenKey) {
     }
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
-      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 07.";
+      const message = "Une erreur inattendue s'est produite lors de la phase 07.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 07');
       log(` - ❌ (07) Je n'ai pas réussi à collecter les données.`);
@@ -883,7 +883,7 @@ const projetHotspotOwasp = async function(maven_key, menace) {
       }
     } catch(error) {
       const trace = prepareTechnicalDetails(error);
-      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 08/09.";
+      const message = "Une erreur inattendue s'est produite lors de la phase 08/09.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 08/09');
       log(` - ❌ (08/09) Collecte des menaces potentielles Owasp en échec.`);
@@ -956,7 +956,7 @@ const projetHotspotOwaspDetails = async function(mavenKey) {
     }
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
-      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 10.";
+      const message = "Une erreur inattendue s'est produite lors de la phase 10.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 10');
       log(` - ❌ (10) Collecte des informations détaillées pour les hotspots en échec.`);
@@ -1034,7 +1034,7 @@ const projetNoSonar = async function(mavenKey){
     }
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
-      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 11.";
+      const message = "Une erreur inattendue s'est produite lors de la phase 11.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 11');
       log (` - ❌ (11) Collecte des annotations NoSonar/SuppressWarning en échec.`);
@@ -1113,7 +1113,7 @@ const projetTodo = async function(mavenKey){
 
     } catch(error) {
       const trace = prepareTechnicalDetails(error);
-      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 12.";
+      const message = "Une erreur inattendue s'est produite lors de la phase 12.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 12');
       log (` - ❌ (12) Collecte des commentaires Todo.`);
@@ -1194,7 +1194,7 @@ const data = { maven_key: mavenKey };
     }
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
-      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite lors de la phase 13.";
+      const message = "Une erreur inattendue s'est produite lors de la phase 13.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 13');
       log (` - ❌ (13) Collecte des Loggers en échec.`);
@@ -1441,7 +1441,7 @@ const afficheMesProjets = async function() {
     }
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
-      const message = "<strong>[Projet]</strong> Une erreur inattendue s'est produite.";
+      const message = "Une erreur inattendue s'est produite.";
       showMessage('alert', message, trace);
   }
 };
@@ -1577,7 +1577,7 @@ $('.js-analyse').on('click', function () {
   const $boutonCollecteIndicateur = $('.js-analyse');
 
   if (!roles.includes('ROLE_COLLECTE') && !roles.includes('ROLE_BATCH') && !roles.includes('ROLE_GESTIONNAIRE')) {
-    showMessage('alert','<strong>[PROJET]</strong> Vous devez avoir au moins le rôle COLLECTE pour lancer la collecte des données.');
+    showMessage('alert','Vous devez avoir au moins le rôle COLLECTE pour lancer la collecte des données.');
     return;
   }
 
@@ -1666,12 +1666,12 @@ $('.js-affiche-result').on('click', async() => {
   /* On récupère la clé du projet. */
   const apiMaven = $('#select-result').text().trim();
 
-  /** On regarde si tou vas bien ! */
+  /** On regarde si tout vas bien ! */
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
   if (collecte === undefined || collecte != 'Tout va bien!') {
     log(` - ❌ Une erreur s'est produite sur le projet ${apiMaven}.`);
     log(`      Vous ne pouvez pas afficher les données collectées pour ce projet.`);
-    showMessage('primary', `<strong>${Peinture}</strong> Le processus d'affichage des données a été interrompu !<br>Choisissez un autre projet.`);
+    showMessage('primary', `Le processus d'affichage des données a été interrompu !<br>Choisissez un autre projet.`);
     sessionStorage.setItem('ma_moulinette_peinture', `La collecte du projet a échoué.`);
     return;
   };
@@ -1705,7 +1705,7 @@ $('.js-enregistrement').on('click', () => {
   const roles = JSON.parse(userRating.dataset.user);
 
   if (!roles.includes('ROLE_COLLECTE') && !roles.includes('ROLE_BATCH') && !roles.includes('ROLE_GESTIONNAIRE')) {
-    showMessage('alert', `<strong>[PROJET-000]</strong> Vous devez avoir au moins le rôle COLLECTE pour lancer la commande d'enregistrement.` );
+    showMessage('alert', `Vous devez avoir au moins le rôle COLLECTE pour lancer la commande d'enregistrement (Erreur 403).` );
     return;
   }
 
