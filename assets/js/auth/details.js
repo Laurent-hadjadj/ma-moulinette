@@ -39,6 +39,10 @@ import { showMessage, prepareTechnicalDetails } from '../common/messageHelper.js
         dataType: 'json',
         data: JSON.stringify(data),
         contentType,
+        headers: {
+          'X-API-Custom-403': 'true',
+          'X-Internal-Front': 'front-app'
+        },
     };
 
     try {
