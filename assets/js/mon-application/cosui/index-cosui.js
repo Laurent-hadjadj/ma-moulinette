@@ -169,7 +169,7 @@ const dessineMoiUnRadar = function (dataset1, dataset2, label1, label2){
                   }
                 }
               } else {
-                sessionStorage.setItem('error', `Oups, le label ${label} n'est pas pris en charge.`);
+                sessionStorage.setItem('ma_moulinette_error', `Oups, le label ${label} n'est pas pris en charge.`);
               }
 
               return ''; // Retourner une chaîne vide si aucune note n'est trouvée
@@ -191,7 +191,7 @@ const dessineMoiUnRadar = function (dataset1, dataset2, label1, label2){
     const ctx = document.getElementById('graphique-note').getContext('2d');
     const charts = new Chart(ctx, { type: 'radar', data, options });
     if (charts === null) {
-      sessionStorage.setItem('error', "c'est pour rire, il ne peut pas y avoir d'erreur ici :)");
+      sessionStorage.setItem('ma_moulinette_error', "c'est pour rire, il ne peut pas y avoir d'erreur ici :)");
     }
 
   };

@@ -112,7 +112,7 @@ const refreshActivity=async function() {
         }
       } catch(error) {
         // Gestion des erreurs
-        sessionStorage.setItem('error', `Erreur lors de la récupération des données : ${JSON.stringify(error, null, 2)}`);
+        sessionStorage.setItem('ma_moulinette_error', `Erreur lors de la récupération des données : ${JSON.stringify(error, null, 2)}`);
         showMessage('alert', '<strong>[ACTIVITÉ]</strong> - Une erreur est survenue lors de la mise à jour.');
       } finally {
         // Cacher le spinner
@@ -239,7 +239,7 @@ const graphToto = function(type, donnee, source) {
   const ctx = document.getElementById('graphique-langage').getContext('2d');
   const charts = new Chart(ctx, { type: 'line', data, options });
   if (charts === null) {
-    sessionStorage.setItem('info','youpi ! charts ne peut pas être null !!!');
+    sessionStorage.setItem('ma_moulinette_info','youpi ! charts ne peut pas être null !!!');
   }
 }
 

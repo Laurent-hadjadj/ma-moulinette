@@ -153,7 +153,7 @@ const videLeTableau = function() {
   $('#autre').html('');
 
   /** on supprime le référentiel par défaut */
-  sessionStorage.setItem('referential_owasp', '');
+  sessionStorage.setItem('ma_moulinette_referential_owasp', '');
 }
 
 /**
@@ -763,7 +763,7 @@ const injectionModule = function (module, total, taux, bc, zero){
       $('#autre').html(i);
       break;
     default:
-      sessionStorage.setItem('Owasp', `Oups !!!, je ne connais pas ${module}.`);
+      sessionStorage.setItem('ma_moulinette_Owasp', `Oups !!!, je ne connais pas le ${module}.`);
   }
 };
 
@@ -966,7 +966,7 @@ const remplissageDetailsHotspotOwasp = async function(maven_key, menace, titre) 
   }
 
     /** on affiche le titre en fonction du référentiel */
-    const x = sessionStorage.getItem('referential_owasp');
+    const x = sessionStorage.getItem('ma_moulinette_referential_owasp');
     if (x === undefined || x == '') { return; }
 
     if (x === 2017) {
@@ -982,7 +982,7 @@ const remplissageDetailsHotspotOwasp = async function(maven_key, menace, titre) 
 
 $('.js-details').on('click', function () {
   const id = $(this).attr('id').split('-');
-  const k_key=sessionStorage.getItem('projet');
+  const k_key=sessionStorage.getItem('ma_moulinette_projet');
   if (id[1] === 'a1') {
     remplissageDetailsHotspotOwasp(k_key, 'a1', un);
   }
@@ -1059,8 +1059,8 @@ const selectReferentialOwasp = function(version){
 
 /*************** Main du programme **************/
 /** On récupère la clé du projet */
-const key=sessionStorage.getItem('projet');
-const projet=key.split(':');
+const key = sessionStorage.getItem('ma_moulinette_projet');
+const projet = key.split(':');
 
 /** On met à jour la page */
 $('#js-application').html(projet[1]);
@@ -1072,12 +1072,12 @@ selectReferentialOwasp('2021');
 
 /** On appel les fonctions de remplissage pour la version OWASP*/
 $('#version-2017').on('click', ()=>{
-  sessionStorage.setItem('referential_owasp', 2017);
+  sessionStorage.setItem('ma_moulinette_referential_owasp', 2017);
   $('#version-2017').addClass('active');
   $('#version-2021').removeClass('active');
   if ($('#version-2017').hasClass('disable') === false){
     selectAnalyseVersion('2017');
-    sessionStorage.setItem('referential_owasp', 2021);
+    sessionStorage.setItem('ma_moulinette_referential_owasp', 2021);
   }
 });
 

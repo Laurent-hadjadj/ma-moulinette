@@ -182,7 +182,7 @@ const dessineMoiUnMouton= function( labels, data1, data2, data3) {
   const ctx = document.getElementById('graphique-anomalie').getContext('2d');
   const charts = new Chart(ctx, { type: 'line', data, options });
   if (charts === null) {
-    sessionStorage.set('info', 'chartJs is null');
+    sessionStorage.set('ma_moulinette_info', 'chartJs is null');
   }
 };
 
@@ -669,7 +669,7 @@ $('.lien-imprimer-pdf').on('click', async () => {
   async function captureAndAddElement(elementId, positionY) {
       const element = document.getElementById(elementId);
       if (!element) {
-          sessionStorage.setItem('error', `L'élément ${elementId} n'a pas été trouvé !!!`);
+          sessionStorage.setItem('ma_moulinette_error', `L'élément ${elementId} n'a pas été trouvé !!!`);
           return 0; // Empêche l'appel à html2canvas si l'élément est absent
       }
 

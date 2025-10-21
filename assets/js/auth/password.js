@@ -59,7 +59,7 @@ window.jQuery = $;
 
     options = $.extend({}, defaults, options);
     if ($object.length === 0) {
-      localStorage.setItem('error', 'L’élément $object est introuvable.');
+      sessionStorage.setItem('ma_moulinette_error', 'L’élément $object est introuvable.');
       return;
     }
 
@@ -222,13 +222,13 @@ window.jQuery = $;
 
       if (options.debug) {
         const items = {'caractères': NombreChars, complexity, entropy, bit, biais, sequence, exigence};
-        sessionStorage.setItem('debug', JSON.stringify(items));
+        sessionStorage.setItem('ma_moulinette_info', JSON.stringify(items));
       }
 
       /** On enregistre les informations de complexité du mot de passe. */
-      localStorage.setItem('complexity', complexity);
-      localStorage.setItem('entropy', entropy);
-      localStorage.setItem('bit', bit);
+      sessionStorage.setItem('ma_moulinette_complexity', complexity);
+      sessionStorage.setItem('ma_moulinette_entropy', entropy);
+      sessionStorage.setItem('ma_moulinette_bit', bit);
 
       /** Retourne le score (moyenne de la complexité et de l'entropie sur 100). */
       return calculateScore(complexity, entropy);
@@ -238,7 +238,7 @@ window.jQuery = $;
     const calculateScore = function(complexity, entropy) {
       const rawScore = (complexity + entropy) / 2;
       const normalizedScore = Math.min(Math.floor((rawScore / 128) * 100), 100); // Limite à 100%
-      localStorage.setItem('score', normalizedScore);
+      sessionStorage.setItem('ma_moulinette_score', normalizedScore);
       return normalizedScore;
     };
 
@@ -317,7 +317,7 @@ window.jQuery = $;
 
       const $closest = $object.closest(options.closestSelector);
       if ($closest.length === 0) {
-        localStorage.setItem('error',`Élément parent introuvable avec le sélecteur : ${options.closestSelector}`);
+        sessionStorage.setItem('ma_moulinette_error',`Élément parent introuvable avec le sélecteur : ${options.closestSelector}`);
         return;
       }
 
@@ -358,7 +358,7 @@ window.jQuery = $;
       $object.keyup(function() {
         let field = options.field || '';
         if (field && $(field).length === 0) {
-          localStorage.setItem('error','Le champ de saisie spécifié est introuvable.');
+          sessionStorage.setItem('ma_moulinette_error','Le champ de saisie spécifié est introuvable.');
           return;
         }
         field = $(field).val();
@@ -369,7 +369,7 @@ window.jQuery = $;
         let percent = score < 0 ? 0 : score;
 
         if ($colorBar.length === 0) {
-          localStorage.setItem('error', '$colorBar introuvable');
+          sessionStorage.setItem('error', '$colorBar introuvable');
           return;
         }
         $colorBar = addColorBarStyle($colorBar, percent);

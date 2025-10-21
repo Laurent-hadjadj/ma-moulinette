@@ -218,6 +218,6 @@ function changeType(x, type) {
   try {
     return x.prop('type', type); //Stupid IE security will not allow this
   } catch(error) {
-    sessionStorage.setItem('info', `Stupid IE security will not allow this !!! :  ${JSON.stringify(error, null, 2)}}`);
+    sessionStorage.setItem('ma_moulinette_info', `Stupid IE security will not allow this !!! :  ${JSON.stringify(error, null, 2)}}`);
   }
 }

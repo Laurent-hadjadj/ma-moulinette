@@ -414,7 +414,7 @@ $('.js-preference-information').on('click', e=> {
       version();
     break;
     default:
-      sessionStorage.setItem('info', "Je n'ai pas trouvé la lumière.");
+      sessionStorage.setItem('ma_moulinette_info', "Je n'ai pas trouvé la lumière.");
   }
 
 });
