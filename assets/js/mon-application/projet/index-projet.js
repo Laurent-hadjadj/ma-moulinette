@@ -1773,7 +1773,7 @@ $('.js-cosui').on('click', () => {
       sessionStorage.setItem('ma_moulinette_projet', mavenKey);
 
       /** On ne passe plus de paramètre dans le get */
-      window.location.href = `${server()}/owasp`;
+      window.location.href = `${serveur()}/owasp`;
     } else {
       log(' - ERROR - [OWASP] - Vous devez choisir un projet dans la liste !! !');
       }
