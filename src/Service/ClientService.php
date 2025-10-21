@@ -28,7 +28,7 @@ use App\Exception\UnexpectedExecutionPathException;
 /**
  * [Description Client]
  */
-class Client
+class ClientService
 {
     /** Définition des constantes */
     private static $erreur400 = "La requête est incorrecte  (Erreur 400).";
