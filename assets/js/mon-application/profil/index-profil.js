@@ -83,15 +83,15 @@ const refreshQuality = async function() {
   $boutonRefreshProfil.attr('tabindex', '-1');
 
   const optionsRefresh = {
-        url: `${serveur()}/api/quality/profiles`,
-        type: 'POST',
-        dataType: 'json',
-        contentType,
-        headers: {
-                  'X-API-Custom-403': 'true',
-                  'X-Internal-Front': 'front-app'
-              },
-      };
+    url: `${serveur()}/api/quality/profiles`,
+    type: 'POST',
+    dataType: 'json',
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
 
   let response;
   try {
@@ -234,9 +234,9 @@ const autreProfil = async function(langage) {
     data: JSON.stringify(dataRefresh),
     contentType,
     headers: {
-                  'X-API-Custom-403': 'true',
-                  'X-Internal-Front': 'front-app'
-              },
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
   };
 
   const t = await $.ajax(optionsRefresh);
@@ -398,14 +398,14 @@ const dessineMoiUnMouton=function(label, dataset) {
 /** Création du graphique par language */
 $('#bouton-affiche-graphique').on('click', async () => {
   const options = {
-        url: `${serveur()}/api/quality/langage`,
-        type: 'POST',
-        dataType: 'json',
-        contentType,
-        headers: {
-                    'X-API-Custom-403': 'true',
-                    'X-Internal-Front': 'front-app'
-                },
+    url: `${serveur()}/api/quality/langage`,
+    type: 'POST',
+    dataType: 'json',
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
   };
 
   const t = await $.ajax(options);
