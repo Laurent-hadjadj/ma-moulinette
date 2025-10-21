@@ -140,9 +140,9 @@ export const remplissage = async function(maven_key) {
     dataType: 'json',
     data: JSON.stringify(data),
     contentType,
-      headers: {
+    headers: {
       'X-API-Custom-403': 'true',
-      'X-App-Client': token
+      'X-Internal-Front': 'front-app'
     },
   };
 
@@ -212,7 +212,7 @@ export const remplissage = async function(maven_key) {
       contentType,
         headers: {
         'X-API-Custom-403': 'true',
-        'X-App-Client': token
+        'X-Internal-Front': 'front-app'
       },
     };
 
@@ -259,7 +259,7 @@ export const remplissage = async function(maven_key) {
     contentType,
       headers: {
       'X-API-Custom-403': 'true',
-      'X-App-Client': token
+      'X-Internal-Front': 'front-app'
     },
   };
 
@@ -349,7 +349,7 @@ export const remplissage = async function(maven_key) {
     contentType,
       headers: {
       'X-API-Custom-403': 'true',
-      'X-App-Client': token
+      'X-Internal-Front': 'front-app'
     },
   };
 
@@ -780,7 +780,7 @@ export const remplissage = async function(maven_key) {
       contentType,
         headers: {
         'X-API-Custom-403': 'true',
-        'X-App-Client': token
+        'X-Internal-Front': 'front-app'
       },
     };
 
@@ -842,7 +842,7 @@ export const remplissage = async function(maven_key) {
     contentType,
       headers: {
       'X-API-Custom-403': 'true',
-      'X-App-Client': token
+      'X-Internal-Front': 'front-app'
     },
   };
 
@@ -952,7 +952,7 @@ export const afficheHotspotDetails = async function (maven_key){
     contentType,
       headers: {
       'X-API-Custom-403': 'true',
-      'X-App-Client': token
+      'X-Internal-Front': 'front-app'
     },
   };
 
