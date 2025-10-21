@@ -6,7 +6,7 @@ namespace App\Tests\Unit\Controller\Batch;
 
 use App\Controller\Batch\BatchCollecteMesureController;
 use App\Repository\MesuresRepository;
-use App\Service\Client;
+use App\service\ClientService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -18,7 +18,7 @@ use Psr\Container\ContainerInterface;
 class BatchCollecteMesureControllerTest extends TestCase
 {
     private EntityManagerInterface $em;
-    private Client $client;
+    private ClientService $client;
     private BatchCollecteMesureController $controller;
     private ContainerInterface $container;
     private ParameterBagInterface $parameterBag;

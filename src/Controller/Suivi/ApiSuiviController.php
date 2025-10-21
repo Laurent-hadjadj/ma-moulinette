@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\ORM\EntityManagerInterface;
 
-use App\Service\Client;
+use App\service\ClientService;
 use App\Entity\Historique;
 use App\Entity\Utilisateur;
 use App\Entity\InformationProjet;

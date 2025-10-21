@@ -9,7 +9,7 @@ use App\Controller\Batch\BatchCollecteAnomalieDetailController;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\AnomalieDetailsRepository;
 use App\Service\ExtractName;
-use App\Service\Client;
+use App\service\ClientService;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;

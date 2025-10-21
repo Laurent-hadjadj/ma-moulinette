@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Properties;
 use App\Entity\Profiles;
 use App\Entity\ProfilesHistorique;
-use App\Service\Client;
+use App\service\ClientService;
 use App\Service\UrlBuilderService;
 
 /**
@@ -61,7 +61,7 @@ class ApiProfilController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        private Client $client,
+        private ClientService $client,
         private Security $security,
         private ParameterBagInterface $params,
         private LoggerInterface $logger,

@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Activity;
 use App\Entity\ActivityHistorique;
 use App\Message\ActivityMessage;
-use App\Service\Client;
+use App\service\ClientService;
 
 /**
  * [Description ApiActivityController]
@@ -52,7 +52,7 @@ class ApiActivityController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        private Client $client,
+        private ClientService $client,
         private MessageBusInterface $messageBus,
         private Security $security,
         private LoggerInterface $logger

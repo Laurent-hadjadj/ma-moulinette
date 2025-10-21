@@ -24,7 +24,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Actuator;
 use App\Entity\ActuatorInfo;
 use App\Form\ActuatorFormType;
-use App\Service\Client;
+use App\service\ClientService;
 
 /**
  * [Description ActuatorController]
@@ -44,7 +44,7 @@ class ActuatorController extends AbstractController
 
     public function __construct(
         private EntityManagerInterface $em,
-        private Client $client,
+        private ClientService $client,
         private PaginatorInterface $paginator,
         private ParameterBagInterface $params
     ) {

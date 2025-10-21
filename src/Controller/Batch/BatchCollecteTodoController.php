@@ -18,7 +18,7 @@ use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\Todo;
-use App\Service\Client;
+use App\service\ClientService;
 use App\Service\UrlBuilderService;
 
 /**
@@ -40,7 +40,7 @@ class BatchCollecteTodoController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        private Client $client,
+        private ClientService $client,
         private UrlBuilderService $urlBuilder,
         private LoggerInterface $logger
     ) {

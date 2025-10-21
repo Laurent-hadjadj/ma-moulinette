@@ -25,7 +25,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\ListeProjet;
 use App\Entity\Properties;
-use App\Service\Client;
+use App\service\ClientService;
 use App\Service\UrlBuilderService;
 
 /**
@@ -48,7 +48,7 @@ class ApiAccueilController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function __construct(
-        private Client $client,
+        private ClientService $client,
         private LoggerInterface $logger,
         private EntityManagerInterface $em,
         private UrlBuilderService $urlBuilder,

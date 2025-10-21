@@ -21,7 +21,7 @@ use Psr\Log\LoggerInterface;
 use App\Message\ActivityMessage;
 use App\Message\ProcessTaskMessage;
 use App\Service\ActivityReportService;
-use App\Service\Client;
+use App\service\ClientService;
 
 #[AsMessageHandler]
 /**
@@ -35,7 +35,7 @@ final class ActivityHandler
         private MessageBusInterface $messengerBus,
         private LoggerInterface $logger,
         private ParameterBagInterface $params,
-        private Client $client,
+        private ClientService $client,
     ) {
         $this->activityReportService = $activityReportService;
         $this->messengerBus = $messengerBus;

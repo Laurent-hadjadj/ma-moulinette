@@ -6,7 +6,7 @@ namespace App\Tests\Unit\Controller\Batch;
 
 use App\Controller\Batch\BatchCollecteNoteController;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Service\Client;
+use App\service\ClientService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use App\Repository\NotesRepository;
@@ -19,7 +19,7 @@ use Psr\Container\ContainerInterface;
 class BatchCollecteNoteControllerTest extends TestCase
 {
     private EntityManagerInterface $entityManager;
-    private Client $client;
+    private ClientService $client;
     private ParameterBagInterface $parameterBag;
     private NotesRepository $notesRepository;
     private HotspotsRepository $hotspotsRepository;

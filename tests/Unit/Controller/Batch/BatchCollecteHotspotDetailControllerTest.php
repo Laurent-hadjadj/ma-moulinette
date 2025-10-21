@@ -7,7 +7,7 @@ namespace App\Tests\Unit\Controller\Batch;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Service\Client;
+use App\service\ClientService;
 use App\Service\ExtractName;
 use App\Repository\HotspotsRepository;
 use App\Repository\HotspotDetailsRepository;

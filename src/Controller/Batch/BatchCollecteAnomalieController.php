@@ -20,7 +20,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Anomalie;
 use App\Service\ExtractName;
 use App\Service\DateTools;
-use App\Service\Client;
+use App\service\ClientService;
 use App\Service\UrlBuilderService;
 
 /**
@@ -46,7 +46,7 @@ class BatchCollecteAnomalieController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        private Client $client,
+        private ClientService $client,
         private ExtractName $serviceExtractName,
         private DateTools $serviceDateTools,
         private UrlBuilderService $urlBuilder,

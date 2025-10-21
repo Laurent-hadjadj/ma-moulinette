@@ -19,7 +19,7 @@ use App\Repository\PropertiesRepository;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Properties;
-use App\Service\Client;
+use App\service\ClientService;
 use Symfony\Bundle\SecurityBundle\Security;
 
 use Doctrine\Common\DataFixtures\Loader;

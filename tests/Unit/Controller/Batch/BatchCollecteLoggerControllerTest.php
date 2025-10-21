@@ -6,7 +6,7 @@ namespace App\Tests\Unit\Controller\Batch;
 
 use App\Controller\Batch\BatchCollecteLoggerController;
 use PHPUnit\Framework\MockObject\MockObject;
-use App\Service\Client;
+use App\service\ClientService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;

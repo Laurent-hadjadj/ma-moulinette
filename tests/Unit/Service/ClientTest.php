@@ -2,7 +2,7 @@
 
 namespace App\Tests\Unit\Service;
 
-use App\Service\Client;
+use App\service\ClientService;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;

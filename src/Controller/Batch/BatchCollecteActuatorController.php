@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-use App\Service\Client;
+use App\service\ClientService;
 use App\Entity\Actuator;
 use App\Entity\ActuatorInfo;
 use App\Service\UrlBuilderService;
@@ -36,7 +36,7 @@ class BatchCollecteActuatorController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        private Client $client,
+        private ClientService $client,
         private UrlBuilderService $urlBuilder,
         private LoggerInterface $logger
     ) {

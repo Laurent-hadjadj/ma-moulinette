@@ -29,7 +29,7 @@ use App\Entity\Profiles;
 use App\Entity\Properties;
 use App\Entity\Historique;
 use App\Entity\MaMoulinette;
-use App\Service\Client;
+use App\service\ClientService;
 use App\Service\UrlBuilderService;
 
 /**
@@ -57,7 +57,7 @@ class AccueilController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        private Client $client,
+        private ClientService $client,
         private ParameterBagInterface $params,
         private UrlBuilderService $urlBuilder,
         private LoggerInterface $logger,

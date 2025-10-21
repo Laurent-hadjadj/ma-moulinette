@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Controller\Batch;
 
 use App\Controller\Batch\BatchCollecteInformationProjetController;
-use App\Service\Client;
+use App\service\ClientService;
 use App\Service\IsValideMavenKey;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -19,7 +19,7 @@ class BatchCollecteInformationProjetControllerTest extends TestCase
 {
     private IsValideMavenKey $isValidMavenKey;
     private EntityManagerInterface $em;
-    private Client $client;
+    private ClientService $client;
     private BatchCollecteInformationProjetController $controller;
     private ContainerInterface $container;
     private ParameterBagInterface $parameterBag;

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Controller\Batch;
 
 use App\Controller\Batch\BatchCollecteNoSonarController;
-use App\Service\Client;
+use App\service\ClientService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;

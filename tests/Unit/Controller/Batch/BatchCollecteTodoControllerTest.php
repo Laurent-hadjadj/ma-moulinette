@@ -4,7 +4,7 @@ namespace App\Tests\Unit\Controller\Batch;
 
 use App\Controller\Batch\BatchCollecteTodoController;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Service\Client;
+use App\service\ClientService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use App\Repository\TodoRepository;
@@ -20,7 +20,7 @@ class BatchCollecteTodoControllerTest extends TestCase
     private EntityManagerInterface $entityManager;
 
     /** @var Client&\PHPUnit\Framework\MockObject\MockObject */
-    private Client $client;
+    private ClientService $client;
 
     /** @var ParameterBagInterface&\PHPUnit\Framework\MockObject\MockObject */
     private ParameterBagInterface $parameterBag;

@@ -30,7 +30,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /** Client HTTP */
-use App\Service\Client;
+use App\service\ClientService;
 
 class PreferenceController extends AbstractController
 {

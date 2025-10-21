@@ -9,7 +9,7 @@ use App\Repository\HotspotOwaspRepository;
 use App\Repository\InformationProjetRepository;
 use App\Entity\HotspotOwasp;
 use App\Entity\InformationProjet;
-use App\Service\Client;
+use App\service\ClientService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Psr\Container\ContainerInterface;
@@ -21,7 +21,7 @@ use PHPUnit\Framework\TestCase;
 class BatchCollecteHotspotOwaspControllerTest extends TestCase
 {
     private EntityManagerInterface $em;
-    private Client $client;
+    private ClientService $client;
     private BatchCollecteHotspotOwaspController $controller;
     private ContainerInterface $container;
     private ParameterBagInterface $parameterBag;

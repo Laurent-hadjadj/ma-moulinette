@@ -7,7 +7,7 @@ namespace App\Tests\Unit\Controller\Batch;
 use PHPUnit\Framework\TestCase;
 use App\Controller\Batch\BatchCollecteAnomalieController;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Service\Client;
+use App\service\ClientService;
 use App\Service\ExtractName;
 use App\Service\DateTools;
 use App\Repository\AnomalieRepository;

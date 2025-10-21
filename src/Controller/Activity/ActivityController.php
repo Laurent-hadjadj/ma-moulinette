@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Activity;
 use App\Entity\ActivityHistorique;
-use App\Service\Client;
+use App\service\ClientService;
 
 /**
  * [Description ActivityController]
@@ -49,7 +49,7 @@ class ActivityController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private ParameterBagInterface $params,
-        private Client $client
+        private ClientService $client
         )
     {
         $this->params = $params;
