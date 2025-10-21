@@ -374,6 +374,46 @@ class AccueilController extends AbstractController
     }
 
     /**
+     * [Description for getSonarQubeVersion]
+     *
+     * @return int|string
+     *
+     * Created at: 21/10/2025 10:56:27 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function getSonarQubeVersion(): int|string
+    {
+        $this->logger->info("[Accueil] ℹ️ Récupération de la version de l'application SonarQube.");
+
+        /** Sécurisation de l'URL */
+        $url = $this->urlBuilder->build(
+            $this->getParameter(static::$sonarUrl),
+            '/api/server/version',[]
+        );
+
+        $this->logger->info('[Accueil] ℹ️ Appel à SonarQube pour le comptage de projets.', [ 'url' => $url ]);
+        $result = $this->client->httpSonarQube($url);
+
+        /* On affiche un message flash pour un timeout ou si le serveur n'est pas démarré. */
+        if ($result['code'] !== 200) {
+            $this->logger->error("[Accueil] ❌ Erreur lors de l'appel à SonarQube", $result);
+            $this->addFlash('notice',
+                [
+                    'type' => 'alert',
+                    'message' => "❌ {$result['erreur']}"
+                ]);
+            // On envoi -1 si on a une erreur HTTPClient
+            return -1;
+        }
+
+        $this->logger->debug('[Accueil] 🛠️ Version du serveur SonarQube.', [
+            'version' => $result['json']['texte']
+        ]);
+        return $result['json']['texte'];
+    }
+
+    /**
      * [Description for getListeFavoriProjet]
      * Récupère la liste des projets favoris.
      *
@@ -548,7 +588,7 @@ class AccueilController extends AbstractController
         $render += array_fill_keys([
             'refresh_bd', 'projet_bd', 'projet_sonar', 'profil_bd', 'profil_sonar',
             'composant', 'nombre_projet_favori', 'favori', 'public', 'private',
-            'nombre_projet_local', 'nombre_tag'
+            'nombre_projet_local', 'nombre_tag', 'version_serveur_sonar'
         ], 0);
 
         /** 1 - Les Dates  */
@@ -686,6 +726,9 @@ class AccueilController extends AbstractController
             $composant = 'vide';
         }
 
+        /** On récupère la version du serveur SonarQube */
+        $sonar_version = self::getSonarQubeVersion();
+
         /** On récupère le rôle de l'utilisateur  */
         $refreshBD = $this->isGranted('ROLE_COLLECTE');
 
@@ -702,6 +745,7 @@ class AccueilController extends AbstractController
         $render['private'] = $private;
         $render['nombre_projet_local'] = $projetBd;
         $render['nombre_tag'] = $tag['nombre'][0]['tag'];
+        $render['version_serveur_sonar'] = ($sonar_version != -1)? $sonar_version : 'Version inconnue.';
 
         $this->logger->info("[Accueil] ℹ️ Rendu final de la page d'accueil.");
         return $this->render(static::$page, $render);
