@@ -346,6 +346,15 @@
   cursor: pointer;
 }
 
+/* Image svg pour le serveur SonarQube */
+.svg-sonarqube-serveur{
+  width: 100%;
+  height: auto;
+  max-width: 24px;
+  cursor: none;
+  margin-bottom: 0.2rem
+}
+
 /* Images SVG : couleur bleu
  *
  * bulle-information-svg
