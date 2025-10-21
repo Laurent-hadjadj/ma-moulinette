@@ -67,9 +67,9 @@ const sonarIsUp = async function() {
     dataType: 'json',
     contentType,
     headers: {
-                  'X-API-Custom-403': 'true',
-                  'X-Internal-Front': 'front-app'
-              },
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
   };
 
   try {
@@ -106,9 +106,9 @@ const miseAJourListe = async function() {
     dataType: 'json',
     contentType,
     headers: {
-                'X-API-Custom-403': 'true',
-                'X-Internal-Front': 'front-app'
-            },
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
   };
 
   try {
@@ -175,10 +175,10 @@ const miseAJourTags = async function() {
     dataType: 'json',
     contentType,
     headers: {
-                'X-API-Custom-403': 'true',
-                'X-Internal-Front': 'front-app'
-            },
-    };
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
 
     try {
       const t = await $.ajax(options);
