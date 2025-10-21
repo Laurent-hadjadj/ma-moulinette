@@ -230,8 +230,7 @@
   .titre-stat { font-size: 1.8rem; }
 
   #bouton-mise-a-jour-referential,
-  #bouton-profil-quality { min-width: 18rem; }
-
+  #bouton-profil-quality { min-width: 20rem; }
 
   #container-information-referential { margin-right: 0.5rem; }
   .visibility-box-public, .tag-box-projet { margin-right: 0.2rem; }
@@ -249,10 +248,21 @@
 }
 
 @media (width >= 160.025em) {
-  .visibility-box-public, .tag-box-projet { margin-right: 0.4rem; }
-  .visibility-box-private, .tag-box-tag { margin-left: 0.4rem; }
+  .stat-tag,
+  .stat-favori,
+  .stat-projet,
+  .stat-profil,
+  .stat-visibility { font-size: 2.4rem; }
+  .titre-stat { font-size: 1.8rem; }
 
-  .tableau-de-board-svg{
+  #bouton-mise-a-jour-referential,
+  #bouton-profil-quality { min-width: 20rem; }
+
+  #container-information-referential { margin-right: 0.5rem; }
+  .visibility-box-public, .tag-box-projet { margin-right: 0.2rem; }
+  .visibility-box-private, .tag-box-tag { margin-left: 0.2rem; }
+
+  .tableau-de-board-svg {
     margin-bottom: -0.2rem;
     max-width: 48px;
   }
