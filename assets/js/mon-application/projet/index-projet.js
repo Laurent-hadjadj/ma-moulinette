@@ -1145,16 +1145,16 @@ const projetLogger = async function(mavenKey){
   }
 
 const data = { maven_key: mavenKey };
-const options = {
-  url: `${serveur()}/api/collecte/logger`,
-  type: 'POST',
-  dataType: 'json',
-  data: JSON.stringify(data),
-  contentType,
-      headers: {
-      'X-API-Custom-403': 'true',
-      'X-Internal-Front': 'front-app'
-    },
+  const options = {
+    url: `${serveur()}/api/collecte/logger`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+        headers: {
+        'X-API-Custom-403': 'true',
+        'X-Internal-Front': 'front-app'
+      },
   };
 
   const $boutonCollecteIndicateur = $('.js-analyse');
@@ -1881,8 +1881,8 @@ $('.favori-svg').on('click', () => {
       data: JSON.stringify(data),
       contentType,
       headers: {
-      'X-API-Custom-403': 'true',
-      'X-Internal-Front': 'front-app'
+        'X-API-Custom-403': 'true',
+        'X-Internal-Front': 'front-app'
       },
     };
 
