@@ -10,7 +10,7 @@ use Psr\Log\LoggerInterface;
 use App\Message\ActivityMessage;
 use App\Message\ProcessTaskMessage;
 use App\Service\ActivityReportService;
-use App\service\ClientService;
+use App\Service\ClientService;
 use App\MessageHandler\ActivityHandler;
 
 /**
@@ -48,7 +48,7 @@ class ActivityHandlerTest extends TestCase
         $this->messengerBus = $this->createMock(MessageBusInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->params = $this->createMock(ParameterBagInterface::class);
-        $this->client = $this->createMock(Client::class);
+        $this->client = $this->createMock(ClientService::class);
 
         // Création du handler avec les mocks
         $this->handler = new ActivityHandler(

@@ -7,7 +7,7 @@ namespace App\Tests\Unit\Controller\Batch;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
 use Doctrine\ORM\EntityManagerInterface;
-use App\service\ClientService;
+use App\Service\ClientService;
 use App\Service\ExtractName;
 use App\Repository\HotspotsRepository;
 use App\Repository\HotspotDetailsRepository;
@@ -21,7 +21,7 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
     /** @var EntityManagerInterface&MockObject */
     private MockObject $entityManager;
 
-    /** @var Client&MockObject */
+    /** @var ClientService&MockObject */
     private MockObject $client;
 
     /** @var ParameterBagInterface&MockObject */
@@ -53,7 +53,7 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
-        $this->client = $this->createMock(Client::class);
+        $this->client = $this->createMock(ClientService::class);
         $this->parameterBag = $this->createMock(ParameterBagInterface::class);
 
         $this->hotspotsRepository = $this->createMock(HotspotsRepository::class);

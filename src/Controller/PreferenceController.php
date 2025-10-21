@@ -13,24 +13,16 @@
 
 namespace App\Controller;
 
-/** Core */
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
-
-/** Sécurité */
-use Symfony\Bundle\SecurityBundle\Security;
-
-/** Accès aux tables SLQLite*/
-use Doctrine\ORM\EntityManagerInterface;
-
-/** API */
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Doctrine\ORM\EntityManagerInterface;
 
-/** Client HTTP */
-use App\service\ClientService;
+use App\Service\ClientService;
 
 class PreferenceController extends AbstractController
 {
@@ -43,7 +35,6 @@ class PreferenceController extends AbstractController
     private $version;
     private $dateCopyright;
 
-
     /**
      * [Description for __construct]
      *
@@ -54,7 +45,8 @@ class PreferenceController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private ParameterBagInterface $params,
-        private Security $security)
+        private Security $security,
+        private ClientService $client)
     {
         $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
@@ -141,7 +133,7 @@ class PreferenceController extends AbstractController
 
 
         $data = [
-            'statut' => $statut, 
+            'statut' => $statut,
             'categorie' => $categorie
         ];
         return new JsonResponse($data,Response::HTTP_OK);
@@ -266,7 +258,9 @@ class PreferenceController extends AbstractController
         $this->em->getConnection()->prepare($trim)->executeStatement();
 
         /** On crée un objet de response JSON 'o'=>$object,'n'=>$nouvelleListeVersion,'t'=>$trim */
-        return new JsonResponse(['200'],Response::HTTP_OK);
+        return new JsonResponse([
+            'code' => 200
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -291,6 +285,7 @@ class PreferenceController extends AbstractController
         $preference = $this->security->getUser()->getPreference();
 
         $data = [
+            'code' => 200,
             'statut' => $preference['statut'],
             $categorie => $preference[$categorie]
         ];

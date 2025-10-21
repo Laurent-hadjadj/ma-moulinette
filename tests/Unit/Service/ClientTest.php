@@ -2,7 +2,7 @@
 
 namespace App\Tests\Unit\Service;
 
-use App\service\ClientService;
+use App\Service\ClientService;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -44,7 +44,7 @@ class ClientTest extends TestCase
         $this->httpClient = $this->createMock(HttpClientInterface::class);
         $this->params = $this->createMock(ParameterBagInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->client = new Client($this->httpClient, $this->params, $this->logger);
+        $this->client = new ClientService($this->httpClient, $this->params, $this->logger);
 
         $this->params->method('get')->will($this->returnValueMap([
           ['sonar.url', 'https://sonarqube.ma-petite-entreprise.fr'],
@@ -76,7 +76,7 @@ class ClientTest extends TestCase
 
     protected function invokePrivateMethod($methodName, array $parameters = [])
     {
-        $reflection = new \ReflectionMethod(Client::class, $methodName);
+        $reflection = new \ReflectionMethod(ClientService::class, $methodName);
         $reflection->setAccessible(true);
         return $reflection->invokeArgs($this->client, $parameters);
     }
@@ -96,7 +96,7 @@ class ClientTest extends TestCase
 
         // vérifie le résultat
         $this->assertEquals(504, $result['code']);
-        $this->assertEquals(Client::$erreur504, $result['erreur']);
+        $this->assertEquals(ClientSer::$erreur504, $result['erreur']);
     }
 
     public function testHandleTransportExceptionFailedToOpenStream()

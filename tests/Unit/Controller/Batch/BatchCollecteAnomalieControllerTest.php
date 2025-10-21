@@ -7,7 +7,7 @@ namespace App\Tests\Unit\Controller\Batch;
 use PHPUnit\Framework\TestCase;
 use App\Controller\Batch\BatchCollecteAnomalieController;
 use Doctrine\ORM\EntityManagerInterface;
-use App\service\ClientService;
+use App\Service\ClientService;
 use App\Service\ExtractName;
 use App\Service\DateTools;
 use App\Repository\AnomalieRepository;
@@ -20,7 +20,7 @@ class BatchCollecteAnomalieControllerTest extends TestCase
     /** @var EntityManagerInterface&MockObject */
     private MockObject $entityManager;
 
-    /** @var Client&MockObject */
+    /** @var ClientService&MockObject */
     private MockObject $client;
 
     /** @var ParameterBagInterface&MockObject */
@@ -53,7 +53,7 @@ class BatchCollecteAnomalieControllerTest extends TestCase
     protected function setUp(): void
     {
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
-        $this->client = $this->createMock(Client::class);
+        $this->client = $this->createMock(ClientService::class);
         $this->parameterBag = $this->createMock(ParameterBagInterface::class);
         $this->anomalieRepository = $this->createMock(AnomalieRepository::class);
         $this->entityManager->method('getRepository')->willReturn($this->anomalieRepository);

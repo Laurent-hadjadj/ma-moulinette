@@ -23,11 +23,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-
 use App\Entity\Activity;
 use App\Entity\ActivityHistorique;
 use App\Message\ActivityMessage;
-use App\service\ClientService;
+use App\Service\ClientService;
 
 /**
  * [Description ApiActivityController]
@@ -147,7 +146,6 @@ class ApiActivityController extends AbstractController
      * Récupération de la liste des projets.
      * http://{url}}/api/components/search_projects?ps=500
      *
-     * @param Client $client
      * @return JsonResponse
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
@@ -155,7 +153,7 @@ class ApiActivityController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/activity/sauvegarde', name: 'sauvegarde_historique', methods: ['POST'])]
-    public function sauvegardeHistorique(Request $request): JsonResponse
+    public function sauvegardeHistorique(): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/activity/sauvegarde");
 
@@ -260,7 +258,7 @@ class ApiActivityController extends AbstractController
 
         // On forme le tableau qui va être envoyé dans la vue
         // Le nombre de jour pour cette année
-        $result=$activityRepos->premiereDate($year);
+        $result = $activityRepos->premiereDate($year);
         $donneeTableau[$year]['day'] = static::calculDifferenceDate(new \DateTime($result['liste'][0]['date']), $dateActuelle);
 
         // Le nombre d'analyse pour cette année
@@ -279,7 +277,7 @@ class ApiActivityController extends AbstractController
 
         // Le temps max d'execution pour cette année
         $result=$activityRepos->tempsExecutionMax($year);
-        $donneeTableau[$year]['max_time']= static::formatDureeMax($result['liste']['max_time']);
+        $donneeTableau[$year]['max_time'] = static::formatDureeMax($result['liste']['max_time']);
 
         // La moyenne d'analyse par jour
         $donneeTableau[$year]['analyse'] = static::calculAnalyseMoyenne($donneeTableau[$year]['day'], $donneeTableau[$year]['nb_analyse']);
@@ -311,7 +309,6 @@ class ApiActivityController extends AbstractController
      * Récupération de la liste des projets.
      * http://{url}}/api/components/search_projects?ps=500
      *
-     * @param Client $client
      * @return JsonResponse
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)

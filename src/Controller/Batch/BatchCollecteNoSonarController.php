@@ -18,7 +18,7 @@ use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\NoSonar;
-use App\service\ClientService;
+use App\Service\ClientService;
 use App\Service\UrlBuilderService;
 
 /**

@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Activity;
 use App\Entity\ActivityHistorique;
-use App\service\ClientService;
+use App\Service\ClientService;
 
 /**
  * [Description ActivityController]

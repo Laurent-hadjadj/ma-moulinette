@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Controller\Batch;
 
 use App\Controller\Batch\BatchCollecteNoSonarController;
-use App\service\ClientService;
+use App\Service\ClientService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -21,7 +21,7 @@ class BatchCollecteNoSonarControllerTest extends TestCase
     /** @var EntityManagerInterface&MockObject */
     private MockObject $entityManager;
 
-    /** @var Client&MockObject */
+    /** @var ClientService&MockObject */
     private MockObject $client;
 
     /** @var ParameterBagInterface&MockObject */
@@ -45,7 +45,7 @@ class BatchCollecteNoSonarControllerTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
 
         // Création du mock pour Client
-        $this->client = $this->createMock(Client::class);
+        $this->client = $this->createMock(ClientService::class);
 
         // Création du mock pour ParameterBagInterface
         $this->parameterBag = $this->createMock(ParameterBagInterface::class);

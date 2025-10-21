@@ -27,7 +27,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Properties;
 use App\Entity\Profiles;
 use App\Entity\ProfilesHistorique;
-use App\service\ClientService;
+use App\Service\ClientService;
 use App\Service\UrlBuilderService;
 
 /**

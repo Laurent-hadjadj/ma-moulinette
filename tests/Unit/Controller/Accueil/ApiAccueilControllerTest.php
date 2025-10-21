@@ -123,14 +123,14 @@ class ApiAccueilControllerTest extends WebTestCase
         $client->loginUser($testUser);
 
         // Mock de la réponse pour l'erreur 400
-        $mockHttpClient = $this->createMock(\App\Service\Client::class);
+        $mockHttpClient = $this->createMock(\App\Service\ClientService::class);
         $mockHttpClient->method('httpSonarQube')->willReturn([
             'code' => 400,
             'erreur' => static::$http400,
         ]);
 
         // Remplacement du service Client dans le conteneur
-        static::getContainer()->set(\App\Service\Client::class, $mockHttpClient);
+        static::getContainer()->set(\App\Service\ClientService::class, $mockHttpClient);
 
         // Simuler une requête POST
         $client->request('POST', static::$apiStatus);
@@ -155,14 +155,14 @@ class ApiAccueilControllerTest extends WebTestCase
         $client->loginUser($testUser);
 
         // Mock de la réponse pour l'erreur 401
-        $mockHttpClient = $this->createMock(\App\Service\Client::class);
+        $mockHttpClient = $this->createMock(\App\Service\ClientService::class);
         $mockHttpClient->method('httpSonarQube')->willReturn([
             'code' => 401,
             'erreur' => static::$http401,
         ]);
 
         // Remplacement du service Client dans le conteneur
-        static::getContainer()->set(\App\Service\Client::class, $mockHttpClient);
+        static::getContainer()->set(\App\Service\ClientService::class, $mockHttpClient);
 
         // Simuler une requête POST
         $client->request('POST', static::$apiStatus);
@@ -187,14 +187,14 @@ class ApiAccueilControllerTest extends WebTestCase
         $client->loginUser($testUser);
 
         // Mock de la réponse pour l'erreur 404
-        $mockHttpClient = $this->createMock(\App\Service\Client::class);
+        $mockHttpClient = $this->createMock(\App\Service\ClientService::class);
         $mockHttpClient->method('httpSonarQube')->willReturn([
             'code' => 404,
             'erreur' => static::$http404,
         ]);
 
         // Remplacement du service Client dans le conteneur
-        static::getContainer()->set(\App\Service\Client::class, $mockHttpClient);
+        static::getContainer()->set(\App\Service\ClientService::class, $mockHttpClient);
 
         // Simuler une requête POST
         $client->request('POST', static::$apiStatus);
@@ -219,14 +219,14 @@ class ApiAccueilControllerTest extends WebTestCase
         $client->loginUser($testUser);
 
         // Mock de la réponse pour l'erreur 404
-        $mockHttpClient = $this->createMock(\App\Service\Client::class);
+        $mockHttpClient = $this->createMock(\App\Service\ClientService::class);
         $mockHttpClient->method('httpSonarQube')->willReturn([
             'code' => 500,
             'erreur' => static::$http500,
         ]);
 
         // Remplacement du service Client dans le conteneur
-        static::getContainer()->set(\App\Service\Client::class, $mockHttpClient);
+        static::getContainer()->set(\App\Service\ClientService::class, $mockHttpClient);
 
         // Simuler une requête POST
         $client->request('POST', static::$apiStatus);
@@ -251,14 +251,14 @@ class ApiAccueilControllerTest extends WebTestCase
         $client->loginUser($testUser);
 
         // Mock de la réponse pour l'erreur 404
-        $mockHttpClient = $this->createMock(\App\Service\Client::class);
+        $mockHttpClient = $this->createMock(\App\Service\ClientService::class);
         $mockHttpClient->method('httpSonarQube')->willReturn([
             'code' => 503,
             'erreur' => static::$http503,
         ]);
 
         // Remplacement du service Client dans le conteneur
-        static::getContainer()->set(\App\Service\Client::class, $mockHttpClient);
+        static::getContainer()->set(\App\Service\ClientService::class, $mockHttpClient);
 
         // Simuler une requête POST
         $client->request('POST', static::$apiStatus);
@@ -330,7 +330,7 @@ class ApiAccueilControllerTest extends WebTestCase
         static::getContainer()->set(ListeProjetRepository::class, $mockListeProjetRepository);
 
         // Mock du client HTTP pour simuler une réponse SonarQube valide
-        $mockHttpClient = $this->createMock(\App\Service\Client::class);
+        $mockHttpClient = $this->createMock(\App\Service\ClientService::class);
         $mockHttpClient->method('httpSonarQube')->willReturn([
             'code' => 200,
             'json' => [
@@ -342,7 +342,7 @@ class ApiAccueilControllerTest extends WebTestCase
                 ]
             ],
         ]);
-        static::getContainer()->set(\App\Service\Client::class, $mockHttpClient);
+        static::getContainer()->set(\App\Service\ClientService::class, $mockHttpClient);
 
         // Simuler une requête POST vers l'API
         $client->request('POST', static::$apiAccueilProjet);
@@ -408,14 +408,14 @@ class ApiAccueilControllerTest extends WebTestCase
         $client->loginUser($testUser);
 
         // Mock de la réponse pour l'erreur 400
-        $mockHttpClient = $this->createMock(\App\Service\Client::class);
+        $mockHttpClient = $this->createMock(\App\Service\ClientService::class);
         $mockHttpClient->method('httpSonarQube')->willReturn([
             'code' => 400,
             'erreur' => static::$http400,
         ]);
 
         // Remplacement du service Client dans le conteneur
-        static::getContainer()->set(\App\Service\Client::class, $mockHttpClient);
+        static::getContainer()->set(\App\Service\ClientService::class, $mockHttpClient);
 
         // Simuler une requête POST
         $client->request('POST', static::$apiAccueilProjet);
@@ -442,14 +442,14 @@ class ApiAccueilControllerTest extends WebTestCase
         $client->loginUser($testUser);
 
         // Mock de la réponse pour l'erreur 401
-        $mockHttpClient = $this->createMock(\App\Service\Client::class);
+        $mockHttpClient = $this->createMock(\App\Service\ClientService::class);
         $mockHttpClient->method('httpSonarQube')->willReturn([
             'code' => 401,
             'erreur' => static::$http401,
         ]);
 
         // Remplacement du service Client dans le conteneur
-        static::getContainer()->set(\App\Service\Client::class, $mockHttpClient);
+        static::getContainer()->set(\App\Service\ClientService::class, $mockHttpClient);
 
         // Simuler une requête POST
         $client->request('POST', static::$apiAccueilProjet);
@@ -476,14 +476,14 @@ class ApiAccueilControllerTest extends WebTestCase
         $client->loginUser($testUser);
 
         // Mock de la réponse pour l'erreur 404
-        $mockHttpClient = $this->createMock(\App\Service\Client::class);
+        $mockHttpClient = $this->createMock(\App\Service\ClientService::class);
         $mockHttpClient->method('httpSonarQube')->willReturn([
             'code' => 404,
             'erreur' => static::$http404,
         ]);
 
         // Remplacement du service Client dans le conteneur
-        static::getContainer()->set(\App\Service\Client::class, $mockHttpClient);
+        static::getContainer()->set(\App\Service\ClientService::class, $mockHttpClient);
 
         // Simuler une requête POST
         $client->request('POST', static::$apiAccueilProjet);
@@ -510,14 +510,14 @@ class ApiAccueilControllerTest extends WebTestCase
         $client->loginUser($testUser);
 
         // Mock de la réponse pour l'erreur 404
-        $mockHttpClient = $this->createMock(\App\Service\Client::class);
+        $mockHttpClient = $this->createMock(\App\Service\ClientService::class);
         $mockHttpClient->method('httpSonarQube')->willReturn([
             'code' => 500,
             'erreur' => static::$http500,
         ]);
 
         // Remplacement du service Client dans le conteneur
-        static::getContainer()->set(\App\Service\Client::class, $mockHttpClient);
+        static::getContainer()->set(\App\Service\ClientService::class, $mockHttpClient);
 
         // Simuler une requête POST
         $client->request('POST', static::$apiAccueilProjet);
@@ -544,14 +544,14 @@ class ApiAccueilControllerTest extends WebTestCase
         $client->loginUser($testUser);
 
         // Mock de la réponse pour l'erreur 404
-        $mockHttpClient = $this->createMock(\App\Service\Client::class);
+        $mockHttpClient = $this->createMock(\App\Service\ClientService::class);
         $mockHttpClient->method('httpSonarQube')->willReturn([
             'code' => 503,
             'erreur' => static::$http503,
         ]);
 
         // Remplacement du service Client dans le conteneur
-        static::getContainer()->set(\App\Service\Client::class, $mockHttpClient);
+        static::getContainer()->set(\App\Service\ClientService::class, $mockHttpClient);
 
         // Simuler une requête POST
         $client->request('POST', static::$apiAccueilProjet);
@@ -574,14 +574,14 @@ class ApiAccueilControllerTest extends WebTestCase
         $client->loginUser($testUser);
 
         // Mock de la réponse HTTP pour le service Client
-        $mockHttpClient = $this->createMock(\App\Service\Client::class);
+        $mockHttpClient = $this->createMock(\App\Service\ClientService::class);
         $mockHttpClient->method('httpSonarQube')->willReturn([
             'code' => 200,
             'json' => ['components' => []]
         ]);
 
         // Remplacement du service Client dans le conteneur
-        static::getContainer()->set(\App\Service\Client::class, $mockHttpClient);
+        static::getContainer()->set(\App\Service\ClientService::class, $mockHttpClient);
 
         // Simuler une requête POST vers l'API
         $client->request('POST', static::$apiAccueilProjet);
@@ -617,7 +617,7 @@ class ApiAccueilControllerTest extends WebTestCase
         static::getContainer()->set(ListeProjetRepository::class, $mockListeProjetRepository);
 
         // Mock du client HTTP pour simuler une réponse SonarQube valide
-        $mockHttpClient = $this->createMock(\App\Service\Client::class);
+        $mockHttpClient = $this->createMock(\App\Service\ClientService::class);
         $mockHttpClient->method('httpSonarQube')->willReturn([
             'code' => 200,
             'json' => [
@@ -629,7 +629,7 @@ class ApiAccueilControllerTest extends WebTestCase
                 ]
             ],
         ]);
-        static::getContainer()->set(\App\Service\Client::class, $mockHttpClient);
+        static::getContainer()->set(\App\Service\ClientService::class, $mockHttpClient);
 
         // Simuler une requête POST vers l'API
         $client->request('POST', static::$apiAccueilProjet);
@@ -669,7 +669,7 @@ class ApiAccueilControllerTest extends WebTestCase
         static::getContainer()->set(PropertiesRepository::class, $mockPropertiesRepository);
 
         // Mock de la réponse HTTP pour le client SonarQube
-        $mockHttpClient = $this->createMock(\App\Service\Client::class);
+        $mockHttpClient = $this->createMock(\App\Service\ClientService::class);
         $mockHttpClient->method('httpSonarQube')->willReturn([
             'code' => 200,
             'json' => [
@@ -680,7 +680,7 @@ class ApiAccueilControllerTest extends WebTestCase
                     'visibility' => 'private']
                 ]
             ]]);
-        static::getContainer()->set(\App\Service\Client::class, $mockHttpClient);
+        static::getContainer()->set(\App\Service\ClientService::class, $mockHttpClient);
 
         // Simuler une requête POST vers l'API
         $client->request('POST', static::$apiAccueilProjet);

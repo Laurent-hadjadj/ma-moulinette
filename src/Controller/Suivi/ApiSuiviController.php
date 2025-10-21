@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Doctrine\ORM\EntityManagerInterface;
 
-use App\service\ClientService;
+use App\Service\ClientService;
 use App\Entity\Historique;
 use App\Entity\Utilisateur;
 use App\Entity\InformationProjet;
@@ -22,25 +22,16 @@ use App\Entity\InformationProjet;
  */
 class ApiSuiviController extends AbstractController
 {
-
-    public static $europeParis = "Europe/Paris";
-    public static $dateFormatTimezone = "Y-m-d\TH:i:sO";
-    public static $sonarUrl = "sonar.url";
-    public static $erreur400 = "La requête est incorrecte (Erreur 400).";
-    public static $erreur403 = "Vous devez avoir le rôle GESTIONNAIRE pour réaliser cette action (Erreur 403).";
-    public static $erreur404 = "Vous devez être rattaché à une équipe (Erreur 404).";
-    public static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. ".
-    "Vérifiez le nom du tag utilisé dans SonarQube (Erreur 406).";
-    public static $erreur500 = "L'accès au serveur SonarQube n'est pas possible (Erreur 500).";
-
-    private $em;
-    private $client;
-    private $security;
+    private static $europeParis = "Europe/Paris";
+    private static $sonarUrl = "sonar.url";
+    private static $erreur400 = "La requête est incorrecte (Erreur 400).";
+    private static $erreur403 = "Vous devez avoir le rôle GESTIONNAIRE pour réaliser cette action (Erreur 403).";
+    private static $erreur500 = "L'accès au serveur SonarQube n'est pas possible (Erreur 500).";
 
     public function __construct(
-        EntityManagerInterface $em,
-        Client $client,
-        Security $security
+        private EntityManagerInterface $em,
+        private ClientService $client,
+        private Security $security
     ) {
     }
 

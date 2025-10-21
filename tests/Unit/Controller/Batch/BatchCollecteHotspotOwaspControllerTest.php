@@ -9,7 +9,7 @@ use App\Repository\HotspotOwaspRepository;
 use App\Repository\InformationProjetRepository;
 use App\Entity\HotspotOwasp;
 use App\Entity\InformationProjet;
-use App\service\ClientService;
+use App\Service\ClientService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Psr\Container\ContainerInterface;
@@ -34,7 +34,7 @@ class BatchCollecteHotspotOwaspControllerTest extends TestCase
     protected function setUp(): void
     {
         $this->em = $this->createMock(EntityManagerInterface::class);
-        $this->client = $this->createMock(Client::class);
+        $this->client = $this->createMock(ClientService::class);
 
         // Mock ParameterBagInterface
         $this->parameterBag = $this->createMock(ParameterBagInterface::class);

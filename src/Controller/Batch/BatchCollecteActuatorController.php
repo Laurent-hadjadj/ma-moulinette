@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
-use App\service\ClientService;
+use App\Service\ClientService;
 use App\Entity\Actuator;
 use App\Entity\ActuatorInfo;
 use App\Service\UrlBuilderService;

@@ -25,7 +25,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\ListeProjet;
 use App\Entity\Properties;
-use App\service\ClientService;
+use App\Service\ClientService;
 use App\Service\UrlBuilderService;
 
 /**

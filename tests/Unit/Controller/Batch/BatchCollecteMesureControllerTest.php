@@ -6,7 +6,7 @@ namespace App\Tests\Unit\Controller\Batch;
 
 use App\Controller\Batch\BatchCollecteMesureController;
 use App\Repository\MesuresRepository;
-use App\service\ClientService;
+use App\Service\ClientService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -32,7 +32,7 @@ class BatchCollecteMesureControllerTest extends TestCase
         $this->em = $this->createMock(EntityManagerInterface::class);
 
         // Mock Client
-        $this->client = $this->createMock(Client::class);
+        $this->client = $this->createMock(ClientService::class);
 
         // Mock ParameterBagInterface
         $this->parameterBag = $this->createMock(ParameterBagInterface::class);

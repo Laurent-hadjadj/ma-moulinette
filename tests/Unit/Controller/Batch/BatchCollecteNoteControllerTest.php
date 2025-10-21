@@ -6,7 +6,7 @@ namespace App\Tests\Unit\Controller\Batch;
 
 use App\Controller\Batch\BatchCollecteNoteController;
 use Doctrine\ORM\EntityManagerInterface;
-use App\service\ClientService;
+use App\Service\ClientService;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use App\Repository\NotesRepository;
@@ -32,7 +32,7 @@ class BatchCollecteNoteControllerTest extends TestCase
     {
         // Mocks setup
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
-        $this->client = $this->createMock(Client::class);
+        $this->client = $this->createMock(ClientService::class);
         $this->parameterBag = $this->createMock(ParameterBagInterface::class);
         $this->notesRepository = $this->createMock(NotesRepository::class);
         $this->hotspotsRepository = $this->createMock(HotspotsRepository::class);

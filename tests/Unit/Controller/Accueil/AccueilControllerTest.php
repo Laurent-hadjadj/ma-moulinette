@@ -19,7 +19,7 @@ use App\Repository\PropertiesRepository;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Properties;
-use App\service\ClientService;
+use App\Service\ClientService;
 use Symfony\Bundle\SecurityBundle\Security;
 
 use Doctrine\Common\DataFixtures\Loader;
@@ -95,12 +95,12 @@ class AccueilControllerTest extends WebTestCase
         $manager = $container->get('doctrine')->getManager();
         $this->loadFixturesManuellement($manager);
 
-        $mockHttpClient = $this->createMock(\App\Service\Client::class);
+        $mockHttpClient = $this->createMock(\App\Service\ClientService::class);
         $mockHttpClient->method('httpSonarQube')->willReturn([
             'code' => 503,
             'erreur' => static::$http503a
         ]);
-        static::getContainer()->set(\App\Service\Client::class, $mockHttpClient);
+        static::getContainer()->set(\App\Service\ClientService::class, $mockHttpClient);
 
         // Utilisateur connecté (comme dans ton autre test)
         $userRepo = $container->get(\App\Repository\UtilisateurRepository::class);
@@ -123,7 +123,7 @@ class AccueilControllerTest extends WebTestCase
         $manager = $container->get('doctrine')->getManager();
         $this->loadFixturesManuellement($manager);
 
-        $mockHttpClient = $this->createMock(\App\Service\Client::class);
+        $mockHttpClient = $this->createMock(\App\Service\ClientService::class);
         $mockHttpClient->method('httpSonarQube')
             ->willReturnOnConsecutiveCalls(
             // Premier appel - code 200
@@ -138,7 +138,7 @@ class AccueilControllerTest extends WebTestCase
             ]
         );
 
-        static::getContainer()->set(\App\Service\Client::class, $mockHttpClient);
+        static::getContainer()->set(\App\Service\ClientService::class, $mockHttpClient);
 
         // Utilisateur connecté (comme dans ton autre test)
         $userRepo = $container->get(\App\Repository\UtilisateurRepository::class);
@@ -160,7 +160,7 @@ class AccueilControllerTest extends WebTestCase
         $manager = $container->get('doctrine')->getManager();
         $this->loadFixturesManuellement($manager);
 
-        $mockHttpClient = $this->createMock(\App\Service\Client::class);
+        $mockHttpClient = $this->createMock(\App\Service\ClientService::class);
         $mockHttpClient->method('httpSonarQube')
         ->willReturn([
             'code' => 200,
@@ -174,7 +174,7 @@ class AccueilControllerTest extends WebTestCase
             ]
         ]);
 
-        static::getContainer()->set(\App\Service\Client::class, $mockHttpClient);
+        static::getContainer()->set(\App\Service\ClientService::class, $mockHttpClient);
 
         // Utilisateur connecté (comme dans ton autre test)
         $userRepo = $container->get(\App\Repository\UtilisateurRepository::class);
@@ -207,7 +207,7 @@ class AccueilControllerTest extends WebTestCase
         $manager = $container->get('doctrine')->getManager();
         $this->loadFixturesManuellement($manager);
 
-        $mockHttpClient = $this->createMock(\App\Service\Client::class);
+        $mockHttpClient = $this->createMock(\App\Service\ClientService::class);
         $mockHttpClient->method('httpSonarQube')
             ->willReturnOnConsecutiveCalls(
             // Premier appel - count = 1 projet
@@ -253,7 +253,7 @@ class AccueilControllerTest extends WebTestCase
             ]
         );
 
-        static::getContainer()->set(\App\Service\Client::class, $mockHttpClient);
+        static::getContainer()->set(\App\Service\ClientService::class, $mockHttpClient);
 
         // Utilisateur connecté (comme dans ton autre test)
         $userRepo = $container->get(\App\Repository\UtilisateurRepository::class);
@@ -281,7 +281,7 @@ class AccueilControllerTest extends WebTestCase
         $this->loadFixturesManuellement($manager);
 
         $params = $container->get(ParameterBagInterface::class);
-        $httpClient = $container->get(Client::class);
+        $httpClient = $container->get(ClientService::class);
 
         // Mock du ListeProjetRepository
         $mockPropertiesRepository = $this->createMock(PropertiesRepository::class);
@@ -326,7 +326,7 @@ class AccueilControllerTest extends WebTestCase
         $manager = $container->get('doctrine')->getManager();
         $this->loadFixturesDiff($manager);
 
-        $mockHttpClient = $this->createMock(\App\Service\Client::class);
+        $mockHttpClient = $this->createMock(\App\Service\ClientService::class);
         $mockHttpClient->method('httpSonarQube')
             ->willReturnOnConsecutiveCalls(
             // Premier appel - code 200
@@ -365,7 +365,7 @@ class AccueilControllerTest extends WebTestCase
             ]
         );
 
-        static::getContainer()->set(\App\Service\Client::class, $mockHttpClient);
+        static::getContainer()->set(\App\Service\ClientService::class, $mockHttpClient);
         // Utilisateur connecté (comme dans ton autre test)
         $userRepo = $container->get(\App\Repository\UtilisateurRepository::class);
         $testUser = $userRepo->findOneByCourriel(static::$aurelie);

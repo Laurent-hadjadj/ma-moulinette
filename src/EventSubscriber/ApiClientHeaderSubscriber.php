@@ -40,6 +40,15 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
         $this->internalHeaderValue = $internalHeaderValue;
     }
 
+    /**
+     * [Description for getSubscribedEvents]
+     *
+     * @return array
+     *
+     * Created at: 21/10/2025 09:30:50 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public static function getSubscribedEvents(): array
     {
         return [
@@ -72,9 +81,9 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
         $internalHeader = $request->headers->get($this->internalHeaderName);
 
         $isAllowed =
-          $this->isAllowedOrigin($origin, $request) ||
-          $this->isAllowedOrigin($referer, $request) ||
-          $internalHeader === $this->internalHeaderValue;
+            $this->isAllowedOrigin($origin, $request) ||
+            $this->isAllowedOrigin($referer, $request) ||
+            $internalHeader === $this->internalHeaderValue;
 
         if ($isAllowed) {
             // si le header X-App-Client est vide, on l’ajoute
@@ -99,37 +108,37 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
         }
     }
 
-  /**
-   * [Description for isAllowedOrigin]
-   *
-   * @param string $url
-   * @param Request|null $request
-   *
-   * @return bool
-   *
-   * Created at: 20/10/2025 22:46:06 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  private function isAllowedOrigin(string $url, ?Request $request = null): bool
-  {
-      // Si l'URL contient un des allowed origins → OK
-      foreach ($this->allowedOrigins as $allowed) {
-          if (str_contains($url, $allowed)) {
-              return true;
-          }
-      }
+    /**
+     * [Description for isAllowedOrigin]
+     *
+     * @param string $url
+     * @param Request|null $request
+     *
+     * @return bool
+     *
+     * Created at: 20/10/2025 22:46:06 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function isAllowedOrigin(string $url, ?Request $request = null): bool
+    {
+        // Si l'URL contient un des allowed origins → OK
+        foreach ($this->allowedOrigins as $allowed) {
+            if (str_contains($url, $allowed)) {
+                return true;
+            }
+        }
 
-      // ✅ Fallback : si pas d'Origin/Referer, on autorise si le host Symfony correspond à un allowed origin
-      if ($request) {
-          $host = $request->getHost();
-          foreach ($this->allowedOrigins as $allowed) {
-              if (str_contains($host, $allowed)) {
-                  return true;
-              }
-          }
-      }
+        // ✅ Fallback : si pas d'Origin/Referer, on autorise si le host Symfony correspond à un allowed origin
+        if ($request) {
+            $host = $request->getHost();
+            foreach ($this->allowedOrigins as $allowed) {
+                if (str_contains($host, $allowed)) {
+                    return true;
+                }
+            }
+        }
 
-      return false;
-  }
+        return false;
+    }
 }

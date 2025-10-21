@@ -6,7 +6,7 @@ namespace App\Tests\Unit\Controller\Batch;
 
 use App\Controller\Batch\BatchCollecteLoggerController;
 use PHPUnit\Framework\MockObject\MockObject;
-use App\service\ClientService;
+use App\Service\ClientService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -21,7 +21,7 @@ class BatchCollecteLoggerControllerTest extends TestCase
     /** @var EntityManagerInterface&MockObject */
     private MockObject $entityManager;
 
-    /** @var Client&MockObject */
+    /** @var ClientService&MockObject */
     private MockObject $client;
 
     /** @var ParameterBagInterface&MockObject */
@@ -46,7 +46,7 @@ class BatchCollecteLoggerControllerTest extends TestCase
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
 
         // Création du mock pour Client
-        $this->client = $this->createMock(Client::class);
+        $this->client = $this->createMock(ClientService::class);
 
         // Création du mock pour ParameterBagInterface
         $this->parameterBag = $this->createMock(ParameterBagInterface::class);

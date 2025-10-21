@@ -19,7 +19,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\Notes;
 use App\Entity\Hotspots;
-use App\service\ClientService;
+use App\Service\ClientService;
 use App\Service\UrlBuilderService;
 
 /**

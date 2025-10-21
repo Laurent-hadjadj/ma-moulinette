@@ -9,7 +9,7 @@ use App\Controller\Batch\BatchCollecteAnomalieDetailController;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\AnomalieDetailsRepository;
 use App\Service\ExtractName;
-use App\service\ClientService;
+use App\Service\ClientService;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -19,7 +19,7 @@ class BatchCollecteAnomalieDetailControllerTest extends TestCase
     /** @var EntityManagerInterface&MockObject */
     private MockObject $entityManager;
 
-    /** @var Client&MockObject */
+    /** @var ClientService&MockObject */
     private MockObject $client;
 
     /** @var ParameterBagInterface&MockObject */
@@ -47,7 +47,7 @@ class BatchCollecteAnomalieDetailControllerTest extends TestCase
 
         // Créez de nouveaux mocks pour chaque test
         $this->entityManager = $this->createMock(EntityManagerInterface::class);
-        $this->client = $this->createMock(Client::class);
+        $this->client = $this->createMock(ClientService::class);
         $this->parameterBag = $this->createMock(ParameterBagInterface::class);
         $this->serviceExtractName = $this->createMock(ExtractName::class);
         $this->anomalieDetailsRepository = $this->createMock(AnomalieDetailsRepository::class);

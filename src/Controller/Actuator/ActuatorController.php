@@ -24,7 +24,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Actuator;
 use App\Entity\ActuatorInfo;
 use App\Form\ActuatorFormType;
-use App\service\ClientService;
+use App\Service\ClientService;
 
 /**
  * [Description ActuatorController]

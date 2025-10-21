@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Controller\Batch;
 
 use App\Controller\Batch\BatchCollecteInformationProjetController;
-use App\service\ClientService;
+use App\Service\ClientService;
 use App\Service\IsValideMavenKey;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -31,7 +31,7 @@ class BatchCollecteInformationProjetControllerTest extends TestCase
     protected function setUp(): void
     {
         $this->em = $this->createMock(EntityManagerInterface::class);
-        $this->client = $this->createMock(Client::class);
+        $this->client = $this->createMock(ClientService::class);
         $this->isValidMavenKey = $this->createMock(IsValideMavenKey::class);
 
         // Mock ParameterBagInterface

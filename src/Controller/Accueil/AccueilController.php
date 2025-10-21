@@ -29,7 +29,7 @@ use App\Entity\Profiles;
 use App\Entity\Properties;
 use App\Entity\Historique;
 use App\Entity\MaMoulinette;
-use App\service\ClientService;
+use App\Service\ClientService;
 use App\Service\UrlBuilderService;
 
 /**

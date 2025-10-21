@@ -21,7 +21,7 @@ use Psr\Log\LoggerInterface;
 use App\Message\ActivityMessage;
 use App\Message\ProcessTaskMessage;
 use App\Service\ActivityReportService;
-use App\service\ClientService;
+use App\Service\ClientService;
 
 #[AsMessageHandler]
 /**
