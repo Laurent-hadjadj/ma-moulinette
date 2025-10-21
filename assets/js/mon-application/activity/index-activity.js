@@ -69,11 +69,16 @@ const refreshActivity=async function() {
               url: `${serveur()}/api/activity/sauvegarde`,
               type: 'POST',
               dataType: 'json',
-              contentType
+              contentType,
+              headers: {
+                'X-API-Custom-403': 'true',
+                'X-Internal-Front': 'front-app'
+              },
           };
 
         /** On appel l'API */
         const t = await $.ajax(options);
+
         // 📌 Vérification des erreurs
         if (t.code === http_403) {
           showMessage('warning', `<strong>[ACTIVITÉ]</strong> - Vous n'êtes pas autorisé à effectuer cette opération (Erreur 403).`);
@@ -245,7 +250,11 @@ const dessineGraph = async function(type, source) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(dataRefresh),
-    contentType
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
   };
 
   const t = await $.ajax(optionsRefresh);

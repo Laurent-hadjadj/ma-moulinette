@@ -175,8 +175,16 @@ const traitementManuel = async function(id, titrePortefeuille, portefeuille){
   /** On lance le processus */
   const data = { 'titre_portefeuille': titrePortefeuille, portefeuille };
   const options = {
-    url: `${serveur()}/traitement/manuel`, type: 'POST',
-    dataType: 'json', data: JSON.stringify(data), contentType};
+    url: `${serveur()}/traitement/manuel`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
 
   const t = await $.ajax(options);
   // 📌 Vérification des erreurs
@@ -215,8 +223,16 @@ const traitementManuel = async function(id, titrePortefeuille, portefeuille){
 const lireJournal = async function(portefeuille, type){
   const data = { portefeuille, type };
   const options = {
-    url: `${serveur()}/traitement/journal/lire`, type: 'POST',
-    dataType: 'json', data: JSON.stringify(data), contentType};
+    url: `${serveur()}/traitement/journal/lire`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
 
   const t = await  $.ajax(options);
   // 📌 Vérification des erreurs
@@ -288,8 +304,17 @@ const traitementAuto = async function(){
   const data = { token  };
 
   const options = {
-  url: `${serveur()}/traitement/auto`, type: 'POST',
-  dataType: 'json', data: JSON.stringify(data), contentType};
+  url: `${serveur()}/traitement/auto`,
+  type: 'POST',
+  dataType: 'json',
+  data: JSON.stringify(data),
+  contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
+
   await $.ajax(options);
 };
 

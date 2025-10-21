@@ -50,8 +50,16 @@ const modifierStatut = async function(statut, categorie) {
   /** on récupère les préférences */
   const data={ statut, categorie }
   const options = {
-    url: `${serveur()}/api/preference/statut`, type: 'POST',
-          dataType: 'json', data:  JSON.stringify(data), contentType };
+    url: `${serveur()}/api/preference/statut`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
   return $.ajax(options);
 }
 
@@ -148,9 +156,17 @@ const favori=async function(){
     const mavenKey = $(`#mavenkey-favori-${ id[2] }`).text();
     const data_1 = { mavenKey };
     const options_1 = {
-      url: `${ serveur() }/api/preference/favori/delete`, type: 'POST',
-      dataType: 'json', data: JSON.stringify(data_1), contentType
+      url: `${ serveur() }/api/preference/favori/delete`,
+      type: 'POST',
+      dataType: 'json',
+      data: JSON.stringify(data_1),
+      contentType,
+      headers: {
+        'X-API-Custom-403': 'true',
+        'X-Internal-Front': 'front-app'
+      },
     };
+
     $.ajax(options_1).then(r_1 => { console.log(r_1); });
   });
 }
@@ -237,8 +253,15 @@ const version=async function(){
     const data_1 = { index, mavenKey, version };
     const options_1 = {
       /** On appel le service de suppression de la version favorite */
-      url: `${ serveur() }/api/preference/version/delete`, type: 'POST',
-      dataType: 'json', data: JSON.stringify(data_1), contentType
+      url: `${ serveur() }/api/preference/version/delete`,
+      type: 'POST',
+      dataType: 'json',
+      data: JSON.stringify(data_1),
+      contentType,
+      headers: {
+        'X-API-Custom-403': 'true',
+        'X-Internal-Front': 'front-app'
+      },
     };
     console.log(options_1);
     //$.ajax(options_1).then(r_1 => { console.log(r_1); });

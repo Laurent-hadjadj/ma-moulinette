@@ -210,7 +210,7 @@ export const remplissage = async function(maven_key) {
       dataType: 'json',
       data: JSON.stringify(data),
       contentType,
-        headers: {
+      headers: {
         'X-API-Custom-403': 'true',
         'X-Internal-Front': 'front-app'
       },
@@ -257,7 +257,7 @@ export const remplissage = async function(maven_key) {
     dataType: 'json',
     data: JSON.stringify(data),
     contentType,
-      headers: {
+    headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
     },
@@ -347,7 +347,7 @@ export const remplissage = async function(maven_key) {
     dataType: 'json',
     data: JSON.stringify(data),
     contentType,
-      headers: {
+    headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
     },
@@ -409,7 +409,11 @@ export const remplissage = async function(maven_key) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
   };
 
   try {
@@ -533,7 +537,11 @@ export const remplissage = async function(maven_key) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
   };
 
     try {
@@ -778,7 +786,7 @@ export const remplissage = async function(maven_key) {
       dataType: 'json',
       data: JSON.stringify(data),
       contentType,
-        headers: {
+      headers: {
         'X-API-Custom-403': 'true',
         'X-Internal-Front': 'front-app'
       },
@@ -840,7 +848,7 @@ export const remplissage = async function(maven_key) {
     dataType: 'json',
     data: JSON.stringify(data),
     contentType,
-      headers: {
+    headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
     },
@@ -950,7 +958,7 @@ export const afficheHotspotDetails = async function (maven_key){
     dataType: 'json',
     data: JSON.stringify(data),
     contentType,
-      headers: {
+    headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
     },

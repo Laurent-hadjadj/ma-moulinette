@@ -81,9 +81,18 @@ const selectProjet=function() {
   }
 
   const options = {
-    url: `${serveur()}/api/filtre/projet`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType };
-    return $.ajax(options)
+    url: `${serveur()}/api/filtre/projet`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
+
+  return $.ajax(options)
     .then(function (r) {
       console.log(r);
       if (r['liste'].length != 0)

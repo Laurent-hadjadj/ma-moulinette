@@ -173,11 +173,19 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
     return;
   }
 
-  const data={maven_key, referential_owasp};
+  const data = { maven_key, referential_owasp };
 
   const options = {
-    url: `${serveur()}/api/peinture/owasp/liste`, type: 'POST',
-    dataType: 'json', data: JSON.stringify(data), contentType };
+    url: `${serveur()}/api/peinture/owasp/liste`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
 
   const r = await $.ajax(options);
   if (r.code !== http_200) {
@@ -476,8 +484,16 @@ const remplissageHotspotInfo = async function(maven_key, referential_owasp) {
 
   const data = { maven_key, referential_owasp };
   const options = {
-    url: `${serveur()}/api/peinture/owasp/hotspot/info`, type: 'POST',
-    dataType: 'json', data: JSON.stringify(data), contentType };
+    url: `${serveur()}/api/peinture/owasp/hotspot/info`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+      headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
 
   const r = await $.ajax(options);
   if (r.code===http_400) {
@@ -555,8 +571,16 @@ const remplissageHotspotListe = async function(maven_key, referential_owasp) {
    */
     const data = { maven_key, referential_owasp };
     const options = {
-      url: `${serveur()}/api/peinture/owasp/hotspot/liste`, type: 'POST',
-            dataType: 'json', data: JSON.stringify(data), contentType };
+      url: `${serveur()}/api/peinture/owasp/hotspot/liste`,
+      type: 'POST',
+      dataType: 'json',
+      data: JSON.stringify(data),
+      contentType,
+      headers: {
+        'X-API-Custom-403': 'true',
+        'X-Internal-Front': 'front-app'
+      },
+    };
 
     const r = await $.ajax(options);
     if (r.code===http_400) {
@@ -759,10 +783,18 @@ const remplissageHotspotDetails = async function(maven_key, referential_owasp) {
     return;
   }
 
-  const data={maven_key, referential_owasp };
+  const data = { maven_key, referential_owasp };
   const options = {
-    url: `${serveur()}/api/peinture/owasp/hotspot/details`, type: 'POST',
-    dataType: 'json', data: JSON.stringify(data), contentType };
+    url: `${serveur()}/api/peinture/owasp/hotspot/details`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
 
   const r =await  $.ajax(options)
   if (r.code === http_400) {
@@ -913,10 +945,18 @@ const remplissageDetailsHotspotOwasp = async function(maven_key, menace, titre) 
     return;
   }
 
-  const data={ maven_key, menace };
+  const data = { maven_key, menace };
   const options = {
-    url: `${serveur()}/api/peinture/owasp/hotspot/severity`, type: 'POST',
-          dataType: 'json', data: JSON.stringify(data), contentType };
+    url: `${serveur()}/api/peinture/owasp/hotspot/severity`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
 
   const r = await $.ajax(options);
   if (r.code===http_400) {

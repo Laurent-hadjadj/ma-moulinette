@@ -217,8 +217,16 @@ dessineMoiUnMouton(
 const selectVersion=async function(mavenKey) {
   const data={ maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/liste/v2.0/version`, type: 'POST',
-    dataType: 'json', data: JSON.stringify(data), contentType };
+    url: `${serveur()}/api/liste/v2.0/version`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
 
   const r = await $.ajax(options);
   // 📌 Vérification des erreurs
@@ -298,10 +306,18 @@ $('select[name="version"]').on('change', function () {
   */
   const data = { maven_key: $('#key-maven').text().trim(), date:d2[0] };
   const options = {
-    url: `${serveur()}/api/get/version`, type: 'POST',
-    dataType: 'json', data: JSON.stringify(data), contentType };
+    url: `${serveur()}/api/get/version`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
 
-    $.ajax(options).then(t => {
+  $.ajax(options).then(t => {
     // 📌 Vérification des erreurs
       /** On récupère le message
      * Si 404 --> le projet n'existe plus
@@ -727,8 +743,16 @@ $('.js-modifier-analyse').on('click', function () {
   const data = { maven_key: $('#js-nom').data('maven') };
 
   const options = {
-    url: `${serveur()}/api/suivi/version/liste`, type: 'POST',
-    dataType: 'json', data: JSON.stringify(data), contentType };
+    url: `${serveur()}/api/suivi/version/liste`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
 
   $.ajax(options).then(t => {
     // 📌 Vérification des erreurs
