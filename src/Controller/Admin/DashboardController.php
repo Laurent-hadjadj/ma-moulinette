@@ -42,8 +42,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
 class DashboardController extends AbstractDashboardController
 {
-    public static $sonarUrl = "sonar.url";
-    public static $removeReturnLine = "/\s+/u";
+    private static $sonarUrl = "sonar.url";
 
     /**
      * [Description for __construct]
@@ -104,6 +103,7 @@ class DashboardController extends AbstractDashboardController
         $result = $this->em->http($url);
         return new JsonResponse($result, Response::HTTP_OK);
     }
+
     /**
      * [Description for index]
      *
@@ -351,9 +351,12 @@ class DashboardController extends AbstractDashboardController
             throw new \LogicException('Mauvais utilisateur !!!');
         }
 
+        $url = '/assets'.$utilisateur?->getAvatarUrl() ?? '/assets/avatar/personne.png';
+
         return parent::configureUserMenu($utilisateur)
-            ->setAvatarUrl($utilisateur->getAvatarUrl());
+            ->setAvatarUrl($url);
     }
+
 
     public function configureActions(): Actions
     {
