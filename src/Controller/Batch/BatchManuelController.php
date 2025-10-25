@@ -31,10 +31,7 @@ use App\Entity\BatchTraitement;
  */
 class BatchManuelController extends AbstractController
 {
-    private static $request = "requête : ";
-    private static $titreJS = "<strong>[TRAITEMENT]</strong> ";
     private static $erreur400 = "La requête est incorrecte (Erreur 400).";
-    private static $erreur404 = "L'appel à l'API n'a pas abouti (Erreur 404).";
     private static $noMessage = 'Aucun message remonté.';
     private static $noError = 'Aucune erreur remontée.';
 
@@ -53,26 +50,37 @@ class BatchManuelController extends AbstractController
      * @param string $portefeuille
      * @param string $type
      *
-     * @return response
+     * @return JsonResponse
      *
      * Created at: 05/03/2023, 01:50:53 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/traitement/journal/lire', name: 'traitement_journal_lire', methods: ['POST'])]
-    public function lireJournal(Request $request): response
+    public function lireJournal(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /traitement/journal/lire");
+
+        $user = $this->security->getUser();
+
         /** On récupère le job et le type (manuel ou automatique) */
         $data = json_decode($request->getContent());
-        if ($data === null || !property_exists($data, 'portefeuille') || !property_exists($data, 'type')) {
+        if ($data === null ||
+            !property_exists($data, 'portefeuille') ||
+            !property_exists($data, 'type')) {
+            $this->logger->error("[Favori] ❌ Requête invalide : clé 'portefeuille', 'type' manquante ou JSON mal formé.", [
+                'utilisateur' => $user,
+                'payload' => $data
+            ]);
+
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$titreJS . static::$erreur400
+                'message' => static::$erreur400
             ], Response::HTTP_OK);
         }
 
-        //$journal=$this->logger->downloadContent($data->portefeuille, $data->type);
+        //$journal = $this->logger->downloadContent($data->portefeuille, $data->type);
         return new JsonResponse([
             'code' => 200,
             'recherche' => "journal['recherche']",
@@ -80,21 +88,38 @@ class BatchManuelController extends AbstractController
         ], Response::HTTP_OK);
     }
 
+    /**
+     * [Description for effaceJournal]
+     *
+     * @param Request $request
+     *
+     * @return response
+     *
+     * Created at: 23/10/2025 13:43:52 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     #[Route('/traitement/journal/efface', name: 'journal_efface', methods: ['DELETE'])]
-    public function effaceJournal(Request $request): response
+    public function effaceJournal(Request $request): JsonResponse
     {
-        /** On créé on objet de response HTTP */
-        $response = new JsonResponse();
+        $this->logger->info("[API] 📥 Requête reçue sur /traitement/journal/efface");
+
+        $user = $this->security->getUser();
 
         /** On récupère le job et le type (manuel ou automatique) */
         $data = json_decode($request->getContent());
         if ($data === null ||
                 !property_exists($data, 'portefeuille') ||
                 !property_exists($data, 'type')) {
-            return $response->setData([
+            $this->logger->error("[Triatement-Manuel] ❌ Requête invalide : clé 'portefeuille', 'type' manquante ou JSON mal formé.", [
+                'utilisateur' => $user,
+                'payload' => $data
+            ]);
+
+            return new jsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$titreJS . static::$erreur400
+                'message' => static::$erreur400
             ], Response::HTTP_OK);
         }
 
@@ -132,8 +157,8 @@ class BatchManuelController extends AbstractController
         $listeProjets = $batchTraitementRepos->selectBatchTraitement($map);
 
         //debug : dd($portefeuille, $listeProjets, $map);
-        if ($listeProjets['code']!=200) {
-            $this->logger->error('[Batch Manuel] ❌ Échec de la requête selectBatchTraitement', [
+        if ($listeProjets['code'] !== 200) {
+            $this->logger->error('[Traitement-Manuel] ❌ Échec de la requête selectBatchTraitement', [
                 'code' => $listeProjets['code'],
                 'message' => $listeProjets['message'] ?? static::$noMessage,
                 'erreur' => $listeProjets['erreur'] ?? static::$noError,
@@ -141,7 +166,9 @@ class BatchManuelController extends AbstractController
 
             return [
                 'code' => $listeProjets['code'],
-                static::$request=>'selectBatchTraitement'
+                'type' => 'alert',
+                'message' => "Une erreur est survenue lors de la récupration des projets du portefeuille ({$listeProjets['code']}).",
+                'erreur' => $listeProjets['erreur']
             ];
         }
 
@@ -158,14 +185,15 @@ class BatchManuelController extends AbstractController
             return [
                 'code' => 404,
                 'type' => 'warning',
-                'message' =>  static::$titreJS . 'La liste des traitements ne contient pas le portefeuille !'
+                'message' => 'La liste des traitements ne contient pas le portefeuille (Erreur 404)',
+                'erreur' => $listeProjets['erreur'] ?? null
             ];
         }
 
         /** On récupère le portefeuille de projets */
         $result = $portefeuilleRepos->selectPortefeuille($map);
 
-        if ($result['code'] != 200) {
+        if ($result['code'] !== 200) {
             $this->logger->error('[Batch Manuel] ❌ Échec de la requête selectPortefeuille', [
                 'code' => $listeProjets['code'],
                 'message' => $listeProjets['message'] ?? static::$noMessage,
@@ -176,7 +204,8 @@ class BatchManuelController extends AbstractController
             return [
                 'code' => $result['code'],
                 'type' => 'alert',
-                'message' => static::$titreJS . "Le portefeuille de projet n'est pas accessible (Erreur {$result['code']})."
+                'message' => "Le portefeuille de projet n'est pas accessible (Erreur {$result['code']}).",
+                'erreur' =>  $listeProjets['erreur'] ?? null
 
             ];
         }
@@ -192,7 +221,8 @@ class BatchManuelController extends AbstractController
             return [
                 'code' => 404,
                 'type' => 'warning',
-                'message' => static::$titreJS . 'Votre portefeuille ne contient pas ce projet !'
+                'message' => "Votre portefeuille ne contient pas ce projet (Erreur {$result['code']}).",
+                'erreur' => $listeProjets['erreur'] ?? static::$noError
             ];
         }
 
@@ -202,7 +232,8 @@ class BatchManuelController extends AbstractController
         }
         return [
             'code' => 200,
-            'liste' => $liste];
+            'liste' => $liste
+        ];
     }
 
     /**
@@ -211,16 +242,21 @@ class BatchManuelController extends AbstractController
      *
      * @param Request $request
      *
-     * @return Response
+     * @return JsonResponse
      *
      * Created at: 01/03/2023, 09:21:45 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/traitement/manuel', name: 'traitement_manuel', methods: ['POST'])]
-    public function traitementManuel(Request $request): Response
+    public function traitementManuel(Request $request): JsonResponse
     {
-        $this->denyAccessUnlessGranted("ROLE_BATCH", null, "L'utilisateur essaye d’accéder à la page sans avoir le rôle ROLE_BATCH");
+        $this->logger->info("[API] 📥 Requête reçue sur /traitement/manuel");
+
+        $user = $this->security->getUser();
+
+        $this->denyAccessUnlessGranted("ROLE_BATCH",
+        null, "L'utilisateur essaye d’accéder à la page sans avoir le rôle ROLE_BATCH");
 
         /** On récupère les données du POST */
         $data = json_decode($request->getContent());
@@ -229,25 +265,31 @@ class BatchManuelController extends AbstractController
                 !property_exists($data, 'titre_portefeuille') ||
                 !property_exists($data, 'portefeuille'))
             {
-                $this->logger->error("[Batch Manuel] ❌ Requête invalide : clé 'titre_portefeuille' ou 'portefeuille' manquante ou JSON mal formé.",[
+                $this->logger->error("[Traitement-Manuel] ❌ Requête invalide : clé 'titre_portefeuille' ou 'portefeuille' manquante ou JSON mal formé.",[
+                    'utilisateur' => $user,
                     'payload' => $data
                 ]);
 
                 return new JsonResponse([
                     'code' => 400,
                     'type' => 'alert',
-                    'message' => static::$titreJS . static::$erreur400
+                    'message' => static::$erreur400
                 ], Response::HTTP_OK);
             }
 
         // On extrait la liste des projets pour le portefeuille
         $les_projets = $this->listeProjet($data->titre_portefeuille, $data->portefeuille);
-        if ($les_projets['code']===404){
+
+        if ($les_projets['code'] === 404){
+            $this->logger->warning("[Traitement-Manuel] ❌ La liste est vide ou n'existe plus.", [
+                'code' => $les_projets,
+                'message' => $les_projets['erreur'] ?? null
+            ]);
             return new JsonResponse([
                 'code' => 404,
-                'type' => 'alert',
-                'message' => static::$titreJS . static::$erreur404,
-                'trace' => $les_projets['message']
+                'type' => $les_projets['type'],
+                'message' => $les_projets['message'],
+                'trace' => $les_projets['erreur']
             ], Response::HTTP_OK);
         }
 
@@ -255,17 +297,20 @@ class BatchManuelController extends AbstractController
         $utilisateur_collecte = $this->security->getUser()->getCourriel();
 
         /** On lance la collecte */
-        foreach ($les_projets[0] as $le_projet){
+        foreach ($les_projets['liste'] as $le_projet){
             $result = $this->collecte->collecte($data->portefeuille, $le_projet, 'TRAITEMENT MANUEL', $utilisateur_collecte);
+
             if ($result['code'] === 500){
                 $code = $result['code'];
                 $type = 'warning';
-                $message = static::$titreJS . "La collecte du projet <strong>$le_projet</strong> n'a pas abouti.<br>Consulter le journal d'execution pour avoir plus d'information.";
+                $message = "La collecte du projet <strong>$le_projet</strong> n'a pas abouti.<br>Consulter le journal d'execution pour avoir plus d'information.";
+                $lien = 'xvftr';
 
-                return new JsonResponse(compact('code', 'type', 'message'),
+                return new JsonResponse(compact('code', 'type', 'message', 'lien'),
                 Response::HTTP_OK);
             }
         }
+
         return new JsonResponse(['code' => 200], Response::HTTP_OK);
     }
 
