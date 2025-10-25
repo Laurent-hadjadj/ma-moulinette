@@ -13,17 +13,18 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Portefeuille;
-
-use Doctrine\ORM\EntityManagerInterface;
-
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Routing\Annotation\Route;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
-
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Portefeuille;
 
 /**
  * [Description PortefeuilleCrudController]
@@ -54,6 +55,26 @@ class PortefeuilleCrudController extends AbstractCrudController
     public static function getEntityFqcn(): string
     {
         return Portefeuille::class;
+    }
+
+    /**
+     * [Description for configureCrud]
+     * Ajout d'un custom filtre pour sélectionner/désélectionner des éléments dans une liste.
+     * @param Crud $crud
+     *
+     * @return Crud
+     *
+     * Created at: 26/10/2025 13:15:20 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud
+            ->setFormThemes([
+                '@EasyAdmin/crud/form_theme.html.twig',
+                'admin/form/custom_choice_widget.html.twig',
+            ]);
     }
 
     /**
@@ -94,47 +115,93 @@ class PortefeuilleCrudController extends AbstractCrudController
 
         // On récupère la liste des équipes
         $sql = "SELECT titre, description FROM equipe ORDER BY titre ASC";
-        $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
-        $result = $l->fetchAllAssociative();
-        $i = 0;
+        $stmt = $this->emm->getConnection()->prepare($sql);
+        $exec = $stmt->executeQuery();
+        $result = $exec->fetchAllAssociative();
+
         /** si la table est vide */
         if (empty($result)) {
-            $resultat = [["titre" => "Aucune", "description" => "Aucune équipe."]];
+            $result = [
+                [
+                    "titre" => "Aucune",
+                    "description" =>
+                    "Aucune équipe."
+                ]
+            ];
         }
-        foreach($result as $value) {
-            $key1[$i] = $value['titre']." - ".$value['description'];
+
+        $key1 = $val1 = [];
+        foreach ($result as $i => $value) {
+            $key1[$i] = $value['titre'] . " - " . $value['description'];
             $val1[$i] = $value['titre'];
-            $i++;
         }
 
         yield ChoiceField::new('equipe')
             ->setChoices(array_combine($key1, $val1))
+            //->allowMultipleChoices()
+            //->autocomplete()
             ->renderExpanded()
-            ->setHelp('Nom de l\'équipe en charge des projets.');
+            ->setHelp("Nom de l'équipe en charge des projets.");
 
-        /** On récupère la liste des projets */
-        $sql = "SELECT name, maven_key FROM liste_projet ORDER BY name ASC";
-        $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
-        $result = $l->fetchAllAssociative();
-        /**
-         * Si la liste des projets vide on renvoi un tableau vide
-         */
-        $i = 0;
-        if (empty($result)) {
+         // --- Filtrage selon équipe sélectionnée ---
+        $request = $this->getContext()->getRequest();
+        $selectedEquipe = $request->query->get('equipe');
+
+        // --- Liste des projets ---
+        $params = [];
+        $sql = "SELECT name, maven_key FROM liste_projet";
+
+        if (!empty($selectedEquipe)) {
+            $equipes = array_map('trim', explode(',', $selectedEquipe));
+
+            // Normalisation : tout en minuscules pour correspondre aux tags JSON
+            $equipes = array_map('mb_strtolower', $equipes);
+
+            if (count($equipes) === 1) {
+                // Utilise jsonb_exists pour éviter l'opérateur '?' qui gêne PDO/DBAL
+                $sql .= " WHERE jsonb_exists(tags::jsonb, :eq0)";
+                $params['eq0'] = $equipes[0];
+            } else {
+                // Utilise jsonb_exists_any pour vérifier si AU MOINS UNE des valeurs est présente
+                // On fournit un littéral PostgreSQL text[] comme chaîne : '{"A","B"}'
+                $arrayLiteral = '{' . implode(',', array_map(
+                    fn($v) => '"' . str_replace('"', '\"', $v) . '"',
+                    $equipes
+                )) . '}';
+
+                $sql .= " WHERE jsonb_exists_any(tags::jsonb, :eqArray)";
+                $params['eqArray'] = $arrayLiteral;
+            }
+        }
+
+        $sql .= " ORDER BY name ASC";
+
+        $stmt = $this->emm->getConnection()->prepare($sql);
+        foreach ($params as $name => $value) {
+            // bindValue simple convient ici
+            $stmt->bindValue($name, $value);
+        }
+
+        $projects = $stmt->executeQuery()->fetchAllAssociative();
+
+        if (empty($projects)) {
             $key2 = ['Aucun Projet'];
             $val2 = [''];
         } else {
-            foreach($result as $value) {
+            foreach ($projects as $i => $value) {
                 $key2[$i] = $value['name'];
                 $val2[$i] = $value['maven_key'];
-                $i++;
             }
         }
+
+        // compter les projets remontés
+        $count = count($projects);
 
         yield ChoiceField::new('liste')
             ->setChoices(array_combine($key2, $val2))
             ->allowMultipleChoices()
-            ->setHelp('Liste des projets du portefeuille.');
+            ->autocomplete()
+            ->setHelp(sprintf('Liste des projets du portefeuille — %d projet(s) trouvés. Tape pour filtrer.', $count));
 
         yield DateTimeField::new('dateModification')
             ->setTimezone('Europe/Paris')
@@ -204,4 +271,37 @@ class PortefeuilleCrudController extends AbstractCrudController
         parent::persistEntity($em, $entityInstance);
     }
 
+    #[Route('/admin/portefeuille/list-projets', name: 'admin_list_projets')]
+    public function listProjets(Request $request): JsonResponse
+    {
+        $selectedEquipe = $request->query->get('equipe');
+        $params = [];
+        $sql = "SELECT name, maven_key FROM liste_projet";
+
+        if (!empty($selectedEquipe)) {
+            $equipes = array_map('trim', explode(',', $selectedEquipe));
+            $equipes = array_map('mb_strtolower', $equipes);
+
+            if (count($equipes) === 1) {
+                $sql .= " WHERE jsonb_exists(tags::jsonb, :eq0)";
+                $params['eq0'] = $equipes[0];
+            } else {
+                $arrayLiteral = '{' . implode(',', array_map(
+                    fn($v) => '"' . addslashes($v) . '"',
+                    $equipes
+                )) . '}';
+                $sql .= " WHERE jsonb_exists_any(tags::jsonb, :eqArray)";
+                $params['eqArray'] = $arrayLiteral;
+            }
+        }
+
+        $sql .= " ORDER BY name ASC";
+        $stmt = $this->emm->getConnection()->prepare($sql);
+        foreach ($params as $name => $value) {
+            $stmt->bindValue($name, $value);
+        }
+        $projects = $stmt->executeQuery()->fetchAllAssociative();
+
+        return new JsonResponse($projects);
+    }
 }
