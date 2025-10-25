@@ -71,6 +71,42 @@ class BatchCollecteHotspotDetailController extends AbstractController
     }
 
     /**
+     * [Description for vulnerabilityProbabilityListe]
+     *
+     * @param mixed $niveaux
+     *
+     * @return array
+     *
+     * Created at: 24/10/2025 15:23:52 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function vulnerabilityProbabilityListe($niveaux): array
+    {
+        $total = $high = $medium = $low = 0;
+
+        foreach ($niveaux as $niveau) {
+            if ($niveau['niveau'] == '1') {
+                $high = $niveau['hotspot'];
+            }
+            if ($niveau['niveau'] == '2') {
+                $medium = $niveau['hotspot'];
+            }
+            if ($niveau['niveau'] == '3') {
+                $low = $niveau['hotspot'];
+            }
+        }
+        $total = intval($high) + intval($medium) + intval($low);
+
+        return [
+                'high' => $high,
+                'medium' => $medium,
+                'low' => $low,
+                'total' => $total
+            ];
+    }
+
+    /**
      * [Description for hotspotDetail]
      *
      * @return array
@@ -147,7 +183,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
             $path = str_replace($maven_key . ':', '', $result['json']['component']['key']);
         }
 
-        /** on récupère la liste des clés pour chaque module */
+        /** On récupère la liste des clés pour chaque module */
         $liste_frontend = $this->getParameter('module.frontend');
         $liste_backend = $this->getParameter('module.backend');
         $liste_autre = $this->getParameter('module.autre');
@@ -351,10 +387,58 @@ class BatchCollecteHotspotDetailController extends AbstractController
             'nombre_détails' => count($mapData)
         ]);
 
+        /** On calcul le nombre de menace potentielle en fonction du niveau et du status */
+        /** Retourne une liste par niveau (1,2,3) du nombre de hotspot à vérifier */
+        $map = [ 'maven_key' => $maven_key, 'status' => 'TO_REVIEW' ];
+        $getToReview = $hotspotsRepos->selectHotspotsByNiveau($map);
+
+        if ($getToReview['code'] !== 200) {
+            return [
+                'code' => $getToReview['code'],
+                'type' => 'alert',
+                'message' => "La récupération des données a échouée pour selectHotspotsByNiveau avec TO_REVIEW (Erreur {$getToReview['code']}).",
+                'trace' => $getToReview['erreur'],
+                'test' => 'TO_REVIEW'
+            ];
+        }
+
+        $map = [ 'maven_key' => $maven_key, 'status' => 'REVIEWED'];
+
+        $getReviewed = $hotspotsRepos->selectHotspotsByNiveau($map);
+        if ($getReviewed['code'] != 200) {
+
+            return [
+                'code' => $getReviewed['code'],
+                'type' => 'alert',
+                'message' => "La récupération des données a échouée pour selectHotspotsByNiveau avec REVIEWED (Erreur {$getReviewed['code']}).",
+                'trace' => $getReviewed['erreur'],
+                'test' => 'REVIEWED'
+                ];
+        }
+
+        $toReview = $reviewed = [];
+        if ($getToReview){
+            $toReview = static::vulnerabilityProbabilityListe($getToReview['liste']);
+        }
+        if ($getReviewed){
+            $reviewed = static::vulnerabilityProbabilityListe($getReviewed['liste']);
+        }
+
+        $historique = [
+            'menace_potentielle_totale' => $toReview['total'] ?? 0,
+            'menace_potentielle_to_review_high' => $toReview['high'] ?? 0,
+            'menace_potentielle_to_review_medium' => $toReview['medium'] ?? 0,
+            'menace_potentielle_to_review_low' => $toReview['low'] ?? 0,
+            'menace_potentielle_reviewed_high' => $reviewed['high'] ?? 0,
+            'menace_potentielle_reviewed_medium' => $reviewed['medium'] ?? 0,
+            'menace_potentielle_reviewed_low' => $reviewed['low'] ?? 0
+        ];
+
         return [
             'code' => 200,
             'nombre' => count($liste),
-            'message' => $mapData
+            'message' => "La collecte deu détail des menaces potentielles du projet est terminée.",
+            'historique' => $historique,
         ];
     }
 }
