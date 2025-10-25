@@ -219,7 +219,7 @@ export const enregistrement = async function(maven_key) {
     'logger_info': loggerInfo, 'logger_warn': loggerWarn, 'logger_error': loggerError,
     'logger_debug': loggerDebug,
     'nombre_ligne_code': nombreLigneDeCode, 'nombre_ligne': nombreLigne,
-    'files': nombreFichier, 'classes': nombreClasse, 'functions': nombreFonction,
+    'nombre_files': nombreFichier, 'nombre_classes': nombreClasse, 'nombre_functions': nombreFonction,
     coverage, duplicated_lines_density,
     'sqale_debt_ratio': sqaleDebtRatio, 'tests': tests,
     'violations': violations, dette,
