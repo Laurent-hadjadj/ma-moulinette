@@ -119,7 +119,12 @@ class BatchCollecteLoggerController extends AbstractController
             return [
                     'code' => 404,
                     'message' => "La collecte des LOGGERS n'a pas été lancée. (TRACK_LOGGER_METHOD=false).",
-                    'historique' => ''
+                    'historique' => [
+                        'logger_info' => 0,
+                        'logger_warn' => 0,
+                        'logger_error' => 0,
+                        'logger_debug' => 0,
+                    ]
                 ];
         }
 
@@ -216,10 +221,10 @@ class BatchCollecteLoggerController extends AbstractController
         /** Données à retourner */
         $historique = [
             'maven_key' => $maven_key,
-            'logger_info' => $results['track-info-method'],
-            'logger_warn' => $results['track-warn-method'],
-            'logger_error' => $results['track-error-method'],
-            'logger_debug' => $results['track-debug-method'],
+            'logger_info' => $loggerData['logger_info'],
+            'logger_warn' => $loggerData['logger_warn'],
+            'logger_error' => $loggerData['logger_error'],
+            'logger_debug' => $loggerData['logger_debug'],
         ];
 
         return [
