@@ -68,6 +68,10 @@ return [
         'path' => './assets/js/mon-application/activity/index-activity.js',
         'entrypoint' => true,
     ],
+    'batch' => [
+        'path' => './assets/js/mon-application/batch/index-batch.js',
+        'entrypoint' => true,
+    ],
     'easyBatch' => [
         'path' => './assets/js/easy-admin/batch.js',
         'entrypoint' => true,
@@ -115,7 +119,7 @@ return [
         'version' => '4.5.0',
     ],
     '@kurkle/color' => [
-        'version' => '0.4.0',
+        'version' => '0.3.0',
     ],
     'chartjs-plugin-datalabels' => [
         'version' => '2.2.0',
@@ -167,5 +171,26 @@ return [
     ],
     'pako' => [
         'version' => '2.1.0',
+    ],
+    'tinymce' => [
+        'version' => '8.2.0',
+    ],
+    'tinymce/themes/silver' => [
+        'version' => '8.2.0',
+    ],
+    'tinymce/icons/default' => [
+        'version' => '8.2.0',
+    ],
+    'tinymce/plugins/link' => [
+        'version' => '8.2.0',
+    ],
+    'tinymce/plugins/table' => [
+        'version' => '8.2.0',
+    ],
+    'tinymce/plugins/image' => [
+        'version' => '8.2.0',
+    ],
+    'tinymce/plugins/code' => [
+        'version' => '8.2.0',
     ],
 ];
