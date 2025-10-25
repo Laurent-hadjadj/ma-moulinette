@@ -119,17 +119,17 @@ class Historique
     #[ORM\Column(type: Types::INTEGER,
     options: ['comment' => 'Nombre total de fichier'])]
     #[Assert\NotNull]
-    private $files;
+    private $nombreFiles;
 
     #[ORM\Column(type: Types::INTEGER,
     options: ['comment' => 'Nombre total de classe'])]
     #[Assert\NotNull]
-    private $classes;
+    private $nombreClasses;
 
     #[ORM\Column(type: Types::INTEGER,
     options: ['comment' => 'Nombre total méthode'])]
     #[Assert\NotNull]
-    private $functions;
+    private $nombreFunctions;
 
     #[ORM\Column(type: Types::FLOAT,
         options: ['comment' => 'Pourcentage de couverture de code par les tests'])]
@@ -758,7 +758,7 @@ class Historique
     }
 
     /**
-     * [Description for getClasses]
+     * [Description for getNombreClasses]
      *
      * @return int|null
      *
@@ -766,15 +766,15 @@ class Historique
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getClasses(): ?int
+    public function getNombreClasses(): ?int
     {
-        return $this->classes;
+        return $this->nombreClasses;
     }
 
     /**
-     * [Description for setClasses]
+     * [Description for setNombreClasses]
      *
-     * @param int $classes
+     * @param int $nombreClasses
      *
      * @return \App\Entity\Historique
      *
@@ -782,15 +782,15 @@ class Historique
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setClasses(int $classes): \App\Entity\Historique
+    public function setNombreClasses(int $nombreClasses): \App\Entity\Historique
     {
-        $this->classes = $classes;
+        $this->nombreClasses = $nombreClasses;
 
         return $this;
     }
 
     /**
-     * [Description for getFunctions]
+     * [Description for getNombreFunctions]
      *
      * @return int|null
      *
@@ -798,15 +798,15 @@ class Historique
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getFunctions(): ?int
+    public function getNombreFunctions(): ?int
     {
-        return $this->functions;
+        return $this->nombreFunctions;
     }
 
     /**
-     * [Description for setFunctions]
+     * [Description for setNombreFunctions]
      *
-     * @param int $functions
+     * @param int $nombreFunctions
      *
      * @return \App\Entity\Historique
      *
@@ -814,21 +814,41 @@ class Historique
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setFunctions(int $functions): \App\Entity\Historique
+    public function setNombreFunctions(int $nombreFunctions): \App\Entity\Historique
     {
-        $this->functions = $functions;
+        $this->nombreFunctions = $nombreFunctions;
 
         return $this;
     }
 
-    public function getFiles(): ?int
+    /**
+     * [Description for getNombreFiles]
+     *
+     * @return int|null
+     *
+     * Created at: 23/10/2025 18:15:00 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getNombreFiles(): ?int
     {
-        return $this->files;
+        return $this->nombreFiles;
     }
 
-    public function setFiles(int $files): \App\Entity\Historique
+    /**
+     * [Description for setNombreFiles]
+     *
+     * @param int $nombreFiles
+     *
+     * @return \App\Entity\Historique
+     *
+     * Created at: 23/10/2025 18:15:21 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setNombreFiles(int $nombreFiles): \App\Entity\Historique
     {
-        $this->files = $files;
+        $this->nombreFiles = $nombreFiles;
 
         return $this;
     }
