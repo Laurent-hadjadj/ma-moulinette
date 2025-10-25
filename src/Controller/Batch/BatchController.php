@@ -13,15 +13,15 @@
 
 namespace App\Controller\Batch;
 
-/** Core */
-use App\Entity\BatchTraitement;
-
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\Request;
-
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Psr\Log\LoggerInterface;
+use Doctrine\ORM\EntityManagerInterface;
+
+use App\Entity\BatchTraitement;
 
 /**
  * [Description BatchController]
@@ -31,8 +31,14 @@ class BatchController extends AbstractController
     private static $timeFormat = "%H:%I:%S";
     private static $europeParis = "Europe/Paris";
     private static $page = 'batch/index.html.twig';
-    private static $titre = 'Traitement';
-    private static $erreur403 = "Vous devez avoir le rôle 'BATCH' pour gérer les traitements [Erreur 403].";
+    private static $erreur403 = "⚠️ Vous devez avoir le rôle 'BATCH' pour gérer les traitements (Erreur 403).";
+
+    private $logoEntreprise;
+    private $marqueEntrepriseShort;
+    private $marqueEntrepriseLong;
+    private $environnement;
+    private $version;
+    private $dateCopyright;
 
     /**
      * [Description for __construct]
@@ -44,7 +50,29 @@ class BatchController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
+        private ParameterBagInterface $params,
+        private LoggerInterface $logger
     ) {
+        $this->params = $params;
+        $this->logoEntreprise = $params->get('logo.entreprise');
+        $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
+        $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
+        $this->environnement = $params->get('environnement');
+        $this->version = $params->get('version');
+        $this->dateCopyright = \date('Y');
+    }
+
+    private function genericRender(): array
+    {
+        return [
+            'type_footer' => null,
+            'logo_entreprise' => $this->logoEntreprise,
+            'marque_entreprise_short' => $this->marqueEntrepriseShort,
+            'marque_entreprise_long' => $this->marqueEntrepriseLong,
+            'env' => $this->environnement,
+            'version' => $this->version,
+            'date_copyright' => $this->dateCopyright
+        ];
     }
 
     /**
@@ -58,55 +86,81 @@ class BatchController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/traitement/suivi', name: 'traitement_suivi', methods:'GET')]
-    public function traitementSuivi(Request $request): Response
+    public function traitementSuivi(): Response
     {
       /** On instancie l'EntityRepository */
-        $batchTraitementRepository = $this->em->getRepository(BatchTraitement::class);
+        $batchTraitementRepos = $this->em->getRepository(BatchTraitement::class);
 
         // Initialisation des informations pour la bulle d'information
-        $render = [
-            'salt' => $this->getParameter('csrf.salt'),
-            'infoNombre' => 'x',
-            'infoTips' => 'Aucun traitement.',
-            'bulle' => 'bulle-info-vide',
-            'date' => '01/01/1980',
-            'traitements' => [['processus' => 'vide']],
-            'marque_entreprise_short' => $this->getParameter('marque.entreprise.short'),
-            'marque_entreprise_long' => $this->getParameter('marque.entreprise.long'),
-            'logo_entreprise' => $this->getParameter('logo.entreprise'),
-            'env' => $this->getParameter('environnement'),
-            'version' => $this->getParameter('version'),
-            'dateCopyright' => \date('Y')
-        ];
+        /** On initialise le tableau */
+        $render = $this->genericRender();
+        $render['salt'] = $this->getParameter('csrf.salt');
+        $render['info_nombre'] = 'x';
+        $render['info_tips'] = 'Aucun traitement.';
+        $render['bulle'] = 'bulle-info-vide';
+        $render['date'] = '01/01/1980';
+        $render['traitements'] = [['processus' => 'vide']];
 
         // Vérifier si l'utilisateur a le rôle 'ROLE_BATCH'.
         if (!$this->isGranted('ROLE_BATCH')) {
-            $this->addFlash('message', ['type'=>'alert', 'titre'=>static::$titre, 'message'=>static::$erreur403]);
+            $this->logger->warning("[Traitement-Suivi] 🚫 Accès refusé pour l'utilisateur (ROLE_BATCH absent).");
+
+            $this->addFlash('notice', [
+                'type' => 'warning',
+                'message' => static::$erreur403
+            ]);
+
             return $this->render(static::$page, $render);
         }
 
         // Obtenir la date du dernier traitement automatique ou programmé
-        $r = $batchTraitementRepository->selectBatchTraitementDateEnregistrementLast();
-        if ($r['code'] != 200) {
-            $message = '1-Nous avons rencontré une erreur inattendue [' . $r['code'] . ']';
-            $this->addFlash('message', ['type' => 'alert', 'titre' => static::$titre, 'message' => $message, 'erreur' => $r['erreur']]);
+        $r = $batchTraitementRepos->selectBatchTraitementDateEnregistrementLast();
+        if ($r['code'] !== 200) {
+            $this->logger->error("[Traitement-Suivi] Échec de la requête selectBatchTraitementDateEnregistrementLast.", [
+                'code' => $r['code'] ?? null
+            ]);
+
+            $message = "❌ 01 - Nous avons rencontré une erreur inattendue ({$r['code']}).";
+            $this->addFlash('notice', [
+                'type' => 'alert',
+                'message' => $message,
+                'debug' => $r['erreur'] ?? null
+            ]);
+
             return $this->render(static::$page, $render);
         }
 
         // Si aucun traitement n'a été trouvé
         if (empty($r['liste'])) {
-            $message = "Aucun traitement trouvé pour aujourd'hui.";
-            $this->addFlash('message', ['type' => 'info', 'titre' => static::$titre, 'message' => $message]);
+            $message = "📌 Aucun traitement trouvé pour aujourd'hui.";
+            $this->logger->info("[Traitement-Suivi] {$message}");
+
+            $this->addFlash('notice', [
+                'type' => 'info',
+                'message' => $message
+            ]);
+
             return $this->render(static::$page, $render);
         }
 
         // Permet d'obtenir la liste des traitements programmés pour la journée en cours
         // 2024-06-14 17:00:11+02
         $dateTimeDernierBatch = new \DateTime($r['liste'][0]['date'], new \DateTimeZone(static::$europeParis));
-        $listeAll = $batchTraitementRepository->selectBatchTraitementLast($dateTimeDernierBatch->format('Y-m-d'));
-        if ($listeAll['code'] != 200) {
-            $message = '2-Nous avons rencontré une erreur inattendue [' . $listeAll['code'] . ']';
-            $this->addFlash('message', ['type' => 'alert', 'titre' => static::$titre, 'message' => $message, 'erreur' => $listeAll['erreur']]);
+        $listeAll = $batchTraitementRepos->selectBatchTraitementLast($dateTimeDernierBatch->format('Y-m-d'));
+
+        if ($listeAll['code'] !== 200) {
+            $this->logger->error("[Traitement-Suivi] Échec de la requête selectBatchTraitementLast.", [
+                'code' => $r['code'] ?? null,
+                'date' => $dateTimeDernierBatch->format('Y-m-d') ?? null
+            ]);
+
+            $message = "❌ 02 - Nous avons rencontré une erreur inattendue ({$listeAll['code']}).";
+            $this->addFlash('notice', [
+                'type' => 'alert',
+                'message' => $message,
+                'debug' => $listeAll['erreur'] ?? \null
+            ]);
+
             return $this->render(static::$page, $render);
         }
 
@@ -114,11 +168,11 @@ class BatchController extends AbstractController
         $traitements = [];
         foreach ($listeAll['liste'] as $traitement) {
             if (!empty($traitement['debut'])) {
-                $resultat = $traitement['resultat'];
+                $result = $traitement['resultat'];
 
                 // Définition du message et de la classe CSS
-                $message = ($resultat == 0) ? "Erreur" : "Succès";
-                $css = ($resultat == 0) ? "ko" : "ok";
+                $message = ($result == 0) ? "Erreur" : "Succès";
+                $css = ($result == 0) ? "ko" : "ok";
 
                 $debut = new \DateTime($traitement['debut'], new \DateTimeZone(static::$europeParis));
                 $fin = new \DateTime($traitement['fin'], new \DateTimeZone(static::$europeParis));
@@ -130,11 +184,11 @@ class BatchController extends AbstractController
                 $execution = "--:--:--";
             }
 
-            $type = ($traitement['demarrage'] === "Auto") ? "automatique" : "manuel";
+            $type = ($traitement['mode_collecte'] === "Auto") ? "automatique" : "manuel";
 
             $traitements[] = [
                 'processus' => "Tout va bien !",
-                'demarrage' => $traitement['demarrage'],
+                'mode_collecte' => $traitement['mode_collecte'],
                 'message' => $message,
                 'css' => $css,
                 'type' => $type,
