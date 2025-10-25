@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V2.6.1 - 20/10/2025              ##
+##               V2.7.0 - 24/10/2025              ##
 ##                                                ##
 ####################################################*/
 
@@ -56,7 +56,8 @@
 -- 22/07/2025 : Laurent HADJADJ - Correction de la colonne rules_update_at en rules_updated_at de la table profiles.
 -- 22/07/2025 : Laurent HADJADJ - Renommage des hotspot_(high, medium, low) en menace_potentielle_(to_review, reviewed)_(high, medium, low) dans la table historique
 -- 22/07/2025 : Laurent HADJADJ - Ajout de l'attribut inconnu dans la relation anomalie + renommage de l'attribut inconnue en inconnu.
--- 22/07/2025 : Laurent HADJADJ - Augmentation de la taille de l'attribut Key de la table profil (32 -> 56). Changement SonarQube en version 25.10 
+-- 22/07/2025 : Laurent HADJADJ - Augmentation de la taille de l'attribut Key de la table profil (32 -> 56). Changement SonarQube en version 25.10.
+-- 24/10/2025 : Laurent HADJADJ - renomage des colonnes files, classes et functions en nombre_files, nombre_classes et nombre_functions.
 
 -- SCHEMA: ma_moulinette
 
@@ -445,9 +446,9 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.historique
   todo integer NOT NULL,
   nombre_ligne integer NOT NULL,
   nombre_ligne_code integer NOT NULL,
-  classes integer NOT NULL,
-  functions integer NOT NULL,
-  files integer NOT NULL,
+  nombre_classes integer NOT NULL,
+  nombre_functions integer NOT NULL,
+  nombre_files integer NOT NULL,
   coverage double precision NOT NULL,
   duplicated_lines_density double precision NOT NULL,
   tests integer NOT NULL,
@@ -757,7 +758,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.liste_projet
   id SERIAL PRIMARY KEY,
   maven_key character varying(255) NOT NULL,
   name character varying(128) NOT NULL,
-  tags json NOT NULL,
+  tags json DEFAULT '[]'::json,
   visibility character varying(8) NOT NULL,
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
