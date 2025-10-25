@@ -272,7 +272,7 @@ class BatchCollecteNoteController extends AbstractController
         return [
             'code' => 200,
             'message' => "La collecte de la note pour les menaces potentielles du projet est terminée.",
-            'historique' => ['note_hotspot' => $note]
+            'historique' => [ 'note_hotspot' => $note ]
         ];
     }
 }
