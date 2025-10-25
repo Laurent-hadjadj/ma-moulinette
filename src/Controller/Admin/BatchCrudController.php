@@ -1,5 +1,16 @@
 <?php
 
+/*
+*  Ma-Moulinette
+*  --------------
+*  Copyright (c) 2021-2024.
+*  Laurent HADJADJ <laurent_h@me.com>.
+*  Licensed Creative Common CC-BY-NC-SA 4.0.
+*  ---
+*  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*/
+
 namespace App\Controller\Admin;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -91,7 +102,7 @@ class BatchCrudController extends AbstractCrudController
             ->setHelp('Statut du traitement (Activé/Désactivé).');
 
         yield TextField::new('titre')
-        ->setHelp('Nom du traitement de données.');
+            ->setHelp('Nom du traitement de données.');
 
         /** On récupère la liste des projets sans filtrage */
         /** To.do : ajouter le filtrage en fonction du portefeuille de projets */
@@ -119,23 +130,23 @@ class BatchCrudController extends AbstractCrudController
             ->setHelp('Nom du portefeuille de projets.');
 
         yield TextField::new('description')
-        ->setHelp('Nom du traitement de données.');
+            ->setHelp('Nom du traitement de données.');
 
         yield IntegerField::new('nombre_projet')
-        ->hideOnForm()
-        ->setHelp('Nombre de projet dans le portefeuille.');
+            ->hideOnForm()
+            ->setHelp('Nombre de projet dans le portefeuille.');
 
         yield TextField::new('responsable')
-        ->hideOnForm()
-        ->setHelp('Responsable du traitement.');
+            ->hideOnForm()
+            ->setHelp('Responsable du traitement.');
 
         yield DateTimeField::new('dateModification')
             ->setTimezone('Europe/Paris')
             ->hideOnForm();
 
         yield DateTimeField::new('dateEnregistrement')
-        ->setTimezone('Europe/Paris')
-        ->hideOnForm();
+            ->setTimezone('Europe/Paris')
+            ->hideOnForm();
 
     }
 
@@ -185,9 +196,9 @@ class BatchCrudController extends AbstractCrudController
         $entityInstance->setDateEnregistrement(new \DateTimeImmutable());
 
         /** On prépare les données pour la table de suivi des traitements */
-        $map=[
-            'demarrage' => ($entityInstance->isStatut() === true)? 'Auto' : 'Manuel',
-            'resultat' => 1,
+        $map = [
+            'mode_collecte' => ($entityInstance->isStatut() === true)? 'Automatique' : 'Manuel',
+            'result' => 1,
             'titre' => $entityInstance->getTitre(),
             'portefeuille' => $entityInstance->getPortefeuille(),
             'nombre_projet' => $entityInstance->getNombreProjet(),
@@ -198,8 +209,8 @@ class BatchCrudController extends AbstractCrudController
         parent::persistEntity($em, $entityInstance);
 
         /** On programme le traitement dans la table BatchTraitement  */
-        $r=$batchTraitementRepository->insertBatchTraitement($map);
-        if ($r['code']!=200){
+        $r = $batchTraitementRepository->insertBatchTraitement($map);
+        if ($r['code'] !== 200){
             throw new \RuntimeException('Erreur : '.$r['code'].' '.$r['erreur']);
         }
     }
