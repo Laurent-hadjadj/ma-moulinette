@@ -29,9 +29,10 @@ class BatchTraitement
 
     #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
         options: ['comment' => 'Mode de collecte du traitement'])]
-    #[Assert\Choice(choices: ['COLLECTE', 'TRAITEMENT MANUEL', 'TRAITEMENT AUTOMATIQUE'], message: "Le démarrage doit être COLLECTE, MANUEL ou AUTOMATIQUE")]
+    #[Assert\Choice(choices: ['Collecte', 'Manuel', 'Automatique'],
+                    message: "Le démarrage doit être Collecte, Manuel ou Automatique")]
     #[Assert\NotBlank]
-    private $modeCollecte = "TRAITEMENT MANUEL";
+    private $modeCollecte = "Manuel";
 
     #[ORM\Column(type: 'boolean', nullable: false,
         options: ['comment' => 'Indique si le traitement a réussi ou échoué'])]
