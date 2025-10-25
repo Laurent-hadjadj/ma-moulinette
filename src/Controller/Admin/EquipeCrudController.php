@@ -13,19 +13,15 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Equipe;
-
-use Doctrine\ORM\EntityManagerInterface;
-
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
-
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
-
 use Symfony\Component\HttpFoundation\RequestStack;
+use Doctrine\ORM\EntityManagerInterface;
 
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use App\Entity\Equipe;
 
 /**
  * [Description EquipeCrudController]
@@ -127,12 +123,15 @@ class EquipeCrudController extends AbstractCrudController
             return;
         }
         $nom = $entityInstance->getTitre();
-        $cleanNom=preg_replace("/[^a-zA-Z0-9\- ]+/", "-", mb_strtoupper($nom));
+        $cleanNom = preg_replace("/[^a-zA-Z0-9\- ]+/", "-", mb_strtoupper($nom));
         $entityInstance->setTitre($cleanNom);
         $entityInstance->setDateEnregistrement(new \DateTimeImmutable());
 
         /** retourne 1 ou null */
-        $record = $this->emm->getRepository(Equipe::class)->findOneBy(['titre' => mb_strtoupper($cleanNom)]);
+        $record = $this->emm->getRepository(Equipe::class)->findOneBy([
+            'titre' => mb_strtoupper($cleanNom)
+        ]);
+
         /** Si l'attribut 'titre' n'existe pas, on enregistre.*/
         if (!$record) {
             parent::persistEntity($em, $entityInstance);
@@ -144,7 +143,8 @@ class EquipeCrudController extends AbstractCrudController
         if (!$entityInstance instanceof Equipe) {
             return;
         }
-        $entityInstance->setDateModification(new \DateTimeImmutable());
+
+        $entityInstance->setDateModification(new \DateTime());
         parent::updateEntity($em, $entityInstance);
     }
 }
