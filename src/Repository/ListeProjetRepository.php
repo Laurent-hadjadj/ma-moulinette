@@ -127,7 +127,13 @@ class ListeProjetRepository extends ServiceEntityRepository
   {
     $sql = "SELECT COUNT(*) AS tag
             FROM ma_moulinette.liste_projet
-            WHERE tags IS NOT NULL AND jsonb_array_length(tags::jsonb) > 0";
+            WHERE tags IS NOT NULL
+            AND jsonb_array_length(tags::jsonb) > 0
+            AND NOT EXISTS (
+                SELECT 1
+                FROM jsonb_array_elements_text(tags::jsonb) AS elem
+                WHERE elem = '@AUCUN')";
+
     try {
           $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
           $nombre = $stmt->executeQuery()->fetchAllAssociative();
