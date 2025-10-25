@@ -1,9 +1,8 @@
 {% extends '@!EasyAdmin/layout.html.twig' %}
-{% block page_title %}
-  <h1 class="h4 open-sans">Informations générales.</h1>
-{% endblock %}
+{% block page_title %}Informations générales.{% endblock %}
 
 {% block main %}
+  <h1 class="h3 open-sans">Informations générales.</h1>
   <h2 class="h4 open-sans">Système.</h2>
   <div class="row">
     <div class="col-sm-12 col-md-3 col-lg-2">
@@ -223,6 +222,7 @@
           <span class="tool-tip-text">Ce ratio mesure le nombre de mises à jour et de suppressions par insertion.</span>
         </div>
         <div class="card-body">
+          {% set indicateur_transaction_per_insert = 'couleur-noir' %}
           {% if transaction_per_insert <= 0.6 %} {% set indicateur_transaction_per_insert = 'couleur-vert' %} {% endif %}
           {% if transaction_per_insert > 0.7 and transaction_per_insert < 0.8 %} {% set indicateur_transaction_per_insert = 'couleur-orange' %} {% endif %}
           {% if transaction_per_insert >= 0.9  %} {% set indicateur_transaction_per_insert = 'couleur-rouge' %} {% endif %}
