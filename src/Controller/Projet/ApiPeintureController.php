@@ -725,7 +725,7 @@ class ApiPeintureController extends AbstractController
         /** On compte le nombre de hotspot au statut TO_REVIEW */
         $map = [ 'maven_key' => $maven_key, 'status' => 'TO_REVIEW' ];
         $toReview = $hotspotsRepos->countHotspotsStatus($map);
-        if ($toReview['code'] != 200) {
+        if ($toReview['code'] !== 200) {
             return new JsonResponse([
                 'code' => $toReview['code'],
                 'type' => 'alert',
@@ -738,7 +738,7 @@ class ApiPeintureController extends AbstractController
         /** On compte le nombre de hotspot au statut REVIEWED */
         $map = [ 'maven_key' => $maven_key, 'status' => 'REVIEWED' ];
         $reviewed = $hotspotsRepos->countHotspotsStatus($map);
-        if ($reviewed['code'] != 200) {
+        if ($reviewed['code'] !== 200) {
             return new JsonResponse([
                 'code' => $reviewed['code'],
                 'type' => 'alert',
@@ -827,7 +827,7 @@ class ApiPeintureController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        $map = ['maven_key' => $data->maven_key, 'status' => 'REVIEWED'];
+        $map = ['maven_key' => $maven_key, 'status' => 'REVIEWED'];
         $getReviewed = $hotspotsRepos->selectHotspotsByNiveau($map);
         if ($getReviewed['code'] != 200) {
             return new JsonResponse([
