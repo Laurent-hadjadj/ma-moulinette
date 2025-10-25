@@ -44,9 +44,9 @@ class BatchTraitementRepository extends ServiceEntityRepository
   protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
   {
     if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
-      return ['code'=>500, 'erreur' => static::$noDataBase];
+      return ['code' => 500, 'erreur' => static::$noDataBase];
     } else {
-      return ['code'=>500, 'erreur'=> $e->getMessage()];
+      return ['code' => 500, 'erreur'=> $e->getMessage()];
     }
   }
 
@@ -65,7 +65,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
   {
     $sql = "SELECT date_enregistrement as date
             FROM batch_traitement
-            WHERE demarrage='Automatique'
+            WHERE mode_collecte = 'AUTOMATIQUE'
             ORDER BY date_enregistrement DESC limit 1";
       try {
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -115,13 +115,13 @@ class BatchTraitementRepository extends ServiceEntityRepository
    */
   public function selectBatchTraitementLast($dateShort): array
   {
-    $sql = "SELECT  demarrage, resultat, titre, portefeuille,
+    $sql = "SELECT  mode_collecte, result, titre, portefeuille,
                     nombre_projet as projet, responsable,
                     debut_traitement as debut, fin_traitement as fin
             FROM batch_traitement
             WHERE date(date_enregistrement)= :date_short
-            GROUP BY demarrage, resultat, titre, portefeuille, nombre_projet, responsable, debut_traitement, fin_traitement
-            ORDER BY responsable ASC, demarrage ASC";
+            GROUP BY mode_collecte, result, titre, portefeuille, nombre_projet, responsable, debut_traitement, fin_traitement
+            ORDER BY responsable ASC, mode_collecte ASC";
       try {
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(':date_short', $dateShort);
@@ -145,7 +145,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
    */
   public function selectBatchTraitement($map): array
   {
-    $sql = "SELECT id, demarrage, titre, portefeuille, nombre_projet as projet
+    $sql = "SELECT id, mode_collecte, titre, portefeuille, nombre_projet as projet
             FROM batch_traitement
             WHERE titre = :titre";
     try {
@@ -172,7 +172,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
   public function updateBatchTraitement($map): array
   {
     $sql = "UPDATE batch_traitement
-            SET debut_traitement = :debut, fin_traitement = :fin, resultat = true
+            SET debut_traitement = :debut, fin_traitement = :fin, result = true
             WHERE id = :id";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
@@ -203,14 +203,14 @@ class BatchTraitementRepository extends ServiceEntityRepository
   public function insertBatchTraitement($map): array
   {
     $sql = "INSERT INTO batch_traitement
-                (demarrage, resultat, titre, portefeuille, nombre_projet, responsable,       date_enregistrement)
-            VALUES (:demarrage, :resultat, :titre, :portefeuille, :nombre_projet, :responsable, :date_enregistrement)";
+                (mode_collecte, result, titre, portefeuille, nombre_projet, responsable,       date_enregistrement)
+            VALUES (:mode_collecte, :result, :titre, :portefeuille, :nombre_projet, :responsable, :date_enregistrement)";
 
       try {
             $this->getEntityManager()->getConnection()->beginTransaction();
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(':demarrage', $map['demarrage']);
-              $stmt->bindValue(':resultat', $map['resultat']);
+              $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
+              $stmt->bindValue(':result', $map['result']);
               $stmt->bindValue(':titre', $map['titre']);
               $stmt->bindValue(':portefeuille', $map['portefeuille']);
               $stmt->bindValue(':nombre_projet', $map['nombre_projet']);
