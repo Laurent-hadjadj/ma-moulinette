@@ -10,18 +10,24 @@
  */
 
 /** Import des dépendances */
+import 'foundation-sites/dist/css/foundation.min.css';
+import 'motion-ui/dist/motion-ui.css';
+import '../../../styles/common/common.css';
+import '../../../styles/common/police.css';
 import '../../../styles/mon-application/batch.css';
 
 /** Intégration de jquery */
 import $ from 'jquery';
+window.$ = $;
 
 import 'what-input';
 import 'foundation-sites';
 import 'motion-ui';
 
 import '../../common/foundation.js';
+import '../../auth/details.js';
 
-import tinymce from 'tinymce/tinymce';
+import tinymce from 'tinymce';
 
 // Import TinyMCE plugins and themes as needed
 import 'tinymce/themes/silver';
@@ -38,7 +44,6 @@ import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common
 
 /** On importe les constantes */
 import { contentType, un, trois, cinqCent, mille, http_500, http_400, http_200 } from '../../common/constante.js';
-
 
 /** Initialize TinyMCE */
 const useDarkMode = window.matchMedia('(prefers-color-scheme: default)').matches;
@@ -186,11 +191,22 @@ const traitementManuel = async function(id, titrePortefeuille, portefeuille){
     },
   };
 
-  const t = await $.ajax(options);
-  // 📌 Vérification des erreurs
-  if (t.code != http_200){
-    showMessage('alert', typeMessage(t.message));
-    $(`#i-am-human-${id}`).removeClass('blink');
+  try{
+    const t = await $.ajax(options);
+    // 📌 Vérification des erreurs
+    if (t.code !== http_200){
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 01');
+      $(`#i-am-human-${id}`).removeClass('blink');
+      return;
+    }
+  } catch(erreur) {
+      const trace = prepareTechnicalDetails(erreur);
+      showMessage('critical', "Une erreur globale est survenue lors du traitement (Erreur 500).", trace);
+      sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 01');
+      $(`#i-am-human-${id}`).removeClass('blink');
     return;
   }
 
