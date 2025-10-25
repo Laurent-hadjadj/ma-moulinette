@@ -321,18 +321,18 @@ class HistoriqueRepository extends ServiceEntityRepository
                         (SELECT date_version AS date,
                                 nombre_ligne,
                                 nombre_ligne_code,
-                                files,
-                                classes,
-                                functions
+                                nombre_files,
+                                nombre_classes,
+                                nombre_functions
                         FROM ma_moulinette.historique
                         WHERE maven_key = :maven_key AND initial = :initial_true)
                         UNION ALL
                         (SELECT date_version AS date,
                                 nombre_ligne,
                                 nombre_ligne_code,
-                                files,
-                                classes,
-                                functions
+                                nombre_files,
+                                nombre_classes,
+                                nombre_functions
                         FROM ma_moulinette.historique
                         WHERE maven_key = :maven_key AND initial = :initial_false
                         ORDER BY date_version DESC
@@ -518,7 +518,7 @@ class HistoriqueRepository extends ServiceEntityRepository
             suppress_warning, no_sonar, todo,
             logger_info, logger_warn, logger_error, logger_debug,
             nombre_ligne, nombre_ligne_code,
-            files, classes, functions,
+            nombre_files, nombre_classes, nombre_functions,
             coverage, duplicated_lines_density, sqale_debt_ratio, tests, violations, dette,
             nombre_bug, nombre_vulnerability, nombre_code_smell,
             bug_blocker, bug_critical, bug_major, bug_minor, bug_info,
@@ -529,7 +529,8 @@ class HistoriqueRepository extends ServiceEntityRepository
             frontend, backend, autre, inconnu,
             nombre_anomalie_bloquant, nombre_anomalie_critique, nombre_anomalie_majeur,
             nombre_anomalie_mineur, nombre_anomalie_info,
-            note_reliability, note_security, note_sqale, note_hotspot, menace_potentielle_totale,
+            note_reliability, note_security, note_sqale, note_hotspot,
+            menace_potentielle_totale,
             menace_potentielle_to_review_high,
             menace_potentielle_to_review_medium,
             menace_potentielle_to_review_low,
@@ -546,7 +547,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                 :suppress_warning, :no_sonar, :todo,
                 :logger_info, :logger_warn, :logger_error, :logger_debug,
                 :nombre_ligne, :nombre_ligne_code,
-                :files, :classes, :functions,
+                :nombre_files, :nombre_classes, :nombre_functions,
                 :coverage, :duplicated_lines_density, :sqale_debt_ratio, :tests,
                 :violations, :dette, :nombre_bug, :nombre_vulnerability,
                 :nombre_code_smell, :bug_blocker, :bug_critical, :bug_major,
@@ -557,7 +558,8 @@ class HistoriqueRepository extends ServiceEntityRepository
                 :nombre_anomalie_bloquant, :nombre_anomalie_critique,
                 :nombre_anomalie_majeur, :nombre_anomalie_mineur,
                 :nombre_anomalie_info, :note_reliability, :note_security,
-                :note_sqale, :note_hotspot, :menace_potentielle_totale,
+                :note_sqale, :note_hotspot,
+                :menace_potentielle_totale,
                 :menace_potentielle_to_review_high,
                 :menace_potentielle_to_review_medium,
                 :menace_potentielle_to_review_low,
@@ -588,9 +590,9 @@ class HistoriqueRepository extends ServiceEntityRepository
                         $stmt->bindValue(':logger_debug', $map['logger_debug']);
                         $stmt->bindValue(':nombre_ligne', $map['nombre_ligne']);
                         $stmt->bindValue(':nombre_ligne_code', $map['nombre_ligne_code']);
-                        $stmt->bindValue(':files', $map['files']);
-                        $stmt->bindValue(':classes', $map['classes']);
-                        $stmt->bindValue(':functions', $map['functions']);
+                        $stmt->bindValue(':nombre_files', $map['nombre_files']);
+                        $stmt->bindValue(':nombre_classes', $map['nombre_classes']);
+                        $stmt->bindValue(':nombre_functions', $map['nombre_functions']);
                         $stmt->bindValue(':coverage', $map['coverage']);
                         $stmt->bindValue(':duplicated_lines_density', $map['duplicated_lines_density']);
                         $stmt->bindValue(':sqale_debt_ratio', $map['sqale_debt_ratio']);
