@@ -1,0 +1,122 @@
+{# templates/admin/form/custom_choice_widget.html.twig #}
+{% extends '@EasyAdmin/crud/form_theme.html.twig' %}
+
+{# For expanded (checkboxes/radios) reuse earlier block #}
+{% block choice_widget_expanded %}
+    <div class="ea-choice-field" data-ea-field-name="{{ id }}">
+        {{ parent() }}
+    </div>
+{% endblock %}
+
+{# For non-expanded (autocomplete) choice widget: inject buttons above the select #}
+{% block choice_widget_collapsed %}
+  <div class="ea-choice-field-collapsed" data-ea-field-name="{{ id }}">
+    {{ parent() }}
+  </div>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      console.clear();
+      const equipeContainer = document.querySelector('[data-ea-field-name*="equipe"]');
+      const listeContainer = document.querySelector('[data-ea-field-name*="liste"] select');
+
+      if (!equipeContainer || !listeContainer) {
+          console.warn("Impossible de trouver les champs équipe ou liste.");
+          return;
+      }
+
+      // Récupération de l’instance TomSelect
+      const ts = listeContainer.tomselect;
+      if (!ts) {
+        console.error("TomSelect non initialisé sur ce champ !");
+        return;
+      }
+
+      // Crée un petit spinner visuel dans le champ
+      const spinner = document.createElement('div');
+      spinner.className = 'ea-spinner';
+      spinner.style.cssText = `
+          position: absolute;
+          right: 10px;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 18px;
+          height: 18px;
+          border: 2px solid #ccc;
+          border-top-color: #666;
+          border-radius: 50%;
+          animation: spin 0.7s linear infinite;
+          display: none;
+          z-index: 5;
+      `;
+
+      const tsWrapper = listeContainer.closest('.ts-wrapper');
+      if (tsWrapper) tsWrapper.style.position = 'relative', tsWrapper.appendChild(spinner);
+
+      // Style de l’animation
+      const style = document.createElement('style');
+      style.textContent = `
+          @keyframes spin { to { transform: translateY(-50%) rotate(360deg); } }
+      `;
+
+      document.head.appendChild(style);
+
+      equipeContainer.addEventListener('change', async (e) => {
+        const checkedInputs = Array.from(equipeContainer.querySelectorAll('input:checked'));
+        const equipes = checkedInputs.map(el => el.value);
+        const param = equipes.join(',');
+
+        // Afficher le spinner
+        spinner.style.display = 'block';
+        ts.disable();
+
+        try {
+            const url = `/admin/portefeuille/list-projets?equipe=${encodeURIComponent(param)}`;
+            const res = await fetch(url);
+            const data = await res.json();
+
+            // Sauvegarder la valeur actuelle (si encore valide)
+            const currentValue = ts.getValue();
+
+            // Nettoyer les options existantes
+            ts.clearOptions();
+            ts.clear(true); // vide la sélection
+
+            if (data.length === 0) {
+              // Ajouter une option vide + message visuel
+              ts.addOption({ value: '', text: 'Aucun projet trouvé' });
+              ts.refreshOptions(false);
+              const help = listeContainer.closest('.form-group, .form-widget')?.querySelector('.form-text');
+              if (help) help.textContent = 'Aucun projet trouvé pour cette équipe.';
+              return;
+            }
+
+            // Ajouter les nouvelles options
+            data.forEach(item => {
+                ts.addOption({ value: item.maven_key, text: item.name });
+            });
+            ts.refreshOptions(false);
+
+            // Si l’ancienne valeur existe encore, la re-sélectionner
+            if (currentValue && data.some(d => d.maven_key === currentValue)) {
+              ts.setValue(currentValue);
+              console.log("Valeur précédente conservée :", currentValue);
+            } else {
+              // Sinon, sélectionner automatiquement la première
+              ts.setValue(data[0].maven_key);
+              console.log("Premier projet sélectionné :", data[0].maven_key);
+            }
+
+            // Mettre à jour le helper
+            const help = listeContainer.closest('.form-group, .form-widget')?.querySelector('.form-text');
+            if (help) help.textContent = `${data.length} projet(s) trouvés.`;
+        } catch (err) {
+            console.error("Erreur lors du chargement des projets :", err);
+        } finally {
+            // Masquer le spinner et réactiver le champ
+            spinner.style.display = 'none';
+            ts.enable();
+        }
+      });
+    });
+  </script>
+{% endblock %}
