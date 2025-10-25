@@ -148,7 +148,7 @@ class BatchCollecteMesureController extends AbstractController
                     arsort($distribution);
                     break;
                 default :
-                    $this->logger->error('[Batch Mesure] ❌ Erreur switch improbable. tu peux jouer au LoTo.');
+                    $this->logger->error('[Batch Mesure] ❌ Erreur switch improbable. Tu peux jouer au LoTo.');
                     break;
             }
         }
@@ -229,7 +229,7 @@ class BatchCollecteMesureController extends AbstractController
                 'nombre_ligne' => $lines,
                 'nombre_ligne_code' => $ncloc,
                 'nombre_classes' => $classes,
-                'nombre_fonctions' => $functions,
+                'nombre_functions' => $functions,
                 'nombre_files' => $files,
                 'language_distribution' => $distribution,
                 'coverage' => $coverage,
