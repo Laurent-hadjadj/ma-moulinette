@@ -200,7 +200,8 @@ class ApiAccueilController extends AbstractController
             $listeProjet = new ListeProjet();
             $listeProjet->setMavenKey($projet["key"]);
             $listeProjet->setName($projet["name"]);
-            $listeProjet->setTags($projet["tags"]);
+            $tags = (empty($projet['tags'])) ? ['@AUCUN'] : $projet['tags'];
+            $listeProjet->setTags($tags);
             $listeProjet->setVisibility($projet["visibility"]);
             $listeProjet->setDateEnregistrement($date);
 
@@ -225,7 +226,7 @@ class ApiAccueilController extends AbstractController
 
         $r = $propertiesRepos->updatePropertiesProjet($map);
 
-        if ($r['code'] != 200) {
+        if ($r['code'] !== 200) {
             $this->logger->error('[Accueil-projet] ❌ Échec de la requête updatePropertiesProjet.', [
                 'code' => $r['code'],
                 'map' => $map ?? null,
