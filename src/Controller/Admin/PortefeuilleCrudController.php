@@ -145,6 +145,10 @@ class PortefeuilleCrudController extends AbstractCrudController
          // --- Filtrage selon équipe sélectionnée ---
         $request = $this->getContext()->getRequest();
         $selectedEquipe = $request->query->get('equipe');
+        if (empty($selectedEquipe) && $this->getContext()?->getEntity()?->getInstance()) {
+                    $entity = $this->getContext()->getEntity()->getInstance();
+                    $selectedEquipe = $entity->getEquipe();
+        }
 
         // --- Liste des projets ---
         $params = [];
