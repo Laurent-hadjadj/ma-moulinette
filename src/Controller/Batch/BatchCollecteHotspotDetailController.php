@@ -329,14 +329,26 @@ class BatchCollecteHotspotDetailController extends AbstractController
             ];
         }
 
+
         /** Si la liste des hotspots est vide on envoi un code http 406 */
         if (empty($liste['liste'])) {
             $this->logger->warning('[HotspotDetail] ⚠️ Liste TO_REVIEW vide', [
                 'maven_key' => $maven_key
             ]);
+
             return [
-                'code' => 406,
-                'message'=> 'Liste vide !!! (Erreur 406).'
+                'code' => 200,
+                'message' => "Liste est vide. Aucune menace potentielle n'a été trouvée.",
+                'nombre' => 0,
+                'historique' => [
+                    'menace_potentielle_totale' => 0,
+                    'menace_potentielle_to_review_high' => 0,
+                    'menace_potentielle_to_review_medium' => 0,
+                    'menace_potentielle_to_review_low' => 0,
+                    'menace_potentielle_reviewed_high' => 0,
+                    'menace_potentielle_reviewed_medium' => 0,
+                    'menace_potentielle_reviewed_low' => 0
+                ]
             ];
         }
 
