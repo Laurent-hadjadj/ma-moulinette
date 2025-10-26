@@ -190,11 +190,9 @@ class BatchController extends AbstractController
         $traitements = [];
         foreach ($listeAll['liste'] as $traitement) {
             if (!empty($traitement['debut'])) {
-                $result = $traitement['result'];
-
                 // Définition du message et de la classe CSS
-                $message = ($result == 0) ? "Erreur" : "Succès";
-                $css = ($result == 0) ? "ko" : "ok";
+                $message = ($traitement['success'] == 0) ? "Erreur" : "Succès";
+                $css = ($traitement['success'] == 0) ? "ko" : "ok";
 
                 $debut = new \DateTime($traitement['debut'], new \DateTimeZone(static::$europeParis));
                 $fin = new \DateTime($traitement['fin'], new \DateTimeZone(static::$europeParis));
