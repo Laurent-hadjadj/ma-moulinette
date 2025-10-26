@@ -619,27 +619,33 @@ class CollecteController extends AbstractController
 
         if ($anomalieDetail['code'] === 200){
             $item = $anomalieDetail['historique'];
-            $collecte[] =
-            '<p class="open-sans">'. $anomalieDetail['message'] .'</p>
-            <div>
-                <ul class="open-sans">
-                    <li class="lead">Nombre de Bug Bloquant : ' . $item['bug_blocker'] . '</li>
-                    <li class="lead">Nombre de Bug Critique : ' . $item['bug_critical'] . '</li>
-                    <li class="lead">Nombre de Bug Majeur : ' . $item['bug_major'] . '</li>
-                    <li class="lead">Nombre de Bug Mineur : ' . $item['bug_minor'] . '</li>
-                    <li class="lead">Nombre de Bug Info : ' . $item['bug_info'] . '</li>
-                    <li class="lead">Nombre de Vulnérabilité Bloquant : ' . $item['vulnerability_blocker'] . '</li>
-                    <li class="lead">Nombre de Vulnérabilité Critique : ' . $item['vulnerability_critical'] . '</li>
-                    <li class="lead">Nombre de Vulnérabilité Majeur : ' . $item['vulnerability_major'] . '</li>
-                    <li class="lead">Nombre de Vulnérabilité Mineur : ' . $item['vulnerability_minor'] . '</li>
-                    <li class="lead">Nombre de Vulnérabilité Info : ' . $item['vulnerability_info'] . '</li>
-                    <li class="lead">Nombre de Mauvaise Pratique Bloquant : ' . $item['code_smell_blocker'] . '</li>
-                    <li class="lead">Nombre de Mauvaise Pratique Critique : ' . $item['code_smell_critical'] . '</li>
-                    <li class="lead">Nombre de Mauvaise Pratique Majeur : ' . $item['code_smell_major'] . '</li>
-                    <li class="lead">Nombre de Mauvaise Pratique Mineur : ' . $item['code_smell_minor'] . '</li>
-                    <li class="lead">Nombre de Mauvaise Pratique Info : ' . $item['code_smell_info'] . '</li>
-                </ul>
-            </div>';
+            if (empty($item)){
+                $msg = htmlspecialchars($anomalieDetail['message']);
+                $collecte[] =
+                '<p class="open-sans">'. $msg .'</p>';
+            } else  {
+                $collecte[] =
+                '<p class="open-sans">'. htmlspecialchars($anomalieDetail['message']) .'</p>
+                <div>
+                    <ul class="open-sans">
+                        <li class="lead">Nombre de Bug Bloquant : ' . htmlspecialchars($item['bug_blocker']) . '</li>
+                        <li class="lead">Nombre de Bug Critique : ' . htmlspecialchars($item['bug_critical']) . '</li>
+                        <li class="lead">Nombre de Bug Majeur : ' . htmlspecialchars($item['bug_major']) . '</li>
+                        <li class="lead">Nombre de Bug Mineur : ' . htmlspecialchars($item['bug_minor']) . '</li>
+                        <li class="lead">Nombre de Bug Info : ' . htmlspecialchars($item['bug_info']) . '</li>
+                        <li class="lead">Nombre de Vulnérabilité Bloquant : ' . htmlspecialchars($item['vulnerability_blocker']) . '</li>
+                        <li class="lead">Nombre de Vulnérabilité Critique : ' . htmlspecialchars($item['vulnerability_critical']) . '</li>
+                        <li class="lead">Nombre de Vulnérabilité Majeur : ' . htmlspecialchars($item['vulnerability_major']) . '</li>
+                        <li class="lead">Nombre de Vulnérabilité Mineur : ' . htmlspecialchars($item['vulnerability_minor']) . '</li>
+                        <li class="lead">Nombre de Vulnérabilité Info : ' . htmlspecialchars($item['vulnerability_info']) . '</li>
+                        <li class="lead">Nombre de Mauvaise Pratique Bloquant : ' . htmlspecialchars($item['code_smell_blocker']) . '</li>
+                        <li class="lead">Nombre de Mauvaise Pratique Critique : ' . htmlspecialchars($item['code_smell_critical']) . '</li>
+                        <li class="lead">Nombre de Mauvaise Pratique Majeur : ' . htmlspecialchars($item['code_smell_major']) . '</li>
+                        <li class="lead">Nombre de Mauvaise Pratique Mineur : ' . htmlspecialchars($item['code_smell_minor']) . '</li>
+                        <li class="lead">Nombre de Mauvaise Pratique Info : ' . htmlspecialchars($item['code_smell_info']) . '</li>
+                    </ul>
+                </div>';
+            }
 
             /** On met à jour le tableau des données pour la table historique */
             $mergeHistorique = array_merge($mergeHistorique, $anomalieDetail['historique']);
@@ -1160,17 +1166,11 @@ class CollecteController extends AbstractController
         $this->logger->info('[Batch] ℹ️ Sauvegarde du conte-rendu pour le projet.');
         $compte_rendu = implode("\n", $collecte);
 
-        $batch_traces = new BatchTraces();
-            $batch_traces->setHtmlCompteRendu($compte_rendu);
-            $batch_traces->setStatut($informationProjet['code']);
-            $batch_traces->setDateExecution($debutTraitement);
-        $this->em->persist($batch_traces);
-        $this->em->flush();
-
         return [
             'code' => 200,
             'message' => 'La collecte et la mise à jour de la table historique pour ce projet est terminée.',
-            'historique' => $mergeHistorique
+            'historique' => $mergeHistorique,
+            'compte_rendu' => $compte_rendu
         ];
     }
 }
