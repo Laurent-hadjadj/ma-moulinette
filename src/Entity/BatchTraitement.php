@@ -39,7 +39,7 @@ class BatchTraitement
     #[Assert\Type(type: 'bool',
         message: "Le résultat doit être un booléen.")]
     #[Assert\NotNull]
-    private $result = false;
+    private $success = false;
 
     #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
         options: ['comment' => 'Titre du traitement'])]
@@ -106,14 +106,14 @@ class BatchTraitement
         return $this;
     }
 
-    public function isResult(): ?bool
+    public function isSuccess(): ?bool
     {
-        return $this->result;
+        return $this->success;
     }
 
-    public function setResult(bool $result): static
+    public function setResult(bool $success): static
     {
-        $this->result = $result;
+        $this->success = $success;
 
         return $this;
     }
