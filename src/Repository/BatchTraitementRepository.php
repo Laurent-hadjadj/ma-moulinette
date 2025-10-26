@@ -203,7 +203,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
   public function insertBatchTraitement($map): array
   {
     $sql = "INSERT INTO batch_traitement
-                (mode_collecte, result, titre, portefeuille, nombre_projet, responsable,       date_enregistrement)
+                (mode_collecte, result, titre, portefeuille, nombre_projet, responsable, date_enregistrement)
             VALUES (:mode_collecte, :result, :titre, :portefeuille, :nombre_projet, :responsable, :date_enregistrement)";
 
       try {
@@ -223,5 +223,36 @@ class BatchTraitementRepository extends ServiceEntityRepository
           return $this->handleDatabaseException($e);
       }
       return ['code' => 200, 'erreur' => ''];
+  }
+
+  /**
+   * [Description for updatePortefeuille]
+   *
+   * @param mixed $map
+   *
+   * @return array
+   *
+   * Created at: 26/10/2025 15:29:27 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function updatePortefeuille($map): array
+  {
+    $sql = "UPDATE ma_moulinette.batch_traitement
+            SET nombre_projet = :nombre_projet
+            WHERE portefeuille = :portefeuille";
+    try {
+          $this->getEntityManager()->getConnection()->beginTransaction();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(':portefeuille', $map['portefeuille']);
+              $stmt->bindValue(':nombre_projet', $map['nombre_projet']);
+            $stmt->executeStatement();
+          $this->getEntityManager()->getConnection()->commit();
+        } catch (\Throwable $e) {
+            $this->getEntityManager()->getConnection()->rollBack();
+            return $this->handleDatabaseException($e);
+        }
+        /** on prépare la réponse */
+        return ['code' => 200, 'erreur' => ''];
   }
 }
