@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V2.7.0 - 24/10/2025              ##
+##               V2.8.0 - 26/10/2025              ##
 ##                                                ##
 ####################################################*/
 
@@ -57,7 +57,8 @@
 -- 22/07/2025 : Laurent HADJADJ - Renommage des hotspot_(high, medium, low) en menace_potentielle_(to_review, reviewed)_(high, medium, low) dans la table historique
 -- 22/07/2025 : Laurent HADJADJ - Ajout de l'attribut inconnu dans la relation anomalie + renommage de l'attribut inconnue en inconnu.
 -- 22/07/2025 : Laurent HADJADJ - Augmentation de la taille de l'attribut Key de la table profil (32 -> 56). Changement SonarQube en version 25.10.
--- 24/10/2025 : Laurent HADJADJ - renomage des colonnes files, classes et functions en nombre_files, nombre_classes et nombre_functions.
+-- 24/10/2025 : Laurent HADJADJ - Renommage des colonnes files, classes et functions en nombre_files, nombre_classes et nombre_functions.
+-- 26/10/2025 : Laurent HADJADJ - Ajout des tables batch_execution et batch_execution_journal
 
 -- SCHEMA: ma_moulinette
 
@@ -66,7 +67,9 @@ DROP SCHEMA IF EXISTS ma_moulinette CASCADE;
 CREATE SCHEMA ma_moulinette AUTHORIZATION db_user;
 COMMENT ON SCHEMA ma_moulinette IS 'Schéma de la base de données Ma-moulinette';
 
+-- ===============================================
 -- Création de la fonction sécurisé pg_stat_activity()
+-- ===============================================
 
 CREATE FUNCTION get_pg_stat_activity() RETURNS SETOF pg_stat_activity AS $$
 BEGIN
@@ -76,7 +79,9 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 GRANT EXECUTE ON FUNCTION get_pg_stat_activity() TO db_user;
 
+-- ===============================================
 -- Table: ma_moulinette.activity
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.activity;
 CREATE TABLE IF NOT EXISTS ma_moulinette.activity
@@ -106,7 +111,9 @@ COMMENT ON COLUMN ma_moulinette.activity.started_at IS 'Date et heure du debut d
 COMMENT ON COLUMN ma_moulinette.activity.executed_at IS ' Date et heure de fin du traitement d’import des données';
 COMMENT ON COLUMN ma_moulinette.activity.execution_time IS 'Temps d’execution du traitement d’import des données';
 
+-- ===============================================
 -- Table: ma_moulinette.activity_historique
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.activity_historique;
 CREATE TABLE IF NOT EXISTS ma_moulinette.activity_historique
@@ -136,14 +143,19 @@ COMMENT ON COLUMN ma_moulinette.activity_historique.success_rate IS 'Taux de ré
 COMMENT ON COLUMN ma_moulinette.activity_historique.max_time IS 'Temps maximum d’une analyse en seconde.';
 COMMENT ON COLUMN ma_moulinette.activity_historique.date_enregistrement IS 'Date de l’enregistrement';
 
+-- ===============================================
 -- Ajout des index
+-- ===============================================
+
 CREATE INDEX idx_year ON ma_moulinette.activity_historique (year);
 CREATE INDEX idx_day ON ma_moulinette.activity_historique (day);
 CREATE INDEX idx_analyse ON ma_moulinette.activity_historique ("analyse");
 CREATE INDEX idx_success_rate ON ma_moulinette.activity_historique (success_rate);
 CREATE INDEX idx_date_enregistrement ON ma_moulinette.activity_historique (date_enregistrement);
 
+-- ===============================================
 -- Table: ma_moulinette.activity_batch_report
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.activity_batch_report;
 CREATE TABLE IF NOT EXISTS ma_moulinette.activity_batch_report (
@@ -169,7 +181,10 @@ COMMENT ON COLUMN ma_moulinette.activity_batch_report.page IS 'Numéro de la pag
 COMMENT ON COLUMN ma_moulinette.activity_batch_report.last_error IS 'Liste des erreurs rencontrées durant le traitement des tâches.';
 COMMENT ON COLUMN ma_moulinette.activity_batch_report.date_enregistrement IS 'Date et heure de l’enregistrement du rapport dans la base de données.';
 
+-- ===============================================
 -- Index pour améliorer les performances sur les requêtes basées sur executed_at
+-- ===============================================
+
 DROP INDEX IF EXISTS ma_moulinette.idx_date_enregistrement;
 DROP INDEX IF EXISTS ma_moulinette.idx_task_status;
 DROP INDEX IF EXISTS ma_moulinette.idx_last_error_error_code;
@@ -177,7 +192,9 @@ CREATE INDEX IF NOT EXISTS idx_executed_at ON ma_moulinette.activity_batch_repor
 CREATE INDEX IF NOT EXISTS idx_task_status ON ma_moulinette.activity_batch_report (task_count, task_done, page);
 CREATE INDEX IF NOT EXISTS idx_last_error_error_code ON ma_moulinette.activity_batch_report ((last_error->>'errorCode'));
 
+-- ===============================================
 -- Table: ma_moulinette.actuator
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.actuator;
 CREATE TABLE IF NOT EXISTS ma_moulinette.actuator
@@ -207,7 +224,9 @@ COMMENT ON COLUMN ma_moulinette.actuator.personne IS 'Prénom et nom de l’util
 COMMENT ON COLUMN ma_moulinette.actuator.date_modification IS 'Date de la dernière modification.';
 COMMENT ON COLUMN ma_moulinette.actuator.date_enregistrement IS 'Date d’enregistrement.';
 
+-- ===============================================
 -- Table: ma_moulinette.actuator_info
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.actuator_info;
 CREATE TABLE IF NOT EXISTS ma_moulinette.actuator_info
@@ -227,7 +246,9 @@ COMMENT ON COLUMN ma_moulinette.actuator_info.id IS 'Identifiant unique de la ta
 COMMENT ON COLUMN ma_moulinette.actuator_info.actuator_info_description IS 'Description courte.';
 COMMENT ON COLUMN ma_moulinette.actuator_info.actuator_info_value IS 'Valeur de la clé actuator.';
 
+-- ===============================================
 -- Table: ma_moulinette.anomalie
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.anomalie;
 CREATE TABLE IF NOT EXISTS ma_moulinette.anomalie
@@ -292,7 +313,9 @@ COMMENT ON COLUMN ma_moulinette.anomalie.mode_collecte IS 'Mode de collecte : co
 COMMENT ON COLUMN ma_moulinette.anomalie.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.anomalie.date_enregistrement IS 'Date d’enregistrement de l’anomalie';
 
+-- ===============================================
 -- Table: ma_moulinette.anomalie_details
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.anomalie_details;
 CREATE TABLE IF NOT EXISTS ma_moulinette.anomalie_details
@@ -345,7 +368,9 @@ COMMENT ON COLUMN ma_moulinette.anomalie_details.mode_collecte IS 'Mode de colle
 COMMENT ON COLUMN ma_moulinette.anomalie_details.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.anomalie_details.date_enregistrement IS 'Date d’enregistrement des détails de l’anomalie';
 
+-- ===============================================
 -- Table: ma_moulinette.batch
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.batch;
 CREATE TABLE IF NOT EXISTS ma_moulinette.batch
@@ -376,7 +401,9 @@ COMMENT ON COLUMN ma_moulinette.batch.execution IS 'État d’exécution du batc
 COMMENT ON COLUMN ma_moulinette.batch.date_modification IS 'Date de la dernière modification du batch';
 COMMENT ON COLUMN ma_moulinette.batch.date_enregistrement IS 'Date d’enregistrement du batch';
 
+-- ===============================================
 -- Table: ma_moulinette.batch_traitement
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.batch_traitement;
 CREATE TABLE IF NOT EXISTS ma_moulinette.batch_traitement
@@ -407,7 +434,74 @@ COMMENT ON COLUMN ma_moulinette.batch_traitement.debut_traitement IS 'Date et he
 COMMENT ON COLUMN ma_moulinette.batch_traitement.fin_traitement IS 'Date et heure de fin du traitement';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.date_enregistrement IS 'Date d’enregistrement du traitement dans le système';
 
+-- ===============================================
+-- TABLE: batch_execution
+-- ===============================================
+
+DROP TABLE IF EXISTS ma_moulinette.batch_execution;
+CREATE TABLE ma_moulinette.batch_execution (
+    id SERIAL PRIMARY KEY,
+    nom VARCHAR(32) NOT NULL,
+    reference_unique UUID NOT NULL,
+    mode_collecte VARCHAR(32) NOT NULL,
+    utilisateur_collecte VARCHAR(320) NULL,
+    date_enregistrement TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+
+    CONSTRAINT uq_batch_execution_reference UNIQUE (reference_unique),
+
+    -- Commentaires
+    CONSTRAINT ck_mode_collecte CHECK (mode_collecte IN ('COLLECTE', 'TRAITEMENT MANUEL', 'TRAITEMENT AUTOMATIQUE'))
+);
+
+ALTER TABLE ma_moulinette.batch_execution OWNER TO db_user;
+GRANT ALL ON TABLE ma_moulinette.batch_execution TO db_user;
+
+COMMENT ON TABLE ma_moulinette.batch_execution IS 'Journal des exécutions de batchs.';
+COMMENT ON COLUMN ma_moulinette.batch_execution.id IS 'Identifiant unique de la table batch_execution';
+COMMENT ON COLUMN ma_moulinette.batch_execution.nom IS 'Nom du batch exécuté.';
+COMMENT ON COLUMN ma_moulinette.batch_execution.reference_unique IS 'Référence unique du journal.';
+COMMENT ON COLUMN ma_moulinette.batch_execution.mode_collecte IS 'Mode de collecte : COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE';
+COMMENT ON COLUMN ma_moulinette.batch_execution.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte.';
+COMMENT ON COLUMN ma_moulinette.batch_execution.date_enregistrement IS 'Date d’enregistrement du journal de l’exécution du batch.';
+
+-- ===============================================
+-- TABLE: batch_execution_journal
+-- ===============================================
+
+DROP TABLE IF EXISTS ma_moulinette.batch_execution_journal;
+CREATE TABLE ma_moulinette.batch_execution_journal (
+    id SERIAL PRIMARY KEY,
+    code INTEGER NOT NULL,
+    compte_rendu TEXT NOT NULL,
+    date_execution TIMESTAMPTZ NOT NULL,
+    job_id INTEGER NOT NULL,
+
+    CONSTRAINT fk_batch_execution_journal_job
+        FOREIGN KEY (job_id)
+        REFERENCES ma_moulinette.batch_execution (id)
+        ON DELETE CASCADE
+);
+
+ALTER TABLE ma_moulinette.batch_execution_journal OWNER TO db_user;
+GRANT ALL ON TABLE ma_moulinette.batch_execution_journal TO db_user;
+
+COMMENT ON TABLE ma_moulinette.batch_execution_journal IS 'Journal détaillé des collectes/exécutions associées à un batch.';
+COMMENT ON COLUMN ma_moulinette.batch_execution_journal.id IS 'Identifiant unique de la table batch_execution_journal';
+COMMENT ON COLUMN ma_moulinette.batch_execution_journal.code IS 'Code de statut du traitement (200 = OK, 500 = Erreur, etc.)';
+COMMENT ON COLUMN ma_moulinette.batch_execution_journal.compte_rendu IS 'Compte rendu HTML du traitement.';
+COMMENT ON COLUMN ma_moulinette.batch_execution_journal.date_execution IS 'Date d’exécution de la collecte.';
+COMMENT ON COLUMN ma_moulinette.batch_execution_journal.job_id IS 'Clé étrangère vers batch_execution.id';
+
+-- INDEXES
+
+CREATE INDEX idx_batch_execution_reference_unique ON ma_moulinette.batch_execution(reference_unique);
+CREATE INDEX idx_batch_execution_journal_job ON ma_moulinette.batch_execution_journal(job_id);
+CREATE INDEX idx_batch_execution_date_enregistrement ON ma_moulinette.batch_execution(date_enregistrement);
+CREATE INDEX idx_batch_execution_journal_date_execution ON ma_moulinette.batch_execution_journal(date_execution);
+
+-- ===============================================
 -- Table: ma_moulinette.equipe
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.equipe;
 CREATE TABLE IF NOT EXISTS ma_moulinette.equipe
@@ -428,7 +522,9 @@ COMMENT ON COLUMN ma_moulinette.equipe.description IS 'Description de l’équip
 COMMENT ON COLUMN ma_moulinette.equipe.date_modification IS 'Date de la dernière modification de l’équipe';
 COMMENT ON COLUMN ma_moulinette.equipe.date_enregistrement IS 'Date d’enregistrement de l’équipe';
 
+-- ===============================================
 -- Table: ma_moulinette.historique
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.historique;
 CREATE TABLE IF NOT EXISTS ma_moulinette.historique
@@ -578,7 +674,9 @@ COMMENT ON COLUMN ma_moulinette.historique.utilisateur_collecte IS 'Cpmpte de l�
 COMMENT ON COLUMN ma_moulinette.historique.actuator_info IS 'Information Actuator du projet';
 COMMENT ON COLUMN ma_moulinette.historique.date_enregistrement IS 'Date d’enregistrement de l’historique';
 
+-- ===============================================
 -- Table: ma_moulinette.hotspot_details
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.hotspot_details;
 CREATE TABLE IF NOT EXISTS ma_moulinette.hotspot_details
@@ -633,7 +731,9 @@ COMMENT ON COLUMN ma_moulinette.hotspot_details.mode_collecte IS 'Mode de collec
 COMMENT ON COLUMN ma_moulinette.hotspot_details.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.date_enregistrement IS 'Date d’enregistrement du détail de hotspot';
 
+-- ===============================================
 -- Table: ma_moulinette.hotspot_owasp
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.hotspot_owasp;
 CREATE TABLE IF NOT EXISTS ma_moulinette.hotspot_owasp
@@ -674,7 +774,9 @@ COMMENT ON COLUMN ma_moulinette.hotspot_owasp.mode_collecte IS 'Mode de collecte
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.date_enregistrement IS 'Date d’enregistrement du hotspot OWASP';
 
+-- ===============================================
 -- Table: ma_moulinette.hotspots
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.hotspots;
 CREATE TABLE IF NOT EXISTS ma_moulinette.hotspots
@@ -713,7 +815,9 @@ COMMENT ON COLUMN ma_moulinette.hotspots.mode_collecte IS 'Mode de collecte : co
 COMMENT ON COLUMN ma_moulinette.hotspots.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.hotspots.date_enregistrement IS 'Date d’enregistrement du hotspot';
 
+-- ===============================================
 -- Table: ma_moulinette.information_projet
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.information_projet;
 CREATE TABLE IF NOT EXISTS ma_moulinette.information_projet
@@ -750,7 +854,9 @@ COMMENT ON COLUMN ma_moulinette.information_projet.mode_collecte IS 'Mode de col
 COMMENT ON COLUMN ma_moulinette.information_projet.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.information_projet.date_enregistrement IS 'Date d’enregistrement de l’information du projet';
 
+-- ===============================================
 -- Table: ma_moulinette.liste_projet
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.liste_projet;
 CREATE TABLE IF NOT EXISTS ma_moulinette.liste_projet
@@ -773,7 +879,9 @@ COMMENT ON COLUMN ma_moulinette.liste_projet.tags IS 'Tags associés au projet s
 COMMENT ON COLUMN ma_moulinette.liste_projet.visibility IS 'Visibilité du projet';
 COMMENT ON COLUMN ma_moulinette.liste_projet.date_enregistrement IS 'Date d’enregistrement du projet';
 
+-- ===============================================
 -- Table: ma_moulinette.logger
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.logger;
 CREATE TABLE IF NOT EXISTS ma_moulinette.logger
@@ -802,7 +910,9 @@ COMMENT ON COLUMN ma_moulinette.logger.mode_collecte IS 'Mode de collecte : coll
 COMMENT ON COLUMN ma_moulinette.logger.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.logger.date_enregistrement IS 'Date d’enregistrement du projet';
 
+-- ===============================================
 -- Table: ma_moulinette.ma_moulinette
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.ma_moulinette;
 CREATE TABLE IF NOT EXISTS ma_moulinette.ma_moulinette
@@ -821,7 +931,9 @@ COMMENT ON COLUMN ma_moulinette.ma_moulinette.version IS 'Numéro de version de 
 COMMENT ON COLUMN ma_moulinette.ma_moulinette.date_version IS 'Date de publication de la version';
 COMMENT ON COLUMN ma_moulinette.ma_moulinette.date_enregistrement IS 'Date d’enregistrement';
 
-    -- Table: ma_moulinette.mesures
+-- ===============================================
+-- Table: ma_moulinette.mesures
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.mesures;
 CREATE TABLE IF NOT EXISTS ma_moulinette.mesures
@@ -866,7 +978,9 @@ COMMENT ON COLUMN ma_moulinette.mesures.mode_collecte IS 'Mode de collecte : col
 COMMENT ON COLUMN ma_moulinette.mesures.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.mesures.date_enregistrement IS 'Date d’enregistrement de la mesure';
 
+-- ===============================================
 -- Table: ma_moulinette.no_sonar
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.no_sonar;
 CREATE TABLE IF NOT EXISTS ma_moulinette.no_sonar
@@ -893,7 +1007,9 @@ COMMENT ON COLUMN ma_moulinette.no_sonar.mode_collecte IS 'Mode de collecte : co
 COMMENT ON COLUMN ma_moulinette.no_sonar.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.no_sonar.date_enregistrement IS 'Date d’enregistrement de l’entrée NoSonar';
 
+-- ===============================================
 -- Table: ma_moulinette.notes
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.notes;
 CREATE TABLE IF NOT EXISTS ma_moulinette.notes
@@ -917,7 +1033,9 @@ COMMENT ON COLUMN ma_moulinette.notes.mode_collecte IS 'Mode de collecte : colle
 COMMENT ON COLUMN ma_moulinette.notes.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.notes.date_enregistrement IS 'Date d’enregistrement de la note';
 
+-- ===============================================
 -- Table: ma_moulinette.owasp
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.owasp;
 CREATE TABLE IF NOT EXISTS ma_moulinette.owasp
@@ -1065,7 +1183,10 @@ COMMENT ON COLUMN ma_moulinette.owasp.mode_collecte IS 'Mode de collecte : colle
 COMMENT ON COLUMN ma_moulinette.owasp.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.owasp.date_enregistrement IS 'Date d’enregistrement des données';
 
+-- ===============================================
 -- Création de la table owasp_top10
+-- ===============================================
+
 DROP TABLE IF EXISTS ma_moulinette.owasp_top10;
 CREATE TABLE IF NOT EXISTS ma_moulinette.owasp_top10 (
     id SERIAL PRIMARY KEY,
@@ -1092,7 +1213,9 @@ COMMENT ON COLUMN owasp_top10.date_enregistrement IS 'Date et heure d’enregist
 -- Création d’index pour améliorer les performances des requêtes sur la colonne year
 CREATE INDEX idx_owasp_year ON owasp_top10(year);
 
+-- ===============================================
 -- Table: ma_moulinette.portefeuille
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.portefeuille;
 CREATE TABLE IF NOT EXISTS ma_moulinette.portefeuille
@@ -1115,7 +1238,9 @@ COMMENT ON COLUMN ma_moulinette.portefeuille.liste IS 'Liste des éléments ou d
 COMMENT ON COLUMN ma_moulinette.portefeuille.date_modification IS 'Date de la dernière modification du portefeuille';
 COMMENT ON COLUMN ma_moulinette.portefeuille.date_enregistrement IS 'Date d’enregistrement du portefeuille';
 
+-- ===============================================
 -- Table: ma_moulinette.portefeuille_historique
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.portefeuille_historique;
 CREATE TABLE IF NOT EXISTS ma_moulinette.portefeuille_historique
@@ -1146,8 +1271,10 @@ COMMENT ON COLUMN ma_moulinette.portefeuille_historique.description IS 'Descript
 COMMENT ON COLUMN ma_moulinette.portefeuille_historique.detail IS 'Détails supplémentaires ou données binaires associées à l’événement';
 COMMENT ON COLUMN ma_moulinette.portefeuille_historique.date_enregistrement IS 'Date d’enregistrement de l’entrée historique dans la base de données';
 
+-- ===============================================
 -- Table: ma_moulinette.profiles
 -- Mise à jour SonarQube de key (32-->56) en version 25.10
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.profiles;
 CREATE TABLE IF NOT EXISTS ma_moulinette.profiles
@@ -1174,7 +1301,9 @@ COMMENT ON COLUMN ma_moulinette.profiles.rules_updated_at IS 'Date de la derniè
 COMMENT ON COLUMN ma_moulinette.profiles.referential_default IS 'Indique si le profil est le profil par défaut';
 COMMENT ON COLUMN ma_moulinette.profiles.date_enregistrement IS 'Date d’enregistrement du profil';
 
+-- ===============================================
 -- Table: ma_moulinette.profiles_historique
+-- ===============================================
 
 CREATE TABLE IF NOT EXISTS ma_moulinette.profiles_historique
 (
@@ -1204,7 +1333,9 @@ COMMENT ON COLUMN ma_moulinette.profiles_historique.description IS 'Description 
 COMMENT ON COLUMN ma_moulinette.profiles_historique.detail IS 'Détails supplémentaires ou données binaires associées à l’événement';
 COMMENT ON COLUMN ma_moulinette.profiles_historique.date_enregistrement IS 'Date d’enregistrement de l’entrée historique';
 
+-- ===============================================
 -- Table: ma_moulinette.properties
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.properties;
 CREATE TABLE IF NOT EXISTS ma_moulinette.properties
@@ -1233,7 +1364,9 @@ COMMENT ON COLUMN ma_moulinette.properties.date_creation IS 'Date de création d
 COMMENT ON COLUMN ma_moulinette.properties.date_modification_projet IS 'Date de la dernière modification du projet';
 COMMENT ON COLUMN ma_moulinette.properties.date_modification_profil IS 'Date de la dernière modification du profil';
 
+-- ===============================================
 -- Table: ma_moulinette.repartition_temp
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.repartition_temp;
 CREATE UNLOGGED TABLE IF NOT EXISTS ma_moulinette.repartition_temp (
@@ -1254,7 +1387,9 @@ COMMENT ON COLUMN ma_moulinette.repartition_temp.type IS 'Catégorie : BUG, VULN
 COMMENT ON COLUMN ma_moulinette.repartition_temp.severity IS 'Niveau de sévérité de l’anomalie';
 COMMENT ON COLUMN ma_moulinette.repartition_temp.setup IS 'Timestamp en milliseconde unique pour chaque analyse';
 
+-- ===============================================
 -- Table: ma_moulinette.repartition
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.repartition;
 CREATE TABLE IF NOT EXISTS ma_moulinette.repartition
@@ -1456,7 +1591,9 @@ COMMENT ON COLUMN ma_moulinette.repartition.mode_collecte IS 'Mode de collecte :
 COMMENT ON COLUMN ma_moulinette.repartition.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.repartition.date_enregistrement IS 'Date d’enregistrement de la répartition dans le système';
 
+-- ===============================================
 -- Table: ma_moulinette.todo
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.todo;
 CREATE TABLE IF NOT EXISTS ma_moulinette.todo
@@ -1483,7 +1620,9 @@ COMMENT ON COLUMN ma_moulinette.todo.mode_collecte IS 'Mode de collecte : collec
 COMMENT ON COLUMN ma_moulinette.todo.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.todo.date_enregistrement IS 'Date d’enregistrement du Todo';
 
+-- ===============================================
 -- Table: ma_moulinette.utilisateur
+-- ===============================================
 
 DROP TABLE IF EXISTS ma_moulinette.utilisateur;
 CREATE TABLE IF NOT EXISTS ma_moulinette.utilisateur
@@ -1522,7 +1661,9 @@ COMMENT ON COLUMN ma_moulinette.utilisateur.reset_password_count IS 'Nombre de t
 COMMENT ON COLUMN ma_moulinette.utilisateur.date_modification IS 'Date de modification';
 COMMENT ON COLUMN ma_moulinette.utilisateur.date_enregistrement IS 'Date de création';
 
---- Ajout des indexes sur toutes tables ayant un attribut maven_key
+-- ===============================================
+-- Ajout des indexes sur toutes tables ayant un attribut maven_key
+-- ===============================================
 
 DO
 $$
