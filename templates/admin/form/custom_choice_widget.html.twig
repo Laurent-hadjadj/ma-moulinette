@@ -99,11 +99,6 @@
             // Si l’ancienne valeur existe encore, la re-sélectionner
             if (currentValue && data.some(d => d.maven_key === currentValue)) {
               ts.setValue(currentValue);
-              console.log("Valeur précédente conservée :", currentValue);
-            } else {
-              // Sinon, sélectionner automatiquement la première
-              ts.setValue(data[0].maven_key);
-              console.log("Premier projet sélectionné :", data[0].maven_key);
             }
 
             // Mettre à jour le helper
