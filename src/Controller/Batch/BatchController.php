@@ -22,6 +22,8 @@ use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\BatchTraitement;
+use App\Entity\BatchExecution;
+use App\Service\PdfExportService;
 
 /**
  * [Description BatchController]
@@ -51,7 +53,8 @@ class BatchController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private ParameterBagInterface $params,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        private PdfExportService $pdfExportService
     ) {
         $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
@@ -73,6 +76,24 @@ class BatchController extends AbstractController
             'version' => $this->version,
             'date_copyright' => $this->dateCopyright
         ];
+    }
+
+    /**
+     * [Description for exportPdf]
+     *
+     * @param BatchExecution $batch
+     * @param PdfExportService $pdfExportService
+     *
+     * @return Response
+     *
+     * Created at: 25/10/2025 22:15:53 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    #[Route('/api/traitement/rapport/pdf/{id}', name: 'batch_execution_journal_pdf')]
+    public function exportPdf(BatchExecution $batch): Response
+    {
+        return $this->pdfExportService->generateBatchPdf($batch);
     }
 
     /**
@@ -115,6 +136,7 @@ class BatchController extends AbstractController
 
         // Obtenir la date du dernier traitement automatique ou programmé
         $r = $batchTraitementRepos->selectBatchTraitementDateEnregistrementLast();
+
         if ($r['code'] !== 200) {
             $this->logger->error("[Traitement-Suivi] Échec de la requête selectBatchTraitementDateEnregistrementLast.", [
                 'code' => $r['code'] ?? null
@@ -186,27 +208,85 @@ class BatchController extends AbstractController
 
             $type = ($traitement['mode_collecte'] === "Auto") ? "automatique" : "manuel";
 
-            $traitements[] = [
-                'processus' => "Tout va bien !",
-                'mode_collecte' => $traitement['mode_collecte'],
-                'message' => $message,
-                'css' => $css,
-                'type' => $type,
-                'titre' => $traitement['titre'],
-                'portefeuille' => $traitement['portefeuille'],
-                'projet' => $traitement['projet'],
-                'responsable' => $traitement['responsable'],
-                'execution' => $execution
-            ];
+            $render['processus'] = "Tout va bien !";
+            $render['mode_collecte'] =  $traitement['mode_collecte'];
+            $render['message'] =  $message;
+            $render['css'] =  $css;
+            $render['type'] =  $type;
+            $render['titre'] =  $traitement['titre'];
+            $render['portefeuille'] =  $traitement['portefeuille'];
+            $render['projet'] =  $traitement['projet'];
+            $render['responsable'] =  $traitement['responsable'];
+            $render['execution'] =  $execution;
+            $render['date'] =  $r['liste'][0]['date'] ?? 'inconnu';
+            $render['traitements'] = $traitements;
         }
-
-        return $this->render(
-            static::$page,
-            array_merge($render, [
-                'date' => $r['liste'][0]['date'],
-                'traitements' => $traitements
-            ])
-        );
+        dd($render);
+        return $this->render(static::$page, $render);
     }
+
+/*#[Route('/rapports', name: 'rapport_index')]
+public function rapports(BatchExecutionRepository $batchRepo): Response
+{
+    $batches = $batchRepo->findBy([], ['dateLancement' => 'DESC']);
+
+    // Statistiques
+    $total = count($batches);
+    $nbErreur = 0;
+    $nbSucces = 0;
+
+    foreach ($batches as $batch) {
+        $codes = array_map(fn($j) => $j->getCode(), $batch->getCollectes()->toArray());
+        if (in_array(500, $codes)) {
+            $nbErreur++;
+        } else {
+            $nbSucces++;
+        }
+    }
+
+    // Récupération des utilisateurs distincts
+    $users = $batchRepo->createQueryBuilder('b')
+        ->select('DISTINCT b.utilisateurCollecte')
+        ->where('b.utilisateurCollecte IS NOT NULL')
+        ->orderBy('b.utilisateurCollecte', 'ASC')
+        ->getQuery()
+        ->getSingleColumnResult(); // Retourne un tableau de chaînes
+
+    return $this->render('rapport/index.html.twig', [
+        'batches' => $batches,
+        'users' => $users,
+        'total' => $total,
+        'nbErreur' => $nbErreur,
+        'nbSucces' => $nbSucces,
+    ]);
+}
+
+public function index(EntityManagerInterface $em)
+{
+    // ... tes stats existantes
+    $dateDebut = new \DateTime('-30 days');
+
+    $qb = $em->createQueryBuilder();
+    $qb->select('DATE(r.date) as jour, COUNT(r.id) as nbJobs')
+        ->from(Rapport::class, 'r')
+        ->where('r.date >= :dateDebut')
+        ->setParameter('dateDebut', $dateDebut)
+        ->groupBy('jour')
+        ->orderBy('jour', 'ASC');
+
+    $result = $qb->getQuery()->getResult();
+
+    // Préparer pour JS
+    $jours = array_map(fn($r) => $r['jour']->format('Y-m-d'), $result);
+    $nbJobs = array_map(fn($r) => $r['nbJobs'], $result);
+
+    return $this->render('rapport/index.html.twig', [
+        'total' => $total,
+        'nbSucces' => $nbSucces,
+        'nbErreur' => $nbErreur,
+        'jours' => json_encode($jours),
+        'nbJobs' => json_encode($nbJobs),
+    ]);
+}*/
 
 }
