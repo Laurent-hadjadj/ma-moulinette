@@ -25,6 +25,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Portefeuille;
+use App\Entity\Batch;
 
 /**
  * [Description PortefeuilleCrudController]
@@ -138,8 +139,6 @@ class PortefeuilleCrudController extends AbstractCrudController
 
         yield ChoiceField::new('equipe')
             ->setChoices(array_combine($key1, $val1))
-            //->allowMultipleChoices()
-            //->autocomplete()
             ->renderExpanded()
             ->setHelp("Nom de l'équipe en charge des projets.");
 
@@ -265,10 +264,31 @@ class PortefeuilleCrudController extends AbstractCrudController
             return;
         }
 
+        /** On récupère le nombre de projet pour ce portefeuille */
+        $nombre_projet = count($entityInstance->getListe());
+        /** On récupère le nom du portefeuille */
+        $nom_portefeuille = $entityInstance->getTitre();
         /** On ajoute la date de modification  */
         $entityInstance->setDateModification(new \DateTime());
 
-        parent::persistEntity($em, $entityInstance);
+        try {
+                parent::persistEntity($em, $entityInstance);
+
+                /** On met à jour le nombre de projet pour ce portefeuille */
+                $isExist = $this->emm->getRepository(Batch::class)->findOneBy(['titre' => mb_strtoupper($nom_portefeuille)]);
+
+                $map = [
+                    'portefeuille' => $nom_portefeuille,
+                    'nombre_projet' => $nombre_projet
+                ];
+
+                if($isExist){
+                    $this->emm->getRepository(Batch::class)->updatePortefeuille($map);
+                }
+        } catch (\Exception $e) {
+            $this->addFlash('danger', 'Une erreur est survenue lors de la mise à jour du portefeuille : ' . $e->getMessage());
+        }
+
     }
 
     #[Route('/admin/portefeuille/list-projets', name: 'admin_list_projets')]
