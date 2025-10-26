@@ -190,7 +190,7 @@ class BatchController extends AbstractController
         $traitements = [];
         foreach ($listeAll['liste'] as $traitement) {
             if (!empty($traitement['debut'])) {
-                $result = $traitement['resultat'];
+                $result = $traitement['result'];
 
                 // Définition du message et de la classe CSS
                 $message = ($result == 0) ? "Erreur" : "Succès";
@@ -207,21 +207,23 @@ class BatchController extends AbstractController
             }
 
             $type = ($traitement['mode_collecte'] === "Auto") ? "automatique" : "manuel";
-
-            $render['processus'] = "Tout va bien !";
-            $render['mode_collecte'] =  $traitement['mode_collecte'];
-            $render['message'] =  $message;
-            $render['css'] =  $css;
-            $render['type'] =  $type;
-            $render['titre'] =  $traitement['titre'];
-            $render['portefeuille'] =  $traitement['portefeuille'];
-            $render['projet'] =  $traitement['projet'];
-            $render['responsable'] =  $traitement['responsable'];
-            $render['execution'] =  $execution;
-            $render['date'] =  $r['liste'][0]['date'] ?? 'inconnu';
-            $render['traitements'] = $traitements;
+            $traitements[] = [
+                'processus' =>"Tout va bien !",
+                'mode_collecte' =>  $traitement['mode_collecte'],
+                'message' =>  $message,
+                'css' =>  $css,
+                'type' =>  $type,
+                'titre' =>  $traitement['titre'],
+                'portefeuille' =>  $traitement['portefeuille'],
+                'projet' =>  $traitement['projet'],
+                'responsable' =>  $traitement['responsable'],
+                'execution' =>  $execution
+            ];
         }
-        dd($render);
+
+        $render['date'] =  $r['liste'][0]['date'] ?? 'inconnu';
+        $render['traitements'] = $traitements;
+
         return $this->render(static::$page, $render);
     }
 
