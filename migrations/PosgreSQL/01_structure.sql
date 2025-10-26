@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V2.8.0 - 26/10/2025              ##
+##               V2.8.1 - 26/10/2025              ##
 ##                                                ##
 ####################################################*/
 
@@ -59,6 +59,7 @@
 -- 22/07/2025 : Laurent HADJADJ - Augmentation de la taille de l'attribut Key de la table profil (32 -> 56). Changement SonarQube en version 25.10.
 -- 24/10/2025 : Laurent HADJADJ - Renommage des colonnes files, classes et functions en nombre_files, nombre_classes et nombre_functions.
 -- 26/10/2025 : Laurent HADJADJ - Ajout des tables batch_execution et batch_execution_journal
+-- 26/10/2025 : Laurent HADJADJ - Renomage de la colonne result en success dans la table batch_traitement
 
 -- SCHEMA: ma_moulinette
 
@@ -410,7 +411,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.batch_traitement
 (
   id SERIAL PRIMARY KEY,
   mode_collecte character varying(32) NOT NULL,
-  result boolean NOT NULL,
+  success boolean NOT NULL,
   titre character varying(32) NOT NULL,
   portefeuille character varying(32) NOT NULL,
   nombre_projet integer NOT NULL,
@@ -425,7 +426,7 @@ GRANT ALL ON TABLE ma_moulinette.batch_traitement TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.batch_traitement.id IS 'Identifiant unique du traitement';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.mode_collecte IS 'Mode de collecte du traitement';
-COMMENT ON COLUMN ma_moulinette.batch_traitement.result IS 'Indique si le traitement a réussi ou échoué';
+COMMENT ON COLUMN ma_moulinette.batch_traitement.success IS 'Indique si le traitement a réussi ou échoué';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.titre IS 'Titre du traitement';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.portefeuille IS 'Nom du portefeuille de projets associé';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.nombre_projet IS 'Nombre de projets traités';
