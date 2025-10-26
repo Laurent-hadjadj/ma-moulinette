@@ -337,7 +337,7 @@ class BatchManuelController extends AbstractController
 
                 $this->em->flush();
 
-                return new JsonResponse(compact('code', 'type', 'message', 'lien'),
+                return new JsonResponse(compact('code', 'type', 'message'),
                 Response::HTTP_OK);
             }
         }
