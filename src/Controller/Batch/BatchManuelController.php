@@ -191,7 +191,7 @@ class BatchManuelController extends AbstractController
                 'code' => 404,
                 'type' => 'warning',
                 'message' => 'La liste des traitements ne contient pas le portefeuille (Erreur 404).',
-                'erreur' => $liste_projets['erreur'] ?? null
+                'erreur' => $traitement['erreur'] ?? null
             ];
         }
 
