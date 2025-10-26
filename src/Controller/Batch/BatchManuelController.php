@@ -19,12 +19,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Uid\Ulid;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Controller\Batch\CollecteController;
 use App\Entity\Portefeuille;
 use App\Entity\BatchTraitement;
+use App\Entity\BatchExecution;
+use App\Entity\BatchExecutionJournal;
 
 /**
  * [Description BatchController]
@@ -34,6 +37,7 @@ class BatchManuelController extends AbstractController
     private static $erreur400 = "La requête est incorrecte (Erreur 400).";
     private static $noMessage = 'Aucun message remonté.';
     private static $noError = 'Aucune erreur remontée.';
+    private static $europeParis = 'Europe/Paris';
 
     public function __construct(
         private CollecteController $collecte,
@@ -296,22 +300,56 @@ class BatchManuelController extends AbstractController
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->security->getUser()->getCourriel();
 
+        // Création du job principal
+        $reference = new Ulid();
+        $batchExecution = new BatchExecution(
+            'Collecte du ' . date('d/m/Y H:i'),
+            $reference,
+            $utilisateur_collecte,
+            'TRAITEMENT MANUEL'
+        );
+
+        $this->em->persist($batchExecution);
+
+        $debut_traitement = new \DateTime('now', new \DateTimeZone(static::$europeParis));
         /** On lance la collecte */
         foreach ($les_projets['liste'] as $le_projet){
             $result = $this->collecte->collecte($data->portefeuille, $le_projet, 'TRAITEMENT MANUEL', $utilisateur_collecte);
+
+            /** On crée le journal d'execution */
+            $journal = new BatchExecutionJournal();
+            $journal->setCode($result['code']);
+            $journal->setCompteRendu($result['compte_rendu']);
+            $journal->setDateExecution(new \DateTimeImmutable());
+
+            $batchExecution->addJournal($journal);
+            $this->em->persist($journal);
 
             if ($result['code'] === 500){
                 $code = $result['code'];
                 $type = 'warning';
                 $message = "La collecte du projet <strong>$le_projet</strong> n'a pas abouti.<br>Consulter le journal d'execution pour avoir plus d'information.";
-                $lien = 'xvftr';
+
+                $this->em->flush();
 
                 return new JsonResponse(compact('code', 'type', 'message', 'lien'),
                 Response::HTTP_OK);
             }
         }
 
-        return new JsonResponse(['code' => 200], Response::HTTP_OK);
+        /** Flush global */
+        $this->em->flush();
+
+        $fin_traitement = new \DateTime('now', new \DateTimeZone(static::$europeParis));
+        $interval = $debut_traitement->diff($fin_traitement);
+        $temps_traitement = $interval->format('%H:%i:%s.%f');
+
+        return new JsonResponse([
+            'code' => 200,
+            'message' => 'Collecte terminée avec succès',
+            'reference' => (string) $reference,
+            'temps_traitement' => $temps_traitement
+        ], Response::HTTP_OK);
     }
 
 }
