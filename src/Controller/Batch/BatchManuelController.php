@@ -38,6 +38,7 @@ class BatchManuelController extends AbstractController
     private static $noMessage = 'Aucun message remonté.';
     private static $noError = 'Aucune erreur remontée.';
     private static $europeParis = 'Europe/Paris';
+    private static $dateFormat = "Y-m-d H:i:s";
 
     public function __construct(
         private CollecteController $collecte,
@@ -211,7 +212,6 @@ class BatchManuelController extends AbstractController
                 'type' => 'alert',
                 'message' => "Le portefeuille de projet n'est pas accessible (Erreur {$liste_projets['code']}).",
                 'erreur' =>  $liste_projets['erreur'] ?? null
-
             ];
         }
 
@@ -236,6 +236,7 @@ class BatchManuelController extends AbstractController
             array_push($liste, $value);
         }
 
+        // On renvoie une liste de maven_key
         return [
             'code' => 200,
             'liste' => $liste
@@ -259,6 +260,7 @@ class BatchManuelController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /traitement/manuel");
 
+        $batchTraitementRepos = $this->em->getRepository(BatchTraitement::class);
         $user = $this->security->getUser();
 
         $this->denyAccessUnlessGranted("ROLE_BATCH",
@@ -268,6 +270,7 @@ class BatchManuelController extends AbstractController
         $data = json_decode($request->getContent());
 
         if ($data === null ||
+                !property_exists($data, 'id') ||
                 !property_exists($data, 'titre_portefeuille') ||
                 !property_exists($data, 'portefeuille'))
             {
@@ -283,7 +286,7 @@ class BatchManuelController extends AbstractController
                 ], Response::HTTP_OK);
             }
 
-        // On extrait la liste des projets pour le portefeuille depuis la table batch
+        // On extrait la liste des projets pour le portefeuille depuis la table batch_traitement
         $les_projets = $this->listeProjet($data->titre_portefeuille, $data->portefeuille);
 
         if ($les_projets['code'] === 404){
@@ -345,6 +348,32 @@ class BatchManuelController extends AbstractController
         $fin_traitement = new \DateTime('now', new \DateTimeZone(static::$europeParis));
         $interval = $debut_traitement->diff($fin_traitement);
         $temps_traitement = $interval->format('%H:%i:%s.%f');
+
+        /** On met à jour la table des traitements */
+        $map = [
+            'debut_traitement' => $debut_traitement->format(static::$dateFormat),
+            'fin_traitement' => $fin_traitement->format(static::$dateFormat),
+            'success' => 1,
+            'id' => $data->id
+        ];
+
+        $update = $batchTraitementRepos->updateBatchTraitement($map);
+
+        if ($update['code'] !== 200) {
+            $this->logger->error('[Batch Manuel] ❌ Échec de la requête updateBatchTraitement', [
+                'code' => $update['code'],
+                'message' => $update['message'] ?? static::$noMessage,
+                'erreur' => $update['erreur'] ?? static::$noError,
+                'id' => $data->id ?? 'inconnu'
+                ]);
+
+            return new JsonResponse([
+                'code' => $update['code'],
+                'type' => 'alert',
+                'message' => "Il n'est pas possible de mettre à jour le traitement (Erreur {$update['code']}).",
+                'erreur' =>  $update['erreur'] ?? null
+            ], Response::HTTP_OK);
+        }
 
         return new JsonResponse([
             'code' => 200,
