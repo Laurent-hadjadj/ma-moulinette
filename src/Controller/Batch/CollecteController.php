@@ -183,17 +183,30 @@ class CollecteController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function generateHtmlFromArray(array $items): string
+    private function generateHtmlFromArray(array $items): string | null
     {
         $html = '<ul class="data-list">';
 
         foreach ($items as $key => $value) {
-                // Gérer les cas où la valeur est null ou vide
-                $value = $value ?? 'N/A';
-                $html .= '<li class="lead">';
-                $html .= '<strong>' . htmlspecialchars($key) . '</strong> => ';
-                $html .= htmlspecialchars($value);
-                $html .= '</li>';
+            if (!is_string($key)) {
+                $key = (string) $key;
+            }
+
+            if ($value === null) {
+                $value = 'N/A';
+            } elseif (!is_scalar($value)) {
+                // pour les arrays, objets, booléens, etc.
+                $value = json_encode($value, JSON_UNESCAPED_UNICODE);
+            } else {
+                // scalaires (int, float, bool) → cast en string
+                $value = (string) $value;
+            }
+            // Gérer les cas où la valeur est null ou vide
+            $value = $value ?? 'N/A';
+            $html .= '<li class="lead">';
+            $html .= '<strong>' . htmlspecialchars($key) . '</strong> => ';
+            $html .= htmlspecialchars($value);
+            $html .= '</li>';
         }
 
         $html .= '</ul>';
@@ -621,8 +634,7 @@ class CollecteController extends AbstractController
             $item = $anomalieDetail['historique'];
             if (empty($item)){
                 $msg = htmlspecialchars($anomalieDetail['message']);
-                $collecte[] =
-                '<p class="open-sans">'. $msg .'</p>';
+                $collecte[] = '<p class="open-sans">'. $msg .'</p>';
             } else  {
                 $collecte[] =
                 '<p class="open-sans">'. htmlspecialchars($anomalieDetail['message']) .'</p>
@@ -776,23 +788,35 @@ class CollecteController extends AbstractController
 
         if ($hotspotDetails['code'] === 200){
             $item = $hotspotDetails['historique'];
-
-            $collecte[] =
-            '<p class="open-sans">'. $hotspotDetails['message'] .'</p>
-            <div>
-                <ul class="open-sans">
-                    <li class="lead">Nombre d’élément dans la liste  : ' . $hotspotDetails['nombre'] ?? static::$jeNeSaisPas . '</li>
-                    <li class="lead">Nombre de menaces total  : ' . $item['menace_potentielle_totale'] ?? static::$jeNeSaisPas . '</li>
-                    <li class="lead">Nombre de menaces de niveau HIGH au statut REVIEW : ' . $item['menace_potentielle_review_high'] ?? static::$jeNeSaisPas . '</li>
-                    <li class="lead">Menaces de niveau MEDIUM au statut REVIEW : ' . $item['menace_potentielle_review_medium'] ?? static::$jeNeSaisPas . '</li>
-                    <li class="lead">Menaces de niveau LOW au statut REVIEW : ' . $item['menace_potentielle_review_low'] ?? static::$jeNeSaisPas . '</li>
-                    <li class="lead">Menaces de niveau HIGH au statut REVIEWED : ' . $item['menace_potentielle_reviewed_high'] ?? static::$jeNeSaisPas . '</li>
-                    <li class="lead">Menaces de niveau MEDIUM au statut REVIEWED : ' . $item['menace_potentielle_reviewed_medium'] ?? static::$jeNeSaisPas . '</li>
-                    <li class="lead">Menaces de niveau LOW au statut REVIEWED : ' . $item['menace_potentielle_reviewed_low'] ?? static::$jeNeSaisPas . '</li>
-                </ul>
-            </div>';
-            /** On met à jour le tableau des données pour la table historique */
-            $mergeHistorique = array_merge($mergeHistorique, $hotspotDetails['historique']);
+            if (empty($item)){
+                $msg = htmlspecialchars($hotspotDetails['message']);
+                $collecte[] ='<p class="open-sans">'. $msg .'</p>';
+            } else  {
+                $collecte[] =
+                '<p class="open-sans">'. htmlspecialchars($hotspotDetails['message']) .'</p>
+                <div>
+                    <ul class="open-sans">
+                        <li class="lead">Nombre d’élément dans la liste  : ' .
+                            htmlspecialchars($hotspotDetails['nombre']) ?? static::$jeNeSaisPas . '</li>
+                        <li class="lead">Nombre de menaces total  : ' .
+                            htmlspecialchars($item['menace_potentielle_totale']) ?? static::$jeNeSaisPas . '</li>
+                        <li class="lead">Nombre de menaces de niveau HIGH au statut REVIEW : ' .
+                            htmlspecialchars($item['menace_potentielle_review_high']) ?? static::$jeNeSaisPas . '</li>
+                        <li class="lead">Menaces de niveau MEDIUM au statut REVIEW : ' .
+                            htmlspecialchars($item['menace_potentielle_review_medium']) ?? static::$jeNeSaisPas . '</li>
+                        <li class="lead">Menaces de niveau LOW au statut REVIEW : ' .
+                            htmlspecialchars($item['menace_potentielle_review_low']) ?? static::$jeNeSaisPas . '</li>
+                        <li class="lead">Menaces de niveau HIGH au statut REVIEWED : ' .
+                            htmlspecialchars($item['menace_potentielle_reviewed_high']) ?? static::$jeNeSaisPas . '</li>
+                        <li class="lead">Menaces de niveau MEDIUM au statut REVIEWED : ' .
+                            htmlspecialchars($item['menace_potentielle_reviewed_medium']) ?? static::$jeNeSaisPas . '</li>
+                        <li class="lead">Menaces de niveau LOW au statut REVIEWED : ' .
+                            htmlspecialchars($item['menace_potentielle_reviewed_low']) ?? static::$jeNeSaisPas . '</li>
+                    </ul>
+                </div>';
+                /** On met à jour le tableau des données pour la table historique */
+                $mergeHistorique = array_merge($mergeHistorique, $hotspotDetails['historique']);
+            }
         } else {
             $this->logger->error('[Batch] ❌ Erreur lors du traitement du détail des menaces potentielles du projet.', [
                         'code' => $hotspotDetails['code'],
@@ -1046,7 +1070,7 @@ class CollecteController extends AbstractController
 
         /** Logger dans le projet (info, warn, error, debug) */
         $this->logger->info('[Batch] ℹ️ Démarrage de la collecte des Logger Java pour le projet.');
-        $collecte[] = 
+        $collecte[] =
         '<h2 class="h4 open-sans"><span aria-hidden="true">🔜</span>14 - Collecte des Logger Java pour le projet</h2>';
 
         $loggerJava = $this->batchCollecteLogger->BatchCollecteLogger(
@@ -1057,7 +1081,7 @@ class CollecteController extends AbstractController
         if ($loggerJava['code'] === 200 || $loggerJava['code'] === 404){
             $item = $loggerJava['historique'];
 
-            $collecte[] = 
+            $collecte[] =
             '<p class="open-sans">'. $loggerJava['message'] .'</p>
             <div>
                 <ul class="open-sans">
