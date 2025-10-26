@@ -186,7 +186,23 @@ class BatchCollecteAnomalieDetailController extends AbstractController
                 'code' => 200,
                 'message' => "Pas d'anomalie trouvée pour le projet {$maven_key}.",
                 'maven_key' => $maven_key,
-                'historique' => []
+                'historique' =>  [
+                    'bug_blocker' =>  0,
+                    'bug_critical' => 0,
+                    'bug_major'  => 0,
+                    'bug_minor' => 0,
+                    'bug_info' => 0,
+                    'vulnerability_blocker' => 0,
+                    'vulnerability_critical' => 0,
+                    'vulnerability_major' => 0,
+                    'vulnerability_minor' => 0,
+                    'vulnerability_info' => 0,
+                    'code_smell_blocker' => 0,
+                    'code_smell_critical' => 0,
+                    'code_smell_major' => 0,
+                    'code_smell_minor' => 0,
+                    'code_smell_info' => 0
+                ]
             ];
         }
 
@@ -249,21 +265,21 @@ class BatchCollecteAnomalieDetailController extends AbstractController
             }
 
             $historique = [
-                    'bug_blocker' => $bugSeverities['BLOCKER'],
-                    'bug_critical' => $bugSeverities['CRITICAL'],
-                    'bug_major' => $bugSeverities['MAJOR'],
-                    'bug_minor' => $bugSeverities['MINOR'],
-                    'bug_info' => $bugSeverities['INFO'],
-                    'vulnerability_blocker' => $vulnerabilitySeverities['BLOCKER'],
-                    'vulnerability_critical' => $vulnerabilitySeverities['CRITICAL'],
-                    'vulnerability_major' => $vulnerabilitySeverities['MAJOR'],
-                    'vulnerability_minor' => $vulnerabilitySeverities['MINOR'],
-                    'vulnerability_info' => $vulnerabilitySeverities['INFO'],
-                    'code_smell_blocker' => $codeSmellSeverities['BLOCKER'],
-                    'code_smell_critical' => $codeSmellSeverities['CRITICAL'],
-                    'code_smell_major' => $codeSmellSeverities['MAJOR'],
-                    'code_smell_minor' => $codeSmellSeverities['MINOR'],
-                    'code_smell_info' => $codeSmellSeverities['INFO']
+                    'bug_blocker' => $bugSeverities['BLOCKER'] ?? 0,
+                    'bug_critical' => $bugSeverities['CRITICAL'] ?? 0,
+                    'bug_major' => $bugSeverities['MAJOR'] ?? 0,
+                    'bug_minor' => $bugSeverities['MINOR'] ?? 0,
+                    'bug_info' => $bugSeverities['INFO'] ?? 0,
+                    'vulnerability_blocker' => $vulnerabilitySeverities['BLOCKER'] ?? 0,
+                    'vulnerability_critical' => $vulnerabilitySeverities['CRITICAL'] ?? 0,
+                    'vulnerability_major' => $vulnerabilitySeverities['MAJOR'] ?? 0,
+                    'vulnerability_minor' => $vulnerabilitySeverities['MINOR'] ?? 0,
+                    'vulnerability_info' => $vulnerabilitySeverities['INFO'] ?? 0,
+                    'code_smell_blocker' => $codeSmellSeverities['BLOCKER'] ?? 0,
+                    'code_smell_critical' => $codeSmellSeverities['CRITICAL'] ?? 0,
+                    'code_smell_major' => $codeSmellSeverities['MAJOR'] ?? 0,
+                    'code_smell_minor' => $codeSmellSeverities['MINOR'] ?? 0,
+                    'code_smell_info' => $codeSmellSeverities['INFO'] ?? 0
             ];
 
         $this->logger->info("[Batch AnomalieDétail] ℹ️ Collecte et insertion terminées.", [
