@@ -184,7 +184,8 @@ class BatchCollecteAnomalieDetailController extends AbstractController
             $this->logger->info("[Batch AnomalieDétail] ℹ️ Aucune anomalie détectée", ['maven_key' => $maven_key]);
             return [
                 'code' => 200,
-                'message' => "Pas d'anomalie trouvée.",
+                'message' => "Pas d'anomalie trouvée pour le projet {$maven_key}.",
+                'maven_key' => $maven_key,
                 'historique' => []
             ];
         }
@@ -209,7 +210,7 @@ class BatchCollecteAnomalieDetailController extends AbstractController
         /** On prépare les données */
         $mapData = [
                     'maven_key' => $maven_key,
-                    'name' =>$this->serviceExtractName->extractNameFromMavenKey($maven_key),
+                    'name' => $this->serviceExtractName->extractNameFromMavenKey($maven_key),
                     'bug_blocker' => $bugSeverities['BLOCKER'],
                     'bug_critical' => $bugSeverities['CRITICAL'],
                     'bug_major' => $bugSeverities['MAJOR'],
@@ -234,6 +235,7 @@ class BatchCollecteAnomalieDetailController extends AbstractController
             ];
 
             $insert = $anomalieDetailsRepos->insertAnomalieDetail($mapData);
+
             if ($insert['code'] !== 200) {
                 $this->logger->error("[Batch AnomalieDétail] ❌ Échec de la requête insertAnomalieDetail.", [
                     'code' => $insert['code'],
