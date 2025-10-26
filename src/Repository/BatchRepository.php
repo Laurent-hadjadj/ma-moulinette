@@ -30,24 +30,38 @@ class BatchRepository extends ServiceEntityRepository
       parent::__construct($registry, Batch::class);
   }
 
+
   /**
    * [Description for handleDatabaseException]
    *
-   * @param \Doctrine\DBAL\Exception $e
+   * @param \Throwable $e
    *
    * @return array
    *
-   * Created at: 21/12/2024 20:15:01 (Europe/Paris)
+   * Created at: 26/10/2025 12:19:01 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
+  public function handleDatabaseException(\Throwable $e): array
   {
-    if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
-      return ['code'=>500, 'erreur' => static::$noDataBase];
-    } else {
-      return ['code'=>500, 'erreur'=> $e->getMessage()];
+    $message = $e->getMessage();
+
+    // message = 'SQLSTATE[08006]'
+    if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
+        $message = static::$noDataBase;
     }
+
+    // state = '23502'
+    if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
+        $message = $e->getMessage();
+    }
+
+    // state = '23505'
+    if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+        return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+    }
+
+    return ['code' => 500, 'erreur' => $message];
   }
 
   /**
@@ -67,9 +81,40 @@ class BatchRepository extends ServiceEntityRepository
       try {
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $liste=$stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Doctrine\DBAL\Exception $e) {
+      } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
+      return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
+  }
+
+  /**
+   * [Description for updatePortefeuille]
+   *
+   * @param mixed $map
+   *
+   * @return array
+   *
+   * Created at: 26/10/2025 13:05:57 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function updatePortefeuille($map): array
+  {
+    $sql = "UPDATE ma_moulinette.batch
+            SET nombre_projet = :nombre_projet
+            WHERE portefeuille = :portefeuille";
+    try {
+          $this->getEntityManager()->getConnection()->beginTransaction();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(':portefeuille', $map['portefeuille']);
+              $stmt->bindValue(':nombre_projet', $map['nombre_projet']);
+            $stmt->executeStatement();
+          $this->getEntityManager()->getConnection()->commit();
+        } catch (\Throwable $e) {
+            $this->getEntityManager()->getConnection()->rollBack();
+            return $this->handleDatabaseException($e);
+        }
+        /** on prépare la réponse */
+        return ['code' => 200, 'erreur' => ''];
   }
 }
