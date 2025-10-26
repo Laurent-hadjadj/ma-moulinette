@@ -64,7 +64,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
   public function selectBatchTraitementDateEnregistrementAutomatiqueLast(): array
   {
     $sql = "SELECT date_enregistrement as date
-            FROM batch_traitement
+            FROM ma_moulinette.batch_traitement
             WHERE mode_collecte = 'AUTOMATIQUE'
             ORDER BY date_enregistrement DESC limit 1";
       try {
@@ -89,7 +89,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
   public function selectBatchTraitementDateEnregistrementLast(): array
   {
     $sql = "SELECT date_enregistrement as date
-            FROM batch_traitement
+            FROM ma_moulinette.batch_traitement
             ORDER BY date_enregistrement DESC limit 1";
     try {
           $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -118,7 +118,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
     $sql = "SELECT  mode_collecte, result, titre, portefeuille,
                     nombre_projet as projet, responsable,
                     debut_traitement as debut, fin_traitement as fin
-            FROM batch_traitement
+            FROM ma_moulinette.batch_traitement
             WHERE date(date_enregistrement)= :date_short
             GROUP BY mode_collecte, result, titre, portefeuille, nombre_projet, responsable, debut_traitement, fin_traitement
             ORDER BY responsable ASC, mode_collecte ASC";
@@ -146,7 +146,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
   public function selectBatchTraitement($map): array
   {
     $sql = "SELECT id, mode_collecte, titre, portefeuille, nombre_projet as projet
-            FROM batch_traitement
+            FROM ma_moulinette.batch_traitement
             WHERE titre = :titre";
     try {
           $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -171,12 +171,13 @@ class BatchTraitementRepository extends ServiceEntityRepository
    */
   public function updateBatchTraitement($map): array
   {
-    $sql = "UPDATE batch_traitement
-            SET debut_traitement = :debut, fin_traitement = :fin, result = true
+    $sql = "UPDATE ma_moulinette.batch_traitement
+            SET debut_traitement = :debut, fin_traitement = :fin, result = :success
             WHERE id = :id";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(':success', $map['success']);
               $stmt->bindValue(':debut_traitement', $map['debut_traitement']);
               $stmt->bindValue(':fin_traitement', $map['fin_traitement']);
               $stmt->bindValue(':id', $map['id']);
@@ -202,7 +203,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
    */
   public function insertBatchTraitement($map): array
   {
-    $sql = "INSERT INTO batch_traitement
+    $sql = "INSERT INTO ma_moulinette.batch_traitement
                 (mode_collecte, result, titre, portefeuille, nombre_projet, responsable, date_enregistrement)
             VALUES (:mode_collecte, :result, :titre, :portefeuille, :nombre_projet, :responsable, :date_enregistrement)";
 
