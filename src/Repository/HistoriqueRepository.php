@@ -572,7 +572,7 @@ class HistoriqueRepository extends ServiceEntityRepository
 
         try {
                 $this->getEntityManager()->getConnection()->beginTransaction();
-                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                    $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                         $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                         $stmt->bindValue(':analyse_key', $map['analyse_key']);
                         $stmt->bindValue(static::$version, $map['version']);
