@@ -136,7 +136,7 @@ class BatchManuelController extends AbstractController
      * [Description for listeProjet]
      * Récupère la liste des projets depuis un portefeuille de projets.
      *
-     * @param string $titrePortefeuille
+     * @param string $titre_portefeuille
      * @param string $portefeuille
      *
      * @return array
@@ -145,7 +145,7 @@ class BatchManuelController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function listeProjet(string $titrePortefeuille, string $portefeuille): array
+    public function listeProjet(string $titre_portefeuille, string $portefeuille): array
     {
         /*** On instancie l'entityRepository */
         $portefeuilleRepos = $this->em->getRepository(Portefeuille::class);
@@ -153,87 +153,89 @@ class BatchManuelController extends AbstractController
 
         /** On envoi le titre du portefeuille et le nom du portefeuille */
         $map = [
-            'titre_portefeuille' => $titrePortefeuille,
+            'titre_portefeuille' => $titre_portefeuille,
             'portefeuille' => $portefeuille
         ];
 
-        /** On vérifie que le portefeuille n'est pas vide */
-        $listeProjets = $batchTraitementRepos->selectBatchTraitement($map);
+        /** On vérifie que le portefeuille n'est pas vide pour le traitement */
+        // liste" => [ "id" => 1, "mode_collecte" => "Manuel", "titre" => "EXP",
+        // "portefeuille" => "JAVA", "projet" => 3 ]
+        $traitement = $batchTraitementRepos->selectBatchTraitement($map);
 
-        //debug : dd($portefeuille, $listeProjets, $map);
-        if ($listeProjets['code'] !== 200) {
+        if ($traitement['code'] !== 200) {
             $this->logger->error('[Traitement-Manuel] ❌ Échec de la requête selectBatchTraitement', [
-                'code' => $listeProjets['code'],
-                'message' => $listeProjets['message'] ?? static::$noMessage,
-                'erreur' => $listeProjets['erreur'] ?? static::$noError,
+                'code' => $traitement['code'],
+                'message' => $traitement['message'] ?? static::$noMessage,
+                'erreur' => $traitement['erreur'] ?? static::$noError,
                 ]);
 
             return [
-                'code' => $listeProjets['code'],
+                'code' => $traitement['code'],
                 'type' => 'alert',
-                'message' => "Une erreur est survenue lors de la récupration des projets du portefeuille ({$listeProjets['code']}).",
-                'erreur' => $listeProjets['erreur']
+                'message' => "Une erreur est survenue lors de la récupération des projets du portefeuille ({$traitement['code']}).",
+                'erreur' => $traitement['erreur']
             ];
         }
 
         /** La liste est vide */
-        if (!isset($listeProjets['liste']) || count($listeProjets['liste']) === 0)
+        if (!isset($traitement['liste']) || count($traitement['liste']) === 0)
         {
             $this->logger->warning('[Batch Manuel] ⚠️ La liste des traitements ne contient pas le portefeuille !', [
-                'code' => $listeProjets['code'],
-                'message' => $listeProjets['message'] ?? static::$noMessage,
-                'erreur' => $listeProjets['erreur'] ?? static::$noError,
-                'portefeuille' => $titrePortefeuille ?? 'inconnu'
+                'code' => $traitement['code'],
+                'message' => $traitement['message'] ?? static::$noMessage,
+                'erreur' => $traitement['erreur'] ?? static::$noError,
+                'portefeuille' => $titre_portefeuille ?? 'inconnu'
                 ]);
 
             return [
                 'code' => 404,
                 'type' => 'warning',
-                'message' => 'La liste des traitements ne contient pas le portefeuille (Erreur 404)',
-                'erreur' => $listeProjets['erreur'] ?? null
+                'message' => 'La liste des traitements ne contient pas le portefeuille (Erreur 404).',
+                'erreur' => $liste_projets['erreur'] ?? null
             ];
         }
 
         /** On récupère le portefeuille de projets */
-        $result = $portefeuilleRepos->selectPortefeuille($map);
+        $liste_projets = $portefeuilleRepos->selectPortefeuille($map);
 
-        if ($result['code'] !== 200) {
+        if ($liste_projets['code'] !== 200) {
             $this->logger->error('[Batch Manuel] ❌ Échec de la requête selectPortefeuille', [
-                'code' => $listeProjets['code'],
-                'message' => $listeProjets['message'] ?? static::$noMessage,
-                'erreur' => $listeProjets['erreur'] ?? static::$noError,
-                'portefeuille' => $titrePortefeuille ?? 'inconnu'
+                'code' => $liste_projets['code'],
+                'message' => $liste_projets['message'] ?? static::$noMessage,
+                'erreur' => $liste_projets['erreur'] ?? static::$noError,
+                'portefeuille' => $titre_portefeuille ?? 'inconnu'
                 ]);
 
             return [
-                'code' => $result['code'],
+                'code' => $liste_projets['code'],
                 'type' => 'alert',
-                'message' => "Le portefeuille de projet n'est pas accessible (Erreur {$result['code']}).",
-                'erreur' =>  $listeProjets['erreur'] ?? null
+                'message' => "Le portefeuille de projet n'est pas accessible (Erreur {$liste_projets['code']}).",
+                'erreur' =>  $liste_projets['erreur'] ?? null
 
             ];
         }
 
-        if (empty($result['liste'])) {
+        if (empty($liste_projets['liste'])) {
             $this->logger->warning('[Batch Manuel] ⚠️ La liste des traitements ne contient pas votre portefeuille !', [
-                'code' => $listeProjets['code'],
-                'message' => $listeProjets['message'] ?? static::$noMessage,
-                'erreur' => $listeProjets['erreur'] ?? static::$noError,
-                'portefeuille' => $titrePortefeuille ?? 'inconnu'
+                'code' => $liste_projets['code'],
+                'message' => $liste_projets['message'] ?? static::$noMessage,
+                'erreur' => $liste_projets['erreur'] ?? static::$noError,
+                'portefeuille' => $titre_portefeuille ?? 'inconnu'
                 ]);
 
             return [
                 'code' => 404,
                 'type' => 'warning',
-                'message' => "Votre portefeuille ne contient pas ce projet (Erreur {$result['code']}).",
-                'erreur' => $listeProjets['erreur'] ?? static::$noError
+                'message' => "Votre portefeuille ne contient pas ce projet (Erreur {$liste_projets['code']}).",
+                'erreur' => $liste_projets['erreur'] ?? static::$noError
             ];
         }
 
         $liste = [];
-        foreach (json_decode($result['liste'][0]['liste']) as $value) {
+        foreach (json_decode($liste_projets['liste'][0]['liste']) as $value) {
             array_push($liste, $value);
         }
+
         return [
             'code' => 200,
             'liste' => $liste
@@ -281,7 +283,7 @@ class BatchManuelController extends AbstractController
                 ], Response::HTTP_OK);
             }
 
-        // On extrait la liste des projets pour le portefeuille
+        // On extrait la liste des projets pour le portefeuille depuis la table batch
         $les_projets = $this->listeProjet($data->titre_portefeuille, $data->portefeuille);
 
         if ($les_projets['code'] === 404){
