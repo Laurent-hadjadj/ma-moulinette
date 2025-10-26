@@ -115,12 +115,12 @@ class BatchTraitementRepository extends ServiceEntityRepository
    */
   public function selectBatchTraitementLast($dateShort): array
   {
-    $sql = "SELECT  mode_collecte, result, titre, portefeuille,
+    $sql = "SELECT  mode_collecte, success, titre, portefeuille,
                     nombre_projet as projet, responsable,
                     debut_traitement as debut, fin_traitement as fin
             FROM ma_moulinette.batch_traitement
             WHERE date(date_enregistrement)= :date_short
-            GROUP BY mode_collecte, result, titre, portefeuille, nombre_projet, responsable, debut_traitement, fin_traitement
+            GROUP BY mode_collecte, success, titre, portefeuille, nombre_projet, responsable, debut_traitement, fin_traitement
             ORDER BY responsable ASC, mode_collecte ASC";
       try {
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -172,8 +172,9 @@ class BatchTraitementRepository extends ServiceEntityRepository
   public function updateBatchTraitement($map): array
   {
     $sql = "UPDATE ma_moulinette.batch_traitement
-            SET debut_traitement = :debut, fin_traitement = :fin, result = :success
+            SET debut_traitement = :debut_traitement, fin_traitement = :fin_traitement, success = :success
             WHERE id = :id";
+
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -187,7 +188,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
           $this->getEntityManager()->getConnection()->rollBack();
           return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'erreur'=>''];
+      return [ 'code'=>200, 'erreur'=>'' ];
   }
 
   /**
@@ -204,14 +205,14 @@ class BatchTraitementRepository extends ServiceEntityRepository
   public function insertBatchTraitement($map): array
   {
     $sql = "INSERT INTO ma_moulinette.batch_traitement
-                (mode_collecte, result, titre, portefeuille, nombre_projet, responsable, date_enregistrement)
-            VALUES (:mode_collecte, :result, :titre, :portefeuille, :nombre_projet, :responsable, :date_enregistrement)";
+                (mode_collecte, success, titre, portefeuille, nombre_projet, responsable, date_enregistrement)
+            VALUES (:mode_collecte, :success, :titre, :portefeuille, :nombre_projet, :responsable, :date_enregistrement)";
 
       try {
             $this->getEntityManager()->getConnection()->beginTransaction();
             $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
-              $stmt->bindValue(':result', $map['result']);
+              $stmt->bindValue(':success', $map['success']);
               $stmt->bindValue(':titre', $map['titre']);
               $stmt->bindValue(':portefeuille', $map['portefeuille']);
               $stmt->bindValue(':nombre_projet', $map['nombre_projet']);
