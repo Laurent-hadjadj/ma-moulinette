@@ -268,7 +268,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
         $map = [ 'maven_key'=> $maven_key ];
         $information = $informationProjetRepos->selectInformationProjetVersion($map);
-        if ($information['code'] != 200) {
+        if ($information['code'] !== 200) {
             $this->logger->error('[HotspotDetail] ❌ Erreur récupération projet', [
                 'maven_key' => $maven_key,
                 'erreur' => $information['erreur']
@@ -301,7 +301,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
         $map = [ 'maven_key' => $mavenKey ];
         $liste = $hotspotsRepos->selectHotspotsToReview($map);
 
-        if ($liste['code'] != 200) {
+        if ($liste['code'] !== 200) {
             $this->logger->error('[HotspotDetail] ❌ Échec de la requête selectHotspotsToReview.', [
                 'maven_key' => $maven_key,
                 'erreur' => $liste['erreur']
@@ -317,7 +317,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
         $map = [ 'maven_key' => $mavenKey ];
         $delete = $hotspotDetailsRepos->deleteHotspotDetailsMavenKey($map);
 
-        if ($delete['code'] != 200) {
+        if ($delete['code'] !== 200) {
             $this->logger->error('[HotspotDetail] ❌ Échec de la requête deleteHotspotsDetailsMavenKey.', [
                 'maven_key' => $maven_key,
                 'erreur' => $delete['erreur']
@@ -405,7 +405,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
         $map = [ 'maven_key' => $maven_key, 'status' => 'REVIEWED'];
 
         $getReviewed = $hotspotsRepos->selectHotspotsByNiveau($map);
-        if ($getReviewed['code'] != 200) {
+        if ($getReviewed['code'] !== 200) {
 
             return [
                 'code' => $getReviewed['code'],
