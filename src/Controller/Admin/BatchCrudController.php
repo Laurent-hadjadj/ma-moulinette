@@ -15,7 +15,6 @@ namespace App\Controller\Admin;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Batch;
-use App\Entity\BatchTraitement;
 
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
@@ -29,6 +28,8 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 /**
  * [Description BatchCrudController]
+ * Gère les traitements programmés ou manuels.
+ *
  */
 class BatchCrudController extends AbstractCrudController
 {
@@ -169,7 +170,7 @@ class BatchCrudController extends AbstractCrudController
             return;
         }
 
-        $batchTraitementRepository = $this->emm->getRepository(BatchTraitement::class);
+        $batchTraitementRepos = $this->emm->getRepository(Batch::class);
 
         /** On récupère le nom du batch */
         $titre = $entityInstance->getTitre();
@@ -209,7 +210,7 @@ class BatchCrudController extends AbstractCrudController
         parent::persistEntity($em, $entityInstance);
 
         /** On programme le traitement dans la table BatchTraitement  */
-        $r = $batchTraitementRepository->insertBatchTraitement($map);
+        $r = $batchTraitementRepos->insertBatchTraitement($map);
         if ($r['code'] !== 200){
             throw new \RuntimeException('Erreur : '.$r['code'].' '.$r['erreur']);
         }
