@@ -27,140 +27,124 @@ import 'motion-ui';
 import '../../common/foundation.js';
 import '../../auth/details.js';
 
-import tinymce from 'tinymce';
-
-// Import TinyMCE plugins and themes as needed
-import 'tinymce/themes/silver';
-import 'tinymce/icons/default';
-import 'tinymce/plugins/link';
-import 'tinymce/plugins/table';
-import 'tinymce/plugins/image';
-import 'tinymce/plugins/code';
-
 /* On importe les paramètres serveur. */
 import {serveur} from '../../common/properties.js';
 
-import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
+import { showMessage, hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
-import { contentType, un, trois, cinqCent, mille, http_500, http_400, http_200 } from '../../common/constante.js';
+import { contentType, un, trois, cinqCent, mille, http_500, http_400, http_200, troisMille, cinqMille } from '../../common/constante.js';
 
-/** Initialize TinyMCE */
-const useDarkMode = window.matchMedia('(prefers-color-scheme: default)').matches;
-tinymce.init({
-  selector: 'textarea.tinymce',
-  license_key: 'gpl',
-  language: 'fr_FR',
-  //skin: 'oxide',
-  theme: 'silver',
-  editable_root: false,
-  plugins: 'preview',
-  menubar: false,
-  toolbar: " preview print copy",
-  skin: useDarkMode ? 'oxide-dark' : 'oxide',
-  content_css: useDarkMode ? 'dark' : 'default',
-  content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:16px }',
-  base_url: '/build/tinymce' });
-
-  /** On gère l'affichage des jobs */
-const jsAutomatique = '.js-automatique';
+/** On gère l'affichage des jobs */
 const automatique = '.automatique';
-const jsManuel = '.js-manuel';
 const manuel= '.manuel';
 const infoBulle='#info-bulle';
 
+// On  initialise le click
+let suppressClick = false;
+
+const getAvatarColorClass = function(username) {
+    const hash = Array.from(username).reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const colorIndex = hash % 10;
+    return `avatar-color-${colorIndex}`;
+};
+
 /**
- * [Description for nombreProjetRabbitMQ]
- * On met à jour la liste des jobs manuels
+ * [Description for workInProgress]
+ * On remonte le nombre de traitements en attente et en cours.
  *
- * @return int
+ * @return array
  *
  * Created at: 14/06/2024 16:23:54 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-const nombreProjet = async function()
-{
+const workInProgress = async function(){
+
   const options = {
-    url: `${serveur()}/messages/count/traitement_manuel`,
+    url: `${serveur()}/api/traitement/pending`,
     type: 'GET',
     dataType: 'json',
-    contentType
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
   };
 
-  const t = await $.ajax(options);
-  // 📌 Vérification des erreurs
-  if (t.nombre > 0){
-    $(infoBulle).removeClass('bulle-info-vide', 'bulle-info-start', 'bulle-info-end').addClass('bulle-info-start');
-    $('#info-bulle-tips').html('Nombre de projet planifié');
-    $(infoBulle).html(t.nombre);
-  }
+  try {
+        const t = await $.ajax(options);
 
-  if (t.nombre === 0){
-    $(infoBulle).removeClass('bulle-info-vide', 'bulle-info-start', 'bulle-info-end').addClass('bulle-info-end');
-    $('#info-bulle-tips').html('Aucun projet planifié');
-    $(infoBulle).html(t.nombre);
-  }
+        // 📌 On met à jour la bulle
+        if (t.pending > 0){
+          $(infoBulle).removeClass('bulle-info-vide', 'bulle-info-start', 'bulle-info-end', 'bulle-info-error').addClass('bulle-info-start');
+          $('#info-bulle-tips').html('Nombre de projet planifié.');
+          $(infoBulle).html(t.nombre);
+        }
 
+        if (t.pending === 0 && t.in_progress === 0){
+          $(infoBulle).removeClass('bulle-info-vide', 'bulle-info-start', 'bulle-info-end', 'bulle-info-error').addClass('bulle-info-end');
+          $('#info-bulle-tips').html('Aucun projet planifié.');
+          $(infoBulle).html(t.nombre);
+        }
+
+        if (t.pending === 0 && t.in_progress > 0){
+          $(infoBulle).removeClass('bulle-info-vide', 'bulle-info-start', 'bulle-info-end', 'bulle-info-error').addClass('bulle-info-end');
+          $('#info-bulle-tips').html('Un projet est en cours de traitement.');
+          $(infoBulle).html(t.in_progress);
+        }
+        return t;
+  } catch(error) {
+      const trace = prepareTechnicalDetails(error);
+      const message = "Une erreur inattendue s'est produite.";
+      showMessage('critical', message, trace);
+  }
+  return null;
 };
 
-/** On affiche la liste des traitements automatiques */
-$(jsAutomatique).on('click', ()=> {
-  if ($(jsAutomatique).hasClass('active')) {
-    $(jsAutomatique).removeClass('active').addClass('bouton-automatique');
-    $(automatique).hide(cinqCent);
-  } else {
-    $(jsAutomatique).removeClass('bouton-automatique').addClass('active');
-    $(automatique).show(mille);
-    if ($(jsManuel).hasClass('active')) {
-      $(manuel).show(mille);
-    } else {
-      $(manuel).hide(cinqCent);
-    }
-  }
-});
-
-/** On affiche la liste des traitements manuels */
-$(jsManuel).on('click', function() {
-  /**
-   * si on click et que le bouton a le statut actif
-   * On retire le statut actif  et on ajoute le tag bouton-manuel
-   */
-  if ($(jsManuel).hasClass('active')) {
-    $(jsManuel).removeClass('active').addClass('bouton-manuel');
-    $(manuel).hide(cinqCent);
-  } else {
-    /**
-     * J'active l'affichage des données pour les traitements manuels
-     * On passe de bleu a orange.
-     * On affiche les lignes manuels et
-     * On garde les lignes automatiques si le bouton est orange
-     */
-    $(jsManuel).removeClass('bouton-manuel').addClass('active');
-    $(manuel).show(mille);
-    if ($(jsAutomatique).hasClass('active')) {
-      $(automatique).show(mille);
-    } else {
-      $(automatique).hide(cinqCent);
-    }
-  }
-});
 
 /** On lance un traitement manuel - oui Monsieur !!! */
-$('.i-am-human-svg').on('click', function() {
+$('.i-am-human-svg').on('click', async (e)=> {
+  // On prévient le multi-click
+  e.preventDefault();
+
+  /* si on a déjà cliqué, on sort */
+  if (suppressClick){
+    return;
+  }
+    suppressClick = true;
+
   /** On récupère l’élément cliqué depuis le DOM */
   //i-am-human-10
-  const id=$(this).attr('id');
+  const id = e.currentTarget.id;
   const idTab = id.split('-');
+
+  /** On regarde si un autre traitement est encours */
+  const t = await workInProgress();
+
+  const pending = t.pending;
+  const in_progress =  t.in_progress;
+
+  if (in_progress > 0){
+    showMessage('warning', `Un autre traitement est cours d’exécution. Attendez quelques minutes avant de relancer.`);
+    return;
+  }
+
+  if (pending > 0){
+    showMessage('warning', `Le traitement ${titre_portefeuille} a été mis en attente.`);
+    return;
+  }
+
   /** clignote */
   $(`#${id}`).addClass('blink');
 
-  /** On récupère le titre du portefeuille (ie. la liste des projets) et le portefeuille */
-  const element=document.getElementById(`portefeuille-${idTab[trois]}`);
-  const titrePortefeuille = element.getAttribute('data-titre');
-  const portefeuille=$(`#portefeuille-${idTab[trois]}`).text();
-
-  traitementManuel(idTab[trois], titrePortefeuille, portefeuille);
+  /** On récupère le titre du portefeuille et le portefeuille (ie. la liste des projets) */
+  const element = document.getElementById(`portefeuille-${idTab[trois]}`);
+  const titre_portefeuille = element.getAttribute('data-titre');
+  const portefeuille = $(`#portefeuille-${idTab[trois]}`).text().trim();
+  showMessage('primary', `Le traitement ${portefeuille} a été lancé.`);
+  await traitementManuel(idTab[trois], titre_portefeuille, portefeuille);
+  suppressClick = false;
 });
 
 /**
@@ -176,11 +160,11 @@ $('.i-am-human-svg').on('click', function() {
  * @author    Laurent HADJADJ <laurent_h@me.com>
  * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-const traitementManuel = async function(id, titrePortefeuille, portefeuille){
+const traitementManuel = async function(id, titre_portefeuille, portefeuille){
   /** On lance le processus */
-  const data = { 'titre_portefeuille': titrePortefeuille, portefeuille };
+  const data = { id, titre_portefeuille, portefeuille };
   const options = {
-    url: `${serveur()}/traitement/manuel`,
+    url: `${serveur()}/api/traitement/manuel`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -191,116 +175,57 @@ const traitementManuel = async function(id, titrePortefeuille, portefeuille){
     },
   };
 
+  $(infoBulle).removeClass('bulle-info-vide', 'bulle-info-start', 'bulle-info-end', 'bulle-info-error').addClass('bulle-info-start');
+  $('#info-bulle-tips').html('Un projet est en cours de traitement.');
+  $(infoBulle).html(1);
+
   try{
     const t = await $.ajax(options);
+
     // 📌 Vérification des erreurs
     if (t.code !== http_200){
       const hasTrace = !!t.trace;
       const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
-      showMessage(t.type, t.message, trace);
+      setTimeout( () => { showMessage(t.type, t.message, trace); }, troisMille);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 01');
       $(`#i-am-human-${id}`).removeClass('blink');
+
+      $(infoBulle).removeClass('bulle-info-vide', 'bulle-info-start', 'bulle-info-end', 'bulle-info-error').addClass('bulle-info-error');
+      $('#info-bulle-tips').html('Traitement en cours en échec.');
+      $(infoBulle).html('x');
       return;
     }
+
+    showMessage('primary',
+      `La collecte pour les projets de ${portefeuille} est terminée.<br>
+        Référence : <strong>${t.reference}</strong><br>
+        Temps total : ${t.temps_traitement}`);
+    $(`#i-am-human-${id}`).removeClass('blink');
+
+    /** On met à jour la bulle info */
+    $(infoBulle).removeClass('bulle-info-vide', 'bulle-info-start', 'bulle-info-end', 'bulle-info-error').addClass('bulle-info-end');
+    $('#info-bulle-tips').html('Traitement terminé.');
+    $(infoBulle).html('x');
+    const result = `<span class="show-for-small-only"><strong>OK</strong></span>
+                    <span class="show-for-medium"><strong>Succès</strong></span>`;
+    $(`#success-${id}`).html(result);
+    $(`#temps-execution-${id}`).html(t.temps);
+    $(collecteAnimation).removeClass('sp-volume');
   } catch(erreur) {
       const trace = prepareTechnicalDetails(erreur);
-      showMessage('critical', "Une erreur globale est survenue lors du traitement (Erreur 500).", trace);
+      setTimeout( () => {
+        showMessage('critical', "Une erreur globale est survenue lors du traitement (Erreur 500).", trace);
+      }, troisMille);
+
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 01');
       $(`#i-am-human-${id}`).removeClass('blink');
+
+      $(infoBulle).removeClass('bulle-info-vide', 'bulle-info-start', 'bulle-info-end', 'bulle-info-error').addClass('bulle-info-error');
+      $('#info-bulle-tips').html('Traitement en cours en échec.');
+      $(infoBulle).html('x');
     return;
   }
 
-  showMessage('default', `La collecte pour les projets de ${portefeuille} est terminée.<br>Vous pouvez consulter le journal des traitements.`);
-  $(`#i-am-human-${id}`).removeClass('blink');
-}
-
-
-  /** On affiche la log pour le job sélectionné */
-  $('.js-outil-lire').on('click', function() {
-    /** On récupère l'ID */
-    const id=$(this).attr('id');
-    const idTab = id.split('-');
-    /** On récupère le job et le type */
-    const portefeuille=$(`#portefeuille-${idTab[un]}`).text();
-    const type=$(`#${idTab[un]}`).data('type');
-    /** On récupère la log */
-    lireJournal(portefeuille, type);
-  });
-
-/**
- * [Description for lireInformationManuel]
- *
- * @return void
- *
- * Created at: 05/03/2023, 15:29:19 (Europe/Paris)
- * @author    Laurent HADJADJ <laurent_h@me.com>
- * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
- */
-const lireJournal = async function(portefeuille, type){
-  const data = { portefeuille, type };
-  const options = {
-    url: `${serveur()}/traitement/journal/lire`,
-    type: 'POST',
-    dataType: 'json',
-    data: JSON.stringify(data),
-    contentType,
-    headers: {
-      'X-API-Custom-403': 'true',
-      'X-Internal-Front': 'front-app'
-    },
-  };
-
-  const t = await  $.ajax(options);
-  // 📌 Vérification des erreurs
-  if (t.code === http_400 || t.code === http_500){
-    showMessage(t.code, typeMessage(t.message));
-    return t.code;
-  }
-
-  tinymce.get('js-journal').setContent('');
-  if (t.recherche === 'OK' || t.code === http_200) {
-    /** On affiche le nom du projet */
-    $('#js-nom-projet').html(portefeuille);
-    /** On ouvre la fenêtre modal */
-    tinymce.get('js-journal').setContent(t.journal);
-    $('#modal-information').foundation('open');
-  }
-}
-
-/** On affiche la log pour le job sélectionné */
-$('.js-outil-efface').on('click', function() {
-  /** On récupère l'ID */
-  const id=$(this).attr('id');
-  const idTab = id.split('-');
-
-  /** On récupère le job et le type */
-   /** On récupère le job et le type */
-  const portefeuille=$(`#portefeuille-${idTab[un]}`).text();
-  const type=$(`#${idTab[1]}`).data('type');
-
-  /** On efface la log */
-  effaceJournal(portefeuille, type);
-
-  });
-
-const effaceJournal = async function(portefeuille, type){
-  const data = { portefeuille, type };
-  const options = {
-    url: `${serveur()}/traitement/journal/efface`,
-    type: 'DELETE',
-    dataType: 'json',
-    data: JSON.stringify(data),
-    contentType
-  };
-
-  const t = $.ajax(options);
-  // 📌 Vérification des erreurs
-  if (t.code === http_400 || t.code === http_500){
-    showMessage(t.code, typeMessage(t.message));
-    return t.code;
-  }
-
-  afficheMessage('success', `Le journal pour le portefeuille ${portefeuille} a été supprimé.` );
 }
 
 /**
@@ -338,14 +263,3 @@ const traitementAuto = async function(){
 $('.batch-processing-svg').on('click', ()=>{
   traitementAuto();
 });
-
-/*** Main */
-
-/** On met à jour la bulle info */
-/*$(infoBulle).removeClass('bulle-info-start').addClass('bulle-info-end');
-$('#info-bulle-tips').html('Collecte terminée');
-const result = `<span class="show-for-small-only"><strong>OK</strong></span>
-                <span class="show-for-medium"><strong>Succès</strong></span>`;
-$(`#resultat-${id}`).html(result);
-$(`#temps-execution-${id}`).html(t.temps);
-$(collecteAnimation).removeClass('sp-volume');*/
