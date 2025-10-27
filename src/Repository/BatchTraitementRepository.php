@@ -178,12 +178,12 @@ class BatchTraitementRepository extends ServiceEntityRepository
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(':success', $map['success']);
-              $stmt->bindValue(':pending', $map['pending']);
-              $stmt->bindValue(':in_progress', $map['in_progress']);
+              $stmt->bindValue(':success', $map['success'], $map['success'] === null ? \PDO::PARAM_NULL : \PDO::PARAM_BOOL);
+              $stmt->bindValue(':pending', $map['pending'], $map['pending'] === null ? \PDO::PARAM_NULL : \PDO::PARAM_BOOL);
+              $stmt->bindValue(':in_progress', $map['in_progress'], $map['in_progress'] === null ? \PDO::PARAM_NULL : \PDO::PARAM_BOOL);
               $stmt->bindValue(':debut_traitement', $map['debut_traitement']);
-              $stmt->bindValue(':fin_traitement', $map['fin_traitement']);
-              $stmt->bindValue(':id', $map['id']);
+              $stmt->bindValue(':fin_traitement', $map['fin_traitement'], $map['fin_traitement'] === null ? \PDO::PARAM_NULL : \PDO::PARAM_STR);
+              $stmt->bindValue(':id', $map['id'], \PDO::PARAM_INT);
               $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
       } catch (\Doctrine\DBAL\Exception $e) {

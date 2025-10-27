@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V2.9.0 - 27/10/2025              ##
+##               V2.9.1 - 27/10/2025              ##
 ##                                                ##
 ####################################################*/
 
@@ -63,6 +63,8 @@
 -- 27/10/2025 : Laurent HADJADJ - Ajout de la colonne in_progress à la table batch_traitement.
 -- 27/10/2025 : Laurent HADJADJ - Ajout de la colonne pending à la table batch_traitement.
 -- 27/10/2025 : Laurent HADJADJ - Ajout de la colonne responsable_short à la table batch et batch_traitement.
+-- 27/10/2025 : Laurent HADJADJ - correction syntaxe ';' (responsable_short)sur la table batch et batch_traitement.
+
 
 -- SCHEMA: ma_moulinette
 
@@ -384,7 +386,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.batch
   titre character varying(32) NOT NULL,
   description character varying(128) NOT NULL,
   responsable character varying(128) NOT NULL,
-  responsable_short character varying(64) NOT NULL;
+  responsable_short character varying(64) NOT NULL,
   portefeuille character varying(32) NOT NULL,
   nombre_projet integer NOT NULL,
   execution character varying(8) DEFAULT NULL::character varying,
@@ -441,7 +443,7 @@ COMMENT ON COLUMN ma_moulinette.batch_traitement.titre IS 'Titre du traitement';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.portefeuille IS 'Nom du portefeuille de projets associé';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.nombre_projet IS 'Nombre de projets traités';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.responsable IS 'Responsable du traitement';
-COMMENT ON COLUMN ma_moulinette.batch_traitement.responsable_short IS 'Identifiant court de l’utilisateur responsable du traitement';
+COMMENT ON COLUMN ma_moulinette.batch_traitement.responsable_short IS 'Identifiant court de l’utilisateur responsable du traitement',
 COMMENT ON COLUMN ma_moulinette.batch_traitement.debut_traitement IS 'Date et heure de début du traitement';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.fin_traitement IS 'Date et heure de fin du traitement';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.date_enregistrement IS 'Date d’enregistrement du traitement dans le système';
