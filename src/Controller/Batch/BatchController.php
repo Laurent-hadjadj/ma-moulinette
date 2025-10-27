@@ -17,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -79,6 +80,43 @@ class BatchController extends AbstractController
     }
 
     /**
+     * [Description for countPendingJob]
+     *
+     * @return JsonResponse
+     *
+     * Created at: 27/10/2025 19:46:17 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    #[Route('/api/traitement/pending', name: 'count_pending_job', methods: ['GET'])]
+    public function countPendingJob(): JsonResponse
+    {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/traitement/pending");
+        $batchTraitementRepos = $this->em->getRepository(BatchTraitement::class);
+        $count = $batchTraitementRepos->countBatchTraitementPendingAndProgress();
+
+        if ($count['code'] !== 200){
+            $this->logger->error("[Traitement-Manuel] ❌ Échec de la requête countBatchTraitementPendingAndProgress.", [
+                'erreur' => $count['erreur'],
+            ]);
+
+            return new JsonResponse([
+                'code' => $count['code'],
+                'type' => 'critical',
+                'message' => "Une erreur s'est produite lors de la récupération du nombre de traitements en attente et en cours (Erreur {$count['code']}).",
+                'erreur' => $count['erreur']
+            ], Response::HTTP_OK);
+        }
+
+        return new JsonResponse([
+            'code' => 200,
+            'message' => 'Récupération du nombre de traitements en attente et en cours.',
+            'pending' => $count['pending'] ?? 0,
+            'in_progress' => $count['progress'] ?? 0
+        ], Response::HTTP_OK);
+    }
+
+    /**
      * [Description for exportPdf]
      *
      * @param BatchExecution $batch
@@ -109,7 +147,7 @@ class BatchController extends AbstractController
     #[Route('/traitement/suivi', name: 'traitement_suivi', methods:'GET')]
     public function traitementSuivi(): Response
     {
-      /** On instancie l'EntityRepository */
+        /** On instancie l'EntityRepository */
         $batchTraitementRepos = $this->em->getRepository(BatchTraitement::class);
 
         // Initialisation des informations pour la bulle d'information
@@ -204,7 +242,17 @@ class BatchController extends AbstractController
                 $execution = "--:--:--";
             }
 
-            $type = ($traitement['mode_collecte'] === "Auto") ? "automatique" : "manuel";
+            $type = ($traitement['mode_collecte'] === "TRAITEMENT AUTOMATIQUE") ? "automatique" : "manuel";
+
+            $responsable = $traitement['responsable_short'];
+            $responsable_short = $traitement['responsable_short'];
+            $usernameParts = explode(' ', $responsable_short, 2);
+            $initiales = (count($usernameParts) === 2) ? $usernameParts[0] : '';
+            $nom = (count($usernameParts) === 2) ? $usernameParts[1] : $usernameParts[0];
+            $hash = array_reduce(str_split($responsable), function ($acc, $char) {
+                return $acc + ord($char);
+            }, 0);
+
             $traitements[] = [
                 'processus' =>"Tout va bien !",
                 'mode_collecte' =>  $traitement['mode_collecte'],
@@ -214,54 +262,56 @@ class BatchController extends AbstractController
                 'titre' =>  $traitement['titre'],
                 'portefeuille' =>  $traitement['portefeuille'],
                 'projet' =>  $traitement['projet'],
-                'responsable' =>  $traitement['responsable'],
+                'responsable' =>  $responsable,
+                'initiales' => $initiales,
+                'nom' => $nom,
+                'color' => $hash % 10,
                 'execution' =>  $execution
             ];
         }
 
         $render['date'] =  $r['liste'][0]['date'] ?? 'inconnu';
         $render['traitements'] = $traitements;
-
         return $this->render(static::$page, $render);
     }
 
-/*#[Route('/rapports', name: 'rapport_index')]
-public function rapports(BatchExecutionRepository $batchRepo): Response
+#[Route('/rapports', name: 'rapport_index')]
+public function rapports(): Response
 {
-    $batches = $batchRepo->findBy([], ['dateLancement' => 'DESC']);
+    /** On instancie l'EntityRepository */
+    $batchExecutionRepos = $this->em->getRepository(BatchExecution::class);
+    $traitements = $batchExecutionRepos->findBy([], ['dateEnregistrement' => 'DESC']);
 
     // Statistiques
-    $total = count($batches);
-    $nbErreur = 0;
-    $nbSucces = 0;
+    $total = count($traitements);
+    $nombre_success = $nombre_erreur = $nombre_bypass =0;
 
-    foreach ($batches as $batch) {
-        $codes = array_map(fn($j) => $j->getCode(), $batch->getCollectes()->toArray());
-        if (in_array(500, $codes)) {
-            $nbErreur++;
-        } else {
-            $nbSucces++;
-        }
+    foreach ($traitements as $traitement) {
+        $codes = array_map(fn($j) => $j->getCode(), $traitement->getCollectes()->toArray());
+        $nombre_success = (in_array(200, $codes)) ? $nombre_success++ : $nombre_success;
+        $nombre_bypass = (in_array(202, $codes)) ? $nombre_bypass++ : $nombre_bypass;
+        $nombre_erreur = (in_array([400, 404, 422, 500, 503], $codes)) ? $nombre_erreur++ : $nombre_erreur;
     }
 
     // Récupération des utilisateurs distincts
-    $users = $batchRepo->createQueryBuilder('b')
+    $users = $batchExecutionRepos->createQueryBuilder('b')
         ->select('DISTINCT b.utilisateurCollecte')
         ->where('b.utilisateurCollecte IS NOT NULL')
         ->orderBy('b.utilisateurCollecte', 'ASC')
         ->getQuery()
         ->getSingleColumnResult(); // Retourne un tableau de chaînes
 
-    return $this->render('rapport/index.html.twig', [
-        'batches' => $batches,
+    return $this->render('batch/rapport.html.twig', [
+        'traitements' => $traitements,
         'users' => $users,
         'total' => $total,
-        'nbErreur' => $nbErreur,
-        'nbSucces' => $nbSucces,
+        'nombre_erreur' => $nombre_erreur,
+        'nombre_success' => $nombre_success,
+        'nombre_bypass' => $nombre_bypass
     ]);
 }
 
-public function index(EntityManagerInterface $em)
+/*public function index(EntityManagerInterface $em)
 {
     // ... tes stats existantes
     $dateDebut = new \DateTime('-30 days');
