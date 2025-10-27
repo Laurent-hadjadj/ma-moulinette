@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V2.8.1 - 26/10/2025              ##
+##               V2.9.0 - 27/10/2025              ##
 ##                                                ##
 ####################################################*/
 
@@ -58,8 +58,11 @@
 -- 22/07/2025 : Laurent HADJADJ - Ajout de l'attribut inconnu dans la relation anomalie + renommage de l'attribut inconnue en inconnu.
 -- 22/07/2025 : Laurent HADJADJ - Augmentation de la taille de l'attribut Key de la table profil (32 -> 56). Changement SonarQube en version 25.10.
 -- 24/10/2025 : Laurent HADJADJ - Renommage des colonnes files, classes et functions en nombre_files, nombre_classes et nombre_functions.
--- 26/10/2025 : Laurent HADJADJ - Ajout des tables batch_execution et batch_execution_journal
--- 26/10/2025 : Laurent HADJADJ - Renomage de la colonne result en success dans la table batch_traitement
+-- 26/10/2025 : Laurent HADJADJ - Ajout des tables batch_execution et batch_execution_journal.
+-- 26/10/2025 : Laurent HADJADJ - Renommage de la colonne result en success dans la table batch_traitement.
+-- 27/10/2025 : Laurent HADJADJ - Ajout de la colonne in_progress à la table batch_traitement.
+-- 27/10/2025 : Laurent HADJADJ - Ajout de la colonne pending à la table batch_traitement.
+-- 27/10/2025 : Laurent HADJADJ - Ajout de la colonne responsable_short à la table batch et batch_traitement.
 
 -- SCHEMA: ma_moulinette
 
@@ -381,6 +384,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.batch
   titre character varying(32) NOT NULL,
   description character varying(128) NOT NULL,
   responsable character varying(128) NOT NULL,
+  responsable_short character varying(64) NOT NULL;
   portefeuille character varying(32) NOT NULL,
   nombre_projet integer NOT NULL,
   execution character varying(8) DEFAULT NULL::character varying,
@@ -395,7 +399,8 @@ COMMENT ON COLUMN ma_moulinette.batch.id IS 'Identifiant unique du batch';
 COMMENT ON COLUMN ma_moulinette.batch.statut IS 'Statut d’activité du batch';
 COMMENT ON COLUMN ma_moulinette.batch.titre IS 'Titre du batch, unique';
 COMMENT ON COLUMN ma_moulinette.batch.description IS 'Description du batch';
-COMMENT ON COLUMN ma_moulinette.batch.responsable IS 'Nom de l’utilisateur responsable';
+COMMENT ON COLUMN ma_moulinette.batch.responsable IS 'Identifiant de l’utilisateur responsable';
+COMMENT ON COLUMN ma_moulinette.batch.responsable_short IS 'Identifiant court de l’utilisateur responsable du traitement';
 COMMENT ON COLUMN ma_moulinette.batch.portefeuille IS 'Portefeuille de projet, unique';
 COMMENT ON COLUMN ma_moulinette.batch.nombre_projet IS 'Nombre de projets dans le batch';
 COMMENT ON COLUMN ma_moulinette.batch.execution IS 'État d’exécution du batch';
@@ -411,11 +416,14 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.batch_traitement
 (
   id SERIAL PRIMARY KEY,
   mode_collecte character varying(32) NOT NULL,
-  success boolean NOT NULL,
+  success boolean DEFAULT NULL,
+  pending boolean DEFAULT NULL,
+  in_progress boolean NOT NULL DEFAULT FALSE,
   titre character varying(32) NOT NULL,
   portefeuille character varying(32) NOT NULL,
   nombre_projet integer NOT NULL,
   responsable character varying(128) NOT NULL,
+  responsable_short character varying(64) NOT NULL;
   debut_traitement TIMESTAMPTZ DEFAULT NULL,
   fin_traitement TIMESTAMPTZ DEFAULT NULL,
   date_enregistrement TIMESTAMPTZ NOT NULL
@@ -427,10 +435,13 @@ GRANT ALL ON TABLE ma_moulinette.batch_traitement TO db_user;
 COMMENT ON COLUMN ma_moulinette.batch_traitement.id IS 'Identifiant unique du traitement';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.mode_collecte IS 'Mode de collecte du traitement';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.success IS 'Indique si le traitement a réussi ou échoué';
+COMMENT ON COLUMN ma_moulinette.batch_traitement.pending IS 'Indique si le traitement est en attente de traitement.';
+COMMENT ON COLUMN ma_moulinette.batch_traitement.in_progress IS 'Indique si le traitement est en cours.';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.titre IS 'Titre du traitement';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.portefeuille IS 'Nom du portefeuille de projets associé';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.nombre_projet IS 'Nombre de projets traités';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.responsable IS 'Responsable du traitement';
+COMMENT ON COLUMN ma_moulinette.batch_traitement.responsable_short IS 'Identifiant court de l’utilisateur responsable du traitement';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.debut_traitement IS 'Date et heure de début du traitement';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.fin_traitement IS 'Date et heure de fin du traitement';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.date_enregistrement IS 'Date d’enregistrement du traitement dans le système';
