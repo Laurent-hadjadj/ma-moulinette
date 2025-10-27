@@ -67,7 +67,7 @@ class BatchCrudController extends AbstractCrudController
     private function formatUsername(string $first_name, string $last_name): string
     {
         // Si pas de point OU compte technique
-        if ($first_name === 'admin' && $last_name === 'ma-moulinette.fr') {
+        if (strtolower($first_name) === 'admin' && strtolower($last_name) === '@ma-moulinette') {
             return ' ' . strtoupper($first_name);
         }
 
@@ -210,9 +210,10 @@ class BatchCrudController extends AbstractCrudController
         $sql = "SELECT liste FROM portefeuille ORDER BY titre ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $r = $l->fetchAssociative();
-        $nombreProjet = 0;
-        if ($r){
-            $nombreProjet = count(json_decode($r['liste']));
+
+        $nombre_projet = 0;
+        if (isset($r['liste'])){
+            $nombre_projet = count(json_decode($r['liste'], true));
         }
 
         /**
@@ -221,20 +222,24 @@ class BatchCrudController extends AbstractCrudController
         */
         $entityInstance->setTitre(mb_strtoupper($titre));
         $entityInstance->setResponsable($user->getPrenom() . ' ' . $user->getNom());
-        $entityInstance->setNombreProjet($nombreProjet);
+
+        $responsable_short = self::formatUsername($user->getPrenom(), $user->getNom());
+        $entityInstance->setResponsableShort($responsable_short);
+
+        $entityInstance->setNombreProjet($nombre_projet);
         $entityInstance->setDateEnregistrement(new \DateTimeImmutable());
 
         /** On prépare les données pour la table de suivi des traitements */
         $map = [
             'mode_collecte' => ($entityInstance->isStatut() === true)? 'TRAITEMENT AUTOMATIQUE' : 'TRAITEMENT MANUEL',
-            'success' => 'false',
-            'in_progress' => 'false',
-            'pending' => 'false',
+            'success' => null,
+            'in_progress' => false,
+            'pending' => null,
             'titre' => $entityInstance->getTitre(),
             'portefeuille' => $entityInstance->getPortefeuille(),
             'nombre_projet' => $entityInstance->getNombreProjet(),
             'responsable' => $entityInstance->getResponsable(),
-            'responsable_short' => self::formatUsername($user->getPrenom(), $user->getNom()),
+            'responsable_short' => $responsable_short,
             'date_enregistrement' => new \DateTimeImmutable()
         ];
 
@@ -242,6 +247,7 @@ class BatchCrudController extends AbstractCrudController
 
         /** On programme le traitement dans la table BatchTraitement  */
         $r = $batchTraitementRepos->insertBatchTraitement($map);
+
         if ($r['code'] !== 200){
             throw new \RuntimeException('Erreur : '.$r['code'].' '.$r['erreur']);
         }
