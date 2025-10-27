@@ -1442,7 +1442,7 @@ const afficheMesProjets = async function() {
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
       const message = "Une erreur inattendue s'est produite.";
-      showMessage('alert', message, trace);
+      showMessage('critical', message, trace);
   }
 };
 
