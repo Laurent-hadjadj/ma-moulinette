@@ -47,92 +47,6 @@ class BatchManuelController extends AbstractController
         private Security $security,
     ) {
     }
-
-    /**
-     * [Description for lireJournal]
-     * Affiche le journal d'execution pour le portefeuille
-     *
-     * @param string $portefeuille
-     * @param string $type
-     *
-     * @return JsonResponse
-     *
-     * Created at: 05/03/2023, 01:50:53 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    #[Route('/traitement/journal/lire', name: 'traitement_journal_lire', methods: ['POST'])]
-    public function lireJournal(Request $request): JsonResponse
-    {
-        $this->logger->info("[API] 📥 Requête reçue sur /traitement/journal/lire");
-
-        $user = $this->security->getUser();
-
-        /** On récupère le job et le type (manuel ou automatique) */
-        $data = json_decode($request->getContent());
-        if ($data === null ||
-            !property_exists($data, 'portefeuille') ||
-            !property_exists($data, 'type')) {
-            $this->logger->error("[Favori] ❌ Requête invalide : clé 'portefeuille', 'type' manquante ou JSON mal formé.", [
-                'utilisateur' => $user,
-                'payload' => $data
-            ]);
-
-            return new JsonResponse([
-                'code' => 400,
-                'type' => 'alert',
-                'message' => static::$erreur400
-            ], Response::HTTP_OK);
-        }
-
-        //$journal = $this->logger->downloadContent($data->portefeuille, $data->type);
-        return new JsonResponse([
-            'code' => 200,
-            'recherche' => "journal['recherche']",
-            'journal' => "journal['content']"
-        ], Response::HTTP_OK);
-    }
-
-    /**
-     * [Description for effaceJournal]
-     *
-     * @param Request $request
-     *
-     * @return response
-     *
-     * Created at: 23/10/2025 13:43:52 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    #[Route('/traitement/journal/efface', name: 'journal_efface', methods: ['DELETE'])]
-    public function effaceJournal(Request $request): JsonResponse
-    {
-        $this->logger->info("[API] 📥 Requête reçue sur /traitement/journal/efface");
-
-        $user = $this->security->getUser();
-
-        /** On récupère le job et le type (manuel ou automatique) */
-        $data = json_decode($request->getContent());
-        if ($data === null ||
-                !property_exists($data, 'portefeuille') ||
-                !property_exists($data, 'type')) {
-            $this->logger->error("[Triatement-Manuel] ❌ Requête invalide : clé 'portefeuille', 'type' manquante ou JSON mal formé.", [
-                'utilisateur' => $user,
-                'payload' => $data
-            ]);
-
-            return new jsonResponse([
-                'code' => 400,
-                'type' => 'alert',
-                'message' => static::$erreur400
-            ], Response::HTTP_OK);
-        }
-
-        //$this->logger->log($data->portefeuille, $data->type, 'delete');
-
-        return new JsonResponse(['code' => 200], Response::HTTP_OK);
-    }
-
     /**
      * [Description for listeProjet]
      * Récupère la liste des projets depuis un portefeuille de projets.
@@ -178,7 +92,7 @@ class BatchManuelController extends AbstractController
             ];
         }
 
-        /** La liste est vide */
+         /** La liste est vide */
         if (!isset($traitement['liste']) || count($traitement['liste']) === 0)
         {
             $this->logger->warning('[Batch Manuel] ⚠️ La liste des traitements ne contient pas le portefeuille !', [
@@ -255,7 +169,7 @@ class BatchManuelController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/traitement/manuel', name: 'traitement_manuel', methods: ['POST'])]
+    #[Route('/api/traitement/manuel', name: 'traitement_manuel', methods: ['POST'])]
     public function traitementManuel(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /traitement/manuel");
@@ -317,6 +231,35 @@ class BatchManuelController extends AbstractController
         $this->em->persist($batchExecution);
 
         $debut_traitement = new \DateTime('now', new \DateTimeZone(static::$europeParis));
+
+        /** On met à jour la table des traitements */
+        $map = [
+            'debut_traitement' => $debut_traitement->format(static::$dateFormat),
+            'fin_traitement' => null,
+            'success' => null,
+            'in_progress' => 'true',
+            'pending' => 'false',
+            'id' => $data->id
+        ];
+
+        $update = $batchTraitementRepos->updateBatchTraitement($map);
+        if ($update['code'] !== 200) {
+            $this->logger->error('[Batch Manuel] ❌ Échec de la requête updateBatchTraitement', [
+                'code' => $update['code'],
+                'message' => $update['message'] ?? static::$noMessage,
+                'erreur' => $update['erreur'] ?? static::$noError,
+                'id' => $data->id ?? 'inconnu',
+                'wip' => 'in_progress = true'
+                ]);
+
+            return new JsonResponse([
+                'code' => $update['code'],
+                'type' => 'alert',
+                'message' => "Il n'est pas possible de mettre à jour le traitement (Erreur {$update['code']}).",
+                'erreur' =>  $update['erreur'] ?? null
+            ], Response::HTTP_OK);
+        }
+
         /** On lance la collecte */
         foreach ($les_projets['liste'] as $le_projet){
             $result = $this->collecte->collecte($data->portefeuille, $le_projet, 'TRAITEMENT MANUEL', $utilisateur_collecte);
@@ -353,7 +296,9 @@ class BatchManuelController extends AbstractController
         $map = [
             'debut_traitement' => $debut_traitement->format(static::$dateFormat),
             'fin_traitement' => $fin_traitement->format(static::$dateFormat),
-            'success' => 1,
+            'success' => 'true',
+            'in_progress' => 'false',
+            'pending' => 'false',
             'id' => $data->id
         ];
 
@@ -364,8 +309,9 @@ class BatchManuelController extends AbstractController
                 'code' => $update['code'],
                 'message' => $update['message'] ?? static::$noMessage,
                 'erreur' => $update['erreur'] ?? static::$noError,
-                'id' => $data->id ?? 'inconnu'
-                ]);
+                'id' => $data->id ?? 'inconnu',
+                'wip' => 'in_progress = false'
+            ]);
 
             return new JsonResponse([
                 'code' => $update['code'],
