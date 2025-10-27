@@ -29,17 +29,29 @@ class BatchTraitement
 
     #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
         options: ['comment' => 'Mode de collecte du traitement'])]
-    #[Assert\Choice(choices: ['Collecte', 'Manuel', 'Automatique'],
-                    message: "Le démarrage doit être Collecte, Manuel ou Automatique")]
+    #[Assert\Choice(choices: ['COLLECTE', 'TRAITEMENT MANUEL', 'TRAITEMENT MANUEL'],
+                    message: "Le démarrage doit être Collecte, TRAITEMENT MANUEL ou TRAITEMENT AUTOMATIQUE")]
     #[Assert\NotBlank]
-    private $modeCollecte = "Manuel";
+    private $modeCollecte = "TRAITEMENT MANUEL";
 
-    #[ORM\Column(type: 'boolean', nullable: false,
+    #[ORM\Column(type: Types::BOOLEAN, nullable: true,
         options: ['comment' => 'Indique si le traitement a réussi ou échoué'])]
     #[Assert\Type(type: 'bool',
-        message: "Le résultat doit être un booléen.")]
+        message: " Le résultat doit être un booléen.")]
     #[Assert\NotNull]
-    private $success = false;
+    private ?bool $success = null;
+
+    #[ORM\Column(type: Types::BOOLEAN, nullable: true,
+        options: ['comment' => "Indique si le traitement est en attente d'execution"])]
+    #[Assert\Type(type: 'bool',
+        message: "Le résultat doit être un booléen.")]
+    private ?bool $pending = null;
+
+    #[ORM\Column(type: Types::BOOLEAN, nullable: false,
+        options: ['comment' => "Indique si le traitement est en cours d'execution"])]
+    #[Assert\Type(type: 'bool',
+        message: "Le résultat doit être un booléen.")]
+    private $inProgress = false;
 
     #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
         options: ['comment' => 'Titre du traitement'])]
@@ -68,6 +80,12 @@ class BatchTraitement
     #[Assert\Length(max: 128,
         maxMessage: "Le nom du responsable ne doit pas dépasser 128 caractères.")]
     private $responsable;
+
+    #[ORM\Column(type: Types::STRING, length: 64, nullable: false,
+        options: ['comment' => 'Identifiant court de l’utilisateur responsable'])]
+    #[Assert\Length(max: 64,
+        maxMessage: "Le nom de l'utilisateur ne doit pas dépasser 64 caractères.")]
+    private $responsableShort;
 
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: true,
         options: ['comment' => 'Date et heure de début du traitement'])]
@@ -111,9 +129,33 @@ class BatchTraitement
         return $this->success;
     }
 
-    public function setResult(bool $success): static
+    public function setSuccess(bool $success): static
     {
         $this->success = $success;
+
+        return $this;
+    }
+
+    public function isPending(): ?bool
+    {
+        return $this->pending;
+    }
+
+    public function setPending(bool $pending): static
+    {
+        $this->pending = $pending;
+
+        return $this;
+    }
+
+    public function isInProgress(): ?bool
+    {
+        return $this->inProgress;
+    }
+
+    public function setInProgress(bool $inProgress): static
+    {
+        $this->inProgress = $inProgress;
 
         return $this;
     }
@@ -162,6 +204,18 @@ class BatchTraitement
     public function setResponsable(string $responsable): static
     {
         $this->responsable = $responsable;
+
+        return $this;
+    }
+
+        public function getResponsableShort(): ?string
+    {
+        return $this->responsableShort;
+    }
+
+    public function setResponsableShort(string $responsableShort): static
+    {
+        $this->responsableShort = $responsableShort;
 
         return $this;
     }
