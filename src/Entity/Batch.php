@@ -49,10 +49,16 @@ class Batch
     private $description;
 
     #[ORM\Column(type: Types::STRING, length: 128, nullable: false,
-        options: ['comment' => 'Nom de l’utilisateur responsable'])]
+        options: ['comment' => 'Identifiant complet de l’utilisateur responsable'])]
     #[Assert\Length(max: 128,
         maxMessage: "Le nom de l'utilisateur ne doit pas dépasser 128 caractères.")]
     private $responsable;
+
+    #[ORM\Column(type: Types::STRING, length: 64, nullable: false,
+        options: ['comment' => 'Identifiant court de l’utilisateur responsable'])]
+    #[Assert\Length(max: 64,
+        maxMessage: "Le nom de l'utilisateur ne doit pas dépasser 64 caractères.")]
+    private $responsableShort;
 
     #[ORM\Column(type: Types::STRING, length: 32, unique: true, nullable: false,
         options: ['comment' => 'Portefeuille de projet, unique'])]
@@ -132,6 +138,18 @@ class Batch
     public function setResponsable(string $responsable): static
     {
         $this->responsable = $responsable;
+
+        return $this;
+    }
+
+    public function getResponsableShort(): ?string
+    {
+        return $this->responsableShort;
+    }
+
+    public function setResponsableShort(string $responsableShort): static
+    {
+        $this->responsableShort = $responsableShort;
 
         return $this;
     }
