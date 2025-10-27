@@ -13,18 +13,18 @@
 
 namespace App\Controller\Admin;
 
-use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Batch;
-
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\Batch;
+use App\Entity\BatchTraitement;
 
 /**
  * [Description BatchCrudController]
@@ -50,6 +50,34 @@ class BatchCrudController extends AbstractCrudController
     ) {
         $this->emm = $emm;
         $this->token = $token;
+    }
+
+    /**
+     * [Description for formatUsername]
+     *
+     * @param string $first_name
+     * @param string $last_name
+     *
+     * @return string
+     *
+     * Created at: 01/06/2025 16:47:59 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function formatUsername(string $first_name, string $last_name): string
+    {
+        // Si pas de point OU compte technique
+        if ($first_name === 'admin' && $last_name === 'ma-moulinette.fr') {
+            return ' ' . strtoupper($first_name);
+        }
+
+        // Gestion de prénoms composés type "jean-pierre"
+        $initialesFirstName = implode('-', array_map(
+            fn($part) => strtoupper(substr($part, 0, 1)),
+            explode('-', $first_name)
+        ));
+
+        return "{$initialesFirstName}. " . strtoupper($last_name);
     }
 
     /**
@@ -170,7 +198,7 @@ class BatchCrudController extends AbstractCrudController
             return;
         }
 
-        $batchTraitementRepos = $this->emm->getRepository(Batch::class);
+        $batchTraitementRepos = $this->emm->getRepository(BatchTraitement::class);
 
         /** On récupère le nom du batch */
         $titre = $entityInstance->getTitre();
@@ -182,7 +210,7 @@ class BatchCrudController extends AbstractCrudController
         $sql = "SELECT liste FROM portefeuille ORDER BY titre ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $r = $l->fetchAssociative();
-        $nombreProjet=0;
+        $nombreProjet = 0;
         if ($r){
             $nombreProjet = count(json_decode($r['liste']));
         }
@@ -192,18 +220,21 @@ class BatchCrudController extends AbstractCrudController
          * attention, les attributs dans l'entity ne doivent pas être NotNull et NotBlank.
         */
         $entityInstance->setTitre(mb_strtoupper($titre));
-        $entityInstance->setResponsable($user->getPrenom().' '.$user->getNom());
+        $entityInstance->setResponsable($user->getPrenom() . ' ' . $user->getNom());
         $entityInstance->setNombreProjet($nombreProjet);
         $entityInstance->setDateEnregistrement(new \DateTimeImmutable());
 
         /** On prépare les données pour la table de suivi des traitements */
         $map = [
-            'mode_collecte' => ($entityInstance->isStatut() === true)? 'Automatique' : 'Manuel',
-            'result' => 1,
+            'mode_collecte' => ($entityInstance->isStatut() === true)? 'TRAITEMENT AUTOMATIQUE' : 'TRAITEMENT MANUEL',
+            'success' => 'false',
+            'in_progress' => 'false',
+            'pending' => 'false',
             'titre' => $entityInstance->getTitre(),
             'portefeuille' => $entityInstance->getPortefeuille(),
             'nombre_projet' => $entityInstance->getNombreProjet(),
             'responsable' => $entityInstance->getResponsable(),
+            'responsable_short' => self::formatUsername($user->getPrenom(), $user->getNom()),
             'date_enregistrement' => new \DateTimeImmutable()
         ];
 
