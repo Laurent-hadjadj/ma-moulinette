@@ -1171,8 +1171,6 @@ class CollecteController extends AbstractController
         /** Fin du traitement */
         $finTraitement = new \DateTime('now', new \DateTimeZone(static::$europeParis));
         $interval = $debutTraitement->diff($finTraitement);
-        $temps = $interval->format('%H:%i:%s.%f');
-        $message = $finTraitement->format(static::$dateFormat) . "Temps d'exécution : " . $temps;
 
         $collecte[] =
         '<h2 class="h4 open-sans"><span aria-hidden="true">🎉</span>Collecte terminée pour ce projet</h2>
@@ -1182,7 +1180,8 @@ class CollecteController extends AbstractController
                 <li class="lead">Projet : ' . $maven_key . '</li>
                 <li class="lead">Mode : ' . $mode_collecte .'</li>
                 <li class="lead">Démarrage : ' . $debutTraitement->format(static::$dateFormat) .'</li>
-                <li class="lead">Fin : ' . $message . '</li>
+                <li class="lead">Fin : ' . $finTraitement->format(static::$dateFormat) . '</li>
+                <li class="lead">Temps d\'exécution : ' . $interval->format('%H:%i:%s.%f') . '</li>
             </ul>
         </div>';
 
