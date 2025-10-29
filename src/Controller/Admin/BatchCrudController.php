@@ -21,10 +21,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-
+use Symfony\Component\Uid\Ulid;
 use Doctrine\ORM\EntityManagerInterface;
+
 use App\Entity\Batch;
+use App\Entity\BatchExecution;
 use App\Entity\BatchTraitement;
+use App\Exception\SqlRequestException;
 
 /**
  * [Description BatchCrudController]
@@ -131,6 +134,7 @@ class BatchCrudController extends AbstractCrudController
             ->setHelp('Statut du traitement (Activé/Désactivé).');
 
         yield TextField::new('titre')
+            ->setFormTypeOption('attr', ['placeholder' => 'Application Java Lot 1'])
             ->setHelp('Nom du traitement de données.');
 
         /** On récupère la liste des projets sans filtrage */
@@ -159,7 +163,8 @@ class BatchCrudController extends AbstractCrudController
             ->setHelp('Nom du portefeuille de projets.');
 
         yield TextField::new('description')
-            ->setHelp('Nom du traitement de données.');
+            ->setFormTypeOption('attr', ['placeholder' => 'Collecte de données pour les applications JAVA du Lot 1'])
+            ->setHelp('Description du traitement de données.');
 
         yield IntegerField::new('nombre_projet')
             ->hideOnForm()
@@ -226,6 +231,10 @@ class BatchCrudController extends AbstractCrudController
         $responsable_short = self::formatUsername($user->getPrenom(), $user->getNom());
         $entityInstance->setResponsableShort($responsable_short);
 
+        /** On créé un clé unique pour lier  */
+        $traitement_id = new ulid();
+        $entityInstance->setTraitementId($traitement_id);
+
         $entityInstance->setNombreProjet($nombre_projet);
         $entityInstance->setDateEnregistrement(new \DateTimeImmutable());
 
@@ -240,6 +249,7 @@ class BatchCrudController extends AbstractCrudController
             'nombre_projet' => $entityInstance->getNombreProjet(),
             'responsable' => $entityInstance->getResponsable(),
             'responsable_short' => $responsable_short,
+            'traitement_id' => $traitement_id,
             'date_enregistrement' => new \DateTimeImmutable()
         ];
 
@@ -249,7 +259,7 @@ class BatchCrudController extends AbstractCrudController
         $r = $batchTraitementRepos->insertBatchTraitement($map);
 
         if ($r['code'] !== 200){
-            throw new \RuntimeException('Erreur : '.$r['code'].' '.$r['erreur']);
+            throw new SqlRequestException('insertBatchTraitement', (int) $r['code'], $r['erreur'], null);
         }
     }
 
@@ -277,4 +287,31 @@ class BatchCrudController extends AbstractCrudController
         parent::updateEntity($em, $entityInstance);
     }
 
+    public function deleteEntity(EntityManagerInterface $em, $entityInstance): void
+    {
+        if (!$entityInstance instanceof Batch) {
+            return;
+        }
+
+        $batchTraitementRepos = $this->emm->getRepository(BatchTraitement::class);
+        $batchExecutionRepos = $this->emm->getRepository(BatchExecution::class);
+
+        /** On récupère le nom du batch */
+        $transaction_id = $entityInstance->getTraitementId();
+
+        /** On supprime le traitement  */
+        $r1 = $batchTraitementRepos->deleteTraitement($transaction_id);
+        $r2 = $batchExecutionRepos->deleteTraitement($transaction_id);
+
+        if ($r1['code'] !== 200){
+            throw new SqlRequestException('insertBatchTraitement', (int) $r1['code'], $r1['erreur'], null);
+        } elseif  ($r2['code'] !== 200){
+            throw new SqlRequestException('insertBatchExecution', (int) $r2['code'], $r2['erreur'], null);
+        }
+
+        // Supprime l'entité
+        $em->remove($entityInstance);
+        $em->flush();
+
+    }
 }
