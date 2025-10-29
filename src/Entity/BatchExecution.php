@@ -35,13 +35,14 @@ class BatchExecution
     private $id;
 
     #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
-        options: ['comment' => 'Nom du batch exécuté.'])]
+        options: ['comment' => 'Nom du traitement exécuté.'])]
     #[Assert\NotBlank]
-    private string $nom;
+    private string $nomTraitement;
 
-    #[ORM\Column(type: 'ulid', nullable: false,
-        options: ['comment' => 'référence unique du journal.'])]
-    private ?Ulid $referenceUnique = null;
+    #[ORM\Column(type: 'ulid', nullable: true,
+        options: ['comment' => 'Référence unique du journal (ULID sous forme de texte).']
+    )]
+    private ?Ulid $traitementId = null;
 
     #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
     options: ['comment' => 'Mode de collecte : COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE'])]
@@ -61,13 +62,13 @@ class BatchExecution
     private Collection $collectes;
 
     public function __construct(
-        string $nom,
-        Ulid $referenceUnique,
+        string $nomTraitement,
+        Ulid $traitementId,
         ?string $utilisateurCollecte,
         string $modeCollecte
     ) {
-        $this->nom = $nom;
-        $this->referenceUnique = $referenceUnique;
+        $this->nomTraitement = $nomTraitement;
+        $this->traitementId = $traitementId;
         $this->utilisateurCollecte = $utilisateurCollecte;
         $this->modeCollecte = $modeCollecte;
         $this->dateEnregistrement = new \DateTimeImmutable();
@@ -98,19 +99,19 @@ class BatchExecution
         return $this->id;
     }
 
-    public function getNom(): string
+    public function getNomTraitement(): string
     {
-        return $this->nom;
+        return $this->nomTraitement;
     }
 
-    public function getReferenceUnique(): ?Ulid
+    public function getTraitementId(): ?Ulid
     {
-        return $this->referenceUnique;
+        return $this->traitementId;
     }
 
-    public function setReferenceUnique(Ulid $referenceUnique): static
+    public function setTraitementId(Ulid $traitementId): static
     {
-        $this->referenceUnique = $referenceUnique;
+        $this->traitementId = $traitementId;
 
         return $this;
     }
