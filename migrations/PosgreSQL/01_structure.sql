@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V2.9.1 - 27/10/2025              ##
+##               V2.11.1 - 29/10/2025             ##
 ##                                                ##
 ####################################################*/
 
@@ -63,8 +63,13 @@
 -- 27/10/2025 : Laurent HADJADJ - Ajout de la colonne in_progress à la table batch_traitement.
 -- 27/10/2025 : Laurent HADJADJ - Ajout de la colonne pending à la table batch_traitement.
 -- 27/10/2025 : Laurent HADJADJ - Ajout de la colonne responsable_short à la table batch et batch_traitement.
--- 27/10/2025 : Laurent HADJADJ - correction syntaxe ';' (responsable_short)sur la table batch et batch_traitement.
-
+-- 27/10/2025 : Laurent HADJADJ - Correction syntaxe ';' (responsable_short) sur la table batch et batch_traitement.
+-- 28/10/2025 : Laurent HADJADJ - Ajout de reference_unique à la table batch_traitement.
+-- 28/10/2025 : Laurent HADJADJ - Ajout de  nom_projet et portefeuille à la table batch_execution_journal.
+-- 28/10/2025 : Laurent HADJADJ - Renommage de nom en nom_traitement pour la table batch_execution.
+-- 28/10/2025 : Laurent HADJADJ - Conversion du type UUID en STRINg pour garder la génération ULID côté PHP.
+-- 29/10/2025 : Laurent HADJADJ - Ajout de l'attribut traitement_id dans les tables batch et batch_traitement.
+-- 29/10/2025 : Laurent HADJADJ - l'objet ulid a une taille par défaut de 36 sauf si on passe en toBase32 (26).
 
 -- SCHEMA: ma_moulinette
 
@@ -390,6 +395,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.batch
   portefeuille character varying(32) NOT NULL,
   nombre_projet integer NOT NULL,
   execution character varying(8) DEFAULT NULL::character varying,
+  traitement_id VARCHAR(36) NOT NULL,
   date_modification TIMESTAMP DEFAULT NULL,
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
@@ -406,6 +412,7 @@ COMMENT ON COLUMN ma_moulinette.batch.responsable_short IS 'Identifiant court de
 COMMENT ON COLUMN ma_moulinette.batch.portefeuille IS 'Portefeuille de projet, unique';
 COMMENT ON COLUMN ma_moulinette.batch.nombre_projet IS 'Nombre de projets dans le batch';
 COMMENT ON COLUMN ma_moulinette.batch.execution IS 'État d’exécution du batch';
+COMMENT ON COLUMN ma_moulinette.batch.traitement_id IS 'Identifiant unique du traitement';
 COMMENT ON COLUMN ma_moulinette.batch.date_modification IS 'Date de la dernière modification du batch';
 COMMENT ON COLUMN ma_moulinette.batch.date_enregistrement IS 'Date d’enregistrement du batch';
 
@@ -425,9 +432,11 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.batch_traitement
   portefeuille character varying(32) NOT NULL,
   nombre_projet integer NOT NULL,
   responsable character varying(128) NOT NULL,
-  responsable_short character varying(64) NOT NULL;
+  responsable_short character varying(64) NOT NULL,
   debut_traitement TIMESTAMPTZ DEFAULT NULL,
   fin_traitement TIMESTAMPTZ DEFAULT NULL,
+  reference_unique VARCHAR(36) NULL,
+  traitement_id VARCHAR(36) NULL,
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
@@ -443,27 +452,28 @@ COMMENT ON COLUMN ma_moulinette.batch_traitement.titre IS 'Titre du traitement';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.portefeuille IS 'Nom du portefeuille de projets associé';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.nombre_projet IS 'Nombre de projets traités';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.responsable IS 'Responsable du traitement';
-COMMENT ON COLUMN ma_moulinette.batch_traitement.responsable_short IS 'Identifiant court de l’utilisateur responsable du traitement',
+COMMENT ON COLUMN ma_moulinette.batch_traitement.responsable_short IS 'Identifiant court de l’utilisateur responsable du traitement';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.debut_traitement IS 'Date et heure de début du traitement';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.fin_traitement IS 'Date et heure de fin du traitement';
+COMMENT ON COLUMN ma_moulinette.batch_traitement.reference_unique IS 'Référence unique du journal.';
+COMMENT ON COLUMN ma_moulinette.batch_traitement.traitement_id IS 'Identifiant unique du traitement';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.date_enregistrement IS 'Date d’enregistrement du traitement dans le système';
 
 -- ===============================================
 -- TABLE: batch_execution
 -- ===============================================
 
-DROP TABLE IF EXISTS ma_moulinette.batch_execution;
+DROP TABLE IF EXISTS ma_moulinette.batch_execution CASCADE;
 CREATE TABLE ma_moulinette.batch_execution (
     id SERIAL PRIMARY KEY,
-    nom VARCHAR(32) NOT NULL,
-    reference_unique UUID NOT NULL,
+    nom_traitement VARCHAR(32) NOT NULL,
+    reference_unique VARCHAR(36) NOT NULL,
     mode_collecte VARCHAR(32) NOT NULL,
     utilisateur_collecte VARCHAR(320) NULL,
     date_enregistrement TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
+    -- Contraintes
     CONSTRAINT uq_batch_execution_reference UNIQUE (reference_unique),
-
-    -- Commentaires
     CONSTRAINT ck_mode_collecte CHECK (mode_collecte IN ('COLLECTE', 'TRAITEMENT MANUEL', 'TRAITEMENT AUTOMATIQUE'))
 );
 
@@ -472,7 +482,7 @@ GRANT ALL ON TABLE ma_moulinette.batch_execution TO db_user;
 
 COMMENT ON TABLE ma_moulinette.batch_execution IS 'Journal des exécutions de batchs.';
 COMMENT ON COLUMN ma_moulinette.batch_execution.id IS 'Identifiant unique de la table batch_execution';
-COMMENT ON COLUMN ma_moulinette.batch_execution.nom IS 'Nom du batch exécuté.';
+COMMENT ON COLUMN ma_moulinette.batch_execution.nom_traitement IS 'Nom du batch exécuté.';
 COMMENT ON COLUMN ma_moulinette.batch_execution.reference_unique IS 'Référence unique du journal.';
 COMMENT ON COLUMN ma_moulinette.batch_execution.mode_collecte IS 'Mode de collecte : COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE';
 COMMENT ON COLUMN ma_moulinette.batch_execution.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte.';
@@ -485,6 +495,8 @@ COMMENT ON COLUMN ma_moulinette.batch_execution.date_enregistrement IS 'Date d�
 DROP TABLE IF EXISTS ma_moulinette.batch_execution_journal;
 CREATE TABLE ma_moulinette.batch_execution_journal (
     id SERIAL PRIMARY KEY,
+    nom_projet character varying(128) NOT NULL,
+    portefeuille character varying(32) NOT NULL,
     code INTEGER NOT NULL,
     compte_rendu TEXT NOT NULL,
     date_execution TIMESTAMPTZ NOT NULL,
@@ -500,6 +512,8 @@ ALTER TABLE ma_moulinette.batch_execution_journal OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.batch_execution_journal TO db_user;
 
 COMMENT ON TABLE ma_moulinette.batch_execution_journal IS 'Journal détaillé des collectes/exécutions associées à un batch.';
+COMMENT ON COLUMN ma_moulinette.batch_execution_journal.nom_projet IS 'Nom du projet traité';
+COMMENT ON COLUMN ma_moulinette.batch_execution_journal.portefeuille IS 'Nom du portefeuille de projets associé';
 COMMENT ON COLUMN ma_moulinette.batch_execution_journal.id IS 'Identifiant unique de la table batch_execution_journal';
 COMMENT ON COLUMN ma_moulinette.batch_execution_journal.code IS 'Code de statut du traitement (200 = OK, 500 = Erreur, etc.)';
 COMMENT ON COLUMN ma_moulinette.batch_execution_journal.compte_rendu IS 'Compte rendu HTML du traitement.';
@@ -530,6 +544,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.equipe
 ALTER TABLE ma_moulinette.equipe OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.equipe TO db_user;
 
+COMMENT ON TABLE ma_moulinette.equipe IS 'Table des groupes utilisateurs';
 COMMENT ON COLUMN ma_moulinette.equipe.id IS 'Identifiant unique de l’équipe';
 COMMENT ON COLUMN ma_moulinette.equipe.titre IS 'Titre de l’équipe, unique';
 COMMENT ON COLUMN ma_moulinette.equipe.description IS 'Description de l’équipe';
