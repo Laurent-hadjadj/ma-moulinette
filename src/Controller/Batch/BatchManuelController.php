@@ -220,10 +220,10 @@ class BatchManuelController extends AbstractController
         $utilisateur_collecte = $this->security->getUser()->getCourriel();
 
         // Création du job principal
-        $reference = new Ulid();
+        $traitement_id = new Ulid();
         $batchExecution = new BatchExecution(
             'Collecte du ' . date('d/m/Y H:i'),
-            $reference,
+            $traitement_id,
             $utilisateur_collecte,
             'TRAITEMENT MANUEL'
         );
@@ -237,9 +237,10 @@ class BatchManuelController extends AbstractController
             'debut_traitement' => $debut_traitement->format(static::$dateFormat),
             'fin_traitement' => null,
             'success' => null,
-            'in_progress' => 'true',
-            'pending' => 'false',
-            'id' => $data->id
+            'in_progress' => true,
+            'pending' => null,
+            'id' => $data->id,
+            'traitement_id' => $traitement_id
         ];
 
         $update = $batchTraitementRepos->updateBatchTraitement($map);
@@ -263,10 +264,14 @@ class BatchManuelController extends AbstractController
         /** On lance la collecte */
         foreach ($les_projets['liste'] as $le_projet){
             $result = $this->collecte->collecte($data->portefeuille, $le_projet, 'TRAITEMENT MANUEL', $utilisateur_collecte);
+            $explose_le_projet = explode(':',$le_projet,2);
+            $nom_projet = (count($explose_le_projet) == 2 ) ?  $explose_le_projet[1] : $le_projet;
 
             /** On crée le journal d'execution */
             $journal = new BatchExecutionJournal();
             $journal->setCode($result['code']);
+            $journal->setPortefeuille($data->portefeuille);
+            $journal->setNomProjet($nom_projet);
             $journal->setCompteRendu($result['compte_rendu']);
             $journal->setDateExecution(new \DateTimeImmutable());
 
@@ -296,10 +301,11 @@ class BatchManuelController extends AbstractController
         $map = [
             'debut_traitement' => $debut_traitement->format(static::$dateFormat),
             'fin_traitement' => $fin_traitement->format(static::$dateFormat),
-            'success' => 'true',
-            'in_progress' => 'false',
-            'pending' => 'false',
-            'id' => $data->id
+            'success' => true,
+            'in_progress' => false,
+            'pending' => false,
+            'id' => $data->id,
+            'traitement_id' => $traitement_id
         ];
 
         $update = $batchTraitementRepos->updateBatchTraitement($map);
@@ -324,7 +330,7 @@ class BatchManuelController extends AbstractController
         return new JsonResponse([
             'code' => 200,
             'message' => 'Collecte terminée avec succès',
-            'reference' => (string) $reference,
+            'reference' => (string) $traitement_id,
             'temps_traitement' => $temps_traitement
         ], Response::HTTP_OK);
     }
