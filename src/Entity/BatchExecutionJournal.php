@@ -32,6 +32,14 @@ class BatchExecutionJournal
         options: ['comment' => 'Code de statut du traitement (200 = OK, 500 = Erreur, etc.)'])]
     private int $code;
 
+    #[ORM\Column(type: Types::STRING, nullable: false,
+        options: ['comment' => 'Nom du projet'])]
+    private string $nomProjet;
+
+    #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
+        options: ['comment' => 'Portefeuille de projets'])]
+    private $portefeuille;
+
     #[ORM\Column(type: Types::TEXT, nullable: false,
         options: ['comment' => 'Compte rendu HTML du traitement.'])]
     private string $compteRendu;
@@ -67,6 +75,30 @@ class BatchExecutionJournal
     public function getCode(): int
     {
         return $this->code;
+    }
+
+    public function getNomProjet(): ?string
+    {
+        return $this->nomProjet;
+    }
+
+    public function setNomProjet(string $nomProjet): static
+    {
+        $this->nomProjet = $nomProjet;
+
+        return $this;
+    }
+
+    public function getPortefeuille(): ?string
+    {
+        return $this->portefeuille;
+    }
+
+    public function setPortefeuille(string $portefeuille): static
+    {
+        $this->portefeuille = $portefeuille;
+
+        return $this;
     }
 
     public function setDateExecution(\DateTimeImmutable $date): void
