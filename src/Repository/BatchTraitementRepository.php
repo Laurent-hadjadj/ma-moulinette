@@ -13,15 +13,20 @@
 
 namespace App\Repository;
 
-use App\Entity\BatchTraitement;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\DBAL\ParameterType;
+use Doctrine\DBAL\Statement;
+use App\Entity\BatchTraitement;
+use App\Repository\Traits\DoctrineParamHelperTrait;
 
 /**
  * @extends ServiceEntityRepository<BatchTraitement>
  */
 class BatchTraitementRepository extends ServiceEntityRepository
 {
+  use DoctrineParamHelperTrait;
+
   public static $removeReturnLine = "/\s+/u";
   public static $noDataBase = 'La connexion à la base de données a échoué.';
 
@@ -30,24 +35,55 @@ class BatchTraitementRepository extends ServiceEntityRepository
       parent::__construct($registry, BatchTraitement::class);
   }
 
-  /**
+/**
    * [Description for handleDatabaseException]
    *
-   * @param \Doctrine\DBAL\Exception $e
+   * @param \Throwable $e
    *
    * @return array
    *
-   * Created at: 21/12/2024 20:06:26 (Europe/Paris)
+   * Created at: 29/10/2025 22:36:06 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  protected function handleDatabaseException(\Doctrine\DBAL\Exception $e): array
+  public function handleDatabaseException(\Throwable $e): array
   {
-    if (strpos($e->getMessage(), 'SQLSTATE[08006]') !== false) {
-      return ['code' => 500, 'erreur' => static::$noDataBase];
-    } else {
-      return ['code' => 500, 'erreur'=> $e->getMessage()];
+    $message = $e->getMessage();
+
+    // message = 'SQLSTATE[08006]'
+    if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
+        $message = static::$noDataBase;
     }
+
+    // state = '23502'
+    if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
+        $message = $e->getMessage();
+    }
+
+    // state = '23505'
+    if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+        return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+    }
+
+    return ['code' => 500, 'erreur' => $message];
+  }
+
+  /**
+   * [Description for bindNullableBool]
+   *
+   * @param Statement $stmt
+   * @param string $param
+   * @param bool|null $value
+   *
+   * @return void
+   *
+   * Created at: 27/10/2025 20:18:51 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  private function bindNullableBool(Statement $stmt, string $param, ?bool $value): void
+  {
+    $stmt->bindValue($param, $value, $value === null ? ParameterType::NULL : ParameterType::BOOLEAN);
   }
 
   /**
@@ -67,12 +103,14 @@ class BatchTraitementRepository extends ServiceEntityRepository
             FROM ma_moulinette.batch_traitement
             WHERE mode_collecte = 'TRAITEMENT AUTOMATIQUE'
             ORDER BY date_enregistrement DESC limit 1";
+
       try {
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $liste = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Doctrine\DBAL\Exception $e) {
+      } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
       }
+
       return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
   }
 
@@ -91,10 +129,11 @@ class BatchTraitementRepository extends ServiceEntityRepository
     $sql = "SELECT date_enregistrement as date
             FROM ma_moulinette.batch_traitement
             ORDER BY date_enregistrement DESC limit 1";
+
     try {
           $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
           $liste = $stmt->executeQuery()->fetchAllAssociative();
-    } catch (\Doctrine\DBAL\Exception $e) {
+    } catch (\Throwable $e) {
       return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
@@ -117,16 +156,25 @@ class BatchTraitementRepository extends ServiceEntityRepository
   {
     $sql = "SELECT  mode_collecte, success, in_progress, titre, portefeuille,
                     nombre_projet as projet, responsable, responsable_short,
-                    debut_traitement as debut, fin_traitement as fin
+                    debut_traitement as debut, fin_traitement as fin,
+                    traitement_id
             FROM ma_moulinette.batch_traitement
             WHERE date(date_enregistrement)= :date_short
-            GROUP BY mode_collecte, success, in_progress, titre, portefeuille, nombre_projet, responsable, responsable_short, debut_traitement, fin_traitement
+            GROUP BY mode_collecte,
+                      success, in_progress,
+                      titre, portefeuille, nombre_projet,
+                      responsable, responsable_short,
+                      debut_traitement, fin_traitement,
+                      traitement_id
             ORDER BY responsable ASC, mode_collecte ASC";
+
+      $conn = $this->getEntityManager()->getConnection();
+
       try {
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(':date_short', $dateShort);
+            $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                    $stmt->bindValue(':date_short', $dateShort);
             $liste = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Doctrine\DBAL\Exception $e) {
+      } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
       }
       return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
@@ -145,14 +193,16 @@ class BatchTraitementRepository extends ServiceEntityRepository
    */
   public function selectBatchTraitement($map): array
   {
-    $sql = "SELECT id, mode_collecte, titre, portefeuille, nombre_projet as projet
+    $sql = "SELECT id, mode_collecte, titre, portefeuille, nombre_projet, traitement_id
             FROM ma_moulinette.batch_traitement
             WHERE titre = :titre";
+    $conn = $this->getEntityManager()->getConnection();
+
     try {
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-            $stmt->bindValue(':titre', $map['titre_portefeuille']);
+          $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                  $stmt->bindValue(':titre', $map['titre_portefeuille']);
           $liste = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Doctrine\DBAL\Exception $e) {
+      } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
       }
       return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
@@ -172,24 +222,44 @@ class BatchTraitementRepository extends ServiceEntityRepository
   public function updateBatchTraitement($map): array
   {
     $sql = "UPDATE ma_moulinette.batch_traitement
-            SET debut_traitement = :debut_traitement, fin_traitement = :fin_traitement, success = :success, pending = :pending, in_progress = :in_progress
+            SET debut_traitement = :debut_traitement,
+                fin_traitement = :fin_traitement,
+                success = :success,
+                pending = :pending,
+                in_progress = :in_progress,
+                traitement_id = :traitement_id
             WHERE id = :id";
 
+    $conn = $this->getEntityManager()->getConnection();
+
+    // Nettoyage des chaînes vides pour les booléens nullable
+    foreach (['success', 'pending', 'in_progress'] as $key) {
+        if ($map[$key] === '') {
+            $map[$key] = null;
+        }
+    }
+
     try {
-          $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(':success', $map['success'], $map['success'] === null ? \PDO::PARAM_NULL : \PDO::PARAM_BOOL);
-              $stmt->bindValue(':pending', $map['pending'], $map['pending'] === null ? \PDO::PARAM_NULL : \PDO::PARAM_BOOL);
-              $stmt->bindValue(':in_progress', $map['in_progress'], $map['in_progress'] === null ? \PDO::PARAM_NULL : \PDO::PARAM_BOOL);
-              $stmt->bindValue(':debut_traitement', $map['debut_traitement']);
-              $stmt->bindValue(':fin_traitement', $map['fin_traitement'], $map['fin_traitement'] === null ? \PDO::PARAM_NULL : \PDO::PARAM_STR);
-              $stmt->bindValue(':id', $map['id'], \PDO::PARAM_INT);
-              $stmt->executeStatement();
-          $this->getEntityManager()->getConnection()->commit();
-      } catch (\Doctrine\DBAL\Exception $e) {
-          $this->getEntityManager()->getConnection()->rollBack();
-          return $this->handleDatabaseException($e);
+        $conn->beginTransaction();
+        $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt->bindValue(':debut_traitement', $map['debut_traitement']);
+          $stmt->bindValue(':fin_traitement', $map['fin_traitement']);
+          $stmt->bindValue(':id', $map['id']);
+
+          // Gestion du type ULID pour PostgreSQL
+          $this->bindNullableBool($stmt, ':success', $map['success']);
+          $this->bindNullableBool($stmt, ':pending', $map['pending']);
+          $this->bindNullableBool($stmt, ':in_progress', $map['in_progress']);
+          $this->bindUlidAsString($stmt, ':traitement_id', $map['traitement_id']);
+
+        // Exécution
+        $stmt->executeStatement();
+        $conn->commit();
+      } catch (\Throwable $e) {
+        $conn->rollBack();
+        return $this->handleDatabaseException($e);
       }
+
       return [ 'code' => 200, 'erreur' => '' ];
   }
 
@@ -210,10 +280,13 @@ class BatchTraitementRepository extends ServiceEntityRepository
             WHERE mode_collecte = 'TRAITEMENT_MANUEL'
             AND pending = true
             AND in_progress = true";
+
+    $conn = $this->getEntityManager()->getConnection();
+
     try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-            $exec = $stmt->executeQuery()->fetchAllAssociative();;
-      } catch (\Doctrine\DBAL\Exception $e) {
+            $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $exec = $stmt->executeQuery()->fetchAllAssociative();
+      } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
       }
 
@@ -236,31 +309,82 @@ class BatchTraitementRepository extends ServiceEntityRepository
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function insertBatchTraitement($map): array
+  public function insertBatchTraitement(array $map): array
   {
-    $sql = "INSERT INTO ma_moulinette.batch_traitement
-                (mode_collecte, success, in_progress, pending, titre, portefeuille, nombre_projet, responsable, date_enregistrement)
-            VALUES (:mode_collecte, :success, :in_progress, :pending, :titre, :portefeuille, :nombre_projet, :responsable, :date_enregistrement)";
+      $sql = "INSERT INTO ma_moulinette.batch_traitement
+              (mode_collecte, success, in_progress, pending, titre, portefeuille, nombre_projet, responsable, responsable_short, traitement_id, date_enregistrement)
+              VALUES (:mode_collecte, :success, :in_progress, :pending, :titre, :portefeuille, :nombre_projet, :responsable, :responsable_short, :traitement_id, :date_enregistrement)";
+
+      $conn = $this->getEntityManager()->getConnection();
+
+      // Nettoyage des chaînes vides pour les booléens nullable
+      foreach (['success', 'pending', 'in_progress'] as $key) {
+          if ($map[$key] === '') {
+              $map[$key] = null;
+          }
+      }
 
       try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
-              $stmt->bindValue(':success', $map['success']);
-              $stmt->bindValue(':in_progress', $map['in_progress']);
-              $stmt->bindValue(':pending', $map['pending']);
-              $stmt->bindValue(':titre', $map['titre']);
-              $stmt->bindValue(':portefeuille', $map['portefeuille']);
-              $stmt->bindValue(':nombre_projet', $map['nombre_projet']);
-              $stmt->bindValue(':responsable', $map['responsable']);
-              $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
-              $stmt->executeStatement();
-          $this->getEntityManager()->getConnection()->commit();
-      } catch (\Doctrine\DBAL\Exception $e) {
-          $this->getEntityManager()->getConnection()->rollBack();
+          $conn->beginTransaction();
+          $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+
+                  // Paramètres texte / int
+                  $stmt->bindValue(':mode_collecte', $map['mode_collecte'], ParameterType::STRING);
+                  $stmt->bindValue(':titre', $map['titre'], ParameterType::STRING);
+                  $stmt->bindValue(':portefeuille', $map['portefeuille'], ParameterType::STRING);
+                  $stmt->bindValue(':nombre_projet', $map['nombre_projet'], ParameterType::INTEGER);
+                  $stmt->bindValue(':responsable', $map['responsable'], ParameterType::STRING);
+                  $stmt->bindValue(':responsable_short', $map['responsable_short'], ParameterType::STRING);
+                  $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
+
+                  // Gestion du type ULID pour PostgreSQL
+                  $this->bindNullableBool($stmt, ':success', $map['success']);
+                  $this->bindNullableBool($stmt, ':pending', $map['pending']);
+                  $this->bindNullableBool($stmt, ':in_progress', $map['in_progress']);
+                  $this->bindUlidAsString($stmt, ':traitement_id', $map['traitement_id']);
+
+          // Exécution
+          $stmt->executeStatement();
+          $conn->commit();
+      } catch (\Throwable $e) {
+          $conn->rollBack();
           return $this->handleDatabaseException($e);
       }
+
       return ['code' => 200, 'erreur' => ''];
+    }
+
+  /**
+   * [Description for deleteTraitement]
+   *
+   * @param mixed $traitement_id
+   *
+   * @return array
+   *
+   * Created at: 29/10/2025 21:40:32 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function deleteTraitement($traitement_id): array
+  {
+    $sql = "DELETE
+            FROM ma_moulinette.batch_traitement
+            WHERE traitement_id = :traitement_id";
+
+    $conn = $this->getEntityManager()->getConnection();
+
+    try {
+        $conn->beginTransaction();
+        $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $this->bindUlidAsString($stmt, ':traitement_id', $traitement_id);
+          $stmt->executeStatement();
+        $conn->commit();
+    } catch (\Throwable $e) {
+        $conn->rollBack();
+        return $this->handleDatabaseException($e);
+    }
+
+    return ['code' => 200, 'erreur' => ''];
   }
 
   /**
@@ -279,17 +403,20 @@ class BatchTraitementRepository extends ServiceEntityRepository
     $sql = "UPDATE ma_moulinette.batch_traitement
             SET nombre_projet = :nombre_projet
             WHERE portefeuille = :portefeuille";
+    $conn = $this->getEntityManager()->getConnection();
+
     try {
-          $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(':portefeuille', $map['portefeuille']);
-              $stmt->bindValue(':nombre_projet', $map['nombre_projet']);
-            $stmt->executeStatement();
-          $this->getEntityManager()->getConnection()->commit();
+          $conn->beginTransaction();
+          $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                  $stmt->bindValue(':portefeuille', $map['portefeuille']);
+                  $stmt->bindValue(':nombre_projet', $map['nombre_projet']);
+                  $stmt->executeStatement();
+          $conn->commit();
         } catch (\Throwable $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
+            $conn->rollBack();
             return $this->handleDatabaseException($e);
         }
+
         /** on prépare la réponse */
         return ['code' => 200, 'erreur' => ''];
   }
