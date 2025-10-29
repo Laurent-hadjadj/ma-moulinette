@@ -15,6 +15,7 @@ namespace App\Entity;
 use App\Repository\BatchTraitementRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: BatchTraitementRepository::class)]
@@ -24,7 +25,7 @@ class BatchTraitement
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Identifiant unique pour la table Batch Traitemeny'])]
+        options: ['comment' => 'Identifiant unique pour la table Batch Traitement'])]
     private $id;
 
     #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
@@ -96,6 +97,11 @@ class BatchTraitement
         options: ['comment' => 'Date et heure de fin du traitement'])]
     #[Assert\NotNull]
     private $finTraitement;
+
+    #[ORM\Column(type: 'ulid', unique: true, nullable: false,
+        options: ['comment' => 'Identifiant unique pour lier un traitement (ULID sous forme de texte).']
+    )]
+    private Ulid $traitementId;
 
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
         options: ['comment' => 'Date d’enregistrement du traitement dans le système'])]
@@ -240,6 +246,18 @@ class BatchTraitement
     public function setFinTraitement(?\DateTimeImmutable $finTraitement): static
     {
         $this->finTraitement = $finTraitement;
+
+        return $this;
+    }
+
+    public function getTraitementId(): ?Ulid
+    {
+        return $this->traitementId;
+    }
+
+    public function setTraitementId(Ulid $traitementId): static
+    {
+        $this->traitementId = $traitementId;
 
         return $this;
     }
