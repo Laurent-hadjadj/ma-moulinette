@@ -154,7 +154,7 @@ class BatchController extends AbstractController
         /** On initialise le tableau */
         $render = $this->genericRender();
         $render['salt'] = $this->getParameter('csrf.salt');
-        $render['info_nombre'] = 'x';
+        $render['info_nombre'] = '-';
         $render['info_tips'] = 'Aucun traitement.';
         $render['bulle'] = 'bulle-info-vide';
         $render['date'] = '01/01/1980';
@@ -196,7 +196,7 @@ class BatchController extends AbstractController
             $this->logger->info("[Traitement-Suivi] {$message}");
 
             $this->addFlash('notice', [
-                'type' => 'info',
+                'type' => 'warning',
                 'message' => $message
             ]);
 
@@ -239,7 +239,7 @@ class BatchController extends AbstractController
             } else {
                 $message = "---";
                 $css = "oko";
-                $execution = "--:--:--";
+                $execution = "--:--.--";
             }
 
             $type = ($traitement['mode_collecte'] === "TRAITEMENT AUTOMATIQUE") ? "automatique" : "manuel";
@@ -266,6 +266,7 @@ class BatchController extends AbstractController
                 'initiales' => $initiales,
                 'nom' => $nom,
                 'color' => $hash % 10,
+                'traitement_id' => $traitement['traitement_id'],
                 'execution' =>  $execution
             ];
         }
