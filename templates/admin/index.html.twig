@@ -181,6 +181,7 @@
           <span class="tool-tip-text">Ratio de Requête de Lecture par Ligne récupérée.</span>
         </div>
         <div class="card-body">
+          {% set indicateur_read_requests_ratio = 'couleur-noir' %}
           {% if read_requests_ratio >= 0.9 %} {% set indicateur_read_requests_ratio = 'couleur-vert' %} {% endif %}
           {% if read_requests_ratio > 0.6 and read_requests_ratio < 0.9 %} {% set indicateur_read_requests_ratio = 'couleur-orange' %} {% endif %}
           {% if read_requests_ratio <=0.5  %} {% set indicateur_read_requests_ratio = 'couleur-rouge' %} {% endif %}
@@ -239,7 +240,7 @@
         </div>
         <div class="card-body">
           {% if index_usage_ratio >= 0.7 %} {% set indicateur_index_usage_ratio = 'couleur-vert' %} {% endif %}
-          {% if index_usage_ratio > 0.3 and idx_tup_read < 0.6 %} {% set indicateur_index_usage_ratio = 'couleur-orange' %} {% endif %}
+          {% if index_usage_ratio > 0.3 and index_usage_ratio  < 0.6 %} {% set indicateur_index_usage_ratio = 'couleur-orange' %} {% endif %}
           {% if index_usage_ratio <=0.2  %} {% set indicateur_index_usage_ratio = 'couleur-rouge' %} {% endif %}
           <p class="card-text text-center card-text-font-size {{indicateur_index_usage_ratio}}">{{index_usage_ratio|format_number(style='percent')}}</p>
         </div>
