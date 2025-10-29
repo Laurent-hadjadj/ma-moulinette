@@ -11,85 +11,31 @@
  */
 
 /* Mobile */
-@media (width <= 20em) {
-  .i-am-robot-svg,
-  .i-am-human-svg {
-    width: 42px;
-    height: 42px;
-  }
-}
+@media (width <= 20em) { }
 
 /* Mobile */
-@media (20.025em <= width <= 22em) {
-  .i-am-robot-svg,
-  .i-am-human-svg {
-    width: 42px;
-    height: 42px;
-  }
-}
+@media (20.025em <= width <= 22em) { }
 
 /* Mobile */
-@media (22.025em <= width <= 30em) {
-  .i-am-robot-svg,
-  .i-am-human-svg {
-    width: 42px;
-    height: 42px;
-  }
-}
+@media (22.025em <= width <= 30em) { }
 
 /* Mobile */
-@media (30.025em <= width <= 40em) {
-  .i-am-robot-svg,
-  .i-am-human-svg {
-    width: 42px;
-    height: 42px;
-  }
-}
+@media (30.025em <= width <= 40em) { }
 
 /* tablette */
-@media (40.025em <= width <= 64em) {
-  .i-am-robot-svg,
-  .i-am-human-svg {
-    width: 45px;
-    height: 45px;
-  }
-}
+@media (40.025em <= width <= 64em) { }
 
 /* desktop */
-@media (64.025em <= width <= 90em) {
-  .i-am-robot-svg,
-  .i-am-human-svg {
-    width: 45px;
-    height: 45px;
-  }
-}
+@media (64.025em <= width <= 90em) { }
 
 /* desktop */
-@media (90.025em <= width <= 120em) {
-  .i-am-robot-svg,
-  .i-am-human-svg {
-    width: 45px;
-    height: 45px;
-  }
-}
+@media (90.025em <= width <= 120em) { }
 
 /* desktop  4k */
-@media (120.025em <= width <= 160em) {
-  .i-am-robot-svg,
-  .i-am-human-svg {
-    width: 45px;
-    height: 45px;
-  }
-}
+@media (120.025em <= width <= 160em) { }
 
 /* Media Extra-large 8k */
-@media (120.025em <= width <= 160em) {
-  .i-am-robot-svg,
-  .i-am-human-svg {
-    width: 45px;
-    height: 45px;
-  }
-}
+@media (120.025em <= width <= 160em) { }
 
 /*************************          Global     *********************************/
 
@@ -101,7 +47,7 @@ tbody tr:nth-child(even) {
   background-color: #ddd;
 }
 
-/** Bouton **/
+/* == Boutons ==**/
 #bouton-traitement-automatique,
 #bouton-affiche-rapport {
   min-width: 14rem;
@@ -132,15 +78,9 @@ tbody tr:nth-child(even) {
   fill: #00445b;
   }
 
-.i-am-human-svg:hover,
-.batch-processing-svg:hover {
+.i-am-human-svg:hover {
   cursor: progress;
   fill: #ed7d20;
-}
-
-#batch-processing-label {
-  margin-top: 1rem;
-  margin-left: 0.5rem;
 }
 
 /* Bouton information SVG */
@@ -158,14 +98,6 @@ tbody tr:nth-child(even) {
 
 /* disable */
 .disable { cursor: not-allowed; }
-
-/* bouton fermer */
-#fermer-traitement-liste {
-  color: #fff;
-  background-color: #00445b;
-}
-
-#fermer-traitement-liste:hover { background-color: #006182; }
 
 /* === AVATAR UTILISATEUR === */
 .user-badge {
@@ -192,13 +124,8 @@ tbody tr:nth-child(even) {
 .avatar-color-8 { background-color: #00cec9; }  /* cyan */
 .avatar-color-9 { background-color: #a29bfe; }  /* lavande */
 
-/** Ajout d'un spinner lors du traitement  */
-.spinner-titre {
-  margin-left: 1rem;
-  margin-top: -3px;
-}
 
-/** Bulle info pour les traitements manuels */
+/* == Bulle info pour les traitements manuels == */
 .bulle-info {
   color: #eee;
   border-radius: 0.9rem;
@@ -213,7 +140,20 @@ tbody tr:nth-child(even) {
 .bulle-info-error { background-color: #971c09; }
 .bulle-info-vide { background-color: #8a8a8a; }
 
-/** clignotant */
+/* === Mise à jour des informations dans la bulle - spinner == */
+.bulle-info.loading {
+  opacity: 0.6;
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255, 255, 255, 0.1),
+    rgba(255, 255, 255, 0.1) 10px,
+    rgba(255, 255, 255, 0.2) 10px,
+    rgba(255, 255, 255, 0.2) 20px
+  );
+  transition: opacity 0.3s;
+}
+
+/* clignotant */
 .blink {
   animation: blink 1.5s steps(5, start) infinite;
   fill: #c46e27;
@@ -239,7 +179,7 @@ tbody tr:nth-child(even) {
   }
 }
 
-/** Ajout d'un tooltip CSS */
+/* === Ajout d'un tooltip CSS  === **/
 .tool-tip {
   position: relative;
   display: inline-block;
