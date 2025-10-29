@@ -17,6 +17,7 @@ use App\Repository\BatchRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Uid\Ulid;
 
 #[ORM\Entity(repositoryClass: BatchRepository::class)]
 #[ORM\Table(name: "batch", schema: "ma_moulinette")]
@@ -65,7 +66,7 @@ class Batch
     #[Assert\NotBlank]
     #[Assert\Length(max: 32,
         maxMessage: "Le portefeuille ne doit pas dépasser 32 caractères.")]
-    private $portefeuille = "Aucun";
+    private $portefeuille;
 
     #[ORM\Column(type: Types::INTEGER, nullable: false,
         options: ['comment' => 'Nombre de projets dans le batch'])]
@@ -75,6 +76,11 @@ class Batch
     #[ORM\Column(type: Types::STRING, length: 8, nullable: true,
         options: ['comment' => 'État d’exécution du batch'])]
     private $execution;
+
+    #[ORM\Column(type: 'ulid', unique: true, nullable: false,
+        options: ['comment' => 'Identifiant unique pour lier un traitement à son batch (ULID sous forme de texte).']
+    )]
+    private Ulid $traitementId;
 
     #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true,
         options: ['comment' => 'Date de la dernière modification du batch'])]
@@ -186,6 +192,18 @@ class Batch
     public function setExecution(?string $execution): static
     {
         $this->execution = $execution;
+
+        return $this;
+    }
+
+    public function getTraitementId(): Ulid
+    {
+        return $this->traitementId;
+    }
+
+    public function setTraitementId(Ulid $traitementId): static
+    {
+        $this->traitementId = $traitementId;
 
         return $this;
     }
