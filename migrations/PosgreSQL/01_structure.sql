@@ -2,74 +2,11 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V2.11.1 - 29/10/2025             ##
+##               V2.13.0 - 31/10/2025             ##
 ##                                                ##
 ####################################################*/
 
 /* #### Le script doit être lancé avec l'utilisateur propriétaire de la base, ici db_user #### */
-
--- 22/05/2024 : Laurent HADJADJ - Surpression des ", modification de la table notes (ajout du cle primaire unique et suppression de l'attribut date.
--- 28/05/2024 : Laurent HADJADJ - Mise à jour du script - réécriture complet
--- 29/05/2024 : Laurent HADJADJ - Mise à jour de la table Activite (Quentin)
--- 30/05/2024 : Laurent HADJADJ - Ajout des attributs resolution et securityCategory pour la table hotspot
--- 02/06/2024 : Laurent HADJADJ - Ajout de l'attribut mode_collecte dans toutes les tables de collecte pour insérer le type de collecte : [COLLECTE], [TRAITEMENT MANUEL], [TRAITEMENT AUTOMATIQUE]
--- 02/06/2024 : Laurent HADJADJ - Ajout de l'attribut utilisateur_collecte dans toutes les tables de collecte pour insérer l'identifiant de l'utilisateur : [batch] ou [prenom.nom]
--- 03/06/2024 : Laurent HADJADJ - Renommage duplication en duplication_density dans la table historique
--- 04/06/2024 : Laurent HADJADJ - Ajout de l'attribut todo dans la table historique.
--- 06/06/2024 : Laurent HADJADJ - Ajout de la mesure du temps d'execution des requêtes.
--- 21/06/2024 : Laurent HADJADJ - Ajout des tables actuator et actuator_info.
--- 23/06/2024 : Laurent HADJADJ - Correction du code pour la création des tables actuator et actuator_info (ajout des contraintes et de la clé étrangère).
--- 23/06/2024 : Laurent HADJADJ - Ajout d'un indexe sur l'attribut maven_key.
--- 27/06/2024 : Laurent HADJADJ - Ajout de l'attribut analyse_key dans la table historique.
--- 10/07/2024 : Laurent HADJADJ - Ajout de la table logger.
--- 14/07/2024 : Laurent HADJADJ - Ajout de la colonne  language_distribution dans la table mesure ;
--- 16/07/2024 : Laurent HADJADJ - Correction du type JSON[] en JSON pour l'attribut language_distribution ;
--- 29/07/2024 : Laurent HADJADJ - Correction du commentaire de l'attribut modeCollecte et utilisateurCollecte, correction de la longueur du champ pour utilisateurCollecte ;
--- 31/07/2024 : Laurent HADJADJ - Ajout de la table activite_historique (Quentin) ;
--- 31/07/2024 : Laurent HADJADJ - Correction du commentaire moyenne_analyse.
--- 31/07/2024 : Laurent HADJADJ - Correction Taux_reussite en FLOAT
--- 04/08/2024 : Laurent HADJADJ - Correction du nom de la table activite_historique ;
--- 04/08/2024 : Laurent HADJADJ - Ajout de la table profiles_historique ;
--- 07/11/2024 : Laurent HADJADJ - Mise à jour de la la table profiles ;
--- 19/11/2024 : Laurent HADJADJ - Ajout de la table Owasp_Top10 ;
--- 20/11/2024 : Laurent HADJADJ - Ajout de la colonne referential_owasp dans la table owasp ;
--- 22/11/2024 : Laurent HADJADJ - Ajout de la colonne lien dans la table owasp_top10 ;
--- 22/12/2024 : Laurent HADJADJ - Renommage des table activite et activite_historique ;
--- 23/12/2024 : Laurent HADJADJ - Correction "analyse" et ajout des indexes ;
--- 24/12/2024 : Laurent HADJADJ - Renommage fail en failed ;
--- 24/12/2024 : Laurent HADJADJ - Correction de la création de la table activity_historique ;
--- 26/12/2024 : Laurent HADJADJ - Ajout de la table activity_batch_report ;
--- 27/12/2024 : Laurent HADJADJ - Réorganisation de la table ;
--- 28/12/2024 : Laurent HADJADJ - Le type de l'attribut erreur de la table activity_batch_report est un json ;
--- 31/12/2024 : Laurent HADJADJ - Correction de la table activity_batch_report ;
--- 03/01/2025 : Laurent HADJADJ - Bonne année 2025. Renommage de l'attribut start en mode_collecte  pour la table batch_traitement ;
--- 20/01/2025 : Laurent HADJADJ - Ajout des colones classes, functions et files à la table historique ;
--- 27/01/2025 : Laurent HADJADJ - Ajout de la clé inconnu à la table historique, pour dénombrer la répartition des valeurs inconnus ;
--- 06/02/2025 : Laurent HADJADJ - Ajout des attributs : version_sonar, version_release_sonar, version_snapshot_sonar, version_autre_sonar à la table information_version ;
--- 11/02/2025 : Laurent HADJADJ - Modification du type pour l'attribut setup et ajout de mode_collecte et utilisateur_collecte à la table repartition ;
--- 14/02/2025 : Laurent HADJADJ - Réorganisation de la table repartition en repartition_temp et repartition
--- 18/02/2025 : Laurent HADJADJ - Mise à jour de la valeur par défaut de la table repartition.
--- 06/07/2025 : Laurent HADJADJ - Ajout de la colonne id et suppression de containte d'unicité maven_key+setup pour la table repartition_temp.
--- 07/07/2025 : Laurent HADJADJ - Suppression de la colonne init, ajout de reset_password et reset_password_count pour la table utilisateur.
--- 16/07/2025 : Laurent HADJADJ - Ajout dans la relation mesures, files, classes et functions.
--- 22/07/2025 : Laurent HADJADJ - Correction de plusieurs erreurs de syntaxe SQL.
--- 22/07/2025 : Laurent HADJADJ - Correction de la colonne rules_update_at en rules_updated_at de la table profiles.
--- 22/07/2025 : Laurent HADJADJ - Renommage des hotspot_(high, medium, low) en menace_potentielle_(to_review, reviewed)_(high, medium, low) dans la table historique
--- 22/07/2025 : Laurent HADJADJ - Ajout de l'attribut inconnu dans la relation anomalie + renommage de l'attribut inconnue en inconnu.
--- 22/07/2025 : Laurent HADJADJ - Augmentation de la taille de l'attribut Key de la table profil (32 -> 56). Changement SonarQube en version 25.10.
--- 24/10/2025 : Laurent HADJADJ - Renommage des colonnes files, classes et functions en nombre_files, nombre_classes et nombre_functions.
--- 26/10/2025 : Laurent HADJADJ - Ajout des tables batch_execution et batch_execution_journal.
--- 26/10/2025 : Laurent HADJADJ - Renommage de la colonne result en success dans la table batch_traitement.
--- 27/10/2025 : Laurent HADJADJ - Ajout de la colonne in_progress à la table batch_traitement.
--- 27/10/2025 : Laurent HADJADJ - Ajout de la colonne pending à la table batch_traitement.
--- 27/10/2025 : Laurent HADJADJ - Ajout de la colonne responsable_short à la table batch et batch_traitement.
--- 27/10/2025 : Laurent HADJADJ - Correction syntaxe ';' (responsable_short) sur la table batch et batch_traitement.
--- 28/10/2025 : Laurent HADJADJ - Ajout de reference_unique à la table batch_traitement.
--- 28/10/2025 : Laurent HADJADJ - Ajout de  nom_projet et portefeuille à la table batch_execution_journal.
--- 28/10/2025 : Laurent HADJADJ - Renommage de nom en nom_traitement pour la table batch_execution.
--- 28/10/2025 : Laurent HADJADJ - Conversion du type UUID en STRINg pour garder la génération ULID côté PHP.
--- 29/10/2025 : Laurent HADJADJ - Ajout de l'attribut traitement_id dans les tables batch et batch_traitement.
--- 29/10/2025 : Laurent HADJADJ - l'objet ulid a une taille par défaut de 36 sauf si on passe en toBase32 (26).
 
 -- SCHEMA: ma_moulinette
 
@@ -435,7 +372,6 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.batch_traitement
   responsable_short character varying(64) NOT NULL,
   debut_traitement TIMESTAMPTZ DEFAULT NULL,
   fin_traitement TIMESTAMPTZ DEFAULT NULL,
-  reference_unique VARCHAR(36) NULL,
   traitement_id VARCHAR(36) NULL,
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
@@ -455,7 +391,6 @@ COMMENT ON COLUMN ma_moulinette.batch_traitement.responsable IS 'Responsable du 
 COMMENT ON COLUMN ma_moulinette.batch_traitement.responsable_short IS 'Identifiant court de l’utilisateur responsable du traitement';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.debut_traitement IS 'Date et heure de début du traitement';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.fin_traitement IS 'Date et heure de fin du traitement';
-COMMENT ON COLUMN ma_moulinette.batch_traitement.reference_unique IS 'Référence unique du journal.';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.traitement_id IS 'Identifiant unique du traitement';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.date_enregistrement IS 'Date d’enregistrement du traitement dans le système';
 
@@ -467,24 +402,26 @@ DROP TABLE IF EXISTS ma_moulinette.batch_execution CASCADE;
 CREATE TABLE ma_moulinette.batch_execution (
     id SERIAL PRIMARY KEY,
     nom_traitement VARCHAR(32) NOT NULL,
-    reference_unique VARCHAR(36) NOT NULL,
+    execution_id VARCHAR(36) NOT NULL,
+    traitement_id VARCHAR(36) NOT NULL,
     mode_collecte VARCHAR(32) NOT NULL,
     utilisateur_collecte VARCHAR(320) NULL,
     date_enregistrement TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 
     -- Contraintes
-    CONSTRAINT uq_batch_execution_reference UNIQUE (reference_unique),
+    CONSTRAINT uq_batch_execution_traitement UNIQUE (id),
     CONSTRAINT ck_mode_collecte CHECK (mode_collecte IN ('COLLECTE', 'TRAITEMENT MANUEL', 'TRAITEMENT AUTOMATIQUE'))
 );
 
 ALTER TABLE ma_moulinette.batch_execution OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.batch_execution TO db_user;
 
-COMMENT ON TABLE ma_moulinette.batch_execution IS 'Journal des exécutions de batchs.';
-COMMENT ON COLUMN ma_moulinette.batch_execution.id IS 'Identifiant unique de la table batch_execution';
+COMMENT ON TABLE ma_moulinette.batch_execution IS 'Journal des exécutions de traitements.';
+COMMENT ON COLUMN ma_moulinette.batch_execution.id IS 'Identifiant unique de la table batch_execution.';
 COMMENT ON COLUMN ma_moulinette.batch_execution.nom_traitement IS 'Nom du batch exécuté.';
-COMMENT ON COLUMN ma_moulinette.batch_execution.reference_unique IS 'Référence unique du journal.';
-COMMENT ON COLUMN ma_moulinette.batch_execution.mode_collecte IS 'Mode de collecte : COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE';
+COMMENT ON COLUMN ma_moulinette.batch_execution.execution_id IS 'Référence unique du journal.';
+COMMENT ON COLUMN ma_moulinette.batch_execution.traitement_id IS 'Référence unique du traitement.';
+COMMENT ON COLUMN ma_moulinette.batch_execution.mode_collecte IS 'Mode de collecte : COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE.';
 COMMENT ON COLUMN ma_moulinette.batch_execution.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte.';
 COMMENT ON COLUMN ma_moulinette.batch_execution.date_enregistrement IS 'Date d’enregistrement du journal de l’exécution du batch.';
 
@@ -522,7 +459,7 @@ COMMENT ON COLUMN ma_moulinette.batch_execution_journal.job_id IS 'Clé étrang�
 
 -- INDEXES
 
-CREATE INDEX idx_batch_execution_reference_unique ON ma_moulinette.batch_execution(reference_unique);
+CREATE INDEX idx_batch_execution_traitement_id ON ma_moulinette.batch_execution(traitement_id);
 CREATE INDEX idx_batch_execution_journal_job ON ma_moulinette.batch_execution_journal(job_id);
 CREATE INDEX idx_batch_execution_date_enregistrement ON ma_moulinette.batch_execution(date_enregistrement);
 CREATE INDEX idx_batch_execution_journal_date_execution ON ma_moulinette.batch_execution_journal(date_execution);
@@ -1709,3 +1646,74 @@ BEGIN
   END LOOP;
 END
 $$;
+
+--------------------------------------------------------------------
+-----                                                        -------
+-----                Historique des changements              -------
+-----                                                        -------
+--------------------------------------------------------------------
+
+-- 22/05/2024 : Laurent HADJADJ - Surpression des ", modification de la table notes (ajout du cle primaire unique et suppression de l'attribut date.
+-- 28/05/2024 : Laurent HADJADJ - Mise à jour du script - réécriture complet
+-- 29/05/2024 : Laurent HADJADJ - Mise à jour de la table Activite (Quentin)
+-- 30/05/2024 : Laurent HADJADJ - Ajout des attributs resolution et securityCategory pour la table hotspot
+-- 02/06/2024 : Laurent HADJADJ - Ajout de l'attribut mode_collecte dans toutes les tables de collecte pour insérer le type de collecte : [COLLECTE], [TRAITEMENT MANUEL], [TRAITEMENT AUTOMATIQUE]
+-- 02/06/2024 : Laurent HADJADJ - Ajout de l'attribut utilisateur_collecte dans toutes les tables de collecte pour insérer l'identifiant de l'utilisateur : [batch] ou [prenom.nom]
+-- 03/06/2024 : Laurent HADJADJ - Renommage duplication en duplication_density dans la table historique
+-- 04/06/2024 : Laurent HADJADJ - Ajout de l'attribut todo dans la table historique.
+-- 06/06/2024 : Laurent HADJADJ - Ajout de la mesure du temps d'execution des requêtes.
+-- 21/06/2024 : Laurent HADJADJ - Ajout des tables actuator et actuator_info.
+-- 23/06/2024 : Laurent HADJADJ - Correction du code pour la création des tables actuator et actuator_info (ajout des contraintes et de la clé étrangère).
+-- 23/06/2024 : Laurent HADJADJ - Ajout d'un indexe sur l'attribut maven_key.
+-- 27/06/2024 : Laurent HADJADJ - Ajout de l'attribut analyse_key dans la table historique.
+-- 10/07/2024 : Laurent HADJADJ - Ajout de la table logger.
+-- 14/07/2024 : Laurent HADJADJ - Ajout de la colonne  language_distribution dans la table mesure ;
+-- 16/07/2024 : Laurent HADJADJ - Correction du type JSON[] en JSON pour l'attribut language_distribution ;
+-- 29/07/2024 : Laurent HADJADJ - Correction du commentaire de l'attribut modeCollecte et utilisateurCollecte, correction de la longueur du champ pour utilisateurCollecte ;
+-- 31/07/2024 : Laurent HADJADJ - Ajout de la table activite_historique (Quentin) ;
+-- 31/07/2024 : Laurent HADJADJ - Correction du commentaire moyenne_analyse.
+-- 31/07/2024 : Laurent HADJADJ - Correction Taux_reussite en FLOAT
+-- 04/08/2024 : Laurent HADJADJ - Correction du nom de la table activite_historique ;
+-- 04/08/2024 : Laurent HADJADJ - Ajout de la table profiles_historique ;
+-- 07/11/2024 : Laurent HADJADJ - Mise à jour de la la table profiles ;
+-- 19/11/2024 : Laurent HADJADJ - Ajout de la table Owasp_Top10 ;
+-- 20/11/2024 : Laurent HADJADJ - Ajout de la colonne referential_owasp dans la table owasp ;
+-- 22/11/2024 : Laurent HADJADJ - Ajout de la colonne lien dans la table owasp_top10 ;
+-- 22/12/2024 : Laurent HADJADJ - Renommage des table activite et activite_historique ;
+-- 23/12/2024 : Laurent HADJADJ - Correction "analyse" et ajout des indexes ;
+-- 24/12/2024 : Laurent HADJADJ - Renommage fail en failed ;
+-- 24/12/2024 : Laurent HADJADJ - Correction de la création de la table activity_historique ;
+-- 26/12/2024 : Laurent HADJADJ - Ajout de la table activity_batch_report ;
+-- 27/12/2024 : Laurent HADJADJ - Réorganisation de la table ;
+-- 28/12/2024 : Laurent HADJADJ - Le type de l'attribut erreur de la table activity_batch_report est un json ;
+-- 31/12/2024 : Laurent HADJADJ - Correction de la table activity_batch_report ;
+-- 03/01/2025 : Laurent HADJADJ - Bonne année 2025. Renommage de l'attribut start en mode_collecte  pour la table batch_traitement ;
+-- 20/01/2025 : Laurent HADJADJ - Ajout des colones classes, functions et files à la table historique ;
+-- 27/01/2025 : Laurent HADJADJ - Ajout de la clé inconnu à la table historique, pour dénombrer la répartition des valeurs inconnus ;
+-- 06/02/2025 : Laurent HADJADJ - Ajout des attributs : version_sonar, version_release_sonar, version_snapshot_sonar, version_autre_sonar à la table information_version ;
+-- 11/02/2025 : Laurent HADJADJ - Modification du type pour l'attribut setup et ajout de mode_collecte et utilisateur_collecte à la table repartition ;
+-- 14/02/2025 : Laurent HADJADJ - Réorganisation de la table repartition en repartition_temp et repartition
+-- 18/02/2025 : Laurent HADJADJ - Mise à jour de la valeur par défaut de la table repartition.
+-- 06/07/2025 : Laurent HADJADJ - Ajout de la colonne id et suppression de contrainte d'unicité maven_key+setup pour la table repartition_temp.
+-- 07/07/2025 : Laurent HADJADJ - Suppression de la colonne init, ajout de reset_password et reset_password_count pour la table utilisateur.
+-- 16/07/2025 : Laurent HADJADJ - Ajout dans la relation mesures, files, classes et functions.
+-- 22/07/2025 : Laurent HADJADJ - Correction de plusieurs erreurs de syntaxe SQL.
+-- 22/07/2025 : Laurent HADJADJ - Correction de la colonne rules_update_at en rules_updated_at de la table profiles.
+-- 22/07/2025 : Laurent HADJADJ - Renommage des hotspot_(high, medium, low) en menace_potentielle_(to_review, reviewed)_(high, medium, low) dans la table historique
+-- 22/07/2025 : Laurent HADJADJ - Ajout de l'attribut inconnu dans la relation anomalie + renommage de l'attribut inconnue en inconnu.
+-- 22/07/2025 : Laurent HADJADJ - Augmentation de la taille de l'attribut Key de la table profil (32 -> 56). Changement SonarQube en version 25.10.
+-- 24/10/2025 : Laurent HADJADJ - Renommage des colonnes files, classes et functions en nombre_files, nombre_classes et nombre_functions.
+-- 26/10/2025 : Laurent HADJADJ - Ajout des tables batch_execution et batch_execution_journal.
+-- 26/10/2025 : Laurent HADJADJ - Renommage de la colonne result en success dans la table batch_traitement.
+-- 27/10/2025 : Laurent HADJADJ - Ajout de la colonne in_progress à la table batch_traitement.
+-- 27/10/2025 : Laurent HADJADJ - Ajout de la colonne pending à la table batch_traitement.
+-- 27/10/2025 : Laurent HADJADJ - Ajout de la colonne responsable_short à la table batch et batch_traitement.
+-- 27/10/2025 : Laurent HADJADJ - Correction syntaxe ';' (responsable_short) sur la table batch et batch_traitement.
+-- 28/10/2025 : Laurent HADJADJ - Ajout de reference_unique à la table batch_traitement.
+-- 28/10/2025 : Laurent HADJADJ - Ajout de  nom_projet et portefeuille à la table batch_execution_journal.
+-- 28/10/2025 : Laurent HADJADJ - Renommage de nom en nom_traitement pour la table batch_execution.
+-- 28/10/2025 : Laurent HADJADJ - Conversion du type UUID en STRINg pour garder la génération ULID côté PHP.
+-- 29/10/2025 : Laurent HADJADJ - Ajout de l'attribut traitement_id dans les tables batch et batch_traitement.
+-- 29/10/2025 : Laurent HADJADJ - L'objet ulid a une taille par défaut de 36 sauf si on passe en toBase32 (26).
+-- 30/10/2025 : Laurent HADJADJ - Suppression ou remplacement de reference_unique par traitement_id.
+-- 31/10/2025 : Laurent HADJADJ - Ajout de l'attribut execution_id pour la table batch_execution
