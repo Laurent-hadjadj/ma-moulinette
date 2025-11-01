@@ -70,7 +70,10 @@ class BatchCrudController extends AbstractCrudController
     private function formatUsername(string $first_name, string $last_name): string
     {
         // Si pas de point OU compte technique
-        if (strtolower($first_name) === 'admin' && strtolower($last_name) === '@ma-moulinette') {
+        if (strtolower($first_name) === 'admin' && (
+            strtolower($last_name) === '@ma-moulinette' ||
+            strtolower($last_name) === 'ma-moulinette')
+            ) {
             return ' ' . strtoupper($first_name);
         }
 
@@ -135,7 +138,7 @@ class BatchCrudController extends AbstractCrudController
 
         yield TextField::new('titre')
             ->setFormTypeOption('attr', ['placeholder' => 'Application Java Lot 1'])
-            ->setHelp('Nom du traitement de données.');
+            ->setHelp('Nom du traitement de données. Ex. Application [language] [équipe]');
 
         /** On récupère la liste des projets sans filtrage */
         /** To.do : ajouter le filtrage en fonction du portefeuille de projets */
@@ -164,7 +167,7 @@ class BatchCrudController extends AbstractCrudController
 
         yield TextField::new('description')
             ->setFormTypeOption('attr', ['placeholder' => 'Collecte de données pour les applications JAVA du Lot 1'])
-            ->setHelp('Description du traitement de données.');
+            ->setHelp('Description du traitement de données. Ex. Collecte de données pour les applications [language]');
 
         yield IntegerField::new('nombre_projet')
             ->hideOnForm()
@@ -212,13 +215,14 @@ class BatchCrudController extends AbstractCrudController
         $user = $this->token->getToken()->getUser();
 
         /** On récupère le nombre de projet du portefeuille */
-        $sql = "SELECT liste FROM portefeuille ORDER BY titre ASC";
-        $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
-        $r = $l->fetchAssociative();
+        $portefeuille = $entityInstance->getPortefeuille();
+        $sql = "SELECT liste FROM portefeuille where titre = '$portefeuille'";
+        $conn = $this->emm->getConnection()->prepare($sql);
+        $exec= $conn->executeQuery()->fetchAssociative();
 
         $nombre_projet = 0;
-        if (isset($r['liste'])){
-            $nombre_projet = count(json_decode($r['liste'], true));
+        if (isset($exec['liste'])){
+            $nombre_projet = count(json_decode($exec['liste'], true));
         }
 
         /**
@@ -234,7 +238,6 @@ class BatchCrudController extends AbstractCrudController
         /** On créé un clé unique pour lier  */
         $traitement_id = new ulid();
         $entityInstance->setTraitementId($traitement_id);
-
         $entityInstance->setNombreProjet($nombre_projet);
         $entityInstance->setDateEnregistrement(new \DateTimeImmutable());
 
@@ -245,7 +248,7 @@ class BatchCrudController extends AbstractCrudController
             'in_progress' => false,
             'pending' => null,
             'titre' => $entityInstance->getTitre(),
-            'portefeuille' => $entityInstance->getPortefeuille(),
+            'portefeuille' => $portefeuille,
             'nombre_projet' => $entityInstance->getNombreProjet(),
             'responsable' => $entityInstance->getResponsable(),
             'responsable_short' => $responsable_short,
@@ -281,6 +284,33 @@ class BatchCrudController extends AbstractCrudController
         if (!$entityInstance instanceof Batch) {
             return;
         }
+
+        /** On vérifie que le nombre de projet n'a pas changé */
+        $portefeuille = $entityInstance->getPortefeuille();
+        $sql = "SELECT liste FROM portefeuille where titre = '$portefeuille'";
+        $conn = $this->emm->getConnection()->prepare($sql);
+        $exec= $conn->executeQuery()->fetchAssociative();
+
+        $nombre_projet = 0;
+        if (isset($exec['liste'])){
+            $nombre_projet = count(json_decode($exec['liste'], true));
+        }
+
+        if ($nombre_projet > 0 && $nombre_projet != $entityInstance->getNombreProjet()) {
+            // On met à jour la table BATCH
+            $sql1 = "UPDATE batch SET nombre_projet = $nombre_projet
+                    WHERE portefeuille = '$portefeuille'";
+            $conn = $this->emm->getConnection()->prepare($sql1);
+            $conn->executeStatement();
+
+            // On met à jour la table BATCH_TRAITEMENT
+            $traitement_id = $entityInstance->getTraitementId()->toRfc4122();
+            $sql2 = "UPDATE batch_traitement SET nombre_projet = $nombre_projet
+                    WHERE traitement_id = '$traitement_id'";
+            $conn = $this->emm->getConnection()->prepare($sql2);
+            $conn->executeStatement();
+        }
+
         /** On ajoute la date de modification  */
         $entityInstance->setDateModification(new \DateTime());
 
