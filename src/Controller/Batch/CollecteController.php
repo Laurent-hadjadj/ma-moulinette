@@ -1140,28 +1140,30 @@ class CollecteController extends AbstractController
 
         $historique = $historiqueRepos->insertHistoriqueAjoutProjet($mergeHistorique, $json);
 
-        if ($historique['code'] === 200){
-            $html = $this->generateHtmlFromArray($mergeHistorique);
-            $collecte[] =
-            '<p class="open-sans">Données collectées</p>
-            <div>'. $html. '</div>';
-        } else {
-                $this->logger->critical('[Batch] 🔴 Erreur lors du traitement des données pour la table historique.', [
-                    'code' => $loggerJava['code'],
-                    'message' => $loggerJava['message'] ?? static::$noMessage,
-                    'erreur' => $loggerJava['erreur'] ?? static::$noError,
-                ]);
+        if ($historique['code'] !== 200){
+            //$html = $this->generateHtmlFromArray($mergeHistorique);
+            //$collecte[] =
+            //'<p class="open-sans">Données collectées</p>
+            //<div>'. $html. '</div>';
+            //} else {
+            $this->logger->critical('[Batch] 🔴 Erreur lors du traitement des données pour la table historique.', [
+                'code' => $loggerJava['code'],
+                'message' => $loggerJava['message'] ?? static::$noMessage,
+                'erreur' => $loggerJava['erreur'] ?? static::$noError,
+            ]);
 
-                $erreurTitre = '<h2 class="h4 open-sans"><span aria-hidden="true">🔴</span>Échec de mise à jour de la table Historique</h2>';
+            $erreurTitre = '<h2 class="h4 open-sans"><span aria-hidden="true">🔴</span>Échec de mise à jour de la table Historique</h2>';
 
-                $erreurContain = $this->generateHtmlErrorContain(
-                    $historique['code'],
-                    $historique['message'] ?? static::$noMessage,
-                    $historique['erreur'] ?? static::$noError );
+            $erreurContain = $this->generateHtmlErrorContain(
+                $historique['code'],
+                $historique['message'] ?? static::$noMessage,
+                $historique['erreur'] ?? static::$noError );
 
-                $collecte[] = $erreurTitre . $erreurContain;
-                $compte_rendu = implode("\n", $collecte);
+            $collecte[] = $erreurTitre . $erreurContain;
+            $compte_rendu = implode("\n", $collecte);
 
+            unset($mergeHistorique);
+            unset($collecte);
             return [
                 'code'=> 500,
                 'compte_rendu' => $compte_rendu
@@ -1176,7 +1178,7 @@ class CollecteController extends AbstractController
         '<h2 class="h4 open-sans"><span aria-hidden="true">🎉</span>Collecte terminée pour ce projet</h2>
         <div class="fieldset">
             <ul class="open-sans">
-                <li class="lead">Portefeuille : '. $portefeuille . '</li>
+                <li class="lead">Portefeuille : ' . $portefeuille . '</li>
                 <li class="lead">Projet : ' . $maven_key . '</li>
                 <li class="lead">Mode : ' . $mode_collecte .'</li>
                 <li class="lead">Démarrage : ' . $debutTraitement->format(static::$dateFormat) .'</li>
@@ -1189,6 +1191,8 @@ class CollecteController extends AbstractController
         $this->logger->info('[Batch] ℹ️ Sauvegarde du conte-rendu pour le projet.');
         $compte_rendu = implode("\n", $collecte);
 
+        unset($collecte);
+        gc_collect_cycles();
         return [
             'code' => 200,
             'message' => 'La collecte et la mise à jour de la table historique pour ce projet est terminée.',
