@@ -22,6 +22,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Uid\Ulid;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 use App\Controller\Batch\CollecteController;
 use App\Entity\Portefeuille;
@@ -47,6 +48,14 @@ class BatchManuelController extends AbstractController
         private Security $security,
     ) {
     }
+
+    #[Route('/workers/pendingWorker.js', name: 'worker_pending')]
+    public function worker(): Response
+    {
+        $path = $this->getParameter('kernel.project_dir').'/assets/js/mon-application/batch/pendingWorker.js';
+        return new BinaryFileResponse($path, 200, ['Content-Type' => 'application/javascript']);
+    }
+
     /**
      * [Description for listeProjet]
      * Récupère la liste des projets depuis un portefeuille de projets.
@@ -86,7 +95,7 @@ class BatchManuelController extends AbstractController
 
             return [
                 'code' => $traitement['code'],
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => "Une erreur est survenue lors de la récupération des projets du portefeuille ({$traitement['code']}).",
                 'erreur' => $traitement['erreur']
             ];
@@ -123,7 +132,7 @@ class BatchManuelController extends AbstractController
 
             return [
                 'code' => $liste_projets['code'],
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => "Le portefeuille de projet n'est pas accessible (Erreur {$liste_projets['code']}).",
                 'erreur' =>  $liste_projets['erreur'] ?? null
             ];
@@ -158,6 +167,91 @@ class BatchManuelController extends AbstractController
     }
 
     /**
+     * [Description for countPendingJob]
+     *
+     * @return JsonResponse
+     *
+     * Created at: 27/10/2025 19:46:17 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    #[Route('/api/traitement/pending', name: 'get_pending_or_inprogress', methods: ['GET'])]
+    public function getPendingOrProgress(): JsonResponse
+    {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/traitement/pending");
+
+        $batchTraitementRepos = $this->em->getRepository(BatchTraitement::class);
+        $count = $batchTraitementRepos->countBatchTraitementPendingAndProgress();
+
+        if ($count['code'] !== 200){
+            $this->logger->error("[Traitement-Manuel] ❌ Échec de la requête countBatchTraitementPendingAndProgress.", [
+                'erreur' => $count['erreur'],
+            ]);
+
+            return new JsonResponse([
+                'code' => $count['code'],
+                'type' => 'critical',
+                'message' => "Une erreur s'est produite lors de la récupération du nombre de traitements en attente et en cours (Erreur {$count['code']}).",
+                'erreur' => $count['erreur']
+            ], Response::HTTP_OK);
+        }
+
+        return new JsonResponse([
+            'code' => 200,
+            'message' => 'Récupération du nombre de traitements en attente et en cours.',
+            'pending' => $count['pending'] ?? 0,
+            'in_progress' => $count['progress'] ?? 0
+        ], Response::HTTP_OK);
+    }
+
+    #[Route('/api/traitement/add-pending', name: 'add_pending', methods: ['GET'])]
+    public function addPending(request $request): JsonResponse
+    {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/traitement/add-pending");
+
+        $batchTraitementRepos = $this->em->getRepository(BatchTraitement::class);
+
+        /** On récupère les données du POST */
+        $data = json_decode($request->getContent());
+
+        if ($data === null || !property_exists($data, 'traitement_id')){
+                $this->logger->error("[Traitement-Manuel] ❌ Requête invalide : clé 'traitement_id' manquante ou JSON mal formé.",[ 'payload' => $data ]);
+
+                return new JsonResponse([
+                    'code' => 400,
+                    'type' => 'error',
+                    'message' => static::$erreur400
+                ], Response::HTTP_OK);
+        }
+
+        $map = [
+                'traitement_id' => $data->traitement_id,
+                'pending' => true
+            ];
+
+            $add_pending = $batchTraitementRepos->updateBatchTraitementPending($map);
+
+            if ($add_pending !== 200){
+                $this->logger->alert("[Traitement-Manuel] ❌ Échec de la requête updateBatchTraitementPending.", [
+                'code' => $add_pending['code'],
+                'message' => $add_pending['erreur'] ?? null
+                ]);
+
+                return new JsonResponse([
+                    'code' => $add_pending['code'],
+                    'type' => 'error',
+                    'message' => "Il n'est pas possible de mettre le traitement en file d'attente (Erreur {$add_pending['code']}).",
+                    'trace' => $add_pending['erreur']
+                ], Response::HTTP_OK);
+            }
+
+        return new JsonResponse([
+            'code' => 200,
+            'message' => "Ajout du traitement en file d'attente.",
+        ], Response::HTTP_OK);
+    }
+
+    /**
      * [Description for traitementManuel]
      * Lance le traitement des projets en manuel
      *
@@ -169,10 +263,10 @@ class BatchManuelController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/traitement/manuel', name: 'traitement_manuel', methods: ['POST'])]
+    #[Route('/api/traitement/start', name: 'traitement_start', methods: ['POST'])]
     public function traitementManuel(Request $request): JsonResponse
     {
-        $this->logger->info("[API] 📥 Requête reçue sur /traitement/manuel");
+        $this->logger->info("[API] 📥 Requête reçue sur /traitement/start");
 
         $batchTraitementRepos = $this->em->getRepository(BatchTraitement::class);
         $user = $this->security->getUser();
@@ -184,21 +278,53 @@ class BatchManuelController extends AbstractController
         $data = json_decode($request->getContent());
 
         if ($data === null ||
-                !property_exists($data, 'id') ||
+                !property_exists($data, 'traitement_id') ||
                 !property_exists($data, 'titre_portefeuille') ||
-                !property_exists($data, 'portefeuille'))
-            {
-                $this->logger->error("[Traitement-Manuel] ❌ Requête invalide : clé 'titre_portefeuille' ou 'portefeuille' manquante ou JSON mal formé.",[
+                !property_exists($data, 'portefeuille')){
+                $this->logger->error("[Traitement-Manuel] ❌ Requête invalide : clé 'traitement_id', 'titre_portefeuille' ou 'portefeuille' manquante ou JSON mal formé.",[
                     'utilisateur' => $user,
                     'payload' => $data
                 ]);
 
                 return new JsonResponse([
                     'code' => 400,
-                    'type' => 'alert',
+                    'type' => 'error',
                     'message' => static::$erreur400
                 ], Response::HTTP_OK);
+        }
+
+        /** On regarde si un traitement est déjà démarré */
+        $isStarted = $batchTraitementRepos->findBy([], ['in_progress' => true ]);
+        if ($isStarted){
+            $this->logger->info("[Traitement-Manuel] ⚠️ Un traitement est déjà en cours d'execution.");
+
+            $map = [
+                'traitement_id' => $data->traitement_id,
+                'pending' => true
+            ];
+
+            $add_pending = $batchTraitementRepos->updateBatchTraitementPending($map);
+
+            if ($add_pending !== 200){
+                $this->logger->alert("[Traitement-Manuel] ❌ Échec de la requête updateBatchTraitementPending.", [
+                'code' => $add_pending,
+                'message' => $add_pending['erreur'] ?? null
+                ]);
+
+                return new JsonResponse([
+                    'code' => $add_pending['code'],
+                    'type' => 'error',
+                    'message' => "Il n'est pas possible de mettre le traitement en file d'attente (Erreur {$add_pending['code']}).",
+                    'trace' => $add_pending['erreur']
+                ], Response::HTTP_OK);
             }
+
+            return new JsonResponse([
+                'code' => 202,
+                'type' => 'info',
+                'message' => 'Un traitement est déjà en cours. Votre demande a été mise en attente.',
+            ], Response::HTTP_OK);
+        }
 
         // On extrait la liste des projets pour le portefeuille depuis la table batch_traitement
         $les_projets = $this->listeProjet($data->titre_portefeuille, $data->portefeuille);
@@ -208,6 +334,7 @@ class BatchManuelController extends AbstractController
                 'code' => $les_projets,
                 'message' => $les_projets['erreur'] ?? null
             ]);
+
             return new JsonResponse([
                 'code' => 404,
                 'type' => $les_projets['type'],
@@ -220,10 +347,11 @@ class BatchManuelController extends AbstractController
         $utilisateur_collecte = $this->security->getUser()->getCourriel();
 
         // Création du job principal
-        $traitement_id = new Ulid();
+        $execution_id = new Ulid();
         $batchExecution = new BatchExecution(
             'Collecte du ' . date('d/m/Y H:i'),
-            $traitement_id,
+            $execution_id,
+            Ulid::fromString($data->traitement_id),
             $utilisateur_collecte,
             'TRAITEMENT MANUEL'
         );
@@ -239,23 +367,23 @@ class BatchManuelController extends AbstractController
             'success' => null,
             'in_progress' => true,
             'pending' => null,
-            'id' => $data->id,
-            'traitement_id' => $traitement_id
+            'traitement_id' => $data->traitement_id
         ];
 
         $update = $batchTraitementRepos->updateBatchTraitement($map);
+
         if ($update['code'] !== 200) {
             $this->logger->error('[Batch Manuel] ❌ Échec de la requête updateBatchTraitement', [
                 'code' => $update['code'],
                 'message' => $update['message'] ?? static::$noMessage,
                 'erreur' => $update['erreur'] ?? static::$noError,
-                'id' => $data->id ?? 'inconnu',
+                'id' => $data->projet_id ?? 'inconnu',
                 'wip' => 'in_progress = true'
                 ]);
 
             return new JsonResponse([
                 'code' => $update['code'],
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => "Il n'est pas possible de mettre à jour le traitement (Erreur {$update['code']}).",
                 'erreur' =>  $update['erreur'] ?? null
             ], Response::HTTP_OK);
@@ -288,10 +416,10 @@ class BatchManuelController extends AbstractController
                 return new JsonResponse(compact('code', 'type', 'message'),
                 Response::HTTP_OK);
             }
+            /** Flush global */
+            $this->em->flush();
+            unset($le_projet);
         }
-
-        /** Flush global */
-        $this->em->flush();
 
         $fin_traitement = new \DateTime('now', new \DateTimeZone(static::$europeParis));
         $interval = $debut_traitement->diff($fin_traitement);
@@ -304,33 +432,34 @@ class BatchManuelController extends AbstractController
             'success' => true,
             'in_progress' => false,
             'pending' => false,
-            'id' => $data->id,
-            'traitement_id' => $traitement_id
+            'traitement_id' => $data->traitement_id
         ];
 
         $update = $batchTraitementRepos->updateBatchTraitement($map);
-
         if ($update['code'] !== 200) {
             $this->logger->error('[Batch Manuel] ❌ Échec de la requête updateBatchTraitement', [
                 'code' => $update['code'],
                 'message' => $update['message'] ?? static::$noMessage,
                 'erreur' => $update['erreur'] ?? static::$noError,
-                'id' => $data->id ?? 'inconnu',
+                'id' => $data->projet_id ?? 'inconnu',
                 'wip' => 'in_progress = false'
             ]);
 
             return new JsonResponse([
                 'code' => $update['code'],
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => "Il n'est pas possible de mettre à jour le traitement (Erreur {$update['code']}).",
                 'erreur' =>  $update['erreur'] ?? null
             ], Response::HTTP_OK);
         }
 
+        unset($map);
+        unset($les_projets);
+        unset($data);
         return new JsonResponse([
             'code' => 200,
             'message' => 'Collecte terminée avec succès',
-            'reference' => (string) $traitement_id,
+            'reference' => (string) $execution_id,
             'temps_traitement' => $temps_traitement
         ], Response::HTTP_OK);
     }
