@@ -1,5 +1,5 @@
 // 🧵 Web Worker pour la mise à jour du statut de traitement
-const delay = 30000; // 30 secondes
+const delay = 15000; // 15 secondes
 let isFetching = false;
 
 /**
@@ -46,5 +46,6 @@ async function fetchPending({ debug = false } = {}) {
 }
 
 // Premier appel immédiat
+// Ajouter pour activer le debug : { debug = true }
 fetchPending();
 setInterval(fetchPending, delay);
