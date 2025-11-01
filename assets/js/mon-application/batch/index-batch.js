@@ -46,17 +46,31 @@ let suppressClick = false;
 $(document).ready(() => {
   pendingWorkerService.start();
 
-  $('.i-am-human-svg').click(async () => {
-    const projetId = $(this).data('projet-id');
-    console.log(projetId);
-    //await lancerTraitementSiPossible(projetId);
+  $('.i-am-human-svg').click(async (e) => {
+    /* si on a déjà cliqué, on sort */
+    if (suppressClick){
+      showMessage('warning', `Un traitement est déjà en cours → ajout à la file d'attente.`);
+      return;
+    }
+    suppressClick = true;
+
+    const id = e.currentTarget.id;
+    const idTab = id.split('-');
+
+    /** On récupère le titre du portefeuille et le portefeuille (ie. la liste des projets) */
+    const element = document.getElementById(`portefeuille-${idTab[trois]}`);
+    const element2 = document.getElementById(`outil-${idTab[trois]}`);
+    const titre_portefeuille = element.getAttribute('data-titre');
+    const portefeuille = $(`#portefeuille-${idTab[trois]}`).text().trim();
+    const traitement_id = element2.getAttribute('data-reference');
+    await lancerTraitementSiPossible(idTab[trois], traitement_id, titre_portefeuille, portefeuille);
   });
 });
 
 /**
  * pendingWorkerService
  *
- * @var [type]
+ * @var void
  */
 const pendingWorkerService = {
   worker: null,
@@ -67,15 +81,22 @@ const pendingWorkerService = {
   start() {
     if (this.worker) return; // déjà démarré
 
-    this.worker = new Worker('./pendingWorker.js');
-
+    //this.worker = new Worker('../../mon-application/batch/pendingWorker.js');
+    this.worker = new Worker('/workers/pendingWorker.js');
     // écoute les messages du worker
     this.worker.onmessage = (event) => {
       const { status, data, error } = event.data;
+      console.log('[pendingWorkerService] 📩 Message reçu du worker à', new Date().toLocaleTimeString(), data);
       if (status === 'ok') {
-        this.updateInfoBulle(data);
+        if (data && typeof data === 'object') {
+          this.updateInfoBulle(data);
+        } else {
+          sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] ⚠️ Données inattendues du worker', error);
+          console.warn('[pendingWorkerService] ⚠️ Données inattendues du worker', data);
+        }
       } else {
-        sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] ❌', error);
+        sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] ❌ Erreur du worker', error);
+        console.error('[pendingWorkerService] ❌ Erreur du worker', error);
       }
     };
 
@@ -112,60 +133,165 @@ const pendingWorkerService = {
   },
 
   updateInfoBulle(t) {
+    if (!t || typeof t.pending === 'undefined') {
+      sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] 🛑 Données invalides', t);
+      console.warn('[pendingWorkerService] Données invalides :', t);
+      return;
+    }
+
     const $infoBulle = $(this.infoBulleSelector);
     const $tips = $(this.infoTipsSelector);
 
-    if (!t) return;
-
-    // Affiche loader pendant la mise à jour
     $infoBulle.addClass('loading');
-
     $infoBulle.removeClass('bulle-info-vide bulle-info-start bulle-info-end bulle-info-error');
 
     if (t.pending > 0) {
       $infoBulle.addClass('bulle-info-start').html(t.pending);
       $tips.html('Nombre de projet planifié.');
-    } else if (t.pending === 0 && t.in_progress > 0) {
-      $infoBulle.addClass('bulle-info-end').html(t.in_progress);
-      $tips.html('Un projet est en cours de traitement.');
-    } else {
-      $infoBulle.addClass('bulle-info-end').html('0');
-      $tips.html('Aucun projet planifié.');
-    }
+      } else if (t.pending === 0 && t.in_progress > 0) {
+        $infoBulle.addClass('bulle-info-end').html(t.in_progress);
+        $tips.html('Un projet est en cours de traitement.');
+      } else {
+        $infoBulle.addClass('bulle-info-end').html('0');
+        $tips.html('Aucun projet planifié.');
+      }
 
-    // Retire loader après affichage
-    setTimeout(() => $infoBulle.removeClass('loading'), 300);
-  }
+      setTimeout(() => $infoBulle.removeClass('loading'), 300);
+    }
 };
 
-const lancerTraitementSiPossible = async function(projetId) {
+/**
+ * [Description for workInProgress]
+ * On remonte le nombre de traitements en attente et en cours.
+ *
+ * @return array
+ *
+ * Created at: 14/06/2024 16:23:54 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ */
+const workInProgress = async function(){
+
+  const options = {
+    url: `${serveur()}/api/traitement/pending`,
+    type: 'GET',
+    dataType: 'json',
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
+
+  try {
+        const t = await $.ajax(options);
+        return t;
+  } catch(error) {
+      const trace = prepareTechnicalDetails(error);
+      const message = "Une erreur inattendue s'est produite lors de la récupération des données de disponibilité de workInProgress.";
+      showMessage('critical', message, trace);
+  }
+  return null;
+};
+
+const lancerTraitementSiPossible = async function(id, traitement_id, titre_portefeuille, portefeuille) {
   try {
     const t = await workInProgress(); // récupère pending/in_progress
 
-    if (!t) return console.warn("Impossible de récupérer l'état des traitements");
+    if (!t) {
+      //console.debug( "⚠️ Impossible de récupérer l'état des traitements.");
+      sessionStorage.setItem('ma_moulinette_batch', "⚠️ Impossible de récupérer l'état des traitements");
+      showMessage('warning', `Impossible de récupérer l'état des traitements.`);
+      return
+    }
 
     if (t.in_progress > 0) {
-      console.log("Un traitement est déjà en cours → ajout à pending");
+      //console.debug("⚠️ Un traitement est déjà en cours → ajout à pending");
+      sessionStorage.setItem('ma_moulinette_batch',"⚠️ Un traitement est déjà en cours → ajout à pending")
+      showMessage('warning', `Un traitement est déjà en cours → ajout à la file d'attente.`);
+
       await $.ajax({
         url: '/api/traitement/add-pending',
         type: 'POST',
-        data: JSON.stringify({ projetId }),
+        data: JSON.stringify({traitement_id, titre_portefeuille, portefeuille }),
         contentType: 'application/json'
       });
       return;
     }
 
-    console.log("Aucun traitement en cours → lancement immédiat");
-    await $.ajax({
-      url: '/api/traitement/start',
-      type: 'POST',
-      data: JSON.stringify({ projetId }),
-      contentType: 'application/json'
-    });
+    //console.debug("ℹ️ Aucun traitement en cours → lancement immédiat");
+    sessionStorage.setItem('ma_moulinette_batch',"ℹ️ Aucun traitement en cours → lancement immédiat.");
+    showMessage('primary', `Aucun traitement en cours → lancement immédiat.`);
 
-  } catch (error) {
-    console.error("Erreur lancement traitement:", error);
+    const data = { traitement_id, titre_portefeuille, portefeuille };
+    const options = {
+      url: `${serveur()}/api/traitement/start`,
+      type: 'POST',
+      dataType: 'json',
+      data: JSON.stringify(data),
+      contentType,
+      headers: {
+        'X-API-Custom-403': 'true',
+        'X-Internal-Front': 'front-app'
+      },
+    };
+
+    const start = await $.ajax(options);
+
+    if (start.code !== http_200){
+      const hasTrace = !!start.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(start.trace) : null;
+      setTimeout( () => { showMessage(start.type, start.message, trace);}, troisMille );
+
+      sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 01');
+      $(`#i-am-human-${id}`).removeClass('blink');
+
+      $(infoBulle).removeClass('bulle-info-vide', 'bulle-info-start', 'bulle-info-end', 'bulle-info-error').addClass('bulle-info-error');
+      $('#info-bulle-tips').html('Traitement en échec.');
+      $(infoBulle).html('X');
+
+      const result = `<span class="show-for-small-only color-rouge"><strong>KO</strong></span>
+                      <span class="show-for-medium color-rouge"><strong>Erreur</strong></span>`;
+      $(`#result-${id}`).html(result);
+      return;
+    }
+
+    showMessage('primary',
+      `La collecte pour les projets de ${portefeuille} est terminée.<br>
+        Référence : <strong>${start.reference}</strong><br>
+        Temps total : ${start.temps_traitement}`);
+    $(`#i-am-human-${id}`).removeClass('blink');
+
+    /** On met à jour la bulle info */
+    $(infoBulle).removeClass('bulle-info-vide', 'bulle-info-start', 'bulle-info-end', 'bulle-info-error').addClass('bulle-info-end');
+    $('#info-bulle-tips').html('Traitement terminé.');
+    $(infoBulle).html('-');
+
+    const result = `<span class="show-for-small-only color-vert"><strong>OK</strong></span>
+                    <span class="show-for-medium color-vert"><strong>Succès</strong></span>`;
+    $(`#result-${id}`).html(result);
+
+    const temps = t.temps_traitement;
+    const isZeroTime = /^0{2}:\d{1,2}:\d{1,2}(\.\d+)?$/.test(temps) && parseFloat(temps.replace(/[:.]/g, '')) === 0;
+    const affiche_temps = isZeroTime ? "--:--.--" : temps;
+    $(`#temps-execution-${id}`).html(affiche_temps);
+    suppressClick = false;
+
+  } catch (erreur) {
+    const trace = prepareTechnicalDetails(erreur);
+    showMessage('critical', "Erreur de lancement traitement", trace);
+
+    $(infoBulle).removeClass('bulle-info-vide', 'bulle-info-start', 'bulle-info-end', 'bulle-info-error').addClass('bulle-info-error');
+    $('#info-bulle-tips').html('Traitement en échec.');
+    $(infoBulle).html('X');
+
+    const result = `<span class="show-for-small-only color-rouge"><strong>KO</strong></span>
+                      <span class="show-for-medium color-rouge"><strong>Erreur</strong></span>`;
+    $(`#result-${id}`).html(result);
+    suppressClick = false;
+    return;
   }
+
 }
 
 /**
@@ -291,48 +417,3 @@ const traitementAuto = async function(){
 
   await $.ajax(options);
 };
-
-/** On lance un traitement manuel - oui Monsieur !!! */
-$('.betat?i-am-human-svg').on('click', async (e)=> {
-  // On prévient le multi-click
-  e.preventDefault();
-
-  /* si on a déjà cliqué, on sort */
-  if (suppressClick){
-    return;
-  }
-    suppressClick = true;
-
-  /** On récupère l’élément cliqué depuis le DOM */
-  //i-am-human-10
-  const id = e.currentTarget.id;
-  const idTab = id.split('-');
-
-  /** On regarde si un autre traitement est encours */
-  const t = await workInProgress();
-
-  const pending = t.pending;
-  const in_progress =  t.in_progress;
-
-  if (in_progress > 0){
-    showMessage('warning', `Un autre traitement est cours d’exécution. Attendez quelques minutes avant de relancer.`);
-    return;
-  }
-
-  if (pending > 0){
-    showMessage('warning', `Le traitement ${titre_portefeuille} a été mis en attente.`);
-    return;
-  }
-
-  /** clignote */
-  $(`#${id}`).addClass('blink');
-
-  /** On récupère le titre du portefeuille et le portefeuille (ie. la liste des projets) */
-  const element = document.getElementById(`portefeuille-${idTab[trois]}`);
-  const titre_portefeuille = element.getAttribute('data-titre');
-  const portefeuille = $(`#portefeuille-${idTab[trois]}`).text().trim();
-  showMessage('primary', `Le traitement ${portefeuille} a été lancé.`);
-  await traitementManuel(idTab[trois], titre_portefeuille, portefeuille);
-  console.log('terminée ?');
-  suppressClick = false;
-});
