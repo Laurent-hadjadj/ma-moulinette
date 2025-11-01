@@ -42,6 +42,11 @@ class BatchExecution
     #[ORM\Column(type: 'ulid', nullable: true,
         options: ['comment' => 'Référence unique du journal (ULID sous forme de texte).']
     )]
+    private ?Ulid $executionId = null;
+
+    #[ORM\Column(type: 'ulid', nullable: true,
+        options: ['comment' => 'Référence unique du traitement (ULID sous forme de texte).']
+    )]
     private ?Ulid $traitementId = null;
 
     #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
@@ -63,11 +68,13 @@ class BatchExecution
 
     public function __construct(
         string $nomTraitement,
+        Ulid $executionId,
         Ulid $traitementId,
         ?string $utilisateurCollecte,
         string $modeCollecte
     ) {
         $this->nomTraitement = $nomTraitement;
+        $this->executionId = $executionId;
         $this->traitementId = $traitementId;
         $this->utilisateurCollecte = $utilisateurCollecte;
         $this->modeCollecte = $modeCollecte;
@@ -102,6 +109,18 @@ class BatchExecution
     public function getNomTraitement(): string
     {
         return $this->nomTraitement;
+    }
+
+    public function getExecutionId(): ?Ulid
+    {
+        return $this->executionId;
+    }
+
+    public function setExecution(Ulid $executionId): static
+    {
+        $this->executionId = $executionId;
+
+        return $this;
     }
 
     public function getTraitementId(): ?Ulid
