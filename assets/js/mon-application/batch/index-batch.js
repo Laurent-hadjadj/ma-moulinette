@@ -44,6 +44,7 @@ const infoBulle='#info-bulle';
 let suppressClick = false;
 
 $(document).ready(() => {
+  // ajouter pour activer le debug -> { debug = true }
   pendingWorkerService.start();
 
   $('.i-am-human-svg').click(async (e) => {
@@ -78,25 +79,30 @@ const pendingWorkerService = {
   infoBulleSelector: '#info-bulle',
   infoTipsSelector: '#info-bulle-tips',
 
-  start() {
+  start({ debug = false } = {}) {
     if (this.worker) return; // déjà démarré
 
     //this.worker = new Worker('../../mon-application/batch/pendingWorker.js');
     this.worker = new Worker('/workers/pendingWorker.js');
+
     // écoute les messages du worker
     this.worker.onmessage = (event) => {
       const { status, data, error } = event.data;
-      console.log('[pendingWorkerService] 📩 Message reçu du worker à', new Date().toLocaleTimeString(), data);
+
+      if (debug) console.log('[pendingWorkerService] 📩 Message reçu du worker à', new Date().toLocaleTimeString(), data);
+
       if (status === 'ok') {
         if (data && typeof data === 'object') {
           this.updateInfoBulle(data);
         } else {
+          if (debug) console.warn('[pendingWorkerService] ⚠️ Données inattendues du worker', data);
+
           sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] ⚠️ Données inattendues du worker', error);
-          console.warn('[pendingWorkerService] ⚠️ Données inattendues du worker', data);
         }
       } else {
+        if (debug) console.error('[pendingWorkerService] ❌ Erreur du worker', error);
+
         sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] ❌ Erreur du worker', error);
-        console.error('[pendingWorkerService] ❌ Erreur du worker', error);
       }
     };
 
@@ -109,26 +115,36 @@ const pendingWorkerService = {
       }
     });
 
-    sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] ✅ Service démarré');
+    if (debug) console.log('[pendingWorkerService] ✅ Service démarré');
+
+    sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] ✅ Service démarré.');
   },
 
-  pause() {
+  pause({ debug = false } = {}) {
     if (this.worker) {
       this.worker.terminate();
       this.worker = null;
-      sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] ⏸️ Pause (onglet inactif)');
+
+      if (debug) console.error('[pendingWorkerService] ⏸️ Pause (onglet inactif');
+
+      sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] ⏸️ Pause (onglet inactif.)');
     }
   },
 
-  resume() {
+  resume({ debug = false } = {}) {
     if (!this.worker) {
-      sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] ▶️ Reprise (onglet actif)');
+      if (debug) console.error('[pendingWorkerService] ▶️ Reprise (onglet actif).');
+
+      sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] ▶️ Reprise (onglet actif).');
       this.start(); // recrée le worker
     }
   },
 
-  stop() {
+  stop({ debug = false } = {}) {
     this.pause();
+
+    if (debug) console.error('[pendingWorkerService] 🛑 Service arrêté manuellement.');
+
     sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] 🛑 Service arrêté manuellement');
   },
 
