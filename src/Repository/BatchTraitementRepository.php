@@ -16,7 +16,6 @@ namespace App\Repository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\DBAL\ParameterType;
-use Doctrine\DBAL\Statement;
 use App\Entity\BatchTraitement;
 use App\Repository\Traits\DoctrineParamHelperTrait;
 
@@ -27,8 +26,10 @@ class BatchTraitementRepository extends ServiceEntityRepository
 {
   use DoctrineParamHelperTrait;
 
-  public static $removeReturnLine = "/\s+/u";
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
+  private static $removeReturnLine = "/\s+/u";
+  private static $noDataBase = 'La connexion à la base de données a échoué.';
+  private static $traitementId = ':traitement_id';
+  private static $pending = ':pending';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -66,24 +67,6 @@ class BatchTraitementRepository extends ServiceEntityRepository
     }
 
     return ['code' => 500, 'erreur' => $message];
-  }
-
-  /**
-   * [Description for bindNullableBool]
-   *
-   * @param Statement $stmt
-   * @param string $param
-   * @param bool|null $value
-   *
-   * @return void
-   *
-   * Created at: 27/10/2025 20:18:51 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  private function bindNullableBool(Statement $stmt, string $param, ?bool $value): void
-  {
-    $stmt->bindValue($param, $value, $value === null ? ParameterType::NULL : ParameterType::BOOLEAN);
   }
 
   /**
@@ -209,61 +192,6 @@ class BatchTraitementRepository extends ServiceEntityRepository
   }
 
   /**
-   * [Description for updateBatchTraitement]
-   *
-   * @param array $map
-   *
-   * @return array
-   *
-   * Created at: 22/05/2024 17:56:41 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  public function updateBatchTraitement($map): array
-  {
-    $sql = "UPDATE ma_moulinette.batch_traitement
-            SET debut_traitement = :debut_traitement,
-                fin_traitement = :fin_traitement,
-                success = :success,
-                pending = :pending,
-                in_progress = :in_progress,
-                traitement_id = :traitement_id
-            WHERE id = :id";
-
-    $conn = $this->getEntityManager()->getConnection();
-
-    // Nettoyage des chaînes vides pour les booléens nullable
-    foreach (['success', 'pending', 'in_progress'] as $key) {
-        if ($map[$key] === '') {
-            $map[$key] = null;
-        }
-    }
-
-    try {
-        $conn->beginTransaction();
-        $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-          $stmt->bindValue(':debut_traitement', $map['debut_traitement']);
-          $stmt->bindValue(':fin_traitement', $map['fin_traitement']);
-          $stmt->bindValue(':id', $map['id']);
-
-          // Gestion du type ULID pour PostgreSQL
-          $this->bindNullableBool($stmt, ':success', $map['success']);
-          $this->bindNullableBool($stmt, ':pending', $map['pending']);
-          $this->bindNullableBool($stmt, ':in_progress', $map['in_progress']);
-          $this->bindUlidAsString($stmt, ':traitement_id', $map['traitement_id']);
-
-        // Exécution
-        $stmt->executeStatement();
-        $conn->commit();
-      } catch (\Throwable $e) {
-        $conn->rollBack();
-        return $this->handleDatabaseException($e);
-      }
-
-      return [ 'code' => 200, 'erreur' => '' ];
-  }
-
-  /**
    * [Description for countBatchTraitementPendingAndProgress]
    *
    *
@@ -296,6 +224,87 @@ class BatchTraitementRepository extends ServiceEntityRepository
           'progress' => $exec[0]['progress'],
           'erreur' => ''
     ];
+  }
+
+  /**
+   * [Description for updateBatchTraitementPending]
+   *
+   * @param mixed $map
+   *
+   * @return array
+   *
+   * Created at: 02/11/2025 21:30:02 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function updateBatchTraitementPending($map): array
+  {
+    $sql = "UPDATE ma_moulinette.batch_traitement
+            SET pending = :pending
+            WHERE traitement_id = :traitement_id";
+
+    $conn = $this->getEntityManager()->getConnection();
+
+    try {
+          $conn->beginTransaction();
+          $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                  $this->bindNullableBool($stmt, static::$pending, $map['pending']);
+                  $this->bindUlidAsString($stmt, static::$traitementId, $map['traitement_id']);
+          $stmt->executeStatement();
+          $conn->commit();
+        } catch (\Throwable $e) {
+            $conn->rollBack();
+            return $this->handleDatabaseException($e);
+        }
+
+        /** on prépare la réponse */
+        return ['code' => 200, 'erreur' => ''];
+  }
+
+  /**
+   * [Description for updateBatchTraitement]
+   *
+   * @param array $map
+   *
+   * @return array
+   *
+   * Created at: 22/05/2024 17:56:41 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function updateBatchTraitement($map): array
+  {
+    $sql = "UPDATE ma_moulinette.batch_traitement
+            SET debut_traitement = :debut_traitement,
+                fin_traitement = :fin_traitement,
+                success = :success,
+                pending = :pending,
+                in_progress = :in_progress
+            WHERE traitement_id = :traitement_id";
+
+    $conn = $this->getEntityManager()->getConnection();
+
+    try {
+        $conn->beginTransaction();
+        $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt->bindValue(':debut_traitement', $map['debut_traitement']);
+          $stmt->bindValue(':fin_traitement', $map['fin_traitement']);
+
+          // Gestion du type ULID pour PostgreSQL
+          $this->bindNullableBool($stmt, ':success', $map['success']);
+          $this->bindNullableBool($stmt, static::$pending, $map['pending']);
+          $this->bindNullableBool($stmt, ':in_progress', $map['in_progress']);
+          $this->bindUlidAsString($stmt, static::$traitementId, $map['traitement_id']);
+
+        // Exécution
+        $stmt->executeStatement();
+        $conn->commit();
+      } catch (\Throwable $e) {
+        $conn->rollBack();
+        return $this->handleDatabaseException($e);
+      }
+
+      return [ 'code' => 200, 'erreur' => '' ];
   }
 
   /**
@@ -339,9 +348,9 @@ class BatchTraitementRepository extends ServiceEntityRepository
 
                   // Gestion du type ULID pour PostgreSQL
                   $this->bindNullableBool($stmt, ':success', $map['success']);
-                  $this->bindNullableBool($stmt, ':pending', $map['pending']);
+                  $this->bindNullableBool($stmt, static::$pending, $map['pending']);
                   $this->bindNullableBool($stmt, ':in_progress', $map['in_progress']);
-                  $this->bindUlidAsString($stmt, ':traitement_id', $map['traitement_id']);
+                  $this->bindUlidAsString($stmt, static::$traitementId, $map['traitement_id']);
 
           // Exécution
           $stmt->executeStatement();
@@ -352,7 +361,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
       }
 
       return ['code' => 200, 'erreur' => ''];
-    }
+  }
 
   /**
    * [Description for deleteTraitement]
@@ -376,7 +385,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
     try {
         $conn->beginTransaction();
         $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-          $this->bindUlidAsString($stmt, ':traitement_id', $traitement_id);
+          $this->bindUlidAsString($stmt, static::$traitementId, $traitement_id);
           $stmt->executeStatement();
         $conn->commit();
     } catch (\Throwable $e) {
@@ -420,4 +429,6 @@ class BatchTraitementRepository extends ServiceEntityRepository
         /** on prépare la réponse */
         return ['code' => 200, 'erreur' => ''];
   }
+
+
 }
