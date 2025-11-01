@@ -162,7 +162,7 @@ class BatchCollecteOwaspController extends AbstractController
 
             /** Calcul du nombre d'issue par type de signalement OWASP et par type de sévérité */
             if ($referential['total'] != 0) {
-                foreach ($referential['json']['issues'] as $issue) {
+                foreach ($referential['issues'] as $issue) {
                     if (in_array($issue['status'], ['OPEN', 'CONFIRMED', 'REOPENED'])) {
                         foreach ($issue['tags'] as $tag) {
                             if (preg_match("/owasp-a(\d+)/", $tag, $matches)) {
