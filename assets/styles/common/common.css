@@ -728,18 +728,26 @@ body {
 
 .alert-callout-border strong { color: #0a0a0a; }
 .alert-callout-border.radius { border-radius: 0.6rem; }
+
+/* ======              Foundation           ====== */
 .alert-callout-border.primary { border-left-color: #1779ba; }
 .alert-callout-border.primary strong { color: #1779ba; }
 .alert-callout-border.secondary { border-left-color: #767676; }
 .alert-callout-border.secondary strong { color: #767676; }
-.alert-callout-border.alert { border-left-color: #cc4b37; }
-.alert-callout-border.alert strong { color: #cc4b37; }
-.alert-callout-border.critical { border-left-color: #cc4b37; }
-.alert-callout-border.critical strong { color: #cc4b37; }
 .alert-callout-border.success { border-left-color: #2fb961; }
 .alert-callout-border.success strong { color: #2fb961; }
+
+/* ======              Logger               ====== */
+.alert-callout-border.info { border-left-color: #1779ba; }
+.alert-callout-border.info strong { color: #1779ba; }
+.alert-callout-border.error { border-left-color: #cc4b37; }
+.alert-callout-border.error strong { color: #cc4b37; }
 .alert-callout-border.warning { border-left-color: #eda60c; }
 .alert-callout-border.warning strong { color: #eda60c; }
+.alert-callout-border.critical { border-left-color: #cc4b37; }
+.alert-callout-border.critical strong { color: #cc4b37; }
+.alert-callout-border.debug { border-left-color: #767676; }
+.alert-callout-border.debug strong { color: #767676; }
 
 /* affichage du bouton close dans un callout */
 .close-button {
@@ -756,12 +764,17 @@ body {
 }
 
 .close-button.primary { background-color: #1779ba; }
-.close-button.default { background-color: #767676; }
 .close-button.secondary { background-color: #767676; }
 .close-button.alert { background-color: #cc4b37; }
-.close-button.critical { background-color: #cc4b37; }
 .close-button.success { background-color: #2fb961; }
+
+/* ======              Logger               ====== */
+.close-button.info { background-color: #1779ba; }
+.close-button.error { background-color: #cc4b37; }
 .close-button.warning { background-color: #eda60c; }
+.close-button.critical { background-color: #cc4b37; }
+.close-button.debug { background-color: #767676; }
+
 
 .close-button.primary:hover {
   background-color: #5CA1CE;
@@ -788,10 +801,32 @@ body {
   box-shadow: 0 6px 8px rgba(0 0 0 / 20%);
 }
 
+/* ======              Logger               ====== */
+.close-button.primary:hover {
+  background-color: #5CA1CE;
+  box-shadow: 0 6px 8px rgba(0 0 0 / 20%);
+}
+
+.close-button.error:hover  {
+  background-color: #DB8173;
+  box-shadow: 0 6px 8px rgba(0 0 0 / 20%);
+}
+
 .close-button.warning:hover {
   background-color: #F2C054;
   box-shadow: 0 6px 8px rgba(0 0 0 / 20%);
 }
+
+.close-button.critical:hover  {
+  background-color: #DB8173;
+  box-shadow: 0 6px 8px rgba(0 0 0 / 20%);
+}
+
+.close-button.debug:hover {
+  background-color: #9F9F9F;
+  box-shadow: 0 6px 8px rgba(0 0 0 / 20%);
+}
+
 
 /* ==== link ==== */
 .source-link {
