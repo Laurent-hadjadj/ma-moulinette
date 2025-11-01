@@ -189,14 +189,16 @@ export const showMessage = function(type, message, technicalDetails = null) {
     const icons = {
         success: '✅',
         alert: '❌',
-        warning: '⚠️',
-        info: 'ℹ️',
         primary: '📌',
         secondary: '📄',
+        delete: '🗑️',
+        notAuthorize: '🚫',
+        // Logger
+        info: 'ℹ️',
+        error: '❌',
+        warning: '⚠️',
         critical: '🔴',
         debug: '🛠️',
-        delete: '🗑️',
-        notAuthorize: '🚫'
     };
 
     const icon = icons[type] || '🔔';
