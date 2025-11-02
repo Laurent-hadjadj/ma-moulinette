@@ -35,6 +35,9 @@ import { showMessage, hideMessage, prepareTechnicalDetails } from '../../common/
 /** On importe les constantes */
 import { contentType, un, trois, cinqCent, mille, http_500, http_400, http_200, troisMille, cinqMille } from '../../common/constante.js';
 
+/** on charge le service pendingWorker */
+import '../batch/pendingWorkerService.js';
+
 /** On gère l'affichage des jobs */
 const automatique = '.automatique';
 const manuel= '.manuel';
@@ -42,139 +45,6 @@ const infoBulle='#info-bulle';
 
 // On  initialise le click
 let suppressClick = false;
-
-$(document).ready(() => {
-  // ajouter pour activer le debug -> { debug = true }
-  pendingWorkerService.start();
-
-  $('.i-am-human-svg').click(async (e) => {
-    /* si on a déjà cliqué, on sort */
-    if (suppressClick){
-      showMessage('warning', `Un traitement est déjà en cours → ajout à la file d'attente.`);
-      return;
-    }
-    suppressClick = true;
-
-    const id = e.currentTarget.id;
-    const idTab = id.split('-');
-
-    /** On récupère le titre du portefeuille et le portefeuille (ie. la liste des projets) */
-    const element = document.getElementById(`portefeuille-${idTab[trois]}`);
-    const element2 = document.getElementById(`outil-${idTab[trois]}`);
-    const titre_portefeuille = element.getAttribute('data-titre');
-    const portefeuille = $(`#portefeuille-${idTab[trois]}`).text().trim();
-    const traitement_id = element2.getAttribute('data-reference');
-    await lancerTraitementSiPossible(idTab[trois], traitement_id, titre_portefeuille, portefeuille);
-  });
-});
-
-/**
- * pendingWorkerService
- *
- * @var void
- */
-const pendingWorkerService = {
-  worker: null,
-  pollingDelay: 30000, // configurable
-  infoBulleSelector: '#info-bulle',
-  infoTipsSelector: '#info-bulle-tips',
-
-  start({ debug = false } = {}) {
-    if (this.worker) return; // déjà démarré
-
-    //this.worker = new Worker('../../mon-application/batch/pendingWorker.js');
-    this.worker = new Worker('/workers/pendingWorker.js');
-
-    // écoute les messages du worker
-    this.worker.onmessage = (event) => {
-      const { status, data, error } = event.data;
-
-      if (debug) console.log('[pendingWorkerService] 📩 Message reçu du worker à', new Date().toLocaleTimeString(), data);
-
-      if (status === 'ok') {
-        if (data && typeof data === 'object') {
-          this.updateInfoBulle(data);
-        } else {
-          if (debug) console.warn('[pendingWorkerService] ⚠️ Données inattendues du worker', data);
-
-          sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] ⚠️ Données inattendues du worker', error);
-        }
-      } else {
-        if (debug) console.error('[pendingWorkerService] ❌ Erreur du worker', error);
-
-        sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] ❌ Erreur du worker', error);
-      }
-    };
-
-    // Pause/reprise automatique selon visibilité
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) {
-        this.pause();
-      } else {
-        this.resume();
-      }
-    });
-
-    if (debug) console.log('[pendingWorkerService] ✅ Service démarré');
-
-    sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] ✅ Service démarré.');
-  },
-
-  pause({ debug = false } = {}) {
-    if (this.worker) {
-      this.worker.terminate();
-      this.worker = null;
-
-      if (debug) console.error('[pendingWorkerService] ⏸️ Pause (onglet inactif');
-
-      sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] ⏸️ Pause (onglet inactif.)');
-    }
-  },
-
-  resume({ debug = false } = {}) {
-    if (!this.worker) {
-      if (debug) console.error('[pendingWorkerService] ▶️ Reprise (onglet actif).');
-
-      sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] ▶️ Reprise (onglet actif).');
-      this.start(); // recrée le worker
-    }
-  },
-
-  stop({ debug = false } = {}) {
-    this.pause();
-
-    if (debug) console.error('[pendingWorkerService] 🛑 Service arrêté manuellement.');
-
-    sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] 🛑 Service arrêté manuellement');
-  },
-
-  updateInfoBulle(t) {
-    if (!t || typeof t.pending === 'undefined') {
-      sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] 🛑 Données invalides', t);
-      console.warn('[pendingWorkerService] Données invalides :', t);
-      return;
-    }
-
-    const $infoBulle = $(this.infoBulleSelector);
-    const $tips = $(this.infoTipsSelector);
-
-    $infoBulle.addClass('loading');
-    $infoBulle.removeClass('bulle-info-vide bulle-info-start bulle-info-end bulle-info-error');
-
-    if (t.pending > 0) {
-      $infoBulle.addClass('bulle-info-start').html(t.pending);
-      $tips.html('Nombre de projet planifié.');
-      } else if (t.pending === 0 && t.in_progress > 0) {
-        $infoBulle.addClass('bulle-info-end').html(t.in_progress);
-        $tips.html('Un projet est en cours de traitement.');
-      } else {
-        $infoBulle.addClass('bulle-info-end').html('0');
-        $tips.html('Aucun projet planifié.');
-      }
-
-      setTimeout(() => $infoBulle.removeClass('loading'), 300);
-    }
-};
 
 /**
  * [Description for workInProgress]
@@ -433,3 +303,27 @@ const traitementAuto = async function(){
 
   await $.ajax(options);
 };
+
+$(document).ready(() => {
+  pendingWorkerService.start({ debug: true });
+
+  $('.i-am-human-svg').click(async (e) => {
+    /* si on a déjà cliqué, on sort */
+    if (suppressClick){
+      showMessage('warning', `Un traitement est déjà en cours → ajout à la file d'attente.`);
+      return;
+    }
+    suppressClick = true;
+
+    const id = e.currentTarget.id;
+    const idTab = id.split('-');
+
+    /** On récupère le titre du portefeuille et le portefeuille (ie. la liste des projets) */
+    const element = document.getElementById(`portefeuille-${idTab[trois]}`);
+    const element2 = document.getElementById(`outil-${idTab[trois]}`);
+    const titre_portefeuille = element.getAttribute('data-titre');
+    const portefeuille = $(`#portefeuille-${idTab[trois]}`).text().trim();
+    const traitement_id = element2.getAttribute('data-reference');
+    await lancerTraitementSiPossible(idTab[trois], traitement_id, titre_portefeuille, portefeuille);
+  });
+});
