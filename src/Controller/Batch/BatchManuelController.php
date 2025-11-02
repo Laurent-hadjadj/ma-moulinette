@@ -154,10 +154,7 @@ class BatchManuelController extends AbstractController
             ];
         }
 
-        $liste = [];
-        foreach (json_decode($liste_projets['liste'][0]['liste']) as $value) {
-            array_push($liste, $value);
-        }
+        $liste = json_decode($liste_projets['liste'][0]['liste'], true) ?? [];
 
         // On renvoie une liste de maven_key
         return [
