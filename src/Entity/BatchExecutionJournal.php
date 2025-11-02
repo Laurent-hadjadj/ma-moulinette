@@ -40,8 +40,8 @@ class BatchExecutionJournal
         options: ['comment' => 'Portefeuille de projets'])]
     private $portefeuille;
 
-    #[ORM\Column(type: Types::TEXT, nullable: false,
-        options: ['comment' => 'Compte rendu HTML du traitement.'])]
+    #[ORM\Column(type: Types::BINARY, nullable: false,
+        options: ['comment' => 'Compte rendu HTML compressé du traitement.'])]
     private string $compteRendu;
 
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
@@ -64,7 +64,8 @@ class BatchExecutionJournal
 
     public function getCompteRendu(): string
     {
-        return $this->compteRendu;
+        $data = $this->compteRendu;
+        return $data ? gzdecode($data) : '';
     }
 
     public function setCode(int $code): void
