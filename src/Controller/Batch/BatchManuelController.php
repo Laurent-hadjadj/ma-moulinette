@@ -291,7 +291,7 @@ class BatchManuelController extends AbstractController
         }
 
         /** On regarde si un traitement est déjà démarré */
-        $isStarted = $batchTraitementRepos->findBy(['in_progress' => true]);
+        $isStarted = $batchTraitementRepos->findBy(['inProgress' => true]);
         if ($isStarted){
             $this->logger->info("[Traitement-Manuel] ⚠️ Un traitement est déjà en cours d'execution.");
 
