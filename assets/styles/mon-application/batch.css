@@ -290,49 +290,6 @@ tbody tr:nth-child(even) {
   transform: translateY(0);
 }
 
-
-/* === Ajout d'un tooltip CSS  === **/
-.tool-tip {
-  position: relative;
-  display: inline-block;
-}
-
-/* Propriété du texte qui sera affiché dans le tool-type */
-.tool-tip .tool-tip-text-right {
-  visibility: hidden;
-  top: -6px;
-  right: 120%;
-  width: 165px;
-  background-color: #555;
-  color: #fff;
-  text-align: justify;
-  padding: 0.5rem;
-  border-radius: 6px;
-  position: absolute;
-  z-index: 1;
-  opacity: 0;
-  transition: opacity 0.5s;
-  hyphens: auto;
-}
-
-/* Mise en place de l'encoche à droite */
-.tool-tip .tool-tip-text-right::after {
-  content: " ";
-  position: absolute;
-  top: 50%;
-  left: 100%;
-  margin-top: -7px;
-  border-width: 8px;
-  border-style: solid;
-  border-color: transparent transparent transparent #555;
-}
-
-/* Action au moment du survol du tool-type */
-.tool-tip:hover .tool-tip-text-right {
-  visibility: visible;
-  opacity: 1;
-}
-
 /* clignotant */
 .blink {
   animation: blink 1.5s steps(5, start) infinite;
