@@ -63,7 +63,7 @@ tbody tr:nth-child(even) {
 #bouton-traitement-automatique:hover,
 #bouton-affiche-rapport:hover { background-color: #006182; }
 
-/** couleur pour le résultat */
+/* couleur pour le résultat */
 .ok { color: #187e3d; }
 .ko { color: #971c09; }
 .oko { color: #000; }
@@ -153,30 +153,50 @@ tbody tr:nth-child(even) {
   transition: opacity 0.3s;
 }
 
-/* clignotant */
-.blink {
-  animation: blink 1.5s steps(5, start) infinite;
-  fill: #c46e27;
+/* === monitoring pending/in_progress === */
+#pending-debug-monitor {
+  position: fixed;
+  bottom: 10px;
+  right: 10px;
+  width: 280px;
+  background: #1e1e1e;
+  color: #eee;
+  font-family: monospace;
+  font-size: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+  z-index: 9999;
+  padding: 8px;
 }
 
-@keyframes blink {
-  from {
-    visibility: 100%;
-  }
-
-  to {
-    visibility: hidden;
-  }
+#pending-debug-monitor .debug-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: bold;
+  color: #7fffd4;
 }
 
-@keyframes blink {
-  from {
-    visibility: 100%;
-  }
+#pending-debug-monitor button#debug-close {
+  background: transparent;
+  color: #ccc;
+  border: none;
+  font-size: 14px;
+  cursor: pointer;
+}
 
-  to {
-    visibility: hidden;
-  }
+#pending-debug-monitor .debug-body {
+  margin-top: 5px;
+  max-height: 180px;
+  overflow-y: auto;
+}
+
+#debug-log {
+  font-family: monospace;
+  white-space: pre-line;
+  margin-top: 4px;
+  font-size: 11px;
+  color: #9ecfff;
 }
 
 /* === Ajout d'un tooltip CSS  === **/
@@ -219,4 +239,20 @@ tbody tr:nth-child(even) {
 .tool-tip:hover .tool-tip-text-right {
   visibility: visible;
   opacity: 1;
+}
+
+/* clignotant */
+.blink {
+  animation: blink 1.5s steps(5, start) infinite;
+  fill: #c46e27;
+}
+
+@keyframes blink {
+  from { visibility: 100%; }
+  to { visibility: hidden; }
+}
+
+@keyframes blink {
+  from { visibility: 100%; }
+  to { visibility: hidden; }
 }
