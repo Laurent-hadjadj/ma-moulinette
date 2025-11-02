@@ -7,7 +7,7 @@ doctrine:
         server_version: '15'
         logging: false
         profiling_collect_backtrace: '%kernel.debug%'
-        profiling: true
+        profiling: false
         use_savepoints: true
     orm:
         auto_generate_proxy_classes: true
