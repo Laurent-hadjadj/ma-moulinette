@@ -27,13 +27,16 @@ window.$ = $;
 export const pendingWorkerService = {
   worker: null,
   token: null,
-  lastUpdate: Date.now(),
+  monitorId: null,
+  monitorPeriod: 30_000,
+  silentThreshold: 60_000,
   infoBulleSelector: '#info-bulle',
   infoTipsSelector: '#info-bulle-tips',
 
   start({ debug = false } = {}) {
     if (this.worker) return; // déjà démarré
 
+    this.lastUpdate = Date.now();
     this.worker = new Worker('/workers/pendingWorker.js', { name: 'pending-worker' });
     this.token = crypto.randomUUID();
 
@@ -43,10 +46,25 @@ export const pendingWorkerService = {
       this.logDebug('▶️ Worker démarré');
     }
 
+    if (debug) {
+      console.log('[pendingWorkerService] ▶️ Worker créé');
+      this.initDebugPanel(true); // active affichage
+      this.logDebug('▶️ Worker démarré');
+    } else {
+      this.initDebugPanel(false); // garde le panneau caché
+    }
+
     /* === Réception des messages du worker === */
     this.worker.onmessage = (event) => {
-      const { type, data, message } = event.data;
       this.lastUpdate = Date.now();
+
+      const payload = event.data || {};
+      if (payload.command === 'debug') return;
+
+      let { type, data, message } = payload;
+      if (!type && payload.pending !== undefined) { type='data'; data=payload; }
+
+      if (debug) console.log('[pendingWorkerService] 🧩 Message brut reçu', payload);
 
       switch (type) {
         case 'data':
@@ -54,7 +72,7 @@ export const pendingWorkerService = {
             this.updateDebugPanel({ status: '✅ OK', data });
             console.log('[pendingWorkerService] 📊 Données', data);
           }
-          this.updateInfoBulle(data);
+          this.updateInfoBulle(data, { debug });
           break;
         case 'status':
           if (debug) {
@@ -74,27 +92,28 @@ export const pendingWorkerService = {
 
      /* === Démarrage du worker === */
     this.worker.postMessage({ command: 'debug', value: debug, token: this.token });
-
     this.worker.postMessage({ command: 'start', token: this.token });
+
     if (debug) console.log('[pendingWorkerService] ✅ Service démarré');
     sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] ✅ Service démarré.');
-
-    /* === Pause/reprise selon visibilité === */
-    document.addEventListener('visibilitychange', () => {
-      if (document.hidden) this.pause({ debug });
-      else this.resume({ debug });
-    });
 
     /* === Surveillance du worker (auto-reconnexion) === */
     this.monitorWorker({ debug });
   },
 
   pause({ debug = false } = {}) {
-    if (!this.worker) return;
+    if (!this.worker && !this.monitorId) return;
 
-    this.worker.postMessage({ command: 'stop', token: this.token });
-    this.worker.terminate();
-    this.worker = null;
+    if (this.worker) {
+      this.worker.postMessage({ command: 'stop', token: this.token });
+      this.worker.terminate();
+      this.worker = null;
+    }
+
+    if (this.monitorId) {
+      clearInterval(this.monitorId);
+      this.monitorId = null;
+    }
 
     if (debug) {
       console.error('[pendingWorkerService] ⏸️ Pause (onglet inactif');
@@ -104,20 +123,25 @@ export const pendingWorkerService = {
   },
 
   resume({ debug = false } = {}) {
-    if (!this.worker) {
-      this.start({ debug });
-      if (debug) {
+    if (!this.worker) this.start({ debug });
+    if (debug) {
         console.error('[pendingWorkerService] ▶️ Reprise (onglet actif).');
         this.updateDebugPanel({ status: '▶️ Reprise (onglet actif)' });
-      }
     }
   },
 
   stop({ debug = false } = {}) {
-    if (!this.worker) return;
-    this.worker.postMessage({ command: 'stop', token: this.token });
-    this.worker.terminate();
-    this.worker = null;
+    if (this.worker) {
+      this.worker.postMessage({ command: 'stop', token: this.token });
+      this.worker.terminate();
+      this.worker = null;
+    }
+
+    // coupe le moniteur
+    if (this.monitorId) {
+      clearInterval(this.monitorId);
+      this.monitorId = null;
+    }
 
     if (debug) {
       console.error('[pendingWorkerService] 🛑 Service arrêté manuellement.');
@@ -127,12 +151,12 @@ export const pendingWorkerService = {
   },
 
   /* === Mise à jour de la bulle === */
-  updateInfoBulle({debug }, t) {
+  updateInfoBulle(t, { debug = false } = {}) {
     const $infoBulle = $(this.infoBulleSelector);
     const $tips = $(this.infoTipsSelector);
 
     if (!t || typeof t.pending === 'undefined') {
-      sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] 🛑 Données invalides', t);
+      sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] 🛑 Données invalides');
       if (debug) console.warn('[pendingWorkerService] Données invalides :', t);
       return;
     }
@@ -152,28 +176,53 @@ export const pendingWorkerService = {
       }
 
       setTimeout(() => $infoBulle.removeClass('loading'), 300);
-    },
-
-    /* === Auto-reconnexion si worker silencieux (>60s) === */
-    monitorWorker({ debug = false } = {}) {
-    setInterval(() => {
-      if (this.worker && Date.now() - this.lastUpdate > 60_000) {
-        console.warn('[pendingWorkerService] ⚠️ Worker silencieux → redémarrage');
-        this.stop({ debug });
-        this.start({ debug });
-      }
-    }, 30_000);
+      if (debug) console.log('🧩 updateInfoBulle - rendu final', $('#info-bulle').html());
   },
 
-  initDebugPanel() {
-    if ($('#pending-debug-monitor').length) return; // déjà présent
+  /* === Auto-reconnexion si worker silencieux (>60s) === */
+  monitorWorker({ debug = false } = {}) {
+    // évite doublons
+    if (this.monitorId) return;
 
-    // créer le panneau
-    $('body').append($('#pending-debug-monitor'));
-    $('#debug-close').on('click', () => $('#pending-debug-monitor').fadeOut(200));
+    const firstDelay = 2 * 15_000; // 30 s (2 cycles du polling à 15 s)
 
-    $('#pending-debug-monitor').fadeIn(200);
-    this.logDebug('🔧 Debug Monitor initialisé');
+    // on diffère le premier check pour laisser le worker envoyer ses 1ers messages
+    setTimeout(() => {
+      // sécurise: si un monitor a déjà été posé entre-temps, on ne double pas
+      if (this.monitorId) return;
+
+      this.monitorId = setInterval(() => {
+        if (!this.worker) return; // rien à faire si worker absent
+
+        const delta = Date.now() - this.lastUpdate;
+        if (debug) console.log('[pendingWorkerService] ⏱️ delta=', delta, 'ms');
+
+        if (delta > this.silentThreshold) {
+          // le worker n'a rien envoyé depuis > 60 s -> restart propre
+          if (debug) console.warn('[pendingWorkerService] ⚠️ Worker silencieux → redémarrage');
+          this.stop({ debug });   // stop coupe aussi le monitorId
+          this.start({ debug });  // redémarre worker + rebranche 1 monitor (unique)
+        }
+      }, this.monitorPeriod);
+    }, firstDelay);
+  },
+
+  initDebugPanel(debug = false) {
+    const $panel = $('#pending-debug-monitor');
+    if (!$panel.length) return;
+
+    // Active / désactive l'affichage en fonction du debug
+    if (debug) {
+      $panel.removeClass('debug-hidden').addClass('debug-visible');
+      this.logDebug('🔧 Debug Monitor activé');
+    } else {
+      $panel.removeClass('debug-visible').addClass('debug-hidden');
+    }
+
+    // Bouton de fermeture
+    $('#debug-close').off('click').on('click', () => {
+      $panel.removeClass('debug-visible').addClass('debug-hidden');
+    });
   },
 
   logDebug(message) {
@@ -185,14 +234,21 @@ export const pendingWorkerService = {
   },
 
   updateDebugPanel({ status, data, error } = {}) {
-    if (!$('#pending-debug-monitor').is(':visible')) return;
+  const $panel = $('#pending-debug-monitor');
+  if (!$panel.length) return; // rien à faire si panneau absent
 
-    if (status) $('#debug-status').text(status);
-    if (data) {
-      $('#debug-last-check').text(new Date().toLocaleTimeString());
-      $('#debug-pending').text(data.pending ?? '–');
-      $('#debug-in-progress').text(data.in_progress ?? '–');
-    }
-    if (error) this.logDebug('⚠️ ' + error);
+  // Toujours mettre à jour, même s'il est caché
+  if (status) $('#debug-status').text(status);
+
+  if (data) {
+    $('#debug-last-check').text(new Date().toLocaleTimeString());
+    $('#debug-pending').text(data.pending ?? '–');
+    $('#debug-in-progress').text(data.in_progress ?? '–');
   }
+
+  if (error) {
+    $('#debug-status').text('❌ Erreur');
+    this.logDebug('⚠️ ' + error);
+  }
+}
 }
