@@ -305,7 +305,7 @@ const traitementAuto = async function(){
 };
 
 $(document).ready(() => {
-  pendingWorkerService.start({ debug: true });
+  pendingWorkerService.start({ debug: false });
 
   $('.i-am-human-svg').click(async (e) => {
     /* si on a déjà cliqué, on sort */
