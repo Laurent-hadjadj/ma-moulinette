@@ -204,8 +204,8 @@ class BatchManuelController extends AbstractController
         ], Response::HTTP_OK);
     }
 
-    #[Route('/api/traitement/add-pending', name: 'add_pending', methods: ['GET'])]
-    public function addPending(request $request): JsonResponse
+    #[Route('/api/traitement/add-pending', name: 'add_pending', methods: ['POST'])]
+    public function addPending(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/traitement/add-pending");
 
