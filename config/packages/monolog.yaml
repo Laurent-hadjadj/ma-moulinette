@@ -4,6 +4,7 @@ monolog:
         - deprecation
         - doctrine
         - messenger
+        - profiling
 
 when@dev:
     monolog:
@@ -36,8 +37,15 @@ when@dev:
                 type: stream
                 path: "%kernel.logs_dir%/app-dev.log"
                 level: debug
-                channels: ["!security", "!event", "!doctrine", "!request", "!messenger"]
+                channels: ["!security", "!event", "!doctrine", "!request", "!messenger", "!deprecation", "!profiling"]
                 formatter: monolog.formatter.line
+            # Handler dédié au profiling
+            profiling:
+                type: stream
+                path: '%kernel.logs_dir%/profiling.log'
+                level: info
+                channels: ['profiling']
+
 when@test:
     monolog:
         handlers:
@@ -71,7 +79,7 @@ when@prod:
                 type: stream
                 path: "%kernel.logs_dir%/app.log"
                 level: info
-                channels: ["!security", "!event", "!doctrine", "!request", "!messenger"]
+                channels: ["!security", "!event", "!doctrine", "!request", "!messenger", "!deprecation", "!profiling"]
                 formatter: monolog.formatter.line
             request:
                 type: stream
@@ -92,3 +100,8 @@ when@prod:
                 type: console
                 process_psr_3_messages: false
                 channels: ["!event", "!doctrine"]
+            profiling:
+                type: stream
+                path: '%kernel.logs_dir%/profiling.log'
+                level: info
+                channels: ['profiling']
