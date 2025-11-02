@@ -33,7 +33,11 @@ const pendingWorkerService = {
     this.worker = new Worker('/workers/pendingWorker.js', { name: 'pending-worker' });
     this.token = crypto.randomUUID();
 
-    if (debug) console.log('[pendingWorkerService] ▶️ Worker créé');
+    if (debug) {
+      console.log('[pendingWorkerService] ▶️ Worker créé');
+      this.initDebugPanel();
+      this.logDebug('▶️ Worker démarré');
+    }
 
     /* === Réception des messages du worker === */
     this.worker.onmessage = (event) => {
@@ -42,13 +46,20 @@ const pendingWorkerService = {
 
       switch (type) {
         case 'data':
-          if (debug) console.log('[pendingWorkerService] 📊 Données', data);
+          if (debug) {
+            this.updateDebugPanel({ status: '✅ OK', data });
+            console.log('[pendingWorkerService] 📊 Données', data);
+          }
           this.updateInfoBulle(data);
           break;
         case 'status':
-          if (debug) console.info('[pendingWorkerService] ℹ️', message);
+          if (debug) {
+              this.updateDebugPanel({ status: message });
+              console.info('[pendingWorkerService] ℹ️', message);
+          }
           break;
         case 'error':
+          this.updateDebugPanel({ status: '❌ Erreur', error: message });
           console.error('[pendingWorkerService] ⚠️', message);
           sessionStorage.setItem('ma_moulinette_pendingWorkerService', `[❌] ${message}`);
           break;
@@ -81,14 +92,20 @@ const pendingWorkerService = {
     this.worker.terminate();
     this.worker = null;
 
-    if (debug) console.error('[pendingWorkerService] ⏸️ Pause (onglet inactif');
+    if (debug) {
+      console.error('[pendingWorkerService] ⏸️ Pause (onglet inactif');
+      this.updateDebugPanel({ status: '⏸️ Pause (onglet inactif)' });
+    }
     sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] ⏸️ Pause (onglet inactif.)');
   },
 
   resume({ debug = false } = {}) {
     if (!this.worker) {
       this.start({ debug });
-      if (debug) console.error('[pendingWorkerService] ▶️ Reprise (onglet actif).');
+      if (debug) {
+        console.error('[pendingWorkerService] ▶️ Reprise (onglet actif).');
+        this.updateDebugPanel({ status: '▶️ Reprise (onglet actif)' });
+      }
     }
   },
 
@@ -98,7 +115,10 @@ const pendingWorkerService = {
     this.worker.terminate();
     this.worker = null;
 
-    if (debug) console.error('[pendingWorkerService] 🛑 Service arrêté manuellement.');
+    if (debug) {
+      console.error('[pendingWorkerService] 🛑 Service arrêté manuellement.');
+      this.updateDebugPanel({ status: '🛑 Service arrêté manuellement' });
+    }
     sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] 🛑 Service arrêté manuellement');
   },
 
@@ -139,5 +159,36 @@ const pendingWorkerService = {
         this.start({ debug });
       }
     }, 30_000);
+  },
+  
+  initDebugPanel() {
+    if ($('#pending-debug-monitor').length) return; // déjà présent
+
+    // créer le panneau
+    $('body').append($('#pending-debug-monitor'));
+    $('#debug-close').on('click', () => $('#pending-debug-monitor').fadeOut(200));
+
+    $('#pending-debug-monitor').fadeIn(200);
+    this.logDebug('🔧 Debug Monitor initialisé');
+  },
+
+  logDebug(message) {
+    const now = new Date().toLocaleTimeString();
+    const $log = $('#debug-log');
+    $log.prepend(`[${now}] ${message}\n`);
+    const logs = $log.text().split('\n');
+    if (logs.length > 50) $log.text(logs.slice(0, 50).join('\n'));
+  },
+
+  updateDebugPanel({ status, data, error } = {}) {
+    if (!$('#pending-debug-monitor').is(':visible')) return;
+
+    if (status) $('#debug-status').text(status);
+    if (data) {
+      $('#debug-last-check').text(new Date().toLocaleTimeString());
+      $('#debug-pending').text(data.pending ?? '–');
+      $('#debug-in-progress').text(data.in_progress ?? '–');
+    }
+    if (error) this.logDebug('⚠️ ' + error);
   }
 }
