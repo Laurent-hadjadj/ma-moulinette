@@ -36,7 +36,7 @@ import { showMessage, hideMessage, prepareTechnicalDetails } from '../../common/
 import { contentType, un, trois, cinqCent, mille, http_500, http_400, http_200, troisMille, cinqMille } from '../../common/constante.js';
 
 /** on charge le service pendingWorker */
-import '../batch/pendingWorkerService.js';
+import { pendingWorkerService } from '../batch/pendingWorkerService.js';
 
 /** On gère l'affichage des jobs */
 const automatique = '.automatique';
