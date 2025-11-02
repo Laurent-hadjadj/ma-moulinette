@@ -305,6 +305,18 @@ const traitementAuto = async function(){
 };
 
 $(document).ready(() => {
+  const $bulle = $('#info-bulle');
+  const $tips = $('#info-bulle-tips');
+
+  // Valeur par défaut (avant que le worker ne réponde)
+  if ($bulle.length && !$bulle.text().trim()) {
+    $bulle
+      .addClass('bulle-init')
+      .removeClass('bulle-ok bulle-retry bulle-error')
+      .text('–');
+    $tips?.text('Initialisation du service...');
+  }
+
   pendingWorkerService.start({ debug: false });
 
   $('.i-am-human-svg').click(async (e) => {

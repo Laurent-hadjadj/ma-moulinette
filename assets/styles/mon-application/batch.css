@@ -126,33 +126,106 @@ tbody tr:nth-child(even) {
 
 
 /* == Bulle info pour les traitements manuels == */
-.bulle-info {
-  color: #eee;
-  border-radius: 0.9rem;
-  font-size: 1.2rem;
-  font-weight: 400;
-  padding-left: 0.7rem;
-  padding-right: 0.7rem;
+/* États visuels du worker */
+#info-bulle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5em;
+  height: 1.5em;
+  font-size: 0.85em;
+  line-height: 1;
+  margin: 0 6px;
+  border-radius: 50%;
+  font-weight: 600;
+  color: #fff;
+  text-align: center;
+  user-select: none;
+  vertical-align: middle;
+  transition: all 0.3s ease;
 }
 
-.bulle-info-start { background-color: #187e3d; }
-.bulle-info-end { background-color: #00445b; }
-.bulle-info-error { background-color: #971c09; }
-.bulle-info-vide { background-color: #8a8a8a; }
+.bulle-init {
+  background-color: #bdc3c7;
+  color: #fff;
+}
 
-/* === Mise à jour des informations dans la bulle - spinner == */
+/* 🟢 Worker actif (animation douce) */
+.bulle-ok {
+  background-color: #27ae60; /* vert plus pro que #2ecc71 */
+  animation: breatheGreen 4s ease-in-out infinite;
+}
+
+/* 🟡 Reconnexion / retry */
+.bulle-retry {
+  background-color: #f39c12;
+  animation: blink 1.2s ease-in-out infinite;
+}
+
+/* 🔴 Erreur ou worker stoppé */
+.bulle-error {
+  background-color: #c0392b;
+}
+
+/* 🌬️ Respiration subtile : variation douce du ton + léger zoom */
+@keyframes breatheGreen {
+  0%, 100% {
+    background-color: #27ae60;
+    transform: scale(1);
+  }
+  50% {
+    background-color: #2ecc71;
+    transform: scale(1.03);
+  }
+}
+
+/* 💡 Clignotement état retry */
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Indication temporaire lors de mise à jour */
+/* === Mode loading (bulle mise à jour) === */
 .bulle-info.loading {
-  opacity: 0.6;
-  background-image: repeating-linear-gradient(
+  opacity: 0.7;
+  background-image: linear-gradient(
     45deg,
-    rgba(255, 255, 255, 0.1),
-    rgba(255, 255, 255, 0.1) 10px,
-    rgba(255, 255, 255, 0.2) 10px,
-    rgba(255, 255, 255, 0.2) 20px
+    rgba(255,255,255,0.15) 25%,
+    transparent 25%,
+    transparent 50%,
+    rgba(255,255,255,0.15) 50%,
+    rgba(255,255,255,0.15) 75%,
+    transparent 75%,
+    transparent
   );
-  transition: opacity 0.3s;
+  background-size: 20px 20px;
+  animation: moveStripes 1.5s linear infinite;
 }
 
+@keyframes moveStripes {
+  from { background-position: 0 0; }
+  to { background-position: 40px 0; }
+}
+
+/* === Ajustement mobile/tablette === */
+@media (max-width: 768px) {
+  #info-bulle {
+    width: 1.3em;
+    height: 1.3em;
+    font-size: 0.8em;
+    margin: 0 4px;
+  }
+}
+
+@media (max-width: 480px) {
+  #info-bulle {
+    width: 1.1em;
+    height: 1.1em;
+    font-size: 0.75em;
+    margin: 0 3px;
+  }
+}
 /* === monitoring pending/in_progress === */
 #pending-debug-monitor {
   position: fixed;

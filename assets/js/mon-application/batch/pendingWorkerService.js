@@ -107,8 +107,10 @@ export const pendingWorkerService = {
                 this.updateDebugPanel({ status: message });
                 console.info('[pendingWorkerService] ℹ️', message);
             }
-            if (typeof message === 'string' && message.includes('Échec après')) {
-                $('#info-bulle').addClass('bulle-info-error');
+            if (typeof message === 'string' && message.includes('Tentative')) {
+              $('#info-bulle').removeClass('bulle-ok bulle-error').addClass('bulle-retry');
+            } else if (typeof message === 'string' && message.includes('Échec après')) {
+              $('#info-bulle').removeClass('bulle-ok bulle-retry').addClass('bulle-error');
             }
             break;
           case 'error':
@@ -200,27 +202,32 @@ export const pendingWorkerService = {
     const $tips = $(this.infoTipsSelector);
 
     if (!t || typeof t.pending === 'undefined') {
-      sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] 🛑 Données invalides');
+      $infoBulle.removeClass('bulle-ok bulle-retry').addClass('bulle-error').text('!');
+      $tips.html('Erreur de communication avec le worker.');
       if (debug) console.warn('[pendingWorkerService] Données invalides :', t);
       return;
     }
 
-    $infoBulle.addClass('loading');
-    $infoBulle.removeClass('bulle-info-vide bulle-info-start bulle-info-end bulle-info-error');
+    //$infoBulle.removeClass('bulle-info-vide bulle-info-start bulle-info-end bulle-info-error');
+    $infoBulle.addClass('loading').removeClass('bulle-retry bulle-error');
+    setTimeout(() => $infoBulle.removeClass('loading'), 300);
+
 
     if (t.pending > 0) {
-      $infoBulle.addClass('bulle-info-start').html(t.pending);
+      //$infoBulle.addClass('bulle-info-start').html(t.pending);
+      $infoBulle.removeClass('bulle-error bulle-retry').addClass('bulle-ok').text(t.pending);
       $tips.html('Nombre de projets planifiés.');
       } else if (t.pending === 0 && t.in_progress > 0) {
-        $infoBulle.addClass('bulle-info-end').html(t.in_progress);
+        //$infoBulle.addClass('bulle-info-end').html(t.in_progress);
+        $infoBulle.removeClass('bulle-error bulle-retry').addClass('bulle-ok').text(t.in_progress);
         $tips.html('Un projet est en cours de traitement.');
       } else {
-        $infoBulle.addClass('bulle-info-end').html('0');
-        $tips.html('Aucun projet planifié.');
+        //$infoBulle.addClass('bulle-info-end').html('0');
+        $infoBulle.removeClass('bulle-error bulle-retry').addClass('bulle-ok').text('0');
+        $tips.html('Aucun traitement planifié.');
       }
 
       setTimeout(() => $infoBulle.removeClass('loading'), 300);
-      if (debug) console.log('🧩 updateInfoBulle - rendu final', $('#info-bulle').html());
   },
 
   /* === Auto-reconnexion si worker silencieux (>60s) === */

@@ -42,18 +42,11 @@
     {{ include('_message.html.twig') }}
 
     <main class="grid-container" role="main">
-      <div class="grid-x">
-        <p class="open-sans small-10 medium-11 cell">Collecte du
-          {{date|format_datetime('full', 'short', locale='fr')}}.
-        </p>
-        <div class="small-2 medium-1 text-center float-center cell">
-          <div class="tool-tip">
-            <span id="info-bulle" class="float-center bulle-info {{bulle}}">
-              {{info_nombre}}</span>
-            <span id="info-bulle-tips" class="tool-tip-text-right">{{info_tips}}</span>
-          </div>
-        </div>
-      </div>
+      <p class="open-sans">
+        Collecte du
+        <span id="info-bulle" class="bulle-info bulle-init" title="Initialisation...">–</span>
+        {{ date | format_datetime('full', 'short', locale='fr') }}.
+      </p>
 
       <div id="tableau-batch" class="table-scroll">
         <table>
