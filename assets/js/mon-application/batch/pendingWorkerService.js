@@ -28,78 +28,113 @@ export const pendingWorkerService = {
   worker: null,
   token: null,
   monitorId: null,
+  channel: null,
+  lastUpdate: Date.now(),
   monitorPeriod: 30_000,
   silentThreshold: 60_000,
   infoBulleSelector: '#info-bulle',
   infoTipsSelector: '#info-bulle-tips',
 
   start({ debug = false } = {}) {
-    if (this.worker) return; // déjà démarré
+    // évite le multi-onglet
+    this.instanceId = this.instanceId || crypto.randomUUID();
+    this.channel = new BroadcastChannel('pending-monitor');
 
-    this.lastUpdate = Date.now();
-    this.worker = new Worker('/workers/pendingWorker.js', { name: 'pending-worker' });
-    this.token = crypto.randomUUID();
+    let leaderPresent = false;
+    let pongTimer = null;
 
-    if (debug) {
-      console.log('[pendingWorkerService] ▶️ Worker créé');
-      this.initDebugPanel();
-      this.logDebug('▶️ Worker démarré');
-    }
+    this.channel.onmessage = (e) => {
+      const msg = e.data || {};
 
-    if (debug) {
-      console.log('[pendingWorkerService] ▶️ Worker créé');
-      this.initDebugPanel(true); // active affichage
-      this.logDebug('▶️ Worker démarré');
-    } else {
-      this.initDebugPanel(false); // garde le panneau caché
-    }
+      // si un leader répond
+      if (msg.type === 'pong' && msg.from !== this.instanceId) {
+        leaderPresent = true;
+        if (pongTimer) clearTimeout(pongTimer);
+      }
 
-    /* === Réception des messages du worker === */
-    this.worker.onmessage = (event) => {
-      this.lastUpdate = Date.now();
-
-      const payload = event.data || {};
-      if (payload.command === 'debug') return;
-
-      let { type, data, message } = payload;
-      if (!type && payload.pending !== undefined) { type='data'; data=payload; }
-
-      if (debug) console.log('[pendingWorkerService] 🧩 Message brut reçu', payload);
-
-      switch (type) {
-        case 'data':
-          if (debug) {
-            this.updateDebugPanel({ status: '✅ OK', data });
-            console.log('[pendingWorkerService] 📊 Données', data);
-          }
-          this.updateInfoBulle(data, { debug });
-          break;
-        case 'status':
-          if (debug) {
-              this.updateDebugPanel({ status: message });
-              console.info('[pendingWorkerService] ℹ️', message);
-          }
-          if (message.includes('Échec après')) $('#info-bulle').addClass('bulle-info-error');
-          break;
-        case 'error':
-          this.updateDebugPanel({ status: '❌ Erreur', error: message });
-          console.error('[pendingWorkerService] ⚠️', message);
-          sessionStorage.setItem('ma_moulinette_pendingWorkerService', `[❌] ${message}`);
-          break;
-        default:
-          if (debug) console.warn('[pendingWorkerService] 🔸 Message inconnu', event.data);
+      // si on est leader et qu’un autre onglet fait un ping → on répond
+      if (msg.type === 'ping' && this.worker) {
+        this.channel.postMessage({ type: 'pong', from: this.instanceId });
       }
     };
 
-     /* === Démarrage du worker === */
-    this.worker.postMessage({ command: 'debug', value: debug, token: this.token });
-    this.worker.postMessage({ command: 'start', token: this.token });
+    // ping et attente courte
+    this.channel.postMessage({ type: 'ping', from: this.instanceId });
 
-    if (debug) console.log('[pendingWorkerService] ✅ Service démarré');
-    sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] ✅ Service démarré.');
+    // attends 250 ms avant de décider si on devient leader
+    pongTimer = setTimeout(() => {
+      if (leaderPresent) {
+        if (debug) console.warn('[pendingWorkerService] 🔕 Leader détecté → pas de worker ici');
+        return; // stop ici, pas de worker dans cet onglet
+      }
 
-    /* === Surveillance du worker (auto-reconnexion) === */
-    this.monitorWorker({ debug });
+      // === On devient leader ===
+      if (this.worker) return;
+      this.lastUpdate = Date.now();
+      this.worker = new Worker('/workers/pendingWorker.js', { name: 'pending-worker' });
+      this.token = crypto.randomUUID();
+
+      if (debug) {
+        console.log('[pendingWorkerService] ▶️ Worker créé');
+        this.initDebugPanel(true); // active affichage
+        this.logDebug('▶️ Worker démarré');
+      } else {
+        this.initDebugPanel(false); // garde le panneau caché
+      }
+
+      /* === Réception des messages du worker === */
+      this.worker.onmessage = (event) => {
+        this.lastUpdate = Date.now();
+
+        const payload = event.data || {};
+        if (payload.command === 'debug') return;
+
+        let { type, data, message } = payload;
+        if (!type && payload.pending !== undefined) { type='data'; data=payload; }
+
+        if (debug) console.log('[pendingWorkerService] 🧩 Message brut reçu', payload);
+
+        switch (type) {
+          case 'data':
+            if (debug) {
+              this.updateDebugPanel({ status: '✅ OK', data });
+              console.log('[pendingWorkerService] 📊 Données', data);
+            }
+            this.updateInfoBulle(data, { debug });
+            break;
+          case 'status':
+            if (debug) {
+                this.updateDebugPanel({ status: message });
+                console.info('[pendingWorkerService] ℹ️', message);
+            }
+            if (typeof message === 'string' && message.includes('Échec après')) {
+                $('#info-bulle').addClass('bulle-info-error');
+            }
+            break;
+          case 'error':
+            this.updateDebugPanel({ status: '❌ Erreur', error: message });
+            $('#info-bulle').addClass('bulle-info-error');
+            if (debug) console.error('[pendingWorkerService] ⚠️', message);
+            sessionStorage.setItem('ma_moulinette_pendingWorkerService', `[❌] ${message}`);
+            break;
+          default:
+            if (debug) console.warn('[pendingWorkerService] 🔸 Message inconnu', event.data);
+        }
+      };
+
+      /* === Démarrage du worker === */
+      this.worker.postMessage({ command: 'debug', value: debug, token: this.token });
+      this.worker.postMessage({ command: 'start', token: this.token });
+
+      if (debug) console.log('[pendingWorkerService] ✅ Service démarré');
+      sessionStorage.setItem('ma_moulinette_pendingWorkerService', '[pendingWorkerService] ✅ Service démarré.');
+
+      // On annonce qu’on est le leader
+      this.channel.postMessage({ type: 'pong', from: this.instanceId });
+
+      /* === Surveillance du worker (auto-reconnexion) === */
+      this.monitorWorker({ debug });
+    }, 250);
   },
 
   pause({ debug = false } = {}) {
@@ -147,6 +182,11 @@ export const pendingWorkerService = {
       this.monitorId = null;
     }
 
+    if (this.channel) {
+      this.channel.close();
+      this.channel = null;
+    }
+
     if (debug) {
       console.error('[pendingWorkerService] 🛑 Service arrêté manuellement.');
       this.updateDebugPanel({ status: '🛑 Service arrêté manuellement' });
@@ -170,7 +210,7 @@ export const pendingWorkerService = {
 
     if (t.pending > 0) {
       $infoBulle.addClass('bulle-info-start').html(t.pending);
-      $tips.html('Nombre de projet planifié.');
+      $tips.html('Nombre de projets planifiés.');
       } else if (t.pending === 0 && t.in_progress > 0) {
         $infoBulle.addClass('bulle-info-end').html(t.in_progress);
         $tips.html('Un projet est en cours de traitement.');
