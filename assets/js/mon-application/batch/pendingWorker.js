@@ -108,7 +108,7 @@ async function fetchPending() {
 
 /* === Gestion des commandes du main thread === */
 onmessage = (event) => {
-  const { command, token } = event.data || {};
+  const { command, token, value } = event.data || {};
 
   if (!command) return;
 
