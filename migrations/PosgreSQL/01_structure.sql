@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V2.13.0 - 31/10/2025             ##
+##               V2.14.0 - 02/11/2025             ##
 ##                                                ##
 ####################################################*/
 
@@ -435,7 +435,7 @@ CREATE TABLE ma_moulinette.batch_execution_journal (
     nom_projet character varying(128) NOT NULL,
     portefeuille character varying(32) NOT NULL,
     code INTEGER NOT NULL,
-    compte_rendu TEXT NOT NULL,
+    compte_rendu BYTEA NOT NULL,
     date_execution TIMESTAMPTZ NOT NULL,
     job_id INTEGER NOT NULL,
 
@@ -453,7 +453,7 @@ COMMENT ON COLUMN ma_moulinette.batch_execution_journal.nom_projet IS 'Nom du pr
 COMMENT ON COLUMN ma_moulinette.batch_execution_journal.portefeuille IS 'Nom du portefeuille de projets associé';
 COMMENT ON COLUMN ma_moulinette.batch_execution_journal.id IS 'Identifiant unique de la table batch_execution_journal';
 COMMENT ON COLUMN ma_moulinette.batch_execution_journal.code IS 'Code de statut du traitement (200 = OK, 500 = Erreur, etc.)';
-COMMENT ON COLUMN ma_moulinette.batch_execution_journal.compte_rendu IS 'Compte rendu HTML du traitement.';
+COMMENT ON COLUMN ma_moulinette.batch_execution_journal.compte_rendu IS 'Compte rendu HTML compresssé du traitement.';
 COMMENT ON COLUMN ma_moulinette.batch_execution_journal.date_execution IS 'Date d’exécution de la collecte.';
 COMMENT ON COLUMN ma_moulinette.batch_execution_journal.job_id IS 'Clé étrangère vers batch_execution.id';
 
@@ -1717,3 +1717,4 @@ $$;
 -- 29/10/2025 : Laurent HADJADJ - L'objet ulid a une taille par défaut de 36 sauf si on passe en toBase32 (26).
 -- 30/10/2025 : Laurent HADJADJ - Suppression ou remplacement de reference_unique par traitement_id.
 -- 31/10/2025 : Laurent HADJADJ - Ajout de l'attribut execution_id pour la table batch_execution
+-- 02/11/2025 : Laurent HADJADJ - modification du type pour le champs compte_rendu de TEXT en BYTEA
