@@ -25,6 +25,8 @@ const DEBUG = false;
 let isFetching = false;
 let intervalId = null;
 let retryDelay = DELAY;
+let retryCount = 0;
+const MAX_RETRY = 5;
 let expectedToken = null;
 
 /* === Utilitaire log conditionnel === */
@@ -81,6 +83,7 @@ async function fetchPending() {
     log('↩️ Données reçues', data);
 
     // Reset retryDelay après succès
+    let retryCount = 0;
     retryDelay = DELAY;
 
     // Si aucun in_progress et des pending, lancer automatiquement
@@ -90,17 +93,28 @@ async function fetchPending() {
     }
 
   } catch (error) {
+    retryCount++;
     postMessage({ type: 'error', message: error.message || String(error) });
     log('⚠️ Erreur', error.message);
 
-     // Retry exponentiel
-    retryDelay = Math.min(retryDelay * 2, 120_000);
-    clearInterval(intervalId);
-    intervalId = setInterval(fetchPending, retryDelay);
-    postMessage({
-      type: 'status',
-      message: `Reconnexion dans ${retryDelay / 1000}s`
-    });
+    // Retry limité
+    if (retryCount <= MAX_RETRY) {
+      retryDelay = Math.min(retryDelay * 2, 120_000);
+      clearInterval(intervalId);
+      intervalId = setInterval(fetchPending, retryDelay);
+      postMessage({
+        type: 'status',
+        message: `Tentative ${retryCount}/${MAX_RETRY} — Reconnexion dans ${retryDelay / 1000}s`
+      });
+    } else {
+      postMessage({
+        type: 'status',
+        message: `❌ Échec après ${MAX_RETRY} tentatives — Worker mis en pause`
+      });
+      clearInterval(intervalId);
+      intervalId = null;
+      retryCount = 0; // reset
+    }
   } finally {
     isFetching = false;
   }

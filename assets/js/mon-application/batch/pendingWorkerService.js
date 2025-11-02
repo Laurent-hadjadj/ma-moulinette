@@ -79,6 +79,7 @@ export const pendingWorkerService = {
               this.updateDebugPanel({ status: message });
               console.info('[pendingWorkerService] ℹ️', message);
           }
+          if (message.includes('Échec après')) $('#info-bulle').addClass('bulle-info-error');
           break;
         case 'error':
           this.updateDebugPanel({ status: '❌ Erreur', error: message });
