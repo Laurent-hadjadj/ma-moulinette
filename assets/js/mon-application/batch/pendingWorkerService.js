@@ -9,6 +9,10 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
+/** Intégration de jquery */
+import $ from 'jquery';
+window.$ = $;
+
 /**
  * pendingWorkerService
  *
@@ -20,7 +24,7 @@
  *  - Monitoring local (sessionStorage)
  *  - Pause / reprise / stop complets
  */
-const pendingWorkerService = {
+export const pendingWorkerService = {
   worker: null,
   token: null,
   lastUpdate: Date.now(),
@@ -160,7 +164,7 @@ const pendingWorkerService = {
       }
     }, 30_000);
   },
-  
+
   initDebugPanel() {
     if ($('#pending-debug-monitor').length) return; // déjà présent
 
