@@ -15,12 +15,14 @@ namespace App\Controller\Batch;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Uid\Ulid;
 use Psr\Log\LoggerInterface;
+
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
@@ -45,6 +47,8 @@ class BatchManuelController extends AbstractController
         private CollecteController $collecte,
         private EntityManagerInterface $em,
         private LoggerInterface $logger,
+        #[Autowire(service: 'monolog.logger.profiling')]
+        private LoggerInterface $profilerLogger,
         private Security $security,
     ) {
     }
@@ -345,6 +349,7 @@ class BatchManuelController extends AbstractController
 
         // Création du job principal
         $execution_id = new Ulid();
+
         $batchExecution = new BatchExecution(
             'Collecte du ' . date('d/m/Y H:i'),
             $execution_id,
@@ -386,13 +391,100 @@ class BatchManuelController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        /** On lance la collecte */
-        foreach ($les_projets['liste'] as $le_projet){
-            $result = $this->collecte->collecte($data->portefeuille, $le_projet, 'TRAITEMENT MANUEL', $utilisateur_collecte);
-            $explose_le_projet = explode(':',$le_projet,2);
-            $nom_projet = (count($explose_le_projet) == 2 ) ?  $explose_le_projet[1] : $le_projet;
+        /** =============================
+        *  Création du job principal
+        *  ============================= */
+        $batchExecution = new BatchExecution(
+            'Collecte du ' . date('d/m/Y H:i'),
+            $execution_id,
+            Ulid::fromString($data->traitement_id),
+            $utilisateur_collecte,
+            'TRAITEMENT MANUEL'
+        );
 
-            /** On crée le journal d'execution */
+        // On enregistre le job immédiatement pour obtenir sa PK (id int)
+        $this->em->persist($batchExecution);
+
+        $debut_traitement = new \DateTime('now', new \DateTimeZone(static::$europeParis));
+
+        /** Mise à jour de la table des traitements */
+        $map = [
+            'debut_traitement' => $debut_traitement->format(static::$dateFormat),
+            'fin_traitement' => null,
+            'success' => null,
+            'in_progress' => true,
+            'pending' => null,
+            'traitement_id' => $data->traitement_id,
+        ];
+
+        $update = $batchTraitementRepos->updateBatchTraitement($map);
+
+        if ($update['code'] !== 200) {
+            $this->logger->error('[Batch Manuel] ❌ Échec de la requête updateBatchTraitement', [
+                'code' => $update['code'],
+                'message' => $update['message'] ?? static::$noMessage,
+                'erreur' => $update['erreur'] ?? static::$noError,
+            ]);
+
+            return new JsonResponse([
+                'code' => $update['code'],
+                'type' => 'error',
+                'message' => "Impossible de mettre à jour le traitement (Erreur {$update['code']}).",
+                'erreur' => $update['erreur'] ?? null,
+            ], Response::HTTP_OK);
+        }
+
+        // =====================================================
+        // === PROFILING - INITIALISATION ======================
+        // =====================================================
+        $totalStart = microtime(true);
+        $profiling = [];
+
+        /*$profil = new BatchProfiling(
+            $le_projet,
+            round($elapsed, 2),
+            $memUsed,
+            $result['code'] === 200 ? 'OK' : 'ERR',
+            (string) $execution_id
+        );
+        $this->em->persist($profil);*/
+
+        $this->profilerLogger->info('[PROFILING] --- Démarrage du traitement manuel ---');
+        $this->profilerLogger->info(sprintf('[PROFILING] Portefeuille: %s / Utilisateur: %s', $data->portefeuille, $utilisateur_collecte));
+
+        /** On lance la collecte */
+        $processed = 0;
+
+        foreach ($les_projets['liste'] as $le_projet) {
+
+            // Démarre le chronomètre et la mesure mémoire
+            $projectStart = microtime(true);
+            $memBefore = memory_get_usage(true);
+
+            // === Collecte principale ===
+            $result = $this->collecte->collecte(
+                $data->portefeuille,
+                $le_projet,
+                'TRAITEMENT MANUEL',
+                $utilisateur_collecte
+            );
+
+            // === Statistiques ===
+            $memAfter = memory_get_usage(true);
+            $elapsed = microtime(true) - $projectStart;
+            $memUsed = round(($memAfter - $memBefore) / 1024 / 1024, 1);
+
+            $profiling[] = [
+                'projet' => $le_projet,
+                'time' => round($elapsed, 2),
+                'memory' => $memUsed,
+                'status' => $result['code'],
+            ];
+
+            // === Journal d’exécution ===
+            $explose_le_projet = explode(':', $le_projet, 2);
+            $nom_projet = (count($explose_le_projet) === 2) ? $explose_le_projet[1] : $le_projet;
+
             $journal = new BatchExecutionJournal();
             $journal->setCode($result['code']);
             $journal->setPortefeuille($data->portefeuille);
@@ -403,20 +495,63 @@ class BatchManuelController extends AbstractController
             $batchExecution->addJournal($journal);
             $this->em->persist($journal);
 
-            if ($result['code'] === 500){
+            if ($result['code'] === 500) {
+                $this->profilerLogger->warning(sprintf(
+                    '[PROFILING] ❌ Erreur sur %s (%ss / +%s MB)',
+                    $le_projet,
+                    round($elapsed, 2),
+                    $memUsed
+                ));
+
                 $code = $result['code'];
                 $type = 'warning';
-                $message = "La collecte du projet <strong>$le_projet</strong> n'a pas abouti.<br>Consulter le journal d'execution pour avoir plus d'information.";
+                $message = "La collecte du projet <strong>$le_projet</strong> n'a pas abouti.<br>Consultez le journal d’exécution pour plus d’informations.";
 
                 $this->em->flush();
-
-                return new JsonResponse(compact('code', 'type', 'message'),
-                Response::HTTP_OK);
+                return new JsonResponse(compact('code', 'type', 'message'), Response::HTTP_OK);
             }
-            /** Flush global */
+
+            // === Flush périodique et nettoyage mémoire ===
             $this->em->flush();
-            unset($le_projet);
+            $this->em->clear();
+
+            $batchExecution = $this->em->getReference(BatchExecution::class, $batchExecution->getId());
+            gc_collect_cycles();
+            gc_mem_caches();
+
+            $processed++;
+            $this->profilerLogger->info(sprintf(
+                '[PROFILING] ✅ %s traité en %ss (+%s MB)',
+                $le_projet,
+                round($elapsed, 2),
+                $memUsed
+            ));
         }
+
+        // =====================================================
+        // === PROFILING - SYNTHÈSE GLOBALE ====================
+        // =====================================================
+
+        $totalEnd = microtime(true);
+        $totalTime = round($totalEnd - $totalStart, 2);
+        $avgTime = $totalTime / max(count($profiling), 1);
+        $avgMem = array_sum(array_column($profiling, 'memory')) / max(count($profiling), 1);
+
+        $this->profilerLogger->info('[PROFILING] =======================');
+        $this->profilerLogger->info("[PROFILING] Temps total : {$totalTime}s pour " . count($profiling) . " projets");
+        $this->profilerLogger->info("[PROFILING] Temps moyen par projet : " . round($avgTime, 2) . "s");
+        $this->profilerLogger->info("[PROFILING] Mémoire moyenne par projet : " . round($avgMem, 1) . " MB");
+
+        foreach ($profiling as $p) {
+            $this->profilerLogger->info(sprintf(
+                "[PROFILING] - %s → %ss (+%s MB) [%s]",
+                $p['projet'],
+                $p['time'],
+                $p['memory'],
+                $p['status'] === 200 ? 'OK' : 'ERR'
+            ));
+        }
+        $this->profilerLogger->info('[PROFILING] =======================');
 
         $fin_traitement = new \DateTime('now', new \DateTimeZone(static::$europeParis));
         $interval = $debut_traitement->diff($fin_traitement);
@@ -450,9 +585,8 @@ class BatchManuelController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        unset($map);
-        unset($les_projets);
-        unset($data);
+        unset($map, $les_projets, $data);
+
         return new JsonResponse([
             'code' => 200,
             'message' => 'Collecte terminée avec succès',
