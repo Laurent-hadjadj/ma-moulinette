@@ -189,20 +189,24 @@
     </main>
 
     {# Debug Monitor (affiché uniquement en mode debug) #}
-    <div id="pending-debug-monitor" style="display:none;">
-      <div class="debug-header">
-        <span class="debug-title">Pending Worker Monitor</span>
-        <button id="debug-close">×</button>
-      </div>
-      <div class="debug-body">
-        <p><strong>Statut :</strong> <span id="debug-status">Inconnu</span></p>
-        <p><strong>Dernier check :</strong> <span id="debug-last-check">–</span></p>
-        <p><strong>Pending :</strong> <span id="debug-pending">–</span></p>
-        <p><strong>In Progress :</strong> <span id="debug-in-progress">–</span></p>
-        <hr>
-        <div id="debug-log"></div>
-      </div>
+    <div id="pending-debug-monitor" class="debug-hidden">
+      <header>
+        <span>⚙️ Pending Worker Monitor</span>
+        <button id="debug-close" title="Fermer">×</button>
+      </header>
+
+      <main>
+        <div><strong>Status :</strong> <span id="debug-status">–</span></div>
+        <div><strong>Dernier check :</strong> <span id="debug-last-check">–</span></div>
+        <div><strong>Pending :</strong> <span id="debug-pending">–</span></div>
+        <div><strong>In Progress :</strong> <span id="debug-in-progress">–</span></div>
+      </main>
+
+      <footer>
+        <pre id="debug-log"></pre>
+      </footer>
     </div>
+
 
     {# Chargement de la section footer #}
     {{ include('footer.html.twig') }}
