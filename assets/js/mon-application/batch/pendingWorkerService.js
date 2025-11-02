@@ -137,6 +137,9 @@ export const pendingWorkerService = {
       this.worker = null;
     }
 
+     // invalide le token actuel
+    this.token = null;
+
     // coupe le moniteur
     if (this.monitorId) {
       clearInterval(this.monitorId);
