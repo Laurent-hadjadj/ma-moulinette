@@ -27,10 +27,11 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 use App\Controller\Batch\CollecteController;
-use App\Entity\Portefeuille;
 use App\Entity\BatchTraitement;
 use App\Entity\BatchExecution;
 use App\Entity\BatchExecutionJournal;
+use App\Entity\BatchProfiling;
+use App\Service\ListeProjetPortefeuilleService;
 
 /**
  * [Description BatchController]
@@ -42,6 +43,7 @@ class BatchManuelController extends AbstractController
     private static $noError = 'Aucune erreur remontée.';
     private static $europeParis = 'Europe/Paris';
     private static $dateFormat = "Y-m-d H:i:s";
+    private static $traitementManuel = 'TRAITEMENT MANUEL';
 
     public function __construct(
         private CollecteController $collecte,
@@ -50,6 +52,7 @@ class BatchManuelController extends AbstractController
         #[Autowire(service: 'monolog.logger.profiling')]
         private LoggerInterface $profilerLogger,
         private Security $security,
+        private ListeProjetPortefeuilleService $listeProjetService
     ) {
     }
 
@@ -58,113 +61,6 @@ class BatchManuelController extends AbstractController
     {
         $path = $this->getParameter('kernel.project_dir').'/assets/js/mon-application/batch/pendingWorker.js';
         return new BinaryFileResponse($path, 200, ['Content-Type' => 'application/javascript']);
-    }
-
-    /**
-     * [Description for listeProjet]
-     * Récupère la liste des projets depuis un portefeuille de projets.
-     *
-     * @param string $titre_portefeuille
-     * @param string $portefeuille
-     *
-     * @return array
-     *
-     * Created at: 09/12/2022, 12:05:30 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function listeProjet(string $titre_portefeuille, string $portefeuille): array
-    {
-        /*** On instancie l'entityRepository */
-        $portefeuilleRepos = $this->em->getRepository(Portefeuille::class);
-        $batchTraitementRepos = $this->em->getRepository(BatchTraitement::class);
-
-        /** On envoi le titre du portefeuille et le nom du portefeuille */
-        $map = [
-            'titre_portefeuille' => $titre_portefeuille,
-            'portefeuille' => $portefeuille
-        ];
-
-        /** On vérifie que le portefeuille n'est pas vide pour le traitement */
-        // liste" => [ "id" => 1, "mode_collecte" => "Manuel", "titre" => "EXP",
-        // "portefeuille" => "JAVA", "projet" => 3 ]
-        $traitement = $batchTraitementRepos->selectBatchTraitement($map);
-
-        if ($traitement['code'] !== 200) {
-            $this->logger->error('[Traitement-Manuel] ❌ Échec de la requête selectBatchTraitement', [
-                'code' => $traitement['code'],
-                'message' => $traitement['message'] ?? static::$noMessage,
-                'erreur' => $traitement['erreur'] ?? static::$noError,
-                ]);
-
-            return [
-                'code' => $traitement['code'],
-                'type' => 'error',
-                'message' => "Une erreur est survenue lors de la récupération des projets du portefeuille ({$traitement['code']}).",
-                'erreur' => $traitement['erreur']
-            ];
-        }
-
-         /** La liste est vide */
-        if (!isset($traitement['liste']) || count($traitement['liste']) === 0)
-        {
-            $this->logger->warning('[Batch Manuel] ⚠️ La liste des traitements ne contient pas le portefeuille !', [
-                'code' => $traitement['code'],
-                'message' => $traitement['message'] ?? static::$noMessage,
-                'erreur' => $traitement['erreur'] ?? static::$noError,
-                'portefeuille' => $titre_portefeuille ?? 'inconnu'
-                ]);
-
-            return [
-                'code' => 404,
-                'type' => 'warning',
-                'message' => 'La liste des traitements ne contient pas le portefeuille (Erreur 404).',
-                'erreur' => $traitement['erreur'] ?? null
-            ];
-        }
-
-        /** On récupère le portefeuille de projets */
-        $liste_projets = $portefeuilleRepos->selectPortefeuille($map);
-
-        if ($liste_projets['code'] !== 200) {
-            $this->logger->error('[Batch Manuel] ❌ Échec de la requête selectPortefeuille', [
-                'code' => $liste_projets['code'],
-                'message' => $liste_projets['message'] ?? static::$noMessage,
-                'erreur' => $liste_projets['erreur'] ?? static::$noError,
-                'portefeuille' => $titre_portefeuille ?? 'inconnu'
-                ]);
-
-            return [
-                'code' => $liste_projets['code'],
-                'type' => 'error',
-                'message' => "Le portefeuille de projet n'est pas accessible (Erreur {$liste_projets['code']}).",
-                'erreur' =>  $liste_projets['erreur'] ?? null
-            ];
-        }
-
-        if (empty($liste_projets['liste'])) {
-            $this->logger->warning('[Batch Manuel] ⚠️ La liste des traitements ne contient pas votre portefeuille !', [
-                'code' => $liste_projets['code'],
-                'message' => $liste_projets['message'] ?? static::$noMessage,
-                'erreur' => $liste_projets['erreur'] ?? static::$noError,
-                'portefeuille' => $titre_portefeuille ?? 'inconnu'
-                ]);
-
-            return [
-                'code' => 404,
-                'type' => 'warning',
-                'message' => "Votre portefeuille ne contient pas ce projet (Erreur {$liste_projets['code']}).",
-                'erreur' => $liste_projets['erreur'] ?? static::$noError
-            ];
-        }
-
-        $liste = json_decode($liste_projets['liste'][0]['liste'], true) ?? [];
-
-        // On renvoie une liste de maven_key
-        return [
-            'code' => 200,
-            'liste' => $liste
-        ];
     }
 
     /**
@@ -201,7 +97,7 @@ class BatchManuelController extends AbstractController
             'code' => 200,
             'message' => 'Récupération du nombre de traitements en attente et en cours.',
             'pending' => $count['pending'] ?? 0,
-            'in_progress' => $count['progress'] ?? 0
+            'in_progress' => $count['progress'] ?? 0,
         ], Response::HTTP_OK);
     }
 
@@ -306,7 +202,7 @@ class BatchManuelController extends AbstractController
 
             $add_pending = $batchTraitementRepos->updateBatchTraitementPending($map);
 
-            if ($add_pending !== 200){
+            if ($add_pending['code'] !== 200){
                 $this->logger->alert("[Traitement-Manuel] ❌ Échec de la requête updateBatchTraitementPending.", [
                 'code' => $add_pending,
                 'message' => $add_pending['erreur'] ?? null
@@ -323,12 +219,12 @@ class BatchManuelController extends AbstractController
             return new JsonResponse([
                 'code' => 202,
                 'type' => 'info',
-                'message' => 'Un traitement est déjà en cours. Votre demande a été mise en attente.',
+                'message' => 'Un traitement est déjà en cours. Votre demande a été mise en attente(Erreur 202).',
             ], Response::HTTP_OK);
         }
 
         // On extrait la liste des projets pour le portefeuille depuis la table batch_traitement
-        $les_projets = $this->listeProjet($data->titre_portefeuille, $data->portefeuille);
+        $les_projets = $this->listeProjetService->listeProjet($data->titre_portefeuille, $data->portefeuille);
 
         if ($les_projets['code'] === 404){
             $this->logger->warning("[Traitement-Manuel] ❌ La liste est vide ou n'existe plus.", [
@@ -355,7 +251,7 @@ class BatchManuelController extends AbstractController
             $execution_id,
             Ulid::fromString($data->traitement_id),
             $utilisateur_collecte,
-            'TRAITEMENT MANUEL'
+            static::$traitementManuel
         );
 
         $this->em->persist($batchExecution);
@@ -399,7 +295,7 @@ class BatchManuelController extends AbstractController
             $execution_id,
             Ulid::fromString($data->traitement_id),
             $utilisateur_collecte,
-            'TRAITEMENT MANUEL'
+            static::$traitementManuel
         );
 
         // On enregistre le job immédiatement pour obtenir sa PK (id int)
@@ -440,15 +336,6 @@ class BatchManuelController extends AbstractController
         $totalStart = microtime(true);
         $profiling = [];
 
-        /*$profil = new BatchProfiling(
-            $le_projet,
-            round($elapsed, 2),
-            $memUsed,
-            $result['code'] === 200 ? 'OK' : 'ERR',
-            (string) $execution_id
-        );
-        $this->em->persist($profil);*/
-
         $this->profilerLogger->info('[PROFILING] --- Démarrage du traitement manuel ---');
         $this->profilerLogger->info(sprintf('[PROFILING] Portefeuille: %s / Utilisateur: %s', $data->portefeuille, $utilisateur_collecte));
 
@@ -465,7 +352,7 @@ class BatchManuelController extends AbstractController
             $result = $this->collecte->collecte(
                 $data->portefeuille,
                 $le_projet,
-                'TRAITEMENT MANUEL',
+                static::$traitementManuel,
                 $utilisateur_collecte
             );
 
@@ -557,6 +444,29 @@ class BatchManuelController extends AbstractController
         $interval = $debut_traitement->diff($fin_traitement);
         $temps_traitement = $interval->format('%H:%i:%s.%f');
 
+        // On récupère les stats issues du profiling
+        $nb_projets = count($les_projets['liste']);
+        $memoire_peak = memory_get_peak_usage(true) / 1024 / 1024; // MB
+        $memoire_moyenne = round($memoire_peak / $nb_projets, 2);
+        $temps_total = round((float)$interval->format('%s.%f'), 2);
+        $temps_moyen = round($temps_total / $nb_projets, 2);
+
+        // Création du profiling en base
+        $profiling = new BatchProfiling(
+            portefeuille: $data->portefeuille,
+            nbProjets: $nb_projets,
+            tempsTotal: $temps_total,
+            tempsMoyen: $temps_moyen,
+            memoirePeak: $memoire_peak,
+            memoireMoyenne: $memoire_moyenne,
+            utilisateur: $utilisateur_collecte,
+            executionReference: (string)$execution_id
+        );
+
+        $this->em->persist($profiling);
+        $this->em->flush();
+
+
         /** On met à jour la table des traitements */
         $map = [
             'debut_traitement' => $debut_traitement->format(static::$dateFormat),
@@ -585,7 +495,7 @@ class BatchManuelController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        unset($map, $les_projets, $data);
+        unset($map, $les_projets, $data, $profiling);
 
         return new JsonResponse([
             'code' => 200,
