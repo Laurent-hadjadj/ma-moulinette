@@ -116,7 +116,6 @@ class BatchController extends AbstractController
         // Initialisation des informations pour la bulle d'information
         /** On initialise le tableau */
         $render = $this->genericRender();
-        $render['salt'] = $this->getParameter('csrf.salt');
         $render['info_nombre'] = '-';
         $render['info_tips'] = 'Aucun traitement.';
         $render['bulle'] = 'bulle-info-vide';
@@ -276,7 +275,7 @@ class BatchController extends AbstractController
 
 /*public function index(EntityManagerInterface $em)
 {
-    // ... tes stats existantes
+    // ... stats existantes
     $dateDebut = new \DateTime('-30 days');
 
     $qb = $em->createQueryBuilder();
@@ -302,4 +301,9 @@ class BatchController extends AbstractController
     ]);
 }*/
 
+/**
+ * $connection = $this->em->getConnection();
+ * $deleted = $connection->fetchOne("SELECT ma_moulinette.purge_batch_profiling(90)");
+* $this->logger->info("Purge des batch_profiling : $deleted lignes supprimées");
+ */
 }
