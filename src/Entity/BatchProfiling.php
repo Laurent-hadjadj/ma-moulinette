@@ -14,42 +14,49 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\DBAL\Types\Types;
 use App\Repository\BatchProfilingRepository;
 
+
+/**
+ * [Description BatchProfiling]
+ */
 #[ORM\Entity(repositoryClass: BatchProfilingRepository::class)]
 #[ORM\Table(name: "batch_profiling", schema: "ma_moulinette")]
 class BatchProfiling
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: Types::INTEGER, nullable: false,
+        options: ['comment' => 'Identifiant unique de la table batch_profiling'])]
     private ?int $id = null;
 
-    #[ORM\Column(type: 'string', length: 64)]
+    #[ORM\Column(type: TYPES::STRING, length: 64)]
     private string $portefeuille;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[ORM\Column(type: TYPES::STRING, length: 255, nullable: true)]
     private ?string $executionReference = null;
 
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(type: TYPES::INTEGER)]
     private int $nbProjets;
 
-    #[ORM\Column(type: 'float')]
+    #[ORM\Column(type: TYPES::FLOAT)]
     private float $tempsTotal;
 
-    #[ORM\Column(type: 'float')]
+    #[ORM\Column(type: TYPES::FLOAT)]
     private float $tempsMoyen;
 
-    #[ORM\Column(type: 'float')]
+    #[ORM\Column(type: TYPES::FLOAT)]
     private float $memoirePeak;
 
-    #[ORM\Column(type: 'float')]
+    #[ORM\Column(type: TYPES::FLOAT)]
     private float $memoireMoyenne;
 
-    #[ORM\Column(type: 'string', length: 128)]
+    #[ORM\Column(type: TYPES::STRING, length: 128)]
     private string $utilisateur;
 
-    #[ORM\Column(type: 'datetime_immutable')]
+    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+        options: ['comment' => "Date d'exécution de la collecte."])]
     private \DateTimeImmutable $dateExecution;
 
     public function __construct(
