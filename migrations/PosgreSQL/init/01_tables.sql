@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V2.14.0 - 02/11/2025             ##
+##               V2.15.0 - 02/11/2025             ##
 ##                                                ##
 ####################################################*/
 
@@ -448,6 +448,13 @@ CREATE TABLE ma_moulinette.batch_execution_journal (
 ALTER TABLE ma_moulinette.batch_execution_journal OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.batch_execution_journal TO db_user;
 
+-- INDEXES
+
+CREATE INDEX idx_batch_execution_traitement_id ON ma_moulinette.batch_execution(traitement_id);
+CREATE INDEX idx_batch_execution_journal_job ON ma_moulinette.batch_execution_journal(job_id);
+CREATE INDEX idx_batch_execution_date_enregistrement ON ma_moulinette.batch_execution(date_enregistrement);
+CREATE INDEX idx_batch_execution_journal_date_execution ON ma_moulinette.batch_execution_journal(date_execution);
+
 COMMENT ON TABLE ma_moulinette.batch_execution_journal IS 'Journal détaillé des collectes/exécutions associées à un batch.';
 COMMENT ON COLUMN ma_moulinette.batch_execution_journal.nom_projet IS 'Nom du projet traité';
 COMMENT ON COLUMN ma_moulinette.batch_execution_journal.portefeuille IS 'Nom du portefeuille de projets associé';
@@ -457,12 +464,44 @@ COMMENT ON COLUMN ma_moulinette.batch_execution_journal.compte_rendu IS 'Compte 
 COMMENT ON COLUMN ma_moulinette.batch_execution_journal.date_execution IS 'Date d’exécution de la collecte.';
 COMMENT ON COLUMN ma_moulinette.batch_execution_journal.job_id IS 'Clé étrangère vers batch_execution.id';
 
--- INDEXES
 
-CREATE INDEX idx_batch_execution_traitement_id ON ma_moulinette.batch_execution(traitement_id);
-CREATE INDEX idx_batch_execution_journal_job ON ma_moulinette.batch_execution_journal(job_id);
-CREATE INDEX idx_batch_execution_date_enregistrement ON ma_moulinette.batch_execution(date_enregistrement);
-CREATE INDEX idx_batch_execution_journal_date_execution ON ma_moulinette.batch_execution_journal(date_execution);
+-- ===============================================
+-- TABLE: batch_profiling
+-- ===============================================
+
+DROP TABLE IF EXISTS ma_moulinette.batch_profiling;
+CREATE TABLE ma_moulinette.batch_profiling (
+    id SERIAL PRIMARY KEY,
+    portefeuille VARCHAR(64) NOT NULL,
+    execution_reference VARCHAR(255),
+    nb_projets INT NOT NULL CHECK (nb_projets > 0),
+    temps_total DOUBLE PRECISION NOT NULL CHECK (temps_total >= 0),
+    temps_moyen DOUBLE PRECISION NOT NULL CHECK (temps_moyen >= 0),
+    memoire_peak DOUBLE PRECISION NOT NULL CHECK (memoire_peak >= 0),
+    memoire_moyenne DOUBLE PRECISION NOT NULL CHECK (memoire_moyenne >= 0),
+    utilisateur VARCHAR(128) NOT NULL,
+    date_execution TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+ALTER TABLE ma_moulinette.batch_profiling OWNER TO db_user;
+GRANT ALL ON TABLE ma_moulinette.batch_profiling TO db_user;
+
+-- INDEXES
+CREATE INDEX idx_batch_profiling_portefeuille ON ma_moulinette.batch_profiling (portefeuille);
+CREATE INDEX idx_batch_profiling_date ON ma_moulinette.batch_profiling (date_execution DESC);
+CREATE INDEX idx_batch_profiling_utilisateur ON ma_moulinette.batch_profiling (utilisateur);
+
+COMMENT ON TABLE ma_moulinette.batch_profiling IS 'Table des statistiques de performances pour les traitements manuels ou automatiques.';
+COMMENT ON COLUMN ma_moulinette.batch_profiling.id IS 'Clé primaire auto-incrémentée.';
+COMMENT ON COLUMN ma_moulinette.batch_profiling.portefeuille IS 'Nom du portefeuille traité (ex: LOT-3, JAVA, etc.).';
+COMMENT ON COLUMN ma_moulinette.batch_profiling.execution_reference IS 'Référence ULID ou UUID du traitement principal (BatchExecution.executionId).';
+COMMENT ON COLUMN ma_moulinette.batch_profiling.nb_projets IS 'Nombre de projets analysés durant l’exécution.';
+COMMENT ON COLUMN ma_moulinette.batch_profiling.temps_total IS 'Temps total d’exécution du batch en secondes (float).';
+COMMENT ON COLUMN ma_moulinette.batch_profiling.temps_moyen IS 'Temps moyen par projet en secondes.';
+COMMENT ON COLUMN ma_moulinette.batch_profiling.memoire_peak IS 'Mémoire maximale utilisée durant le traitement (en Mo).';
+COMMENT ON COLUMN ma_moulinette.batch_profiling.memoire_moyenne IS 'Mémoire moyenne utilisée par projet (en Mo).';
+COMMENT ON COLUMN ma_moulinette.batch_profiling.utilisateur IS 'Utilisateur ayant déclenché le traitement.';
+COMMENT ON COLUMN ma_moulinette.batch_profiling.date_execution IS 'Horodatage de fin d’exécution du traitement.';
 
 -- ===============================================
 -- Table: ma_moulinette.equipe
@@ -1717,4 +1756,5 @@ $$;
 -- 29/10/2025 : Laurent HADJADJ - L'objet ulid a une taille par défaut de 36 sauf si on passe en toBase32 (26).
 -- 30/10/2025 : Laurent HADJADJ - Suppression ou remplacement de reference_unique par traitement_id.
 -- 31/10/2025 : Laurent HADJADJ - Ajout de l'attribut execution_id pour la table batch_execution
--- 02/11/2025 : Laurent HADJADJ - modification du type pour le champs compte_rendu de TEXT en BYTEA
+-- 02/11/2025 : Laurent HADJADJ - Modification du type pour le champs compte_rendu de TEXT en BYTEA
+-- 03/11/2025 : Externalisation des vues et des proc_stock dans un script dédiée. Code-Clean.
