@@ -273,51 +273,25 @@ const traitementManuel = async function(id, titre_portefeuille, portefeuille){
 
 }
 
-/**
- * [Description for traitementAuto]
- * Démarrage du traitement automatique.
- *
- * @return void
- *
- * Created at: 08/02/2023, 17:09:11 (Europe/Paris)
- * @author    Laurent HADJADJ <laurent_h@me.com>
- * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
- */
-const traitementAuto = async function(){
-  /** On récupère le token */
-  const e = document.querySelector('.batch-processing-svg');
-  const token=e.dataset.session;
-  const data = { token  };
-
-  const options = {
-  url: `${serveur()}/traitement/auto`,
-  type: 'POST',
-  dataType: 'json',
-  data: JSON.stringify(data),
-  contentType,
-    headers: {
-      'X-API-Custom-403': 'true',
-      'X-Internal-Front': 'front-app'
-    },
-  };
-
-  await $.ajax(options);
-};
-
 $(document).ready(() => {
-  const $bulle = $('#info-bulle');
-  const $tips = $('#info-bulle-tips');
+  const $bulle_wip = $('#info-bulle-in-progress');
+  const $bulle_workers = $('#info-bulle-workers');
 
   // Valeur par défaut (avant que le worker ne réponde)
-  if ($bulle.length && !$bulle.text().trim()) {
-    $bulle
+  if ($bulle_wip.length && !$bulle_wip.text().trim()) {
+    $bulle_wip
+      .addClass('bulle-init')
+      .removeClass('bulle-ok bulle-error')
+      .text('–')
+      .attr('title', 'Initialisation du service...' );
+    $bulle_workers
       .addClass('bulle-init')
       .removeClass('bulle-ok bulle-retry bulle-error')
-      .text('–');
-    $tips?.text('Initialisation du service...');
+      .text('–')
+      .attr('title', 'Initialisation du service...' );
   }
 
-  pendingWorkerService.start({ debug: false });
+  pendingWorkerService.stop({ debug: false });
 
   $('.i-am-human-svg').click(async (e) => {
     /* si on a déjà cliqué, on sort */
