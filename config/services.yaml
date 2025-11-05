@@ -15,6 +15,7 @@ parameters:
     # API Secure
     app.client_token: '%env(APP_CLIENT_TOKEN)%'
     app.allowed_origins: '%env(csv:APP_ALLOWED_ORIGINS)%'
+    api.client_token: '%env(API_CLIENT_TOKEN)%'
 
 
     # Configuration SonarQube
@@ -41,7 +42,6 @@ parameters:
     nombre.favori: '%env(NOMBRE_FAVORI)%'
     # Configuration diverse
     track.logger.method: '%env(TRACK_LOGGER_METHOD)%'
-    csrf.salt: '%env(CSRF_SALT)%'
     path.audit: '%env(PATH_AUDIT)%'
     environnement: '%env(ENVIRONNEMENT)%'
 
