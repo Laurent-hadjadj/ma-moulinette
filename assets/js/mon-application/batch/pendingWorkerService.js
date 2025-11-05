@@ -23,6 +23,7 @@ window.$ = $;
  *  - Auto-reconnexion si le worker est silencieux
  *  - Monitoring local (sessionStorage)
  *  - Pause / reprise / stop complets
+ *  - Gestion d'une bulle pour in_progress et une pour le workers
  */
 export const pendingWorkerService = {
   worker: null,
@@ -32,8 +33,8 @@ export const pendingWorkerService = {
   lastUpdate: Date.now(),
   monitorPeriod: 30_000,
   silentThreshold: 60_000,
-  infoBulleSelector: '#info-bulle',
-  infoTipsSelector: '#info-bulle-tips',
+  infoBulleWip: '#info-bulle-in-progress',
+  infoBulleWorkers: '#info-bulle-workers',
 
   start({ debug = false } = {}) {
     // évite le multi-onglet
@@ -108,19 +109,19 @@ export const pendingWorkerService = {
                 console.info('[pendingWorkerService] ℹ️', message);
             }
             if (typeof message === 'string' && message.includes('Tentative')) {
-              $('#info-bulle').removeClass('bulle-ok bulle-error').addClass('bulle-retry');
+              $(this.infoBulleWorkers).removeClass('bulle-ok bulle-error').addClass('bulle-retry').attr('title', message);
             } else if (typeof message === 'string' && message.includes('Échec après')) {
-              $('#info-bulle').removeClass('bulle-ok bulle-retry').addClass('bulle-error');
+              $(this.infoBulleWorkers).removeClass('bulle-ok bulle-retry').addClass('bulle-error').attr('title', message);
             }
             break;
           case 'error':
             this.updateDebugPanel({ status: '❌ Erreur', error: message });
-            $('#info-bulle').addClass('bulle-info-error');
+            $(this.infoBulleWorkers).addClass('bulle-info-error').attr('title', "Une erreur s'est  produite.");
             if (debug) console.error('[pendingWorkerService] ⚠️', message);
             sessionStorage.setItem('ma_moulinette_pendingWorkerService', `[❌] ${message}`);
             break;
           default:
-            if (debug) console.warn('[pendingWorkerService] 🔸 Message inconnu', event.data);
+            if (debug) console.warn('[pendingWorkerService] Message inconnu', event.data);
         }
       };
 
@@ -198,36 +199,64 @@ export const pendingWorkerService = {
 
   /* === Mise à jour de la bulle === */
   updateInfoBulle(t, { debug = false } = {}) {
-    const $infoBulle = $(this.infoBulleSelector);
-    const $tips = $(this.infoTipsSelector);
+    const $infoBulleWorkers = $(this.infoBulleWorkers);
+    const $infoBulleWip = $(this.infoBulleWip);
 
     if (!t || typeof t.pending === 'undefined') {
-      $infoBulle.removeClass('bulle-ok bulle-retry').addClass('bulle-error').text('!');
-      $tips.html('Erreur de communication avec le worker.');
+      $infoBulleWip.removeClass('bulle-ok').addClass('bulle-error').text('!').attr('title', 'Erreur de communication avec le worker.');
+      $infoBulleWorkers.removeClass('bulle-ok bulle-retry').addClass('bulle-error').text('!').attr('title', 'Erreur de communication avec le worker.');
+
       if (debug) console.warn('[pendingWorkerService] Données invalides :', t);
       return;
     }
 
-    //$infoBulle.removeClass('bulle-info-vide bulle-info-start bulle-info-end bulle-info-error');
-    $infoBulle.addClass('loading').removeClass('bulle-retry bulle-error');
-    setTimeout(() => $infoBulle.removeClass('loading'), 300);
-
+    $infoBulleWorkers.addClass('loading').removeClass('bulle-retry bulle-error');
+    $infoBulleWip.addClass('loading').removeClass('bulle-error');
+    setTimeout(() => {
+      $infoBulleWorkers.removeClass('loading');
+      $infoBulleWip.removeClass('loading');
+    }, 300);
 
     if (t.pending > 0) {
-      //$infoBulle.addClass('bulle-info-start').html(t.pending);
-      $infoBulle.removeClass('bulle-error bulle-retry').addClass('bulle-ok').text(t.pending);
-      $tips.html('Nombre de projets planifiés.');
-      } else if (t.pending === 0 && t.in_progress > 0) {
-        //$infoBulle.addClass('bulle-info-end').html(t.in_progress);
-        $infoBulle.removeClass('bulle-error bulle-retry').addClass('bulle-ok').text(t.in_progress);
-        $tips.html('Un projet est en cours de traitement.');
-      } else {
-        //$infoBulle.addClass('bulle-info-end').html('0');
-        $infoBulle.removeClass('bulle-error bulle-retry').addClass('bulle-ok').text('0');
-        $tips.html('Aucun traitement planifié.');
+      $infoBulleWorkers
+        .removeClass('bulle-error bulle-retry')
+        .addClass('bulle-ok')
+        .text(t.pending)
+        .attr('title', 'Nombre de projets en attente de traitement.');
       }
 
-      setTimeout(() => $infoBulle.removeClass('loading'), 300);
+    if (t.pending === 0 && t.in_progress === 0){
+        $infoBulleWorkers
+          .removeClass('bulle-error bulle-retry')
+          .addClass('bulle-ok')
+          .text('0')
+          .attr('title', 'Aucun projets en attente de traitement.');
+        $infoBulleWip
+          .removeClass('bulle-error')
+          .addClass('bulle-ok')
+          .text('0')
+          .attr('title', 'Aucun traitement en cours.');
+      }
+
+    if (t.in_progress > 0) {
+        $infoBulleWip
+          .removeClass('bulle-error')
+          .addClass('bulle-ok')
+          .text(t.in_progress)
+          .attr('title', 'Un projet est en cours de traitement.');
+      } else {
+          $infoBulleWip
+          .removeClass('bulle-error')
+          .addClass('bulle-ok')
+          .text(t.in_progress)
+          .attr('title', 'Aucun projet en cours de traitement.');
+      }
+
+      setTimeout(() =>
+        {
+          $infoBulleWorkers.removeClass('loading');
+          $infoBulleWip.removeClass('loading');
+        }, 300);
   },
 
   /* === Auto-reconnexion si worker silencieux (>60s) === */
@@ -285,21 +314,21 @@ export const pendingWorkerService = {
   },
 
   updateDebugPanel({ status, data, error } = {}) {
-  const $panel = $('#pending-debug-monitor');
-  if (!$panel.length) return; // rien à faire si panneau absent
+    const $panel = $('#pending-debug-monitor');
+    if (!$panel.length) return; // rien à faire si panneau absent
 
-  // Toujours mettre à jour, même s'il est caché
-  if (status) $('#debug-status').text(status);
+    // Toujours mettre à jour, même s'il est caché
+    if (status) $('#debug-status').text(status);
 
-  if (data) {
-    $('#debug-last-check').text(new Date().toLocaleTimeString());
-    $('#debug-pending').text(data.pending ?? '–');
-    $('#debug-in-progress').text(data.in_progress ?? '–');
+    if (data) {
+      $('#debug-last-check').text(new Date().toLocaleTimeString());
+      $('#debug-pending').text(data.pending ?? '–');
+      $('#debug-in-progress').text(data.in_progress ?? '–');
+    }
+
+    if (error) {
+      $('#debug-status').text('❌ Erreur');
+      this.logDebug('⚠️ ' + error);
+    }
   }
-
-  if (error) {
-    $('#debug-status').text('❌ Erreur');
-    this.logDebug('⚠️ ' + error);
-  }
-}
 }
