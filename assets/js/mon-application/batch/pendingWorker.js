@@ -36,7 +36,7 @@ let expectedToken = null;
  *
  * @param mixed ...args
  *
- * @return [type]
+ * @return void
  *
  * Created at: 02/11/2025 13:33:03 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -89,7 +89,7 @@ async function fetchPending() {
     // Si aucun in_progress et des pending, lancer automatiquement
     if (data && data.in_progress === 0 && data.pending > 0) {
       log('💡 Aucun en cours, pending dispo → possible lancement auto');
-      await fetch('/api/traitement/start-next-pending', { method: 'POST' });
+      //TODO : await fetch('/api/traitement/start-next-pending', { method: 'POST' });
     }
 
   } catch (error) {
