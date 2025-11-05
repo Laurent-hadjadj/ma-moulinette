@@ -48,7 +48,7 @@ tbody tr:nth-child(even) {
 }
 
 /* == Boutons ==**/
-#bouton-traitement-automatique,
+#bouton-affiche-statistique,
 #bouton-affiche-rapport {
   min-width: 14rem;
   font-size: 0.95rem;
@@ -60,7 +60,7 @@ tbody tr:nth-child(even) {
   background-color: #00445b;
 }
 
-#bouton-traitement-automatique:hover,
+#bouton-affiche-statistique:hover,
 #bouton-affiche-rapport:hover { background-color: #006182; }
 
 /* couleur pour le résultat */
@@ -69,8 +69,13 @@ tbody tr:nth-child(even) {
 .oko { color: #000; }
 .error { background-color: #ab493a; }
 
+.execution-container {
+  display: flex;
+  justify-content: space-around;
+}
+
 /* Bouton information SVG */
-.i-am-robot-svg,
+.i-am-a-robot-svg,
 .i-am-human-svg {
   width: 100%;
   height: auto;
@@ -127,7 +132,7 @@ tbody tr:nth-child(even) {
 
 /* == Bulle info pour les traitements manuels == */
 /* États visuels du worker */
-#info-bulle {
+#info-bulle-in-progress, #info-bulle-workers {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -135,7 +140,7 @@ tbody tr:nth-child(even) {
   height: 1.5em;
   font-size: 0.85em;
   line-height: 1;
-  margin: 0 6px;
+  /*margin: 0 6px;*/
   border-radius: 50%;
   font-weight: 600;
   color: #fff;
@@ -150,7 +155,7 @@ tbody tr:nth-child(even) {
   color: #fff;
 }
 
-/* 🟢 Worker actif (animation douce) */
+/* 🟢 Worker/in_progress actif (animation douce) */
 .bulle-ok {
   background-color: #27ae60; /* vert plus pro que #2ecc71 */
   animation: breatheGreen 4s ease-in-out infinite;
@@ -162,7 +167,7 @@ tbody tr:nth-child(even) {
   animation: blink 1.2s ease-in-out infinite;
 }
 
-/* 🔴 Erreur ou worker stoppé */
+/* 🔴 Erreur ou worker stoppé/in_progess */
 .bulle-error {
   background-color: #c0392b;
 }
@@ -185,7 +190,6 @@ tbody tr:nth-child(even) {
   50% { opacity: 0.5; }
 }
 
-/* Indication temporaire lors de mise à jour */
 /* === Mode loading (bulle mise à jour) === */
 .bulle-info.loading {
   opacity: 0.7;
@@ -210,7 +214,7 @@ tbody tr:nth-child(even) {
 
 /* === Ajustement mobile/tablette === */
 @media (max-width: 768px) {
-  #info-bulle {
+  #info-bulle-in-progress, #info-bulle-workers {
     width: 1.3em;
     height: 1.3em;
     font-size: 0.8em;
@@ -219,7 +223,7 @@ tbody tr:nth-child(even) {
 }
 
 @media (max-width: 480px) {
-  #info-bulle {
+  #info-bulle-in-progress, #info-bulle-workers {
     width: 1.1em;
     height: 1.1em;
     font-size: 0.75em;
