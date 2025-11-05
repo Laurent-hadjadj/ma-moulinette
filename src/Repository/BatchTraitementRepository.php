@@ -203,11 +203,15 @@ class BatchTraitementRepository extends ServiceEntityRepository
    */
   public function countBatchTraitementPendingAndProgress(): array
   {
-    $sql = "SELECT count(pending) as pending, count(in_progress) as progress
-            FROM ma_moulinette.batch_traitement
-            WHERE mode_collecte = 'TRAITEMENT_MANUEL'
-            AND pending = true
-            AND in_progress = true";
+    $sql = "SELECT
+              SUM(CASE WHEN pending IS TRUE THEN 1 ELSE 0 END) AS pending_count,
+              SUM(CASE WHEN in_progress IS TRUE THEN 1 ELSE 0 END) AS in_progress_count,
+              SUM(CASE WHEN pending IS NULL THEN 1 ELSE 0 END) AS pending_null_count,
+              SUM(CASE WHEN in_progress IS NULL THEN 1 ELSE 0 END) AS in_progress_null_count
+            FROM
+                ma_moulinette.batch_traitement
+            WHERE
+                mode_collecte = 'TRAITEMENT MANUEL'";
 
     $conn = $this->getEntityManager()->getConnection();
 
@@ -220,8 +224,10 @@ class BatchTraitementRepository extends ServiceEntityRepository
 
       return [
           'code' => 200,
-          'pending' => $exec[0]['pending'],
-          'progress' => $exec[0]['progress'],
+          'pending' => $exec[0]['pending_count'],
+          'progress' => $exec[0]['in_progress_count'],
+          'pending_null' => $exec[0]['pending_null_count'],
+          'in_progress_null' => $exec[0]['in_progress_null_count'],
           'erreur' => ''
     ];
   }
