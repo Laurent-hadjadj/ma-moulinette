@@ -273,7 +273,10 @@ class ClientService
     public function httpSonarQube(string $url): array
     {
         if (empty($this->params->get('sonar.token')) && empty($this->params->get('sonar.user'))){
-            return ['code' => 401];
+            return [
+                    'code' => 401,
+                    'erreur' => static::$erreur401
+                    ];
         }
 
         if (empty($this->params->get('sonar.token'))) {
@@ -310,15 +313,18 @@ class ClientService
 
             $response = $this->client->request('GET', $url, $options);
             $statusCode = $response->getStatusCode();
-
-            // On récupère toujours le corps brut, sans lever d'exception
-            $responseBody = $response->getContent(false);
+            // On lève une erreur si possible catché par le handler.
+            $response->getContent();
 
             try {
+                // On récupère toujours le corps brut, sans lever d'exception
+                $responseBody = $response->getContent(false);
                 $json = json_decode($responseBody, true, 512, JSON_THROW_ON_ERROR);
             } catch (\JsonException $e) {
                 // pas un JSON valide : on créé un tableau pour le texte brute
-                $json = $json = !empty(trim($responseBody)) ? ['texte' => $responseBody] : ['texte' => null];
+                $json = $json = !empty(trim($responseBody))
+                        ? ['texte' => $responseBody]
+                        : [ 'texte' => null ];
             }
 
             /** Extraire les informations de la réponse */
@@ -334,7 +340,8 @@ class ClientService
             return [
                 'code' => $statusCode,
                 'message' => $message,
-                'json' =>  $json
+                'json' =>  $json,
+                'erreur' => "L'exception n'a pas été catché correctement par le handler (Erreur sympathique)."
             ];
         } catch (TimeoutException $e) {
             return $this->handleTimeoutException($e);
@@ -443,7 +450,10 @@ class ClientService
     public function httpActivity(string $url): array
     {
         if (empty($this->params->get('sonar.activity.token')) && empty($this->params->get('sonar.activity.user'))){
-            return ['code'=> 401, 'erreur' => static::$erreur401];
+            return [
+                'code'=> 401,
+                'erreur' => static::$erreur401
+            ];
         }
 
         if (empty($this->params->get('sonar.activity.token'))) {
