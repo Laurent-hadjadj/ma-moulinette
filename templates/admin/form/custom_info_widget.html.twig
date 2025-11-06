@@ -1,0 +1,21 @@
+{% block _Groupe_information_widget %}
+<div class="alert alert-info">
+    <h4>Note d'Information</h4>
+		⚠️ Attention, le groupe permet de <strong>rattacher des utilisateurs</strong> mais aussi <strong>définit</strong> le groupe SonarQube. En d'autres termes, le groupe permettra de relier les projets rattacher dans un groupe SonarQube.<br>
+    Vous devez donc utiliser le tag ajouté sur les projets SonarQube pour permettre leur regroupement dans ma-moulinette.<br><br>
+    Par exemple, si les projets sont tagués '<strong>JAVA IS COOL</strong>', il faudra créer un groupe 'JAVA-IS-COOL' dans l'application ma-moulinette.
+</div>
+{% endblock %}
+
+{% block _Portefeuille_information_widget %}
+<div class="alert alert-info">
+    <h4>Note d'Information</h4>
+		ℹ️ Ce formulaire vous permet de définir le nom du <em>portefeuille</em>, c'est-à-dire la liste des projets rattachés à un groupe, qui sera utilisée lors des traitements manuels ou automatiques de collecte des données SonarQube. Le nom et le portefeuille seront utilisés lors du traitement de la collecte.
+    <br><br>
+    <h4>Recommandations</h4>
+    📌 <strong>Taille du Portefeuille</strong> : Limitez le portefeuille à un maximum de 50 projets pour une empreinte mémoire de 400 MO et un temps d'exécution d'environ 8 minutes.<br>
+    📌 <strong>Projets Très Actifs</strong> : Regroupez les projets très actifs dans un portefeuille dédié, par exemple <b>[groupe]-quotidien</b>, pour lesquels une analyse quotidienne est réalisée.<br>
+    📌 <strong>Projets Moins Actifs</strong> : Regroupez les projets moins actifs dans un portefeuille dédié, par exemple <b>[groupe]-hebdomadaire</b>, pour lesquels une analyse hebdomadaire est nécessaire.<br>
+    📌 <strong>Projets Inactifs</strong> : Regroupez les projets inactifs dans un portefeuille dédié, par exemple <b>[groupe]-mensuel</b>, pour lesquels une analyse régulière n'est pas nécessaire.
+</div>
+{% endblock %}
