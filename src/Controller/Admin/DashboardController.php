@@ -14,27 +14,14 @@
 namespace App\Controller\Admin;
 
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
+use EasyCorp\Bundle\EasyAdminBundle\Config\{Crud, Assets, Action, Actions, MenuItem, userMenu, Dashboard};
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
-
+use Symfony\Component\HttpFoundation\{Response, JsonResponse};
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Utilisateur;
-use App\Entity\Groupe;
-use App\Entity\Portefeuille;
-use App\Entity\Batch;
-
-use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
-use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
-use EasyCorp\Bundle\EasyAdminBundle\Config\UserMenu;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
+use App\Entity\{Utilisateur, Groupe, Portefeuille, Batch};
 
 /**
  * [Description DashboardController]
@@ -322,16 +309,17 @@ class DashboardController extends AbstractDashboardController
             ->setPermission('ROLE_UTILISATEUR');
 
         yield MenuItem::linkToCrud('Utilisateur', 'fas fa-user', Utilisateur::class)
-        ->setPermission('ROLE_GESTIONNAIRE');
+            ->setPermission('ROLE_GESTIONNAIRE');
 
-        yield MenuItem::linkToCrud('Équipe', 'fas fa-users', Groupe::class)
-        ->setPermission('ROLE_GESTIONNAIRE');
+        yield MenuItem::linkToCrud('Groupe', 'fas fa-users', Groupe::class)
+            ->setAction('new')
+            ->setPermission('ROLE_GESTIONNAIRE');
 
         yield MenuItem::linkToCrud('Portefeuille', 'fas fa-gamepad', Portefeuille::class)
-        ->setPermission('ROLE_GESTIONNAIRE');
+            ->setPermission('ROLE_GESTIONNAIRE');
 
         yield MenuItem::linkToCrud('Batch', 'fas fa-gears', Batch::class)
-        ->setPermission('ROLE_BATCH');
+            ->setPermission('ROLE_BATCH');
     }
 
     /**
@@ -356,7 +344,6 @@ class DashboardController extends AbstractDashboardController
         return parent::configureUserMenu($utilisateur)
             ->setAvatarUrl($url);
     }
-
 
     public function configureActions(): Actions
     {
