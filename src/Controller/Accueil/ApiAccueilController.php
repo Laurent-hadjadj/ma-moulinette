@@ -15,18 +15,12 @@ namespace App\Controller\Accueil;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\{Response, JsonResponse, Request};
 use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-
-
-use App\Entity\ListeProjet;
-use App\Entity\Properties;
-use App\Service\ClientService;
-use App\Service\UrlBuilderService;
+use App\Entity\{ListeProjet, Properties};
+use App\Service\{ClientService, UrlBuilderService};
 
 /**
  * [Description ApiAccueilController]
@@ -116,7 +110,7 @@ class ApiAccueilController extends AbstractController
      */
     #[Route('/api/accueil/projet', name: 'accueil_projet_liste', methods: ['POST'], defaults: ['role' => 'ROLE_COLLECTE'])]
     #[IsGranted('ROLE_COLLECTE')]
-    public function accueilProjetListe(Request $request): JsonResponse
+    public function accueilProjetListe(): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/accueil/projet");
 
@@ -270,7 +264,7 @@ class ApiAccueilController extends AbstractController
      */
     #[Route('/api/accueil/tags', name: 'accueil_projet_tags', methods: ['POST'], defaults: ['role' => 'ROLE_COLLECTE'])]
     #[IsGranted('ROLE_COLLECTE')]
-    public function accueilProjetTags(Request $request): JsonResponse
+    public function accueilProjetTags(): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/accueil/tags");
 
