@@ -192,7 +192,10 @@ const miseAJourTags = async function() {
         }
 
       /** On affiche le nombre de tags */
-      $('#js-tag-nombre').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nombre_tag));
+      $('#js-tag-nombre')
+        .html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nombre_tag))
+        .removeClass('couleur-rouge')
+        .addClass('couleur-bleu');
     } catch (error) {
       const message = `Une erreur inattendue s'est produite lors de la récupération du nombre de tags (Erreur 500).`;
       const trace = prepareTechnicalDetails(error);
