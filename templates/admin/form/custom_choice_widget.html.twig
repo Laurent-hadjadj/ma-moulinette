@@ -16,10 +16,10 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       console.clear();
-      const equipeContainer = document.querySelector('[data-ea-field-name*="equipe"]');
+      const groupeContainer = document.querySelector('[data-ea-field-name*="groupe"]');
       const listeContainer = document.querySelector('[data-ea-field-name*="liste"] select');
 
-      if (!equipeContainer || !listeContainer) {
+      if (!groupeContainer || !listeContainer) {
           console.warn("Impossible de trouver les champs équipe ou liste.");
           return;
       }
@@ -60,17 +60,17 @@
 
       document.head.appendChild(style);
 
-      equipeContainer.addEventListener('change', async (e) => {
-        const checkedInputs = Array.from(equipeContainer.querySelectorAll('input:checked'));
-        const equipes = checkedInputs.map(el => el.value);
-        const param = equipes.join(',');
+      groupeContainer.addEventListener('change', async (e) => {
+        const checkedInputs = Array.from(groupeContainer.querySelectorAll('input:checked'));
+        const groupes = checkedInputs.map(el => el.value);
+        const param = groupes.join(',');
 
         // Afficher le spinner
         spinner.style.display = 'block';
         ts.disable();
 
         try {
-            const url = `/admin/portefeuille/list-projets?equipe=${encodeURIComponent(param)}`;
+            const url = `/admin/portefeuille/list-projets?groupe=${encodeURIComponent(param)}`;
             const res = await fetch(url);
             const data = await res.json();
 

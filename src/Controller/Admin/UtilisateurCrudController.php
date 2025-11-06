@@ -77,7 +77,7 @@ class UtilisateurCrudController extends AbstractCrudController
     {
         return $filters
             ->add('courriel')
-            ->add('equipe');
+            ->add('groupe');
     }
 
     /**
@@ -138,7 +138,7 @@ class UtilisateurCrudController extends AbstractCrudController
             ->setHelp('Sélectionne le ou les rôles.');
 
         /** On récupère la liste des équipes */
-        $sql = "SELECT titre, description FROM equipe ORDER BY titre ASC";
+        $sql = "SELECT titre, description FROM groupe ORDER BY titre ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $result = $l->fetchAllAssociative();
         /** si la table est vide */
@@ -152,7 +152,7 @@ class UtilisateurCrudController extends AbstractCrudController
             array_push($val, $value['titre']);
         }
 
-        yield ChoiceField::new('equipe')
+        yield ChoiceField::new('groupe')
             ->setChoices(array_combine($key, $val))
             ->allowMultipleChoices()
             //->renderExpanded()

@@ -23,7 +23,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Utilisateur;
-use App\Entity\Equipe;
+use App\Entity\Groupe;
 use App\Entity\Portefeuille;
 use App\Entity\Batch;
 
@@ -324,7 +324,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Utilisateur', 'fas fa-user', Utilisateur::class)
         ->setPermission('ROLE_GESTIONNAIRE');
 
-        yield MenuItem::linkToCrud('Équipe', 'fas fa-users', Equipe::class)
+        yield MenuItem::linkToCrud('Équipe', 'fas fa-users', Groupe::class)
         ->setPermission('ROLE_GESTIONNAIRE');
 
         yield MenuItem::linkToCrud('Portefeuille', 'fas fa-gamepad', Portefeuille::class)

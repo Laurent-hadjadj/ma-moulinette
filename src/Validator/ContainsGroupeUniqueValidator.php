@@ -18,10 +18,10 @@ use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
-use App\Entity\Equipe;
+use App\Entity\Groupe;
 use Doctrine\ORM\EntityManagerInterface;
 
-class ContainsEquipeUniqueValidator extends ConstraintValidator
+class ContainsGroupeUniqueValidator extends ConstraintValidator
 {
     /**
      * [Description for __construct]
@@ -54,8 +54,8 @@ class ContainsEquipeUniqueValidator extends ConstraintValidator
     public function validate($value, Constraint $constraint): void
     {
         /** La contrainte s'applique uniquement à la class équipe */
-        if (!$constraint instanceof ContainsEquipeUnique) {
-            throw new UnexpectedTypeException($constraint, ContainsEquipeUnique::class);
+        if (!$constraint instanceof ContainsGroupeUnique) {
+            throw new UnexpectedTypeException($constraint, ContainsGroupeUnique::class);
         }
 
         /** La valeur ne doit pas $etre null ou vide. */
@@ -69,7 +69,7 @@ class ContainsEquipeUniqueValidator extends ConstraintValidator
         }
 
         /** On cherche si la valeur existe déjà.  */
-        $record = $this->em->getRepository(Equipe::class)->findOneBy(['titre' => mb_strtoupper($value)]);
+        $record = $this->em->getRepository(Groupe::class)->findOneBy(['titre' => mb_strtoupper($value)]);
 
         /** Si la valeur existe, on affiche une erreur. */
         if ($record) {

@@ -25,7 +25,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Translation\TranslatableMessage;
 
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Equipe;
+use App\Entity\Groupe;
 use App\Entity\Portefeuille;
 use App\Entity\Utilisateur;
 

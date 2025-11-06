@@ -94,7 +94,7 @@ class SuiviController extends AbstractController
      * [Description for listeProjet]
      *
      * @param $maven_key array
-     * @param $teams array
+     * @param $groupes array
      *
      * @return array
      *
@@ -102,17 +102,17 @@ class SuiviController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function listeProjet($maven_key, $teams): array
+    private function listeProjet($maven_key, $groupes): array
     {
         /** On instancie l'entityRepository */
         $listeProjetRepository = $this->em->getRepository(ListeProjet::class);
 
         /** On recherche les projets pour les équipes rattaché à l'utilisateur */
         $in = '';
-        foreach ($teams as $team) {
-            if ($team !== 'null') {
+        foreach ($groupes as $groupe) {
+            if ($groupe !== 'null') {
                 /** On met en minuscule */
-                $minus = trim(strtolower($team));
+                $minus = trim(strtolower($groupe));
                 /** On construit la clause in et on remplace les espaces par des tirets  */
                 $in = $in." tag LIKE '".preg_replace('/\s+/', '-', $minus)."%' OR ";
             }
@@ -123,7 +123,7 @@ class SuiviController extends AbstractController
 
         /** On construit la requête de selection des projets en fonction de(s) (l')équipes */
         $map = ['clause_where' => $inTrim];
-        $requestListe = $listeProjetRepository->selectListeProjetByEquipe($map);
+        $requestListe = $listeProjetRepository->selectListeProjetByGroupe($map);
         if ($requestListe['code'] != 200) {
             return ['code' => $requestListe['code']];
         }
@@ -281,7 +281,7 @@ class SuiviController extends AbstractController
 
         // Initialisation des variables
         $maven_key = $session->get('maven_key');
-        $teams = $this->security->getUser()->getEquipe();
+        $groupes = $this->security->getUser()->getGroupe();
         $debug = '';
 
         /** On charge le template du render */
@@ -297,13 +297,13 @@ class SuiviController extends AbstractController
             return $this->addFlashAndRender('alert', static::$erreur400, $debug, $render);
         }
 
-        if (empty($teams)) {
+        if (empty($groupes)) {
             $this->logger->warning('[Suivi] ❌ ' . static::$erreur404);
             return $this->addFlashAndRender('warning', static::$erreur404, $debug, $render);
         }
 
         // Vérification du projet
-        $listeProjet = self::listeProjet($maven_key, $teams);
+        $listeProjet = self::listeProjet($maven_key, $groupes);
         if ($listeProjet['code'] === 406) {
             $this->logger->warning('[Suivi] ⚠️ ' . $listeProjet['message']);
             return $this->addFlashAndRender('warning', $listeProjet['message'], $debug, $render);

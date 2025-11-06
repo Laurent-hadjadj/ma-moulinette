@@ -21,7 +21,7 @@
   .prenom-nom { margin-left: 0.7rem; }
   .adresse-mel { margin-left: 0.7rem; }
   .privilege-titre { margin-left: 0.7rem; }
-  .mon-equipe { margin-left: 0.7rem; }
+  .mon-groupe { margin-left: 0.7rem; }
   .privilege-liste { margin-left: 1rem; }
 }
 
@@ -34,7 +34,7 @@
   .prenom-nom { margin-left: 0.7rem; }
   .adresse-mel { margin-left: 0.7rem; }
   .privilege-titre { margin-left: 0.7rem; }
-  .mon-equipe { margin-left: 0.7rem; }
+  .mon-groupe { margin-left: 0.7rem; }
   .privilege-liste { margin-left: 1rem; }
 }
 
@@ -47,7 +47,7 @@
   .prenom-nom { margin-left: 0.7rem; }
   .adresse-mel { margin-left: 0.7rem; }
   .privilege-titre { margin-left: 0.7rem; }
-  .mon-equipe { margin-left: 0.7rem; }
+  .mon-groupe { margin-left: 0.7rem; }
   .privilege-liste { margin-left: 1rem; }
 }
 
@@ -59,7 +59,7 @@
   }
   .prenom-nom { margin-left: 0.7rem; }
   .privilege-titre { margin-left: 0.7rem; }
-  .mon-equipe { margin-left: 0.7rem; }
+  .mon-groupe { margin-left: 0.7rem; }
   .privilege-liste { margin-left: 1rem; }
 }
 
@@ -78,7 +78,7 @@
   .prenom-nom { margin-top: 1.5rem; }
   .adresse-mel { margin-top: 0.3rem; }
   .privilege-titre { margin-top: 0.3rem; }
-  .mon-equipe { margin-top: 0.3rem; }
+  .mon-groupe { margin-top: 0.3rem; }
   .privilege-liste { margin-left: 4rem; }
 }
 
@@ -96,7 +96,7 @@
   .prenom-nom { margin-top: 1.5rem; }
   .adresse-mel { margin-top: 0.3rem; }
   .privilege-titre { margin-top: 0.3rem; }
-  .mon-equipe { margin-top: 0.3rem; }
+  .mon-groupe { margin-top: 0.3rem; }
   .privilege-liste { margin-left: 7rem; }
 }
 
@@ -114,7 +114,7 @@
   .prenom-nom { margin-top: 1.5rem; }
   .adresse-mel { margin-top: 0.3rem; }
   .privilege-titre { margin-top: 0.3rem; }
-  .mon-equipe { margin-top: 0.3rem; }
+  .mon-groupe { margin-top: 0.3rem; }
   .privilege-liste { margin-left: 7rem; }
 }
 
@@ -132,7 +132,7 @@
   .prenom-nom { margin-top: 1.5rem; }
   .adresse-mel { margin-top: 0.3rem; }
   .privilege-titre { margin-top: 0.3rem; }
-  .mon-equipe { margin-top: 0.3rem; }
+  .mon-groupe { margin-top: 0.3rem; }
   .privilege-liste { margin-left: 7rem; }
 }
 
@@ -151,7 +151,7 @@
   .prenom-nom { margin-top: 1.5rem; }
   .adresse-mel { margin-top: 0.3rem; }
   .privilege-titre { margin-top: 0.3rem; }
-  .mon-equipe { margin-top: 0.3rem; }
+  .mon-groupe { margin-top: 0.3rem; }
   .privilege-liste { margin-left: 7rem; }
 }
 
@@ -169,13 +169,13 @@
 .privilege-titre { font-size: 1.1rem; }
 .privilege-liste { font-size: 1.1rem; }
 
-/* affiche equipe */
-.mon-equipe { font-size: 1rem; }
+/* affiche groupe */
+.mon-groupe { font-size: 1rem; }
 
 /* SVG */
 .courriel-svg,
 .role-svg,
-.mon-equipe-svg,
+.mon-groupe-svg,
 .preference-svg {
   fill: #00445b;
   width: 36px;

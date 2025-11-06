@@ -2,14 +2,14 @@
 
 namespace App\DataFixtures;
 
-use App\Entity\Equipe;
+use App\Entity\Groupe;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
 /**
- * [Description EquipeFixtures]
+ * [Description GroupeFixtures]
  */
-class EquipeFixtures extends Fixture
+class GroupeFixtures extends Fixture
 {
 
   private static $titre = 'MA PETITE ENTREPRISE';
@@ -31,12 +31,12 @@ class EquipeFixtures extends Fixture
    */
   public function load(ObjectManager $manager): void
     {
-      $equipe=(new Equipe())
+      $groupe=(new Groupe())
           ->setTitre(static::$titre)
           ->setDescription(static::$description)
           ->setDateModification(new \DateTime(static::$dateModification))
           ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
-      $manager->persist($equipe);
+      $manager->persist($groupe);
 
       /** Enregistrement des données dans la base de tests */
         $manager->flush();

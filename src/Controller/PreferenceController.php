@@ -313,9 +313,9 @@ class PreferenceController extends AbstractController
         $avatar = $this->security->getUser()->getAvatar();
         $courriel = $this->security->getUser()->getCourriel();
         $roles = $this->security->getUser()->getRoles();
-        $equipes = $this->security->getUser()->getEquipe();
-        if (empty($equipes)) {
-            $equipes[0] = "null";
+        $groupes = $this->security->getUser()->getGroupe();
+        if (empty($groupes)) {
+            $groupes[0] = "null";
         }
 
         $preferences = $this->security->getUser()->getPreference();
@@ -341,7 +341,7 @@ class PreferenceController extends AbstractController
         $render['avatar'] = $avatar;
         $render['courriel'] = $courriel;
         $render['roles'] = $roles;
-        $render['equipes'] = $equipes;
+        $render['groupes'] = $groupes;
         $render['preferences'] = $mesPreferences;
         $render['version'] = $mesPreferences;
         return $this->render('preference/index.html.twig', $render);

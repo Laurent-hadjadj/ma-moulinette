@@ -41,7 +41,7 @@ class Portefeuille
     #[Assert\NotBlank]
     #[Assert\Length(max: 32,
         maxMessage: "Le nom de l'équipe ne peut pas dépasser 32 caractères.")]
-    private $equipe;
+    private $groupe;
 
     #[ORM\Column(type: 'json',
         options: ['comment' => 'Liste des éléments ou des activités du portefeuille'])]
@@ -77,14 +77,14 @@ class Portefeuille
         return $this;
     }
 
-    public function getEquipe(): ?string
+    public function getGroupe(): ?string
     {
-        return $this->equipe;
+        return $this->groupe;
     }
 
-    public function setEquipe(string $equipe): static
+    public function setGroupe(string $groupe): static
     {
-        $this->equipe = $equipe;
+        $this->groupe = $groupe;
 
         return $this;
     }

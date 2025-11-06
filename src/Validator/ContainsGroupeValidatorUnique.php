@@ -16,8 +16,8 @@ namespace App\Validator;
 use Symfony\Component\Validator\Constraint;
 
 #[\Attribute]
-class ContainsEquipeUnique extends Constraint
+class ContainsGroupeUnique extends Constraint
 {
-    public string $message = '[Équipe] La valeur "{{ string }}" existe déjà.';
+    public string $message = '[Groupe] La valeur "{{ string }}" existe déjà.';
     public string $mode = 'strict'; //mode='loose'
 }

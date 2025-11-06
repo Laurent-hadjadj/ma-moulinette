@@ -21,12 +21,12 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Doctrine\ORM\EntityManagerInterface;
 
-use App\Entity\Equipe;
+use App\Entity\Groupe;
 
 /**
- * [Description EquipeCrudController]
+ * [Description GroupeCrudController]
  */
-class EquipeCrudController extends AbstractCrudController
+class GroupeCrudController extends AbstractCrudController
 {
     /**
      * [Description for __construct]
@@ -55,7 +55,7 @@ class EquipeCrudController extends AbstractCrudController
      */
     public static function getEntityFqcn(): string
     {
-        return Equipe::class;
+        return Groupe::class;
     }
 
     public function configureCrud(Crud $crud): Crud
@@ -119,7 +119,7 @@ class EquipeCrudController extends AbstractCrudController
      */
     public function persistEntity(EntityManagerInterface $em, $entityInstance): void
     {
-        if (!$entityInstance instanceof Equipe) {
+        if (!$entityInstance instanceof Groupe) {
             return;
         }
         $nom = $entityInstance->getTitre();
@@ -128,7 +128,7 @@ class EquipeCrudController extends AbstractCrudController
         $entityInstance->setDateEnregistrement(new \DateTimeImmutable());
 
         /** retourne 1 ou null */
-        $record = $this->emm->getRepository(Equipe::class)->findOneBy([
+        $record = $this->emm->getRepository(Groupe::class)->findOneBy([
             'titre' => mb_strtoupper($cleanNom)
         ]);
 
@@ -140,7 +140,7 @@ class EquipeCrudController extends AbstractCrudController
 
     public function updateEntity(EntityManagerInterface $em, $entityInstance): void
     {
-        if (!$entityInstance instanceof Equipe) {
+        if (!$entityInstance instanceof Groupe) {
             return;
         }
 

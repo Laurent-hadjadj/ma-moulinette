@@ -46,7 +46,7 @@
 		</header>
 
 		{% set display,reference,message,css = "hide", "","", "" %}
-		{% if equipes|default is empty %}
+		{% if groupes|default is empty %}
 			{% set display,reference,message,css = "", "[Préférence-003]", " - Vous devez être rattaché à une équipe !", "alert" %}
 		{% endif %}
 		<div class="grid-container">
@@ -81,10 +81,10 @@
 				</legend>
 				{% set id = 1 %}
 				{# si on a au moins une équipe #}
-				{% if equipes|default is not empty %}
-					{% for equipe in equipes %}
-						<input id="check-{{id}}" type="checkbox" data-equipe="{{equipe}}">
-						<label for="check-{{id}}">{{equipe}}</label>
+				{% if groupes|default is not empty %}
+					{% for groupe in groupes %}
+						<input id="check-{{id}}" type="checkbox" data-groupe="{{groupe}}">
+						<label for="check-{{id}}">{{groupe}}</label>
 						{% set id = id + 1 %}
 					{% endfor %}
 				{% endif %}
@@ -172,7 +172,7 @@
 					</ol>
 
 					<p class="open-sans text-justify">Pour rappel le nom de l'équipe est composé uniquement des caractères [a-z0-9-].</p>
-					<p class="open-sans">Par exemple «&nbsp;<strong>L’équipe de champion</strong>&nbsp;» sera converti par SonarQube en «&nbsp;<strong>lequipe-de-champion</strong>&nbsp;».</p>
+					<p class="open-sans">Par exemple «&nbsp;<strong>L’équipe de champion</strong>&nbsp;» sera converti par SonarQube en «&nbsp;<strong>le-groupe-de-champion</strong>&nbsp;».</p>
 
 					<button class="close-button" data-close aria-label="Close Accessible Modal" type="button">
 						<span aria-hidden="true">&times;</span>

@@ -212,7 +212,7 @@ class ApiProjetController extends AbstractController
         $user = $this->security->getUser();
         $username = $user->getUserIdentifier();
         $listeProjetRepos = $this->em->getRepository(ListeProjet::class);
-        $groupes = $user->getEquipe();
+        $groupes = $user->getGroupe();
 
         if (empty($groupes)) {
             $this->logger->warning("[Projet-Liste] ⚠️ Aucun groupe associé à l'utilisateur.", [
@@ -245,7 +245,7 @@ class ApiProjetController extends AbstractController
         $this->logger->debug('[Projet-Liste] 🛠️ Clause WHERE construite.', [
             'clause' => $inTrim]);
 
-        $requestListe = $listeProjetRepos->selectListeProjetByEquipe($map);
+        $requestListe = $listeProjetRepos->selectListeProjetByGroupe($map);
 
         if ($requestListe['code'] != 200) {
             $this->logger->error("[Projet-Liste] ❌ Erreur lors de la récupération des projets.", [

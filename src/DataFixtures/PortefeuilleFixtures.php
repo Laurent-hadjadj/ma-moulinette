@@ -13,7 +13,7 @@ class PortefeuilleFixtures extends Fixture
 {
 
   private static $titre = 'MES PROJETS';
-  private static $equipe = 'MA PETITE ENTREPRISE';
+  private static $groupe = 'MA PETITE ENTREPRISE';
   private static $liste =  ['fr.ma-petite-entreprise:ma-moulinette'];
   private static $dateModification = '2024-03-26 14:46:38+01';
   private static $dateEnregistrement = '2024-03-25 12:26:58+01';
@@ -34,7 +34,7 @@ class PortefeuilleFixtures extends Fixture
     {
       $portefeuille=(new Portefeuille())
           ->setTitre(static::$titre)
-          ->setEquipe(static::$equipe)
+          ->setGroupe(static::$groupe)
           ->setListe(static::$liste)
           ->setDateModification(new \DateTime(static::$dateModification))
           ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));

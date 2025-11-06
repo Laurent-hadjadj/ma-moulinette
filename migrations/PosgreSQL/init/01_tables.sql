@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V2.15.0 - 02/11/2025             ##
+##               V2.16.0 - 02/11/2025             ##
 ##                                                ##
 ####################################################*/
 
@@ -504,11 +504,11 @@ COMMENT ON COLUMN ma_moulinette.batch_profiling.utilisateur IS 'Utilisateur ayan
 COMMENT ON COLUMN ma_moulinette.batch_profiling.date_execution IS 'Horodatage de fin d’exécution du traitement.';
 
 -- ===============================================
--- Table: ma_moulinette.equipe
+-- Table: ma_moulinette.groupe
 -- ===============================================
 
-DROP TABLE IF EXISTS ma_moulinette.equipe;
-CREATE TABLE IF NOT EXISTS ma_moulinette.equipe
+DROP TABLE IF EXISTS ma_moulinette.groupe;
+CREATE TABLE IF NOT EXISTS ma_moulinette.groupe
 (
   id SERIAL PRIMARY KEY,
   titre character varying(32) NOT NULL,
@@ -517,15 +517,15 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.equipe
   date_enregistrement TIMESTAMPTZ NOT NULL
 );
 
-ALTER TABLE ma_moulinette.equipe OWNER TO db_user;
-GRANT ALL ON TABLE ma_moulinette.equipe TO db_user;
+ALTER TABLE ma_moulinette.groupe OWNER TO db_user;
+GRANT ALL ON TABLE ma_moulinette.groupe TO db_user;
 
-COMMENT ON TABLE ma_moulinette.equipe IS 'Table des groupes utilisateurs';
-COMMENT ON COLUMN ma_moulinette.equipe.id IS 'Identifiant unique de l’équipe';
-COMMENT ON COLUMN ma_moulinette.equipe.titre IS 'Titre de l’équipe, unique';
-COMMENT ON COLUMN ma_moulinette.equipe.description IS 'Description de l’équipe';
-COMMENT ON COLUMN ma_moulinette.equipe.date_modification IS 'Date de la dernière modification de l’équipe';
-COMMENT ON COLUMN ma_moulinette.equipe.date_enregistrement IS 'Date d’enregistrement de l’équipe';
+COMMENT ON TABLE ma_moulinette.groupe IS 'Table des groupes utilisateurs';
+COMMENT ON COLUMN ma_moulinette.groupe.id IS 'Identifiant unique de l’équipe';
+COMMENT ON COLUMN ma_moulinette.groupe.titre IS 'Titre de l’équipe, unique';
+COMMENT ON COLUMN ma_moulinette.groupe.description IS 'Description de l’équipe';
+COMMENT ON COLUMN ma_moulinette.groupe.date_modification IS 'Date de la dernière modification de l’équipe';
+COMMENT ON COLUMN ma_moulinette.groupe.date_enregistrement IS 'Date d’enregistrement de l’équipe';
 
 -- ===============================================
 -- Table: ma_moulinette.historique
@@ -1227,7 +1227,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.portefeuille
 (
   id SERIAL PRIMARY KEY,
   titre character varying(32) NOT NULL,
-  equipe character varying(32) NOT NULL,
+  groupe character varying(32) NOT NULL,
   liste json NOT NULL,
   date_modification TIMESTAMP DEFAULT NULL,
   date_enregistrement TIMESTAMPTZ NOT NULL
@@ -1238,7 +1238,7 @@ GRANT ALL ON TABLE ma_moulinette.portefeuille TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.portefeuille.id IS 'Identifiant unique pour chaque portefeuille';
 COMMENT ON COLUMN ma_moulinette.portefeuille.titre IS 'Titre unique du portefeuille';
-COMMENT ON COLUMN ma_moulinette.portefeuille.equipe IS 'Nom de l’équipe associée au portefeuille';
+COMMENT ON COLUMN ma_moulinette.portefeuille.groupe IS 'Nom de l’équipe associée au portefeuille';
 COMMENT ON COLUMN ma_moulinette.portefeuille.liste IS 'Liste des éléments ou des activités du portefeuille';
 COMMENT ON COLUMN ma_moulinette.portefeuille.date_modification IS 'Date de la dernière modification du portefeuille';
 COMMENT ON COLUMN ma_moulinette.portefeuille.date_enregistrement IS 'Date d’enregistrement du portefeuille';
@@ -1638,7 +1638,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.utilisateur
   avatar character varying(128) DEFAULT NULL::character varying,
   courriel character varying(320) NOT NULL,
   roles json,
-  equipe json,
+  groupe json,
   password character varying(64) NOT NULL,
   actif boolean NOT NULL DEFAULT false,
   preference json NOT NULL,
@@ -1657,7 +1657,7 @@ COMMENT ON COLUMN ma_moulinette.utilisateur.nom IS 'Nom de l’utilisateur';
 COMMENT ON COLUMN ma_moulinette.utilisateur.avatar IS 'Avatar de l’utilisateur';
 COMMENT ON COLUMN ma_moulinette.utilisateur.courriel IS 'Adresse de courriel, clé unique';
 COMMENT ON COLUMN ma_moulinette.utilisateur.roles IS 'Liste des rôles';
-COMMENT ON COLUMN ma_moulinette.utilisateur.equipe IS 'Liste des équipes';
+COMMENT ON COLUMN ma_moulinette.utilisateur.groupe IS 'Liste des équipes';
 COMMENT ON COLUMN ma_moulinette.utilisateur.password IS 'Mot de passe de l’utilisateur';
 COMMENT ON COLUMN ma_moulinette.utilisateur.actif IS 'L’utilisateur est désactivé';
 COMMENT ON COLUMN ma_moulinette.utilisateur.preference IS 'Préférences de l’utilisateur';
@@ -1758,3 +1758,4 @@ $$;
 -- 31/10/2025 : Laurent HADJADJ - Ajout de l'attribut execution_id pour la table batch_execution
 -- 02/11/2025 : Laurent HADJADJ - Modification du type pour le champs compte_rendu de TEXT en BYTEA
 -- 03/11/2025 : Externalisation des vues et des proc_stock dans un script dédiée. Code-Clean.
+-- 06/11/2025 : Renommage de equipe en groupe.

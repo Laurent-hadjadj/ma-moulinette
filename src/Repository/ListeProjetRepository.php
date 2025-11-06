@@ -144,7 +144,7 @@ class ListeProjetRepository extends ServiceEntityRepository
   }
 
   /**
-   * [Description for selectListeProjetByEquipe]
+   * [Description for selectListeProjetByGroupe]
    * retourne la liste des projets en fonction de(s) (l')équipes.
    *
    * @param array $map
@@ -155,7 +155,7 @@ class ListeProjetRepository extends ServiceEntityRepository
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectListeProjetByEquipe($map): array
+  public function selectListeProjetByGroupe($map): array
   {
     $sql = "SELECT DISTINCT
                 liste_projet.maven_key AS id,

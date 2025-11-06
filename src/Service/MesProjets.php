@@ -24,7 +24,7 @@ class MesProjets
     /**
      * [Description for listeProjet]
      *
-     * @param mixed $teams
+     * @param mixed $groupes
      *
      * @return array
      *
@@ -32,17 +32,17 @@ class MesProjets
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function liste($teams): array
+    public function liste($groupes): array
     {
         /** On instancie l'entityRepository */
         $listeProjetRepository = $this->em->getRepository(ListeProjet::class);
 
         /** On recherche les projets pour les équipes rattaché à l'utilisateur */
         $in = '';
-        foreach ($teams as $team) {
-            if ($team !== 'null') {
+        foreach ($groupes as $groupe) {
+            if ($groupe !== 'null') {
                 /** On met en minuscule */
-                $minus = trim(strtolower($team));
+                $minus = trim(strtolower($groupe));
                 /** On construit la clause in et on remplace les espaces par des tirets  */
                 $in = $in." tag LIKE '".preg_replace('/\s+/', '-', $minus)."%' OR ";
             }
@@ -53,7 +53,7 @@ class MesProjets
 
         /** On construit la requête de selection des projets en fonction de(s) (l')équipes */
         $map = ['clause_where'=>$inTrim];
-        $requestListe = $listeProjetRepository->selectListeProjetByEquipe($map);
+        $requestListe = $listeProjetRepository->selectListeProjetByGroupe($map);
         if ($requestListe['code'] != 200) {
             return ['code' => $requestListe['code'], 'erreur' => $requestListe['erreur']];
         }

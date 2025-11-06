@@ -95,7 +95,7 @@ class PortefeuilleCrudController extends AbstractCrudController
     {
         return $filters
             ->add('titre')
-            ->add('equipe');
+            ->add('groupe');
     }
 
     /**
@@ -116,7 +116,7 @@ class PortefeuilleCrudController extends AbstractCrudController
         ->setHelp('Nom de la liste des projets.');
 
         // On récupère la liste des équipes
-        $sql = "SELECT titre, description FROM equipe ORDER BY titre ASC";
+        $sql = "SELECT titre, description FROM groupe ORDER BY titre ASC";
         $stmt = $this->emm->getConnection()->prepare($sql);
         $exec = $stmt->executeQuery();
         $result = $exec->fetchAllAssociative();
@@ -138,39 +138,39 @@ class PortefeuilleCrudController extends AbstractCrudController
             $val1[$i] = $value['titre'];
         }
 
-        yield ChoiceField::new('equipe')
+        yield ChoiceField::new('groupe')
             ->setChoices(array_combine($key1, $val1))
             ->renderExpanded()
             ->setHelp("Nom de l'équipe en charge des projets.");
 
          // --- Filtrage selon équipe sélectionnée ---
         $request = $this->getContext()->getRequest();
-        $selectedEquipe = $request->query->get('equipe');
-        if (empty($selectedEquipe) && $this->getContext()?->getEntity()?->getInstance()) {
+        $selectedGroupe = $request->query->get('groupe');
+        if (empty($selectedGroupe) && $this->getContext()?->getEntity()?->getInstance()) {
                     $entity = $this->getContext()->getEntity()->getInstance();
-                    $selectedEquipe = $entity->getEquipe();
+                    $selectedGroupe = $entity->getGroupe();
         }
 
         // --- Liste des projets ---
         $params = [];
         $sql = "SELECT name, maven_key FROM liste_projet";
 
-        if (!empty($selectedEquipe)) {
-            $equipes = array_map('trim', explode(',', $selectedEquipe));
+        if (!empty($selectedGroupe)) {
+            $groupes = array_map('trim', explode(',', $selectedGroupe));
 
             // Normalisation : tout en minuscules pour correspondre aux tags JSON
-            $equipes = array_map('mb_strtolower', $equipes);
+            $groupes = array_map('mb_strtolower', $groupes);
 
-            if (count($equipes) === 1) {
+            if (count($groupes) === 1) {
                 // Utilise jsonb_exists pour éviter l'opérateur '?' qui gêne PDO/DBAL
                 $sql .= " WHERE jsonb_exists(tags::jsonb, :eq0)";
-                $params['eq0'] = $equipes[0];
+                $params['eq0'] = $groupes[0];
             } else {
                 // Utilise jsonb_exists_any pour vérifier si AU MOINS UNE des valeurs est présente
                 // On fournit un littéral PostgreSQL text[] comme chaîne : '{"A","B"}'
                 $arrayLiteral = '{' . implode(',', array_map(
                     fn($v) => '"' . str_replace('"', '\"', $v) . '"',
-                    $equipes
+                    $groupes
                 )) . '}';
 
                 $sql .= " WHERE jsonb_exists_any(tags::jsonb, :eqArray)";
@@ -300,21 +300,21 @@ class PortefeuilleCrudController extends AbstractCrudController
     #[Route('/admin/portefeuille/list-projets', name: 'admin_list_projets')]
     public function listProjets(Request $request): JsonResponse
     {
-        $selectedEquipe = $request->query->get('equipe');
+        $selectedGroupe = $request->query->get('groupe');
         $params = [];
         $sql = "SELECT name, maven_key FROM liste_projet";
 
-        if (!empty($selectedEquipe)) {
-            $equipes = array_map('trim', explode(',', $selectedEquipe));
-            $equipes = array_map('mb_strtolower', $equipes);
+        if (!empty($selectedGroupe)) {
+            $groupes = array_map('trim', explode(',', $selectedGroupe));
+            $groupes = array_map('mb_strtolower', $groupes);
 
-            if (count($equipes) === 1) {
+            if (count($groupes) === 1) {
                 $sql .= " WHERE jsonb_exists(tags::jsonb, :eq0)";
-                $params['eq0'] = $equipes[0];
+                $params['eq0'] = $groupes[0];
             } else {
                 $arrayLiteral = '{' . implode(',', array_map(
                     fn($v) => '"' . addslashes($v) . '"',
-                    $equipes
+                    $groupes
                 )) . '}';
                 $sql .= " WHERE jsonb_exists_any(tags::jsonb, :eqArray)";
                 $params['eqArray'] = $arrayLiteral;

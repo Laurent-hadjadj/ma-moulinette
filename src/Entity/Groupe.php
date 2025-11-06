@@ -13,16 +13,16 @@
 
 namespace App\Entity;
 
-use App\Repository\EquipeRepository;
+use App\Repository\GroupeRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 use App\Validator as AcmeAssert;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: EquipeRepository::class)]
-#[ORM\Table(name: "equipe", schema: "ma_moulinette")]
-class Equipe
+#[ORM\Entity(repositoryClass: GroupeRepository::class)]
+#[ORM\Table(name: "groupe", schema: "ma_moulinette")]
+class Groupe
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -32,7 +32,7 @@ class Equipe
 
     #[ORM\Column(name: 'titre', type: Types::STRING, length: 32, unique: true, nullable: false,
         options: ['comment' => 'Titre de l’équipe, unique'])]
-    #[AcmeAssert\ContainsEquipeUnique]
+    #[AcmeAssert\ContainsGroupeUnique]
     #[Assert\NotBlank]
     #[Assert\Length(max: 32,
         maxMessage: "Le titre ne doit pas dépasser 32 caractères.")]

@@ -115,11 +115,11 @@ class ProjetController extends AbstractController
         $historiqueRepos = $this->em->getRepository(Historique::class);
 
         $render = static::genericRender();
-        $teams = $this->security->getUser()->getEquipe();
+        $groupes = $this->security->getUser()->getGroupe();
         $debug = '';
 
         /** Si l'utilisateur n'est pas rattaché à une équipe on ne charge rien */
-        if (empty($teams)) {
+        if (empty($groupes)) {
             /** On envoi un message à l'utilisateur */
             $render['liste_projet'] = [];
             $this->addFlash('notice', [
@@ -130,7 +130,7 @@ class ProjetController extends AbstractController
             return $this->render(static::$page, $render);
         }
 
-        $mes_projets = $this->mesProjets->liste($teams);
+        $mes_projets = $this->mesProjets->liste($groupes);
         if ($mes_projets['code'] === 406 || !isset($mes_projets['projets'])) {
             $render['liste_projet'] = [];
             $this->addFlash('notice',[

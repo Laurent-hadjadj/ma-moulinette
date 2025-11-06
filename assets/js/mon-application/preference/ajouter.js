@@ -71,12 +71,12 @@ const match=function(params, data) {
 const selectProjet=function() {
   let data={};
   /** On récupère le filtre */
-  const nombreEquipe = $("input[id^='check-']").length;
+  const nombreGroupe = $("input[id^='check-']").length;
   /** première valeur de la liste = 'null'  ? */
   data[0] = 'null';
-  for (let i = 1; i < Number(nombreEquipe) + 1; i++){
+  for (let i = 1; i < Number(nombreGroupe) + 1; i++){
     if ($(`#check-${i}`).prop('checked')) {
-      data[i] = $(`#check-${i}`).data('equipe');
+      data[i] = $(`#check-${i}`).data('groupe');
     }
   }
 
@@ -146,20 +146,20 @@ const selectProjet=function() {
 $('.js-preference-ajouter-favoris-enable').on('click', ()=> {
 
   /** On récupère le filtre */
-  const nombreEquipe=$("input[id^='check-']").length;
+  const nombreGroupe=$("input[id^='check-']").length;
 
   /** Si on a pas d'équipe */
-  if (nombreEquipe===0) { return; }
+  if (nombreGroupe===0) { return; }
 
   /** On regarde si au moins une équipe est choisi */
-  let nombreEquipeChecked=0;
-  for (let i=1; i<Number(nombreEquipe)+1; i++){
+  let nombreGroupeChecked=0;
+  for (let i=1; i<Number(nombreGroupe)+1; i++){
     if ($(`#check-${i}`).prop('checked')) {
-      nombreEquipeChecked =+1;
+      nombreGroupeChecked =+1;
     }
   }
 
-  if(nombreEquipeChecked===0) {
+  if(nombreGroupeChecked===0) {
     const message = "Vous devez choisir au moins une équipe !";
     /** On affiche un message */
     if ($('#callout-message').hasClass('hide')) {

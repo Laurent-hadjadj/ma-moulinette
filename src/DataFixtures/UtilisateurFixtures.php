@@ -50,7 +50,7 @@ class UtilisateurFixtures extends Fixture
         ->setPassword('$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K')
         ->setActif(true)
         ->setRoles(["ROLE_GESTIONNAIRE"])
-        ->setEquipe([])
+        ->setGroupe([])
         ->setPreference(static::$preference)
         ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
         $manager->persist($admin);
@@ -66,7 +66,7 @@ class UtilisateurFixtures extends Fixture
         ->setPassword('$2y$13$HMk1rgFp5OiveduUd.dNXeaxq1y/HiActAv3hiMpAFCNsCjNHIFya')
         ->setActif(false)
         ->setRoles(["ROLE_GESTIONNAIRE"])
-        ->setEquipe([])
+        ->setGroupe([])
         ->setPreference(static::$preference)
         ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
         $manager->persist($aurelie);
@@ -82,7 +82,7 @@ class UtilisateurFixtures extends Fixture
         ->setPassword('$2y$13$BrmmLZ3WiFwZcOllwh9zNOrjBRH9RSLEdLCW2y8by5CFX5zS.b1MG')
         ->setActif(false)
         ->setRoles(["ROLE_BATCH"])
-        ->setEquipe([])
+        ->setGroupe([])
         ->setPreference(static::$preference)
         ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
         $manager->persist($emma);
@@ -98,7 +98,7 @@ class UtilisateurFixtures extends Fixture
         ->setPassword('$2y$13$hwX0QJOw8fSgjiBq1CL/FuJsf4miOeLJRBw8jzt1WrsV/qLR.DxN.')
         ->setActif(0)
         ->setRoles(["ROLE_COLLECTE"])
-        ->setEquipe([])
+        ->setGroupe([])
         ->setPreference(static::$preference)
         ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
         $manager->persist($nathan);
@@ -114,7 +114,7 @@ class UtilisateurFixtures extends Fixture
         ->setPassword('$2y$13$ON.wYv3nmwkB9N3eOSubt.HFA46NjBHgyvOo6PBs3PVcCPtRb5MSa')
         ->setActif(false)
         ->setRoles(["ROLE_UTILISATEUR"])
-        ->setEquipe([])
+        ->setGroupe([])
         ->setPreference(static::$preference)
         ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
         $manager->persist($josh);

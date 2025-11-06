@@ -52,7 +52,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private array $roles = [];
 
     #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => "Liste des équipes"])]
-    private array $equipe = [];
+    private array $groupe = [];
 
     #[ORM\Column(type: Types::STRING, length: 64, nullable: false, options: ['comment' => "Mot de passe de l'utilisateur"])]
     #[Assert\NotBlank(groups: ['default'])]
@@ -455,7 +455,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
     /**
-     * [Description for getEquipe]
+     * [Description for getGroupe]
      *
      * @return array
      *
@@ -463,15 +463,15 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getEquipe(): array
+    public function getGroupe(): array
     {
-        return $this->equipe;
+        return $this->groupe;
     }
 
     /**
-     * [Description for setEquipe]
+     * [Description for setGroupe]
      *
-     * @param array $equipe
+     * @param array $groupe
      *
      * @return self
      *
@@ -479,9 +479,9 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function setEquipe(array $equipe): \App\Entity\Utilisateur
+    public function setGroupe(array $groupe): \App\Entity\Utilisateur
     {
-        $this->equipe = $equipe;
+        $this->groupe = $groupe;
 
         return $this;
     }
