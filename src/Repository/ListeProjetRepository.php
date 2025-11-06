@@ -132,7 +132,7 @@ class ListeProjetRepository extends ServiceEntityRepository
             AND NOT EXISTS (
                 SELECT 1
                 FROM jsonb_array_elements_text(tags::jsonb) AS elem
-                WHERE elem = '@AUCUN')";
+                WHERE elem = 'aucun')";
 
     try {
           $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
