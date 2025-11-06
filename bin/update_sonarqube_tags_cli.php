@@ -16,7 +16,7 @@
  * --------------------------------------------------------
  * 🧩 Version : 1.1.0
  * 🗂️ class   : `update_sonarqube_tags_cli.php`
- * 🧑‍💻 Auteur : Équipe Socle Développement
+ * 🧑‍💻 Auteur : Laurent HADJADJ
  * 🗓️ Dernière mise à jour : 2025-11-05
  *
  * 🎯 Étapes :
