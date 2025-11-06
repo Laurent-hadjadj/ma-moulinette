@@ -31,7 +31,7 @@ class UtilisateurCaseTest extends TestCase
   public static $password = '$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K';
   public static $actif = true;
   public static $roles = ["ROLE_GESTIONNAIRE"];
-  public static $equipe = [];
+  public static $groupe = [];
   public static $preference = ['{
     "statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
     "projet":[],"favori":[],"version":[],"bookmark":[]}'];
@@ -50,7 +50,7 @@ class UtilisateurCaseTest extends TestCase
       ->setPassword(static::$password)
       ->setActif(static::$actif)
       ->setRoles(static::$roles)
-      ->setEquipe(static::$equipe)
+      ->setGroupe(static::$groupe)
       ->setPreference(static::$preference)
       ->setDateModification(new \DateTime(static::$dateModification))
       ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
@@ -99,7 +99,7 @@ class UtilisateurCaseTest extends TestCase
     $entity->setPassword(static::$password);
     $entity->setActif(static::$actif);
     $entity->setRoles(static::$roles);
-    $entity->setEquipe(static::$equipe);
+    $entity->setGroupe(static::$groupe);
     $entity->setPreference(static::$preference);
     $entity->setDateModification(new \DateTime(static::$dateModification));
     $entity->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
@@ -118,7 +118,7 @@ class UtilisateurCaseTest extends TestCase
     $this->assertNotNull($entity->getPassword(), "Mot de passe null");
     $this->assertTrue(true, $entity->isActif(), "isActif doit être vrai");
     $this->assertEquals(static::$roles, $entity->getRoles(), "Erreur ROLES");
-    $this->assertEquals(static::$equipe, $entity->getEquipe(), "Erreur EQUIPE");
+    $this->assertEquals(static::$groupe, $entity->getGroupe(), "Erreur GROUPE");
     $this->assertEquals(static::$preference, $entity->getPreference(),"Erreur PREFERENCE");
     $this->assertEquals(new \DateTime(static::$dateModification), $entity->getDateModification(), "Erreur DATEModification");
     $this->assertEquals(new \DateTimeImmutable(static::$dateEnregistrement), $entity->getDateEnregistrement(), "Erreur DATEEnregistrement");

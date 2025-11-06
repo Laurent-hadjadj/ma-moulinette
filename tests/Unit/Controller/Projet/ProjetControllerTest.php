@@ -64,7 +64,7 @@ class ProjetControllerTest extends WebTestCase
         $securityMock = $this->createMock(Security::class);
         $userMock = $this->createMock(Utilisateur::class);
         $teamsMock = ['team1', 'team2'];
-        $userMock->method('getEquipe')->willReturn($teamsMock);
+        $userMock->method('getGroupe')->willReturn($teamsMock);
         $securityMock->method('getUser')->willReturn($userMock);
         $container->set(Security::class, $securityMock);
 
@@ -168,7 +168,7 @@ class ProjetControllerTest extends WebTestCase
         // Mock du service de sécurité
         $securityMock = $this->createMock(Security::class);
         $userMock = $this->createMock(Utilisateur::class);
-        $userMock->method('getEquipe')->willReturn([]);
+        $userMock->method('getGroupe')->willReturn([]);
         $securityMock->method('getUser')->willReturn($userMock);
         $container->set(Security::class, $securityMock);
 
@@ -202,7 +202,7 @@ class ProjetControllerTest extends WebTestCase
         $securityMock = $this->createMock(Security::class);
         $userMock = $this->createMock(Utilisateur::class);
         $teamsMock = ['team1', 'team2'];
-        $userMock->method('getEquipe')->willReturn($teamsMock);
+        $userMock->method('getGroupe')->willReturn($teamsMock);
         $securityMock->method('getUser')->willReturn($userMock);
         $container->set(Security::class, $securityMock);
 
@@ -245,7 +245,7 @@ class ProjetControllerTest extends WebTestCase
         $securityMock = $this->createMock(Security::class);
         $userMock = $this->createMock(Utilisateur::class);
         $teamsMock = ['team1', 'team2'];
-        $userMock->method('getEquipe')->willReturn($teamsMock);
+        $userMock->method('getGroupe')->willReturn($teamsMock);
         $securityMock->method('getUser')->willReturn($userMock);
         $container->set(Security::class, $securityMock);
 

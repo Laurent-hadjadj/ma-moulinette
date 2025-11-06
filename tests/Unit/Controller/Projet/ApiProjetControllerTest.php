@@ -308,13 +308,13 @@ class ApiProjetControllerTest extends WebTestCase
       $testUser = $userRepository->findOneByCourriel(static::$aurelie);
 
       // Sauvegarde du groupe actuel
-      $groupeActuel = $testUser->getEquipe();
+      $groupeActuel = $testUser->getGroupe();
 
       // Modification du groupe
       $groupeTest = [];
 
       /** On met à jour les préférences */
-      $testUser->setEquipe($groupeTest);
+      $testUser->setGroupe($groupeTest);
       $entityManager->flush();
 
       /** On se connecte */
@@ -324,7 +324,7 @@ class ApiProjetControllerTest extends WebTestCase
       $client->request('POST', static::$apiProjetListe, [], [], [static::$contentType]);
 
       // 🔄 **Restaure le groupe après le test **
-      $testUser->setEquipe($groupeActuel);
+      $testUser->setGroupe($groupeActuel);
       $entityManager->flush();
 
       $response = $client->getResponse();
@@ -341,7 +341,7 @@ class ApiProjetControllerTest extends WebTestCase
       $this->assertEquals(static::$message404, $jsonResponse['message']);
     }
 
-    public function testProjetListeEquipe500Error(): void
+    public function testProjetListeGroupe500Error(): void
     {
       $client = static::createClient();
       $container = static::getContainer();
@@ -350,7 +350,7 @@ class ApiProjetControllerTest extends WebTestCase
         ->disableOriginalConstructor()
         ->getMock();
 
-      $listeProjetRepositoryMock->method('selectListeProjetByEquipe')
+      $listeProjetRepositoryMock->method('selectListeProjetByGroupe')
         ->willReturn(['code' => 500, 'type' => 'alert', 'erreur' => static::$messageLight500]);
       $container->set(ListeProjetRepository::class, $listeProjetRepositoryMock);
 
@@ -360,13 +360,13 @@ class ApiProjetControllerTest extends WebTestCase
       $testUser = $userRepository->findOneByCourriel(static::$aurelie);
 
       // Sauvegarde du groupe actuel
-      $groupeActuel = $testUser->getEquipe();
+      $groupeActuel = $testUser->getGroupe();
 
       // Modification du groupe
       $groupeTest = ['le-chat'];
 
       /** On met à jour les préférences */
-      $testUser->setEquipe($groupeTest);
+      $testUser->setGroupe($groupeTest);
       $entityManager->flush();
 
       /** On se connecte */
@@ -376,7 +376,7 @@ class ApiProjetControllerTest extends WebTestCase
       $client->request('POST', static::$apiProjetListe, [], [], [static::$contentType]);
 
       // 🔄 **Restaure le groupe après le test **
-      $testUser->setEquipe($groupeActuel);
+      $testUser->setGroupe($groupeActuel);
       $entityManager->flush();
 
       $response = $client->getResponse();
@@ -393,7 +393,7 @@ class ApiProjetControllerTest extends WebTestCase
       $this->assertEquals(static::$message500, $jsonResponse['message']);
     }
 
-    public function testProjetListeEquipe406Error(): void
+    public function testProjetListeGroupe406Error(): void
     {
       $client = static::createClient();
       $container = static::getContainer();
@@ -402,7 +402,7 @@ class ApiProjetControllerTest extends WebTestCase
         ->disableOriginalConstructor()
         ->getMock();
 
-      $listeProjetRepositoryMock->method('selectListeProjetByEquipe')
+      $listeProjetRepositoryMock->method('selectListeProjetByGroupe')
         ->willReturn(['code' => 200, 'liste' => []]);
       $container->set(ListeProjetRepository::class, $listeProjetRepositoryMock);
 
@@ -412,13 +412,13 @@ class ApiProjetControllerTest extends WebTestCase
       $testUser = $userRepository->findOneByCourriel(static::$aurelie);
 
       // Sauvegarde du groupe actuel
-      $groupeActuel = $testUser->getEquipe();
+      $groupeActuel = $testUser->getGroupe();
 
       // Modification du groupe
       $groupeTest = ['le-chat'];
 
       /** On met à jour les préférences */
-      $testUser->setEquipe($groupeTest);
+      $testUser->setGroupe($groupeTest);
       $entityManager->flush();
 
       /** On se connecte */
@@ -428,7 +428,7 @@ class ApiProjetControllerTest extends WebTestCase
       $client->request('POST', static::$apiProjetListe, [], [], [static::$contentType]);
 
       // 🔄 **Restaure le groupe après le test **
-      $testUser->setEquipe($groupeActuel);
+      $testUser->setGroupe($groupeActuel);
       $entityManager->flush();
 
       $response = $client->getResponse();
@@ -445,7 +445,7 @@ class ApiProjetControllerTest extends WebTestCase
       $this->assertEquals(static::$message406, $jsonResponse['message']);
     }
 
-    public function testProjetListeEquipeSuccess(): void
+    public function testProjetListeGroupeSuccess(): void
     {
       $client = static::createClient();
       $container = static::getContainer();
@@ -454,7 +454,7 @@ class ApiProjetControllerTest extends WebTestCase
         ->disableOriginalConstructor()
         ->getMock();
 
-      $listeProjetRepositoryMock->method('selectListeProjetByEquipe')
+      $listeProjetRepositoryMock->method('selectListeProjetByGroupe')
         ->willReturn(['code' => 200, 'liste' =>
                         [
                           ['id' => static::$leChat, 'text' => 'le-chat']
@@ -468,13 +468,13 @@ class ApiProjetControllerTest extends WebTestCase
       $testUser = $userRepository->findOneByCourriel(static::$aurelie);
 
       // Sauvegarde du groupe actuel
-      $groupeActuel = $testUser->getEquipe();
+      $groupeActuel = $testUser->getGroupe();
 
       // Modification du groupe
       $groupeTest = ['le-chat'];
 
       /** On met à jour les préférences */
-      $testUser->setEquipe($groupeTest);
+      $testUser->setGroupe($groupeTest);
       $entityManager->flush();
 
       /** On se connecte */
@@ -484,7 +484,7 @@ class ApiProjetControllerTest extends WebTestCase
       $client->request('POST', static::$apiProjetListe, [], [], [static::$contentType]);
 
       // 🔄 **Restaure le groupe après le test **
-      $testUser->setEquipe($groupeActuel);
+      $testUser->setGroupe($groupeActuel);
       $entityManager->flush();
 
       $response = $client->getResponse();

@@ -21,7 +21,7 @@ class PortefeuilleValidatorTest extends KernelTestCase
 {
 
   private static $titre = 'MES PROJETS';
-  private static $equipe = 'MA PETITE ENTREPRISE';
+  private static $groupe = 'MA PETITE ENTREPRISE';
   private static $liste =  ['fr.ma-petite-entreprise:ma-moulinette'];
   private static $dateModification = '2024-03-26 14:46:38+01';
   private static $dateEnregistrement = '2024-03-25 12:26:58+01';
@@ -30,7 +30,7 @@ class PortefeuilleValidatorTest extends KernelTestCase
   {
       return (new portefeuille())
       ->setTitre(static::$titre)
-      ->setEquipe(static::$equipe)
+      ->setGroupe(static::$groupe)
       ->setListe(static::$liste)
       ->setDateModification(new \DateTime(static::$dateModification))
       ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
@@ -66,16 +66,16 @@ class PortefeuilleValidatorTest extends KernelTestCase
     $this->assertNotNull($portefeuille->getTitre());
   }
 
-  public function testEquipeInvalidBlankEntity(): void
+  public function testGroupeInvalidBlankEntity(): void
   {
-    $this->assertHasErrors($this->getEntity()->setEquipe(''), 1);
+    $this->assertHasErrors($this->getEntity()->setGroupe(''), 1);
   }
 
-  public function testEquipeNotNullEntity(): void
+  public function testGroupeNotNullEntity(): void
   {
     $portefeuille = new portefeuille();
-    $portefeuille->setEquipe('mon equipe');
-    $this->assertNotNull($portefeuille->getEquipe());
+    $portefeuille->setGroupe('mon groupe');
+    $this->assertNotNull($portefeuille->getGroupe());
   }
 
   public function testListeValidNullEntity(): void

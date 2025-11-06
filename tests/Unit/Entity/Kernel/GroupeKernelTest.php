@@ -14,15 +14,15 @@
 namespace App\Tests\Unit\Entity\Kernel;
 
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use App\DataFixtures\EquipeFixtures;
-use App\Entity\Equipe;
+use App\DataFixtures\GroupeFixtures;
+use App\Entity\Groupe;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 
 /**
- * [Description EquipeKernelTest]
+ * [Description GroupeKernelTest]
  */
-class EquipeKernelTest extends KernelTestCase
+class GroupeKernelTest extends KernelTestCase
 {
 
     private static $titre = 'MA PETITE ENTREPRISE';
@@ -38,13 +38,13 @@ class EquipeKernelTest extends KernelTestCase
         $platform = $connection->getDatabasePlatform();
 
         if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform) {
-            $sequence = 'ma_moulinette.equipe_id_seq';
+            $sequence = 'ma_moulinette.groupe_id_seq';
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
         $purger = new ORMPurger($entityManager);
         $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new EquipeFixtures()]);
+        $executor->execute([new GroupeFixtures()]);
     }
 
     public function testInformationProjetFindOneBy(): void
@@ -53,8 +53,8 @@ class EquipeKernelTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $equipeRepository = $entityManager->getRepository(Equipe::class);
-        $response = $equipeRepository->findOneBy(['titre' => static::$titre]);
+        $groupeRepository = $entityManager->getRepository(Groupe::class);
+        $response = $groupeRepository->findOneBy(['titre' => static::$titre]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'MAVENKEY: Aucune réponse trouvée');

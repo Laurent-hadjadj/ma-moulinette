@@ -22,7 +22,7 @@ Accueil: Accueil
 Titre: Titre
 Dashboard: Dashboard
 Utilisateur: Utilisateur
-Equipe: Équipe
+Groupe: Groupe
 Portefeuille: Portefeuille
 
 # UtilisateurCrud
@@ -32,7 +32,7 @@ Roles: Roles
 Actif: Actif
 Gestionnaire: Gestionnaire
 
-# EquipeCrud
+# GroupeCrud
 
 Description: Description
 Date Modification: Date de modification

@@ -99,7 +99,7 @@ class ListeProjetRepositoryTest extends KernelTestCase
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
-    public function testSelectListeProjetByEquipe(): void
+    public function testSelectListeProjetByGroupe(): void
     {
         // Connexion à la base de données
         self::bootKernel();
@@ -111,7 +111,7 @@ class ListeProjetRepositoryTest extends KernelTestCase
 
         // Appel de la méthode
         $listeProjetRepository = $entityManager->getRepository(ListeProjet::class);
-        $r = $listeProjetRepository->selectListeProjetByEquipe($map);
+        $r = $listeProjetRepository->selectListeProjetByGroupe($map);
 
         // Assert
         $this->assertEquals(200, $r['code'], static::$erreurCode200);

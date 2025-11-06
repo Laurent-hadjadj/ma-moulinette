@@ -24,7 +24,7 @@ class PortefeuilleCaseTest extends TestCase
     private $portefeuille;
 
     private static $titre = 'MES PROJETS';
-    private static $equipe = 'MA PETITE ENTREPRISE';
+    private static $groupe = 'MA PETITE ENTREPRISE';
     private static $liste =  ['fr.ma-petite-entreprise:ma-moulinette'];
     private static $dateModification = '2024-03-26 14:46:38+01';
     private static $dateEnregistrement = '2024-03-25 12:26:58+01';
@@ -33,7 +33,7 @@ class PortefeuilleCaseTest extends TestCase
     {
         return (new portefeuille())
         ->setTitre(static::$titre)
-        ->setEquipe(static::$equipe)
+        ->setGroupe(static::$groupe)
         ->setListe(static::$liste)
         ->setDateModification(new \DateTime(static::$dateModification))
         ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
@@ -57,10 +57,10 @@ class PortefeuilleCaseTest extends TestCase
         $this->assertEquals(static::$titre, $this->portefeuille->getTitre());
     }
 
-    public function testSettingAndGettingEquipe(): void
+    public function testSettingAndGettingGroupe(): void
     {
-        $this->portefeuille->setEquipe(static::$equipe);
-        $this->assertEquals(static::$equipe, $this->portefeuille->getEquipe());
+        $this->portefeuille->setGroupe(static::$groupe);
+        $this->assertEquals(static::$groupe, $this->portefeuille->getGroupe());
     }
 
     public function testSettingAndGettingListe(): void

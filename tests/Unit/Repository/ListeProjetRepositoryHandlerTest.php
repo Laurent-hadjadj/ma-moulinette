@@ -183,7 +183,7 @@ class ListeProjetRepositoryHandlerTest extends TestCase
         $this->assertSame($expected, $result);
     }
 
-    public function testSelectListeProjetByEquipe_WhenSQLException(): void
+    public function testSelectListeProjetByGroupe_WhenSQLException(): void
     {
         // 1) Exception DBAL factice
         /** @var DBALException&\Throwable $fakeException */
@@ -229,7 +229,7 @@ class ListeProjetRepositoryHandlerTest extends TestCase
 
         // 8) Appel de la méthode
         $map = ['clause_where'=>"tag LIKE 'ma-moulinette%' OR tag LIKE '2048%'" ];
-        $result = $repo->selectListeProjetByEquipe($map);
+        $result = $repo->selectListeProjetByGroupe($map);
 
         // 9) Vérification
         $this->assertSame($expected, $result);

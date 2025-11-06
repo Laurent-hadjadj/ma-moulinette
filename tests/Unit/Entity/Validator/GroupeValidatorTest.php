@@ -13,11 +13,11 @@
 
 namespace App\Tests\Unit\Entity\Validator;
 
-use App\Entity\Equipe;
+use App\Entity\Groupe;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\ConstraintViolation;
 
-class EquipeValidatorTest extends KernelTestCase
+class GroupeValidatorTest extends KernelTestCase
 {
 
   private static $titre = 'MA PETITE ENTREPRISE';
@@ -25,16 +25,16 @@ class EquipeValidatorTest extends KernelTestCase
   private static $dateModification = '2024-03-26 14:46:38+02';
   private static $dateEnregistrement = '2024-03-25 12:26:58+02';
 
-  private function getEntity(): Equipe
+  private function getEntity(): Groupe
   {
-      return (new equipe())
+      return (new groupe())
       ->setTitre(static::$titre)
       ->setDescription(static::$description)
       ->setDateModification(new \DateTime(static::$dateModification))
       ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
   }
 
-  public function assertHasErrors(Equipe $entity, int $number = 0): void
+  public function assertHasErrors(Groupe $entity, int $number = 0): void
   {
     self::bootKernel();
     $container = static::getContainer();

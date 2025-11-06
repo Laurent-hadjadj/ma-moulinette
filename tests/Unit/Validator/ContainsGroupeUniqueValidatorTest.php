@@ -13,9 +13,9 @@
 
 namespace App\Tests\Unit\Validator;
 
-use App\Entity\Equipe;
-use App\Validator\ContainsEquipeUnique;
-use App\Validator\ContainsEquipeUniqueValidator;
+use App\Entity\Groupe;
+use App\Validator\ContainsGroupeUnique;
+use App\Validator\ContainsGroupeUniqueValidator;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,9 +24,9 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Violation\ConstraintViolationBuilderInterface;
 
 /**
- * [Description ContainsEquipeUniqueValidatorTest]
+ * [Description ContainsGroupeUniqueValidatorTest]
  */
-class ContainsEquipeUniqueValidatorTest extends TestCase
+class ContainsGroupeUniqueValidatorTest extends TestCase
 {
     private $validator;
     /** @var EntityManagerInterface */
@@ -46,17 +46,17 @@ class ContainsEquipeUniqueValidatorTest extends TestCase
         $this->contextMock = $this->createMock(ExecutionContextInterface::class);
 
         // Mock de la contrainte
-        $this->constraintMock = $this->createMock(ContainsEquipeUnique::class);
+        $this->constraintMock = $this->createMock(ContainsGroupeUnique::class);
         $this->constraintMock->message = '[Équipe] La valeur "{{ string }}" existe déjà.'; // Message de la contrainte
 
         // Création du validateur
-        $this->validator = new ContainsEquipeUniqueValidator($this->entityManagerMock);
+        $this->validator = new ContainsGroupeUniqueValidator($this->entityManagerMock);
         $this->validator->initialize($this->contextMock); // Initialiser le validateur avec le contexte
     }
 
     public function testValidateWithValidValue(): void
     {
-        $value = 'EquipeTest';
+        $value = 'GroupeTest';
 
         // Simulation du cas où aucune équipe avec ce titre n'existe
         $this->entityManagerMock
@@ -73,16 +73,16 @@ class ContainsEquipeUniqueValidatorTest extends TestCase
 
     public function testValidateWithExistingValue(): void
     {
-        $value = 'EquipeTest';
+        $value = 'GroupeTest';
 
         // Simulation du cas où une équipe avec ce titre existe déjà
-        $mockEquipe = $this->createMock(Equipe::class);
+        $mockGroupe = $this->createMock(Groupe::class);
         $this->entityManagerMock
             ->method('getRepository')
             ->willReturn($this->createMock(\Doctrine\ORM\EntityRepository::class));
-        $this->entityManagerMock->getRepository(Equipe::class)
+        $this->entityManagerMock->getRepository(Groupe::class)
             ->method('findOneBy')
-            ->willReturn($mockEquipe);
+            ->willReturn($mockGroupe);
 
         // S'attend à ce qu'une violation soit ajoutée
         $violationBuilderMock = $this->createMock(ConstraintViolationBuilderInterface::class);
@@ -110,7 +110,7 @@ class ContainsEquipeUniqueValidatorTest extends TestCase
         $this->expectException(\TypeError::class);
 
         // Passer une contrainte invalide
-        $this->validator->validate('EquipeTest', new \stdClass());
+        $this->validator->validate('GroupeTest', new \stdClass());
 
         // Appel à la méthode validate avec le mauvais type de contrainte
         //$this->validator->validate('EXISTING_TITLE', $invalidConstraint);

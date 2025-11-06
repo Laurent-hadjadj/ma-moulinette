@@ -13,24 +13,24 @@
 
 namespace App\Tests\Unit\Entity\Case;
 
-use App\Entity\Equipe;
+use App\Entity\Groupe;
 use PHPUnit\Framework\TestCase;
 
 /**
- * [Description EquipeCaseTest]
+ * [Description GroupeCaseTest]
  */
-class EquipeCaseTest extends TestCase
+class GroupeCaseTest extends TestCase
 {
-    private $equipe;
+    private $groupe;
 
     private static $titre = 'MA PETITE ENTREPRISE';
     private static $description = "Équipe de Développement de l'application Ma-Moulinette";
     private static $dateModification = '2024-03-26 14:46:38+02';
     private static $dateEnregistrement = '2024-03-25 12:26:58+02';
 
-    private function getEntity(): Equipe
+    private function getEntity(): Groupe
     {
-        return (new equipe())
+        return (new groupe())
         ->setTitre(static::$titre)
         ->setDescription(static::$description)
         ->setDateModification(new \DateTime(static::$dateModification))
@@ -40,39 +40,39 @@ class EquipeCaseTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->equipe = $this->getEntity();
+        $this->groupe = $this->getEntity();
     }
 
     public function testSettingAndGettingId(): void
     {
-        $this->equipe->setId(1);
-        $this->assertEquals(1, $this->equipe->getId());
+        $this->groupe->setId(1);
+        $this->assertEquals(1, $this->groupe->getId());
     }
 
     public function testSettingAndGettingTitre(): void
     {
-        $this->equipe->setTitre(static::$titre);
-        $this->assertEquals(static::$titre, $this->equipe->getTitre());
+        $this->groupe->setTitre(static::$titre);
+        $this->assertEquals(static::$titre, $this->groupe->getTitre());
     }
 
     public function testSettingAndGettingDescription(): void
     {
-        $this->equipe->setDescription(static::$description);
-        $this->assertEquals(static::$description, $this->equipe->getDescription());
+        $this->groupe->setDescription(static::$description);
+        $this->assertEquals(static::$description, $this->groupe->getDescription());
     }
 
     public function testSettingAndGettingDateModification(): void
     {
         $newDate=new \DateTime(static::$dateModification);
-        $this->equipe->setDateModification($newDate);
-        $this->assertEquals($newDate, $this->equipe->getDateModification());
+        $this->groupe->setDateModification($newDate);
+        $this->assertEquals($newDate, $this->groupe->getDateModification());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
         $newDate=new \DateTimeImmutable(static::$dateEnregistrement);
-        $this->equipe->setDateEnregistrement($newDate);
-        $this->assertEquals($newDate, $this->equipe->getDateEnregistrement());
+        $this->groupe->setDateEnregistrement($newDate);
+        $this->assertEquals($newDate, $this->groupe->getDateEnregistrement());
     }
 
 }

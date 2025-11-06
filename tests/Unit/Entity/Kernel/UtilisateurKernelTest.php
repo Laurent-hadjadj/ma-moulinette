@@ -34,7 +34,7 @@ class UtilisateurKernelTest extends KernelTestCase
   public static $password = '$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K';
   public static $actif = true;
   public static $roles = ["ROLE_GESTIONNAIRE"];
-  public static $equipe = [];
+  public static $groupe = [];
   public static $preference = ['{
     "statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
     "projet":[],"favori":[],"version":[],"bookmark":[]}'];
@@ -52,7 +52,7 @@ class UtilisateurKernelTest extends KernelTestCase
       ->setPassword(static::$password)
       ->setActif(static::$actif)
       ->setRoles(static::$roles)
-      ->setEquipe(static::$equipe)
+      ->setGroupe(static::$groupe)
       ->setPreference(static::$preference)
       ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
   }
