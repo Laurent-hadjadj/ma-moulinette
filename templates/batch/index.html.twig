@@ -33,7 +33,7 @@
       <nav aria-label="vous êtes ici :">
         <ul class="claire-hand breadcrumbs">
           <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
-          <li><span class="show-for-sr">vous êtes sur la page Traitement :</span>Traitement</li>
+          <li><span class="show-for-sr">vous êtes sur la page :</span>Traitement</li>
         </ul>
       </nav>
     </header>
@@ -42,6 +42,10 @@
     {{ include('_message.html.twig') }}
 
     <main class="grid-container" role="main">
+      <h1 class="h3 claire-hand" aria-label="Traitements du jour">
+        <span aria-hidden="true" class="emoji">🕒</span> Traitements
+      </h1>
+
       <p class="open-sans">
         Collecte du
         <span id="info-bulle-in-progress" class="bulle-info bulle-init" title="Initialisation...">–</span>
