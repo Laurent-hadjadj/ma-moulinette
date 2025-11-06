@@ -13,15 +13,13 @@
 
 namespace App\Controller\Admin;
 
+use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Config\{Crud, Filters};
+use EasyCorp\Bundle\EasyAdminBundle\Field\{FormField, ChoiceField, TextField, DateTimeField};
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
-use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Portefeuille;
@@ -76,6 +74,7 @@ class PortefeuilleCrudController extends AbstractCrudController
             ->setFormThemes([
                 '@EasyAdmin/crud/form_theme.html.twig',
                 'admin/form/custom_choice_widget.html.twig',
+                'admin/form/custom_info_widget.html.twig',
             ]);
     }
 
@@ -112,8 +111,17 @@ class PortefeuilleCrudController extends AbstractCrudController
      */
     public function configureFields(string $pageName): iterable
     {
+        yield FormField::addColumn(12);
+        yield TextField::new('information')
+            ->setLabel(false)
+            ->setFormTypeOption('block_name', 'information')
+            ->onlyOnForms()
+            ->setFormTypeOption('mapped', false);
+
+        yield FormField::addColumn(6);
         yield TextField::new('titre')
-        ->setHelp('Nom de la liste des projets.');
+            ->setLabel('Nom')
+            ->setHelp('Nom de la liste des projets. Ex. Application - [Groupe]');
 
         // On récupère la liste des équipes
         $sql = "SELECT titre, description FROM groupe ORDER BY titre ASC";
@@ -201,6 +209,7 @@ class PortefeuilleCrudController extends AbstractCrudController
         // compter les projets remontés
         $count = count($projects);
 
+        yield FormField::addColumn(8);
         yield ChoiceField::new('liste')
             ->setChoices(array_combine($key2, $val2))
             ->allowMultipleChoices()

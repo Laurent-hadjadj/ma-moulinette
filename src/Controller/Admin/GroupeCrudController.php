@@ -14,10 +14,8 @@
 namespace App\Controller\Admin;
 
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
+use EasyCorp\Bundle\EasyAdminBundle\Config\{Action, Actions, Crud, Filters};
+use EasyCorp\Bundle\EasyAdminBundle\Field\{FormField, TextField, DateTimeField};
 use Symfony\Component\HttpFoundation\RequestStack;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -58,9 +56,11 @@ class GroupeCrudController extends AbstractCrudController
         return Groupe::class;
     }
 
-    public function configureCrud(Crud $crud): Crud
+    public function configureActions(Actions $actions): Actions
     {
-        return $crud;
+        return $actions
+            ->remove(Crud::PAGE_INDEX, Action::EDIT)
+            ->remove(Crud::PAGE_DETAIL, Action::EDIT);
     }
 
     /**
@@ -80,6 +80,14 @@ class GroupeCrudController extends AbstractCrudController
             ->add('titre');
     }
 
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud->setFormThemes([
+            'admin/form/custom_info_widget.html.twig',
+            '@EasyAdmin/crud/form_theme.html.twig',
+        ]);
+    }
+
     /**
      * [Description for configureFields]
      *
@@ -93,13 +101,28 @@ class GroupeCrudController extends AbstractCrudController
      */
     public function configureFields(string $pageName): iterable
     {
+        yield FormField::addColumn(12);
+        yield TextField::new('information')
+            ->setLabel(false)
+            ->setFormTypeOption('block_name', 'information')
+            ->onlyOnForms()
+            ->setFormTypeOption('mapped', false);
+
+        yield FormField::addColumn(4);
         yield TextField::new('titre')
-        ->setHelp('Nom de l\'équipe. Attention, si vous voulez utiliser les tags de SonarQube, les caractères autorisés sont [a-z0-9-].');
+            ->setLabel('Nom')
+            ->setFormTypeOption('attr', ['placeholder' => 'JAVA-C-COOL-AUSSI'])
+            ->setHelp('Nom du groupe. Les caractères autorisés sont [a-z0-9-] pour l\'utilisation des tags SonarQube.')
+            ->hideWhenUpdating();
+
         yield TextField::new('description')
-        ->setHelp('Description de l\'équipe.');
+        ->setFormTypeOption('attr', ['placeholder' => 'Application - JAVA'])
+        ->setHelp('Description du groupe. Par exemple, Application - ?[langage]');
+
         yield DateTimeField::new('dateModification')
             ->setTimezone('Europe/Paris')
             ->hideOnForm();
+
         yield DateTimeField::new('dateEnregistrement')
             ->setTimezone('Europe/Paris')
             ->hideOnForm();
@@ -138,13 +161,4 @@ class GroupeCrudController extends AbstractCrudController
         }
     }
 
-    public function updateEntity(EntityManagerInterface $em, $entityInstance): void
-    {
-        if (!$entityInstance instanceof Groupe) {
-            return;
-        }
-
-        $entityInstance->setDateModification(new \DateTime());
-        parent::updateEntity($em, $entityInstance);
-    }
 }
