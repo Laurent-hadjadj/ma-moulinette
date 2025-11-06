@@ -70,25 +70,27 @@ class BatchTraitementRepository extends ServiceEntityRepository
   }
 
   /**
-   * [Description for selectBatchTraitementDateEnregistrementAutomatiqueLast]
-   * On récupère la dernière date de programmation du batch automatique
-   *
+   * [Description for selectBatchTraitementAutoListe]
    *
    * @return array
    *
-   * Created at: 10/04/2024 09:10:49 (Europe/Paris)
+   * Created at: 06/11/2025 17:51:11 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectBatchTraitementDateEnregistrementAutomatiqueLast(): array
+  public function selectBatchTraitementAutoListe(): array
   {
-    $sql = "SELECT date_enregistrement as date
+      $sql = "SELECT titre as nom, portefeuille,
+                      nombre_projet as projets, traitement_id
             FROM ma_moulinette.batch_traitement
             WHERE mode_collecte = 'TRAITEMENT AUTOMATIQUE'
-            ORDER BY date_enregistrement DESC limit 1";
+              AND in_progress = false
+            ORDER BY date_enregistrement";
+
+      $conn = $this->getEntityManager()->getConnection();
 
       try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $liste = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
