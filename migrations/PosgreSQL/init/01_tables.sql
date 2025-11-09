@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V2.16.0 - 02/11/2025             ##
+##               V2.17.1 - 09/11/2025             ##
 ##                                                ##
 ####################################################*/
 
@@ -362,10 +362,10 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.batch_traitement
 (
   id SERIAL PRIMARY KEY,
   mode_collecte character varying(32) NOT NULL,
-  activated boolean NOT NULL DEFAULT FALSE,
+  activated boolean NOT NULL DEFAULT False,
   success boolean DEFAULT NULL,
   pending boolean DEFAULT NULL,
-  in_progress boolean NOT NULL DEFAULT FALSE,
+  in_progress boolean NOT NULL DEFAULT False,
   titre character varying(32) NOT NULL,
   portefeuille character varying(32) NOT NULL,
   nombre_projet integer NOT NULL,
