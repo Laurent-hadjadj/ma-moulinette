@@ -14,11 +14,9 @@
 namespace App\Controller\Cosui;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\{Request, Response};
 use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
-
 use App\Service\ProjetCosuiService;
 
 /**
