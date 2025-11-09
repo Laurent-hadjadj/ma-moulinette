@@ -16,19 +16,12 @@ namespace App\Controller\Profil;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
 use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-
-
-use App\Entity\Properties;
-use App\Entity\Profiles;
-use App\Entity\ProfilesHistorique;
-use App\Service\ClientService;
-use App\Service\UrlBuilderService;
+use App\Entity\{Properties, Profiles, ProfilesHistorique};
+use App\Service\{ClientService, UrlBuilderService};
 
 /**
  * [Description ApiProfilController]
