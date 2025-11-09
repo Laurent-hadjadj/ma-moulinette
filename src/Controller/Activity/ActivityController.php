@@ -19,9 +19,8 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Activity;
-use App\Entity\ActivityHistorique;
-use App\Service\ClientService;
+use App\Entity\{Activity, ActivityHistorique};
+use App\Service\{ClientService, UrlBuilderService};
 
 /**
  * [Description ActivityController]
