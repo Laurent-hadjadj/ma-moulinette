@@ -17,8 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Mesures;
-use App\Service\ClientService;
-use App\Service\UrlBuilderService;
+use App\Service\{ClientService, UrlBuilderService};
 
 /**
  * [Description BatchCollecteMesureController]
