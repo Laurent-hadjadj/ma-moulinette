@@ -17,22 +17,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-
 use App\Entity\Historique;
 
 /** Class API Batch */
-use App\Controller\Batch\BatchCollecteInformationProjetController;
-use App\Controller\Batch\BatchCollecteMesureController;
-use App\Controller\Batch\BatchCollecteNoteController;
-use App\Controller\Batch\BatchCollecteOwaspController;
-use App\Controller\Batch\BatchCollecteHotspotController;
-use App\Controller\Batch\BatchCollecteAnomalieController;
-use App\Controller\Batch\BatchCollecteAnomalieDetailController;
-use App\Controller\Batch\BatchCollecteHotspotOwaspController;
-use App\Controller\Batch\BatchCollecteHotspotDetailController;
-use App\Controller\Batch\BatchCollecteNoSonarController;
-use App\Controller\Batch\BatchCollecteTodoController;
-use App\Controller\Batch\BatchCollecteActuatorController;
+use App\Controller\Batch\{BatchCollecteInformationProjetController, BatchCollecteMesureController, BatchCollecteNoteController, BatchCollecteOwaspController, BatchCollecteHotspotController,BatchCollecteAnomalieController, BatchCollecteAnomalieDetailController, BatchCollecteHotspotOwaspController, BatchCollecteHotspotDetailController, BatchCollecteNoSonarController, BatchCollecteTodoController,BatchCollecteActuatorController};
 
 /**
  * [Description CollecteController]
