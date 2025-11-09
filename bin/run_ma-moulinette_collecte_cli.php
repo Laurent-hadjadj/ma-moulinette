@@ -179,7 +179,7 @@ if ($DRY_RUN) { logMessage("⚠️ Mode simulation activé.", 'INFO'); }
 if ($DEBUG) { logMessage("🛠️ Mode debug activé : toutes les requêtes/ réponses API seront affichées.\n", 'DEBUG'); }
 if ($DRY_RUN) { logMessage("🛠️ Flush activé tout les $FLUSH traitements", 'DEBUG'); }
 if ($USE_PROXY && $PROXY_URL) { logMessage("🌐 Proxy actif : $PROXY_URL", 'INFO'); }
-if (!empty($NO_PROXY)) { logMessage("🚫 Pas de proxy pour : " . implode(", ", $NO_PROXY) . "\n", 'TEXT'); }
+if (!empty($NO_PROXY)) { logMessage("🚫 Pas de proxy pour : " . implode(", ", $NO_PROXY), 'WARNING'); }
 
 // -----------------------------------------------------
 // === FONCTIONS UTILITAIRES ===
