@@ -56,11 +56,23 @@ class GroupeCrudController extends AbstractCrudController
         return Groupe::class;
     }
 
+    /**
+     * [Description for configureActions]
+     *
+     * @param Actions $actions
+     *
+     * @return Actions
+     *
+     * Created at: 09/11/2025 15:10:42 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function configureActions(Actions $actions): Actions
     {
+        // On désactive depuis la page INDEX, les pages de modification et de consultation
         return $actions
             ->remove(Crud::PAGE_INDEX, Action::EDIT)
-            ->remove(Crud::PAGE_DETAIL, Action::EDIT);
+            ->remove(Crud::PAGE_INDEX, Action::DETAIL);
     }
 
     /**
@@ -108,13 +120,14 @@ class GroupeCrudController extends AbstractCrudController
             ->onlyOnForms()
             ->setFormTypeOption('mapped', false);
 
-        yield FormField::addColumn(4);
+        yield FormField::addColumn(6);
         yield TextField::new('titre')
             ->setLabel('Nom')
             ->setFormTypeOption('attr', ['placeholder' => 'JAVA-C-COOL-AUSSI'])
             ->setHelp('Nom du groupe. Les caractères autorisés sont [a-z0-9-] pour l\'utilisation des tags SonarQube.')
             ->hideWhenUpdating();
 
+        yield FormField::addColumn(6);
         yield TextField::new('description')
         ->setFormTypeOption('attr', ['placeholder' => 'Application - JAVA'])
         ->setHelp('Description du groupe. Par exemple, Application - ?[langage]');
