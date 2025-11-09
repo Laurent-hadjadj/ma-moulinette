@@ -30,10 +30,10 @@ class Batch
     private $id;
 
     #[ORM\Column(type: Types::BOOLEAN, nullable: false,
-        options: ['comment' => 'Statut d’activité du batch'])]
+        options: ['comment' => 'Le traitement est activé ou pas'])]
     #[Assert\NotNull]
     #[Assert\Type(type: 'bool')]
-    private $statut = false;
+    private $activated = false;
 
     #[ORM\Column(type: Types::STRING, length: 32, unique: true, nullable: false,
         options: ['comment' => 'Titre du batch, unique'])]
@@ -100,14 +100,14 @@ class Batch
         return $this;
     }
 
-    public function isStatut(): ?bool
+    public function isActivated(): ?bool
     {
-        return $this->statut;
+        return $this->activated;
     }
 
-    public function setStatut(bool $statut): static
+    public function setActivated(bool $activated): static
     {
-        $this->statut = $statut;
+        $this->activated = $activated;
 
         return $this;
     }

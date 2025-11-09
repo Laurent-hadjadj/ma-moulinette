@@ -35,10 +35,15 @@ class BatchTraitement
     #[Assert\NotBlank]
     private $modeCollecte = "TRAITEMENT MANUEL";
 
+    #[ORM\Column(type: Types::BOOLEAN, nullable: false,
+        options: ['comment' => 'Indique si le traitement est activé ou non'])]
+    #[Assert\Type(type: 'bool', message: " Le résultat doit être un booléen.")]
+    #[Assert\NotNull]
+    private bool $activated = false;
+
     #[ORM\Column(type: Types::BOOLEAN, nullable: true,
         options: ['comment' => 'Indique si le traitement a réussi ou échoué'])]
-    #[Assert\Type(type: 'bool',
-        message: " Le résultat doit être un booléen.")]
+    #[Assert\Type(type: 'bool', message: " Le résultat doit être un booléen.")]
     #[Assert\NotNull]
     private ?bool $success = null;
 
@@ -126,6 +131,18 @@ class BatchTraitement
     public function setModeCollecte(string $modeCollecte): static
     {
         $this->modeCollecte = $modeCollecte;
+
+        return $this;
+    }
+
+    public function isActivated(): ?bool
+    {
+        return $this->activated;
+    }
+
+    public function setActivated(bool $activated): static
+    {
+        $this->activated = $activated;
 
         return $this;
     }

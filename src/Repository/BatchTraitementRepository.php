@@ -85,6 +85,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
               FROM ma_moulinette.batch_traitement
               WHERE mode_collecte = 'TRAITEMENT AUTOMATIQUE'
                 AND in_progress = false
+                AND activated = true
               ORDER BY date_enregistrement";
 
       $conn = $this->getEntityManager()->getConnection();
@@ -210,10 +211,9 @@ class BatchTraitementRepository extends ServiceEntityRepository
               SUM(CASE WHEN in_progress IS TRUE THEN 1 ELSE 0 END) AS in_progress_count,
               SUM(CASE WHEN pending IS NULL THEN 1 ELSE 0 END) AS pending_null_count,
               SUM(CASE WHEN in_progress IS NULL THEN 1 ELSE 0 END) AS in_progress_null_count
-            FROM
-                ma_moulinette.batch_traitement
-            WHERE
-                mode_collecte = 'TRAITEMENT MANUEL'";
+            FROM ma_moulinette.batch_traitement
+            WHERE mode_collecte = 'TRAITEMENT MANUEL'
+            AND activated = true";
 
     $conn = $this->getEntityManager()->getConnection();
 
@@ -329,8 +329,8 @@ class BatchTraitementRepository extends ServiceEntityRepository
   public function insertBatchTraitement(array $map): array
   {
       $sql = "INSERT INTO ma_moulinette.batch_traitement
-              (mode_collecte, success, in_progress, pending, titre, portefeuille, nombre_projet, responsable, responsable_short, traitement_id, date_enregistrement)
-              VALUES (:mode_collecte, :success, :in_progress, :pending, :titre, :portefeuille, :nombre_projet, :responsable, :responsable_short, :traitement_id, :date_enregistrement)";
+              (activated, mode_collecte, success, in_progress, pending, titre, portefeuille, nombre_projet, responsable, responsable_short, traitement_id, date_enregistrement)
+              VALUES (:activated, :mode_collecte, :success, :in_progress, :pending, :titre, :portefeuille, :nombre_projet, :responsable, :responsable_short, :traitement_id, :date_enregistrement)";
 
       $conn = $this->getEntityManager()->getConnection();
 
@@ -354,7 +354,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
                   $stmt->bindValue(':responsable_short', $map['responsable_short'], ParameterType::STRING);
                   $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
 
-                  // Gestion du type ULID pour PostgreSQL
+                  $this->bindNullableBool($stmt, ':activated', $map['activated']);
                   $this->bindNullableBool($stmt, ':success', $map['success']);
                   $this->bindNullableBool($stmt, static::$pending, $map['pending']);
                   $this->bindNullableBool($stmt, ':in_progress', $map['in_progress']);
