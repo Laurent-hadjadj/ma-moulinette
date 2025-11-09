@@ -12,24 +12,12 @@
 */
 
 namespace App\Controller\Admin;
-
 use App\Entity\Utilisateur;
-
 use Doctrine\ORM\EntityManagerInterface;
 
-use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
-
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\EmailField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\AvatarField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
-
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Config\{Crud, Actions, Action, Filters};
+use EasyCorp\Bundle\EasyAdminBundle\Field\{TextField, EmailField, AvatarField, ChoiceField, BooleanField, DateTimeField};
 
 /**
  * [Description UtilisateurCrudController]
