@@ -19,7 +19,6 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use EasyCorp\Bundle\EasyAdminBundle\Field\{BooleanField, ChoiceField, DateTimeField, IntegerField, TextField};
 use Symfony\Component\Uid\Ulid;
 use Doctrine\ORM\EntityManagerInterface;
-
 use App\Entity\{Batch, BatchTraitement, BatchExecution };
 use App\Exception\SqlRequestException;
 
@@ -38,15 +37,12 @@ class BatchCrudController extends AbstractCrudController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
 
-    private $emm;
-    private $token;
-
     public function __construct(
-        EntityManagerInterface $emm,
-        TokenStorageInterface $token,
+        private EntityManagerInterface $emm,
+        private TokenStorageInterface $token,
     ) {
-        $this->emm = $emm;
-        $this->token = $token;
+        //$this->emm = $emm;
+        //$this->token = $token;
     }
 
     /**
@@ -137,6 +133,7 @@ class BatchCrudController extends AbstractCrudController
             ->setHelp('mode de collecte Automatique ou Manuel (Automatique = true).');
 
         yield TextField::new('titre')
+            ->setLabel('Traitement')
             ->setFormTypeOption('attr', ['placeholder' => 'Application - Lot 1'])
             ->setHelp('Nom du traitement de données. Ex. Application - [groupe]');
 
