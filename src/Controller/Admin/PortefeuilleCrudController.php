@@ -16,11 +16,8 @@ namespace App\Controller\Admin;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\{Crud, Filters};
 use EasyCorp\Bundle\EasyAdminBundle\Field\{FormField, ChoiceField, TextField, DateTimeField};
-
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\{JsonResponse, Request};
 use Symfony\Component\Routing\Annotation\Route;
-
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Portefeuille, Batch, BatchTraitement};
 
