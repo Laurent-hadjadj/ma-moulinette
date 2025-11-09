@@ -17,20 +17,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
 use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-
-use App\Entity\ListeProjet;
-use App\Entity\Profiles;
-use App\Entity\Properties;
-use App\Entity\Historique;
-use App\Entity\MaMoulinette;
-use App\Service\ClientService;
-use App\Service\UrlBuilderService;
+use App\Entity\{ListeProjet, Profiles, Properties, Historique, MaMoulinette};
+use App\Service\{ClientService, UrlBuilderService};
 
 /**
  * [Description AccueilController]
