@@ -100,7 +100,7 @@ class DashboardController extends AbstractDashboardController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[IsGranted('ROLE_UTILISATEUR')]
+    #[IsGranted('ROLE_GESTIONNAIRE')]
     #[Route('/admin', name: 'admin')]
     public function index(): Response
     {
@@ -312,7 +312,6 @@ class DashboardController extends AbstractDashboardController
             ->setPermission('ROLE_GESTIONNAIRE');
 
         yield MenuItem::linkToCrud('Groupe', 'fas fa-users', Groupe::class)
-            ->setAction('new')
             ->setPermission('ROLE_GESTIONNAIRE');
 
         yield MenuItem::linkToCrud('Portefeuille', 'fas fa-gamepad', Portefeuille::class)
@@ -345,6 +344,15 @@ class DashboardController extends AbstractDashboardController
             ->setAvatarUrl($url);
     }
 
+    /**
+     * [Description for configureActions]
+     *
+     * @return Actions
+     *
+     * Created at: 09/11/2025 15:00:08 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function configureActions(): Actions
     {
         return parent::configureActions()
