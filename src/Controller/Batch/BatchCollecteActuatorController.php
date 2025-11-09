@@ -16,11 +16,8 @@ namespace App\Controller\Batch;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-
-use App\Service\ClientService;
-use App\Entity\Actuator;
-use App\Entity\ActuatorInfo;
-use App\Service\UrlBuilderService;
+use App\Entity\{Actuator, ActuatorInfo};
+use App\Service\{ClientService, UrlBuilderService};
 
 /**
  * [Description BatchCollecteActuatorController]
