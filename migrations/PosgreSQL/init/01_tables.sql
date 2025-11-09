@@ -324,7 +324,7 @@ DROP TABLE IF EXISTS ma_moulinette.batch;
 CREATE TABLE IF NOT EXISTS ma_moulinette.batch
 (
   id SERIAL PRIMARY KEY,
-  statut boolean NOT NULL,
+  activated boolean NOT NULL,
   titre character varying(32) NOT NULL,
   description character varying(128) NOT NULL,
   responsable character varying(128) NOT NULL,
@@ -340,18 +340,18 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.batch
 ALTER TABLE ma_moulinette.batch OWNER TO db_user;
 GRANT ALL ON TABLE ma_moulinette.batch TO db_user;
 
-COMMENT ON COLUMN ma_moulinette.batch.id IS 'Identifiant unique du batch';
-COMMENT ON COLUMN ma_moulinette.batch.statut IS 'Statut d’activité du batch';
+COMMENT ON COLUMN ma_moulinette.batch.id IS 'Identifiant unique du traitement';
+COMMENT ON COLUMN ma_moulinette.batch.activated IS 'Statut d’activité du traitement';
 COMMENT ON COLUMN ma_moulinette.batch.titre IS 'Titre du batch, unique';
-COMMENT ON COLUMN ma_moulinette.batch.description IS 'Description du batch';
+COMMENT ON COLUMN ma_moulinette.batch.description IS 'Description du traitement';
 COMMENT ON COLUMN ma_moulinette.batch.responsable IS 'Identifiant de l’utilisateur responsable';
 COMMENT ON COLUMN ma_moulinette.batch.responsable_short IS 'Identifiant court de l’utilisateur responsable du traitement';
 COMMENT ON COLUMN ma_moulinette.batch.portefeuille IS 'Portefeuille de projet, unique';
-COMMENT ON COLUMN ma_moulinette.batch.nombre_projet IS 'Nombre de projets dans le batch';
-COMMENT ON COLUMN ma_moulinette.batch.execution IS 'État d’exécution du batch';
+COMMENT ON COLUMN ma_moulinette.batch.nombre_projet IS 'Nombre de projets dans le traitement';
+COMMENT ON COLUMN ma_moulinette.batch.execution IS 'État d’exécution du traitement';
 COMMENT ON COLUMN ma_moulinette.batch.traitement_id IS 'Identifiant unique du traitement';
-COMMENT ON COLUMN ma_moulinette.batch.date_modification IS 'Date de la dernière modification du batch';
-COMMENT ON COLUMN ma_moulinette.batch.date_enregistrement IS 'Date d’enregistrement du batch';
+COMMENT ON COLUMN ma_moulinette.batch.date_modification IS 'Date de la dernière modification du traitement';
+COMMENT ON COLUMN ma_moulinette.batch.date_enregistrement IS 'Date d’enregistrement du traitement';
 
 -- ===============================================
 -- Table: ma_moulinette.batch_traitement
@@ -362,6 +362,7 @@ CREATE TABLE IF NOT EXISTS ma_moulinette.batch_traitement
 (
   id SERIAL PRIMARY KEY,
   mode_collecte character varying(32) NOT NULL,
+  activated boolean NOT NULL DEFAULT FALSE,
   success boolean DEFAULT NULL,
   pending boolean DEFAULT NULL,
   in_progress boolean NOT NULL DEFAULT FALSE,
@@ -381,6 +382,7 @@ GRANT ALL ON TABLE ma_moulinette.batch_traitement TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.batch_traitement.id IS 'Identifiant unique du traitement';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.mode_collecte IS 'Mode de collecte du traitement';
+COMMENT ON COLUMN ma_moulinette.batch_traitement.activated IS 'Indique si le traitement est activé ou non';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.success IS 'Indique si le traitement a réussi ou échoué';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.pending IS 'Indique si le traitement est en attente de traitement.';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.in_progress IS 'Indique si le traitement est en cours.';
@@ -1757,5 +1759,6 @@ $$;
 -- 30/10/2025 : Laurent HADJADJ - Suppression ou remplacement de reference_unique par traitement_id.
 -- 31/10/2025 : Laurent HADJADJ - Ajout de l'attribut execution_id pour la table batch_execution
 -- 02/11/2025 : Laurent HADJADJ - Modification du type pour le champs compte_rendu de TEXT en BYTEA
--- 03/11/2025 : Externalisation des vues et des proc_stock dans un script dédiée. Code-Clean.
--- 06/11/2025 : Renommage de equipe en groupe.
+-- 03/11/2025 : Laurent HADJADJ - Externalisation des vues et des proc_stock dans un script dédiée. Code-Clean.
+-- 06/11/2025 : Laurent HADJADJ - Renommage de equipe en groupe.
+-- 09/11/2025 : Laurent HADJADJ - Renommage de statut en activated pour la table batch, ajout de activated pour la table batch_traitement
