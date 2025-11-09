@@ -16,11 +16,8 @@ namespace App\Controller\Batch;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-
 use App\Entity\AnomalieDetails;
-use App\Service\ExtractName;
-use App\Service\ClientService;
-use App\Service\UrlBuilderService;
+use App\Service\{ExtractName, ClientService, UrlBuilderService};
 
 /**
  * [Description BatchCollecteAnomalieDetailController]
