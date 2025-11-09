@@ -1,4 +1,4 @@
-# Introduction
+# 🧩 Ma-Moulinette
 
 ![Ma-Moulinette](/documentation/ressources/home-000.jpg)
 
@@ -9,44 +9,111 @@
 ┗┓┏┓┏┛━┏┫┣┓━┃┃\
 ━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.0.0 Release on December 2025 !
 
-Ma Moulinette est une application, locale (pour le moment...), qui a pour objectif de simplifier la consultation et le suivi des principaux indicateurs collectés et calculés depuis un serveur SonarQube.
+**Ma-Moulinette** est une application web open-source dont l’objectif est de **simplifier la consultation et le suivi des indicateurs de qualité logicielle** collectés depuis un serveur **SonarQube**.
 
-L'application fonctionne avec la version SonarQube 8.9.9 LTS et 9.9.4 LTS. Elle s'appuie sur les API publiques de l'application SonarQube.
+Elle s’appuie sur les **API publiques** de SonarQube et est **compatible** avec les versions :
 
-`Note :` L'application est compatible avec les versions 8, 9 et 10 de SonarQube.
+- SonarQube **8.9.9 LTS**
+- SonarQube **9.9.4 LTS**
+- SonarQube **10 LTA**
 
-## Histoire
+---
 
-C'est lors d'un échange avec mes étudiants en stage PHP/Symfony, que j'ai présenté SonarQube et l'application de gestion et de suivi des indicateurs de qualité. L'objectif étant de leur montrer la réalisation d'une petite application web en HTML5/JS et les bonnes pratiques de conception et de réalisation.
+## 💡 Philosophie du projet
 
-Par la suite, l'application a été améliorée et utilisée dans le cadre de mes travaux.
+Conçue à la fois comme **outil de pilotage qualité** et **cadre pédagogique**, Ma-Moulinette est utilisée :
 
-Cette première version développée en 10 jours a été réalisée en HTML5, CSS et Javascript. Le stockage en base de données utilisait indexedDB (dexieJs).
-Cette application se voulait autonome, légère et simple d'utilisation. Elle permettait à un utilisateur de gérer localement son suivi des projets SonarQube.
+- comme **plateforme de démonstration et d’expérimentation** dans l’enseignement supérieur (BTS, BUT, Licence, etc.) ;
+- comme **projet support** pour la formation aux bonnes pratiques de développement, d’intégration continue et de qualité logicielle.
 
-Cependant, il n'a pas été possible de l'utiliser en condition de production. Pour autant, elle fonctionnait parfaitement dans notre environnement de développement.
+Ce double objectif a guidé son développement : offrir une **application robuste, claire et documentée**, tout en restant **accessible aux étudiants et formateurs**.
 
-Après de nombreux tests et réécritures de codes, la version a été abandonnée pour une application reposant sur le langage PHP et Symfony. Les premiers tests étant concluants, la migration de la version HTML5/JS a pu commencer.
+---
 
-Aujourd'hui, l'application est régulièrement utilisée et a fait l'objet de nombreuses évolutions.
+## 📜 Licence
 
-La version 2.0.0 est en cours de développement. Elle contient les fonctionnalités suivantes :
+Ma-Moulinette est distribuée sous licence
+**[Creative Commons CC BY-NC-SA 4.0 International](https://creativecommons.org/licenses/by-nc-sa/4.0/)**.
 
-- [x] Une base de données PostgreSQL centralisée ;
-- [x] La gestion des utilisateurs ;
-- [x] La gestion des équipes ;
-- [x] La Gestion des portefeuille de projets ;
-- [x] La Gestion des traitements asynchrones de collecte ;
-- [x] Un processus de collecte des indicateurs SonarQube ;
-- [x] Un processus d'historisation des résultats en base de données ;
-- [x] Des tableaux de suivi des indicateurs de qualité ;
-- [x] Un nouveau système de gestion de la documentation (mkDocs) ;
+> Vous êtes libres de partager et d’adapter le projet à condition de :
+>
+> - **Citer l’auteur** (BY),
+> - **Ne pas en faire un usage commercial** (NC),
+> - **Partager sous la même licence** (SA).
 
-Compte **Admin** (cf. securite.md).
+---
+
+## 📖 Histoire du projet
+
+Le projet est né lors d’un échange avec mes étudiants en **stage PHP/Symfony**, autour de l’analyse de code et de la qualité logicielle avec **SonarQube**.
+L’idée initiale : concevoir une **application web simple** en **HTML5/JS**, illustrant les bonnes pratiques de développement et d’architecture.
+
+La première version, développée en une dizaine de jours, reposait sur :
+
+- **HTML5 / CSS / JavaScript**,
+- **IndexedDB (Dexie.js)** pour le stockage local.
+
+Cette version légère et autonome permettait un **suivi local des projets SonarQube**, mais n’était pas adaptée à la production multi-utilisateurs.
+
+Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**, permettant une architecture solide, une base de données centralisée et des traitements automatisés.
+
+---
+
+## 🚀 État actuel
+
+Aujourd’hui, **Ma-Moulinette** est une application stable et évolutive, utilisée dans différents contextes (formation, évaluation continue, démonstration).
+
+La **version 2.0.0** est actuellement en développement et apporte de nombreuses améliorations.
+
+### ✅ Fonctionnalités disponibles
+
+- [x] Base de données **PostgreSQL** centralisée ;
+- [x] Gestion des **utilisateurs** et **groupes** ;
+- [x] Gestion des **portefeuilles de projets** SonarQube ;
+- [x] **Collecte asynchrone** des indicateurs manuellement ou via un batch PHP ;
+- [x] **Historisation** des résultats et métriques en base ;
+- [x] Tableaux de bord et **visualisation** des indicateurs ;
+- [x] Nouveau système de **documentation** avec **MkDocs**.
+
+---
+
+### 🧱 Fonctionnalités en cours de finalisation
+
+- [ ] Mise à jour et refonte des **tests unitaires** ;
+- [ ] Alignement complet de la **documentation** avec la version 2.0.0 ;
+- [ ] Finalisation de la **gestion des préférences utilisateurs** ;
+- [ ] Support complet de la **collecte Actuator** ;
+- [ ] Gestion avancée du **multi-projet (portefeuille étendu)** ;
+- [ ] Mise en place de la **gestion de session sécurisée** ;
+- [ ] Ajout de nouveaux **indicateurs SonarQube 10.x**.
+
+---
+
+## 🔐 Compte administrateur
 
 - [x] Son identifiant de connexion est <admin@ma-moulinette.fr>.
 - [x] Son mot de passe est : `eYK8k4[T;99N!em^`
 
-Code Emoji : ☠️ ✅ ❌ ⚠️ ℹ️ 📌 📄 🔴 🛠️ 🗑️ 🚫
+> **Important**, le mot de passe du compte `admin` étant rendu public, il est **obligatoire de le changer** lors du déploiement de l'application.
+
+---
+
+## Iconographie Ma-Moulinette
+
+> Informations
+
+- ✅ success
+- 📌 primary/notice
+- 📄 notice
+- 🚫 Interdit
+- ☠️ C'est pas bien
+
+> Loggers
+
+- ℹ️ info
+- ❌ error
+- ⚠️ warning
+- 🔴 critical
+- 🛠️ debug
 
 -**-- FIN --**-
