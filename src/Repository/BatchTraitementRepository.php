@@ -70,7 +70,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
   }
 
   /**
-   * [Description for selectBatchTraitementAutoListe]
+   * [Description for selectBatchTraitementAutomatiqueListe]
    *
    * @return array
    *
@@ -78,14 +78,14 @@ class BatchTraitementRepository extends ServiceEntityRepository
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectBatchTraitementAutoListe(): array
+  public function selectBatchTraitementAutomatiqueListe(): array
   {
-      $sql = "SELECT titre as nom, portefeuille,
-                      nombre_projet as projets, traitement_id
-            FROM ma_moulinette.batch_traitement
-            WHERE mode_collecte = 'TRAITEMENT AUTOMATIQUE'
-              AND in_progress = false
-            ORDER BY date_enregistrement";
+      $sql = "SELECT titre as nom_traitement, portefeuille,
+                      nombre_projet, traitement_id
+              FROM ma_moulinette.batch_traitement
+              WHERE mode_collecte = 'TRAITEMENT AUTOMATIQUE'
+                AND in_progress = false
+              ORDER BY date_enregistrement";
 
       $conn = $this->getEntityManager()->getConnection();
 
