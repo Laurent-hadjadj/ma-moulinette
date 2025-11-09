@@ -16,13 +16,10 @@ namespace App\Controller\Actuator;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\{Request, Response};
 use Knp\Component\Pager\PaginatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
-
-use App\Entity\Actuator;
-use App\Entity\ActuatorInfo;
+use App\Entity\{Actuator, ActuatorInfo};
 use App\Form\ActuatorFormType;
 use App\Service\ClientService;
 
