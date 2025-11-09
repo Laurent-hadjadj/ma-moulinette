@@ -16,11 +16,9 @@ namespace App\Controller\Batch;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\{Notes, Hotspots};
+use App\Service\{ClientService, UrlBuilderService};
 
-use App\Entity\Notes;
-use App\Entity\Hotspots;
-use App\Service\ClientService;
-use App\Service\UrlBuilderService;
 
 /**
  * [Description BatchCollecteNoteController]
