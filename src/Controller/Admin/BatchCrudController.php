@@ -110,7 +110,8 @@ class BatchCrudController extends AbstractCrudController
     {
         return $filters
             ->add('titre')
-            ->add('statut');
+            ->add('activated')
+            ->add('automatique');
     }
 
     /**
@@ -127,12 +128,17 @@ class BatchCrudController extends AbstractCrudController
      */
     public function configureFields(string $pageName): iterable
     {
-        yield BooleanField::new('statut')->renderAsSwitch(false)
+        yield BooleanField::new('activated')->renderAsSwitch(false)
+            ->setLabel('Activé')
             ->setHelp('Statut du traitement (Activé/Désactivé).');
 
+        yield BooleanField::new('automatique')->renderAsSwitch(false)
+            ->setLabel('Automatique ?')
+            ->setHelp('mode de collecte Automatique ou Manuel (Automatique = true).');
+
         yield TextField::new('titre')
-            ->setFormTypeOption('attr', ['placeholder' => 'Application Java Lot 1'])
-            ->setHelp('Nom du traitement de données. Ex. Application [language] [équipe]');
+            ->setFormTypeOption('attr', ['placeholder' => 'Application - Lot 1'])
+            ->setHelp('Nom du traitement de données. Ex. Application - [groupe]');
 
         /** On récupère la liste des projets sans filtrage */
         /** To.do : ajouter le filtrage en fonction du portefeuille de projets */
@@ -161,7 +167,7 @@ class BatchCrudController extends AbstractCrudController
 
         yield TextField::new('description')
             ->setFormTypeOption('attr', ['placeholder' => 'Collecte de données pour les applications JAVA du Lot 1'])
-            ->setHelp('Description du traitement de données. Ex. Collecte de données pour les applications [language]');
+            ->setHelp('Description du traitement de données. Ex. Collecte de données pour les applications [language] [groupe]');
 
         yield IntegerField::new('nombre_projet')
             ->hideOnForm()
@@ -237,7 +243,8 @@ class BatchCrudController extends AbstractCrudController
 
         /** On prépare les données pour la table de suivi des traitements */
         $map = [
-            'mode_collecte' => ($entityInstance->isStatut() === true)? 'TRAITEMENT AUTOMATIQUE' : 'TRAITEMENT MANUEL',
+            'mode_collecte' => ($entityInstance->isAutomatique() === true) ? 'TRAITEMENT AUTOMATIQUE' : 'TRAITEMENT MANUEL',
+            'activated' => $entityInstance->setActivated(true),
             'success' => null,
             'in_progress' => false,
             'pending' => null,
@@ -292,14 +299,20 @@ class BatchCrudController extends AbstractCrudController
 
         if ($nombre_projet > 0 && $nombre_projet != $entityInstance->getNombreProjet()) {
             // On met à jour la table BATCH
-            $sql1 = "UPDATE batch SET nombre_projet = $nombre_projet
+            $sql1 = "UPDATE batch
+                    SET nombre_projet = $nombre_projet
                     WHERE portefeuille = '$portefeuille'";
             $conn = $this->emm->getConnection()->prepare($sql1);
             $conn->executeStatement();
 
             // On met à jour la table BATCH_TRAITEMENT
             $traitement_id = $entityInstance->getTraitementId()->toRfc4122();
-            $sql2 = "UPDATE batch_traitement SET nombre_projet = $nombre_projet
+            $isActivated = $entityInstance->getIsActivated();
+            $isAutomatique = ($entityInstance->isAutomatique() === true) ? 'TRAITEMENT AUTOMATIQUE' : 'TRAITEMENT MANUEL';
+            $sql2 = "UPDATE batch_traitement
+                    SET nombre_projet = $nombre_projet,
+                        activated = $isActivated,
+                        mode_collecte = $isAutomatique,
                     WHERE traitement_id = '$traitement_id'";
             $conn = $this->emm->getConnection()->prepare($sql2);
             $conn->executeStatement();
@@ -336,6 +349,5 @@ class BatchCrudController extends AbstractCrudController
         // Supprime l'entité
         $em->remove($entityInstance);
         $em->flush();
-
     }
 }
