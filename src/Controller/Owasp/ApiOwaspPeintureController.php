@@ -14,17 +14,11 @@
 namespace App\Controller\Owasp;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\{JsonResponse,Response, Request};
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-
-
-use App\Entity\Owasp;
-use App\Entity\HotspotOwasp;
-use App\Entity\HotspotDetails;
+use App\Entity\{Owasp, HotspotOwasp, HotspotDetails};
 
 /**
  * [Description ApiOwaspPeintureController]
