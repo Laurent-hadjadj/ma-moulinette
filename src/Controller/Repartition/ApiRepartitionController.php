@@ -16,16 +16,11 @@ namespace App\Controller\Repartition;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Exception;
+use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-
-use App\Entity\Repartition;
-use App\Entity\RepartitionTemp;
 use App\Controller\Batch\BatchCollecteRepartitionController;
+use App\Entity\{Repartition, RepartitionTemp};
 
 /**
  * [Description ApiRepartitionController]
@@ -231,7 +226,7 @@ class ApiRepartitionController extends AbstractController
                     'total' => $repartitionAnalyse['total'],
                     'mode' => 'Manuel',
                 ], Response::HTTP_OK);
-        } catch (Exception $trace) {
+        } catch (\Exception $trace) {
             $this->logger->critical("[Répartition-Analyse] 🔴 Exception lors du traitement de répartition des anomalies par module (Erreur 500).", [
                 'exception' => $trace->getMessage()
             ]);
