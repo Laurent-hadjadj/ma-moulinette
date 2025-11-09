@@ -22,9 +22,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Portefeuille;
-use App\Entity\Batch;
-use App\Entity\BatchTraitement;
+use App\Entity\{Portefeuille, Batch, BatchTraitement};
 
 /**
  * [Description PortefeuilleCrudController]
