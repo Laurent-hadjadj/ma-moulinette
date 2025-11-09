@@ -14,28 +14,13 @@
 namespace App\Controller\Projet;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\SecurityBundle\Security;
 use Psr\Log\LoggerInterface;
 
 /** Gestion de accès aux API */
-use App\Controller\Batch\BatchCollecteInformationProjetController;
-use App\Controller\Batch\BatchCollecteMesureController;
-use App\Controller\Batch\BatchCollecteNoteController;
-use App\Controller\Batch\BatchCollecteOwaspController;
-use App\Controller\Batch\BatchCollecteHotspotController;
-use App\Controller\Batch\BatchCollecteAnomalieController;
-use App\Controller\Batch\BatchCollecteAnomalieDetailController;
-use App\Controller\Batch\BatchCollecteHotspotOwaspController;
-use App\Controller\Batch\BatchCollecteHotspotDetailController;
-use App\Controller\Batch\BatchCollecteNoSonarController;
-use App\Controller\Batch\BatchCollecteTodoController;
-use App\Controller\Batch\BatchCollecteActuatorController;
-use App\Controller\Batch\BatchCollecteLoggerController;
+use App\Controller\Batch\{BatchCollecteInformationProjetController, BatchCollecteMesureController,BatchCollecteNoteController, BatchCollecteOwaspController, BatchCollecteHotspotController,BatchCollecteAnomalieController, BatchCollecteAnomalieDetailController, BatchCollecteHotspotOwaspController,BatchCollecteHotspotDetailController, BatchCollecteNoSonarController, BatchCollecteTodoController,BatchCollecteActuatorController, BatchCollecteLoggerController};
 
 /**
  * [Description ApiMesureController]
