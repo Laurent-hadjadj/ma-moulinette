@@ -17,11 +17,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-
-use App\Entity\Repartition;
-use App\Entity\RepartitionTemp;
-use App\Service\ClientService;
-use App\Service\UrlBuilderService;
+use App\Entity\{Repartition, RepartitionTemp};
+use App\Service\{ClientService, UrlBuilderService};
 
 /**
  * [Description BatchCollecteNoSonarController]
