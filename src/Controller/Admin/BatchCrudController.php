@@ -295,6 +295,7 @@ class BatchCrudController extends AbstractCrudController
      */
     public function updateEntity(EntityManagerInterface $em, $entityInstance): void
     {
+
         if (!$entityInstance instanceof Batch) {
             return;
         }
@@ -303,7 +304,7 @@ class BatchCrudController extends AbstractCrudController
         $portefeuille = $entityInstance->getPortefeuille();
         $sql = "SELECT liste FROM portefeuille where titre = '$portefeuille'";
         $conn = $this->emm->getConnection()->prepare($sql);
-        $exec= $conn->executeQuery()->fetchAssociative();
+        $exec = $conn->executeQuery()->fetchAssociative();
 
         $nombre_projet = 0;
         if (isset($exec['liste'])){
@@ -317,19 +318,20 @@ class BatchCrudController extends AbstractCrudController
                     WHERE portefeuille = '$portefeuille'";
             $conn = $this->emm->getConnection()->prepare($sql1);
             $conn->executeStatement();
+        }
 
-            // On met à jour la table BATCH_TRAITEMENT
-            $traitement_id = $entityInstance->getTraitementId()->toRfc4122();
-            $isActivated = $entityInstance->getIsActivated();
-            $isAutomatique = ($entityInstance->isAutomatique() === true) ? 'TRAITEMENT AUTOMATIQUE' : 'TRAITEMENT MANUEL';
-            $sql2 = "UPDATE batch_traitement
+        // On met à jour la table BATCH_TRAITEMENT
+        $traitement_id = $entityInstance->getTraitementId()->toRfc4122();
+        $isActivated = $entityInstance->isActivated() ? 'TRUE' : 'FALSE';
+        $isAutomatique = ($entityInstance->isAutomatique() === true) ? 'TRAITEMENT AUTOMATIQUE' : 'TRAITEMENT MANUEL';
+
+        $sql2 = "UPDATE batch_traitement
                     SET nombre_projet = $nombre_projet,
                         activated = $isActivated,
-                        mode_collecte = $isAutomatique,
+                        mode_collecte = '$isAutomatique'
                     WHERE traitement_id = '$traitement_id'";
-            $conn = $this->emm->getConnection()->prepare($sql2);
-            $conn->executeStatement();
-        }
+        $conn = $this->emm->getConnection()->prepare($sql2);
+        $conn->executeStatement();
 
         /** On ajoute la date de modification  */
         $entityInstance->setDateModification(new \DateTime());
