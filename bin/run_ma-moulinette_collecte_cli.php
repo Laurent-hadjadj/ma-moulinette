@@ -126,7 +126,7 @@ function logMessage(string $message, string $level = 'INFO'): void {
     $reset = "\033[0m";
 
     $prefix = isset($colors[$level]) ? "{$colors[$level]}[$level]$reset" : "[$level]";
-    $line = ($level == 'TEXT') ? "$date $message\n" : "$date $prefix $message\n";
+    $line = "$date $prefix $message\n";
 
     echo $line;
     file_put_contents($logFile, strip_tags($line), FILE_APPEND);
@@ -172,13 +172,13 @@ rotateLogs($logDir, $logFile, $MAX_LOG_SIZE * 1024 * 1024, $KEEP_DAYS);
 // -----------------------------------------------------
 
 logMessage("🔗 Connexion à Ma-Moulinette : $MA_MOULINETTE_URL", 'INFO');
-logMessage("🧾 Conservation des logs : $KEEP_DAYS jour(s)\n", 'INFO');
-logMessage("📏 Taille max des logs : $MAX_LOG_SIZE Mo\n", 'INFO');
-logMessage("📂 Répertoire des logs : $logDir\n", 'INFO');
-if ($DRY_RUN) { logMessage("⚠️ Mode simulation activé.\n", 'INFO'); }
+logMessage("🧾 Conservation des logs : $KEEP_DAYS jour(s)", 'INFO');
+logMessage("📏 Taille max des logs : $MAX_LOG_SIZE Mo", 'INFO');
+logMessage("📂 Répertoire des logs : $logDir", 'INFO');
+if ($DRY_RUN) { logMessage("⚠️ Mode simulation activé.", 'INFO'); }
 if ($DEBUG) { logMessage("🛠️ Mode debug activé : toutes les requêtes/ réponses API seront affichées.\n", 'DEBUG'); }
-if ($DRY_RUN) { logMessage("🛠️ Flush activé tout les $FLUSH traitements\n", 'DEBUG'); }
-if ($USE_PROXY && $PROXY_URL) { logMessage("🌐 Proxy actif : $PROXY_URL\n", 'INFO'); }
+if ($DRY_RUN) { logMessage("🛠️ Flush activé tout les $FLUSH traitements", 'DEBUG'); }
+if ($USE_PROXY && $PROXY_URL) { logMessage("🌐 Proxy actif : $PROXY_URL", 'INFO'); }
 if (!empty($NO_PROXY)) { logMessage("🚫 Pas de proxy pour : " . implode(", ", $NO_PROXY) . "\n", 'TEXT'); }
 
 // -----------------------------------------------------
