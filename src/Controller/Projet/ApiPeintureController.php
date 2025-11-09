@@ -15,22 +15,11 @@ namespace App\Controller\Projet;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\{JsonResponse, Response, Request};
 use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-
-use App\Entity\InformationProjet;
-use App\Entity\Anomalie;
-use App\Entity\AnomalieDetails;
-use App\Entity\Mesures;
-use App\Entity\NoSonar;
-use App\Entity\Hotspots;
-use App\Entity\Notes;
-use App\Entity\Todo;
-use App\Entity\Logger;
+use App\Entity\{InformationProjet, Anomalie, AnomalieDetails, Mesures, NoSonar, Hotspots, Notes, Todo, Logger};
 use App\Service\IsValideMavenKey;
 
 /**
