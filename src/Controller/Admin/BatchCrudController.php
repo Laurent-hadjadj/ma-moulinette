@@ -16,17 +16,11 @@ namespace App\Controller\Admin;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
-use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\IntegerField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\{BooleanField, ChoiceField, DateTimeField, IntegerField, TextField};
 use Symfony\Component\Uid\Ulid;
 use Doctrine\ORM\EntityManagerInterface;
 
-use App\Entity\Batch;
-use App\Entity\BatchExecution;
-use App\Entity\BatchTraitement;
+use App\Entity\{Batch, BatchTraitement, BatchExecution };
 use App\Exception\SqlRequestException;
 
 /**
