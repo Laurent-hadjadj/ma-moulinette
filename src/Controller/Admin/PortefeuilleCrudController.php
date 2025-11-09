@@ -118,7 +118,7 @@ class PortefeuilleCrudController extends AbstractCrudController
             ->setLabel('Nom')
             ->setHelp('Nom de la liste des projets. Ex. Application - [Groupe]');
 
-        // On récupère la liste des équipes
+        // On récupère la liste des groupes
         $sql = "SELECT titre, description FROM groupe ORDER BY titre ASC";
         $stmt = $this->emm->getConnection()->prepare($sql);
         $exec = $stmt->executeQuery();
@@ -144,7 +144,7 @@ class PortefeuilleCrudController extends AbstractCrudController
         yield ChoiceField::new('groupe')
             ->setChoices(array_combine($key1, $val1))
             ->renderExpanded()
-            ->setHelp("Nom de l'équipe en charge des projets.");
+            ->setHelp("Nom du groupe en charge des projets.");
 
          // --- Filtrage selon équipe sélectionnée ---
         $request = $this->getContext()->getRequest();
@@ -209,6 +209,7 @@ class PortefeuilleCrudController extends AbstractCrudController
             ->setChoices(array_combine($key2, $val2))
             ->allowMultipleChoices()
             ->autocomplete()
+            ->hideOnIndex()
             ->setHelp(sprintf('Liste des projets du portefeuille — %d projet(s) trouvés. Tape pour filtrer.', $count));
 
         yield DateTimeField::new('dateModification')
