@@ -324,6 +324,7 @@ DROP TABLE IF EXISTS ma_moulinette.batch;
 CREATE TABLE IF NOT EXISTS ma_moulinette.batch
 (
   id SERIAL PRIMARY KEY,
+  automatique boolean NOT NULL DEFAULT False,
   activated boolean NOT NULL,
   titre character varying(32) NOT NULL,
   description character varying(128) NOT NULL,
@@ -342,6 +343,7 @@ GRANT ALL ON TABLE ma_moulinette.batch TO db_user;
 
 COMMENT ON COLUMN ma_moulinette.batch.id IS 'Identifiant unique du traitement';
 COMMENT ON COLUMN ma_moulinette.batch.activated IS 'Statut d’activité du traitement';
+COMMENT ON COLUMN ma_moulinette.batch.automatique IS 'Mode manuel ou automatqiue';
 COMMENT ON COLUMN ma_moulinette.batch.titre IS 'Titre du batch, unique';
 COMMENT ON COLUMN ma_moulinette.batch.description IS 'Description du traitement';
 COMMENT ON COLUMN ma_moulinette.batch.responsable IS 'Identifiant de l’utilisateur responsable';
@@ -1762,3 +1764,5 @@ $$;
 -- 03/11/2025 : Laurent HADJADJ - Externalisation des vues et des proc_stock dans un script dédiée. Code-Clean.
 -- 06/11/2025 : Laurent HADJADJ - Renommage de equipe en groupe.
 -- 09/11/2025 : Laurent HADJADJ - Renommage de statut en activated pour la table batch, ajout de activated pour la table batch_traitement
+-- 09/11/2025 : Laurent HADJADJ - Correction du typage FALSE en False ;
+-- 09/11/2025 : Laurent HADJADJ - Ajout de l'attribibut traitement dans la table batch ;
