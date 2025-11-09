@@ -257,7 +257,7 @@ class BatchCrudController extends AbstractCrudController
         /** On prépare les données pour la table de suivi des traitements */
         $map = [
             'mode_collecte' => ($entityInstance->isAutomatique() === true) ? 'TRAITEMENT AUTOMATIQUE' : 'TRAITEMENT MANUEL',
-            'activated' => $entityInstance->setActivated(true),
+            'activated' => $entityInstance->isActivated() ? 'TRUE' : 'FALSE',
             'success' => null,
             'in_progress' => false,
             'pending' => null,
