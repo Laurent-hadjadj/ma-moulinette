@@ -7,15 +7,10 @@ namespace App\Controller\Suivi;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
 use Doctrine\ORM\EntityManagerInterface;
-
+use App\Entity\{Historique, Utilisateur, InformationProjet};
 use App\Service\ClientService;
-use App\Entity\Historique;
-use App\Entity\Utilisateur;
-use App\Entity\InformationProjet;
 
 /**
  * [Description ApiSuiviController]
