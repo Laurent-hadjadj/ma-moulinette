@@ -17,14 +17,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Messenger\MessageBusInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-
-use App\Entity\Activity;
-use App\Entity\ActivityHistorique;
+use App\Entity\{Activity, ActivityHistorique};
 use App\Message\ActivityMessage;
 use App\Service\ClientService;
 
