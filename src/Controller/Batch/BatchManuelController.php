@@ -16,21 +16,14 @@ namespace App\Controller\Batch;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\{Request, Response, JsonResponse, BinaryFileResponse};
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Uid\Ulid;
 use Psr\Log\LoggerInterface;
-
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 use App\Controller\Batch\CollecteController;
-use App\Entity\BatchTraitement;
-use App\Entity\BatchExecution;
-use App\Entity\BatchExecutionJournal;
-use App\Entity\BatchProfiling;
+use App\Entity\{BatchTraitement, BatchExecution, BatchExecutionJournal, BatchProfiling};
 use App\Service\ListeProjetPortefeuilleService;
 
 /**
@@ -44,6 +37,7 @@ class BatchManuelController extends AbstractController
     private static $europeParis = 'Europe/Paris';
     private static $dateFormat = "Y-m-d H:i:s";
     private static $traitementManuel = 'TRAITEMENT MANUEL';
+    private static $loggerUpdateBatchTraitement = '[Traitement-Manuel] ❌ Échec de la requête updateBatchTraitement';
 
     public function __construct(
         private CollecteController $collecte,
@@ -101,6 +95,17 @@ class BatchManuelController extends AbstractController
         ], Response::HTTP_OK);
     }
 
+    /**
+     * [Description for addPending]
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     *
+     * Created at: 08/11/2025 19:28:52 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     #[Route('/api/traitement/add-pending', name: 'add_pending', methods: ['POST'])]
     public function addPending(Request $request): JsonResponse
     {
@@ -271,7 +276,7 @@ class BatchManuelController extends AbstractController
         $update = $batchTraitementRepos->updateBatchTraitement($map);
 
         if ($update['code'] !== 200) {
-            $this->logger->error('[Batch Manuel] ❌ Échec de la requête updateBatchTraitement', [
+            $this->logger->error(static::$loggerUpdateBatchTraitement, [
                 'code' => $update['code'],
                 'message' => $update['message'] ?? static::$noMessage,
                 'erreur' => $update['erreur'] ?? static::$noError,
@@ -316,7 +321,7 @@ class BatchManuelController extends AbstractController
         $update = $batchTraitementRepos->updateBatchTraitement($map);
 
         if ($update['code'] !== 200) {
-            $this->logger->error('[Batch Manuel] ❌ Échec de la requête updateBatchTraitement', [
+            $this->logger->error(static::$loggerUpdateBatchTraitement, [
                 'code' => $update['code'],
                 'message' => $update['message'] ?? static::$noMessage,
                 'erreur' => $update['erreur'] ?? static::$noError,
@@ -448,8 +453,8 @@ class BatchManuelController extends AbstractController
         $nb_projets = count($les_projets['liste']);
         $memoire_peak = memory_get_peak_usage(true) / 1024 / 1024; // MB
         $memoire_moyenne = round($memoire_peak / $nb_projets, 2);
-        $temps_total = round((float)$interval->format('%s.%f'), 2);
-        $temps_moyen = round($temps_total / $nb_projets, 2);
+        $temps_total = round($totalEnd - $totalStart, 2);
+        $temps_moyen = $temps_total / max(count($les_projets['liste']), 1);
 
         // Création du profiling en base
         $profiling = new BatchProfiling(
@@ -465,7 +470,7 @@ class BatchManuelController extends AbstractController
 
         $this->em->persist($profiling);
         $this->em->flush();
-
+        $this->em->clear(BatchExecutionJournal::class);
 
         /** On met à jour la table des traitements */
         $map = [
@@ -479,7 +484,7 @@ class BatchManuelController extends AbstractController
 
         $update = $batchTraitementRepos->updateBatchTraitement($map);
         if ($update['code'] !== 200) {
-            $this->logger->error('[Batch Manuel] ❌ Échec de la requête updateBatchTraitement', [
+            $this->logger->error(static::$loggerUpdateBatchTraitement, [
                 'code' => $update['code'],
                 'message' => $update['message'] ?? static::$noMessage,
                 'erreur' => $update['erreur'] ?? static::$noError,
@@ -496,6 +501,8 @@ class BatchManuelController extends AbstractController
         }
 
         unset($map, $les_projets, $data, $profiling);
+        gc_collect_cycles();
+        gc_mem_caches();
 
         return new JsonResponse([
             'code' => 200,
