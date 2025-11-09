@@ -16,10 +16,12 @@ namespace App\Controller\Admin;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\{Crud, Assets, Action, Actions, MenuItem, userMenu, Dashboard};
+use Symfony\Component\Asset\Packages;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\{Response, JsonResponse};
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Utilisateur, Groupe, Portefeuille, Batch};
 
@@ -42,8 +44,8 @@ class DashboardController extends AbstractDashboardController
      */
     public function __construct(
         private EntityManagerInterface $em,
+        private Packages $assets
     ) {
-        $this->em = $em;
     }
 
     /**
@@ -285,9 +287,10 @@ class DashboardController extends AbstractDashboardController
      */
     public function configureDashboard(): Dashboard
     {
+        $faviconPath = $this->assets->getUrl('favicon/favicon-32x32.png');
         return Dashboard::new()
-            ->setTitle('<img src="assets/favicon/favicon-32x32.png"> Ma Moulinette')
-            ->setFaviconPath('assets/favicon/favicon-32x32.png')
+            ->setTitle('<img src="'.$faviconPath.'" alt="Logo"> Ma Moulinette')
+            ->setFaviconPath($faviconPath)
             ->renderContentMaximized()
             ->renderSidebarMinimized()
             ->disableDarkMode();
