@@ -26,14 +26,20 @@ class Batch
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Identifiant unique de la table batch'])]
+        options: ['comment' => 'Identifiant unique de la table batch.'])]
     private $id;
 
     #[ORM\Column(type: Types::BOOLEAN, nullable: false,
-        options: ['comment' => 'Le traitement est activé ou pas'])]
+        options: ['comment' => 'Le traitement est activé ou pas.'])]
     #[Assert\NotNull]
     #[Assert\Type(type: 'bool')]
     private $activated = false;
+
+    #[ORM\Column(type: Types::BOOLEAN, nullable: false,
+        options: ['comment' => 'Le traitement est automatique ou manuel.'])]
+    #[Assert\NotNull]
+    #[Assert\Type(type: 'bool')]
+    private $automatique = false;
 
     #[ORM\Column(type: Types::STRING, length: 32, unique: true, nullable: false,
         options: ['comment' => 'Titre du batch, unique'])]
@@ -97,6 +103,18 @@ class Batch
     public function setId(int $id): self
     {
         $this->id = $id;
+        return $this;
+    }
+
+    public function isAutomatique(): ?bool
+    {
+        return $this->automatique;
+    }
+
+    public function setAutomatique(bool $automatique): static
+    {
+        $this->automatique = $automatique;
+
         return $this;
     }
 
