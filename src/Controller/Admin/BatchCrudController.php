@@ -15,7 +15,7 @@ namespace App\Controller\Admin;
 
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Config\{Action, Actions, Crud, Filters};
 use EasyCorp\Bundle\EasyAdminBundle\Field\{BooleanField, ChoiceField, DateTimeField, IntegerField, TextField};
 use Symfony\Component\Uid\Ulid;
 use Doctrine\ORM\EntityManagerInterface;
@@ -41,8 +41,6 @@ class BatchCrudController extends AbstractCrudController
         private EntityManagerInterface $emm,
         private TokenStorageInterface $token,
     ) {
-        //$this->emm = $emm;
-        //$this->token = $token;
     }
 
     /**
@@ -88,6 +86,24 @@ class BatchCrudController extends AbstractCrudController
     public static function getEntityFqcn(): string
     {
         return Batch::class;
+    }
+
+    /**
+     * [Description for configureActions]
+     *
+     * @param Actions $actions
+     *
+     * @return Actions
+     *
+     * Created at: 09/11/2025 15:49:45 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function configureActions(Actions $actions): Actions
+    {
+        // On désactive depuis la page INDEX, la page de modification
+        return $actions
+            ->remove(Crud::PAGE_INDEX, Action::DETAIL);
     }
 
     /**
