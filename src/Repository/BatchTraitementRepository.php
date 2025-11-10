@@ -101,31 +101,6 @@ class BatchTraitementRepository extends ServiceEntityRepository
   }
 
   /**
-   * [Description for selectBatchTraitementDateEnregistrementLast]
-   * On récupère la dernière date du batch exécuté
-   *
-   * @return array
-   *
-   * Created at: 10/04/2024 09:35:40 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  public function selectBatchTraitementDateEnregistrementLast(): array
-  {
-    $sql = "SELECT date_enregistrement as date
-            FROM ma_moulinette.batch_traitement
-            ORDER BY date_enregistrement DESC limit 1";
-
-    try {
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-          $liste = $stmt->executeQuery()->fetchAllAssociative();
-    } catch (\Throwable $e) {
-      return $this->handleDatabaseException($e);
-    }
-    return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
-  }
-
-  /**
    * [Description for selectBatchTraitementLast]
    * On récupère la liste des derniers traitements,
    * groupé par titre et ordonné par responsable
@@ -138,14 +113,14 @@ class BatchTraitementRepository extends ServiceEntityRepository
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectBatchTraitementLast($dateShort): array
+  public function selectBatchTraitementActivated(): array
   {
     $sql = "SELECT  mode_collecte, success, in_progress, titre, portefeuille,
                     nombre_projet as projet, responsable, responsable_short,
                     debut_traitement as debut, fin_traitement as fin,
                     traitement_id
             FROM ma_moulinette.batch_traitement
-            WHERE date(date_enregistrement)= :date_short
+            WHERE activated = true
             GROUP BY mode_collecte,
                       success, in_progress,
                       titre, portefeuille, nombre_projet,
@@ -158,7 +133,6 @@ class BatchTraitementRepository extends ServiceEntityRepository
 
       try {
             $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(':date_short', $dateShort);
             $liste = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
