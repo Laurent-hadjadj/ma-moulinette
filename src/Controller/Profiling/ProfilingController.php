@@ -14,8 +14,7 @@
 namespace App\Controller\Profiling;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\{JsonResponse, Response};
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\DBAL\Connection;
 
@@ -30,7 +29,7 @@ class ProfilingController extends AbstractController
         return $this->render('batch/profiling_dashboard.html.twig');
     }
 
-    #[Route('/api/profiling/stats', name: 'profiling_stats', methods: ['GET'])]
+    #[Route('/api/secure/profiling/stats', name: 'profiling_stats', methods: ['GET'])]
     public function stats(Connection $conn): JsonResponse
     {
         $sql = <<<SQL
