@@ -64,7 +64,7 @@ async function fetchPending() {
   try {
     log('🔄 Vérification à', new Date().toLocaleTimeString());
 
-    const response = await fetch('/api/secure/secure/traitement/pending', {
+    const response = await fetch('/api/secure/traitement/pending', {
       method: 'GET',
       headers: {
         'X-API-Custom-403': 'true',
@@ -89,7 +89,7 @@ async function fetchPending() {
     // Si aucun in_progress et des pending, lancer automatiquement
     if (data && data.in_progress === 0 && data.pending > 0) {
       log('💡 Aucun en cours, pending dispo → possible lancement auto');
-      //TODO : await fetch('/api/secure/secure/traitement/start-next-pending', { method: 'POST' });
+      //TODO : await fetch('/api/secure/traitement/start-next-pending', { method: 'POST' });
     }
 
   } catch (error) {
