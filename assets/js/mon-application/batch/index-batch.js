@@ -33,7 +33,7 @@ import {serveur} from '../../common/properties.js';
 import { showMessage, hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
-import { contentType, un, trois, cinqCent, mille, http_500, http_400, http_200, troisMille, cinqMille } from '../../common/constante.js';
+import { contentType, dateOptions, un, trois, cinqCent, mille, http_500, http_400, http_200, troisMille, cinqMille } from '../../common/constante.js';
 
 /** on charge le service pendingWorker */
 import { pendingWorkerService } from '../batch/pendingWorkerService.js';
@@ -59,7 +59,7 @@ let suppressClick = false;
 const workInProgress = async function(){
 
   const options = {
-    url: `${serveur()}/api/traitement/pending`,
+    url: `${serveur()}/api/secure/traitement/pending`,
     type: 'GET',
     dataType: 'json',
     contentType,
@@ -97,7 +97,7 @@ const lancerTraitementSiPossible = async function(id, traitement_id, titre_porte
       showMessage('warning', `Un traitement est déjà en cours → ajout à la file d'attente.`);
 
       await $.ajax({
-        url: '/api/traitement/add-pending',
+        url: '/api/secure/traitement/add-pending',
         type: 'POST',
         data: JSON.stringify({traitement_id, titre_portefeuille, portefeuille }),
         contentType: 'application/json'
@@ -111,7 +111,7 @@ const lancerTraitementSiPossible = async function(id, traitement_id, titre_porte
 
     const data = { traitement_id, titre_portefeuille, portefeuille };
     const options = {
-      url: `${serveur()}/api/traitement/start`,
+      url: `${serveur()}/api/secure/traitement/start`,
       type: 'POST',
       dataType: 'json',
       data: JSON.stringify(data),
@@ -181,6 +181,99 @@ const lancerTraitementSiPossible = async function(id, traitement_id, titre_porte
 }
 
 /**
+ * [Description for traitementInformation]
+ * LRécupère les information du traitement
+ *
+ * @param string id
+ * @param string portefeuille
+ *
+ * @return void
+ *
+ * Created at: 07/02/2023, 15:05:56 (Europe/Paris)
+ * @author    Laurent HADJADJ <laurent_h@me.com>
+ * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ */
+const traitementInformation = async function(traitement_id){
+  /** On lance le processus */
+  const data = { traitement_id };
+  const options = {
+    url: `${serveur()}/api/secure/traitement/information`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
+
+  try{
+    const t = await $.ajax(options);
+
+    // 📌 Vérification des erreurs
+    if (t.code !== http_200){
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      return;
+    }
+
+    const traitement = t.map;
+    // Nom du traitement
+    $('.js-nom-traitement').text(traitement.nom_traitement);
+
+    // Badges et infos
+    $('.js-portefeuille').text(traitement.portefeuille);
+    $('.js-nombre-projet').text(traitement.nombre_projet);
+    $('.js-mode-collecte').text(traitement.mode_collecte);
+
+    // Statut
+    $('.js-statut')
+        .text(traitement.statut ? '✅ Succès' : '❌ Échec')
+        .removeClass('success failed')
+        .addClass(traitement.statut ? 'success' : 'failed');
+
+    // Activation
+    $('.js-activated')
+        .text(traitement.is_activated ? 'Oui' : 'Non')
+        .removeClass('active inactive')
+        .addClass(traitement.is_activated ? 'active' : 'inactive');
+
+    // Dates
+    $('.js-start-at').html(new Intl.DateTimeFormat('default', dateOptions)
+                      .format(new Date(traitement.start_at)));
+    $('.js-end-at').html(new Intl.DateTimeFormat('default', dateOptions)
+                      .format(new Date(traitement.end_at)));
+
+    // Timeline : calcul progress si fin > début
+    const start = new Date(traitement.start_at);
+    const end = new Date(traitement.end_at);
+    const now = new Date();
+    let progress = 0;
+
+    // on calcul la durée
+    const time_elapse = Math.abs((end - start) / (1000 * 60));;
+    $('.js-time-elapse').html(`${time_elapse} minutes`);
+
+    if (now < start) progress = 0;
+    else if (now > end) progress = 100;
+    else progress = ((now - start) / (end - start)) * 100;
+
+    $('.timeline-progress').css('width', `${progress}%`);
+
+
+    // Ouvrir modale
+    $('#modal-traitement-information').foundation('open');
+  } catch(erreur) {
+    const trace = prepareTechnicalDetails(erreur);
+    showMessage('critical', "Une erreur globale est survenue lors du traitement (Erreur 500).", trace);
+    return;
+  }
+
+}
+
+/**
  * [Description for traitementManuel]
  * Lance le traitement manuel
  *
@@ -197,7 +290,7 @@ const traitementManuel = async function(id, titre_portefeuille, portefeuille){
   /** On lance le processus */
   const data = { id, titre_portefeuille, portefeuille };
   const options = {
-    url: `${serveur()}/api/traitement/manuel`,
+    url: `${serveur()}/api/secure/traitement/manuel`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -270,8 +363,21 @@ const traitementManuel = async function(id, titre_portefeuille, portefeuille){
       $(`#result-${id}`).html(result);
     return;
   }
-
 }
+
+$('.js-outil-lire').on('click', async (e) => {
+  const id = e.currentTarget.id;
+  const idTab = id.split('-');
+  // on récupère l'index 1
+  const traitement_id = $(`#outil-${idTab[1]}`).attr('data-reference') ?? null;
+
+  if (traitement_id == '' || traitement_id == undefined || traitement_id == null){
+    showMessage('warning', "La référence à ce traitement n'existe pas (Erreur 404).");
+    return;
+  }
+  /** On appelle l'API */
+  traitementInformation(traitement_id);
+});
 
 $(document).ready(() => {
   const $bulle_wip = $('#info-bulle-in-progress');
@@ -293,7 +399,7 @@ $(document).ready(() => {
 
   pendingWorkerService.stop({ debug: false });
 
-  $('.i-am-human-svg').click(async (e) => {
+  $('.i-am-human-svg').on('click', async (e) => {
     /* si on a déjà cliqué, on sort */
     if (suppressClick){
       showMessage('warning', `Un traitement est déjà en cours → ajout à la file d'attente.`);
