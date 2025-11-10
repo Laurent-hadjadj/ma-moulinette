@@ -9,7 +9,6 @@
         "php": ">=8.3.0",
         "ext-ctype": "*",
         "ext-iconv": "*",
-        "cesargb/php-log-rotation": "^2.7.1",
         "doctrine/dbal": "^4.3.2",
         "doctrine/doctrine-bundle": "^2.15.0",
         "doctrine/orm": "^3.5.0",
