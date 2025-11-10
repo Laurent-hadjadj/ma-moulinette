@@ -167,31 +167,32 @@ class BatchTraitementRepository extends ServiceEntityRepository
   }
 
   /**
-   * [Description for selectBatchTraitement]
+   * [Description for selectBatchTraitementByTraitementId]
    *
    * @param array $map
    *
    * @return array
    *
-   * Created at: 09/06/2024 21:55:58 (Europe/Paris)
+   * Created at: 10/11/2025 11:36:58 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectBatchTraitement($map): array
+  public function selectBatchTraitementByTraitementId($traitement_id): array
   {
-    $sql = "SELECT id, mode_collecte, titre, portefeuille, nombre_projet, traitement_id
+    $sql = "SELECT *
             FROM ma_moulinette.batch_traitement
-            WHERE titre = :titre";
+            WHERE traitement_id = :traitement_id";
+
     $conn = $this->getEntityManager()->getConnection();
 
     try {
           $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                  $stmt->bindValue(':titre', $map['titre_portefeuille']);
-          $liste = $stmt->executeQuery()->fetchAllAssociative();
+                  $stmt->bindValue(':traitement_id', $traitement_id);
+          $traitement = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
       }
-      return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
+      return ['code' => 200, 'traitement' => $traitement[0], 'erreur' => ''];
   }
 
   /**
@@ -437,6 +438,5 @@ class BatchTraitementRepository extends ServiceEntityRepository
         /** on prépare la réponse */
         return ['code' => 200, 'erreur' => ''];
   }
-
 
 }
