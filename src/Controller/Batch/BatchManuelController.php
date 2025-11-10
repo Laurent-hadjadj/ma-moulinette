@@ -339,7 +339,7 @@ class BatchManuelController extends AbstractController
         // === PROFILING - INITIALISATION ======================
         // =====================================================
         $totalStart = microtime(true);
-        $profiling = [];
+        $profilingRecords = [];
 
         $this->profilerLogger->info('[PROFILING] --- Démarrage du traitement manuel ---');
         $this->profilerLogger->info(sprintf('[PROFILING] Portefeuille: %s / Utilisateur: %s', $data->portefeuille, $utilisateur_collecte));
@@ -366,7 +366,7 @@ class BatchManuelController extends AbstractController
             $elapsed = microtime(true) - $projectStart;
             $memUsed = round(($memAfter - $memBefore) / 1024 / 1024, 1);
 
-            $profiling[] = [
+            $profilingRecords[] = [
                 'projet' => $le_projet,
                 'time' => round($elapsed, 2),
                 'memory' => $memUsed,
@@ -395,6 +395,14 @@ class BatchManuelController extends AbstractController
                     $memUsed
                 ));
 
+                $batchTraitementRepos->updateBatchTraitement([
+                    'success' => false,
+                    'in_progress' => false,
+                    'pending' => false,
+                    'fin_traitement' => (new \DateTime('now', new \DateTimeZone(static::$europeParis)))->format(static::$dateFormat),
+                    'traitement_id' => $data->traitement_id,
+                ]);
+
                 $code = $result['code'];
                 $type = 'warning';
                 $message = "La collecte du projet <strong>$le_projet</strong> n'a pas abouti.<br>Consultez le journal d’exécution pour plus d’informations.";
@@ -404,7 +412,9 @@ class BatchManuelController extends AbstractController
             }
 
             // === Flush périodique et nettoyage mémoire ===
+            $this->logger->debug('peak before flush: ' . memory_get_peak_usage(true)/1024/1024 . ' MB');
             $this->em->flush();
+            $this->logger->debug('peak after flush: ' . memory_get_peak_usage(true)/1024/1024 . ' MB');
             $this->em->clear();
 
             $batchExecution = $this->em->getReference(BatchExecution::class, $batchExecution->getId());
@@ -426,15 +436,15 @@ class BatchManuelController extends AbstractController
 
         $totalEnd = microtime(true);
         $totalTime = round($totalEnd - $totalStart, 2);
-        $avgTime = $totalTime / max(count($profiling), 1);
-        $avgMem = array_sum(array_column($profiling, 'memory')) / max(count($profiling), 1);
+        $avgTime = $totalTime / max(count($profilingRecords), 1);
+        $avgMem = array_sum(array_column($profilingRecords, 'memory')) / max(count($profilingRecords), 1);
 
         $this->profilerLogger->info('[PROFILING] =======================');
-        $this->profilerLogger->info("[PROFILING] Temps total : {$totalTime}s pour " . count($profiling) . " projets");
+        $this->profilerLogger->info("[PROFILING] Temps total : {$totalTime}s pour " . count($profilingRecords) . " projets");
         $this->profilerLogger->info("[PROFILING] Temps moyen par projet : " . round($avgTime, 2) . "s");
         $this->profilerLogger->info("[PROFILING] Mémoire moyenne par projet : " . round($avgMem, 1) . " MB");
 
-        foreach ($profiling as $p) {
+        foreach ($profilingRecords as $p) {
             $this->profilerLogger->info(sprintf(
                 "[PROFILING] - %s → %ss (+%s MB) [%s]",
                 $p['projet'],
@@ -452,7 +462,7 @@ class BatchManuelController extends AbstractController
         // On récupère les stats issues du profiling
         $nb_projets = count($les_projets['liste']);
         $memoire_peak = memory_get_peak_usage(true) / 1024 / 1024; // MB
-        $memoire_moyenne = round($memoire_peak / $nb_projets, 2);
+        $memoire_moyenne = round($avgMem, 2);
         $temps_total = round($totalEnd - $totalStart, 2);
         $temps_moyen = $temps_total / max(count($les_projets['liste']), 1);
 
@@ -469,8 +479,10 @@ class BatchManuelController extends AbstractController
         );
 
         $this->em->persist($profiling);
+        $this->logger->debug('peak before flush: ' . memory_get_peak_usage(true)/1024/1024 . ' MB');
         $this->em->flush();
-        $this->em->clear(BatchExecutionJournal::class);
+        $this->logger->debug('peak after flush: ' . memory_get_peak_usage(true)/1024/1024 . ' MB');
+        $this->em->clear();
 
         /** On met à jour la table des traitements */
         $map = [
@@ -500,7 +512,7 @@ class BatchManuelController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        unset($map, $les_projets, $data, $profiling);
+        unset($map, $les_projets, $data, $profilingRecords);
         gc_collect_cycles();
         gc_mem_caches();
 
