@@ -21,7 +21,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Uid\Ulid;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-
 use App\Controller\Batch\CollecteController;
 use App\Entity\{BatchTraitement, BatchExecution, BatchExecutionJournal, BatchProfiling};
 use App\Service\ListeProjetPortefeuilleService;
@@ -224,7 +223,7 @@ class BatchManuelController extends AbstractController
             return new JsonResponse([
                 'code' => 202,
                 'type' => 'info',
-                'message' => 'Un traitement est déjà en cours. Votre demande a été mise en attente(Erreur 202).',
+                'message' => 'Un traitement est déjà en cours. Votre demande a été mise en attente (Erreur 202).',
             ], Response::HTTP_OK);
         }
 
