@@ -91,6 +91,7 @@ phpstan.neon
 ## Fichiers temporaires
 *.old
 *.backup
+*.log
 
 ###> symfony/asset-mapper ###
 /public/assets/
