@@ -135,7 +135,7 @@ export const remplissage = async function(maven_key) {
    * On récupère les informations sur les versions, et le dernier audit.
    */
   const optionsInfo = {
-    url: `${serveur()}/api/peinture/projet/version`,
+    url: `${serveur()}/api/secure/peinture/projet/version`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -205,7 +205,7 @@ export const remplissage = async function(maven_key) {
      * On récupère les exclusions noSonar
      */
     const optionsNoSonar = {
-      url: `${serveur()}/api/peinture/projet/nosonar`,
+      url: `${serveur()}/api/secure/peinture/projet/nosonar`,
       type: 'POST',
       dataType: 'json',
       data: JSON.stringify(data),
@@ -252,7 +252,7 @@ export const remplissage = async function(maven_key) {
 
   /** On récupère les to.do tags */
   const optionsTodo = {
-    url: `${serveur()}/api/peinture/projet/todo`,
+    url: `${serveur()}/api/secure/peinture/projet/todo`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -342,7 +342,7 @@ export const remplissage = async function(maven_key) {
  * On récupère les logger
  */
   const optionsLogger = {
-    url: `${serveur()}/api/peinture/projet/logger`,
+    url: `${serveur()}/api/secure/peinture/projet/logger`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -405,7 +405,7 @@ export const remplissage = async function(maven_key) {
    * lignes, coverage fonctionnelle, ration de dette technique, duplication, tests unitaires et le nombre de défaut.
    */
   const optionsMesures = {
-    url: `${serveur()}/api/peinture/projet/mesures`,
+    url: `${serveur()}/api/secure/peinture/projet/mesures`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -533,7 +533,7 @@ export const remplissage = async function(maven_key) {
    * On récupère les informations sur la dette technique et les anomalies.
    */
   const optionsAnomalie = {
-    url: `${serveur()}/api/peinture/projet/anomalie`,
+    url: `${serveur()}/api/secure/peinture/projet/anomalie`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -781,7 +781,7 @@ export const remplissage = async function(maven_key) {
      * On récupère les hotspot.
      */
     const optionsHotspots = {
-      url: `${serveur()}/api/peinture/projet/hotspots`,
+      url: `${serveur()}/api/secure/peinture/projet/hotspots`,
       type: 'POST',
       dataType: 'json',
       data: JSON.stringify(data),
@@ -843,7 +843,7 @@ export const remplissage = async function(maven_key) {
    * On récupère la sévérité par type.
    */
   const optionsAnomaliesDetails = {
-    url: `${serveur()}/api/peinture/projet/anomalie/details`,
+    url: `${serveur()}/api/secure/peinture/projet/anomalie/details`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -940,7 +940,7 @@ export const remplissage = async function(maven_key) {
 /**
  * [Description for afficheHotspotDetails]
  * On récupère la répartition des hotspot par sévérité pour le type to_review et reviewed
- * http://{url}/api/peinture/projet/hotspot/details{meven_key}
+ * http://{url}/api/secure/peinture/projet/hotspot/details{meven_key}
  *
  * @param string mavenKey
  *
@@ -953,7 +953,7 @@ export const afficheHotspotDetails = async function (maven_key){
   /* On récupère la répartition des hotspot. */
   const data = { maven_key };
   const options = {
-    url: `${serveur()}/api/peinture/projet/hotspots/details`,
+    url: `${serveur()}/api/secure/peinture/projet/hotspots/details`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),

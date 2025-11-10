@@ -34,7 +34,7 @@ import { showMessage, prepareTechnicalDetails } from '../common/messageHelper.js
   const getResetPasswordChange = async function(reset_password){
     const data = { reset_password };
     const options = {
-        url:  serveur()+`/api/mot-de-passe/mise-a-jour`,
+        url:  serveur()+`/api/secure/mot-de-passe/mise-a-jour`,
         method: 'POST',
         dataType: 'json',
         data: JSON.stringify(data),

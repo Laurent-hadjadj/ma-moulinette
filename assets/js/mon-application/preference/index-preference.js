@@ -50,7 +50,7 @@ const modifierStatut = async function(statut, categorie) {
   /** on récupère les préférences */
   const data={ statut, categorie }
   const options = {
-    url: `${serveur()}/api/preference/statut`,
+    url: `${serveur()}/api/secure/preference/statut`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -76,7 +76,7 @@ const bookmark=async function(){
   /** on récupère les préférences */
   const data={ categorie: 'bookmark' }
   const options = {
-    url: `${serveur()}/api/preference/categorie`, type: 'GET',
+    url: `${serveur()}/api/secure/preference/categorie`, type: 'GET',
           dataType: 'json', data, contentType };
 
   const r = await $.ajax(options);
@@ -114,7 +114,7 @@ const favori=async function(){
   /** on récupère les préférences */
   const data={ categorie: 'favori' }
   const options = {
-    url: `${serveur()}/api/preference/categorie`, type: 'GET',
+    url: `${serveur()}/api/secure/preference/categorie`, type: 'GET',
           dataType: 'json', data, contentType };
 
   const r = await $.ajax(options);
@@ -156,7 +156,7 @@ const favori=async function(){
     const mavenKey = $(`#mavenkey-favori-${ id[2] }`).text();
     const data_1 = { mavenKey };
     const options_1 = {
-      url: `${ serveur() }/api/preference/favori/delete`,
+      url: `${ serveur() }/api/secure/preference/favori/delete`,
       type: 'POST',
       dataType: 'json',
       data: JSON.stringify(data_1),
@@ -184,7 +184,7 @@ const favori=async function(){
 const version=async function(){
   /** on récupère les préférences */
   const data={ categorie: 'version' }
-  const options = { url: `${serveur()}/api/preference/categorie`, type: 'GET',
+  const options = { url: `${serveur()}/api/secure/preference/categorie`, type: 'GET',
                     dataType: 'json', data, contentType };
 
   const r = await $.ajax(options);
@@ -253,7 +253,7 @@ const version=async function(){
     const data_1 = { index, mavenKey, version };
     const options_1 = {
       /** On appel le service de suppression de la version favorite */
-      url: `${ serveur() }/api/preference/version/delete`,
+      url: `${ serveur() }/api/secure/preference/version/delete`,
       type: 'POST',
       dataType: 'json',
       data: JSON.stringify(data_1),
@@ -283,7 +283,7 @@ const projet=async function(){
   /** on récupère les préférences */
   const data={ categorie: 'projet' }
   const options = {
-    url: `${serveur()}/api/preference/categorie`, type: 'GET',
+    url: `${serveur()}/api/secure/preference/categorie`, type: 'GET',
           dataType: 'json', data, contentType };
 
   const r = await $.ajax(options);

@@ -81,7 +81,7 @@ const selectProjet=function() {
   }
 
   const options = {
-    url: `${serveur()}/api/filtre/projet`,
+    url: `${serveur()}/api/secure/filtre/projet`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),

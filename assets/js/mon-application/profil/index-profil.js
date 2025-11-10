@@ -83,7 +83,7 @@ const refreshQuality = async function() {
   $boutonRefreshProfil.attr('tabindex', '-1');
 
   const optionsRefresh = {
-    url: `${serveur()}/api/quality/profiles`,
+    url: `${serveur()}/api/secure/quality/profiles`,
     type: 'POST',
     dataType: 'json',
     contentType,
@@ -228,7 +228,7 @@ const refreshQuality = async function() {
 const autreProfil = async function(langage) {
   const dataRefresh = { langage };
   const optionsRefresh = {
-    url: `${serveur()}/api/quality/off`,
+    url: `${serveur()}/api/secure/quality/off`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(dataRefresh),
@@ -398,7 +398,7 @@ const dessineMoiUnMouton=function(label, dataset) {
 /** Création du graphique par language */
 $('#bouton-affiche-graphique').on('click', async () => {
   const options = {
-    url: `${serveur()}/api/quality/langage`,
+    url: `${serveur()}/api/secure/quality/langage`,
     type: 'POST',
     dataType: 'json',
     contentType,

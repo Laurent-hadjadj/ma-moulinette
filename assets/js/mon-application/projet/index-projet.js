@@ -209,7 +209,7 @@ const match = function(params, data) {
 /**
  * [Description for selectProjet]
  * Création du sélecteur de projet.
- * http://{url}/api/liste/projet
+ * http://{url}/api/secure/liste/projet
  *
  * @return void
  *
@@ -218,7 +218,7 @@ const match = function(params, data) {
  */
 const selectProjet = async function() {
   const options = {
-    url: `${serveur()}/api/projet/liste`,
+    url: `${serveur()}/api/secure/projet/liste`,
     type: 'POST',
     dataType: 'json',
     contentType,
@@ -296,7 +296,7 @@ const errorButton = function(element, aria_label){
 /**
  * [Description for projetAnalyse]
  * Collecte les informations du projet (projet, version, date)
- * http://{url}/api/collecte/information
+ * http://{url}/api/secure/collecte/information
  *
  * Phase 01
  * {mavenKey} = clé du projet
@@ -316,7 +316,7 @@ const projetInformation = async function(mavenKey) {
 
   const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/collecte/information`,
+    url: `${serveur()}/api/secure/collecte/information`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -368,7 +368,7 @@ const projetInformation = async function(mavenKey) {
 /**
  * [Description for projetMesure]
  * Collecte des mesures clés du projet (lignes, coverage, duplication, défauts).
- * http://{url}/api/collecte/mesure
+ * http://{url}/api/secure/collecte/mesure
  *
  * Phase 02
  * {mavenKey} = clé du projet
@@ -388,7 +388,7 @@ const projetMesure = async function(mavenKey) {
 
   const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/collecte/mesure`,
+    url: `${serveur()}/api/secure/collecte/mesure`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -434,7 +434,7 @@ const projetMesure = async function(mavenKey) {
 /**
   * [Description for projetRating]
   * Récupère la note pour la fiabilité, la sécurité et les mauvaises pratiques.
-  * http://{url}'/api/collecte/note
+  * http://{url}'/api/secure/collecte/note
   *
   * Phase 03
   * {mavenKey} = clé du projet
@@ -456,7 +456,7 @@ const projetRating = async function(mavenKey, type) {
 
   const data = { maven_key: mavenKey, type };
   const options = {
-    url: `${serveur()}/api/collecte/note`,
+    url: `${serveur()}/api/secure/collecte/note`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -504,7 +504,7 @@ const projetRating = async function(mavenKey, type) {
  * Récupère le top 10 OWASP et construit la vue
  * Attention une faille peut être comptée deux fois ou plus, cela dépend du tag. Donc il est
  * possible d'avoir pour la clé une faille de type OWASP-A3 et OWASP-A10
- * http://{url}/api/collecte/owasp
+ * http://{url}/api/secure/collecte/owasp
  *
  * Phase 04
  * {mavenKey} = clé du projet
@@ -524,7 +524,7 @@ const projetOwasp = async function(mavenKey) {
 
   const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/collecte/owasp`,
+    url: `${serveur()}/api/secure/collecte/owasp`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -593,7 +593,7 @@ const projetOwasp = async function(mavenKey) {
  * Traitement des hotspots de type owasp pour SonarQube 8.9 et >
  * On récupère les Hotspot a examiner. Les clés sont uniques
  * (i.e. on ne se base pas sur les tags).
- * http://{url}/api/collecte/hotspot
+ * http://{url}/api/secure/collecte/hotspot
  *
  * Phase 05
  * {mavenKey} = clé du projet
@@ -614,7 +614,7 @@ const projetHotspot = async function(mavenKey) {
 
   const data = { maven_key: mavenKey};
   const options = {
-    url: `${serveur()}/api/collecte/hotspot`,
+    url: `${serveur()}/api/secure/collecte/hotspot`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -690,7 +690,7 @@ const projetAnomalie = async function(mavenKey) {
 
   const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/collecte/anomalie`,
+    url: `${serveur()}/api/secure/collecte/anomalie`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -758,7 +758,7 @@ const projetAnomalieDetails = async function(mavenKey) {
 
   const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/collecte/anomalie/detail`,
+    url: `${serveur()}/api/secure/collecte/anomalie/detail`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -830,7 +830,7 @@ const projetHotspotOwasp = async function(maven_key, menace) {
 
   const data = { maven_key, menace };
   const options = {
-    url: `${serveur()}/api/collecte/hotspot/owasp`,
+    url: `${serveur()}/api/secure/collecte/hotspot/owasp`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -895,7 +895,7 @@ const projetHotspotOwasp = async function(maven_key, menace) {
 /**
  * [Description for projetHotspotOwaspDetails]
  * On enregistre le détails des hotspot owasp
- * http://{url}/api/collecte/hotspot/detail
+ * http://{url}/api/secure/collecte/hotspot/detail
  *
  * Phase 10
  * {mavenKey} = clé du projet
@@ -916,7 +916,7 @@ const projetHotspotOwaspDetails = async function(mavenKey) {
 
   const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/collecte/hotspot/detail`,
+    url: `${serveur()}/api/secure/collecte/hotspot/detail`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -968,7 +968,7 @@ const projetHotspotOwaspDetails = async function(mavenKey) {
 /**
  * [Description for projetNoSonar]
  * On récupère la liste des exclusions de code
- * http://{url}/api/collete/nosonar
+ * http://{url}/api/secure/collete/nosonar
  *
  * Phase 11
  * {mavenKey} = clé du projet
@@ -989,7 +989,7 @@ const projetNoSonar = async function(mavenKey){
 
   const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/collecte/nosonar`,
+    url: `${serveur()}/api/secure/collecte/nosonar`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -1046,7 +1046,7 @@ const projetNoSonar = async function(mavenKey){
 /**
  * [Description for projetTodo]
  * On récupère la liste des t_odo
- * http://{url}/api/collecte/t_odo
+ * http://{url}/api/secure/collecte/t_odo
  *
  * Phase 12
  * {mavenKey} = clé du projet
@@ -1067,7 +1067,7 @@ const projetTodo = async function(mavenKey){
 
   const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/collecte/todo`,
+    url: `${serveur()}/api/secure/collecte/todo`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -1125,7 +1125,7 @@ const projetTodo = async function(mavenKey){
 /**
  * [Description for projetLogger]
  * On récupère la liste des Logger
- * http://{url}/api/collecte/logger
+ * http://{url}/api/secure/collecte/logger
  *
  * Phase 13
  * {mavenKey} = clé du projet
@@ -1146,7 +1146,7 @@ const projetLogger = async function(mavenKey){
 
 const data = { maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/collecte/logger`,
+    url: `${serveur()}/api/secure/collecte/logger`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -1232,7 +1232,7 @@ const finCollecte = function(maven_key){
 /**
  * [Description for afficheMesProjets]
  * On récupère la liste des projets et des favoris de l'utilisateur
- * http://{url}/api/projet/mes-applications/liste
+ * http://{url}/api/secure/projet/mes-applications/liste
  *
  * @return response
  *
@@ -1241,7 +1241,7 @@ const finCollecte = function(maven_key){
  */
 const afficheMesProjets = async function() {
   const options = {
-    url: `${serveur()}/api/projet/mes-applications/liste`,
+    url: `${serveur()}/api/secure/projet/mes-applications/liste`,
     type: 'POST',
     dataType: 'json',
     contentType,
@@ -1487,7 +1487,7 @@ $('select[name="projet"]').on('change', function () {
   /* On regarde si le projet est en favori */
   const data = { maven_key: $('#select-result').text().trim() };
   const options = {
-    url: `${serveur()}/api/favori/check`,
+    url: `${serveur()}/api/secure/favori/check`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -1875,7 +1875,7 @@ $('.favori-svg').on('click', () => {
 
     const data = { maven_key: $('#select-result').text().trim() };
     const options = {
-      url: `${serveur()}/api/favori`,
+      url: `${serveur()}/api/secure/favori`,
       type: 'POST',
       dataType: 'json',
       data: JSON.stringify(data),

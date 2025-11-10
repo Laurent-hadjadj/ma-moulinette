@@ -62,7 +62,7 @@ const sonarIsUp = async function() {
   }
   console.log(token);
   const options = {
-    url: `${serveur()}/api/status`,
+    url: `${serveur()}/api/secure/status`,
     type: 'POST',
     dataType: 'json',
     contentType,
@@ -101,7 +101,7 @@ const miseAJourListe = async function() {
   }
 
   const options = {
-    url: `${serveur()}/api/accueil/projet`,
+    url: `${serveur()}/api/secure/accueil/projet`,
     type: 'POST',
     dataType: 'json',
     contentType,
@@ -170,7 +170,7 @@ const miseAJourTags = async function() {
   }
 
   const options = {
-    url: `${serveur()}/api/accueil/tags`,
+    url: `${serveur()}/api/secure/accueil/tags`,
     type: 'POST',
     dataType: 'json',
     contentType,

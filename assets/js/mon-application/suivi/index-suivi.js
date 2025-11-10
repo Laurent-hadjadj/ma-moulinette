@@ -217,7 +217,7 @@ dessineMoiUnMouton(
 const selectVersion=async function(mavenKey) {
   const data={ maven_key: mavenKey };
   const options = {
-    url: `${serveur()}/api/liste/v2.0/version`,
+    url: `${serveur()}/api/secure/liste/v2.0/version`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -306,7 +306,7 @@ $('select[name="version"]').on('change', function () {
   */
   const data = { maven_key: $('#key-maven').text().trim(), date:d2[0] };
   const options = {
-    url: `${serveur()}/api/get/version`,
+    url: `${serveur()}/api/secure/get/version`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -607,7 +607,7 @@ $('.js-enregistrer-analyse').on('click', ()=>{
      * On lance l'API de mise à jour
      */
     const options = {
-    url: `${serveur()}/api/suivi/mise-a-jour`, type: 'PUT',
+    url: `${serveur()}/api/secure/suivi/mise-a-jour`, type: 'PUT',
     dataType: 'json', data: JSON.stringify(data), contentType };
 
     $.ajax(options).then(t => {
@@ -743,7 +743,7 @@ $('.js-modifier-analyse').on('click', function () {
   const data = { maven_key: $('#js-nom').data('maven') };
 
   const options = {
-    url: `${serveur()}/api/suivi/version/liste`,
+    url: `${serveur()}/api/secure/suivi/version/liste`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -847,7 +847,7 @@ $('.js-modifier-analyse').on('click', function () {
         const dataFavori = { maven_key, favori, version, date_version: formatted_date };
 
         const optionsFavori = {
-          url: `${serveur()}/api/suivi/version/favori`, type: 'PUT',
+          url: `${serveur()}/api/secure/suivi/version/favori`, type: 'PUT',
           dataType: 'json', data: JSON.stringify(dataFavori), contentType };
 
         /**
@@ -898,7 +898,7 @@ $('.js-modifier-analyse').on('click', function () {
        */
       const dataReference = { maven_key, initial, version, date_version: formatted_date };
       const optionsReference = {
-        url: `${serveur()}/api/suivi/version/reference`, type: 'PUT',
+        url: `${serveur()}/api/secure/suivi/version/reference`, type: 'PUT',
         dataType: 'json', data: JSON.stringify(dataReference), contentType };
 
       $.ajax(optionsReference).then((t) => {
@@ -937,7 +937,7 @@ $('.js-modifier-analyse').on('click', function () {
        */
       const dataPoubelle = { maven_key, version, 'date_version': formatted_date };
       const optionsPoubelle = {
-        url: `${serveur()}/api/suivi/version/poubelle`, type: 'PUT',
+        url: `${serveur()}/api/secure/suivi/version/poubelle`, type: 'PUT',
         dataType: 'json', data: JSON.stringify(dataPoubelle), contentType };
 
       let message;

@@ -250,7 +250,7 @@ export const enregistrement = async function(maven_key) {
     initial: 0 };
 
     const options = {
-      url: `${serveur()}/api/enregistrement`,
+      url: `${serveur()}/api/secure/enregistrement`,
       type: 'PUT',
       dataType: 'json',
       data: JSON.stringify(data),

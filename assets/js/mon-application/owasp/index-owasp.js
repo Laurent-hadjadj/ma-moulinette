@@ -176,7 +176,7 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
   const data = { maven_key, referential_owasp };
 
   const options = {
-    url: `${serveur()}/api/peinture/owasp/liste`,
+    url: `${serveur()}/api/secure/peinture/owasp/liste`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -484,7 +484,7 @@ const remplissageHotspotInfo = async function(maven_key, referential_owasp) {
 
   const data = { maven_key, referential_owasp };
   const options = {
-    url: `${serveur()}/api/peinture/owasp/hotspot/info`,
+    url: `${serveur()}/api/secure/peinture/owasp/hotspot/info`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -571,7 +571,7 @@ const remplissageHotspotListe = async function(maven_key, referential_owasp) {
    */
     const data = { maven_key, referential_owasp };
     const options = {
-      url: `${serveur()}/api/peinture/owasp/hotspot/liste`,
+      url: `${serveur()}/api/secure/peinture/owasp/hotspot/liste`,
       type: 'POST',
       dataType: 'json',
       data: JSON.stringify(data),
@@ -785,7 +785,7 @@ const remplissageHotspotDetails = async function(maven_key, referential_owasp) {
 
   const data = { maven_key, referential_owasp };
   const options = {
-    url: `${serveur()}/api/peinture/owasp/hotspot/details`,
+    url: `${serveur()}/api/secure/peinture/owasp/hotspot/details`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
@@ -947,7 +947,7 @@ const remplissageDetailsHotspotOwasp = async function(maven_key, menace, titre) 
 
   const data = { maven_key, menace };
   const options = {
-    url: `${serveur()}/api/peinture/owasp/hotspot/severity`,
+    url: `${serveur()}/api/secure/peinture/owasp/hotspot/severity`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),

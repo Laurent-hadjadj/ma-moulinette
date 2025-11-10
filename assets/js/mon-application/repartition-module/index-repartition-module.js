@@ -210,7 +210,7 @@ const analyse = async function (maven_key, category, severity, css, setup) {
   const data = { maven_key, category, severity, setup };
 
   const options = {
-      url: `${serveur()}/api/repartition/analyse`,
+      url: `${serveur()}/api/secure/repartition/analyse`,
       type: 'PUT',
       dataType: 'json',
       data: JSON.stringify(data),
@@ -328,7 +328,7 @@ const historique = async function (maven_key) {
   const data = { maven_key };
 
   const options = {
-      url: `${serveur()}/api/repartition/historique`,
+      url: `${serveur()}/api/secure/repartition/historique`,
       type: 'PUT',
       dataType: 'json',
       data: JSON.stringify(data),
@@ -461,7 +461,7 @@ const collecte = async function (maven_key, category, severity, counter, timer) 
   const data = JSON.stringify({ maven_key, category, severity, setup });
 
   const options = {
-      url: `${serveur()}/api/repartition/collecte`,
+      url: `${serveur()}/api/secure/repartition/collecte`,
       type: 'PUT',
       dataType: 'json',
       data: data,
@@ -530,7 +530,7 @@ const collecte = async function (maven_key, category, severity, counter, timer) 
 const updateRepartition = async function(phase){
     const data = { maven_key, setup, calcul: analyseCollecteRepartition };
     const options = {
-      url: `${serveur()}/api/repartition/analyse/mise-a-jour`,
+      url: `${serveur()}/api/secure/repartition/analyse/mise-a-jour`,
       type: 'PUT',
       dataType: 'json',
       data: JSON.stringify(data),

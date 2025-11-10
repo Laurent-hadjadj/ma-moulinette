@@ -66,7 +66,7 @@ const refreshActivity=async function() {
   try {
         // Configuration de l'appel Ajax
         const options = {
-              url: `${serveur()}/api/activity/sauvegarde`,
+              url: `${serveur()}/api/secure/activity/sauvegarde`,
               type: 'POST',
               dataType: 'json',
               contentType,
@@ -246,7 +246,7 @@ const graphToto = function(type, donnee, source) {
 const dessineGraph = async function(type, source) {
   const dataRefresh = { source: source };
   const optionsRefresh = {
-    url: `${serveur()}/api/activity/dessin`,
+    url: `${serveur()}/api/secure/activity/dessin`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(dataRefresh),
