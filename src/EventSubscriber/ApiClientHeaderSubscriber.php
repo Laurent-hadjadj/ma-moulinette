@@ -15,8 +15,8 @@ namespace App\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\{JsonResponse, Request};
+use Psr\Log\LoggerInterface;
 
 /**
  * [Description ApiClientHeaderSubscriber]
@@ -27,17 +27,20 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
     private array $allowedOrigins;
     private string $internalHeaderName;
     private string $internalHeaderValue;
+    private LoggerInterface $logger;
 
     public function __construct(
         string $appClientToken,
+        LoggerInterface $logger,
         array $allowedOrigins = [],
-        string $internalHeaderName = 'X-Internal-Front',
+        string $internalHeaderName = '',
         string $internalHeaderValue = 'front-app'
     ) {
         $this->appClientToken = $appClientToken;
         $this->allowedOrigins = $allowedOrigins;
         $this->internalHeaderName = $internalHeaderName;
         $this->internalHeaderValue = $internalHeaderValue;
+        $this->logger = $logger;
     }
 
     /**
@@ -71,41 +74,47 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
     {
         $request = $event->getRequest();
 
-        // ✅ On ne s'applique qu'aux routes /api/
-        if (!str_starts_with($request->getPathInfo(), '/api/')) {
+        // On ne s'applique qu'aux routes /api/secure/
+        if (!str_starts_with($request->getPathInfo(), '/api/secure/')) {
             return;
         }
 
-        $origin  = $request->headers->get('Origin') ?? '';
-        $referer = $request->headers->get('Referer') ?? '';
+        $origin         = $request->headers->get('Origin') ?? '';
+        $referer        = $request->headers->get('Referer') ?? '';
         $internalHeader = $request->headers->get($this->internalHeaderName);
 
-        $isAllowed =
+        //🔒 seules les requêtes venant d’un Origin ou Referer autorisé et portant le header interne correct (X-Internal-Front: front-app) peuvent appeler /api/secure/*.
+        $isAllowedOriginOrReferer =
             $this->isAllowedOrigin($origin, $request) ||
-            $this->isAllowedOrigin($referer, $request) ||
+            $this->isAllowedOrigin($referer, $request);
+
+        $hasInternalHeader =
             $internalHeader === $this->internalHeaderValue;
+
+        $isAllowed = $isAllowedOriginOrReferer && $hasInternalHeader;
 
         if ($isAllowed) {
             // si le header X-App-Client est vide, on l’ajoute
             if (empty($request->headers->get('X-App-Client'))) {
                 $request->headers->set('X-App-Client', $this->appClientToken);
             }
-        } else {
-            // 🚫 Requête externe : on bloque immédiatement
-            $event->setResponse(new JsonResponse([
-                'code'    => 403,
-                'message' => '[API-Credential] 🚫 Accès interdit : client non autorisé.'
-            ], JsonResponse::HTTP_FORBIDDEN));
-
-            // Optionnel : log
-            file_put_contents('/tmp/api_denied.log', sprintf(
-                "[%s] Tentative externe : Origin=%s | Referer=%s | IP=%s\n",
-                date('Y-m-d H:i:s'),
-                $origin,
-                $referer,
-                $request->getClientIp()
-            ), FILE_APPEND);
+            return;
         }
+
+        // 🚫 Requête externe : on bloque immédiatement
+        $event->setResponse(new JsonResponse([
+            'code'    => 403,
+            'message' => '[API-Credential] 🚫 Accès interdit : client non autorisé.'
+        ], JsonResponse::HTTP_FORBIDDEN));
+
+        // journalisation
+        $this->logger->warning('[API-Credential] ☠️ Accès interdit', [
+            'origin' => $origin,
+            'referer' => $referer,
+            'header' => $internalHeader,
+            'ip' => $request->getClientIp(),
+            'path' => $request->getPathInfo()
+        ]);
     }
 
     /**
@@ -116,24 +125,28 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
      *
      * @return bool
      *
-     * Created at: 20/10/2025 22:46:06 (Europe/Paris)
+     * Created at: 10/11/2025 12:33:45 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private function isAllowedOrigin(string $url, ?Request $request = null): bool
     {
-        // Si l'URL contient un des allowed origins → OK
-        foreach ($this->allowedOrigins as $allowed) {
-            if (str_contains($url, $allowed)) {
-                return true;
-            }
+        if (empty($url) && $request === null) {
+            return false;
         }
 
-        // ✅ Fallback : si pas d'Origin/Referer, on autorise si le host Symfony correspond à un allowed origin
+        $originsToCheck = [];
+        if (!empty($url)) {
+            $originsToCheck[] = parse_url($url, PHP_URL_HOST);
+        }
         if ($request) {
-            $host = $request->getHost();
+            $originsToCheck[] = $request->getHost();
+        }
+
+        foreach ($originsToCheck as $host) {
             foreach ($this->allowedOrigins as $allowed) {
-                if (str_contains($host, $allowed)) {
+                // Compare proprement les domaines, pas juste un "contains"
+                if ($host === $allowed || str_ends_with($host, '.' . $allowed)) {
                     return true;
                 }
             }
@@ -141,4 +154,5 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
 
         return false;
     }
+
 }
