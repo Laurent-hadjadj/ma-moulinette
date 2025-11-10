@@ -417,7 +417,7 @@ class AccueilController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/accueil/favori/liste/projet', name: 'accueil_favori_liste_projet', defaults: ['role' => 'ROLE_COLLECTE'])]
+    #[Route('/api/secure/accueil/favori/liste/projet', name: 'accueil_favori_liste_projet', defaults: ['role' => 'ROLE_COLLECTE'])]
     #[IsGranted('ROLE_COLLECTE')]
     private function getListeFavoriProjet(): JsonResponse
     {

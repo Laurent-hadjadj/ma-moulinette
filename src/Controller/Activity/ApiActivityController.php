@@ -148,7 +148,7 @@ class ApiActivityController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/activity/sauvegarde', name: 'sauvegarde_historique', methods: ['POST'])]
+    #[Route('/api/secure/activity/sauvegarde', name: 'sauvegarde_historique', methods: ['POST'])]
     public function sauvegardeHistorique(): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/activity/sauvegarde");
@@ -311,7 +311,7 @@ class ApiActivityController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/activity/dessin', name: 'api_dessin', methods: ['POST'])]
+    #[Route('/api/secure/activity/dessin', name: 'api_dessin', methods: ['POST'])]
     public function apiDessin(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/activity/dessin");

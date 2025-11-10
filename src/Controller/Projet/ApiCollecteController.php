@@ -65,7 +65,7 @@ class ApiCollecteController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/collecte/information', name: 'api_collecte_information', methods: ['POST'])]
+    #[Route('/api/secure/collecte/information', name: 'api_collecte_information', methods: ['POST'])]
     public function apiCollecteInformation(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/information");
@@ -169,7 +169,7 @@ class ApiCollecteController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/collecte/mesure', name: 'api_collecte_mesure', methods: ['POST'])]
+    #[Route('/api/secure/collecte/mesure', name: 'api_collecte_mesure', methods: ['POST'])]
     public function apiCollecteMesure(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/mesure");
@@ -278,7 +278,7 @@ class ApiCollecteController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/collecte/note', name: 'api_collecte_note', methods: ['POST'])]
+    #[Route('/api/secure/collecte/note', name: 'api_collecte_note', methods: ['POST'])]
     public function apiCollecteNote(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/note");
@@ -375,7 +375,7 @@ class ApiCollecteController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/collecte/owasp', name: 'api_collecte_owasp', methods: ['POST'])]
+    #[Route('/api/secure/collecte/owasp', name: 'api_collecte_owasp', methods: ['POST'])]
     public function apiCollecteOwasp(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/owasp");
@@ -472,7 +472,7 @@ class ApiCollecteController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/collecte/hotspot', name: 'api_collecte_hotspot', methods: ['POST'])]
+    #[Route('/api/secure/collecte/hotspot', name: 'api_collecte_hotspot', methods: ['POST'])]
     public function apiCollecteHotspot(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/hotspot");
@@ -571,7 +571,7 @@ class ApiCollecteController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/collecte/anomalie', name: 'api_collecte_anomalie', methods: ['POST'])]
+    #[Route('/api/secure/collecte/anomalie', name: 'api_collecte_anomalie', methods: ['POST'])]
     public function apiCollecteAnomalie(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/anomalie");
@@ -670,7 +670,7 @@ class ApiCollecteController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/collecte/anomalie/detail', name: 'api_collecte_anomalie_detail', methods: ['POST'])]
+    #[Route('/api/secure/collecte/anomalie/detail', name: 'api_collecte_anomalie_detail', methods: ['POST'])]
     public function apiCollecteAnomalieDetail(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/anomalie/detail");
@@ -761,7 +761,7 @@ class ApiCollecteController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/collecte/hotspot/owasp', name: 'api_collecte_hotspot_owasp', methods: ['POST'])]
+    #[Route('/api/secure/collecte/hotspot/owasp', name: 'api_collecte_hotspot_owasp', methods: ['POST'])]
     public function apiCollecteHotspotOwasp(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/hotspot/owasp");
@@ -858,7 +858,7 @@ class ApiCollecteController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/collecte/hotspot/detail', name: 'api_collecte_hotspot_detail', methods: ['POST'])]
+    #[Route('/api/secure/collecte/hotspot/detail', name: 'api_collecte_hotspot_detail', methods: ['POST'])]
     public function apiCollecteHotspotDetail(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/hotspot/detail");
@@ -948,7 +948,7 @@ class ApiCollecteController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/collecte/nosonar', name: 'api_collecte_nosonar', methods: ['POST'])]
+    #[Route('/api/secure/collecte/nosonar', name: 'api_collecte_nosonar', methods: ['POST'])]
     public function apiCollecteNoSonar(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/nosonar");
@@ -1041,7 +1041,7 @@ class ApiCollecteController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/collecte/todo', name: 'api_collecte_todo', methods: ['POST'])]
+    #[Route('/api/secure/collecte/todo', name: 'api_collecte_todo', methods: ['POST'])]
     public function apiCollecteTodo(Request $request): response
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/todo");
@@ -1132,7 +1132,7 @@ class ApiCollecteController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/collecte/actuator/info', name: 'api_collecte_actuator_info', methods: ['POST'])]
+    #[Route('/api/secure/collecte/actuator/info', name: 'api_collecte_actuator_info', methods: ['POST'])]
     public function apiCollecteActuator(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/actuator/info");
@@ -1222,7 +1222,7 @@ class ApiCollecteController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/collecte/logger', name: 'api_collecte_logger', methods: ['POST'])]
+    #[Route('/api/secure/collecte/logger', name: 'api_collecte_logger', methods: ['POST'])]
     public function apiCollecteLogger(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/logger");

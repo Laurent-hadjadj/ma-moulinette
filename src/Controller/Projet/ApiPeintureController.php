@@ -132,7 +132,7 @@ class ApiPeintureController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/projet/mes-applications/liste', name: 'projet_mes_applications_liste', methods: ['POST'])]
+    #[Route('/api/secure/projet/mes-applications/liste', name: 'projet_mes_applications_liste', methods: ['POST'])]
     public function projetMesApplicationsListe(Request $request, Security $security): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/projet/mes-applications/liste");
@@ -232,7 +232,7 @@ class ApiPeintureController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/projet/version', name: 'peinture_projet_version', methods: ['POST'])]
+    #[Route('/api/secure/peinture/projet/version', name: 'peinture_projet_version', methods: ['POST'])]
     public function peintureProjetVersion(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/version");
@@ -329,7 +329,7 @@ class ApiPeintureController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/projet/mesures', name: 'peinture_projet_mesures', methods: ['POST'])]
+    #[Route('/api/secure/peinture/projet/mesures', name: 'peinture_projet_mesures', methods: ['POST'])]
     public function peintureProjetMesures(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/mesures");
@@ -416,7 +416,7 @@ class ApiPeintureController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/projet/anomalie', name: 'peinture_projet_anomalie', methods: ['POST'])]
+    #[Route('/api/secure/peinture/projet/anomalie', name: 'peinture_projet_anomalie', methods: ['POST'])]
     public function peintureProjetAnomalie(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/anomalie");
@@ -565,7 +565,7 @@ class ApiPeintureController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/projet/anomalie/details', name: 'peinture_projet_anomalie_details', methods: ['POST'])]
+    #[Route('/api/secure/peinture/projet/anomalie/details', name: 'peinture_projet_anomalie_details', methods: ['POST'])]
     public function peintureProjetAnomalieDetails(Request $request): response
     {
 
@@ -669,7 +669,7 @@ class ApiPeintureController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/projet/hotspots', name: 'peinture_projet_hotspots', methods: ['POST'])]
+    #[Route('/api/secure/peinture/projet/hotspots', name: 'peinture_projet_hotspots', methods: ['POST'])]
     public function peintureProjetHotspots(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/hotspots");
@@ -761,7 +761,7 @@ class ApiPeintureController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/projet/hotspots/details', name: 'peinture_projet_hotspots_details', methods: ['POST'])]
+    #[Route('/api/secure/peinture/projet/hotspots/details', name: 'peinture_projet_hotspots_details', methods: ['POST'])]
     public function peintureProjetHotspotsDetails(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/hotspots/details");
@@ -862,7 +862,7 @@ class ApiPeintureController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/projet/nosonar', name: 'peinture_projet_nosonar', methods: ['POST'])]
+    #[Route('/api/secure/peinture/projet/nosonar', name: 'peinture_projet_nosonar', methods: ['POST'])]
     public function peintureProjetNoSonar(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/nosonar");
@@ -952,7 +952,7 @@ class ApiPeintureController extends AbstractController
        * @author    Laurent HADJADJ <laurent_h@me.com>
        * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
        */
-    #[Route('/api/peinture/projet/todo', name: 'peinture_projet_todo', methods: ['POST'])]
+    #[Route('/api/secure/peinture/projet/todo', name: 'peinture_projet_todo', methods: ['POST'])]
     public function peintureProjetTodo(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/todo");
@@ -1065,7 +1065,7 @@ class ApiPeintureController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/projet/logger', name: 'peinture_projet_logger', methods: ['POST'])]
+    #[Route('/api/secure/peinture/projet/logger', name: 'peinture_projet_logger', methods: ['POST'])]
     public function peintureProjetLogger(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/logger");

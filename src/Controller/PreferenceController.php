@@ -88,7 +88,7 @@ class PreferenceController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/preference/statut', name: 'api_preference_statut', methods:'POST')]
+    #[Route('/api/secure/preference/statut', name: 'api_preference_statut', methods:'POST')]
     public function apiPreferenceStatut(Request $request): JsonResponse
     {
         /** On récupère le filtre de recherche */
@@ -148,7 +148,7 @@ class PreferenceController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/preference/favori/delete', name: 'api_preference_favori_delete', methods:'POST')]
+    #[Route('/api/secure/preference/favori/delete', name: 'api_preference_favori_delete', methods:'POST')]
     public function apiPreferenceFavoriDelete(Request $request): JsonResponse
     {
         /** On bind les arguments passés depuis l'URL */
@@ -200,7 +200,7 @@ class PreferenceController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/preference/version/delete', name: 'api_preference_version_delete', methods:'POST')]
+    #[Route('/api/secure/preference/version/delete', name: 'api_preference_version_delete', methods:'POST')]
     public function apiPreferenceVersionDelete(Request $request): JsonResponse
     {
         /** On bind les arguments passés depuis l'URL */
@@ -272,7 +272,7 @@ class PreferenceController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/preference/categorie', name: 'api_preference_categorie', methods:'GET')]
+    #[Route('/api/secure/preference/categorie', name: 'api_preference_categorie', methods:'GET')]
     public function apiPreferenceCategorie(Request $request): JsonResponse
     {
         /** On bind les arguments passés depuis l'URL */

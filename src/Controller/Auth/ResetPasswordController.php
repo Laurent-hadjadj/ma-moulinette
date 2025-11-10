@@ -193,7 +193,7 @@ class ResetPasswordController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/mot-de-passe/mise-a-jour', name: 'api_reset_mot_de_passe', methods:'POST')]
+    #[Route('/api/secure/mot-de-passe/mise-a-jour', name: 'api_reset_mot_de_passe', methods:'POST')]
     public function apiResetMotDePasse(Request $request): Response
     {
         /** On instancie l'EntityRepository */

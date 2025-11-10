@@ -61,7 +61,7 @@ class ApiAccueilController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/status', name: 'api_sonar_status', methods: ['POST'])]
+    #[Route('/api/secure/status', name: 'api_sonar_status', methods: ['POST'])]
     public function apiSonarStatus(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/status");
@@ -108,7 +108,7 @@ class ApiAccueilController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/accueil/projet', name: 'accueil_projet_liste', methods: ['POST'], defaults: ['role' => 'ROLE_COLLECTE'])]
+    #[Route('/api/secure/accueil/projet', name: 'accueil_projet_liste', methods: ['POST'], defaults: ['role' => 'ROLE_COLLECTE'])]
     #[IsGranted('ROLE_COLLECTE')]
     public function accueilProjetListe(): JsonResponse
     {
@@ -262,7 +262,7 @@ class ApiAccueilController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/accueil/tags', name: 'accueil_projet_tags', methods: ['POST'], defaults: ['role' => 'ROLE_COLLECTE'])]
+    #[Route('/api/secure/accueil/tags', name: 'accueil_projet_tags', methods: ['POST'], defaults: ['role' => 'ROLE_COLLECTE'])]
     #[IsGranted('ROLE_COLLECTE')]
     public function accueilProjetTags(): JsonResponse
     {

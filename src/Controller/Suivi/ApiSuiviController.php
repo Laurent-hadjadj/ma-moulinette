@@ -43,7 +43,7 @@ class ApiSuiviController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/liste/v1.0/version', name: 'liste_v1_version', methods: ['POST'])]
+    #[Route('/api/secure/liste/v1.0/version', name: 'liste_v1_version', methods: ['POST'])]
     public function listeVersionV1(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
@@ -88,7 +88,7 @@ class ApiSuiviController extends AbstractController
         ], Response::HTTP_OK);
     }
 
-    #[Route('/api/liste/v2.0/version', name: 'liste_v2_version', methods: ['POST'])]
+    #[Route('/api/secure/liste/v2.0/version', name: 'liste_v2_version', methods: ['POST'])]
     public function listeVersionV2(Request $request): JsonResponse
     {
         /** On récupère le job et le type (manuel ou automatique) */
@@ -148,7 +148,7 @@ class ApiSuiviController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/get/version', name: 'get_version', methods: ['POST'])]
+    #[Route('/api/secure/get/version', name: 'get_version', methods: ['POST'])]
     public function getVersion(Request $request): JsonResponse
     {
         /** On récupère la maven_Key */
@@ -312,7 +312,7 @@ class ApiSuiviController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/suivi/mise-a-jour', name: 'suivi_mise_a_jour', methods: ['PUT'])]
+    #[Route('/api/secure/suivi/mise-a-jour', name: 'suivi_mise_a_jour', methods: ['PUT'])]
     public function suiviMiseAJour(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
@@ -462,7 +462,7 @@ class ApiSuiviController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/suivi/version/liste', name: 'suivi_version_liste', methods: ['POST'])]
+    #[Route('/api/secure/suivi/version/liste', name: 'suivi_version_liste', methods: ['POST'])]
     public function suiviVersionListe(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
@@ -547,7 +547,7 @@ class ApiSuiviController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/suivi/version/favori', name: 'suivi_projet_favori', methods: ['PUT'])]
+    #[Route('/api/secure/suivi/version/favori', name: 'suivi_projet_favori', methods: ['PUT'])]
     public function suiviVersionFavori(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
@@ -593,7 +593,7 @@ class ApiSuiviController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/suivi/version/reference', name: 'suivi_version_reference', methods: ['PUT'])]
+    #[Route('/api/secure/suivi/version/reference', name: 'suivi_version_reference', methods: ['PUT'])]
     public function suiviVersionReference(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */
@@ -650,7 +650,7 @@ class ApiSuiviController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/suivi/version/poubelle', name: 'suivi_version_poubelle', methods: ['PUT'])]
+    #[Route('/api/secure/suivi/version/poubelle', name: 'suivi_version_poubelle', methods: ['PUT'])]
     public function suiviVersionPoubelle(Request $request): JsonResponse
     {
         /** On instancie l'entityRepository */

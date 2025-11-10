@@ -65,7 +65,7 @@ class BatchManuelController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/traitement/pending', name: 'get_pending_or_inprogress', methods: ['GET'])]
+    #[Route('/api/secure/traitement/pending', name: 'get_pending_or_inprogress', methods: ['GET'])]
     public function getPendingOrProgress(): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/traitement/pending");
@@ -105,7 +105,7 @@ class BatchManuelController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/traitement/add-pending', name: 'add_pending', methods: ['POST'])]
+    #[Route('/api/secure/traitement/add-pending', name: 'add_pending', methods: ['POST'])]
     public function addPending(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/traitement/add-pending");
@@ -164,7 +164,7 @@ class BatchManuelController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/traitement/start', name: 'traitement_start', methods: ['POST'])]
+    #[Route('/api/secure/traitement/start', name: 'traitement_start', methods: ['POST'])]
     public function traitementManuel(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /traitement/start");

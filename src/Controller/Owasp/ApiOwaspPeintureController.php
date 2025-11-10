@@ -72,7 +72,7 @@ class ApiOwaspPeintureController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/owasp/liste', name: 'peinture_owasp_liste', methods: ['POST'])]
+    #[Route('/api/secure/peinture/owasp/liste', name: 'peinture_owasp_liste', methods: ['POST'])]
     public function peintureOwaspListe(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/owasp/liste");
@@ -220,7 +220,7 @@ class ApiOwaspPeintureController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/owasp/hotspot/info', name: 'peinture_owasp_hotspot_info', methods: ['POST'])]
+    #[Route('/api/secure/peinture/owasp/hotspot/info', name: 'peinture_owasp_hotspot_info', methods: ['POST'])]
     public function peintureOwaspHotspotInfo(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/owasp/hotspot/info");
@@ -342,7 +342,7 @@ class ApiOwaspPeintureController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/owasp/hotspot/liste', name: 'peinture_owasp_hotspot_liste', methods: ['POST'])]
+    #[Route('/api/secure/peinture/owasp/hotspot/liste', name: 'peinture_owasp_hotspot_liste', methods: ['POST'])]
     public function peintureOwaspHotspotListe(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/owasp/hotspot/liste");
@@ -441,7 +441,7 @@ class ApiOwaspPeintureController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/owasp/hotspot/details', name: 'peinture_owasp_hotspot_details', methods: ['POST'])]
+    #[Route('/api/secure/peinture/owasp/hotspot/details', name: 'peinture_owasp_hotspot_details', methods: ['POST'])]
     public function peintureOwaspHotspotDetails(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/owasp/hotspot/details");
@@ -502,7 +502,7 @@ class ApiOwaspPeintureController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/peinture/owasp/hotspot/severity', name: 'peinture_owasp_hotspot_severity', methods: ['POST'])]
+    #[Route('/api/secure/peinture/owasp/hotspot/severity', name: 'peinture_owasp_hotspot_severity', methods: ['POST'])]
     public function peintureOwaspSeverity(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/owasp/hotspot/severity");

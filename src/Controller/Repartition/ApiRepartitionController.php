@@ -59,7 +59,7 @@ class ApiRepartitionController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/repartition/collecte', name: 'api_repartition_collecte', methods: ['PUT'])]
+    #[Route('/api/secure/repartition/collecte', name: 'api_repartition_collecte', methods: ['PUT'])]
     public function apiRepartitionCollecte(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/repartition/collecte");
@@ -130,7 +130,7 @@ class ApiRepartitionController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/repartition/analyse', name: 'repartition_analyse', methods: ['PUT'])]
+    #[Route('/api/secure/repartition/analyse', name: 'repartition_analyse', methods: ['PUT'])]
     public function apiRepartitionAnalyse(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/repartition/analyse");
@@ -252,7 +252,7 @@ class ApiRepartitionController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/repartition/historique', name: 'repartition_historique', methods: ['PUT'])]
+    #[Route('/api/secure/repartition/historique', name: 'repartition_historique', methods: ['PUT'])]
     public function apiRepartitionHistorique(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/repartition/historique");
@@ -340,7 +340,7 @@ class ApiRepartitionController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/repartition/analyse/mise-a-jour', name: 'repartition_analyse_maj', methods: ['PUT'])]
+    #[Route('/api/secure/repartition/analyse/mise-a-jour', name: 'repartition_analyse_maj', methods: ['PUT'])]
     public function apiRepartitionAnalyseMaj(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/repartition/analyse/mise-a-jour");

@@ -59,7 +59,7 @@ class ApiProjetController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/favori', name: 'favori', methods: ['POST'])]
+    #[Route('/api/secure/favori', name: 'favori', methods: ['POST'])]
     public function favori(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/favori");
@@ -137,7 +137,7 @@ class ApiProjetController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/favori/check', name: 'favori_check', methods: ['POST'])]
+    #[Route('/api/secure/favori/check', name: 'favori_check', methods: ['POST'])]
     public function favoriCheck(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/favori/check");
@@ -200,7 +200,7 @@ class ApiProjetController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/projet/liste', name: 'projet_liste', methods: ['POST'])]
+    #[Route('/api/secure/projet/liste', name: 'projet_liste', methods: ['POST'])]
     public function liste_projet(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/projet/liste");

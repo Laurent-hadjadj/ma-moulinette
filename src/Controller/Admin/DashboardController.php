@@ -60,7 +60,7 @@ class DashboardController extends AbstractDashboardController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/health', name: 'sonar_health', methods: ['POST'])]
+    #[Route('/api/secure/health', name: 'sonar_health', methods: ['POST'])]
     public function sonarHealth(): response
     {
         $url = $this->getParameter(static::$sonarUrl) . "/api/system/health";
@@ -83,7 +83,7 @@ class DashboardController extends AbstractDashboardController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/system/info', name: 'information_system', methods: ['POST'])]
+    #[Route('/api/secure/system/info', name: 'information_system', methods: ['POST'])]
     public function informationSystem(): response
     {
         $url = $this->getParameter(static::$sonarUrl) . "/api/system/info";

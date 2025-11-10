@@ -175,7 +175,7 @@ class ApiProfilController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/quality/profiles', name: 'liste_quality_profiles', methods: ['POST'])]
+    #[Route('/api/secure/quality/profiles', name: 'liste_quality_profiles', methods: ['POST'])]
     public function listeQualityProfiles(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/quality/profiles");
@@ -341,7 +341,7 @@ class ApiProfilController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/quality/langage', name: 'liste_quality_langage', methods: ['POST'])]
+    #[Route('/api/secure/quality/langage', name: 'liste_quality_langage', methods: ['POST'])]
     public function listeQualityLangage(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/quality/langage");
@@ -633,7 +633,7 @@ class ApiProfilController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/quality/off', name: 'liste_quality_off', methods: ['POST'])]
+    #[Route('/api/secure/quality/off', name: 'liste_quality_off', methods: ['POST'])]
     public function listeQualityOff(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/quality/off");

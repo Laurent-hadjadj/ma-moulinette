@@ -59,7 +59,7 @@ class ApiEnregistrementController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/enregistrement', name: 'enregistrement', methods: ['PUT'])]
+    #[Route('/api/secure/enregistrement', name: 'enregistrement', methods: ['PUT'])]
     public function enregistrement(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/enregistrement");
