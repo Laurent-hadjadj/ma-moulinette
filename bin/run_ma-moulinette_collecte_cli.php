@@ -14,7 +14,7 @@
 /**
  * Script de collecte des données SonarQube depuis Ma-Moulinette
  * --------------------------------------------------------
- * 🧩 Version : 1.3.0
+ * 🧩 Version : 1.4.0
  * 🗂️ class   : `run_ma-moulinette_collecte_cli.php`
  * 🧑‍💻 Auteur : Laurent HADJADJ
  * 🗓️ Dernière mise à jour : 2025-11-09
@@ -23,7 +23,7 @@
  *
  * 1️⃣ Connexion à l'application ma-moulinette via token (dans le body)
  * 2️⃣ Récupération des traitements automatiques non démarrés
- * 3️⃣ Démarrage de chaque traitement et profiling
+ * 3️⃣ Démarrage de chaque traitement
  * 4️⃣ Sauvegarde locale des résultats + rotation des logs
  *
  * 🧩 Usage :
@@ -44,6 +44,10 @@
 // -----------------------------------------------------
 // === PARAMÈTRES CLI ===
 // -----------------------------------------------------
+
+// Forcer le garbage collector à nettoyer tout ce qui traîne
+gc_collect_cycles();
+gc_mem_caches();
 
 $options = getopt("", ["url:", "token:", "flush::", "keep-days::", "max-log-size::", "dry-run", "debug", "help"]);
 
@@ -118,10 +122,10 @@ function logMessage(string $message, string $level = 'INFO'): void {
 
     // Coloration console
     $colors = [
-        'INFO' => "\033[32m",     // vert
-        'WARNING' => "\033[33m",  // jaune
-        'ERROR' => "\033[31m",    // rouge
-        'DEBUG' => "\033[36m"     // cyan
+        'INFO' => "\033[32m",    // vert
+        'WARN' => "\033[33m",    // jaune
+        'ERROR' => "\033[31m",   // rouge
+        'DEBUG' => "\033[36m"    // cyan
     ];
     $reset = "\033[0m";
 
@@ -171,15 +175,15 @@ rotateLogs($logDir, $logFile, $MAX_LOG_SIZE * 1024 * 1024, $KEEP_DAYS);
 // === AFFICHAGE CONFIGURATION ===
 // -----------------------------------------------------
 
-logMessage("🔗 Connexion à Ma-Moulinette : $MA_MOULINETTE_URL", 'INFO');
-logMessage("🧾 Conservation des logs : $KEEP_DAYS jour(s)", 'INFO');
-logMessage("📏 Taille max des logs : $MAX_LOG_SIZE Mo", 'INFO');
-logMessage("📂 Répertoire des logs : $logDir", 'INFO');
-if ($DRY_RUN) { logMessage("⚠️ Mode simulation activé.", 'INFO'); }
+logMessage(" 🔗 Connexion à Ma-Moulinette : $MA_MOULINETTE_URL", 'INFO');
+logMessage(" 🧾 Conservation des logs : $KEEP_DAYS jour(s)", 'INFO');
+logMessage(" 📏 Taille max des logs : $MAX_LOG_SIZE Mo", 'INFO');
+logMessage(" 📂 Répertoire des logs : $logDir", 'INFO');
+if ($DRY_RUN) { logMessage(" ⚠️ Mode simulation activé.", 'INFO'); }
 if ($DEBUG) { logMessage("🛠️ Mode debug activé : toutes les requêtes/ réponses API seront affichées.\n", 'DEBUG'); }
 if ($DRY_RUN) { logMessage("🛠️ Flush activé tout les $FLUSH traitements", 'DEBUG'); }
-if ($USE_PROXY && $PROXY_URL) { logMessage("🌐 Proxy actif : $PROXY_URL", 'INFO'); }
-if (!empty($NO_PROXY)) { logMessage("🚫 Pas de proxy pour : " . implode(", ", $NO_PROXY), 'WARNING'); }
+if ($USE_PROXY && $PROXY_URL) { logMessage(" 🌐 Proxy actif : $PROXY_URL", 'INFO'); }
+if (!empty($NO_PROXY)) { logMessage(" 🚫 Pas de proxy pour : " . implode(", ", $NO_PROXY), 'WARN'); }
 
 // -----------------------------------------------------
 // === FONCTIONS UTILITAIRES ===
@@ -252,10 +256,10 @@ function callApi($endpoint, $params = [], $method = 'GET', $timeout = 600) {
     $json = json_decode($response, true);
 
     if ($DEBUG) {
-        logMessage("DEBUG API CALL: URL=$url | CODE=$status | RESPONSE=" . ($response ?: '(vide)'), 'DEBUG');
+        logMessage("🛠️ API CALL: URL=$url | CODE=$status | RESPONSE=" . ($response ?: '(vide)'), 'DEBUG');
     }
     if (!is_array($json)) {
-        logMessage("⚠️ Réponse non JSON de $url : $response", 'WARNING');
+        logMessage(" ⚠️ Réponse non JSON de $url : $response", 'WARN');
         return ['code' => $status, 'message' => 'Invalid JSON', 'response' => $response];
     }
 
@@ -288,7 +292,7 @@ function getTraitementAutomatique():array {
     $liste = $data['liste_traitement'] ?? [];
 
     if (empty($liste)) {
-        logMessage("📭 Aucun traitement automatique disponible.", 'INFO');
+        logMessage(" 📭 Aucun traitement automatique disponible.", 'INFO');
         return [];
     }
 
@@ -318,7 +322,7 @@ function startTraitement(array $traitement) {
     ];
 
     if ($DRY_RUN) {
-        logMessage("⚠️ Simulation : démarrage du traitement {$traitement['nom_traitement']}", 'WARNING');
+        logMessage(" ⚠️ Simulation : démarrage du traitement {$traitement['nom_traitement']}", 'WARN');
         return ['code' => 200, 'message' => 'Simulation réussie'];
     }
 
@@ -329,20 +333,21 @@ function startTraitement(array $traitement) {
 // === SCRIPT PRINCIPAL ===
 // -----------------------------------------------------
 
-logMessage("ℹ️ Début du batch Ma-Moulinette ($MA_MOULINETTE_URL)", 'INFO');
+logMessage(" ℹ️ Début du batch Ma-Moulinette ($MA_MOULINETTE_URL)", 'INFO');
 
 $startGlobal = microtime(true);
-$totalMemoryBefore = memory_get_usage(true);
+$memoryStart = round((memory_get_usage(true) /1024 /1024), 2);
+logMessage(" ℹ️ Mémoire au démarrage : {$memoryStart} MB", 'INFO');
 
 $traitements = getTraitementAutomatique();
 if (empty($traitements)) {
-    logMessage("ℹ️ Aucun traitement à exécuter. Fin du batch.", 'INFO');
+    logMessage(" ℹ️ Aucun traitement à exécuter. Fin du batch.", 'INFO');
     exit(0);
 }
 
 // Appliquer flush si défini
 if ($FLUSH > 0 && count($traitements) > $FLUSH) {
-    logMessage("⚠️ Mode flush activé : envoi seulement des $FLUSH premiers traitements sur " . count($traitements), 'WARNING');
+    logMessage(" ⚠️ Mode flush activé : envoi seulement des $FLUSH premiers traitements sur " . count($traitements), 'WARN');
     $traitements = array_slice($traitements, 0, $FLUSH);
 }
 
@@ -352,10 +357,9 @@ $hasError = false;
 foreach ($traitements as $traitement) {
     $nom = $traitement['nom_traitement'];
     $projets = $traitement['nombre_projet'] ?? '?';
-    logMessage("⚙️ Traitement : $nom ($projets projets)", 'INFO');
+    logMessage(" ⚙️ Traitement : $nom ($projets projets)", 'INFO');
 
     $start = microtime(true);
-    $memStart = memory_get_usage(true);
 
     try {
         $result = startTraitement($traitement);
@@ -366,16 +370,13 @@ foreach ($traitements as $traitement) {
     }
 
     $duration = round(microtime(true) - $start, 2);
-    // 🔧 utilisation du pic mémoire pour fiabilité
-    $memUsed = round((memory_get_peak_usage(true) - $memStart) / 1024 / 1024, 2);
-    if ($memUsed < 0) { $memUsed = 0; }
-
     // S'assurer que le résultat contient bien 'code' et 'message'
     $code = $result['code'] ?? 0;
     $msg = $result['message'] ?? '(aucun message)';
     $status = ($code === 200) ? 'INFO' : 'ERROR';
-    $icon = ($code === 200) ? '✅' : '❌';
-    logMessage("$icon Terminé : $nom | {$duration}s | +{$memUsed} MB | Code=$code | Message=$msg", $status);
+    $icon = ($code === 200) ? ' ✅' : '❌';
+
+    logMessage("$icon Terminé : $nom | {$duration}s | Code=$code | Message=$msg", $status);
 
     if ($code !== 200) {
         $hasError = true; // marque une erreur API
@@ -383,7 +384,7 @@ foreach ($traitements as $traitement) {
 
     // En mode debug, afficher la réponse complète si nécessaire
     if ($DEBUG) {
-        echo "🔍 Réponse brute API : " . json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) . "\n";
+        logMessage("🔍 Réponse brute API : " . json_encode($result, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE), 'DEBUG');
     }
 }
 
@@ -391,13 +392,10 @@ foreach ($traitements as $traitement) {
 // === ENREGISTREMENT DU PROFILING LOCAL ===
 // -----------------------------------------------------
 
-$totalTime = round(microtime(true) - $startGlobal, 2);
-$totalMem = round((memory_get_peak_usage(true) - $totalMemoryBefore) / 1024 / 1024, 2);
-
-logMessage("⏱️ Batch terminé en {$totalTime}s | Mémoire totale : +{$totalMem} MB", 'INFO');
+logMessage(" ⏱️ Batch terminé en {$totalTime}s", 'INFO');
 
 if ($DRY_RUN) {
-    logMessage("⚠️ Mode simulation : aucune modification réelle envoyée.", 'WARNING');
+    logMessage(" ⚠️ Mode simulation : aucune modification réelle envoyée.", 'WARN');
 }
 
 // -----------------------------------------------------
@@ -408,6 +406,6 @@ if ($hasError) {
     logMessage("🚨 Fin du batch avec anomalies (code de retour 1).", 'ERROR');
     exit(1);
 } else {
-    logMessage("✅ Batch terminé sans erreur (code de retour 0).", 'INFO');
+    logMessage(" ✅ Batch terminé sans erreur (code de retour 0).", 'INFO');
     exit(0);
 }
