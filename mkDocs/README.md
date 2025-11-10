@@ -1,6 +1,6 @@
 # Mkdocs Ma-Moulinette
 
-Ce projet permet la rédaction de la documentation technique et fonctionelle de l'application Ma-Moulinette sous forme de pages Markdown.
+Ce projet permet la rédaction de la documentation technique et fonctionnelle de l'application Ma-Moulinette sous forme de pages Markdown.
 Il utilise **Mkdocs** pour générer un site Web statique à partir des fichiers Markdown et Material for MkDocs pour le thème.
 
 ## Prérequis
