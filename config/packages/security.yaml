@@ -72,7 +72,7 @@ security:
     access_control:
         # API
         - { path: ^/api/public/, roles: PUBLIC_ACCESS }
-        - { path: ^/api, roles: ROLE_UTILISATEUR }
+        - { path: ^/api/secure/, roles: ROLE_UTILISATEUR }
 
         # Web (public)
         - { path: ^/login, roles: PUBLIC_ACCESS }
