@@ -6,8 +6,8 @@ when@dev:
 
     framework:
         profiler:
-            only_exceptions: false
-            collect_serializer_data: true
+            only_exceptions: true
+            collect_serializer_data: false
 
 when@test:
     web_profiler:
