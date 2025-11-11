@@ -99,4 +99,35 @@ class BatchExecutionRepository extends ServiceEntityRepository
     return ['code' => 200, 'erreur' => ''];
   }
 
+  /**
+   * [Description for selectBatchExecutionTraitementId]
+   *
+   * @param mixed $traitement_id
+   *
+   * @return array
+   *
+   * Created at: 11/11/2025 14:17:43 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function selectBatchExecutionLastTraitementId($traitement_id): array
+  {
+      $sql = "SELECT id
+              FROM ma_moulinette.batch_execution
+              WHERE traitement_id = :traitement_id
+              ORDER BY date_enregistrement DESC
+              limit 1";
+      $conn = $this->getEntityManager()->getConnection();
+
+      try {
+            $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(':traitement_id', $traitement_id);
+            $find = $stmt->executeQuery()->fetchAllAssociative();
+      } catch (\Throwable $e) {
+          return $this->handleDatabaseException($e);
+      }
+      return ['code' => 200, 'id' => $find[0]['id'], 'erreur' => ''];
+  }
+
+
 }
