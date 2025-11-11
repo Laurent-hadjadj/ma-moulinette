@@ -208,7 +208,7 @@ export const showMessage = function(type, message, technicalDetails = null) {
     buttonElement.addClass(type);
 
     // Message principal
-    const role = (type === 'alert') ? 'alert' : 'status';
+    const role = (type === 'alert' || type === 'error') ? 'alert' : 'status';
     $('#message-box').attr('role', role);
     let html = `<span class="message-icon" aria-hidden="true">${icon}</span> ${message}`;
 
