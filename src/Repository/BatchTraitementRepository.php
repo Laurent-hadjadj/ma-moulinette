@@ -161,7 +161,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
 
     try {
           $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                  $stmt->bindValue(':traitement_id', $traitement_id);
+            $stmt->bindValue(':traitement_id', $traitement_id);
           $traitement = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
