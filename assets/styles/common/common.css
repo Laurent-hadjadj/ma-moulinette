@@ -603,6 +603,31 @@ body {
 /* si on a pas activé javascript */
 .javascript-obligatoire {  font-weight: bold; }
 
+/* ==== Modal                             === */
+.modal-template {
+  border: none;
+  border-radius: 0.8rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  padding: 2rem;
+  background: #ffffff;
+  max-width: 650px;
+}
+
+/* ========= Traitement information ========= */
+.header-h1 {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #004a7f;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.header-h2 {
+  color: #0070b8;
+  font-weight: 500;
+  margin-bottom: 1rem;
+}
 /* ==== WCAG : focus sur les éléments  ==== */
 .focus-light:focus {
   outline: 3px dashed #007acc;
