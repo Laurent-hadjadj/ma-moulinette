@@ -21,7 +21,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{BatchTraitement, BatchExecution};
-use Doctrine\DBAL\Types\DateTimeTzType;
 
 //use App\Service\PdfExportService;
 
@@ -96,6 +95,7 @@ class BatchController extends AbstractController
     {
         /** On instancie l'EntityRepository */
         $batchTraitementRepos = $this->em->getRepository(BatchTraitement::class);
+
         $user = $this->security->getUser();
 
         // Vérifier si l'utilisateur a le rôle 'ROLE_BATCH'.
@@ -111,7 +111,6 @@ class BatchController extends AbstractController
 
         /** On récupère les données du POST */
         $data = json_decode($request->getContent());
-
 
         if ($data === null || !property_exists($data, 'traitement_id')){
             $this->logger->error("[Information-Traitement] ❌ Requête invalide : clé 'traitement_id' manquante ou JSON mal formé.",[
@@ -130,7 +129,7 @@ class BatchController extends AbstractController
         $traitement_info = $batchTraitementRepos->selectBatchTraitementByTraitementId($data->traitement_id);
 
         if ($traitement_info['code'] !== 200){
-            $this->logger->alert("[Information-Traitement] ❌ Échec de la requête selectBatchTraitementByTraitementId($data->traitement_id.", [
+            $this->logger->alert("[Information-Traitement] ❌ Échec de la requête selectBatchTraitementByTraitementId", [
             'code' => $traitement_info,
             'message' => $traitement_info['erreur'] ?? null
             ]);
@@ -138,7 +137,7 @@ class BatchController extends AbstractController
             return new JsonResponse([
                 'code' => $traitement_info['code'],
                 'type' => 'error',
-                'message' => "Il n'est pas possible de récupèrer les informations du traitement n°<strong>{data->traitement_id}</strong> (Erreur {$traitement_info['code']}).",
+                'message' => "Il n'est pas possible de récupérer les informations du traitement n°<strong>{$data->traitement_id}</strong> (Erreur {$traitement_info['code']}).",
                 'trace' => $traitement_info['erreur']
             ], Response::HTTP_OK);
         }
@@ -151,21 +150,14 @@ class BatchController extends AbstractController
             'nom_traitement' => $traitement_info['titre'],
             'portefeuille' => $traitement_info['portefeuille'],
             'nombre_projet' => $traitement_info['nombre_projet'],
+            "nombre_ok" => $nombre_ok ?? 0,
+            "nombre_ko" => $nombre_ko ?? 0,
+            'projets' => $liste_projet ?? [],
             'start_at' => $traitement_info['debut_traitement'],
             'end_at' => $traitement_info['fin_traitement'],
             'is_activated' => $traitement_info['activated']
         ];
-        /*"map": {
-                "traitement_id": "019a696f-72b5-517e-21f2-e7a3b3607cb4",
-                "mode_collecte": "TRAITEMENT AUTOMATIQUE",
-                "statut": true,
-                "nom_traitement": "TEST PERFORMANCE",
-                "portefeuille": "APPLICATIONS JAVA - LOT 5",
-                "nombre_projet": 46,
-                "start_at": "2025-11-09 20:45:49+01",
-                "end_at": "2025-11-09 20:50:32+01",
-                "is_activated": false
-            }*/
+
         return new JsonResponse([
                 'code' => 200,
                 'message' => "Récupération des données d'information sur le traitement {$data->traitement_id}.",
