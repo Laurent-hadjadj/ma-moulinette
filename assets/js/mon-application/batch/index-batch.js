@@ -14,7 +14,11 @@ import 'foundation-sites/dist/css/foundation.min.css';
 import 'motion-ui/dist/motion-ui.css';
 import '../../../styles/common/common.css';
 import '../../../styles/common/police.css';
+import '../../../styles/common/select2.min.css';
 import '../../../styles/mon-application/batch.css';
+
+import '../../select2/select2.min.js';
+import '../../select2/i18n/fr.js'
 
 /** Intégration de jquery */
 import $ from 'jquery';
@@ -210,6 +214,7 @@ const traitementInformation = async function(traitement_id){
 
   try{
     const t = await $.ajax(options);
+    console.log(t);
 
     // 📌 Vérification des erreurs
     if (t.code !== http_200){
@@ -262,7 +267,6 @@ const traitementInformation = async function(traitement_id){
     const total = traitement.nombre_projet;
     const ok = traitement.nombre_ok;
     const ko = traitement.nombre_ko;
-    console.log(total, ok, ko);
 
     const progress = total > 0 ? Math.round((ok / total) * 100) : 0;
     let color = '#4CAF50';
@@ -275,6 +279,81 @@ const traitementInformation = async function(traitement_id){
     $('.js-nb-ok').text(ok);
     $('.js-nb-ko').text(ko);
 
+
+    // On suppose que ta réponse API contient aussi un tableau `projets`
+    const projets = traitement.projets || [];
+
+    // On vide le select avant de le remplir
+    const $select = $('.js-select-journal');
+    $select.empty().append('<option value="">-- Sélectionner un projet --</option>');
+
+    // On injecte les nouvelles options
+    projets.forEach(p => {
+      const $opt = $('<option>')
+        .val(p.job_id)
+        .text(p.nom_projet)
+        .attr('data-status', p.status);
+      $select.append($opt);
+    });
+
+    // ⚠️ Détruire l'ancien select2 si déjà présent
+    if ($select.hasClass("select2-hidden-accessible")) {
+      $select.select2('destroy');
+    }
+    // On rafraîchit Select2 (ou l’initialise s’il ne l’était pas)
+    if ($select.data('select2')) {
+      $select.trigger('change.select2');
+    } else {
+      $select.select2({
+        placeholder: '-- Sélectionner un projet --',
+        width: '100%',
+        allowClear: true,
+        language: 'fr',
+
+        templateResult: function (data) {
+          if (!data.id) return data.text;
+
+          // Lecture du statut depuis data-status
+          const status = (data.element?.getAttribute('data-status') || '').toLowerCase();
+          let color = '#9E9E9E';
+          let label = 'Inconnu';
+
+          if (status === 'ok' || status === 'success') {
+            color = '#4CAF50';
+            label = 'Succès';
+          } else if (status === 'ko' || status === 'failed') {
+            color = '#F44336';
+            label = 'Échec';
+          }
+
+          // Élément visuel stylé
+          const $result = $(`
+            <div class="select2-option-custom">
+              <span class="status-dot" style="background-color:${color}"></span>
+              <span class="option-text">${data.text}</span>
+              <span class="option-status">${label}</span>
+            </div>
+          `);
+          return $result;
+        },
+
+        templateSelection: function (data) {
+          if (!data.id) return data.text;
+
+          const status = (data.element?.getAttribute('data-status') || '').toLowerCase();
+          let color = '#9E9E9E';
+          if (status === 'ok' || status === 'success') color = '#4CAF50';
+          if (status === 'ko' || status === 'failed') color = '#F44336';
+
+          return $(`
+            <span class="selected-option">
+              <span class="status-dot" style="background-color:${color}"></span>
+              ${data.text}
+            </span>
+          `);
+        }
+      });
+    }
     // Ouvrir modale
     $('#modal-traitement-information').foundation('open');
   } catch(erreur) {
@@ -390,6 +469,49 @@ $('.js-outil-lire').on('click', async (e) => {
   /** On appelle l'API */
   traitementInformation(traitement_id);
 });
+
+// Initialisation du select2
+$('.js-select-journal').select2({
+  placeholder: '-- Sélectionner un projet --',
+  width: '100%',
+  allowClear: true,
+  language: 'fr'
+});
+
+// Lorsqu’un projet est sélectionné
+$('.js-select-journal').on('select2:select', async function(e) {
+  const projetId = e.params.data.id;
+  const projetNom = e.params.data.text;
+
+  try {
+    // Requête du journal
+    const response = await $.ajax({
+      url: `${serveur()}/api/secure/traitement/journal/${projetId}`,
+      type: 'GET',
+      dataType: 'html',
+      headers: {
+        'X-API-Custom-403': 'true',
+        'X-Internal-Front': 'front-app'
+      }
+    });
+
+    // Injection du contenu
+    $('.js-journal-nom').text(projetNom);
+    $('.js-journal-content').html(response);
+
+    // Ouverture de la modale
+    $('#modal-journal').foundation('open');
+  } catch (erreur) {
+    const trace = prepareTechnicalDetails(erreur);
+    showMessage('critical', 'Impossible de charger le journal demandé.', trace);
+  }
+});
+
+// Optionnel : nettoyage du contenu à la fermeture
+$('#modal-journal').on('closed.zf.reveal', function() {
+  $('.js-journal-content').html('<p class="text-center text-muted">Aucun journal chargé.</p>');
+});
+
 
 $(document).ready(() => {
   const $bulle_wip = $('#info-bulle-in-progress');
