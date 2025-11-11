@@ -1,36 +1,66 @@
-    {# Affichage des informations du traitement. #}
-    <div id="modal-traitement-information" class="reveal large" data-reveal data-close-on-click="true" aria-modal="true">
-      <h1 class="h3 claire-hand"><span aria-hidden="true">ℹ️</span>Information du l'execution du traitement</h1>
-      <h2 class="h4 claire-hand"><span aria-hidden="true">📌</span><span class="js-nom-traitement"></span></h2>
+{# ────────────────────────────────────────
+  Affichage des informations du traitement.
+  ------------------------------------------------
+  BLOC : header   → titre + bouton de fermeture
+  BLOC : body     → contenu principal
+  BLOC : footer   → actions / bouton fermer
+  ------------------------------------------------
+#}
+<dialog
+    id="modal-traitement-information"
+    class="modal-template reveal large"
+    data-reveal
+    data-close-on-click="true"
+    aria-modal="true"
+    aria-label="Information sur le traitement">
 
-      <div class="batch-info grid-x grid-margin-x">
-        <div class="cell small-12 medium-6">
-            <span><strong>Portefeuille      :</strong> <span class="js-portefeuille badge info">--</span></span><br>
-            <span><strong>Nombre de projets :</strong> <span class="js-nombre-projet badge secondary">--</span></span><br>
-            <span><strong>Mode de collecte  :</strong> <span class="js-mode-collecte badge warning">--</span></span>
-        </div>
-        <div class="cell small-12 medium-6">
-            <span><strong>Durée  :</strong> <span class="js-time-elapse badge">--</span></span><br>
-            <span><strong>Statut :</strong> <span class="js-statut badge">--</span></span><br>
-            <span><strong>Activé :</strong> <span class="js-activated badge">--</span></span>
-        </div>
+  {# ------- Header (titre) ------- #}
+  <header>
+    <h1 class="h3 claire-hand header-h1">
+      <span aria-hidden="true">ℹ️</span>Information
+    </h1>
+    <h2 class="h4 claire-hand header-h2">
+      <span aria-hidden="true">📌</span>
+      <span class="js-nom-traitement"></span>
+    </h2>
+  </header>
+
+  <section>
+    <div class="batch-info grid-x grid-margin-x">
+      <div class="small-12 cell">
+        <p class="open-sans"><strong>Référence :</strong> <span class="js-reference color-noir">--</span></p>
+        <p class="open-sans"><strong>Portefeuille :</strong> <span class="js-portefeuille color-noir">--</span></p>
       </div>
-
-      <div class="timeline-container">
+      <div class="small-12 medium-8 large-6 cell">
+        <p class="open-sans"><strong>Nombre de projets :</strong> <span class="js-nombre-projet badge secondary">--</span></p>
+        <p class="open-sans"><strong>Mode de collecte :</strong> <span class="js-mode-collecte badge warning">--</span></p>
+        <p><strong>Durée  :</strong> <span class="js-time-elapse badge">--</span></p>
+      </div>
+      <div class="small-12 medium-4 large-6 cell">
+          <p><strong>Résultat :</strong> <span class="js-statut badge">--</span></p>
+          <p><strong>Activé :</strong> <span class="js-activated badge">--</span></p>
+      </div>
+      <div class="small-12 timeline-container cell">
         <h3 class="h5 claire-hand"><span aria-hidden="true">⏱️</span> Timeline</h3>
         <div class="timeline">
-            <div class="timeline-start"><span class="js-start-at">--</span></div>
-            <div class="timeline-bar"><div class="timeline-progress"></div></div>
-            <div class="timeline-end"><span class="js-end-at">--</span></div>
+          <div class="timeline-start"><span class="js-start-at">--</span></div>
+          <div class="timeline-bar"><div class="timeline-progress"></div></div>
+          <div class="timeline-end"><span class="js-end-at">--</span></div>
+        </div>
+        <div class="timeline-summary">
+          <span class="text-success">✔️ <span class="js-nb-ok"></span></span> /
+          <span class="text-error">❌ <span class="js-nb-ko"></span></span>
         </div>
       </div>
-
-      <footer class="grid-x grid-margin-x align-right margin-top-2">
-        <div class="cell shrink">
-          <button id="bouton-fermer-information" data-close
-                  class="button open-sans focus-light"
-                  type="button"
-                  aria-label="Ferme la fenêtre"><span arial-hidden="true">❌</span> Fermer
-          </button>
-      </footer>
     </div>
+  </section>
+
+  <footer class="grid-x grid-margin-x align-right margin-top-2">
+    <div class="cell shrink">
+      <button id="bouton-fermer-information" data-close
+              class="button open-sans focus-light"
+              type="button"
+              aria-label="Ferme la fenêtre"><span arial-hidden="true">❌</span> Fermer
+      </button>
+  </footer>
+</dialog>
