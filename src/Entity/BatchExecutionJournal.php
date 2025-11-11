@@ -14,11 +14,12 @@ namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Repository\BatchExecutionJournalRepository;
 
 /**
  * [Description BatchExecutionJournal]
  */
-#[ORM\Entity]
+#[ORM\Entity(repositoryClass: BatchExecutionJournalRepository::class)]
 #[ORM\Table(name: "batch_execution_journal", schema: "ma_moulinette")]
 class BatchExecutionJournal
 {
