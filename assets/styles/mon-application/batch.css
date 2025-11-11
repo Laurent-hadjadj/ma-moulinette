@@ -382,3 +382,93 @@ tbody tr:nth-child(even) {
   width: 0%;
   transition: width 0.6s ease;
 }
+
+/* ==== Journal Selector ==== */
+.journal-selector-container {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.journal-selector-container h3 {
+  color: #004a7f;
+  font-weight: 600;
+  margin-bottom: 0.75rem;
+}
+
+/* Harmonisation Select2 + Foundation */
+.select2-container--default .select2-selection--single {
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  height: 2.6rem;
+  display: flex;
+  align-items: center;
+  font-family: 'Open Sans', sans-serif;
+  font-size: 0.95rem;
+  padding: 0 0.5rem;
+  transition: border-color 0.2s ease;
+}
+
+.select2-container--default .select2-selection--single:hover {
+  border-color: #0078D4;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
+  color: #333;
+  line-height: 1.6;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+  height: 100%;
+  right: 8px;
+}
+
+/* Liste déroulante */
+.select2-dropdown {
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-family: 'Open Sans', sans-serif;
+}
+
+.select2-results__option {
+  padding: 0.5rem 0.75rem;
+}
+
+.select2-container--default .select2-results__option--highlighted {
+  background-color: #2196F3;
+  color: #fff;
+}
+
+/* Texte placeholder */
+.select2-selection__placeholder {
+  color: #888 !important;
+}
+
+.select2-results__option span {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.select2-results__option span strong {
+  color: #004a7f;
+  font-weight: 600;
+}
+
+/* ==== Journal Modal ==== */
+#modal-journal .journal-content h1,
+#modal-journal .journal-content h2 {
+  color: #004a7f;
+  margin-top: 1rem;
+}
+
+#modal-journal .journal-content ul {
+  list-style-type: disc;
+  margin-left: 1.5rem;
+}
+
+#modal-journal .journal-content p {
+  margin-bottom: 0.5rem;
+  line-height: 1.4;
+}
