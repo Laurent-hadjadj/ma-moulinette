@@ -171,4 +171,29 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
     ];
   }
 
+  public function selectBatchExecutionJournalByJob($map): array
+  {
+    $sql = "SELECT compte_rendu
+            FROM ma_moulinette.batch_execution_journal
+            WHERE job_id = :job_id
+              AND nom_projet = :nom_projet";
+
+    $conn = $this->getEntityManager()->getConnection();
+
+    try {
+            $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(':job_id', $map['job_id']);
+              $stmt->bindValue(':nom_projet', $map['nom_projet']);
+            $exec = $stmt->executeQuery()->fetchAllAssociative();
+      } catch (\Throwable $e) {
+          return $this->handleDatabaseException($e);
+      }
+
+      return [
+          'code' => 200,
+          'journal' => $exec,
+          'erreur' => ''
+    ];
+  }
+
 }
