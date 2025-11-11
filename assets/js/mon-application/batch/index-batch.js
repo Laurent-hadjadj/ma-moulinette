@@ -220,13 +220,17 @@ const traitementInformation = async function(traitement_id){
     }
 
     const traitement = t.map;
-    // Nom du traitement
+    // Nom du traitement + référence
     $('.js-nom-traitement').text(traitement.nom_traitement);
+    $('.js-reference').text(traitement.traitement_id);
 
     // Badges et infos
     $('.js-portefeuille').text(traitement.portefeuille);
     $('.js-nombre-projet').text(traitement.nombre_projet);
-    $('.js-mode-collecte').text(traitement.mode_collecte);
+    const mode_collecte = (traitement.mode_collecte === 'TRAITEMENT AUTOMATIQUE')
+      ? 'Automatique'
+      : 'Manuel';
+    $('.js-mode-collecte').text(mode_collecte);
 
     // Statut
     $('.js-statut')
@@ -250,18 +254,26 @@ const traitementInformation = async function(traitement_id){
     const start = new Date(traitement.start_at);
     const end = new Date(traitement.end_at);
     const now = new Date();
-    let progress = 0;
 
     // on calcul la durée
     const time_elapse = Math.abs((end - start) / (1000 * 60));;
     $('.js-time-elapse').html(`${time_elapse} minutes`);
 
-    if (now < start) progress = 0;
-    else if (now > end) progress = 100;
-    else progress = ((now - start) / (end - start)) * 100;
+    const total = traitement.nombre_projet;
+    const ok = traitement.nombre_ok;
+    const ko = traitement.nombre_ko;
+    console.log(total, ok, ko);
 
-    $('.timeline-progress').css('width', `${progress}%`);
+    const progress = total > 0 ? Math.round((ok / total) * 100) : 0;
+    let color = '#4CAF50';
+    if (progress < 80) color = '#FFB300';
+    if (progress < 40) color = '#E53935';
+    $('.timeline-progress')
+      .css('width', `${progress}%`)
+      .css('background-color', color);
 
+    $('.js-nb-ok').text(ok);
+    $('.js-nb-ko').text(ko);
 
     // Ouvrir modale
     $('#modal-traitement-information').foundation('open');
