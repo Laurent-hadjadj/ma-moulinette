@@ -480,15 +480,17 @@ $('.js-select-journal').select2({
 
 // Lorsqu’un projet est sélectionné
 $('.js-select-journal').on('select2:select', async function(e) {
-  const projetId = e.params.data.id;
-  const projetNom = e.params.data.text;
+  const job = e.params.data.id;
+  const nom_projet = e.params.data.text;
 
   try {
     // Requête du journal
+    const data = { job, nom_projet };
     const response = await $.ajax({
-      url: `${serveur()}/api/secure/traitement/journal/${projetId}`,
-      type: 'GET',
-      dataType: 'html',
+      url: `${serveur()}/api/secure/traitement/journal`,
+      type: 'POST',
+      data: JSON.stringify(data),
+      contentType,
       headers: {
         'X-API-Custom-403': 'true',
         'X-Internal-Front': 'front-app'
@@ -496,8 +498,8 @@ $('.js-select-journal').on('select2:select', async function(e) {
     });
 
     // Injection du contenu
-    $('.js-journal-nom').text(projetNom);
-    $('.js-journal-content').html(response);
+    $('.js-journal-nom').text(nom_projet);
+    $('.js-journal-content').html(response.html);
 
     // Ouverture de la modale
     $('#modal-journal').foundation('open');
