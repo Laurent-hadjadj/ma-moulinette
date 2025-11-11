@@ -93,6 +93,8 @@ class BatchController extends AbstractController
     #[Route('/api/secure/traitement/information', name: 'traitement_information', methods:'POST')]
     public function traitementInformation(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/secure/traitement/information");
+
         /** On instancie l'EntityRepository */
         $batchTraitementRepos = $this->em->getRepository(BatchTraitement::class);
         $batchExecutionRepos = $this->em->getRepository(BatchExecution::class);
@@ -113,7 +115,6 @@ class BatchController extends AbstractController
 
         /** On récupère les données du POST */
         $data = json_decode($request->getContent());
-
 
         if ($data === null || !property_exists($data, 'traitement_id')){
             $this->logger->error("[Information-Traitement] ❌ Requête invalide : clé 'traitement_id' manquante ou JSON mal formé.",[
@@ -151,7 +152,7 @@ class BatchController extends AbstractController
         $find_job_id = $batchExecutionRepos->selectBatchExecutionLastTraitementId($traitement_info['traitement_id']);
 
         if ($find_job_id['code'] !== 200){
-            $this->logger->alert("[Information-Traitement] ❌ Échec de la requête selectBatchTraitementByTraitementId", [
+            $this->logger->alert("[Information-Traitement] ❌ Échec de la requête selectBatchExecutionLastTraitementId", [
             'code' => $find_job_id['code'],
             'message' => $find_job_id['erreur'] ?? null
             ]);
@@ -186,7 +187,7 @@ class BatchController extends AbstractController
             ->selectBatchExecutionJournalNomProjetAndStatus($find_job_id['id']);
 
         if ($projets['code'] !== 200){
-            $this->logger->alert("[Information-Traitement] ❌ Échec de la requête countBatchExecutionJournalCode.", [
+            $this->logger->alert("[Information-Traitement] ❌ Échec de la requête selectBatchExecutionJournalNomProjetAndStatus.", [
             'code' => $projets['code'],
             'message' => $projets['erreur'] ?? null
             ]);
@@ -222,6 +223,106 @@ class BatchController extends AbstractController
                 'code' => 200,
                 'message' => "Récupération des données d'information sur le traitement {$data->traitement_id}.",
                 'map' => $map,
+        ], Response::HTTP_OK);
+    }
+
+    /**
+     * [Description for traitementJournal]
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     *
+     * Created at: 11/11/2025 19:05:12 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    #[Route('api/secure/traitement/journal', name: 'traitement_journal', methods:'POST')]
+    public function traitementJournal(Request $request): JsonResponse
+    {
+        $this->logger->info("[API] 📥 Requête reçue sur api/secure/traitement/journal");
+
+        /** On instancie l'EntityRepository */
+        $batchExecutionJournalRepos = $this->em->getRepository(BatchExecutionJournal::class);
+
+        $user = $this->security->getUser();
+
+        // Vérifier si l'utilisateur a le rôle 'ROLE_BATCH'.
+        if (!$this->isGranted('ROLE_BATCH')) {
+            $this->logger->warning("[Information-Traitement] 🚫 Accès refusé pour l'utilisateur (ROLE_BATCH absent).");
+
+            return new JsonResponse([
+                'code' => 403,
+                'type' => 'warning',
+                'message' => "Accès refusé pour l'utilisateur (Erreur 403).",
+            ], Response::HTTP_OK);
+        }
+
+        /** On récupère les données du POST */
+        $data = json_decode($request->getContent());
+
+        if ($data === null ||
+            !property_exists($data, 'job') ||
+            !property_exists($data, 'nom_projet')){
+            $this->logger->error("[Information-Traitement] ❌ Requête invalide : clé 'job' ou 'nom_projet' manquante ou JSON mal formé.",[
+                'utilisateur' => $user,
+                'payload' => $data
+            ]);
+
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'error',
+                'message' => static::$erreur400
+            ], Response::HTTP_OK);
+        }
+
+        /** On va chercher les infos depuis batch_execution_journal */
+        $map = [
+                'job_id' => $data->job,
+                'nom_projet' => $data->nom_projet
+        ];
+
+        $get_journal = $batchExecutionJournalRepos->selectBatchExecutionJournalByJob($map);
+
+        if ($get_journal['code'] !== 200){
+            $this->logger->alert("[Information-Traitement] ❌ Échec de la requête selectBatchExecutionJournalByJob.", [
+            'code' => $get_journal['code'],
+            'message' => $get_journal['erreur'] ?? null
+            ]);
+
+            return new JsonResponse([
+                'code' => $get_journal['code'],
+                'type' => 'error',
+                'message' => "Il n'est pas possible de récupérer le journal d'execution (Erreur {$get_journal['code']}).",
+                'trace' => $get_journal['erreur']
+            ], Response::HTTP_OK);
+        }
+
+        $stream = $get_journal['journal'][0]['compte_rendu'];
+
+        if (!is_resource($stream)) {
+            throw new \RuntimeException("Le champ compte_rendu n'est pas un flux valide.");
+        }
+
+        // Lire le flux complet
+        $binary = stream_get_contents($stream);
+        fclose($stream);
+        // Détection de compression GZIP (signature hexadécimale "1f8b")
+        /*$is_gzip = str_starts_with(bin2hex(substr($binary, 0, 2)), '1f8b');
+        if ($is_gzip) {
+            $html = @gzdecode($binary);
+        } else {
+            // On tente une autre compression (rare)
+            $html = @gzuncompress($binary);
+            // Ou sinon on suppose que c’est du texte brut
+            if ($html === false) {
+                $html = $binary;
+            }
+        }*/
+        return new JsonResponse([
+                'code' => 200,
+                'message' => "Récupération du journal d'execution pour le projet {$data->nom_projet}.",
+                'html' => $binary,
         ], Response::HTTP_OK);
     }
 
