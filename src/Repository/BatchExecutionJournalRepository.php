@@ -103,6 +103,7 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
   /**
    * [Description for countBatchExecutionJournalCode]
    *
+   * @param mixed $job_id
    * @return array
    *
    * Created at: 11/11/2025 13:12:29 (Europe/Paris)
@@ -112,14 +113,15 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
   public function countBatchExecutionJournalCode($job_id): array
   {
     $sql = "SELECT
-	            SUM(CASE WHEN code = 200 THEN 1 ELSE 0 END) AS ok_count,
-	            SUM(CASE WHEN code != 200 THEN 1 ELSE 0 END) AS ko_count
+              SUM(CASE WHEN code = 200 THEN 1 ELSE 0 END) AS ok_count,
+              SUM(CASE WHEN code != 200 THEN 1 ELSE 0 END) AS ko_count
             FROM ma_moulinette.batch_execution_journal
             WHERE job_id = :job_id";
     $conn = $this->getEntityManager()->getConnection();
+
     try {
             $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $this->bindValue(':job_id', $job_id);
+              $stmt->bindValue(':job_id', $job_id);
             $exec = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
@@ -129,6 +131,42 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
           'code' => 200,
           'ok' => $exec[0]['ok_count'],
           'ko' => $exec[0]['ko_count'],
+          'erreur' => ''
+    ];
+  }
+
+  /**
+   * [Description for selectBatchExecutionJournalNomProjetAndStatus]
+   *
+   * @param mixed $job_id
+   *
+   * @return array
+   *
+   * Created at: 11/11/2025 13:27:34 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function selectBatchExecutionJournalNomProjetAndStatus($job_id): array
+  {
+    $sql = "SELECT nom_projet, job_id,
+              CASE WHEN code = 200 THEN 'ok' ELSE 'ko' END AS status
+            FROM ma_moulinette.batch_execution_journal
+            WHERE job_id = :job_id
+            ORDER BY nom_projet ASC";
+
+    $conn = $this->getEntityManager()->getConnection();
+
+    try {
+            $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(':job_id', $job_id);
+            $exec = $stmt->executeQuery()->fetchAllAssociative();
+      } catch (\Throwable $e) {
+          return $this->handleDatabaseException($e);
+      }
+
+      return [
+          'code' => 200,
+          'liste' => $exec,
           'erreur' => ''
     ];
   }
