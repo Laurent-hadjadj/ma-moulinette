@@ -759,9 +759,41 @@ body {
 .alert-callout-border.primary strong { color: #1779ba; }
 .alert-callout-border.secondary { border-left-color: #767676; }
 .alert-callout-border.secondary strong { color: #767676; }
+.alert-callout-border.alert { border-left-color: #cc4b37; }
+.alert-callout-border.alert strong { color: #cc4b37; }
 .alert-callout-border.success { border-left-color: #2fb961; }
 .alert-callout-border.success strong { color: #2fb961; }
 
+/* ======              Logger               ====== */
+.alert-callout.info{
+  background-color: rgb(214.8186602871, 235.9894736842, 250.0313397129);
+  color: #0a0a0a;
+}
+
+.alert-callout.error {
+    background-color: rgb(247.35, 228, 225);
+    color: #0a0a0a;
+}
+
+.alert-callout.critical {
+    background-color: rgb(247.35, 228, 225);
+    color: #0a0a0a;
+}
+
+.alert-callout.warning{
+  background-color: rgb(255, 242.85, 216.75);
+  color: #0a0a0a;
+}
+
+.alert-callout.warning{
+  background-color: rgb(255, 242.85, 216.75);
+  color: #0a0a0a;
+}
+
+.alert-callout.secondary {
+    background-color: rgb(234.45, 234.45, 234.45);
+    color: #0a0a0a;
+}
 /* ======              Logger               ====== */
 .alert-callout-border.info { border-left-color: #1779ba; }
 .alert-callout-border.info strong { color: #1779ba; }
@@ -799,7 +831,6 @@ body {
 .close-button.warning { background-color: #eda60c; }
 .close-button.critical { background-color: #cc4b37; }
 .close-button.debug { background-color: #767676; }
-
 
 .close-button.primary:hover {
   background-color: #5CA1CE;
