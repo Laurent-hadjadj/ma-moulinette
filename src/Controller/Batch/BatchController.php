@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\{JsonResponse, Response, Request};
 use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\{BatchTraitement, BatchExecution};
+use App\Entity\{BatchTraitement, BatchExecution, BatchExecutionJournal};
 
 //use App\Service\PdfExportService;
 
@@ -95,6 +95,8 @@ class BatchController extends AbstractController
     {
         /** On instancie l'EntityRepository */
         $batchTraitementRepos = $this->em->getRepository(BatchTraitement::class);
+        $batchExecutionRepos = $this->em->getRepository(BatchExecution::class);
+        $batchExecutionJournalRepos = $this->em->getRepository(BatchExecutionJournal::class);
 
         $user = $this->security->getUser();
 
@@ -111,6 +113,7 @@ class BatchController extends AbstractController
 
         /** On récupère les données du POST */
         $data = json_decode($request->getContent());
+
 
         if ($data === null || !property_exists($data, 'traitement_id')){
             $this->logger->error("[Information-Traitement] ❌ Requête invalide : clé 'traitement_id' manquante ou JSON mal formé.",[
@@ -130,7 +133,7 @@ class BatchController extends AbstractController
 
         if ($traitement_info['code'] !== 200){
             $this->logger->alert("[Information-Traitement] ❌ Échec de la requête selectBatchTraitementByTraitementId", [
-            'code' => $traitement_info,
+            'code' => $traitement_info['code'],
             'message' => $traitement_info['erreur'] ?? null
             ]);
 
@@ -143,6 +146,63 @@ class BatchController extends AbstractController
         }
 
         $traitement_info = $traitement_info['traitement'];
+
+        /** On récupère le job_id du dernier traitement_id */
+        $find_job_id = $batchExecutionRepos->selectBatchExecutionLastTraitementId($traitement_info['traitement_id']);
+
+        if ($find_job_id['code'] !== 200){
+            $this->logger->alert("[Information-Traitement] ❌ Échec de la requête selectBatchTraitementByTraitementId", [
+            'code' => $find_job_id['code'],
+            'message' => $find_job_id['erreur'] ?? null
+            ]);
+
+            return new JsonResponse([
+                'code' => $find_job_id['code'],
+                'type' => 'error',
+                'message' => "Il n'est pas possible de récupérer les informations du traitement n°<strong>{$data->traitement_id}</strong> (Erreur {$find_job_id['code']}).",
+                'trace' => $find_job_id['erreur']
+            ], Response::HTTP_OK);
+        }
+
+        /** On va chercher les infos depuis batch_execution_journal */
+        $count_traitement_journal = $batchExecutionJournalRepos->countBatchExecutionJournalCode($find_job_id['id']);
+
+        if ($count_traitement_journal['code'] !== 200){
+            $this->logger->alert("[Information-Traitement] ❌ Échec de la requête countBatchExecutionJournalCode.", [
+            'code' => $count_traitement_journal['code'],
+            'message' => $count_traitement_journal['erreur'] ?? null
+            ]);
+
+            return new JsonResponse([
+                'code' => $count_traitement_journal['code'],
+                'type' => 'error',
+                'message' => "Il n'est pas possible de récupérer les informations du journal pour la référence n°<strong>{$traitement_info['id']}</strong> (Erreur {$count_traitement_journal['code']}).",
+                'trace' => $count_traitement_journal['erreur']
+            ], Response::HTTP_OK);
+        }
+
+        /** On va chercher la liste des projets pour le job_id depuis batch_execution_journal */
+        $projets = $batchExecutionJournalRepos
+            ->selectBatchExecutionJournalNomProjetAndStatus($find_job_id['id']);
+
+        if ($projets['code'] !== 200){
+            $this->logger->alert("[Information-Traitement] ❌ Échec de la requête countBatchExecutionJournalCode.", [
+            'code' => $projets['code'],
+            'message' => $projets['erreur'] ?? null
+            ]);
+
+            return new JsonResponse([
+                'code' => $projets['code'],
+                'type' => 'error',
+                'message' => "Il n'est pas possible de récupérer les informations du journal pour la référence n°<strong>{$traitement_info['id']}</strong> (Erreur {$projets['code']}).",
+                'trace' => $projets['erreur']
+            ], Response::HTTP_OK);
+        }
+
+        $nombre_ok = $count_traitement_journal['ok'] ?? 0;
+        $nombre_ko = $count_traitement_journal['ko'] ?? 0;
+        $liste_projet = $projets['liste'] ?? [];
+
         $map = [
             'traitement_id' => $data->traitement_id,
             'mode_collecte' => $traitement_info['mode_collecte'],
@@ -150,12 +210,12 @@ class BatchController extends AbstractController
             'nom_traitement' => $traitement_info['titre'],
             'portefeuille' => $traitement_info['portefeuille'],
             'nombre_projet' => $traitement_info['nombre_projet'],
-            "nombre_ok" => $nombre_ok ?? 0,
-            "nombre_ko" => $nombre_ko ?? 0,
-            'projets' => $liste_projet ?? [],
+            "nombre_ok" => $nombre_ok,
+            "nombre_ko" => $nombre_ko,
+            'projets' => $liste_projet,
             'start_at' => $traitement_info['debut_traitement'],
             'end_at' => $traitement_info['fin_traitement'],
-            'is_activated' => $traitement_info['activated']
+            'is_activated' => $traitement_info['activated'],
         ];
 
         return new JsonResponse([
