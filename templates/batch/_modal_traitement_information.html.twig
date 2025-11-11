@@ -55,6 +55,41 @@
     </div>
   </section>
 
+
+    <section>
+    <div class="journal-selector-container margin-top-2">
+      <h3 class="h5 claire-hand">
+        <span aria-hidden="true">📘</span> Consulter un journal d'exécution
+      </h3>
+
+      <label for="select-journal" class="open-sans">Choisir un projet :</label>
+      <select id="select-journal" class="js-select-journal" style="width: 100%;">
+        <option value="">-- Sélectionner un projet --</option>
+      </select>
+    </div>
+
+    {# Deuxième modale pour le contenu du journal #}
+    <div id="modal-journal" class="reveal large" data-reveal aria-modal="true">
+      <header>
+        <h2 class="h4 claire-hand">
+          <span aria-hidden="true">📓</span>
+          Journal d'exécution – <span class="js-journal-nom open-sans"></span>
+        </h2>
+      </header>
+
+      <section class="journal-content js-journal-content open-sans"
+              style="max-height:70vh; overflow-y:auto; background:#fafafa; border-radius:8px; padding:1rem;">
+        <p class="text-center text-muted">Aucun journal chargé.</p>
+      </section>
+
+      <footer class="grid-x grid-margin-x align-right margin-top-2">
+        <div class="cell shrink">
+          <button data-close class="button secondary open-sans">Fermer</button>
+        </div>
+      </footer>
+    </div>
+  </section>
+
   <footer class="grid-x grid-margin-x align-right margin-top-2">
     <div class="cell shrink">
       <button id="bouton-fermer-information" data-close
