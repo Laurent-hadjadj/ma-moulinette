@@ -397,6 +397,7 @@ tbody tr:nth-child(even) {
 }
 
 /* Harmonisation Select2 + Foundation */
+/* Container global Select2 */
 .select2-container--default .select2-selection--single {
   background-color: #fff;
   border: 1px solid #ccc;
@@ -410,50 +411,50 @@ tbody tr:nth-child(even) {
   transition: border-color 0.2s ease;
 }
 
-.select2-container--default .select2-selection--single:hover {
-  border-color: #0078D4;
+.select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+    background-color: #00445b3a;
 }
 
-.select2-container--default .select2-selection--single .select2-selection__rendered {
-  color: #333;
-  line-height: 1.6;
-}
-
-.select2-container--default .select2-selection--single .select2-selection__arrow {
-  height: 100%;
-  right: 8px;
-}
-
-/* Liste déroulante */
-.select2-dropdown {
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-family: 'Open Sans', sans-serif;
-}
-
-.select2-results__option {
-  padding: 0.5rem 0.75rem;
-}
-
-.select2-container--default .select2-results__option--highlighted {
-  background-color: #2196F3;
-  color: #fff;
-}
-
-/* Texte placeholder */
-.select2-selection__placeholder {
-  color: #888 !important;
-}
-
-.select2-results__option span {
-  display: flex;
+.select2-selection__rendered {
+  display: flex !important;
   align-items: center;
   gap: 0.4rem;
 }
 
-.select2-results__option span strong {
-  color: #004a7f;
-  font-weight: 600;
+/* Options dans le menu déroulant */
+.select2-option-custom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-family: 'Open Sans', sans-serif;
+  padding: 0.1rem 0.6rem;
+}
+
+.status-dot {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.option-text {
+  flex-grow: 1;
+  color: #00445b;
+}
+
+.option-status {
+  font-size: 0.8rem;
+  color: #00445b;
+  font-style: italic;
+}
+
+/* Résultat sélectionné */
+.selected-option {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 /* ==== Journal Modal ==== */
