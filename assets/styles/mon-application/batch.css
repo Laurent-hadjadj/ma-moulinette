@@ -312,50 +312,73 @@ tbody tr:nth-child(even) {
   to { visibility: hidden; }
 }
 
-/* ========= Traitement information ========= */
-/* Badges colorés */
-.badge {
-    display: inline-block;
-    padding: 0.3em 0.6em;
-    border-radius: 0.25rem;
-    color: #fff;
-    font-weight: bold;
+
+/* ==== SECTION INFORMATIONS ==== */
+.batch-info p {
+  margin-bottom: 0.75rem;
+  font-size: 0.95rem;
+  color: #333;
 }
 
-.badge.info { background-color: #2196F3; }
-.badge.secondary { background-color: #9E9E9E; }
-.badge.warning { background-color: #FF9800; }
-.badge.success { background-color: #4CAF50; }
-.badge.failed { background-color: #F44336; }
-.badge.active { background-color: #4CAF50; }
-.badge.inactive { background-color: #9E9E9E; }
+.batch-info strong { color: #005b7f; }
 
-/* Timeline */
-.timeline-container { margin-top: 1rem; }
+/* ==== BADGES ==== */
+.badge {
+  display: inline-block;
+  padding: 0.35em 0.7em;
+  border-radius: 0.375rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  letter-spacing: 0.3px;
+  text-transform: capitalize;
+  min-width: 50px;
+  text-align: center;
+  color: #fff;
+}
+
+.badge.info { background-color: #00445b; }
+.badge.secondary { background-color: #9E9E9E; }
+.badge.warning { background-color: #FFB300; }
+.badge.success { background-color: #43A047; }
+.badge.failed { background-color: #E53935; }
+.badge.active { background-color: #43A047; }
+.badge.inactive { background-color: #BDBDBD; }
+
+/* ==== TIMELINE ==== */
+.timeline-container {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+.timeline-container h3 {
+  color: #004a7f;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
 
 .timeline {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.timeline-start, .timeline-end {
-    flex: 0 0 auto;
-    font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .timeline-bar {
-    flex: 1 1 auto;
-    height: 10px;
-    background-color: #e0e0e0;
-    border-radius: 5px;
-    position: relative;
+  position: relative;
+  flex: 1 1 100%;
+  height: 10px;
+  background-color: #e0e0e0;
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 .timeline-progress {
-    height: 100%;
-    background-color: #4CAF50;
-    width: 0%;
-    border-radius: 5px;
-    transition: width 0.5s ease;
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  background-color: #4CAF50; /* valeur par défaut */
+  border-radius: 6px;
+  width: 0%;
+  transition: width 0.6s ease;
 }
