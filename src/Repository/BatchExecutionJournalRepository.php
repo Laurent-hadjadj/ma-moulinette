@@ -81,14 +81,14 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
   {
     $sql = "DELETE
             FROM ma_moulinette.batch_execution_journal
-            WHERE job_id = :traitement_id";
+            WHERE job_id = :job_id";
 
     $conn = $this->getEntityManager()->getConnection();
 
     try {
         $conn->beginTransaction();
         $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-          $this->bindValue(':journal_id', $job_id);
+          $this->bindValue(':job_id', $job_id);
           $stmt->executeStatement();
         $conn->commit();
     } catch (\Throwable $e) {
@@ -97,6 +97,40 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
     }
 
     return ['code' => 200, 'erreur' => ''];
+  }
+
+
+  /**
+   * [Description for countBatchExecutionJournalCode]
+   *
+   * @return array
+   *
+   * Created at: 11/11/2025 13:12:29 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function countBatchExecutionJournalCode($job_id): array
+  {
+    $sql = "SELECT
+	            SUM(CASE WHEN code = 200 THEN 1 ELSE 0 END) AS ok_count,
+	            SUM(CASE WHEN code != 200 THEN 1 ELSE 0 END) AS ko_count
+            FROM ma_moulinette.batch_execution_journal
+            WHERE job_id = :job_id";
+    $conn = $this->getEntityManager()->getConnection();
+    try {
+            $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+              $this->bindValue(':job_id', $job_id);
+            $exec = $stmt->executeQuery()->fetchAllAssociative();
+      } catch (\Throwable $e) {
+          return $this->handleDatabaseException($e);
+      }
+
+      return [
+          'code' => 200,
+          'ok' => $exec[0]['ok_count'],
+          'ko' => $exec[0]['ko_count'],
+          'erreur' => ''
+    ];
   }
 
 }
