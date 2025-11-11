@@ -75,11 +75,12 @@ class BatchRepository extends ServiceEntityRepository
    */
   public function selectBatchByStatut(): array
   {
-    $sql = "SELECT activated, titre, responsable, portefeuille, nombre_projet as nombre
+    $sql = "SELECT activated, titre, responsable, portefeuille,
+                  nombre_projet as nombre
             FROM batch
             ORDER BY activated ASC";
       try {
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $liste=$stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
