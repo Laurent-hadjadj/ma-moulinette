@@ -31,19 +31,19 @@ class BatchExecutionJournal
 
     #[ORM\Column(type: Types::INTEGER, nullable: false,
         options: ['comment' => 'Code de statut du traitement (200 = OK, 500 = Erreur, etc.)'])]
-    private int $code;
+    private int $code = 500;
 
     #[ORM\Column(type: Types::STRING, nullable: false,
         options: ['comment' => 'Nom du projet'])]
-    private string $nomProjet;
+    private string $nomProjet = '';
 
     #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
         options: ['comment' => 'Portefeuille de projets'])]
-    private $portefeuille;
+    private string $portefeuille = '';
 
     #[ORM\Column(type: Types::BINARY, nullable: false,
         options: ['comment' => 'Compte rendu HTML compressé du traitement.'])]
-    private string $compteRendu;
+    private $compteRendu;
 
     #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
         options: ['comment' => "Date d'exécution de la collecte."])]
@@ -60,13 +60,35 @@ class BatchExecutionJournal
 
     public function setCompteRendu(string $html): void
     {
-        $this->compteRendu = $html;
+        // 9 = niveau de compression le plus haut (0–9)
+        $this->compteRendu = gzencode($html, 9);
+    }
+
+    public function getCompteRenduBrut(): ?string
+    {
+        return $this->compteRendu; // retourne la propriété privée telle quelle
     }
 
     public function getCompteRendu(): string
     {
-        $data = $this->compteRendu;
-        return $data ? gzdecode($data) : '';
+        if ($this->compteRendu === null) {
+            return '';
+        }
+
+        // Le champ peut être un flux (resource)
+        $binary = is_resource($this->compteRendu)
+            ? stream_get_contents($this->compteRendu)
+            : $this->compteRendu;
+
+        // On tente de décoder si c’est du gzencode()
+        $html = @gzdecode($binary);
+
+        // Si la donnée est déjà en texte brut (cas anciens)
+        if ($html === false) {
+            $html = $binary;
+        }
+
+        return $html;
     }
 
     public function setCode(int $code): void
@@ -84,11 +106,9 @@ class BatchExecutionJournal
         return $this->nomProjet;
     }
 
-    public function setNomProjet(string $nomProjet): static
+    public function setNomProjet(string $nomProjet): void
     {
         $this->nomProjet = $nomProjet;
-
-        return $this;
     }
 
     public function getPortefeuille(): ?string
@@ -96,11 +116,9 @@ class BatchExecutionJournal
         return $this->portefeuille;
     }
 
-    public function setPortefeuille(string $portefeuille): static
+    public function setPortefeuille(string $portefeuille): void
     {
         $this->portefeuille = $portefeuille;
-
-        return $this;
     }
 
     public function setDateExecution(\DateTimeImmutable $date): void
