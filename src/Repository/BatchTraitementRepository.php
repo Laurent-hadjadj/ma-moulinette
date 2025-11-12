@@ -101,7 +101,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
   }
 
   /**
-   * [Description for selectBatchTraitementLast]
+   * [Description for selectBatchTraitementActivated]
    * On récupère la liste des derniers traitements,
    * groupé par titre et ordonné par responsable
    *
