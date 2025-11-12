@@ -100,7 +100,7 @@ class BatchAutoController extends AbstractController
         $get_liste = $batchTraitementRepos->selectBatchTraitementAutomatiqueListe();
 
         if ($get_liste['code'] !== 200){
-            $this->logger->alert("[Traitement-Automatique] ❌ Échec de la requête selectBatchTraitementListe.", [
+            $this->logger->alert("[Traitement-Automatique] ❌ Échec de la requête selectBatchTraitementAutomatiqueListe.", [
             'code' => $get_liste,
             'message' => $get_liste['erreur'] ?? null
             ]);
@@ -297,13 +297,17 @@ class BatchAutoController extends AbstractController
                     $memUsed
                 ));
 
-                $batchTraitementRepos->updateBatchTraitement([
-                    'success' => false,
-                    'in_progress' => false,
-                    'pending' => false,
-                    'fin_traitement' => (new \DateTime('now', new \DateTimeZone(static::$europeParis)))->format(static::$dateFormat),
-                    'traitement_id' => $data->traitement_id,
-                ]);
+                $map = [
+                        'debut_traitement' => $debut_traitement->format(static::$dateFormat),
+                        'success' => false,
+                        'in_progress' => false,
+                        'pending' => false,
+                        'fin_traitement' => (new \DateTime('now', new \DateTimeZone(static::$europeParis)))->format(static::$dateFormat),
+                        'traitement_id' => $data->traitement_id,
+                ];
+
+                $failed = $batchTraitementRepos->updateBatchTraitement($map);
+                $this->logger->critical("erreur de la mise à jour de in_progress", ['erreur' => $failed]);
 
                 $code = $result['code'];
                 $message = "❌ La collecte du projet $le_projet n'a pas abouti. Consultez le journal d’exécution pour plus d’informations.";
