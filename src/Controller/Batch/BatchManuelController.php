@@ -395,6 +395,7 @@ class BatchManuelController extends AbstractController
                 ));
 
                 $batchTraitementRepos->updateBatchTraitement([
+                    'debut_traitement' => $debut_traitement->format(static::$dateFormat),
                     'success' => false,
                     'in_progress' => false,
                     'pending' => false,
