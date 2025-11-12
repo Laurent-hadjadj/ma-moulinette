@@ -50,51 +50,12 @@ class ListeProjetPortefeuilleService
     {
         /*** On instancie l'entityRepository */
         $portefeuilleRepos = $this->em->getRepository(Portefeuille::class);
-        $batchTraitementRepos = $this->em->getRepository(BatchTraitement::class);
 
         /** On envoi le titre du portefeuille et le nom du portefeuille */
         $map = [
             'titre_portefeuille' => $titre_portefeuille,
             'portefeuille' => $portefeuille
         ];
-
-        /** On vérifie que le portefeuille n'est pas vide pour le traitement */
-        // liste" => [ "id" => 1, "mode_collecte" => "Manuel", "titre" => "EXP",
-        // "portefeuille" => "JAVA", "projet" => 3 ]
-        $traitement = $batchTraitementRepos->selectBatchTraitement($map);
-
-        if ($traitement['code'] !== 200) {
-            $this->logger->error('[ListeProjetPortefeuilleService] ❌ Échec de la requête selectBatchTraitement', [
-                'code' => $traitement['code'],
-                'message' => $traitement['message'] ?? static::$noMessage,
-                'erreur' => $traitement['erreur'] ?? static::$noError,
-                ]);
-
-            return [
-                'code' => $traitement['code'],
-                'type' => 'error',
-                'message' => "Une erreur est survenue lors de la récupération des projets du portefeuille ({$traitement['code']}).",
-                'erreur' => $traitement['erreur']
-            ];
-        }
-
-        /** La liste est vide */
-        if (!isset($traitement['liste']) || count($traitement['liste']) === 0)
-        {
-            $this->logger->warning('[ListeProjetPortefeuilleService] ⚠️ La liste des traitements ne contient pas le portefeuille !', [
-                'code' => $traitement['code'],
-                'message' => $traitement['message'] ?? static::$noMessage,
-                'erreur' => $traitement['erreur'] ?? static::$noError,
-                'portefeuille' => $titre_portefeuille ?? 'inconnu'
-                ]);
-
-            return [
-                'code' => 404,
-                'type' => 'warning',
-                'message' => 'La liste des traitements ne contient pas le portefeuille (Erreur 404).',
-                'erreur' => $traitement['erreur'] ?? null
-            ];
-        }
 
         /** On récupère le portefeuille de projets */
         $liste_projets = $portefeuilleRepos->selectPortefeuille($map);
