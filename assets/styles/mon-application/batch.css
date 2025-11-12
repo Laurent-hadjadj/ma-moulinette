@@ -460,16 +460,32 @@ tbody tr:nth-child(even) {
 /* ==== Journal Modal ==== */
 #modal-journal .journal-content h1,
 #modal-journal .journal-content h2 {
-  color: #004a7f;
   margin-top: 1rem;
+  color: #00445b;
+  font-family: "open sans", Arial, Helvetica, sans-serif;
 }
 
 #modal-journal .journal-content ul {
-  list-style-type: disc;
+  list-style-type: none;
   margin-left: 1.5rem;
 }
 
+#modal-journal .journal-content li {
+  color: #00445b;
+  font-size: 0.9rem;
+  font-family: "open sans", Arial, Helvetica, sans-serif;
+}
+
+#modal-journal .journal-content li span {
+  font-size: 1rem;
+  color: #000;
+}
+
+
 #modal-journal .journal-content p {
+  color: #00445b;
+  font-size: 1.1rem;
+  font-family: "open sans", Arial, Helvetica, sans-serif;
   margin-bottom: 0.5rem;
   line-height: 1.4;
 }
