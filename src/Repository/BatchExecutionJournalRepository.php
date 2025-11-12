@@ -114,7 +114,8 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
   {
     $sql = "SELECT
               SUM(CASE WHEN code = 200 THEN 1 ELSE 0 END) AS ok_count,
-              SUM(CASE WHEN code != 200 THEN 1 ELSE 0 END) AS ko_count
+              SUM(CASE WHEN code != 200 THEN 1 ELSE 0 END) AS ko_count,
+              SUM(CASE WHEN code = 202 THEN 1 ELSE 0 END) AS oko_count
             FROM ma_moulinette.batch_execution_journal
             WHERE job_id = :job_id";
     $conn = $this->getEntityManager()->getConnection();
@@ -131,6 +132,7 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
           'code' => 200,
           'ok' => $exec[0]['ok_count'],
           'ko' => $exec[0]['ko_count'],
+          'oko' => $exec[0]['oko_count'],
           'erreur' => ''
     ];
   }
@@ -149,7 +151,11 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
   public function selectBatchExecutionJournalNomProjetAndStatus($job_id): array
   {
     $sql = "SELECT nom_projet, job_id,
-              CASE WHEN code = 200 THEN 'ok' ELSE 'ko' END AS status
+              CASE
+                WHEN code = 200 THEN 'ok'
+                WHEN code = 202 THEN 'oko'
+                ELSE 'ko'
+              END AS status
             FROM ma_moulinette.batch_execution_journal
             WHERE job_id = :job_id
             ORDER BY nom_projet ASC";
