@@ -14,10 +14,10 @@
 /**
  * Script de collecte des données SonarQube depuis Ma-Moulinette
  * --------------------------------------------------------
- * 🧩 Version : 1.4.0
+ * 🧩 Version : 1.4.1
  * 🗂️ class   : `run_ma-moulinette_collecte_cli.php`
  * 🧑‍💻 Auteur : Laurent HADJADJ
- * 🗓️ Dernière mise à jour : 2025-11-09
+ * 🗓️ Dernière mise à jour : 2025-11-12
  *
  * 🎯 Étapes :
  *
@@ -392,6 +392,7 @@ foreach ($traitements as $traitement) {
 // === ENREGISTREMENT DU PROFILING LOCAL ===
 // -----------------------------------------------------
 
+$totalTime = round(microtime(true) - $start, 2);
 logMessage(" ⏱️ Batch terminé en {$totalTime}s", 'INFO');
 
 if ($DRY_RUN) {
