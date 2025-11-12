@@ -12,6 +12,7 @@
         "doctrine/dbal": "^4.3.2",
         "doctrine/doctrine-bundle": "^2.15.0",
         "doctrine/orm": "^3.5.0",
+        "dompdf/dompdf": "^3.0",
         "dragonmantank/cron-expression": "^3.4.0",
         "easycorp/easyadmin-bundle": "^4.24.9",
         "knplabs/knp-paginator-bundle": "^6.9.1",
