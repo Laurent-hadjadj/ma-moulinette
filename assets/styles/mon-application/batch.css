@@ -91,17 +91,21 @@ tbody tr:nth-child(even) {
 }
 
 /* Bouton information SVG */
-.information-svg, .poubelle-svg {
+.information-svg,
+.affiche-svg,
+.download-svg {
   fill: #00445b;
+  width: 100%;
+  height: auto;
+  max-width: 32px;
+  transition: fill 0.3s ease;
   cursor: pointer;
-  margin-bottom: -0.2rem;
-  width: 28px;
-  height: 28px;
 }
 
 /* hover sur l'icône information */
 .information-svg:hover,
-.poubelle-svg:hover { fill: #ed7d20;}
+.affiche-svg:hover,
+.download-svg:hover { fill: #ed7d20;}
 
 /* disable */
 .disable { cursor: not-allowed; }
@@ -130,7 +134,6 @@ tbody tr:nth-child(even) {
 .avatar-color-7 { background-color: #fab1a0; }  /* pêche */
 .avatar-color-8 { background-color: #00cec9; }  /* cyan */
 .avatar-color-9 { background-color: #a29bfe; }  /* lavande */
-
 
 /* == Bulle info pour les traitements manuels == */
 /* États visuels du worker */
