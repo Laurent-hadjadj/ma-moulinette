@@ -21,8 +21,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{BatchTraitement, BatchExecution, BatchExecutionJournal};
-
-//use App\Service\PdfExportService;
+use App\Service\PdfExportService;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
  * [Description BatchController]
@@ -55,7 +55,7 @@ class BatchController extends AbstractController
         private ParameterBagInterface $params,
         private LoggerInterface $logger,
         private Security $security,
-        //private PdfExportService $pdfExportService
+        private PdfExportService $pdfExportService
     ) {
         $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
@@ -202,6 +202,7 @@ class BatchController extends AbstractController
 
         $nombre_ok = $count_traitement_journal['ok'] ?? 0;
         $nombre_ko = $count_traitement_journal['ko'] ?? 0;
+        $nombre_oko = $count_traitement_journal['oko'] ?? 0;
         $liste_projet = $projets['liste'] ?? [];
 
         $map = [
@@ -211,8 +212,9 @@ class BatchController extends AbstractController
             'nom_traitement' => $traitement_info['titre'],
             'portefeuille' => $traitement_info['portefeuille'],
             'nombre_projet' => $traitement_info['nombre_projet'],
-            "nombre_ok" => $nombre_ok,
-            "nombre_ko" => $nombre_ko,
+            'nombre_ok' => $nombre_ok,
+            'nombre_ko' => $nombre_ko,
+            'nombre_oko' => $nombre_oko,
             'projets' => $liste_projet,
             'start_at' => $traitement_info['debut_traitement'],
             'end_at' => $traitement_info['fin_traitement'],
@@ -298,31 +300,65 @@ class BatchController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        $stream = $get_journal['journal'][0]['compte_rendu'];
 
-        if (!is_resource($stream)) {
-            throw new \RuntimeException("Le champ compte_rendu n'est pas un flux valide.");
+        $stream = $get_journal['journal'][0]['compte_rendu'] ?? null;
+
+        if (!$stream || !is_resource($stream)) {
+            $this->logger->warning("Le champ compte_rendu n'est pas un flux valide.");
+
+            return new JsonResponse([
+                    'code' => 204,
+                    'type' => 'error',
+                    'message' => "Le journal pour le  projet {$data->nom_projet} n'a pas pu être extrait (Erreur 204).",
+            ], Response::HTTP_OK);
         }
 
-        // Lire le flux complet
+        // 🧩 Lecture complète du flux
         $binary = stream_get_contents($stream);
         fclose($stream);
-        // Détection de compression GZIP (signature hexadécimale "1f8b")
-        /*$is_gzip = str_starts_with(bin2hex(substr($binary, 0, 2)), '1f8b');
+
+        // 🔍 Vérification du contenu
+        if (empty($binary)) {
+            $this->logger->warning("Le contenu du champ compte_rendu est vide.");
+
+            return new JsonResponse([
+                    'code' => 204,
+                    'type' => 'warning',
+                    'message' => "Le journal n'est plus disponible pour le  projet {$data->nom_projet} (Erreur 204).",
+            ], Response::HTTP_OK);
+        }
+
+        // 🚦 Détection de compression GZIP (signature hexadécimale 1F 8B)
+        $is_gzip = (substr($binary, 0, 2) === "\x1f\x8b");
+
+        // 🧭 Décompression ou texte brut
         if ($is_gzip) {
             $html = @gzdecode($binary);
-        } else {
-            // On tente une autre compression (rare)
-            $html = @gzuncompress($binary);
-            // Ou sinon on suppose que c’est du texte brut
+
             if ($html === false) {
-                $html = $binary;
+                $this->logger->error("Erreur lors de la décompression GZIP du compte_rendu (flux corrompu ?).");
+
+                return new JsonResponse([
+                        'code' => 500,
+                        'type' => 'warning',
+                        'message' => "Erreur lors de la décompression GZIP du journal (flux corrompu ?) pour le  projet {$data->nom_projet} (Erreur 500).",
+                ], Response::HTTP_OK);
             }
-        }*/
+        }
+
+        // 🧼 Nettoyage : conversion UTF-8 forcée
+        // (évite les erreurs d'encodage côté Twig ou JSON)
+        $html = mb_convert_encoding($html, 'UTF-8', 'auto');
+
+        // 🧪 Sécurité : validation basique du HTML
+        if (!str_contains($html, '<div') && !str_contains($html, '<h1')) {
+            $this->logger->warning("Le contenu du compte_rendu ne semble pas être du HTML.");
+        }
+
         return new JsonResponse([
                 'code' => 200,
                 'message' => "Récupération du journal d'execution pour le projet {$data->nom_projet}.",
-                'html' => $binary,
+                'html' => $html,
         ], Response::HTTP_OK);
     }
 
@@ -481,7 +517,6 @@ class BatchController extends AbstractController
             'nombre_bypass' => $nombre_bypass
         ]);
     }
-}
 
     /**
      * [Description for exportPdf]
@@ -495,11 +530,34 @@ class BatchController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    /*#[Route('/api/secure/traitement/rapport/pdf/{id}', name: 'batch_execution_journal_pdf')]
-    public function exportPdf(BatchExecution $batch): Response
-    {
-        //return $this->pdfExportService->generateBatchPdf($batch);
-    }*/
+    #[Route('/api/public/traitement/rapport/pdf/{token}/{download?0}', name: 'rapport_execution_pdf')]
+    public function rapportExecutionPdf(string $token, bool $download = false): Response {
+
+        $batchExecution = $this->em->getRepository(BatchExecution::class)->findBy(
+            ['traitementId' => $token],
+            ['dateEnregistrement' => 'DESC'],
+            1
+        )[0] ?? null;
+
+        if (!$batchExecution) {
+            throw $this->createNotFoundException('Aucun batch trouvé pour ce token.');
+        }
+
+        $document_type = 'Document Interne';
+        $pdfContent = $this->pdfExportService->generateRapportPdf($batchExecution, $document_type);
+
+        $disposition = $download ? ResponseHeaderBag::DISPOSITION_ATTACHMENT : ResponseHeaderBag::DISPOSITION_INLINE;
+        $date = date('Y-m-d_H-i');
+        $filename = "rapport_execution_$date.pdf";
+
+        return new Response($pdfContent, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => $disposition.'; filename='. $filename,
+        ]);
+    }
+
+}
+
 
 /*public function index(EntityManagerInterface $em)
 {
