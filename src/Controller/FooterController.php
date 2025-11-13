@@ -34,6 +34,7 @@ class FooterController extends AbstractController
     public function __construct(
         private ParameterBagInterface $params,
     ) {
+        $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
