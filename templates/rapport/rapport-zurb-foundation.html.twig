@@ -1,0 +1,222 @@
+{% set title = "Rapport d'execution des traitement." %}
+{#
+.__  __             __  __             _ _            _   _
+|  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+| |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+| |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+|_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+
+Laurent HADJADJ
+https://github.com/Laurent-hadjadj/ma-moulinette
+© 2024 - CC BY-SA-NC 4.0
+#}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>{{title}}</title>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 12px;
+            margin: 20px;
+            color: #00445b;
+        }
+        @page {
+            margin-bottom: 50px;
+        }
+        /* --- En-tête --- */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
+        }
+        .logo {
+            max-height: 40px;
+            margin-top: -10px;
+        }
+        .cartouche-infos {
+            text-align: left;
+            font-size: 12px;
+        }
+        .cartouche-infos div {
+            margin-bottom: 4px;
+        }
+        /* --- Légende --- */
+        .legend {
+            margin-bottom: 15px;
+            font-size: 12px;
+        }
+        .legend span {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-weight: bold;
+            margin-right: 2px;
+            min-width: 90px;
+            text-align: center;
+            font-size: 12px;
+        }
+        .legend .ok { background-color: #a2d5ab; color: #000; }
+        .legend .oko { background-color: #7ea6c4; color: #fff; }
+        .legend .error { background-color: #f5a6a6; color: #000; }
+        .legend-mini-container {
+            margin-top: 15px;
+            margin-bottom: 15px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .legend-mini {
+            display: flex;
+            align-items:
+            center; gap: 5px;"
+        }
+        .legend-mini-status {
+            width: 12px;
+            height: 12px;
+            background-color: #00445b;
+            display: inline-block;
+            border-radius: 2px;"
+        }
+        /* --- Status badges --- */
+        .status {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            min-width: 80px;
+            text-align: center;
+            font-size: 13px;
+            gap: 4px;
+        }
+        .status-ok { background-color: #a2d5ab; color: #000; }
+        .status-oko { background-color: #7ea6c4; color: #fff; }
+        .status-error { background-color: #f5a6a6; color: #000; }
+        .status svg { width: 14px; height: 14px; }
+        /* --- Tableau --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        th, td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            vertical-align: middle;
+        }
+        th { background-color: #e0e0e0; text-align: left; }
+        th.status-column, td.status-column { text-align: center; width: 130px; }
+        th.status-column, td.date-column { text-align: center; width: 140px; }
+        tbody tr:nth-child(even) { background-color: #f9f9f9; }
+        tbody tr:nth-child(odd) { background-color: #ffffff; }
+        /* --- Totaux --- */
+        .totals {
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        .totals span {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 4px;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        .totals .ok { background-color: #a2d5ab; color: #000; }
+        .totals .oko { background-color: #7ea6c4; color: #fff; }
+        .totals .error { background-color: #f5a6a6; color: #000; }
+    </style>
+</head>
+<body>
+    <!-- En-tête -->
+    <header class="header">
+        <div class="logo">
+            <img src="data:image/png;base64,{{ logoBase64 }}" alt="Marque Entreprise" class="logo">
+        </div>
+        <div class="cartouche-infos">
+            <h1>Rapport d'exécution des traitements Ma-Moulinette</h1>
+            <div><strong>Traitement :</strong> {{ batch.nomTraitement }}</div>
+            <div><strong>Mode :</strong> {{ batch.modeCollecte }}</div>
+            <div><strong>Utilisateur :</strong> {{ batch.utilisateurCollecte ?: 'N/A' }}</div>
+            <div><strong>Portefeuille :</strong> {{ batch.collectes|first.portefeuille ?: 'N/A' }}</div>
+            <div><strong>Date enregistrement :</strong> {{ batch.dateEnregistrement|date('d/m/Y H:i') }}</div>
+        </div>
+    </header>
+
+    <!-- Légende -->
+    <div class="legend">
+        <span class="status status-ok">OK</span>: Collecte réussie
+        <span class="status status-oko">À jour</span>: Collecte sautée
+        <span class="status status-error">Erreur</span>: Collecte échouée
+    </div>
+
+    <!-- Tableau -->
+    <table>
+        <thead>
+            <tr>
+                <th>Projet</th>
+                <th class="status-column">Status</th>
+                <th class="date-column">Date exécution</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% set count_ok = 0 %}
+            {% set count_oko = 0 %}
+            {% set count_error = 0 %}
+            {% for collecte in batch.collectes %}
+                {% if collecte.code == 200 %}{% set count_ok = count_ok + 1 %}{% elseif collecte.code == 202 %}{% set count_oko = count_oko + 1 %}{% else %}{% set count_error = count_error + 1 %}{% endif %}
+                <tr>
+                    <td>{{ collecte.nomProjet }}</td>
+                    <td class="status-column">
+                        {% if collecte.code == 200 %}
+                            <span class="status status-ok">
+                                <svg viewBox="0 0 16 16" fill="currentColor"><path d="M6.173 11.414l-3.293-3.293 1.414-1.414L6.173 8.586l5.586-5.586 1.414 1.414z"/></svg>
+                                OK
+                            </span>
+                        {% elseif collecte.code == 202 %}
+                            <span class="status status-oko">
+                                <svg viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="7"/></svg>
+                                À jour
+                            </span>
+                        {% else %}
+                            <span class="status status-error">
+                                <svg viewBox="0 0 16 16" fill="currentColor"><path d="M4.646 4.646l6.708 6.708m0-6.708l-6.708 6.708"/></svg>
+                                Erreur
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td class="date-column">{{ collecte.dateExecution|date('d/m/Y H:i') }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="legend-mini-container">
+        <div class="legend-mini">
+            <span class="legend-mini-status status-ok"></span>
+            <span>OK (collecte réussie)</span>
+        </div>
+        <div class="legend-mini">
+            <span class="legend-mini-status status-oko"></span>
+            <span>À jour (collecte déjà faite)</span>
+        </div>
+        <div class="legend-mini">
+            <span class="legend-mini-status status-error"></span>
+            <span>Erreur (Collecte en échec)</span>
+        </div>
+    </div>
+
+    <!-- Totaux par statut -->
+    <div class="totals">
+        <span class="ok">OK : {{ count_ok }}</span>
+        <span class="oko"> À jour : {{ count_oko }}</span>
+        <span class="error"> Erreur : {{ count_error }}</span>
+    </div>
+</body>
+</html>
