@@ -261,14 +261,19 @@ const traitementInformation = async function(traitement_id){
     const now = new Date();
 
     // on calcul la durée
-    const time_elapse = Math.abs((end - start) / (1000 * 60));;
-    $('.js-time-elapse').html(`${time_elapse} minutes`);
+    const diffMs = Math.abs(end - start);
+    const totalSeconds = Math.floor(diffMs / 1000);
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    $('.js-time-elapse').html(`${minutes} min ${seconds} sec`);
 
     const total = traitement.nombre_projet;
     const ok = traitement.nombre_ok;
     const ko = traitement.nombre_ko;
+    const oko = traitement.nombre_oko;
 
-    const progress = total > 0 ? Math.round((ok / total) * 100) : 0;
+    const progress = total > 0 ? Math.round((ok+oko / total) * 100) : 0;
     let color = '#4CAF50';
     if (progress < 80) color = '#FFB300';
     if (progress < 40) color = '#E53935';
@@ -278,7 +283,7 @@ const traitementInformation = async function(traitement_id){
 
     $('.js-nb-ok').text(ok);
     $('.js-nb-ko').text(ko);
-
+    $('.js-nb-oko').text(oko);
 
     // On suppose que ta réponse API contient aussi un tableau `projets`
     const projets = traitement.projets || [];
@@ -319,11 +324,14 @@ const traitementInformation = async function(traitement_id){
           let label = 'Inconnu';
 
           if (status === 'ok' || status === 'success') {
-            color = '#4CAF50';
+            color = '#1f7a22ff';
             label = 'Succès';
           } else if (status === 'ko' || status === 'failed') {
-            color = '#F44336';
+            color = '#bb1b10ff';
             label = 'Échec';
+          } else if (status === 'oko' || status === 'standby') {
+            color = '#ed7327ff';
+            label = 'En attente';
           }
 
           // Élément visuel stylé
@@ -342,8 +350,9 @@ const traitementInformation = async function(traitement_id){
 
           const status = (data.element?.getAttribute('data-status') || '').toLowerCase();
           let color = '#9E9E9E';
-          if (status === 'ok' || status === 'success') color = '#4CAF50';
-          if (status === 'ko' || status === 'failed') color = '#F44336';
+          if (status === 'ok' || status === 'success') color = '#1f7a22ff';
+          if (status === 'ko' || status === 'failed') color = '#bb1b10ff';
+          if (status === 'oko' || status === 'standby') color = '#ed7327ff';
 
           return $(`
             <span class="selected-option">
@@ -456,10 +465,14 @@ const traitementManuel = async function(id, titre_portefeuille, portefeuille){
   }
 }
 
-$('.js-outil-lire').on('click', async (e) => {
+/********************************************************/
+/**               Bouton Information                   **/
+/********************************************************/
+
+$('.js-outil-info').on('click', async (e) => {
   const id = e.currentTarget.id;
   const idTab = id.split('-');
-  // on récupère l'index 1
+  // On récupère l'index 1
   const traitement_id = $(`#outil-${idTab[1]}`).attr('data-reference') ?? null;
 
   if (traitement_id == '' || traitement_id == undefined || traitement_id == null){
@@ -469,6 +482,10 @@ $('.js-outil-lire').on('click', async (e) => {
   /** On appelle l'API */
   traitementInformation(traitement_id);
 });
+
+/********************************************************/
+/**              Sélecteur de projets                  **/
+/********************************************************/
 
 // Initialisation du select2
 $('.js-select-journal').select2({
@@ -514,6 +531,34 @@ $('#modal-journal').on('closed.zf.reveal', function() {
   $('.js-journal-content').html('<p class="text-center text-muted">Aucun journal chargé.</p>');
 });
 
+/********************************************************/
+/**                   Rapport PDF                      **/
+/********************************************************/
+
+/*document.addEventListener('DOMContentLoaded', () => {
+    const openPdf = (batchId, download) => {
+        const url = `/rapport/${batchId}?download=${download ? 1 : 0}`;
+        if (download) {
+            window.location.href = url; // téléchargement
+        } else {
+            window.open(url, '_blank'); // ouverture dans un nouvel onglet
+        }
+    };
+
+    document.querySelectorAll('.pdf-view').forEach(button => {
+        button.addEventListener('click', () => {
+            const id = button.dataset.id;
+            openPdf(id, false);
+        });
+    });
+
+    document.querySelectorAll('.pdf-download').forEach(button => {
+        button.addEventListener('click', () => {
+            const id = button.dataset.id;
+            openPdf(id, true);
+        });
+    });
+});*/
 
 $(document).ready(() => {
   const $bulle_wip = $('#info-bulle-in-progress');
