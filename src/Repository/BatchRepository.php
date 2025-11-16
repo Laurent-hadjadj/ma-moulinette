@@ -80,7 +80,7 @@ class BatchRepository extends ServiceEntityRepository
             ORDER BY activated ASC";
       try {
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-            $liste=$stmt->executeQuery()->fetchAllAssociative();
+            $liste = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
       }
