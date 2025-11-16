@@ -268,12 +268,12 @@ const traitementInformation = async function(traitement_id){
 
     $('.js-time-elapse').html(`${minutes} min ${seconds} sec`);
 
-    const total = traitement.nombre_projet;
-    const ok = traitement.nombre_ok;
-    const ko = traitement.nombre_ko;
-    const oko = traitement.nombre_oko;
+    const total = Number(traitement.nombre_projet);
+    const ok = Number(traitement.nombre_ok);
+    const ko = Number(traitement.nombre_ko);
+    const oko = Number(traitement.nombre_oko);
 
-    const progress = total > 0 ? Math.round((ok+oko / total) * 100) : 0;
+    const progress = total > 0 ? Math.round((ok + oko / total) * 100) : 0;
     let color = '#4CAF50';
     if (progress < 80) color = '#FFB300';
     if (progress < 40) color = '#E53935';
@@ -281,7 +281,7 @@ const traitementInformation = async function(traitement_id){
       .css('width', `${progress}%`)
       .css('background-color', color);
 
-    $('.js-nb-ok').text(ok);
+    $('.js-nb-ok').text(ok - oko);
     $('.js-nb-ko').text(ko);
     $('.js-nb-oko').text(oko);
 
