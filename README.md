@@ -94,7 +94,7 @@ La **version 2.0.0** est actuellement en développement et apporte de nombreuses
 - [x] Son identifiant de connexion est <admin@ma-moulinette.fr>.
 - [x] Son mot de passe est : `eYK8k4[T;99N!em^`
 
-> **Important**, le mot de passe du compte `admin` étant rendu public, il est **obligatoire de le changer** lors du déploiement de l'application.
+> ☠️ **Important**, le mot de passe du compte `admin` étant rendu public, il est **obligatoire de le changer** lors du déploiement de l'application.
 
 ---
 
