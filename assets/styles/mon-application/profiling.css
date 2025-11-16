@@ -1,0 +1,105 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2024.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+/* Mobile */
+@media (width <= 20em) {
+    .chart-container { height: 350px; }
+}
+
+/* Mobile */
+@media (20.025em <= width <= 22em) {
+    .chart-container { height: 350px; }
+}
+
+/* Mobile */
+@media (22.025em <= width <= 30em) {
+    .chart-container { height: 350px; }
+}
+
+/* Mobile */
+@media (30.025em <= width <= 40em) {
+    .chart-container { height: 350px; }
+}
+
+/* tablette */
+@media (40.025em <= width <= 64em) {
+    .chart-container { height: 480px; }
+}
+
+/* desktop */
+@media (64.025em <= width <= 90em) {
+    .chart-container { height: 480px; }
+}
+
+/* desktop */
+@media (90.025em <= width <= 120em) {
+    .chart-container { height: 480px; }
+}
+
+/* desktop  4k */
+@media (120.025em <= width <= 160em) {
+    .chart-container { height: 480px; }
+
+}
+
+/* Media Extra-large 8k */
+@media (120.025em <= width <= 160em) {
+    .chart-container { height: 480px; }
+}
+
+/*************************          Global     *********************************/
+
+.chart-container {
+    width: 100%;
+    position: relative; /* important pour Chart.js */
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.hauteur-max { height: 200px;}
+
+.card-container {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+    flex-wrap: wrap;
+}
+
+.card {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    padding: 15px;
+    width: 250px;
+    margin: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+}
+
+.card h3 {
+    color: #333;
+    font-size: 18px;
+}
+
+.card p {
+    color: #555;
+    font-size: 14px;
+    margin: 5px 0;
+}
+
+.card strong {
+    font-weight: bold;
+}

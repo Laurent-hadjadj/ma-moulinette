@@ -1,0 +1,168 @@
+{% set title = 'Dashboard Profiling' %}
+{% set description = 'Suivi des indicateurs de performances des batchs.' %}
+{% set bottom = "footer-fixed" %}
+<!--
+.. __  __             __  __             _ _            _   _
+  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+
+  Laurent HADJADJ
+  https://github.com/Laurent-hadjadj/ma-moulinette
+  © 2024 - CC BY-SA-NC 4.0
+-->
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <title>{{ title }}</title>
+    {{ include('head.html.twig') }}
+    {% block importmap %}{{ importmap('profiling') }}{% endblock %}
+  </head>
+
+  <body dir="ltr">
+    {{ include('no-script.html.twig') }}
+    {{ include('header.html.twig') }}
+
+    <header class="grid-container margin-top-1">
+      <nav aria-label="vous êtes ici :">
+        <ul class="claire-hand breadcrumbs">
+          <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+          <li><a href="{{ path('traitement_suivi', {}) }}">Traitement</a></li>
+          <li><span class="show-for-sr">vous êtes sur la page :</span> Dashboard Profiling</li>
+        </ul>
+      </nav>
+    </header>
+
+    {# Message d'information php #}
+    {{ include('_message.html.twig') }}
+
+
+    <main class="grid-container" role="main">
+      <h1 class="h3 claire-hand" aria-label="Indicateurs de performances">
+        <span aria-hidden="true" class="emoji">📊</span> Dashboard Profiling
+      </h1>
+
+      <div class="profiling-summary">
+      <h2 class="h4 claire-hand">Résumé des performances</h2>
+      <table id="summaryTable">
+        <thead>
+          <tr>
+            <th>Temps total moyen (s)</th>
+            <th>Temps moyen projet (s)</th>
+            <th>Mémoire moyenne (Mo)</th>
+            <th>Pic mémoire moyen (Mo)</th>
+            <th>Pic mémoire max (Mo)</th>
+            <th>Dernière exécution</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+      <div class="profiling-summary-charts">
+        <h3>Résumé des performances (graphique individuel)</h3>
+        <div class="charts-grid">
+          <div class="hauteur-max">
+          <canvas id="chart-kpi-time-donut"></canvas>
+          </div>
+          <div class="hauteur-max">
+            <canvas id="chart-kpi-memory-donut"></canvas>
+          </div>
+          <div class="hauteur-max">
+            <canvas id="chart-kpi-memory-bar" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard">
+      <h2>Tableau de bord des utilisateurs</h2>
+      <div class="card-container">
+        <!-- Les cartes utilisateurs seront insérées ici -->
+      </div>
+    </div>
+
+      {# Graphiques globaux #}
+      <section class="grid-x grid-margin-x margin-top-2">
+        <div class="cell medium-6">
+          <h2 class="h4">Temps moyen par portefeuille</h2>
+          <div class="chart-container">
+            <canvas id="chartTime"></canvas>
+          </div>
+        </div>
+        <div class="cell medium-6">
+          <h2 class="h4">Mémoire peak moyenne</h2>
+          <div class="chart-container">
+            <canvas id="chartMemory"></canvas>
+          </div>
+        </div>
+      </section>
+
+      {# Évolution hebdomadaire #}
+      <section class="grid-x grid-margin-x margin-top-2">
+        <div class="cell medium-6">
+          <h2 class="h4">Évolution hebdomadaire - Temps moyen</h2>
+          <div class="chart-container">
+            <canvas id="chartWeeklyTime"></canvas>
+          </div>
+        </div>
+        <div class="cell medium-6">
+          <h2 class="h4">Évolution hebdomadaire - Mémoire</h2>
+          <div class="chart-container">
+            <canvas id="chartWeeklyMemory"></canvas>
+          </div>
+        </div>
+      </section>
+
+      {# Évolution mensuelle #}
+      <section class="grid-x grid-margin-x margin-top-2">
+        <div class="cell medium-6">
+          <h2 class="h4">Évolution mensuelle - Temps moyen</h2>
+          <div class="chart-container">
+            <canvas id="chartMonthlyTime"></canvas>
+          </div>
+        </div>
+        <div class="cell medium-6">
+          <h2 class="h4">Évolution mensuelle - Mémoire</h2>
+          <div class="chart-container">
+            <canvas id="chartMonthlyMemory"></canvas>
+          </div>
+        </div>
+      </section>
+
+      {# Comparaison utilisateurs #}
+      <section class="grid-x grid-margin-x margin-top-2">
+        <div class="cell medium-6">
+          <h2 class="h4">Comparaison utilisateur - Temps moyen</h2>
+          <canvas id="chartUsersTime"></canvas>
+        </div>
+        <div class="cell medium-6">
+          <h2  class="h4">Comparaison utilisateur - Mémoire</h2>
+          <div class="chart-container">
+            <canvas id="chartUsersMemory"></canvas>
+          </div>
+        </div>
+      </section>
+
+      {# Tableau dernières exécutions #}
+      <section class="margin-top-2">
+        <h2 class="h4">Dernières exécutions</h2>
+        <table class="table-scroll" id="tableExecutions">
+          <thead>
+            <tr>
+              <th>Portefeuille</th>
+              <th>Utilisateur</th>
+              <th>Nb Projets</th>
+              <th>Temps moyen (s)</th>
+              <th>Mémoire moyenne (Mo)</th>
+              <th>Date exécution</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </section>
+    </main>
+
+    {# Chargement de la section footer #}
+    {{ include('footer.html.twig') }}
+  </body>
+</html>

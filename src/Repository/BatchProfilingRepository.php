@@ -63,15 +63,26 @@ class BatchProfilingRepository extends ServiceEntityRepository
     return ['code' => 500, 'erreur' => $message];
   }
 
+  /**
+   * [Description for getGlobalKpi]
+   *
+   * @return array
+   *
+   * Created at: 16/11/2025 15:21:45 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
   public function getGlobalKpi(): array
   {
     $sql = "
-      SELECT
-        ROUND(AVG(temps_total_moyen_s), 2) AS temps_total_moyen_s,
-        ROUND(AVG(average_time_s), 2) AS average_time_s,
-        ROUND(AVG(memoire_peak_moyenne_mo), 2) AS memoire_peak_moyenne_mo,
-        MAX(derniere_execution) AS derniere_execution
-      FROM ma_moulinette.vw_batch_profiling_stats";
+            SELECT
+              ROUND(AVG(temps_total_moyen_s), 2) AS average_time_total,
+              ROUND(AVG(temps_moyen_projet_s), 2) AS average_time_projet,
+              ROUND(AVG(memoire_peak_moyenne_mo), 2) AS average_memory_peak,
+              ROUND(AVG(memoire_moyenne_mo), 2) AS average_memory,
+              ROUND(AVG(memoire_peak_max_mo), 2) AS average_memory_peak_max,
+              MAX(derniere_execution) AS last_execution
+            FROM ma_moulinette.vw_batch_profiling_stats";
 
     $conn = $this->getEntityManager()->getConnection();
 
@@ -81,23 +92,63 @@ class BatchProfilingRepository extends ServiceEntityRepository
     } catch (\Throwable $e) {
       return $this->handleDatabaseException($e);
     }
-    return ['code' => 200, 'data' => $result, 'erreur' => ''];
+    return ['code' => 200, 'summary' => $result, 'erreur' => ''];
   }
 
-  public function findGlobalSummary(): array
+  /**
+   * [Description for findGlobalSummary]
+   *
+   * @param mixed $indicateur
+   *
+   * @return array
+   *
+   * Created at: 16/11/2025 21:00:01 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function findGlobalSummary($indicateur): array
   {
-    $sql = "
-            SELECT portefeuille,
+    // Liste des colonnes autorisées (à adapter selon les colonnes que tu veux autoriser)
+    $validIndicators = ['utilisateur', 'portefeuille', 'granularite',
+            'periode', 'nb_projets', 'nb_exec', 'derniere_execution'];
+
+    // Vérifie que l'indicateur fourni est valide
+    if (!in_array($indicateur, $validIndicators)) {
+        throw new \InvalidArgumentException("Indicateur invalide : {$indicateur}");
+    }
+
+    // Construire la requête avec l'indicateur en dur
+    $sql = "SELECT {$indicateur},
                   ROUND(AVG(temps_total_moyen_s), 2) AS average_time,
                   ROUND(AVG(memoire_peak_moyenne_mo), 2) AS average_memory
             FROM ma_moulinette.vw_batch_profiling_summary
-            GROUP BY portefeuille
-            ORDER BY portefeuille";
-    return $this->getEntityManager()->getConnection()
-            ->executeQuery($sql)->fetchAllAssociative();
+            GROUP BY {$indicateur}
+            ORDER BY {$indicateur} DESC
+            LIMIT 10";
+
+    $conn = $this->getEntityManager()->getConnection();
+
+    try {
+        $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, ' ', $sql));
+        $result = $stmt->executeQuery()->fetchAllAssociative();
+    } catch (\Throwable $e) {
+      return $this->handleDatabaseException($e);
+    }
+    return ['code' => 200, 'indicateur' => $result ?? [], 'erreur' => ''];
   }
 
-  /**** OK */
+
+  /**
+   * [Description for findLatest]
+   *
+   * @param int $limit
+   *
+   * @return array
+   *
+   * Created at: 16/11/2025 15:10:36 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
   public function findLatest(int $limit = 10): array
   {
       return $this->createQueryBuilder('b')
@@ -107,7 +158,15 @@ class BatchProfilingRepository extends ServiceEntityRepository
           ->getArrayResult();
   }
 
-  /**** OK */
+  /**
+   * [Description for findStatsByPortefeuille]
+   *
+   * @return array
+   *
+   * Created at: 16/11/2025 15:10:29 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
   public function findStatsByPortefeuille(): array
   {
     return $this->getEntityManager()
@@ -122,7 +181,15 @@ class BatchProfilingRepository extends ServiceEntityRepository
         ->fetchAllAssociative();
   }
 
-  /**** OK */
+  /**
+   * [Description for findWeeklyStats]
+   *
+   * @return array
+   *
+   * Created at: 16/11/2025 15:10:26 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
   public function findWeeklyStats(): array
   {
     return $this->getEntityManager()
@@ -137,7 +204,15 @@ class BatchProfilingRepository extends ServiceEntityRepository
         ->fetchAllAssociative();
   }
 
-  /**** OK */
+  /**
+   * [Description for findMonthlyStats]
+   *
+   * @return array
+   *
+   * Created at: 16/11/2025 15:10:22 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
   public function findMonthlyStats(): array
   {
     return $this->getEntityManager()
@@ -152,7 +227,15 @@ class BatchProfilingRepository extends ServiceEntityRepository
         ->fetchAllAssociative();
   }
 
-  /**** OK */
+  /**
+   * [Description for findUsersStats]
+   *
+   * @return array
+   *
+   * Created at: 16/11/2025 15:10:18 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
   public function findUsersStats(): array
   {
       return $this->getEntityManager()
