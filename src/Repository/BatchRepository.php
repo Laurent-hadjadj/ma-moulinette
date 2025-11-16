@@ -30,7 +30,6 @@ class BatchRepository extends ServiceEntityRepository
       parent::__construct($registry, Batch::class);
   }
 
-
   /**
    * [Description for handleDatabaseException]
    *
