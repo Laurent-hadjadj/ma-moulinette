@@ -72,6 +72,10 @@ return [
         'path' => './assets/js/mon-application/batch/index-batch.js',
         'entrypoint' => true,
     ],
+    'profiling' => [
+        'path' => './assets/js/mon-application/profiling/index-profiling.js',
+        'entrypoint' => true,
+    ],
     'easyBatch' => [
         'path' => './assets/js/easy-admin/batch.js',
         'entrypoint' => true,
