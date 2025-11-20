@@ -106,7 +106,7 @@ class BatchProfilingRepository extends ServiceEntityRepository
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function findGlobalSummary($indicateur): array
+  public function findGlobalSummary($indicateur, $limit=10): array
   {
     // Liste des colonnes autorisées (à adapter selon les colonnes que tu veux autoriser)
     $validIndicators = ['utilisateur', 'portefeuille', 'granularite',
@@ -124,7 +124,7 @@ class BatchProfilingRepository extends ServiceEntityRepository
             FROM ma_moulinette.vw_batch_profiling_summary
             GROUP BY {$indicateur}
             ORDER BY {$indicateur} DESC
-            LIMIT 10";
+            LIMIT {$limit}";
 
     $conn = $this->getEntityManager()->getConnection();
 
