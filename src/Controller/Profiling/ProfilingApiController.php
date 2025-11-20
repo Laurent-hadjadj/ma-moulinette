@@ -117,6 +117,13 @@ class ProfilingApiController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/secure/profiling/indicateur");
 
+        if (!$this->isGranted('ROLE_BATCH')){
+            return $this->json([
+                'code' => 404,
+                'indicateur' => []
+            ]);
+        }
+
         /** On décode le body */
         $data = json_decode($request->getContent());
 
@@ -139,7 +146,11 @@ class ProfilingApiController extends AbstractController
 
         $repo = $this->em->getRepository(BatchProfiling::class);
         $data = $repo->findGlobalSummary($data->indicateur);
-        return $this->json(['indicateur' => $data ?? []]);
+
+        return new JsonResponse([
+            'code' => 200,
+            'indicateur' => $data ?? []
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -155,10 +166,18 @@ class ProfilingApiController extends AbstractController
     public function summary(): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/secure/profiling/summary");
+
+        if (!$this->isGranted('ROLE_BATCH')){
+            return $this->json(['summary' => []]);
+        }
+
         $repo = $this->em->getRepository(BatchProfiling::class);
         $data = $repo->getGlobalKpi();
-        $summary = $data['summary'][0] ?? [];
-        return $this->json(['summary' => $summary]);
+
+        return new JsonResponse([
+            'code' => 200,
+            'summary' => $data['summary'][0] ?? [],
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -174,27 +193,18 @@ class ProfilingApiController extends AbstractController
     public function latest(): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/secure/profiling/latest");
+
+        if (!$this->isGranted('ROLE_BATCH')){
+            return $this->json(['latest' => []]);
+        }
+
         $repo = $this->em->getRepository(BatchProfiling::class);
         $data = $repo->findLatest(10);
-        return $this->json($data);
-    }
 
-    /**
-     * [Description for apiLastExecutions]
-     *
-     * @param BatchProfiling $repo
-     *
-     * @return Response
-     *
-     * Created at: 16/11/2025 20:11:59 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    #[Route('/api/profiling/last-executions', name: 'api_profiling_last_executions', methods: ['GET'])]
-    public function apiLastExecutions(BatchProfiling $repo): Response
-    {
-        $data = $repo->findLastExecutions(10);
-        return $this->json($data);
+        return new JsonResponse([
+            'code' => 200,
+            'latest' => $data ?? [],
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -211,12 +221,19 @@ class ProfilingApiController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/secure/profiling/weekly/all");
 
+        if (!$this->isGranted('ROLE_BATCH')){
+            return $this->json(['weekly' => []]);
+        }
+
         $repo = $this->em->getRepository(BatchProfiling::class);
         $rows = $repo->findWeeklyStats();
-        return $this->json($this->formatChartData($rows,
-            'semaine',
-            ['average_time', 'average_memory'],
-            'portefeuille'));
+        $data = $this->formatChartData($rows, 'semaine',
+            ['average_time', 'average_memory'], 'portefeuille');
+
+        return new JsonResponse([
+            'code' => 200,
+            'weekly' => $data ?? [],
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -233,12 +250,19 @@ class ProfilingApiController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/secure/profiling/monthly/all");
 
+        if (!$this->isGranted('ROLE_BATCH')){
+            return $this->json(['monthly' => []]);
+        }
+
         $repo = $this->em->getRepository(BatchProfiling::class);
         $rows = $repo->findMonthlyStats();
-        return $this->json($this->formatChartData($rows,
-            'mois',
-            ['average_time', 'average_memory'],
-            'portefeuille'));
+        $data = $this->formatChartData($rows, 'mois',
+            ['average_time', 'average_memory'], 'portefeuille');
+
+        return new JsonResponse([
+            'code' => 200,
+            'monthly' => $data ?? [],
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -255,12 +279,19 @@ class ProfilingApiController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/secure/profiling/users/all");
 
+        if (!$this->isGranted('ROLE_BATCH')){
+            return $this->json(['user' => []]);
+        }
+
         $repo = $this->em->getRepository(BatchProfiling::class);
         $rows = $repo->findUsersStats();
-        return $this->json($this->formatChartData($rows,
-            'utilisateur',
-            ['average_time', 'average_memory'],
-            null));
+        $data = $this->formatChartData($rows, 'utilisateur',
+            ['average_time', 'average_memory'], null);
+
+        return new JsonResponse([
+            'code' => 200,
+            'user' => $data ?? [],
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -277,16 +308,20 @@ class ProfilingApiController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/secure/profiling/portefeuille/all");
 
+        if (!$this->isGranted('ROLE_BATCH')){
+            return $this->json(['portefeuille' => []]);
+        }
+
         $repo = $this->em->getRepository(BatchProfiling::class);
         $rows = $repo->findStatsByPortefeuille();
-        return $this->json(
-            $this->formatChartData(
-                $rows,
-                'portefeuille',
-                ['average_time', 'average_memory'],
-                'portefeuille'
-            )
-        );
+        $data = $this->formatChartData($rows,'portefeuille',
+                ['average_time', 'average_memory'], 'portefeuille');
+
+        return new JsonResponse([
+            'code' => 200,
+            'portefeuille' => $data ?? [],
+        ], Response::HTTP_OK);
+
     }
 
 }
