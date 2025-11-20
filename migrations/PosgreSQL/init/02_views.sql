@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Creation des tables et des objets      ##
-##               V1.0.0 - 02/11/2025              ##
+##               V1.0.1 - 02/11/2025              ##
 ##                                                ##
 ####################################################*/
 
@@ -177,7 +177,7 @@ CREATE OR REPLACE VIEW ma_moulinette.vw_batch_profiling_summary AS
 
 -- 1. Niveau hebdomadaire
 SELECT
-    'weekly'::text AS granularite,
+    'Hebdomadaire'::text AS granularite,
     portefeuille,
     utilisateur,
     TO_CHAR(semaine, 'IYYY-"S"IW') AS periode,  -- ex: 2025-S45
@@ -196,7 +196,7 @@ UNION ALL
 
 -- Niveau mensuel
 SELECT
-    'monthly'::text AS granularite,
+    'Mensuel'::text AS granularite,
     portefeuille,
     utilisateur,
     mois AS periode,
@@ -218,7 +218,7 @@ SELECT
     'global'::text AS granularite,
     portefeuille,
     utilisateur,
-    'ALL_TIME'::text AS periode,
+    'Les autres'::text AS periode,
     nb_executions_total AS nb_exec,
     total_projets AS nb_projets,
     temps_total_moyen_s,
@@ -283,3 +283,4 @@ COMMENT ON INDEX ma_moulinette.idx_batch_profiling_portefeuille_user IS 'Index c
 -- 02/11/2025 : Laurent HADJADJ - Ajout d'une vue sur la table batch_profiling pour les statistiques mensuelles.
 -- 02/11/2025 : Laurent HADJADJ - Ajout d'une vue sur la table batch_profiling pour les statistiques globales.
 -- 03/11/2025 : Externalisation des vues dans un script dédiée. Code-Clean.
+-- 20/11/2025 : Renommage de : 'weekly', 'monthly', 'all_time'
