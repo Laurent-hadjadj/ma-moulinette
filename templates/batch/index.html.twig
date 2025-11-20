@@ -182,11 +182,13 @@
       {% if is_granted('ROLE_BATCH') %}
       <footer class="grid-x grid-margin-x align-right margin-top-2">
         <div class="cell shrink">
-          <button id="bouton-affiche-statistique"
-                  class="button open-sans focus-light"
-                  type="button"
-                  aria-label="statistique">Statistiques
-          </button>
+          <a href="{{ path('profiling_dashboard', {}) }}" rel='link'>
+            <button id="bouton-affiche-statistique"
+                    class="button open-sans focus-light"
+                    type="button"
+                    aria-label="statistique">Statistiques
+            </button>
+          </a>
         </div>
         <div class="cell shrink">
           <button id="bouton-affiche-rapport"
