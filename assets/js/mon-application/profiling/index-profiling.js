@@ -471,23 +471,28 @@ function createBarChart(ctx, labels, data, colors, unit = '') {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-function createUserCards(data) {
-  console.log(data.indicateur);
-  const container = document.querySelector('.card-container');
+function createUserCards(data, id) {
+
+  const container = document.querySelector(`#indicateur-${id}`);
+  id = (id == 'projets') ? 'nb_projets' : id;
+  id = (id == 'exec') ? 'nb_exec' : id;
+  id = (id == 'execution') ? 'derniere_execution' : id;
+
   container.innerHTML = '';  // Vider le contenu précédent
 
-  data.indicateur.forEach(user => {
+  data.indicateur.forEach(item => {
     const card = document.createElement('div');
     card.classList.add('card');
 
-    const title = document.createElement('h3');
-    title.textContent = user.utilisateur;
+    const title = document.createElement('h4');
+    title.textContent = item[id];
+    title.classList.add('h5');
 
     const timeParagraph = document.createElement('p');
-    timeParagraph.innerHTML = `<strong>Temps moyen :</strong> ${user.average_time} s`;
+    timeParagraph.innerHTML = `<strong>Temps moyen :</strong> ${item.average_time} s`;
 
     const memoryParagraph = document.createElement('p');
-    memoryParagraph.innerHTML = `<strong>Mémoire moyenne :</strong> ${user.average_memory} Mo`;
+    memoryParagraph.innerHTML = `<strong>Mémoire moyenne :</strong> ${item.average_memory} Mo`;
 
     // Ajouter les éléments dans la carte
     card.appendChild(title);
@@ -513,16 +518,40 @@ async function initDashboard() {
     let ctx;
 
     // Appel de la fonction avec les données récupérées
+    const indicateur_granularite = await fetchJSON(`${serveur()}/api/secure/profiling/indicateur`, 'granularite', 'POST');
+    if (indicateur_granularite){
+      const data =  indicateur_granularite.indicateur;
+      createUserCards(data, 'granularite');
+    }
+
+    const indicateur_periode = await fetchJSON(`${serveur()}/api/secure/profiling/indicateur`, 'periode', 'POST');
+    if (indicateur_periode){
+      const data =  indicateur_periode.indicateur;
+      createUserCards(data, 'periode');
+    }
+
     const indicateur_utilisateur = await fetchJSON(`${serveur()}/api/secure/profiling/indicateur`, 'utilisateur', 'POST');
     if (indicateur_utilisateur){
       const data =  indicateur_utilisateur.indicateur;
-      createUserCards(data);
+      createUserCards(data, 'utilisateur');
     }
 
     const indicateur_portefeuille = await fetchJSON(`${serveur()}/api/secure/profiling/indicateur`, 'portefeuille', 'POST');
     if (indicateur_portefeuille){
       const data =  indicateur_portefeuille.indicateur;
-      createUserCards(data);
+      createUserCards(data, 'portefeuille');
+    }
+
+    const indicateur_exec = await fetchJSON(`${serveur()}/api/secure/profiling/indicateur`, 'nb_exec', 'POST');
+    if (indicateur_exec){
+      const data =  indicateur_exec.indicateur;
+      createUserCards(data, 'exec');
+    }
+
+    const indicateur_execution = await fetchJSON(`${serveur()}/api/secure/profiling/indicateur`, 'derniere_execution', 'POST');
+    if (indicateur_execution){
+      const data =  indicateur_execution.indicateur;
+      createUserCards(data, 'execution');
     }
 
     // table summary (KPI)
