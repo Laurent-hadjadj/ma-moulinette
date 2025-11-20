@@ -37,48 +37,72 @@
     {# Message d'information php #}
     {{ include('_message.html.twig') }}
 
-
     <main class="grid-container" role="main">
       <h1 class="h3 claire-hand" aria-label="Indicateurs de performances">
         <span aria-hidden="true" class="emoji">📊</span> Dashboard Profiling
       </h1>
 
       <div class="profiling-summary">
-      <h2 class="h4 claire-hand">Résumé des performances</h2>
-      <table id="summaryTable">
-        <thead>
-          <tr>
-            <th>Temps total moyen (s)</th>
-            <th>Temps moyen projet (s)</th>
-            <th>Mémoire moyenne (Mo)</th>
-            <th>Pic mémoire moyen (Mo)</th>
-            <th>Pic mémoire max (Mo)</th>
-            <th>Dernière exécution</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-      <div class="profiling-summary-charts">
-        <h3>Résumé des performances (graphique individuel)</h3>
-        <div class="charts-grid">
-          <div class="hauteur-max">
-          <canvas id="chart-kpi-time-donut"></canvas>
-          </div>
-          <div class="hauteur-max">
-            <canvas id="chart-kpi-memory-donut"></canvas>
-          </div>
-          <div class="hauteur-max">
-            <canvas id="chart-kpi-memory-bar" height="200"></canvas>
+        <h2 class="h4 claire-hand">Résumé global des performances</h2>
+        <table id="summaryTable">
+          <thead>
+            <tr>
+              <th>Temps total moyen (s)</th>
+              <th>Temps moyen projet (s)</th>
+              <th>Mémoire moyenne (Mo)</th>
+              <th>Pic mémoire moyen (Mo)</th>
+              <th>Pic mémoire max (Mo)</th>
+              <th>Dernière exécution</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+
+        <div class="profiling-summary-charts">
+          <h2 class="h4 claire-hand">Indicateurs de performances </h2>
+          <div class="charts-grid">
+            <div class="hauteur-max">
+            <canvas id="chart-kpi-time-donut"></canvas>
+            </div>
+            <div class="hauteur-max">
+              <canvas id="chart-kpi-memory-donut"></canvas>
+            </div>
+            <div class="hauteur-max">
+              <canvas id="chart-kpi-memory-bar" height="200"></canvas>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
     <div class="dashboard">
-      <h2>Tableau de bord des utilisateurs</h2>
-      <div class="card-container">
+      <h2 class="h4 claire-hand">Tableaux de bord</h2>
+
+      <h3 class="h6 claire-hand">Granularité</h3>
+      <div id="indicateur-granularite" class="card-container">
         <!-- Les cartes utilisateurs seront insérées ici -->
       </div>
+      <h3 class="h6 claire-hand">Période</h3>
+      <div id="indicateur-periode" class="card-container">
+        <!-- Les cartes utilisateurs seront insérées ici -->
+      </div>
+
+      <h3 class="h6 claire-hand">Utilisateurs</h3>
+      <div id="indicateur-utilisateur" class="card-container">
+        <!-- Les cartes utilisateurs seront insérées ici -->
+      </div>
+      <h3 class="h6 claire-hand">Portefeuille</h3>
+      <div id="indicateur-portefeuille" class="card-container">
+        <!-- Les cartes utilisateurs seront insérées ici -->
+      </div>
+      <h3 class="h6 claire-hand">Execution</h3>
+      <div id="indicateur-exec" class="card-container">
+        <!-- Les cartes utilisateurs seront insérées ici -->
+      </div>
+      <h3 class="h6 claire-hand">Dernière execution</h3>
+      <div id="indicateur-execution" class="card-container">
+        <!-- Les cartes utilisateurs seront insérées ici -->
+      </div>
+
     </div>
 
       {# Graphiques globaux #}
