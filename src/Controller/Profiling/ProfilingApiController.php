@@ -122,7 +122,7 @@ class ProfilingApiController extends AbstractController
 
         $authorize_indicateur = [
             'utilisateur', 'portefeuille', 'granularite',
-            'periode', 'nb_projets', 'nb_exec', 'derniere_execution'
+            'periode', 'nb_exec', 'derniere_execution'
         ];
 
         /** On teste si la clé est valide */
