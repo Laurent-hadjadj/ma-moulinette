@@ -34,7 +34,7 @@ import {serveur} from '../../common/properties.js';
 import { showMessage, hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
-import { contentType, http_200 } from '../../common/constante.js';
+import { contentType, dateOptionsShort, http_200 } from '../../common/constante.js';
 
 import {Chart, registerables} from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -106,13 +106,13 @@ const colorMap = new Map();
  *
  * @param mixed label
  *
- * @return [type]
+ * @return object
  *
  * Created at: 16/11/2025 20:29:16 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-function getColor(label) {
+const getColor = function(label) {
   if (!label) { return colorPalette[0]; }
 
   if (!colorMap.has(label)) {
@@ -315,7 +315,7 @@ const createChart = function(ctx, data, type = 'line', datasetKey = 'datasetsTim
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-function fillActivityTable(tableId, rows) {
+const fillActivityTable = function(tableId, rows) {
   const tbody = document.querySelector(`#${tableId} tbody`);
   tbody.innerHTML = '';
   rows.forEach(row => {
@@ -323,9 +323,9 @@ function fillActivityTable(tableId, rows) {
     tr.innerHTML = `
       <td>${row.portefeuille}</td>
       <td>${row.utilisateur}</td>
-      <td>${row.nbProjets}</td>
-      <td>${row.tempsMoyen.toFixed(2)}</td>
-      <td>${row.memoireMoyenne.toFixed(2)}</td>
+      <td class="text-center">${row.nbProjets}</td>
+      <td class="text-center">${row.tempsMoyen.toFixed(2)}</td>
+      <td class="text-center">${row.memoireMoyenne.toFixed(2)}</td>
       <td>${new Date(row.dateExecution).toLocaleString()}</td>
     `;
     tbody.appendChild(tr);
@@ -344,16 +344,16 @@ function fillActivityTable(tableId, rows) {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-function fillSummaryTable(tableId, summary)
+const fillSummaryTable = function(tableId, summary)
 {
   const tbody = document.querySelector(`#${tableId} tbody`);
   tbody.innerHTML = `
     <tr>
       <td>${summary.average_time_total}</td>
       <td>${summary.average_time_projet}</td>
-      <td>${summary.average_memory}</td>
-      <td>${summary.average_memory_peak}</td>
-      <td>${summary.average_memory_peak_max}</td>
+      <td class="text-center">${summary.average_memory}</td>
+      <td class="text-center">${summary.average_memory_peak}</td>
+      <td class="text-center">${summary.average_memory_peak_max}</td>
       <td>${new Date(summary.last_execution).toLocaleString()}</td>
     </tr>`;
 }
@@ -373,7 +373,7 @@ function fillSummaryTable(tableId, summary)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-function createDonutChart(ctx, labels, data, colors, unit = '') {
+const createDonutChart = function(ctx, labels, data, colors, unit = '') {
   return new Chart(ctx, {
     type: 'doughnut',
     data: {
@@ -423,7 +423,7 @@ function createDonutChart(ctx, labels, data, colors, unit = '') {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-function createBarChart(ctx, labels, data, colors, unit = '') {
+const createBarChart = function(ctx, labels, data, colors, unit = '') {
   return new Chart(ctx, {
     type: 'bar',
     data: {
@@ -471,7 +471,7 @@ function createBarChart(ctx, labels, data, colors, unit = '') {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-function createUserCards(data, id) {
+const createUserCards = function(data, id) {
 
   const container = document.querySelector(`#indicateur-${id}`);
   id = (id == 'projets') ? 'nb_projets' : id;
@@ -485,7 +485,14 @@ function createUserCards(data, id) {
     card.classList.add('card');
 
     const title = document.createElement('h4');
-    title.textContent = item[id];
+    /** On converti la date en date :) */
+    if (id == 'derniere_execution'){
+      const date = new Date(item[id]);
+      title.textContent = new Intl.DateTimeFormat('default', dateOptionsShort)
+                            .format(date);
+    } else {
+      title.textContent = item[id];
+    }
     title.classList.add('h5');
 
     const timeParagraph = document.createElement('p');
@@ -507,13 +514,13 @@ function createUserCards(data, id) {
   /**
   * [Description for initDashboard]
   *
-  * @return [type]
+  * @return void
   *
   * Created at: 16/11/2025 20:32:22 (Europe/Paris)
   * @author     Laurent HADJADJ <laurent_h@me.com>
   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
   */
-async function initDashboard() {
+const initDashboard = async function() {
   try {
     let ctx;
 
