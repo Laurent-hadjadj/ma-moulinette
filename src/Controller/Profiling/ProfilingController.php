@@ -30,6 +30,8 @@ class ProfilingController extends AbstractController
     private $version;
     private $dateCopyright;
 
+    private static $erreur403 = "⚠️ Vous devez avoir le rôle 'BATCH' pour accéder à cette page (Erreur 403).";
+
     public function __construct(
         private ParameterBagInterface $params,
     ) {
@@ -73,6 +75,16 @@ class ProfilingController extends AbstractController
     public function profiling(): Response
     {
         $render = static::genericRender();
+
+        /** On vérifie que l'utilisateur a le ROLE_BATCH pour voir cette page. */
+        if (!$this->isGranted('ROLE_ACTUATOR')) {
+            $this->addFlash('notice', [
+                'type' => 'warning',
+                'message' => static::$erreur403
+            ]);
+            return $this->render('profiling/index.html.twig', $render);
+        }
+
         return $this->render('profiling/index.html.twig', $render);
     }
 
