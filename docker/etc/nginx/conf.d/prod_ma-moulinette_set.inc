@@ -27,7 +27,9 @@ location / {
 # Accès au fichier index.php
 location ~ ^/index\.php(/|$) {
    #limit_req zone=req_zone burst=10 nodelay;
-
+   #Header a ajouter si utilisation de subdirectory http://fqdn.net/chat
+   #Si non utilisation d'un subpath alors commenter ou laisser vide
+   add_header X-Subpath-Location "/ma-moulinette" always;
    # Check that the PHP script exists before passing it
    try_files $fastcgi_script_name 404;
 

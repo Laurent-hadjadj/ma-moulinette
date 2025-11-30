@@ -17,7 +17,7 @@ server {
     # TODO - mettre à jour le nom du dossier de l'application
     root /var/www/prod_ma_moulinette/public;
     # TODO - mettre à jour le nom du serveur
-    server_name ma-moulinette.*;
+    server_name [changeMe].*;
 
     # On ajoute un identifiant dynamique serveur
     # Il faut avoir le module HttpEchoModule ou le module HttpRequestIdModule
@@ -33,7 +33,7 @@ server {
     add_header X-XSS-Protection "1; mode=block";
 
     # Enable the Cross-site scripting (XSS) filter
-    add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' https://ma-moulinette.*;" always;
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' https://[changeMe].*;" always;
 
     charset UTF-8;
 
