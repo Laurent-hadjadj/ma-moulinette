@@ -13,7 +13,14 @@ ENV LANG=fr_FR.UTF-8
 ENV LC_ALL=fr_FR.UTF-8
 ENV LANGUAGE=fr_FR.UTF-8
 
+ENV DEBIAN_FRONTEND=noninteractive
+
 WORKDIR /app
+
+# 2024-12-10 - activation de l'extension fileinfo (php.ini + php-ext)
+# 2025-03-27 - modification de la taille des upload de 4mo à 8mo pour les documents PDF ;
+# 2025-06-23 - ajout de l'extension gd ;
+# 2025-11-30 - mise à jour de realpath_cache_size, realpath_cache_ttl, max_execution_time, session.cookie_secure, session.cookie_httponly
 
 # Use the default configuration
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
@@ -22,22 +29,31 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && locale-gen \
     # Install PHP extensions for PostgreSQL and SQLite
     && apt-get install -y libsqlite3-dev libpq-dev \
-    && docker-php-ext-install -j$(nproc) intl zip xsl calendar pdo_sqlite pdo_pgsql \
+    # Installation de gd pour phpWord
+    && apt-get update && apt-get install -y libfreetype-dev libjpeg62-turbo-dev libpng-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) gd \
+    && docker-php-ext-install -j$(nproc) intl zip xsl calendar pdo_sqlite pdo_pgsql fileinfo\
     && apt autoremove -y \
-    && apt-get purge -y libicu-dev libonig-dev libzip-dev libxslt-dev \
+    && apt-get purge -y libicu-dev libonig-dev libzip-dev libxslt-dev libfreetype-dev libjpeg62-turbo-dev libpng-dev \
     && apt-get clean \
     && rm -rf /tmp/pear /var/lib/apt/lists/*
 
 RUN sed -i -r "s/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g" "$PHP_INI_DIR/php.ini" \
+    && sed -i -r "s/;extension=fileinfo/extension=fileinfo/g" "$PHP_INI_DIR/php.ini" \
     && sed -i -r "s/expose_php = On/expose_php = Off/g" "$PHP_INI_DIR/php.ini" \
     && sed -i -r "s/post_max_size = 8M/post_max_size = 16M/g" "$PHP_INI_DIR/php.ini" \
-    && sed -i -r "s/upload_max_filesize = 2M/upload_max_filesize = 4M/g" "$PHP_INI_DIR/php.ini" \
+    && sed -i -r "s/upload_max_filesize = 2M/upload_max_filesize = 8M/g" "$PHP_INI_DIR/php.ini" \
     && sed -i -r "s/max_execution_time = 30/max_execution_time = 600/g" "$PHP_INI_DIR/php.ini" \
     && sed -i -r "s/memory_limit = .*/memory_limit = 2048M/" "$PHP_INI_DIR/php.ini" \
     && sed -i -r "s/zlib.output_compression = .*/zlib.output_compression = on/" "$PHP_INI_DIR/php.ini" \
     && sed -i -r "s/;date.timezone =/date.timezone = Europe\/Paris/" "$PHP_INI_DIR/php.ini" \
     && sed -i -r "s/display_errors = on/display_errors = off/" "$PHP_INI_DIR/php.ini" \
-    && sed -i -r "s/;intl.default_locale =/intl.default_locale =fr/" "$PHP_INI_DIR/php.ini" \
+    && sed -i -r "s/;intl.default_locale =/intl.default_locale = fr/" "$PHP_INI_DIR/php.ini" \
+    && sed -i -r "s/;realpath_cache_size = 4096k/realpath_cache_size = 5120k/" "$PHP_INI_DIR/php.ini" \
+    && sed -i -r "s/;realpath_cache_ttl = 120/realpath_cache_ttl = 600/" "$PHP_INI_DIR/php.ini" \
+    && sed -i -r "s/;session.cookie_secure =/session.cookie_secure = 1/" "$PHP_INI_DIR/php.ini" \
+    && sed -i -r "s/;session.cookie_httponly/session.cookie_httponly = 1/" "$PHP_INI_DIR/php.ini" \
     # Setup FPM global config
     && sed -i '0,/^\[www\].*/s/^\[www\].*/emergency_restart_threshold = 10\n&/' "/usr/local/etc/php-fpm.d/docker.conf" \
     && sed -i '0,/^\[www\].*/s/^\[www\].*/emergency_restart_interval = 1m\n&/' "/usr/local/etc/php-fpm.d/docker.conf" \

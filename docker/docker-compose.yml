@@ -3,49 +3,56 @@ services:
   # ma base de données postgreSQL
   database:
     platform: ${platform}
-    container_name: "postgresql"
+    container_name: postgresql
     image: "postgres:${postgresql_version}"
+    hostname: postgresql-ma-moulinette
     restart: "unless-stopped"
     shm_size: "128mb"
     security_opt:
       - no-new-privileges:true
     environment:
-      - "TZ=Europe/Paris"
-      - "LANG=fr_FR.utf8"
-      - "POSTGRES_INITDB_ARGS=${postgresql_initdb}"
+      - "TZ=${LOCAL_TZ}"
+      - "LANG=${LOCAL_LANG}"
       - "POSTGRES_PASSWORD=${postgresql_password}"
-      - "POSTGRES_USER=${postgresql_user}"
-      - "POSTGRES_DB=${postgresql_db}"
+      #- "POSTGRES_USER=${postgresql_user}"
+      #- "POSTGRES_DB=${postgresql_db}"
     volumes:
       - "${root_volume}/postgresql:/var/lib/postgresql/data"
+      - "${root_volume}/data/sql:/docker-entrypoint-initdb.d"
     networks:
-      - backend-network
+      - proxy-net
 
-  php:
+  php-fpm:
     platform: ${platform}
     container_name: php-fpm
+    hostname: php-fpm
     environment:
-      - "TZ=Europe/Paris"
-      - "LANG=fr_FR.utf8"
+      - "TZ=${LOCAL_TZ}"
+      - "LANG=${LOCAL_LANG}"
     build:
       dockerfile: php-custom.dockerfile
       context: .
+      args:
+      - "http_proxy=${http_proxy}"
+      - "https_proxy=${https_proxy}"
     volumes:
       - "${root_volume}/web-app:/var/www/"
     restart: unless-stopped
     depends_on:
       - database
     networks:
-      - frontend-network
-      - backend-network
+      - proxy-net
 
   nginx:
     platform: ${platform}
     image: nginx:${nginx_version}
     container_name: nginx
     environment:
-      - "TZ=Europe/Paris"
-      - "LANG=fr_FR.utf8"
+      - "TZ=${LOCAL_TZ}"
+      - "LANG=${LOCAL_LANG}"
+      - "http_proxy=${http_proxy}"
+      - "https_proxy=${https_proxy}"
+      - "no_proxy=${no_proxy}"
     volumes:
       - "${root_volume}/web-app:/var/www/"
       - "${root_volume}/log:/var/log/nginx/"
@@ -56,27 +63,28 @@ services:
       - "${root_volume}/etc/nginx/sites-enabled/:/etc/nginx/sites-enabled/:ro"
       - "${root_volume}/etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro"
       - "${root_volume}/etc/nginx/mime.types:/etc/nginx/mime.types:ro"
-    ports:
-      - "8080:80"
-      - "8443:443"
     restart: unless-stopped
     depends_on:
-      - php
+      - php-fpm
       - database
+    links:
+      - php-fpm
     networks:
-      - frontend-network
-      - backend-network
+      - proxy-net
+    labels:
+      - "traefik.enable=${traefik_enable}"
+      - "traefik.http.routers.${traefik_container}.rule=Host(`${traefik_host}`)"
+      - "traefik.http.routers.${traefik_container}.rule=PathPrefix(`${traefik_pathprefix}`)"
+      - "traefik.http.routers.${traefik_container}.entrypoints=web"
+      - "traefik.http.services.${traefik_container}.loadbalancer.server.port=${traefik_lb_port}"
+      - "traefik.http.routers.${traefik_container}.middlewares=${traefik_container}-middle-headers"
+      - "traefik.http.middlewares.${traefik_container}-middle-headers.headers.customrequestheaders.X-Forwarded-Prefix=${traefik_forwarded_prefix}"
+      - "traefik.http.middlewares.${traefik_container}-middle-headers.headers.customrequestheaders.X-Debug-Traefik=traefik-header"
+      - "traefik.http.routers.${traefik_container}.middlewares=${traefik_container}-middle"
+      - "traefik.http.middlewares.${traefik_container}-middle.stripprefix.prefixes=${traefik_pathprefix}"
 
 # Définition des réseaux
 networks:
-  frontend-network:
-  backend-network:
-
-## penses-bête :)++
-# construire l'image et démarrer : docker-compose up --build -d
-# vérifier que le port 80 est libre : netstat -ano | findstr :80
-# logs nginx : docker-compose logs nginx
-# logs php : docker-compose logs php
-# logs postgresql :docker-compose logs database
-# arret des containers : docker compose down
-# démarrage des containers : docker compose up -d
+  proxy-net:
+    name: proxy-net
+    external: true
