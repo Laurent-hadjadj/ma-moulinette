@@ -583,36 +583,36 @@ const initDashboard = async function() {
       // Table dernières exécutions
       const lastExec = await fetchJSON(`${serveur()}/api/secure/profiling/latest`);
       if (lastExec) {
-        fillActivityTable('tableExecutions', lastExec);
+        fillActivityTable('tableExecutions', lastExec.latest);
       }
 
     // Graphiques globaux
       const portefeuilleData = await fetchJSON(`${serveur()}/api/secure/profiling/portefeuille/all`);
       if (portefeuilleData) {
-        createChart(document.getElementById('chartTime'), portefeuilleData, 'bar', 'datasetsTime');
-        createChart(document.getElementById('chartMemory'), portefeuilleData, 'bar', 'datasetsMemory', { fill: true });
+        createChart(document.getElementById('chartTime'), portefeuilleData.portefeuille, 'bar', 'datasetsTime');
+        createChart(document.getElementById('chartMemory'), portefeuilleData.portefeuille, 'bar', 'datasetsMemory', { fill: true });
       }
     }
 
     // Weekly - temps et mémoire (line chart)
     const weeklyData = await fetchJSON(`${serveur()}/api/secure/profiling/weekly/all`);
     if (weeklyData) {
-        createChart(document.getElementById('chartWeeklyTime'), weeklyData, 'line', 'datasetsTime');
-        createChart(document.getElementById('chartWeeklyMemory'), weeklyData, 'line', 'datasetsMemory', { fill: true });
+        createChart(document.getElementById('chartWeeklyTime'), weeklyData.weekly, 'line', 'datasetsTime');
+        createChart(document.getElementById('chartWeeklyMemory'), weeklyData.weekly, 'line', 'datasetsMemory', { fill: true });
     }
 
     // Monthly - temps et mémoire (line chart)
     const monthlyData = await fetchJSON(`${serveur()}/api/secure/profiling/monthly/all`);
     if (monthlyData) {
-        createChart(document.getElementById('chartMonthlyTime'), monthlyData, 'line', 'datasetsTime');
-        createChart(document.getElementById('chartMonthlyMemory'), monthlyData, 'line', 'datasetsMemory', { fill: true });
+        createChart(document.getElementById('chartMonthlyTime'), monthlyData.monthly, 'line', 'datasetsTime');
+        createChart(document.getElementById('chartMonthlyMemory'), monthlyData.monthly, 'line', 'datasetsMemory', { fill: true });
     }
 
     // Users - bar chart (groupé) pour temps et mémoire
     const usersData = await fetchJSON(`${serveur()}/api/secure/profiling/users/all`);
     if (usersData) {
-      createChart(document.getElementById('chartUsersTime'), usersData, 'bar', 'datasetsTime');
-      createChart(document.getElementById('chartUsersMemory'), usersData, 'bar', 'datasetsMemory', { fill: true });
+      createChart(document.getElementById('chartUsersTime'), usersData.user, 'bar', 'datasetsTime');
+      createChart(document.getElementById('chartUsersMemory'), usersData.user, 'bar', 'datasetsMemory', { fill: true });
     }
 
   } catch (error) {
