@@ -26,7 +26,7 @@ import 'motion-ui';
 
 import '../../common/foundation.js';
 
-import '../../auth/details.js';
+import '../../auth/details.js.old/index.js';
 
 /** On importe les paramètres serveur */
 import {serveur} from '../../common/properties.js';
@@ -34,7 +34,7 @@ import {serveur} from '../../common/properties.js';
 /** La gestion des messagesJS */
 import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 /** On importe les constantes */
-import { http_400, http_401, http_403, http_404, http_500, http_504, contentType } from '../../common/constante.js';
+import { http_400, http_401, http_403, http_404, http_500, http_504, content_type } from '../../common/constante.js';
 
 let token;
 import("../../common/secrets.local.js").then((module) => {
@@ -65,7 +65,7 @@ const sonarIsUp = async function() {
     url: `${serveur()}/api/secure/status`,
     type: 'POST',
     dataType: 'json',
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -104,7 +104,7 @@ const miseAJourListe = async function() {
     url: `${serveur()}/api/secure/accueil/projet`,
     type: 'POST',
     dataType: 'json',
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -173,7 +173,7 @@ const miseAJourTags = async function() {
     url: `${serveur()}/api/secure/accueil/tags`,
     type: 'POST',
     dataType: 'json',
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'

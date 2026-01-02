@@ -33,7 +33,7 @@ import '../../select2/select2.min.js';
 import '../../select2/i18n/fr.js'
 
 import '../../common/foundation.js';
-import '../../auth/details.js';
+import '../../auth/details.js.old/index.js';
 
 /** On importe les paramètres serveur */
 import {serveur} from '../../common/properties.js';
@@ -41,7 +41,7 @@ import {serveur} from '../../common/properties.js';
 import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
-import {dateOptions, contentType, couleur, note, espace, rien,
+import {dateOptions, content_type, couleur, note, espace, rien,
   http_200, http_400, http_406,
   listeOwasp2017, listeOwasp2021,
   un, deux, trois, quatre, cinq, six, sept, huit, neuf, dix, onze,
@@ -180,7 +180,7 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -488,7 +488,7 @@ const remplissageHotspotInfo = async function(maven_key, referential_owasp) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
       headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -575,7 +575,7 @@ const remplissageHotspotListe = async function(maven_key, referential_owasp) {
       type: 'POST',
       dataType: 'json',
       data: JSON.stringify(data),
-      contentType,
+      contentType: content_type,
       headers: {
         'X-API-Custom-403': 'true',
         'X-Internal-Front': 'front-app'
@@ -789,7 +789,7 @@ const remplissageHotspotDetails = async function(maven_key, referential_owasp) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -951,7 +951,7 @@ const remplissageDetailsHotspotOwasp = async function(maven_key, menace, titre) 
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'

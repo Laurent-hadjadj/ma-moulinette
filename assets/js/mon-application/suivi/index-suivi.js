@@ -27,7 +27,7 @@ import 'what-input';
 import 'foundation-sites';
 import 'motion-ui';
 import '../../common/foundation.js';
-import '../../auth/details.js';
+import '../../auth/details.js.old/index.js';
 
 /** On charge la version html2pdf depuis les assets */
 import { jsPDF } from 'jspdf';
@@ -48,7 +48,7 @@ Chart.register(ChartDataLabels);
 
 /** On importe les constantes */
 import { http_200, http_201,http_400, http_404, chartColors, zero, un,
-        deux, soixante, cent, dateOptions, contentType } from '../../common/constante.js';
+        deux, soixante, cent, dateOptions, content_type } from '../../common/constante.js';
 
 /* Construction des callouts pour les messages */
 const messageInformation=`<div id="js-message-info" class="callout alert-callout-border primary" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu padding-right-1"><strong>Information ! </strong>`;
@@ -221,7 +221,7 @@ const selectVersion=async function(mavenKey) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -310,7 +310,7 @@ $('select[name="version"]').on('change', function () {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -608,7 +608,7 @@ $('.js-enregistrer-analyse').on('click', ()=>{
      */
     const options = {
     url: `${serveur()}/api/secure/suivi/mise-a-jour`, type: 'PUT',
-    dataType: 'json', data: JSON.stringify(data), contentType };
+    dataType: 'json', data: JSON.stringify(data), content_type };
 
     $.ajax(options).then(t => {
       // 📌 Vérification des erreurs
@@ -747,7 +747,7 @@ $('.js-modifier-analyse').on('click', function () {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -848,7 +848,14 @@ $('.js-modifier-analyse').on('click', function () {
 
         const optionsFavori = {
           url: `${serveur()}/api/secure/suivi/version/favori`, type: 'PUT',
-          dataType: 'json', data: JSON.stringify(dataFavori), contentType };
+          dataType: 'json',
+          data: JSON.stringify(dataFavori),
+          contentType: content_type,
+          headers: {
+            'X-API-Custom-403': 'true',
+            'X-Internal-Front': 'front-app'
+          },
+        };
 
         /**
          * On appel l'API de mise à jour du favori
@@ -899,7 +906,14 @@ $('.js-modifier-analyse').on('click', function () {
       const dataReference = { maven_key, initial, version, date_version: formatted_date };
       const optionsReference = {
         url: `${serveur()}/api/secure/suivi/version/reference`, type: 'PUT',
-        dataType: 'json', data: JSON.stringify(dataReference), contentType };
+        dataType: 'json',
+        data: JSON.stringify(dataReference),
+        contentType: content_type,
+        headers: {
+            'X-API-Custom-403': 'true',
+            'X-Internal-Front': 'front-app'
+          },
+      };
 
       $.ajax(optionsReference).then((t) => {
       if (t.code===200) {
@@ -938,7 +952,14 @@ $('.js-modifier-analyse').on('click', function () {
       const dataPoubelle = { maven_key, version, 'date_version': formatted_date };
       const optionsPoubelle = {
         url: `${serveur()}/api/secure/suivi/version/poubelle`, type: 'PUT',
-        dataType: 'json', data: JSON.stringify(dataPoubelle), contentType };
+        dataType: 'json',
+        data: JSON.stringify(dataPoubelle),
+        contentType: content_type,
+        headers: {
+          'X-API-Custom-403': 'true',
+          'X-Internal-Front': 'front-app'
+        },
+      };
 
       let message;
       $.ajax(optionsPoubelle).then((t) => {

@@ -24,7 +24,7 @@ import 'what-input';
 import 'foundation-sites';
 import 'motion-ui';
 import '../../common/foundation.js';
-import '../../auth/details.js';
+import '../../auth/details.js.old/index.js';
 
 /** On importe les paramètres serveur */
 import {serveur} from '../../common/properties.js';
@@ -32,7 +32,7 @@ import {serveur} from '../../common/properties.js';
 import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
-import { dateOptions, contentType, zero, cent, mille, http_200, http_201, http_202, http_404, http_500} from '../../common/constante.js';
+import { dateOptions, content_type, zero, cent, mille, http_200, http_201, http_202, http_404, http_500} from '../../common/constante.js';
 
 /** On récupère la clé maven de la clé de l'application. */
 const maven_key = $('#titre-repartition').data('application');
@@ -214,7 +214,11 @@ const analyse = async function (maven_key, category, severity, css, setup) {
       type: 'PUT',
       dataType: 'json',
       data: JSON.stringify(data),
-      contentType,
+      contentType: content_type,
+      headers: {
+                  'X-API-Custom-403': 'true',
+                  'X-Internal-Front': 'front-app'
+      },
       beforeSend: () => setTimeout(() => startAnalyse(), 1),
       complete: () => setTimeout(stopAnalyse(), 1)
   };
@@ -332,7 +336,11 @@ const historique = async function (maven_key) {
       type: 'PUT',
       dataType: 'json',
       data: JSON.stringify(data),
-      contentType,
+      contentType: content_type,
+      headers: {
+        'X-API-Custom-403': 'true',
+        'X-Internal-Front': 'front-app'
+      },
       beforeSend: () => setTimeout(() => startHistorique(), 1),
       complete: () => setTimeout(stopHistorique(), 1)
   };
@@ -465,7 +473,11 @@ const collecte = async function (maven_key, category, severity, counter, timer) 
       type: 'PUT',
       dataType: 'json',
       data: data,
-      contentType,
+      contentType: content_type,
+      headers: {
+        'X-API-Custom-403': 'true',
+        'X-Internal-Front': 'front-app'
+      },
       beforeSend: function () {
           setTimeout(() => {
               $collecteAnimation1.addClass('sp-volume');
@@ -534,7 +546,11 @@ const updateRepartition = async function(phase){
       type: 'PUT',
       dataType: 'json',
       data: JSON.stringify(data),
-      contentType,
+      contentType: content_type,
+      headers: {
+        'X-API-Custom-403': 'true',
+        'X-Internal-Front': 'front-app'
+      },
     };
 
     // Exécution de la requête AJAX

@@ -29,7 +29,7 @@ import 'foundation-sites';
 import 'motion-ui';
 
 import '../../common/foundation.js';
-import '../../auth/details.js';
+import '../../auth/details.js.old/index.js';
 
 /* On importe les paramètres serveur. */
 import {serveur} from '../../common/properties.js';
@@ -37,7 +37,7 @@ import {serveur} from '../../common/properties.js';
 import { showMessage, hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
-import { contentType, dateOptions, un, trois, cinqCent, mille, http_500, http_400, http_200, troisMille, cinqMille } from '../../common/constante.js';
+import { content_type, dateOptions, un, trois, cinqCent, mille, http_500, http_400, http_200, troisMille, cinqMille } from '../../common/constante.js';
 
 /** on charge le service pendingWorker */
 import { pendingWorkerService } from '../batch/pendingWorkerService.js';
@@ -104,7 +104,7 @@ const lancerTraitementSiPossible = async function(id, traitement_id, titre_porte
         url: '/api/secure/traitement/add-pending',
         type: 'POST',
         data: JSON.stringify({traitement_id, titre_portefeuille, portefeuille }),
-        contentType: 'application/json'
+        contentType: content_type,
       });
       return;
     }
@@ -119,7 +119,7 @@ const lancerTraitementSiPossible = async function(id, traitement_id, titre_porte
       type: 'POST',
       dataType: 'json',
       data: JSON.stringify(data),
-      contentType,
+      contentType: content_type,
       headers: {
         'X-API-Custom-403': 'true',
         'X-Internal-Front': 'front-app'
@@ -205,7 +205,7 @@ const traitementInformation = async function(traitement_id){
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -394,7 +394,7 @@ const traitementManuel = async function(id, titre_portefeuille, portefeuille){
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -507,7 +507,7 @@ $('.js-select-journal').on('select2:select', async function(e) {
       url: `${serveur()}/api/secure/traitement/journal`,
       type: 'POST',
       data: JSON.stringify(data),
-      contentType,
+      contentType: content_type,
       headers: {
         'X-API-Custom-403': 'true',
         'X-Internal-Front': 'front-app'

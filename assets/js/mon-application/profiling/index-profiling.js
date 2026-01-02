@@ -27,14 +27,14 @@ import 'foundation-sites';
 import 'motion-ui';
 
 import '../../common/foundation.js';
-import '../../auth/details.js';
+import '../../auth/details.js.old/index.js';
 
 /* On importe les paramètres serveur. */
 import {serveur} from '../../common/properties.js';
 import { showMessage, hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
-import { contentType, dateOptionsShort, http_200 } from '../../common/constante.js';
+import { content_type, dateOptionsShort, http_200 } from '../../common/constante.js';
 
 import {Chart, registerables} from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -61,7 +61,7 @@ const fetchJSON = async function(url, indicateur = '', type = 'GET') {
     url,
     type,
     dataType: 'json',
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'

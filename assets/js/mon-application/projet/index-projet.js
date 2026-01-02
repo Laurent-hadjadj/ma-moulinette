@@ -29,7 +29,7 @@ import 'what-input';
 import 'foundation-sites';
 import 'motion-ui';
 import '../../common/foundation.js';
-import '../../auth/details.js';
+import '../../auth/details.js.old/index.js';
 
 /** On importe les paramètres serveur */
 import {serveur} from '../../common/properties.js';
@@ -40,7 +40,7 @@ import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common
 import { log } from '../../common/log.js';
 
 /** On importe les constantes */
-import { http_200, http_400, http_401, http_403, http_404, http_406, http_500, http_503, http_504, deuxMille, cinqMille, contentType, paletteCouleur, matrice, troisMille } from '../../common/constante.js';
+import { http_200, http_400, http_401, http_403, http_404, http_406, http_500, http_503, http_504, deuxMille, cinqMille, content_type, paletteCouleur, matrice, troisMille } from '../../common/constante.js';
 
 /** On importe l'encoder */
 import {encode} from '../../common/encode.js';
@@ -221,7 +221,7 @@ const selectProjet = async function() {
     url: `${serveur()}/api/secure/projet/liste`,
     type: 'POST',
     dataType: 'json',
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -320,7 +320,7 @@ const projetInformation = async function(mavenKey) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -392,7 +392,7 @@ const projetMesure = async function(mavenKey) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -460,7 +460,7 @@ const projetRating = async function(mavenKey, type) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -528,7 +528,7 @@ const projetOwasp = async function(mavenKey) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -618,7 +618,7 @@ const projetHotspot = async function(mavenKey) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -694,7 +694,7 @@ const projetAnomalie = async function(mavenKey) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -762,7 +762,7 @@ const projetAnomalieDetails = async function(mavenKey) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -834,7 +834,7 @@ const projetHotspotOwasp = async function(maven_key, menace) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -920,7 +920,7 @@ const projetHotspotOwaspDetails = async function(mavenKey) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -993,7 +993,7 @@ const projetNoSonar = async function(mavenKey){
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -1071,7 +1071,7 @@ const projetTodo = async function(mavenKey){
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -1150,11 +1150,11 @@ const data = { maven_key: mavenKey };
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
-        headers: {
-        'X-API-Custom-403': 'true',
-        'X-Internal-Front': 'front-app'
-      },
+    contentType: content_type,
+    headers: {
+    'X-API-Custom-403': 'true',
+    'X-Internal-Front': 'front-app'
+    },
   };
 
   const $boutonCollecteIndicateur = $('.js-analyse');
@@ -1244,7 +1244,7 @@ const afficheMesProjets = async function() {
     url: `${serveur()}/api/secure/projet/mes-applications/liste`,
     type: 'POST',
     dataType: 'json',
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -1491,7 +1491,7 @@ $('select[name="projet"]').on('change', function () {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
       headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -1879,7 +1879,7 @@ $('.favori-svg').on('click', () => {
       type: 'POST',
       dataType: 'json',
       data: JSON.stringify(data),
-      contentType,
+      contentType: content_type,
       headers: {
         'X-API-Custom-403': 'true',
         'X-Internal-Front': 'front-app'

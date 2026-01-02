@@ -24,7 +24,7 @@ export const http_503=Number(503);
 export const http_504=Number(504);
 
 /** Liste des constantes clientHTML */
-export const contentType = 'application/json; charset=utf-8';
+export const content_type = 'application/json; charset=utf-8';
 
 /** Liste des constantes charJS */
 export const matrice = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,

@@ -21,8 +21,8 @@ import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common
 import { log } from '../../common/log.js';
 
 /** On importe les constantes */
-import {contentType, dateOptions, http_400, http_401, http_403, http_404, http_406, http_500,
-        http_503, http_504, un, deux, trois, quatre, cinq, dix, cent, dixMille} from '../../common/constante.js';
+import {content_type, dateOptions, http_400, http_401, http_403, http_404, http_406, http_500,
+http_503, http_504, un, deux, trois, quatre, cinq, dix, cent, dixMille} from '../../common/constante.js';
 
 let token;
 import("../../common/secrets.local.js").then((module) => {
@@ -139,7 +139,7 @@ export const remplissage = async function(maven_key) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -209,7 +209,7 @@ export const remplissage = async function(maven_key) {
       type: 'POST',
       dataType: 'json',
       data: JSON.stringify(data),
-      contentType,
+      contentType: content_type,
       headers: {
         'X-API-Custom-403': 'true',
         'X-Internal-Front': 'front-app'
@@ -256,7 +256,7 @@ export const remplissage = async function(maven_key) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -346,7 +346,7 @@ export const remplissage = async function(maven_key) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -409,7 +409,7 @@ export const remplissage = async function(maven_key) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -537,7 +537,7 @@ export const remplissage = async function(maven_key) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -785,7 +785,7 @@ export const remplissage = async function(maven_key) {
       type: 'POST',
       dataType: 'json',
       data: JSON.stringify(data),
-      contentType,
+      contentType: content_type,
       headers: {
         'X-API-Custom-403': 'true',
         'X-Internal-Front': 'front-app'
@@ -847,7 +847,7 @@ export const remplissage = async function(maven_key) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -957,7 +957,7 @@ export const afficheHotspotDetails = async function (maven_key){
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'

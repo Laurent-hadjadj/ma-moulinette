@@ -24,7 +24,7 @@ import 'what-input';
 import 'foundation-sites';
 import 'motion-ui';
 import '../../common/foundation.js';
-import '../../auth/details.js';
+import '../../auth/details.js.old/index.js';
 
 /** initialisation de jQuery */
 $('').hide();

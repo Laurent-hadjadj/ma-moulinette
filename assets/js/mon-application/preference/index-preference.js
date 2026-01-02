@@ -20,10 +20,10 @@ import 'foundation-sites';
 import 'motion-ui';
 
 import '../../common/foundation.js';
-import '../../auth/details.js';
+import '../../auth/details.js.old/index.js';
 
 /** On importe les constantes */
-import {contentType} from '../../common/constante.js';
+import {content_type} from '../../common/constante.js';
 
 /* On importe les paramètres serveur. */
 import {serveur} from '../../common/properties.js';
@@ -54,7 +54,7 @@ const modifierStatut = async function(statut, categorie) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -77,7 +77,14 @@ const bookmark=async function(){
   const data={ categorie: 'bookmark' }
   const options = {
     url: `${serveur()}/api/secure/preference/categorie`, type: 'GET',
-          dataType: 'json', data, contentType };
+    dataType: 'json',
+    data,
+    contentType: content_type,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
 
   const r = await $.ajax(options);
   $('#js-modal-bookmark-statut').html(`<span class="option-false"><strong>Désactivée.</strong></span>`);
@@ -115,7 +122,14 @@ const favori=async function(){
   const data={ categorie: 'favori' }
   const options = {
     url: `${serveur()}/api/secure/preference/categorie`, type: 'GET',
-          dataType: 'json', data, contentType };
+    dataType: 'json',
+    data,
+    contentType: content_type,
+    headers: {
+        'X-API-Custom-403': 'true',
+        'X-Internal-Front': 'front-app'
+      },
+  };
 
   const r = await $.ajax(options);
   /** Par défaut on affiche pas de favoris */
@@ -160,7 +174,7 @@ const favori=async function(){
       type: 'POST',
       dataType: 'json',
       data: JSON.stringify(data_1),
-      contentType,
+      contentType: content_type,
       headers: {
         'X-API-Custom-403': 'true',
         'X-Internal-Front': 'front-app'
@@ -184,8 +198,17 @@ const favori=async function(){
 const version=async function(){
   /** on récupère les préférences */
   const data={ categorie: 'version' }
-  const options = { url: `${serveur()}/api/secure/preference/categorie`, type: 'GET',
-                    dataType: 'json', data, contentType };
+  const options = { 
+    url: `${serveur()}/api/secure/preference/categorie`,
+    type: 'GET',
+    dataType: 'json',
+    data,
+    contentType: content_type,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
 
   const r = await $.ajax(options);
 
@@ -257,7 +280,7 @@ const version=async function(){
       type: 'POST',
       dataType: 'json',
       data: JSON.stringify(data_1),
-      contentType,
+      contentType: content_type,
       headers: {
         'X-API-Custom-403': 'true',
         'X-Internal-Front': 'front-app'
@@ -281,10 +304,18 @@ const version=async function(){
  */
 const projet=async function(){
   /** on récupère les préférences */
-  const data={ categorie: 'projet' }
+  const data = { categorie: 'projet' }
   const options = {
-    url: `${serveur()}/api/secure/preference/categorie`, type: 'GET',
-          dataType: 'json', data, contentType };
+    url: `${serveur()}/api/secure/preference/categorie`,
+    type: 'GET',
+    dataType: 'json',
+    data,
+    contentType: content_type,
+    headers: {
+        'X-API-Custom-403': 'true',
+        'X-Internal-Front': 'front-app'
+      },
+  };
 
   const r = await $.ajax(options);
   $('#js-modal-projet-statut').html(`<span class="option-false"><strong>Désactivée.</strong></span>`);

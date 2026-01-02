@@ -26,7 +26,7 @@ import 'foundation-sites';
 import 'motion-ui';
 
 import '../../common/foundation.js';
-import '../../auth/details.js';
+import '../../auth/details.js.old/index.js';
 
 /** On importe les paramètres serveur */
 import {serveur} from '../../common/properties.js';
@@ -34,7 +34,7 @@ import {serveur} from '../../common/properties.js';
 import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
-import { http_200, http_400, http_401, http_403, http_404, http_500, http_504, contentType } from '../../common/constante.js';
+import { http_200, http_400, http_401, http_403, http_404, http_500, http_504, content_type } from '../../common/constante.js';
 
 import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -69,7 +69,7 @@ const refreshActivity=async function() {
               url: `${serveur()}/api/secure/activity/sauvegarde`,
               type: 'POST',
               dataType: 'json',
-              contentType,
+              contentType: content_type,
               headers: {
                 'X-API-Custom-403': 'true',
                 'X-Internal-Front': 'front-app'
@@ -250,7 +250,7 @@ const dessineGraph = async function(type, source) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(dataRefresh),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'

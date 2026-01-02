@@ -17,7 +17,7 @@ import $ from 'jquery';
 import {serveur} from '../../common/properties.js';
 
 /** On importe les constantes */
-import {dateOptions, contentType, http_200, http_400, http_401, http_403, http_404, http_500, http_504} from '../../common/constante.js';
+import {dateOptions, content_type, http_200, http_400, http_401, http_403, http_404, http_500, http_504} from '../../common/constante.js';
 
 import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
@@ -254,7 +254,7 @@ export const enregistrement = async function(maven_key) {
       type: 'PUT',
       dataType: 'json',
       data: JSON.stringify(data),
-      contentType,
+      contentType: content_type,
       headers: {
         'X-API-Custom-403': 'true',
         'X-Internal-Front': 'front-app'

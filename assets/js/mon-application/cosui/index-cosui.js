@@ -24,7 +24,7 @@ import 'what-input';
 import 'foundation-sites';
 import 'motion-ui';
 import '../../common/foundation.js';
-import '../../auth/details.js';
+import '../../auth/details.js.old/index.js';
 
 /** On importe les constantes */
 import { zero, dix, vingt, trente, quarante, cinquante, soixante, soixanteDix, cent, quatreVingt } from '../../common/constante.js';

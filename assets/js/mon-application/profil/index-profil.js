@@ -24,7 +24,7 @@ import 'what-input';
 import 'foundation-sites';
 import 'motion-ui';
 import '../../common/foundation.js';
-import '../../auth/details.js';
+import '../../auth/details.js.old/index.js';
 
 /** On importe les paramètres serveur */
 import {serveur} from '../../common/properties.js';
@@ -33,7 +33,7 @@ import {serveur} from '../../common/properties.js';
 import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
-import { http_200, http_400, http_401, http_403, http_404, http_500, contentType, paletteCouleur, matrice, dateOptions, dateOptionsShort } from '../../common/constante.js';
+import { http_200, http_400, http_401, http_403, http_404, http_500, content_type, paletteCouleur, matrice, dateOptions, dateOptionsShort } from '../../common/constante.js';
 
 let token;
 import("../../common/secrets.local.js").then((module) => {
@@ -86,7 +86,7 @@ const refreshQuality = async function() {
     url: `${serveur()}/api/secure/quality/profiles`,
     type: 'POST',
     dataType: 'json',
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -232,7 +232,7 @@ const autreProfil = async function(langage) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(dataRefresh),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -401,7 +401,7 @@ $('#bouton-affiche-graphique').on('click', async () => {
     url: `${serveur()}/api/secure/quality/langage`,
     type: 'POST',
     dataType: 'json',
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'

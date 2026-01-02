@@ -23,10 +23,10 @@ import 'select2';
 import 'select2/dist/js/i18n/fr.js';
 
 import '../../common/foundation.js';
-import '../../auth/details.js';
+import '../../auth/details.js.old/index.js';
 
 /** On importe les constantes */
-import {contentType} from '../../common/constante.js';
+import {content_type} from '../../common/constante.js';
 
 /* On importe les paramètres serveur. */
 import {serveur} from '../../common/properties.js';
@@ -85,7 +85,7 @@ const selectProjet=function() {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
