@@ -27,7 +27,7 @@ import 'what-input';
 import 'foundation-sites';
 import 'motion-ui';
 import '../../common/foundation.js';
-import '../../auth/details.js.old/index.js';
+import '../../auth/details.js';
 
 /** On charge la version html2pdf depuis les assets */
 import { jsPDF } from 'jspdf';

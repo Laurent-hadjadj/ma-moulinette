@@ -23,7 +23,7 @@ import 'select2';
 import 'select2/dist/js/i18n/fr.js';
 
 import '../../common/foundation.js';
-import '../../auth/details.js.old/index.js';
+import '../../auth/details.js';
 
 /** On importe les constantes */
 import {content_type} from '../../common/constante.js';

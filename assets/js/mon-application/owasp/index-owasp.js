@@ -33,7 +33,7 @@ import '../../select2/select2.min.js';
 import '../../select2/i18n/fr.js'
 
 import '../../common/foundation.js';
-import '../../auth/details.js.old/index.js';
+import '../../auth/details.js';
 
 /** On importe les paramètres serveur */
 import {serveur} from '../../common/properties.js';

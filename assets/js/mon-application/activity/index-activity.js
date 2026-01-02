@@ -26,7 +26,7 @@ import 'foundation-sites';
 import 'motion-ui';
 
 import '../../common/foundation.js';
-import '../../auth/details.js.old/index.js';
+import '../../auth/details.js';
 
 /** On importe les paramètres serveur */
 import {serveur} from '../../common/properties.js';
