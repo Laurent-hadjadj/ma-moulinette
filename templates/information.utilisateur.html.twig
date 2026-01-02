@@ -1,5 +1,5 @@
-  {# Menu Information utilisateur #}
-  {% if is_granted('ROLE_UTILISATEUR') %}
+{# Menu Information utilisateur #}
+{% if is_granted('ROLE_UTILISATEUR') %}
 <dialog id="modal-information-utilisateur"
         class="reveal small" data-reveal
         data-close-on-click="true"
@@ -8,20 +8,23 @@
         aria-labelledby="titre-modal-information-utilisateur"
         aria-describedby="desc-modal-information-utilisateur">
 
-  <p class="show-for-sr">Appuyez sur la touche Échap pour fermer cette fenêtre.</p>
-  <header>
-    <h1 id="titre-modal-information-utilisateur" class="h3 claire-hand">
-      <span aria-hidden="true">ℹ️</span> Informations</h1>
-    <p id="desc-modal-information-utilisateur" class="show-for-sr">
-        Affiche les informations personnelles de l'utilisateur et permet de changer son mot de passe.
-    </p>
+  <header class="grid-x align-justify align-middle margin-bottom-1">
+    <p class="show-for-sr">Appuyez sur la touche Échap pour fermer cette fenêtre.</p>
+    <div class="cell auto">
+      <h1 id="titre-modal-information-utilisateur" class="h3 claire-hand">
+        <span aria-hidden="true">ℹ️</span> Informations</h1>
+      <p id="desc-modal-information-utilisateur" class="show-for-sr">
+          Affiche les informations personnelles de l'utilisateur et permet de changer son mot de passe.
+      </p>
+    </div>
   </header>
+
   <section>
     <p class="open-sans">
-      <strong>Nom&nbsp;:</strong> <span class="color-noir">{{ app.user.nom}}</span>
+      <strong>Nom&nbsp;:</strong> <span class="color-noir">{{ app.user.nom|upper}}</span>
     </p>
     <p class="open-sans">
-      <strong>Prénom&nbsp;:</strong> <span class="color-noir">{{ app.user.prenom }}</span>
+      <strong>Prénom&nbsp;:</strong> <span class="color-noir">{{ app.user.prenom|capitalize }}</span>
     </p>
     <p class="open-sans">
       <strong>Courriel&nbsp;:</strong> <span class="color-noir">{{ app.user.courriel }}</span>
@@ -32,18 +35,21 @@
     <p class="open-sans">
       <strong>Modifier le&nbsp;:</strong> <span class="color-noir">{{ app.user.dateModification|date("d/m/Y H:i:s", "Europe/Paris") }}</span>
     </p>
-    <div class="grid-x">
+    <div class="grid-x margin-top-1">
       <p class="open-sans">Mise à jour du mot-de-passe&nbsp;?&nbsp;</p>
-      <div class="switch switch-identifiant small">
-        <input id="js-identifiant-oui-non"
+      <div class="switch switch-reset-password small">
+        <input id="js-reset-password"
               class="switch-input"
               type="checkbox"
+              role="switch"
+              aria-checked="false"
+              aria-label="Mise à jour du mot de passe"
               name="variationSwitch"
               data-reset-password="{{app.user.resetPassword}}">
-        <label class="switch-paddle switch-paddle-identifiant" for="js-identifiant-oui-non">
-          <span class="show-for-sr">Mise à jour du mot-de-passe?</span>
-          <span class="switch-active switch-identifiant-active" aria-hidden="true">Oui</span>
-          <span class="switch-inactive switch-identifiant-inactive" aria-hidden="true">Non</span>
+        <label class="switch-paddle switch-paddle-reset-password" for="js-reset-password">
+          <span class="show-for-sr">Mise à jour du mot-de-passe&nbsp;?</span>
+          <span class="switch-active switch-reset-password-active" aria-hidden="true">Oui</span>
+          <span class="switch-inactive switch-reset-password-inactive" aria-hidden="true">Non</span>
         </label>
       </div>
     </div>
@@ -57,7 +63,7 @@
                 type="button"
                 class="button open-sans focus-dark-light"
                 data-close
-                aria-label="Fermer la fenêtre">❌ Fermer</button>
+                aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span> Fermer</button>
       </div>
   </footer>
 </dialog>

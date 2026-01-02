@@ -986,18 +986,18 @@ body {
 
 /* === gestion du switch pour la mise à jour du mot de passe ==== */
 /* décalage vers la droite */
-.switch-identifiant { padding-left: 1rem; }
+.switch-reset-password { padding-left: 1rem; }
 
 /* Changement de la couleur par défaut par 00445b */
-input:checked ~ .switch-paddle-identifiant { background-color: #00445b; }
+input:checked ~ .switch-paddle-reset-password { background-color: #00445b; }
 
 /* Réduction de la marge gauche */
-.switch-identifiant-inactive {
+.switch-reset-password-inactive {
   right: 10%;
   color: #00445b;
 }
 
-.switch-identifiant-active {
+.switch-reset-password-active {
   right: 13%;
   color: #fff;
 }
