@@ -1,3 +1,5 @@
+\c postgres
+
 \i sql/00_drop_database
 \i sql/01_create_roles.sql
 \i sql/02_create-database.sql

@@ -14,6 +14,7 @@
 --- 2025-02-03 : Laurent HADJADJ - Ajout du nom du schema en préfixe des tables.
 --- 2025-07-22 : Laurent HADJADJ - Utilisation de true/false au lieu de 0/1 pour reset_password.
 
+\c ma_moulinette db_user
 
 BEGIN;
 

@@ -9,7 +9,7 @@
 --- 2025-11-30 : Migration postGreSql 18
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
-\c ma_moulinette;
+\c assistant_ia db_user
 
 DROP TABLE IF EXISTS ma_moulinette.todo;
 
@@ -24,4 +24,3 @@ CREATE TABLE ma_moulinette.todo
   utilisateur_collecte VARCHAR(320),
   date_enregistrement TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
-

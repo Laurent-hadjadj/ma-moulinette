@@ -9,7 +9,7 @@
 --- 2025-11-30 : Migration postGreSql 18
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
-\c ma_moulinette;
+\c ma_moulinette db_user
 
 CREATE OR REPLACE FUNCTION get_pg_stat_activity()
 RETURNS SETOF pg_catalog.pg_stat_activity

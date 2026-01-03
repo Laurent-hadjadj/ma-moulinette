@@ -9,7 +9,8 @@
 --- 2025-11-30 : Migration postGreSql 18
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
-\c ma_moulinette;
+\c assistant_ia db_user
+
 DROP TABLE IF EXISTS ma_moulinette.no_sonar;
 
 CREATE TABLE ma_moulinette.no_sonar

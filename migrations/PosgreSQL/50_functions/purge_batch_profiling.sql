@@ -9,7 +9,7 @@
 --- 2025-11-30 : Migration postGreSql 18
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
-\c ma_moulinette;
+\c ma_moulinette db_user
 
 CREATE OR REPLACE FUNCTION ma_moulinette.purge_batch_profiling(v_limit_days INTEGER DEFAULT 90)
 RETURNS INTEGER
