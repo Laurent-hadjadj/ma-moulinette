@@ -19,82 +19,58 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ActivityRepository::class)]
+#[ORM\Table(name: 'activity', schema: 'ma_moulinette')]
 #[ORM\Index(name: 'idx_maven_key', columns: ['maven_key'])]
 #[ORM\Index(name: 'idx_project_name', columns: ['project_name'])]
 #[ORM\Index(name: 'idx_status_executed_at', columns: ['status', 'executed_at'])]
-#[ORM\Table(name: "activity", schema: "ma_moulinette")]
 class Activity
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Identifiant unique de la table activité'])]
-    private int $id;
+    #[ORM\Column(type: Types::INTEGER)]
+    private ?int $id = null;
 
-    #[ORM\Column(type: Types::STRING, length: 255, nullable: false,
-        options: ['comment' => 'Clé Maven du projet'])]
+    #[ORM\Column(name: 'maven_key', type: Types::STRING, length: 255)]
     #[Assert\NotBlank]
-    #[Assert\Length(
-        max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères.")]
-    private $mavenKey;
+    #[Assert\Length(max: 255)]
+    private string $mavenKey;
 
-    #[ORM\Column(type: Types::STRING, length: 64, nullable: false,
-        options: ['comment' => 'Nom du projet associé à la clé maven'])]
+    #[ORM\Column(name: 'project_name', type: Types::STRING, length: 64)]
     #[Assert\NotBlank]
-    #[Assert\Length(
-        max: 64,
-        maxMessage: "Le nom du projet ne doit pas dépasser 64 caractères."
-    )]
-    private $projectName;
+    #[Assert\Length(max: 64)]
+    private string $projectName;
 
-    #[ORM\Column(type: Types::STRING, length: 26, nullable: false,
-        options: ['comment' => 'Identifiant de l’analyse du projet'])]
+    #[ORM\Column(name: 'analyse_id', type: Types::STRING, length: 26)]
     #[Assert\NotBlank]
-    #[Assert\Length(
-        max: 26,
-        maxMessage: "L'identifiant de l'analyse ne doit pas dépasser 26 caractères."
-    )]
-    private ?string $analyseId = null;
+    #[Assert\Length(max: 26)]
+    private string $analyseId;
 
-    #[ORM\Column(type: Types::STRING, length: 16, nullable: false,
-        options: ['comment' => 'Statut du traitement d’import'])]
+    #[ORM\Column(name: 'analyse_id', type: Types::STRING, length: 16)]
     #[Assert\NotBlank]
-    #[Assert\Length(
-        max: 16,
-        maxMessage: "Le statut ne doit pas dépasser 16 caractères."
-    )]
-    private $status;
+    #[Assert\Length(max: 16)]
+    private string $status;
 
-    #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
-        options: ['comment' => 'Utilisateur soumettant l’import'])]
+    #[ORM\Column(name: 'submitter_login', type: Types::STRING, length: 32)]
     #[Assert\NotBlank]
-    #[Assert\Length(
-        max: 32,
-        maxMessage: "Le login ne doit pas dépasser 32 caractères."
-    )]
-    private $submitterLogin;
+    #[Assert\Length(max: 32)]
+    private string $submitterLogin;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
-        options: ['comment' => 'Date et heure de la soumission du traitement d’import des données']
-    )]
+    #[ORM\Column(name: 'submitted_at', type: Types::DATETIMETZ_IMMUTABLE)]
     #[Assert\NotNull]
-    private $submittedAt;
+    private \DateTimeImmutable $submittedAt;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
-        options: ['comment' => 'Date et heure du debut du traitement d’import des données'])]
+    #[ORM\Column(name: 'started_at', type: Types::DATETIMETZ_IMMUTABLE)]
     #[Assert\NotNull]
-    private ?\DateTimeInterface $startedAt = null;
+    private \DateTimeImmutable $startedAt;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
-        options: ['comment' => 'Date et heure de fin du traitement d’import des données'])]
+    #[ORM\Column(name: 'executed_at', type: Types::DATETIMETZ_IMMUTABLE)]
     #[Assert\NotNull]
-    private $executedAt;
+    private \DateTimeImmutable $executedAt;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Date et heure de fin du traitement d’import des données'])]
+    #[ORM\Column(name: 'execution_time', type: Types::INTEGER)]
     #[Assert\NotNull]
-    private $executionTime;
+    #[Assert\PositiveOrZero]
+    private int $executionTime;
 
     public function getId(): ?int
     {
@@ -112,7 +88,7 @@ class Activity
         return $this->mavenKey;
     }
 
-    public function setMavenKey(string $mavenKey): static
+    public function setMavenKey(string $mavenKey): self
     {
         $this->mavenKey = $mavenKey;
 
@@ -124,7 +100,7 @@ class Activity
         return $this->projectName;
     }
 
-    public function setProjectName(string $projectName): static
+    public function setProjectName(string $projectName): self
     {
         $this->projectName = $projectName;
 
@@ -136,7 +112,7 @@ class Activity
         return $this->analyseId;
     }
 
-    public function setAnalyseId(string $analyseId): static
+    public function setAnalyseId(string $analyseId): self
     {
         $this->analyseId = $analyseId;
 
@@ -148,7 +124,7 @@ class Activity
         return $this->status;
     }
 
-    public function setStatus(string $status): static
+    public function setStatus(string $status): self
     {
         $this->status = $status;
 
@@ -160,7 +136,7 @@ class Activity
         return $this->submitterLogin;
     }
 
-    public function setSubmitterLogin(string $submitterLogin): static
+    public function setSubmitterLogin(string $submitterLogin): self
     {
         $this->submitterLogin = $submitterLogin;
 
@@ -172,7 +148,7 @@ class Activity
         return $this->submittedAt;
     }
 
-    public function setSubmittedAt(\DateTimeImmutable $submittedAt): static
+    public function setSubmittedAt(\DateTimeImmutable $submittedAt): self
     {
         $this->submittedAt = $submittedAt;
 
@@ -184,7 +160,7 @@ class Activity
         return $this->startedAt;
     }
 
-    public function setStartedAt(\DateTimeImmutable $startedAt): static
+    public function setStartedAt(\DateTimeImmutable $startedAt): self
     {
         $this->startedAt = $startedAt;
 
@@ -196,7 +172,7 @@ class Activity
         return $this->executedAt;
     }
 
-    public function setExecutedAt(\DateTimeImmutable $executedAt): static
+    public function setExecutedAt(\DateTimeImmutable $executedAt): self
     {
         $this->executedAt = $executedAt;
 
@@ -208,7 +184,7 @@ class Activity
         return $this->executionTime;
     }
 
-    public function setExecutionTime(int $executionTime): static
+    public function setExecutionTime(int $executionTime): self
     {
         $this->executionTime = $executionTime;
 
