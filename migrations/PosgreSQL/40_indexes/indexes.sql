@@ -187,6 +187,24 @@ CREATE INDEX IF NOT EXISTS idx_utilisateur_courriel ON ma_moulinette.utilisateur
 CREATE INDEX IF NOT EXISTS idx_utilisateur_nom_prenom ON ma_moulinette.utilisateur (nom, prenom);
 CREATE INDEX IF NOT EXISTS idx_utilisateur_actif ON ma_moulinette.utilisateur (actif);
 
+-- user_agent_analysis
+
+CREATE INDEX IF NOT EXISTS idx_analysis_device_type ON ma_moulinette.user_agent_analysis(device_type);
+CREATE INDEX IF NOT EXISTS idx_analysis_os_name ON ma_moulinette.user_agent_analysis(os_name);
+CREATE INDEX IF NOT EXISTS idx_analysis_browser_name ON ma_moulinette.user_agent_analysis(browser_name);
+CREATE INDEX IF NOT EXISTS idx_analysis_is_bot ON ma_moulinette.user_agent_analysis(is_bot);
+CREATE INDEX IF NOT EXISTS idx_analysis_created_at ON ma_moulinette.user_agent_analysis(created_at);
+CREATE INDEX IF NOT EXISTS idx_analysis_event_type ON ma_moulinette.user_agent_analysis(event_type);
+CREATE INDEX IF NOT EXISTS idx_analysis_session_id ON ma_moulinette.user_agent_analysis(session_id);
+
+--- user_agent_event
+
+CREATE INDEX idx_processing_status ON ma_moulinette.user_agent_event(processing_status);
+CREATE INDEX idx_event_type ON ma_moulinette.user_agent_event(event_type);
+CREATE INDEX user_agent_event_created_at_idx ON ma_moulinette.user_agent_event(created_at);
+CREATE INDEX idx_user_id ON ma_moulinette.user_agent_event(user_id);
+CREATE INDEX idx_session_id ON ma_moulinette.user_agent_event(session_id);
+
 -- ===============================================
 -- INDEXES: ma_moulinette.batch_profiling
 -- ===============================================

@@ -21,7 +21,6 @@ REVOKE ALL ON SCHEMA ma_moulinette FROM PUBLIC;
 GRANT USAGE ON SCHEMA ma_moulinette TO db_user;
 GRANT CREATE ON SCHEMA ma_moulinette TO db_user;
 
-
 ------------------------------------------------------------
 -- 2. Droits sur toutes les tables existantes
 ------------------------------------------------------------
@@ -40,7 +39,6 @@ GRANT USAGE, SELECT, UPDATE ON ALL SEQUENCES IN SCHEMA ma_moulinette TO db_user;
 ALTER DEFAULT PRIVILEGES IN SCHEMA ma_moulinette
     GRANT USAGE, SELECT, UPDATE ON SEQUENCES TO db_user;
 
-
 ------------------------------------------------------------
 -- 4. Droits sur les fonctions (si un jour tu en ajoutes)
 ------------------------------------------------------------
@@ -49,9 +47,8 @@ GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA ma_moulinette TO db_user;
 ALTER DEFAULT PRIVILEGES IN SCHEMA ma_moulinette
     GRANT EXECUTE ON FUNCTIONS TO db_user;
 
-
 ------------------------------------------------------------
--- 5. En bonus
+-- 5. Blocage de public
 ------------------------------------------------------------
 -- Empêcher PUBLIC d'accéder par erreur
 REVOKE ALL PRIVILEGES ON ALL TABLES    IN SCHEMA ma_moulinette FROM PUBLIC;

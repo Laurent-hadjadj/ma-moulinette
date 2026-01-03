@@ -618,6 +618,42 @@ COMMENT ON COLUMN ma_moulinette.utilisateur.date_modification IS 'Date de modifi
 COMMENT ON COLUMN ma_moulinette.utilisateur.date_enregistrement IS 'Date de création';
 
 -- ============================================
+-- TABLE user_agent_analysis
+-- ============================================
+
+COMMENT ON TABLE ma_moulinette.user_agent_analysis IS 'Table persistante contenant les résultats consolidés de l’analyse des User-Agent pour les statistiques.';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.id IS 'Identifiant unique de l’analyse User-Agent';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.user_agent_event_id IS 'Référence vers l’événement source analysé';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.device_type IS 'Type d’appareil détecté (desktop, mobile, tablet…)';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.os_name IS 'Nom du système d’exploitation';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.os_version IS 'Version du système d’exploitation';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.browser_name IS 'Nom du navigateur';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.browser_version IS 'Version du navigateur';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.is_bot IS 'Indique si le client est identifié comme bot';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.detector_version IS 'Version du moteur Matomo DeviceDetector';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.event_type IS 'Type fonctionnel de l’événement déclencheur (PROMPT, STATS, LOGOUT, etc.)';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.url IS 'URL ou chemin déclencheur de l’événement';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.session_id IS 'Identifiant de session PHP associé à l’événement';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.created_at IS 'Date de création de l’analyse';
+
+-- ============================================
+-- TABLE user_agent_event
+-- ============================================
+
+COMMENT ON TABLE ma_moulinette.user_agent_event IS 'Table de collecte des User-Agent.';
+COMMENT ON COLUMN ma_moulinette.user_agent_event.id IS 'Identifiant unique de l’événement User-Agent';
+COMMENT ON COLUMN ma_moulinette.user_agent_event.event_type IS 'Type fonctionnel de l’événement déclencheur';
+COMMENT ON COLUMN ma_moulinette.user_agent_event.url IS 'URL ou path déclencheur de l’événement';
+COMMENT ON COLUMN ma_moulinette.user_agent_event.user_agent IS 'User-Agent HTTP brut fourni par le client';
+COMMENT ON COLUMN ma_moulinette.user_agent_event.session_id IS 'Identifiant de session PHP si existant';
+COMMENT ON COLUMN ma_moulinette.user_agent_event.user_id IS 'Identifiant de l’utilisateur authentifié';
+COMMENT ON COLUMN ma_moulinette.user_agent_event.auth_state IS 'État d’authentification lors de l’événement';
+COMMENT ON COLUMN ma_moulinette.user_agent_event.processing_status IS 'Statut de traitement par le batch d’analyse';
+COMMENT ON COLUMN ma_moulinette.user_agent_event.ip_hash IS 'Hash SHA-256 de l’adresse IP client';
+COMMENT ON COLUMN ma_moulinette.user_agent_event.created_at IS 'Date de création de l’événement';
+COMMENT ON COLUMN ma_moulinette.user_agent_event.processed_at IS 'Date de traitement de l’événement';
+
+-- ============================================
 -- VIEW vw_batch_profiling_stats
 -- ============================================
 COMMENT ON VIEW ma_moulinette.vw_batch_profiling_stats IS
