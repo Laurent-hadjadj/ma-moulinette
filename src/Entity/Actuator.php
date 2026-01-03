@@ -21,61 +21,205 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ActuatorRepository::class)]
-#[ORM\Table(name: "actuator", schema: "ma_moulinette")]
+#[ORM\Table(
+    name: 'actuator',
+    schema: 'ma_moulinette',
+    options: ['comment' => 'Configuration d’accès aux endpoints Actuator']
+)]
 #[ORM\HasLifecycleCallbacks]
 class Actuator
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER, nullable: false, options: ['comment' => 'Identifiant unique de la table'])]
-    private $id;
+    #[ORM\Column(
+        name: 'id',
+        type: Types::INTEGER,
+        options: ['comment' => 'Identifiant unique de la table actuator']
+    )]
+    private ?int $id = null;
 
-    #[ORM\Column(type: Types::STRING, length: 255, nullable: false, options: ['comment' => 'Clé Maven du projet'])]
+    #[ORM\Column(
+        name: 'maven_key',
+        type: Types::STRING,
+        length: 255,
+        options: ['comment' => 'Clé Maven du projet']
+    )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 255, maxMessage: "La clé Maven ne doit pas dépasser 255 caractères.")]
-    private $mavenKey;
+    #[Assert\Length(max: 255)]
+    private string $mavenKey;
 
-    #[ORM\Column(type: Types::STRING, length: 128, nullable: false, options: ['comment' => "Nom de l'application."])]
+    #[ORM\Column(
+        name: 'nom_application',
+        type: Types::STRING,
+        length: 128,
+        options: ['comment' => "Nom de l'application"]
+    )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 128, maxMessage: "Le nom de l'application ne doit pas dépasser 128 caractères.")]
-    private $nomApplication;
+    #[Assert\Length(max: 128)]
+    private string $nomApplication;
 
-    #[ORM\Column(type: Types::STRING, length: 255, nullable: false, options: ['comment' => 'URL de base du serveur.'])]
+    #[ORM\Column(
+        name: 'url',
+        type: Types::STRING,
+        length: 255,
+        options: ['comment' => 'URL de base du serveur']
+    )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 255, maxMessage: "L'URL ne doit pas dépasser 255 caractères.")]
-    private $url;
+    #[Assert\Length(max: 255)]
+    #[Assert\Url]
+    private string $url;
 
-    #[ORM\Column(type: Types::STRING, length: 128, nullable: true, options: ['comment' => "Nom de l'utilisateur Actuator"])]
-    #[Assert\Length(max: 128, maxMessage: "Le nom de l'utilisateur Actuator ne doit pas dépasser 128 caractères.")]
+    #[ORM\Column(
+        name: 'actuator_user',
+        type: Types::STRING,
+        length: 128,
+        nullable: true,
+        options: ['comment' => "Nom de l'utilisateur Actuator"]
+    )]
+    #[Assert\Length(max: 128)]
     private ?string $actuatorUser = null;
 
-    #[ORM\Column(type: Types::STRING, length: 128, nullable: true, options: ['comment' => "Mot de passe de l'utilisateur Actuator"])]
-    #[Assert\Length(max: 128, maxMessage: "Le mot de passe de l'utilisateur Actuator ne doit pas dépasser 128 caractères.")]
+    #[ORM\Column(
+        name: 'actuator_password',
+        type: Types::STRING,
+        length: 255,
+        nullable: true,
+        options: ['comment' => "Mot de passe Actuator chiffré"]
+    )]
     private ?string $actuatorPassword = null;
 
-    #[ORM\Column(type: Types::STRING, length: 128, nullable: false, options: ['comment' => "Prénom et nom de l'utilisateur"])]
+    #[ORM\Column(
+        name: 'password_encrypted',
+        type: Types::BOOLEAN,
+        options: [
+            'default' => false,
+            'comment' => 'Indique si le mot de passe est chiffré']
+    )]
+    private bool $passwordEncrypted = false;
+
+    #[ORM\Column(
+        name: 'personne',
+        type: Types::STRING,
+        length: 128,
+        options: ['comment' => "Prénom et nom du contact"]
+    )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 128, maxMessage: "Le prénom et nom de l'utilisateur ne doit pas dépasser 128 caractères.")]
-    private ?string $personne;
+    #[Assert\Length(max: 128)]
+    private string $personne;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => 'Date de la dernière modification.'])]
-    private ?\DateTimeInterface $dateModification = null;
+    #[ORM\Column(
+        name: 'date_modification',
+        type: Types::DATETIME_MUTABLE,
+        nullable: true,
+        options: ['comment' => 'Date de la dernière modification']
+    )]
+    private ?\DateTime $dateModification = null;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false, options: ['comment' => 'Date d’enregistrement.'])]
+    #[ORM\Column(
+        name: 'date_enregistrement',
+        type: Types::DATETIMETZ_IMMUTABLE,
+        options: ['comment' => 'Date et heure d’enregistrement']
+    )]
     private \DateTimeImmutable $dateEnregistrement;
 
     /**
      * @var Collection<int, ActuatorInfo>
-    */
-    #[ORM\OneToMany(mappedBy: "actuator", targetEntity: ActuatorInfo::class, orphanRemoval: true, cascade: ["persist"])]
+     */
+    #[ORM\OneToMany(
+        mappedBy: 'actuator',
+        targetEntity: ActuatorInfo::class,
+        orphanRemoval: true,
+        cascade: ['persist']
+    )]
     #[Assert\Count(min: 1)]
     #[Assert\Valid]
-    private $actuatorInfo;
+    private Collection $actuatorInfo;
 
     public function __construct()
     {
         $this->actuatorInfo = new ArrayCollection();
         $this->dateEnregistrement = new \DateTimeImmutable();
+    }
+
+    #[ORM\PreUpdate]
+    public function onUpdate(): void
+    {
+        $this->dateModification = new \DateTime();
+    }
+
+
+    // ===============================
+    // Lifecycle callbacks
+    // ===============================
+
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
+    public function encryptPassword(): void
+    {
+        if ($this->actuatorPassword === null || $this->passwordEncrypted) {
+            return;
+        }
+
+        $this->actuatorPassword = self::encrypt(
+            $this->actuatorPassword,
+            $_ENV['ACTUATOR_SECRET_KEY']
+        );
+
+        $this->passwordEncrypted = true;
+    }
+
+    // ===============================
+    // Crypto helpers
+    // ===============================
+
+    private static function encrypt(string $plain, string $key): string
+    {
+        $key = base64_decode(str_replace('base64:', '', $key));
+        $iv = random_bytes(openssl_cipher_iv_length('aes-256-cbc'));
+
+        $encrypted = openssl_encrypt(
+            $plain,
+            'aes-256-cbc',
+            $key,
+            OPENSSL_RAW_DATA,
+            $iv
+        );
+
+        return base64_encode($iv . $encrypted);
+    }
+
+    private static function decrypt(string $cipher, string $key): string
+    {
+        $key = base64_decode(str_replace('base64:', '', $key));
+        $data = base64_decode($cipher);
+
+        $ivLength = openssl_cipher_iv_length('aes-256-cbc');
+        $iv = substr($data, 0, $ivLength);
+        $encrypted = substr($data, $ivLength);
+
+        return openssl_decrypt(
+            $encrypted,
+            'aes-256-cbc',
+            $key,
+            OPENSSL_RAW_DATA,
+            $iv
+        );
+    }
+
+    // ===============================
+    // Getter sécurisé
+    // ===============================
+
+    public function getActuatorPasswordDecrypted(): ?string
+    {
+        if ($this->actuatorPassword === null || !$this->passwordEncrypted) {
+            return $this->actuatorPassword;
+        }
+
+        return self::decrypt(
+            $this->actuatorPassword,
+            $_ENV['ACTUATOR_SECRET_KEY']
+        );
     }
 
     public function setId(int $id): self
@@ -94,7 +238,7 @@ class Actuator
         return $this->mavenKey;
     }
 
-    public function setMavenKey(string $mavenKey): static
+    public function setMavenKey(string $mavenKey): self
     {
         $this->mavenKey = $mavenKey;
 
@@ -106,7 +250,7 @@ class Actuator
         return $this->nomApplication;
     }
 
-    public function setNomApplication(string $nomApplication): static
+    public function setNomApplication(string $nomApplication): self
     {
         $this->nomApplication = $nomApplication;
 
@@ -118,7 +262,7 @@ class Actuator
         return $this->url;
     }
 
-    public function setUrl(string $url): static
+    public function setUrl(string $url): self
     {
         $this->url = $url;
 
@@ -130,7 +274,7 @@ class Actuator
         return $this->actuatorUser;
     }
 
-    public function setActuatorUser(?string $actuatorUser): static
+    public function setActuatorUser(?string $actuatorUser): self
     {
         $this->actuatorUser = $actuatorUser;
 
@@ -142,7 +286,7 @@ class Actuator
         return $this->actuatorPassword;
     }
 
-    public function setActuatorPassword(?string $actuatorPassword): static
+    public function setActuatorPassword(?string $actuatorPassword): self
     {
         $this->actuatorPassword = $actuatorPassword;
 
@@ -154,7 +298,7 @@ class Actuator
         return $this->personne;
     }
 
-    public function setPersonne(string $personne): static
+    public function setPersonne(string $personne): self
     {
         $this->personne = $personne;
 
@@ -166,17 +310,11 @@ class Actuator
         return $this->dateModification;
     }
 
-    public function setDateModification(?\DateTimeInterface $dateModification): static
+    public function setDateModification(?\DateTimeInterface $dateModification): self
     {
         $this->dateModification = $dateModification;
 
         return $this;
-    }
-
-    #[ORM\PreUpdate]
-    public function preUpdate(): void
-    {
-        $this->dateModification = new \DateTimeImmutable();
     }
 
     public function getDateEnregistrement(): ?\DateTimeImmutable
@@ -191,7 +329,7 @@ class Actuator
 
     /**
      * @return Collection<int, ActuatorInfo>
-    */
+     */
     public function getActuatorInfo(): Collection
     {
         return $this->actuatorInfo;
@@ -200,7 +338,7 @@ class Actuator
     public function addActuatorInfo(ActuatorInfo $actuatorInfo): self
     {
         if (!$this->actuatorInfo->contains($actuatorInfo)) {
-            $this->actuatorInfo[] = $actuatorInfo;
+            $this->actuatorInfo->add($actuatorInfo);
             $actuatorInfo->setActuator($this);
         }
 
@@ -209,12 +347,8 @@ class Actuator
 
     public function removeActuatorInfo(ActuatorInfo $actuatorInfo): self
     {
-        if ($this->actuatorInfo->removeElement($actuatorInfo)) {
-            // set the owning side to null (unless already changed)
-            if ($actuatorInfo->getActuator() === $this) {
-                $actuatorInfo->setActuator(null);
-            }
-        }
+        // orphanRemoval=true ⇒ suppression automatique
+        $this->actuatorInfo->removeElement($actuatorInfo);
 
         return $this;
     }
