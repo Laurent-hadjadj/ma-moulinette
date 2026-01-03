@@ -19,120 +19,228 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AnomalieDetailsRepository::class)]
-#[ORM\Table(name: "anomalie_details", schema: "ma_moulinette")]
+#[ORM\Table(
+    name: 'anomalie_details',
+    schema: 'ma_moulinette',
+    options: ['comment' => 'Détail des anomalies par type et sévérité']
+)]
 class AnomalieDetails
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Identifiant unique pour la table Anomalie Détails'])]
-    private $id;
+    #[ORM\Column(
+        name: 'id',
+        type: Types::INTEGER,
+        options: ['comment' => 'Identifiant unique pour la table anomalie_details']
+    )]
+    private ?int $id = null;
 
-    #[ORM\Column(type: Types::STRING, length: 255, nullable: false,
-        options: ['comment' => 'Clé Maven du projet'])]
+    #[ORM\Column(
+        name: 'maven_key',
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
+        options: ['comment' => 'Clé Maven du projet']
+    )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères.")]
-    private $mavenKey;
+    #[Assert\Length(max: 255)]
+    private string $mavenKey;
 
-    #[ORM\Column(type: Types::STRING, length: 128, nullable: false,
-        options: ['comment' => 'Nom '])]
+    #[ORM\Column(
+        name: 'name',
+        type: Types::STRING,
+        length: 128,
+        nullable: false,
+        options: ['comment' => 'Nom de référence de l’anomalie']
+    )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 128,
-        maxMessage: "Le nom ne doit pas dépasser 128 caractères.")]
-    private $name;
+    #[Assert\Length(max: 128)]
+    private string $name;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Nombre de bugs bloquants'])]
+    // ===============================
+    // Bugs
+    // ===============================
+
+    #[ORM\Column(
+        name: 'bug_blocker',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre de bugs bloquants']
+    )]
+    #[Assert\PositiveOrZero]
+    private int $bugBlocker;
+
+    #[ORM\Column(
+        name: 'bug_critical', 
+        type: Types::INTEGER, 
+        nullable: false,
+        options: ['comment' => 'Nombre de bugs critiques']
+    )]
+    #[Assert\PositiveOrZero]
+    private int $bugCritical;
+
+    #[ORM\Column(
+        name: 'bug_major', 
+        type: Types::INTEGER, 
+        nullable: false,
+        options: ['comment' => 'Nombre de bugs majeurs']
+    )]
+    #[Assert\PositiveOrZero]
+    private int $bugMajor;
+
+    #[ORM\Column(
+        name: 'bug_minor', 
+        type: Types::INTEGER, 
+        nullable: false,
+        options: ['comment' => 'Nombre de bugs mineurs']
+    )]
+    #[Assert\PositiveOrZero]
+    private int $bugMinor;
+
+    #[ORM\Column(
+        name: 'bug_info', 
+        type: Types::INTEGER, 
+        nullable: false,
+        options: ['comment' => 'Nombre de bugs d’information']
+    )]
+    #[Assert\PositiveOrZero]
+    private int $bugInfo;
+
+    // ===============================
+    // Vulnerabilities
+    // ===============================
+
+    #[ORM\Column(
+        name: 'vulnerability_blocker', 
+        type: Types::INTEGER, 
+        nullable: false,
+        options: ['comment' => 'Vulnérabilités bloquantes']
+    )]
+    #[Assert\PositiveOrZero]
+    private int $vulnerabilityBlocker;
+
+    #[ORM\Column(
+        name: 'vulnerability_critical', 
+        type: Types::INTEGER, 
+        nullable: false,
+        options: ['comment' => 'Vulnérabilités critiques']
+    )]
+    #[Assert\PositiveOrZero]
+    private int $vulnerabilityCritical;
+
+    #[ORM\Column(
+        name: 'vulnerability_major', 
+        type: Types::INTEGER, 
+        nullable: false,
+        options: ['comment' => 'Vulnérabilités majeures']
+    )]
+    #[Assert\PositiveOrZero]
+    private int $vulnerabilityMajor;
+
+    #[ORM\Column(
+        name: 'vulnerability_minor', 
+        type: Types::INTEGER, 
+        nullable: false,
+        options: ['comment' => 'Vulnérabilités mineures']
+    )]
+    #[Assert\PositiveOrZero]
+    private int $vulnerabilityMinor;
+
+    #[ORM\Column(
+        name: 'vulnerability_info', 
+        type: Types::INTEGER, 
+        nullable: false,
+        options: ['comment' => 'Vulnérabilités d’information']
+    )]
+    #[Assert\PositiveOrZero]
+    private int $vulnerabilityInfo;
+
+    // ===============================
+    // Code Smells
+    // ===============================
+
+    #[ORM\Column(
+        name: 'code_smell_blocker', 
+        type: Types::INTEGER, 
+        nullable: false,
+        options: ['comment' => 'Mauvaises pratiques bloquantes']
+    )]
+    #[Assert\PositiveOrZero]
+    private int $codeSmellBlocker;
+
+    #[ORM\Column(
+        name: 'code_smell_critical', 
+        type: Types::INTEGER,
+        nullable: false, 
+        options: ['comment' => 'Mauvaises pratiques critiques']
+        )]
+    #[Assert\PositiveOrZero]
+    private int $codeSmellCritical;
+
+    #[ORM\Column(
+        name: 'code_smell_major', 
+        type: Types::INTEGER, 
+        nullable: false,
+        options: ['comment' => 'Mauvaises pratiques majeures']
+    )]
+    #[Assert\PositiveOrZero]
+    private int $codeSmellMajor;
+
+    #[ORM\Column(
+        name: 'code_smell_minor', 
+        type: Types::INTEGER, 
+        nullable: false,
+        options: ['comment' => 'Mauvaises pratiques mineures']
+    )]
+    #[Assert\PositiveOrZero]
+    private int $codeSmellMinor;
+
+    #[ORM\Column(
+        name: 'code_smell_info', 
+        type: Types::INTEGER, 
+        nullable: false,
+        options: ['comment' => 'Mauvaises pratiques d’information']
+    )]
+    #[Assert\PositiveOrZero]
+    private int $codeSmellInfo;
+
+    // ===============================
+    // Meta
+    // ===============================
+
+    #[ORM\Column(
+        name: 'mode_collecte',
+        type: Types::STRING,
+        length: 32,
+        nullable: true,
+        options: ['comment' => 'Mode de collecte : COLLECTE / TRAITEMENT_MANUEL / TRAITEMENT_AUTOMATIQUE']
+    )]
+    #[Assert\Length(max: 32)]
+    private ?string $modeCollecte = null;
+
+    #[ORM\Column(
+        name: 'utilisateur_collecte',
+        type: Types::STRING,
+        length: 320,
+        nullable: true,
+        options: ['comment' => 'Compte utilisateur ayant réalisé la collecte']
+    )]
+    #[Assert\Length(max: 320)]
+    private ?string $utilisateurCollecte = null;
+
+    #[ORM\Column(
+        name: 'date_enregistrement',
+        type: Types::DATETIMETZ_IMMUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date et heure d’enregistrement des détails de l’anomalie']
+    )]
     #[Assert\NotNull]
-    private $bugBlocker;
+    private \DateTimeImmutable $dateEnregistrement;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Nombre de bugs critiques'])]
-    #[Assert\NotNull]
-    private $bugCritical;
-
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-            options: ['comment' => 'Nombre de bugs d’information'])]
-    #[Assert\NotNull]
-    private $bugInfo;
-
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Nombre de bugs majeurs'])]
-    #[Assert\NotNull]
-    private $bugMajor;
-
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Nombre de bugs mineurs'])]
-    #[Assert\NotNull]
-    private $bugMinor;
-
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Nombre de vulnérabilités bloquantes'])]
-    #[Assert\NotNull]
-    private $vulnerabilityBlocker;
-
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Nombre de vulnérabilités critiques'])]
-    #[Assert\NotNull]
-    private $vulnerabilityCritical;
-
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Nombre de vulnérabilités d’information'])]
-    #[Assert\NotNull]
-    private $vulnerabilityInfo;
-
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Nombre de vulnérabilités majeures'])]
-    #[Assert\NotNull]
-    private $vulnerabilityMajor;
-
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Nombre de vulnérabilités mineures'])]
-    #[Assert\NotNull]
-    private $vulnerabilityMinor;
-
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Nombre de mauvaises pratiques bloquantes'])]
-    #[Assert\NotNull]
-    private $codeSmellBlocker;
-
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Nombre de mauvaises pratiques critiques'])]
-    #[Assert\NotNull]
-    private $codeSmellCritical;
-
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Nombre de mauvaises pratiques d’information'])]
-    #[Assert\NotNull]
-    private $codeSmellInfo;
-
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Nombre de mauvaises pratiques majeures'])]
-    #[Assert\NotNull]
-    private $codeSmellMajor;
-
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Nombre de mauvaises pratiques mineures'])]
-    #[Assert\NotNull]
-    private $codeSmellMinor;
-
-    #[ORM\Column(type: Types::STRING, length: 32, nullable: true,
-    options: ['comment' => 'Mode de collecte : [COLLECTE] | [TRAITEMENT MANUEL] | [TRAITEMENT AUTOMATIQUE]'])]
-    #[Assert\Length(max: 32,
-        maxMessage: "Le mode de collecte ne peut pas dépasser 32 caractères.")]
-    private ?string $modeCollecte=null;
-
-    #[ORM\Column(type: Types::STRING, length: 320, nullable: true,
-    options: ['comment' => "Compte de l'utilisateur qui a réalisé la collecte."])]
-    #[Assert\Length(max: 320,
-        maxMessage: "Le compte de l’utilisateur ne peut pas dépasser 320 caractères.")]
-    private ?string $utilisateurCollecte=null;
-
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
-        options: ['comment' => 'Date d’enregistrement des détails de l’anomalie'])]
-    #[Assert\NotNull]
-    private $dateEnregistrement;
+    public function __construct()
+    {
+        $this->dateEnregistrement = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -149,7 +257,7 @@ class AnomalieDetails
         return $this->mavenKey;
     }
 
-    public function setMavenKey(string $mavenKey): static
+    public function setMavenKey(string $mavenKey): self
     {
         $this->mavenKey = $mavenKey;
 
@@ -161,7 +269,7 @@ class AnomalieDetails
         return $this->name;
     }
 
-    public function setName(string $name): static
+    public function setName(string $name): self
     {
         $this->name = $name;
 
@@ -173,7 +281,7 @@ class AnomalieDetails
         return $this->bugBlocker;
     }
 
-    public function setBugBlocker(int $bugBlocker): static
+    public function setBugBlocker(int $bugBlocker): self
     {
         $this->bugBlocker = $bugBlocker;
 
@@ -185,7 +293,7 @@ class AnomalieDetails
         return $this->bugCritical;
     }
 
-    public function setBugCritical(int $bugCritical): static
+    public function setBugCritical(int $bugCritical): self
     {
         $this->bugCritical = $bugCritical;
 
@@ -197,7 +305,7 @@ class AnomalieDetails
         return $this->bugInfo;
     }
 
-    public function setBugInfo(int $bugInfo): static
+    public function setBugInfo(int $bugInfo): self
     {
         $this->bugInfo = $bugInfo;
 
@@ -209,7 +317,7 @@ class AnomalieDetails
         return $this->bugMajor;
     }
 
-    public function setBugMajor(int $bugMajor): static
+    public function setBugMajor(int $bugMajor): self
     {
         $this->bugMajor = $bugMajor;
 
@@ -221,7 +329,7 @@ class AnomalieDetails
         return $this->bugMinor;
     }
 
-    public function setBugMinor(int $bugMinor): static
+    public function setBugMinor(int $bugMinor): self
     {
         $this->bugMinor = $bugMinor;
 
@@ -233,7 +341,7 @@ class AnomalieDetails
         return $this->vulnerabilityBlocker;
     }
 
-    public function setVulnerabilityBlocker(int $vulnerabilityBlocker): static
+    public function setVulnerabilityBlocker(int $vulnerabilityBlocker): self
     {
         $this->vulnerabilityBlocker = $vulnerabilityBlocker;
 
@@ -245,7 +353,7 @@ class AnomalieDetails
         return $this->vulnerabilityCritical;
     }
 
-    public function setVulnerabilityCritical(int $vulnerabilityCritical): static
+    public function setVulnerabilityCritical(int $vulnerabilityCritical): self
     {
         $this->vulnerabilityCritical = $vulnerabilityCritical;
 
@@ -257,7 +365,7 @@ class AnomalieDetails
         return $this->vulnerabilityInfo;
     }
 
-    public function setVulnerabilityInfo(int $vulnerabilityInfo): static
+    public function setVulnerabilityInfo(int $vulnerabilityInfo): self
     {
         $this->vulnerabilityInfo = $vulnerabilityInfo;
 
@@ -269,7 +377,7 @@ class AnomalieDetails
         return $this->vulnerabilityMajor;
     }
 
-    public function setVulnerabilityMajor(int $vulnerabilityMajor): static
+    public function setVulnerabilityMajor(int $vulnerabilityMajor): self
     {
         $this->vulnerabilityMajor = $vulnerabilityMajor;
 
@@ -281,7 +389,7 @@ class AnomalieDetails
         return $this->vulnerabilityMinor;
     }
 
-    public function setVulnerabilityMinor(int $vulnerabilityMinor): static
+    public function setVulnerabilityMinor(int $vulnerabilityMinor): self
     {
         $this->vulnerabilityMinor = $vulnerabilityMinor;
 
@@ -293,7 +401,7 @@ class AnomalieDetails
         return $this->codeSmellBlocker;
     }
 
-    public function setCodeSmellBlocker(int $codeSmellBlocker): static
+    public function setCodeSmellBlocker(int $codeSmellBlocker): self
     {
         $this->codeSmellBlocker = $codeSmellBlocker;
 
@@ -305,7 +413,7 @@ class AnomalieDetails
         return $this->codeSmellCritical;
     }
 
-    public function setCodeSmellCritical(int $codeSmellCritical): static
+    public function setCodeSmellCritical(int $codeSmellCritical): self
     {
         $this->codeSmellCritical = $codeSmellCritical;
 
@@ -317,7 +425,7 @@ class AnomalieDetails
         return $this->codeSmellInfo;
     }
 
-    public function setCodeSmellInfo(int $codeSmellInfo): static
+    public function setCodeSmellInfo(int $codeSmellInfo): self
     {
         $this->codeSmellInfo = $codeSmellInfo;
 
@@ -329,7 +437,7 @@ class AnomalieDetails
         return $this->codeSmellMajor;
     }
 
-    public function setCodeSmellMajor(int $codeSmellMajor): static
+    public function setCodeSmellMajor(int $codeSmellMajor): self
     {
         $this->codeSmellMajor = $codeSmellMajor;
 
@@ -341,7 +449,7 @@ class AnomalieDetails
         return $this->codeSmellMinor;
     }
 
-    public function setCodeSmellMinor(int $codeSmellMinor): static
+    public function setCodeSmellMinor(int $codeSmellMinor): self
     {
         $this->codeSmellMinor = $codeSmellMinor;
 
@@ -353,7 +461,7 @@ class AnomalieDetails
         return $this->dateEnregistrement;
     }
 
-    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
+    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): self
     {
         $this->dateEnregistrement = $dateEnregistrement;
 
@@ -365,7 +473,7 @@ class AnomalieDetails
         return $this->modeCollecte;
     }
 
-    public function setModeCollecte(?string $modeCollecte): static
+    public function setModeCollecte(?string $modeCollecte): self
     {
         $this->modeCollecte = $modeCollecte;
 
@@ -377,7 +485,7 @@ class AnomalieDetails
         return $this->utilisateurCollecte;
     }
 
-    public function setUtilisateurCollecte(?string $utilisateurCollecte): static
+    public function setUtilisateurCollecte(?string $utilisateurCollecte): self
     {
         $this->utilisateurCollecte = $utilisateurCollecte;
 
