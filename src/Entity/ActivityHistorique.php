@@ -19,59 +19,104 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ActivityHistoriqueRepository::class)]
-#[ORM\Table(name: "activity_historique", schema: "ma_moulinette")]
+#[ORM\Table(name: 'activity_historique', schema: 'ma_moulinette',
+    options: ['comment' => 'Table d’historisation des statistiques d’activité']
+)]
 class ActivityHistorique
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Identifiant unique de la table historique activité'])]
-    private int $id;
+    #[ORM\Column(
+        name: 'id',
+        type: Types::INTEGER,
+        options: ['comment' => 'Identifiant unique de la table historique activité']
+    )]
+    private ?int $id = null;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Année'])]
+    #[ORM\Column(
+        name: 'year',
+        type: Types::INTEGER,
+        options: ['comment' => 'Année de référence des statistiques']
+    )]
     #[Assert\NotNull]
+    #[Assert\Positive]
     private int $year;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Nombre de jours'])]
+    #[ORM\Column(
+        name: 'day',
+        type: Types::INTEGER,
+        options: ['comment' => 'Nombre de jour']
+    )]
     #[Assert\NotNull]
+    #[Assert\Range(min: 1, max: 366)]
     private int $day;
 
-    #[ORM\Column(name: '"analyse"', type: Types::INTEGER, nullable: false,
-        options: ['comment' => "Nombre d'analyses"])]
+    #[ORM\Column(
+        name: '"analyse"',
+        type: Types::INTEGER,
+        options: ['comment' => 'Nombre total d’analyses']
+    )]
     #[Assert\NotNull]
+    #[Assert\PositiveOrZero]
     private int $analyse;
 
-    #[ORM\Column(type: Types::FLOAT, nullable: false,
-        options: ['comment' => 'Moyenne des analyses'])]
+    #[ORM\Column(
+        name: 'analyse_average',
+        type: Types::FLOAT,
+        options: ['comment' => 'Moyenne du nombre d’analyses']
+    )]
     #[Assert\NotNull]
+    #[Assert\PositiveOrZero]
     private float $analyseAverage;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Nombre de réussites'])]
+    #[ORM\Column(
+        name: 'success',
+        type: Types::INTEGER,
+        options: ['comment' => 'Nombre de traitements réussis']
+    )]
     #[Assert\NotNull]
+    #[Assert\PositiveOrZero]
     private int $success;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => "Nombre d'échecs"])]
+    #[ORM\Column(
+        name: 'failed',
+        type: Types::INTEGER,
+        options: ['comment' => 'Nombre de traitements en échec']
+    )]
     #[Assert\NotNull]
+    #[Assert\PositiveOrZero]
     private int $failed;
 
-    #[ORM\Column(type: Types::FLOAT, nullable: false,
-        options: ['comment' => 'Taux de réussite'])]
+    #[ORM\Column(
+        name: 'success_rate',
+        type: Types::FLOAT,
+        options: ['comment' => 'Taux de réussite en pourcentage']
+    )]
     #[Assert\NotNull]
+    #[Assert\Range(min: 0, max: 100)]
     private float $successRate;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Temps maximal'])]
+    #[ORM\Column(
+        name: 'max_time',
+        type: Types::INTEGER,
+        options: ['comment' => 'Temps maximum de traitement (en secondes)']
+    )]
     #[Assert\NotNull]
+    #[Assert\PositiveOrZero]
     private int $maxTime;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
-        options: ['comment' => "Date et heure d'enregistrement"])]
+    #[ORM\Column(
+        name: 'date_enregistrement',
+        type: Types::DATETIMETZ_IMMUTABLE,
+        options: ['comment' => 'Date et heure d’enregistrement des statistiques']
+    )]
     #[Assert\NotNull]
     private \DateTimeImmutable $dateEnregistrement;
+
+    public function __construct()
+    {
+        $this->dateEnregistrement = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -89,7 +134,7 @@ class ActivityHistorique
         return $this->year;
     }
 
-    public function setYear(int $year): static
+    public function setYear(int $year): self
     {
         $this->year = $year;
         return $this;
@@ -100,7 +145,7 @@ class ActivityHistorique
         return $this->day;
     }
 
-    public function setDay(int $day): static
+    public function setDay(int $day): self
     {
         $this->day = $day;
         return $this;
@@ -111,7 +156,7 @@ class ActivityHistorique
         return $this->analyse;
     }
 
-    public function setAnalyse(int $analyse): static
+    public function setAnalyse(int $analyse): self
     {
         $this->analyse = $analyse;
         return $this;
@@ -122,7 +167,7 @@ class ActivityHistorique
         return $this->analyseAverage;
     }
 
-    public function setAnalyseAverage(float $analyseAverage): static
+    public function setAnalyseAverage(float $analyseAverage): self
     {
         $this->analyseAverage = $analyseAverage;
         return $this;
@@ -133,7 +178,7 @@ class ActivityHistorique
         return $this->success;
     }
 
-    public function setSuccess(int $success): static
+    public function setSuccess(int $success): self
     {
         $this->success = $success;
         return $this;
@@ -144,7 +189,7 @@ class ActivityHistorique
         return $this->failed;
     }
 
-    public function setFailed(int $failed): static
+    public function setFailed(int $failed): self
     {
         $this->failed = $failed;
         return $this;
@@ -155,7 +200,7 @@ class ActivityHistorique
         return $this->successRate;
     }
 
-    public function setSuccessRate(float $successRate): static
+    public function setSuccessRate(float $successRate): self
     {
         $this->successRate = $successRate;
         return $this;
@@ -166,7 +211,7 @@ class ActivityHistorique
         return $this->maxTime;
     }
 
-    public function setMaxTime(int $maxTime): static
+    public function setMaxTime(int $maxTime): self
     {
         $this->maxTime = $maxTime;
         return $this;
@@ -177,7 +222,7 @@ class ActivityHistorique
         return $this->dateEnregistrement;
     }
 
-    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
+    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): self
     {
         $this->dateEnregistrement = $dateEnregistrement;
         return $this;
