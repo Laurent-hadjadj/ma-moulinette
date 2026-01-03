@@ -54,7 +54,6 @@ class ClientService
         private ParameterBagInterface $params,
         private LoggerInterface $logger,
     ) {
-        $this->client = $client;
         $this->params = $params;
     }
 
