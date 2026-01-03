@@ -430,7 +430,6 @@ class ApiCollecteController extends AbstractController
             $this->logger->error('[Collecte] ❌ Échec de collecte des menaces OWASP du projet.', [
                 'code' => $owasp['code'],
                 'maven_key' => $data->maven_key,
-                'type' => $data->type,
                 'erreur' => $owasp['erreur'] ?? static::$noSpecify
             ]);
 
