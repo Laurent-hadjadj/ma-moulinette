@@ -20,35 +20,85 @@ use Doctrine\DBAL\Types\Types;
  * [Description ActivityBatchReport]
  */
 #[ORM\Entity]
+#[ORM\Table(name: 'activity_batch_report', schema: 'ma_moulinette',
+    options: ['comment' => 'Rapport d’exécution des traitements batch']
+)]
 #[ORM\Index(name: 'idx_date_enregistrement', columns: ['date_enregistrement'])]
 #[ORM\Index(name: 'idx_task_status', columns: ['task_count', 'task_done', 'page'])]
-#[ORM\Table(name: 'activity_batch_report', schema: "ma_moulinette")]
 class ActivityBatchReport
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER)]
+    #[ORM\Column(
+        name: 'id',
+        type: Types::INTEGER,
+        options: ['comment' => 'Identifiant unique du rapport batch']
+    )]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false)]
+    #[ORM\Column(
+        name: 'date_start',
+        type: Types::DATETIMETZ_IMMUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date et heure de début du traitement batch']
+    )]
     private \DateTimeImmutable $dateStart;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false)]
+    #[ORM\Column(
+        name: 'date_end',
+        type: Types::DATETIMETZ_IMMUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date et heure de fin du traitement batch']
+    )]
     private \DateTimeImmutable $dateEnd;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: false, options: ['default' => 0])]
+    #[ORM\Column(
+        name: 'task_count',
+        type: Types::INTEGER,
+        nullable: false,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre total de tâches à traiter'
+        ]
+    )]
     private int $taskCount = 0;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: false, options: ['default' => 0])]
+    #[ORM\Column(
+        name: 'task_done',
+        type: Types::INTEGER,
+        nullable: false,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de tâches traitées avec succès'
+        ]
+    )]
     private int $taskDone = 0;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: false, options: ['default' => 0])]
+    #[ORM\Column(
+        name: 'page',
+        type: Types::INTEGER,
+        nullable: false,
+        options: [
+            'default' => 0,
+            'comment' => 'Numéro de page ou lot traité'
+        ]
+    )]
     private int $page = 0;
 
-    #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => "Liste des erreurs du traitement."])]
-    private array $lastError = [];
+    #[ORM\Column(
+        name: 'last_error',
+        type: Types::JSON,
+        nullable: true,
+        options: ['comment' => 'Liste des erreurs rencontrées lors du traitement batch']
+    )]
+    private ?array $lastError = null;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false)]
+    #[ORM\Column(
+        name: 'date_enregistrement',
+        type: Types::DATETIMETZ_IMMUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date et heure d’enregistrement du rapport']
+    )]
     private \DateTimeImmutable $dateEnregistrement;
 
     public function __construct()
@@ -57,7 +107,6 @@ class ActivityBatchReport
     }
 
     // Getters et setters pour chaque propriété
-
     public function getId(): ?int
     {
         return $this->id;
