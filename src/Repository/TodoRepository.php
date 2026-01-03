@@ -139,7 +139,7 @@ class TodoRepository extends ServiceEntityRepository
   {
     $sql = "SELECT rule, component, line
             FROM ma_moulinette.todo
-            WHERE maven_key=:maven_key
+            WHERE maven_key = :maven_key
             ORDER BY rule";
     try {
           $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
