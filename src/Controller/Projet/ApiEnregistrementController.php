@@ -111,7 +111,7 @@ class ApiEnregistrementController extends AbstractController
                 'todo' => $data->todo,
                 'logger_info' => $data->logger_info, 'logger_warn' => $data->logger_warn, 'logger_error' => $data->logger_error, 'logger_debug' => $data->logger_debug,
                 'nombre_ligne' => $data->nombre_ligne, 'nombre_ligne_code' => $data->nombre_ligne_code,
-                'files' => $data->files, 'classes' => $data->classes, 'functions' => $data->functions,
+                'nombre_files' => $data->nombre_files, 'nombre_classes' => $data->nombre_classes, 'nombre_functions' => $data->nombre_functions,
                 'coverage' => $data->coverage, 'duplicated_lines_density' => $data->duplicated_lines_density, 'sqale_debt_ratio' => $data->sqale_debt_ratio, 'tests' => $data->tests, 'violations' => $data->violations, 'dette' => $data->dette,
                 'nombre_bug' => $data->nombre_bug, 'nombre_vulnerability' => $data->nombre_vulnerability, 'nombre_code_smell' => $data->nombre_code_smell,
                 'bug_blocker' => $data->bug_blocker, 'bug_critical' => $data->bug_critical,
