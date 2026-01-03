@@ -181,8 +181,13 @@ export const showMessage = function(type, message, technicalDetails = null) {
     const buttonElement = $('#message-button-close');
 
     // Réinitialise les classes d'alerte et le style inline
-    messageElement.removeClass('alert primary secondary success warning hide');
-    buttonElement.removeClass('alert primary secondary success warning');
+    const allowedTypes = ['info', 'warning', 'error', 'critical', 'debug', 'success', 'alert', 'primary', 'secondary'];
+    // Type par défaut si non défini ou invalide
+    const finalType = allowedTypes.includes(type) ? type : 'critical';
+
+    messageElement.removeClass('success alert primary secondary delete notAuthorize info error warning critical debug hide');
+
+    buttonElement.removeClass('success alert primary secondary delete notAuthorize info error warning critical debug');
     messageElement.css('display', '');
 
     // Icône par type
@@ -201,14 +206,15 @@ export const showMessage = function(type, message, technicalDetails = null) {
         debug: '🛠️',
     };
 
-    const icon = icons[type] || '🔔';
+    // si on a pas de type
+    const icon = icons[finalType] || '🔔';
 
     // Applique la classe de style
-    messageElement.addClass(type);
-    buttonElement.addClass(type);
+    messageElement.addClass(finalType);
+    buttonElement.addClass(finalType);
 
     // Message principal
-    const role = (type === 'alert' || type === 'error') ? 'alert' : 'status';
+    const role = (finalType === 'alert' || finalType === 'error' || finalType === 'critical') ? 'alert' : 'status';
     $('#message-box').attr('role', role);
     let html = `<span class="message-icon" aria-hidden="true">${icon}</span> ${message}`;
 
