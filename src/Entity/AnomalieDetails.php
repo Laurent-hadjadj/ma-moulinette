@@ -71,8 +71,8 @@ class AnomalieDetails
     private int $bugBlocker;
 
     #[ORM\Column(
-        name: 'bug_critical', 
-        type: Types::INTEGER, 
+        name: 'bug_critical',
+        type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de bugs critiques']
     )]
@@ -80,8 +80,8 @@ class AnomalieDetails
     private int $bugCritical;
 
     #[ORM\Column(
-        name: 'bug_major', 
-        type: Types::INTEGER, 
+        name: 'bug_major',
+        type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de bugs majeurs']
     )]
@@ -89,8 +89,8 @@ class AnomalieDetails
     private int $bugMajor;
 
     #[ORM\Column(
-        name: 'bug_minor', 
-        type: Types::INTEGER, 
+        name: 'bug_minor',
+        type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de bugs mineurs']
     )]
@@ -98,8 +98,8 @@ class AnomalieDetails
     private int $bugMinor;
 
     #[ORM\Column(
-        name: 'bug_info', 
-        type: Types::INTEGER, 
+        name: 'bug_info',
+        type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de bugs d’information']
     )]
@@ -111,8 +111,8 @@ class AnomalieDetails
     // ===============================
 
     #[ORM\Column(
-        name: 'vulnerability_blocker', 
-        type: Types::INTEGER, 
+        name: 'vulnerability_blocker',
+        type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Vulnérabilités bloquantes']
     )]
@@ -120,8 +120,8 @@ class AnomalieDetails
     private int $vulnerabilityBlocker;
 
     #[ORM\Column(
-        name: 'vulnerability_critical', 
-        type: Types::INTEGER, 
+        name: 'vulnerability_critical',
+        type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Vulnérabilités critiques']
     )]
@@ -129,8 +129,8 @@ class AnomalieDetails
     private int $vulnerabilityCritical;
 
     #[ORM\Column(
-        name: 'vulnerability_major', 
-        type: Types::INTEGER, 
+        name: 'vulnerability_major',
+        type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Vulnérabilités majeures']
     )]
@@ -138,8 +138,8 @@ class AnomalieDetails
     private int $vulnerabilityMajor;
 
     #[ORM\Column(
-        name: 'vulnerability_minor', 
-        type: Types::INTEGER, 
+        name: 'vulnerability_minor',
+        type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Vulnérabilités mineures']
     )]
@@ -147,8 +147,8 @@ class AnomalieDetails
     private int $vulnerabilityMinor;
 
     #[ORM\Column(
-        name: 'vulnerability_info', 
-        type: Types::INTEGER, 
+        name: 'vulnerability_info',
+        type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Vulnérabilités d’information']
     )]
@@ -160,8 +160,8 @@ class AnomalieDetails
     // ===============================
 
     #[ORM\Column(
-        name: 'code_smell_blocker', 
-        type: Types::INTEGER, 
+        name: 'code_smell_blocker',
+        type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Mauvaises pratiques bloquantes']
     )]
@@ -169,17 +169,17 @@ class AnomalieDetails
     private int $codeSmellBlocker;
 
     #[ORM\Column(
-        name: 'code_smell_critical', 
+        name: 'code_smell_critical',
         type: Types::INTEGER,
-        nullable: false, 
+        nullable: false,
         options: ['comment' => 'Mauvaises pratiques critiques']
         )]
     #[Assert\PositiveOrZero]
     private int $codeSmellCritical;
 
     #[ORM\Column(
-        name: 'code_smell_major', 
-        type: Types::INTEGER, 
+        name: 'code_smell_major',
+        type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Mauvaises pratiques majeures']
     )]
@@ -187,8 +187,8 @@ class AnomalieDetails
     private int $codeSmellMajor;
 
     #[ORM\Column(
-        name: 'code_smell_minor', 
-        type: Types::INTEGER, 
+        name: 'code_smell_minor',
+        type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Mauvaises pratiques mineures']
     )]
@@ -196,8 +196,8 @@ class AnomalieDetails
     private int $codeSmellMinor;
 
     #[ORM\Column(
-        name: 'code_smell_info', 
-        type: Types::INTEGER, 
+        name: 'code_smell_info',
+        type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Mauvaises pratiques d’information']
     )]
