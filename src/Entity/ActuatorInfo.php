@@ -18,74 +18,97 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ActuatorInfoRepository;
 use Symfony\Component\Validator\Constraints as Assert;
 
-
 #[ORM\Entity(repositoryClass: ActuatorInfoRepository::class)]
-#[ORM\Table(name: "actuator_info", schema: "ma_moulinette")]
+#[ORM\Table(
+    name: 'actuator_info',
+    schema: 'ma_moulinette',
+    options: ['comment' => 'Informations complémentaires associées à un actuator']
+)]
+#[ORM\Index(name: 'idx_actuator_key', columns: ['actuator_id', 'description'])]
 class ActuatorInfo
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Identifiant unique de la table'])]
-    private $id;
+    #[ORM\Column(
+        name: 'id',
+        type: Types::INTEGER,
+        options: ['comment' => 'Identifiant unique de la table actuator_info']
+    )]
+    private ?int $id = null;
 
-    #[ORM\Column(type: Types::STRING, length: 255, nullable: true,
-    options: ['comment' => "Description courte."])]
+    #[ORM\Column(
+        name: 'description',
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
+        options: ['comment' => 'Description courte de la clé actuator']
+    )]
     #[Assert\NotBlank]
-    private $actuatorInfoDescription;
+    #[Assert\Length(max: 255)]
+    private string $actuatorInfoDescription;
 
-    #[ORM\Column(type: Types::STRING, length: 128, nullable: true,
-    options: ['comment' => "Valeur de la clé actuator."])]
+    #[ORM\Column(
+        name: 'value',
+        type: Types::STRING,
+        length: 128,
+        nullable: false,
+        options: ['comment' => 'Valeur associée à la clé actuator']
+    )]
     #[Assert\NotBlank]
-    private $actuatorInfoValue;
+    #[Assert\Length(max: 128)]
+    private string $actuatorInfoValue;
 
-    #[ORM\ManyToOne(targetEntity: Actuator::class, inversedBy: "actuatorInfo")]
-    #[ORM\JoinColumn(name: "actuator_id", referencedColumnName: "id", nullable: false)]
-    private $actuator;
+    #[ORM\ManyToOne(
+        targetEntity: Actuator::class,
+        inversedBy: 'actuatorInfo'
+    )]
+    #[ORM\JoinColumn(
+        name: 'actuator_id',
+        referencedColumnName: 'id',
+        nullable: false,
+        onDelete: 'CASCADE'
+    )]
+    private Actuator $actuator;
 
-    public function getActuator(): ?Actuator
-    {
-        return $this->actuator;
-    }
-
-    public function setActuator(?Actuator $actuator): self
-    {
-        $this->actuator = $actuator;
-
-        return $this;
-    }
+    // ===============================
+    // Getters / setters
+    // ===============================
 
     public function getId(): ?int
     {
         return $this->id;
     }
-    public function setId(int $id): self
-    {
-        $this->id = $id;
-        return $this;
-    }
 
-    public function getActuatorInfoDescription(): ?string
+    public function getActuatorInfoDescription(): string
     {
         return $this->actuatorInfoDescription;
     }
 
-    public function setActuatorInfoDescription(?string $actuatorInfoDescription): static
+    public function setActuatorInfoDescription(string $description): self
     {
-        $this->actuatorInfoDescription = $actuatorInfoDescription;
-
+        $this->actuatorInfoDescription = $description;
         return $this;
     }
 
-    public function getActuatorInfoValue(): ?string
+    public function getActuatorInfoValue(): string
     {
         return $this->actuatorInfoValue;
     }
 
-    public function setActuatorInfoValue(?string $actuatorInfoValue): static
+    public function setActuatorInfoValue(string $value): self
     {
-        $this->actuatorInfoValue = $actuatorInfoValue;
+        $this->actuatorInfoValue = $value;
+        return $this;
+    }
 
+    public function getActuator(): Actuator
+    {
+        return $this->actuator;
+    }
+
+    public function setActuator(Actuator $actuator): self
+    {
+        $this->actuator = $actuator;
         return $this;
     }
 }
