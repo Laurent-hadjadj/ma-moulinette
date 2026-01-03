@@ -66,7 +66,7 @@ class BatchCollecteTodoController extends AbstractController
             $this->getParameter(static::$sonarUrl),
             '/api/issues/search',
             [
-                'project' => $maven_key,
+                'projects' => $maven_key,
                 'rules' => 'javascript:S1135,xml:S1135,typescript:S1135,Web:S1135,java:S1135,php:s1135,ruby:s1135,python:s1135',
                 'p' => $index,
                 'ps' => $batchSize
@@ -127,19 +127,7 @@ class BatchCollecteTodoController extends AbstractController
         $batchSize = 500;
         $maxPages = 20;
 
-        /** Si pas d'issues, on arrête */
-        if (empty($result['issues']) || $result['paging']['total'] === 0) {
-            $this->logger->info('[Batch Todo] ℹ️ Aucun TODO trouvé pour ce projet.', [
-                'maven_key' => $maven_key
-            ]);
-
-            return [
-                    'code' => 200,
-                    'nombre' => 0,
-                    ];
-        }
-
-        // Avant d'insérer les nouveaux enregistrements :
+        // On efface les données du projet :
         $map = [ 'maven_key' => $maven_key ];
         $this->logger->debug('[Batch Todo] 🛠️ Suppression des anciennes entrées TODO');
 
@@ -155,6 +143,18 @@ class BatchCollecteTodoController extends AbstractController
                 'code' => $delete['code'],
                 'erreur' => $delete['erreur']
             ];
+        }
+
+        /** Si pas d'issues, on arrête */
+        if (empty($result['issues']) || $result['paging']['total'] === 0) {
+            $this->logger->info('[Batch Todo] ℹ️ Aucun TODO trouvé pour ce projet.', [
+                'maven_key' => $maven_key
+            ]);
+
+            return [
+                    'code' => 200,
+                    'nombre' => 0,
+                    ];
         }
 
         /** Si on a trouvé des to.do dans le code alors on les dénombre */
