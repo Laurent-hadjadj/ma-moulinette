@@ -22,67 +22,132 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
-#[ORM\Table(name: "utilisateur", schema: "ma_moulinette")]
-#[UniqueEntity(fields: ['courriel'], message: "La création de votre compte n'a pas aboutie.")]
+#[UniqueEntity(
+    fields: ['courriel'],
+    message: "La création de votre compte n'a pas aboutie.")]
+#[ORM\Table(
+    name: "utilisateur",
+    schema: "ma_moulinette",
+    options: ['comment' => "Table des utilisateurs"])]
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER, nullable: false, options: ['comment' => "clé unique de la table utilisateur"])]
-    private $id;
+    #[ORM\Column(
+        name: 'id',
+        type: Types::INTEGER,
+        options: ['comment' => "clé unique de la table utilisateur"])]
+    private ?int $id = null;
 
-    #[ORM\Column(type: Types::STRING, length: 32, nullable: false, options: ['comment' => "Prénom de l'utilisateur"])]
+    #[ORM\Column(
+        name: 'prenom',
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
+        options: ['comment' => "Prénom de l'utilisateur"])]
     #[Assert\NotBlank(groups: ['form', 'default'])]
     private ?string $prenom = null;
 
-    #[ORM\Column(type: Types::STRING, length: 64, nullable: false, options: ['comment' => "Nom de l'utilisateur"])]
+    #[ORM\Column(
+        name: 'nom',
+        type: Types::STRING,
+        length: 64,
+        nullable: false,
+        options: ['comment' => "Nom de l'utilisateur"])]
     #[Assert\NotBlank(groups: ['form', 'default'])]
     private ?string $nom = null;
 
-    #[ORM\Column(type: Types::STRING, length: 128, nullable: true, options: ['comment' => "Avatar de l'utilisateur"])]
+    #[ORM\Column(
+        name: 'avatar',
+        type: Types::STRING,
+        length: 128,
+        nullable: true,
+        options: ['comment' => "Avatar de l'utilisateur"])]
     private ?string $avatar = null;
 
-    // RFC 5321
-    #[ORM\Column(type: Types::STRING, length: 320, unique: true, options: ['comment' => "Adresse de courriel, clé unique"])]
+    #[ORM\Column(
+        name: 'courriel',
+        type: Types::STRING,
+        length: 320,
+        unique: true,
+        options: ['comment' => "Adresse de courriel, clé unique"])]
     #[Assert\NotBlank(groups: ['form', 'default'])]
     #[Assert\Email(groups: ['form', 'default'])]
     private ?string $courriel = null;
 
-    #[ORM\Column(type: Types::JSON, nullable: false, options: ['comment' => "Liste des rôles"])]
+    #[ORM\Column(
+        name: 'roles',
+        type: Types::JSON,
+        nullable: false,
+        options: ['comment' => "Liste des rôles"])]
     private array $roles = [];
 
-    #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => "Liste des équipes"])]
+    #[ORM\Column(
+        name: 'groupe',
+        type: Types::JSON,
+        nullable: true,
+        options: ['comment' => "Liste des équipes"])]
     private array $groupe = [];
 
-    #[ORM\Column(type: Types::STRING, length: 64, nullable: false, options: ['comment' => "Mot de passe de l'utilisateur"])]
+    #[ORM\Column(
+        name: 'password',
+        type: Types::STRING,
+        length: 64,
+        nullable: false,
+        options: ['comment' => "Mot de passe de l'utilisateur"])]
     #[Assert\NotBlank(groups: ['default'])]
     private string $password;
 
-    #[ORM\Column(type: Types::BOOLEAN, nullable: false,
-        options: ['default' => 0, 'comment' => "L'utilisateur est désactivé"])]
+    #[ORM\Column(
+        name: 'actif',
+        type: Types::BOOLEAN,
+        nullable: false,
+        options: [
+            'default' => false,
+            'comment' => "L'utilisateur est désactivé"])]
     private bool $actif = false;
 
-    # Préférences de l'utilisateur
-    #[ORM\Column(type: Types::JSON, nullable: false, options: ['comment' => "Préférences de l'utilisateur"])]
+    #[ORM\Column(
+        name: 'preference',
+        type: Types::JSON,
+        nullable: false,
+        options: ['comment' => "Préférences de l'utilisateur"])]
     private array $preference = [];
 
-    #[ORM\Column(type: Types::BOOLEAN, nullable: false,
-    options: ['default' => true, 'comment' => "Indicateur de réinitialisation du mot de passe"])]
-    private $resetPassword = true;
+    #[ORM\Column(
+        name: 'reset_password',
+        type: Types::BOOLEAN, nullable: false,
+        options: [
+            'default' => true,
+            'comment' => "Indicateur de réinitialisation du mot de passe"])]
+    private bool $resetPassword = true;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-    options: ['default' => 1, 'comment' => 'Nombre de tentative de changement du mot de passe.'])]
-    private ?int $resetPasswordCount = 1;
+    #[ORM\Column(
+        name: 'reset_password_count',
+        type: Types::INTEGER, nullable: false,
+        options: [
+            'default' => 1,
+            'comment' => 'Nombre de tentative de changement du mot de passe.'])]
+    private int $resetPasswordCount = 1;
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true, options: ['comment' => "Date de modification"])]
+    #[ORM\Column(
+        name: 'date_modification',
+        type: Types::DATETIME_MUTABLE,
+        nullable: true,
+        options: ['comment' => "Date de modification"])]
     private ?\DateTimeInterface $dateModification = null;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, options: ['comment' => "Date de création"])]
-    private ?\DateTimeImmutable $dateEnregistrement = null;
+    #[ORM\Column(
+        name: 'date_enregistrement',
+        type: Types::DATETIMETZ_IMMUTABLE,
+        nullable: false,
+        options: ['comment' => "Date de création"])]
+    private \DateTimeImmutable $dateEnregistrement;
 
     public function __construct()
     {
         $this->roles = [];
+        $this->groupe = [];
         $this->preference = [];
         $this->resetPasswordCount = 1;
         $this->resetPassword = true;
