@@ -20,7 +20,7 @@ CREATE TABLE ma_moulinette.actuator
     nom_application VARCHAR(128) NOT NULL,
     url VARCHAR(255) NOT NULL,
     actuator_user VARCHAR(128),
-    actuator_password VARCHAR(128),
+    actuator_password VARCHAR(200),
     personne VARCHAR(128) NOT NULL,
     date_modification TIMESTAMP,
     date_enregistrement TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
