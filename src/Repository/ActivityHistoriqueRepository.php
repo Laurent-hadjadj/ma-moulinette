@@ -69,10 +69,12 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
                     date_enregistrement)
             VALUES (:year, :day, :analyse, :analyse_average,
                     :success, :failed, :success_rate, :max_time, :date_enregistrement)";
-    try {
-          $this->getEntityManager()->getConnection()->beginTransaction();
+
+  try {
+          $conn = $this->getEntityManager()->getConnection();
+          $conn->beginTransaction();
             foreach ($data as $year => $valeur) {
-              $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+              $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(static::$year, $year);
                 $stmt->bindValue(':day', $valeur['day']);
                 $stmt->bindValue(':analyse', $valeur['analyse']);
@@ -84,9 +86,9 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
                 $stmt->bindValue(':date_enregistrement', $valeur['date_enregistrement']->format(static::$formatDate));
                 $stmt->executeStatement();
             }
-        $this->getEntityManager()->getConnection()->commit();
+        $conn->commit();
     } catch (\Throwable $e) {
-        $this->getEntityManager()->getConnection()->rollBack();
+        $conn->rollBack();
         return $this->handleDatabaseException($e);
     }
     return [ 'code' => 200, 'erreur' => ''];
@@ -114,10 +116,12 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
                 max_time = :max_time,
                 date_enregistrement = :date_enregistrement
             WHERE year = :year";
+
       try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
+          $conn = $this->getEntityManager()->getConnection();
+          $conn->beginTransaction();
             foreach ($data as $year => $valeur) {
-              $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+              $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(static::$year, $year);
                 $stmt->bindValue(':day', $valeur['day']);
                 $stmt->bindValue(':analyse', $valeur['analyse']);
@@ -129,9 +133,9 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
                 $stmt->bindValue(':date_enregistrement', $valeur['date_enregistrement']->format(static::$formatDate));
                 $stmt->executeStatement();
             }
-            $this->getEntityManager()->getConnection()->commit();
+            $conn->commit();
       } catch (\Throwable $e) {
-          $this->getEntityManager()->getConnection()->rollBack();
+          $conn->rollBack();
           return $this->handleDatabaseException($e);
       }
       return ['code' => 200, 'erreur' => ''];
