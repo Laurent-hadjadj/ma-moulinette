@@ -39,6 +39,7 @@ class HotspotOwasp
         nullable: false,
         options: ['comment' => 'Référentiel OWASP 2017 ou 2021'])]
     #[Assert\NotNull(message: 'Le référentiel ne peut pas être null')]
+    #[Assert\PositiveOrZero]
     private int $referentialOwasp = 2017;
 
     #[ORM\Column(

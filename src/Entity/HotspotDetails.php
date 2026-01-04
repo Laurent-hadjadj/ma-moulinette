@@ -140,6 +140,7 @@ class HotspotDetails
         nullable: false,
         options: ['comment' => 'Niveau de risque du hotspot'])]
     #[Assert\NotNull]
+    #[Assert\PositiveOrZero]
     private int $niveau;
 
     #[ORM\Column(
@@ -148,6 +149,7 @@ class HotspotDetails
         nullable: false,
         options: ['comment' => 'Anomalies présentes dans le module frontend'])]
     #[Assert\NotNull]
+    #[Assert\PositiveOrZero]
     private int $frontend;
 
     #[ORM\Column(
@@ -156,6 +158,7 @@ class HotspotDetails
         nullable: false,
         options: ['comment' => 'Anomalies présentes dans le module backend'])]
     #[Assert\NotNull]
+    #[Assert\PositiveOrZero]
     private int $backend;
 
     #[ORM\Column(
@@ -164,6 +167,7 @@ class HotspotDetails
         nullable: false,
         options: ['comment' => 'Anomalies présentes dans les modules autres'])]
     #[Assert\NotNull]
+    #[Assert\PositiveOrZero]
     private int $autre;
 
     #[ORM\Column(
@@ -196,6 +200,7 @@ class HotspotDetails
         nullable: false,
         options: ['comment' => 'Ligne du fichier où se situe le hotspot'])]
     #[Assert\NotNull]
+    #[Assert\PositiveOrZero]
     private int $line;
 
     #[ORM\Column(

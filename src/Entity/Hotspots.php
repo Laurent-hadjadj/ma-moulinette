@@ -142,6 +142,7 @@ class Hotspots
         nullable: false,
         options: ['comment' => 'Niveau de risque du hotspot'])]
     #[Assert\NotNull]
+    #[Assert\PositiveOrZero]
     private int $niveau;
 
     #[ORM\Column(

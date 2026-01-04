@@ -105,6 +105,7 @@ class InformationProjet
         options: [
             'default' => 0,
             'comment' => 'Nombre de version Release sur le serveur SonarQube.'])]
+    #[Assert\PositiveOrZero]
     private int $versionReleaseSonar = 0;
 
     #[ORM\Column(
@@ -114,6 +115,7 @@ class InformationProjet
         options: [
             'default' => 0,
             'comment' => 'Nombre de version Snapshot sur le serveur SonarQube.'])]
+    #[Assert\PositiveOrZero]
     private int $versionSnapshotSonar = 0;
 
     #[ORM\Column(
@@ -123,6 +125,7 @@ class InformationProjet
         options: [
             'default' => 0,
             'comment' => 'Nombre de version Autre sur le serveur SonarQube.'])]
+    #[Assert\PositiveOrZero]
     private int $versionAutreSonar = 0;
 
     #[ORM\Column(

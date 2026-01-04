@@ -30,6 +30,7 @@ class Logger
         name: 'id',
         type: Types::INTEGER,
         options: ['comment' => 'ID unique pour la table logger'])]
+    #[Assert\PositiveOrZero]
     private ?int $id = null;
 
     #[ORM\Column(
@@ -50,6 +51,7 @@ class Logger
         nullable: false,
         options: ['comment' => 'Logger de type Info'])]
     #[Assert\NotNull(message: "Le logger Info ne peut pas être nul.")]
+    #[Assert\PositiveOrZero]
     private int $loggerInfo;
 
     #[ORM\Column(
@@ -58,6 +60,7 @@ class Logger
         nullable: false,
         options: ['comment' => 'Logger de type Warn'])]
     #[Assert\NotNull(message: "Le logger Warn ne peut pas être nul.")]
+    #[Assert\PositiveOrZero]
     private int $loggerWarn;
 
     #[ORM\Column(
@@ -66,6 +69,7 @@ class Logger
         nullable: false,
         options: ['comment' => 'Logger de type Error'])]
     #[Assert\NotNull(message: "Le logger Error ne peut pas être nul.")]
+    #[Assert\PositiveOrZero]
     private int $loggerError;
 
     #[ORM\Column(
@@ -74,6 +78,7 @@ class Logger
         nullable: false,
         options: ['comment' => 'Logger de type Debug'])]
     #[Assert\NotNull(message: "Le logger Debug ne peut pas être nul.")]
+    #[Assert\PositiveOrZero]
     private int $loggerDebug;
 
     #[ORM\Column(
