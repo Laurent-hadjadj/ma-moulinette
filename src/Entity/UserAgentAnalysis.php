@@ -34,7 +34,7 @@ use Doctrine\DBAL\Types\Types;
 #[ORM\Index(name: 'idx_event_type', columns: ["event_type"])]
 #[ORM\Index(name: 'idx_session_id', columns: ["session_id"])]
 #[ORM\Table(
-    name: 'user_agent_analysis', 
+    name: 'user_agent_analysis',
     schema: 'ma_moulinette',
     options: ['comment' => 'Table d’analyse pour le User-Agent']
     )]
