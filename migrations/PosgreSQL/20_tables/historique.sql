@@ -97,10 +97,10 @@ CREATE TABLE ma_moulinette.historique
     utilisateur_collecte VARCHAR(320),
     actuator_info JSON,
 
-    logger_info INT NOT NULL,
-    logger_warn INT NOT NULL,
-    logger_error INT NOT NULL,
-    logger_debug INT NOT NULL,
+    logger_info INT,
+    logger_warn INT,
+    logger_error INT,
+    logger_debug INT,
 
     date_enregistrement TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
 );
