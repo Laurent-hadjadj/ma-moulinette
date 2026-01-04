@@ -23,64 +23,89 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 
 #[ORM\Entity(repositoryClass: RepartitionTempRepository::class)]
-#[ORM\Table(name: 'repartition_temp', schema: 'ma_moulinette')]
+#[ORM\Table(
+    name: 'repartition_temp',
+    schema: 'ma_moulinette',
+    options: ['comment' => "Table temporaire de répartition des anomalies."])]
 class RepartitionTemp
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER)]
-    private int $id;
+    #[ORM\Column(
+        name: 'id',
+        type: Types::INTEGER,
+        options: ['comment' => "Identifiant unique pour la table repartition_temp"])]
+    private ?int $id = null;
 
     /**
      * Clé d'identification de la répartition
      */
-    #[ORM\Column(type: Types::STRING, length: 255, nullable: false,
-                options: ['comment' => "Clé identification du projet"])]
+    #[ORM\Column(
+        name:'maven_key',
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
+        options: ['comment' => "Clé identification du projet"])]
     #[Assert\NotBlank(groups: ['default'])]
     private string $mavenKey;
 
     /**
      * Nom du composant
      */
-    #[ORM\Column(type: Types::TEXT, nullable: false)]
+    #[ORM\Column(
+        name: 'component',
+        type: Types::TEXT,
+        nullable: false,
+        options: ['comment' => "Nom du composant"])]
     #[Assert\NotBlank(groups: ['default'])]
     private string $component;
 
     /**
      * Type de la répartition
+     * Valeurs possibles : BUG, VULNERABILITY, CODE_SMELL
      */
-    #[ORM\Column(type: Types::STRING, length: 16, nullable: false,
-                options: ['comment' => "Catégorie : BUG, VULNERABILITY ou CODE_SMELL"])]
+    #[ORM\Column(
+        name: 'type',
+        type: Types::STRING,
+        length: 16,
+        nullable: false,
+        options: ['comment' => "Catégorie : BUG, VULNERABILITY ou CODE_SMELL"]
+    )]
     #[Assert\NotBlank(groups: ['default'])]
     private string $type;
 
     /**
      * Gravité de la répartition
      */
-    #[ORM\Column(type: Types::STRING, length: 8, nullable: false,
-                options: ['comment' => "Niveau de sévérité de l’anomalie"])]
+    #[ORM\Column(
+        name: 'severity',
+        type: Types::STRING,
+        length: 8,
+        nullable: false,
+        options: ['comment' => "Niveau de sévérité de l’anomalie"]
+    )]
     #[Assert\NotBlank(groups: ['default'])]
     private string $severity;
 
     /**
-     * Timestamp en milliseconde unique pour chaque analyse (utilisé comme partie de la clé composite)
+     * Timestamp en milliseconde unique pour chaque analyse
+     * (utilisé comme partie de la clé composite)
      */
-    #[ORM\Column(type: Types::BIGINT, nullable: false,
-                options: ['comment' => "Timestamp en milliseconde unique pour chaque analyse"])]
+    #[ORM\Column(
+        name: 'setup',
+        type: Types::BIGINT,
+        nullable: false,
+        options: ['comment' => "Timestamp en milliseconde unique pour chaque analyse"]
+    )]
     #[Assert\NotBlank(groups: ['default'])]
+    #[Assert\PositiveOrZero]
     private int $setup;
 
-    // ----- Getters et Setters -----
+    // --- GETTERS ET SETTERS ---
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function setId(string $id): self
-    {
-        $this->id = $id;
-        return $this;
     }
 
     public function getMavenKey(): string
