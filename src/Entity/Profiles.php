@@ -22,55 +22,93 @@ use Symfony\Component\Validator\Constraints as Assert;
  * [Description Profiles]
  */
 #[ORM\Entity(repositoryClass: ProfilesRepository::class)]
-#[ORM\Table(name: "profiles", schema: "ma_moulinette")]
+#[ORM\Table(
+    name: 'profiles',
+    schema: "ma_moulinette",
+    options: ['comment' => 'Table des profiles de règles SonarQube.'])]
 class Profiles
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
+    #[ORM\Column(
+        name: 'id',
+        type: Types::INTEGER,
         options: ['comment' => 'Identifiant unique pour chaque profil'])]
-    private $id;
+    private ?int $id = null;
 
-    #[ORM\Column(type: Types::STRING, length: 56, nullable: false,
+    #[ORM\Column(
+        name: 'key',
+        type: Types::STRING,
+        length: 56,
+        nullable: false,
         options: ['comment' => 'Clé unique du profil'])]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 56,
+    #[Assert\Length(
+        max: 56,
         maxMessage: "La clé du profil ne doit pas dépasser 56 caractères.")]
-    private $key;
+    private string $key;
 
-    #[ORM\Column(type: Types::STRING, length: 128, nullable: false,
+    #[ORM\Column(
+        name: 'name',
+        type: Types::STRING,
+        length: 128,
+        nullable: false,
         options: ['comment' => 'Nom du profil'])]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 128,
+    #[Assert\Length(
+        max: 128,
         maxMessage: "Le nom ne peut pas dépasser 128 caractères.")]
-    private $name;
+    private string $name;
 
-    #[ORM\Column(type: Types::STRING, length: 64, nullable: false,
+    #[ORM\Column(
+        name: 'language_name',
+        type: Types::STRING,
+        length: 64,
+        nullable: false,
         options: ['comment' => 'Nom du langage de programmation'])]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 64,
+    #[Assert\Length(
+        max: 64,
         maxMessage: "Le langage ne peut pas dépasser 64 caractères.")]
-    private $languageName;
+    private string $languageName;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
+    #[ORM\Column(
+        name: 'active_rule_count',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Nombre de règles actives associées au profil'])]
     #[Assert\NotNull]
-    private $activeRuleCount;
+    #[Assert\PositiveOrZero]
+    private int $activeRuleCount;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+    #[ORM\Column(
+        name: 'rules_updated_at',
+        type: Types::DATETIMETZ_IMMUTABLE,
+        nullable: false,
         options: ['comment' => 'Date de la dernière mise à jour des règles'])]
     #[Assert\NotNull]
-    private $rulesUpdatedAt;
+    private \DateTimeImmutable $rulesUpdatedAt;
 
-    #[ORM\Column(type: TYPES::BOOLEAN, nullable: false,
+    #[ORM\Column(
+        'referential_default',
+        type: Types::BOOLEAN,
+        nullable: false,
         options: ['comment' => 'Indique si le profil est le profil par défaut'])]
     #[Assert\NotNull]
-    private $referentialDefault;
+    private bool $referentialDefault;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+    #[ORM\Column(
+        name: 'date_enregistrement',
+        type: Types::DATETIMETZ_IMMUTABLE,
+        nullable: false,
         options: ['comment' => 'Date d’enregistrement du profil'])]
     #[Assert\NotNull]
-    private $dateEnregistrement;
+    private \DateTimeImmutable $dateEnregistrement;
+
+    public function __construct()
+    {
+        $this->dateEnregistrement = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -87,7 +125,7 @@ class Profiles
         return $this->key;
     }
 
-    public function setKey(string $key): static
+    public function setKey(string $key): self
     {
         $this->key = $key;
 
@@ -99,7 +137,7 @@ class Profiles
         return $this->name;
     }
 
-    public function setName(string $name): static
+    public function setName(string $name): self
     {
         $this->name = $name;
 
@@ -111,7 +149,7 @@ class Profiles
         return $this->languageName;
     }
 
-    public function setLanguageName(string $languageName): static
+    public function setLanguageName(string $languageName): self
     {
         $this->languageName = $languageName;
 
@@ -123,7 +161,7 @@ class Profiles
         return $this->activeRuleCount;
     }
 
-    public function setActiveRuleCount(int $activeRuleCount): static
+    public function setActiveRuleCount(int $activeRuleCount): self
     {
         $this->activeRuleCount = $activeRuleCount;
 
@@ -135,7 +173,7 @@ class Profiles
         return $this->rulesUpdatedAt;
     }
 
-    public function setRulesUpdatedAt(\DateTimeImmutable $rulesUpdatedAt): static
+    public function setRulesUpdatedAt(\DateTimeImmutable $rulesUpdatedAt): self
     {
         $this->rulesUpdatedAt = $rulesUpdatedAt;
 
@@ -147,7 +185,7 @@ class Profiles
         return $this->referentialDefault;
     }
 
-    public function setReferentialDefault(bool $referentialDefault): static
+    public function setReferentialDefault(bool $referentialDefault): self
     {
         $this->referentialDefault = $referentialDefault;
 
@@ -159,7 +197,7 @@ class Profiles
         return $this->dateEnregistrement;
     }
 
-    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
+    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): self
     {
         $this->dateEnregistrement = $dateEnregistrement;
 
