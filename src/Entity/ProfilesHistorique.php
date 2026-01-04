@@ -19,66 +19,109 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProfilesHistoriqueRepository::class)]
-#[ORM\Table(name: "profiles_historique", schema: "ma_moulinette")]
+#[ORM\Table(
+    name: 'profiles_historique',
+    schema: "ma_moulinette",
+    options: ['comment' => 'Table des changements des rééferentiels de règles.'])]
 class ProfilesHistorique
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
+    #[ORM\Column(
+        name: 'id',
+        type: Types::INTEGER,
         options: ['comment' => 'Identifiant unique pour chaque historique de profil'])]
-    private $id;
+    private ?int $id = null;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+    #[ORM\Column(
+        name: 'date_courte',
+        type: Types::DATETIMETZ_IMMUTABLE,
+        nullable: false,
         options: ['comment' => 'Date courte associée à l’historique'])]
     #[Assert\NotNull]
-    private $dateCourte;
+    private \DateTimeImmutable $dateCourte;
 
-    #[ORM\Column(type: Types::STRING, length: 16, nullable: false,
-        options: ['comment' => 'language de programmation associé'])]
+    #[ORM\Column(
+        name: 'language',
+        type: Types::STRING,
+        length: 16,
+        nullable: false,
+        options: ['comment' => 'Langage de programmation associé'])]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 16,
+    #[Assert\Length(
+        max: 16,
         maxMessage: "Le langage ne peut pas dépasser 16 caractères.")]
-    private $language;
+    private string $language;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+    #[ORM\Column(
+        name: 'date',
+        type: Types::DATETIMETZ_IMMUTABLE,
+        nullable: false,
         options: ['comment' => 'Date complète de l’événement de l’historique'])]
     #[Assert\NotNull]
-    private $date;
+    private \DateTimeImmutable $date;
 
-    #[ORM\Column(type: Types::STRING, length: 16, nullable: false,
+    #[ORM\Column(
+        name: 'action',
+        type: Types::STRING,
+        length: 16,
+        nullable: false,
         options: ['comment' => 'Action réalisée, par exemple modification ou création'])]
     #[Assert\NotBlank]
     #[Assert\Length(max: 16)]
-    private $action;
+    private string $action;
 
-    #[ORM\Column(type: Types::STRING, length: 64, nullable: false,
+    #[ORM\Column(
+        name: 'auteur',
+        type: Types::STRING,
+        length: 64,
+        nullable: false,
         options: ['comment' => 'Auteur de l’action dans l’historique'])]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 64,
+    #[Assert\Length(
+        max: 64,
         maxMessage: "L'auteur ne peut pas dépasser 64 caractères.")]
-    private $auteur;
+    private string $auteur;
 
-    #[ORM\Column(type: Types::STRING, length: 128, nullable: false,
+    #[ORM\Column(
+        name: 'rule',
+        type: Types::STRING,
+        length: 128,
+        nullable: false,
         options: ['comment' => 'Règle ou norme concernée par l’historique'])]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 128,
-        maxMessage: "La règle ne peut pas dépasser 32 caractères.")]
-    private $rule;
+    #[Assert\Length(
+        max: 128,
+        maxMessage: "La règle ne peut pas dépasser 128 caractères.")]
+    private string $rule;
 
-    #[ORM\Column(type: Types::TEXT, nullable: false,
+    #[ORM\Column(
+        name: 'description',
+        type: Types::TEXT,
+        nullable: false,
         options: ['comment' => 'Description détaillée de l’événement historique'])]
     #[Assert\NotBlank]
-    private $description;
+    private string $description;
 
-    #[ORM\Column(type: Types::BLOB, nullable: false,
+    #[ORM\Column(
+        name: 'detail',
+        type: Types::BLOB, nullable: false,
         options: ['comment' => 'Détails supplémentaires ou données binaires associées à l’événement'])]
     #[Assert\NotNull]
-    private $detail;
+    private $detail; // type exact : resource ou string selon la base
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+    #[ORM\Column(
+        name: 'date_enregistrement',
+        type: Types::DATETIMETZ_IMMUTABLE,
+        nullable: false,
         options: ['comment' => 'Date d’enregistrement de l’entrée historique'])]
     #[Assert\NotNull]
-    private $dateEnregistrement;
+    private \DateTimeImmutable $dateEnregistrement;
+
+    public function __construct()
+    {
+        $this->dateEnregistrement = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -95,7 +138,7 @@ class ProfilesHistorique
         return $this->dateCourte;
     }
 
-    public function setDateCourte(\DateTimeImmutable $dateCourte): static
+    public function setDateCourte(\DateTimeImmutable $dateCourte): self
     {
         $this->dateCourte = $dateCourte;
 
@@ -107,7 +150,7 @@ class ProfilesHistorique
         return $this->language;
     }
 
-    public function setLanguage(string $language): static
+    public function setLanguage(string $language): self
     {
         $this->language = $language;
 
@@ -119,7 +162,7 @@ class ProfilesHistorique
         return $this->date;
     }
 
-    public function setDate(\DateTimeImmutable $date): static
+    public function setDate(\DateTimeImmutable $date): self
     {
         $this->date = $date;
 
@@ -131,7 +174,7 @@ class ProfilesHistorique
         return $this->action;
     }
 
-    public function setAction(string $action): static
+    public function setAction(string $action): self
     {
         $this->action = $action;
 
@@ -143,7 +186,7 @@ class ProfilesHistorique
         return $this->auteur;
     }
 
-    public function setAuteur(string $auteur): static
+    public function setAuteur(string $auteur): self
     {
         $this->auteur = $auteur;
 
@@ -155,7 +198,7 @@ class ProfilesHistorique
         return $this->rule;
     }
 
-    public function setRule(string $rule): static
+    public function setRule(string $rule): self
     {
         $this->rule = $rule;
 
@@ -167,7 +210,7 @@ class ProfilesHistorique
         return $this->description;
     }
 
-    public function setDescription(string $description): static
+    public function setDescription(string $description): self
     {
         $this->description = $description;
 
@@ -179,7 +222,7 @@ class ProfilesHistorique
         return $this->detail;
     }
 
-    public function setDetail($detail): static
+    public function setDetail($detail): self
     {
         $this->detail = $detail;
 
@@ -191,7 +234,7 @@ class ProfilesHistorique
         return $this->dateEnregistrement;
     }
 
-    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
+    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): self
     {
         $this->dateEnregistrement = $dateEnregistrement;
 
