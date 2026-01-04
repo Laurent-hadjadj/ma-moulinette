@@ -19,7 +19,10 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: RepartitionRepository::class)]
-#[ORM\Table(name: 'repartition', schema: 'ma_moulinette')]
+#[ORM\Table(
+    name: 'repartition',
+    schema: 'ma_moulinette',
+    options: ['comment' => 'Table de répartition des anomalies.'])]
 class Repartition
 {
     /**
@@ -27,14 +30,20 @@ class Repartition
     */
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'id',
+        type: Types::INTEGER,
         options: ['comment' => 'ID unique pour chaque répartition'])]
     private ?int $id = null;
 
     /**
      * Clé identification du projet.
     */
-    #[ORM\Column(type: Types::STRING, length: 255, nullable: false,
+    #[ORM\Column(
+        name: 'maven_key',
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
         options: ['comment' => 'Clé identification du projet'])]
     #[Assert\NotBlank()]
     private string $mavenKey;
@@ -42,7 +51,11 @@ class Repartition
     /**
      * Nom de l’application.
     */
-    #[ORM\Column(type: Types::STRING, length: 128, nullable: false,
+    #[ORM\Column(
+        name: 'name',
+        type: Types::STRING,
+        length: 128,
+        nullable: false,
         options: ['comment' => 'Nom de l’application'])]
     #[Assert\NotBlank()]
     private string $name;
@@ -50,392 +63,711 @@ class Repartition
     /**
      * Nombre de bug bloquant.
     */
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug bloquant'])]
+    #[ORM\Column(
+        name: 'bug_blocker',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug bloquant'])]
+    #[Assert\PositiveOrZero]
     private int $bugBlocker = 0;
 
     /**
      * Nombre de bug critique.
     */
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug critique'])]
+    #[ORM\Column(
+        name: 'bug_critical',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug critique'])]
+    #[Assert\PositiveOrZero]
     private int $bugCritical = 0;
 
     /**
      * Nombre de bug majeur.
     */
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug majeur'])]
+    #[ORM\Column(
+        name: 'bug_major',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug majeur'])]
+    #[Assert\PositiveOrZero]
     private int $bugMajor = 0;
 
     /**
      * Nombre de bug mineur.
     */
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug mineur'])]
+    #[ORM\Column(
+        name: 'bug_minor',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug mineur'])]
+    #[Assert\PositiveOrZero]
     private int $bugMinor = 0;
 
     /**
      * Nombre de bug info.
     */
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug info'])]
+    #[ORM\Column(
+        name: 'bug_info',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug info'])]
     private int $bugInfo = 0;
 
     /**
      * Nombre de vulnérabilité bloquante.
     */
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'vulnerability_blocker',
+        type: Types::INTEGER,
         options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité bloquante'])]
     private int $vulnerabilityBlocker = 0;
 
     /**
      * Nombre de vulnérabilité critique.
     */
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité critique'])]
+    #[ORM\Column(
+        name: 'vulnerability_critical',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de vulnérabilité critique'])]
     private int $vulnerabilityCritical = 0;
 
     /**
      * Nombre de vulnérabilité majeure.
     */
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité majeure'])]
+    #[ORM\Column(
+        name: 'vulnerability_major',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de vulnérabilité majeure'])]
     private int $vulnerabilityMajor = 0;
 
     /**
      * Nombre de vulnérabilité mineure.
     */
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité mineure'])]
+    #[ORM\Column(
+        name: 'vulnerability_minor',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de vulnérabilité mineure'])]
     private int $vulnerabilityMinor = 0;
 
     /**
      * Nombre de vulnérabilité en info.
     */
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité en info'])]
+    #[ORM\Column(
+        name: 'vulnerability_info',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de vulnérabilité en info'])]
     private int $vulnerabilityInfo = 0;
 
     /**
      * Nombre de mauvaise pratique bloquante.
     */
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique bloquante'])]
+    #[ORM\Column(
+        name: 'code_smell_blocker',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de mauvaise pratique bloquante'])]
     private int $codeSmellBlocker = 0;
 
     /**
      * Nombre de mauvaise pratique critique.
     */
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique critique'])]
+    #[ORM\Column(
+        name: 'code_smell_critical',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de mauvaise pratique critique'])]
     private int $codeSmellCritical = 0;
 
     /**
      * Nombre de mauvaise pratique majeure.
     */
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique majeure'])]
+    #[ORM\Column(
+        name: 'code_smell_major',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de mauvaise pratique majeure'])]
     private int $codeSmellMajor = 0;
 
     /**
      * Nombre de mauvaise pratique mineure.
     */
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique mineure'])]
+    #[ORM\Column(
+        name: 'code_smell_minor',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de mauvaise pratique mineure'])]
     private int $codeSmellMinor = 0;
 
     /**
      * Nombre de mauvaise pratique en info.
     */
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique en info'])]
+    #[ORM\Column(
+        name: 'code_smell_info',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de mauvaise pratique en info'])]
     private int $codeSmellInfo = 0;
 
     /**
      * Répartition des anomalies de l’application frontend.
     */
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => "Répartition des anomalies de l’application frontend"])]
+    #[ORM\Column(
+        name: 'frontend',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => "Répartition des anomalies de l’application frontend"])]
     private int $frontend = 0;
 
     // FRONTEND
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug bloquant (frontend)'])]
+    #[ORM\Column(
+        name: 'frontend_bug_blocker',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug bloquant (frontend)'])]
     private int $frontendBugBlocker = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug critique (frontend)'])]
+    #[ORM\Column(
+        name: 'frontend_bug_critical',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug critique (frontend)'])]
     private int $frontendBugCritical = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug majeur (frontend)'])]
+    #[ORM\Column(
+        name: 'frontend_bug_major',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug majeur (frontend)'])]
     private int $frontendBugMajor = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug mineur (frontend)'])]
+    #[ORM\Column(
+        name: 'frontend_bug_minor',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug mineur (frontend)'])]
     private int $frontendBugMinor = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug informatif (frontend)'])]
+    #[ORM\Column(
+        name: 'frontend_bug_info',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug informatif (frontend)'])]
     private int $frontendBugInfo = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité bloquante (frontend)'])]
+    #[ORM\Column(
+        name: 'frontend_vulnerability_blocker',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de vulnérabilité bloquante (frontend)'])]
     private int $frontendVulnerabilityBlocker = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité critique (frontend)'])]
+    #[ORM\Column(
+        name: 'frontend_vulnerability_critical',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de vulnérabilité critique (frontend)'])]
     private int $frontendVulnerabilityCritical = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité majeure (frontend)'])]
+    #[ORM\Column(
+        name: 'frontend_vulnerability_major',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de vulnérabilité majeure (frontend)'])]
     private int $frontendVulnerabilityMajor = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité mineure (frontend)'])]
+    #[ORM\Column(
+        name: 'frontend_vulnerability_minor',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de vulnérabilité mineure (frontend)'])]
     private int $frontendVulnerabilityMinor = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité informative (frontend)'])]
+    #[ORM\Column(
+        name: 'frontend_vulnerability_info',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de vulnérabilité informative (frontend)'])]
     private int $frontendVulnerabilityInfo = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de code smell bloquant (frontend)'])]
+    #[ORM\Column(
+        name: 'frontend_code_smell_blocker',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de code smell bloquant (frontend)'])]
     private int $frontendCodeSmellBlocker = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de code smell critique (frontend)'])]
+    #[ORM\Column(
+        name: 'frontend_code_smell_critical',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de code smell critique (frontend)'])]
     private int $frontendCodeSmellCritical = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de code smell majeur (frontend)'])]
+    #[ORM\Column(
+        name: 'frontend_code_smell_major',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de code smell majeur (frontend)'])]
     private int $frontendCodeSmellMajor = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de code smell mineur (frontend)'])]
+    #[ORM\Column(
+        name: 'frontend_code_smell_minor',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de code smell mineur (frontend)'])]
     private int $frontendCodeSmellMinor = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de code smell informatif (frontend)'])]
+    #[ORM\Column(
+        name: 'frontend_code_smell_info',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de code smell informatif (frontend)'])]
     private int $frontendCodeSmellInfo = 0;
 
     /**
      * Répartition des anomalies de l’application backend.
     */
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => "Répartition des anomalies de l’application backend"])]
+    #[ORM\Column(
+        name: 'backend',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => "Répartition des anomalies de l’application backend"])]
     private int $backend = 0;
 
     // BACKEND
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug bloquant (backend)'])]
+    #[ORM\Column(
+        name: 'backend_bug_blocker',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug bloquant (backend)'])]
     private int $backendBugBlocker = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug critique (backend)'])]
+    #[ORM\Column(
+        name: 'backend_bug_critical',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug critique (backend)'])]
     private int $backendBugCritical = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug majeur (backend)'])]
+    #[ORM\Column(
+        name: 'backend_bug_major',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug majeur (backend)'])]
     private int $backendBugMajor = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug mineur (backend)'])]
+    #[ORM\Column(
+        name: 'backend_bug_minor',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug mineur (backend)'])]
     private int $backendBugMinor = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug informatif (backend)'])]
+    #[ORM\Column(
+        name: 'backend_bug_info',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug informatif (backend)'])]
     private int $backendBugInfo = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité bloquante (backend)'])]
+    #[ORM\Column(
+        name: 'backend_vulnerability_blocker',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de vulnérabilité bloquante (backend)'])]
     private int $backendVulnerabilityBlocker = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité critique (backend)'])]
+    #[ORM\Column(
+        name: 'backend_vulnerability_critical',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de vulnérabilité critique (backend)'])]
     private int $backendVulnerabilityCritical = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité majeure (backend)'])]
+    #[ORM\Column(
+        name: 'backend_vulnerability_major',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de vulnérabilité majeure (backend)'])]
     private int $backendVulnerabilityMajor = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité mineure (backend)'])]
+    #[ORM\Column(
+        name: 'backend_vulnerability_minor',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de vulnérabilité mineure (backend)'])]
     private int $backendVulnerabilityMinor = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité informative (backend)'])]
+    #[ORM\Column(
+        name: 'backend_vulnerability_info',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de vulnérabilité informative (backend)'])]
     private int $backendVulnerabilityInfo = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique bloquant (backend)'])]
+    #[ORM\Column(
+        name: 'backend_code_smell_blocker',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de mauvaise pratique bloquant (backend)'])]
     private int $backendCodeSmellBlocker = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique critique (backend)'])]
+    #[ORM\Column(
+        name: 'backend_code_smell_critical',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de mauvaise pratique critique (backend)'])]
     private int $backendCodeSmellCritical = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique majeur (backend)'])]
+    #[ORM\Column(
+        name: 'backend_code_smell_major',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de mauvaise pratique majeur (backend)'])]
     private int $backendCodeSmellMajor = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique mineur (backend)'])]
+    #[ORM\Column(
+        name: 'backend_code_smell_minor',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de mauvaise pratique mineur (backend)'])]
     private int $backendCodeSmellMinor = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique informatif (backend)'])]
+    #[ORM\Column(
+        name: 'backend_code_smell_info',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de mauvaise pratique informatif (backend)'])]
     private int $backendCodeSmellInfo = 0;
 
     /**
      * Répartition des anomalies de l’application autres.
     */
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => "Répartition des anomalies de l’application autres"])]
+    #[ORM\Column(
+        name: 'autre',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => "Répartition des anomalies de l’application autres"])]
     private int $autre = 0;
 
     // AUTRE
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug bloquant (autre)'])]
+    #[ORM\Column(
+        name: 'autre_bug_blocker',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug bloquant (autre)'])]
     private int $autreBugBlocker = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug critique (autre)'])]
+    #[ORM\Column(
+        name: 'autre_bug_critical',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug critique (autre)'])]
     private int $autreBugCritical = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug majeur (autre)'])]
+    #[ORM\Column(
+        name: 'autre_bug_major',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug majeur (autre)'])]
     private int $autreBugMajor = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug mineur (autre)'])]
+    #[ORM\Column(
+        name: 'autre_bug_minor',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug mineur (autre)'])]
     private int $autreBugMinor = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug informatif (autre)'])]
+    #[ORM\Column(
+        name: 'autre_bug_info',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug informatif (autre)'])]
     private int $autreBugInfo = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité bloquante (autre)'])]
+    #[ORM\Column(
+        name: 'autre_vulnerability_blocker',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de vulnérabilité bloquante (autre)'])]
     private int $autreVulnerabilityBlocker = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité critique (autre)'])]
+    #[ORM\Column(
+        name: 'autre_vulnerability_critical',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de vulnérabilité critique (autre)'])]
     private int $autreVulnerabilityCritical = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité majeure (autre)'])]
+    #[ORM\Column(
+        name: 'autre_vulnerability_major',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de vulnérabilité majeure (autre)'])]
     private int $autreVulnerabilityMajor = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité mineure (autre)'])]
+    #[ORM\Column(
+        name: 'autre_vulnerability_minor',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de vulnérabilité mineure (autre)'])]
     private int $autreVulnerabilityMinor = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité informative (autre)'])]
+    #[ORM\Column(
+        name: 'autre_vulnerability_info',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de vulnérabilité informative (autre)'])]
     private int $autreVulnerabilityInfo = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-    options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique bloquant (autre)'])]
+    #[ORM\Column(
+        name: 'autre_code_smell_blocker',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de mauvaise pratique bloquant (autre)'])]
     private int $autreCodeSmellBlocker = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique critique (autre)'])]
+    #[ORM\Column(
+        name: 'autre_code_smell_critical',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de mauvaise pratique critique (autre)'])]
     private int $autreCodeSmellCritical = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique majeur (autre)'])]
+    #[ORM\Column(
+        name: 'autre_code_smell_major',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de mauvaise pratique majeur (autre)'])]
     private int $autreCodeSmellMajor = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique mineur (autre)'])]
+    #[ORM\Column(
+        name: 'autre_code_smell_minor',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de mauvaise pratique mineur (autre)'])]
     private int $autreCodeSmellMinor = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'autre_code_smell_info',
+        type: Types::INTEGER,
         options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique informatif (autre)'])]
     private int $autreCodeSmellInfo = 0;
 
     /**
      * Répartition des anomalies de l’application non définies.
     */
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'inconnu',
+        type: Types::INTEGER,
         options: ['default' => 0, 'comment' => "Répartition des anomalies de l’application non définies"])]
     private int $inconnu = 0;
 
     // inconnu
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug bloquant (inconnu)'])]
+    #[ORM\Column(
+        name: 'inconnu_bug_blocker',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug bloquant (inconnu)'])]
     private int $inconnuBugBlocker = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug critique (inconnu)'])]
+    #[ORM\Column(
+        name: 'inconnu_bug_critical',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug critique (inconnu)'])]
     private int $inconnuBugCritical = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug majeur (inconnu)'])]
+    #[ORM\Column(
+        name: 'inconnu_bug_major',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug majeur (inconnu)'])]
     private int $inconnuBugMajor = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug mineur (inconnu)'])]
+    #[ORM\Column(
+        name: 'inconnu_bug_minor',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug mineur (inconnu)'])]
     private int $inconnuBugMinor = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de bug informatif (inconnu)'])]
+    #[ORM\Column(
+        name: 'inconnu_bug_info',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de bug informatif (inconnu)'])]
     private int $inconnuBugInfo = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité bloquante (inconnu)'])]
+    #[ORM\Column(
+        name: 'inconnu_vulnerability_blocker',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de vulnérabilité bloquante (inconnu)'])]
     private int $inconnuVulnerabilityBlocker = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité critique (inconnu)'])]
+    #[ORM\Column(
+        name: 'inconnu_vulnerability_critical',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de vulnérabilité critique (inconnu)'])]
     private int $inconnuVulnerabilityCritical = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité majeure (inconnu)'])]
+    #[ORM\Column(
+        name: 'inconnu_vulnerability_major',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de vulnérabilité majeure (inconnu)'])]
     private int $inconnuVulnerabilityMajor = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité mineure (inconnu)'])]
+    #[ORM\Column(
+        name: 'inconnu_vulnerability_minor',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de vulnérabilité mineure (inconnu)'])]
     private int $inconnuVulnerabilityMinor = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'inconnu_vulnerability_info',
+        type: Types::INTEGER,
         options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité informative (inconnu)'])]
     private int $inconnuVulnerabilityInfo = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-    options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique bloquant (inconnu)'])]
+    #[ORM\Column(
+        name: 'inconnu_code_smell_blocker',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de mauvaise pratique bloquant (inconnu)'])]
     private int $inconnuCodeSmellBlocker = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique critique (inconnu)'])]
+    #[ORM\Column(
+        name: 'inconnu_code_smell_critical',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de mauvaise pratique critique (inconnu)'])]
     private int $inconnuCodeSmellCritical = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique majeur (inconnu)'])]
+    #[ORM\Column(
+        name: 'inconnu_code_smell_major',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de mauvaise pratique majeur (inconnu)'])]
     private int $inconnuCodeSmellMajor = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique mineur (inconnu)'])]
+    #[ORM\Column(
+        name: 'inconnu_code_smell_minor',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de mauvaise pratique mineur (inconnu)'])]
     private int $inconnuCodeSmellMinor = 0;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique informatif (inconnu)'])]
+    #[ORM\Column(
+        name: 'inconnu_code_smell_info',
+        type: Types::INTEGER,
+        options: [
+            'default' => 0,
+            'comment' => 'Nombre de mauvaise pratique informatif (inconnu)'])]
     private int $inconnuCodeSmellInfo = 0;
 
     /**
      * Timestamp en milliseconde unique pour chaque analyse.
     */
-    #[ORM\Column(type: Types::BIGINT,
-        nullable: false, options: ['comment' => 'Timestamp en milliseconde unique pour chaque analyse'])]
+    #[ORM\Column(
+        name: 'setup',
+        type: Types::BIGINT,
+        nullable: false,
+        options: ['comment' => 'Timestamp en milliseconde unique pour chaque analyse'])]
     #[Assert\NotBlank()]
     private int $setup;
 
     /**
      * Timestamp en milliseconde unique pour chaque analyse.
     */
-    #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
+    #[ORM\Column(
+        name: 'initial',
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
         options: ['comment' => 'Avancement du processus: initial, collecte, analyse'])]
     #[Assert\NotBlank()]
     private string $control ='initial';
@@ -443,24 +775,40 @@ class Repartition
     /**
      * Mode de collecte : collecte, traitement manuel ou traitement automatique.
     */
-    #[ORM\Column(type: Types::STRING, length: 32, nullable: true,
+    #[ORM\Column(
+        name: 'mode_collecte',
+        type: Types::STRING,
+        length: 32,
+        nullable: true,
         options: ['comment' => 'Mode de collecte : collecte, traitement manuel ou traitement automatique'])]
     private ?string $modeCollecte = null;
 
     /**
      * Compte de l’utilisateur qui a réalisé la collecte.
     */
-    #[ORM\Column(type: Types::STRING, length: 320, nullable: true,
+    #[ORM\Column(
+        name: 'utilisateur_collecte',
+        type: Types::STRING,
+        length: 320,
+        nullable: true,
         options: ['comment' => 'Compte de l’utilisateur qui a réalisé la collecte'])]
     private ?string $utilisateurCollecte = null;
 
     /**
      * Date d’enregistrement de la répartition dans le système.
     */
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+    #[ORM\Column(
+        name: 'date_enregistrement',
+        type: Types::DATETIMETZ_IMMUTABLE,
+        nullable: false,
         options: ['comment' => "Date d’enregistrement de la répartition dans le système"])]
     #[Assert\NotBlank()]
     private \DateTimeImmutable $dateEnregistrement;
+
+    public function __construct()
+    {
+        $this->dateEnregistrement = new \DateTimeImmutable();
+    }
 
     // --- Getters et Setters ---
 
