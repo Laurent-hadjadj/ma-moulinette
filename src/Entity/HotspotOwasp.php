@@ -19,101 +19,173 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: HotspotOwaspRepository::class)]
-#[ORM\Table(name: "hotspot_owasp", schema: "ma_moulinette")]
+#[ORM\Table(
+    name: 'hotspot_owasp',
+    schema: 'ma_moulinette',
+    options: ['comment' => 'Table des menaces potentielles de type OWASP.'])]
 class HotspotOwasp
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
+    #[ORM\Column(
+        name: 'id',
+        type: Types::INTEGER,
         options: ['comment' => 'Identifiant unique pour chaque hotspot OWASP'])]
-    private $id;
+    private ?int $id = null;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Référentiel OWASP 2017, 2021'])]
-    #[Assert\NotNull(message: "Le référentiel ne peut pas être null")]
-    private ?int $referentialOwasp=2017;
+    #[ORM\Column(
+        name: 'referential_owasp',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Référentiel OWASP 2017 ou 2021'])]
+    #[Assert\NotNull(message: 'Le référentiel ne peut pas être null')]
+    private int $referentialOwasp = 2017;
 
-    #[ORM\Column(type: Types::STRING, length: 255, nullable: false,
+    #[ORM\Column(
+        name: 'maven_key',
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
         options: ['comment' => 'Clé Maven du projet'])]
     #[Assert\NotBlank(message: "La clé Maven ne peut pas être vide.")]
-    #[Assert\Length(max: 255,
+    #[Assert\Length(
+        max: 255,
         maxMessage: "La clé Maven ne doit pas dépasser 255 caractères.")]
-    private $mavenKey;
+    private string $mavenKey;
 
-    #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
+    #[ORM\Column(
+        name: 'version',
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
         options: ['comment' => 'Version du hotspot OWASP'])]
     #[Assert\NotBlank(message: "La version ne peut pas être vide.")]
-    #[Assert\Length(max: 32,
+    #[Assert\Length(
+        max: 32,
         maxMessage: "La version ne doit pas dépasser 32 caractères.")]
-    private $version;
+    private string $version;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+    #[ORM\Column(
+        name: 'date_version',
+        type: Types::DATETIMETZ_IMMUTABLE,
+        nullable: false,
         options: ['comment' => 'Date de la version du hotspot OWASP'])]
     #[Assert\NotNull(message: "La date de la version ne peut pas être nulle.")]
-    private $dateVersion;
+    private \DateTimeImmutable $dateVersion;
 
-    #[ORM\Column(type: Types::STRING, length: 8, nullable: false,
+    #[ORM\Column(
+        name: 'menace',
+        type: Types::STRING,
+        length: 8,
+        nullable: false,
         options: ['comment' => 'Menace évaluée du hotspot OWASP'])]
     #[Assert\NotBlank(message: "La menace ne peut pas être vide.")]
-    #[Assert\Length(max: 8,
+    #[Assert\Length(
+        max: 8,
         maxMessage: "La menace ne doit pas dépasser 8 caractères.")]
-    private $menace;
+    private string $menace;
 
-    #[ORM\Column(type: Types::STRING, length: 64, nullable: false,
-        options: ['comment' => 'Défini la catégorie de sécurité du hotspot'])]
+    #[ORM\Column(
+        name: 'security_category',
+        type: Types::STRING,
+        length: 64,
+        nullable: false,
+        options: ['comment' => 'Catégorie de sécurité du hotspot'])]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 64,
+    #[Assert\Length(
+        max: 64,
         maxMessage: "La catégorie de sécurité ne doit pas dépasser 64 caractères.")]
-    private $securityCategory;
+    private string $securityCategory;
 
-    #[ORM\Column(type: Types::STRING, length: 255, nullable: false,
-        options: ['comment' => 'Règle SonarQube'])]
+    #[ORM\Column(
+        name: 'rule_key',
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
+        options: ['comment' => 'Règle SonarQube associée'])]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 255,
-        maxMessage: "La catégorie de sécurité ne doit pas dépasser 255 caractères.")]
-    private $ruleKey;
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "La clé de la règle ne doit pas dépasser 255 caractères.")]
+    private string $ruleKey;
 
-    #[ORM\Column(type: Types::STRING, length: 8, nullable: false,
+    #[ORM\Column(
+        name: 'probability',
+        type: Types::STRING,
+        length: 8,
+        nullable: false,
         options: ['comment' => 'Probabilité du hotspot OWASP'])]
     #[Assert\NotBlank(message: "La probabilité ne peut pas être vide.")]
-    #[Assert\Length(max: 8,
-            maxMessage: "La probabilité ne doit pas dépasser 8 caractères.")]
-    private $probability;
+    #[Assert\Length(
+        max: 8,
+        maxMessage: "La probabilité ne doit pas dépasser 8 caractères.")]
+    private string $probability;
 
-    #[ORM\Column(type: Types::STRING, length: 16, nullable: false,
+    #[ORM\Column(
+        name: 'status',
+        type: Types::STRING,
+        length: 16,
+        nullable: false,
         options: ['comment' => 'Statut du hotspot OWASP'])]
     #[Assert\NotBlank(message: "Le statut ne peut pas être vide.")]
-    #[Assert\Length(max: 16,
-            maxMessage: "Le statut ne doit pas dépasser 16 caractères.")]
-    private $status;
-
-    #[ORM\Column(type: Types::STRING, length: 16, nullable: true,
-        options: ['comment' => 'Donne pour un hotspot au statut REVIEWED son état : FIXED, SAFE, ACKNOWLEDGED'])]
-    #[Assert\Length(max: 16,
+    #[Assert\Length(
+        max: 16,
         maxMessage: "Le statut ne doit pas dépasser 16 caractères.")]
-    private ?string $resolution=null;
+    private string $status;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
+    #[ORM\Column(
+        name: 'resolution',
+        type: Types::STRING,
+        length: 16,
+        nullable: true,
+        options: ['comment' => 'État d’un hotspot REVIEWED : FIXED, SAFE, ACKNOWLEDGED'])]
+    #[Assert\Length(
+        max: 16,
+        maxMessage: "Le statut ne doit pas dépasser 16 caractères.")]
+    private ?string $resolution = null;
+
+    #[ORM\Column(
+        name: 'niveau',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Niveau de risque du hotspot OWASP'])]
     #[Assert\NotNull(message: "Le niveau ne peut pas être nul.")]
-    private $niveau;
+    private int $niveau;
 
-    #[ORM\Column(type: Types::STRING, length: 32, nullable: true,
-    options: ['comment' => 'Mode de collecte : [COLLECTE] | [TRAITEMENT MANUEL] | [TRAITEMENT AUTOMATIQUE'])]
-    #[Assert\Length(max: 32,
+    #[ORM\Column(
+        name: 'mode_collecte',
+        type: Types::STRING,
+        length: 32,
+        nullable: true,
+        options: ['comment' => 'Mode de collecte : COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE'])]
+    #[Assert\Length(
+        max: 32,
         maxMessage: "Le mode de collecte ne peut pas dépasser 32 caractères.")]
-    private ?string $modeCollecte=null;
+    private ?string $modeCollecte = null;
 
-    #[ORM\Column(type: Types::STRING, length: 320, nullable: true,
-    options: ['comment' => "Compte de l'utilisateur qui a réalisé la collecte."])]
-    #[Assert\Length(max: 320,
+    #[ORM\Column(
+        name: 'utilisateur_collecte',
+        type: Types::STRING,
+        length: 320,
+        nullable: true,
+        options: ['comment' => "Compte de l'utilisateur qui a réalisé la collecte"])]
+    #[Assert\Length(
+        max: 320,
         maxMessage: "Le compte de l'utilisateur ne peut pas dépasser 320 caractères.")]
-    private ?string $utilisateurCollecte=null;
+    private ?string $utilisateurCollecte = null;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+    #[ORM\Column(
+        name: 'date_enregistrement',
+        type: Types::DATETIMETZ_IMMUTABLE,
+        nullable: false,
         options: ['comment' => 'Date d’enregistrement du hotspot OWASP'])]
     #[Assert\NotNull(message: "La date d'enregistrement ne peut pas être nulle.")]
-    private $dateEnregistrement;
+    private \DateTimeImmutable $dateEnregistrement;
+
+    public function __construct()
+    {
+        $this->dateEnregistrement = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -130,7 +202,7 @@ class HotspotOwasp
         return $this->mavenKey;
     }
 
-    public function setMavenKey(string $mavenKey): static
+    public function setMavenKey(string $mavenKey): self
     {
         $this->mavenKey = $mavenKey;
 
@@ -142,7 +214,7 @@ class HotspotOwasp
         return $this->version;
     }
 
-    public function setVersion(string $version): static
+    public function setVersion(string $version): self
     {
         $this->version = $version;
 
@@ -154,7 +226,7 @@ class HotspotOwasp
         return $this->dateVersion;
     }
 
-    public function setDateVersion(\DateTimeImmutable $dateVersion): static
+    public function setDateVersion(\DateTimeImmutable $dateVersion): self
     {
         $this->dateVersion = $dateVersion;
 
@@ -166,7 +238,7 @@ class HotspotOwasp
         return $this->menace;
     }
 
-    public function setMenace(string $menace): static
+    public function setMenace(string $menace): self
     {
         $this->menace = $menace;
 
@@ -178,7 +250,7 @@ class HotspotOwasp
         return $this->probability;
     }
 
-    public function setProbability(string $probability): static
+    public function setProbability(string $probability): self
     {
         $this->probability = $probability;
 
@@ -190,7 +262,7 @@ class HotspotOwasp
         return $this->status;
     }
 
-    public function setStatus(string $status): static
+    public function setStatus(string $status): self
     {
         $this->status = $status;
 
@@ -202,7 +274,7 @@ class HotspotOwasp
         return $this->niveau;
     }
 
-    public function setNiveau(int $niveau): static
+    public function setNiveau(int $niveau): self
     {
         $this->niveau = $niveau;
 
@@ -214,7 +286,7 @@ class HotspotOwasp
         return $this->dateEnregistrement;
     }
 
-    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
+    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): self
     {
         $this->dateEnregistrement = $dateEnregistrement;
 
@@ -226,7 +298,7 @@ class HotspotOwasp
         return $this->securityCategory;
     }
 
-    public function setSecurityCategory(string $securityCategory): static
+    public function setSecurityCategory(string $securityCategory): self
     {
         $this->securityCategory = $securityCategory;
 
@@ -238,7 +310,7 @@ class HotspotOwasp
         return $this->ruleKey;
     }
 
-    public function setRuleKey(string $ruleKey): static
+    public function setRuleKey(string $ruleKey): self
     {
         $this->ruleKey = $ruleKey;
 
@@ -250,7 +322,7 @@ class HotspotOwasp
         return $this->resolution;
     }
 
-    public function setResolution(?string $resolution): static
+    public function setResolution(?string $resolution): self
     {
         $this->resolution = $resolution;
 
@@ -262,7 +334,7 @@ class HotspotOwasp
         return $this->modeCollecte;
     }
 
-    public function setModeCollecte(?string $modeCollecte): static
+    public function setModeCollecte(?string $modeCollecte): self
     {
         $this->modeCollecte = $modeCollecte;
 
@@ -274,7 +346,7 @@ class HotspotOwasp
         return $this->utilisateurCollecte;
     }
 
-    public function setUtilisateurCollecte(?string $utilisateurCollecte): static
+    public function setUtilisateurCollecte(?string $utilisateurCollecte): self
     {
         $this->utilisateurCollecte = $utilisateurCollecte;
 
@@ -286,7 +358,7 @@ class HotspotOwasp
         return $this->referentialOwasp;
     }
 
-    public function setReferentialOwasp(int $referentialOwasp): static
+    public function setReferentialOwasp(int $referentialOwasp): self
     {
         $this->referentialOwasp = $referentialOwasp;
 
