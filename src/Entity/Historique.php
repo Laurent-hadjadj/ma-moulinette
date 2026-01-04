@@ -15,367 +15,693 @@ namespace App\Entity;
 
 use App\Repository\HistoriqueRepository;
 use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-
+use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: HistoriqueRepository::class)]
-#[ORM\Table(name: "historique", schema: "ma_moulinette")]
+#[ORM\Table(
+    name: 'historique',
+    schema: 'ma_moulinette',
+    options: ['comment' => 'Table de <féé> pour le suivi des statistiques'])]
 class Historique
 {
+    // -------------------------
+    // Clé composite : mavenKey + version + dateVersion
+    // -------------------------
     #[ORM\Id]
-    #[ORM\Column(type: Types::STRING, length: 255,
-        options: ['comment' => 'Clé Maven pour l\'historique des projets'])]
-    #[Assert\Length(max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 128 caractères.")]
-    private $mavenKey;
+    #[ORM\Column(
+        name: 'maven_key',
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
+        options: [ 'comment' => "Clé Maven pour l'historique des projets"])]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: 'La clé Maven ne doit pas dépasser 255 caractères.')]
+    private string $mavenKey;
 
     #[ORM\Id]
-    #[ORM\Column(type: Types::STRING, length: 32,
+    #[ORM\Column(
+        name: 'version',
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
         options: ['comment' => "Version du projet dans l'historique"])]
-    #[Assert\Length(max: 32,
-        maxMessage: "La version du projet ne doit pas dépasser 32 caractères.")]
     #[Assert\NotBlank]
-    private $version;
+    #[Assert\Length(
+        max: 32,
+        maxMessage: 'La version du projet ne doit pas dépasser 32 caractères.')]
+    private string $version;
 
     #[ORM\Id]
-    #[ORM\Column(type: Types::STRING, length: 128,
+    #[ORM\Column(
+        name: 'date_version',
+        type: Types::STRING,
+        length: 128,
+        nullable: false,
         options: ['comment' => 'Date de la version du projet'])]
-    #[Assert\Length(max: 128,
-        maxMessage: "La date de la version ne doit pas dépasser 128 caractères.")]
     #[Assert\NotBlank]
-    private $dateVersion;
+    #[Assert\Length(
+        max: 128,
+        maxMessage: 'La date de la version ne doit pas dépasser 128 caractères.')]
+    private string $dateVersion;
 
-    #[ORM\Column(type: Types::STRING, length: 128,
+    // -------------------------
+    // Informations sur le projet
+    // -------------------------
+    #[ORM\Column(
+        name: 'nom_projet',
+        type: Types::STRING,
+        length: 128,
+        nullable: false,
         options: ['comment' => 'Nom du projet associé à cette version'])]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 128,
-        maxMessage: "Le nom du projet ne doit pas dépasser 128 caractères.")]
-    private $nomProjet;
+    #[Assert\Length(
+        max: 128,
+        maxMessage: 'Le nom du projet ne doit pas dépasser 128 caractères.')]
+    private string $nomProjet;
 
-    #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
-    options: ['comment' => 'Clé d’analyse du projet'])]
+    #[ORM\Column(
+        name: 'analyse_key',
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
+        options: ['comment' => 'Clé d’analyse du projet'])]
     #[Assert\NotBlank(message: "La clé d'analyse ne peut pas être vide.")]
-    #[Assert\Length(max: 32,
-    maxMessage: "La clé d'analyse ne doit pas dépasser 32 caractères.")]
-    private $analyseKey;
+    #[Assert\Length(
+        max: 32,
+        maxMessage: "La clé d'analyse ne doit pas dépasser 32 caractères.")]
+    private string $analyseKey;
 
-    #[ORM\Column(type: Types::INTEGER,
+    // -------------------------
+    // Indicateurs de type de version
+    // -------------------------
+    #[ORM\Column(
+        name: 'version_release',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Indicateur de release pour la version spécifique'])]
     #[Assert\NotNull]
-    private $versionRelease;
+    #[Assert\PositiveOrZero]
+    private int $versionRelease;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'version_snapshot',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Indicateur de snapshot pour la version spécifique'])]
     #[Assert\NotNull]
-    private $versionSnapshot;
+    #[Assert\PositiveOrZero]
+    private int $versionSnapshot;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'version_autre',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Indicateur pour les autres types de versions'])]
     #[Assert\NotNull]
-    private $versionAutre;
+    #[Assert\PositiveOrZero]
+    private int $versionAutre;
 
-    #[ORM\Column(type: Types::INTEGER,
+    // -------------------------
+    // Compteurs de qualité
+    // -------------------------
+    #[ORM\Column(
+        name: 'suppress_warning',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Compteur des suppressions d\'avertissements'])]
     #[Assert\NotNull]
-    private $suppressWarning;
+    #[Assert\PositiveOrZero]
+    private int $suppressWarning;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'no_sonar',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Compteur de l\'utilisation de NoSonar'])]
     #[Assert\NotNull]
-    private $noSonar;
+    #[Assert\PositiveOrZero]
+    private int $noSonar;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'todo',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Compteur de l’utilisation de Todo'])]
     #[Assert\NotNull]
-    private $todo;
+    #[Assert\PositiveOrZero]
+    private int $todo;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: true,
-    options: ['comment' => 'Logger JAVA de type INFO'])]
+    // -------------------------
+    // Logger Java
+    // -------------------------
+    #[ORM\Column(
+        name: 'logger_info',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Logger JAVA de type INFO'])]
     private ?int $loggerInfo = null;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: true,
-    options: ['comment' => 'Logger JAVA de type WARN'])]
+    #[ORM\Column(
+        name: 'logger_warn',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Logger JAVA de type WARN'])]
     private ?int $loggerWarn = null;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: true,
-    options: ['comment' => 'Logger JAVA de type ERROR'])]
+    #[ORM\Column(
+        name: 'logger_error',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Logger JAVA de type ERROR'])]
     private ?int $loggerError = null;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: true,
-    options: ['comment' => 'Logger JAVA de type DEBUG'])]
+    #[ORM\Column(
+        name: 'logger_debug',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Logger JAVA de type DEBUG'])]
     private ?int $loggerDebug = null;
 
-    #[ORM\Column(type: Types::INTEGER,
+    // -------------------------
+    // Statistiques de code
+    // -------------------------
+    #[ORM\Column(
+        name: 'nombre_ligne',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Nombre total de lignes dans le projet'])]
     #[Assert\NotNull]
-    private $nombreLigne;
+    #[Assert\PositiveOrZero]
+    private int $nombreLigne;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'nombre_ligne_code',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Nombre total de lignes de code dans le projet'])]
     #[Assert\NotNull]
-    private $nombreLigneCode;
+    #[Assert\PositiveOrZero]
+    private int $nombreLigneCode;
 
-    #[ORM\Column(type: Types::INTEGER,
-    options: ['comment' => 'Nombre total de fichier'])]
+    #[ORM\Column(
+        name: 'nombre_files',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre total de fichier'])]
     #[Assert\NotNull]
-    private $nombreFiles;
+    #[Assert\PositiveOrZero]
+    private int $nombreFiles;
 
-    #[ORM\Column(type: Types::INTEGER,
-    options: ['comment' => 'Nombre total de classe'])]
+    #[ORM\Column(
+        name: 'nombre_classes',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre total de classe'])]
     #[Assert\NotNull]
-    private $nombreClasses;
+    #[Assert\PositiveOrZero]
+    private int $nombreClasses;
 
-    #[ORM\Column(type: Types::INTEGER,
-    options: ['comment' => 'Nombre total méthode'])]
+    #[ORM\Column(
+        name: 'nombre_functions',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre total méthode'])]
     #[Assert\NotNull]
-    private $nombreFunctions;
+    #[Assert\PositiveOrZero]
+    private int $nombreFunctions;
 
-    #[ORM\Column(type: Types::FLOAT,
+    #[ORM\Column(
+        name: 'coverage',
+        type: Types::FLOAT,
+        nullable: false,
         options: ['comment' => 'Pourcentage de couverture de code par les tests'])]
     #[Assert\NotNull]
-    private $coverage;
+    private float $coverage;
 
-    #[ORM\Column(type: Types::FLOAT,
+    #[ORM\Column(
+        name: 'duplicated_lines_density',
+        type: Types::FLOAT,
+        nullable: false,
         options: ['comment' => 'Pourcentage de duplication dans le code'])]
     #[Assert\NotNull]
-    private $duplicatedLinesDensity;
+    private float $duplicatedLinesDensity;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'tests',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Nombre de tests unitaires exécutés'])]
     #[Assert\NotNull]
-    private $tests;
+    #[Assert\PositiveOrZero]
+    private int $tests;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'violations',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Nombre total de défauts détectés'])]
     #[Assert\NotNull]
-    private $violations;
+    #[Assert\PositiveOrZero]
+    private int $violations;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'nombre_bug',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Nombre total de bugs détectés'])]
     #[Assert\NotNull]
-    private $nombreBug;
+    #[Assert\PositiveOrZero]
+    private int $nombreBug;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'nombre_vulnerability',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Nombre total de vulnérabilités détectées'])]
     #[Assert\NotNull]
-    private $nombreVulnerability;
+    #[Assert\PositiveOrZero]
+    private int $nombreVulnerability;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['comment' => 'Nombre total de smells de code détectés'])]
+    #[ORM\Column(
+        name: 'nombre_code_smell',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre total de mauvaise pratique détectés'])]
     #[Assert\NotNull]
-    private $nombreCodeSmell;
+    #[Assert\PositiveOrZero]
+    private int $nombreCodeSmell;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'frontend',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Développements spécifiques frontend'])]
     #[Assert\NotNull]
-    private $frontend;
+    #[Assert\PositiveOrZero]
+    private int $frontend;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'backend',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Développements spécifiques backend'])]
     #[Assert\NotNull]
+    #[Assert\PositiveOrZero]
     private int $backend;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'autre',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Développements spécifiques'])]
     #[Assert\NotNull]
+    #[Assert\PositiveOrZero]
     private int $autre;
 
-    #[ORM\Column(type: Types::INTEGER,
-    options: ['comment' => 'développements indéterminées'])]
+    #[ORM\Column(
+        name: 'inconnu',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Développements indéterminés'])]
     #[Assert\NotNull]
+    #[Assert\PositiveOrZero]
     private int $inconnu;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'dette',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Somme de la dette technique accumulée'])]
     #[Assert\NotNull]
-    private $dette;
+    #[Assert\PositiveOrZero]
+    private int $dette;
 
-    #[ORM\Column(type: Types::FLOAT,
+    #[ORM\Column(
+        name: 'sqale_debt_ratio',
+        type: Types::FLOAT,
+        nullable: false,
         options: ['comment' => 'Ratio de la dette technique (SQALE)'])]
     #[Assert\NotNull]
-    private $sqaleDebtRatio;
+    private float $sqaleDebtRatio;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['comment' => 'Nombre d\'anomalies bloquantes'])]
+    // -------------------------
+    // Anomalies
+    // -------------------------
+    #[ORM\Column(
+        name: 'nombre_anomalie_bloquant',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => "Nombre d'anomalies bloquantes"])]
     #[Assert\NotNull]
-    private $nombreAnomalieBloquant;
+    #[Assert\PositiveOrZero]
+    private int $nombreAnomalieBloquant;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['comment' => 'Nombre d\'anomalies critiques'])]
+    #[ORM\Column(
+        name: 'nombre_anomalie_critique',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => "Nombre d'anomalies critiques"])]
     #[Assert\NotNull]
-    private $nombreAnomalieCritique;
+    #[Assert\PositiveOrZero]
+    private int $nombreAnomalieCritique;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['comment' => 'Nombre d\'anomalies d\'information'])]
+    #[ORM\Column(
+        name: 'nombre_anomalie_info',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => "Nombre d'anomalies d'information"])]
     #[Assert\NotNull]
-    private $nombreAnomalieInfo;
+    #[Assert\PositiveOrZero]
+    private int $nombreAnomalieInfo;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['comment' => 'Nombre d\'anomalies majeures'])]
+    #[ORM\Column(
+        name: 'nombre_anomalie_majeur',
+        type: Types::INTEGER,
+        options: ['comment' => "Nombre d'anomalies majeures"])]
     #[Assert\NotNull]
-    private $nombreAnomalieMajeur;
+    #[Assert\PositiveOrZero]
+    private int $nombreAnomalieMajeur;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['comment' => 'Nombre d\'anomalies mineures'])]
+    #[ORM\Column(
+        name: 'nombre_anomalie_mineur',
+        type: Types::INTEGER,
+        options: ['comment' => "Nombre d'anomalies mineures"])]
     #[Assert\NotNull]
-    private $nombreAnomalieMineur;
+    #[Assert\PositiveOrZero]
+    private int $nombreAnomalieMineur;
 
-    #[ORM\Column(type: Types::STRING, length: 4,
-        options: ['comment' => 'Note de fiabilité attribuée au projet'])]
+    // -------------------------
+    // Notes qualité
+    // -------------------------
+    #[ORM\Column(
+        name: 'note_reliability',
+        type: Types::STRING,
+        length: 4,
+        nullable: false,
+        options: ['comment' => "Note de fiabilité attribuée au projet"])]
     #[Assert\NotBlank]
-    private $noteReliability;
+    private string $noteReliability;
 
-    #[ORM\Column(type: Types::STRING, length: 4,
+    #[ORM\Column(
+        name: 'note_security',
+        type: Types::STRING,
+        length: 4,
+        nullable: false,
         options: ['comment' => 'Note de sécurité attribuée au projet'])]
     #[Assert\NotBlank]
-    private $noteSecurity;
+    private string $noteSecurity;
 
-    #[ORM\Column(type: Types::STRING, length: 4,
+    #[ORM\Column(
+        name: 'note_sqale',
+        type: Types::STRING,
+        length: 4,
+        nullable: false,
         options: ['comment' => 'Note SQALE attribuée au projet'])]
     #[Assert\NotBlank]
-    private $noteSqale;
+    private string $noteSqale;
 
-    #[ORM\Column(type: Types::STRING, length: 4,
+    #[ORM\Column(
+        name: 'note_hotspot',
+        type: Types::STRING,
+        length: 4,
+        nullable: false,
         options: ['comment' => 'Note pour les hotspots de sécurité'])]
     #[Assert\NotBlank]
-    private $noteHotspot;
+    private string $noteHotspot;
 
-    #[ORM\Column(type: Types::INTEGER,
+    // -------------------------
+    // Menaces potentielles de sécurité
+    // -------------------------
+    #[ORM\Column(
+        name: 'menace_potentielle_to_review_high',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau élevé à vérifier'])]
     #[Assert\NotNull]
-    private $menacePotentielleToReviewHigh;
+    #[Assert\PositiveOrZero]
+    private int $menacePotentielleToReviewHigh;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'menace_potentielle_to_review_medium',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau moyen à vérifier'])]
     #[Assert\NotNull]
-    private $menacePotentielleToReviewMedium;
+    #[Assert\PositiveOrZero]
+    private int $menacePotentielleToReviewMedium;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'menace_potentielle_to_review_low',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau faible à vérifier'])]
     #[Assert\NotNull]
-    private $menacePotentielleToReviewLow;
+    #[Assert\PositiveOrZero]
+    private int $menacePotentielleToReviewLow;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'menace_potentielle_reviewed_high',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau élevé vérifié'])]
     #[Assert\NotNull]
-    private $menacePotentielleReviewedHigh;
+    #[Assert\PositiveOrZero]
+    private int $menacePotentielleReviewedHigh;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'menace_potentielle_reviewed_medium',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau moyen vérifié'])]
     #[Assert\NotNull]
-    private $menacePotentielleReviewedMedium;
+    #[Assert\PositiveOrZero]
+    private int $menacePotentielleReviewedMedium;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'menace_potentielle_reviewed_low',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau faible vérifié'])]
     #[Assert\NotNull]
-    private $menacePotentielleReviewedLow;
+    #[Assert\PositiveOrZero]
+    private int $menacePotentielleReviewedLow;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'menace_potentielle_totale',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Nombre total de menaces potentielles de sécurité'])]
     #[Assert\NotNull]
-    private $menacePotentielleTotale;
+    #[Assert\PositiveOrZero]
+    private int $menacePotentielleTotale;
 
-    #[ORM\Column(type: Types::BOOLEAN,
-        options: ['comment' => 'Indique si c\'est l\'initialisation du projet'])]
+    // -------------------------
+    // Initialisation du projet
+    // -------------------------
+    #[ORM\Column(
+        name: 'initial',
+        type: Types::BOOLEAN,
+        nullable: false,
+        options: ['comment' => "Indique si c'est l'initialisation du projet"])]
     #[Assert\NotNull]
-    private $initial;
+    private bool $initial;
 
-    #[ORM\Column(type: Types::INTEGER,
+    // -------------------------
+    // Bugs
+    // -------------------------
+    #[ORM\Column(
+        name: 'bug_blocker',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Nombre de bugs bloquants'])]
     #[Assert\NotNull]
-    private $bugBlocker;
+    #[Assert\PositiveOrZero]
+    private int $bugBlocker;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'bug_critical',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Nombre de bugs critiques'])]
     #[Assert\NotNull]
-    private $bugCritical;
+    #[Assert\PositiveOrZero]
+    private int $bugCritical;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'bug_major',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Nombre de bugs majeurs'])]
     #[Assert\NotNull]
-    private $bugMajor;
+    #[Assert\PositiveOrZero]
+    private int $bugMajor;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'bug_minor',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Nombre de bugs mineurs'])]
     #[Assert\NotNull]
-    private $bugMinor;
+    private int $bugMinor;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['comment' => 'Nombre de bugs d\'information'])]
+    #[ORM\Column(
+        name: 'bug_info',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => "Nombre de bugs d'information"])]
     #[Assert\NotNull]
-    private $bugInfo;
+    #[Assert\PositiveOrZero]
+    private int $bugInfo;
 
-    #[ORM\Column(type: Types::INTEGER,
+    // -------------------------
+    // Vulnérabilités
+    // -------------------------
+    #[ORM\Column(
+        name: 'vulnerability_blocker',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Nombre de vulnérabilités bloquantes'])]
     #[Assert\NotNull]
-    private $vulnerabilityBlocker;
+    #[Assert\PositiveOrZero]
+    private int $vulnerabilityBlocker;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'vulnerability_critical',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Nombre de vulnérabilités critiques'])]
     #[Assert\NotNull]
-    private $vulnerabilityCritical;
+    #[Assert\PositiveOrZero]
+    private int $vulnerabilityCritical;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'vulnerability_major',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Nombre de vulnérabilités majeures'])]
     #[Assert\NotNull]
-    private $vulnerabilityMajor;
+    #[Assert\PositiveOrZero]
+    private int $vulnerabilityMajor;
 
-    #[ORM\Column(type: Types::INTEGER,
+    #[ORM\Column(
+        name: 'vulnerability_minor',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Nombre de vulnérabilités mineures'])]
     #[Assert\NotNull]
-    private $vulnerabilityMinor;
+    #[Assert\PositiveOrZero]
+    private int $vulnerabilityMinor;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['comment' => 'Nombre de vulnérabilités d\'information'])]
+    #[ORM\Column(
+        name: 'vulnerability_info',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => "Nombre de vulnérabilités d'information"])]
     #[Assert\NotNull]
-    private $vulnerabilityInfo;
+    #[Assert\PositiveOrZero]
+    private int $vulnerabilityInfo;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['comment' => 'Nombre de smells de code bloquants'])]
+    // -------------------------
+    // Code smells
+    // -------------------------
+    #[ORM\Column(
+        name: 'code_smell_blocker',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => "Nombre de mauvaises pratiques bloquants"])]
     #[Assert\NotNull]
-    private $codeSmellBlocker;
+    #[Assert\PositiveOrZero]
+    private int $codeSmellBlocker;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['comment' => 'Nombre de smells de code critiques'])]
+    #[ORM\Column(
+        name: 'code_smell_critical',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre de mauvaise pratique critiques'])]
     #[Assert\NotNull]
-    private $codeSmellCritical;
+    #[Assert\PositiveOrZero]
+    private int $codeSmellCritical;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['comment' => 'Nombre de smells de code majeurs'])]
+    #[ORM\Column(
+        name: 'code_smell_major',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre de mauvaise pratique majeurs'])]
     #[Assert\NotNull]
-    private $codeSmellMajor;
+    #[Assert\PositiveOrZero]
+    private int $codeSmellMajor;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['comment' => 'Nombre de smells de code mineurs'])]
+    #[ORM\Column(
+        name: 'code_smell_minor',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre de mauvaise pratique mineurs'])]
     #[Assert\NotNull]
-    private $codeSmellMinor;
+    #[Assert\PositiveOrZero]
+    private int $codeSmellMinor;
 
-    #[ORM\Column(type: Types::INTEGER,
-        options: ['comment' => "Nombre de smells de code d'information"])]
+    #[ORM\Column(
+        name: 'code_smell_info',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => "Nombre de mauvaise pratique d'information"])]
     #[Assert\NotNull]
-    private $codeSmellInfo;
+    #[Assert\PositiveOrZero]
+    private int $codeSmellInfo;
 
-    #[ORM\Column(type: Types::JSON, nullable: true,
-    options: ['comment' => 'Actuator Info'])]
-    private $actuatorInfo=null;
+    // -------------------------
+    // Actuator info
+    // -------------------------
+    #[ORM\Column(
+        name: 'actuator_info',
+        type: Types::JSON,
+        nullable: true,
+        options: ['comment' => 'Actuator Info'])]
+    private ?array $actuatorInfo = null;
 
-    #[ORM\Column(type: Types::STRING, length: 32, nullable: true,
-    options: ['comment' => 'Mode de collecte : COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE'])]
-    #[Assert\Length(max: 32,
-        maxMessage: "Le mode de collecte ne peut pas dépasser 32 caractères.")]
-    private ?string $modeCollecte=null;
+    // -------------------------
+    // Mode de collecte et utilisateur
+    // -------------------------
+    #[ORM\Column(
+        name: 'mode_collecte',
+        type: Types::STRING,
+        length: 32,
+        nullable: true,
+        options: ['comment' => 'Mode de collecte : COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE'])]
+    #[Assert\Length(
+        max: 32,
+        maxMessage: 'Le mode de collecte ne peut pas dépasser 32 caractères.')]
+    private ?string $modeCollecte = null;
 
-    #[ORM\Column(type: Types::STRING, length: 320, nullable: true,
-    options: ['comment' => "Compte de l'utilisateur qui a réalisé la collecte."])]
-    #[Assert\Length(max: 320,
-        maxMessage: "Le compte de l'utilisateur ne peut pas dépasser 128 caractères.")]
-    private ?string $utilisateurCollecte=null;
+    #[ORM\Column(
+        name: 'utilisateur_collecte',
+        type: Types::STRING,
+        length: 320,
+        nullable: true,
+        options: ['comment' => "Compte de l'utilisateur qui a réalisé la collecte."])]
+    #[Assert\Length(
+        max: 320,
+        maxMessage: "Le compte de l'utilisateur ne peut pas dépasser 320 caractères.")]
+    private ?string $utilisateurCollecte = null;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+    // -------------------------
+    // Date d'enregistrement
+    // -------------------------
+    #[ORM\Column(
+        name: 'date_enregistrement',
+        type: Types::DATETIMETZ_IMMUTABLE,
+        nullable: false,
         options: ['comment' => "Date d'enregistrement de l'historique"])]
     #[Assert\NotNull]
-    private $dateEnregistrement;
+    private \DateTimeImmutable $dateEnregistrement;
+
+    public function __construct()
+    {
+        $this->dateEnregistrement = new \DateTimeImmutable();
+    }
 
     public function getMavenKey(): ?string
     {
@@ -526,7 +852,7 @@ class Historique
         return $this->analyseKey;
     }
 
-    public function setAnalyseKey(string $analyseKey): static
+    public function setAnalyseKey(string $analyseKey): self
     {
         $this->analyseKey = $analyseKey;
 
@@ -2311,7 +2637,7 @@ class Historique
         return $this->todo;
     }
 
-    public function setTodo(int $todo): static
+    public function setTodo(int $todo): self
     {
         $this->todo = $todo;
 
@@ -2323,7 +2649,7 @@ class Historique
         return $this->loggerInfo;
     }
 
-    public function setLoggerInfo(?int $loggerInfo): static
+    public function setLoggerInfo(?int $loggerInfo): self
     {
         $this->loggerInfo = $loggerInfo;
 
@@ -2335,7 +2661,7 @@ class Historique
         return $this->loggerWarn;
     }
 
-    public function setLoggerWarn(?int $loggerWarn): static
+    public function setLoggerWarn(?int $loggerWarn): self
     {
         $this->loggerWarn = $loggerWarn;
 
@@ -2347,7 +2673,7 @@ class Historique
         return $this->loggerError;
     }
 
-    public function setLoggerError(?int $loggerError): static
+    public function setLoggerError(?int $loggerError): self
     {
         $this->loggerError = $loggerError;
 
@@ -2359,7 +2685,7 @@ class Historique
         return $this->loggerDebug;
     }
 
-    public function setLoggerDebug(?int $loggerDebug): static
+    public function setLoggerDebug(?int $loggerDebug): self
     {
         $this->loggerDebug = $loggerDebug;
 
@@ -2371,7 +2697,7 @@ class Historique
         return $this->modeCollecte;
     }
 
-    public function setModeCollecte(?string $modeCollecte): static
+    public function setModeCollecte(?string $modeCollecte): self
     {
         $this->modeCollecte = $modeCollecte;
 
@@ -2383,7 +2709,7 @@ class Historique
         return $this->utilisateurCollecte;
     }
 
-    public function setUtilisateurCollecte(?string $utilisateurCollecte): static
+    public function setUtilisateurCollecte(?string $utilisateurCollecte): self
     {
         $this->utilisateurCollecte = $utilisateurCollecte;
 
@@ -2395,7 +2721,7 @@ class Historique
         return $this->actuatorInfo;
     }
 
-    public function setActuatorInfo(?array $actuatorInfo): static
+    public function setActuatorInfo(?array $actuatorInfo): self
     {
         $this->actuatorInfo = $actuatorInfo;
 
