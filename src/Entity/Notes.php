@@ -19,103 +19,121 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: NotesRepository::class)]
-#[ORM\Table(name: "notes", schema: "ma_moulinette")]
+#[ORM\Table(
+    name: 'notes',
+    schema: "ma_moulinette",
+    options: ['comment' => 'Tables des Notes relatives à la qualité du code.'])]
 class Notes
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Identifiant unique la table Notes'])]
-    private $id;
+    #[ORM\Column(
+        name: 'id',
+        type: Types::INTEGER,
+        options: ['comment' => 'Identifiant unique pour la table Notes'])]
+    private ?int $id = null;
 
-    #[ORM\Column(type: Types::STRING, length: 255, nullable: false,
+    #[ORM\Column(
+        name: 'maven_key',
+        type: Types::STRING,
+        length: 255,
+        nullable: false,
         options: ['comment' => 'Clé Maven du projet'])]
-    #[Assert\Length( max: 255,
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 255,
         maxMessage: "La clé Maven ne doit pas dépasser 255 caractères.")]
-    private $mavenKey;
+    private string $mavenKey;
 
-    #[ORM\Column(type: Types::STRING, length: 16, nullable: false,
+    #[ORM\Column(
+        name: 'type',
+        type: Types::STRING,
+        length: 16,
+        nullable: false,
         options: ['comment' => 'Type de la note'])]
     #[Assert\NotBlank]
-    private $type;
+    private string $type;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
+    #[ORM\Column(
+        name: 'value',
+        type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Valeur de la note'])]
     #[Assert\NotNull]
-    private $value;
+    #[Assert\PositiveOrZero]
+    private int $value;
 
-    #[ORM\Column(type: Types::STRING, length: 32, nullable: true,
-    options: ['comment' => 'Mode de collecte : [COLLECTE] | [TRAITEMENT MANUEL] | [TRAITEMENT AUTOMATIQUE]'])]
-    #[Assert\Length(max: 32,
+    #[ORM\Column(
+        name: 'mode_collecte',
+        type: Types::STRING,
+        length: 32,
+        nullable: true,
+        options: ['comment' => 'Mode de collecte : [COLLECTE] | [TRAITEMENT MANUEL] | [TRAITEMENT AUTOMATIQUE]'])]
+    #[Assert\Length(
+        max: 32,
         maxMessage: "Le mode de collecte ne peut pas dépasser 32 caractères.")]
-    private ?string $modeCollecte=null;
+    private ?string $modeCollecte = null;
 
-    #[ORM\Column(type: Types::STRING, length: 320, nullable: true,
-    options: ['comment' => "Compte de l'utilisateur qui a réalisé la collecte."])]
-    #[Assert\Length(max: 320,
+    #[ORM\Column(
+        name: 'utilisateur_collecte',
+        type: Types::STRING,
+        length: 320,
+        nullable: true,
+        options: ['comment' => "Compte de l'utilisateur qui a réalisé la collecte."])]
+    #[Assert\Length(
+        max: 320,
         maxMessage: "Le compte de l’utilisateur ne peut pas dépasser 320 caractères.")]
-    private ?string $utilisateurCollecte=null;
+    private ?string $utilisateurCollecte = null;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
+    #[ORM\Column(
+        name: 'date_enregistrement',
+        type: Types::DATETIMETZ_IMMUTABLE,
+        nullable: false,
         options: ['comment' => 'Date d’enregistrement de la note'])]
     #[Assert\NotNull]
-    private $dateEnregistrement;
+    private \DateTimeImmutable $dateEnregistrement;
 
+    public function __construct()
+    {
+        $this->dateEnregistrement = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
+    }
+
+    // Getters et setters
     public function getId(): ?int
     {
         return $this->id;
     }
-    public function setId(int $id): self
-    {
-        $this->id = $id;
-        return $this;
-    }
 
-    public function getMavenKey(): ?string
+    public function getMavenKey(): string
     {
         return $this->mavenKey;
     }
 
-    public function setMavenKey(string $mavenKey): static
+    public function setMavenKey(string $mavenKey): self
     {
         $this->mavenKey = $mavenKey;
-
         return $this;
     }
 
-    public function getType(): ?string
+    public function getType(): string
     {
         return $this->type;
     }
 
-    public function setType(string $type): static
+    public function setType(string $type): self
     {
         $this->type = $type;
-
         return $this;
     }
 
-    public function getValue(): ?int
+    public function getValue(): int
     {
         return $this->value;
     }
 
-    public function setValue(int $value): static
+    public function setValue(int $value): self
     {
         $this->value = $value;
-
-        return $this;
-    }
-
-    public function getDateEnregistrement(): ?\DateTimeImmutable
-    {
-        return $this->dateEnregistrement;
-    }
-
-    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
-    {
-        $this->dateEnregistrement = $dateEnregistrement;
-
         return $this;
     }
 
@@ -124,10 +142,9 @@ class Notes
         return $this->modeCollecte;
     }
 
-    public function setModeCollecte(?string $modeCollecte): static
+    public function setModeCollecte(?string $modeCollecte): self
     {
         $this->modeCollecte = $modeCollecte;
-
         return $this;
     }
 
@@ -136,11 +153,20 @@ class Notes
         return $this->utilisateurCollecte;
     }
 
-    public function setUtilisateurCollecte(?string $utilisateurCollecte): static
+    public function setUtilisateurCollecte(?string $utilisateurCollecte): self
     {
         $this->utilisateurCollecte = $utilisateurCollecte;
-
         return $this;
     }
 
+    public function getDateEnregistrement(): \DateTimeImmutable
+    {
+        return $this->dateEnregistrement;
+    }
+
+    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): self
+    {
+        $this->dateEnregistrement = $dateEnregistrement;
+        return $this;
+    }
 }
