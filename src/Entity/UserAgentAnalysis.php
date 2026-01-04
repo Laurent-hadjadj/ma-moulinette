@@ -26,14 +26,18 @@ use Doctrine\DBAL\Types\Types;
  * Les données sont volontairement dénormalisées pour faciliter les agrégations.
  */
 #[ORM\Entity(repositoryClass: UserAgentAnalysisRepository::class)]
-#[ORM\Table(name: "user_agent_analysis", schema: "ma_moulinette")]
-#[ORM\Index(name: "idx_device_type", columns: ["device_type"])]
-#[ORM\Index(name: "idx_os_name", columns: ["os_name"])]
-#[ORM\Index(name: "idx_browser_name", columns: ["browser_name"])]
-#[ORM\Index(name: "idx_is_bot", columns: ["is_bot"])]
-#[ORM\Index(name: "idx_created_at", columns: ["created_at"])]
-#[ORM\Index(name: "idx_event_type", columns: ["event_type"])]
-#[ORM\Index(name: "idx_session_id", columns: ["session_id"])]
+#[ORM\Index(name: 'idx_device_type', columns: ["device_type"])]
+#[ORM\Index(name: 'idx_os_name', columns: ["os_name"])]
+#[ORM\Index(name: 'idx_browser_name', columns: ["browser_name"])]
+#[ORM\Index(name: 'idx_is_bot', columns: ["is_bot"])]
+#[ORM\Index(name: 'idx_created_at', columns: ["created_at"])]
+#[ORM\Index(name: 'idx_event_type', columns: ["event_type"])]
+#[ORM\Index(name: 'idx_session_id', columns: ["session_id"])]
+#[ORM\Table(
+    name: 'user_agent_analysis', 
+    schema: 'ma_moulinette',
+    options: ['comment' => 'Table d’analyse pour le User-Agent']
+    )]
 class UserAgentAnalysis {
     /**
      * Identifiant technique unique de l'analyse.
@@ -41,7 +45,7 @@ class UserAgentAnalysis {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(
-        name: "id",
+        name: 'id',
         type: Types::BIGINT,
         nullable: false,
         options: ['comment' => 'Identifiant unique de l’analyse User-Agent']
@@ -56,8 +60,8 @@ class UserAgentAnalysis {
      */
     #[ORM\OneToOne(targetEntity: UserAgentEvent::class)]
     #[ORM\JoinColumn(
-        name: "user_agent_event_id",
-        referencedColumnName: "id",
+        name: 'user_agent_event_id',
+        referencedColumnname: 'id',
         nullable: false,
         onDelete: "CASCADE"
     )]
@@ -72,7 +76,7 @@ class UserAgentAnalysis {
      * - LOGOUT : déconnexion de l'utilisateur
      */
     #[ORM\Column(
-        name: "event_type",
+        name: 'event_type',
         type: Types::STRING,
         length: 50,
         nullable: true,
@@ -92,7 +96,7 @@ class UserAgentAnalysis {
      * il est uniquement informatif.
      */
     #[ORM\Column(
-        name: "url",
+        name: 'url',
         type: Types::STRING,
         length: 2048,
         nullable: true,
@@ -108,7 +112,7 @@ class UserAgentAnalysis {
      * - non NULL : session active après authentification
      */
     #[ORM\Column(
-        name: "session_id",
+        name: 'session_id',
         type: Types::STRING,
         length: 128,
         nullable: true,
@@ -119,16 +123,10 @@ class UserAgentAnalysis {
     /**
      * Type d'appareil détecté.
      *
-     * Valeurs possibles :
-     * - desktop
-     * - smartphone
-     * - tablet
-     * - tv
-     * - console
-     * - unknown
+     * Valeurs possibles : desktop, smartphone, tablet, tv, console, unknown
      */
     #[ORM\Column(
-        name: "device_type",
+        name: 'device_type',
         type: Types::STRING,
         length: 30,
         nullable: true,
@@ -139,15 +137,10 @@ class UserAgentAnalysis {
     /**
      * Système d'exploitation détecté.
      *
-     * Exemple :
-     * - Windows
-     * - macOS
-     * - Linux
-     * - Android
-     * - iOS
+     * Exemple : Windows, macOS, Linux, Android, iOS
      */
     #[ORM\Column(
-        name: "os_name",
+        name: 'os_name',
         type: Types::STRING,
         length: 50,
         nullable: true,
@@ -159,7 +152,7 @@ class UserAgentAnalysis {
      * Version du système d'exploitation.
      */
     #[ORM\Column(
-        name: "os_version",
+        name: 'os_version',
         type: Types::STRING,
         length: 50,
         nullable: true,
@@ -170,14 +163,10 @@ class UserAgentAnalysis {
     /**
      * Nom du navigateur détecté.
      *
-     * Exemple :
-     * - Chrome
-     * - Firefox
-     * - Safari
-     * - Edge
+     * Exemple : Chrome, Firefox, Safari, Edge
      */
     #[ORM\Column(
-        name: "browser_name",
+        name: 'browser_name',
         type: Types::STRING,
         length: 50,
         nullable: true,
@@ -189,7 +178,7 @@ class UserAgentAnalysis {
      * Version du navigateur.
      */
     #[ORM\Column(
-        name: "browser_version",
+        name: 'browser_version',
         type: Types::STRING,
         length: 50,
         nullable: true,
@@ -201,7 +190,7 @@ class UserAgentAnalysis {
      * Indique si le client est identifié comme un bot.
      */
     #[ORM\Column(
-        name: "is_bot",
+        name: 'is_bot',
         type: Types::BOOLEAN,
         nullable: true,
         options: ['comment' => 'Indique si le client est un bot']
@@ -214,7 +203,7 @@ class UserAgentAnalysis {
      * Permet de rejouer ou comparer les analyses dans le temps.
      */
     #[ORM\Column(
-        name: "detector_version",
+        name: 'detector_version',
         type: Types::STRING,
         length: 20,
         nullable: false,
@@ -226,12 +215,18 @@ class UserAgentAnalysis {
      * Date de création de l'analyse.
      */
     #[ORM\Column(
-        name: "created_at",
+        name: 'created_at',
         type: Types::DATETIME_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date de création de l’analyse']
     )]
     private ?\DateTimeImmutable $createdAt = null;
+
+    public function __construct(string $detectorVersion)
+    {
+        $this->detectorVersion = $detectorVersion;
+        $this->createdAt = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
