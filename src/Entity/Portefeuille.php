@@ -16,44 +16,71 @@ namespace App\Entity;
 use App\Repository\PortefeuilleRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PortefeuilleRepository::class)]
-#[ORM\Table(name: "portefeuille", schema: "ma_moulinette")]
+#[ORM\Table(
+    name: 'portefeuille',
+    schema: "ma_moulinette",
+    options: ['comment' => 'Identifiant unique pour chaque portefeuille'])]
 class Portefeuille
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
+    #[ORM\Column(
+        name: 'id',
+        type: Types::INTEGER,
         options: ['comment' => 'Identifiant unique pour chaque portefeuille'])]
-    private $id;
+    private ?int $id = null;
 
-    #[ORM\Column(type: Types::STRING, length: 32, nullable: false, unique: true,
+    #[ORM\Column(
+        name: 'titre',
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
+        unique: true,
         options: ['comment' => 'Titre unique du portefeuille'])]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 32,
-        maxMessage: "Le titre ne peut pas dépasser 32 caractères.")]
-    private $titre;
+    #[Assert\Length(max: 32, maxMessage: "Le titre ne peut pas dépasser 32 caractères.")]
+    private string $titre;
 
-    #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
+    #[ORM\Column(
+        name: 'groupe',
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
         options: ['comment' => 'Nom de l’équipe associée au portefeuille'])]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 32,
-        maxMessage: "Le nom de l'équipe ne peut pas dépasser 32 caractères.")]
-    private $groupe;
+    #[Assert\Length(max: 32, maxMessage: "Le nom de l'équipe ne peut pas dépasser 32 caractères.")]
+    private string $groupe;
 
-    #[ORM\Column(type: 'json',
+    #[ORM\Column(
+        name: 'liste',
+        type: Types::JSON,
+        nullable: false,
         options: ['comment' => 'Liste des éléments ou des activités du portefeuille'])]
-    private ?array $liste = [];
+    #[Assert\NotNull]
+    private array $liste = [];
 
-    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true,
+    #[ORM\Column(
+        name: 'date_modification',
+        type: Types::DATETIME_MUTABLE,
+        nullable: true,
         options: ['comment' => 'Date de la dernière modification du portefeuille'])]
-    private $dateModification;
+    private ?\DateTimeInterface $dateModification = null;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE,  nullable: false,
+    #[ORM\Column(
+        name: 'date_enregistrement',
+        type: Types::DATETIMETZ_IMMUTABLE,
+        nullable: false,
         options: ['comment' => 'Date d’enregistrement du portefeuille'])]
-    private $dateEnregistrement;
+    #[Assert\NotNull]
+    private \DateTimeImmutable $dateEnregistrement;
+
+    public function __construct()
+    {
+        $this->dateEnregistrement = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {
@@ -70,7 +97,7 @@ class Portefeuille
         return $this->titre;
     }
 
-    public function setTitre(string $titre): static
+    public function setTitre(string $titre): self
     {
         $this->titre = $titre;
 
@@ -82,7 +109,7 @@ class Portefeuille
         return $this->groupe;
     }
 
-    public function setGroupe(string $groupe): static
+    public function setGroupe(string $groupe): self
     {
         $this->groupe = $groupe;
 
@@ -94,7 +121,7 @@ class Portefeuille
         return $this->liste;
     }
 
-    public function setListe(array $liste): static
+    public function setListe(array $liste): self
     {
         $this->liste = $liste;
 
@@ -106,7 +133,7 @@ class Portefeuille
         return $this->dateModification;
     }
 
-    public function setDateModification(?\DateTimeInterface $dateModification): static
+    public function setDateModification(?\DateTimeInterface $dateModification): self
     {
         $this->dateModification = $dateModification;
 
@@ -118,7 +145,7 @@ class Portefeuille
         return $this->dateEnregistrement;
     }
 
-    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
+    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): self
     {
         $this->dateEnregistrement = $dateEnregistrement;
 
