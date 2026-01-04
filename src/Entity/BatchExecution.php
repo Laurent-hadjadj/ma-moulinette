@@ -25,57 +25,99 @@ use Doctrine\ORM\Mapping as ORM;
  * [Description BatchExecution]
  */
 #[ORM\Entity(repositoryClass: BatchExecutionRepository::class)]
-#[ORM\Table(name: "batch_execution", schema: "ma_moulinette")]
+#[ORM\Table(
+    name: 'batch_execution',
+    schema: 'ma_moulinette',
+    options: ['comment' => 'Journal des exécutions de batchs']
+)]
 class BatchExecution
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Identifiant unique de la table batch_execution'])]
-    private $id;
+    #[ORM\Column(
+        name: 'id',
+        type: Types::INTEGER,
+        options: ['comment' => 'Identifiant unique de la table batch_execution']
+    )]
+    private ?int $id = null;
 
-    #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
-        options: ['comment' => 'Nom du traitement exécuté.'])]
+    #[ORM\Column(
+        name: 'nom_traitement',
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
+        options: ['comment' => 'Nom du traitement exécuté']
+    )]
     #[Assert\NotBlank]
+    #[Assert\Length(max: 32)]
     private string $nomTraitement;
 
-    #[ORM\Column(type: 'ulid', nullable: true,
-        options: ['comment' => 'Référence unique du journal (ULID sous forme de texte).']
+    #[ORM\Column(
+        name: 'execution_id',
+        type: 'ulid',
+        nullable: true,
+        options: ['comment' => 'Référence unique du journal (ULID)']
     )]
     private ?Ulid $executionId = null;
 
-    #[ORM\Column(type: 'ulid', nullable: true,
-        options: ['comment' => 'Référence unique du traitement (ULID sous forme de texte).']
+    #[ORM\Column(
+        name: 'traitement_id',
+        type: 'ulid',
+        nullable: true,
+        options: ['comment' => 'Référence unique du traitement (ULID)']
     )]
     private ?Ulid $traitementId = null;
 
-    #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
-    options: ['comment' => 'Mode de collecte : COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE'])]
+    #[ORM\Column(
+        name: 'mode_collecte',
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
+        options: ['comment' => 'Mode de collecte : COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE']
+    )]
     #[Assert\NotBlank]
+    #[Assert\Length(max: 32)]
     private string $modeCollecte;
 
-    #[ORM\Column(type: Types::STRING, length: 320, nullable: true,
-    options: ['comment' => "Compte de l'utilisateur qui a réalisé la collecte."])]
+    #[ORM\Column(
+        name: 'utilisateur_collecte',
+        type: Types::STRING,
+        length: 320,
+        nullable: true,
+        options: ['comment' => 'Compte utilisateur ayant réalisé la collecte']
+    )]
     #[Assert\Email]
     private ?string $utilisateurCollecte = null;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
-        options: ['comment' => 'Date d’enregistrement du journal de l’exécution du batch.'])]
+    #[ORM\Column(
+        name: 'date_enregistrement',
+        type: Types::DATETIMETZ_IMMUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date d’enregistrement du journal de l’exécution du batch']
+    )]
     private \DateTimeImmutable $dateEnregistrement;
 
-    #[ORM\OneToMany(mappedBy: 'job', targetEntity: BatchExecutionJournal::class, cascade: ['persist', 'remove'])]
+    /**
+     * @var Collection<int, BatchExecutionJournal>
+     */
+    #[ORM\OneToMany(
+        mappedBy: 'batchExecution',
+        targetEntity: BatchExecutionJournal::class,
+        cascade: ['persist', 'remove'],
+        orphanRemoval: true
+    )]
     private Collection $collectes;
 
     public function __construct(
         string $nomTraitement,
-        Ulid $executionId,
-        Ulid $traitementId,
+        ?Ulid $executionId,
+        ?Ulid $traitementId,
         ?string $utilisateurCollecte,
         string $modeCollecte
     ) {
         $this->nomTraitement = $nomTraitement;
-        $this->executionId = $executionId;
-        $this->traitementId = $traitementId;
+        $this->executionId = $executionId ?? new Ulid();
+        $this->traitementId = $traitementId ?? new Ulid();
         $this->utilisateurCollecte = $utilisateurCollecte;
         $this->modeCollecte = $modeCollecte;
         $this->dateEnregistrement = new \DateTimeImmutable();
@@ -83,22 +125,34 @@ class BatchExecution
     }
 
     /**
-     * [Description for addJournal]
-     *
-     * @param BatchExecutionJournal $journal
-     *
-     * @return void
-     *
-     * Created at: 25/10/2025 21:58:34 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * Ajoute un journal à la collection.
      */
     public function addJournal(BatchExecutionJournal $journal): void
     {
         if (!$this->collectes->contains($journal)) {
             $this->collectes->add($journal);
-            $journal->setJob($this);
+            $journal->setBatchExecution($this);
         }
+    }
+
+    /**
+     * Supprime un journal de la collection.
+     */
+    public function removeJournal(BatchExecutionJournal $journal): void
+    {
+        if ($this->collectes->removeElement($journal) && $journal->getBatchExecution() === $this) {
+            $journal->setBatchExecution(null);
+        }
+    }
+
+    /**
+     * Retourne la collection de journaux.
+     *
+     * @return Collection<int, BatchExecutionJournal>
+     */
+    public function getCollectes(): Collection
+    {
+        return $this->collectes;
     }
 
     public function getId(): ?int
@@ -116,7 +170,7 @@ class BatchExecution
         return $this->executionId;
     }
 
-    public function setExecution(Ulid $executionId): static
+    public function setExecution(Ulid $executionId): self
     {
         $this->executionId = $executionId;
 
@@ -128,7 +182,7 @@ class BatchExecution
         return $this->traitementId;
     }
 
-    public function setTraitementId(Ulid $traitementId): static
+    public function setTraitementId(Ulid $traitementId): self
     {
         $this->traitementId = $traitementId;
 
@@ -140,7 +194,7 @@ class BatchExecution
         return $this->modeCollecte;
     }
 
-    public function setModeCollecte(?string $modeCollecte): static
+    public function setModeCollecte(?string $modeCollecte): self
     {
         $this->modeCollecte = $modeCollecte;
 
@@ -152,7 +206,7 @@ class BatchExecution
         return $this->utilisateurCollecte;
     }
 
-    public function setUtilisateurCollecte(?string $utilisateurCollecte): static
+    public function setUtilisateurCollecte(?string $utilisateurCollecte): self
     {
         $this->utilisateurCollecte = $utilisateurCollecte;
 
@@ -164,21 +218,11 @@ class BatchExecution
         return $this->dateEnregistrement;
     }
 
-    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
+    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): self
     {
         $this->dateEnregistrement = $dateEnregistrement;
 
         return $this;
     }
 
-    public function getCollectes(): Collection
-    {
-        return $this->collectes;
-    }
-
-    public function addCollecte(BatchExecutionJournal $collecte): void
-    {
-        $this->collectes->add($collecte);
-        $collecte->setJob($this);
-    }
 }

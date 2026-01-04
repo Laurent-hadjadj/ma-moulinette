@@ -20,38 +20,90 @@ use App\Repository\BatchExecutionJournalRepository;
  * [Description BatchExecutionJournal]
  */
 #[ORM\Entity(repositoryClass: BatchExecutionJournalRepository::class)]
-#[ORM\Table(name: "batch_execution_journal", schema: "ma_moulinette")]
+#[ORM\Table(
+    name: 'batch_execution_journal',
+    schema: 'ma_moulinette',
+    options: ['comment' => 'Journal des exécutions de batch, ligne par projet']
+)]
 class BatchExecutionJournal
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Identifiant unique de la table batch_execution_journal'])]
-    private $id;
+    #[ORM\Column(
+        name: 'id',
+        type: Types::INTEGER,
+        options: ['comment' => 'Identifiant unique de la table batch_execution_journal']
+    )]
+    private ?int $id = null;
 
-    #[ORM\Column(type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Code de statut du traitement (200 = OK, 500 = Erreur, etc.)'])]
+    #[ORM\Column(
+        name: 'code',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Code de statut du traitement (200 = OK, 500 = Erreur, etc.)']
+    )]
     private int $code = 500;
 
-    #[ORM\Column(type: Types::STRING, nullable: false,
-        options: ['comment' => 'Nom du projet'])]
+    #[ORM\Column(
+        name: 'nom_projet',
+        type: Types::STRING,
+        nullable: false,
+        options: ['comment' => 'Nom du projet']
+    )]
     private string $nomProjet = '';
 
-    #[ORM\Column(type: Types::STRING, length: 32, nullable: false,
-        options: ['comment' => 'Portefeuille de projets'])]
+    #[ORM\Column(
+        name: 'portefeuille',
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
+        options: ['comment' => 'Portefeuille de projets']
+    )]
     private string $portefeuille = '';
 
-    #[ORM\Column(type: Types::BINARY, nullable: false,
-        options: ['comment' => 'Compte rendu HTML compressé du traitement.'])]
-    private $compteRendu;
+    #[ORM\Column(
+        name: 'compte_rendu',
+        type: Types::BLOB,
+        nullable: false,
+        options: ['comment' => 'Compte rendu HTML compressé du traitement']
+    )]
+    private string $compteRendu = '';
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
-        options: ['comment' => "Date d'exécution de la collecte."])]
+    #[ORM\Column(
+        name: 'date_execution',
+        type: Types::DATETIMETZ_IMMUTABLE,
+        nullable: false,
+        options: ['comment' => "Date d'exécution de la collecte"]
+    )]
     private \DateTimeImmutable $dateExecution;
 
-    #[ORM\ManyToOne(targetEntity: BatchExecution::class, inversedBy: 'collectes')]
-    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
-    private ?BatchExecution $job = null;
+    #[ORM\ManyToOne(
+        targetEntity: BatchExecution::class,
+        inversedBy: 'collectes'
+    )]
+    #[ORM\JoinColumn(
+        name: 'batch_execution_id',
+        referencedColumnName: 'id',
+        nullable: false,
+        onDelete: 'CASCADE'
+    )]
+    private ?BatchExecution $batchExecution = null;
+
+    public function __construct(
+        string $nomProjet,
+        string $portefeuille,
+        string $compteRendu,
+        \DateTimeImmutable $dateExecution,
+        BatchExecution $batchExecution,
+        int $code = 500
+    ) {
+        $this->nomProjet = $nomProjet;
+        $this->portefeuille = $portefeuille;
+        $this->compteRendu = $compteRendu;
+        $this->dateExecution = $dateExecution;
+        $this->batchExecution = $batchExecution;
+        $this->code = $code;
+    }
 
     public function getId(): ?int
     {
@@ -131,14 +183,15 @@ class BatchExecutionJournal
         return $this->dateExecution;
     }
 
-    public function setJob(?BatchExecution $job): void
+    public function getBatchExecution(): ?BatchExecution
     {
-        $this->job = $job;
+        return $this->batchExecution;
     }
 
-    public function getJob(): ?BatchExecution
+    public function setBatchExecution(?BatchExecution $batchExecution): self
     {
-        return $this->job;
+        $this->batchExecution = $batchExecution;
+        return $this;
     }
 
     // ----------------------------------------------------

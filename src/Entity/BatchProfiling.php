@@ -15,66 +15,111 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\BatchProfilingRepository;
 
 /**
  * [Description BatchProfiling]
  */
 #[ORM\Entity(repositoryClass: BatchProfilingRepository::class)]
-#[ORM\Table(name: "batch_profiling", schema: "ma_moulinette")]
+#[ORM\Table(
+    name: 'batch_profiling',
+    schema: 'ma_moulinette',
+    options: ['comment' => 'Profiling des batchs exécutés : temps et mémoire']
+)]
 class BatchProfiling
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: Types::INTEGER, nullable: false, options: [
-        'comment' => 'Identifiant unique de la table batch_profiling'
-    ])]
+    #[ORM\Column(
+        name: 'id',
+        type: Types::INTEGER,
+        options: ['comment' => 'Identifiant unique de la table batch_profiling']
+    )]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::STRING, length: 64, options: [
-        'comment' => 'Nom du portefeuille concerné par le traitement'
-    ])]
+    #[ORM\Column(
+        name: 'portefeuille',
+        type: Types::STRING,
+        length: 64,
+        nullable: false,
+        options: ['comment' => 'Nom du portefeuille concerné par le traitement']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 64)]
     private string $portefeuille;
 
-    #[ORM\Column(type: Types::STRING, length: 255, nullable: true, options: [
-        'comment' => 'Référence unique d’exécution du traitement (token ou UUID)'
-    ])]
+    #[ORM\Column(
+        name: 'execution_reference',
+        type: Types::STRING,
+        length: 255,
+        nullable: true,
+        options: ['comment' => 'Référence unique d’exécution du traitement (token ou UUID)']
+    )]
     private ?string $executionReference = null;
 
-    #[ORM\Column(type: Types::INTEGER, options: [
-        'comment' => 'Nombre total de projets traités dans le batch'
-    ])]
+    #[ORM\Column(
+        name: 'nb_projets',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre total de projets traités dans le batch']
+    )]
+    #[Assert\PositiveOrZero]
     private int $nbProjets;
 
-    #[ORM\Column(type: Types::FLOAT, options: [
-        'comment' => 'Durée totale d’exécution en secondes'
-    ])]
+    #[ORM\Column(
+        name: 'temps_total',
+        type: Types::FLOAT,
+        nullable: false,
+        options: ['comment' => 'Durée totale d’exécution en secondes']
+    )]
+    #[Assert\PositiveOrZero]
     private float $tempsTotal;
 
-    #[ORM\Column(type: Types::FLOAT, options: [
-        'comment' => 'Durée moyenne d’exécution par projet (en secondes)'
-    ])]
+    #[ORM\Column(
+        name: 'temps_moyen',
+        type: Types::FLOAT,
+        nullable: false,
+        options: ['comment' => 'Durée moyenne d’exécution par projet (en secondes)']
+    )]
+    #[Assert\PositiveOrZero]
     private float $tempsMoyen;
 
-    #[ORM\Column(type: Types::FLOAT, options: [
-        'comment' => 'Consommation mémoire maximale observée (en Mo)'
-    ])]
+    #[ORM\Column(
+        name: 'memoire_peak',
+        type: Types::FLOAT,
+        nullable: false,
+        options: ['comment' => 'Consommation mémoire maximale observée (en Mo)']
+    )]
+    #[Assert\PositiveOrZero]
     private float $memoirePeak;
 
-    #[ORM\Column(type: Types::FLOAT, options: [
-        'comment' => 'Consommation mémoire moyenne observée (en Mo)'
-    ])]
+    #[ORM\Column(
+        name: 'memoire_moyenne',
+        type: Types::FLOAT,
+        nullable: false,
+        options: ['comment' => 'Consommation mémoire moyenne observée (en Mo)']
+    )]
+    #[Assert\PositiveOrZero]
     private float $memoireMoyenne;
 
-    #[ORM\Column(type: Types::STRING, length: 128, options: [
-        'comment' => 'Identifiant ou adresse e-mail de l’utilisateur exécutant le batch'
-    ])]
+    #[ORM\Column(
+        name: 'utilisateur',
+        type: Types::STRING,
+        length: 128,
+        nullable: false,
+        options: ['comment' => 'Identifiant ou adresse e-mail de l’utilisateur exécutant le batch']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 128)]
     private string $utilisateur;
 
-    #[ORM\Column(type: Types::DATETIMETZ_IMMUTABLE, nullable: false, options: [
-        'default' => 'CURRENT_TIMESTAMP',
-        'comment' => "Horodatage de l’exécution du batch (timezone Europe/Paris)"
-    ])]
+    #[ORM\Column(
+        name: 'date_execution',
+        type: Types::DATETIMETZ_IMMUTABLE,
+        nullable: false,
+        options: ['comment' => "Horodatage de l’exécution du batch (timezone Europe/Paris)"]
+    )]
     private \DateTimeImmutable $dateExecution;
 
     public function __construct(
@@ -98,18 +143,59 @@ class BatchProfiling
         $this->dateExecution = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
     }
 
-    // --- Getters ---
+    // -------------------------
+    // Getters
+    // -------------------------
 
-    public function getId(): ?int { return $this->id; }
-    public function getPortefeuille(): string { return $this->portefeuille; }
-    public function getExecutionReference(): ?string { return $this->executionReference; }
-    public function getNbProjets(): int { return $this->nbProjets; }
-    public function getTempsTotal(): float { return $this->tempsTotal; }
-    public function getTempsMoyen(): float { return $this->tempsMoyen; }
-    public function getMemoirePeak(): float { return $this->memoirePeak; }
-    public function getMemoireMoyenne(): float { return $this->memoireMoyenne; }
-    public function getUtilisateur(): string { return $this->utilisateur; }
-    public function getDateExecution(): \DateTimeImmutable { return $this->dateExecution; }
+    public function getId(): ?int
+    {
+        return $this->id;
+    }
+
+    public function getPortefeuille(): string
+    {
+        return $this->portefeuille;
+    }
+
+    public function getExecutionReference(): ?string
+    {
+        return $this->executionReference;
+    }
+
+    public function getNbProjets(): int
+    {
+        return $this->nbProjets;
+    }
+
+    public function getTempsTotal(): float
+    {
+        return $this->tempsTotal;
+    }
+
+    public function getTempsMoyen(): float
+    {
+        return $this->tempsMoyen;
+    }
+
+    public function getMemoirePeak(): float
+    {
+        return $this->memoirePeak;
+    }
+
+    public function getMemoireMoyenne(): float
+    {
+        return $this->memoireMoyenne;
+    }
+
+    public function getUtilisateur(): string
+    {
+        return $this->utilisateur;
+    }
+
+    public function getDateExecution(): \DateTimeImmutable
+    {
+        return $this->dateExecution;
+    }
 
     // --- Méthodes utilitaires (facultatives mais utiles dans Twig ou debug) ---
 
@@ -122,10 +208,10 @@ class BatchProfiling
      * [Description for __toString]
      *
      * @return string
-     * 
+     *
      * Created at: 13/11/2025 21:17:41 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com> 
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0. 
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function __toString(): string
     {
