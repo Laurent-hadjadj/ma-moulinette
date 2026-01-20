@@ -327,7 +327,20 @@ class AccueilController extends AbstractController
                 'date_modification_profil' => $date
             ];
 
-            $propertiesRepos->insertProperties($map);
+            $insert = $propertiesRepos->insertProperties($map);
+            if ($insert['code'] !== 200) {
+                $this->logger->error("[Accueil] ❌ Échec de la requête insertProperties", [
+                    'code' => $insert['code'],
+                    'erreur' => $insert['erreur'] ?? null
+                ]);
+
+                $this->addFlash('notice',
+                    [
+                        'type' => 'alert',
+                        'message' => "❌ {$insert['erreur']}"
+                    ]);
+                return ['code' => 500];
+            }
             return $map;
         }
 
@@ -582,6 +595,11 @@ class AccueilController extends AbstractController
             'composant', 'nombre_projet_favori', 'favori', 'public', 'private',
             'nombre_projet_local', 'nombre_tag', 'version_serveur_sonar'
         ], 0);
+
+        /** Le tableau des properties et il y a un code 500 */
+        if (!empty($properties) && array_key_exists('code', $properties) && $properties['code'] !== 200){
+            return $this->render(static::$page, $render);
+        }
 
         /** 1 - Les Dates  */
         $dateModificationProjet = $properties['date_modification_projet'];
