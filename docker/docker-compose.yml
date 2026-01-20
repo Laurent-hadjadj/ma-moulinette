@@ -1,31 +1,36 @@
 # Definition des services pour la stack Symfony
 services:
   # ma base de données postgreSQL
-  database:
+  database-ma-moulinette:
     platform: ${platform}
-    container_name: postgresql
+    container_name: postgresql-ma-moulinette
     image: "postgres:${postgresql_version}"
     hostname: postgresql-ma-moulinette
     restart: "unless-stopped"
     shm_size: "128mb"
+    ports:
+      - "5433:5432"
     security_opt:
       - no-new-privileges:true
     environment:
       - "TZ=${LOCAL_TZ}"
       - "LANG=${LOCAL_LANG}"
       - "POSTGRES_PASSWORD=${postgresql_password}"
-      #- "POSTGRES_USER=${postgresql_user}"
-      #- "POSTGRES_DB=${postgresql_db}"
+      - "SQL_DIR=/data/sql/update"
+      - "INIT_SQL_DIR=/docker-entrypoint-initdb.d"
     volumes:
-      - "${root_volume}/postgresql:/var/lib/postgresql/data"
       - "${root_volume}/data/sql:/docker-entrypoint-initdb.d"
+      - "${root_volume}/postgresql:/var/lib/postgresql/18/docker"
+      - "${root_volume}/data/update-sql:/data/sql/update"
+      - "${root_volume}/scripts/postgresql/execute_sql_files.sh:/scripts/postgresql/execute_sql_files.sh"
+      - "${root_volume}/scripts/postgresql/init_sql_files.sh:/docker-entrypoint-initdb.d/init_sql_files.sh"
     networks:
       - proxy-net
 
-  php-fpm:
+  php-fpm-ma-moulinette:
     platform: ${platform}
-    container_name: php-fpm
-    hostname: php-fpm
+    container_name: php-fpm-ma-moulinette
+    hostname: php-fpm-ma-moulinette
     environment:
       - "TZ=${LOCAL_TZ}"
       - "LANG=${LOCAL_LANG}"
@@ -39,14 +44,14 @@ services:
       - "${root_volume}/web-app:/var/www/"
     restart: unless-stopped
     depends_on:
-      - database
+      - database-ma-moulinette
     networks:
       - proxy-net
 
-  nginx:
+  nginx-ma-moulinette:
     platform: ${platform}
     image: nginx:${nginx_version}
-    container_name: nginx
+    container_name: nginx-ma-moulinette
     environment:
       - "TZ=${LOCAL_TZ}"
       - "LANG=${LOCAL_LANG}"
@@ -56,8 +61,7 @@ services:
     volumes:
       - "${root_volume}/web-app:/var/www/"
       - "${root_volume}/log:/var/log/nginx/"
-      - "${root_volume}/opt:/opt:rw"
-      - "${root_volume}/etc/letsencrypt:/etc/letsencrypt:ro"
+      - "${root_volume}/opt:/opt:rw"      
       - "${root_volume}/etc/nginx/ssl/dhparam.pem:/etc/nginx/ssl/dhparam.pem:ro"
       - "${root_volume}/etc/nginx/conf.d/:/etc/nginx/conf.d/:ro"
       - "${root_volume}/etc/nginx/sites-enabled/:/etc/nginx/sites-enabled/:ro"
@@ -65,10 +69,10 @@ services:
       - "${root_volume}/etc/nginx/mime.types:/etc/nginx/mime.types:ro"
     restart: unless-stopped
     depends_on:
-      - php-fpm
-      - database
+      - php-fpm-ma-moulinette
+      - database-ma-moulinette
     links:
-      - php-fpm
+      - php-fpm-ma-moulinette
     networks:
       - proxy-net
     labels:
@@ -82,6 +86,19 @@ services:
       - "traefik.http.middlewares.${traefik_container}-middle-headers.headers.customrequestheaders.X-Debug-Traefik=traefik-header"
       - "traefik.http.routers.${traefik_container}.middlewares=${traefik_container}-middle"
       - "traefik.http.middlewares.${traefik_container}-middle.stripprefix.prefixes=${traefik_pathprefix}"
+
+      - "traefik.http.routers.${traefik_container}-https.rule=Host(`${traefik_host}`)"
+      - "traefik.http.routers.${traefik_container}-https.rule=PathPrefix(`${traefik_pathprefix}`)"
+      - "traefik.http.routers.${traefik_container}-https.entrypoints=websecure"
+      - "traefik.http.routers.${traefik_container}-https.middlewares=${traefik_container}-https-middle-headers"
+      - "traefik.http.middlewares.${traefik_container}-https-middle-headers.headers.customrequestheaders.X-Forwarded-Prefix==${traefik_forwarded_prefix}"
+      - "traefik.http.middlewares.${traefik_container}-https-middle-headers.headers.customrequestheaders.X-Debug-Traefik=traefik-header"
+      - "traefik.http.routers.${traefik_container}-https.middlewares=${traefik_container}-https-middle"
+      - "traefik.http.middlewares.${traefik_container}-https-middle.stripprefix.prefixes=${traefik_pathprefix}"
+
+      - "traefik.http.routers.${traefik_container}-https.tls=true"
+      - "traefik.http.middlewares.${traefik_container}-redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.${traefik_container}-redirect-to-https.redirectscheme.permanent=true"
 
 # Définition des réseaux
 networks:
