@@ -9,7 +9,7 @@
 --- 2026-01-03 : Initialisation du script
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
-\c assistant_ia db_user
+\c ma_moulinette db_user;
 
 DROP TABLE IF EXISTS ma_moulinette.user_agent_event;
 

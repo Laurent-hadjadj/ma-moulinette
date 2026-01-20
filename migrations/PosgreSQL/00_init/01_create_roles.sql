@@ -9,6 +9,7 @@
 --- 2025-11-30 : Migration postGreSql 18
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire de la base
+-- a lancer depuis la console.
 \c postgres;
 
 CREATE ROLE db_user LOGIN PASSWORD 'db_password';
