@@ -102,5 +102,5 @@ CREATE TABLE ma_moulinette.historique
     logger_error INT,
     logger_debug INT,
 
-    date_enregistrement TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    date_enregistrement TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
