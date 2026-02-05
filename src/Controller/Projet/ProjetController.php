@@ -20,8 +20,9 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
+
 use App\Entity\Historique;
-use App\Service\MesProjets;
+use App\Service\{MesProjets, UserAgentTrackingFacade};
 
 /**
  * [Description ProjetController]
@@ -45,6 +46,7 @@ class ProjetController extends AbstractController
         private EntityManagerInterface $em,
         private ParameterBagInterface $params,
         private LoggerInterface $logger,
+        private UserAgentTrackingFacade $tracking
     ) {
         $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
@@ -92,6 +94,7 @@ class ProjetController extends AbstractController
     #[Route('/projet', name: 'projet', methods: 'GET')]
     public function index(): Response
     {
+        $this->tracking->track('PROJET');
         $render = static::genericRender();
 
         $this->logger->info('[Projet] ℹ️ Affichage de la page projet.');
@@ -110,6 +113,7 @@ class ProjetController extends AbstractController
     #[Route('/projet/mes-projets', name: 'mes_projets', methods: 'GET')]
     public function mesProjets(): Response
     {
+        $this->tracking->track('MES_PROJETS');
         /** On instancie l'entityRepository */
         $historiqueRepos = $this->em->getRepository(Historique::class);
 

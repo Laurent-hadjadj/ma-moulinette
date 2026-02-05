@@ -21,6 +21,7 @@ use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\Profiles;
+use App\Service\UserAgentTrackingFacade;
 
 /**
  * [Description ProfilController]
@@ -44,7 +45,8 @@ class ProfilController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private ParameterBagInterface $params,
-        private LoggerInterface $logger)
+        private LoggerInterface $logger,
+        private UserAgentTrackingFacade $tracking)
     {
         $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
@@ -89,6 +91,8 @@ class ProfilController extends AbstractController
     #[Route('/profil', name: 'profil', methods: 'GET')]
     public function index(): Response
     {
+        $this->tracking->track('PROFIL');
+
         $this->logger->info('[Profil] ℹ️ Accès à la page /profil', [
         'env' => $this->environnement]);
 

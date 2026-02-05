@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Activity, ActivityHistorique};
-use App\Service\{ClientService, UrlBuilderService};
+use App\Service\{ClientService, UserAgentTrackingFacade};
 
 /**
  * [Description ActivityController]
@@ -48,8 +48,9 @@ class ActivityController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private ParameterBagInterface $params,
-        private ClientService $client
-        )
+        private ClientService $client,
+        private UserAgentTrackingFacade $tracking
+    )
     {
         $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
@@ -93,6 +94,8 @@ class ActivityController extends AbstractController
     #[Route('/activity', name: 'activity', methods: 'GET')]
     public function index()
     {
+        $this->tracking->track('ACTIVITY');
+
         /** On instancie l'EntityRepository */
         $activityRepos = $this->em->getRepository(Activity::class);
         $activityHistoriqueRepos = $this->em->getRepository(ActivityHistorique::class);

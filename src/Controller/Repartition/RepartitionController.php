@@ -21,8 +21,9 @@ use Symfony\Component\HttpFoundation\{Request, Response};
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Controller\Batch\BatchCollecteRepartitionController;
+
 use App\Entity\Repartition;
-use App\Service\ExtractName;
+use App\Service\{ExtractName, UserAgentTrackingFacade};
 
 /**
  * [Description RepartitionController]
@@ -54,7 +55,8 @@ class RepartitionController extends AbstractController
         private ParameterBagInterface $params,
         private Security $security,
         private BatchCollecteRepartitionController $batchCollecteRepartition,
-        private LoggerInterface $logger)
+        private LoggerInterface $logger,
+        private UserAgentTrackingFacade $tracking)
     {
         $this->params = $params;
 
@@ -148,6 +150,8 @@ class RepartitionController extends AbstractController
     #[Route('/repartition', name: 'repartition', methods: ['GET'])]
     public function repartition(Request $request): Response
     {
+        $this->tracking->track('REPARTITION');
+
         $user = $this->security->getUser();
         if (!$user) {
             $this->logger->error('[Répartition] 🚫 Accès refusé : utilisateur non connecté.');

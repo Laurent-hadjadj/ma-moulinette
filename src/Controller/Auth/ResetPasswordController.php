@@ -26,6 +26,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Utilisateur;
 use App\Form\ResetPasswordFormType;
 use App\Repository\UtilisateurRepository;
+use App\Service\UserAgentTrackingFacade;
 
 /**
  * [Description ResetPasswordController]
@@ -51,6 +52,7 @@ class ResetPasswordController extends AbstractController
         private ParameterBagInterface $params,
         private LoggerInterface $logger,
         private UserPasswordHasherInterface $passwordHasher,
+        private UserAgentTrackingFacade $tracking
     ) {
         $this->utilisateurRepository = $utilisateurRepository;
         $this->params = $params;
@@ -102,6 +104,8 @@ class ResetPasswordController extends AbstractController
     #[Route('/mot-de-passe/mise-a-jour', name: 'reset_mot_de_passe')]
     public function resetMotDePasse(Request $request, TokenInterface $token): Response
     {
+        $this->tracking->track('RESET_PASSWORD');
+
         $utilisateur = $token->getUser();
 
         if (!$utilisateur instanceof Utilisateur) {

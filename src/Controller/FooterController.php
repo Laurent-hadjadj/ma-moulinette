@@ -17,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Service\UserAgentTrackingFacade;
 
 /**
  * [Description FooterController]
@@ -33,6 +34,7 @@ class FooterController extends AbstractController
 
     public function __construct(
         private ParameterBagInterface $params,
+        private UserAgentTrackingFacade $tracking
     ) {
         $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
@@ -76,6 +78,7 @@ class FooterController extends AbstractController
     #[Route('/plan-du-site', name: 'plan_du_site')]
     public function planDuSite(): Response
     {
+        $this->tracking->track('PLAN_DU_SITE');
         $render=static::genericRender();
         return $this->render('footer/plan-du-site.html.twig', $render);
     }
@@ -92,6 +95,7 @@ class FooterController extends AbstractController
     #[Route('/mention-legale', name: 'mention_legal')]
     public function mentionLegal(): Response
     {
+        $this->tracking->track('MENTION_LEGALE');
         $render=static::genericRender();
         $render['editeur'] = $this->getParameter('cgu.editeur');
         $render['siret'] = $this->getParameter('cgu.siret');
@@ -114,6 +118,7 @@ class FooterController extends AbstractController
     #[Route('/donnees-personnelles', name: 'donnees_personnelles')]
     public function donneesPersonnelles(): Response
     {
+        $this->tracking->track('CGU');
         $render=static::genericRender();
         $render['urlSite'] = $this->getParameter('cgu.url.site');
         return $this->render('footer/donnees-personnelles.html.twig', $render);

@@ -23,7 +23,7 @@ use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Utilisateur;
 use App\Form\RegistrationFormType;
-use App\Service\TokenService;
+use App\Service\{TokenService, UserAgentTrackingFacade};
 
 /**
  * [Description RegistrationController]
@@ -43,7 +43,8 @@ class RegistrationController extends AbstractController
         private ParameterBagInterface $params,
         private EntityManagerInterface $em,
         private LoggerInterface $logger,
-        private TokenService $tokenService
+        private TokenService $tokenService,
+        private UserAgentTrackingFacade $tracking
     ) {
         $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
@@ -92,6 +93,8 @@ class RegistrationController extends AbstractController
     #[Route('/register', name: 'register')]
     public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, ValidatorInterface $validator): Response
     {
+        $this->tracking->track('REGISTER');
+
         /**
          * Si on est déjà connecté
          * On affiche la page /accueil, Si on la page /login

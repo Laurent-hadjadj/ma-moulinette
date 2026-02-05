@@ -21,7 +21,7 @@ use Knp\Component\Pager\PaginatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Actuator, ActuatorInfo};
 use App\Form\ActuatorFormType;
-use App\Service\ClientService;
+use App\Service\{ClientService, UserAgentTrackingFacade};
 
 /**
  * [Description ActuatorController]
@@ -43,7 +43,8 @@ class ActuatorController extends AbstractController
         private EntityManagerInterface $em,
         private ClientService $client,
         private PaginatorInterface $paginator,
-        private ParameterBagInterface $params
+        private ParameterBagInterface $params,
+        private UserAgentTrackingFacade $tracking
     ) {
         $this->paginator = $paginator;
         $this->params = $params;
@@ -81,6 +82,8 @@ class ActuatorController extends AbstractController
     #[Route('/actuator', name: 'actuator', methods:'GET')]
     public function actuator(Request $request): Response
     {
+        $this->tracking->track('PROMPT_SIMPLE');
+
       /** On instancie l'EntityRepository */
         $actuatorRepository = $this->em->getRepository(actuator::class);
 

@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\OwaspTop10;
+use App\Service\UserAgentTrackingFacade;
 
 /**
  * [Description OwaspController]
@@ -45,7 +46,8 @@ class OwaspController extends AbstractController
      */
     public function __construct(
         private ParameterBagInterface $params,
-        private EntityManagerInterface $em)
+        private EntityManagerInterface $em,
+        private UserAgentTrackingFacade $tracking)
     {
         $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
@@ -90,8 +92,11 @@ class OwaspController extends AbstractController
     #[Route('/owasp', name: 'owasp')]
     public function index(): Response
     {
+
+        $this->tracking->track('OWASP');
+
         /** On charge le template du render */
-        $render=static::genericRender();
+        $render = static::genericRender();
 
         /** On instancie l'entityRepos */
         $owaspTop10Repos = $this->em->getRepository(OwaspTop10::class);

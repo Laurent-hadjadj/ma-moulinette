@@ -22,7 +22,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{ListeProjet, Profiles, Properties, Historique, MaMoulinette};
-use App\Service\{ClientService, UrlBuilderService};
+use App\Service\{ClientService, UrlBuilderService, UserAgentTrackingFacade};
 
 /**
  * [Description AccueilController]
@@ -53,7 +53,8 @@ class AccueilController extends AbstractController
         private ParameterBagInterface $params,
         private UrlBuilderService $urlBuilder,
         private LoggerInterface $logger,
-        private Security $security
+        private Security $security,
+        private UserAgentTrackingFacade $tracking
     ) {
         $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
@@ -569,7 +570,7 @@ class AccueilController extends AbstractController
     #[Route('/accueil', name: 'accueil', methods:'GET')]
     public function index(): Response
     {
-                /**
+        /**
          * Description du processus :
          * 1 - On regarde si la base locale a déjà été mise à jour, i.e.
          *     si la base locale a été mise à jour dans la journée alors les propriétés
@@ -580,6 +581,9 @@ class AccueilController extends AbstractController
          * 3 - On met à jour la table liste_projet et/ou profiles et on met à jour la table
          *     properties.
          */
+
+        $this->tracking->track('ACCUEIL');
+
         $this->logger->info("[Accueil] ℹ️ Chargement de la page d'accueil");
         $listeProjetRepo = $this->em->getRepository(ListeProjet::class);
 

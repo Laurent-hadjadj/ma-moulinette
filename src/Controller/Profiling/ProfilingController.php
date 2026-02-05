@@ -17,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\{Response};
 use Symfony\Component\Routing\Annotation\Route;
+use App\Service\UserAgentTrackingFacade;
 
 /**
  * [Description ProfilingController]
@@ -34,6 +35,7 @@ class ProfilingController extends AbstractController
 
     public function __construct(
         private ParameterBagInterface $params,
+        private UserAgentTrackingFacade $tracking
     ) {
         $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
@@ -74,6 +76,7 @@ class ProfilingController extends AbstractController
     #[Route('/traitement/profiling', name: 'profiling_dashboard', methods: ['GET'])]
     public function profiling(): Response
     {
+        $this->tracking->track('PROFILING');
         $render = static::genericRender();
 
         /** On vérifie que l'utilisateur a le ROLE_BATCH pour voir cette page. */

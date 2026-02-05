@@ -21,7 +21,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{BatchTraitement, BatchExecution, BatchExecutionJournal};
-use App\Service\PdfExportService;
+use App\Service\{PdfExportService, UserAgentTrackingFacade};
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
@@ -55,7 +55,8 @@ class BatchController extends AbstractController
         private ParameterBagInterface $params,
         private LoggerInterface $logger,
         private Security $security,
-        private PdfExportService $pdfExportService
+        private PdfExportService $pdfExportService,
+        private UserAgentTrackingFacade $tracking
     ) {
         $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
@@ -375,6 +376,8 @@ class BatchController extends AbstractController
     #[Route('/traitement/suivi', name: 'traitement_suivi', methods:'GET')]
     public function traitementSuivi(): Response
     {
+        $this->tracking->track('BATCH');
+
         /** On instancie l'EntityRepository */
         $batchTraitementRepos = $this->em->getRepository(BatchTraitement::class);
 
@@ -557,38 +560,3 @@ class BatchController extends AbstractController
     }
 
 }
-
-
-/*public function index(EntityManagerInterface $em)
-{
-    // ... stats existantes
-    $dateDebut = new \DateTime('-30 days');
-
-    $qb = $em->createQueryBuilder();
-    $qb->select('DATE(r.date) as jour, COUNT(r.id) as nbJobs')
-        ->from(Rapport::class, 'r')
-        ->where('r.date >= :dateDebut')
-        ->setParameter('dateDebut', $dateDebut)
-        ->groupBy('jour')
-        ->orderBy('jour', 'ASC');
-
-    $result = $qb->getQuery()->getResult();
-
-    // Préparer pour JS
-    $jours = array_map(fn($r) => $r['jour']->format('Y-m-d'), $result);
-    $nbJobs = array_map(fn($r) => $r['nbJobs'], $result);
-
-    return $this->render('rapport/index.html.twig', [
-        'total' => $total,
-        'nbSucces' => $nbSucces,
-        'nbErreur' => $nbErreur,
-        'jours' => json_encode($jours),
-        'nbJobs' => json_encode($nbJobs),
-    ]);
-}*/
-
-/**
- * $connection = $this->em->getConnection();
- * $deleted = $connection->fetchOne("SELECT ma_moulinette.purge_batch_profiling(90)");
-* $this->logger->info("Purge des batch_profiling : $deleted lignes supprimées");
- */

@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{Request, Response};
 use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
-use App\Service\ProjetCosuiService;
+use App\Service\{ProjetCosuiService, UserAgentTrackingFacade};
 
 /**
  * [Description CosuiController]
@@ -38,7 +38,8 @@ class CosuiController extends AbstractController
      */
     public function __construct(
         private LoggerInterface $logger,
-        private ProjetCosuiService $cosuiService)
+        private ProjetCosuiService $cosuiService,
+        private UserAgentTrackingFacade $tracking)
     {
         $this->cosuiService = $cosuiService;
     }
@@ -137,6 +138,8 @@ class CosuiController extends AbstractController
     public function projetCosui(Request $request): Response
     {
         $this->logger->info('[COSUI] ℹ️ Accès à /projet/cosui');
+
+        $this->tracking->track('COSUI');
 
         $render = $this->cosuiService->initialRender();
 

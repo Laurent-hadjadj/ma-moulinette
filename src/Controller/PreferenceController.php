@@ -19,7 +19,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
 use Symfony\Component\Routing\Annotation\Route;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Service\ClientService;
+use App\Service\{ClientService, UserAgentTrackingFacade};
 
 class PreferenceController extends AbstractController
 {
@@ -43,8 +43,9 @@ class PreferenceController extends AbstractController
         private EntityManagerInterface $em,
         private ParameterBagInterface $params,
         private Security $security,
-        private ClientService $client)
-    {
+        private ClientService $client,
+        private UserAgentTrackingFacade $tracking
+    ){
         $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
@@ -304,6 +305,7 @@ class PreferenceController extends AbstractController
     #[Route('/preferences', name: 'preferences', methods:'GET')]
     public function index(): Response
     {
+        $this->tracking->track('PREFERENCE');
         /** On bind les informations utilisateur */
         $prenom = $this->security->getUser()->getPrenom();
         $nom = $this->security->getUser()->getNom();

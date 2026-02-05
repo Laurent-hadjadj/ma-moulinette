@@ -22,6 +22,7 @@ use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Historique, ListeProjet};
 use App\Exception\FetchDataException;
+use App\Service\UserAgentTrackingFacade;
 
 /**
  * [Description SuiviController]
@@ -30,7 +31,6 @@ class SuiviController extends AbstractController
 {
     /** Définition des constantes */
     public static $page= "suivi/index.html.twig";
-    //public static $erreur = "❌ Une erreur s'est produite ";
     public static $erreur400 = "❌ La requête est incorrecte (Erreur 400).";
     public static $erreur404 = "⚠️ Vous devez être rattaché à une équipe (Erreur 404).";
     public static $erreur406 = "⚠️ Je n'ai pas trouvé de projets pour ton équipe. ".
@@ -55,6 +55,7 @@ class SuiviController extends AbstractController
         private Security $security,
         private ParameterBagInterface $params,
         private LoggerInterface $logger,
+        private UserAgentTrackingFacade $tracking
     ) {
         $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
@@ -271,6 +272,8 @@ class SuiviController extends AbstractController
     #[Route('/suivi', name: 'suivi', methods: ['GET'])]
     public function suivi(Request $request): response
     {
+        $this->tracking->track('SUIVI');
+
         $session = $request->getSession();
 
         // Instanciation des repositories

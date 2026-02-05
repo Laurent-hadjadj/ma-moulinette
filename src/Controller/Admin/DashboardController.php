@@ -24,6 +24,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Utilisateur, Groupe, Portefeuille, Batch};
+use App\Service\UserAgentTrackingFacade;
 
 /**
  * [Description DashboardController]
@@ -44,7 +45,8 @@ class DashboardController extends AbstractDashboardController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        private Packages $assets
+        private Packages $assets,
+        private UserAgentTrackingFacade $tracking
     ) {
     }
 
@@ -106,6 +108,8 @@ class DashboardController extends AbstractDashboardController
     #[Route('/admin', name: 'admin')]
     public function index(): Response
     {
+        $this->tracking->track('DASHBOARD');
+
         /** Informations système **/
         $symfonyVersion = \Symfony\Component\HttpKernel\Kernel::VERSION;
         $phpVersion = PHP_VERSION;

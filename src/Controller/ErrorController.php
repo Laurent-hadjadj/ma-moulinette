@@ -17,6 +17,7 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Service\UserAgentTrackingFacade;
 
 /** Exception */
 use Symfony\Component\ErrorHandler\Exception\FlattenException;
@@ -30,8 +31,10 @@ use Twig\Environment;
 class ErrorController extends AbstractController
 {
     #[Route('/error', name: 'erreur', methods: ['GET'])]
-    public function show(FlattenException $exception, Environment $env): Response
+    public function show(FlattenException $exception, Environment $env, UserAgentTrackingFacade $tracking): Response
     {
+        $tracking->track("ERROR_{$exception->getStatusCode()}");
+
         /** On affiche la page correspondant au code HTTP */
         $view = "bundles/TwigBundle/Exception/error{$exception->getStatusCode()}.html.twig";
         if (!$env->getLoader()->exists($view)) {
