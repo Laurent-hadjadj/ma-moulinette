@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright © 2015-2025.
+ *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -16,6 +16,7 @@ namespace App\Entity;
 use App\Repository\UserAgentEventRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Uid\Ulid;
 
 /**
  * [Description UserAgentEvent]
@@ -37,6 +38,7 @@ use Doctrine\DBAL\Types\Types;
 #[ORM\Index(name: "idx_created_at", columns: ["created_at"])]
 #[ORM\Index(name: "idx_user_id", columns: ["user_id"])]
 #[ORM\Index(name: "idx_session_id", columns: ["session_id"])]
+#[ORM\Index(name: "idx_visitor_id", columns: ["visitor_id"])]
 class UserAgentEvent {
 
     /**
@@ -60,7 +62,7 @@ class UserAgentEvent {
      *
      * Valeurs possibles :
      * - LOGIN_PAGE_VIEW : affichage de la page de login (utilisateur anonyme)
-     * - LOGIN_SUCCESS_REDIRECT : redirection après authentification réussie
+     * - LOGIN_SUCCESS_REDIRECT (LOGGED) : redirection après authentification réussie
      * - LOGOUT : déconnexion de l'utilisateur
      */
     #[ORM\Column(
@@ -139,6 +141,22 @@ class UserAgentEvent {
         options: ['comment' => 'Identifiant de l’utilisateur authentifié']
     )]
     private ?int $userId = null;
+
+    /**
+     * Identifiant visiteur long terme (cookie analytics).
+     *
+     * Stable :
+     * - avant login
+     * - après login
+     * - malgré rotation de session
+     */
+    #[ORM\Column(
+        name: "visitor_id",
+        type: 'ulid',
+        nullable: false,
+        options: ['comment' => 'Identifiant visiteur analytics long terme']
+    )]
+    private ?Ulid $visitorId = null;
 
     /**
      * État d'authentification au moment de l'événement.
@@ -268,6 +286,17 @@ class UserAgentEvent {
     public function setUserId(?int $userId): self
     {
         $this->userId = $userId;
+        return $this;
+    }
+
+    public function getVisitorId(): ?Ulid
+    {
+        return $this->visitorId;
+    }
+
+    public function setVisitorId(?Ulid $visitorId): self
+    {
+        $this->visitorId = $visitorId;
         return $this;
     }
 
