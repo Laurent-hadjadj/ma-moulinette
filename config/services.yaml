@@ -98,4 +98,23 @@ services:
             $allowedOrigins: '%app.allowed_origins%'
             $internalHeaderName: 'X-Internal-Front'
             $internalHeaderValue: 'front-app'
+
+    # Permet d'offusquer les informations sensibles dans les logs.
+    App\EventListener\ExceptionListener:
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
+
+    App\Monolog\Processor\MaskSensitiveEnvVariablesProcessor:
+        tags:
+            - { name: monolog.processor}
+
+    # On remplace handler par channel
+    App\Monolog\Processor\MaskSensitiveDataProcessor:
+        tags:
+            - { name: monolog.processor, channel: request }
+
+    # Collecte userAgent  définition du salt.
+    App\Service\UserAgentTrackerService:
+        arguments:
+            $appSalt: '%env(APP_USER_AGENT_SALT)%'
 ...
