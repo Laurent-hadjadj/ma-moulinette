@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright © 2015-2025.
+ *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -16,6 +16,7 @@ namespace App\Entity;
 use App\Repository\UserAgentAnalysisRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Component\Uid\Ulid;
 
 /**
  * [Description UserAgentAnalysis]
@@ -33,6 +34,8 @@ use Doctrine\DBAL\Types\Types;
 #[ORM\Index(name: 'idx_created_at', columns: ["created_at"])]
 #[ORM\Index(name: 'idx_event_type', columns: ["event_type"])]
 #[ORM\Index(name: 'idx_session_id', columns: ["session_id"])]
+#[ORM\Index(name: "idx_user_id", columns: ["user_id"])]
+#[ORM\Index(name: "idx_visitor_id", columns: ["visitor_id"])]
 #[ORM\Table(
     name: 'user_agent_analysis',
     schema: 'ma_moulinette',
@@ -51,21 +54,6 @@ class UserAgentAnalysis {
         options: ['comment' => 'Identifiant unique de l’analyse User-Agent']
     )]
     private ?int $id = null;
-
-    /**
-     * Référence vers l'événement source analysé.
-     *
-     * Relation 1–1 :
-     * un événement ne peut être analysé qu'une seule fois.
-     */
-    #[ORM\OneToOne(targetEntity: UserAgentEvent::class)]
-    #[ORM\JoinColumn(
-        name: 'user_agent_event_id',
-        referencedColumnname: 'id',
-        nullable: false,
-        onDelete: "CASCADE"
-    )]
-    private ?UserAgentEvent $userAgentEvent = null;
 
     /**
      * Type d'événement fonctionnel.
@@ -119,6 +107,38 @@ class UserAgentAnalysis {
         options: ['comment' => 'Identifiant de session PHP si existant']
     )]
     private ?string $sessionId = null;
+
+
+    /**
+     * Identifiant de l'utilisateur authentifié.
+     *
+     * Cas possibles :
+     * - NULL : utilisateur non authentifié
+     * - non NULL : utilisateur connecté
+     */
+    #[ORM\Column(
+        name: 'user_id',
+        type: Types::BIGINT,
+        nullable: true,
+        options: ['comment' => 'Identifiant de l’utilisateur authentifié']
+    )]
+    private ?int $userId = null;
+
+    /**
+     * Identifiant visiteur long terme (cookie analytics).
+     *
+     * Stable :
+     * - avant login
+     * - après login
+     * - malgré rotation de session
+     */
+    #[ORM\Column(
+        name: "visitor_id",
+        type: 'ulid',
+        nullable: false,
+        options: ['comment' => 'Identifiant visiteur analytics long terme']
+    )]
+    private ?Ulid $visitorId = null;
 
     /**
      * Type d'appareil détecté.
@@ -222,26 +242,9 @@ class UserAgentAnalysis {
     )]
     private ?\DateTimeImmutable $createdAt = null;
 
-    public function __construct(string $detectorVersion)
-    {
-        $this->detectorVersion = $detectorVersion;
-        $this->createdAt = new \DateTimeImmutable();
-    }
-
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getUserAgentEvent(): ?UserAgentEvent
-    {
-        return $this->userAgentEvent;
-    }
-
-    public function setUserAgentEvent(UserAgentEvent $userAgentEvent): self
-    {
-        $this->userAgentEvent = $userAgentEvent;
-        return $this;
     }
 
     public function getEventType(): ?string
@@ -274,6 +277,28 @@ class UserAgentAnalysis {
     public function setSessionId(?string $sessionId): self
     {
         $this->sessionId = $sessionId;
+        return $this;
+    }
+
+    public function getUserId(): ?int
+    {
+        return $this->userId;
+    }
+
+    public function setUserId(?int $userId): self
+    {
+        $this->userId = $userId;
+        return $this;
+    }
+
+    public function getVisitorId(): ?Ulid
+    {
+        return $this->visitorId;
+    }
+
+    public function setVisitorId(?Ulid $visitorId): self
+    {
+        $this->visitorId = $visitorId;
         return $this;
     }
 
