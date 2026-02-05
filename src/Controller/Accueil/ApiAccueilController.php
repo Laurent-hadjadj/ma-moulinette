@@ -191,7 +191,9 @@ class ApiAccueilController extends AbstractController
                 $this->logger->debug('🛠️ [Accueil-projet] Projet ignoré (SVN)', ['key' => $projet['key']]);
                 continue;
             }
-            $listeProjet = new ListeProjet();
+
+            /** il faut passer les arguments à ListeProjet a cause du constructeur */
+            $listeProjet = new ListeProjet('', '', '', [] );
             $listeProjet->setMavenKey($projet["key"]);
             $listeProjet->setName($projet["name"]);
             $tags = (empty($projet['tags'])) ? ['@AUCUN'] : $projet['tags'];
