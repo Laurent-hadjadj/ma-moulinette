@@ -2,11 +2,13 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.0.0 - 30/11/2025                  ##
+##           V2.1.0 - 05/02/2026                  ##
 ##                                                ##
 ####################################################*/
 
 --- 2025-11-30 : Migration postGreSql 18
+--- 2026-02-05 : Ajout du commentaire pour visitor_id de la table user_agent_event.
+--- 2026-02-05 : Ajout de l'index pour visitor_id et user_id de la table user_agent_analysis
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette db_user
@@ -623,7 +625,6 @@ COMMENT ON COLUMN ma_moulinette.utilisateur.date_enregistrement IS 'Date de cré
 
 COMMENT ON TABLE ma_moulinette.user_agent_analysis IS 'Table persistante contenant les résultats consolidés de l’analyse des User-Agent pour les statistiques.';
 COMMENT ON COLUMN ma_moulinette.user_agent_analysis.id IS 'Identifiant unique de l’analyse User-Agent';
-COMMENT ON COLUMN ma_moulinette.user_agent_analysis.user_agent_event_id IS 'Référence vers l’événement source analysé';
 COMMENT ON COLUMN ma_moulinette.user_agent_analysis.device_type IS 'Type d’appareil détecté (desktop, mobile, tablet…)';
 COMMENT ON COLUMN ma_moulinette.user_agent_analysis.os_name IS 'Nom du système d’exploitation';
 COMMENT ON COLUMN ma_moulinette.user_agent_analysis.os_version IS 'Version du système d’exploitation';
@@ -635,6 +636,8 @@ COMMENT ON COLUMN ma_moulinette.user_agent_analysis.event_type IS 'Type fonction
 COMMENT ON COLUMN ma_moulinette.user_agent_analysis.url IS 'URL ou chemin déclencheur de l’événement';
 COMMENT ON COLUMN ma_moulinette.user_agent_analysis.session_id IS 'Identifiant de session PHP associé à l’événement';
 COMMENT ON COLUMN ma_moulinette.user_agent_analysis.created_at IS 'Date de création de l’analyse';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.visitor_id IS 'Identifiant visiteur analytics';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.user_id IS 'Identifiant de l’utilisateur authentifié';
 
 -- ============================================
 -- TABLE user_agent_event
@@ -647,6 +650,7 @@ COMMENT ON COLUMN ma_moulinette.user_agent_event.url IS 'URL ou path déclencheu
 COMMENT ON COLUMN ma_moulinette.user_agent_event.user_agent IS 'User-Agent HTTP brut fourni par le client';
 COMMENT ON COLUMN ma_moulinette.user_agent_event.session_id IS 'Identifiant de session PHP si existant';
 COMMENT ON COLUMN ma_moulinette.user_agent_event.user_id IS 'Identifiant de l’utilisateur authentifié';
+COMMENT ON COLUMN ma_moulinette.user_agent_event.visitor_id IS 'Identifiant visiteur analytics long terme';
 COMMENT ON COLUMN ma_moulinette.user_agent_event.auth_state IS 'État d’authentification lors de l’événement';
 COMMENT ON COLUMN ma_moulinette.user_agent_event.processing_status IS 'Statut de traitement par le batch d’analyse';
 COMMENT ON COLUMN ma_moulinette.user_agent_event.ip_hash IS 'Hash SHA-256 de l’adresse IP client';

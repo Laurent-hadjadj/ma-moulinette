@@ -2,11 +2,14 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.0.0 - 30/11/2025                  ##
+##           V2.1.0 - 05/02/2027                  ##
 ##                                                ##
 ####################################################*/
 
 --- 2025-11-30 : Migration postGreSql 18
+--- 2026-02-05 : Ajout de l'index pour visitor_id de la table user_agent_event
+--- 2026-02-05 : Ajout de l'index pour visitor_id et user_id de la table user_agent_analysis
+
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette db_user
@@ -196,14 +199,17 @@ CREATE INDEX IF NOT EXISTS idx_analysis_is_bot ON ma_moulinette.user_agent_analy
 CREATE INDEX IF NOT EXISTS idx_analysis_created_at ON ma_moulinette.user_agent_analysis(created_at);
 CREATE INDEX IF NOT EXISTS idx_analysis_event_type ON ma_moulinette.user_agent_analysis(event_type);
 CREATE INDEX IF NOT EXISTS idx_analysis_session_id ON ma_moulinette.user_agent_analysis(session_id);
+CREATE INDEX IF NOT EXISTS idx_user_agent_analysis_visitor_id ON ma_moulinette.user_agent_analysis(visitor_id);
+CREATE INDEX IF NOT EXISTS idx_user_agent_analysis_user_id ON ma_moulinette.user_agent_analysis(user_id);
 
 --- user_agent_event
 
-CREATE INDEX idx_processing_status ON ma_moulinette.user_agent_event(processing_status);
-CREATE INDEX idx_event_type ON ma_moulinette.user_agent_event(event_type);
-CREATE INDEX user_agent_event_created_at_idx ON ma_moulinette.user_agent_event(created_at);
-CREATE INDEX idx_user_id ON ma_moulinette.user_agent_event(user_id);
-CREATE INDEX idx_session_id ON ma_moulinette.user_agent_event(session_id);
+CREATE INDEX IF NOT EXISTS idx_processing_status ON ma_moulinette.user_agent_event(processing_status);
+CREATE INDEX IF NOT EXISTS idx_event_type ON ma_moulinette.user_agent_event(event_type);
+CREATE INDEX IF NOT EXISTS user_agent_event_created_at_idx ON ma_moulinette.user_agent_event(created_at);
+CREATE INDEX IF NOT EXIST idx_user_id ON ma_moulinette.user_agent_event(user_id);
+CREATE INDEX IF NOT EXIST idx_session_id ON ma_moulinette.user_agent_event(session_id);
+CREATE INDEX IF NOT EXISTS idx_visitor_id ON ma_moulinette.user_agent_event(visitor_id);
 
 -- ===============================================
 -- INDEXES: ma_moulinette.batch_profiling

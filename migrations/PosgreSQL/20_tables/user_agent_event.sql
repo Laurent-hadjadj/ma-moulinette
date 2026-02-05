@@ -2,11 +2,12 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V1.0.0 - 03/01/2026                  ##
+##           V1.1.0 - 05/021/2026                 ##
 ##                                                ##
 ####################################################*/
 
 --- 2026-01-03 : Initialisation du script
+--- 2026-02-05 :Ajout de visitor_id
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette db_user;
@@ -20,6 +21,7 @@ CREATE UNLOGGED TABLE ma_moulinette.user_agent_event (
             user_agent VARCHAR(1024) NOT NULL,
             session_id VARCHAR(128),
             user_id BIGINT,
+            visitor_id VARCHAR(36) NOT NULL,
             auth_state VARCHAR(20) NOT NULL,
             processing_status VARCHAR(20) NOT NULL,
             ip_hash VARCHAR(64),
