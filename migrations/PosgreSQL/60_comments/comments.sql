@@ -570,7 +570,7 @@ COMMENT ON COLUMN ma_moulinette.repartition.autre_code_smell_critical IS 'Nombre
 COMMENT ON COLUMN ma_moulinette.repartition.autre_code_smell_major IS 'Nombre de code smell majeur (autre)';
 COMMENT ON COLUMN ma_moulinette.repartition.autre_code_smell_minor IS 'Nombre de code smell mineur (autre)';
 COMMENT ON COLUMN ma_moulinette.repartition.autre_code_smell_info IS 'Nombre de code smell informatif (autre)';
-COMMENT ON COLUMN ma_moulinette.repartition.inconuu_bug_blocker IS 'Nombre de bug bloquant (inconnu)';
+COMMENT ON COLUMN ma_moulinette.repartition.inconnu_bug_blocker IS 'Nombre de bug bloquant (inconnu)';
 COMMENT ON COLUMN ma_moulinette.repartition.inconnu_bug_critical IS 'Nombre de bug critique (inconnu)';
 COMMENT ON COLUMN ma_moulinette.repartition.inconnu_bug_major IS 'Nombre de bug majeur (inconnu)';
 COMMENT ON COLUMN ma_moulinette.repartition.inconnu_bug_minor IS 'Nombre de bug mineur (inconnu)';
