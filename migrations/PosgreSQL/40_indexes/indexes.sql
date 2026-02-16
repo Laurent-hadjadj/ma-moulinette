@@ -154,9 +154,7 @@ CREATE INDEX IF NOT EXISTS idx_portefeuille_historique_date ON ma_moulinette.por
 CREATE INDEX IF NOT EXISTS idx_portefeuille_groupe ON ma_moulinette.portefeuille (groupe);
 CREATE INDEX IF NOT EXISTS idx_portefeuille_titre ON ma_moulinette.portefeuille (titre);
 CREATE INDEX IF NOT EXISTS idx_portefeuille_liste_gin ON ma_moulinette.portefeuille
-  USING gin (liste jsonb_path_ops);
-CREATE INDEX IF NOT EXISTS idx_portefeuille_liste_gin ON ma_moulinette.portefeuille
-  USING gin ((liste::jsonb));
+	USING gin ((liste::jsonb));
 
 -- profiles_historique
 CREATE INDEX IF NOT EXISTS idx_profiles_hist_rule ON ma_moulinette.profiles_historique (rule);
@@ -199,17 +197,17 @@ CREATE INDEX IF NOT EXISTS idx_analysis_is_bot ON ma_moulinette.user_agent_analy
 CREATE INDEX IF NOT EXISTS idx_analysis_created_at ON ma_moulinette.user_agent_analysis(created_at);
 CREATE INDEX IF NOT EXISTS idx_analysis_event_type ON ma_moulinette.user_agent_analysis(event_type);
 CREATE INDEX IF NOT EXISTS idx_analysis_session_id ON ma_moulinette.user_agent_analysis(session_id);
-CREATE INDEX IF NOT EXISTS idx_user_agent_analysis_visitor_id ON ma_moulinette.user_agent_analysis(visitor_id);
-CREATE INDEX IF NOT EXISTS idx_user_agent_analysis_user_id ON ma_moulinette.user_agent_analysis(user_id);
+CREATE INDEX IF NOT EXISTS idx_analysis_visitor_id ON ma_moulinette.user_agent_analysis(visitor_id);
+CREATE INDEX IF NOT EXISTS idx_analysis_user_id ON ma_moulinette.user_agent_analysis(user_id);
 
 --- user_agent_event
 
-CREATE INDEX IF NOT EXISTS idx_processing_status ON ma_moulinette.user_agent_event(processing_status);
+CREATE INDEX IF NOT EXISTS idx_event_processing_status ON ma_moulinette.user_agent_event(processing_status);
 CREATE INDEX IF NOT EXISTS idx_event_type ON ma_moulinette.user_agent_event(event_type);
-CREATE INDEX IF NOT EXISTS user_agent_event_created_at_idx ON ma_moulinette.user_agent_event(created_at);
-CREATE INDEX IF NOT EXIST idx_user_id ON ma_moulinette.user_agent_event(user_id);
-CREATE INDEX IF NOT EXIST idx_session_id ON ma_moulinette.user_agent_event(session_id);
-CREATE INDEX IF NOT EXISTS idx_visitor_id ON ma_moulinette.user_agent_event(visitor_id);
+CREATE INDEX IF NOT EXISTS idx_event_created_at_idx ON ma_moulinette.user_agent_event(created_at);
+CREATE INDEX IF NOT EXISTS idx_event_user_id ON ma_moulinette.user_agent_event(user_id);
+CREATE INDEX IF NOT EXISTS idx_event_session_id ON ma_moulinette.user_agent_event(session_id);
+CREATE INDEX IF NOT EXISTS idx_event_visitor_id ON ma_moulinette.user_agent_event(visitor_id);
 
 -- ===============================================
 -- INDEXES: ma_moulinette.batch_profiling
