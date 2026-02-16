@@ -7,8 +7,8 @@ SELECT
     is_nullable
 FROM information_schema.columns
 WHERE table_schema = 'ma_moulinette'
-  AND table_name = 'historique'
-  AND is_nullable = 'YES'
+    AND table_name = 'historique'
+    AND is_nullable = 'YES'
 ORDER BY ordinal_position;
 
 ALTER TABLE ma_moulinette.historique
