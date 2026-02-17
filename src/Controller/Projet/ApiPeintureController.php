@@ -1122,10 +1122,10 @@ class ApiPeintureController extends AbstractController
         $loggerInfo = $loggerWarn = $loggerError = $loggerDebug = $total = -1;
 
         if (!empty($logger['liste'])) {
-            $loggerInfo = $logger['liste'][0]['logger_info'] ?? 0;
-            $loggerWarn = $logger['liste'][1]['logger_warn'] ?? 0;
-            $loggerError = $logger['liste'][2]['logger_error'] ?? 0;
-            $loggerDebug = $logger['liste'][3]['logger_debug'] ?? 0;
+            $loggerInfo = $logger['liste']['logger_info'] ?? 0;
+            $loggerWarn = $logger['liste']['logger_warn'] ?? 0;
+            $loggerError = $logger['liste']['logger_error'] ?? 0;
+            $loggerDebug = $logger['liste']['logger_debug'] ?? 0;
 
             /** Calcul la somme des loggers */
             $total = (int) $loggerInfo + (int) $loggerWarn + (int) $loggerError + (int) $loggerDebug;
