@@ -110,11 +110,11 @@ class LoggerRepository extends ServiceEntityRepository
   {
     $sql = "SELECT logger_info, logger_warn, logger_error, logger_debug
             FROM ma_moulinette.logger
-            WHERE maven_key=:maven_key";
+            WHERE maven_key = :maven_key";
       try {
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-            $liste = $stmt->executeQuery()->fetchAllAssociative();
+            $liste = $stmt->executeQuery()->fetchAssociative();
       } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
       }
