@@ -526,7 +526,6 @@ class ApiCollecteController extends AbstractController
             $this->logger->error('[Collecte] ❌ Échec de collecte des menaces potentielles du projet.', [
                 'code' => $hotspot['code'],
                 'maven_key' => $data->maven_key,
-                'type' => $data->type,
                 'erreur' => $hotspot['erreur'] ?? static::$noSpecify
             ]);
 
@@ -724,7 +723,6 @@ class ApiCollecteController extends AbstractController
             $this->logger->error('[Collecte] ❌ Échec de collecte du détail des anomalies pour le projet.', [
                 'code' => $anomalieDetail['code'],
                 'maven_key' => $data->maven_key,
-                'type' => $data->type,
                 'erreur' => $anomalieDetail['erreur'] ?? static::$noSpecify
             ]);
 
@@ -816,7 +814,7 @@ class ApiCollecteController extends AbstractController
             $this->logger->error('[Collecte] ❌ Échec de collecte des menaces OWASP potentielles du projet.', [
                 'code' => $hotspotOwasp['code'],
                 'maven_key' => $data->maven_key,
-                'type' => $data->type,
+                'menace' => $data->menace,
                 'erreur' => $hotspotOwasp['erreur'] ?? static::$noSpecify
             ]);
 
@@ -1002,7 +1000,6 @@ class ApiCollecteController extends AbstractController
             $this->logger->error('[Collecte] ❌ Échec de collecte des annotations noSonar et suppressWarning du projet.', [
                 'code' => $noSonar['code'],
                 'maven_key' => $data->maven_key,
-                'type' => $data->type,
                 'erreur' => $noSonar['erreur'] ?? static::$noSpecify
             ]);
 
@@ -1095,7 +1092,6 @@ class ApiCollecteController extends AbstractController
             $this->logger->error('[Collecte] ❌ Échec de collecte des todos du projet.', [
                 'code' => $todo['code'],
                 'maven_key' => $data->maven_key,
-                'type' => $data->type,
                 'erreur' => $todo['erreur'] ?? static::$noSpecify
             ]);
 
@@ -1186,7 +1182,6 @@ class ApiCollecteController extends AbstractController
             $this->logger->error('[Collecte] ❌ Échec de collecte des informations Actuator du projet JAVA.', [
                 'code' => $actuatorInfo['code'],
                 'maven_key' => $data->maven_key,
-                'type' => $data->type,
                 'erreur' => $actuatorInfo['erreur'] ?? static::$noSpecify
             ]);
 
