@@ -11,6 +11,7 @@ WHERE table_schema = 'ma_moulinette'
     AND is_nullable = 'YES'
 ORDER BY ordinal_position;
 
+-- on créé les colonnes si elles n'existent pas en nullable = true
 ALTER TABLE ma_moulinette.historique
     ADD COLUMN IF NOT EXISTS analyse_key VARCHAR(32),
     ADD COLUMN IF NOT EXISTS todo INT,
@@ -27,7 +28,26 @@ ALTER TABLE ma_moulinette.historique
     ADD COLUMN IF NOT EXISTS logger_error INT,
     ADD COLUMN IF NOT EXISTS logger_debug INT;
 
+--  On rend nullable les colonnes
+ALTER TABLE ma_moulinette.historique
+    ALTER COLUMN analyse_key DROP NOT NULL,
+    ALTER COLUMN todo DROP NOT NULL,
+    ALTER COLUMN nombre_classes DROP NOT NULL,
+    ALTER COLUMN nombre_functions DROP NOT NULL,
+    ALTER COLUMN nombre_files DROP NOT NULL,
+    ALTER COLUMN inconnu DROP NOT NULL,
+    ALTER COLUMN sqale_debt_ratio DROP NOT NULL,
+    ALTER COLUMN menace_potentielle_reviewed_high DROP NOT NULL,
+    ALTER COLUMN menace_potentielle_reviewed_medium DROP NOT NULL,
+    ALTER COLUMN menace_potentielle_reviewed_low DROP NOT NULL,
+    ALTER COLUMN logger_info DROP NOT NULL,
+    ALTER COLUMN logger_warn DROP NOT NULL,
+    ALTER COLUMN logger_error DROP NOT NULL,
+    ALTER COLUMN logger_debug DROP NOT NULL;
+
 -- COPY ou INSERT historique
+
+\i 'C:/environnement/ma-moulinette/migrations/dump.sql'
 
 UPDATE ma_moulinette.historique
 SET
