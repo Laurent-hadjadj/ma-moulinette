@@ -23,5 +23,6 @@ CREATE TABLE ma_moulinette.properties
   profil_sonar INT NOT NULL,
   date_creation TIMESTAMPTZ NOT NULL,
   date_modification_projet TIMESTAMP DEFAULT NULL,
+  date_modification_profil TIMESTAMP DEFAULT NULL,
   date_enregistrement TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
