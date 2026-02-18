@@ -132,7 +132,7 @@ ALTER TABLE ma_moulinette.repartition_temp
 
 -- \todo
 ALTER TABLE ma_moulinette.todo
-  ADD CONSTRAINT ck_todo_line CHECK (line > 0);
+  ADD CONSTRAINT ck_todo_line CHECK (line >= 0);
 
 ALTER TABLE ma_moulinette.todo
   ADD CONSTRAINT ck_todo_maven_key CHECK (length(maven_key) > 0);
