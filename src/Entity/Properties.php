@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(
     name: 'properties',
     schema: "ma_moulinette",
-    options: ['comment' => "Table des propriétés de l'application"])]
+    options: ['comment' => "table des propriétés de l'application"])]
 class Properties
 {
     #[ORM\Id]
