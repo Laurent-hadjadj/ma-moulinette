@@ -35,7 +35,7 @@
         {% if mesure is not empty %}
           {% for i in 0..mesure|length-1 %}
             <td class="text-right">
-              <span>{{mesure[i]['files']|format_number(locale='fr')}}</span>
+              <span>{{mesure[i]['nombre_files']|format_number(locale='fr')}}</span>
             </td>
           {% endfor %}
         {% endif %}
@@ -65,7 +65,7 @@
         {% if mesure is not empty %}
           {% for i in 0..mesure|length-1 %}
             <td class="text-right">
-              <span>{{mesure[i]['classes']|format_number(locale='fr')}}</span>
+              <span>{{mesure[i]['nombre_classes']|format_number(locale='fr')}}</span>
             </td>
           {% endfor %}
         {% endif %}
@@ -75,7 +75,7 @@
         {% if mesure is not empty %}
           {% for i in 0..mesure|length-1 %}
             <td class="text-right">
-              <span>{{mesure[i]['functions']|format_number(locale='fr')}}</span>
+              <span>{{mesure[i]['nombre_functions']|format_number(locale='fr')}}</span>
             </td>
           {% endfor %}
         {% endif %}
