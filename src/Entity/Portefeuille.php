@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Table(
     name: 'portefeuille',
     schema: "ma_moulinette",
-    options: ['comment' => 'Identifiant unique pour chaque portefeuille'])]
+    options: ['comment' => "table des portefeuilles d'application"])]
 class Portefeuille
 {
     #[ORM\Id]
