@@ -28,7 +28,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 #[ORM\Table(
     name: "utilisateur",
     schema: "ma_moulinette",
-    options: ['comment' => "Table des utilisateurs"])]
+    options: ['comment' => "table des utilisateurs"])]
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
