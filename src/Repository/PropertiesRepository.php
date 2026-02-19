@@ -132,7 +132,7 @@ class PropertiesRepository extends ServiceEntityRepository
             /** Les dates sont déjà en string */
             $stmt->bindValue(":date_modification_projet", $map["date_modification_projet"]->format(static::$horodatage));
             $stmt->bindValue(":date_modification_profil", $map["date_modification_profil"]->format(static::$horodatage));
-            $stmt->bindValue(":date_creation", $map["date_creation"]);
+            $stmt->bindValue(":date_creation", $map["date_creation"]->format(static::$horodatage));
             $stmt->executeStatement();
         $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
