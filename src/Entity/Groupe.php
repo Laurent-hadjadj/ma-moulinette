@@ -79,10 +79,8 @@ class Groupe
     )]
     private \DateTimeImmutable $dateEnregistrement;
 
-    public function __construct(string $titre, string $description)
+    public function __construct()
     {
-        $this->titre = $titre;
-        $this->description = $description;
         $this->dateEnregistrement = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
     }
 
@@ -133,4 +131,9 @@ class Groupe
         return $this->dateEnregistrement;
     }
 
+    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): self
+    {
+        $this->dateEnregistrement = $dateEnregistrement;
+        return $this;
+    }
 }
