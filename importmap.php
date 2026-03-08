@@ -68,6 +68,14 @@ return [
         'path' => './assets/js/mon-application/repartition-module/index-repartition-module.js',
         'entrypoint' => true,
     ],
+    'statistique' => [
+        'path' => './assets/js/mon-application/statistique/app-statistique.js',
+        'entrypoint' => true,
+    ],
+    'statistique-utilisateur' => [
+        'path' => './assets/js/mon-application/statistique/app-statistique-utilisateur.js',
+        'entrypoint' => true,
+    ],
     'activity' => [
         'path' => './assets/js/mon-application/activity/index-activity.js',
         'entrypoint' => true,
