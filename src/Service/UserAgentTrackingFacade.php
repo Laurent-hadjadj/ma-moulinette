@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright © 2015-2025..
+ *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -45,7 +45,7 @@ class UserAgentTrackingFacade
         if ($result['code'] !== 200) {
             $this->logger->warning('[UserAgentTracking] Échec tracking', [
                 'event_type' => $eventType,
-                'error' => $result['error'] ?? null,
+                'erreur' => $result['erreur'] ?? null,
             ]);
         }
     }
