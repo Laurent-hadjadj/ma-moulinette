@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -136,6 +136,13 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         nullable: true,
         options: ['comment' => "Date de modification"])]
     private ?\DateTimeInterface $dateModification = null;
+
+    #[ORM\Column(
+        name: 'last_activity',
+        type: Types::DATETIME_IMMUTABLE,
+        nullable: true,
+        options: ['comment' => "Date de modification"])]
+    private ?\DateTimeImmutable $lastActivityAt = null;
 
     #[ORM\Column(
         name: 'date_enregistrement',
@@ -605,6 +612,17 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         $this->resetPasswordCount = $resetPasswordCount
         ;
 
+        return $this;
+    }
+
+    public function getLastActivityAt(): ?\DateTimeImmutable
+    {
+        return $this->lastActivityAt;
+    }
+
+    public function setLastActivityAt(?\DateTimeImmutable $lastActivityAt): self
+    {
+        $this->lastActivityAt = $lastActivityAt;
         return $this;
     }
 
