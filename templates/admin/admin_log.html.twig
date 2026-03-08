@@ -1,0 +1,157 @@
+{% set title = "Admin-Log" %}
+{% set description = "Consultation des journaux de traces" %}
+{% set type_content = "Application Ma-Moulinette, consultation des traces." %}
+{% set bottom="footer-fixed footer-fixed-small" %}
+<!DOCTYPE html>
+<!--
+.     _            _     _              _       ___    _    .
+.    / \   ___ ___(_)___| |_ __ _ _ __ | |_    |_ _|  / \   .
+.   / _ \ / __/ __| / __| __/ _` | '_ \| __|____| |  / _ \  .
+.  / ___ \\__ \__ \ \__ \ || (_| | | | | ||_____| | / ___ \ .
+. /_/   \_\___/___/_|___/\__\__,_|_| |_|\__|   |___/_/   \_\.
+
+    Laurent HADJADJ
+    https://gitlab.ma-moulinette.fr/PHP/assistant-ia.git
+    © 2015-2026 - CC BY-SA-NC 4.0
+-->
+<html	lang="fr">
+  {# Chargement de la section HEAD #}
+  <head>
+    <title>{{ title }}</title>
+    {{ include('head.html.twig') }}
+    {# Chargement des assets JS et CSS #}
+    {% block importmap %}{{ importmap('admin-log') }}{% endblock %}
+  </head>
+
+  <body dir="ltr">
+    {# no-script #}
+    {{ include('no-script.html.twig') }}
+    {# Chargement de la section header #}
+    {{ include('header.html.twig') }}
+
+    {# On affiche les messages JS et Flash #}
+    <header class="grid-container" role="banner">
+      {# Message d'alerte #}
+      <div id="message-box"
+          class="callout alert-callout-border callout-ombre hide"
+          role="alert"  data-closable>
+        <button class="close-button"
+                aria-label="Close alert"
+                type="button" data-close><span aria-hidden="true">&times;</span>
+        </button>
+        <p id="message-text"></p>
+      </div>
+
+      {# On affiche les messages #}
+      {% for message in app.flashes('notice') %}
+      <div class="callout {{message.type}} alert-callout-border callout-ombre" role="alert"  data-closable>
+        <p class="open-sans text-justify callout-message"><strong>{{message.titre}}</strong> {{ message.message }} <br> {{message.debug|default('')}}</p>
+        <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {% endfor %}
+    </header>
+
+    <header class="grid-container margin-top-2">
+        <nav id="fil-ariane" aria-label="vous êtes ici :">
+          <ol class="claire-hand breadcrumbs">
+            <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+            <li><span class="show-for-sr">Vous êtes sur la page :</span>Logs</li>
+          </ol>
+        </nav>
+    </header>
+
+    <main class="grid-container">
+      <div class="grid-container admin-logs">
+        <h1 class="h4 claire-hand"><span aria-hidden="true">🗂️</span> Journaux système</h1>
+
+        {# Filtres #}
+        <div class="callout secondary admin-log-filters">
+          <div class="grid-x grid-padding-x">
+            <div class="cell medium-3">
+                <label>Environnement
+                    <select id="filter-env">
+                        <option value="">Environnement courant</option>
+                        <option value="dev">Dev</option>
+                        <option value="test">Test</option>
+                        <option value="prod">Prod</option>
+                    </select>
+                </label>
+            </div>
+
+            <div class="cell medium-6">
+                <label>Types de logs</label>
+                <div class="grid-x">
+                    <div class="cell small-6 medium-4">
+                        <input type="checkbox" class="filter-type" value="main"> Main
+                    </div>
+                    <div class="cell small-6 medium-4">
+                        <input type="checkbox" class="filter-type" value="application"> Application
+                    </div>
+                    <div class="cell small-6 medium-4">
+                        <input type="checkbox" class="filter-type" value="request"> Request
+                    </div>
+                    <div class="cell small-6 medium-4">
+                        <input type="checkbox" class="filter-type" value="messenger"> Messenger
+                    </div>
+                    <div class="cell small-6 medium-4">
+                        <input type="checkbox" class="filter-type" value="deprecation"> Deprecation
+                    </div>
+                </div>
+            </div>
+
+            <div class="cell medium-3 align-self-bottom">
+              <button id="bouton-apply-filters"
+                    type="button"
+                    class="button open-sans focus-dark-light"
+                    data-close
+                    aria-label="Appliquer les filtres"><span aria-hidden="true">🛠️</span> Appliquer les filtres
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="logs-loading" class="callout primary hide">
+            Chargement des logs…
+        </div>
+
+        {# Table #}
+        <div class="callout admin-log-table">
+          <table id="logs-table" class="hover stack">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Env</th>
+                <th>Type</th>
+                <th class="text-right">Taille</th>
+                <th>Modifié</th>
+                <th class="text-center">
+                    <input type="checkbox" id="select-all">
+                </th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      {# Actions #}
+      {% if is_granted('ROLE_INTERNAL') %}
+      <footer class="grid-x grid-padding-x align-right margin-top-2">
+        <div class="cell shrink">
+          <button id="bouton-download-zip"
+                  type="button"
+                  class="button open-sans focus-dark-light"
+                  data-close
+                  aria-label="Télécharger la sélection"><span aria-hidden="true">⚙️</span> Télécharger la sélection
+          </button>
+        </div>
+      </footer>
+      {% endif %}
+    </main>
+
+    {# Chargement de la section footer #}
+    {{ include('footer.html.twig') }}
+  </body>
+</html>
