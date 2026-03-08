@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common CC-BY-NC-SA 4.0.
 *  ---
@@ -115,14 +115,14 @@ class UtilisateurCrudController extends AbstractCrudController
             ->hideOnForm();
         yield EmailField::new('courriel');
 
-        $key1 = ['Gestionnaire', 'Traitement', 'Collecteur','Utilisateur', 'Analyse' ];
-        $value1 = ['ROLE_GESTIONNAIRE','ROLE_BATCH', 'ROLE_COLLECTE','ROLE_UTILISATEUR', 'ROLE_ACTIVITY'];
+        $key1 = ['Admin', 'Gestionnaire', 'Traitement', 'Collecteur','Utilisateur', 'Analyse' ];
+        $value1 = ['ROLE_INTERNAL','ROLE_GESTIONNAIRE','ROLE_BATCH', 'ROLE_COLLECTE','ROLE_UTILISATEUR', 'ROLE_ACTIVITY'];
         yield ChoiceField::new('roles')
             ->setChoices(array_combine($key1, $value1))
             ->allowMultipleChoices()
             ->renderExpanded()
             ->renderAsBadges(['ROLE_UTILISATEUR' => 'primary',
-            'ROLE_BATCH' => 'warning', 'ROLE_ACTIVITY' => 'warning', 'ROLE_GESTIONNAIRE' => 'danger'])
+            'ROLE_BATCH' => 'warning', 'ROLE_ACTIVITY' => 'warning', 'ROLE_GESTIONNAIRE' => 'danger', 'ROLE_INTERNAL' => 'danger' ])
             ->setHelp('Sélectionne le ou les rôles.');
 
         /** On récupère la liste des équipes */
