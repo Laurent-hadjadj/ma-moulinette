@@ -53,17 +53,26 @@
         </label>
       </div>
     </div>
+
+    {% if is_granted('ROLE_INTERNAL') %}
+    <div class="margin-top-2">
+      <a href="{{ path('admin_logs_index')}}" title="Consulter les Logs" rel="link">
+        <span class="open-sans source-link"><span aria-hidden="true">🗒️</span> Consulter les logs.</a>
+      </a>
+    </div>
+    {% endif %}
+
   </section>
 
-  <output id="mise-a-jour-message" class="open-sans text-justify"></output>
+  <output id="mise-a-jour-message" class="open-sans text-justify" aria-live="polite"></output>
 
   <footer class="grid-x grid-padding-x align-right margin-top-2">
       <div class="cell shrink">
         <button id="bouton-fermer-information-utilisateur"
-                type="button"
+                type="button" data-close
                 class="button open-sans focus-dark-light"
-                data-close
-                aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span> Fermer</button>
+                aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span> Fermer
+        </button>
       </div>
   </footer>
 </dialog>
