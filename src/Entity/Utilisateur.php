@@ -138,7 +138,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private ?\DateTimeInterface $dateModification = null;
 
     #[ORM\Column(
-        name: 'last_activity',
+        name: 'last_activity_at',
         type: Types::DATETIME_IMMUTABLE,
         nullable: true,
         options: ['comment' => "Date de modification"])]
@@ -159,6 +159,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         $this->resetPasswordCount = 1;
         $this->resetPassword = true;
         $this->actif = false;
+        $this->lastActivityAt = new \DateTimeImmutable();
         $this->dateEnregistrement = new \DateTimeImmutable();
     }
 
@@ -590,7 +591,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
- public function isResetPassword(): ?bool
+    public function isResetPassword(): ?bool
     {
         return $this->resetPassword;
     }
