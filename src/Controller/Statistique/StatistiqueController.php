@@ -99,6 +99,8 @@ class StatistiqueController extends AbstractController
     #[IsGranted('ROLE_INTERNAL', message: 'Vous ne disposez pas des droits suffisants pour accéder à cette page.', statusCode: 403)]
     public function runBatchAnalysis(): Response
     {
+        $this->tracking->track('STATISTIQUES');
+
         $render = static::genericRender();
 
         /** On vérifie que l'utilisateur a bien le ROLE_GESTIONNAIRE */
@@ -111,19 +113,20 @@ class StatistiqueController extends AbstractController
         }
 
         $exec = $this->analysis->runBatch(50);
+
         if ($exec['code'] !== 200) {
             $this->addFlash('notice', [
                 'type' => 'error',
                 'message' => "Une erreur s'est produite pendant l'analyse des données UserAgent ({$exec['code']})",
-                'trace' => count($exec['errors'])
+                'trace' => count($exec['erreurs'])
             ]);
             return $this->render(static::$index, $render);
         }
 
-        $error = count($exec['errors']) ?? 0;
+        $erreur = count($exec['erreurs']) ?? 0;
         $this->addFlash('notice', [
             'type' => 'info',
-            'message' => "Collecte terminée : {$exec['processed']} collecté, {$error} erreurs.",
+            'message' => "Collecte terminée : {$exec['processed']} collecté, {$erreur} erreurs.",
             'trace' => null
         ]);
         return $this->render(static::$index, $render);
