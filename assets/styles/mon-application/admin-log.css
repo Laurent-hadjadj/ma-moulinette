@@ -1,0 +1,125 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2025.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+/**
+  * Propriétés pour les class en fonction des medias type
+  *
+  */
+
+/* Media Small */
+@media (width <= 20em) { /** */
+}
+
+/* Media Small */
+@media (20.025em <= width <= 22em){ /** */
+}
+
+/* Media Small */
+@media (22.025em <= width <= 30em) { /** */
+}
+
+/* Media Small */
+@media (30.025em <= width <= 40em) { /** */
+}
+
+/* Media Medium */
+@media (40.025em <= width <= 64em) { /** */
+}
+
+/* Media Large */
+@media (64.025em <= width <= 90em) { /** */
+}
+
+/* Media Large */
+@media (90.025em <= width <= 120em) { /** */
+}
+
+/* Media Extra-Large */
+@media (120.025em <= width <= 160em) { /** */
+}
+
+/*************************          Global     *********************************/
+
+#bouton-download-zip,
+#bouton-apply-filters {
+    min-width: 9rem;
+    font-size: 0.95rem;
+    border-radius: 0.375rem;
+    margin: 0 0.25rem 0.5rem 0.25rem;
+    padding: 0.8rem 0.6rem;
+    color: #fff;
+    text-align: center;
+    background-color: #00445B;
+}
+
+#bouton-download-zip:hover,
+#bouton-apply-filters:hover { background-color: #006182; }
+
+.admin-logs { margin-top: 1.5rem; }
+.admin-log-filters { background-color: #f8f8f8; }
+.admin-log-table table { margin-bottom: 0; }
+
+.admin-log-table th {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.admin-log-table td {
+    font-size: 0.85rem;
+    vertical-align: middle;
+}
+
+.admin-log-table td:nth-child(1) {
+    font-family: monospace;
+    font-size: 0.8rem;
+}
+
+.admin-log-table .text-right { text-align: right; }
+.admin-log-table .text-center { text-align: center; }
+
+.log-badge {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+/* Couleurs cohérentes admin */
+.log-main {
+    background: #e6e6e6;
+    color: #333;
+}
+
+.log-application {
+    background: #1779ba;
+    color: #fff;
+}
+
+.log-request {
+    background: #ffae00;
+    color: #000;
+}
+
+.log-messenger {
+    background: #3adb76;
+    color: #003b1f;
+}
+
+.log-deprecation {
+    background: #cc4b37;
+    color: #fff;
+}
+
+#logs-table tbody tr { cursor: pointer; }
+#logs-table tbody tr:hover { background-color: #f3f3f3; }
