@@ -117,4 +117,10 @@ services:
     App\Service\UserAgentTrackerService:
         arguments:
             $appSalt: '%env(APP_USER_AGENT_SALT)%'
+
+    # Téléchargement des logs
+    App\Service\LogArchiveService:
+        arguments:
+            $logDir: '%kernel.logs_dir%'
+
 ...
