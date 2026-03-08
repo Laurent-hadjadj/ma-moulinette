@@ -686,6 +686,8 @@ export const remplissage = async function(maven_key) {
       $('#nombre-anomalie-info').html(t.info);
       $('#nombre-anomalie-majeur').html(t.major);
       $('#nombre-anomalie-mineur').html(t.minor);
+      const totalCodeSmellReal = parseInt(t.blocker + t.critical + t.major + t.minor, 10);
+      $('#nombre-mauvaise-pratique-real').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(totalCodeSmellReal));
 
       const t23 = document.getElementById('nombre-anomalie-bloquant');
       const t24 = document.getElementById('nombre-anomalie-critique');
