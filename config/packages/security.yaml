@@ -8,7 +8,7 @@ security:
         ROLE_BATCH: ['ROLE_COLLECTE', 'ROLE_UTILISATEUR']
         ROLE_ACTUATOR: ['ROLE_COLLECTE', 'ROLE_UTILISATEUR']
         ROLE_GESTIONNAIRE: ['ROLE_COLLECTE', 'ROLE_BATCH', 'ROLE_ACTUATOR','ROLE_UTILISATEUR']
-        ROLE_INTERNAL:  ['ROLE_COLLECTE', 'ROLE_BATCH', 'ROLE_ACTUATOR','ROLE_UTILISATEUR', 'ROLE_INTERNAL']
+        ROLE_INTERNAL:  ['ROLE_GESTIONNAIRE', 'ROLE_COLLECTE', 'ROLE_BATCH', 'ROLE_ACTUATOR','ROLE_UTILISATEUR', 'ROLE_INTERNAL']
 
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
@@ -84,6 +84,7 @@ security:
         - { path: ^/donnees-personnelles, roles: PUBLIC_ACCESS }
 
         # Web (privé)
+        - { path: ^/admin/logs, roles: ROLE_INTERNAL }
         - { path: ^/admin, roles: ROLE_GESTIONNAIRE }
         - { path: ^/, roles: ROLE_UTILISATEUR }
 
