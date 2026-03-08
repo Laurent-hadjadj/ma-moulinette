@@ -379,4 +379,77 @@ class UtilisateurRepository extends ServiceEntityRepository
     return ['code' => 200, 'erreur' => ''];
   }
 
+    /**
+     * [Description for findRecentlyActiveUsers]
+     *
+     * @param int $minutes
+     *
+     * @return array
+     *
+     * Created at: 11/04/2025 17:23:06 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function findRecentlyActiveUsers(int $minutes = 5): array
+    {
+        $limit = new \DateTimeImmutable("-{$minutes} minutes");
+
+        return $this->createQueryBuilder('u')
+            ->where('u.lastActivityAt > :limit')
+            ->setParameter('limit', $limit)
+            ->orderBy('u.lastActivityAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * [Description for countUtilisateurDisponible]
+     *
+     * @return array
+     *
+     * Created at: 28/12/2025 10:45:40 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function countUtilisateurDisponible():array {
+        $sql = "SELECT count(*) as total
+                FROM ma_moulinette.utilisateur";
+
+        $conn = $this->getEntityManager()->getConnection();
+
+        try {
+                $stmt = $conn->prepare($sql);
+                $count = $stmt->executeQuery()->fetchAssociative();
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
+        }
+        return ['code' => 200, 'total' => $count['total'] ?? 0, 'erreur' => ''];
+    }
+
+
+    /**
+     * [Description for countUtilisateurActif]
+     *
+     * @return array
+     *
+     * Created at: 28/12/2025 10:41:37 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function countUtilisateurActif():array {
+        $sql = "SELECT COUNT(*) as total
+                FROM ma_moulinette.utilisateur
+                WHERE EXTRACT(YEAR FROM last_activity_at) = EXTRACT(YEAR FROM CURRENT_DATE)";
+
+        $conn = $this->getEntityManager()->getConnection();
+
+        try {
+                $stmt = $conn->prepare($sql);
+                $count = $stmt->executeQuery()->fetchAssociative();
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
+        }
+        return ['code' => 200, 'total' => $count['total'] ?? 0, 'erreur' => ''];
+    }
+
 }
