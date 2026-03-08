@@ -7,6 +7,7 @@
 ####################################################*/
 
 --- 2025-11-30 : Migration postGreSql 18
+--- 2026-03-08 : ajout de la colonne last_activity_at
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette db_user;
@@ -28,5 +29,6 @@ CREATE TABLE ma_moulinette.utilisateur
   reset_password BOOLEAN DEFAULT TRUE NOT NULL,
   reset_password_count SMALLINT DEFAULT 1 NOT NULL,
   date_modification TIMESTAMP DEFAULT NULL,
+  last_activity_at TIMESTAMP WITHOUT TIME ZONE NULL DEFAULT NULL;
   date_enregistrement TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

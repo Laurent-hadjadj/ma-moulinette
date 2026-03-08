@@ -617,6 +617,7 @@ COMMENT ON COLUMN ma_moulinette.utilisateur.preference IS 'Préférences de l’
 COMMENT ON COLUMN ma_moulinette.utilisateur.reset_password IS 'Indicateur de réinitialisation du mot de passe';
 COMMENT ON COLUMN ma_moulinette.utilisateur.reset_password_count IS 'Nombre de tentative avant blocage';
 COMMENT ON COLUMN ma_moulinette.utilisateur.date_modification IS 'Date de modification';
+COMMENT ON COLUMN ma_moulinette.utilisateur.last_activity_at IS 'Dernière connexion.';
 COMMENT ON COLUMN ma_moulinette.utilisateur.date_enregistrement IS 'Date de création';
 
 -- ============================================
