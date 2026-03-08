@@ -28,6 +28,10 @@ return [
         'path' => './assets/js/auth/reset.js',
         'entrypoint' => true,
     ],
+    'admin-log' => [
+        'path' => './assets/js/mon-application/admin-log/app-admin-log.js',
+        'entrypoint' => true,
+    ],
     'welcome' => [
         'path' => './assets/js/auth/welcome.js',
         'entrypoint' => true,
