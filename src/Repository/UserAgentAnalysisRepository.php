@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright © 2015-2025..
+ *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -31,12 +31,13 @@ class UserAgentAnalysisRepository extends ServiceEntityRepository
 
     /**
      * [Description for handleDatabaseException]
+     * Gestion centralisée des exceptions SQL
      *
      * @param \Throwable $e
      *
      * @return array
      *
-     * Created at: 04/01/2026 16:17:38 (Europe/Paris)
+     * Created at: 14/12/2025 18:11:47 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
@@ -76,13 +77,13 @@ class UserAgentAnalysisRepository extends ServiceEntityRepository
      */
     public function insertUserAgentAnalysis(array $map): array
     {
-        $sql = "INSERT INTO assistant_ia.user_agent_analysis
-                    (user_agent_event_id, event_type, url, session_id,
+        $sql = "INSERT INTO ma_moulinette.user_agent_analysis
+                    (event_type, url, session_id, user_id, visitor_id,
                     device_type, os_name, os_version,
                     browser_name, browser_version, is_bot,
                     detector_version, created_at)
                 VALUES
-                    (:event_id, :event_type, :url, :session_id,
+                    (:event_type, :url, :session_id, :user_id, :visitor_id,
                     :device_type, :os_name, :os_version,
                     :browser_name, :browser_version, :is_bot,
                     :detector_version, :created_at)";
@@ -93,10 +94,11 @@ class UserAgentAnalysisRepository extends ServiceEntityRepository
             $conn->beginTransaction();
 
                 $stmt = $conn->prepare($sql);
-                $stmt->bindValue(':event_id', $map['user_agent_event_id']);
                 $stmt->bindValue(':event_type', $map['event_type']);
                 $stmt->bindValue(':url', $map['url']);
                 $stmt->bindValue(':session_id', $map['session_id']);
+                $stmt->bindValue(':user_id', $map['user_id']);
+                $stmt->bindValue(':visitor_id', $map['visitor_id']);
                 $stmt->bindValue(':device_type', $map['device_type']);
                 $stmt->bindValue(':os_name', $map['os_name']);
                 $stmt->bindValue(':os_version', $map['os_version']);
@@ -113,7 +115,7 @@ class UserAgentAnalysisRepository extends ServiceEntityRepository
             return $this->handleDatabaseException($e);
         }
 
-        return ['code' => 200, 'error' => ''];
+        return ['code' => 200, 'erreur' => ''];
     }
 
 }
