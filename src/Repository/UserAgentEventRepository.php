@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright © 2015-2025..
+ *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -31,12 +31,13 @@ class UserAgentEventRepository extends ServiceEntityRepository
 
     /**
      * [Description for handleDatabaseException]
+     * Gestion centralisée des exceptions SQL
      *
      * @param \Throwable $e
      *
      * @return array
      *
-     * Created at: 04/01/2026 16:17:38 (Europe/Paris)
+     * Created at: 14/12/2025 18:04:58 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
@@ -76,12 +77,12 @@ class UserAgentEventRepository extends ServiceEntityRepository
      */
     public function insertUserAgentEvent(array $map): array
     {
-        $sql = "INSERT INTO assistant_ia.user_agent_event
-                  (event_type, url, user_agent, session_id, user_id, auth_state,
-                  processing_status, ip_hash, created_at)
+        $sql = "INSERT INTO ma_moulinette.user_agent_event
+                    (event_type, url, user_agent, session_id, user_id, visitor_id, auth_state,
+                    processing_status, ip_hash, created_at)
                 VALUES
-                  (:event_type, :url, :user_agent, :session_id, :user_id,
-                  :auth_state, :processing_status, :ip_hash, :created_at)";
+                    (:event_type, :url, :user_agent, :session_id, :user_id, :visitor_id,
+                    :auth_state, :processing_status, :ip_hash, :created_at)";
 
         $conn = $this->getEntityManager()->getConnection();
 
@@ -94,6 +95,7 @@ class UserAgentEventRepository extends ServiceEntityRepository
             $stmt->bindValue(':user_agent', $map['user_agent']);
             $stmt->bindValue(':session_id', $map['session_id']);
             $stmt->bindValue(':user_id', $map['user_id']);
+            $stmt->bindValue(':visitor_id', $map['visitor_id']);
             $stmt->bindValue(':auth_state', $map['auth_state']);
             $stmt->bindValue(':processing_status', $map['processing_status']);
             $stmt->bindValue(':ip_hash', $map['ip_hash']);
@@ -106,7 +108,7 @@ class UserAgentEventRepository extends ServiceEntityRepository
             return $this->handleDatabaseException($e);
         }
 
-        return ['code' => 200, 'error' => ''];
+        return ['code' => 200, 'erreur' => ''];
     }
 
     /**
@@ -124,7 +126,7 @@ class UserAgentEventRepository extends ServiceEntityRepository
     public function selectPendingEvents(int $limit = 20): array
     {
         $sql = "SELECT *
-                FROM assistant_ia.user_agent_event
+                FROM ma_moulinette.user_agent_event
                 WHERE processing_status = 'PENDING'
                 ORDER BY created_at ASC
                 LIMIT :limit";
@@ -139,7 +141,7 @@ class UserAgentEventRepository extends ServiceEntityRepository
             return $this->handleDatabaseException($e);
         }
 
-        return ['code' => 200, 'liste' => $liste, 'error' => ''];
+        return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
     }
 
     /**
@@ -162,7 +164,7 @@ class UserAgentEventRepository extends ServiceEntityRepository
         ?\DateTimeImmutable $processedAt = null
     ): array {
 
-        $sql = "UPDATE assistant_ia.user_agent_event
+        $sql = "UPDATE ma_moulinette.user_agent_event
                 SET processing_status = :status,
                     processed_at = :processed_at
                 WHERE id = :id";
@@ -178,6 +180,6 @@ class UserAgentEventRepository extends ServiceEntityRepository
             return $this->handleDatabaseException($e);
         }
 
-        return ['code' => 200, 'error' => ''];
+        return ['code' => 200, 'erreur' => ''];
     }
 }
