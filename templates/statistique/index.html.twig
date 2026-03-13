@@ -1,0 +1,146 @@
+{% set title = "Statistiques" %}
+{% set description = "Ma-Moulinette, page des statistiques" %}
+{% set type_content = "Application Ma-moulinette, La page d'accès aux statistiques." %}
+{% set bottom="footer-fixed footer-fixed-small" %}
+<!DOCTYPE html>
+<!--
+.. __  __             __  __             _ _            _   _
+  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+
+  Laurent HADJADJ
+  https://github.com/Laurent-hadjadj/ma-moulinette
+  © 2015-2026 - CC BY-SA-NC 4.0
+-->
+<html	lang="fr">
+
+  {# Chargement de la section HEAD #}
+  <head>
+    <title>{{ title }}</title>
+    {{ include('head.html.twig') }}
+    {# Chargement des assets JS et CSS #}
+    {% block importmap %}{{ importmap('statistique') }}{% endblock %}
+  </head>
+
+  <body dir="ltr">
+    {# no-script #}
+    {{ include('no-script.html.twig') }}
+    {# Chargement de la section header #}
+    {{ include('header.html.twig') }}
+
+    <header class="grid-container">
+      <nav id="fil-ariane" aria-label="vous êtes ici :">
+        <ol class="claire-hand breadcrumbs">
+          <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+          <li><span class="show-for-sr">Vous êtes sur la page :</span>Statistiques</li>
+        </ol>
+      </nav>
+    </header>
+
+    <header class="grid-container" role="banner" aria-label="Message d'alerte">
+      {# Message d'alerte #}
+      <div id="message-box" class="callout alert-callout-border callout-ombre hide" role="alert"  data-closable>
+        <button class="close-button" aria-label="Close alert" type="button" data-close>
+        <span aria-hidden="true">&times;</span>
+        </button>
+        <p id="message-text"></p>
+      </div>
+
+      {# Gestion des messages flash & JS #}
+      {% for message in app.flashes('notice') %}
+      <div class="callout
+                  {{message.type|default('info')}}
+                  alert-callout-border
+                  callout-ombre
+                  js-flash-box" data-closable>
+        <p class="open-sans text-justify callout-message">{{ message.message }}</p>
+        {% if app.environment == 'dev' and message.trace is defined %}
+          <p class="open-sans">{{message.trace}}</p>
+        {% endif %}
+
+        <button class="close-button {{message.type|default('info')}}"
+                type="button" aria-label="Dismiss alert" data-close>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {% endfor %}
+    </header>
+
+    <main class="grid-container" role="main">
+
+      <section class="stats-selection">
+        <div class="grid-x grid-margin-x align-center">
+          <div class="cell small-12">
+            <h1 class="h3 text-center claire-hand"><span aria-hidden="true">📈</span>Statistiques</h1>
+            <p class="text-center stats-intro">
+              🎯 Sélectionnez le type de statistiques que vous souhaitez consulter.
+            </p>
+          </div>
+
+          <!-- Utilisateur -->
+          <div class="cell small-12 medium-4 margin-bottom-2">
+            <a href="{{ path('statistiques_utilisateur',{}) }}"
+                class="stats-card" rel="next"
+                aria-labelledby="stats-user-title"
+                aria-describedby="stats-user-desc">
+              <div id="stats-user-desc" class="stats-card-header">
+                <p class="open-sans">
+                  <span class="show-for-large">Analyse de l’activité et des profils utilisateurs.</span>
+                  <span class="show-for-medium-only">Analyse de l’activité.</span>
+                  <span class="show-for-small-only">Analyse de l’activité et des profils utilisateurs.</span>
+                </p>
+              </div>
+              <div class="stats-card-body text-center">
+                <span class="stats-icon">💻</span>
+                <h3 id="stats-user-title"
+                    class="claire-hand">Utilisateur</h3>
+              </div>
+            </a>
+          </div>
+
+          <!-- Projet -->
+          <div class="cell small-12 medium-4 margin-bottom-2">
+            <a href="{ path('statistiques_projet') }}"
+                class="stats-card"
+                aria-labelledby="stats-consommation-title"
+                aria-describedby="stats-consommation-desc">
+              <div id="stats-consommation-desc" class="stats-card-header">
+                <p class="open-sans">
+                  <span class="show-for-large">Suivi des projets, volumes et tendances.</span>
+                  <span class="show-for-medium-only">Suivi des projets.</span>
+                  <span class="show-for-small-only">Suivi des projets, volumes et tendances.</span>
+                </p>
+              </div>
+              <div class="stats-card-body text-center">
+                <span class="stats-icon">🛒</span>
+                <h3 id="stats-consommation-title"
+                    class="claire-hand">Projet</h3>
+              </div>
+            </a>
+          </div>
+        </div>
+      </section>
+
+      {% if is_granted('ROLE_INTERNAL') %}
+      <footer class="grid-x grid-padding-x align-right margin-top-2">
+        <div class="cell shrink">
+          <a href="{{ path('runBatchAnalysis')}}" rel="next">
+            <button id="bouton-lance-batch-analysis"
+                    type="button"
+                    class="button open-sans focus-dark-light"
+                    data-close
+                    aria-label="Analyse userAgent"><span aria-label="true">▶️</span>Analyse UserAgent
+            </button>
+          </a>
+          </div>
+      </footer>
+      {% endif %}
+
+    </main>
+
+    {# Chargement de la section footer #}
+    {{ include('footer.html.twig') }}
+    </body>
+</html>
