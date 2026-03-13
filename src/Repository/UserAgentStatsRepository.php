@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright © 2015-2025..
+ *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -36,12 +36,13 @@ class UserAgentStatsRepository extends ServiceEntityRepository
 
     /**
      * [Description for handleDatabaseException]
+     * Gestion centralisée des exceptions SQL
      *
      * @param \Throwable $e
      *
      * @return array
      *
-     * Created at: 04/01/2026 16:17:38 (Europe/Paris)
+     * Created at: 14/12/2025 18:24:19 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
@@ -81,9 +82,11 @@ class UserAgentStatsRepository extends ServiceEntityRepository
         \DateTimeInterface $start,
         \DateTimeInterface $end): array {
 
-        $sql = "SELECT device_type as name, COUNT(*) AS total
-                FROM assistant_ia.user_agent_analysis
+        $sql = "SELECT device_type as name, COUNT(DISTINCT visitor_id) AS total
+                FROM ma_moulinette.user_agent_analysis
                 WHERE created_at BETWEEN :start AND :end
+                    AND event_type != 'LOGGED'
+                    AND event_type != 'LOGIN_PAGE_VIEW'
                 GROUP BY device_type
                 ORDER BY total DESC";
         $conn = $this->getEntityManager()->getConnection();
@@ -115,11 +118,11 @@ class UserAgentStatsRepository extends ServiceEntityRepository
      */
     public function selectOsStatsByPeriod(
         \DateTimeInterface $start, \DateTimeInterface $end): array {
-
-        $sql = "SELECT os_name as name, os_version as version,
-                COUNT(*) AS total
-                FROM assistant_ia.user_agent_analysis
+        $sql = "SELECT os_name as name, os_version as version, COUNT(DISTINCT visitor_id) AS total
+                FROM ma_moulinette.user_agent_analysis
                 WHERE created_at BETWEEN :start AND :end
+                    AND event_type != 'LOGGED'
+                    AND event_type != 'LOGIN_PAGE_VIEW'
                 GROUP BY os_name, os_version
                 ORDER BY total DESC";
 
@@ -153,10 +156,11 @@ class UserAgentStatsRepository extends ServiceEntityRepository
     public function selectBrowserStatsByPeriod(
         \DateTimeInterface $start, \DateTimeInterface $end): array {
 
-        $sql = "SELECT browser_name as name,
-                        browser_version as version, COUNT(*) AS total
-                FROM assistant_ia.user_agent_analysis
+        $sql = "SELECT browser_name as name, browser_version as version, COUNT(DISTINCT visitor_id) AS total
+                FROM ma_moulinette.user_agent_analysis
                 WHERE created_at BETWEEN :start AND :end
+                    AND event_type != 'LOGGED'
+                    AND event_type != 'LOGIN_PAGE_VIEW'
                 GROUP BY browser_name, browser_version
                 ORDER BY total DESC";
 
@@ -171,42 +175,6 @@ class UserAgentStatsRepository extends ServiceEntityRepository
         }
 
         return ['code' => 200, 'liste' => $result];
-    }
-
-    /**
-     * [Description for selectAuthenticatedBrowserStats]
-     * Retour le liste des pages visitées
-     *
-     * @return array
-     * Navigateurs utilisés par les utilisateurs authentifiés
-     *
-     * Created at: 14/12/2025 18:26:33 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function selectStateByPeriod(
-        \DateTimeInterface $start, \DateTimeInterface $end): array {
-
-        $sql = "SELECT browser_name as name,
-                    browser_version as version, COUNT(*) AS total
-                FROM assistant_ia.user_agent_analysis
-                JOIN assistant_ia.user_agent_event
-                    ON id = user_agent_event_id
-                WHERE created_at BETWEEN :start AND :end
-                GROUP BY browser_name, browser_version
-                ORDER BY total DESC";
-
-        $conn = $this->getEntityManager()->getConnection();
-
-        try {
-            $stmt = $conn->prepare($sql);
-            $stmt->bindValue(self::START, $start->format(self::DATE_COMPLETE));
-            $stmt->bindValue(self::END, $end->format(self::DATE_COMPLETE));
-            $result = $stmt->executeQuery()->fetchAllAssociative();
-        } catch (\Throwable $e) {
-            return $this->handleDatabaseException($e);
-        }
-        return ['code' => 200, 'liste' => $result, 'error' => ''];
     }
 
     /**
@@ -227,12 +195,12 @@ class UserAgentStatsRepository extends ServiceEntityRepository
         $sqlKpi =  "SELECT
                         COUNT(DISTINCT session_id) AS unique_users,
                         COUNT(*) AS page_views
-                    FROM assistant_ia.user_agent_analysis
+                    FROM ma_moulinette.user_agent_analysis
                     WHERE session_id IS NOT NULL
                     AND created_at BETWEEN :start AND :end";
 
         $sqlPages = "SELECT event_type AS label, url, COUNT(*) AS total
-                    FROM assistant_ia.user_agent_analysis
+                    FROM ma_moulinette.user_agent_analysis
                     WHERE session_id IS NOT NULL
                         AND event_type != 'LOGGED'
                         AND event_type != 'LOGIN_PAGE_VIEW'
@@ -256,7 +224,7 @@ class UserAgentStatsRepository extends ServiceEntityRepository
             return $this->handleDatabaseException($e);
         }
 
-        return [ 'code' => 200, 'kpi' => $kpi, 'items' => $items, 'error' => '' ];
+        return [ 'code' => 200, 'kpi' => $kpi, 'items' => $items, 'erreur' => '' ];
     }
 
     /**
@@ -270,30 +238,37 @@ class UserAgentStatsRepository extends ServiceEntityRepository
      */
     public function selectAvgSessionDurationStats(): array
     {
-        $sql = "WITH session_bounds AS (
-                SELECT
-                    session_id,
-                    created_at AS session_date,
-                    MIN(created_at) FILTER (WHERE event_type IN ('PROMPT', 'PROMPT_SIMPLE')) AS session_start,
-                    MAX(created_at) FILTER (WHERE event_type = 'LOGOUT') AS session_logout,
-                    MAX(created_at) AS session_last_event
-                FROM assistant_ia.user_agent_analysis
-                WHERE event_type IS NOT NULL
-                AND event_type NOT IN ('LOGGED', 'LOGIN_PAGE_VIEW')
-                GROUP BY session_id, created_at
-            ),
-            session_durations AS (
-                SELECT
-                    session_date,
-                    EXTRACT(EPOCH FROM (COALESCE(session_logout, session_last_event) - session_start))/60.0 AS duration_minutes
-                FROM session_bounds
-            )
-            SELECT
-                session_date,
-                ROUND(AVG(duration_minutes), 2) AS avg_duration_minutes
-            FROM session_durations
-            GROUP BY session_date
-            ORDER BY session_date";
+            $sql = "WITH session_bounds AS (
+                        SELECT
+                                session_id,
+                                DATE(created_at) AS session_date,
+                                MIN(created_at) FILTER (WHERE event_type IN ('ACCUEIL')) AS session_start,
+                                MAX(created_at) FILTER (WHERE event_type = 'LOGOUT') AS session_end
+                        FROM
+                                ma_moulinette.user_agent_analysis
+                        WHERE
+                                event_type IN ('ACCUEIL', 'LOGOUT')
+                        GROUP BY
+                                session_id, DATE(created_at)
+                    ),
+                    session_durations AS (
+                        SELECT
+                                session_date,
+                                (EXTRACT(EPOCH FROM (session_end - session_start))/60.0) AS duration_minutes
+                        FROM
+                                session_bounds
+                        WHERE
+                                session_start IS NOT NULL AND session_end IS NOT NULL
+                    )
+                    SELECT
+                            session_date,
+                            ROUND(AVG(duration_minutes), 2) AS avg_duration_minutes
+                    FROM
+                            session_durations
+                    GROUP BY
+                            session_date
+                    ORDER BY
+                            session_date";
 
         $conn = $this->getEntityManager()->getConnection();
 
@@ -304,7 +279,7 @@ class UserAgentStatsRepository extends ServiceEntityRepository
             return $this->handleDatabaseException($e);
         }
 
-        return ['code' => 200, 'rows' => $rows, 'error' => ''];
+        return ['code' => 200, 'rows' => $rows, 'erreur' => ''];
     }
 
     /**
@@ -321,9 +296,9 @@ class UserAgentStatsRepository extends ServiceEntityRepository
         $sql = "WITH session_bounds AS (
                 SELECT
                     session_id,
-                    created_at AS session_date
-                FROM assistant_ia.user_agent_analysis
-                WHERE event_type IN ('PROMPT','PROMPT_SIMPLE')
+                    created_at::date AS session_date
+                FROM ma_moulinette.user_agent_analysis
+                WHERE event_type IN ('ACCUEIL')
                 AND created_at IS NOT NULL
                 GROUP BY session_id, created_at
                 )
@@ -343,7 +318,7 @@ class UserAgentStatsRepository extends ServiceEntityRepository
             return $this->handleDatabaseException($e);
         }
 
-        return ['code' => 200, 'rows' => $rows, 'error' => ''];
+        return ['code' => 200, 'rows' => $rows, 'erreur' => ''];
     }
 
     /**
@@ -358,38 +333,40 @@ class UserAgentStatsRepository extends ServiceEntityRepository
     public function selectSessionDurationByCategoryStats(): array
     {
         $sql = "WITH session_bounds AS (
-                SELECT
-                    session_id,
-                    MIN(created_at) FILTER (WHERE event_type IN ('PROMPT', 'PROMPT_SIMPLE')) AS session_start,
-                    MAX(created_at) FILTER (WHERE event_type = 'LOGOUT') AS session_logout,
-                    MAX(created_at) AS session_last_event
-                FROM assistant_ia.user_agent_analysis
-                WHERE created_at::date = CURRENT_DATE
-                    AND event_type IS NOT NULL
-                    AND event_type NOT IN ('LOGGED', 'LOGIN_PAGE_VIEW')
-                GROUP BY session_id
-            ),
-            session_durations AS (
+                    SELECT
+                        session_id,
+                        MIN(created_at) FILTER (WHERE event_type IN ('ACCUEIL')) AS session_start,
+                        MAX(created_at) FILTER (WHERE event_type = 'LOGOUT') AS session_logout,
+                        MAX(created_at) AS session_last_event
+                    FROM ma_moulinette.user_agent_analysis
+                    WHERE created_at::date = CURRENT_DATE
+                        AND session_id IS NOT NULL
+                        AND event_type IS NOT NULL
+                        AND event_type NOT IN ('LOGGED', 'LOGIN_PAGE_VIEW')
+                    GROUP BY session_id
+                ),
+                session_durations AS (
+                    SELECT
+                        session_id,
+                        session_start,
+                        COALESCE(session_logout, session_last_event) AS session_end,
+                        EXTRACT(EPOCH FROM (COALESCE(session_logout, session_last_event) - session_start)) AS duration_seconds
+                    FROM session_bounds
+                    WHERE session_start IS NOT NULL
+                )
                 SELECT
                     session_id,
                     session_start,
-                    COALESCE(session_logout, session_last_event) AS session_end,
-                    EXTRACT(EPOCH FROM (COALESCE(session_logout, session_last_event) - session_start)) AS duration_seconds
-                FROM session_bounds
-            )
-            SELECT
-                session_id,
-                session_start,
-                session_end,
-                ROUND(duration_seconds/60.0, 2) AS duration_minutes,
-                ROUND(duration_seconds/3600.0, 2) AS duration_hours,
-                CASE
-                    WHEN duration_seconds < 600 THEN 'court'                -- <10 min
-                    WHEN duration_seconds BETWEEN 600 AND 3600 THEN 'moyen' -- 10-120 min
-                    ELSE 'long'                                             -- >120 min
-                END AS session_length_category
-            FROM session_durations
-            ORDER BY duration_seconds DESC";
+                    session_end,
+                    ROUND(duration_seconds/60.0, 2) AS duration_minutes,
+                    ROUND(duration_seconds/3600.0, 2) AS duration_hours,
+                    CASE
+                        WHEN duration_seconds < 300 THEN 'court'                -- <5 min
+                        WHEN duration_seconds BETWEEN 300 AND 1800 THEN 'moyen' -- 5-30 min
+                        ELSE 'long'                                             -- >30 min
+                    END AS session_length_category
+                FROM session_durations
+                ORDER BY duration_seconds DESC";
 
         $conn = $this->getEntityManager()->getConnection();
 
@@ -400,7 +377,7 @@ class UserAgentStatsRepository extends ServiceEntityRepository
             return $this->handleDatabaseException($e);
         }
 
-        return ['code' => 200, 'rows' => $rows, 'error' => ''];
+        return ['code' => 200, 'rows' => $rows, 'erreur' => ''];
     }
 
     /**
@@ -417,10 +394,10 @@ class UserAgentStatsRepository extends ServiceEntityRepository
         $sql = "WITH session_bounds AS (
                     SELECT
                         session_id,
-                        MIN(created_at) FILTER (WHERE event_type IN ('PROMPT', 'PROMPT_SIMPLE')) AS session_start,
+                        MIN(created_at) FILTER (WHERE event_type IN ('ACCUEIL')) AS session_start,
                         MAX(created_at) FILTER (WHERE event_type = 'LOGOUT') AS session_logout,
                         MAX(created_at) AS session_last_event
-                    FROM assistant_ia.user_agent_analysis
+                    FROM ma_moulinette.user_agent_analysis
                     WHERE created_at::date = CURRENT_DATE
                     AND event_type IS NOT NULL
                     AND event_type NOT IN ('LOGGED', 'LOGIN_PAGE_VIEW')
@@ -438,8 +415,8 @@ class UserAgentStatsRepository extends ServiceEntityRepository
                         session_id,
                         duration_seconds,
                         CASE
-                            WHEN duration_seconds < 600 THEN 'Court'
-                            WHEN duration_seconds BETWEEN 600 AND 3600 THEN 'Moyen'
+                            WHEN duration_seconds < 300 THEN 'Court'
+                            WHEN duration_seconds BETWEEN 300 AND 1800 THEN 'Moyen'
                             ELSE 'Long'
                         END AS session_length_category
                     FROM session_durations
@@ -468,7 +445,7 @@ class UserAgentStatsRepository extends ServiceEntityRepository
             return $this->handleDatabaseException($e);
         }
 
-        return ['code' => 200, 'rows' => $rows, 'error' => ''];
+        return ['code' => 200, 'rows' => $rows, 'erreur' => ''];
     }
 
     /**
@@ -489,10 +466,10 @@ class UserAgentStatsRepository extends ServiceEntityRepository
         $sql = "WITH session_bounds AS (
                     SELECT
                         session_id,
-                        MIN(created_at) FILTER (WHERE event_type IN ('PROMPT', 'PROMPT_SIMPLE')) AS session_start,
+                        MIN(created_at) FILTER (WHERE event_type IN ('ACCUEIL')) AS session_start,
                         MAX(created_at) FILTER (WHERE event_type = 'LOGOUT') AS session_logout,
                         MAX(created_at) AS session_last_event
-                    FROM assistant_ia.user_agent_analysis
+                    FROM ma_moulinette.user_agent_analysis
                     WHERE event_type IS NOT NULL
                     AND event_type NOT IN ('LOGGED', 'LOGIN_PAGE_VIEW')
                     AND created_at BETWEEN :start AND :end
@@ -536,7 +513,7 @@ class UserAgentStatsRepository extends ServiceEntityRepository
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
-        return ['code' => 200, 'liste' => $result, 'error' => ''];
+        return ['code' => 200, 'liste' => $result, 'erreur' => ''];
     }
 
 }
