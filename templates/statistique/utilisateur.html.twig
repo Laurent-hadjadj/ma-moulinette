@@ -1,0 +1,662 @@
+{% set title = "Statistiques" %}
+{% set description = "Ma-moulinette, statistiques utilisateur" %}
+{% set type_content = "Application Ma-moulinette, La page des statistiques utilisateur." %}
+{% set bottom="footer-fixed footer-fixed-small" %}
+{% if nombre_utilisateur_disponible != 0 %}
+  {% set adhesion = (nombre_utilisateur_actif / nombre_utilisateur_disponible) %}
+  {% if adhesion < 25 %} {% set couleur = 'stats-list-rouge' %} {% endif %}
+  {% if adhesion > 25 and adhesion < 50 %} {% set couleur = 'stats-list-orange' %} {% endif %}
+  {% if adhesion > 50 and adhesion < 75 %} {% set couleur = 'stats-list-bleu' %} {% endif %}
+  {% if adhesion > 75 %} {% set couleur = 'stats-list-vert' %} {% endif %}
+  {% else %}
+    {% set couleur = 'stats-list-rouge' %}
+  {% endif %}
+<!DOCTYPE html>
+<!--
+.. __  __             __  __             _ _            _   _
+  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+
+  Laurent HADJADJ
+  https://github.com/Laurent-hadjadj/ma-moulinette
+  © 2024 - CC BY-SA-NC 4.0
+-->
+<html	lang="fr">
+
+  {# Chargement de la section HEAD #}
+  <head>
+    <title>{{ title }}</title>
+    {{ include('head.html.twig') }}
+    {# Chargement des assets JS et CSS #}
+    {% block importmap %}{{ importmap('statistique-utilisateur') }}{% endblock %}
+  </head>
+
+  <body dir="ltr">
+    {# no-script #}
+    {{ include('no-script.html.twig') }}
+    {# Chargement de la section header #}
+    {{ include('header.html.twig') }}
+
+    <header class="grid-container">
+      <nav id="fil-ariane" aria-label="vous êtes ici :">
+        <ol class="claire-hand breadcrumbs">
+          <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+          <li><a href="{{ path('statistiques', {}) }}">Statistiques</a></li>
+          <li><span class="show-for-sr">Vous êtes sur la page :</span>Utilisateur</li>
+        </ol>
+      </nav>
+    </header>
+
+    <header class="grid-container margin-top-2" role="banner">
+      {# Message d'alerte JS #}
+      <div id="message-box"
+          class="callout alert-callout-border callout-ombre hide"
+          role="alert" data-closable>
+        <p id="message-text"></p>
+        <button class="close-button" aria-label="Close alert" type="button" data-close>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+
+      {# On affiche les messages #}
+      {% for message in app.flashes('notice') %}
+        <div class="callout
+                    {{message.type|default('info')}}
+                    alert-callout-border
+                    callout-ombre
+                    js-flash-box" data-closable>
+          <p class="open-sans text-justify callout-message color">{{ message.message }}</p>
+          {% if app.environment == 'dev' and message.trace is defined %}
+            <p class="open-sans">{{message.trace}}</p>
+          {% endif %}
+
+          <button class="close-button {{message.type|default('info')}}"
+                  aria-label="Dismiss alert"
+                  type="button" data-close>
+              <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      {% endfor %}
+    </header>
+
+    <main class="grid-container margin-bottom-2" role="main">
+      <h1 class="h3 text-center claire-hand"><span aria-hidden="true">💻</span>
+        Statistiques utilisateur</h1>
+
+    {# ===================== Utilisateur créé/ Utilisateur actif ===================== #}
+    <section>
+      <ul class="stats-list">
+        <li>
+          {{nombre_utilisateur_disponible|format_number(locale='fr')}} <span class="stats-list-label">Compte</span>
+        </li>
+        <li>
+          {{nombre_utilisateur_actif|format_number(locale='fr')}} <span class="mini-stat stats-list-label">Actif</span>
+        </li>
+        <li>
+          <span class="mini-stat {{couleur}}">{{ adhesion|default(0)|format_number(style: 'percent', locale: 'fr') }}</span> <span class="stats-list-label">Adhésion</span>
+        </li>
+      </ul>
+    </section>
+
+    {# ===================== Activité moyenne                     ===================== #}
+    <section class="cell">
+      <h2 class="h4 claire-hand"><span aria-hidden="true">📊</span>Durée moyenne d'une session</h2>
+      <div class="chart-container-annuelle">
+        <canvas id="chart-avg-session-duration"
+                data-avg-session-duration="{{avg_session_duration|json_encode}}">
+                Graphique non disponible sans JavaScript ou données manquantes.</canvas>
+        <div class="chart-empty-message">Aucune donnée disponible pour ce graphique.</div>
+      </div>
+      <footer class="stats-card-footer">
+        <span>Générée le : {{generated_on|format_datetime(locale: 'fr')}}</span>
+      </footer>
+    </section>
+
+    {# ===================== Activité unique                     ===================== #}
+    <section class="cell margin-top-2">
+      <h2 class="h4 claire-hand"><span aria-hidden="true">📊</span>Session de travail unique</h2>
+      <div class="chart-container-annuelle">
+        <canvas id="chart-nb-session-unique"
+                data-nb-session-unique="{{nb_session_unique|json_encode}}">
+                Graphique non disponible sans JavaScript ou données manquantes.</canvas>
+        <div class="chart-empty-message">Aucune donnée disponible pour ce graphique.</div>
+      </div>
+      <footer class="stats-card-footer">
+        <span>Générée le : {{generated_on|format_datetime(locale: 'fr')}}</span>
+      </footer>
+    </section>
+
+    {# ===================== JOUR-SEMAINE-MOIS ===================== #}
+    <section class="cell margin-top-2">
+      <form method="get"
+        class="stats-period-selector inline grid-x align-middle"
+        id="period-form"
+        aria-label="Sélecteur de période des statistiques">
+
+      <div class="cell shrink stats-period-options">
+        <label>
+          <input type="radio" name="period" value="day"
+            {% if period == 'day' %}checked{% endif %}>
+          ☀️ Aujourd’hui
+        </label>
+
+        <label>
+          <input type="radio" name="period" value="week"
+            {% if period == 'week' %}checked{% endif %}>
+          📅 Semaine
+        </label>
+
+        <label>
+          <input type="radio" name="period" value="month"
+            {% if period == 'month' %}checked{% endif %}>
+          🗓️ Mois
+        </label>
+      </div>
+
+      <div class="cell shrink">
+        <input type="week"
+              name="week"
+              id="week-picker"
+              value="{{ selected_week|default('') }}"
+              min="2025-W01"
+              class="stats-period-input"
+              aria-label="Choisir une semaine"
+              {% if period != 'week' %}style="display:none"{% endif %}>
+      </div>
+
+      <div class="cell shrink">
+        <input type="month"
+              name="month"
+              id="month-picker"
+              value="{{ selected_month|default('') }}"
+              min="2025-01"
+              class="stats-period-input"
+              aria-label="Choisir un mois"
+              {% if period != 'month' %}style="display:none"{% endif %}>
+      </div>
+
+      <div class="cell shrink">
+        <button id="bouton-valid-period"
+                type="submit"
+                class="button open-sans focus-dark-light"
+                data-close
+                aria-label="Validez"><span aria-label="true">📆</span>Validez
+        </button>
+      </div>
+    </form>
+  </section>
+
+    {# ===================== OS/BROWSER/DEVICE ===================== #}
+    <section  class="cell margin-top-1">
+      <div class="callout">
+          <span class="open-sans">📌 Répartition des utilisateurs <strong>uniques</strong> selon leur système d’exploitation, navigateur et type d’appareil.</span>
+      </div>
+      <span>Générée le : {{generated_on|format_datetime(locale: 'fr')}}</span>
+      <div class="grid-x grid-margin-x margin-top-1">
+        {# --- OS --- #}
+        <div class="cell small-12 medium-6 large-4">
+          <section class="stats-card stats-card-table"
+          aria-labelledby="os-title"
+          aria-describedby="os-desc">
+            <header class="stats-card-header">
+              <h2 id="os-title" class="h4 claire-hand">
+                <span aria-hidden="true">🖥️</span> Systèmes d’exploitation</h2>
+              <p id="os-desc" class="stats-card-intro">
+                Répartition des OS utilisés par les visiteurs.
+              </p>
+            </header>
+
+            <div class="stats-card-content">
+              <table class="stats-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Nom</th>
+                    <th scope="col">Version</th>
+                    <th scope="col" class="text-right">Nb</th>
+                    <th scope="col" class="text-right">%</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for row in os.data.items %}
+                    <tr>
+                      <td class="open-sans">{{ row.name }}</td>
+                      <td class="open-sans text-right">{{ row.version }}</td>
+                      <td class="open-sans text-right">{{ row.total|number_format(0, '.', ' ') }}</td>
+                      <td class="stats-percent-cell">
+                        <span class="open-sans stats-percent-value">{{ row.percent }}%</span>
+                        <span
+                          class="stats-percent-bar"
+                          aria-hidden="true"
+                          style="--percent: {{ row.percent }}"></span>
+                      </td>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+            <footer class="stats-card-footer">
+              <span>Total : {{ os.data.total|default(0)|number_format(0, '.', ' ') }}</span>
+              <span class="stats-period">{{ os.period_label|default('❌ Non disponible') }}</span>
+            </footer>
+          </section>
+        </div>
+
+        {# --- Navigateurs --- #}
+        <div class="cell small-12 medium-6 large-4">
+          <section class="stats-card stats-card-table"
+            aria-labelledby="browser-title"
+            aria-describedby="browser-desc">
+            <header class="stats-card-header">
+              <h2 id="browser-title" class="h4 claire-hand">
+                <span aria-hidden="true">🌐</span> Navigateurs</h2>
+              <p id="browser-desc" class="stats-card-intro">
+                Navigateurs utilisés pour accéder à l’application.
+              </p>
+            </header>
+
+            <div class="stats-card-content">
+              <table class="stats-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Nom</th>
+                    <th scope="col">Version</th>
+                    <th scope="col" class="text-right">Nb</th>
+                    <th scope="col" class="text-right">%</th>
+                  </tr>
+                </thead>
+                <tbody>
+                {% for row in browser.data.items %}
+                  <tr>
+                    <td class="open-sans">{{ row.name }}</td>
+                    <td class="open-sans text-right">{{ row.version }}</td>
+                    <td class="open-sans text-right">{{ row.total|number_format(0, '.', ' ') }}</td>
+                    <td class="open-sans stats-percent-cell">
+                      <span class="stats-percent-value">{{ row.percent }}%</span>
+                      <span
+                        class="stats-percent-bar"
+                        aria-hidden="true"
+                        style="--percent: {{ row.percent }}"></span>
+                    </td>
+                  </tr>
+                {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+            <footer class="stats-card-footer">
+              <span>Total : {{ browser.data.total|default(0)|number_format(0, '.', ' ') }}</span>
+              <span class="stats-period">{{ browser.period_label|default('❌ Non disponible') }}</span>
+            </footer>
+          </section>
+        </div>
+
+        {# --- Appareils --- #}
+        <div class="cell small-12 medium-6 large-4">
+          <section class="stats-card stats-card-table"
+            aria-labelledby="device-title"
+            aria-describedby="device-desc">
+            <header class="stats-card-header">
+              <h2 id="device-title" class="h4 claire-hand">
+                <span aria-hidden="true">📱</span> Appareils</h2>
+              <p id="device-desc" class="stats-card-intro">
+                Types d’appareils utilisés par les visiteurs.
+              </p>
+            </header>
+
+            <div class="stats-card-content">
+              <table class="stats-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Type</th>
+                    <th scope="col" class="text-right">Nb</th>
+                    <th scope="col" class="text-right">%</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for row in device.data.items %}
+                    <tr>
+                      <td class="open-sans">{{ row.name }}</td>
+                      <td class="open-sans text-right">{{ row.total|number_format(0, '.', ' ') }}</td>
+                      <td class="stats-percent-cell">
+                        <span class="open-sans stats-percent-value">{{ row.percent }}%</span>
+                        <span
+                          class="stats-percent-bar"
+                          aria-hidden="true"
+                          style="--percent: {{ row.percent }}"></span>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+
+            <footer class="stats-card-footer">
+              <span>Total : {{ device.data.total|default(0) }}</span>
+              <span class="stats-period">{{ device.period_label|default('❌ Non disponible') }}</span>
+            </footer>
+          </section>
+        </div>
+      </div>
+    </section>
+
+    {# ===================== PAGES VUES UNIQUES ===================== #}
+    <section class="stats-section grid-x grid-margin-x margin-top-2">
+      <div class="cell small-12">
+        <div class="stats-card stats-card-table"
+            aria-labelledby="session-unique-title"
+            aria-describedby="session-unique-desc">
+
+          <header class="stats-card-header">
+            <h2 id="session-unique-title" class="h4 claire-hand">
+              <span aria-hidden="true">📄</span> Pages vues
+            </h2>
+            <p id="session-unique-desc" class="stats-card-intro">
+              Affiche le nombre total de vues unique par page pour la période sélectionnée et le pourcentage relatif au total.
+            </p>
+          </header>
+
+          {# ---------- KPIs ---------- #}
+          <ul class="stats-kpi no-bullet color-bleu">
+            <li>📶 {{ page_vue_unique.kpi.unique_users|default(0)|number_format(0, '.', ' ') }} Connexion unique</li>
+            <li>📄 {{ page_vue_unique.kpi.page_views|default(0)|number_format(0, '.', ' ') }} pages vues</li>
+            <li>📊 {{ page_vue_unique.kpi.pages_per_session|default(0)|number_format(0, '.', ' ') }} pages / session</li>
+          </ul>
+
+          {# ---------- Tableau ---------- #}
+          <div class="stats-table-wrapper">
+            <table class="stats-table">
+              <caption class="show-for-sr">
+                Pages les plus consultées – {{ page_vue_unique.period_label|default('❌ Non disponible') }}
+              </caption>
+
+              <thead>
+                <tr>
+                  <th scope="col">Page</th>
+                  <th scope="col" class="text-center">URI</th>
+                  <th scope="col" class="text-center">Vues</th>
+                  <th scope="col" class="text-right">%</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for row in  page_vue_unique.pages.items %}
+                  <tr>
+                    <th scope="row" class="open-sans text-left">{{ row.label }}</th>
+                    <td class="open-sans text-truncate">{{ row.url ?: '—' }}</td>
+                    <td class="open-sans text-center">{{ row.total|number_format(0, '.', ' ') }}</td>
+                    <td class="stats-percent-cell">
+                      <span class="open-sans stats-percent-value">{{ row.percent }}%</span>
+                      <span
+                        class="stats-percent-bar"
+                        aria-hidden="true"
+                        style="--percent: {{ row.percent }}"></span>
+                    </td>
+                  </tr>
+                {% else %}
+                  <tr>
+                    <td colspan="4" class="text-center">
+                      Aucune donnée disponible
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          <footer class="stats-card-footer">
+            <span>Générée le : {{generated_on|format_datetime(locale: 'fr')}}</span>
+            <span>Pages parcourues : {{ page_vue_unique.kpi.page_views|default(0)|number_format(0, '.', ' ') }}</span>
+            <span class="stats-period">{{ page_vue_unique.period_label|default('❌ Non disponible') }}</span>
+          </footer>
+        </div>
+      </div>
+    </section>
+
+    {# ===================== SESSION UNIQUE CATEGORY ================ #}
+    <section class="stats-section grid-x grid-margin-x margin-top-2">
+      <div class="cell small-12">
+        <div class="stats-card stats-card-table"
+              aria-labelledby="session-category-title"
+              aria-describedby="session-category-desc">
+
+          <header class="stats-card-header">
+            <h2 id="session-category-title" class="h4 claire-hand">
+              <span aria-hidden="true">⏱️</span> Session de travail globale.
+            </h2>
+            <p id="session-category-desc" class="stats-card-intro">
+              Affiche pour chaque catégorie le nombre de session de travail unique
+              quotidienne, la moyenne et son poids relatif par rapport au total.
+              <br>
+              <small class="color-noir">Catégories : court &lt; 5 min · moyen 5–30 min · long &gt; 30 min</small>
+            </p>
+          </header>
+
+          {# ---------- Tableau ---------- #}
+          <div class="stats-table-wrapper">
+            <table class="stats-table">
+              <caption class="show-for-sr">
+              Catégories des sessions de travail et leur moyennes quotidiennes – {{ session_category.period_label|default('❌ Non disponible') }}
+              </caption>
+
+              <thead>
+                <tr>
+                  <th scope="col">Catégorie</th>
+                  <th scope="col" class="text-center">Session</th>
+                  <th scope="col" class="text-center">Moyenne (min.)</th>
+                  <th scope="col" class="text-right">%</th>
+                </tr>
+              </thead>
+
+              <tbody>
+              {% if session_category is not empty %}
+                {% for row in session_category.items %}
+                  <tr>
+                    <td class="open-sans text-left">
+                      {{ row.category }}
+                    </td>
+                    <td class="open-sans text-center">
+                      {{ row.session|number_format() }}
+                    </td>
+                    <td class="open-sans text-center">
+                      {{ row.average|number_format(2, '.', ' ') }}
+                    </td>
+                    <td class="stats-percent-cell">
+                      <span class="open-sans stats-percent-value">
+                        {{ row.percent|number_format(1, '.', ' ') }}%
+                      </span>
+                      <span
+                        class="stats-percent-bar"
+                        aria-hidden="true"
+                        style="--percent: {{ row.percent }}"></span>
+                    </td>
+                  </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="4" class="text-center">
+                    Aucune donnée disponible
+                  </td>
+                </tr>
+              {% endif %}
+              </tbody>
+            </table>
+          </div>
+
+          <footer class="stats-card-footer">
+            <span>Générée le : {{generated_on|format_datetime(locale: 'fr')}}</span>
+            <span>Catégories totales : {{ session_category.total|default(0) }}</span>
+            <span class="stats-period">{{ session_category.period_label|default('❌ Non disponible') }}</span>
+          </footer>
+        </div>
+      </div>
+    </section>
+
+    {# ===================== SESSION UNIQUE          ================ #}
+    <section class="stats-section grid-x grid-margin-x margin-top-2">
+      <div class="cell small-12">
+        <div class="stats-card stats-card-table"
+              aria-labelledby="session-unique-category-title"
+              aria-describedby="session-unique-category-desc">
+
+          <header class="stats-card-header">
+            <h2 id="session-unique-category-title" class="h4 claire-hand">
+              <span aria-hidden="true">⏱️</span> Session de travail
+            </h2>
+            <p id="session-unique-category-desc" class="stats-card-intro">
+              Affiche pour chaque session de travail quotidienne unique, la période, sa durée et son poids relatif par rapport au total.
+              <br>
+              <small class="color-noir">Catégories : court &lt; 5 min · moyen 5–30 min · long &gt; 30 min</small>
+            </p>
+          </header>
+
+          {# ---------- Tableau ---------- #}
+          <div class="stats-table-wrapper">
+            <table class="stats-table">
+              <caption class="show-for-sr">
+                Durée de la session de travail quotidienne – {{ session_unique_category.period_label|default('❌ Non disponible') }}
+              </caption>
+
+              <thead>
+                <tr>
+                  <th scope="col">Début</th>
+                  <th scope="col">Fin</th>
+                  <th scope="col" class="text-center">Minute</th>
+                  <th scope="col" class="text-center">Heure</th>
+                  <th scope="col">Catégorie</th>
+                  <th scope="col" class="text-right">%</th>
+                </tr>
+              </thead>
+
+              <tbody>
+              {% if session_unique_category is not empty %}
+                {% for row in session_unique_category.items %}
+                  <tr>
+                    <td class="open-sans text-left">
+                      {{ row.first|format_datetime(locale: 'fr') }}
+                    </td>
+                    <td class="open-sans text-left">
+                      {{ row.last|format_datetime(locale: 'fr') }}
+                    </td>
+                    <td class="open-sans text-center">
+                      {{ row.minute|number_format(2, '.', ' ') }}
+                    </td>
+                    <td class="open-sans text-center">
+                      {{ row.hour|number_format(2, '.', ' ') }}
+                    </td>
+                    <td class="open-sans text-center">
+                      {{ row.category }}
+                    </td>
+                    <td class="stats-percent-cell">
+                      <span class="open-sans stats-percent-value">
+                        {{ row.percent|number_format(1, '.', ' ') }}%
+                      </span>
+                      <span
+                        class="stats-percent-bar"
+                        aria-hidden="true"
+                        style="--percent: {{ row.percent }}"></span>
+                    </td>
+                  </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="6" class="text-center">
+                    Aucune donnée disponible
+                  </td>
+                </tr>
+              {% endif %}
+              </tbody>
+            </table>
+          </div>
+
+          <footer class="stats-card-footer">
+            <span>Générée le : {{generated_on|format_datetime(locale: 'fr')}}</span>
+            <span>Sessions totales : {{ session_unique_category.total|default(0)|number_format(0, '.', ' ') }}</span>
+            <span class="stats-period">{{ session_unique_category.period_label|default('❌ Non disponible') }}</span>
+          </footer>
+        </div>
+      </div>
+    </section>
+
+    {# ===================== SESSION UNIQUE          ================ #}
+    <section class="stats-section grid-x grid-margin-x margin-top-2 margin-bottom-4">
+      <div class="cell small-12">
+        <div class="stats-card stats-card-table"
+              aria-labelledby="session-duration-title"
+              aria-describedby="session-duration-desc">
+
+          <header class="stats-card-header">
+            <h2 id="session-duration-title" class="h4 claire-hand">
+              <span aria-hidden="true">⏱️</span> Suivi de la durée de travail.
+            </h2>
+            <p id="session-duration-desc" class="stats-card-intro">
+              Affiche pour chaque jour de la période (quotidienne, hebdomadaire ou mensuelle) la durée moyenne de la session unique en minute, en heure et son poids relatif par rapport au total.
+            </p>
+          </header>
+
+          {# ---------- Tableau ---------- #}
+          <div class="stats-table-wrapper">
+            <table class="stats-table">
+              <caption class="show-for-sr">
+                Durée de la session de travail – {{ session_duration.period_label|default('❌ Non disponible') }}
+              </caption>
+
+              <thead>
+                <tr>
+                  <th scope="col">Jour</th>
+                  <th scope="col" class="text-center">Minute</th>
+                  <th scope="col" class="text-center">Heure</th>
+                  <th scope="col" class="text-right">%</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {% if session_duration is not empty %}
+                  {% for row in session_duration.items %}
+                  <tr>
+                    <td class="open-sans text-left">
+                      {{ row.date|format_datetime('short', 'none', locale: 'fr') }}
+                    </td>
+                    <td class="open-sans text-center">
+                      {{ row.minute|number_format(2, '.', ' ') }}
+                    </td>
+                    <td class="open-sans text-center">
+                      {{ row.hour|number_format(2, '.', ' ') }}
+                    </td>
+                    <td class="stats-percent-cell">
+                      <span class="open-sans stats-percent-value">
+                        {{ row.percent|number_format(1, '.', ' ') }}%
+                      </span>
+                      <span
+                        class="stats-percent-bar"
+                        aria-hidden="true"
+                        style="--percent: {{ row.percent }}"></span>
+                    </td>
+                  </tr>
+                {% endfor %}
+                {% else %}
+                  <tr>
+                    <td colspan="4" class="text-center">
+                      Aucune donnée disponible
+                    </td>
+                  </tr>
+                {% endif %}
+                </tbody>
+            </table>
+          </div>
+
+          <footer class="stats-card-footer">
+            <span>Générée le : {{generated_on|format_datetime(locale: 'fr')}}</span>
+            <span>Sessions totales : {{ session_duration.total|default(0)|number_format(0, '.', ' ') }}</span>
+            <span class="stats-period">{{ session_duration.period_label|default('❌ Non disponible') }}</span>
+          </footer>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  {# Chargement de la section footer #}
+  {{ include('footer.html.twig') }}
+  </body>
+</html>
