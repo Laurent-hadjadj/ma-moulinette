@@ -123,4 +123,17 @@ services:
         arguments:
             $logDir: '%kernel.logs_dir%'
 
+    # Gestion LDAP
+    Symfony\Component\Ldap\Ldap:
+        factory: ['Symfony\Component\Ldap\Ldap', 'create']
+        arguments:
+            - 'ext_ldap'       # adapter PHP natif
+            - 
+                host: '%env(LDAP_HOST)%'
+                port: '%env(LDAP_PORT)%'
+                encryption: '%env(LDAP_ENCRYPTION)%'
+                options:
+                    protocol_version: 3
+                    referrals: false
+                    network_timeout: 3
 ...
