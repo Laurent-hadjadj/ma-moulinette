@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright © 2015-2025..
+ *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -33,23 +33,33 @@ class UserAgentAnalysisService
         $this->detectorVersion = DeviceDetector::VERSION;
     }
 
+
     /**
+     * [Description for runBatch]
      * Lance un batch d'analyse des User-Agents
+     *
+     * @param int $limit
+     *
+     * @return array
+     *
+     * Created at: 13/03/2026 13:01:18 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function runBatch(int $limit = 20): array
+    public function runBatch(int $limit = 50): array
     {
         $eventsResult = $this->eventRepository->selectPendingEvents($limit);
         if ($eventsResult['code'] !== 200)
         {
             $this->logger->error('[Run-Batch] ❌ Échec de la requête selectPendingEvents().', [
                 'code' => $eventsResult['code'],
-                'error' => $eventsResult['error']
+                'erreur' => $eventsResult['erreur']
             ]);
             return $eventsResult;
         }
 
         $processed = 0;
-        $errors = [];
+        $erreurs = [];
 
         /* si la liste est vide en renvoie la réponse avec un code => 200 */
         foreach ($eventsResult['liste'] as $event) {
@@ -60,19 +70,20 @@ class UserAgentAnalysisService
             );
 
             if ($lock['code'] !== 200) {
-                $errors[] = [
+                $erreurs[] = [
                     'event_id' => $event['id'],
-                    'error' => 'Impossible de verrouiller l’événement'
+                    'erreur' => 'Impossible de verrouiller l’événement'
                 ];
                 continue;
             }
 
             try {
                 $analysisMap = $this->analyzeUserAgent($event['user_agent']);
-                $analysisMap['user_agent_event_id'] = $event['id'];
                 $analysisMap['event_type'] = $event['event_type'];
                 $analysisMap['url'] = $event['url'];
                 $analysisMap['session_id'] = $event['session_id'];
+                $analysisMap['visitor_id'] = $event['visitor_id'];
+                $analysisMap['user_id'] = $event['user_id'];
                 $analysisMap['detector_version'] = $this->detectorVersion;
                 $analysisMap['created_at'] = new \DateTimeImmutable();
 
@@ -80,9 +91,9 @@ class UserAgentAnalysisService
                     if ($insert['code'] !== 200) {
                         $this->logger->error('[Run-Batch] ❌ Échec de la requête insertUserAgentAnalysis().', [
                             'code' => $insert['code'],
-                            'error' => $insert['error']
+                            'erreur' => $insert['erreur']
                         ]);
-                    throw new \RuntimeException($insert['error']);
+                    throw new \RuntimeException($insert['erreur']);
                 }
 
                 $this->eventRepository->updateProcessingStatus(
@@ -101,9 +112,9 @@ class UserAgentAnalysisService
                     new \DateTimeImmutable()
                 );
 
-                $errors[] = [
+                $erreurs[] = [
                     'event_id' => $event['id'],
-                    'error' => $e->getMessage()
+                    'erreur' => $e->getMessage()
                 ];
             }
         }
@@ -111,12 +122,21 @@ class UserAgentAnalysisService
         return [
             'code' => 200,
             'processed' => $processed,
-            'errors' => $errors
+            'erreurs' => $erreurs
         ];
     }
 
     /**
+     * [Description for analyzeUserAgent]
      * Analyse un User-Agent via Matomo DeviceDetector
+     *
+     * @param string $userAgent
+     *
+     * @return array
+     *
+     * Created at: 13/03/2026 12:58:45 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private function analyzeUserAgent(string $userAgent): array
     {
