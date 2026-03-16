@@ -94,7 +94,7 @@ HELP
         $qb = $repo->createQueryBuilder('e')
             ->select('COUNT(e.id)');
 
-        $items = $qb->getQuery()->getSingleScalarResult();;
+        $items = $qb->getQuery()->getSingleScalarResult();
 
         $output->writeln([
             'Migration compte_rendu -> gzencode()',
