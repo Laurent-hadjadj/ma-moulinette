@@ -17,6 +17,7 @@ use App\Repository\UserAgentEventRepository;
 use App\Repository\UserAgentAnalysisRepository;
 use Psr\Log\LoggerInterface;
 use DeviceDetector\DeviceDetector;
+use App\Exception\SqlRequestException;
 
 /**
  * [Description UserAgentAnalysisService]
@@ -93,7 +94,7 @@ class UserAgentAnalysisService
                             'code' => $insert['code'],
                             'erreur' => $insert['erreur']
                         ]);
-                    throw new \RuntimeException($insert['erreur']);
+                    throw new SqlRequestException('insertUserAgentAnalysis', (int) $insert['code'], $insert['erreur'], null);
                 }
 
                 $this->eventRepository->updateProcessingStatus(
