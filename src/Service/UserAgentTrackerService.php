@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright © 2015-2025..
+ *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -16,6 +16,7 @@ namespace App\Service;
 use App\Repository\UserAgentEventRepository;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Uid\Ulid;
 
 /**
  * [Description UserAgentTrackerService]
@@ -26,7 +27,7 @@ class UserAgentTrackerService
         private RequestStack $requestStack,
         private UserAgentEventRepository $repository,
         private Security $security,
-        private string $appSalt
+        private string $appSalt //à définir dans service.yml
     ) {}
 
     /**
@@ -34,18 +35,26 @@ class UserAgentTrackerService
      *
      * @param string $eventType Type fonctionnel de l'événement (LOGIN_PAGE_VIEW, LOGIN_SUCCESS_REDIRECT, LOGOUT)
      *
-     * @return array ['code'=>200,'error'=>null] ou erreur
+     * @return array ['code'=>200,'erreur'=>null] ou erreur
      */
     public function track(string $eventType): array
     {
         $request = $this->requestStack->getCurrentRequest();
         if (!$request) {
-            return ['code' => 500, 'error' => 'Pas de requête active'];
+            return [
+            'code' => 500,
+            'erreur' => 'Pas de requête active'];
         }
 
         $sessionId = $request->getSession()->getId();
         $user = $this->security->getUser();
         $userId = $user?->getId();
+        $visitorId = $request->cookies->get('visitor_id');
+
+        if (!$visitorId) {
+            $visitorId = (string) new Ulid();
+            $request->attributes->set('visitor_id', $visitorId);
+        }
 
         $map = [
             'event_type' => $eventType,
@@ -53,6 +62,7 @@ class UserAgentTrackerService
             'user_agent' => $request->headers->get('User-Agent'),
             'session_id' => $sessionId,
             'user_id' => $userId,
+            'visitor_id' => $visitorId,
             'auth_state' => $user ? 'AUTHENTICATED' : 'ANONYMOUS',
             'processing_status' => 'PENDING',
             'ip_hash' => hash('sha256', $request->getClientIp() . $this->appSalt),
