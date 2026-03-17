@@ -50,7 +50,7 @@ class ProjetCosuiService
      */
     public function generateRender(string $maven_key): array
     {
-        $this->logger->info("ℹ️ [COSUI] Démarrage génération du rendu pour {$maven_key}");
+        $this->logger->info("[COSUI] ℹ️ Démarrage génération du rendu pour {$maven_key}");
 
         $render = array_merge(
             self::genericRender(),
@@ -60,13 +60,13 @@ class ProjetCosuiService
             self::initializeChartRender()
         );
 
-        $this->logger->debug("🛠️ [COSUI] Structure initiale du render générée.");
+        $this->logger->debug("[COSUI] 🛠️ Structure initiale du render générée.");
 
         // 1. Données projet actuel
         $n = $this->notes($maven_key);
         if ($n['code'] !== 200) {
             $message = '❌ Problème récupération des données projet actuel (notes)';
-            $messageLog = '❌ [COSUI] Problème récupération des données projet actuel (notes)';
+            $messageLog = '[COSUI] ❌ Problème récupération des données projet actuel (notes)';
             $this->logger->error($messageLog);
             return [
                 'code' => $n['code'],
@@ -78,7 +78,7 @@ class ProjetCosuiService
 
         if ($n['code'] == 200 && $n['result'] === false) {
             $message = '⚠️ Aucune données présentent dans la table historique pour ce projet (Erreur 404).';
-            $messageLog = '⚠️ [COSUI] Aucune données présentent dans la table historique pour ce projet (Erreur 404).';
+            $messageLog = '[COSUI] ⚠️ Aucune données présentent dans la table historique pour ce projet (Erreur 404).';
             $this->logger->warning($messageLog);
             return [
                 'code' => 404,
@@ -94,7 +94,7 @@ class ProjetCosuiService
         $nn = $this->reference($maven_key);
         if ($nn['code'] !== 200) {
             $message = "❌ Échec récupération des données de référence.";
-            $messageLog = "❌ [COSUI] Échec récupération des données de référence.";
+            $messageLog = "[COSUI] ❌ Échec récupération des données de référence.";
             $this->logger->error($messageLog);
             return [
                 'code' => $nn['code'],
@@ -106,7 +106,7 @@ class ProjetCosuiService
 
         if ($nn['code'] == 200 && $nn['result'] === false) {
             $message = '⚠️ Aucune données de références présentent dans la table historique pour ce projet (Erreur 404).';
-            $messageLog = '⚠️ [COSUI] Aucune données de références présentent dans la table historique pour ce projet (Erreur 404).';
+            $messageLog = '[COSUI] ⚠️ Aucune données de références présentent dans la table historique pour ce projet (Erreur 404).';
             $this->logger->warning($messageLog);
         } else {
             $this->injectNotesReference($render, $nn);
@@ -119,7 +119,7 @@ class ProjetCosuiService
             } catch (\Throwable $e) {
                 $render['setup'] = 'inconnu';
                 $message = '🔴 Erreur lors de la récupération du setup';
-                $messageLog = '🔴 [COSUI] Erreur lors de la récupération du setup';
+                $messageLog = '[COSUI] 🔴 Erreur lors de la récupération du setup';
                 $this->logger->critical($messageLog, ['exception' => $e->getMessage()]);
                 return [
                         'code' => 500,
@@ -156,7 +156,7 @@ class ProjetCosuiService
             }
         } catch (\Throwable $e) {
         $message = '🔴 Erreur durant le traitement des anomalies.';
-        $messageLog = '🔴 [COSUI] Erreur durant le traitement des anomalies.';
+        $messageLog = '[COSUI] 🔴 Erreur durant le traitement des anomalies.';
         $this->logger->critical($messageLog, ['exception' => $e->getMessage()]);
         return [
             'code' => 500,
@@ -169,7 +169,7 @@ class ProjetCosuiService
         $this->calculerEvolutions($render);
         $this->construireRadarChart($render);
 
-        $this->logger->info("ℹ️ [COSUI] Rendu généré avec succès pour {$maven_key}");
+        $this->logger->info("[COSUI] ℹ️ Rendu généré avec succès pour {$maven_key}");
         return $render;
     }
 
@@ -184,7 +184,7 @@ class ProjetCosuiService
      */
     public function initialRender(): array
     {
-        $this->logger->debug("🛠️ [COSUI] Initialisation du rendu par défaut.");
+        $this->logger->debug("[COSUI] 🛠️ Initialisation du rendu par défaut.");
         return array_merge(
             self::genericRender(),
             self::initializeNotesRender(),
@@ -218,14 +218,14 @@ class ProjetCosuiService
         'date_copyright' => $this->dateCopyright,
         ];
 
-        $this->logger->debug('🛠️ [COSUI] Préparation des paramètres de rendu générique', $data);
+        $this->logger->debug('[COSUI] 🛠️ Préparation des paramètres de rendu générique', $data);
 
         if (empty($this->logoEntreprise)) {
-            $this->logger->warning('⚠️ [COSUI] Logo entreprise non défini dans genericRender()');
+            $this->logger->warning('[COSUI] ⚠️ Logo entreprise non défini dans genericRender()');
         }
 
         if (empty($this->marqueEntrepriseShort) || empty($this->marqueEntrepriseLong)) {
-            $this->logger->warning('⚠️ [COSUI] Nom de marque incomplet dans genericRender()');
+            $this->logger->warning('[COSUI] ⚠️ Nom de marque incomplet dans genericRender()');
         }
 
         return $data;
@@ -571,13 +571,13 @@ class ProjetCosuiService
      */
     private function setup(string $maven_key): array
     {
-        $this->logger->debug("🛠️ [COSUI] Recherche du dernier setup pour le projet", ['maven_key' => $maven_key]);
+        $this->logger->debug("[COSUI] 🛠️ Recherche du dernier setup pour le projet", ['maven_key' => $maven_key]);
         $repartitionRepos = $this->em->getRepository(Repartition::class);
         $getSetup = $repartitionRepos->findLatestSetupByMavenKey($maven_key);
 
         if ($getSetup['code'] != 200) {
             $message = "❌ Échec de récupération du dernier setup pour le projet.";
-            $messageLog = "❌ [COSUI] Échec de récupération du dernier setup pour le projet.";
+            $messageLog = "[COSUI] ❌ Échec de récupération du dernier setup pour le projet.";
             $this->logger->error($messageLog, $getSetup['erreur']);
             return [
                 'code' => $getSetup['code'],
@@ -588,18 +588,18 @@ class ProjetCosuiService
         }
 
         if ($getSetup['result'] === 'NaN') {
-            $this->logger->warning("⚠️ [COSUI] Aucun setup trouvé pour ce maven_key", ['mavenKey' => $maven_key]);
+            $this->logger->warning("[COSUI] ⚠️ Aucun setup trouvé pour ce maven_key", ['mavenKey' => $maven_key]);
             return ['NaN'];
         }
 
         $setup = $getSetup['result'];
 
         if ($setup === null) {
-            $this->logger->error("❌ [COSUI] Setup null dans l'entité Repartition pour ce maven_key", ['maven_key' => $maven_key]);
+            $this->logger->error("[COSUI] ❌ Setup null dans l'entité Repartition pour ce maven_key", ['maven_key' => $maven_key]);
             return ['NaN'];
         }
 
-        $this->logger->info("ℹ️ [COSUI] Dernier setup récupéré avec succès",
+        $this->logger->info("[COSUI] ℹ️ Dernier setup récupéré avec succès",
             ['mavenKey' => $maven_key, 'setup' => $setup]);
         return [$setup];
     }
@@ -631,9 +631,9 @@ class ProjetCosuiService
         $point = $map[$note] ?? 0;
 
         if (!array_key_exists($note, $map)) {
-            $this->logger->warning("⚠️ [COSUI] Note inconnue reçue dans note2point()", ['note' => $note]);
+            $this->logger->warning("[COSUI] ⚠️ Note inconnue reçue dans note2point()", ['note' => $note]);
         } else {
-            $this->logger->debug("🛠️ [COSUI] Conversion de note : $note → $point points");
+            $this->logger->debug("[COSUI] 🛠️ Conversion de note : $note → $point points");
         }
 
         return $point;
@@ -650,7 +650,7 @@ class ProjetCosuiService
     private function variation(float|int $ancienneValeur, float|int $nouvelleValeur): string
     {
         if ($ancienneValeur === 0) {
-            $this->logger->warning("⚠️ [COSUI] Division par zéro évitée dans variation()", [
+            $this->logger->warning("[COSUI] ⚠️ Division par zéro évitée dans variation()", [
                 'ancienne' => $ancienneValeur,
                 'nouvelle' => $nouvelleValeur,
             ]);
@@ -659,7 +659,7 @@ class ProjetCosuiService
 
         $result = (($nouvelleValeur - $ancienneValeur) / $ancienneValeur) * 100;
 
-        $this->logger->debug("🛠️ [COSUI] Variation calculée", [
+        $this->logger->debug("[COSUI] 🛠️ Variation calculée", [
             'ancienne' => $ancienneValeur,
             'nouvelle' => $nouvelleValeur,
             'variation_pct' => $result,
@@ -688,14 +688,14 @@ class ProjetCosuiService
      */
     private function notes(string $maven_key): array
     {
-        $this->logger->debug("🛠️ [COSUI] Recherche des notes pour le projet", ['maven_key' => $maven_key]);
+        $this->logger->debug("[COSUI] 🛠️ Recherche des notes pour le projet", ['maven_key' => $maven_key]);
 
         $historiqueRepos = $this->em->getRepository(Historique::class);
         $request = $historiqueRepos->selectHistoriqueProjetLast(['maven_key' => $maven_key]);
 
         if ($request['code'] !== 200) {
             $message = "❌ Erreur lors de la récupération des notes.";
-            $messageLog = "❌ [COSUI] Erreur lors de la récupération des notes.";
+            $messageLog = "[COSUI] ❌ Erreur lors de la récupération des notes.";
             $this->logger->error($messageLog, [
                 'maven_key' => $maven_key,
                 'code' => $request['code'],
@@ -766,13 +766,13 @@ class ProjetCosuiService
      */
     private function reference(string $maven_key): array
     {
-        $this->logger->debug("🛠️ [COSUI] Recherche du projet de référence", ['maven_key' => $maven_key]);
+        $this->logger->debug("[COSUI] 🛠️  Recherche du projet de référence", ['maven_key' => $maven_key]);
 
         $historiqueRepos = $this->em->getRepository(Historique::class);
         $request = $historiqueRepos->selectHistoriqueProjetReference(['maven_key' => $maven_key]);
 
         if ($request['code'] !== 200) {
-            $this->logger->error("❌ [COSUI] Erreur lors de la récupération du projet de référence", [
+            $this->logger->error("[COSUI] ❌ Erreur lors de la récupération du projet de référence", [
                 'mavenKey' => $maven_key,
                 'code' => $request['code'],
                 'erreur' => $request['erreur'] ?? static::$erreurInconnue
@@ -785,7 +785,7 @@ class ProjetCosuiService
         }
 
         if (empty($request['reference']) || !isset($request['reference'][0])) {
-            $this->logger->warning("⚠️ [COSUI] Aucune donnée de référence trouvée", ['mavenKey' => $maven_key]);
+            $this->logger->warning("[COSUI] ⚠️ Aucune donnée de référence trouvée", ['mavenKey' => $maven_key]);
             return ['code' => 200, 'result' => false];
         }
 
@@ -794,7 +794,7 @@ class ProjetCosuiService
         $version = $versionSplit[0] ?? static::$defaultVersion;
         $type = $versionSplit[1] ?? 'undefined';
 
-        $this->logger->info("ℹ️ [COSUI] Données de référence récupérées", ['mavenKey' => $maven_key, 'version' => $version, 'type' => $type]);
+        $this->logger->info("[COSUI] ℹ️ Données de référence récupérées", ['mavenKey' => $maven_key, 'version' => $version, 'type' => $type]);
 
         return [
             'code' => 200,
@@ -855,13 +855,13 @@ class ProjetCosuiService
                         ->setParameter('mavenKey', $maven_key)
                         ->setParameter('setup', $setup);
                 $query = $qb->getQuery();
-		        $result = $query->getArrayResult();
-                //$trace = $querry->getSQL();
-                $this->logger->debug("🛠️ Query Result: " . json_encode($result));
+                $result = $query->getArrayResult();
+                //'$trace = $querry->getSQL();
+                $this->logger->debug("[COSUI] 🛠️ Query Result: " . json_encode($result));
 
                 return $result;
         } catch(\Throwable $e) {
-            $this->logger->critical('🔴 Erreur dans le createQueryBuilder : ' . $e->getMessage());
+            $this->logger->critical('[COSUI] 🔴 Erreur dans le createQueryBuilder : ' . $e->getMessage());
         }
         return [];
     }
