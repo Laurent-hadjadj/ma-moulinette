@@ -340,7 +340,7 @@ class ClientService
                 'code' => $statusCode,
                 'message' => $message,
                 'json' =>  $json,
-                'erreur' => "L'exception n'a pas été catché correctement par le handler (Erreur sympathique)."
+                'erreur' => "ℹ️ Pas d'exception catché par le handler. Tout va bien ! (Erreur sympathique)."
             ];
         } catch (TimeoutException $e) {
             return $this->handleTimeoutException($e);
