@@ -21,8 +21,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Helper\ProgressBar;
 use App\Service\CommandRebuildHistorique\{
-    SonarAnalysisFetcher,
-    SonarMetricsFetcher,
+    SonarAnalysisFetcherService,
+    SonarMetricsFetcherService,
+    BuildMapHistoryService
 };
 use App\Repository\HistoriqueRepository;
 use App\Exception\SonarApiException;
@@ -38,118 +39,17 @@ class RebuildHistoriqueCommand extends Command
 {
 
 public function __construct(
-        private SonarAnalysisFetcher $analysisFetcher,
-        private SonarMetricsFetcher $metricsFetcher,
+        private SonarAnalysisFetcherService $analysisFetcher,
+        private SonarMetricsFetcherService $metricsFetcher,
+        private BuildMapHistoryService $buildMapHistory,
         private HistoriqueRepository $historiqueRepos,
     ) {
         parent::__construct();
 
         $this->analysisFetcher = $analysisFetcher;
         $this->metricsFetcher = $metricsFetcher;
+        $this->$buildMapHistory = $buildMapHistory;
         $this->historiqueRepos = $historiqueRepos;
-    }
-
-    /**
-     * [Description for buildHistoriqueMap]
-     *
-     * @param string $projectKey
-     * @param array $analysis
-     * @param array $metrics
-     *
-     * @return array
-     *
-     * Created at: 17/03/2026 04:22:29 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    private function buildHistoriqueMap(string $project_key, array $analysis, array $measures
-    ): array {
-        return [
-            'maven_key' => $project_key,
-            'analyse_key' => $analysis['analysisKey'],
-            'version' => $analysis['version'],
-            'date_version' => new \DateTime($analysis['date']),
-            'nom_projet' => $project_key,
-
-            'version_release' => $analysis['version_release'] ?? 0,
-            'version_snapshot' => $analysis['version_snapshot'] ?? 0,
-            'version_autre' => $analysis['version_autre'] ?? 0,
-
-            'suppress_warning' => 0,
-            'no_sonar' => 0,
-            'todo' => 0,
-
-            'logger_info' => 0,
-            'logger_warn' => 0,
-            'logger_error' => 0,
-            'logger_debug' => 0,
-
-            'nombre_ligne' => $measures['lines'] ?? 0,
-            'nombre_ligne_code' => $measures['ncloc'] ?? 0,
-
-            'nombre_files' => $measures['files'] ?? 0,
-            'nombre_classes' => $measures['classes'] ?? 0,
-            'nombre_functions' => $measures['functions'] ?? 0,
-
-            'coverage' => $measures['coverage'] ?? 0,
-            'duplicated_lines_density' => $measures['duplicated_lines_density'] ?? 0,
-            'sqale_debt_ratio' => $measures['sqale_debt_ratio'] ?? 0,
-
-            'tests' => $measures['tests'] ?? 0,
-            'violations' => $measures['violations'] ?? 0,
-            'dette' => $measures['sqale_index'] ?? 0,
-
-            'nombre_bug' => $measures['bugs'] ?? 0,
-            'nombre_vulnerability' => $measures['vulnerabilities'] ?? 0,
-            'nombre_code_smell' => $measures['code_smells'] ?? 0,
-
-            'bug_blocker' => 0,
-            'bug_critical' => 0,
-            'bug_major' => 0,
-            'bug_minor' => 0,
-            'bug_info' => 0,
-
-            'vulnerability_blocker' => 0,
-            'vulnerability_critical' => 0,
-            'vulnerability_major' => 0,
-            'vulnerability_minor' => 0,
-            'vulnerability_info' => 0,
-
-            'code_smell_blocker' => 0,
-            'code_smell_critical' => 0,
-            'code_smell_major' => 0,
-            'code_smell_minor' => 0,
-            'code_smell_info' => 0,
-
-            'frontend' => 0,
-            'backend' => 0,
-            'autre' => 0,
-            'inconnu' => 0,
-
-            'nombre_anomalie_bloquant' => $measures['blocker_violations'] ?? 0,
-            'nombre_anomalie_critique' => $measures['critical_violations'] ?? 0,
-            'nombre_anomalie_majeur' => $measures['major_violations'] ?? 0,
-            'nombre_anomalie_mineur' => $measures['minor_violations'] ?? 0,
-            'nombre_anomalie_info' => $measures['info_violations'] ?? 0,
-
-            'note_reliability' => $measures['reliability_rating'] ?? 'F',
-            'note_security' => $measures['security_rating'] ?? 'F',
-            'note_sqale' => $measures['sqale_rating'] ?? 'F',
-            'note_hotspot' => $measures['hotspot_rating'] ?? 'F',
-
-            'menace_potentielle_totale' => 0,
-            'menace_potentielle_to_review_high' => 0,
-            'menace_potentielle_to_review_medium' => 0,
-            'menace_potentielle_to_review_low' => 0,
-            'menace_potentielle_reviewed_high' => 0,
-            'menace_potentielle_reviewed_medium' => 0,
-            'menace_potentielle_reviewed_low' => 0,
-
-            'mode_collecte' => 'rebuild',
-            'utilisateur_collecte' => 'cli',
-
-            'date_enregistrement' => new \DateTime()
-        ];
     }
 
     /**
@@ -235,7 +135,7 @@ public function __construct(
                 continue;
             }
 
-            $map = $this->buildHistoriqueMap(
+            $map = $this->$this->buildMapHistory->buildHistoriqueMap(
                 $project_key,
                 $analysis,
                 $metrics
@@ -283,7 +183,7 @@ public function __construct(
             } else {
                 $batch[] = $map;
                 if (count($batch) >= $batchSize) {
-                    //$inserted +=                 $this->historiqueRepos->insertHistoriqueAjoutProjet($batch,[]);
+                    $inserted +=                 $this->historiqueRepos->insertHistoriqueAjoutProjet($batch,[]);
                     $batch = [];
                 }
             }
@@ -292,7 +192,7 @@ public function __construct(
         }
 
         if (!$dryRun && !empty($batch)) {
-            //$inserted += $this->historiqueRepos->batchInsert($batch,[]);
+            $inserted += $this->historiqueRepos->batchInsert($batch,[]);
         }
 
         $progressBar->finish();
