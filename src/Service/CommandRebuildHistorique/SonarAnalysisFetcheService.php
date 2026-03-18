@@ -20,7 +20,7 @@ use App\Service\{ClientService, UrlBuilderService};
 /**
  * [Description SonarAnalysisFetcher]
  */
-class SonarAnalysisFetcher
+class SonarAnalysisFetcherService
 {
     private static $sonarUrl = "sonar.url";
 
