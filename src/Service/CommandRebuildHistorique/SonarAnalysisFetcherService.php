@@ -85,7 +85,6 @@ class SonarAnalysisFetcherService
         ]);
 
         do {
-
             $url = $this->urlBuilder->build(
                 $this->params->get(self::$sonarUrl),
                 '/api/project_analyses/search',
@@ -137,7 +136,9 @@ class SonarAnalysisFetcherService
         $this->logger->info('[SonarAnalysisFetcher] 📊 Fin de collecte', [
             'analyses_total' => count($analyses)
         ]);
+
         return $analyses;
+
     }
 
     /**
@@ -250,6 +251,5 @@ class SonarAnalysisFetcherService
 
         return $analyses;
     }
-
 
 }
