@@ -158,6 +158,7 @@ class BatchCollecteTodoController extends AbstractController
         }
 
         /** Si on a trouvé des to.do dans le code alors on les dénombre */
+        $java_todo = $python_todo = $php_todo = $xml_todo = $web_todo = $javascript_todo = $typescript_todo = $ruby_todo = $inconnu = 0;
         $mapData = [];
         for ($i = 1; $i <= $maxPages; $i++) {
             // Appel de l'API pour la page $i
@@ -183,6 +184,37 @@ class BatchCollecteTodoController extends AbstractController
                     'utilisateur_collecte' => $utilisateur_collecte,
                     'date_enregistrement' => $date
                 ];
+
+                // on calcul le nombre de to.do en fonction du language.
+                switch ($issueData['rule']) {
+                    case 'java:S1135':
+                        $java_todo++;
+                        break;
+                    case 'php:S1135':
+                        $php_todo++;
+                        break;
+                    case 'xml:S1315':
+                        $xml_todo++;
+                        break;
+                    case 'web:S1135':
+                        $web_todo++;
+                        break;
+                    case 'python:S1135':
+                        $python_todo++;
+                        break;
+                    case 'javascript:S1135':
+                        $javascript_todo++;
+                        break;
+                    case 'typescript:S1135':
+                        $typescript_todo++;
+                        break;
+                    case 'ruby:S1135':
+                        $ruby_todo++;
+                        break;
+                    default:
+                        $inconnu++;
+                        break;
+                }
             }
 
             // Insérer les issues récupérées pour cette page
@@ -212,12 +244,25 @@ class BatchCollecteTodoController extends AbstractController
             'total_todo' => $nombre
         ]);
 
+        /** On prépare les données pour l'historique */
+        $historique = [
+                'java_todo' => $java_todo,
+                'python_todo' => $python_todo,
+                'php_todo' => $php_todo,
+                'xml_todo' => $php_todo,
+                'web_todo' => $php_todo,
+                'javascript_todo' => $php_todo,
+                'typescript_todo' => $php_todo,
+                'ruby_todo' => $php_todo,
+                'total_todo' => $nombre,
+            ];
+
         /** On enregistre les données */
         return [
             'code' => 200,
             'nombre' => $result['paging']['total'] ?? 0,
             'message' => 'La collecte des todo pour le projet est terminées.',
-            'historique' => ['todo' => $nombre]
+            'historique' => $historique
         ];
     }
 }
