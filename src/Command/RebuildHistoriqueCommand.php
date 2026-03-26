@@ -48,7 +48,7 @@ public function __construct(
 
         $this->analysisFetcher = $analysisFetcher;
         $this->metricsFetcher = $metricsFetcher;
-        $this->$buildMapHistory = $buildMapHistory;
+        $this->buildMapHistory = $buildMapHistory;
         $this->historiqueRepos = $historiqueRepos;
     }
 
@@ -135,11 +135,7 @@ public function __construct(
                 continue;
             }
 
-            $map = $this->$this->buildMapHistory->buildHistoriqueMap(
-                $project_key,
-                $analysis,
-                $metrics
-            );
+            $map = $this->buildMapHistory->metricsRebuild($metrics, $analysis, $project_key);
 
             if ($dryRun) {
 
