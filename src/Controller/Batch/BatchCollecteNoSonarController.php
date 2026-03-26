@@ -74,7 +74,7 @@ class BatchCollecteNoSonarController extends AbstractController
             '/api/issues/search',
             [
                 'componentKeys' => $maven_key,
-                'rules' => 'java:S1309,java:NoSonar',
+                'rules' => 'java:S1309,java:S1310,java:S1315,java:NoSonar,python:NoSonar,php:NoSonar',
                 'p' => 1,
                 'ps' => 500
             ]
@@ -112,21 +112,33 @@ class BatchCollecteNoSonarController extends AbstractController
         }
 
         /**
-         * Si on a trouvé des @notations de type noSonar ou suppressWarning.
+         * Si on a trouvé des @notations de type noSonar, noPMD, noCheckstyle ou suppressWarning.
          * dans le code alors on les dénombre
          */
-        $noSonar = $suppressWarning = $inconnu = 0;
+        $java_no_sonar = $python_no_sonar = $php_no_sonar = $suppress_warning = $no_pmd = $check_style = $inconnu = 0;
         $mapData=[];
         if ($result['json']['paging']['total'] !== 0) {
             foreach ($result['json']['issues'] as $issue) {
                 switch ($issue['rule']) {
                     case 'java:S1309':
-                        $suppressWarning++;
+                        $suppress_warning++;
+                        break;
+                    case 'java:S1310':
+                        $no_pmd++;
+                        break;
+                    case 'java:S1315':
+                        $check_style++;
                         break;
                     case 'java:NoSonar':
-                        $noSonar++;
+                        $java_no_sonar++;
                         break;
-                    default:
+                    case 'python:NoSonar':
+                        $python_no_sonar++;
+                        break;
+                    case 'php:NoSonar':
+                        $php_no_sonar++;
+                        break;
+                default:
                         $inconnu++;
                         break;
                 }
@@ -146,12 +158,16 @@ class BatchCollecteNoSonarController extends AbstractController
             }
         } else {
             /** Il n'y a pas de noSOnar ou de suppressWarning */
-            $this->logger->info("[Batch NoSonar] ℹ️ Il n'y a pas de noSOnar ou de suppressWarning.");
+            $this->logger->info("[Batch NoSonar] ℹ️ Il n'y a pas de no_sonar ou de suppress_warning.");
         }
 
         $this->logger->debug('[Batch NoSonar] 🛠️  Résultats analysés', [
-            'no_sonar' => $noSonar,
-            'suppress_warning' => $suppressWarning,
+            'java_no_sonar' => $java_no_sonar,
+            'python_no_sonar' => $java_no_sonar,
+            'php_no_sonar' => $java_no_sonar,
+            'check_style' => $check_style,
+            'no_pmd' => $no_pmd,
+            'suppress_warning' => $suppress_warning,
             'inconnu' => $inconnu
         ]);
 
@@ -169,16 +185,24 @@ class BatchCollecteNoSonarController extends AbstractController
         }
 
         $this->logger->info('[Batch NoSonar] ℹ️ Insertion terminée avec succès', [
-            'maven_key' => $maven_key,
-            'no_sonar' => $noSonar,
-            'suppress_warning' => $suppressWarning,
-            'autre' => $inconnu
+            'java_no_sonar' => $java_no_sonar,
+            'python_no_sonar' => $java_no_sonar,
+            'php_no_sonar' => $java_no_sonar,
+            'check_style' => $check_style,
+            'no_pmd' => $no_pmd,
+            'suppress_warning' => $suppress_warning,
+            'inconnu' => $inconnu
         ]);
 
         /** On prépare les données pour l'historique */
         $historique = [
-                'suppress_warning' => $suppressWarning,
-                'no_sonar' => $noSonar,
+                'java_no_sonar' => $java_no_sonar,
+                'python_no_sonar' => $python_no_sonar,
+                'php_no_sonar' => $php_no_sonar,
+                'check_style' => $check_style,
+                'no_pmd' => $no_pmd,
+                'suppress_warning' => $suppress_warning,
+                'total_no_sonar' => $java_no_sonar+$python_no_sonar+$php_no_sonar,
             ];
 
         return [
