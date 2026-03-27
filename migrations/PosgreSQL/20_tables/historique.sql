@@ -2,12 +2,13 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.1.0 - 27/03/2026                  ##
+##           V2.2.0 - 27/03/2026                  ##
 ##                                                ##
 ####################################################*/
 
 --- 2025-11-30 : Migration postGreSql 18
---- 2026-03-27 : les attributs concernant les metrics SonarQube sont nullable.
+--- 2026-03-27 : Les attributs concernant les metrics SonarQube sont nullable.
+--- 2026-03-27 : Ajout des attributs par language/style pour les no_sonar et les to_do.
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette db_user;
@@ -27,9 +28,21 @@ CREATE TABLE ma_moulinette.historique
     version_snapshot INT,
     version_autre INT,
 
+    java_no_sonar INT,
+    python_no_sonar INT,
+    php_no_sonar INT,
     suppress_warning INT,
-    no_sonar INT,
-    todo INT,
+    no_pmd INT,
+    check_style INT,
+
+    java_todo INT,
+    python_todo INT,
+    php_todo INT,
+    xml_todo INT,
+    web_todo INT,
+    javascript_todo INT,
+    typescript_todo INT,
+    ruby_todo INT,
 
     nombre_ligne INT,
     nombre_ligne_code INT,
