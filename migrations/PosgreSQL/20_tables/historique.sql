@@ -2,11 +2,12 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.0.0 - 30/11/2025                  ##
+##           V2.1.0 - 27/03/2026                  ##
 ##                                                ##
 ####################################################*/
 
 --- 2025-11-30 : Migration postGreSql 18
+--- 2026-03-27 : les attributs concernant les metrics SonarQube sont nullable.
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette db_user;
@@ -22,76 +23,76 @@ CREATE TABLE ma_moulinette.historique
     analyse_key VARCHAR(32) NOT NULL,
     nom_projet VARCHAR(128) NOT NULL,
 
-    version_release INT NOT NULL,
-    version_snapshot INT NOT NULL,
-    version_autre INT NOT NULL,
+    version_release INT,
+    version_snapshot INT,
+    version_autre INT,
 
-    suppress_warning INT NOT NULL,
-    no_sonar INT NOT NULL,
-    todo INT NOT NULL,
+    suppress_warning INT,
+    no_sonar INT,
+    todo INT,
 
-    nombre_ligne INT NOT NULL,
-    nombre_ligne_code INT NOT NULL,
-    nombre_classes INT NOT NULL,
-    nombre_functions INT NOT NULL,
-    nombre_files INT NOT NULL,
+    nombre_ligne INT,
+    nombre_ligne_code INT,
+    nombre_classes INT,
+    nombre_functions INT,
+    nombre_files INT,
 
-    coverage DOUBLE PRECISION NOT NULL,
-    duplicated_lines_density DOUBLE PRECISION NOT NULL,
+    coverage DOUBLE PRECISION,
+    duplicated_lines_density DOUBLE PRECISION,
 
-    tests INT NOT NULL,
-    violations INT NOT NULL,
+    tests INT,
+    violations INT,
 
-    nombre_bug INT NOT NULL,
-    nombre_vulnerability INT NOT NULL,
-    nombre_code_smell INT NOT NULL,
+    nombre_bug INT,
+    nombre_vulnerability INT,
+    nombre_code_smell INT,
 
-    frontend INT NOT NULL,
-    backend INT NOT NULL,
-    autre INT NOT NULL,
-    inconnu INT NOT NULL,
+    frontend INT,
+    backend INT,
+    autre INT,
+    inconnu INT,
 
-    dette INT NOT NULL,
-    sqale_debt_ratio DOUBLE PRECISION NOT NULL,
+    dette INT,
+    sqale_debt_ratio DOUBLE PRECISION,
 
-    nombre_anomalie_bloquant INT NOT NULL,
-    nombre_anomalie_critique INT NOT NULL,
-    nombre_anomalie_info INT NOT NULL,
-    nombre_anomalie_majeur INT NOT NULL,
-    nombre_anomalie_mineur INT NOT NULL,
+    nombre_anomalie_bloquant INT,
+    nombre_anomalie_critique INT,
+    nombre_anomalie_info INT,
+    nombre_anomalie_majeur INT,
+    nombre_anomalie_mineur INT,
 
-    note_reliability VARCHAR(16) NOT NULL,
-    note_security VARCHAR(16) NOT NULL,
-    note_sqale VARCHAR(16) NOT NULL,
-    note_hotspot VARCHAR(16) NOT NULL,
+    note_reliability VARCHAR(16),
+    note_security VARCHAR(16),
+    note_sqale VARCHAR(16),
+    note_hotspot VARCHAR(16),
 
-    menace_potentielle_to_review_high INT NOT NULL,
-    menace_potentielle_to_review_medium INT NOT NULL,
-    menace_potentielle_to_review_low INT NOT NULL,
-    menace_potentielle_reviewed_high INT NOT NULL,
-    menace_potentielle_reviewed_medium INT NOT NULL,
-    menace_potentielle_reviewed_low INT NOT NULL,
-    menace_potentielle_totale INT NOT NULL,
+    menace_potentielle_to_review_high INT,
+    menace_potentielle_to_review_medium INT,
+    menace_potentielle_to_review_low INT,
+    menace_potentielle_reviewed_high INT,
+    menace_potentielle_reviewed_medium INT,
+    menace_potentielle_reviewed_low INT,
+    menace_potentielle_totale INT,
 
     initial BOOLEAN NOT NULL,
 
-    bug_blocker INT NOT NULL,
-    bug_critical INT NOT NULL,
-    bug_major INT NOT NULL,
-    bug_minor INT NOT NULL,
-    bug_info INT NOT NULL,
+    bug_blocker INT,
+    bug_critical INT,
+    bug_major INT,
+    bug_minor INT,
+    bug_info INT,
 
-    vulnerability_blocker INT NOT NULL,
-    vulnerability_critical INT NOT NULL,
-    vulnerability_major INT NOT NULL,
-    vulnerability_minor INT NOT NULL,
-    vulnerability_info INT NOT NULL,
+    vulnerability_blocker INT,
+    vulnerability_critical INT,
+    vulnerability_major INT,
+    vulnerability_minor INT,
+    vulnerability_info INT,
 
-    code_smell_blocker INT NOT NULL,
-    code_smell_critical INT NOT NULL,
-    code_smell_major INT NOT NULL,
-    code_smell_minor INT NOT NULL,
-    code_smell_info INT NOT NULL,
+    code_smell_blocker INT,
+    code_smell_critical INT,
+    code_smell_major INT,
+    code_smell_minor INT,
+    code_smell_info INT,
 
     mode_collecte VARCHAR(32),
     utilisateur_collecte VARCHAR(320),
