@@ -278,18 +278,18 @@ class BuildMapHistoryService
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private function getComplexityRating(float $ratio): string {
-		if ($ratio <= 3) {
-				return 'A';
-		} elseif ($ratio > 3 && $ratio <= 7) {
-				return 'B';
-		} elseif ($ratio > 7 && $ratio <= 12) {
-				return 'C';
-		} elseif ($ratio > 12 && $ratio <= 18) {
-				return 'D';
-		} elseif ($ratio > 18) {
-				return 'E';
-		}
-		return '--';
+        if ($ratio <= 3) {
+                return 'A';
+        } elseif ($ratio > 3 && $ratio <= 7) {
+                return 'B';
+        } elseif ($ratio > 7 && $ratio <= 12) {
+                return 'C';
+        } elseif ($ratio > 12 && $ratio <= 18) {
+                return 'D';
+        } elseif ($ratio > 18) {
+                return 'E';
+        }
+        return '--';
     }
 
     /**
