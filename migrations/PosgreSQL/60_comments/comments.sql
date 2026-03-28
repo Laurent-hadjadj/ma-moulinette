@@ -210,75 +210,239 @@ COMMENT ON COLUMN ma_moulinette.groupe.date_enregistrement IS 'Date d’enregist
 -- ============================================
 -- TABLE historique
 -- ============================================
-COMMENT ON COLUMN ma_moulinette.historique.maven_key IS 'Clé Maven du projet';
+COMMENT ON COLUMN ma_moulinette.historique.maven_key IS 'Clé unique du projet, souvent project_key
+(fr.monapplication:ma-moulinette).';
 COMMENT ON COLUMN ma_moulinette.historique.version IS 'Version du projet dans l’historique';
-COMMENT ON COLUMN ma_moulinette.historique.date_version IS 'Date de la version du projet';
-COMMENT ON COLUMN ma_moulinette.historique.nom_projet IS 'Nom du projet associé à cette version';
-COMMENT ON COLUMN ma_moulinette.historique.analyse_key IS 'Clé d’analyse du projet';
-COMMENT ON COLUMN ma_moulinette.historique.version_release IS 'Indicateur de release pour la version spécifique';
-COMMENT ON COLUMN ma_moulinette.historique.version_snapshot IS 'Indicateur de snapshot pour la version spécifique';
-COMMENT ON COLUMN ma_moulinette.historique.version_autre IS 'Indicateur pour les autres types de versions';
-COMMENT ON COLUMN ma_moulinette.historique.suppress_warning IS 'Compteur des suppressions d’avertissements';
-COMMENT ON COLUMN ma_moulinette.historique.no_sonar IS 'Compteur de l’utilisation de NoSonar';
-COMMENT ON COLUMN ma_moulinette.historique.todo IS 'Compteur de l’utilisation de todo';
-COMMENT ON COLUMN ma_moulinette.historique.nombre_ligne IS 'Nombre total de lignes dans le projet';
-COMMENT ON COLUMN ma_moulinette.historique.nombre_ligne_code IS 'Nombre total de lignes de code dans le projet';
-COMMENT ON COLUMN ma_moulinette.historique.nombre_classes IS 'Nombre de classes dans le projet';
-COMMENT ON COLUMN ma_moulinette.historique.nombre_functions IS 'Nombre de méthode/fonction dans le projet';
-COMMENT ON COLUMN ma_moulinette.historique.nombre_files IS 'Nombre de fichiers dans le projet';
-COMMENT ON COLUMN ma_moulinette.historique.coverage IS 'Pourcentage de couverture de code par les tests';
-COMMENT ON COLUMN ma_moulinette.historique.duplicated_lines_density IS 'Pourcentage de duplication dans le code';
-COMMENT ON COLUMN ma_moulinette.historique.tests IS 'Nombre de tests unitaires exécutés';
-COMMENT ON COLUMN ma_moulinette.historique.violations IS 'Nombre total de défauts détectés';
-COMMENT ON COLUMN ma_moulinette.historique.nombre_bug IS 'Nombre total de bugs détectés';
-COMMENT ON COLUMN ma_moulinette.historique.nombre_vulnerability IS 'Nombre total de vulnérabilités détectées';
-COMMENT ON COLUMN ma_moulinette.historique.nombre_code_smell IS 'Nombre total de mauvaises pratiques détectés';
-COMMENT ON COLUMN ma_moulinette.historique.frontend IS 'Développements spécifiques frontend';
-COMMENT ON COLUMN ma_moulinette.historique.backend IS 'Développements spécifiques backend';
-COMMENT ON COLUMN ma_moulinette.historique.autre IS 'Développements spécifiques';
-COMMENT ON COLUMN ma_moulinette.historique.inconnu IS 'Développements indéterminés';
-COMMENT ON COLUMN ma_moulinette.historique.dette IS 'Somme de la dette technique accumulée';
-COMMENT ON COLUMN ma_moulinette.historique.sqale_debt_ratio IS 'Ratio de la dette technique (SQALE)';
-COMMENT ON COLUMN ma_moulinette.historique.nombre_anomalie_bloquant IS 'Nombre d’anomalies bloquantes';
-COMMENT ON COLUMN ma_moulinette.historique.nombre_anomalie_critique IS 'Nombre d’anomalies critiques';
-COMMENT ON COLUMN ma_moulinette.historique.nombre_anomalie_info IS 'Nombre d’anomalies d’information';
-COMMENT ON COLUMN ma_moulinette.historique.nombre_anomalie_majeur IS 'Nombre d’anomalies majeures';
-COMMENT ON COLUMN ma_moulinette.historique.nombre_anomalie_mineur IS 'Nombre d’anomalies mineures';
-COMMENT ON COLUMN ma_moulinette.historique.note_reliability IS 'Note de fiabilité attribuée au projet';
-COMMENT ON COLUMN ma_moulinette.historique.note_security IS 'Note de sécurité attribuée au projet';
-COMMENT ON COLUMN ma_moulinette.historique.note_sqale IS 'Note SQALE attribuée au projet';
-COMMENT ON COLUMN ma_moulinette.historique.note_hotspot IS 'Note pour les menaces potentielles de sécurité';
-COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_to_review_high IS 'Nombre de menaces potentielles de sécurité de niveau élevé à vérifier';
-COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_to_review_medium IS 'Nombre de menaces potentielles moyennes à vérifier';
-COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_to_review_low IS 'Nombre de menaces potentielles faibles à vérifier';
-COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_reviewed_high IS 'Nombre de menaces potentielle élevées vérifiées';
-COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_reviewed_medium IS 'Nombre de menaces potentielle moyennes vérifiées';
-COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_reviewed_low IS 'Nombre de menaces potentielle faibles vérifiées';
-COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_totale IS 'Nombre total de menaces potentielles vérifiées';
-COMMENT ON COLUMN ma_moulinette.historique.initial IS 'Indique si c’est la version de référence';
-COMMENT ON COLUMN ma_moulinette.historique.bug_blocker IS 'Nombre de bugs bloquants';
-COMMENT ON COLUMN ma_moulinette.historique.bug_critical IS 'Nombre de bugs critiques';
-COMMENT ON COLUMN ma_moulinette.historique.bug_major IS 'Nombre de bugs majeurs';
-COMMENT ON COLUMN ma_moulinette.historique.bug_minor IS 'Nombre de bugs mineurs';
-COMMENT ON COLUMN ma_moulinette.historique.bug_info IS 'Nombre de bugs d’information';
-COMMENT ON COLUMN ma_moulinette.historique.vulnerability_blocker IS 'Nombre de vulnérabilités bloquantes';
-COMMENT ON COLUMN ma_moulinette.historique.vulnerability_critical IS 'Nombre de vulnérabilités critiques';
-COMMENT ON COLUMN ma_moulinette.historique.vulnerability_major IS 'Nombre de vulnérabilités majeures';
-COMMENT ON COLUMN ma_moulinette.historique.vulnerability_minor IS 'Nombre de vulnérabilités mineures';
-COMMENT ON COLUMN ma_moulinette.historique.vulnerability_info IS 'Nombre de vulnérabilités d’information';
-COMMENT ON COLUMN ma_moulinette.historique.code_smell_blocker IS 'Nombre de mauvaises pratiques bloquants';
-COMMENT ON COLUMN ma_moulinette.historique.code_smell_critical IS 'Nombre de mauvaises pratiques critiques';
-COMMENT ON COLUMN ma_moulinette.historique.code_smell_major IS 'Nombre de mauvaises pratiques majeurs';
-COMMENT ON COLUMN ma_moulinette.historique.code_smell_minor IS 'Nombre de mauvaises pratiques mineurs';
-COMMENT ON COLUMN ma_moulinette.historique.code_smell_info IS 'Nombre de mauvaises pratiques d’information';
-COMMENT ON COLUMN ma_moulinette.historique.logger_info IS 'Nombre de méthode Info invoqué';
-COMMENT ON COLUMN ma_moulinette.historique.logger_warn IS 'Nombre de méthode Warn invoqué';
-COMMENT ON COLUMN ma_moulinette.historique.logger_error IS 'Nombre de méthode Error invoqué';
-COMMENT ON COLUMN ma_moulinette.historique.logger_debug IS 'Nombre de méthode Debug invoqué';
-COMMENT ON COLUMN ma_moulinette.historique.mode_collecte IS 'Mode de collecte : collecte, traitement manuel ou traitement automatique';
-COMMENT ON COLUMN ma_moulinette.historique.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
-COMMENT ON COLUMN ma_moulinette.historique.actuator_info IS 'Information Actuator du projet';
-COMMENT ON COLUMN ma_moulinette.historique.date_enregistrement IS 'Date d’enregistrement de l’historique';
+COMMENT ON COLUMN ma_moulinette.historique.date_version IS 'Date de l''analyse du projet';
+COMMENT ON COLUMN ma_moulinette.historique.nom_projet IS 'Nom du projet i.e. extrait de la maven_key.';
+COMMENT ON COLUMN ma_moulinette.historique.analyse_key IS 'Identifiant unique d’une analyse SonarQube. Permet de tracer
+un scan précis. Utile pour historiser les résultats.';
+COMMENT ON COLUMN ma_moulinette.historique.version_release IS 'Nombre de version de type RELEASE.';
+COMMENT ON COLUMN ma_moulinette.historique.version_snapshot IS 'Nombre de version de type SNAPSHOT.';
+COMMENT ON COLUMN ma_moulinette.historique.version_autre IS 'Nombre de version de type RC, ALPHA, BETA,...';
+COMMENT ON COLUMN ma_moulinette.historique.repartition_frontend IS 'Nombre de signalement FRONTEND.';
+COMMENT ON COLUMN ma_moulinette.historique.repartition_backend IS 'Nombre de signalement BACKEND.';
+COMMENT ON COLUMN ma_moulinette.historique.repartition_autre IS 'Nombre de signalement AUTRE (autre modules).';
+COMMENT ON COLUMN ma_moulinette.historique.repartition_inconnu IS 'Nombre de signalement INCONNU.';
+COMMENT ON COLUMN ma_moulinette.historique.java_no_sonar IS 'Nombre de noSonar pour JAVA (java:S1309).';
+COMMENT ON COLUMN ma_moulinette.historique.python_no_sonar IS 'Nombre de noSonar pour PYTHON (python:S1309).';
+COMMENT ON COLUMN ma_moulinette.historique.php_no_sonar IS 'Nombre de noSonar pour PHP (php:S1309).';
+COMMENT ON COLUMN ma_moulinette.historique.suppress_warning IS 'Nombre de suppressWarning pour JAVA (java:S1309).';
+COMMENT ON COLUMN ma_moulinette.historique.no_pmd IS 'Nombre de noPMD pour JAVA (java:S1310).';
+COMMENT ON COLUMN ma_moulinette.historique.check_style IS 'Nombre de checkstyle:off pour JAVA (java:S1315).';
+COMMENT ON COLUMN ma_moulinette.historique.java_todo IS 'Nombre de todo pour java (java:S1135).';
+COMMENT ON COLUMN ma_moulinette.historique.python_todo IS 'Nombre de todo pour python (python:S1135).';
+COMMENT ON COLUMN ma_moulinette.historique.php_todo IS 'Nombre de todo pour php (php:S1135).';
+COMMENT ON COLUMN ma_moulinette.historique.xml_todo IS 'Nombre de todo pour xml (xml:S1135).';
+COMMENT ON COLUMN ma_moulinette.historique.web_todo IS 'Nombre de todo pour web (web:S1135).';
+COMMENT ON COLUMN ma_moulinette.historique.javascript_todo IS 'Nombre de todo pour javascript (javascript:S1135).';
+COMMENT ON COLUMN ma_moulinette.historique.typescript_todo IS 'Nombre de todo pour typescript (typescript:S1135).';
+COMMENT ON COLUMN ma_moulinette.historique.ruby_todo IS 'Nombre de todo pour ruby (ruby:S1135).';
+COMMENT ON COLUMN ma_moulinette.historique.alert_status IS 'Statut du Quality Gate. Indique si les critères qualité sont respectés. Conditionne souvent la mise en production.';
+COMMENT ON COLUMN ma_moulinette.historique.lines IS 'Nombre total de lignes du projet, incluant code, commentaires et
+lignes vides. Cette métrique donne une vision globale de la taille du code source. Elle permet de suivre l’évolution
+volumétrique du projet dans le temps.';
+COMMENT ON COLUMN ma_moulinette.historique.ncloc IS 'Nombre de lignes de code effectives, excluant commentaires et
+lignes vides. Elle représente la quantité réelle de logique métier. Sert de base pour de nombreux indicateurs comme la
+couverture ou la dette technique.';
+COMMENT ON COLUMN ma_moulinette.historique.ncloc_language_distribution IS 'Répartition des lignes de code par langage de programmation. Permet d’identifier les technologies dominantes du projet. Utile pour analyser la diversité technique et orienter les compétences nécessaires.';
+COMMENT ON COLUMN ma_moulinette.historique.files IS 'Nombre total de fichiers analysés dans le projet. Reflète la
+structure et la granularité du code. Peut être utilisé pour évaluer la complexité organisationnelle.';
+COMMENT ON COLUMN ma_moulinette.historique.classes IS 'Nombre de classes définies dans le code. Indique le niveau
+d’abstraction et de modularité. Une augmentation peut traduire une architecture plus structurée ou plus complexe.';
+COMMENT ON COLUMN ma_moulinette.historique.functions IS 'Nombre de fonctions ou méthodes présentes dans le code. Permet
+d’évaluer la granularité des traitements. Une forte densité peut indiquer un bon découpage ou une complexité
+excessive.';
+COMMENT ON COLUMN ma_moulinette.historique.statements IS 'Nombre total d’instructions exécutables dans le code.
+Représente la quantité réelle de logique exécutée. Sert notamment au calcul de la couverture de tests.';
+COMMENT ON COLUMN ma_moulinette.historique.comment_lines IS 'Nombre de lignes contenant des commentaires. Les
+commentaires facilitent la compréhension du code. Un bon équilibre est essentiel pour la maintenabilité.';
+COMMENT ON COLUMN ma_moulinette.historique.comment_lines_density IS 'Pourcentage de commentaires par rapport au code
+total. Permet d’évaluer la qualité de la documentation interne. Un ratio équilibré améliore la lisibilité.';
+COMMENT ON COLUMN ma_moulinette.historique.comment_lines_rating IS 'Note commentaire (A-E)';
+COMMENT ON COLUMN ma_moulinette.historique.coverage IS 'Pourcentage global de couverture du code par les tests. Mesure
+la part de code exécutée pendant les tests. Un taux élevé améliore la confiance dans la qualité du code.';
+COMMENT ON COLUMN ma_moulinette.historique.branch_coverage IS 'Couverture des conditions logiques du code (if, switch).
+Vérifie que toutes les branches sont testées. Réduit les risques de comportements inattendus.';
+COMMENT ON COLUMN ma_moulinette.historique.line_coverage IS 'Pourcentage de lignes exécutées par les tests. Donne une
+vision simple de la couverture. Complémentaire à la couverture des branches.';
+COMMENT ON COLUMN ma_moulinette.historique.lines_to_cover IS 'Nombre de lignes de code devant être couvertes par les
+tests. Sert de base au calcul de la couverture. Permet d’identifier les zones critiques.';
+COMMENT ON COLUMN ma_moulinette.historique.conditions_to_cover IS 'Nombre total de conditions à tester. Inclut les
+branches logiques du code. Plus ce nombre est élevé, plus les tests doivent être complets.';
+COMMENT ON COLUMN ma_moulinette.historique.uncovered_conditions IS 'Nombre de conditions non couvertes par les tests.
+Indique les zones de risque. Doit être réduit pour améliorer la qualité.';
+COMMENT ON COLUMN ma_moulinette.historique.tests IS 'Nombre total de tests unitaires exécutés. Reflète la stratégie de
+test du projet. Plus il est élevé, meilleure est la couverture potentielle.';
+COMMENT ON COLUMN ma_moulinette.historique.test_execution_time IS 'Durée totale d’exécution des tests unitaires. Permet
+d’évaluer leur performance. Un temps trop long peut ralentir les cycles de développement.';
+COMMENT ON COLUMN ma_moulinette.historique.test_errors IS 'Nombre d’erreurs techniques lors de l’exécution des tests.
+Ces erreurs empêchent leur bon déroulement. Elles doivent être corrigées rapidement.';
+COMMENT ON COLUMN ma_moulinette.historique.test_failures IS 'Nombre de tests ayant échoué. Indique des anomalies
+fonctionnelles ou régressions. Doit être proche de zéro pour garantir la qualité.';
+COMMENT ON COLUMN ma_moulinette.historique.skipped_tests IS 'Nombre de tests ignorés lors de l’exécution. Ces tests ne
+contribuent pas à la couverture. Un nombre élevé peut masquer des risques.';
+COMMENT ON COLUMN ma_moulinette.historique.test_success_density IS 'Pourcentage de tests réussis. Mesure la stabilité de
+ la suite de tests. Un taux élevé indique un code fiable.';
+COMMENT ON COLUMN ma_moulinette.historique.duplicated_files IS 'Nombre de fichiers contenant des duplications. Permet
+d’identifier les zones redondantes. Impacte la maintenabilité.';
+COMMENT ON COLUMN ma_moulinette.historique.duplicated_blocks IS 'Nombre de blocs de code dupliqués. Indique la présence
+de copier-coller. La duplication augmente la dette technique.';
+COMMENT ON COLUMN ma_moulinette.historique.duplicated_lines IS 'Nombre de lignes dupliquées dans le code. Représente le
+volume de duplication. Plus il est élevé, plus le risque de maintenance est important.';
+COMMENT ON COLUMN ma_moulinette.historique.duplicated_lines_density IS 'Pourcentage de duplication dans le code. Mesure
+la proportion de code copié. Une valeur élevée dégrade la qualité globale.';
+COMMENT ON COLUMN ma_moulinette.historique.complexity IS 'Complexité cyclomatique du code. Mesure le nombre de chemins
+d’exécution. Une valeur élevée rend le code difficile à tester.';
+COMMENT ON COLUMN ma_moulinette.historique.complexity_rating IS 'Note de complexité cyclomatique du code.';
+COMMENT ON COLUMN ma_moulinette.historique.cognitive_complexity IS 'Complexité cognitive du code. Évalue la difficulté
+de compréhension humaine. Une valeur élevée indique un code difficile à lire.';
+COMMENT ON COLUMN ma_moulinette.historique.cognitive_complexity_rating IS 'Note de complexité cognitive du code.';
+COMMENT ON COLUMN ma_moulinette.historique.complexity_ratio IS 'Ratio de complexité cyclomatique exprimé en pourcentage
+par rapport à une base de référence (par exemple le nombre de lignes de code ou de fonctions). Cette métrique permet
+d’évaluer le niveau global de complexité logique du projet. Un ratio élevé indique un code comportant de nombreux
+chemins d’exécution, donc plus difficile à tester, maintenir et sécuriser.';
+COMMENT ON COLUMN ma_moulinette.historique.cognitive_complexity_ratio IS 'Ratio de complexité cognitive exprimé en
+pourcentage par rapport à une base de référence (par exemple le nombre de lignes de code ou de fonctions). Cette
+métrique permet d’évaluer la difficulté globale de compréhension du code à l’échelle du projet. Un ratio élevé indique
+un code potentiellement difficile à lire, maintenir et faire évoluer.';
+COMMENT ON COLUMN ma_moulinette.historique.open_issues IS 'Nombre d’issues ouvertes. Représente les problèmes en attente de correction. Permet de suivre la dette en cours.';
+COMMENT ON COLUMN ma_moulinette.historique.reopened_issues IS 'Nombre d’issues réouvertes après correction. Indique des
+corrections insuffisantes. Peut révéler un manque de qualité dans les fix.';
+COMMENT ON COLUMN ma_moulinette.historique.confirmed_issues IS 'Nombre d’issues confirmées comme valides. Exclut les
+faux positifs. Représente les problèmes réels.';
+COMMENT ON COLUMN ma_moulinette.historique.false_positive_issues IS 'Nombre d’issues faussement positives.';
+COMMENT ON COLUMN ma_moulinette.historique.accepted_issues IS 'Nombre d’issues acceptées sans correction. Ces problèmes
+sont connus mais jugés non prioritaires. Ils restent dans le code.';
+COMMENT ON COLUMN ma_moulinette.historique.high_impact_accepted_issues IS 'Nombre d’issues acceptées avec un impact
+élevé (blocker ou high). Représente un risque assumé. Doit être surveillé attentivement.';
+COMMENT ON COLUMN ma_moulinette.historique.violations IS 'Nombre total d’issues détectées. Inclut bugs, vulnérabilités
+et code smells. Donne une vision globale de la qualité.';
+COMMENT ON COLUMN ma_moulinette.historique.blocker_violations IS 'Nombre d’issues de sévérité bloquante détectées dans
+le code. Ces problèmes représentent des risques critiques pouvant empêcher le bon fonctionnement ou la mise en
+production. Ils doivent être corrigés en priorité absolue.';
+COMMENT ON COLUMN ma_moulinette.historique.critical_violations IS 'Nombre d’issues de sévérité critique identifiées. Ces anomalies peuvent entraîner des dysfonctionnements importants ou des comportements incorrects. Leur correction est
+fortement recommandée avant toute mise en production.';
+COMMENT ON COLUMN ma_moulinette.historique.major_violations IS 'Nombre d’issues de sévérité majeure détectées. Elles
+impactent la qualité du code et sa maintenabilité sans être bloquantes. Leur traitement permet d’améliorer la robustesse globale du projet.';
+COMMENT ON COLUMN ma_moulinette.historique.minor_violations IS 'Nombre d’issues de sévérité mineure présentes dans le
+code. Ces problèmes ont un impact limité et concernent souvent des améliorations de style ou de bonnes pratiques. Leur
+correction reste recommandée pour maintenir un code propre.';
+COMMENT ON COLUMN ma_moulinette.historique.info_violations IS 'Nombre d’issues informatives détectées. Elles n’impactent pas directement la qualité ou le fonctionnement du code. Elles servent principalement à signaler des optimisations ou
+des bonnes pratiques à suivre.';
+COMMENT ON COLUMN ma_moulinette.historique.software_quality_blocker_issues IS 'Nombre d’issues de sévérité bloquante
+selon le modèle de qualité logiciel récent. Ces problèmes représentent des risques critiques pouvant empêcher le
+fonctionnement correct ou la mise en production. Ils doivent être corrigés immédiatement.';
+COMMENT ON COLUMN ma_moulinette.historique.software_quality_high_issues IS 'Nombre d’issues de sévérité élevée détectées dans le code. Elles peuvent avoir un impact important sur la qualité, la fiabilité ou la sécurité. Leur correction est
+fortement prioritaire.';
+COMMENT ON COLUMN ma_moulinette.historique.software_quality_medium_issues IS 'Nombre d’issues de sévérité moyenne
+identifiées. Ces problèmes ont un impact modéré sur la qualité du code ou sa maintenabilité. Ils doivent être traités
+pour améliorer progressivement la qualité globale.';
+COMMENT ON COLUMN ma_moulinette.historique.software_quality_low_issues IS 'Nombre d’issues de sévérité faible détectées Elles concernent généralement des optimisations ou des améliorations mineures. Leur correction contribue à maintenir un code propre et cohérent.';
+COMMENT ON COLUMN ma_moulinette.historique.software_quality_info_issues IS 'Nombre d’issues informatives dans le modèle
+de qualité logiciel. Elles n’ont pas d’impact direct sur le fonctionnement ou la qualité. Elles servent principalement à signaler des bonnes pratiques ou des améliorations possibles.';
+COMMENT ON COLUMN ma_moulinette.historique.code_smells IS 'Nombre de mauvaises pratiques détectées. Impacte la
+maintenabilité sans bloquer l’exécution. Contribue à la dette technique.';
+COMMENT ON COLUMN ma_moulinette.historique.code_smell_blocker IS 'Nombre de mauvaises pratiques bloquants.';
+COMMENT ON COLUMN ma_moulinette.historique.code_smell_critical IS 'Nombre de mauvaises pratiques critiques.';
+COMMENT ON COLUMN ma_moulinette.historique.code_smell_major IS 'Nombre de mauvaises pratiques majeurs.';
+COMMENT ON COLUMN ma_moulinette.historique.code_smell_minor IS 'Nombre de mauvaises pratiques mineurs.';
+COMMENT ON COLUMN ma_moulinette.historique.code_smell_info IS 'Nombre de mauvaises pratiques d’information.';
+COMMENT ON COLUMN ma_moulinette.historique.maintainability_issues IS 'Ensemble des issues liées à la maintenabilité du
+code. Elles regroupent principalement les code smells impactant la lisibilité et l’évolution du projet. Ces problèmes
+augmentent la dette technique et rendent les modifications futures plus coûteuses.';
+COMMENT ON COLUMN ma_moulinette.historique.sqale_index IS 'Dette technique estimée en minutes. Représente l’effort de
+correction total. Permet de prioriser les actions.';
+COMMENT ON COLUMN ma_moulinette.historique.sqale_debt_ratio IS 'Ratio de dette technique par rapport au coût de
+développement. Exprimé en pourcentage. Plus il est faible, meilleure est la qualité.';
+COMMENT ON COLUMN ma_moulinette.historique.sqale_rating IS 'Note SQALE.';
+COMMENT ON COLUMN ma_moulinette.historique.effort_to_reach_maintainability_rating_a IS 'Effort estimé nécessaire pour
+atteindre la note A en maintenabilité. Exprimé généralement en temps (minutes ou jours). Permet d’évaluer le coût
+d’amélioration du code.';
+COMMENT ON COLUMN ma_moulinette.historique.software_quality_maintainability_issues IS 'Nombre d’issues liées à la
+maintenabilité selon le modèle de qualité logiciel récent. Inclut les problèmes impactant la lisibilité et l’évolution
+du code. Une valeur élevée indique un besoin de refactoring.';
+COMMENT ON COLUMN ma_moulinette.historique.software_quality_maintainability_rating IS 'Note de maintenabilité pour la
+qualité logicielle.';
+COMMENT ON COLUMN ma_moulinette.historique.software_quality_maintainability_debt_ratio IS 'Ratio de dette technique lié
+à la maintenabilité, exprimé en pourcentage. Il compare l’effort de correction au coût estimé de développement du code.
+Plus ce ratio est faible, meilleure est la qualité de maintenabilité.';
+COMMENT ON COLUMN ma_moulinette.historique.software_quality_maintainability_remediation_effort IS 'Effort total requis
+pour corriger les problèmes de maintenabilité. Représente la dette technique associée aux code smells. Sert à prioriser
+les actions de refactoring.';
+COMMENT ON COLUMN ma_moulinette.historique.effort_to_reach_software_quality_maintainability_rating_a IS 'Effort estimé
+pour atteindre la note A en maintenabilité dans le modèle software quality. Représente le coût de correction des
+problèmes identifiés. Permet d’anticiper les travaux d’amélioration.';
+COMMENT ON COLUMN ma_moulinette.historique.bugs IS 'Nombre de bugs détectés. Représente les défauts pouvant provoquer
+des erreurs. Impact direct sur la fiabilité.';
+COMMENT ON COLUMN ma_moulinette.historique.bug_blocker IS 'Nombre de bugs bloquants.';
+COMMENT ON COLUMN ma_moulinette.historique.bug_critical IS 'Nombre de bugs critiques.';
+COMMENT ON COLUMN ma_moulinette.historique.bug_major IS 'Nombre de bugs majeurs.';
+COMMENT ON COLUMN ma_moulinette.historique.bug_minor IS 'Nombre de bugs mineurs.';
+COMMENT ON COLUMN ma_moulinette.historique.bug_info IS 'Nombre de bugs d’information.';
+COMMENT ON COLUMN ma_moulinette.historique.reliability_issues IS 'Nombre d’issues liées à la fiabilité du code,
+principalement les bugs. Ces problèmes peuvent provoquer des erreurs à l’exécution ou des comportements inattendus. Leur correction est essentielle pour garantir la stabilité de l’application.';
+COMMENT ON COLUMN ma_moulinette.historique.reliability_rating IS 'Note de fiabilité de A à E. Basée sur les bugs
+détectés. Permet d’évaluer le niveau de risque.';
+COMMENT ON COLUMN ma_moulinette.historique.reliability_remediation_effort IS 'Effort estimé nécessaire pour corriger les problèmes de fiabilité du code, généralement exprimé en temps. Cette métrique correspond au coût de résolution des bugs identifiés. Elle permet de prioriser les actions visant à améliorer la stabilité du logiciel.';
+COMMENT ON COLUMN ma_moulinette.historique.software_quality_reliability_issues IS 'Nombre d’issues de fiabilité selon le modèle de qualité logiciel récent. Inclut les bugs impactant le comportement du système. Une valeur élevée indique un
+risque accru d’erreurs en production.';
+COMMENT ON COLUMN ma_moulinette.historique.software_quality_reliability_rating IS 'Note de fiabilité selon le modèle de
+qualité logiciel, allant de A à E. Elle est calculée en fonction du nombre et de la sévérité des bugs détectés. Une note élevée indique un faible risque de défaillance en production.';
+COMMENT ON COLUMN ma_moulinette.historique.software_quality_reliability_remediation_effort IS 'Effort total requis pour
+corriger les problèmes de fiabilité identifiés. Représente le coût de résolution des bugs dans le modèle software
+quality. Permet d’anticiper les travaux nécessaires pour améliorer la stabilité.';
+COMMENT ON COLUMN ma_moulinette.historique.vulnerabilities IS 'Nombre de vulnérabilités de sécurité détectées. Ces
+failles peuvent être exploitées. Doivent être corrigées rapidement.';
+COMMENT ON COLUMN ma_moulinette.historique.vulnerability_blocker IS 'Nombre de vulnérabilités bloquantes.';
+COMMENT ON COLUMN ma_moulinette.historique.vulnerability_critical IS 'Nombre de vulnérabilités critiques.';
+COMMENT ON COLUMN ma_moulinette.historique.vulnerability_major IS 'Nombre de vulnérabilités majeures.';
+COMMENT ON COLUMN ma_moulinette.historique.vulnerability_minor IS 'Nombre de vulnérabilités mineures.';
+COMMENT ON COLUMN ma_moulinette.historique.vulnerability_info IS 'Nombre de vulnérabilités d’information.';
+COMMENT ON COLUMN ma_moulinette.historique.security_issues IS 'Ensemble des problèmes de sécurité détectés dans le code, incluant les vulnérabilités. Ces issues peuvent exposer l’application à des attaques ou des failles exploitables. Leur analyse et correction sont essentielles pour protéger le système.';
+COMMENT ON COLUMN ma_moulinette.historique.security_rating IS 'Note de sécurité de A à E. Basée sur les vulnérabilités.
+Indique le niveau de risque global.';
+COMMENT ON COLUMN ma_moulinette.historique.security_remediation_effort IS 'Effort estimé nécessaire pour corriger les
+vulnérabilités de sécurité détectées dans le code. Exprimé généralement en temps, il représente le coût de mise en
+conformité. Cette métrique aide à prioriser les actions de sécurisation du projet.';
+COMMENT ON COLUMN ma_moulinette.historique.software_quality_security_issues IS 'Nombre d’issues de sécurité identifiées
+dans le modèle de qualité logiciel récent. Inclut les vulnérabilités pouvant compromettre le système. Une valeur élevée
+indique un niveau de risque important.';
+COMMENT ON COLUMN ma_moulinette.historique.software_quality_security_rating IS 'Note de sécurité du projet selon le
+modèle software quality, allant de A à E. Elle dépend du nombre et de la sévérité des vulnérabilités identifiées. Une
+note élevée indique un faible niveau de risque en matière de sécurité.';
+COMMENT ON COLUMN ma_moulinette.historique.software_quality_security_remediation_effort IS 'Effort total requis pour
+corriger les problèmes de sécurité selon le modèle software quality. Représente le coût global de remédiation des
+vulnérabilités. Permet d’évaluer l’investissement nécessaire pour sécuriser l’application.';
+COMMENT ON COLUMN ma_moulinette.historique.security_hotspots IS 'Nombre de Security Hotspots identifiés, c’est-à-dire
+des zones de code sensibles nécessitant une revue manuelle. Ces éléments ne sont pas forcément des vulnérabilités mais
+peuvent le devenir selon le contexte. Ils doivent être analysés par un développeur ou un expert sécurité.';
+COMMENT ON COLUMN ma_moulinette.historique.security_review_rating IS 'Note de revue des Security Hotspots, allant de A à
+E. Elle reflète la qualité et le niveau de complétude des analyses effectuées sur les zones sensibles. Une bonne note
+indique un processus de revue sécurité maîtrisé.';
+COMMENT ON COLUMN ma_moulinette.historique.security_hotspots_reviewed IS 'Pourcentage de Security Hotspots ayant été
+examinés et validés. Indique le niveau de couverture des revues de sécurité manuelles. Un taux élevé signifie que les
+zones sensibles ont été correctement analysées.';
+COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_to_review_high IS 'Nombre de menaces potentielles de
+sécurité de niveau élevé à vérifier.';
+COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_to_review_medium IS 'Nombre de menaces potentielles
+moyennes à vérifier.';
+COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_to_review_low IS 'Nombre de menaces potentielles faibles à vérifier.';
+COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_reviewed_high IS 'Nombre de menaces potentielle élevées vérifiées.';
+COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_reviewed_medium IS 'Nombre de menaces potentielle moyennes vérifiées.';
+COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_reviewed_low IS 'Nombre de menaces potentielle faibles
+vérifiées.';
+COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_totale IS 'Nombre total de menaces potentielles
+vérifiées.';
+COMMENT ON COLUMN ma_moulinette.historique.actuator_info IS 'Information Actuator du projet.';
+COMMENT ON COLUMN ma_moulinette.historique.logger_info IS 'Nombre de logger de type INFO.';
+COMMENT ON COLUMN ma_moulinette.historique.logger_warn IS 'Nombre de logger de type WARN.';
+COMMENT ON COLUMN ma_moulinette.historique.logger_error IS 'Nombre de logger de type ERROR.';
+COMMENT ON COLUMN ma_moulinette.historique.logger_debug IS 'Nombre de logger de type DEBUG.';
+COMMENT ON COLUMN ma_moulinette.historique.initial IS 'Indique si c’est la version de référence.';
+COMMENT ON COLUMN ma_moulinette.historique.mode_collecte IS 'Type de collecte : REBUILD | COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE.';
+COMMENT ON COLUMN ma_moulinette.historique.utilisateur_collecte IS 'Auteur de la collecte de données.';
+COMMENT ON COLUMN ma_moulinette.historique.date_enregistrement IS 'date de l’événement.';
 -- ============================================
 -- TABLE hotspot_details
 -- ============================================
