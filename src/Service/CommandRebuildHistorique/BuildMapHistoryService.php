@@ -492,14 +492,19 @@ class BuildMapHistoryService
 
         $maintainability_10 = [
             'maintainability_issues' => isset($measures['maintainability_issues']) ? (string) $measures['maintainability_issues'] : null,
+            'software_quality_maintainability_rating' => isset($measures['software_quality_maintainability_rating']) ? self::ratingToLetter($measures['software_quality_maintainability_rating']) : null,
+
             'software_quality_maintainability_debt_ratio' => isset($measures['software_quality_maintainability_debt_ratio']) ? (float) $measures['software_quality_maintainability_debt_ratio'] : null,
-            'effort_to_reach_maintainability_rating_a' => isset($measures['effort_to_reach_maintainability_rating_a']) ? self::ratingToLetter($measures['effort_to_reach_maintainability_rating_a']) : null,
-            'software_quality_maintainability_remediation_effort' => isset($measures['software_quality_maintainability_remediation_effort']) ? (float) $measures['software_quality_maintainability_remediation_effort'] : null,
+
+            'effort_to_reach_maintainability_rating_a' => isset($measures['effort_to_reach_maintainability_rating_a']) ? (int) $measures['effort_to_reach_maintainability_rating_a'] : null,
+
+            'software_quality_maintainability_remediation_effort' => isset($measures['software_quality_maintainability_remediation_effort']) ? (int) $measures['software_quality_maintainability_remediation_effort'] : null,
         ];
 
         $maintainability_2024 = [
             'software_quality_maintainability_issues' => isset($measures['software_quality_maintainability_issues']) ? (string) $measures['software_quality_maintainability_issues'] : null,
-            'effort_to_reach_software_quality_maintainability_rating_a' => isset($measures['effort_to_reach_software_quality_maintainability_rating_a']) ? self::ratingToLetter($measures['effort_to_reach_software_quality_maintainability_rating_a']) : null,
+
+            'effort_to_reach_software_quality_maintainability_rating_a' => isset($measures['effort_to_reach_software_quality_maintainability_rating_a']) ? (int) $measures['effort_to_reach_software_quality_maintainability_rating_a'] : null,
         ];
 
         $reliability_core = [
