@@ -22,7 +22,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Table(
     name: 'historique',
     schema: 'ma_moulinette',
-    options: ['comment' => 'Table de <féé> pour le suivi des statistiques'])]
+    options: ['comment' => 'Table de <fées> pour le suivi des statistiques']
+)]
 class Historique
 {
     // -------------------------
@@ -34,11 +35,13 @@ class Historique
         type: Types::STRING,
         length: 255,
         nullable: false,
-        options: [ 'comment' => "Clé Maven pour l'historique des projets"])]
+        options: ['comment' => "Clé Maven pour l'historique des projets"]
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 255,
-        maxMessage: 'La clé Maven ne doit pas dépasser 255 caractères.')]
+        maxMessage: 'La clé Maven ne doit pas dépasser 255 caractères.'
+    )]
     private string $mavenKey;
 
     #[ORM\Id]
@@ -47,11 +50,13 @@ class Historique
         type: Types::STRING,
         length: 32,
         nullable: false,
-        options: ['comment' => "Version du projet dans l'historique"])]
+        options: ['comment' => "Version du projet dans l'historique"]
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 32,
-        maxMessage: 'La version du projet ne doit pas dépasser 32 caractères.')]
+        maxMessage: 'La version du projet ne doit pas dépasser 32 caractères.'
+    )]
     private string $version;
 
     #[ORM\Id]
@@ -60,11 +65,13 @@ class Historique
         type: Types::STRING,
         length: 128,
         nullable: false,
-        options: ['comment' => 'Date de la version du projet'])]
+        options: ['comment' => 'Date de la version du projet']
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 128,
-        maxMessage: 'La date de la version ne doit pas dépasser 128 caractères.')]
+        maxMessage: 'La date de la version ne doit pas dépasser 128 caractères.'
+    )]
     private string $dateVersion;
 
     // -------------------------
@@ -75,11 +82,13 @@ class Historique
         type: Types::STRING,
         length: 128,
         nullable: false,
-        options: ['comment' => 'Nom du projet associé à cette version'])]
+        options: ['comment' => 'Nom du projet associé à cette version']
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 128,
-        maxMessage: 'Le nom du projet ne doit pas dépasser 128 caractères.')]
+        maxMessage: 'Le nom du projet ne doit pas dépasser 128 caractères.'
+    )]
     private string $nomProjet;
 
     #[ORM\Column(
@@ -87,570 +96,1144 @@ class Historique
         type: Types::STRING,
         length: 32,
         nullable: false,
-        options: ['comment' => 'Clé d’analyse du projet'])]
+        options: ['comment' => 'Clé d’analyse du projet']
+    )]
     #[Assert\NotBlank(message: "La clé d'analyse ne peut pas être vide.")]
     #[Assert\Length(
         max: 32,
-        maxMessage: "La clé d'analyse ne doit pas dépasser 32 caractères.")]
+        maxMessage: "La clé d'analyse ne doit pas dépasser 32 caractères."
+    )]
     private string $analyseKey;
 
     // -------------------------
     // Indicateurs de type de version
     // -------------------------
+
     #[ORM\Column(
         name: 'version_release',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Indicateur de release pour la version spécifique'])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => 'Indicateur de release pour la version spécifique']
+    )]
     #[Assert\PositiveOrZero]
-    private int $versionRelease;
+    private ?int $versionRelease = null;
 
     #[ORM\Column(
         name: 'version_snapshot',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Indicateur de snapshot pour la version spécifique'])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => 'Indicateur de snapshot pour la version spécifique']
+    )]
     #[Assert\PositiveOrZero]
-    private int $versionSnapshot;
+    private ?int $versionSnapshot = null;
 
     #[ORM\Column(
         name: 'version_autre',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Indicateur pour les autres types de versions'])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => 'Indicateur pour les autres types de versions']
+    )]
     #[Assert\PositiveOrZero]
-    private int $versionAutre;
+    private ?int $versionAutre = null;
+
+    #[ORM\Column(
+        name: 'repartition_frontend',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Développements spécifiques frontend']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $repartitionFrontend = null;
+
+    #[ORM\Column(
+        name: 'repartition_backend',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Développements spécifiques backend']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $repartitionBackend = null;
+
+    #[ORM\Column(
+        name: 'repartition_autre',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Développements spécifiques']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $repartitionAutre = null;
+
+    #[ORM\Column(
+        name: 'repartition_inconnu',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Développements indéterminés']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $repartitionInconnu = null;
 
     // -------------------------
     // Compteurs de qualité
     // -------------------------
+
+    #[ORM\Column(
+        name: 'java_no_sonar',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Compteur de l\'utilisation de NoSonar pour JAVA']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $javaNoSonar = null;
+
+    #[ORM\Column(
+        name: 'python_no_sonar',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Compteur de l\'utilisation de NoSonar pour Python']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $pythonNoSonar = null;
+
+    #[ORM\Column(
+        name: 'php_no_sonar',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Compteur de l\'utilisation de NoSonar pour PHP']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $phpNoSonar = null;
+
     #[ORM\Column(
         name: 'suppress_warning',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Compteur des suppressions d\'avertissements'])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => 'Compteur des suppressions d\'avertissements']
+    )]
     #[Assert\PositiveOrZero]
-    private int $suppressWarning;
+    private ?int $suppressWarning = null;
 
     #[ORM\Column(
-        name: 'no_sonar',
+        name: 'no_pmd',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Compteur de l\'utilisation de NoSonar'])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => 'Compteur des suppressions d\'avertissements pour PMD']
+    )]
     #[Assert\PositiveOrZero]
-    private int $noSonar;
+    private ?int $noPmd = null;
 
     #[ORM\Column(
-        name: 'todo',
+        name: 'check_style',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Compteur de l’utilisation de Todo'])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => 'Compteur des suppressions d\'avertissements pour checkStyle']
+    )]
     #[Assert\PositiveOrZero]
-    private int $todo;
+    private ?int $checkStyle = null;
+
+    #[ORM\Column(
+        name: 'java_todo',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Compteur de l’utilisation de Todo pour JAVA']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $javaTodo = null;
+
+    #[ORM\Column(
+        name: 'python_todo',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Compteur de l’utilisation de Todo pour PYTHON']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $pythonTodo = null;
+
+    #[ORM\Column(
+        name: 'php_todo',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Compteur de l’utilisation de Todo pour PHP']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $phpTodo = null;
+
+    #[ORM\Column(
+        name: 'xml_todo',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Compteur de l’utilisation de Todo pour XML']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $xmlTodo = null;
+
+    #[ORM\Column(
+        name: 'javascript_todo',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Compteur de l’utilisation de Todo pour javascript']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $javascriptTodo = null;
+
+    #[ORM\Column(
+        name: 'typescript_todo',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Compteur de l’utilisation de Todo pour typescript']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $typescriptTodo = null;
+
+    #[ORM\Column(
+        name: 'ruby_todo',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Compteur de l’utilisation de Todo pour RUBY']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $rubyTodo = null;
 
     // -------------------------
-    // Logger Java
+    // Quality Gates
     // -------------------------
-    #[ORM\Column(
-        name: 'logger_info',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => 'Logger JAVA de type INFO'])]
-    private ?int $loggerInfo = null;
 
     #[ORM\Column(
-        name: 'logger_warn',
-        type: Types::INTEGER,
+        name: 'alert_status',
+        type: Types::STRING,
+        length: 16,
         nullable: true,
-        options: ['comment' => 'Logger JAVA de type WARN'])]
-    private ?int $loggerWarn = null;
-
-    #[ORM\Column(
-        name: 'logger_error',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => 'Logger JAVA de type ERROR'])]
-    private ?int $loggerError = null;
-
-    #[ORM\Column(
-        name: 'logger_debug',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => 'Logger JAVA de type DEBUG'])]
-    private ?int $loggerDebug = null;
+        options: ['comment' => 'Status de respect de la quality gates.']
+    )]
+    private ?string $alertStatus = null;
 
     // -------------------------
     // Statistiques de code
     // -------------------------
-    #[ORM\Column(
-        name: 'nombre_ligne',
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre total de lignes dans le projet'])]
-    #[Assert\NotNull]
-    #[Assert\PositiveOrZero]
-    private int $nombreLigne;
 
     #[ORM\Column(
-        name: 'nombre_ligne_code',
+        name: 'lines',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre total de lignes de code dans le projet'])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => 'Nombre total de lignes dans le projet']
+    )]
     #[Assert\PositiveOrZero]
-    private int $nombreLigneCode;
+    private ?int $lines = null;
 
     #[ORM\Column(
-        name: 'nombre_files',
+        name: 'ncloc',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre total de fichier'])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => 'Nombre total de lignes de code dans le projet']
+    )]
     #[Assert\PositiveOrZero]
-    private int $nombreFiles;
+    private ?int $ncloc = null;
 
     #[ORM\Column(
-        name: 'nombre_classes',
+        name: 'files',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre total de classe'])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => 'Nombre total de fichier']
+    )]
     #[Assert\PositiveOrZero]
-    private int $nombreClasses;
+    private ?int $files = null;
 
     #[ORM\Column(
-        name: 'nombre_functions',
+        name: 'classes',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre total méthode'])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => 'Nombre total de classe']
+    )]
     #[Assert\PositiveOrZero]
-    private int $nombreFunctions;
+    private ?int $classes = null;
+
+    #[ORM\Column(
+        name: 'functions',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre total méthode']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $functions = null;
+
+    #[ORM\Column(
+        name: 'statements',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre total state']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $statements = null;
+
+    #[ORM\Column(
+        name: 'comment_lines',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre total de ligne de commentaire']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $commentLines = null;
+
+    #[ORM\Column(
+        name: 'comment_lines_density',
+        type: Types::FLOAT,
+        nullable: true,
+        options: ['comment' => 'Pourcentage de couverture des commentaires']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?float $commentLinesDensity = null;
+
+    #[ORM\Column(
+        name: 'comment_lines_rating',
+        type: Types::STRING,
+        length: 4,
+        nullable: true,
+        options: ['comment' => 'Rating des commentaires']
+    )]
+    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    private ?string $commentLinesRating = null;
 
     #[ORM\Column(
         name: 'coverage',
         type: Types::FLOAT,
-        nullable: false,
-        options: ['comment' => 'Pourcentage de couverture de code par les tests'])]
-    #[Assert\NotNull]
-    private float $coverage;
+        nullable: true,
+        options: ['comment' => 'Pourcentage de couverture de code par les tests du projet']
+    )]
+    private ?float $coverage = null;
 
     #[ORM\Column(
-        name: 'duplicated_lines_density',
+        name: 'branch_coverage',
         type: Types::FLOAT,
-        nullable: false,
-        options: ['comment' => 'Pourcentage de duplication dans le code'])]
-    #[Assert\NotNull]
-    private float $duplicatedLinesDensity;
+        nullable: true,
+        options: ['comment' => 'Pourcentage de couverture de code par les tests de la branche']
+    )]
+    private ?float $branchCoverage = null;
+
+    #[ORM\Column(
+        name: 'line_coverage',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre total de ligne couverte']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $lineCoverage = null;
+
+    #[ORM\Column(
+        name: 'lines_to_cover',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre total de ligne à couvrir']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $linesToCover = null;
+
+    #[ORM\Column(
+        name: 'conditions_to_cover',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre total de conditions à couvrir']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $conditionsToCover = null;
+
+    #[ORM\Column(
+        name: 'uncovered_conditions',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre total de conditions non couvertes']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $uncoveredConditions = null;
+
+    // -------------------------
+    // Tests
+    // -------------------------
 
     #[ORM\Column(
         name: 'tests',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de tests unitaires exécutés'])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => 'Nombre de tests unitaires exécutés']
+    )]
     #[Assert\PositiveOrZero]
-    private int $tests;
+    private ?int $tests = null;
+
+    #[ORM\Column(
+        name: 'test_execution_time',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Temps d\'execution en milliseconde']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $testExecutionTime = null;
+
+    #[ORM\Column(
+        name: 'test_errors',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de tests unitaires en erreur']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $testErrors = null;
+
+    #[ORM\Column(
+        name: 'test_failures',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de tests unitaires en échec']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $testFailures = null;
+
+    #[ORM\Column(
+        name: 'skipped_tests',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de tests unitaires non exécuté']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $skippedTests = null;
+
+    #[ORM\Column(
+        name: 'test_success_density',
+        type: Types::FLOAT,
+        nullable: true,
+        options: ['comment' => 'Pourcentage de tests passés.']
+    )]
+    #[Assert\Range(min: 0, max: 100)]
+    private ?float $testSuccessDensity = null;
+
+    // -------------------------
+    // DUPLICATION
+    // -------------------------
+
+    #[ORM\Column(
+        name: 'duplicated_files',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de fichiers dupliqué']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $duplicatedFiles = null;
+
+    #[ORM\Column(
+        name: 'duplicated_blocks',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de blocs de codes dupliqué']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $duplicatedBlocks = null;
+
+    #[ORM\Column(
+        name: 'duplicated_lines',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de lignes dupliqué']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $duplicatedLines = null;
+
+    #[ORM\Column(
+        name: 'duplicated_lines_density',
+        type: Types::FLOAT,
+        nullable: true,
+        options: ['comment' => 'Pourcentage de duplication dans le code']
+    )]
+    #[Assert\Range(min: 0, max: 100)]
+    private ?float $duplicatedLinesDensity = null;
+
+    // -------------------------
+    // Complexity
+    // -------------------------
+
+    #[ORM\Column(
+        name: 'complexity',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Niveau de complexité cyclomatique']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $complexity = null;
+
+    #[ORM\Column(
+        name: 'complexity_rating',
+        type: Types::STRING,
+        length: 4,
+        nullable: true,
+        options: ['comment' => 'Note pour la complexité']
+    )]
+    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    private ?string $complexityRating = null;
+
+    #[ORM\Column(
+        name: 'cognitive_complexity',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Niveau de complexité cognitive']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $cognitiveComplexity = null;
+
+    #[ORM\Column(
+        name: 'cognitive_complexity_rating',
+        type: Types::STRING,
+        length: 4,
+        nullable: true,
+        options: ['comment' => 'Note pour la complexité cognitive']
+    )]
+    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    private ?string $cognitiveComplexityRating = null;
+
+    #[ORM\Column(
+        name: 'complexity_ratio',
+        type: Types::FLOAT,
+        nullable: true,
+        options: ['comment' => 'Pourcentage de complexité']
+    )]
+    #[Assert\Range(min: 0, max: 100)]
+    private ?float $complexityRatio = null;
+
+    #[ORM\Column(
+        name: 'cognitive_complexity_ratio',
+        type: Types::FLOAT,
+        nullable: true,
+        options: ['comment' => 'Pourcentage de complexité cognitive']
+    )]
+    #[Assert\Range(min: 0, max: 100)]
+    private ?float $cognitiveComplexityRatio = null;
+
+    // -------------------------
+    // Anomalies status
+    // -------------------------
+
+    #[ORM\Column(
+        name: 'open_issues',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de défauts ouvert']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $openIssues = null;
+
+    #[ORM\Column(
+        name: 'reopened_issues',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de défauts réouvert']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $reopenedIssues = null;
+
+    #[ORM\Column(
+        name: 'confirmed_issues',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de défauts confirmé']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $confirmedIssues = null;
+
+    #[ORM\Column(
+        name: 'false_positive_issues',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de défauts faux positif']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $falsePositiveIssues = null;
+
+    #[ORM\Column(
+        name: 'accepted_issues',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de défauts accepté']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $acceptedIssues = null;
+
+    #[ORM\Column(
+        name: 'high_impact_accepted_issues',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de défauts accepté avec fort impact']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $highImpactAcceptedIssues = null;
+
+    // -------------------------
+    // Anomalies per severities
+    // -------------------------
 
     #[ORM\Column(
         name: 'violations',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre total de défauts détectés'])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => 'Nombre total de défauts détectés']
+    )]
     #[Assert\PositiveOrZero]
-    private int $violations;
+    private ?int $violations = null;
 
     #[ORM\Column(
-        name: 'nombre_bug',
+        name: 'blocker_violations',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre total de bugs détectés'])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => "Nombre d'anomalies bloquantes"]
+    )]
     #[Assert\PositiveOrZero]
-    private int $nombreBug;
+    private ?int $blockerViolations = null;
 
     #[ORM\Column(
-        name: 'nombre_vulnerability',
+        name: 'critical_violations',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre total de vulnérabilités détectées'])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => "Nombre d'anomalies critiques"]
+    )]
     #[Assert\PositiveOrZero]
-    private int $nombreVulnerability;
+    private ?int $criticalViolations = null;
 
     #[ORM\Column(
-        name: 'nombre_code_smell',
+        name: 'major_violations',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre total de mauvaise pratique détectés'])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => "Nombre d'anomalies majeures"]
+    )]
     #[Assert\PositiveOrZero]
-    private int $nombreCodeSmell;
+    private ?int $majorViolations = null;
 
     #[ORM\Column(
-        name: 'frontend',
+        name: 'minor_violations',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Développements spécifiques frontend'])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => "Nombre d'anomalies mineures"]
+    )]
     #[Assert\PositiveOrZero]
-    private int $frontend;
+    private ?int $minorViolations = null;
 
     #[ORM\Column(
-        name: 'backend',
+        name: 'info_violations',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Développements spécifiques backend'])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => "Nombre d'anomalies d'information"]
+    )]
     #[Assert\PositiveOrZero]
-    private int $backend;
+    private ?int $infoViolations = null;
 
     #[ORM\Column(
-        name: 'autre',
+        name: 'software_quality_blocker_issues',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Développements spécifiques'])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => "Nombre d'anomalies bloquantes"]
+    )]
     #[Assert\PositiveOrZero]
-    private int $autre;
+    private ?int $softwareQualityBlockerIssues = null;
 
     #[ORM\Column(
-        name: 'inconnu',
+        name: 'software_quality_high_issues',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Développements indéterminés'])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => "Nombre d'anomalies critiques"]
+    )]
     #[Assert\PositiveOrZero]
-    private int $inconnu;
+    private ?int $softwareQualityHighIssues = null;
 
     #[ORM\Column(
-        name: 'dette',
+        name: 'software_quality_medium_issues',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Somme de la dette technique accumulée'])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => "Nombre d'anomalies majeures"]
+    )]
     #[Assert\PositiveOrZero]
-    private int $dette;
+    private ?int $softwareQualityMediumIssues = null;
 
     #[ORM\Column(
-        name: 'sqale_debt_ratio',
-        type: Types::FLOAT,
-        nullable: false,
-        options: ['comment' => 'Ratio de la dette technique (SQALE)'])]
-    #[Assert\NotNull]
-    private float $sqaleDebtRatio;
-
-    // -------------------------
-    // Anomalies
-    // -------------------------
-    #[ORM\Column(
-        name: 'nombre_anomalie_bloquant',
+        name: 'software_quality_low_issues',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => "Nombre d'anomalies bloquantes"])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => "Nombre d'anomalies mineures"]
+    )]
     #[Assert\PositiveOrZero]
-    private int $nombreAnomalieBloquant;
+    private ?int $softwareQualityLowIssues = null;
 
     #[ORM\Column(
-        name: 'nombre_anomalie_critique',
+        name: 'software_quality_info_issues',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => "Nombre d'anomalies critiques"])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => "Nombre d'anomalies d'information"]
+    )]
     #[Assert\PositiveOrZero]
-    private int $nombreAnomalieCritique;
-
-    #[ORM\Column(
-        name: 'nombre_anomalie_info',
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => "Nombre d'anomalies d'information"])]
-    #[Assert\NotNull]
-    #[Assert\PositiveOrZero]
-    private int $nombreAnomalieInfo;
-
-    #[ORM\Column(
-        name: 'nombre_anomalie_majeur',
-        type: Types::INTEGER,
-        options: ['comment' => "Nombre d'anomalies majeures"])]
-    #[Assert\NotNull]
-    #[Assert\PositiveOrZero]
-    private int $nombreAnomalieMajeur;
-
-    #[ORM\Column(
-        name: 'nombre_anomalie_mineur',
-        type: Types::INTEGER,
-        options: ['comment' => "Nombre d'anomalies mineures"])]
-    #[Assert\NotNull]
-    #[Assert\PositiveOrZero]
-    private int $nombreAnomalieMineur;
-
-    // -------------------------
-    // Notes qualité
-    // -------------------------
-    #[ORM\Column(
-        name: 'note_reliability',
-        type: Types::STRING,
-        length: 4,
-        nullable: false,
-        options: ['comment' => "Note de fiabilité attribuée au projet"])]
-    #[Assert\NotBlank]
-    private string $noteReliability;
-
-    #[ORM\Column(
-        name: 'note_security',
-        type: Types::STRING,
-        length: 4,
-        nullable: false,
-        options: ['comment' => 'Note de sécurité attribuée au projet'])]
-    #[Assert\NotBlank]
-    private string $noteSecurity;
-
-    #[ORM\Column(
-        name: 'note_sqale',
-        type: Types::STRING,
-        length: 4,
-        nullable: false,
-        options: ['comment' => 'Note SQALE attribuée au projet'])]
-    #[Assert\NotBlank]
-    private string $noteSqale;
-
-    #[ORM\Column(
-        name: 'note_hotspot',
-        type: Types::STRING,
-        length: 4,
-        nullable: false,
-        options: ['comment' => 'Note pour les hotspots de sécurité'])]
-    #[Assert\NotBlank]
-    private string $noteHotspot;
-
-    // -------------------------
-    // Menaces potentielles de sécurité
-    // -------------------------
-    #[ORM\Column(
-        name: 'menace_potentielle_to_review_high',
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau élevé à vérifier'])]
-    #[Assert\NotNull]
-    #[Assert\PositiveOrZero]
-    private int $menacePotentielleToReviewHigh;
-
-    #[ORM\Column(
-        name: 'menace_potentielle_to_review_medium',
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau moyen à vérifier'])]
-    #[Assert\NotNull]
-    #[Assert\PositiveOrZero]
-    private int $menacePotentielleToReviewMedium;
-
-    #[ORM\Column(
-        name: 'menace_potentielle_to_review_low',
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau faible à vérifier'])]
-    #[Assert\NotNull]
-    #[Assert\PositiveOrZero]
-    private int $menacePotentielleToReviewLow;
-
-    #[ORM\Column(
-        name: 'menace_potentielle_reviewed_high',
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau élevé vérifié'])]
-    #[Assert\NotNull]
-    #[Assert\PositiveOrZero]
-    private int $menacePotentielleReviewedHigh;
-
-    #[ORM\Column(
-        name: 'menace_potentielle_reviewed_medium',
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau moyen vérifié'])]
-    #[Assert\NotNull]
-    #[Assert\PositiveOrZero]
-    private int $menacePotentielleReviewedMedium;
-
-    #[ORM\Column(
-        name: 'menace_potentielle_reviewed_low',
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau faible vérifié'])]
-    #[Assert\NotNull]
-    #[Assert\PositiveOrZero]
-    private int $menacePotentielleReviewedLow;
-
-    #[ORM\Column(
-        name: 'menace_potentielle_totale',
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre total de menaces potentielles de sécurité'])]
-    #[Assert\NotNull]
-    #[Assert\PositiveOrZero]
-    private int $menacePotentielleTotale;
-
-    // -------------------------
-    // Initialisation du projet
-    // -------------------------
-    #[ORM\Column(
-        name: 'initial',
-        type: Types::BOOLEAN,
-        nullable: false,
-        options: ['comment' => "Indique si c'est l'initialisation du projet"])]
-    #[Assert\NotNull]
-    private bool $initial;
-
-    // -------------------------
-    // Bugs
-    // -------------------------
-    #[ORM\Column(
-        name: 'bug_blocker',
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de bugs bloquants'])]
-    #[Assert\NotNull]
-    #[Assert\PositiveOrZero]
-    private int $bugBlocker;
-
-    #[ORM\Column(
-        name: 'bug_critical',
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de bugs critiques'])]
-    #[Assert\NotNull]
-    #[Assert\PositiveOrZero]
-    private int $bugCritical;
-
-    #[ORM\Column(
-        name: 'bug_major',
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de bugs majeurs'])]
-    #[Assert\NotNull]
-    #[Assert\PositiveOrZero]
-    private int $bugMajor;
-
-    #[ORM\Column(
-        name: 'bug_minor',
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de bugs mineurs'])]
-    #[Assert\NotNull]
-    private int $bugMinor;
-
-    #[ORM\Column(
-        name: 'bug_info',
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => "Nombre de bugs d'information"])]
-    #[Assert\NotNull]
-    #[Assert\PositiveOrZero]
-    private int $bugInfo;
-
-    // -------------------------
-    // Vulnérabilités
-    // -------------------------
-    #[ORM\Column(
-        name: 'vulnerability_blocker',
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de vulnérabilités bloquantes'])]
-    #[Assert\NotNull]
-    #[Assert\PositiveOrZero]
-    private int $vulnerabilityBlocker;
-
-    #[ORM\Column(
-        name: 'vulnerability_critical',
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de vulnérabilités critiques'])]
-    #[Assert\NotNull]
-    #[Assert\PositiveOrZero]
-    private int $vulnerabilityCritical;
-
-    #[ORM\Column(
-        name: 'vulnerability_major',
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de vulnérabilités majeures'])]
-    #[Assert\NotNull]
-    #[Assert\PositiveOrZero]
-    private int $vulnerabilityMajor;
-
-    #[ORM\Column(
-        name: 'vulnerability_minor',
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de vulnérabilités mineures'])]
-    #[Assert\NotNull]
-    #[Assert\PositiveOrZero]
-    private int $vulnerabilityMinor;
-
-    #[ORM\Column(
-        name: 'vulnerability_info',
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => "Nombre de vulnérabilités d'information"])]
-    #[Assert\NotNull]
-    #[Assert\PositiveOrZero]
-    private int $vulnerabilityInfo;
+    private ?int $softwareQualityInfoIssues = null;
 
     // -------------------------
     // Code smells
     // -------------------------
+
+    #[ORM\Column(
+        name: 'code_smells',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre total de mauvaise pratique détectés']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $codeSmells = null;
+
     #[ORM\Column(
         name: 'code_smell_blocker',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => "Nombre de mauvaises pratiques bloquants"])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => "Nombre de mauvaises pratiques bloquantes"]
+    )]
     #[Assert\PositiveOrZero]
-    private int $codeSmellBlocker;
+    private ?int $codeSmellBlocker = null;
 
     #[ORM\Column(
         name: 'code_smell_critical',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de mauvaise pratique critiques'])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => 'Nombre de mauvaise pratique critiques']
+    )]
     #[Assert\PositiveOrZero]
-    private int $codeSmellCritical;
+    private ?int $codeSmellCritical = null;
 
     #[ORM\Column(
         name: 'code_smell_major',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de mauvaise pratique majeurs'])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => 'Nombre de mauvaise pratique majeurs']
+    )]
     #[Assert\PositiveOrZero]
-    private int $codeSmellMajor;
+    private ?int $codeSmellMajor = null;
 
     #[ORM\Column(
         name: 'code_smell_minor',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre de mauvaise pratique mineurs'])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => 'Nombre de mauvaise pratique mineurs']
+    )]
     #[Assert\PositiveOrZero]
-    private int $codeSmellMinor;
+    private ?int $codeSmellMinor = null;
 
     #[ORM\Column(
         name: 'code_smell_info',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => "Nombre de mauvaise pratique d'information"])]
-    #[Assert\NotNull]
+        nullable: true,
+        options: ['comment' => "Nombre de mauvaise pratique d'information"]
+    )]
     #[Assert\PositiveOrZero]
-    private int $codeSmellInfo;
+    private ?int $codeSmellInfo = null;
+
+    #[ORM\Column(
+        name: 'maintainability_issues',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => "Liste des mauvaise pratique"]
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $maintainabilityIssues = null;
+
+    #[ORM\Column(
+        name: 'sqale_index',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Dette technique']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $sqaleIndex = null;
+
+    #[ORM\Column(
+        name: 'sqale_debt_ratio',
+        type: Types::FLOAT,
+        nullable: true,
+        options: ['comment' => 'Ratio de la dette technique (SQALE)']
+    )]
+    #[Assert\Range(min: 0, max: 100)]
+    private ?float $sqaleDebtRatio = null;
+
+    #[ORM\Column(
+        name: 'sqale_rating',
+        type: Types::STRING,
+        length: 4,
+        nullable: true,
+        options: ['comment' => 'Note SQALE attribuée au projet']
+    )]
+    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    private ?string $sqaleRating = null;
+
+    #[ORM\Column(
+        name: 'effort_to_reach_maintainability_rating_a',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Effort pour atteindre la note A']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $effortToReachMaintainabilityRatingA = null;
+
+    #[ORM\Column(
+        name: 'software_quality_maintainability_issues',
+        type: Types::STRING,
+        length: 255,
+        nullable: true,
+        options: ['comment' => 'Liste des indicateurs pour les mauvaises pratiques.']
+    )]
+    private ?string $softwareQualityMaintainabilityIssues = null;
+
+    #[ORM\Column(
+        name: 'software_quality_maintainability_rating',
+        type: Types::STRING,
+        length: 4,
+        nullable: true,
+        options: ['comment' => 'Note SQALE attribuée au projet']
+    )]
+    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    private ?string $softwareQualityMaintainabilityRating = null;
+
+    #[ORM\Column(
+        name: 'software_quality_maintainability_debt_ratio',
+        type: Types::FLOAT,
+        nullable: true,
+        options: ['comment' => 'Pourcentage de dette technique']
+    )]
+    #[Assert\Range(min: 0, max: 100)]
+    private ?float $softwareQualityMaintainabilityDebtRatio = null;
+
+    #[ORM\Column(
+        name: 'software_quality_maintainability_remediation_effort',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Effort pour corriger les mauvaises pratiques']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $softwareQualityMaintainabilityRemediationEffort = null;
+
+    #[ORM\Column(
+        name: 'effort_to_reach_software_quality_maintainability_rating_a',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Effort pour atteindre la note A']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $effortToReachSoftwareQualityMaintainabilityRatingA = null;
+
+    // -------------------------
+    // BUG
+    // -------------------------
+
+    #[ORM\Column(
+        name: 'bugs',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre total de bugs détectés']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $bugs = null;
+
+    #[ORM\Column(
+        name: 'bug_blocker',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de bugs bloquants']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $bugBlocker = null;
+
+    #[ORM\Column(
+        name: 'bug_critical',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de bugs critiques']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $bugCritical = null;
+
+    #[ORM\Column(
+        name: 'bug_major',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de bugs majeurs']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $bugMajor = null;
+
+    #[ORM\Column(
+        name: 'bug_minor',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de bugs mineurs']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $bugMinor = null;
+
+    #[ORM\Column(
+        name: 'bug_info',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => "Nombre de bugs d'information"]
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $bugInfo = null;
+
+    #[ORM\Column(
+        name: 'reliability_issues',
+        type: Types::STRING,
+        length: 255,
+        nullable: true,
+        options: ['comment' => "Liste des indicateurs de fiabilité."]
+    )]
+    private ?string $reliabilityIssues = null;
+
+    #[ORM\Column(
+        name: 'reliability_rating',
+        type: Types::STRING,
+        length: 4,
+        nullable: true,
+        options: ['comment' => "Note de fiabilité attribuée au projet"]
+    )]
+    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    private ?string $reliabilityRating = null;
+
+    #[ORM\Column(
+        name: 'reliability_remediation_effort',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => "Effort de remediation pour corriger"]
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $reliabilityRemediationEffort = null;
+
+    #[ORM\Column(
+        name: 'software_quality_reliability_issues',
+        type: Types::STRING,
+        length: 255,
+        nullable: true,
+        options: ['comment' => "Liste des indicateurs de fiabilité."]
+    )]
+    private ?string $softwareQualityReliabilityIssues = null;
+
+    #[ORM\Column(
+        name: 'software_quality_reliability_rating',
+        type: Types::STRING,
+        length: 4,
+        nullable: true,
+        options: ['comment' => "Note de fiabilité attribuée au projet"]
+    )]
+    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    private ?string $softwareQualityReliabilityRating = null;
+
+    #[ORM\Column(
+        name: 'software_quality_reliability_remediation_effort',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => "Effort de remediation pour corriger"]
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $softwareQualityReliabilityRemediationEffort = null;
+
+    // -------------------------
+    // VULNERABILITIES
+    // -------------------------
+
+    #[ORM\Column(
+        name: 'vulnerabilities',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre total de vulnérabilités détectées']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $vulnerabilities = null;
+
+    #[ORM\Column(
+        name: 'vulnerability_blocker',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de vulnérabilités bloquantes']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $vulnerabilityBlocker = null;
+
+    #[ORM\Column(
+        name: 'vulnerability_critical',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de vulnérabilités critiques']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $vulnerabilityCritical = null;
+
+    #[ORM\Column(
+        name: 'vulnerability_major',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de vulnérabilités majeures']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $vulnerabilityMajor = null;
+
+    #[ORM\Column(
+        name: 'vulnerability_minor',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de vulnérabilités mineures']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $vulnerabilityMinor = null;
+
+    #[ORM\Column(
+        name: 'vulnerability_info',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => "Nombre de vulnérabilités d'information"]
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $vulnerabilityInfo = null;
+
+    #[ORM\Column(
+        name: 'security_issues',
+        type: Types::STRING,
+        length: 255,
+        nullable: true,
+        options: ['comment' => "Liste des indicateurs de sécurités."]
+    )]
+    private ?string $securityIssues = null;
+
+    #[ORM\Column(
+        name: 'security_rating',
+        type: Types::STRING,
+        length: 4,
+        nullable: true,
+        options: ['comment' => "Note de sécurité attribuée au projet"]
+    )]
+    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    private ?string $securityRating = null;
+
+    #[ORM\Column(
+        name: 'security_remediation_effort',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => "Effort de remediation"]
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $securityRemediationEffort = null;
+
+    #[ORM\Column(
+        name: 'software_quality_security_issues',
+        type: Types::STRING,
+        length: 255,
+        nullable: true,
+        options: ['comment' => "Liste des indicateurs de sécurité."]
+    )]
+    private ?string $softwareQualitySecurityIssues = null;
+
+    #[ORM\Column(
+        name: 'software_quality_security_rating',
+        type: Types::STRING,
+        length: 4,
+        nullable: true,
+        options: ['comment' => "Note de sécurité attribuée au projet"]
+    )]
+    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    private ?string $softwareQualitySecurityRating = null;
+
+    #[ORM\Column(
+        name: 'software_quality_security_remediation_effort',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => "Effort de remediation"]
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $softwareQualitySecurityRemediationEffort = null;
+
+    // -------------------------
+    // Menaces potentielles de sécurité
+    // -------------------------
+
+    #[ORM\Column(
+        name: 'security_hotspot',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre total de menaces potentielles.']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $securityHotspot = null;
+
+    #[ORM\Column(
+        name: 'security_review_rating',
+        type: Types::STRING,
+        length: 4,
+        nullable: true,
+        options: ['comment' => 'Note pour les menaces potentielles.']
+    )]
+    private ?string $securityReviewRating = null;
+
+    #[ORM\Column(
+        name: 'security_hotspots_reviewed',
+        type: Types::FLOAT,
+        nullable: true,
+        options: ['comment' => 'Pourcentage de menaces potentielles examiné.']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?float $securityHotspotsReviewed = null;
+
+    #[ORM\Column(
+        name: 'menace_potentielle_to_review_high',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau élevé à vérifier']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $menacePotentielleToReviewHigh = null;
+
+    #[ORM\Column(
+        name: 'menace_potentielle_to_review_medium',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau moyen à vérifier']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $menacePotentielleToReviewMedium = null;
+
+    #[ORM\Column(
+        name: 'menace_potentielle_to_review_low',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau faible à vérifier']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $menacePotentielleToReviewLow = null;
+
+    #[ORM\Column(
+        name: 'menace_potentielle_reviewed_high',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau élevé vérifié']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $menacePotentielleReviewedHigh = null;
+
+    #[ORM\Column(
+        name: 'menace_potentielle_reviewed_medium',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau moyen vérifié']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $menacePotentielleReviewedMedium = null;
+
+    #[ORM\Column(
+        name: 'menace_potentielle_reviewed_low',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau faible vérifié']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $menacePotentielleReviewedLow = null;
+
+    #[ORM\Column(
+        name: 'menace_potentielle_totale',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Nombre total de menaces potentielles de sécurité']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $menacePotentielleTotale = null;
 
     // -------------------------
     // Actuator info
@@ -659,8 +1242,56 @@ class Historique
         name: 'actuator_info',
         type: Types::JSON,
         nullable: true,
-        options: ['comment' => 'Actuator Info'])]
+        options: ['comment' => 'Actuator Info']
+    )]
     private ?array $actuatorInfo = null;
+
+    // -------------------------
+    // Logger Java
+    // -------------------------
+    #[ORM\Column(
+        name: 'logger_info',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Logger JAVA de type INFO']
+    )]
+    private ?int $loggerInfo = null;
+
+    #[ORM\Column(
+        name: 'logger_warn',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Logger JAVA de type WARN']
+    )]
+    private ?int $loggerWarn = null;
+
+    #[ORM\Column(
+        name: 'logger_error',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Logger JAVA de type ERROR']
+    )]
+    private ?int $loggerError = null;
+
+    #[ORM\Column(
+        name: 'logger_debug',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Logger JAVA de type DEBUG']
+    )]
+    private ?int $loggerDebug = null;
+
+    // -------------------------
+    // Initialisation du projet
+    // -------------------------
+    #[ORM\Column(
+        name: 'initial',
+        type: Types::BOOLEAN,
+        nullable: false,
+        options: ['comment' => "Indique si c'est l'initialisation du projet"]
+    )]
+    #[Assert\NotNull]
+    private bool $initial;
 
     // -------------------------
     // Mode de collecte et utilisateur
@@ -670,10 +1301,12 @@ class Historique
         type: Types::STRING,
         length: 32,
         nullable: true,
-        options: ['comment' => 'Mode de collecte : COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE'])]
+        options: ['comment' => 'Mode de collecte : COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE']
+    )]
     #[Assert\Length(
         max: 32,
-        maxMessage: 'Le mode de collecte ne peut pas dépasser 32 caractères.')]
+        maxMessage: 'Le mode de collecte ne peut pas dépasser 32 caractères.'
+    )]
     private ?string $modeCollecte = null;
 
     #[ORM\Column(
@@ -681,10 +1314,12 @@ class Historique
         type: Types::STRING,
         length: 320,
         nullable: true,
-        options: ['comment' => "Compte de l'utilisateur qui a réalisé la collecte."])]
+        options: ['comment' => "Compte de l'utilisateur qui a réalisé la collecte."]
+    )]
     #[Assert\Length(
         max: 320,
-        maxMessage: "Le compte de l'utilisateur ne peut pas dépasser 320 caractères.")]
+        maxMessage: "Le compte de l'utilisateur ne peut pas dépasser 320 caractères."
+    )]
     private ?string $utilisateurCollecte = null;
 
     // -------------------------
@@ -694,7 +1329,8 @@ class Historique
         name: 'date_enregistrement',
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => "Date d'enregistrement de l'historique"])]
+        options: ['comment' => "Date d'enregistrement de l'historique"]
+    )]
     #[Assert\NotNull]
     private \DateTimeImmutable $dateEnregistrement;
 
@@ -786,7 +1422,6 @@ class Historique
         return $this;
     }
 
-
     /**
      * [Description for getVersion]
      *
@@ -859,1791 +1494,1336 @@ class Historique
         return $this;
     }
 
-    /**
-     * [Description for getVersionRelease]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:54:01 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getVersionRelease(): ?int
     {
         return $this->versionRelease;
     }
 
-    /**
-     * [Description for setVersionRelease]
-     *
-     * @param int $versionRelease
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:54:02 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setVersionRelease(int $versionRelease): \App\Entity\Historique
+    public function setVersionRelease(?int $versionRelease): self
     {
         $this->versionRelease = $versionRelease;
-
         return $this;
     }
 
-    /**
-     * [Description for getVersionSnapshot]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:54:04 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getVersionSnapshot(): ?int
     {
         return $this->versionSnapshot;
     }
 
-    /**
-     * [Description for setVersionSnapshot]
-     *
-     * @param int $versionSnapshot
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:54:06 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setVersionSnapshot(int $versionSnapshot): \App\Entity\Historique
+    public function setVersionSnapshot(?int $versionSnapshot): self
     {
         $this->versionSnapshot = $versionSnapshot;
-
         return $this;
     }
 
-    /**
-     * [Description for getVersionAutre]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:54:08 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getVersionAutre(): ?int
     {
         return $this->versionAutre;
     }
 
-    /**
-     * [Description for setVersionAutre]
-     *
-     * @param int $versionAutre
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:54:10 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setVersionAutre(int $versionAutre): \App\Entity\Historique
+    public function setVersionAutre(?int $versionAutre): self
     {
         $this->versionAutre = $versionAutre;
-
         return $this;
     }
 
-    /**
-     * [Description for getSuppressWarning]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:54:12 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
+    public function getRepartitionFrontend(): ?int
+    {
+        return $this->repartitionFrontend;
+    }
+
+    public function setRepartitionFrontend(?int $repartitionFrontend): self
+    {
+        $this->repartitionFrontend = $repartitionFrontend;
+        return $this;
+    }
+
+    public function getRepartitionBackend(): ?int
+    {
+        return $this->repartitionBackend;
+    }
+
+    public function setRepartitionBackend(?int $repartitionBackend): self
+    {
+        $this->repartitionBackend = $repartitionBackend;
+        return $this;
+    }
+
+    public function getRepartitionAutre(): ?int
+    {
+        return $this->repartitionAutre;
+    }
+
+    public function setRepartitionAutre(?int $repartitionAutre): self
+    {
+        $this->repartitionAutre = $repartitionAutre;
+        return $this;
+    }
+
+    public function getRepartitionInconnu(): ?int
+    {
+        return $this->repartitionInconnu;
+    }
+
+    public function setRepartitionInconnu(?int $repartitionInconnu): self
+    {
+        $this->repartitionInconnu = $repartitionInconnu;
+        return $this;
+    }
+
+    public function getJavaNoSonar(): ?int
+    {
+        return $this->javaNoSonar;
+    }
+
+    public function setJavaNoSonar(?int $javaNoSonar): self
+    {
+        $this->javaNoSonar = $javaNoSonar;
+        return $this;
+    }
+
+    public function getPythonNoSonar(): ?int
+    {
+        return $this->pythonNoSonar;
+    }
+
+    public function setPythonNoSonar(?int $pythonNoSonar): self
+    {
+        $this->pythonNoSonar = $pythonNoSonar;
+        return $this;
+    }
+
+    public function getPhpNoSonar(): ?int
+    {
+        return $this->phpNoSonar;
+    }
+
+    public function setPhpNoSonar(?int $phpNoSonar): self
+    {
+        $this->phpNoSonar = $phpNoSonar;
+        return $this;
+    }
+
     public function getSuppressWarning(): ?int
     {
         return $this->suppressWarning;
     }
 
-    /**
-     * [Description for setSuppressWarning]
-     *
-     * @param int $suppressWarning
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:54:13 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setSuppressWarning(int $suppressWarning): \App\Entity\Historique
+    public function setSuppressWarning(?int $suppressWarning): self
     {
         $this->suppressWarning = $suppressWarning;
-
         return $this;
     }
 
-    /**
-     * [Description for getNoSonar]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:54:16 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getNoSonar(): ?int
+    public function getNoPmd(): ?int
     {
-        return $this->noSonar;
+        return $this->noPmd;
     }
 
-    /**
-     * [Description for setNoSonar]
-     *
-     * @param int $noSonar
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:54:18 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setNoSonar(int $noSonar): \App\Entity\Historique
+    public function setNoPmd(?int $noPmd): self
     {
-        $this->noSonar = $noSonar;
-
+        $this->noPmd = $noPmd;
         return $this;
     }
 
-    /**
-     * [Description for getNombreLigne]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:54:20 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getNombreLigne(): ?int
+    public function getCheckStyle(): ?int
     {
-        return $this->nombreLigne;
+        return $this->checkStyle;
     }
 
-    /**
-     * [Description for setNombreLigne]
-     *
-     * @param int $nombreLigne
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:54:21 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setNombreLigne(int $nombreLigne): \App\Entity\Historique
+    public function setCheckStyle(?int $checkStyle): self
     {
-        $this->nombreLigne = $nombreLigne;
-
+        $this->checkStyle = $checkStyle;
         return $this;
     }
 
-    /**
-     * [Description for getNombreLigneCode]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:54:23 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getNombreLigneCode(): ?int
+    public function getJavaTodo(): ?int
     {
-        return $this->nombreLigneCode;
+        return $this->javaTodo;
     }
 
-    /**
-     * [Description for setNombreLigneCode]
-     *
-     * @param int $nombreLigneCode
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:54:25 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setNombreLigneCode(int $nombreLigneCode): \App\Entity\Historique
+    public function setJavaTodo(?int $javaTodo): self
     {
-        $this->nombreLigneCode = $nombreLigneCode;
-
+        $this->javaTodo = $javaTodo;
         return $this;
     }
 
-    /**
-     * [Description for getNombreClasses]
-     *
-     * @return int|null
-     *
-     * Created at: 20/01/2025 12:13:47 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getNombreClasses(): ?int
+    public function getPythonTodo(): ?int
     {
-        return $this->nombreClasses;
+        return $this->pythonTodo;
     }
 
-    /**
-     * [Description for setNombreClasses]
-     *
-     * @param int $nombreClasses
-     *
-     * @return \App\Entity\Historique
-     *
-     * Created at: 20/01/2025 12:13:44 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setNombreClasses(int $nombreClasses): \App\Entity\Historique
+    public function setPythonTodo(?int $pythonTodo): self
     {
-        $this->nombreClasses = $nombreClasses;
-
+        $this->pythonTodo = $pythonTodo;
         return $this;
     }
 
-    /**
-     * [Description for getNombreFunctions]
-     *
-     * @return int|null
-     *
-     * Created at: 20/01/2025 12:13:42 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getNombreFunctions(): ?int
+    public function getPhpTodo(): ?int
     {
-        return $this->nombreFunctions;
+        return $this->phpTodo;
     }
 
-    /**
-     * [Description for setNombreFunctions]
-     *
-     * @param int $nombreFunctions
-     *
-     * @return \App\Entity\Historique
-     *
-     * Created at: 20/01/2025 12:13:34 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setNombreFunctions(int $nombreFunctions): \App\Entity\Historique
+    public function setPhpTodo(?int $phpTodo): self
     {
-        $this->nombreFunctions = $nombreFunctions;
-
+        $this->phpTodo = $phpTodo;
         return $this;
     }
 
-    /**
-     * [Description for getNombreFiles]
-     *
-     * @return int|null
-     *
-     * Created at: 23/10/2025 18:15:00 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getNombreFiles(): ?int
+    public function getXmlTodo(): ?int
     {
-        return $this->nombreFiles;
+        return $this->xmlTodo;
     }
 
-    /**
-     * [Description for setNombreFiles]
-     *
-     * @param int $nombreFiles
-     *
-     * @return \App\Entity\Historique
-     *
-     * Created at: 23/10/2025 18:15:21 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setNombreFiles(int $nombreFiles): \App\Entity\Historique
+    public function setXmlTodo(?int $xmlTodo): self
     {
-        $this->nombreFiles = $nombreFiles;
-
+        $this->xmlTodo = $xmlTodo;
         return $this;
     }
-    /**
-     * [Description for getCouverture]
-     *
-     * @return float|null
-     *
-     * Created at: 02/01/2023, 17:54:27 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
+
+    public function getJavascriptTodo(): ?int
+    {
+        return $this->javascriptTodo;
+    }
+
+    public function setJavascriptTodo(?int $javascriptTodo): self
+    {
+        $this->javascriptTodo = $javascriptTodo;
+        return $this;
+    }
+
+    public function getTypescriptTodo(): ?int
+    {
+        return $this->typescriptTodo;
+    }
+
+    public function setTypescriptTodo(?int $typescriptTodo): self
+    {
+        $this->typescriptTodo = $typescriptTodo;
+        return $this;
+    }
+
+    public function getRubyTodo(): ?int
+    {
+        return $this->rubyTodo;
+    }
+
+    public function setRubyTodo(?int $rubyTodo): self
+    {
+        $this->rubyTodo = $rubyTodo;
+        return $this;
+    }
+
+    public function getAlertStatus(): ?string
+    {
+        return $this->alertStatus;
+    }
+
+    public function setAlertStatus(?string $alertStatus): self
+    {
+        $this->alertStatus = $alertStatus;
+        return $this;
+    }
+
+    public function getLines(): ?int
+    {
+        return $this->lines;
+    }
+
+    public function setLines(?int $lines): self
+    {
+        $this->lines = $lines;
+        return $this;
+    }
+
+    public function getNcloc(): ?int
+    {
+        return $this->ncloc;
+    }
+
+    public function setNcloc(?int $ncloc): self
+    {
+        $this->ncloc = $ncloc;
+        return $this;
+    }
+
+    public function getFiles(): ?int
+    {
+        return $this->files;
+    }
+
+    public function setFiles(?int $files): self
+    {
+        $this->files = $files;
+        return $this;
+    }
+
+    public function getClasses(): ?int
+    {
+        return $this->classes;
+    }
+
+    public function setClasses(?int $classes): self
+    {
+        $this->classes = $classes;
+        return $this;
+    }
+
+    public function getFunctions(): ?int
+    {
+        return $this->functions;
+    }
+
+    public function setFunctions(?int $functions): self
+    {
+        $this->functions = $functions;
+        return $this;
+    }
+
+    public function getStatements(): ?int
+    {
+        return $this->statements;
+    }
+
+    public function setStatements(?int $statements): self
+    {
+        $this->statements = $statements;
+        return $this;
+    }
+
+    public function getCommentLines(): ?int
+    {
+        return $this->commentLines;
+    }
+
+    public function setCommentLines(?int $commentLines): self
+    {
+        $this->commentLines = $commentLines;
+        return $this;
+    }
+
+    public function getCommentLinesDensity(): ?float
+    {
+        return $this->commentLinesDensity;
+    }
+
+    public function setCommentLinesDensity(?float $commentLinesDensity): self
+    {
+        $this->commentLinesDensity = $commentLinesDensity;
+        return $this;
+    }
+
+    public function getCommentLinesRating(): ?string
+    {
+        return $this->commentLinesRating;
+    }
+
+    public function setCommentLinesRating(?string $commentLinesRating): self
+    {
+        $this->commentLinesRating = $commentLinesRating;
+        return $this;
+    }
+
     public function getCoverage(): ?float
     {
         return $this->coverage;
     }
 
-    /**
-     * [Description for setCoverage]
-     *
-     * @param float $coverage
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:54:29 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setCoverage(float $coverage): \App\Entity\Historique
+    public function setCoverage(?float $coverage): self
     {
         $this->coverage = $coverage;
-
         return $this;
     }
 
-    /**
-     * [Description for getDuplicatedLinesDensity]
-     *
-     * @return float|null
-     *
-     * Created at: 02/01/2023, 17:54:31 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getDuplicatedLinesDensity(): ?float
+    public function getBranchCoverage(): ?float
     {
-        return $this->duplicatedLinesDensity;
+        return $this->branchCoverage;
     }
 
-    /**
-     * [Description for setDuplicatedLinesDensity]
-     *
-     * @param float $duplicatedLinesDensity
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:54:33 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setDuplicatedLinesDensity(float $duplicatedLinesDensity): \App\Entity\Historique
+    public function setBranchCoverage(?float $branchCoverage): self
     {
-        $this->duplicatedLinesDensity = $duplicatedLinesDensity;
-
+        $this->branchCoverage = $branchCoverage;
         return $this;
     }
 
-    /**
-     * [Description for getTests]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:54:35 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
+    public function getLineCoverage(): ?int
+    {
+        return $this->lineCoverage;
+    }
+
+    public function setLineCoverage(?int $lineCoverage): self
+    {
+        $this->lineCoverage = $lineCoverage;
+        return $this;
+    }
+
+    public function getLinesToCover(): ?int
+    {
+        return $this->linesToCover;
+    }
+
+    public function setLinesToCover(?int $linesToCover): self
+    {
+        $this->linesToCover = $linesToCover;
+        return $this;
+    }
+
+    public function getConditionsToCover(): ?int
+    {
+        return $this->conditionsToCover;
+    }
+
+    public function setConditionsToCover(?int $conditionsToCover): self
+    {
+        $this->conditionsToCover = $conditionsToCover;
+        return $this;
+    }
+
+    public function getUncoveredConditions(): ?int
+    {
+        return $this->uncoveredConditions;
+    }
+
+    public function setUncoveredConditions(?int $uncoveredConditions): self
+    {
+        $this->uncoveredConditions = $uncoveredConditions;
+        return $this;
+    }
+
     public function getTests(): ?int
     {
         return $this->tests;
     }
 
-    /**
-     * [Description for setTests]
-     *
-     * @param int $tests
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:54:40 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setTests(int $tests): \App\Entity\Historique
+    public function setTests(?int $tests): self
     {
         $this->tests = $tests;
-
         return $this;
     }
 
-    /**
-     * [Description for getViolations]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:54:45 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
+    public function getTestExecutionTime(): ?int
+    {
+        return $this->testExecutionTime;
+    }
+
+    public function setTestExecutionTime(?int $testExecutionTime): self
+    {
+        $this->testExecutionTime = $testExecutionTime;
+        return $this;
+    }
+
+    public function getTestErrors(): ?int
+    {
+        return $this->testErrors;
+    }
+
+    public function setTestErrors(?int $testErrors): self
+    {
+        $this->testErrors = $testErrors;
+        return $this;
+    }
+
+    public function getTestFailures(): ?int
+    {
+        return $this->testFailures;
+    }
+
+    public function setTestFailures(?int $testFailures): self
+    {
+        $this->testFailures = $testFailures;
+        return $this;
+    }
+
+    public function getSkippedTests(): ?int
+    {
+        return $this->skippedTests;
+    }
+
+    public function setSkippedTests(?int $skippedTests): self
+    {
+        $this->skippedTests = $skippedTests;
+        return $this;
+    }
+
+    public function getTestSuccessDensity(): ?float
+    {
+        return $this->testSuccessDensity;
+    }
+
+    public function setTestSuccessDensity(?float $testSuccessDensity): self
+    {
+        $this->testSuccessDensity = $testSuccessDensity;
+        return $this;
+    }
+
+    public function getDuplicatedFiles(): ?int
+    {
+        return $this->duplicatedFiles;
+    }
+
+    public function setDuplicatedFiles(?int $duplicatedFiles): self
+    {
+        $this->duplicatedFiles = $duplicatedFiles;
+        return $this;
+    }
+
+    public function getDuplicatedBlocks(): ?int
+    {
+        return $this->duplicatedBlocks;
+    }
+
+    public function setDuplicatedBlocks(?int $duplicatedBlocks): self
+    {
+        $this->duplicatedBlocks = $duplicatedBlocks;
+        return $this;
+    }
+
+    public function getDuplicatedLines(): ?int
+    {
+        return $this->duplicatedLines;
+    }
+
+    public function setDuplicatedLines(?int $duplicatedLines): self
+    {
+        $this->duplicatedLines = $duplicatedLines;
+        return $this;
+    }
+
+    public function getDuplicatedLinesDensity(): ?float
+    {
+        return $this->duplicatedLinesDensity;
+    }
+
+    public function setDuplicatedLinesDensity(?float $duplicatedLinesDensity): self
+    {
+        $this->duplicatedLinesDensity = $duplicatedLinesDensity;
+        return $this;
+    }
+
+    public function getComplexity(): ?int
+    {
+        return $this->complexity;
+    }
+
+    public function setComplexity(?int $complexity): self
+    {
+        $this->complexity = $complexity;
+        return $this;
+    }
+
+    public function getComplexityRating(): ?string
+    {
+        return $this->complexityRating;
+    }
+
+    public function setComplexityRating(?string $complexityRating): self
+    {
+        $this->complexityRating = $complexityRating;
+        return $this;
+    }
+
+    public function getCognitiveComplexity(): ?int
+    {
+        return $this->cognitiveComplexity;
+    }
+
+    public function setCognitiveComplexity(?int $cognitiveComplexity): self
+    {
+        $this->cognitiveComplexity = $cognitiveComplexity;
+        return $this;
+    }
+
+    public function getCognitiveComplexityRating(): ?string
+    {
+        return $this->cognitiveComplexityRating;
+    }
+
+    public function setCognitiveComplexityRating(?string $cognitiveComplexityRating): self
+    {
+        $this->cognitiveComplexityRating = $cognitiveComplexityRating;
+        return $this;
+    }
+
+    public function getComplexityRatio(): ?float
+    {
+        return $this->complexityRatio;
+    }
+
+    public function setComplexityRatio(?float $complexityRatio): self
+    {
+        $this->complexityRatio = $complexityRatio;
+        return $this;
+    }
+
+    public function getCognitiveComplexityRatio(): ?float
+    {
+        return $this->cognitiveComplexityRatio;
+    }
+
+    public function setCognitiveComplexityRatio(?float $cognitiveComplexityRatio): self
+    {
+        $this->cognitiveComplexityRatio = $cognitiveComplexityRatio;
+        return $this;
+    }
+
+    public function getOpenIssues(): ?int
+    {
+        return $this->openIssues;
+    }
+
+    public function setOpenIssues(?int $openIssues): self
+    {
+        $this->openIssues = $openIssues;
+        return $this;
+    }
+
+    public function getReopenedIssues(): ?int
+    {
+        return $this->reopenedIssues;
+    }
+
+    public function setReopenedIssues(?int $reopenedIssues): self
+    {
+        $this->reopenedIssues = $reopenedIssues;
+        return $this;
+    }
+
+    public function getConfirmedIssues(): ?int
+    {
+        return $this->confirmedIssues;
+    }
+
+    public function setConfirmedIssues(?int $confirmedIssues): self
+    {
+        $this->confirmedIssues = $confirmedIssues;
+        return $this;
+    }
+
+    public function getFalsePositiveIssues(): ?int
+    {
+        return $this->falsePositiveIssues;
+    }
+
+    public function setFalsePositiveIssues(?int $falsePositiveIssues): self
+    {
+        $this->falsePositiveIssues = $falsePositiveIssues;
+        return $this;
+    }
+
+    public function getAcceptedIssues(): ?int
+    {
+        return $this->acceptedIssues;
+    }
+
+    public function setAcceptedIssues(?int $acceptedIssues): self
+    {
+        $this->acceptedIssues = $acceptedIssues;
+        return $this;
+    }
+
+    public function getHighImpactAcceptedIssues(): ?int
+    {
+        return $this->highImpactAcceptedIssues;
+    }
+
+    public function setHighImpactAcceptedIssues(?int $highImpactAcceptedIssues): self
+    {
+        $this->highImpactAcceptedIssues = $highImpactAcceptedIssues;
+        return $this;
+    }
+
     public function getViolations(): ?int
     {
         return $this->violations;
     }
 
-    /**
-     * [Description for setViolations]
-     *
-     * @param int $violations
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:54:46 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setViolations(int $violations): \App\Entity\Historique
+    public function setViolations(?int $violations): self
     {
         $this->violations = $violations;
-
         return $this;
     }
 
-    /**
-     * [Description for getNombreBug]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:54:49 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getNombreBug(): ?int
+    public function getBlockerViolations(): ?int
     {
-        return $this->nombreBug;
+        return $this->blockerViolations;
     }
 
-    /**
-     * [Description for setNombreBug]
-     *
-     * @param int $nombreBug
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:54:51 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setNombreBug(int $nombreBug): \App\Entity\Historique
+    public function setBlockerViolations(?int $blockerViolations): self
     {
-        $this->nombreBug = $nombreBug;
-
+        $this->blockerViolations = $blockerViolations;
         return $this;
     }
 
-    /**
-     * [Description for getNombreVulnerability]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:54:53 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getNombreVulnerability(): ?int
+    public function getCriticalViolations(): ?int
     {
-        return $this->nombreVulnerability;
+        return $this->criticalViolations;
     }
 
-    /**
-     * [Description for setNombreVulnerability]
-     *
-     * @param int $nombreVulnerability
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:54:54 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setNombreVulnerability(int $nombreVulnerability): \App\Entity\Historique
+    public function setCriticalViolations(?int $criticalViolations): self
     {
-        $this->nombreVulnerability = $nombreVulnerability;
-
+        $this->criticalViolations = $criticalViolations;
         return $this;
     }
 
-    /**
-     * [Description for getNombreCodeSmell]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:54:56 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getNombreCodeSmell(): ?int
+    public function getMajorViolations(): ?int
     {
-        return $this->nombreCodeSmell;
+        return $this->majorViolations;
     }
 
-    /**
-     * [Description for setNombreCodeSmell]
-     *
-     * @param int $nombreCodeSmell
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:54:58 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setNombreCodeSmell(int $nombreCodeSmell): \App\Entity\Historique
+    public function setMajorViolations(?int $majorViolations): self
     {
-        $this->nombreCodeSmell = $nombreCodeSmell;
-
+        $this->majorViolations = $majorViolations;
         return $this;
     }
 
-    /**
-     * [Description for getFrontend]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:55:00 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getFrontend(): ?int
+    public function getMinorViolations(): ?int
     {
-        return $this->frontend;
+        return $this->minorViolations;
     }
 
-    /**
-     * [Description for setFrontend]
-     *
-     * @param int $frontend
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:55:02 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setFrontend(int $frontend): \App\Entity\Historique
+    public function setMinorViolations(?int $minorViolations): self
     {
-        $this->frontend = $frontend;
-
+        $this->minorViolations = $minorViolations;
         return $this;
     }
 
-    /**
-     * [Description for getBackend]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:55:04 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getBackend(): ?int
+    public function getInfoViolations(): ?int
     {
-        return $this->backend;
+        return $this->infoViolations;
     }
 
-    /**
-     * [Description for setBackend]
-     *
-     * @param int $backend
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:55:05 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setBackend(int $backend): \App\Entity\Historique
+    public function setInfoViolations(?int $infoViolations): self
     {
-        $this->backend = $backend;
-
+        $this->infoViolations = $infoViolations;
         return $this;
     }
 
-    /**
-     * [Description for getAutre]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:55:07 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getAutre(): ?int
+    public function getSoftwareQualityBlockerIssues(): ?int
     {
-        return $this->autre;
+        return $this->softwareQualityBlockerIssues;
     }
 
-    /**
-     * [Description for setAutre]
-     *
-     * @param int $autre
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:55:09 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setAutre(int $autre): \App\Entity\Historique
+    public function setSoftwareQualityBlockerIssues(?int $softwareQualityBlockerIssues): self
     {
-        $this->autre = $autre;
-
+        $this->softwareQualityBlockerIssues = $softwareQualityBlockerIssues;
         return $this;
     }
 
-    public function getInconnu(): ?int
+    public function getSoftwareQualityHighIssues(): ?int
     {
-        return $this->inconnu;
+        return $this->softwareQualityHighIssues;
     }
 
-    public function setInconnu(int $inconnu): \App\Entity\Historique
+    public function setSoftwareQualityHighIssues(?int $softwareQualityHighIssues): self
     {
-        $this->inconnu = $inconnu;
-
+        $this->softwareQualityHighIssues = $softwareQualityHighIssues;
         return $this;
     }
 
-    /**
-     * [Description for getDette]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:55:10 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getDette(): ?int
+    public function getSoftwareQualityMediumIssues(): ?int
     {
-        return $this->dette;
+        return $this->softwareQualityMediumIssues;
     }
 
-    /**
-     * [Description for setDette]
-     *
-     * @param int $dette
-     *
-     * @return self
-     *
-     * Created at: 05/03/2024 22:21:38 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setDette(int $dette): \App\Entity\Historique
+    public function setSoftwareQualityMediumIssues(?int $softwareQualityMediumIssues): self
     {
-        $this->dette = $dette;
-
+        $this->softwareQualityMediumIssues = $softwareQualityMediumIssues;
         return $this;
     }
 
-    /**
-     * [Description for getSqaleDebtRatio]
-     *
-     * @return float|null
-     *
-     * Created at: 05/03/2024 22:19:23 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getSqaleDebtRatio(): ?float
+    public function getSoftwareQualityLowIssues(): ?int
     {
-        return $this->sqaleDebtRatio;
+        return $this->softwareQualityLowIssues;
     }
 
-    /**
-     * [Description for setSqaleDebtRatio]
-     *
-     * @param float $sqaleDebtRatio
-     *
-     * @return self
-     *
-     * Created at: 05/03/2024 22:19:20 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setSqaleDebtRatio(float $sqaleDebtRatio): \App\Entity\Historique
+    public function setSoftwareQualityLowIssues(?int $softwareQualityLowIssues): self
     {
-        $this->sqaleDebtRatio = $sqaleDebtRatio;
-
+        $this->softwareQualityLowIssues = $softwareQualityLowIssues;
         return $this;
     }
 
-    /**
-     * [Description for getNombreAnomalieBloquant]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:55:14 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getNombreAnomalieBloquant(): ?int
+    public function getSoftwareQualityInfoIssues(): ?int
     {
-        return $this->nombreAnomalieBloquant;
+        return $this->softwareQualityInfoIssues;
     }
 
-    /**
-     * [Description for setNombreAnomalieBloquant]
-     *
-     * @param int $nombreAnomalieBloquant
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:55:15 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setNombreAnomalieBloquant(int $nombreAnomalieBloquant): \App\Entity\Historique
+    public function setSoftwareQualityInfoIssues(?int $softwareQualityInfoIssues): self
     {
-        $this->nombreAnomalieBloquant = $nombreAnomalieBloquant;
-
+        $this->softwareQualityInfoIssues = $softwareQualityInfoIssues;
         return $this;
     }
 
-    /**
-     * [Description for getNombreAnomalieCritique]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:55:17 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getNombreAnomalieCritique(): ?int
+    public function getCodeSmells(): ?int
     {
-        return $this->nombreAnomalieCritique;
+        return $this->codeSmells;
     }
 
-    /**
-     * [Description for setNombreAnomalieCritique]
-     *
-     * @param int $nombreAnomalieCritique
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:55:18 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setNombreAnomalieCritique(int $nombreAnomalieCritique): \App\Entity\Historique
+    public function setCodeSmells(?int $v): self
     {
-        $this->nombreAnomalieCritique = $nombreAnomalieCritique;
-
+        $this->codeSmells = $v;
         return $this;
     }
 
-    /**
-     * [Description for getNombreAnomalieInfo]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:55:20 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getNombreAnomalieInfo(): ?int
-    {
-        return $this->nombreAnomalieInfo;
-    }
-
-    /**
-     * [Description for setNombreAnomalieInfo]
-     *
-     * @param int $nombreAnomalieInfo
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:55:21 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setNombreAnomalieInfo(int $nombreAnomalieInfo): \App\Entity\Historique
-    {
-        $this->nombreAnomalieInfo = $nombreAnomalieInfo;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getNombreAnomalieMajeur]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:55:23 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getNombreAnomalieMajeur(): ?int
-    {
-        return $this->nombreAnomalieMajeur;
-    }
-
-    /**
-     * [Description for setNombreAnomalieMajeur]
-     *
-     * @param int $nombreAnomalieMajeur
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:55:25 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setNombreAnomalieMajeur(int $nombreAnomalieMajeur): \App\Entity\Historique
-    {
-        $this->nombreAnomalieMajeur = $nombreAnomalieMajeur;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getNombreAnomalieMineur]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:55:27 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getNombreAnomalieMineur(): ?int
-    {
-        return $this->nombreAnomalieMineur;
-    }
-
-    /**
-     * [Description for setNombreAnomalieMineur]
-     *
-     * @param int $nombreAnomalieMineur
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:55:28 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setNombreAnomalieMineur(int $nombreAnomalieMineur): \App\Entity\Historique
-    {
-        $this->nombreAnomalieMineur = $nombreAnomalieMineur;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getNoteReliability]
-     *
-     * @return string|null
-     *
-     * Created at: 02/01/2023, 17:55:30 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getNoteReliability(): ?string
-    {
-        return $this->noteReliability;
-    }
-
-    /**
-     * [Description for setNoteReliability]
-     *
-     * @param string $noteReliability
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:55:32 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setNoteReliability(string $noteReliability): \App\Entity\Historique
-    {
-        $this->noteReliability = $noteReliability;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getNoteSecurity]
-     *
-     * @return string|null
-     *
-     * Created at: 02/01/2023, 17:55:34 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getNoteSecurity(): ?string
-    {
-        return $this->noteSecurity;
-    }
-
-    /**
-     * [Description for setNoteSecurity]
-     *
-     * @param string $noteSecurity
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:55:35 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setNoteSecurity(string $noteSecurity): \App\Entity\Historique
-    {
-        $this->noteSecurity = $noteSecurity;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getNoteSqale]
-     *
-     * @return string|null
-     *
-     * Created at: 02/01/2023, 17:55:38 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getNoteSqale(): ?string
-    {
-        return $this->noteSqale;
-    }
-
-    /**
-     * [Description for setNoteSqale]
-     *
-     * @param string $noteSqale
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:55:39 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setNoteSqale(string $noteSqale): \App\Entity\Historique
-    {
-        $this->noteSqale = $noteSqale;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getNoteHotspot]
-     *
-     * @return string|null
-     *
-     * Created at: 02/01/2023, 17:55:41 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getNoteHotspot(): ?string
-    {
-        return $this->noteHotspot;
-    }
-
-    /**
-     * [Description for setNoteHotspot]
-     *
-     * @param string $noteHotspot
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:55:42 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setNoteHotspot(string $noteHotspot): \App\Entity\Historique
-    {
-        $this->noteHotspot = $noteHotspot;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getMenacePotentielleReviewedHigh]
-     *
-     * @return int|null
-     *
-     * Created at: 31/07/2025 11:23:58 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getMenacePotentielleReviewedHigh(): ?int
-    {
-        return $this->menacePotentielleReviewedHigh;
-    }
-
-    /**
-     * [Description for setMenacePotentielleReviewedHigh]
-     *
-     * @param int $menacePotentielleReviewedHigh
-     *
-     * @return \App\Entity\Historique
-     *
-     * Created at: 31/07/2025 11:24:01 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setMenacePotentielleReviewedHigh(int $menacePotentielleReviewedHigh): \App\Entity\Historique
-    {
-        $this->menacePotentielleReviewedHigh = $menacePotentielleReviewedHigh;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getMenacePotentielleReviewedMedium]
-     *
-     * @return int|null
-     *
-     * Created at: 31/07/2025 11:24:06 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getMenacePotentielleReviewedMedium(): ?int
-    {
-        return $this->menacePotentielleReviewedMedium;
-    }
-
-    /**
-     * [Description for setMenacePotentielleReviewedMedium]
-     *
-     * @param int $menacePotentielleReviewedMedium
-     *
-     * @return \App\Entity\Historique
-     *
-     * Created at: 31/07/2025 11:24:10 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setMenacePotentielleReviewedMedium(int $menacePotentielleReviewedMedium): \App\Entity\Historique
-    {
-        $this->menacePotentielleReviewedMedium = $menacePotentielleReviewedMedium;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getMenacePotentielleReviewedLow]
-     *
-     * @return int|null
-     *
-     * Created at: 31/07/2025 11:24:16 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getMenacePotentielleReviewedLow(): ?int
-    {
-        return $this->menacePotentielleReviewedLow;
-    }
-
-    /**
-     * [Description for setMenacePotentielleReviewedLow]
-     *
-     * @param int $menacePotentielleReviewedLow
-     *
-     * @return \App\Entity\Historique
-     *
-     * Created at: 31/07/2025 11:24:19 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setMenacePotentielleReviewedLow(int $menacePotentielleReviewedLow): \App\Entity\Historique
-    {
-        $this->menacePotentielleReviewedLow = $menacePotentielleReviewedLow;
-
-        return $this;
-    }
-
-    /**
-     * [Description for setHotspotHigh]
-     *
-     * @param int menacePotentielleToReviewHigh
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:55:46 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getMenacePotentielleToReviewHigh(): ?int
-    {
-        return $this->menacePotentielleToReviewHigh;
-    }
-
-    /**
-     * [Description for setHotspotHigh]
-     *
-     * @param int menacePotentielleToReviewHigh
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:55:46 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setMenacePotentielleToReviewHigh(int $menacePotentielleToReviewHigh): \App\Entity\Historique
-    {
-        $this->menacePotentielleToReviewHigh = $menacePotentielleToReviewHigh;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getHotspotMedium]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:55:47 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getMenacePotentielleToReviewMedium(): ?int
-    {
-        return $this->menacePotentielleToReviewMedium;
-    }
-
-    /**
-     * [Description for setHotspotMedium]
-     *
-     * @param int $menacePotentielleToReviewMedium
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:55:49 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setMenacePotentielleToReviewMedium(int $menacePotentielleToReviewMedium): \App\Entity\Historique
-    {
-        $this->menacePotentielleToReviewMedium = $menacePotentielleToReviewMedium;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getHotspotLow]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:55:51 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getMenacePotentielleToReviewLow(): ?int
-    {
-        return $this->menacePotentielleToReviewLow;
-    }
-
-    /**
-     * [Description for setHotspotLow]
-     *
-     * @param int $menacePotentielleToReviewLow
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:55:52 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setMenacePotentielleToReviewLow(int $menacePotentielleToReviewLow): \App\Entity\Historique
-    {
-        $this->menacePotentielleToReviewLow = $menacePotentielleToReviewLow;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getMenacePotentielleTotale]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:55:55 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getMenacePotentielleTotale(): ?int
-    {
-        return $this->menacePotentielleTotale;
-    }
-
-    /**
-     * [Description for setMenacePotentielleTotale]
-     *
-     * @param int $menacePotentielleTotale
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:55:57 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setMenacePotentielleTotale(int $menacePotentielleTotale): \App\Entity\Historique
-    {
-        $this->menacePotentielleTotale = $menacePotentielleTotale;
-
-        return $this;
-    }
-
-    /**
-     * [Description for isInitial]
-     *
-     * @return bool|null
-     *
-     * Created at: 02/01/2023, 17:56:02 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function isInitial(): ?bool
-    {
-        return $this->initial;
-    }
-
-    /**
-     * [Description for setInitial]
-     *
-     * @param bool $initial
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:56:03 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setInitial(bool $initial): \App\Entity\Historique
-    {
-        $this->initial = $initial;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getBugBlocker]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:56:05 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getBugBlocker(): ?int
-    {
-        return $this->bugBlocker;
-    }
-
-    /**
-     * [Description for setBugBlocker]
-     *
-     * @param int $bugBlocker
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:56:07 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setBugBlocker(int $bugBlocker): \App\Entity\Historique
-    {
-        $this->bugBlocker = $bugBlocker;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getBugCritical]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:56:08 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getBugCritical(): ?int
-    {
-        return $this->bugCritical;
-    }
-
-    /**
-     * [Description for setBugCritical]
-     *
-     * @param int $bugCritical
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:56:10 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setBugCritical(int $bugCritical): \App\Entity\Historique
-    {
-        $this->bugCritical = $bugCritical;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getBugMajor]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:56:12 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getBugMajor(): ?int
-    {
-        return $this->bugMajor;
-    }
-
-    /**
-     * [Description for setBugMajor]
-     *
-     * @param int $bugMajor
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:56:13 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setBugMajor(int $bugMajor): \App\Entity\Historique
-    {
-        $this->bugMajor = $bugMajor;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getBugMinor]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:56:15 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getBugMinor(): ?int
-    {
-        return $this->bugMinor;
-    }
-
-    /**
-     * [Description for setBugMinor]
-     *
-     * @param int $bugMinor
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:56:23 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setBugMinor(int $bugMinor): \App\Entity\Historique
-    {
-        $this->bugMinor = $bugMinor;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getBugInfo]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:56:18 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getBugInfo(): ?int
-    {
-        return $this->bugInfo;
-    }
-
-    /**
-     * [Description for setBugInfo]
-     *
-     * @param int $bugInfo
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:56:28 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setBugInfo(int $bugInfo): \App\Entity\Historique
-    {
-        $this->bugInfo = $bugInfo;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getVulnerabilityBlocker]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:56:31 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getVulnerabilityBlocker(): ?int
-    {
-        return $this->vulnerabilityBlocker;
-    }
-
-    /**
-     * [Description for setVulnerabilityBlocker]
-     *
-     * @param int $vulnerabilityBlocker
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:56:33 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setVulnerabilityBlocker(int $vulnerabilityBlocker): \App\Entity\Historique
-    {
-        $this->vulnerabilityBlocker = $vulnerabilityBlocker;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getVulnerabilityCritical]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:56:36 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getVulnerabilityCritical(): ?int
-    {
-        return $this->vulnerabilityCritical;
-    }
-
-    /**
-     * [Description for setVulnerabilityCritical]
-     *
-     * @param int $vulnerabilityCritical
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:56:37 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setVulnerabilityCritical(int $vulnerabilityCritical): \App\Entity\Historique
-    {
-        $this->vulnerabilityCritical = $vulnerabilityCritical;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getVulnerabilityMajor]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:56:39 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getVulnerabilityMajor(): ?int
-    {
-        return $this->vulnerabilityMajor;
-    }
-
-    /**
-     * [Description for setVulnerabilityMajor]
-     *
-     * @param int $vulnerabilityMajor
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:56:40 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setVulnerabilityMajor(int $vulnerabilityMajor): \App\Entity\Historique
-    {
-        $this->vulnerabilityMajor = $vulnerabilityMajor;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getVulnerabilityMinor]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:56:42 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getVulnerabilityMinor(): ?int
-    {
-        return $this->vulnerabilityMinor;
-    }
-
-    /**
-     * [Description for setVulnerabilityMinor]
-     *
-     * @param int $vulnerabilityMinor
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:56:43 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setVulnerabilityMinor(int $vulnerabilityMinor): \App\Entity\Historique
-    {
-        $this->vulnerabilityMinor = $vulnerabilityMinor;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getVulnerabilityInfo]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:56:45 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getVulnerabilityInfo(): ?int
-    {
-        return $this->vulnerabilityInfo;
-    }
-
-    /**
-     * [Description for setVulnerabilityInfo]
-     *
-     * @param int $vulnerabilityInfo
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:56:47 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setVulnerabilityInfo(int $vulnerabilityInfo): \App\Entity\Historique
-    {
-        $this->vulnerabilityInfo = $vulnerabilityInfo;
-
-        return $this;
-    }
-
-    /**
-     * [Description for getCodeSmellBlocker]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:56:48 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getCodeSmellBlocker(): ?int
     {
         return $this->codeSmellBlocker;
     }
 
-    /**
-     * [Description for setCodeSmellBlocker]
-     *
-     * @param int $codeSmellBlocker
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:56:50 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setCodeSmellBlocker(int $codeSmellBlocker): \App\Entity\Historique
+    public function setCodeSmellBlocker(?int $v): self
     {
-        $this->codeSmellBlocker = $codeSmellBlocker;
-
+        $this->codeSmellBlocker = $v;
         return $this;
     }
 
-    /**
-     * [Description for getCodeSmellCritical]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:56:52 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getCodeSmellCritical(): ?int
     {
         return $this->codeSmellCritical;
     }
 
-    /**
-     * [Description for setCodeSmellCritical]
-     *
-     * @param int $codeSmellCritical
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:56:53 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setCodeSmellCritical(int $codeSmellCritical): \App\Entity\Historique
+    public function setCodeSmellCritical(?int $v): self
     {
-        $this->codeSmellCritical = $codeSmellCritical;
-
+        $this->codeSmellCritical = $v;
         return $this;
     }
 
-    /**
-     * [Description for getCodeSmellMajor]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:56:55 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getCodeSmellMajor(): ?int
     {
         return $this->codeSmellMajor;
     }
 
-    /**
-     * [Description for setCodeSmellMajor]
-     *
-     * @param int $codeSmellMajor
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:56:57 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setCodeSmellMajor(int $codeSmellMajor): \App\Entity\Historique
+    public function setCodeSmellMajor(?int $v): self
     {
-        $this->codeSmellMajor = $codeSmellMajor;
-
+        $this->codeSmellMajor = $v;
         return $this;
     }
 
-    /**
-     * [Description for getCodeSmellMinor]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:56:58 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getCodeSmellMinor(): ?int
     {
         return $this->codeSmellMinor;
     }
 
-    /**
-     * [Description for setCodeSmellMinor]
-     *
-     * @param int $codeSmellMinor
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:57:01 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setCodeSmellMinor(int $codeSmellMinor): \App\Entity\Historique
+    public function setCodeSmellMinor(?int $v): self
     {
-        $this->codeSmellMinor = $codeSmellMinor;
-
+        $this->codeSmellMinor = $v;
         return $this;
     }
 
-    /**
-     * [Description for getCodeSmellInfo]
-     *
-     * @return int|null
-     *
-     * Created at: 02/01/2023, 17:57:02 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function getCodeSmellInfo(): ?int
     {
         return $this->codeSmellInfo;
     }
 
-    /**
-     * [Description for setCodeSmellInfo]
-     *
-     * @param int $codeSmellInfo
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:57:04 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setCodeSmellInfo(int $codeSmellInfo): \App\Entity\Historique
+    public function setCodeSmellInfo(?int $v): self
     {
-        $this->codeSmellInfo = $codeSmellInfo;
-
+        $this->codeSmellInfo = $v;
         return $this;
     }
 
-    /**
-     * [Description for getDateEnregistrement]
-     *
-     * @return \DateTimeInterface|null
-     *
-     * Created at: 02/01/2023, 17:57:06 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getDateEnregistrement(): ?\DateTimeInterface
+    public function getMaintainabilityIssues(): ?int
     {
-        return $this->dateEnregistrement;
+        return $this->maintainabilityIssues;
     }
 
-    /**
-     * [Description for setDateEnregistrement]
-     *
-     * @param \DateTimeInterface $dateEnregistrement
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 17:57:09 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setDateEnregistrement(\DateTimeInterface $dateEnregistrement): \App\Entity\Historique
+    public function setMaintainabilityIssues(?int $v): self
     {
-        $this->dateEnregistrement = $dateEnregistrement;
-
+        $this->maintainabilityIssues = $v;
         return $this;
     }
 
-    public function getTodo(): ?int
+    public function getSqaleIndex(): ?int
     {
-        return $this->todo;
+        return $this->sqaleIndex;
     }
 
-    public function setTodo(int $todo): self
+    public function setSqaleIndex(?int $v): self
     {
-        $this->todo = $todo;
-
+        $this->sqaleIndex = $v;
         return $this;
     }
 
+    public function getSqaleDebtRatio(): ?float
+    {
+        return $this->sqaleDebtRatio;
+    }
+
+    public function setSqaleDebtRatio(?float $v): self
+    {
+        $this->sqaleDebtRatio = $v;
+        return $this;
+    }
+
+    public function getSqaleRating(): ?string
+    {
+        return $this->sqaleRating;
+    }
+
+    public function setSqaleRating(?string $v): self
+    {
+        $this->sqaleRating = $v;
+        return $this;
+    }
+
+    public function getEffortToReachMaintainabilityRatingA(): ?int
+    {
+        return $this->effortToReachMaintainabilityRatingA;
+    }
+
+    public function setEffortToReachMaintainabilityRatingA(?int $v): self
+    {
+        $this->effortToReachMaintainabilityRatingA = $v;
+        return $this;
+    }
+
+    public function getSoftwareQualityMaintainabilityIssues(): ?string
+    {
+        return $this->softwareQualityMaintainabilityIssues;
+    }
+
+    public function setSoftwareQualityMaintainabilityIssues(?string $v): self
+    {
+        $this->softwareQualityMaintainabilityIssues = $v;
+        return $this;
+    }
+
+    public function getSoftwareQualityMaintainabilityRating(): ?string
+    {
+        return $this->softwareQualityMaintainabilityRating;
+    }
+
+    public function setSoftwareQualityMaintainabilityRating(?string $v): self
+    {
+        $this->softwareQualityMaintainabilityRating = $v;
+        return $this;
+    }
+
+    public function getSoftwareQualityMaintainabilityDebtRatio(): ?float
+    {
+        return $this->softwareQualityMaintainabilityDebtRatio;
+    }
+
+    public function setSoftwareQualityMaintainabilityDebtRatio(?float $v): self
+    {
+        $this->softwareQualityMaintainabilityDebtRatio = $v;
+        return $this;
+    }
+
+    public function getSoftwareQualityMaintainabilityRemediationEffort(): ?int
+    {
+        return $this->softwareQualityMaintainabilityRemediationEffort;
+    }
+
+    public function setSoftwareQualityMaintainabilityRemediationEffort(?int $v): self
+    {
+        $this->softwareQualityMaintainabilityRemediationEffort = $v;
+        return $this;
+    }
+
+    public function getEffortToReachSoftwareQualityMaintainabilityRatingA(): ?int
+    {
+        return $this->effortToReachSoftwareQualityMaintainabilityRatingA;
+    }
+
+    public function setEffortToReachSoftwareQualityMaintainabilityRatingA(?int $v): self
+    {
+        $this->effortToReachSoftwareQualityMaintainabilityRatingA = $v;
+        return $this;
+    }
+
+    public function getBugs(): ?int
+    {
+        return $this->bugs;
+    }
+
+    public function setBugs(?int $v): self
+    {
+        $this->bugs = $v;
+        return $this;
+    }
+
+    public function getBugBlocker(): ?int
+    {
+        return $this->bugBlocker;
+    }
+
+    public function setBugBlocker(?int $v): self
+    {
+        $this->bugBlocker = $v;
+        return $this;
+    }
+
+    public function getBugCritical(): ?int
+    {
+        return $this->bugCritical;
+    }
+
+    public function setBugCritical(?int $v): self
+    {
+        $this->bugCritical = $v;
+        return $this;
+    }
+
+    public function getBugMajor(): ?int
+    {
+        return $this->bugMajor;
+    }
+
+    public function setBugMajor(?int $v): self
+    {
+        $this->bugMajor = $v;
+        return $this;
+    }
+
+    public function getBugMinor(): ?int
+    {
+        return $this->bugMinor;
+    }
+
+    public function setBugMinor(?int $v): self
+    {
+        $this->bugMinor = $v;
+        return $this;
+    }
+
+    public function getBugInfo(): ?int
+    {
+        return $this->bugInfo;
+    }
+
+    public function setBugInfo(?int $v): self
+    {
+        $this->bugInfo = $v;
+        return $this;
+    }
+
+    public function getReliabilityIssues(): ?string
+    {
+        return $this->reliabilityIssues;
+    }
+
+    public function setReliabilityIssues(?string $v): self
+    {
+        $this->reliabilityIssues = $v;
+        return $this;
+    }
+
+    public function getReliabilityRating(): ?string
+    {
+        return $this->reliabilityRating;
+    }
+
+    public function setReliabilityRating(?string $v): self
+    {
+        $this->reliabilityRating = $v;
+        return $this;
+    }
+
+    public function getReliabilityRemediationEffort(): ?int
+    {
+        return $this->reliabilityRemediationEffort;
+    }
+
+    public function setReliabilityRemediationEffort(?int $v): self
+    {
+        $this->reliabilityRemediationEffort = $v;
+        return $this;
+    }
+
+    public function getSoftwareQualityReliabilityIssues(): ?string
+    {
+        return $this->softwareQualityReliabilityIssues;
+    }
+
+    public function setSoftwareQualityReliabilityIssues(?string $v): self
+    {
+        $this->softwareQualityReliabilityIssues = $v;
+        return $this;
+    }
+
+    public function getSoftwareQualityReliabilityRating(): ?string
+    {
+        return $this->softwareQualityReliabilityRating;
+    }
+
+    public function setSoftwareQualityReliabilityRating(?string $v): self
+    {
+        $this->softwareQualityReliabilityRating = $v;
+        return $this;
+    }
+
+    public function getSoftwareQualityReliabilityRemediationEffort(): ?int
+    {
+        return $this->softwareQualityReliabilityRemediationEffort;
+    }
+
+    public function setSoftwareQualityReliabilityRemediationEffort(?int $v): self
+    {
+        $this->softwareQualityReliabilityRemediationEffort = $v;
+        return $this;
+    }
+
+    public function getVulnerabilities(): ?int
+    {
+        return $this->vulnerabilities;
+    }
+
+    public function setVulnerabilities(?int $v): self
+    {
+        $this->vulnerabilities = $v;
+        return $this;
+    }
+
+    public function getVulnerabilityBlocker(): ?int
+    {
+        return $this->vulnerabilityBlocker;
+    }
+
+    public function setVulnerabilityBlocker(?int $v): self
+    {
+        $this->vulnerabilityBlocker = $v;
+        return $this;
+    }
+
+    public function getVulnerabilityCritical(): ?int
+    {
+        return $this->vulnerabilityCritical;
+    }
+
+    public function setVulnerabilityCritical(?int $v): self
+    {
+        $this->vulnerabilityCritical = $v;
+        return $this;
+    }
+
+    public function getVulnerabilityMajor(): ?int
+    {
+        return $this->vulnerabilityMajor;
+    }
+
+    public function setVulnerabilityMajor(?int $v): self
+    {
+        $this->vulnerabilityMajor = $v;
+        return $this;
+    }
+
+    public function getVulnerabilityMinor(): ?int
+    {
+        return $this->vulnerabilityMinor;
+    }
+
+    public function setVulnerabilityMinor(?int $v): self
+    {
+        $this->vulnerabilityMinor = $v;
+        return $this;
+    }
+
+    public function getVulnerabilityInfo(): ?int
+    {
+        return $this->vulnerabilityInfo;
+    }
+
+    public function setVulnerabilityInfo(?int $v): self
+    {
+        $this->vulnerabilityInfo = $v;
+        return $this;
+    }
+
+    public function getSecurityIssues(): ?string
+    {
+        return $this->securityIssues;
+    }
+
+    public function setSecurityIssues(?string $v): self
+    {
+        $this->securityIssues = $v;
+        return $this;
+    }
+
+    public function getSecurityRating(): ?string
+    {
+        return $this->securityRating;
+    }
+
+    public function setSecurityRating(?string $v): self
+    {
+        $this->securityRating = $v;
+        return $this;
+    }
+
+    public function getSecurityRemediationEffort(): ?int
+    {
+        return $this->securityRemediationEffort;
+    }
+
+    public function setSecurityRemediationEffort(?int $v): self
+    {
+        $this->securityRemediationEffort = $v;
+        return $this;
+    }
+
+    public function getSoftwareQualitySecurityIssues(): ?string
+    {
+        return $this->softwareQualitySecurityIssues;
+    }
+
+    public function setSoftwareQualitySecurityIssues(?string $v): self
+    {
+        $this->softwareQualitySecurityIssues = $v;
+        return $this;
+    }
+
+    public function getSoftwareQualitySecurityRating(): ?string
+    {
+        return $this->softwareQualitySecurityRating;
+    }
+
+    public function setSoftwareQualitySecurityRating(?string $v): self
+    {
+        $this->softwareQualitySecurityRating = $v;
+        return $this;
+    }
+
+    public function getSoftwareQualitySecurityRemediationEffort(): ?int
+    {
+        return $this->softwareQualitySecurityRemediationEffort;
+    }
+
+    public function setSoftwareQualitySecurityRemediationEffort(?int $v): self
+    {
+        $this->softwareQualitySecurityRemediationEffort = $v;
+        return $this;
+    }
+
+    // -------------------------
+    // Menaces potentielles de sécurité
+    // -------------------------
+
+    public function getSecurityHotspot(): ?int
+    {
+        return $this->securityHotspot;
+    }
+
+    public function setSecurityHotspot(?int $securityHotspot): self
+    {
+        $this->securityHotspot = $securityHotspot;
+        return $this;
+    }
+
+    public function getSecurityReviewRating(): ?string
+    {
+        return $this->securityReviewRating;
+    }
+
+    public function setSecurityReviewRating(?string $securityReviewRating): self
+    {
+        $this->securityReviewRating = $securityReviewRating;
+        return $this;
+    }
+
+    public function getSecurityHotspotsReviewed(): ?float
+    {
+        return $this->securityHotspotsReviewed;
+    }
+
+    public function setSecurityHotspotsReviewed(?float $securityHotspotsReviewed): self
+    {
+        $this->securityHotspotsReviewed = $securityHotspotsReviewed;
+        return $this;
+    }
+
+    public function getMenacePotentielleToReviewHigh(): ?int
+    {
+        return $this->menacePotentielleToReviewHigh;
+    }
+
+    public function setMenacePotentielleToReviewHigh(?int $menacePotentielleToReviewHigh): self
+    {
+        $this->menacePotentielleToReviewHigh = $menacePotentielleToReviewHigh;
+        return $this;
+    }
+
+    public function getMenacePotentielleToReviewMedium(): ?int
+    {
+        return $this->menacePotentielleToReviewMedium;
+    }
+
+    public function setMenacePotentielleToReviewMedium(?int $menacePotentielleToReviewMedium): self
+    {
+        $this->menacePotentielleToReviewMedium = $menacePotentielleToReviewMedium;
+        return $this;
+    }
+
+    public function getMenacePotentielleToReviewLow(): ?int
+    {
+        return $this->menacePotentielleToReviewLow;
+    }
+
+    public function setMenacePotentielleToReviewLow(?int $menacePotentielleToReviewLow): self
+    {
+        $this->menacePotentielleToReviewLow = $menacePotentielleToReviewLow;
+        return $this;
+    }
+
+    public function getMenacePotentielleReviewedHigh(): ?int
+    {
+        return $this->menacePotentielleReviewedHigh;
+    }
+
+    public function setMenacePotentielleReviewedHigh(?int $menacePotentielleReviewedHigh): self
+    {
+        $this->menacePotentielleReviewedHigh = $menacePotentielleReviewedHigh;
+        return $this;
+    }
+
+    public function getMenacePotentielleReviewedMedium(): ?int
+    {
+        return $this->menacePotentielleReviewedMedium;
+    }
+
+    public function setMenacePotentielleReviewedMedium(?int $menacePotentielleReviewedMedium): self
+    {
+        $this->menacePotentielleReviewedMedium = $menacePotentielleReviewedMedium;
+        return $this;
+    }
+
+    public function getMenacePotentielleReviewedLow(): ?int
+    {
+        return $this->menacePotentielleReviewedLow;
+    }
+
+    public function setMenacePotentielleReviewedLow(?int $menacePotentielleReviewedLow): self
+    {
+        $this->menacePotentielleReviewedLow = $menacePotentielleReviewedLow;
+        return $this;
+    }
+
+    public function getMenacePotentielleTotale(): ?int
+    {
+        return $this->menacePotentielleTotale;
+    }
+
+    public function setMenacePotentielleTotale(?int $menacePotentielleTotale): self
+    {
+        $this->menacePotentielleTotale = $menacePotentielleTotale;
+        return $this;
+    }
+
+    // -------------------------
+    // Actuator info
+    // -------------------------
+    public function getActuatorInfo(): ?array
+    {
+        return $this->actuatorInfo;
+    }
+
+    public function setActuatorInfo(?array $actuatorInfo): self
+    {
+        $this->actuatorInfo = $actuatorInfo;
+        return $this;
+    }
+
+    // -------------------------
+    // Logger Java
+    // -------------------------
     public function getLoggerInfo(): ?int
     {
         return $this->loggerInfo;
@@ -2652,7 +2832,6 @@ class Historique
     public function setLoggerInfo(?int $loggerInfo): self
     {
         $this->loggerInfo = $loggerInfo;
-
         return $this;
     }
 
@@ -2664,7 +2843,6 @@ class Historique
     public function setLoggerWarn(?int $loggerWarn): self
     {
         $this->loggerWarn = $loggerWarn;
-
         return $this;
     }
 
@@ -2676,7 +2854,6 @@ class Historique
     public function setLoggerError(?int $loggerError): self
     {
         $this->loggerError = $loggerError;
-
         return $this;
     }
 
@@ -2688,9 +2865,23 @@ class Historique
     public function setLoggerDebug(?int $loggerDebug): self
     {
         $this->loggerDebug = $loggerDebug;
-
         return $this;
     }
+
+    public function isInitial(): bool
+    {
+        return $this->initial;
+    }
+
+    public function setInitial(bool $initial): self
+    {
+        $this->initial = $initial;
+        return $this;
+    }
+
+    // -------------------------
+    // Mode de collecte et utilisateur
+    // -------------------------
 
     public function getModeCollecte(): ?string
     {
@@ -2700,7 +2891,6 @@ class Historique
     public function setModeCollecte(?string $modeCollecte): self
     {
         $this->modeCollecte = $modeCollecte;
-
         return $this;
     }
 
@@ -2712,20 +2902,17 @@ class Historique
     public function setUtilisateurCollecte(?string $utilisateurCollecte): self
     {
         $this->utilisateurCollecte = $utilisateurCollecte;
-
         return $this;
     }
 
-    public function getActuatorInfo(): ?array
+    public function getDateEnregistrement(): \DateTimeImmutable
     {
-        return $this->actuatorInfo;
+        return $this->dateEnregistrement;
     }
 
-    public function setActuatorInfo(?array $actuatorInfo): self
+    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): self
     {
-        $this->actuatorInfo = $actuatorInfo;
-
+        $this->dateEnregistrement = $dateEnregistrement;
         return $this;
     }
-
 }
