@@ -20,7 +20,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Psr\Log\LoggerInterface;
 
 /** Gestion de accès aux API */
-use App\Controller\Batch\{BatchCollecteInformationProjetController, BatchCollecteMesureController,BatchCollecteNoteController, BatchCollecteOwaspController, BatchCollecteHotspotController,BatchCollecteAnomalieController, BatchCollecteAnomalieDetailController, BatchCollecteHotspotOwaspController,BatchCollecteHotspotDetailController, BatchCollecteNoSonarController, BatchCollecteTodoController,BatchCollecteActuatorController, BatchCollecteLoggerController};
+use App\Controller\Batch\{BatchCollecteInformationProjetController, BatchCollecteMesureController, BatchCollecteOwaspController, BatchCollecteHotspotController,BatchCollecteAnomalieController, BatchCollecteAnomalieDetailController, BatchCollecteHotspotOwaspController,BatchCollecteHotspotDetailController, BatchCollecteNoSonarController, BatchCollecteTodoController,BatchCollecteActuatorController, BatchCollecteLoggerController};
 
 /**
  * [Description ApiMesureController]
@@ -38,7 +38,6 @@ class ApiCollecteController extends AbstractController
     public function __construct(
         private BatchCollecteInformationProjetController $batchCollecteInformation,
         private BatchCollecteMesureController $batchCollecteMesure,
-        private BatchCollecteNoteController $batchCollecteNote,
         private BatchCollecteOwaspController $batchCollecteOwasp,
         private BatchCollecteHotspotController $batchCollecteHotspot,
         private BatchCollecteAnomalieController $batchCollecteAnomalie,
