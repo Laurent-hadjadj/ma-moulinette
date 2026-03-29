@@ -134,8 +134,8 @@ public function __construct(
                 $io->newLine();
                 continue;
             }
-
-            $map = $this->buildMapHistory->metricsRebuild($metrics, $analysis, $project_key);
+            // analytics = full map  ||+ measures = metrics uniquement
+            $map = $this->buildMapHistory->metricsRebuild($metrics, $analysis, $project_key, 'analytics');
 
             if ($dryRun) {
 
