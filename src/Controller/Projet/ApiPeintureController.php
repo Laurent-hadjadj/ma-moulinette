@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\{JsonResponse, Response, Request};
 use Symfony\Component\Routing\Annotation\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\{InformationProjet, Anomalie, AnomalieDetails, Mesures, NoSonar, Hotspots, Notes, Todo, Logger};
+use App\Entity\{InformationProjet, Anomalie, AnomalieDetails, Mesures, NoSonar, Hotspots, Todo, Logger};
 use App\Service\IsValideMavenKey;
 
 /**
@@ -383,23 +383,93 @@ class ApiPeintureController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        /** On récupère le tableau des language de programmation. */
-        $languageDistribution = json_decode($request['mesures'][0]['language_distribution'], true);
+        /** On récupère le tableau des languages de programmation. */
+        $languageDistribution = json_decode($request['mesures']['ncloc_language_distribution'], true);
 
         return new JsonResponse([
             'code' => 200,
-            'name' => $request['mesures'][0]['name'],
-            'ncloc' => $request['mesures'][0]['ncloc'],
-            'languages' => $languageDistribution[0] ?? [],
-            'lines' => $request['mesures'][0]['lines'],
-            'files' => $request['mesures'][0]['files'],
-            'classes' => $request['mesures'][0]['classes'],
-            'functions' => $request['mesures'][0]['functions'],
-            'coverage' => $request['mesures'][0]['coverage'],
-            'sqale_debt_ratio' => $request['mesures'][0]['sqale_debt_ratio'],
-            'duplicated_lines_density' => $request['mesures'][0]['duplicated_lines_density'],
-            'tests' => $request['mesures'][0]['tests'],
-            'issues' => $request['mesures'][0]['issues']
+            'name' => $request['mesures']['project_name'],
+            'project_name' => $request['mesures']['project_name'],
+            'alert_status' => $request['mesures']['alert_status'] ?? null,
+            'lines' => $request['mesures']['lines'] ?? null,
+            'ncloc' => $request['mesures']['ncloc'] ?? null,
+            'ncloc_language_distribution' => $languageDistribution,
+            'files' => $request['mesures']['files'] ?? null,
+            'classes' => $request['mesures']['classes'] ?? null,
+            'functions' => $request['mesures']['functions'] ?? null,
+            'statements' => $request['mesures']['statements'] ?? null,
+            'comment_lines' => $request['mesures']['comment_lines'] ?? null,
+            'comment_lines_density' => $request['mesures']['comment_lines_density'] ?? null,
+            'comment_lines_rating' => $request['mesures']['comment_lines_rating'] ?? null,
+            'coverage' => $request['mesures']['coverage'] ?? null,
+            'branch_coverage' => $request['mesures']['branch_coverage'] ?? null,
+            'line_coverage' => $request['mesures']['line_coverage'] ?? null,
+            'lines_to_cover' => $request['mesures']['lines_to_cover'] ?? null,
+            'conditions_to_cover' => $request['mesures']['conditions_to_cover'] ?? null,
+            'uncovered_conditions' => $request['mesures']['uncovered_conditions'] ?? null,
+            'coverage_rating' => $request['mesures']['coverage_rating'] ?? null,
+            'tests' => $request['mesures']['tests'] ?? null,
+            'test_execution_time' => $request['mesures']['test_execution_time'] ?? null,
+            'test_errors' => $request['mesures']['test_errors'] ?? null,
+            'test_failures' => $request['mesures']['test_failures'] ?? null,
+            'skipped_tests' => $request['mesures']['skipped_tests'] ?? null,
+            'test_success_density' => $request['mesures']['test_success_density'] ?? null,
+            'duplicated_files' => $request['mesures']['duplicated_files'] ?? null,
+            'duplicated_blocks' => $request['mesures']['duplicated_blocks'] ?? null,
+            'duplicated_lines' => $request['mesures']['duplicated_lines'] ?? null,
+            'duplicated_lines_density' => $request['mesures']['duplicated_lines_density'] ?? null,
+            'duplicated_lines_rating' => $request['mesures']['duplicated_lines_rating'] ?? null,
+            'complexity' => $request['mesures']['complexity'] ?? null,
+            'complexity_rating' => $request['mesures']['complexity_rating'] ?? null,
+            'cognitive_complexity' => $request['mesures']['cognitive_complexity'] ?? null,
+            'cognitive_complexity_rating' => $request['mesures']['cognitive_complexity_rating'] ?? null,
+            'complexity_ratio' => $request['mesures']['complexity_ratio'] ?? null,
+            'cognitive_complexity_ratio' => $request['mesures']['cognitive_complexity_ratio'] ?? null,
+            'open_issues' => $request['mesures']['open_issues'] ?? null,
+            'reopened_issues' => $request['mesures']['reopened_issues'] ?? null,
+            'confirmed_issues' => $request['mesures']['confirmed_issues'] ?? null,
+            'false_positive_issues' => $request['mesures']['false_positive_issues'] ?? null,
+            'accepted_issues' => $request['mesures']['accepted_issues'] ?? null,
+            'high_impact_accepted_issues' => $request['mesures']['high_impact_accepted_issues'] ?? null,
+            'violations' => $request['mesures']['violations'] ?? null,
+            'blocker_violations' => $request['mesures']['blocker_violations'] ?? null,
+            'critical_violations' => $request['mesures']['critical_violations'] ?? null,
+            'major_violations' => $request['mesures']['major_violations'] ?? null,
+            'minor_violations' => $request['mesures']['minor_violations'] ?? null,
+            'info_violations' => $request['mesures']['info_violations'] ?? null,
+            'software_quality_blocker_issues' => $request['mesures']['software_quality_blocker_issues'] ?? null,
+            'software_quality_high_issues' => $request['mesures']['software_quality_high_issues'] ?? null,
+            'software_quality_medium_issues' => $request['mesures']['software_quality_medium_issues'] ?? null,
+            'software_quality_low_issues' => $request['mesures']['software_quality_low_issues'] ?? null,
+            'software_quality_info_issues' => $request['mesures']['software_quality_info_issues'] ?? null,
+            'code_smells' => $request['mesures']['code_smells'] ?? null,
+            'maintainability_issues' => $request['mesures']['maintainability_issues'] ?? null,
+            'sqale_index' => $request['mesures']['sqale_index'] ?? null,
+            'sqale_debt_ratio' => $request['mesures']['sqale_debt_ratio'] ?? null,
+            'sqale_rating' => $request['mesures']['sqale_rating'] ?? null,
+            'effort_to_reach_maintainability_rating_a' => $request['mesures']['effort_to_reach_maintainability_rating_a'] ?? null,
+            'software_quality_maintainability_issues' => $request['mesures']['software_quality_maintainability_issues'] ?? null,
+            'software_quality_maintainability_rating' => $request['mesures']['software_quality_maintainability_rating'] ?? null,
+            'software_quality_maintainability_debt_ratio' => $request['mesures']['software_quality_maintainability_debt_ratio'] ?? null,
+            'software_quality_maintainability_remediation_effort' => $request['mesures']['software_quality_maintainability_remediation_effort'] ?? null,
+            'effort_to_reach_software_quality_maintainability_rating_a' => $request['mesures']['effort_to_reach_software_quality_maintainability_rating_a'] ?? null,
+            'bugs' => $request['mesures']['bugs'] ?? null,
+            'reliability_issues' => $request['mesures']['reliability_issues'] ?? null,
+            'reliability_rating' => $request['mesures']['reliability_rating'] ?? null,
+            'reliability_remediation_effort' => $request['mesures']['reliability_remediation_effort'] ?? null,
+            'software_quality_reliability_issues' => $request['mesures']['software_quality_reliability_issues'] ?? null,
+            'software_quality_reliability_rating' => $request['mesures']['software_quality_reliability_rating'] ?? null,
+            'software_quality_reliability_remediation_effort' => $request['mesures']['software_quality_reliability_remediation_effort'] ?? null,
+            'vulnerabilities' => $request['mesures']['vulnerabilities'] ?? null,
+            'security_issues' => $request['mesures']['security_issues'] ?? null,
+            'security_rating' => $request['mesures']['security_rating'] ?? null,
+            'security_remediation_effort' => $request['mesures']['security_remediation_effort'] ?? null,
+            'software_quality_security_issues' => $request['mesures']['software_quality_security_issues'] ?? null,
+            'software_quality_security_rating' => $request['mesures']['software_quality_security_rating'] ?? null,
+            'software_quality_security_remediation_effort' => $request['mesures']['software_quality_security_remediation_effort'] ?? null,
+            'security_hotspots' => $request['mesures']['security_hotspots'] ?? null,
+            'security_review_rating' => $request['mesures']['security_review_rating'] ?? null,
+            'security_hotspots_reviewed' => $request['mesures']['security_hotspots_reviewed'] ?? null,
             ], Response::HTTP_OK
         );
     }
@@ -423,7 +493,6 @@ class ApiPeintureController extends AbstractController
 
         /** On instancie l'entityRepository */
         $anomalieRepos = $this->em->getRepository(Anomalie::class);
-        $notesRepos = $this->em->getRepository(Notes::class);
 
         /** On décode le body */
         $data = json_decode($request->getContent());
@@ -502,33 +571,6 @@ class ApiPeintureController extends AbstractController
         $autre = $anomalie['liste'][0]['autre'] ?? 0;
         $inconnu = $anomalie['liste'][0]['inconnu'] ?? 0;
 
-        /* On récupère les notes (A-F) */
-        $types = ['reliability', 'security', 'sqale'];
-        $noteReliability = $noteSecurity = $noteSqale = 'N/A';
-
-        foreach ($types as $type) {
-            $map = [ 'maven_key' => $maven_key, 'type' => $type ];
-            $note = $notesRepos->selectNotesMavenType($map);
-            if ($note['code'] != 200) {
-                return new JsonResponse([
-                    'code' => $note['code'],
-                    'type' => 'alert',
-                    'message' => "La récupération des données a échouée pour selectNotesMavenType (Erreur {$note['code']}).",
-                    'trace' => $note['erreur']
-                ], Response::HTTP_OK);
-            }
-
-            if (isset($note['liste'][0]['value'])) {
-                if ($type == 'reliability') {
-                    $noteReliability = $note['liste'][0]['value'];
-                } elseif ($type == 'security') {
-                    $noteSecurity = $note['liste'][0]['value'];
-                } elseif ($type == 'sqale') {
-                    $noteSqale = $note['liste'][0]['value'];
-                }
-            }
-        }
-
         return new JsonResponse([
             'code' => 200,
             'dette' => $dette,
@@ -539,7 +581,9 @@ class ApiPeintureController extends AbstractController
             'detteReliabilityMinute' => $detteReliabilityMinute,
             'detteVulnerabilityMinute' => $detteVulnerabilityMinute,
             'detteCodeSmellMinute' => $detteCodeSmellMinute,
-            'bug' => $typeBug, 'vulnerability' => $typeVulnerability, 'codeSmell' => $typeCodeSmell,
+            'bug' => $typeBug,
+            'vulnerability' => $typeVulnerability,
+            'codeSmell' => $typeCodeSmell,
             'blocker' => $severityBlocker,
             'critical' => $severityCritical,
             'info' => $severityInfo,
@@ -547,9 +591,6 @@ class ApiPeintureController extends AbstractController
             'minor' => $severityMinor,
             'frontend' => $frontend, 'backend' => $backend,
             'autre' => $autre, 'inconnu' => $inconnu,
-            'noteReliability' => $noteReliability,
-            'noteSecurity' => $noteSecurity,
-            'noteSqale' => $noteSqale
         ], Response::HTTP_OK);
     }
 
