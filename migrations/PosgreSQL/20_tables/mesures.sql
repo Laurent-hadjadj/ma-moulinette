@@ -2,12 +2,13 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.1.0 - 29/03/2026                  ##
+##           V2.2.0 - 29/03/2026                  ##
 ##                                                ##
 ####################################################*/
 
 --- 2025-11-30 : Migration postGreSql 18
 --- 2026-03-29 : Ajout des attributs SonarQube 10 et 2024, alignement des noms sur la version CORE (8 & 9).
+--- 2026-03-30 : Ajout de coverage_rating et duplicated_lines_rating. Suppression des attributs de code_smells, bug et vulnerability (blocker, critical, major, minor, info) qui ne sont pas utilisés dans les traitements.
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette db_user;
@@ -40,6 +41,7 @@ CREATE TABLE ma_moulinette.mesures
   lines_to_cover INT,
   conditions_to_cover INT,
   uncovered_conditions INT,
+  coverage_rating VARCHAR(4),
 
   tests INT,
   test_execution_time INT,
@@ -52,6 +54,7 @@ CREATE TABLE ma_moulinette.mesures
   duplicated_blocks INT,
   duplicated_lines INT,
   duplicated_lines_density DOUBLE PRECISION,
+  duplicated_lines_rating VARCHAR(4),
 
   complexity INT,
   complexity_rating VARCHAR(4),
@@ -81,12 +84,6 @@ CREATE TABLE ma_moulinette.mesures
   software_quality_info_issues INT,
 
   code_smells INT,
-  code_smell_blocker INT,
-  code_smell_critical INT,
-  code_smell_major INT,
-  code_smell_minor INT,
-  code_smell_info INT,
-
   maintainability_issues VARCHAR(255),
   sqale_index INT,
   sqale_debt_ratio DOUBLE PRECISION,
@@ -100,12 +97,6 @@ CREATE TABLE ma_moulinette.mesures
   effort_to_reach_software_quality_maintainability_rating_a INTEGER,
 
   bugs INT,
-  bug_blocker INT,
-  bug_critical INT,
-  bug_major INT,
-  bug_minor INT,
-  bug_info INT,
-
   reliability_issues VARCHAR(255),
   reliability_rating VARCHAR(4),
   reliability_remediation_effort INT,
@@ -115,12 +106,6 @@ CREATE TABLE ma_moulinette.mesures
   software_quality_reliability_remediation_effort INT,
 
   vulnerabilities INT,
-  vulnerability_blocker INT,
-  vulnerability_critical INT,
-  vulnerability_major INT,
-  vulnerability_minor INT,
-  vulnerability_info INT,
-
   security_issues VARCHAR(255),
   security_rating VARCHAR(4),
   security_remediation_effort INT,
