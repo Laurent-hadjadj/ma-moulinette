@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.3.0 - 29/03/2026                  ##
+##           V2.4.0 - 29/03/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -11,6 +11,7 @@
 --- 2026-02-05 : Ajout de l'index pour visitor_id et user_id de la table user_agent_analysis
 --- 2026-03-08 : Ajout de la colonne last_activity_at à la table utilisateur
 --- 2026-03-29 : Ajout des attributs SonarQube 10 et 2024, alignement des noms sur la version CORE (8 & 9).
+--- 2026-03-29 : Ajout de coverage_rating et duplicated_lines_rating.
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette db_user
@@ -472,6 +473,8 @@ COMMENT ON COLUMN ma_moulinette.mesures.comment_lines_density IS '[CORE] Pourcen
 COMMENT ON COLUMN ma_moulinette.mesures.comment_lines_rating IS '[MA-MOULINETTE] Note commentaire (A-E). Permet d’évaluer la qualité des commentaires. Une note élevée indique des commentaires pertinents et bien rédigés, tandis qu’une note basse peut signaler des commentaires insuffisants ou de mauvaise qualité.';
 
 COMMENT ON COLUMN ma_moulinette.mesures.coverage IS '[CORE] Pourcentage global de couverture du code par les tests. Mesure la part de code exécutée pendant les tests. Un taux élevé améliore la confiance dans la qualité du code.';
+COMMENT ON COLUMN ma_moulinette.mesures.coverage_rating IS '[MA-MOULINETTE] Note de couverture des tests. Permet d’évaluer la qualité de la couverture du code. Une note élevée indique une bonne couverture, tandis qu’une note basse peut signaler des zones non testées.';
+
 COMMENT ON COLUMN ma_moulinette.mesures.branch_coverage IS '[CORE] Couverture des conditions logiques du code (if, switch). Vérifie que toutes les branches sont testées. Réduit les risques de comportements inattendus.';
 COMMENT ON COLUMN ma_moulinette.mesures.line_coverage IS '[CORE] Pourcentage de lignes exécutées par les tests. Donne une vision simple de la couverture. Complémentaire à la couverture des branches.';
 COMMENT ON COLUMN ma_moulinette.mesures.lines_to_cover IS '[CORE] Nombre de lignes de code devant être couvertes par les tests. Sert de base au calcul de la couverture. Permet d’identifier les zones critiques.';
@@ -488,6 +491,7 @@ COMMENT ON COLUMN ma_moulinette.mesures.duplicated_files IS '[CORE] Nombre de fi
 COMMENT ON COLUMN ma_moulinette.mesures.duplicated_blocks IS '[CORE] Nombre de blocs de code dupliqués. Indique la présence de copier-coller. La duplication augmente la dette technique.';
 COMMENT ON COLUMN ma_moulinette.mesures.duplicated_lines IS '[CORE] Nombre de lignes dupliquées dans le code. Représente le volume de duplication. Plus il est élevé, plus le risque de maintenance est important.';
 COMMENT ON COLUMN ma_moulinette.mesures.duplicated_lines_density IS '[CORE] Pourcentage de duplication dans le code. Mesure la proportion de code copié. Une valeur élevée dégrade la qualité globale.';
+COMMENT ON COLUMN ma_moulinette.mesures.duplicated_lines_rating IS '[MA-MOULINETTE] Note de duplication des lignes. Permet d’évaluer la qualité de la gestion des duplications. Une note élevée indique un code avec beaucoup de lignes dupliquées, ce qui peut compliquer la maintenance.';
 
 COMMENT ON COLUMN ma_moulinette.mesures.complexity IS '[CORE] Complexité cyclomatique du code. Mesure le nombre de chemins d’exécution. Une valeur élevée rend le code difficile à tester.';
 COMMENT ON COLUMN ma_moulinette.mesures.complexity_rating IS '[MA-MOULINETTE] Note de complexité cyclomatique du code. Permet d’évaluer la qualité de la structure du code. Une note élevée indique un code plus complexe et potentiellement plus difficile à maintenir.';
