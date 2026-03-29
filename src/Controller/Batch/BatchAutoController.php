@@ -278,12 +278,8 @@ class BatchAutoController extends AbstractController
             $explose_le_projet = explode(':', $le_projet, 2);
             $nom_projet = (count($explose_le_projet) === 2) ? $explose_le_projet[1] : $le_projet;
 
-            $journal = new BatchExecutionJournal();
-            $journal->setCode($result['code']);
-            $journal->setPortefeuille($data->portefeuille);
-            $journal->setNomProjet($nom_projet);
-            $journal->setCompteRendu($result['compte_rendu']);
-            $journal->setDateExecution(new \DateTimeImmutable());
+            /* On utilise le constructeur de l'entité pour créer une nouvelle instance avec les données du résultat de la collecte */
+            $journal = new BatchExecutionJournal($result['code'], $data->portefeuille, $nom_projet, $result['compte_rendu'], new \DateTimeImmutable());
 
             $batchExecution->addJournal($journal);
             $this->em->persist($journal);
