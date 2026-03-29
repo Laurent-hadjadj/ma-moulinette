@@ -20,7 +20,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Historique;
 
 /** Class API Batch */
-use App\Controller\Batch\{BatchCollecteInformationProjetController, BatchCollecteMesureController, BatchCollecteNoteController, BatchCollecteOwaspController, BatchCollecteHotspotController,BatchCollecteAnomalieController, BatchCollecteAnomalieDetailController, BatchCollecteHotspotOwaspController, BatchCollecteHotspotDetailController, BatchCollecteNoSonarController, BatchCollecteTodoController,BatchCollecteActuatorController};
+use App\Controller\Batch\{BatchCollecteInformationProjetController, BatchCollecteMesureController, BatchCollecteOwaspController, BatchCollecteHotspotController,BatchCollecteAnomalieController, BatchCollecteAnomalieDetailController, BatchCollecteHotspotOwaspController, BatchCollecteHotspotDetailController, BatchCollecteNoSonarController, BatchCollecteTodoController,BatchCollecteActuatorController};
 
 /**
  * [Description CollecteController]
@@ -32,7 +32,6 @@ class CollecteController extends AbstractController
     private static $noMessage = 'Aucun message remonté.';
     private static $noError = 'Aucune erreur remontée.';
     private static $jeNeSaisPas = 'Je ne sais pas.';
-    private static $erreurFinTraitement = '[Batch] ❌ Erreur lors du traitement des notes du projet.';
 
     /**
      * [Description for __construct]
@@ -47,7 +46,6 @@ class CollecteController extends AbstractController
         private LoggerInterface $logger,
         private BatchCollecteInformationProjetController $batchCollecteInformation,
         private BatchCollecteMesureController $batchCollecteMesure,
-        private BatchCollecteNoteController $batchCollecteNote,
         private BatchCollecteOwaspController $batchCollecteOwasp,
         private BatchCollecteHotspotController $batchCollecteHotspot,
         private BatchCollecteAnomalieController $batchCollecteAnomalie,
@@ -169,6 +167,12 @@ class CollecteController extends AbstractController
         /** On nettoie les variables du POST */
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
         $mode_collecte = htmlspecialchars($mode_collecte, ENT_QUOTES, 'UTF-8');
+
+        // debug
+        $mesure = $this->batchCollecteMesure->batchCollecteMesure(
+            $maven_key,
+            $mode_collecte,
+            $utilisateur_collecte);
 
         /** On démarre la mesure du traitement */
         $debutTraitement = new \DateTime('now', new \DateTimeZone(static::$europeParis));
@@ -348,143 +352,7 @@ class CollecteController extends AbstractController
                 ];
         }
 
-        /** Notes du projet  (fiabilité, sécurité, mauvaise pratique) */
-        $this->logger->info('[Batch] ℹ️ Démarrage de la collecte des notes pour le projet.');
-        $collecte[] =
-        '<h2 class="h5"><span aria-hidden="true">🔜</span>03 - Collecte des notes pour le projet</h2>';
-
-        $noteReliability = $this->batchCollecteNote->batchCollecteNote(
-            $maven_key,
-            $mode_collecte,
-            $utilisateur_collecte,
-            'reliability');
-
-        if ($noteReliability['code'] === 200){
-            $item = $noteReliability['historique'];
-            $collecte[] ='
-            <section>
-                <p>'. $noteReliability['message'] .'</p>
-                <ul>
-                    <li><span>Note pour la catégorie RELIABILITY : </span>' . $item['note_reliability'] . '</li>
-                </ul>
-            </section>';
-
-            /** On met à jour le tableau des données pour la table historique */
-            $mergeHistorique = array_merge($mergeHistorique, $noteReliability['historique']);
-        } else {
-            $this->logger->error(static::$erreurFinTraitement, [
-                'code' => $noteReliability['code'],
-                'type' => 'reliability',
-                'message' => $noteReliability['message'] ?? static::$noMessage,
-                'erreur' => $noteReliability['erreur'] ?? static::$noError,
-            ]);
-
-            $erreurTitre = '<h2 class="h5"><span aria-hidden="true">🔚</span>03 - Fin de la collecte des notes pour le projet</h2>';
-            $erreurSousTitre = '<h3> class="h5 opens-sans"><span aria-hidden="true">🔠</span>Type : RELIABILITY<h3>';
-
-            $erreurContain = $this->generateHtmlErrorContain(
-                    $noteReliability['code'],
-                    $noteReliability['message'] ?? static::$noMessage,
-                    $noteReliability['erreur'] ?? static::$noError );
-
-            $collecte[] = $erreurTitre . $erreurSousTitre. $erreurContain;
-            $compte_rendu = implode("\n", $collecte);
-
-            return [
-                    'code' => $noteReliability['code'],
-                    'compte_rendu' => $compte_rendu
-                ];
-        }
-
-        $this->logger->info('[Batch] ℹ️ Démarrage de la collecte des notes pour le projet.');
-        $collecte[] =
-        '<h2 class="h5"><span aria-hidden="true">🔜</span>03 - Collecte des notes pour le projet</h2>';
-
-        $noteSecurity = $this->batchCollecteNote->batchCollecteNote(
-            $maven_key,
-            $mode_collecte,
-            $utilisateur_collecte,
-            'security');
-
-        if ($noteSecurity['code'] === 200){
-            $item = $noteSecurity['historique'];
-            $collecte[] ='
-            <section>
-                <p>'. $noteSecurity['message'] .'</p>
-                <ul>
-                    <li><span>Note pour la catégorie SECURITY : </span>' . $item['note_security'] . '</li>
-                </ul>
-            </section>';
-
-            /** On met à jour le tableau des données pour la table historique */
-            $mergeHistorique = array_merge($mergeHistorique, $noteSecurity['historique']);
-        } else {
-            $this->logger->error(static::$erreurFinTraitement, [
-                'code' => $noteSecurity['code'],
-                'type' => 'security',
-                'message' => $noteSecurity['message'] ?? static::$noMessage,
-                'erreur' => $noteSecurity['erreur'] ?? static::$noError,
-            ]);
-
-            $erreurTitre = '<h2 class="h5"><span aria-hidden="true">🔚</span>03 - Fin de la collecte des notes pour le projet</h2>';
-            $erreurSousTitre = '<h3> class="h5 opens-sans"><span aria-hidden="true">🔠</span>Type : SECURITY<h3>';
-
-            $erreurContain = $this->generateHtmlErrorContain(
-                    $noteSecurity['code'],
-                    $noteSecurity['message'] ?? static::$noMessage,
-                    $noteSecurity['erreur'] ?? static::$noError );
-
-            $collecte[] = $erreurTitre . $erreurSousTitre. $erreurContain;
-            $compte_rendu = implode("\n", $collecte);
-
-            return [
-                    'code' => $noteSecurity['code'],
-                    'compte_rendu' => $compte_rendu
-                ];
-        }
-
-        $noteSqale = $this->batchCollecteNote->batchCollecteNote(
-            $maven_key,
-            $mode_collecte,
-            $utilisateur_collecte,
-            'sqale');
-
-        if ($noteSqale['code'] === 200){
-            $item = $noteSqale['historique'];
-            $collecte[] ='
-            <section>
-                <p>'. $noteSqale['message'] .'</p>
-                <ul>
-                    <li><span>Note pour la catégorie SQALE : </span>' . $item['note_sqale'] . '</li>
-                </ul>
-            </section>';
-
-            /** On met à jour le tableau des données pour la table historique */
-            $mergeHistorique = array_merge($mergeHistorique, $noteSqale['historique']);
-        } else {
-            $this->logger->error(static::$erreurFinTraitement, [
-                'code' => $noteSqale['code'],
-                'type' => 'sqale',
-                'message' => $noteSqale['message'] ?? static::$noMessage,
-                'erreur' => $noteSqale['erreur'] ?? static::$noError,
-            ]);
-
-            $erreurTitre = '<h2 class="h5"><span aria-hidden="true">🔚</span>03 - Fin de la collecte des notes pour le projet</h2>';
-            $erreurSousTitre = '<h3> class="h5 opens-sans"><span aria-hidden="true">🔠</span>Type : CODE SMELL<h3>';
-
-            $erreurContain = $this->generateHtmlErrorContain(
-                    $noteSecurity['code'],
-                    $noteSecurity['message'] ?? static::$noMessage,
-                    $noteSecurity['erreur'] ?? static::$noError );
-
-            $collecte[] = $erreurTitre . $erreurSousTitre. $erreurContain;
-            $compte_rendu = implode("\n", $collecte);
-
-            return [
-                    'code' => $noteSqale['code'],
-                    'compte_rendu' => $compte_rendu
-                ];
-        }
+        /** Notes du projet (fiabilité, sécurité, mauvaise pratique) -> collecte dans les mesures*/
 
         /** Signalement des Anomalies pour le projet  */
         $this->logger->info('[Batch] ℹ️ Démarrage de la collecte des anomalies pour le projet.');
@@ -665,7 +533,7 @@ class CollecteController extends AbstractController
         }
 
         /** On calcule la note pour les hotspot */
-        $this->logger->info('[Batch] ℹ️ Démarrage de la collecte de la note des menaces potentielle pour le projet.');
+        /*$this->logger->info('[Batch] ℹ️ Démarrage de la collecte de la note des menaces potentielle pour le projet.');
         $collecte[] =
         '<h2 class="h5"><span aria-hidden="true">🔜</span>07 - Collecte de la note Hotspot pour le projet</h2>';
 
@@ -685,7 +553,7 @@ class CollecteController extends AbstractController
                 </section>';
 
                 /** On met à jour le tableau des données pour la table historique */
-                $mergeHistorique = array_merge($mergeHistorique, $noteHotspot['historique']);
+          /*      $mergeHistorique = array_merge($mergeHistorique, $noteHotspot['historique']);
             } else {
                 $this->logger->error('[Batch] ❌ Erreur lors du traitement de la note des menaces potentielles du projet.', [
                             'code' => $noteHotspot['code'],
@@ -708,7 +576,7 @@ class CollecteController extends AbstractController
                     'compte_rendu' => $compte_rendu
                 ];
             }
-
+        */
         /** Signalement du détail des Hotspots pour le projet */
         $this->logger->info('[Batch] ℹ️ Démarrage de la collecte du détail des hotspots pour le projet.');
         $collecte[] =
