@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.4.2 - 29/03/2026                  ##
+##           V2.5.2 - 29/03/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -13,6 +13,7 @@
 --- 2026-03-28 : Corrections sur les types et réorganisation.
 --- 2026-03-30 : Renommage nom_projet en project_name.
 --- 2026-03-30 : Ajout de coverage_rating.
+--- 2026-03-30 : Ajout des attributs duplicated_lines_rating.
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette db_user;
@@ -86,6 +87,7 @@ CREATE TABLE ma_moulinette.historique
     duplicated_blocks INT,
     duplicated_lines INT,
     duplicated_lines_density DOUBLE PRECISION,
+    duplicated_lines_rating VARCHAR(4),
 
     complexity INT,
     complexity_rating VARCHAR(4),
