@@ -362,7 +362,7 @@ class BuildMapHistoryService
             'analyse_key' => $analysis['analysisKey'],
             'version' => $analysis['version'],
             'date_version' => new \DateTime($analysis['date']),
-            'nom_projet' => $this->extractName->extractNameFromMavenKey($project_key),
+            'project_name' => $this->extractName->extractNameFromMavenKey($project_key),
         ];
 
         $custom_metrics = [
