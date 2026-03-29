@@ -170,12 +170,13 @@ class BatchManuelController extends AbstractController
         $this->logger->info("[API] 📥 Requête reçue sur /traitement/start");
 
         // ========= Debug =========
-        /*'$debug = $this->collecte->collecte(
+        /*$this->collecte->collecte(
                 'test_portefeuille',
                 'fr.ma-moulinette:monapplication',
                 static::$traitementManuel,
                 'test_utilisateur'
-            );*/
+            );
+        die('Debug collecte terminée');*/
         // =========================
 
         $batchTraitementRepos = $this->em->getRepository(BatchTraitement::class);
