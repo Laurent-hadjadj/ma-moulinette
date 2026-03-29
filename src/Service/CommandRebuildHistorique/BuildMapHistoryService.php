@@ -297,13 +297,14 @@ class BuildMapHistoryService
      *
      * @param mixed $value
      *
-     * @return [type]
+     * @return string
      *
      * Created at: 21/03/2026 14:57:26 (America/Costa_Rica)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function ratingToLetter(string $value) {
+    private function ratingToLetter(string $value): string
+    {
         return match((int)$value) {
             1 => 'A',
             2 => 'B',
@@ -335,6 +336,30 @@ class BuildMapHistoryService
         if ($coverage >= 70) { return 'B'; }
         if ($coverage >= 50) { return 'C'; }
         if ($coverage >= 30 && $coverage < 10) { return 'D'; }
+        return 'E';
+    }
+
+    /**
+     * [Description for getDuplicationRating]
+     *
+     * @param float|null $density
+     *
+     * @return string|null
+     *
+     * Created at: 29/03/2026 16:36:23 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function getDuplicationRating(?float $density): ?string
+    {
+        if ($density === null) {
+            return null;
+        }
+
+        if ($density <= 3) {return 'A';}
+        if ($density <= 5) { return 'B'; }
+        if ($density <= 10) { return 'C'; }
+        if ($density <= 20) { return 'D'; }
         return 'E';
     }
 
@@ -451,6 +476,7 @@ class BuildMapHistoryService
             'duplicated_files' => isset($measures['duplicated_files']) ? (int) $measures['duplicated_files'] : null,
             'duplicated_lines' => isset($measures['duplicated_lines']) ? (int) $measures['duplicated_lines'] : null,
             'duplicated_lines_density' => isset($measures['duplicated_lines_density']) ? (float) $measures['duplicated_lines_density'] : null,
+            'duplicated_lines_rating' => self::getDuplicationRating($measures['duplicated_lines_density'] ?? null)
         ];
 
         $issues_status_core = [
