@@ -169,6 +169,15 @@ class BatchManuelController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /traitement/start");
 
+        // ========= Debug =========
+        /*'$debug = $this->collecte->collecte(
+                'test_portefeuille',
+                'fr.ma-moulinette:monapplication',
+                static::$traitementManuel,
+                'test_utilisateur'
+            );*/
+        // =========================
+
         $batchTraitementRepos = $this->em->getRepository(BatchTraitement::class);
         $user = $this->security->getUser();
 
@@ -376,12 +385,7 @@ class BatchManuelController extends AbstractController
             $explose_le_projet = explode(':', $le_projet, 2);
             $nom_projet = (count($explose_le_projet) === 2) ? $explose_le_projet[1] : $le_projet;
 
-            $journal = new BatchExecutionJournal();
-            $journal->setCode($result['code']);
-            $journal->setPortefeuille($data->portefeuille);
-            $journal->setNomProjet($nom_projet);
-            $journal->setCompteRendu($result['compte_rendu']);
-            $journal->setDateExecution(new \DateTimeImmutable());
+            $journal = new BatchExecutionJournal($result['code'], $data->portefeuille, $nom_projet, $result['compte_rendu'], new \DateTimeImmutable());
 
             $batchExecution->addJournal($journal);
             $this->em->persist($journal);
