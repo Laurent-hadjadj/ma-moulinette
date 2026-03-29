@@ -315,6 +315,30 @@ class BuildMapHistoryService
     }
 
     /**
+     * [Description for getCoverageRating]
+     *
+     * @param float|null $coverage
+     *
+     * @return string|null
+     *
+     * Created at: 29/03/2026 16:19:37 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function getCoverageRating(?float $coverage): ?string
+    {
+        if ($coverage === null) {
+            return null;
+        }
+
+        if ($coverage >= 80) { return 'A'; }
+        if ($coverage >= 70) { return 'B'; }
+        if ($coverage >= 50) { return 'C'; }
+        if ($coverage >= 30 && $coverage < 10) { return 'D'; }
+        return 'E';
+    }
+
+    /**
      * [Description for generateKeys]
      * Générateur générique
      *
@@ -410,6 +434,7 @@ class BuildMapHistoryService
             'lines_to_cover' => isset($measures['lines_to_cover']) ? (int) $measures['lines_to_cover'] : null,
             'conditions_to_cover' => isset($measures['conditions_to_cover']) ? (int) $measures['conditions_to_cover'] : null,
             'uncovered_conditions' => isset($measures['uncovered_conditions']) ? (int) $measures['uncovered_conditions'] : null,
+            'coverage_rating' => self::getCoverageRating($measures['coverage'] ?? null)
         ];
 
         $tests_core = [
