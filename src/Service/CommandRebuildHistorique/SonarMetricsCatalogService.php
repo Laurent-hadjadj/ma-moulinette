@@ -107,6 +107,12 @@ class SonarMetricsCatalogService
                 'type' => 'float',
                 'description' => "Pourcentage global de couverture du code par les tests. Mesure la part de code exécutée pendant les tests. Un taux élevé améliore la confiance dans la qualité du code."
             ],
+            'coverage_rating' => [
+                'domaine' => 'ma-moulinette',
+                'version' => null,
+                'type' => 'string',
+                'description' => 'Note de couverture des tests. Permet d’évaluer la qualité de la couverture du code. Une note élevée indique une bonne couverture, tandis qu’une note basse peut signaler des zones non testées.'
+            ],
 
             'branch_coverage' => [
                 'domaine' => 'SonarQube',
@@ -211,6 +217,12 @@ class SonarMetricsCatalogService
                 'version' => 8,
                 'type' => 'float',
                 'description' => "Pourcentage de duplication dans le code. Mesure la proportion de code copié. Une valeur élevée dégrade la qualité globale."
+            ],
+            'duplicated_lines_rating' => [
+                'domaine' => 'ma-moulinette',
+                'version' => null,
+                'type' => 'string',
+                'description' => "Note de duplication des lignes. Permet d’évaluer la qualité de la gestion des duplications. Une note élevée indique un code avec beaucoup de lignes dupliquées, ce qui peut compliquer la maintenance."
             ],
 
             'open_issues' => [
