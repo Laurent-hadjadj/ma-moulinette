@@ -89,12 +89,26 @@ class BatchExecutionJournal
     )]
     private ?BatchExecution $batchExecution = null;
 
+    /**
+     * [Description for __construct]
+     *
+     * @param string $nomProjet
+     * @param string $portefeuille
+     * @param string $compteRendu
+     * @param BatchExecution $batchExecution
+     * @param \DateTimeImmutable $dateExecution
+     * @param int $code
+     *
+     * Created at: 29/03/2026 09:13:20 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function __construct(
         string $nomProjet,
         string $portefeuille,
         string $compteRendu,
-        \DateTimeImmutable $dateExecution,
         BatchExecution $batchExecution,
+        \DateTimeImmutable $dateExecution,
         int $code = 500
     ) {
         $this->nomProjet = $nomProjet;
