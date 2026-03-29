@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.2.0 - 08/03/2026                  ##
+##           V2.3.0 - 29/03/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -10,7 +10,7 @@
 --- 2026-02-05 : Ajout du commentaire pour visitor_id de la table user_agent_event.
 --- 2026-02-05 : Ajout de l'index pour visitor_id et user_id de la table user_agent_analysis
 --- 2026-03-08 : Ajout de la colonne last_activity_at à la table utilisateur
-
+--- 2026-03-29 : Ajout des attributs SonarQube 10 et 2024, alignement des noms sur la version CORE (8 & 9).
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette db_user
