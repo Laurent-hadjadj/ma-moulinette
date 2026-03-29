@@ -148,7 +148,7 @@ class BatchCollecteMesureController extends AbstractController
 
         $mesureData = array_merge ($rebuild_metrics, [
             'maven_key' => $maven_key,
-            'nom_projet' => strtolower($analysis['json']['projectName'] ?? 'inconnu'),
+            'project_name' => strtolower($analysis['json']['projectName'] ?? 'inconnu'),
             'mode_collecte' => $mode_collecte,
             'utilisateur_collecte' => $utilisateur_collecte,
             'date_enregistrement' => $date
