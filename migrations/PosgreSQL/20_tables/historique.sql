@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.3.1 - 28/03/2026                  ##
+##           V2.3.2 - 29/03/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -11,7 +11,7 @@
 --- 2026-03-27 : Ajout des attributs par language/style pour les no_sonar et les to_do.
 --- 2026-03-27 : Ajout des attributs SonarQube 10 et 2024, alignement des noms sur la version CORE (8 & 9).
 --- 2026-03-28 : Corrections sur les types et réorganisation.
-
+--- 2026-03-30 : Renommage nom_projet en project_name.
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette db_user;
@@ -25,7 +25,7 @@ CREATE TABLE ma_moulinette.historique
     date_version VARCHAR(128) NOT NULL,
 
     analyse_key VARCHAR(32) NOT NULL,
-    nom_projet VARCHAR(128) NOT NULL,
+    project_name VARCHAR(128) NOT NULL,
 
     version_release INT,
     version_snapshot INT,
