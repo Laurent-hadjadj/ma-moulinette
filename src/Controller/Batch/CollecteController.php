@@ -169,10 +169,13 @@ class CollecteController extends AbstractController
         $mode_collecte = htmlspecialchars($mode_collecte, ENT_QUOTES, 'UTF-8');
 
         // debug
-        $mesure = $this->batchCollecteMesure->batchCollecteMesure(
+        /*
+        '$mesure = $this->batchCollecteMesure->batchCollecteMesure(
             $maven_key,
             $mode_collecte,
             $utilisateur_collecte);
+        dd($mesure);
+        */
 
         /** On démarre la mesure du traitement */
         $debutTraitement = new \DateTime('now', new \DateTimeZone(static::$europeParis));
