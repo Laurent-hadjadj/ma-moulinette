@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.3.2 - 29/03/2026                  ##
+##           V2.4.2 - 29/03/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -12,6 +12,7 @@
 --- 2026-03-27 : Ajout des attributs SonarQube 10 et 2024, alignement des noms sur la version CORE (8 & 9).
 --- 2026-03-28 : Corrections sur les types et réorganisation.
 --- 2026-03-30 : Renommage nom_projet en project_name.
+--- 2026-03-30 : Ajout de coverage_rating.
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette db_user;
