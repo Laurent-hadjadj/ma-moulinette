@@ -24,7 +24,7 @@ ADD CONSTRAINT fk_actuator_info_actuator
 -- batch_execution
 ALTER TABLE ma_moulinette.batch_execution
 ADD CONSTRAINT ck_mode_collecte
-    CHECK (mode_collecte IN ('COLLECTE', 'TRAITEMENT MANUEL', 'TRAITEMENT AUTOMATIQUE'));
+    CHECK (mode_collecte IN ('REBUILD','COLLECTE', 'TRAITEMENT MANUEL', 'TRAITEMENT AUTOMATIQUE'));
 
 -- batch_execution_journal
 ALTER TABLE ma_moulinette.batch_execution_journal
