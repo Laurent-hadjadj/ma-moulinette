@@ -277,7 +277,7 @@ class BuildMapHistoryService
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function getComplexityRating(float $ratio): string {
+    private function getComplexityRating(float|null $ratio): string {
         if ($ratio <= 3) {
                 return 'A';
         } elseif ($ratio > 3 && $ratio <= 7) {
@@ -348,7 +348,7 @@ class BuildMapHistoryService
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function metricsRebuild(array $measures, array $analysis, string $project_key): array
+    public function metricsRebuild(array $measures, array $analysis, string $project_key, string $collect = 'measures'): array
     {
 
         $information_collecte = [
@@ -400,7 +400,7 @@ class BuildMapHistoryService
         $comments_core = [
             'comment_lines' => isset($measures['comment_lines']) ? (int) $measures['comment_lines'] : null,
             'comment_lines_density' => isset($measures['comment_lines_density']) ? (float) $measures['comment_lines_density'] : null,
-            'comment_lines_rating' => self::getCommentDensityRating($measures['comment_lines_density'])
+            'comment_lines_rating' => self::getCommentDensityRating($measures['comment_lines_density'] ?? 0)
         ];
 
         $coverage_core = [
@@ -548,11 +548,8 @@ class BuildMapHistoryService
             'alert_status' => isset($measures['alert_status']) ? $measures['alert_status'] : 'UNKNOWN',
         ];
 
-        return array_merge(
+        $array_core = array_merge(
             $quality_gate,
-            $information_collecte,
-            $information_projet,
-            $custom_metrics,
             $size_core,
             $comments_core,
             $coverage_core,
@@ -572,7 +569,15 @@ class BuildMapHistoryService
             $security_core,
             $security_10,
             $security_2024,
-            $security_review_core,
+            $security_review_core
         );
+
+        $array_custom = array_merge(
+            $information_collecte,
+            $information_projet,
+            $custom_metrics
+        );
+
+        return ($collect == 'analytics') ? array_merge($array_custom, $array_core) : array_merge($array_core);
     }
 }
