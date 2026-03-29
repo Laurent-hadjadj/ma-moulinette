@@ -68,6 +68,7 @@ CREATE TABLE ma_moulinette.historique
 
     coverage DOUBLE PRECISION,
     branch_coverage DOUBLE PRECISION,
+    coverage_rating VARCHAR(4),
     line_coverage INT,
     lines_to_cover INT,
     conditions_to_cover INT,
