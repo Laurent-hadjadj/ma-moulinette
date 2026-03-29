@@ -18,7 +18,7 @@ use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Mesures;
 use App\Service\{ClientService, UrlBuilderService};
-
+use App\Service\CommandRebuildHistorique\BuildMapHistoryService;
 /**
  * [Description BatchCollecteMesureController]
  */
@@ -38,7 +38,8 @@ class BatchCollecteMesureController extends AbstractController
         private EntityManagerInterface $em,
         private ClientService $client,
         private UrlBuilderService $urlBuilder,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        private BuildMapHistoryService $apiBuildRequest
     ) {
     }
 
@@ -66,7 +67,7 @@ class BatchCollecteMesureController extends AbstractController
             'utilisateur' => $utilisateur_collecte
         ]);
 
-        // [1] Récupération du projet
+        // [1] Récupération du projet de base pour vérifier son existence
         $url = $this->urlBuilder->build(
             $this->getParameter(static::$sonarUrl),
             '/api/components/app',
@@ -74,18 +75,18 @@ class BatchCollecteMesureController extends AbstractController
         );
 
         $this->logger->debug('[Batch Mesure] 🛠️ Appel API SonarQube', ['url' => $url]);
-        $result = $this->client->httpSonarQube($url);
+        $analysis = $this->client->httpSonarQube($url);
 
-        if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
-            $this->logger->error('[Batch Mesure] ❌  Erreur SonarQube', [
+        if (isset($analysis['code']) && in_array($analysis['code'], [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
+            $this->logger->error('[Batch Mesure] ❌ Erreur SonarQube', [
                 'url' => $url,
-                'code' => $result['code'],
-                'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
+                'code' => $analysis['code'],
+                'erreur' => $analysis['erreur'] ?? 'Erreur Sonar inconnue.'
             ]);
 
             return [
-                'code' => $result['code'],
-                'erreur' => $result['erreur'] ?? 'Erreur Sonar inconnue.'
+                'code' => $analysis['code'],
+                'erreur' => $analysis['erreur'] ?? 'Erreur Sonar inconnue.'
             ];
         }
 
@@ -107,98 +108,51 @@ class BatchCollecteMesureController extends AbstractController
             'maven_key' => $maven_key
         ]);
 
-        // [3] Collecte secondaire : lignes de code, fichiers...
+        // [3] Collecte des mesures secondaires : lignes de code, fichiers, classes, fonctions, distribution par langage...
+        // Par défaut, on suppose une version 8 si la variable d'environnement n'est pas définie
+        $versionSonar = getenv('SONAR_VERSION') ?: 8;
+        $metrics = $this->apiBuildRequest->metricsKey($versionSonar);
         $url = $this->urlBuilder->build(
             $this->getParameter(static::$sonarUrl),
             '/api/measures/component', [
                 'component' => $maven_key,
-                'metricKeys' => 'ncloc,ncloc_language_distribution,classes,functions,files'
+                'metricKeys' => $metrics
                 ]
         );
 
-        $this->logger->debug('[Batch Mesure] 🛠️ Appel à SonarQube /measures/component (bloc 1)', ['url' => $url]);
-        $result2 = $this->client->httpSonarQube($url);
+        $this->logger->debug('[Batch Mesure] 🛠️ Appel à SonarQube /measures/component', ['url' => $url]);
+        /** On récupère les mesures depuis l'API */
+        $results = $this->client->httpSonarQube($url);
+        $measures = $results['json']['component']['measures'] ?? [];
 
-        $ncloc = $classes = $functions = $files = 0;
-        $distribution = [];
-
-        foreach ($result2['json']['component']['measures'] ?? [] as $mesure) {
-            switch ($mesure['metric']) {
-                case 'ncloc':
-                    $ncloc = intval($mesure['value'] ?? 0);
-                    break;
-                case 'classes':
-                    $classes = intval($mesure['value'] ?? 0);
-                    break;
-                case 'functions':
-                    $functions = intval($mesure['value'] ?? 0);
-                    break;
-                case 'files':
-                    $files = intval($mesure['value'] ?? 0);
-                    break;
-                case 'ncloc_language_distribution':
-                    $asArr = explode(';', $mesure['value'] ?? '');
-                    foreach ($asArr as $language) {
-                        $tmp = explode('=', $language);
-                        if (count($tmp) === 2) {
-                            $distribution[$tmp[0]] = intval($tmp[1]);
-                        }
-                    }
-                    arsort($distribution);
-                    break;
-                default :
-                    $this->logger->error('[Batch Mesure] ❌ Erreur switch improbable. Tu peux jouer au LoTo.');
-                    break;
-            }
+        // On construit un tableau clé-valeur à partir des mesures récupérées
+        foreach ($measures as $measure) {
+            $result[$measure['metric']] = $measure['value'] ?? 0;
         }
 
-        $this->logger->debug('[Batch Mesure] 🛠️ Résumé des métriques secondaires extraites', [
-            'ncloc' => $ncloc,
-            'classes' => $classes,
-            'functions' => $functions,
-            'files' => $files,
-            'distribution' => $distribution
-        ]);
-
-        // [4] Récupération du SQALE ratio
-        $url = $this->urlBuilder->build(
-            $this->getParameter(static::$sonarUrl),
-            '/api/measures/component', [
-                'component' => $maven_key,
-                'metricKeys' => 'sqale_debt_ratio'
-            ]
+        // On récupère le tableau des mesures reconstruites par le service BuildMapHistoryService.
+        $rebuild_metrics = $this->apiBuildRequest->metricsRebuild(
+            $result,
+            [
+                'analysisKey' => null,
+                'version' => null,
+                'date' => null
+            ],
+            $maven_key,
+            'measures'
         );
 
-        $this->logger->debug('[Batch Mesure] 🛠️ Appel à SonarQube /measures/component (SQALE)', ['url' => $url]);
-        $result3 = $this->client->httpSonarQube($url);
-        $sqaleRatio = floatval($result3['json']['component']['measures'][0]['value'] ?? -1);
+        $this->logger->debug('[Batch Mesure] 🛠️ Résumé des métriques extraites', $rebuild_metrics);
 
-        // [5] Création des données mesures
         $date = new \DateTimeImmutable('now', new \DateTimeZone("Europe/Paris"));
-        $lines = intval($result['json']['measures']['lines'] ?? 0);
-        $coverage = floatval($result['json']['measures']['coverage'] ?? 0);
-        $duplicatedLinesDensity = floatval($result['json']['measures']['duplicationDensity'] ?? 0);
-        $tests = intval($result['json']['measures']['tests'] ?? 0);
-        $issues = intval($result['json']['measures']['issues'] ?? 0);
 
-        $mesureData = [
+        $mesureData = array_merge ($rebuild_metrics, [
             'maven_key' => $maven_key,
-            'project_name' => $result['json']['projectName'] ?? 'inconnu',
-            'lines' => $lines,
-            'ncloc' => $ncloc,
-            'classes' => $classes,
-            'functions' => $functions,
-            'files' => $files,
-            'language_distribution' => $distribution,
-            'sqale_debt_ratio' => $sqaleRatio,
-            'coverage' => $coverage,
-            'duplicated_lines_density' => $duplicatedLinesDensity,
-            'tests' => $tests,
-            'issues' => $issues,
+            'nom_projet' => strtolower($analysis['json']['projectName'] ?? 'inconnu'),
             'mode_collecte' => $mode_collecte,
             'utilisateur_collecte' => $utilisateur_collecte,
             'date_enregistrement' => $date
-        ];
+        ]);
 
         $insert = $mesuresRepos->insertMesures($mesureData);
         if ($insert['code'] !== 200) {
@@ -215,28 +169,14 @@ class BatchCollecteMesureController extends AbstractController
 
         $this->logger->info('[Batch Mesure] ℹ️ Insertion mesures OK', [
             'maven_key' => $maven_key,
-            'lines' => $lines,
-            'coverage' => $coverage
+            'nombre_mesures' => count($rebuild_metrics)
         ]);
 
         return [
             'code' => 200,
             'message' => "La mise à jour des mesures pour le projet est terminées.",
             'data' => $mesureData,
-            'historique' => [
-                'nom_projet' => strtolower($result['json']['projectName'] ?? 'inconnu'),
-                'nombre_ligne' => $lines,
-                'nombre_ligne_code' => $ncloc,
-                'nombre_classes' => $classes,
-                'nombre_functions' => $functions,
-                'nombre_files' => $files,
-                'language_distribution' => $distribution,
-                'coverage' => $coverage,
-                'sqale_debt_ratio' => $sqaleRatio,
-                'duplicated_lines_density' => $duplicatedLinesDensity,
-                'tests' => $tests,
-                'issues' => $issues
-            ]
+            'historique' => $mesureData
         ];
     }
 
