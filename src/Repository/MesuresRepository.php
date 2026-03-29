@@ -222,9 +222,11 @@ class MesuresRepository extends ServiceEntityRepository
             ':' . implode(', :', $columns)
         );
 
+        $conn = $this->getEntityManager()->getConnection();
+
         try {
-            $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $conn->beginTransaction();
+            $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 // Bind automatique sécurisé
                 foreach ($columns as $column) {
                     if ($column === 'date_enregistrement') {
@@ -238,9 +240,9 @@ class MesuresRepository extends ServiceEntityRepository
                 }
 
                 $stmt->executeStatement();
-            $this->getEntityManager()->getConnection()->commit();
+            $conn->commit();
         } catch (\Throwable $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
+            $conn->rollBack();
             return $this->handleDatabaseException($e);
         }
 
