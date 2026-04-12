@@ -84,8 +84,10 @@
   /* marge du logo en small */
   .logo {
     margin-top: 10px;
-    margin-left: 10px;
+    margin-left: 5px;
   }
+
+  .marque-entreprise { width: 70px; }
 
   .marque-mm {
     width: 49px;
@@ -93,14 +95,14 @@
   }
 
   .ma-moulinette {
-    margin-left: 0.5rem;
-    font-size: 1rem;
+    margin-left: 0.2rem;
+    font-size: 0.9rem;
   }
 
   .version {
-    margin-left: 0.5rem;
+    margin-left: 0.2rem;
     margin-top: -0.9rem;
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 
   .label-custom {
@@ -145,8 +147,10 @@
 @media (22.025em <= width <= 30em) {
   .logo {
     margin-top: 10px;
-    margin-left: 10px;
+    margin-left: 5px;
   }
+
+  .marque-entreprise { width: 80px; }
 
   .marque-mm {
     width: 50px;
@@ -154,14 +158,14 @@
   }
 
   .ma-moulinette {
-    margin-left: 0.5rem;
-    font-size: 1rem;
+    margin-left: 0.2rem;
+    font-size: 0.9rem;
   }
 
   .version {
-    margin-left: 0.5rem;
+    margin-left: 0.2rem;
     margin-top: -0.9rem;
-    font-size: 1rem;
+    font-size: 0.9rem;
   }
 
   .label-custom {
@@ -213,14 +217,17 @@
     margin-left: 10px;
   }
 
+  .marque-entreprise { width: 100px; }
+
   .marque-mm {
-    width: 72px;
-    height: 72px;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1.2rem;
   }
 
   .ma-moulinette {
-    margin-left: 0.5rem;
-    font-size: 1.6rem;
+    margin-left: 0.2rem;
+    font-size: 1.4rem;
   }
 
   .version {
@@ -272,27 +279,27 @@
   .ma-moulinette-container { margin-top: -1rem; }
 
   .logo {
-    margin-top: 10px;
+    margin-top: 5px;
     margin-left: 10px;
   }
 
   .marque-entreprise { width: 120px; }
 
   .marque-mm {
-    width: 56px;
-    height: 56px;
-    margin-bottom: 0.4rem;
+    width: 48px;
+    height: 48px;
+    margin-bottom: 1rem;
   }
 
   .ma-moulinette {
-    font-size: 1.5rem;
-    margin-left: 0.5rem;
+    font-size: 1.3rem;
+    margin-left: 0.1rem;
   }
 
   .version {
     font-size: 1rem;
     margin-top: -1.5rem;
-    margin-left: 0.5rem;
+    margin-left: 0.1rem;
   }
 
   .logout-svg,
@@ -323,16 +330,16 @@
   .ma-moulinette-container { margin-top: -1rem; }
 
   .logo {
-    margin-top: 10px;
+    margin-top: 5px;
     margin-left: 10px;
   }
 
   .marque-entreprise { width: 122px; }
 
   .marque-mm {
-    width: 56px;
-    height: 56px;
-    margin-bottom: 0.4rem;
+    width: 62px;
+    height: 49px;
+    margin-bottom: 1em;
   }
 
   .ma-moulinette {
@@ -375,15 +382,16 @@
   .ma-moulinette-container { margin-top: -1rem; }
 
   .logo {
-    margin-top: 10px;
+    margin-top: 5px;
     margin-left: 10px;
   }
 
   .marque-entreprise { width: 122px; }
 
-  .marque-mm {
-    width: 74px;
-    height: 66px;
+    .marque-mm {
+    width: 62px;
+    height: 49px;
+    margin-bottom: 1rem;
   }
 
   .ma-moulinette {
@@ -425,16 +433,16 @@
   .ma-moulinette-container { margin-top: -1rem; }
 
   .logo {
-    margin-top: 10px;
+    margin-top: 5px;
     margin-left: 10px;
   }
 
   .marque-entreprise { width: 122px; }
 
   .marque-mm {
-    width: 80px;
-    height: 71px;
-    margin-bottom: 0.4rem;
+    width: 62px;
+    height: 49px;
+    margin-bottom: 1rem;
   }
 
   .ma-moulinette {
@@ -472,11 +480,11 @@
 
 /* Desktop 8K */
 @media (width >= 160.025em) {
-  .open-sans { font-size: 1.2rem; }
+  .open-sans { font-size: 1rem; }
   .ma-moulinette-container { margin-top: -1rem; }
 
   .logo {
-    margin-top: 10px;
+    margin-top: 5px;
     margin-left: 10px;
   }
 
@@ -928,26 +936,14 @@ body {
 /* Définition des SVG */
 .logo-svg,
 .logout-svg,
-.preferences-svg,
-.gestion-utilisateurs-svg,
-.gestion-batchs-svg {
+.preferences-svg {
   height: auto;
   fill: #00445b;
   cursor: pointer;
 }
 
 .logout-svg:hover,
-.preferences-svg:hover,
-.gestion-utilisateurs-svg:hover,
-.gestion-batchs-svg:hover { fill: #e7552c; }
-
-/** Image information utilisateur */
-.information-utilisateur-svg {
-  height: auto;
-  fill: #00445b;
-  cursor: pointer;
-  max-width: 22px;
-}
+.preferences-svg:hover { fill: #e7552c; }
 
 /* Affiche le titre du sous menu */
 .container-information {
@@ -963,15 +959,14 @@ body {
 .breadcrumbs a { color: #850385; }
 
 /* === Information utilisateur === */
-/* menu utilisateur */
-.menu-identifiant {
+.container-identifiant {
   display: flex;
   flex-direction: row;
-  justify-content: flex-end;
+  justify-content: center;
+  cursor: pointer;
 }
 
-.menu-identifiant-titre:hover,
-.menu-identifiant-item:hover { color: #e7552c; }
+.identifiant-titre:hover { color: #e7552c; }
 
 #bouton-fermer-information-utilisateur {
   min-width: 9rem;
@@ -984,7 +979,47 @@ body {
   background-color: #00445b;
 }
 
-#bouton-fermer-information-utilisateur:hover { background-color: #006182; }
+#bouton-changer-avatar {
+    font-size: 0.8rem;
+    border-radius: 0.275rem;
+    margin: 0 0.25rem 0.5rem 0.25rem;
+    padding: 0.4rem 0.6rem;
+    color: #fff;
+    text-align: center;
+    background-color: #00445b;
+}
+#bouton-fermer-information-utilisateur:hover,
+#bouton-changer-avatar:hover { background-color: #006182; }
+
+/***************  Avatar                        *******************************/
+.sepia { filter: sepia(0); }
+.sepia:hover { filter: sepia(1); }
+.gray-scale { filter: grayscale(1); }
+.gray-scale:hover { filter: grayscale(0); }
+
+/* Accordion */
+.menu-accordion {
+  background-color: white;
+  border-radius: 5px;
+  margin-top: 0.1rem;
+}
+
+/* Suppression style inline */
+.ajouter-mon-avatar-container { display: inline-flex; }
+#ajouter-mon-avatar { margin-left: 0.6rem; }
+
+/* Suppression style inline */
+.avatar-chiffre,
+.avatar-emoticon,
+.avatar-fille1,
+.avatar-fille2,
+.avatar-garcon1,
+.avatar-garcon2,
+.avatar-lettre {
+  font-size: 1.5rem;
+  padding-right: 3rem;
+  margin-top: -0.2rem;
+}
 
 /* === gestion du switch pour la mise à jour du mot de passe ==== */
 /* décalage vers la droite */
