@@ -10,4 +10,5 @@
  */
 
 /** Import des dépendances */
+import '../../styles/common/police.css';
 import '../../styles/easy-admin.css';
