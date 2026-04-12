@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.1.0 - 08/03/2026                  ##
+##           V2.1.0 - 04/04/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -21,13 +21,16 @@ CREATE TABLE ma_moulinette.utilisateur
   nom VARCHAR(64) NOT NULL,
   avatar VARCHAR(128) DEFAULT NULL::VARCHAR,
   courriel VARCHAR(320) NOT NULL,
-  roles json,
-  groupe json,
   password VARCHAR(64) NOT NULL,
-  actif BOOLEAN NOT NULL DEFAULT false,
-  preference json NOT NULL,
   reset_password BOOLEAN DEFAULT TRUE NOT NULL,
   reset_password_count SMALLINT DEFAULT 1 NOT NULL,
+  roles json,
+  groupe_utilisateur character varying(64),
+  groupe_id character varying(26) NOT NULL,
+  liste_groupe_fonctionnel json,
+  actif BOOLEAN NOT NULL DEFAULT false,
+  preference json NOT NULL,
+  last_activity_at TIMESTAMP WITHOUT TIME ZONE NULL DEFAULT NULL,
   date_modification TIMESTAMP DEFAULT NULL,
   last_activity_at TIMESTAMP WITHOUT TIME ZONE NULL DEFAULT NULL;
   date_enregistrement TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
