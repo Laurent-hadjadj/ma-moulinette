@@ -136,4 +136,5 @@ services:
                     protocol_version: 3
                     referrals: false
                     network_timeout: 3
+                    x_tls_require_cert: 'LDAP_OPT_X_TLS_REQUIRE_CERT'
 ...
