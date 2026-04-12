@@ -4,11 +4,12 @@ security:
     hide_user_not_found: false
 
     role_hierarchy:
+        ROLE_UTILISATEUR: []
         ROLE_COLLECTE: ['ROLE_UTILISATEUR']
-        ROLE_BATCH: ['ROLE_COLLECTE', 'ROLE_UTILISATEUR']
-        ROLE_ACTUATOR: ['ROLE_COLLECTE', 'ROLE_UTILISATEUR']
-        ROLE_GESTIONNAIRE: ['ROLE_COLLECTE', 'ROLE_BATCH', 'ROLE_ACTUATOR','ROLE_UTILISATEUR']
-        ROLE_INTERNAL:  ['ROLE_GESTIONNAIRE', 'ROLE_COLLECTE', 'ROLE_BATCH', 'ROLE_ACTUATOR','ROLE_UTILISATEUR', 'ROLE_INTERNAL']
+        ROLE_BATCH: ['ROLE_UTILISATEUR']
+        ROLE_ACTUATOR: ['ROLE_UTILISATEUR']
+        ROLE_GESTIONNAIRE: ['ROLE_UTILISATEUR']
+        ROLE_INTERNAL: ['ROLE_GESTIONNAIRE']
 
     password_hashers:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
