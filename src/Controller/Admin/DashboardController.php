@@ -14,16 +14,17 @@
 namespace App\Controller\Admin;
 
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
+use EasyCorp\Bundle\EasyAdminBundle\Config\{Crud, Assets, Action, Actions, MenuItem, UserMenu, Dashboard};
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
-use EasyCorp\Bundle\EasyAdminBundle\Config\{Crud, Assets, Action, Actions, MenuItem, userMenu, Dashboard};
+
 use Symfony\Component\Asset\Packages;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\{Response, JsonResponse};
+use Symfony\Component\HttpFoundation\{Response, JsonResponse, RedirectResponse};
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\RouterInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\{Utilisateur, Groupe, Portefeuille, Batch};
+use App\Entity\{Utilisateur};
 use App\Service\UserAgentTrackingFacade;
 
 /**
@@ -46,6 +47,7 @@ class DashboardController extends AbstractDashboardController
     public function __construct(
         private EntityManagerInterface $em,
         private Packages $assets,
+        private RouterInterface $router,
         private UserAgentTrackingFacade $tracking
     ) {
     }
@@ -95,24 +97,28 @@ class DashboardController extends AbstractDashboardController
         return new JsonResponse($result, Response::HTTP_OK);
     }
 
-    /**
-     * [Description for index]
-     *
-     * @return Response
-     *
-     * Created at: 02/01/2023, 18:34:07 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     #[IsGranted('ROLE_GESTIONNAIRE')]
     #[Route('/admin', name: 'admin')]
     public function index(): Response
     {
-        $this->tracking->track('DASHBOARD');
+        $this->tracking->track('EASY_ADMIN_ACCUEIL');
+        return $this->render('admin/home.html.twig', [ 'dateCopyright' => date('Y')]);
+    }
+
+    #[Route('/admin/projet', name: 'admin_projet')]
+    public function batchSuivi(): Response
+    {
+        $this->tracking->track('EASY_ADMIN_REDIRECT_PROJET');
+        return new RedirectResponse($this->router->generate('projet'));
+    }
+
+    #[Route('/admin/stats', name: 'admin_stats')]
+    public function stats(): Response
+    {
+        $this->tracking->track('EASY_ADMIN_STATS');
 
         /** Informations système **/
         $symfonyVersion = \Symfony\Component\HttpKernel\Kernel::VERSION;
-        $phpVersion = PHP_VERSION;
         $ram = round(memory_get_usage() / 1048576, 2);
 
         $queries = [
@@ -146,20 +152,6 @@ class DashboardController extends AbstractDashboardController
             (CASE WHEN idx_scan != 0 THEN idx_tup_fetch::float / idx_scan ELSE 0 END) AS tuple_per_index_scan,
             (CASE WHEN idx_tup_read != 0 THEN idx_tup_fetch::float / idx_tup_read ELSE 0 END) AS tuple_per_index_read
             FROM pg_stat_all_indexes WHERE schemaname='ma_moulinette'",
-
-            // Statistiques SQL
-            /*"pg_stat_statements" => "SELECT  AVG(total_exec_time_seconds) AS avg_total_exec_time_seconds,
-                AVG(min_exec_time_seconds) AS avg_min_exec_time_seconds,
-                AVG(max_exec_time_seconds) AS avg_max_exec_time_seconds,
-                AVG(mean_exec_time_seconds) AS avg_mean_exec_time_seconds,
-                AVG(stddev_exec_time_seconds) AS avg_stddev_exec_time_seconds
-                FROM (SELECT
-                total_exec_time / 1000 AS total_exec_time_seconds,
-                min_exec_time / 1000 AS min_exec_time_seconds,
-                max_exec_time / 1000 AS max_exec_time_seconds,
-                mean_exec_time / 1000 AS mean_exec_time_seconds,
-                stddev_exec_time / 1000 AS stddev_exec_time_seconds
-            FROM pg_stat_statements ORDER BY total_exec_time DESC LIMIT 10) AS top_queries",*/
 
             // Nombre d'utilisateurs
             "utilisateur_count" => "SELECT count(*) as total FROM utilisateur",
@@ -233,13 +225,13 @@ class DashboardController extends AbstractDashboardController
         $migration = ['fichier' => 2, 'code' => 881, 'comment' => 10, 'vide' => 14, 'total' => 112];
 
         /** La version de ma-moulinette */
-        $app=explode('-', $this->getParameter("version"));
+        $app = explode('-', $this->getParameter("version"));
 
-        return $this->render('admin/index.html.twig', [
+        $data = [
+            'php_version' => PHP_VERSION,
             'dateCopyright' => date('Y'),
             'date' => $this->getParameter("date"),
             'version' => $this->getParameter('version'),
-            'php_version' => $phpVersion,
             'symfony_version' => $symfonyVersion,
             'postgresql_version' => $results['postgres_version'][0]['version'] ?? '-',
             'application_utilisateur' => $results['utilisateur_count'][0]['total'] ?? 0,
@@ -248,9 +240,9 @@ class DashboardController extends AbstractDashboardController
             'pg_stat_activity_idle' => $results['pg_stat_activity'][0]['idle_count'],
             'pg_stat_activity_not_idle' => $results['pg_stat_activity'][0]['not_idle_count'],
             'pg_locks' => count($results['pg_locks']),
-            'cache_hit_ratio'=> $results['pg_stat_database'][0]['cache_hit_ratio'],
-            'transaction_rollback_ratio'=> $results['pg_stat_database'][0]['transaction_rollback_ratio'],
-            'read_requests_per_inserted_tuple'=> $results['pg_stat_database'][0]['read_requests_per_inserted_tuple'],
+            'cache_hit_ratio' => $results['pg_stat_database'][0]['cache_hit_ratio'],
+            'transaction_rollback_ratio' => $results['pg_stat_database'][0]['transaction_rollback_ratio'],
+            'read_requests_per_inserted_tuple' => $results['pg_stat_database'][0]['read_requests_per_inserted_tuple'],
             'read_requests_ratio' => $results['pg_stat_database'][0]['read_requests_ratio'],
             'seq_scan_ratio' => $results['pg_stat_all_tables'][0]['seq_scan_ratio'],
             'idx_scan_ratio' => $results['pg_stat_all_tables'][0]['idx_scan_ratio'],
@@ -262,7 +254,13 @@ class DashboardController extends AbstractDashboardController
             'avg_min_exec_time_seconds' => $results['pg_stat_statements'][0]['avg_min_exec_time_seconds'] ?? -1,
             'avg_max_exec_time_seconds' => $results['pg_stat_statements'][0]['avg_max_exec_time_seconds'] ?? -1,
             'avg_stddev_exec_time_seconds' => $results['pg_stat_statements'][0]['avg_stddev_exec_time_seconds'] ?? -1,
-            'html' => $html, 'php' => $php, 'css' => $css, 'js' => $js, 'md' => $md, 'sql' => $updateSql, 'migration' => $migration,
+            'html' => $html,
+            'php' => $php,
+            'css' => $css,
+            'js' => $js,
+            'md' => $md,
+            'sql' => $updateSql,
+            'migration' => $migration,
             'application_nombre_version' => $results['ma_moulinette_count'][0]['total'] ?? 0,
             'application_local_version' => $app[0],
             'application_table' => $results['table_count'][0]['total'] ?? 0,
@@ -277,7 +275,9 @@ class DashboardController extends AbstractDashboardController
             'mesure_bug' => $results['mesure_bug'][0]['total'] ?? 0,
             'mesure_vulnerability' => $results['mesure_vulnerability'][0]['total'] ?? 0,
             'mesure_code_smell' => $results['mesure_code_smell'][0]['total'] ?? 0,
-        ]);
+        ];
+
+        return $this->render('admin/dashboard.html.twig', $data);
     }
 
     /**
@@ -293,12 +293,11 @@ class DashboardController extends AbstractDashboardController
     {
         $faviconPath = $this->assets->getUrl('favicon/favicon-32x32.png');
         return Dashboard::new()
-            ->setTitle('<img src="'.$faviconPath.'" alt="Logo"> Ma Moulinette')
+            ->setTitle('<img src="' . $faviconPath . '" alt="Logo"> Ma Moulinette')
             ->setFaviconPath($faviconPath)
             ->renderContentMaximized()
             ->renderSidebarMinimized()
             ->disableDarkMode();
-            //->generateRelativeUrls();
     }
 
     /**
@@ -312,20 +311,20 @@ class DashboardController extends AbstractDashboardController
      */
     public function configureMenuItems(): iterable
     {
-        yield MenuItem::linkToUrl('Accueil', 'fas fa-desktop', $this->generateUrl('accueil'))
-            ->setPermission('ROLE_UTILISATEUR');
+        yield MenuItem::linkToRoute("Retour à l’application", 'fas fa-backward-step', 'admin_projet');
 
-        yield MenuItem::linkToCrud('Utilisateur', 'fas fa-user', Utilisateur::class)
-            ->setPermission('ROLE_GESTIONNAIRE');
+        yield MenuItem::section('Gestion');
 
-        yield MenuItem::linkToCrud('Groupe', 'fas fa-users', Groupe::class)
-            ->setPermission('ROLE_GESTIONNAIRE');
+        yield MenuItem::linkTo(UtilisateurCrudController::class, 'Utilisateurs', 'fas fa-user');
+        yield MenuItem::linkTo(GroupeUtilisateurCrudController::class, 'Groupes Utilisateurs', 'fas fa-user-group');
+        yield MenuItem::linkTo(GroupeFonctionnelCrudController::class, 'Groupes Fonctionnels', 'fas fa-stamp');
+        yield MenuItem::linkTo(PortefeuilleCrudController::class, 'Portefeuilles', 'fas fa-wallet');
+        yield MenuItem::linkTo(BatchCrudController::class, 'Batch', 'fas fa-cogs');
 
-        yield MenuItem::linkToCrud('Portefeuille', 'fas fa-gamepad', Portefeuille::class)
-            ->setPermission('ROLE_GESTIONNAIRE');
+        yield MenuItem::section('Suivi');
 
-        yield MenuItem::linkToCrud('Batch', 'fas fa-gears', Batch::class)
-            ->setPermission('ROLE_BATCH');
+        yield MenuItem::linkToRoute('Statistiques', 'fas fa-chart-bar', 'admin_stats');
+        yield MenuItem::linkToRoute('Suivi batch', 'fas fa-tasks', 'admin_batch_suivi');
     }
 
     /**
@@ -345,7 +344,7 @@ class DashboardController extends AbstractDashboardController
             throw new \LogicException('Mauvais utilisateur !!!');
         }
 
-        $url = '/assets'.$utilisateur?->getAvatarUrl() ?? '/assets/avatar/personne.png';
+        $url = '/assets' . $utilisateur?->getAvatarUrl() ?? '/assets/avatar/personne.png';
 
         return parent::configureUserMenu($utilisateur)
             ->setAvatarUrl($url);
@@ -379,8 +378,8 @@ class DashboardController extends AbstractDashboardController
     public function configureAssets(): Assets
     {
         return parent::configureAssets()
-        ->addAssetMapperEntry('easyBatch', 'easyAdmin')
-        ->addHtmlContentToBody('<!-- generated at '.time().' -->');
+            ->addAssetMapperEntry('easy-admin','easy-footer', 'easy-groupe-fonctionnel')
+            ->addHtmlContentToBody('<!-- generated at ' . time() . ' -->');
     }
 
 }
