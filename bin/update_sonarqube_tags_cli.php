@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2025.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common  CC-BY-NC-SA 4.0.
 *  ---
@@ -19,17 +19,6 @@
  * 🧑‍💻 Auteur : Laurent HADJADJ
  * 🗓️ Dernière mise à jour : 2025-11-05
  *
- * 🎯 Étapes :
- *
- * 1️⃣ Connexion à SonarQube via token (Basic Auth)
- * 2️⃣ Récupère la liste de tous les projets
- * 3️⃣ Supprime tous les tags (met 'aucun')
- * 4️⃣ Détecte le groupe du projet selon les critères :
- *      - permissions = ["codeviewer","securityhotspotadmin","user"] et description contient "2021"
- *      - permissions != [] et name = "Archive"
- * 5️⃣ Réassigne le tag avec le nom du groupe trouvé
- * 6️⃣ Sauvegarde le mapping dans mapping_projets_groupes.json
- *
  * 🧩 Usage :
  *
  * php update_sonarqube_tags_cli.php --url="https://sonar.exemple.com" --token="XXXXX" [--login=USER --password=PASS] [--dry-run]
@@ -44,13 +33,14 @@
 
 // -----------------------------------------------------
 // === PARAMÈTRES CLI ===
-$options = getopt("", ["url:", "token:", "login::", "password::", "dry-run"]);
+$options = getopt("", ["url:", "token:", "login::", "password::", "dry-run", "debug"]);
 if (!isset($options['url'])) {
     die("❌ Utilisation : php update_sonarqube_tags_cli.php --url=\"https://sonar.exemple.com\" --token=\"XXXXX\" [--login=USER --password=PASS] [--dry-run]\n");
 }
 
 $SONAR_URL = rtrim($options['url'], '/');
 $DRY_RUN = isset($options['dry-run']);
+$DEBUG = isset($options['debug']);
 
 // Authentification
 $TOKEN = $options['token'] ?? null;
@@ -68,28 +58,58 @@ if ($TOKEN) {
 // -----------------------------------------------------
 // === CONFIG SSL / TLS ===
 // -----------------------------------------------------
-$VERIFY_PEER = false;     // false = ne vérifie pas le certificat
-$VERIFY_HOST = 0;         // 0 = ne vérifie pas le nom d’hôte SSL
-$CIPHERS = "DEFAULT:!DH"; // TLS 1.3 compatible
+$VERIFY_PEER = 0;                   // 0 = ne vérifie pas le certificat
+$VERIFY_HOST = 0;                   // 0 = ne vérifie pas le nom d’hôte SSL
+$CIPHERS = "DEFAULT:!DH";           // TLS 1.3 compatible
 
 // 🌐 Configuration PROXY (laisser vide si non utilisé)
-$USE_PROXY = true;                                 // false = désactiver le proxy
-$PROXY_URL = "http://proxy.mon-serveur.fr:8080";
+$USE_PROXY = 0;  // 0 = désactiver le proxy
+$PROXY_URL = "";
 $PROXY_USERPWD = "";
 // 🚫 Liste des domaines à ignorer pour le proxy (optionnel)
 // si authentification requise : "user:password"
 $NO_PROXY = ["localhost", "127.0.0.1"];
-// -----------------------------------------------------
-// === AFFICHAGE CONFIGURATION ===
-echo "🔗 Connexion à SonarQube : $SONAR_URL\n";
-if ($DRY_RUN) { echo "🧪 Mode simulation activé (aucune modification ne sera envoyée).\n"; }
-if ($USE_PROXY && $PROXY_URL) { echo "🌐 Proxy actif : $PROXY_URL\n"; }
-if (!empty($NO_PROXY)) { echo "🚫 Pas de proxy pour : " . implode(", ", $NO_PROXY) . "\n"; }
 
 // -----------------------------------------------------
 // === FONCTIONS UTILITAIRES ===
 // -----------------------------------------------------
 
+$logDir = __DIR__ . '/logs';
+if (!is_dir($logDir)) { mkdir($logDir, 0775, true); }
+$logFile = sprintf('%s/update_sonar_tags_%s.log', $logDir, gmdate('Ymd_His'));
+
+/**
+ * [Description for logMessage]
+ *
+ * @param string $message
+ * @param string $level
+ *
+ * @return void
+ *
+ * Created at: 08/04/2026 14:38:51 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ */
+function logMessage(string $message, string $level = 'INFO'): void {
+    global $logFile;
+    $date = gmdate('[Y-m-d H:i:s]');
+    $level = strtoupper($level);
+
+    // Coloration console
+    $colors = [
+        'INFO' => "\033[32m",    // vert
+        'WARN' => "\033[33m",    // jaune
+        'ERROR' => "\033[31m",   // rouge
+        'DEBUG' => "\033[36m"    // cyan
+    ];
+    $reset = "\033[0m";
+
+    $prefix = isset($colors[$level]) ? "{$colors[$level]}[$level]$reset" : "[$level]";
+    $line = "$date $prefix $message\n";
+
+    echo $line;
+    file_put_contents($logFile, strip_tags($line), FILE_APPEND);
+}
 /**
  * [Description for callApi]
  *
@@ -104,7 +124,7 @@ if (!empty($NO_PROXY)) { echo "🚫 Pas de proxy pour : " . implode(", ", $NO_PR
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
 function callApi($endpoint, $params = [], $method = 'GET') {
-    global $SONAR_URL, $AUTH, $VERIFY_HOST, $VERIFY_PEER, $CIPHERS;
+    global $DEBUG, $SONAR_URL, $AUTH, $VERIFY_HOST, $VERIFY_PEER, $CIPHERS;
     global $USE_PROXY, $PROXY_URL, $PROXY_USERPWD, $NO_PROXY;
 
     $url = $SONAR_URL . $endpoint;
@@ -132,8 +152,8 @@ function callApi($endpoint, $params = [], $method = 'GET') {
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($params));
     }
 
-    // 🔧 Configuration du proxy si activée
-    if ($USE_PROXY && !empty($PROXY_URL)) {
+    // 🔧 Configuration du proxy si activée (0 = false, 1 = true)
+    if ($USE_PROXY==1 && !empty($PROXY_URL)) {
         curl_setopt($ch, CURLOPT_PROXY, $PROXY_URL);
         curl_setopt($ch, CURLOPT_HTTPPROXYTUNNEL, true);
         if (!empty($PROXY_USERPWD)) {
@@ -149,16 +169,34 @@ function callApi($endpoint, $params = [], $method = 'GET') {
     $response = curl_exec($ch);
     $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
+    if($DEBUG){
+        logMessage("Appel API : $method $url", 'DEBUG');
+        logMessage("Paramètres : " . json_encode($params), 'DEBUG');
+        logMessage("Authentification : " . (strpos($AUTH, ":") === 0 ? "Token" : "Login/Password"), 'DEBUG');
+        logMessage("SSL : " . ($VERIFY_PEER ? "Vérifié" : "Non vérifié") . ", Ciphers: $CIPHERS", 'DEBUG');
+        logMessage("Proxy : " . ($USE_PROXY ? "Activé ($PROXY_URL)" : "Désactivé"), 'DEBUG');
+
+        logMessage("URL finale : $url", 'DEBUG');
+        logMessage("Méthode : $method", 'DEBUG');
+        logMessage("Statut HTTP : $status", 'DEBUG');
+        logMessage("Corps de la réponse : ".substr($response, 0, 40), 'DEBUG');
+        logMessage("Résultat de l'appel API : " . ($status >= 200 && $status < 300 ? "Succès" : "Erreur"), 'DEBUG');
+        logMessage("Détails : " . ($status >= 200 && $status < 300 ? "Données traitées" : "Code d'erreur $status"), 'DEBUG');
+    }
+
     if (curl_errno($ch)) {
         $error_msg = curl_error($ch);
+        if($DEBUG){ logMessage("❌ Erreur cURL : $error_msg",'DEBUG'); }
         die("❌ Erreur cURL : $error_msg\n");
     }
 
     if ($status == 401) {
+        if($DEBUG){ logMessage("🔒 Erreur 401 : accès non autorisé à $url",'DEBUG'); }
         die("🔒 Erreur 401 : accès non autorisé à $url\n");
     }
 
     if ($status < 200 || $status >= 300) {
+        if($DEBUG){ logMessage("❌ Erreur API $status sur $url : $response",'DEBUG'); }
         die("❌ Erreur API $status sur $url : $response\n");
     }
 
@@ -181,9 +219,9 @@ function callApi($endpoint, $params = [], $method = 'GET') {
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
 function sanitizeTag(string $tag) {
-    $tag = strtolower($tag);                      // tout en minuscules
+    $tag = strtolower($tag);                       // tout en minuscules
     $tag = preg_replace('/[^a-z0-9]/', '-', $tag); // supprime tout sauf a-z0-9
-    return $tag ?: "aucun";                       // si vide, mettre "aucun"
+    return $tag ?: "aucun";                        // si vide, mettre "aucun"
 }
 
 /**
@@ -226,7 +264,7 @@ function setProjectTag(string $project_key, string $tag_value) {
     global $DRY_RUN;
     $tag_value = sanitizeTag($tag_value);
     if ($DRY_RUN) {
-        echo "    [DRY-RUN] Tag simulé : '$tag_value'\n";
+        logMessage("Tag simulé : '$tag_value'", 'INFO');
         return;
     }
     callApi("/api/project_tags/set", ["project" => $project_key, "tags" => $tag_value], "POST");
@@ -288,19 +326,47 @@ function isArchivedProject(string $project_key): bool {
 // -----------------------------------------------------
 // === SCRIPT PRINCIPAL ===
 // -----------------------------------------------------
+// -----------------------------------------------------
+// === AFFICHAGE CONFIGURATION ===
+logMessage("🔗 Connexion à SonarQube : $SONAR_URL", 'INFO');
+if ($DRY_RUN) { logMessage("🧪 Mode simulation activé (aucune modification ne sera envoyée).", 'INFO'); }
+if ($USE_PROXY==1 && $PROXY_URL) { logMessage("🌐 Proxy actif : $PROXY_URL", 'INFO'); }
+if (!empty($NO_PROXY)) {
+    $no_proxy = implode(", ", $NO_PROXY);
+    logMessage("🚫 Pas de proxy pour : $no_proxy", 'INFO');
+}
+
+if ($DEBUG) {
+    logMessage ("url : $SONAR_URL", 'DEBUG');
+    logMessage("auth : $AUTH", 'DEBUG');
+    $a = ($VERIFY_HOST == 1) ? 'true' : 'false';
+    logMessage("verify_host : $a", 'DEBUG');
+    $b = ($VERIFY_PEER == 1) ? 'true' : 'false';
+    logMessage("verify_peer : $b", 'DEBUG');
+    logMessage("ciphers : $CIPHERS", 'DEBUG');
+    $c = ($USE_PROXY == 1) ? 'true' : 'false';
+    logMessage("use_proxy : $c", 'DEBUG');
+    $d = (empty($PROXY_URL) ? 'None' : $PROXY_URL);
+    logMessage("proxy_url : $d", 'DEBUG');
+    $e = (empty($PROXY_USERPWD) ? 'None' : $PROXY_USERPWD);
+    logMessage("proxy_userpwd : $e ", 'DEBUG');
+    $f = (empty($PROXY_USERPWD) ? 'None' : json_encode($NO_PROXY));
+    logMessage("no_proxy : $f", 'DEBUG');
+}
+
 $archive = 0;
 $proceeded = 0;
 $warning = 0;
 $mapping = [];
 
 $projects = getAllProjects();
-echo "📦 Nombre de projets récupérés : " . count($projects) . "\n";
+logMessage("📦 Nombre de projets récupérés : " . count($projects), 'INFO');
 
 foreach ($projects as $key) {
-    echo "\n🧩 Projet : $key\n";
+    logMessage("🧩 Projet : $key", 'INFO');
 
     try {
-        echo "  - Suppression des tags...\n";
+        logMessage("🗑️ Suppression des tags...", 'INFO');
         setProjectTag($key,"aucun");
 
         // Détection "Archive" par nom
@@ -315,11 +381,11 @@ foreach ($projects as $key) {
                 $proceeded++;
             } else {
                 $group_tag = "aucun";
-                echo "    ⚠ Aucun groupe valide trouvé, tag 'aucun' conservé\n";
+                logMessage("⚠️ Aucun groupe valide trouvé, tag 'aucun' conservé", 'WARN');
                 $warning++;
             }
         }
-        echo "    → Tag assigné : $group_tag\n";
+        logMessage("Tag assigné : $group_tag", 'INFO');
         setProjectTag($key, $group_tag);
 
         $mapping[] = [
@@ -327,7 +393,7 @@ foreach ($projects as $key) {
             "groupe" => $group_tag
         ];
     } catch (Exception $e) {
-        echo "  ❌ Erreur sur $key : " . $e->getMessage() . "\n";
+        logMessage("❌ Erreur sur $key : " . $e->getMessage(), 'ERROR');
     }
 }
 
@@ -335,11 +401,11 @@ foreach ($projects as $key) {
 $file = "mapping_projets_groupes.json";
 file_put_contents($file, json_encode($mapping, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
 
-echo "\n✅ Traitement terminé.\n";
-echo "  - 📌 Projets archivés   : $archive\n";
-echo "  - 📌 Projets tagués     : $proceeded\n";
-echo "  - 📌 Projets sans tag   : $warning\n";
-echo "🗂️ Résultat sauvegardé dans : $file\n";
+logMessage("✅ Traitement terminé.", 'INFO');
+logMessage("  📌 Projets archivés   : $archive", 'INFO');
+logMessage("  📌 Projets tagués     : $proceeded", 'INFO');
+logMessage("  📌 Projets sans tag   : $warning", 'INFO');
+logMessage("🗂️ Résultat sauvegardé dans : $file", 'INFO');
 if ($DRY_RUN) {
-    echo "⚠️ Aucun changement réel n’a été effectué (mode simulation).\n";
+    logMessage("⚠️ Aucun changement réel n’a été effectué (mode simulation).", 'WARN');
 }
