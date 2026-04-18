@@ -1,0 +1,163 @@
+<div class="grid-container">
+  <section class="container-detail-titre">
+    <div class="small-4 medium-4 large-4">
+      <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="icon">
+    </div>
+    <div class="small-8 medium-8 large-8">
+      <h1 class="h2 claire-hand margin-left-1">A6:2017 Mauvaise configuration de Sécurité</h1>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Résumé</strong></h2>
+    <div class="callout open-sans font-size-11 text-justify">
+      {{ owasp.description }}
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Facteurs de Menace/Vecteurs d'Attaque</strong></h2>
+    <div class="table-scroll">
+      <table class="responsive-card-table unstriped">
+        <thead>
+          <tr>
+            <th>Facteurs | Vecteurs</th>
+            <th>Vulnérabilité</th>
+            <th>Impacts</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="text-center">
+            <td data-label="Facteurs | Vecteurs">Exploitation 3</td>
+            <td data-label="Vulnérabilité">Détection 3</td>
+            <td data-label="Impacts">Métier</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout alert-callout-border">
+      <p class="open-sans font-size-11">
+        <span class="lead">Facteurs de Menace/Vecteurs d'Attaque</span>
+      </p>
+      <p class="open-sans font-size-11 text-justify">Les attaquants tentent fréquemment d'exploiter des vulnérabilités non corrigées ou d'accéder aux comptes par défaut, aux pages inutilisées, aux fichiers et répertoires non protégés, etc... afin d'obtenir des accès non autorisés et une meilleure connaissance du système visé.</p>
+    </div>
+
+    <div class="callout alert-callout-border">
+      <p class="open-sans font-size-11">
+        <span class="lead">Vulnérabilité</span>
+      </p>
+      <p class="open-sans font-size-11 text-justify">Une mauvaise configuration de sécurité peut survenir sur l'ensemble des couches protocolaires, dont les services de réseau, la plateforme, le serveur Web, le serveur d'application, la base de données, les frameworks, les codes spécifiques, et les machines virtuelles pré-installées, les conteneurs, et le stockage. Les scanners automatisés sont utiles pour détecter les erreurs de configurations, l'utilisation de comptes ou de configurations par défaut, les services inutiles, les options héritées de configurations précédentes, etc.</p>
+    </div>
+
+    <div class="callout alert-callout-border">
+      <p class="open-sans font-size-11">
+        <span class="lead">Impacts</span>
+      </p>
+      <p class="open-sans text-justify">Techniquement parlant, De tels défauts ou vulnérabilités fournissent souvent aux attaquants un accès non autorisé à certaines données du système, ou à des fonctionnalités. Il arrive parfois que de tels vulnérabilités ou défauts entraînent une compromission complète du système. L'impact métier dépend des exigences de protection sécurité portées par l'application et les données.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>L'application est-elle vulnérable&nbsp;?</strong></h2>
+    <p class="open-sans font-size-11 text-justify">L'application peut être vulnérable si&nbsp;:</p>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>elle n'a pas fait l'objet d'un durcissement sécurité approprié sur l'ensemble des couches protocolaires applicatives, ou si les permissions sont mal configurées sur les services cloud.</li>
+      <li>des fonctionnalités inutiles sont activées ou installées (ex : des ports, des services, des pages, des comptes ou des privilèges inutiles).</li>
+      <li>les comptes par défaut et leurs mots de passe sont toujours activés et inchangés.</li>
+      <li>le traitement des erreurs révèle aux utilisateurs des traces des piles protocolaires ou d'autres messages d'erreur laissant transpirer trop d'informations.</li>
+      <li>pour les systèmes à jour ou mis à niveau, les dernières fonctionnalités de sécurité sont désactivées ou ne sont pas configurées de manière sécurisées.</li>
+      <li>les paramètres de sécurité dans les serveurs d'application, les frameworks applicatifs (ex : Struts, Spring, ASP.NET), les bibliothèques, les bases de données, etc. ne sont pas paramétrés avec des valeurs correctes du point de vue de la sécurité.</li>
+      <li>le serveur n'envoie pas d'en-têtes ou de directives de sécurité, ou s'ils ne sont pas paramétrés avec des valeurs correctes du point de vue de la sécurité.</li>
+      <li>La version du logiciel est obsolète ou vulnérable (voir [A9:2017 Utilisation de Composants avec des Vulnérabilités Connues]).
+    </ul>
+
+    <p class="open-sans font-size-11 text-justify">Sans un processus concerté et répétable de configuration de la sécurité des applications, les systèmes courent un risque plus élevé.</p>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Comment s'en prémunir&nbsp;?</strong></h2>
+    <p class="open-sans font-size-11 text-justify">Des processus d'installation sécurisés doivent être mis en œuvre, avec notamment&nbsp;:</p>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>Un processus de durcissement répétable qui permette de déployer rapidement et facilement un autre environnement correctement sécurisé avec une configuration verrouillée. Les environnements de développement, d'assurance qualité et de production doivent tous être configurés de manière identique, avec des droits différents pour chaque environnement. Ce processus devrait être automatisé afin de réduire au minimum les efforts requis pour mettre en place un nouvel environnement sécurisé.</li>
+      <li>Une plate-forme minimale sans fonctionnalité, composant, documentation et échantillon inutile. Supprimer ou ne pas installer des fonctionnalités et frameworks inutilisés.</li>
+      <li>Une tâche pour revoir et mettre à jour les configurations appropriées à tous les avis de sécurité, toutes les mises à jour et tous les correctifs dans le cadre du processus de gestion des correctifs (voir [A9:2017 Utilisation de Composants avec des Vulnérabilités Connues]). En particulier, examiner les permissions de stockage dans le Cloud (ex. les permissions des buckets AWS S3).</li>
+      <li>Une architecture d'application segmentée qui fournit une séparation efficace et sécurisée entre les composants ou les environnement hébergés, avec de la segmentation, de la mise en conteneurs ou l'utilisation de groupes de sécurité dans le Cloud (ACL).</li>
+      <li>L'envoi de directives de sécurité aux clients, par exemple <a href="https://www.owasp.org/index.php/OWASP_Secure_Headers_Project" target="_blank" rel="noopener noreferrer" aria-label="En-têtes de sécurité"><span class="source-link">En-têtes de sécurité</span></a>.</li>
+      <li>Un processus automatisé pour vérifier l'efficacité des configurations et des réglages dans tous les environnements.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Exemple de scénarios d'attaques</strong></h2>
+    <p class="open-sans font-size-11 text-justify"><strong>Scénario 1</strong>&nbsp;: Le serveur d'application est livré avec des applications classiques qui ne sont pas supprimées du serveur mis en production. Ces mêmes applications ont des failles de sécurité connues que les attaquants utilisent afin de compromettre le serveur. Si l'une de ces applications est la console d'administration, et que les comptes par défaut n'ont pas été modifiés, l'attaquant se connecte avec les mots de passe par défaut et prend la main sur la cible.</p>
+    <p class="open-sans font-size-11 text-justify"><strong>Scénario 2</strong>&nbsp;: La fonctionnalité de listage des répertoires n'est pas désactivée sur le serveur. Un attaquant découvre qu'il peut simplement lister les répertoires. L'attaquant trouve et télécharge les classes Java compilées, qu'il décompose et fait de l’ingénierie inversée pour visualiser le code. L'attaquant trouve alors un grave défaut dans le contrôle d'accès de l'application.</p>
+    <p class="open-sans font-size-11 text-justify"><strong>Scénario 3</strong>&nbsp;: La configuration du serveur d'application permet de renvoyer aux utilisateurs des messages d'erreur détaillés, par exemple avec des traces des couches protocolaires applicatives. Cela peut ainsi exposer des informations sensibles ou des vulnérabilités sous-jacentes telles que les versions de composants dont on sait qu'elles sont vulnérables.</p>
+    <p class="open-sans font-size-11 text-justify"><strong>Scénario 1</strong>&nbsp;: Un fournisseur de services Cloud (CSP) a positionné des droits de partage par défaut qui sont ouverts sur  Internet par d'autres utilisateurs du CSP. Cela permet d'accéder à des données sensibles stockées dans le stockage Cloud.</p>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Références</strong></h2>
+    <h3 class="h5 claire-hand">OWASP</h3>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>
+        <a href="https://www.owasp.org/index.php/Testing_for_configuration_management" target="_blank" rel="noopener noreferrer" aria-label="OWASP Testing Guide: Configuration Management">
+          <span class="source-link">OWASP Testing Guide: Configuration Management</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://www.owasp.org/index.php/Testing_for_Error_Code_(OWASP-IG-006)" target="_blank" rel="noopener noreferrer" aria-label="OWASP Testing Guide: Testing for Error Codes">
+          <span class="source-link">OWASP Testing Guide: Testing for Error Codes</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://www.owasp.org/index.php/OWASP_Secure_Headers_Project" target="_blank" rel="noopener noreferrer" aria-label="OWASP Security Headers Project">
+          <span class="source-link">OWASP Security Headers Project</span>
+        </a>
+      </li>
+    </ul>
+
+    <p class="open-sans font-size-11 text-justify">Pour des exigences supplémentaires dans ce domaine, voir la Norme de vérification de la sécurité des applications : Application Security Verification Standard<a href="https://www.owasp.org/index.php/ASVS_V19_Configuration" target="_blank" rel="noopener noreferrer" aria-label="V19 Configuration"><span class="source-link">V19 Configuration</span></a></p>
+
+    <h3 class="h5 c-ha>nd">Externes</h3>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>
+        <a href="https://csrc.nist.gov/publications/detail/sp/800-123/final" target="_blank" rel="noopener noreferrer" aria-label="NIST Guide to General Server Hardening">
+          <span class="source-link">NIST Guide to General Server Hardening</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/2.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-2: Environmental Security Flaws">
+          <span class="source-link">CWE-2: Environmental Security Flaws</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/16.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-16: Configuration">
+          <span class="source-link">CWE-16: Configuration</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/388.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-388: Error Handling"><span class="source-link">CWE-388: Error Handling</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://www.cisecurity.org/cis-benchmarks/" target="_blank" rel="noopener noreferrer" aria-label="CIS Security Configuration Guides/Benchmarks"><span class="source-link">CIS Security Configuration Guides/Benchmarks</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://blog.websecurify.com/2017/10/aws-s3-bucket-discovery.html" target="_blank" rel="noopener noreferrer" aria-label="Amazon S3 Bucket Discovery and Enumeration"><span class="source-link">Amazon S3 Bucket Discovery and Enumeration</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+</div>
+
+<div class="grid-container">
+  <div class="callout primary alert-callout-border">
+    <p class="open-sans text-justify">
+      Copyright © 2003-2021 La Fondation OWASP™.<br>
+      Ce document est publié sous la licence Creative Commons Attribution Share-Alike 4.0 (CC 4.0 BY-SA).
+    </p>
+  </div>
+</div>
+<br><br>

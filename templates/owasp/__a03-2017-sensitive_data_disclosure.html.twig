@@ -1,0 +1,220 @@
+<div class="grid-container">
+  <section class="container-detail-titre">
+    <div class="small-4 medium-4 large-4">
+      <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="icon">
+    </div>
+    <div class="small-8 medium-8 large-8">
+      <h1 class="h2 claire-hand margin-left-1">A3:2017 Exposition de données sensibles</h1>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Résumé</strong></h2>
+    <div class="callout open-sans font-size-11 text-justify">
+      {{ owasp.description }}
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Facteurs de Menace/Vecteurs d'Attaque</strong></h2>
+    <div class="table-scroll">
+      <table class="responsive-card-table unstriped">
+        <thead>
+          <tr>
+            <th>Facteurs | Vecteurs</th>
+            <th>Vulnérabilité</th>
+            <th>Impacts</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="text-center">
+            <td data-label="Facteurs | Vecteurs">Exploitation 2</td>
+            <td data-label="Vulnérabilité">Détection 2</td>
+            <td data-label="Impacts">Métier</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout alert-callout-border">
+      <p class="open-sans font-size-11">
+        <span class="lead">Facteurs de Menace/Vecteurs d'Attaque</span>
+      </p>
+      <p class="open-sans font-size-11 text-justify">La cryptanalyse (cassage de l’algorithme ou de la clé) reste rare. On préfère obtenir les clefs, effectuer des attaques du type man-in-the-middle, accéder aux données en clair sur le serveur, en transit, ou depuis le client de l'utilisateur, par exemple le navigateur. Une attaque manuelle est requise dans la majorité des cas. Des bases de données de mots de passe précédemment récupérées peuvent être brute forcées par des processeurs graphiques (GPU).</p>
+    </div>
+
+    <div class="callout alert-callout-border">
+      <p class="open-sans font-size-11">
+        <span class="lead">Vulnérabilité</span>
+      </p>
+      <p class="open-sans font-size-11 text-justify">Au cours des dernières années, cela a été l'attaque impactante la plus courante. La principale erreur est de ne pas chiffrer les données sensibles. Les autres erreurs fréquentes sont&nbsp;: génération de clés faibles, choix et configuration incorrects des algorithmes et protection insuffisante des mots de passe. En ce qui concerne les données en transit, les faiblesses côté serveur sont pour la plupart faciles à détecter. C'est plus difficile pour les données déjà stockées.</p>
+    </div>
+
+    <div class="callout alert-callout-border">
+      <p class="open-sans font-size-11">
+        <span class="lead">Impacts</span>
+      </p>
+      <p class="open-sans font-size-11 text-justify">L’exploitation peut résulter en la compromission ou la perte de données personnelles, médicales, financières, d’éléments de cartes de crédit ou d’authentification. Ces données nécessitent souvent une protection telle que définie par le Règlement Général sur la Protection des Données ou les lois locales sur la vie privée.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Suis-je vulnérable&nbsp;?</strong></h2>
+    <p class="open-sans font-size-11 text-justify">Déterminer d’abord quelles données doivent bénéficier d’une protection chiffrée (mots de passe, données patient, numéros de cartes, données personnelles, etc.), lors de leur transfert et/ou leur stockage.</p>
+    <p class="open-sans font-size-11 text-justify">Pour chacune de ces données&nbsp;:</p>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>Les données circulent-elles en clair&nbsp;? Ceci concerne les protocoles tels que HTTP, SMTP, et FTP. Le trafic externe sur internet est particulièrement dangereux. Vérifiez tout le réseau interne, par exemple entre les équilibreurs de charge, les serveurs Web, ou les systèmes backend.</li>
+      <li>Des algorithmes faibles ou désuets sont-ils utilisés, soit par défaut, soit dans le code source existant&nbsp;?</li>
+      <li>Est-ce que des clefs de chiffrement par défaut sont utilisées&nbsp;? Des clefs de chiffrement faibles sont-elles générées ou réutilisées&nbsp;? Leur gestion et rotation sont-elles prises en charge&nbsp;?</li>
+      <li>Les réponses transmises au navigateur incluent-elles les directives/en-têtes de sécurité adéquats&nbsp;?
+      <li>Est-ce que l'agent utilisateur (l'application ou le client mail, par exemple) vérifie que le certificat envoyé par le serveur est valide&nbsp;?</li>
+    </ul>
+
+    <p class="open-sans font-size-11 text-justify">Pour une liste complète de contrôles, se référer à l’ASVS&nbsp;:</p>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <a href="https://www.owasp.org/index.php/ASVS_V7_Cryptography" target="_blank" rel="noopener noreferrer" aria-label="ASVS V7 Cryptography"><span class="source-link">Crypto (V7)</span>
+      </a>,
+      <a href="https://www.owasp.org/index.php/ASVS_V9_Data_Protection" target="_blank" rel="noopener noreferrer" aria-label="ASVS V9 Data Protection"><span class="source-link">Data Protection (V9)</span>
+      </a> et
+      <a href="https://www.owasp.org/index.php/ASVS_V10_Communications" target="_blank" rel="noopener noreferrer" aria-label="ASVS V10 SSL/TLS Communications"><span class="source-link">SSL/TLS (V10)</span>
+      </a>.
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Comment s'en prémunir&nbsp;?</strong></h2>
+    <p class="open-sans font-size-11 text-justify">On veillera au minimum à suivre les recommandations suivantes, mais il reste nécessaire de consulter les références.</p>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>Classifier les données traitées, stockées ou transmises par l'application. Identifier quelles données sont sensibles selon les lois concernant la protection de la vie privée, les exigences réglementaires, ou les besoins métier.</li>
+      <li>Appliquer des contrôles selon la classification.</li>
+      <li>Ne pas stocker de données sensibles sans que cela ne soit nécessaire. Les rejeter ou utiliser une tokenisation conforme à la norme de sécurité de l’industrie des cartes de paiement (PCI DSS) ou même une troncature. Les données que l’on ne possède pas ne peuvent être volées&nbsp;!</li>
+      <li>S'assurer de chiffrer toutes les données sensibles au repos.</li>
+      <li>Choisir des algorithmes éprouvés et générer des clés robustes. S'assurer qu'une gestion des clés est en place.</li>
+      <li>Chiffrer toutes les données transmises avec des protocoles sécurisés tels que TLS avec des chiffres à confidentialité persistante (perfect forward secrecy - PFS). Chiffrer en priorité sur le serveur. Utiliser des paramètres sécurisés. Forcer le chiffrement en utilisant des directives comme HTTP Strict Transport Security (HSTS).</li>
+      <li>Désactiver le cache pour les réponses contenant des données sensibles.</li>
+      <li>Stocker les mots de passe au moyen de puissantes fonctions de hachage adaptatives, avec sel et facteur de travail (ou facteur de retard), comme <a href="https://www.cryptolux.org/index.php/Argon2" target="_blank" rel="noopener noreferrer">
+    <span class="source-link">Argon2</span></a>, <a href="https://wikipedia.org/wiki/Scrypt" target="_blank" rel="noopener noreferrer">
+    <span class="source-link">scrypt</span></a>, <a href="https://wikipedia.org/wiki/Bcrypt" target="_blank" rel="noopener noreferrer">
+    <span class="source-link">bcrypt</span></a> ou <a href="https://wikipedia.org/wiki/PBKDF2" target="_blank" rel="noopener noreferrer">
+    <span class="source-link">PBKDF2</span></a>.</li>
+      <li>Vérifier indépendamment l'efficacité de la configuration et des paramètres.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Exemple de scénarios d'attaques</strong></h2>
+    <p class="open-sans font-size-11 text-justify"><strong>Scénario 1</strong>&nbsp;: Une application chiffre des numéros de cartes de crédit dans une base de données utilisant un chiffrement en base automatique. Cependant, ces données sont automatiquement déchiffrées lorsqu'elles sont récupérées, permettant, à une injection SQL de récupérer des numéros de carte de crédit en clair.</p>
+
+    <p class="open-sans font-size-11 text-justify"><strong>Scénario 2</strong>&nbsp;: Un site n'utilise pas ou ne force pas l'utilisation de TLS sur toutes les pages, ou supporte des protocoles de chiffrement faibles. Un attaquant surveille le trafic réseau (par exemple sur un réseau sans fil non sécurisé), dégrade les connexions de HTTPS à HTTP, intercepte les requêtes, et vole le cookie de session d'un utilisateur. L'attaquant réutilise alors ce cookie et détourne la session de l'utilisateur (authentifié), pouvant ainsi accéder aux données privées de l'utilisateur ou les modifier. Un attaquant pourrait également modifier toutes les données en transit, par exemple le destinataire d'un virement d'argent.</p>
+
+    <p class="open-sans font-size-11 text-justify"><strong>Scénario 3</strong>&nbsp;: La base de données contenant les mots de passe n'utilise pas de sel, ou alors de simples hash pour stocker les mots de passe de chacun. Une faille d'upload de fichier permet à un attaquant de récupérer la base de données de mots de passe. Tous les hash non salés peuvent alors être révélés avec une rainbow table de hash pré-calculés. Des hash générés par des fonctions de hachage simples ou rapides peuvent être décryptés par des GPUs, même salés.</p>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Références</strong></h2>
+
+    <h3 class="h5 claire-hand">OWASP</h3>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>
+        <a href="https://www.owasp.org/index.php/OWASP_Proactive_Controls#7:_Protect_Data" target="_blank" rel="noopener noreferrer" aria-label="OWASP Proactive Controls: Protect Data">
+          <span class="source-link">OWASP Proactive Controls: Protect Data</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://www.owasp.org/index.php/Category:OWASP_Application_Security_Verification_Standard_Project" target="_blank" rel="noopener noreferrer" aria-label="OWASP Application Security Verification Standard">
+          <span class="source-link">OWASP Application Security Verification Standard</span>
+        </a>: 
+        <a href="https://www.owasp.org/index.php/ASVS_V7_Cryptography" target="_blank" rel="noopener noreferrer" aria-label="ASVS V7 Cryptography">
+          <span class="source-link">V7</span>
+        </a>, 
+        <a href="https://www.owasp.org/index.php/ASVS_V9_Data_Protection" target="_blank" rel="noopener noreferrer" aria-label="ASVS V9 Data Protection">
+          <span class="source-link">V9</span>
+        </a>, 
+        <a href="https://www.owasp.org/index.php/ASVS_V10_Communications" target="_blank" rel="noopener noreferrer" aria-label="ASVS V10 Communications">
+          <span class="source-link">V10</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://www.owasp.org/index.php/Transport_Layer_Protection_Cheat_Sheet" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Transport Layer Protection">
+          <span class="source-link">OWASP Cheat Sheet: Transport Layer Protection</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://www.owasp.org/index.php/User_Privacy_Protection_Cheat_Sheet" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: User Privacy Protection">
+          <span class="source-link">OWASP Cheat Sheet: User Privacy Protection</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://www.owasp.org/index.php/Password_Storage_Cheat_Sheet" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Password Storage">
+          <span class="source-link">OWASP Cheat Sheet: Password</span>
+        </a> and 
+        <a href="https://www.owasp.org/index.php/Cryptographic_Storage_Cheat_Sheet" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Cryptographic Storage">
+          <span class="source-link">Cryptographic Storage</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://www.owasp.org/index.php/OWASP_Secure_Headers_Project" target="_blank" rel="noopener noreferrer" aria-label="OWASP Secure Headers Project">
+          <span class="source-link">OWASP Security Headers Project</span>
+        </a>; 
+        <a href="https://www.owasp.org/index.php/HTTP_Strict_Transport_Security_Cheat_Sheet" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: HSTS">
+          <span class="source-link">Cheat Sheet: HSTS</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://www.owasp.org/index.php/Testing_for_weak_Cryptography" target="_blank" rel="noopener noreferrer" aria-label="OWASP Testing Guide: Testing for weak cryptography">
+          <span class="source-link">OWASP Testing Guide: Testing for weak cryptography</span>
+        </a>
+      </li>
+    </ul>
+
+    <h3 class="h5 claire-hand">Externes</h3>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/220.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-220: Exposure of Sensitive Information Through Data Queries">
+          <span class="source-link">CWE-220: Exposure of Sensitive Information Through Data Queries</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/310.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-310: Cryptographic Issues">
+          <span class="source-link">CWE-310: Cryptographic Issues</span>
+        </a>; 
+        <a href="https://cwe.mitre.org/data/definitions/311.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-311: Missing Encryption">
+          <span class="source-link">CWE-311: Missing Encryption</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/312.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-312: Cleartext Storage of Sensitive Information">
+          <span class="source-link">CWE-312: Cleartext Storage of Sensitive Information</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/319.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-319: Cleartext Transmission of Sensitive Information">
+          <span class="source-link">CWE-319: Cleartext Transmission of Sensitive Information</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/326.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-326: Weak Encryption">
+          <span class="source-link">CWE-326: Weak Encryption</span>
+        </a>; 
+        <a href="https://cwe.mitre.org/data/definitions/327.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-327: Broken/Risky Cryptography">
+          <span class="source-link">CWE-327: Broken/Risky Cryptography</span>
+        </a>
+      </li>
+      <li>
+        <a href="https://cwe.mitre.org/data/definitions/359.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-359: Exposure of Private Information - Privacy Violation">
+          <span class="source-link">CWE-359: Exposure of Private Information - Privacy Violation</span>
+        </a>
+      </li>
+    </ul>
+  </section>
+</div>
+
+<div class="grid-container">
+  <div class="callout primary alert-callout-border">
+    <p class="open-sans text-justify">
+      Copyright © 2003-2021 La Fondation OWASP™.<br>
+      Ce document est publié sous la licence Creative Commons Attribution Share-Alike 4.0 (CC 4.0 BY-SA).
+    </p>
+  </div>
+</div>
+<br><br>

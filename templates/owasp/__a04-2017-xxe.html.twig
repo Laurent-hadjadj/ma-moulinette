@@ -1,0 +1,146 @@
+<div class="grid-container">
+  <section class="container-detail-titre">
+    <div class="small-4 medium-4 large-4">
+      <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="icon">
+    </div>
+    <div class="small-8 medium-8 large-8">
+      <h1 class="h2 claire-hand margin-left-1">A4:2017 XML Entités externes (XXE)</h1>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Résumé</strong></h2>
+    <div class="callout open-sans font-size-11 text-justify">
+      {{ owasp.description }}
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Facteurs de Menace/Vecteurs d'Attaque</strong></h2>
+    <div class="table-scroll">
+      <table class="responsive-card-table unstriped">
+        <thead>
+          <tr>
+            <th>Facteurs | Vecteurs</th>
+            <th>Vulnérabilité</th>
+            <th>Impacts</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="text-center">
+            <td data-label="Facteurs | Vecteurs">Exploitation 2</td>
+            <td data-label="Vulnérabilité">Détection 2</td>
+            <td data-label="Impacts">Métier</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout alert-callout-border">
+      <p class="open-sans font-size-11">
+        <span class="lead">Facteurs de Menace/Vecteurs d'Attaque</span>
+      </p>
+      <p class="open-sans font-size-11 text-justify">Des attaquants peuvent exploiter des processeurs XML vulnérables s'ils peuvent télécharger du XML ou inclure du contenu hostile dans un document XML, en exploitant du code vulnérable, des dépendances ou des intégrations.</p>
+    </div>
+
+    <div class="callout alert-callout-border">
+      <p class="open-sans font-size-11">
+        <span class="lead">Vulnérabilité</span>
+      </p>
+      <p class="open-sans font-size-11 text-justify">Par défaut, de nombreux anciens processeurs XML permettent de spécifier une entité externe : une URI déréférencée et évaluée lors du traitement XML. Les outils <a href="https://www.owasp.org/index.php/Source_Code_Analysis_Tools" target="_blank" rel="noopener noreferrer"><span class="source-link">SAST (Static Application Security Testing)</span></a> peuvent découvrir ces problèmes en inspectant les dépendances et la configuration. Les outils <a href="https://www.owasp.org/index.php/Category:Vulnerability_Scanning_Tools" target="_blank" rel="noopener noreferrer">
+      <span class="source-link">DAST (Dynamic Application Security Testing)</span></a> nécessitent des étapes manuelles supplémentaires pour détecter et exploiter ces problèmes. Des testeurs doivent être formés à la façon manuelle de tester les XXE, car elles n'étaient pas couramment testées en 2017.</p>
+    </div>
+
+    <div class="callout alert-callout-border">
+      <p class="open-sans font-size-11">
+        <span class="lead">Impacts</span>
+      </p>
+      <p class="open-sans font-size-11 text-justify">Ces failles peuvent être utilisées pour extraire des données, exécuter une requête à distance sur un serveur, découvrir des systèmes internes, lancer des attaques par déni de service ou même exécuter d'autres attaques.</p>
+    </div>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>L'application est-elle vulnérable&nbsp;?</strong></h2>
+    <p class="open-sans font-size-11 text-justify">Des applications et en particulier les services Web basés sur XML ou les intégrations en aval peuvent être vulnérables aux attaques si&nbsp;:</p>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>L'application accepte directement du XML ou les uploads XML, en particulier ceux provenant de sources non fiables, ou injecte des données non fiables dans des documents XML, qui sont ensuite analysés par un processeur XML.</li>
+      <li>N'importe quels moteur XML d'une application ou des services Web basés sur SOAP à un <a href="https://fr.wikipedia.org/wiki/Document_type_definition" target="_blank" rel="noopener noreferrer"><span class="source-link">Document Type Definitions (DTDs)</span></a> activé. Comme le mécanisme exact de désactivation du traitement de DTD varie selon le moteur, il est recommandé de consulter une référence telle que la <a href="https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Prevention_Cheat_Sheet" target="_blank" rel="noopener noreferrer">OWASP Cheat Sheet 'XXE Prevention'</a>.</li>
+      <li>Si l'application utilise SAML pour le traitement de l'identité à des fins de sécurité fédérée ou d'authentification unique. SAML utilise XML pour les assertions d'identité et peut être vulnérable.</li>
+      <li>Si l'application utilise SOAP avant la version 1.2, il est probable que des attaques XXE se produisent si des entités XML sont transmises à la structure SOAP.</li>
+      <li>Être vulnérable aux attaques XXE signifie probablement que l'application est vulnérable aux attaques par déni de service, y compris l'attaque Billion Laughs.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Comment s'en prémunir&nbsp;?</strong></h2>
+    <p class="open-sans font-size-11 text-justify">La formation des développeurs est essentielle pour identifier et atténuer les XXE. De plus, prévenir des XXE nécessite&nbsp;:</p>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li>Autant que possible, utiliser des formats de données moins complexes tels que JSON et éviter la sérialisation des données sensibles.
+      <li>Corriger ou mettre à niveau tous les moteurs et bibliothèques XML utilisés par l'application ou sur le système d'exploitation sous-jacent. Utiliser des vérificateurs de dépendance. Mettre à jour SOAP vers SOAP 1.2 ou supérieur.
+      <li>Désactiver le traitement des entités externes XML et des DTD dans tous les moteur XML de l’application, <a href="https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Prevention_Cheat_Sheet" target="_blank" rel="noopener noreferrer">OWASP Cheat Sheet 'XXE Prevention'</a>.</li>
+      <li>Implémenter une validation, un filtrage ou une désinfection des entrées côté serveur positives ("liste blanche") pour empêcher les données hostiles dans les documents XML, les en-têtes ou les nœuds.</li>
+      <li>Vérifier que la fonctionnalité de téléchargement de fichier XML ou XSL valide le XML entrant à l'aide de la validation XSD ou similaire.</li>
+      <li>Les outils SAST peuvent aider à détecter XXE dans le code source, bien que la relecture manuelle du code soit la meilleure alternative dans les applications volumineuses et complexes comportant de nombreuses intégrations.</li>
+    </ul>
+    <p class="open-sans font-size-11 text-justify">Si ces contrôles sont impossibles, envisagez d'utiliser des correctifs virtuels, des passerelles de sécurité d'API ou des pare-feu d'applications Web (WAF) pour détecter, surveiller et bloquer les attaques XXE.</p>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Exemple de scénarios d'attaques</strong></h2>
+    <p class="open-sans font-size-11 text-justify">De nombreux problèmes XXE ont été rendu public, notamment des attaques sur des périphériques intégrés. XXE se produit dans de nombreux endroits inattendus, y compris des dépendances profondément imbriquées. Le moyen le plus simple est d'uploader un fichier XML illicite, s’il est accepté&nbsp;:</p>
+    <p class="open-sans font-size-11 text-justify"><strong>Scénario 1</strong>&nbsp;: L'attaquant tente   d'extraire des données du serveur.</p>
+    <pre>
+      <code class="code-block source-code">
+&lt;?xml version="1.0" encoding="ISO-8859-1"?&gt;
+  &lt;!DOCTYPE foo [&lt;
+    !ELEMENT foo ANY &gt;
+    !ENTITY xxe SYSTEM "file:///etc/passwd" &gt;]&gt;
+  &lt;foo&gt;&amp;xxe;&lt;/foo&gt;
+      </code>
+    </pre>
+
+    <p class="open-sans font-size-11 text-justify"><strong>Scénario 2</strong>&nbsp;: Un attaquant scan le réseau privé du serveur en modifiant la ligne ENTITY ci-dessous en&nbsp;:</p>
+    <pre>
+      <code class="code-block source-code">
+&lt;!ENTITY xxe SYSTEM "https://192.168.1.1/private" &gt;]&gt;
+      </code>
+    </pre>
+
+    <p class="open-sans font-size-11 text-justify"><strong>Scénario 3</strong>&nbsp;: Un attaquant tente une attaque par déni de service en incluant un fichier potentiellement sans fin&nbsp;:</p>
+    <pre>
+      <code class="code-block source-code">
+&lt;!!ENTITY xxe SYSTEM "file:///dev/random" &gt;]&gt;
+      </code>
+    </pre>
+  </section>
+
+  <section>
+    <h2 class="h4 claire-hand"><strong>Références</strong></h2>
+    <h3 class="h5 claire-hand">OWASP</h3>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li><span class="source-link"><a href="https://www.owasp.org/index.php/Category:OWASP_Application_Security_Verification_Standard_Project#tab=Home" target="_blank" rel="noopener noreferrer" aria-label="OWASP Application Security Verification Standard">OWASP Application Security Verification Standard</a></span></li>
+      <li><span class="source-link"><a href="https://www.owasp.org/index.php/Testing_for_XML_Injection_(OTG-INPVAL-008)" target="_blank" rel="noopener noreferrer" aria-label="OWASP Testing Guide: Testing for XML Injection">OWASP Testing Guide: Testing for XML Injection</a></span></li>
+      <li><span class="source-link"><a href="https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Processing" target="_blank" rel="noopener noreferrer" aria-label="OWASP XXE Vulnerability">OWASP XXE Vulnerability</a></span></li>
+      <li><span class="source-link"><a href="https://www.owasp.org/index.php/XML_External_Entity_(XXE)_Prevention_Cheat_Sheet" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: XXE Prevention">OWASP Cheat Sheet: XXE Prevention</a></span></li>
+      <li><span class="source-link"><a href="https://www.owasp.org/index.php/XML_Security_Cheat_Sheet" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: XML Security">OWASP Cheat Sheet: XML Security</a></span></li>
+    </ul>
+
+    <h3 class="h5 claire-hand">Externes</h3>
+    <ul class="open-sans font-size-11 margin-left-2">
+      <li><span class="source-link"><a href="https://cwe.mitre.org/data/definitions/611.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-611: Improper Restriction of XXE">CWE-611: Improper Restriction of XXE</a></span></li>
+      <li><span class="source-link"><a href="https://en.wikipedia.org/wiki/Billion_laughs_attack" target="_blank" rel="noopener noreferrer" aria-label="Billion Laughs Attack">Billion Laughs Attack</a></span></li>
+      <li><span class="source-link"><a href="https://secretsofappsecurity.blogspot.tw/2017/01/saml-security-xml-external-entity-attack.html" target="_blank" rel="noopener noreferrer" aria-label="SAML Security XML External Entity Attack">SAML Security XML External Entity Attack</a></span></li>
+      <li><span class="source-link"><a href="https://web-in-security.blogspot.tw/2014/11/detecting-and-exploiting-xxe-in-saml.html" target="_blank" rel="noopener noreferrer" aria-label="Detecting and exploiting XXE in SAML Interfaces">Detecting and exploiting XXE in SAML Interfaces</a></span></li>
+    </ul>
+  </section>
+</div>
+
+<div class="grid-container">
+  <div class="callout primary alert-callout-border">
+    <p class="open-sans text-justify">
+      Copyright © 2003-2021 La Fondation OWASP™.<br>
+      Ce document est publié sous la licence Creative Commons Attribution Share-Alike 4.0 (CC 4.0 BY-SA).
+    </p>
+  </div>
+</div>
+<br><br>
