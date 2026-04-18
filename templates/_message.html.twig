@@ -6,7 +6,7 @@
             data-closable>
         <p class="open-sans text-justify callout-message">{{ message.message }}</p>
         {% if app.environment == 'dev' and message.debug is defined %}
-        <p class"open-sans">{{message.debug}}</p>
+        <p class="open-sans">{{message.debug}}</p>
         {% endif %}
 
         <button class="close-button {{message.type}}"
