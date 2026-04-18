@@ -54,6 +54,7 @@ class ClientService
         private ParameterBagInterface $params,
         private LoggerInterface $logger,
     ) {
+        $this->client = $client;
         $this->params = $params;
     }
 
@@ -142,11 +143,24 @@ class ClientService
 
         // Décoder le JSON en tableau associatif
         $data = json_decode($body, true);
+
         // Vérifier si 'detail' existe dans les données
         if (isset($data['detail']) && is_array($data['detail'])) {
             $firstTenLines = substr($body, 0, 1000);
-        } else {
-            $this->logger->error("[handleClientException] ❌ Aucune donnée dans le bloc 'detail'.");
+            $this->logger->error("[handleClientException] ❌ Une erreur non spécifiée est survenue. ", [
+                'code' => $errorCode,
+                'body' => $firstTenLines
+                ]);
+        }
+
+        // On  vérifie si la réponse contient un message d'erreur spécifique pour le code d'erreur, sinon on utilise un message générique.
+        if (isset($data['errors']) && is_string($data['errors'][0]['msg']) && !empty(trim($data['errors'][0]['msg']))) {
+            $errorMessage = $data['errors'][0]['msg'];
+            $this->logger->error("[handleClientException] ❌ Une erreur de l'API SonarQube a été retournée. ", [
+            'code' => $errorCode,
+            'body' => $errorMessage
+        ]);
+            return ['code' => $errorCode, 'erreur' => $errorMessage];
         }
 
         $errorMessage = match ($errorCode) {
@@ -340,7 +354,7 @@ class ClientService
                 'code' => $statusCode,
                 'message' => $message,
                 'json' =>  $json,
-                'erreur' => "ℹ️ Pas d'exception catché par le handler. Tout va bien ! (Erreur sympathique)."
+                'erreur' => "L'exception n'a pas été catché correctement par le handler (Erreur sympathique)."
             ];
         } catch (TimeoutException $e) {
             return $this->handleTimeoutException($e);
