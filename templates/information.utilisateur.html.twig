@@ -1,30 +1,46 @@
-{# Menu Information utilisateur #}
-{% if is_granted('ROLE_UTILISATEUR') %}
+  {# Menu Information utilisateur #}
+  {% if is_granted('ROLE_UTILISATEUR') %}
 <dialog id="modal-information-utilisateur"
         class="reveal small" data-reveal
-        data-close-on-click="true"
-        data-animation-in="fade-in" data-animation-out="fade-out"
-        aria-modal="true"
+        data-close-on-click="false"
+        data-animation-out="fade-out"
         aria-labelledby="titre-modal-information-utilisateur"
         aria-describedby="desc-modal-information-utilisateur">
 
-  <header class="grid-x align-justify align-middle margin-bottom-1">
-    <p class="show-for-sr">Appuyez sur la touche Échap pour fermer cette fenêtre.</p>
-    <div class="cell auto">
-      <h1 id="titre-modal-information-utilisateur" class="h3 claire-hand">
-        <span aria-hidden="true">ℹ️</span> Informations</h1>
-      <p id="desc-modal-information-utilisateur" class="show-for-sr">
-          Affiche les informations personnelles de l'utilisateur et permet de changer son mot de passe.
-      </p>
-    </div>
+  <p class="show-for-sr">Appuyez sur la touche Échap pour fermer cette fenêtre.</p>
+  <header>
+    <h1 id="titre-modal-information-utilisateur" class="h3 claire-hand">
+      <span aria-hidden="true">ℹ️</span> Informations</h1>
+    <p id="desc-modal-information-utilisateur" class="show-for-sr">
+        Affiche les informations personnelles de l'utilisateur et permet de changer son mot de passe.
+    </p>
   </header>
-
   <section>
+    <div>
+      {% set avatar = app.user.avatar ?? 'racine/personne' %}
+      {% set parts = avatar|split('/') %}
+      {% if parts|length == 1 %}
+        {% set parts = ['racine', avatar] %}
+      {% endif %}
+
+      <img id="ajouter-mon-avatar"
+        src="{{ asset('avatar/' ~ avatar) }}"
+        alt="Mon avatar"
+        height="52"
+        width="52"
+        data-theme="{{ parts[0] }}"
+        data-image="{{ parts[1] }}">
+      <button id="bouton-changer-avatar"
+              class="button open-sans focus-dark-light"
+              aria-label="Changer l'avatar"><span aria-hidden="true">🛠️</span> Changer
+      </button>
+    </div>
+
     <p class="open-sans">
-      <strong>Nom&nbsp;:</strong> <span class="color-noir">{{ app.user.nom|upper}}</span>
+      <strong>Nom&nbsp;:</strong> <span class="color-noir">{{ app.user.nom}}</span>
     </p>
     <p class="open-sans">
-      <strong>Prénom&nbsp;:</strong> <span class="color-noir">{{ app.user.prenom|capitalize }}</span>
+      <strong>Prénom&nbsp;:</strong> <span class="color-noir">{{ app.user.prenom }}</span>
     </p>
     <p class="open-sans">
       <strong>Courriel&nbsp;:</strong> <span class="color-noir">{{ app.user.courriel }}</span>
@@ -35,21 +51,18 @@
     <p class="open-sans">
       <strong>Modifier le&nbsp;:</strong> <span class="color-noir">{{ app.user.dateModification|date("d/m/Y H:i:s", "Europe/Paris") }}</span>
     </p>
-    <div class="grid-x margin-top-1">
+    <div class="grid-x">
       <p class="open-sans">Mise à jour du mot-de-passe&nbsp;?&nbsp;</p>
-      <div class="switch switch-reset-password small">
-        <input id="js-reset-password"
+      <div class="switch switch-identifiant small">
+        <input id="js-identifiant-oui-non"
               class="switch-input"
               type="checkbox"
-              role="switch"
-              aria-checked="false"
-              aria-label="Mise à jour du mot de passe"
               name="variationSwitch"
               data-reset-password="{{app.user.resetPassword}}">
-        <label class="switch-paddle switch-paddle-reset-password" for="js-reset-password">
-          <span class="show-for-sr">Mise à jour du mot-de-passe&nbsp;?</span>
-          <span class="switch-active switch-reset-password-active" aria-hidden="true">Oui</span>
-          <span class="switch-inactive switch-reset-password-inactive" aria-hidden="true">Non</span>
+        <label class="switch-paddle switch-paddle-identifiant" for="js-identifiant-oui-non">
+          <span class="show-for-sr">Mise à jour du mot-de-passe?</span>
+          <span class="switch-active switch-identifiant-active" aria-hidden="true">Oui</span>
+          <span class="switch-inactive switch-identifiant-inactive" aria-hidden="true">Non</span>
         </label>
       </div>
     </div>
@@ -64,12 +77,12 @@
 
   </section>
 
-  <output id="mise-a-jour-message" class="open-sans text-justify" aria-live="polite"></output>
+  <output id="mise-a-jour-message" class="open-sans text-justify"></output>
 
   <footer class="grid-x grid-padding-x align-right margin-top-2">
       <div class="cell shrink">
         <button id="bouton-fermer-information-utilisateur"
-                type="button" data-close
+                type="button"
                 class="button open-sans focus-dark-light"
                 aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span> Fermer
         </button>

@@ -1,0 +1,115 @@
+{# affiche la liste des avatar #}
+<dialog id="mes-avatars"
+        class="grid-container large reveal"
+        data-reveal>
+  <header>
+    <h1 id="titre-modal-avatar" class="h3 claire-hand">
+      <span aria-hidden="true">🖼️</span> Choix de l'avatar</h1>
+    <p id="desc-modal-avatar" class="show-for-sr">Sélectionne ton avatar.</p>
+  </header>
+  <p class="open-sans">Sélectionne ton avatar parmi les avatars disponible.</p>
+  <ul id="ajouter-mes-avatars" class="accordion" data-accordion data-multi-open="true">
+    <li class="accordion-item menu-accordion" data-accordion-item>
+      <a class="accordion-title color-bleu">
+        <span class="open-sans">
+          <strong>Chiffres</strong>
+        </span>
+        <span class="open-sans float-right avatar-chiffre">1</span>
+      </a>
+      <div class="accordion-content background-color-blanc" data-tab-content>
+        {% for i in 1..1 %}
+          {% if i<10 %}
+            <img id="ajouter-chiffre-0{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/chiffre/0' ~ i ~ '.png')}}" data-theme="chiffre" data-image="0{{i}}">
+          {% else %}
+            <img id="ajouter-chiffre-{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/chiffre/' ~ i ~ '}.png') }}" data-theme="chiffre" data-image="{{i}}">
+          {% endif %}
+        {% endfor %}
+      </div>
+    </li>
+    <li class="accordion-item menu-accordion" data-accordion-item>
+      <a class="accordion-title color-bleu">
+        <span class="open-sans">
+          <strong>Émoticônes</strong>
+        </span>
+        <span class="open-sans float-right avatar-emoticon">35</span>
+      </a>
+      <div class="accordion-content background-color-blanc" data-tab-content>
+        {% for i in 1..35 %}
+          {% if i<10 %}
+            <img id="ajouter-emoticon-0{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/emoticon/0' ~ i ~ '.png')}}" data-theme="emoticon" data-image="0{{i}}">
+          {% else %}
+            <img id="ajouter-emoticon-{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/emoticon/' ~ i ~ '.png')}}" data-theme="emoticon" data-image="{{i}}">
+          {% endif %}
+        {% endfor %}
+      </div>
+    </li>
+    <li class="accordion-item menu-accordion" data-accordion-item>
+      <a class="accordion-title color-bleu">
+        <span class="open-sans">
+          <strong>Filles (1)</strong>
+        </span>
+        <span class="open-sans float-right avatar-fille1">27</span>
+      </a>
+      <div class="accordion-content background-color-blanc" data-tab-content>
+        {% for i in 1..27 %}
+          {% if i<10 %}
+            <img id="ajouter-fille-1-0{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/fille-1/0' ~ i ~ '.png')}}" data-theme="fille-1" data-image="0{{i}}">
+          {% else %}
+            <img id="ajouter-fille-1-{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/fille-1/' ~ i ~ '.png')}}" data-theme="fille-1" data-image="{{i}}">
+          {% endif %}
+        {% endfor %}
+      </div>
+    </li>
+    <li class="accordion-item menu-accordion" data-accordion-item>
+      <a class="accordion-title color-bleu">
+        <span class="open-sans">
+          <strong>Filles (2)</strong>
+        </span>
+        <span class="open-sans float-right avatar-fille2">27</span>
+      </a>
+      <div class="accordion-content background-color-blanc" data-tab-content>
+        {% for i in 1..26 %}
+          {% if i<10 %}
+            <img id="ajouter-fille-2-0{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/fille-2/0' ~ i ~ '.png')}}" data-theme="fille-2" data-image="0{{i}}">
+          {% else %}
+            <img id="ajouter-fille-2-{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/fille-2/' ~ i ~ '.png')}}" data-theme="fille-2" data-image="{{i}}">
+          {% endif %}
+        {% endfor %}
+      </div>
+    </li>
+    <li class="accordion-item menu-accordion" data-accordion-item>
+      <a class="accordion-title color-bleu">
+        <span class="open-sans">
+          <strong>Garçon (1)</strong>
+        </span>
+        <span class="open-sans float-right avatar-garcon1">23</span>
+      </a>
+      <div class="accordion-content background-color-blanc" data-tab-content>
+        {% for i in 1..23 %}
+          {% if i<10 %}
+            <img id="ajouter-garcon-1-0{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/garcon-1/0' ~ i ~ '.png')}}" data-theme="garcon-1" data-image="0{{i}}">
+          {% else %}
+            <img id="ajouter-garcon-1-{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/garcon-1/' ~ i ~ '.png')}}" data-theme="garcon-1" data-image="{{i}}">
+          {% endif %}
+        {% endfor %}
+      </div>
+    </li>
+    <li class="accordion-item menu-accordion" data-accordion-item>
+      <a class="accordion-title color-bleu">
+        <span class="open-sans">
+          <strong>Garçon (2)</strong>
+        </span>
+        <span class="open-sans float-right avatar-garcon2">23</span>
+      </a>
+      <div class="accordion-content background-color-blanc" data-tab-content>
+        {% for i in 1..24 %}
+          {% if i<10 %}
+            <img id="ajouter-garcon-2-0{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/garcon-2/0' ~ i ~ '.png')}}" data-theme="garcon-2" data-image="0{{i}}">
+          {% else %}
+            <img id="ajouter-garcon-2-{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/garcon-2/' ~ i ~ '.png')}}" data-theme="garcon-2" data-image="{{i}}">
+          {% endif %}
+        {% endfor %}
+      </div>
+    </li>
+  </ul>
+</dialog>
