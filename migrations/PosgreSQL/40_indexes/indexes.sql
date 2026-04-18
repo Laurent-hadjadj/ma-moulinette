@@ -2,13 +2,13 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.1.0 - 05/02/2027                  ##
+##           V2.1.1 - 13/04/2026                  ##
 ##                                                ##
 ####################################################*/
 
 --- 2025-11-30 : Migration postGreSql 18
---- 2026-02-05 : Ajout de l'index pour visitor_id de la table user_agent_event
 --- 2026-02-05 : Ajout de l'index pour visitor_id et user_id de la table user_agent_analysis
+--- 2026-04-13 : Corrections des indexes pour la tables portefeuille (titre, groupe)
 
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
@@ -78,9 +78,14 @@ CREATE INDEX IF NOT EXISTS idx_batch_traitement_id ON ma_moulinette.batch(traite
 CREATE INDEX IF NOT EXISTS idx_batch_date_enregistrement ON ma_moulinette.batch(date_enregistrement);
 CREATE INDEX IF NOT EXISTS idx_batch_activated ON ma_moulinette.batch(activated);
 
--- groupe
-CREATE INDEX IF NOT EXISTS idx_groupe_titre ON ma_moulinette.groupe (titre);
-CREATE INDEX IF NOT EXISTS idx_groupe_date ON ma_moulinette.groupe (date_enregistrement);
+-- groupe utilisateur
+CREATE INDEX IF NOT EXISTS idx_groupe_groupe_utilisateur ON ma_moulinette.groupe_utilisateur (groupe_utilisateur);
+CREATE INDEX IF NOT EXISTS idx_groupe_id ON ma_moulinette.groupe_utilisateur (groupe_id);
+CREATE INDEX IF NOT EXISTS idx_groupe_date ON ma_moulinette.groupe_utilisateur (date_enregistrement);
+
+-- groupe fonctionnel
+CREATE INDEX IF NOT EXISTS idx_groupe_groupe_fonctionnel ON ma_moulinette.groupe_fonctionnel (groupe_fonctionnel);
+CREATE INDEX IF NOT EXISTS idx_groupe_date ON ma_moulinette.groupe_fonctionnel (date_enregistrement);
 
 -- historique
 CREATE INDEX IF NOT EXISTS idx_historique_maven_key ON ma_moulinette.historique (maven_key);
@@ -151,10 +156,9 @@ CREATE INDEX IF NOT EXISTS idx_portefeuille_historique_action ON ma_moulinette.p
 CREATE INDEX IF NOT EXISTS idx_portefeuille_historique_date ON ma_moulinette.portefeuille_historique (date);
 
 -- portefeuille
-CREATE INDEX IF NOT EXISTS idx_portefeuille_groupe ON ma_moulinette.portefeuille (groupe);
-CREATE INDEX IF NOT EXISTS idx_portefeuille_titre ON ma_moulinette.portefeuille (titre);
-CREATE INDEX IF NOT EXISTS idx_portefeuille_liste_gin ON ma_moulinette.portefeuille
-	USING gin ((liste::jsonb));
+CREATE INDEX IF NOT EXISTS idx_portefeuille_groupe_fonctionnel ON ma_moulinette.portefeuille (groupe_fonctionnel);
+CREATE INDEX IF NOT EXISTS idx_portefeuille_portefeuille ON ma_moulinette.portefeuille (portefeuille);
+CREATE INDEX IF NOT EXISTS idx_portefeuille_liste_gin ON ma_moulinette.portefeuille USING gin ((liste::jsonb));
 
 -- profiles_historique
 CREATE INDEX IF NOT EXISTS idx_profiles_hist_rule ON ma_moulinette.profiles_historique (rule);
