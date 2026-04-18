@@ -66,15 +66,18 @@
             <p id="desc-formulaire" class="show-for-sr">
               Formulaire d'authentification. Utiliser votre adresse mèl et saisissez votre mot de passe.</p>
             <div class="floated-label-wrapper">
-              <label for="courriel">Courriel</label>
-              <input id="courriel"
+              <label for="login">Courriel</label>
+              <input id="login"
                     class="open-sans"
-                    type="email"
-                    name="courriel"
-                    placeholder="laurent.hadjadj@ma-petite-entreprise.fr"
+                    type="text"
+                    name="login"
+                    placeholder="prenom.nom ou email@domaine.fr"
                     required aria-required="true"
-                    autofocus autocomplete="email">
+                    autofocus autocomplete="username"
+                    inputmode="email"
+                    pattern="^[a-zA-Z0-9._@-]+$">
             </div>
+
             <div class="floated-label-wrapper">
               <label for="mot-de-passe">Mot de passe</label>
               <input id="mot-de-passe"
@@ -91,10 +94,6 @@
                       aria-label="Afficher le mot de passe">Afficher
               </button>
             </div>
-            {% if is_granted('IS_AUTHENTICATED_REMEMBERED') == false %}
-            <a href="{{ path('register', {}) }}" class="float-left open-sans pas-encore-inscrit">Pas encore inscrit ?</a>
-              <br>
-            {% endif %}
             <div class="grid-x grid-padding-x align-right margin-top-2">
               <div class="cell shrink">
                 <input id="valider-formulaire-login"
@@ -107,7 +106,7 @@
             <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
           </form>
           {% if error %}
-            <output class="label alert" role="alert">{{ error.messageKey|trans(error.messageData, 'security') }}
+            <output class="label alert" role="alert">{{ error.messageKey }}
             </output>
           {% endif %}
         </div>
