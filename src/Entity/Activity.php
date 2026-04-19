@@ -30,44 +30,67 @@ class Activity
     #[ORM\Column(type: Types::INTEGER)]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'maven_key', type: Types::STRING, length: 255)]
+    #[ORM\Column(
+        name: 'maven_key',
+        type: Types::STRING,
+        length: 255)]
     #[Assert\NotBlank]
     #[Assert\Length(max: 255)]
     private string $mavenKey;
 
-    #[ORM\Column(name: 'project_name', type: Types::STRING, length: 64)]
+    #[ORM\Column(
+        name: 'project_name',
+        type: Types::STRING,
+        length: 64)]
     #[Assert\NotBlank]
     #[Assert\Length(max: 64)]
     private string $projectName;
 
-    #[ORM\Column(name: 'analyse_id', type: Types::STRING, length: 26)]
+    #[ORM\Column(
+        name: 'analyse_id',
+        type: Types::STRING,
+        length: 26)]
     #[Assert\NotBlank]
     #[Assert\Length(max: 26)]
     private string $analyseId;
 
-    #[ORM\Column(name: 'analyse_id', type: Types::STRING, length: 16)]
+    #[ORM\Column(
+        name: 'status',
+        type: Types::STRING,
+        length: 16)]
     #[Assert\NotBlank]
     #[Assert\Length(max: 16)]
     private string $status;
 
-    #[ORM\Column(name: 'submitter_login', type: Types::STRING, length: 32)]
+    #[ORM\Column(
+        name: 'submitter_login',
+        type: Types::STRING,
+        length: 32)]
     #[Assert\NotBlank]
     #[Assert\Length(max: 32)]
     private string $submitterLogin;
 
-    #[ORM\Column(name: 'submitted_at', type: Types::DATETIMETZ_IMMUTABLE)]
+    #[ORM\Column(
+        name: 'submitted_at',
+        type: Types::DATETIMETZ_IMMUTABLE)]
     #[Assert\NotNull]
     private \DateTimeImmutable $submittedAt;
 
-    #[ORM\Column(name: 'started_at', type: Types::DATETIMETZ_IMMUTABLE)]
+    #[ORM\Column(
+        name: 'started_at',
+        type: Types::DATETIMETZ_IMMUTABLE)]
     #[Assert\NotNull]
     private \DateTimeImmutable $startedAt;
 
-    #[ORM\Column(name: 'executed_at', type: Types::DATETIMETZ_IMMUTABLE)]
+    #[ORM\Column(
+        name: 'executed_at',
+        type: Types::DATETIMETZ_IMMUTABLE)]
     #[Assert\NotNull]
     private \DateTimeImmutable $executedAt;
 
-    #[ORM\Column(name: 'execution_time', type: Types::INTEGER)]
+    #[ORM\Column(
+        name: 'execution_time',
+        type: Types::INTEGER)]
     #[Assert\NotNull]
     #[Assert\PositiveOrZero]
     private int $executionTime;
