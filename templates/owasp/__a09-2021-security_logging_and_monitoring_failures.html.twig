@@ -1,22 +1,23 @@
 <div class="grid-container">
   <section class="container-detail-titre">
   <div class="small-4 medium-4 large-4">
-    <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="icon">
+    <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="">
   </div>
   <div class="small-8 medium-8 large-8">
-    <h1 class="h2 claire-hand margin-left-1">A09:2021 – Carence des systèmes de contrôle et de journalisation</h1>
+    {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page (celui du header) ; descente d'un niveau pour tous les titres (h1->h2, h2->h3, h3->h4) #}
+      <h2 class="h2 claire-hand margin-left-1">A09:2021 – Carence des systèmes de contrôle et de journalisation</h2>
   </div>
   </section>
 
   <section>
-  <h2 class="h4 claire-hand"><strong>Résumé</strong></h2>
+  <h3 class="h4 claire-hand"><strong>Résumé</strong></h3>
   <div class="callout open-sans font-size-11 text-justify">
       {{ owasp.description }}
   </div>
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Facteurs</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Facteurs</strong></h3>
     <div class="table-scroll">
       <table class="responsive-card-table unstriped">
         <thead>
@@ -50,13 +51,13 @@
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Aperçu</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Aperçu</strong></h3>
     <p class="open-sans font-size-11 text-justify">La journalisation et la surveillance de la sécurité sont issues de l'enquête de la communauté Top 10 (n°3), en légère hausse par rapport à la dixième position dans le Top 10 2017 de l'OWASP. La journalisation et la surveillance peuvent être difficiles à tester, impliquant souvent des entretiens ou demandant si des attaques ont été détectées lors d'un test d'intrusion.</p>
     <p class="open-sans font-size-11 text-justify">Il n'y a pas beaucoup de données CVE/CVSS pour cette catégorie, mais la détection et la réponse aux brèches sont essentielles. Il n'en reste pas moins qu'elle peut avoir un impact considérable sur la responsabilité, la visibilité, l'alerte en cas d'incident et la forensique. Cette catégorie s'étend au-delà de <em>CWE-778 Insufficient Logging</em> pour inclure <em>CWE-117 Improper Output Neutralization for Logs</em>, <em>CWE-223 Omission of Security-relevant Information</em>, et <em>CWE-532 Insertion of Sensitive Information into Log File</em>.</p>
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Description</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Description</strong></h3>
     <p class="open-sans font-size-11 text-justify">De retour dans le Top 10 2021 de l'OWASP, cette catégorie a pour but d'aider à la détection, à l'escalade et à la réponse aux brèches actives. Sans journalisation et surveillance, les brèches ne peuvent être détectées. Une journalisation, une détection, une surveillance et une réponse active insuffisantes peuvent survenir à tout moment&nbsp;:</p>
     <ul class="open-sans font-size-11 margin-left-2">
       <li>les traces d’audit, telles que les accès réussis ou échoués et les transactions sensibles, ne sont pas enregistrées&nbsp;;</li>
@@ -72,7 +73,7 @@
 </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Comment s'en prémunir</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Comment s'en prémunir</strong></h3>
     <p class="open-sans font-size-11 text-justify">Les développeurs doivent mettre en œuvre tout ou partie des contrôles suivants, en fonction du risque de l'application&nbsp;:</p>
     <ul class="open-sans font-size-11 margin-left-2">
       <li>s'assurer que toutes les authentifications, les erreurs de contrôle d'accès et de contrôle des entrées côté serveur sont enregistrées, avec un contexte utilisateur suffisant pour identifier les comptes suspects ou malveillants, et conservées suffisamment longtemps pour permettre une analyse légale différée&nbsp;;</li>
@@ -87,7 +88,7 @@
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Exemple de scénarios d'attaque</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Exemple de scénarios d'attaque</strong></h3>
     <p class="open-sans font-size-11 text-justify"><strong>Scénario 1</strong>&nbsp;: l'opérateur du site Web d'un fournisseur de soins de santé pour enfants n'a pas pu détecter une violation en raison d'un manque de surveillance et de journalisation. Une partie externe a informé le fournisseur du plan de santé qu'un attaquant avait accédé et modifié des milliers de dossiers médicaux sensibles de plus de 3,5 millions d'enfants. Un examen postérieur à l'incident a révélé que les développeurs du site Web n'avaient pas corrigé d'importantes vulnérabilités. Comme il n'y avait pas de journalisation ou de surveillance du système, la violation de données pourrait être en cours depuis 2013, soit une période de plus de sept ans.</p>
 
     <p class="open-sans font-size-11 text-justify"><strong>Scénario 2</strong>&nbsp;: une grande compagnie aérienne indienne a subi une violation de données portant sur plus de dix ans de données personnelles de millions de passagers, y compris des données de passeport et de carte de crédit. La violation des données s'est produite chez un fournisseur tiers d'hébergement en nuage, qui a informé la compagnie aérienne de la violation après un certain temps.</p>
@@ -96,7 +97,7 @@
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Références</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Références</strong></h3>
     <ul class="open-sans font-size-11 margin-left-2">
       <li>
         <a href="https://owasp.org/www-project-proactive-controls/v3/en/c9-security-logging.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Proactive Controls: Implement Logging and Monitoring">
@@ -142,7 +143,7 @@
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Liste des CWEs associées</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Liste des CWEs associées</strong></h3>
     <ul class="open-sans font-size-11 margin-left-2">
       <li>
         <a href="https://cwe.mitre.org/data/definitions/117.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-117 Improper Output Neutralization for Logs">
