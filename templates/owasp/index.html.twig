@@ -36,12 +36,13 @@
     {{ include('header.html.twig') }}
 
     <header class="grid-container margin-top-1">
-      <nav aria-label="Vous êtes Ici : ">
-        <ul class="claire-hand breadcrumbs">
+      {# WCAG 2.4.8 : aria-label enrichi ; <ol> à la place de <ul> ; aria-current="page" #}
+      <nav aria-label="Fil d'Ariane, vous êtes ici">
+        <ol class="claire-hand breadcrumbs">
           <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
           <li><a href="{{ path('projet', {}) }}">Projet</a></li>
-          <li><span class="show-for-sr">Vous êtes ici:</span>Owasp</li>
-        </ul>
+          <li aria-current="page">Owasp</li>
+        </ol>
       </nav>
     </header>
 
@@ -49,7 +50,8 @@
     {{ include('_message.html.twig') }}
 
     <div class="grid-container grid-x">
-      <h1 class="h2 claire-hand">Vulnérabilités OWASP et points chauds.</h1>
+      {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page ; titre descendu en <h2> #}
+      <h2 class="h2 claire-hand">Vulnérabilités OWASP et points chauds.</h2>
       <div id="js-serveur" class="cell" data-serveur="{{ serveur|default('none') }}">
         {# On ajoute un caractère pour éviter une erreur W3C #}
         <h2 id="js-application" class="h3 claire-hand">&nbsp;</h2>
@@ -318,7 +320,8 @@
 
     {# Référentiel OWASP 2017 et 2021 - Doc #}
     <div class="grid-container">
-      <h1 class="h2 claire-hand">Référentiel OWASP</h1>
+      {# WCAG 1.3.1 / 2.4.6 : deuxième <h1> rétrogradé en <h2> #}
+      <h2 class="h2 claire-hand">Référentiel OWASP</h2>
       <div class="small-12 medium-12 large-12 cell">
         <label for="owasp-select">Choisis ton référentiel :</label>
         <select id="js-owasp-select" name="owasp" data-tags="true" data-placeholder='Cliquez pour ouvrir la liste' data-language='fr'>
