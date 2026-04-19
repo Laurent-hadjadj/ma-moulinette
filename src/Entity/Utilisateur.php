@@ -22,143 +22,171 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UtilisateurRepository::class)]
+#[ORM\Table(
+    name: "utilisateur",
+    schema: "ma_moulinette")]
 #[UniqueEntity(
     fields: ['courriel'],
     message: "La création de votre compte n'a pas aboutie.")]
-#[ORM\Table(
-    name: "utilisateur",
-    schema: "ma_moulinette",
-    options: ['comment' => "table des utilisateurs"])]
 class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(
-        name: 'id',
+        name: "id",
         type: Types::INTEGER,
+        nullable: false, 
         options: ['comment' => "clé unique de la table utilisateur"])]
-    private ?int $id = null;
+    private $id;
 
     #[ORM\Column(
-        name: 'prenom',
+        name: "prenom",
         type: Types::STRING,
         length: 32,
         nullable: false,
-        options: ['comment' => "Prénom de l'utilisateur"])]
+        options: ['comment' => "Prénom de l'utilisateur"]
+    )]
     #[Assert\NotBlank(groups: ['form', 'default'])]
     private ?string $prenom = null;
 
     #[ORM\Column(
-        name: 'nom',
+        name: "nom",
         type: Types::STRING,
         length: 64,
         nullable: false,
-        options: ['comment' => "Nom de l'utilisateur"])]
+        options: ['comment' => "Nom de l'utilisateur"]
+    )]
     #[Assert\NotBlank(groups: ['form', 'default'])]
     private ?string $nom = null;
 
     #[ORM\Column(
-        name: 'avatar',
+        name: "avatar",
         type: Types::STRING,
         length: 128,
         nullable: true,
-        options: ['comment' => "Avatar de l'utilisateur"])]
+        options: ['comment' => "Avatar de l'utilisateur"]
+    )]
     private ?string $avatar = null;
 
+    // RFC 5321
     #[ORM\Column(
-        name: 'courriel',
+        name: "courriel",
         type: Types::STRING,
         length: 320,
         unique: true,
-        options: ['comment' => "Adresse de courriel, clé unique"])]
+        options: ['comment' => "Adresse de courriel, clé unique"]
+    )]
     #[Assert\NotBlank(groups: ['form', 'default'])]
     #[Assert\Email(groups: ['form', 'default'])]
     private ?string $courriel = null;
 
     #[ORM\Column(
-        name: 'roles',
+        name: "roles",
         type: Types::JSON,
         nullable: false,
         options: ['comment' => "Liste des rôles"])]
     private array $roles = [];
 
     #[ORM\Column(
-        name: 'groupe',
-        type: Types::JSON,
-        nullable: true,
-        options: ['comment' => "Liste des équipes"])]
-    private array $groupe = [];
-
-    #[ORM\Column(
-        name: 'password',
+        name: "groupe_utilisateur",
         type: Types::STRING,
         length: 64,
+        nullable: true,
+        options: [
+            'comment' => 'Nom du groupe utilisateur.'
+        ]
+    )]
+    #[Assert\Length(
+        max: 64,
+        maxMessage: "Le nom du groupe utilisateur ne doit pas dépasser 64 caractères.")]
+    private ?string $groupeUtilisateur = null;
+
+    #[ORM\Column(
+        name: "groupe_id",
+        type: Types::STRING,
+        length: 26,
         nullable: false,
-        options: ['comment' => "Mot de passe de l'utilisateur"])]
+        options: ['comment' => "L’identifiant du groupe utilisateur."]
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 26, maxMessage: "L'identifiant du groupe utilisateur ne doit pas dépasser 26 caractères.")]
+    private ?string $groupeId = null;
+
+    #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => "Liste de groupes fonctionnels"])]
+    private array $listeGroupeFonctionnel = [];
+
+    #[ORM\Column(
+        name: "password",
+        type: Types::STRING,
+        length: 128,
+        nullable: false,
+        options: ['comment' => "Mot de passe de l'utilisateur"]
+    )]
     #[Assert\NotBlank(groups: ['default'])]
     private string $password;
 
     #[ORM\Column(
-        name: 'actif',
+        name: "actif",
         type: Types::BOOLEAN,
         nullable: false,
-        options: [
-            'default' => false,
-            'comment' => "L'utilisateur est désactivé"])]
+        options: ['default' => 0, 'comment' => "L'utilisateur est désactivé"])]
     private bool $actif = false;
 
+    # Préférences de l'utilisateur
     #[ORM\Column(
-        name: 'preference',
+        name: "preference",
         type: Types::JSON,
         nullable: false,
-        options: ['comment' => "Préférences de l'utilisateur"])]
+        options: ['comment' => "Préférences de l'utilisateur"]
+    )]
     private array $preference = [];
 
     #[ORM\Column(
-        name: 'reset_password',
-        type: Types::BOOLEAN, nullable: false,
-        options: [
-            'default' => true,
-            'comment' => "Indicateur de réinitialisation du mot de passe"])]
-    private bool $resetPassword = true;
+        name: "reset_password",
+        type: Types::BOOLEAN,
+        nullable: false,
+        options: ['default' => true, 'comment' => "Indicateur de réinitialisation du mot de passe"]
+    )]
+    private $resetPassword = true;
 
     #[ORM\Column(
-        name: 'reset_password_count',
-        type: Types::INTEGER, nullable: false,
-        options: [
-            'default' => 1,
-            'comment' => 'Nombre de tentative de changement du mot de passe.'])]
-    private int $resetPasswordCount = 1;
+        name: "reset_password_count",
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['default' => 1, 'comment' => 'Nombre de tentative de changement du mot de passe.']
+    )]
+    private ?int $resetPasswordCount = 1;
 
     #[ORM\Column(
-        name: 'date_modification',
-        type: Types::DATETIME_MUTABLE,
-        nullable: true,
-        options: ['comment' => "Date de modification"])]
-    private ?\DateTimeInterface $dateModification = null;
-
-    #[ORM\Column(
-        name: 'last_activity_at',
+        name: "last_activity_at",
         type: Types::DATETIME_IMMUTABLE,
-        nullable: true,
-        options: ['comment' => "Date de modification"])]
+        nullable: true
+    )]
     private ?\DateTimeImmutable $lastActivityAt = null;
 
     #[ORM\Column(
-        name: 'date_enregistrement',
+        name: "date_modification",
+        type: Types::DATETIME_MUTABLE,
+        nullable: true,
+        options: ['comment' => "Date de modification"]
+    )]
+    private ?\DateTimeInterface $dateModification = null;
+
+    #[ORM\Column(
+        name: "date_enregistrement",
         type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => "Date de création"])]
-    private \DateTimeImmutable $dateEnregistrement;
+        options: ['comment' => "Date de création"]
+    )]
+    private ?\DateTimeImmutable $dateEnregistrement = null;
 
     public function __construct()
     {
         $this->roles = [];
-        $this->groupe = [];
         $this->preference = [];
         $this->resetPasswordCount = 1;
         $this->resetPassword = true;
         $this->actif = false;
+        $this->groupeId = '00000000000000000000000000';
         $this->lastActivityAt = new \DateTimeImmutable();
         $this->dateEnregistrement = new \DateTimeImmutable();
     }
@@ -293,6 +321,41 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->actif = $actif;
 
+        return $this;
+    }
+
+    public function getGroupeUtilisateur(): ?string
+    {
+        return $this->groupeUtilisateur;
+    }
+
+    public function setGroupeUtilisateur(?string $groupeUtilisateur): static
+    {
+        $this->groupeUtilisateur = $groupeUtilisateur;
+
+        return $this;
+    }
+
+    public function getGroupeId(): ?string
+    {
+        return $this->groupeId;
+    }
+
+    public function setGroupeId(string $groupeId): static
+    {
+        $this->groupeId = $groupeId;
+
+        return $this;
+    }
+
+    public function getLastActivityAt(): ?\DateTimeImmutable
+    {
+        return $this->lastActivityAt;
+    }
+
+    public function setLastActivityAt(?\DateTimeImmutable $lastActivityAt): self
+    {
+        $this->lastActivityAt = $lastActivityAt;
         return $this;
     }
 
@@ -527,34 +590,14 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
     }
 
-    /**
-     * [Description for getGroupe]
-     *
-     * @return array
-     *
-     * Created at: 02/01/2023, 18:12:31 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function getGroupe(): array
+    public function getListeGroupeFonctionnel(): array
     {
-        return $this->groupe;
+        return $this->listeGroupeFonctionnel;
     }
 
-    /**
-     * [Description for setGroupe]
-     *
-     * @param array $groupe
-     *
-     * @return self
-     *
-     * Created at: 02/01/2023, 18:12:32 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function setGroupe(array $groupe): \App\Entity\Utilisateur
+    public function setListeGroupeFonctionnel(array $listeGroupeFonctionnel): \App\Entity\Utilisateur
     {
-        $this->groupe = $groupe;
+        $this->listeGroupeFonctionnel = $listeGroupeFonctionnel;
 
         return $this;
     }
@@ -615,16 +658,4 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
-    public function getLastActivityAt(): ?\DateTimeImmutable
-    {
-        return $this->lastActivityAt;
-    }
-
-    public function setLastActivityAt(?\DateTimeImmutable $lastActivityAt): self
-    {
-        $this->lastActivityAt = $lastActivityAt;
-        return $this;
-    }
-
 }
