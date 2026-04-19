@@ -16,7 +16,7 @@ namespace App\Controller\Accueil;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\{Response, JsonResponse, Request};
-use Symfony\Component\Routing\Annotation\Route;
+use \Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{ListeProjet, Properties};
@@ -46,9 +46,7 @@ class ApiAccueilController extends AbstractController
         private LoggerInterface $logger,
         private EntityManagerInterface $em,
         private UrlBuilderService $urlBuilder,
-    ) {
-
-    }
+    ) {}
 
     /**
      * [Description for sonarStatus]
@@ -108,8 +106,8 @@ class ApiAccueilController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/secure/accueil/projet', name: 'accueil_projet_liste', methods: ['POST'], defaults: ['role' => 'ROLE_COLLECTE'])]
-    #[IsGranted('ROLE_COLLECTE')]
+    #[Route('/api/secure/accueil/projet', name: 'accueil_projet_liste', methods: ['POST'], defaults: ['role' => 'ROLE_GESTIONNAIRE'])]
+    #[IsGranted('ROLE_GESTIONNAIRE')]
     public function accueilProjetListe(): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/accueil/projet");
@@ -151,7 +149,7 @@ class ApiAccueilController extends AbstractController
         $public = $private = $emptyTags = $nombre = 0;
 
         /** On vérifie que SonarQube a au moins 1 projet */
-        if (array_key_exists('json', $result) && empty($result['json']['components'])){
+        if (array_key_exists('json', $result) && empty($result['json']['components'])) {
             $this->logger->warning('[Accueil-projet] ⚠️ Aucun projet Sonar trouvé.');
 
             return new JsonResponse([
@@ -191,9 +189,7 @@ class ApiAccueilController extends AbstractController
                 $this->logger->debug('🛠️ [Accueil-projet] Projet ignoré (SVN)', ['key' => $projet['key']]);
                 continue;
             }
-
-            /** il faut passer les arguments à ListeProjet a cause du constructeur */
-            $listeProjet = new ListeProjet('', '', '', [] );
+            $listeProjet = new ListeProjet('','','',[],'',new \DateTimeImmutable()); 
             $listeProjet->setMavenKey($projet["key"]);
             $listeProjet->setName($projet["name"]);
             $tags = (empty($projet['tags'])) ? ['@AUCUN'] : $projet['tags'];
@@ -245,13 +241,13 @@ class ApiAccueilController extends AbstractController
         ]);
 
         return new JsonResponse([
-                'code' => 200,
-                'type' => 'success',
-                'message' => "Mise à jour de la liste des projets effectuée.",
-                'nombre' => $nombre,
-                'public' => $public,
-                'private' => $private,
-                'empty_tags' => $emptyTags
+            'code' => 200,
+            'type' => 'success',
+            'message' => "Mise à jour de la liste des projets effectuée.",
+            'nombre' => $nombre,
+            'public' => $public,
+            'private' => $private,
+            'empty_tags' => $emptyTags
         ], Response::HTTP_OK);
     }
 
@@ -264,8 +260,8 @@ class ApiAccueilController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/secure/accueil/tags', name: 'accueil_projet_tags', methods: ['POST'], defaults: ['role' => 'ROLE_COLLECTE'])]
-    #[IsGranted('ROLE_COLLECTE')]
+    #[Route('/api/secure/accueil/tags', name: 'accueil_projet_tags', methods: ['POST'], defaults: ['role' => 'ROLE_GESTIONNAIRE'])]
+    #[IsGranted('ROLE_GESTIONNAIRE')]
     public function accueilProjetTags(): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/accueil/tags");
@@ -285,7 +281,7 @@ class ApiAccueilController extends AbstractController
             return new JsonResponse([
                 'code' => $tag['code'],
                 'type' => 'alert',
-                'message' =>"Le dénombrement des tags de projets n'a pas abouti ({$tag['code']}).",
+                'message' => "Le dénombrement des tags de projets n'a pas abouti ({$tag['code']}).",
                 'trace' => $tag['erreur'] ?? null
             ], Response::HTTP_OK);
         }
@@ -296,5 +292,4 @@ class ApiAccueilController extends AbstractController
             'nombre_tag' => $tag['nombre'][0]['tag'] ?? 0
         ], Response::HTTP_OK);
     }
-
 }
