@@ -1,125 +1,128 @@
 {
-  "type": "project",
-  "license": "CC-BY-NC-SA-4.0",
-  "minimum-stability": "stable",
-  "prefer-stable": true,
-  "name": "ma-moulinette/ma-moulinette",
-  "description": "Dépendances symfony pour l'application Ma-Moulinette",
-  "require": {
-    "php": "8.3.0",
-    "ext-ctype": "*",
-    "ext-iconv": "*",
-    "doctrine/dbal": "^4.4.1",
-    "doctrine/doctrine-bundle": "^2.18.2",
-    "doctrine/orm": "^3.6.2",
-    "dompdf/dompdf": "^v3.1.4",
-    "dragonmantank/cron-expression": "^3.6.0",
-    "easycorp/easyadmin-bundle": "^v5.0.0-BETA2",
-    "knplabs/knp-paginator-bundle": "^v6.10.0",
-    "matomo/device-detector": "^6.5.0",
-    "symfony/asset": "^7.3.0",
-    "symfony/asset-mapper": "^7.3.5",
-    "symfony/cache": "^7.3.6",
-    "symfony/clock": "^7.3.0",
-    "symfony/console": "^7.3.6",
-    "symfony/doctrine-messenger": "^7.3.6",
-    "symfony/dotenv": "^7.3.2",
-    "symfony/expression-language": "^7.3.2",
-    "symfony/flex": "^v2.10.0",
-    "symfony/form": "^7.3.6",
-    "symfony/framework-bundle": "^7.3.6",
-    "symfony/http-client": "^7.3.6",
-    "symfony/intl": "^7.3.5",
-    "symfony/ldap": "7.3.*",
-    "symfony/mailer": "^7.3.5",
-    "symfony/messenger": "7.3.1",
-    "symfony/mime": "^7.3.4",
-    "symfony/monolog-bundle": "^3.10.0",
-    "symfony/notifier": "^7.3.4",
-    "symfony/process": "^7.3.4",
-    "symfony/property-access": "^7.3.3",
-    "symfony/property-info": "^7.3.5",
-    "symfony/proxy-manager-bridge": "^6.4.28",
-    "symfony/rate-limiter": "^7.3.2",
-    "symfony/runtime": "^7.3.4",
-    "symfony/scheduler": "^7.3.5",
-    "symfony/security-bundle": "7.3.0",
-    "symfony/security-core": "7.3.0",
-    "symfony/serializer": "^7.3.5",
-    "symfony/string": "^7.3.4",
-    "symfony/translation": "^7.3.4",
-    "symfony/twig-bundle": "^7.3.4",
-    "symfony/validator": "^7.3.6",
-    "symfony/web-link": "^7.3.0",
-    "symfony/yaml": "^7.3.5",
-    "twig/extra-bundle": "^v3.23.0",
-    "twig/intl-extra": "^v3.23.0",
-    "twig/twig": "^3.22.1"
-  },
-  "require-dev": {
-    "doctrine/doctrine-fixtures-bundle": "^4.1.0",
-    "doctrine/doctrine-migrations-bundle": "^3.4.2",
-    "justinrainbow/json-schema": "^5.3.0",
-    "phpdocumentor/reflection-docblock": "^5.6.2",
-    "phpstan/phpdoc-parser": "^1.33.0",
-    "phpstan/phpstan": "^1.12.28",
-    "phpunit/phpunit": "^9.6.25",
-    "symfony/browser-kit": "^7.3.2",
-    "symfony/css-selector": "^7.3.0",
-    "symfony/debug-bundle": "^7.3.0",
-    "symfony/dom-crawler": "^7.3.3",
-    "symfony/maker-bundle": "^v1.66.0",
-    "symfony/phpunit-bridge": "^7.3.3",
-    "symfony/stopwatch": "^7.3.0",
-    "symfony/web-profiler-bundle": "^7.3.3"
-  },
-  "config": {
-    "allow-plugins": {
-      "composer/package-versions-deprecated": false,
-      "symfony/flex": true,
-      "symfony/runtime": true
+    "type": "project",
+    "license": "CC-BY-NC-SA-4.0",
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "name": "ma-moulinette/ma-moulinette",
+    "description": "Dépendances symfony pour l'application Ma-Moulinette",
+    "require": {
+        "php": ">=8.4.0",
+        "ext-ctype": "*",
+        "ext-iconv": "*",
+        "amphp/file": "*",
+        "amphp/http-client": "5.3.4",
+        "doctrine/dbal": "^4.4.3",
+        "doctrine/doctrine-bundle": "^3.2.2",
+        "doctrine/doctrine-migrations-bundle": "4.0",
+        "doctrine/orm": "^3.6.3",
+        "dompdf/dompdf": "^3.1.5",
+        "dragonmantank/cron-expression": "^3.6.0",
+        "easycorp/easyadmin-bundle": "^5.0.5",
+        "knplabs/knp-paginator-bundle": "^6.10.0",
+        "symfony/asset": "^8.0.8",
+        "symfony/asset-mapper": "^8.0.8",
+        "symfony/cache": "^8.0.8",
+        "symfony/clock": "^8.0.8",
+        "symfony/config": "^8.0.8",
+        "symfony/console": "^8.0.8",
+        "symfony/dependency-injection": "^8.0.8",
+        "symfony/doctrine-messenger": "^8.0.6",
+        "symfony/dotenv": "^8.0.8",
+        "symfony/expression-language": "^8.0.8",
+        "symfony/flex": "^2.10.0",
+        "symfony/form": "^8.0.8",
+        "symfony/framework-bundle": "^8.0.8",
+        "symfony/http-client": "^8.0.8",
+        "symfony/http-foundation": "^8.0.8",
+        "symfony/intl": "^8.0.8",
+        "symfony/ldap": "^8.0.8",
+        "symfony/mailer": "^8.0.8",
+        "symfony/messenger": "^8.0.8",
+        "symfony/mime": "^8.0.8",
+        "symfony/monolog-bundle": "^4.0.2",
+        "symfony/notifier": "^8.0.8",
+        "symfony/process": "^8.0.8",
+        "symfony/property-access": "^8.0.8",
+        "symfony/property-info": "^8.0.8",
+        "symfony/rate-limiter": "^8.0.8",
+        "symfony/runtime": "^8.0.8",
+        "symfony/scheduler": "^8.0.8",
+        "symfony/security-bundle": "8.0.8",
+        "symfony/security-core": "8.0.8",
+        "symfony/serializer": "^8.0.8",
+        "symfony/string": "^8.0.8",
+        "symfony/translation": "^8.0.8",
+        "symfony/twig-bundle": "^8.0.8",
+        "symfony/validator": "^8.0.8",
+        "symfony/web-link": "^8.0.8",
+        "symfony/yaml": "^8.0.8",
+        "twig/extra-bundle": "^3.24.0",
+        "twig/intl-extra": "^3.24.0",
+        "twig/twig": "^3.24.0"
     },
-    "optimize-autoloader": true,
-    "preferred-install": {
-      "*": "dist"
+    "require-dev": {
+        "doctrine/doctrine-fixtures-bundle": "^4.3.1",
+        "justinrainbow/json-schema": "^6.8.0",
+        "phpdocumentor/reflection-docblock": "^6.0.3",
+        "phpstan/phpdoc-parser": "^2.3.2",
+        "phpstan/phpstan": "^2.1.48",
+        "phpunit/phpunit": "^13.1.5",
+        "symfony/browser-kit": "^8.0.8",
+        "symfony/css-selector": "^8.0.8",
+        "symfony/debug-bundle": "^8.0.8",
+        "symfony/dom-crawler": "^8.0.8",
+        "symfony/maker-bundle": "^1.67.0",
+        "symfony/phpunit-bridge": "^8.0.8",
+        "symfony/stopwatch": "^8.0.8",
+        "symfony/web-profiler-bundle": "^8.0.8"
     },
-    "sort-packages": true
-  },
-  "autoload": {
-    "psr-4": {
-      "App\\": "src/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "App\\Tests\\": "tests/"
-    }
-  },
-  "replace": {
-    "symfony/polyfill-ctype": "*",
-    "symfony/polyfill-iconv": "*",
-    "symfony/polyfill-php72": "*"
-  },
-  "scripts": {
-    "auto-scripts": {
-      "cache:clear": "symfony-cmd",
-      "assets:install %PUBLIC_DIR%": "symfony-cmd",
-      "importmap:install": "symfony-cmd"
+    "config": {
+        "allow-plugins": {
+            "composer/package-versions-deprecated": false,
+            "symfony/flex": true,
+            "symfony/runtime": true
+        },
+        "optimize-autoloader": true,
+        "preferred-install": {
+            "*": "dist"
+        },
+        "sort-packages": true
     },
-    "post-install-cmd": [
-      "@auto-scripts"
-    ],
-    "post-update-cmd": [
-      "@auto-scripts"
-    ]
-  },
-  "conflict": {
-    "symfony/symfony": "*"
-  },
-  "extra": {
-    "symfony": {
-      "allow-contrib": false,
-      "require": "7.3.*"
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\Tests\\": "tests/"
+        }
+    },
+    "replace": {
+        "symfony/polyfill-ctype": "*",
+        "symfony/polyfill-iconv": "*",
+        "symfony/polyfill-php72": "*"
+    },
+    "scripts": {
+        "auto-scripts": {
+            "cache:clear": "symfony-cmd",
+            "assets:install %PUBLIC_DIR%": "symfony-cmd",
+            "importmap:install": "symfony-cmd"
+        },
+        "post-install-cmd": [
+            "@auto-scripts"
+        ],
+        "post-update-cmd": [
+            "@auto-scripts"
+        ]
+    },
+    "conflict": {
+        "symfony/symfony": "*"
+    },
+    "extra": {
+        "symfony": {
+            "allow-contrib": false,
+            "require": "8.0.*"
+        }
     }
-  }
 }
