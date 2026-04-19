@@ -3,7 +3,7 @@
 /**
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common CC-BY-NC-SA 4.0.
 *  ---
@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\{Request, Response, JsonResponse};
-use Symfony\Component\Routing\Annotation\Route;
+use \Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Ulid;
 use Psr\Log\LoggerInterface;
 
@@ -48,8 +48,7 @@ class BatchAutoController extends AbstractController
         #[Autowire(service: 'monolog.logger.profiling')]
         private LoggerInterface $profilerLogger,
         private ListeProjetPortefeuilleService $listeProjetService,
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for traitementListe]
@@ -72,37 +71,37 @@ class BatchAutoController extends AbstractController
         /** On récupère les données du POST */
         $data = json_decode($request->getContent());
 
-        if ($data === null || !property_exists($data, 'token')){
-                $this->logger->error("[Traitement-Automatique] ❌ Requête invalide : clé 'token' manquante ou JSON mal formé.",[
-                    'payload' => $data
-                ]);
+        if ($data === null || !property_exists($data, 'token')) {
+            $this->logger->error("[Traitement-Automatique] ❌ Requête invalide : clé 'token' manquante ou JSON mal formé.", [
+                'payload' => $data
+            ]);
 
-                return new JsonResponse([
-                    'code' => 400,
-                    'type' => 'error',
-                    'message' => static::$erreur400
-                ], Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'error',
+                'message' => static::$erreur400
+            ], Response::HTTP_OK);
         }
 
         // Vérification du token
         $token = $this->params->get('api.client_token');
-        if ($data->token !== $token){
-        $this->logger->error("[Traitement-Automatique] 🚫 Vous n'êtes pas autorisé à acceder à ce service.", ['token' => $data->token]);
+        if ($data->token !== $token) {
+            $this->logger->error("[Traitement-Automatique] 🚫 Vous n'êtes pas autorisé à acceder à ce service.", ['token' => $data->token]);
 
-        return new JsonResponse([
-            'code' => 403,
-            'type' => 'error',
-            'message' => static::$erreur403
-        ], Response::HTTP_FORBIDDEN);
+            return new JsonResponse([
+                'code' => 403,
+                'type' => 'error',
+                'message' => static::$erreur403
+            ], Response::HTTP_FORBIDDEN);
         }
 
         /** On récupère la liste des traitements Automatique */
         $get_liste = $batchTraitementRepos->selectBatchTraitementAutomatiqueListe();
 
-        if ($get_liste['code'] !== 200){
-            $this->logger->alert("[Traitement-Automatique] ❌ Échec de la requête selectBatchTraitementAutomatiqueListe.", [
-            'code' => $get_liste,
-            'message' => $get_liste['erreur'] ?? null
+        if ($get_liste['code'] !== 200) {
+            $this->logger->error("[Traitement-Automatique] ❌ Échec de la requête selectBatchTraitementAutomatiqueListe.", [
+                'code' => $get_liste,
+                'message' => $get_liste['erreur'] ?? null
             ]);
 
             return new JsonResponse([
@@ -114,9 +113,9 @@ class BatchAutoController extends AbstractController
         }
 
         return new JsonResponse([
-        'code' => 200,
-        'message' => 'Liste des projets pour les traitements automatique récupérée.',
-        'liste_traitement' => $get_liste['liste'] ?? null
+            'code' => 200,
+            'message' => 'Liste des projets pour les traitements automatique récupérée.',
+            'liste_traitement' => $get_liste['liste'] ?? null
         ], Response::HTTP_OK);
     }
 
@@ -143,15 +142,17 @@ class BatchAutoController extends AbstractController
         /** On récupère les données du POST */
         $data = json_decode($request->getContent());
 
-        if ($data === null ||
+        if (
+            $data === null ||
             !property_exists($data, 'token') ||
             !property_exists($data, 'nom_traitement') ||
             !property_exists($data, 'portefeuille') ||
-            !property_exists($data, 'traitement_id')){
-            $this->logger->error("[Traitement-Automatique] ❌ Requête invalide : clé 'token', 'nom_traitement', 'portefeuille' ou 'traitement_id' manquante ou JSON mal formé.",[
-                    'mode' => 'TRAITEMENT AUTOMATIQUE',
-                    'payload' => $data
-                ]);
+            !property_exists($data, 'traitement_id')
+        ) {
+            $this->logger->error("[Traitement-Automatique] ❌ Requête invalide : clé 'token', 'nom_traitement', 'portefeuille' ou 'traitement_id' manquante ou JSON mal formé.", [
+                'mode' => 'TRAITEMENT AUTOMATIQUE',
+                'payload' => $data
+            ]);
 
             return new JsonResponse([
                 'code' => 400,
@@ -162,9 +163,11 @@ class BatchAutoController extends AbstractController
 
         // Vérification du token
         $token = $this->params->get('api.client_token');
-        if ($data->token !== $token){
-            $this->logger->error("[Traitement-Automatique] 🚫 Vous n'êtes pas autorisé à acceder à ce service.",
-            ['token' => $data->token]);
+        if ($data->token !== $token) {
+            $this->logger->error(
+                "[Traitement-Automatique] 🚫 Vous n'êtes pas autorisé à acceder à ce service.",
+                ['token' => $data->token]
+            );
 
             return new JsonResponse([
                 'code' => 403,
@@ -176,7 +179,7 @@ class BatchAutoController extends AbstractController
         // On extrait la liste des projets pour le portefeuille depuis la table batch_traitement
         $les_projets = $this->listeProjetService->listeProjet($data->nom_traitement, $data->portefeuille);
 
-        if ($les_projets['code'] === 404){
+        if ($les_projets['code'] === 404) {
             $this->logger->warning("[Traitement-Automatique] ❌ La liste est vide ou n'existe plus.", [
                 'code' => $les_projets,
                 'message' => $les_projets['erreur'] ?? null
@@ -227,7 +230,7 @@ class BatchAutoController extends AbstractController
                 'erreur' => $update['erreur'] ?? static::$noError,
                 'traitement_id' => $data->traitement_id,
                 'wip' => 'in_progress = true'
-                ]);
+            ]);
 
             return new JsonResponse([
                 'code' => $update['code'],
@@ -294,12 +297,12 @@ class BatchAutoController extends AbstractController
                 ));
 
                 $map = [
-                        'debut_traitement' => $debut_traitement->format(static::$dateFormat),
-                        'success' => false,
-                        'in_progress' => false,
-                        'pending' => false,
-                        'fin_traitement' => (new \DateTime('now', new \DateTimeZone(static::$europeParis)))->format(static::$dateFormat),
-                        'traitement_id' => $data->traitement_id,
+                    'debut_traitement' => $debut_traitement->format(static::$dateFormat),
+                    'success' => false,
+                    'in_progress' => false,
+                    'pending' => false,
+                    'fin_traitement' => (new \DateTime('now', new \DateTimeZone(static::$europeParis)))->format(static::$dateFormat),
+                    'traitement_id' => $data->traitement_id,
                 ];
 
                 $failed = $batchTraitementRepos->updateBatchTraitement($map);
@@ -313,9 +316,9 @@ class BatchAutoController extends AbstractController
             }
 
             // === Flush périodique et nettoyage mémoire ===
-            $this->logger->debug('peak before flush: ' . memory_get_peak_usage(true)/1024/1024 . ' MB');
+            $this->logger->debug('peak before flush: ' . memory_get_peak_usage(true) / 1024 / 1024 . ' MB');
             $this->em->flush();
-            $this->logger->debug('peak after flush: ' . memory_get_peak_usage(true)/1024/1024 . ' MB');
+            $this->logger->debug('peak after flush: ' . memory_get_peak_usage(true) / 1024 / 1024 . ' MB');
             $this->em->clear();
 
             $batchExecution = $this->em->getReference(BatchExecution::class, $batchExecution->getId());
@@ -378,7 +381,7 @@ class BatchAutoController extends AbstractController
         );
 
         $this->em->persist($profiling);
-        $this->logger->debug('peak before flush: ' . memory_get_peak_usage(true)/1024/1024 . ' MB');
+        $this->logger->debug('peak before flush: ' . memory_get_peak_usage(true) / 1024 / 1024 . ' MB');
         $this->em->flush();
         $this->logger->debug('peak after flush: ' . memory_get_peak_usage(true)/1024/1024 . ' MB');
         $this->em->clear();
