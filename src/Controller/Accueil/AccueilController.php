@@ -18,7 +18,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
-use Symfony\Component\Routing\Annotation\Route;
+use \Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{ListeProjet, Profiles, Properties, Historique, MaMoulinette};
@@ -88,27 +88,33 @@ class AccueilController extends AbstractController
     }
 
     /************ getter méthode private  ****************/
-    public function getCountProjetBD(): int {
+    public function getCountProjetBD(): int
+    {
         return static::countProjetBD();
     }
 
-    public function getCountProjetSonar(): int {
+    public function getCountProjetSonar(): int
+    {
         return static::countProjetSonar();
     }
 
-    public function getCountProfilBD(): int {
+    public function getCountProfilBD(): int
+    {
         return static::countProfilBD();
     }
 
-    public function getCountProfilSonar(): int {
+    public function getCountProfilSonar(): int
+    {
         return static::countProfilSonar();
     }
 
-    public function getGetProperties(): array {
+    public function getGetProperties(): array
+    {
         return static::getProperties();
     }
 
-    public function getGetVersion(): string {
+    public function getGetVersion(): string
+    {
         return static::getVersion();
     }
 
@@ -165,11 +171,13 @@ class AccueilController extends AbstractController
         /* On affiche un message flash pour un timeout ou si le serveur n'est pas démarré. */
         if ($result['code'] !== 200) {
             $this->logger->error("[Accueil] ❌ Erreur lors de l'appel à SonarQube", $result);
-            $this->addFlash('notice',
+            $this->addFlash(
+                'notice',
                 [
                     'type' => 'alert',
                     'message' => "❌ {$result['erreur']}"
-                ]);
+                ]
+            );
             // On envoi -1 si on a une erreur HTTPClient
             return -1;
         }
@@ -187,7 +195,8 @@ class AccueilController extends AbstractController
         }
 
         $this->logger->debug('[Accueil] 🛠️ Nombre de projets valides (hors SVN) trouvés sur SonarQube.', [
-            'total' => $count]);
+            'total' => $count
+        ]);
         return $count;
     }
 
@@ -241,7 +250,7 @@ class AccueilController extends AbstractController
             $this->addFlash('notice', [
                 'type' => 'alert',
                 'message' => "❌ {$result['erreur']}"
-                ]);
+            ]);
             return -1;
         }
 
@@ -252,7 +261,8 @@ class AccueilController extends AbstractController
         }
 
         $this->logger->debug('[Accueil] 🛠️ Nombre de profils trouvés sur SonarQube.', [
-            'total' => $count]);
+            'total' => $count
+        ]);
         return $count;
     }
 
@@ -284,11 +294,13 @@ class AccueilController extends AbstractController
         $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
 
         $map = [
-                'projet_bd' => $bd, 'projet_sonar' => $sonar,
-                'profil_bd' => $bd, 'profil_sonar' => $sonar,
-                'date_modification_projet' => $date,
-                'date_modification_profil' => $date
-            ];
+            'projet_bd' => $bd,
+            'projet_sonar' => $sonar,
+            'profil_bd' => $bd,
+            'profil_sonar' => $sonar,
+            'date_modification_projet' => $date,
+            'date_modification_profil' => $date
+        ];
 
         if ($type === 'projet') {
             $propertiesRepos->updatePropertiesProjet($map);
@@ -321,9 +333,11 @@ class AccueilController extends AbstractController
 
             $date = new \DateTime('now', new \DateTimeZone(static::$europeParis));
             $map = [
-                'projet_bd' => 0, 'projet_sonar' => 0,
-                'profil_bd' => 0, 'profil_sonar' => 0,
-                'date_creation'=> $date,
+                'projet_bd' => 0,
+                'projet_sonar' => 0,
+                'profil_bd' => 0,
+                'profil_sonar' => 0,
+                'date_creation' => $date,
                 'date_modification_projet' => $date,
                 'date_modification_profil' => $date
             ];
@@ -335,11 +349,13 @@ class AccueilController extends AbstractController
                     'erreur' => $insert['erreur'] ?? null
                 ]);
 
-                $this->addFlash('notice',
+                $this->addFlash(
+                    'notice',
                     [
                         'type' => 'alert',
                         'message' => "❌ {$insert['erreur']}"
-                    ]);
+                    ]
+                );
                 return ['code' => 500];
             }
             return $map;
@@ -395,20 +411,23 @@ class AccueilController extends AbstractController
         /** Sécurisation de l'URL */
         $url = $this->urlBuilder->build(
             $this->getParameter(static::$sonarUrl),
-            '/api/server/version',[]
+            '/api/server/version',
+            []
         );
 
-        $this->logger->info('[Accueil] ℹ️ Appel à SonarQube pour le comptage de projets.', [ 'url' => $url ]);
+        $this->logger->info('[Accueil] ℹ️ Appel à SonarQube pour le comptage de projets.', ['url' => $url]);
         $result = $this->client->httpSonarQube($url);
 
         /* On affiche un message flash pour un timeout ou si le serveur n'est pas démarré. */
         if ($result['code'] !== 200) {
             $this->logger->error("[Accueil] ❌ Erreur lors de l'appel à SonarQube", $result);
-            $this->addFlash('notice',
+            $this->addFlash(
+                'notice',
                 [
                     'type' => 'alert',
                     'message' => "❌ {$result['erreur']}"
-                ]);
+                ]
+            );
             // On envoi -1 si on a une erreur HTTPClient
             return -1;
         }
@@ -431,8 +450,8 @@ class AccueilController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/secure/accueil/favori/liste/projet', name: 'accueil_favori_liste_projet', defaults: ['role' => 'ROLE_COLLECTE'])]
-    #[IsGranted('ROLE_COLLECTE')]
+    #[Route('/api/secure/accueil/favori/liste/projet', name: 'accueil_favori_liste_projet', defaults: ['role' => 'ROLE_GESTIONNAIRE'])]
+    #[IsGranted('ROLE_GESTIONNAIRE')]
     private function getListeFavoriProjet(): JsonResponse
     {
         /** On instancie l'entityRepository */
@@ -450,7 +469,7 @@ class AccueilController extends AbstractController
         $this->logger->info('[Accueil] ℹ️ Chargement des favoris projets.', [
             'statut' => $statutFavoriProjet,
             'nb_favoris' => count($listeFavoriProjet)
-            ]);
+        ]);
 
         $liste = '';
         $listeProjet = '';
@@ -462,8 +481,8 @@ class AccueilController extends AbstractController
             }
             /* on prépare les données pour la requête */
             $map = [
-                    'liste_projet' => rtrim($liste, " , "),
-                    'nombre_projet_favori' => $nombreProjetFavori
+                'liste_projet' => rtrim($liste, " , "),
+                'nombre_projet_favori' => $nombreProjetFavori
             ];
             $listeProjet = $historiqueRepos->selectHistoriqueProjetFavori($map);
         } else {
@@ -496,18 +515,18 @@ class AccueilController extends AbstractController
         //maven_key='fr.ma-petite-entreprise:ma-moulinette' AND (version = '1.2.0-RELEASE' OR version = '1.2.1-RELEASE')
         $m = $maven_key[0];
         $l = "";
-        $maven_Key = "maven_key='".$m."'";
+        $maven_Key = "maven_key='" . $m . "'";
         $version = "";
 
         $versions = array_values($liste[$index]);
         for ($v = 0; $v < count($versions[0]); $v++) {
-            $version = $version." version='".$versions[0][$v]."' OR ";
+            $version = $version . " version='" . $versions[0][$v] . "' OR ";
         }
-        $l = $l.' '.$maven_Key.' AND ('.$version;
+        $l = $l . ' ' . $maven_Key . ' AND (' . $version;
 
         /** On supprime le dernier OR */
         $rtrimOr = rtrim($l, " OR ");
-        return $rtrimOr.')';
+        return $rtrimOr . ')';
     }
 
 
@@ -536,7 +555,7 @@ class AccueilController extends AbstractController
 
         $liste = [];
         /** Si la liste de favoris pour les versions est activée et que le nombre de projet > 0  */
-        if ($statutFavoriVersion === true && count($listeFavoriVersion) > 0){
+        if ($statutFavoriVersion === true && count($listeFavoriVersion) > 0) {
             /** Nombre de projets  */
             $keys = array_values($listeFavoriVersion);
             /** pour chaque projet */
@@ -548,11 +567,11 @@ class AccueilController extends AbstractController
         }
 
         $data = [
-                    'code' => $liste['code'] ?? 200,
-                    'statut' => $statutFavoriVersion,
-                    'liste_version' => $liste,
-                    'nombre_projet' => count($listeFavoriVersion)
-                ];
+            'code' => $liste['code'] ?? 200,
+            'statut' => $statutFavoriVersion,
+            'liste_version' => $liste,
+            'nombre_projet' => count($listeFavoriVersion)
+        ];
         return new JsonResponse($data, Response::HTTP_OK);
     }
 
@@ -567,7 +586,7 @@ class AccueilController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/accueil', name: 'accueil', methods:'GET')]
+    #[Route('/accueil', name: 'accueil', methods: 'GET')]
     public function index(): Response
     {
         /**
@@ -595,13 +614,23 @@ class AccueilController extends AbstractController
         /** On initialise le tableau */
         $render = $this->genericRender();
         $render += array_fill_keys([
-            'refresh_bd', 'projet_bd', 'projet_sonar', 'profil_bd', 'profil_sonar',
-            'composant', 'nombre_projet_favori', 'favori', 'public', 'private',
-            'nombre_projet_local', 'nombre_tag', 'version_serveur_sonar'
+            'refresh_bd',
+            'projet_bd',
+            'projet_sonar',
+            'profil_bd',
+            'profil_sonar',
+            'composant',
+            'nombre_projet_favori',
+            'favori',
+            'public',
+            'private',
+            'nombre_projet_local',
+            'nombre_tag',
+            'version_serveur_sonar'
         ], 0);
 
         /** Le tableau des properties et il y a un code 500 */
-        if (!empty($properties) && array_key_exists('code', $properties) && $properties['code'] !== 200){
+        if (!empty($properties) && array_key_exists('code', $properties) && $properties['code'] !== 200) {
             return $this->render(static::$page, $render);
         }
 
@@ -618,12 +647,14 @@ class AccueilController extends AbstractController
         /** ----- Projet ------ */
         /** Si la base n'a pas été mise à jour, on récupère le nombre de projet */
         // $dateModProjet doit être de type DateTimeInterface.
-        if (date_diff($dateModProjet, $date)->format('%a') >=
-        $this->getParameter('maj.projet')) {
+        if (
+            date_diff($dateModProjet, $date)->format('%a') >=
+            $this->getParameter('maj.projet')
+        ) {
             $this->logger->info('[Accueil] ℹ️ Vérification projet requise.');
             /** On récupère le nombre de projet depuis le serveur sonar */
             $projetSonar = static::getCountProjetSonar();
-            if ($projetSonar === -1){
+            if ($projetSonar === -1) {
                 return $this->render(static::$page, $render);
             }
             /** On récupère le nombre de projet en base */
@@ -639,8 +670,10 @@ class AccueilController extends AbstractController
         /**
          * Si la base n'a pas été mise à jour, on récupère le nombre de projet
          */
-        if (date_diff($dateModProfil, $date)->format('%a') >=
-        $this->getParameter('maj.profil')) {
+        if (
+            date_diff($dateModProfil, $date)->format('%a') >=
+            $this->getParameter('maj.profil')
+        ) {
             $this->logger->info('[Accueil] ℹ️ Vérification profil requise.');
             /** On récupère le nombre de profil en base. */
             $profilBd = static::getCountProfilBD();
@@ -648,7 +681,7 @@ class AccueilController extends AbstractController
             /** On récupère le nombre de projet depuis le serveur sonar */
             $profilSonar = static::getCountProfilSonar();
 
-            if ($profilSonar === -1){
+            if ($profilSonar === -1) {
                 return $this->render(static::$page, $render);
             }
             $dateVerificationProfil = true;
@@ -664,16 +697,18 @@ class AccueilController extends AbstractController
             /**
              * Si le nombre de projetSonar est différent de projetBD alors on envoi un message à l'utilisateur pour qu'il mette à jour.
              */
-            $this->addFlash('info',
+            $this->addFlash(
+                'info',
                 [
                     'type' => 'primary',
                     'message' => '📌 Vous devez mettre à jour le référentiel local pour les ',
                     'ref' => 'PROJETS'
-            ]);
+                ]
+            );
         } elseif ($dateVerificationProjet && $projetSonar === $projetBd && $projetSonar !== $properties['projet_sonar']) {
-        /**
-         * Si le référentiel sonar est égale de celui sur le serveur et que la table de properties n'est pas à jour, on met à jour la table.
-         */
+            /**
+             * Si le référentiel sonar est égale de celui sur le serveur et que la table de properties n'est pas à jour, on met à jour la table.
+             */
             $this->majProperties('projet', $projetBd, $projetSonar);
         }
 
@@ -683,16 +718,18 @@ class AccueilController extends AbstractController
             /**
              * Si le nombre de projetSonar est différent de projetBD alors on envoi un message à l'utilisateur pour qu'il mette à jour.
              */
-            $this->addFlash('info',
+            $this->addFlash(
+                'info',
                 [
                     'type' => 'primary',
                     'message' => '📌 Vous devez mettre à jour le référentiel local pour les ',
                     'ref' => 'PROFILS'
-            ]);
-        } elseif ($dateVerificationProfil && $profilSonar === $profilBd && $profilSonar !== $properties['profil_sonar']){
-        /**
-         * Si le référentiel sonar est égale de celui sur le serveur et que la table de properties n'est pas à jour, on met à jour la table.
-        */
+                ]
+            );
+        } elseif ($dateVerificationProfil && $profilSonar === $profilBd && $profilSonar !== $properties['profil_sonar']) {
+            /**
+             * Si le référentiel sonar est égale de celui sur le serveur et que la table de properties n'est pas à jour, on met à jour la table.
+             */
             $this->majProperties('profil', $profilBd, $profilSonar);
         }
 
@@ -711,11 +748,13 @@ class AccueilController extends AbstractController
 
         /** si la dernière version en base est inférieure, on renvoie une alerte ; */
         if ($versionApp !== $versionBd) {
-            $this->addFlash('notice',
+            $this->addFlash(
+                'notice',
                 [
                     'type' => 'warning',
                     'message' => "⚠️ La base de données est en version $versionBd. Vous devez passer le script de migration $versionApp."
-                ]);
+                ]
+            );
         }
 
         /** On va chercher les projets favoris ou les versions des projets */
@@ -725,7 +764,7 @@ class AccueilController extends AbstractController
         /** On a choisi la liste des projets favori
          *  sinon la liste des versions
          *  sinon rien
-        */
+         */
         if ($favoriProjet->statut && $favoriProjet->code !== 500) {
             $favori = $favoriProjet->liste_favori;
             $nombreProjet = $favoriProjet->nombre_projet;
@@ -744,7 +783,7 @@ class AccueilController extends AbstractController
         $sonar_version = self::getSonarQubeVersion();
 
         /** On récupère le rôle de l'utilisateur  */
-        $refreshBD = $this->isGranted('ROLE_COLLECTE');
+        $refreshBD = $this->isGranted('ROLE_GESTIONNAIRE');
 
         /** On met à jour les données avant d'afficher la page */
         $render['refresh_bd'] = $refreshBD;
@@ -759,7 +798,7 @@ class AccueilController extends AbstractController
         $render['private'] = $private;
         $render['nombre_projet_local'] = $projetBd;
         $render['nombre_tag'] = $tag['nombre'][0]['tag'];
-        $render['version_serveur_sonar'] = ($sonar_version != -1)? $sonar_version : 'Version inconnue.';
+        $render['version_serveur_sonar'] = ($sonar_version != -1) ? $sonar_version : 'Version inconnue.';
 
         $this->logger->info("[Accueil] ℹ️ Rendu final de la page d'accueil.");
         return $this->render(static::$page, $render);
