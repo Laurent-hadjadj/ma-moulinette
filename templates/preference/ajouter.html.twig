@@ -31,17 +31,17 @@
 		<br>
 
 		<header class="grid-container margin-top-1">
-			<nav aria-label="Ici : " role="navigation">
-				<ul class="claire-hand breadcrumbs">
+			{# WCAG 2.4.8 / 4.1.1 : aria-label explicite ; <nav> a déjà le role="navigation" implicite (à retirer) ; <ol> pour la sémantique ordonnée ; aria-current="page" sur l'élément courant #}
+			<nav aria-label="Fil d'Ariane, vous êtes ici">
+				<ol class="claire-hand breadcrumbs">
 					<li>
 						<a href="{{ path('accueil', {}) }}">Accueil</a>
 					</li>
 					<li>
 						<a href="{{ path('preferences', {}) }}">Mes préférences</a>
 					</li>
-					<li>
-						<span class="show-for-sr">Current:</span>Ajouter</li>
-				</ul>
+					<li aria-current="page">Ajouter</li>
+				</ol>
 			</nav>
 		</header>
 
@@ -61,7 +61,8 @@
 				{# Avatar + Prénom + Nom #}
 				<div class="grid-x">
 					<div class="small-12 medium-1 large-1 cell avatar-container">
-						<img id="mon-avatar" src="{{ asset('build/avatar/{{avatar}}') }}" alt="mon Avatar"/>
+						{# WCAG 1.1.1 : alt décoratif "" car l'avatar est accompagné immédiatement du prénom/nom lisible #}
+					<img id="mon-avatar" src="{{ asset('build/avatar/{{avatar}}') }}" alt=""/>
 					</div>
 					<div class="small-12 medium-11 large-11 cell">
 						<p class="open-sans prenom-nom-ajouter">{{prenom}}
@@ -161,7 +162,8 @@
 
 				{# Modal information #}
 				<div class="reveal" id="informationModal" aria-labelledby="informationModalHeader" data-reveal aria-modal="true">
-					<h1 id="informationModalHeader" class="h2 claire-hand">A propos du filtre.</h1>
+					{# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page ; titre de la modale descendu en <h2> #}
+					<h2 id="informationModalHeader" class="h2 claire-hand">A propos du filtre.</h2>
 					<p class="open-sans text-justify">Le filtre permet d'afficher les projets rattachés à une équipe. Il faut donc :
 					</p>
 					<ol class="open-sans">
