@@ -30,31 +30,31 @@
     {{ include('header.html.twig') }}
 
     <header class="grid-container margin-top-1">
-      <nav aria-label="vous êtes Ici : ">
-        <ul class="claire-hand breadcrumbs">
+      {# WCAG 2.4.8 : aria-label enrichi ; <ol> à la place de <ul> ; aria-current="page" #}
+      <nav aria-label="Fil d'Ariane, vous êtes ici">
+        <ol class="claire-hand breadcrumbs">
           <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
           <li><a href="{{ path('projet', {}) }}">Projet</a></li>
-          <li><span class="show-for-sr">Vous êtes sur la page : suivi</span>Suivi</li>
-        </ul>
+          <li aria-current="page">Suivi</li>
+        </ol>
       </nav>
     </header>
 
     {# Message d'information php #}
     {{ include('_message.html.twig') }}
 
-    <header class="grid-container"
+    {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page ; les deux <h1> existants sont rétrogradés en <h2>, le <h2> descend en <h3>. aria-describedby auto-référents retirés. aria-label redondants retirés. Ajout de id="main-content" (cible du skip link). #}
+    <header id="main-content" class="grid-container"
               aria-labelledby="titre-sonarqube">
-      <h1 id="titre-sonarqube" class="h3 claire-hand" aria-label="Collecte et analyse des indicateurs SonarQube" aria-describedby="titre-sonarqube"><span aria-hidden="true">📊</span>Collecte et analyse des indicateurs SonarQube</h1>
+      <h2 id="titre-sonarqube" class="h3 claire-hand"><span aria-hidden="true">📊</span>Collecte et analyse des indicateurs SonarQube</h2>
       <div class="show-for-sr">Sur cette page, vous pouvez collecter et visualiser les métriques clés de vos projets SonarQube.</div>
     </header>
 
     {# En-tête #}
     <header id="element1-to-print" class="pleine-page">
-      <h1 id="titre-js-nom" class="h3 claire-hand"
-          aria-label="Tableaux de suivi du projet"
-          aria-describedby="titre-js-nom"
+      <h2 id="titre-js-nom" class="h3 claire-hand"
           data-maven="{{mavenKey}}"><span aria-hidden="true">🧭</span>Suivi des indicateurs pour {{nom}}
-      </h1>
+      </h2>
       <div class="show-for-sr">
         Cette page présente les principaux indicateurs de suivi du projet et permet de générer un rapport PDF, d'ajouter une version dans l'historique et de modifier la version de référence ou favorite.
       </div>
@@ -65,12 +65,12 @@
       {% else %}
         {% set s="" %}
       {% endif %}
-      <h2 class="h4 claire-hand">
+      <h3 class="h4 claire-hand">
           <span id="affiche-total-profil" class="mini-stat">
             <span aria-hidden="true">🗂️</span>{{nombre | default('0') }}</span>
             <span>version{{s}} sélectionnée{{s}} pour ce projet.</span>
           </span>
-      </h2>
+      </h3>
     </header>
 
     {# Affichage du suivi des anomalies #}
