@@ -7,164 +7,130 @@ use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
 /**
- * [Description HistoriqueFixtures]
+ * Fixture Historique — version alignée avec le refactor v2.0.0 de l'entité.
+ *
+ * Correspondances principales (old → new) :
+ *   setNombreLigne        → setLines
+ *   setNombreLigneCode    → setNcloc
+ *   setNombreBug          → setBugs
+ *   setNombreVulnerability→ setVulnerabilities
+ *   setNombreCodeSmell    → setCodeSmells
+ *   setNombreHotspot      → setSecurityHotspot
+ *   setNombreAnomalieXxx  → setBlocker/Critical/Major/Minor/Info Violations
+ *   setFrontend/Backend/Autre/inconnu → setRepartitionFrontend/Backend/Autre/Inconnu
+ *   setDette              → setSqaleIndex
+ *   setNoteReliability    → setReliabilityRating
+ *   setNoteSecurity       → setSecurityRating
+ *   setNoteSqale          → setSqaleRating
+ *   setNoteHotspot        → setSecurityReviewRating
+ *   setHotspot{High,Med,Low}  → setMenacePotentielleToReview{High,Medium,Low}
+ *   setNoSonar            → setJavaNoSonar (+ Php/Python/Javascript/Typescript/Ruby/Xml)
+ *   setTodo               → setJavaTodo   (+ Php/Python/Javascript/Typescript/Ruby/Xml)
+ *   setInitial('true')    → setInitial(true)   (typage bool strict)
  */
 class HistoriqueFixtures extends Fixture
 {
-
-  /**
-   * [Description for load]
-   * Chargement des utilisateurs
-   *
-   * @param ObjectManager $manager
-   *
-   * @return void
-   *
-   * Created at: 05/05/2024 18:43:05 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  public function load(ObjectManager $manager): void
+    /**
+     * Jeu de données historique pour deux versions du projet ma-moulinette.
+     */
+    public function load(ObjectManager $manager): void
     {
-      $historique = (new Historique())
-          ->setMavenKey('fr.ma-petite-entreprise:ma-moulinette')
-          ->setAnalyseKey('AZCc05qWgfifxdiJPzns')
-          ->setVersion('1.2.0-RELEASE')
-          ->setDateVersion('2024-07-12 16:34:46')
-          ->setNomProjet('ma-moulinette')
-          ->setVersionRelease('0')
-          ->setVersionSnapshot('0')
-          ->setVersionAutre('1')
-          ->setSuppressWarning('8')
-          ->setNoSonar('0')
-          ->setTodo('17')
-          ->setLoggerInfo('14')
-          ->setLoggerWarn('0')
-          ->setLoggerError('15')
-          ->setLoggerDebug('8')
-          ->setNombreLigne('17049')
-          ->setNombreLigneCode('8928')
-          ->setFiles('180')
-          ->setFunctions('226')
-          ->setClasses('123')
-          ->setFunctions('457')
-          ->setCoverage('50.1')
-          ->setDuplicatedLinesDensity('0.2')
-          ->setSqaleDebtRatio('1')
-          ->setTests('55')
-          ->setViolations('295')
-          ->setDette('3054')
-          ->setNombreBug('88')
-          ->setNombreVulnerability('9')
-          ->setNombreCodeSmell('198')
-          ->setBugBlocker('7')
-          ->setBugCritical('0')
-          ->setBugMajor('44')
-          ->setBugMinor('0')
-          ->setBugInfo('37')
-          ->setVulnerabilityBlocker('0')
-          ->setVulnerabilityCritical('9')
-          ->setVulnerabilityMajor('0')
-          ->setVulnerabilityMinor('0')
-          ->setVulnerabilityInfo('0')
-          ->setCodeSmellBlocker('0')
-          ->setCodeSmellCritical('4')
-          ->setCodeSmellMajor('109')
-          ->setCodeSmellMinor('13')
-          ->setCodeSmellInfo('72')
-          ->setFrontend('21')
-          ->setBackend('136')
-          ->setAutre('0')
-          ->setinconnu('10')
-          ->setNombreAnomalieBloquant('7')
-          ->setNombreAnomalieCritique('13')
-          ->setNombreAnomalieMajeur('153')
-          ->setNombreAnomalieMineur('13')
-          ->setNombreAnomalieInfo('109')
-          ->setNoteReliability('E')
-          ->setNoteSecurity('D')
-          ->setNoteSqale('A')
-          ->setNoteHotspot('A')
-          ->setNombreHotspot('0')
-          ->setHotspotHigh('0')
-          ->setHotspotMedium('0')
-          ->setHotspotLow('0')
-          ->setInitial('true')
-          ->setModeCollecte('COLLECTE')
-          ->setUtilisateurCollecte('admin@ma-moulinette.fr')
-          ->setDateEnregistrement(new \DateTimeImmutable('2024-06-28 17:55:45+02'));
-          $manager->persist($historique);
+        foreach ($this->rows() as $row) {
+            $historique = (new Historique())
+                ->setMavenKey('fr.ma-petite-entreprise:ma-moulinette')
+                ->setAnalyseKey('AZCc05qWgfifxdiJPzns')
+                ->setVersion($row['version'])
+                ->setDateVersion($row['dateVersion'])
+                ->setNomProjet('ma-moulinette')
+                ->setVersionRelease($row['versionRelease'])
+                ->setVersionSnapshot(0)
+                ->setVersionAutre(1)
+                ->setSuppressWarning(8)
+                ->setJavaNoSonar(0)
+                ->setJavaTodo(17)
+                ->setLoggerInfo(14)
+                ->setLoggerWarn(0)
+                ->setLoggerError(15)
+                ->setLoggerDebug(8)
+                ->setLines(17049)
+                ->setNcloc(8928)
+                ->setFiles(180)
+                ->setClasses(123)
+                ->setFunctions(457)
+                ->setCoverage(50.1)
+                ->setDuplicatedLinesDensity(0.2)
+                ->setSqaleDebtRatio(1.0)
+                ->setSqaleIndex(3054)
+                ->setTests(55)
+                ->setViolations(295)
+                ->setBugs(88)
+                ->setVulnerabilities(9)
+                ->setCodeSmells(198)
+                ->setBugBlocker(7)
+                ->setBugCritical(0)
+                ->setBugMajor(44)
+                ->setBugMinor(0)
+                ->setBugInfo(37)
+                ->setVulnerabilityBlocker(0)
+                ->setVulnerabilityCritical(9)
+                ->setVulnerabilityMajor(0)
+                ->setVulnerabilityMinor(0)
+                ->setVulnerabilityInfo(0)
+                ->setCodeSmellBlocker(0)
+                ->setCodeSmellCritical(4)
+                ->setCodeSmellMajor(109)
+                ->setCodeSmellMinor(13)
+                ->setCodeSmellInfo(72)
+                ->setRepartitionFrontend(21)
+                ->setRepartitionBackend(136)
+                ->setRepartitionAutre(0)
+                ->setRepartitionInconnu($row['inconnu'])
+                ->setBlockerViolations(7)
+                ->setCriticalViolations(13)
+                ->setMajorViolations(153)
+                ->setMinorViolations(13)
+                ->setInfoViolations(109)
+                ->setReliabilityRating('E')
+                ->setSecurityRating('D')
+                ->setSqaleRating('A')
+                ->setSecurityReviewRating('A')
+                ->setSecurityHotspot(0)
+                ->setMenacePotentielleToReviewHigh(0)
+                ->setMenacePotentielleToReviewMedium(0)
+                ->setMenacePotentielleToReviewLow(0)
+                ->setInitial($row['initial'])
+                ->setModeCollecte('COLLECTE')
+                ->setUtilisateurCollecte('admin@ma-moulinette.fr')
+                ->setDateEnregistrement(new \DateTimeImmutable($row['dateEnregistrement']));
+            $manager->persist($historique);
+        }
 
-          $historique2 = (new Historique())
-          ->setMavenKey('fr.ma-petite-entreprise:ma-moulinette')
-          ->setAnalyseKey('AZCc05qWgfifxdiJPzns')
-          ->setVersion('1.2.3-RELEASE')
-          ->setDateVersion('2024-08-18 15:54:26')
-          ->setNomProjet('ma-moulinette')
-          ->setVersionRelease('1')
-          ->setVersionSnapshot('0')
-          ->setVersionAutre('1')
-          ->setSuppressWarning('8')
-          ->setNoSonar('0')
-          ->setTodo('17')
-          ->setLoggerInfo('14')
-          ->setLoggerWarn('0')
-          ->setLoggerError('15')
-          ->setLoggerDebug('8')
-          ->setNombreLigne('17049')
-          ->setNombreLigneCode('8928')
-          ->setFiles('180')
-          ->setFunctions('226')
-          ->setClasses('123')
-          ->setFunctions('457')
-          ->setCoverage('50.1')
-          ->setDuplicatedLinesDensity('0.2')
-          ->setSqaleDebtRatio('1')
-          ->setTests('55')
-          ->setViolations('295')
-          ->setDette('3054')
-          ->setNombreBug('88')
-          ->setNombreVulnerability('9')
-          ->setNombreCodeSmell('198')
-          ->setBugBlocker('7')
-          ->setBugCritical('0')
-          ->setBugMajor('44')
-          ->setBugMinor('0')
-          ->setBugInfo('37')
-          ->setVulnerabilityBlocker('0')
-          ->setVulnerabilityCritical('9')
-          ->setVulnerabilityMajor('0')
-          ->setVulnerabilityMinor('0')
-          ->setVulnerabilityInfo('0')
-          ->setCodeSmellBlocker('0')
-          ->setCodeSmellCritical('4')
-          ->setCodeSmellMajor('109')
-          ->setCodeSmellMinor('13')
-          ->setCodeSmellInfo('72')
-          ->setFrontend('21')
-          ->setBackend('136')
-          ->setAutre('0')
-          ->setinconnu('5')
-          ->setNombreAnomalieBloquant('7')
-          ->setNombreAnomalieCritique('13')
-          ->setNombreAnomalieMajeur('153')
-          ->setNombreAnomalieMineur('13')
-          ->setNombreAnomalieInfo('109')
-          ->setNoteReliability('E')
-          ->setNoteSecurity('D')
-          ->setNoteSqale('A')
-          ->setNoteHotspot('A')
-          ->setNombreHotspot('0')
-          ->setHotspotHigh('0')
-          ->setHotspotMedium('0')
-          ->setHotspotLow('0')
-          ->setInitial('false')
-          ->setModeCollecte('COLLECTE')
-          ->setUtilisateurCollecte('admin@ma-moulinette.fr')
-          ->setDateEnregistrement(new \DateTimeImmutable('2024-08-28 14:25:15+02'));
-          $manager->persist($historique2);
-
-      /** Enregistrement des données dans la base de tests */
+        /** Enregistrement des données dans la base de tests */
         $manager->flush();
     }
-  }
+
+    /**
+     * @return array<int, array<string, mixed>>
+     */
+    private function rows(): array
+    {
+        return [
+            [
+                'version'            => '1.2.0-RELEASE',
+                'dateVersion'        => '2024-07-12 16:34:46',
+                'versionRelease'     => 0,
+                'inconnu'            => 10,
+                'initial'            => true,
+                'dateEnregistrement' => '2024-06-28 17:55:45+02',
+            ],
+            [
+                'version'            => '1.2.3-RELEASE',
+                'dateVersion'        => '2024-08-18 15:54:26',
+                'versionRelease'     => 1,
+                'inconnu'            => 5,
+                'initial'            => false,
+                'dateEnregistrement' => '2024-08-28 14:25:15+02',
+            ],
+        ];
+    }
+}
