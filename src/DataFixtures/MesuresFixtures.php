@@ -12,18 +12,22 @@ use Doctrine\Persistence\ObjectManager;
 class MesuresFixtures extends Fixture
 {
 
+  // v2.0.0 : refactor de l'entité Mesures.
+  //  - `languageDistribution` (array) : champ supprimé (plus dans l'entité).
+  //  - `issues` (int agrégé) : remplacé par des compteurs granulaires (openIssues,
+  //    maintainabilityIssues, reliabilityIssues, securityIssues, etc.).
+  //    Ici on utilise `openIssues` comme approximation compatible.
   private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
   private static $projectName = 'Ma-Moulinette';
   private static $lines = 22015;
   private static $ncloc = 10043;
-  private static $languageDistribution = ['java' => 4278, 'ts' => 18690];
   private static $files = 18;
   private static $classes = 26;
   private static $functions = 52;
   private static $coverage = 10.3;
   private static $duplicatedLinesDensity = 5.1;
   private static $sqaleDebtRatio = 26.0;
-  private static $issues = 200;
+  private static $openIssues = 200;
   private static $tests = 123;
   private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
   private static $dateEnregistrement = '2024-04-12 16:23:11+01';
@@ -39,14 +43,13 @@ class MesuresFixtures extends Fixture
             ->setProjectName(static::$projectName)
             ->setLines(static::$lines)
             ->setNcloc(static::$ncloc)
-            ->setLanguageDistribution(static::$languageDistribution)
             ->setFiles(static::$files)
             ->setClasses(static::$classes)
             ->setFunctions(static::$functions)
             ->setCoverage(static::$coverage)
             ->setDuplicatedLinesDensity(static::$duplicatedLinesDensity)
             ->setSqaleDebtRatio(static::$sqaleDebtRatio)
-            ->setIssues(static::$issues)
+            ->setOpenIssues(static::$openIssues)
             ->setTests(static::$tests)
             ->setModeCollecte($mode)
             ->setUtilisateurCollecte(static::$utilisateurCollecte)
