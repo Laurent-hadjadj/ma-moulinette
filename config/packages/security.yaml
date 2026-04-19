@@ -1,11 +1,10 @@
 ---
 security:
-    # On ne lève pas une exception si l'utilisateur n'existe pas
-    hide_user_not_found: false
 
     role_hierarchy:
         ROLE_UTILISATEUR: []
         ROLE_COLLECTE: ['ROLE_UTILISATEUR']
+        ROLE_SUIVI: ['ROLE_UTILISATEUR']
         ROLE_BATCH: ['ROLE_UTILISATEUR']
         ROLE_ACTUATOR: ['ROLE_UTILISATEUR']
         ROLE_GESTIONNAIRE: ['ROLE_UTILISATEUR']
