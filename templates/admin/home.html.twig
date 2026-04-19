@@ -1,0 +1,126 @@
+{% extends '@EasyAdmin/layout.html.twig' %}
+
+{% block page_title %}EasyAdmin - Accueil{% endblock %}
+
+{% block content %}
+{# WCAG 2.4.1 : id="main-content" (cible du skip link) #}
+<main id="main-content" class="ea-content">
+    {# WCAG 1.3.1 / 2.4.6 : le layout EasyAdmin fournit déjà un <h1> ; on descend d'un niveau (h1->h2, h2->h3) #}
+    <h2 class="claire-hand">Bienvenue sur EasyAdmin</h2>
+    <h3 class="claire-hand">Portail de gestion et d'administration</h3>
+
+    <p class="open-sans text-center font-size-11">Sélectionnez une section</p>
+
+    <div class="row">
+        <!-- Utilisateurs -->
+        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+        <a href="{{ ea_url().setController('App\\Controller\\Admin\\UtilisateurCrudController') }}"
+            class="dashboard-card card-users">
+                <div class="dashboard-card-top">
+                <i class="fas fa-user"></i>
+                <h3 class="open-sans">Utilisateurs</h3>
+                </div>
+
+                <div class="dashboard-card-bottom">
+                    <p class="open-sans font-size-1">Création, modification et suppression d'utilisateurs.</p>
+                </div>
+        </a>
+    </div>
+
+        <!-- Groupes -->
+        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+            <a href="{{ ea_url().setController('App\\Controller\\Admin\\GroupeUtilisateurCrudController') }}"
+                class="dashboard-card card-groups">
+                <div class="dashboard-card-top">
+                    <i class="fas fa-user-group"></i>
+                    <h3 class="open-sans">Groupe Utilisateur</h3>
+                </div>
+                <div class="dashboard-card-bottom">
+                    <p class="open-sans font-size-1">Gérer les groupes utilisateurs de l'application.</p>
+                </div>
+                </a>
+        </div>
+
+        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+            <a href="{{ ea_url().setController('App\\Controller\\Admin\\GroupeFonctionnelCrudController') }}"
+                class="dashboard-card card-groups">
+                <div class="dashboard-card-top">
+                    <i class="fas fa-stamp"></i>
+                    <h3 class="open-sans">Groupe Fonctionnel</h3>
+                </div>
+                <div class="dashboard-card-bottom">
+                    <p class="open-sans font-size-1">Gérer les groupes fonctionnels liés aux tags SonarQube.</p>
+                </div>
+                </a>
+        </div>
+
+        <!-- Portefeuille -->
+        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+            <a href="{{ ea_url().setController('App\\Controller\\Admin\\PortefeuilleCrudController') }}" class="dashboard-card card-wallet">
+                <div class="dashboard-card-top">
+                    <i class="fas fa-wallet"></i>
+                    <h3 class="open-sans">Portefeuilles</h3>
+                </div>
+                <div class="dashboard-card-bottom">
+                    <p class="open-sans font-size-1">Gestion des portefeuilles de projets</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Batch -->
+        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+            <a href="{{ ea_url().setController('App\\Controller\\Admin\\BatchCrudController') }}" class="dashboard-card card-batch">
+                <div class="dashboard-card-top">
+                    <i class="fas fa-cogs"></i>
+                    <h3 class="open-sans">Traitements de données</h3>
+                </div>
+                <div class="dashboard-card-bottom">
+                        <p class="open-sans font-size-1">Gestion des traitements de données.</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Suivi batch -->
+        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+            <a href="{{ path('admin_batch_suivi') }}"
+                class="dashboard-card card-batch">
+                <div class="dashboard-card-top">
+                    <i class="fas fa-tasks"></i>
+                    <h3 class="open-sans">Suivi Traitements</h3>
+                </div>
+                <div class="dashboard-card-bottom">
+                    <p class="open-sans font-size-1">Suivi des traitements de collecte.</p>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Statistiques -->
+    <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+        <a href="{{ path('admin_stats') }}"
+            class="dashboard-card card-stats">
+            <div class="dashboard-card-top">
+                <i class="fas fa-chart-bar"></i>
+                <h3 class="open-sans">Statistiques</h3>
+            </div>
+            <div class="dashboard-card-bottom">
+                <p class="open-sans font-size-1">Suivi des métriques de l'application.</p>
+            </div>
+        </a>
+    </div>
+</main>
+{% endblock %}
+
+{% block configured_body_contents %}
+<footer class="raw footer">
+    <div class="footer-padding">
+        <div class="d-flex justify-content-between mb-3">
+            <div class="copyright">©
+            {{dateCopyright}}
+            - CC BY-SA-NC 4.0</div>
+            <div class="null"></div>
+            <div class="auteur color-blanc">Laurent HADJADJ</div>
+        </div>
+    </div>
+</footer>
+{% endblock %}
