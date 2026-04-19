@@ -16,7 +16,7 @@ namespace App\Controller\Auth;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\{RedirectResponse, Response};
-use Symfony\Component\Routing\Annotation\Route;
+use \Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Psr\Log\LoggerInterface;
@@ -144,7 +144,7 @@ class LoginController extends AbstractController
         }
 
         $render = static::genericRender();
-        $render['error'] = $this->authenticationUtils->getLastAuthenticationError();
+        $render['error'] = $error;
         $render['type_footer'] = 'complet';
 
         return $this->render('auth/login.html.twig', $render);
