@@ -20,20 +20,12 @@ return [
         'path' => './assets/js/auth/login.js',
         'entrypoint' => true,
     ],
-    'register' => [
-        'path' => './assets/js/auth/register.js',
-        'entrypoint' => true,
-    ],
     'reset' => [
         'path' => './assets/js/auth/reset.js',
         'entrypoint' => true,
     ],
     'admin-log' => [
         'path' => './assets/js/mon-application/admin-log/app-admin-log.js',
-        'entrypoint' => true,
-    ],
-    'welcome' => [
-        'path' => './assets/js/auth/welcome.js',
         'entrypoint' => true,
     ],
     'accueil' => [
@@ -88,14 +80,6 @@ return [
         'path' => './assets/js/mon-application/profiling/index-profiling.js',
         'entrypoint' => true,
     ],
-    'easyBatch' => [
-        'path' => './assets/js/easy-admin/batch.js',
-        'entrypoint' => true,
-    ],
-    'easyAdmin' => [
-        'path' => './assets/js/easy-admin/admin.js',
-        'entrypoint' => true,
-    ],
     'footer-donnees-personnelles' => [
         'path' => './assets/js/footer/donnees-personnelles.js',
         'entrypoint' => true,
@@ -106,6 +90,18 @@ return [
     ],
     'footer-plan-du-site' => [
         'path' => './assets/js/footer/plan-du-site.js',
+        'entrypoint' => true,
+    ],
+    'easy-admin' => [
+        'path' => './assets/js/easy-admin/admin.js',
+        'entrypoint' => true,
+    ],
+    'easy-footer' => [
+        'path' => './assets/js/easy-admin/footer.js',
+        'entrypoint' => true,
+    ],
+    'easy-groupe-fonctionnel' => [
+        'path' => './assets/js/easy-admin/groupe-fonctionnel.js',
         'entrypoint' => true,
     ],
     'jquery' => [
