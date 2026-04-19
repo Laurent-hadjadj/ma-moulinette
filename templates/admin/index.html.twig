@@ -2,8 +2,9 @@
 {% block page_title %}Informations générales.{% endblock %}
 
 {% block main %}
-  <h1 class="h3 open-sans">Informations générales.</h1>
-  <h2 class="h4 open-sans">Système.</h2>
+  {# WCAG 1.3.1 / 2.4.6 : le layout EasyAdmin fournit déjà un <h1> ; descente d'un niveau de toute la hiérarchie (h1->h2, h2->h3, h3->h4) #}
+  <h2 class="h3 open-sans">Informations générales.</h2>
+  <h3 class="h4 open-sans">Système.</h3>
   <div class="row">
     <div class="col-sm-12 col-md-3 col-lg-2">
       <div class="card border-dark mb-3 card-font-size">
@@ -56,7 +57,7 @@
     </div>
   </div>
 
-  <h2 class="h4 open-sans">Ma Moulinette.</h2>
+  <h3 class="h4 open-sans">Ma Moulinette.</h3>
   <div class="row">
     <div class="col-sm-12 col-md-3 col-lg-2">
       <div class="card border-dark mb-3 card-font-size">
@@ -100,7 +101,7 @@
     </div>
   </div>
 
-  <h2 class="h4 open-sans">PostgreSQL.</h2>
+  <h3 class="h4 open-sans">PostgreSQL.</h3>
   <div class="row">
     <div class="col-sm-12 col-md-3 col-lg-3">
       <div class="card border-dark mb-3 card-font-size">
@@ -148,7 +149,7 @@
         </div>
       </div>
     </div>
-    <h3 class="h5 open-sans">Database</h3>
+    <h4 class="h5 open-sans">Database</h4>
     <div class="col-sm-12 col-md-3 col-lg-3">
       <div class="card border-dark mb-3 card-font-size">
         <div class="card-header text-center tool-tip">Rollback
@@ -190,7 +191,7 @@
       </div>
     </div>
 
-    <h3 class="h5 open-sans">Tables</h3>
+    <h4 class="h5 open-sans">Tables</h4>
     <div class="col-sm-12 col-md-3 col-lg-3">
       <div class="card border-dark mb-3 card-font-size">
         <div class="card-header text-center tool-tip">Balayage seq.
@@ -232,7 +233,7 @@
       </div>
     </div>
 
-    <h3 class="h5 open-sans">Indexes</h3>
+    <h4 class="h5 open-sans">Indexes</h4>
     <div class="col-sm-12 col-md-3 col-lg-3">
       <div class="card border-dark mb-3 card-font-size">
         <div class="card-header text-center tool-tip">Utilisation.
@@ -273,7 +274,7 @@
       </div>
     </div>
 
-    <h3 class="h5 open-sans">Requêtes</h3>
+    <h4 class="h5 open-sans">Requêtes</h4>
     <div class="col-sm-12 col-md-3 col-lg-3">
       <div class="card border-dark mb-3 card-font-size">
         <div class="card-header text-center tool-tip">Durée totale.
@@ -392,7 +393,7 @@
     </table>
   </div>
 
-  <h2 class="h4 open-sans">Mes projets.</h2>
+  <h3 class="h4 open-sans">Mes projets.</h3>
   <div class="row">
     <div class="col-sm-12 col-md-3 col-lg-2">
       <div class="card border-dark mb-3 card-font-size">
@@ -470,7 +471,7 @@
     </div>
   </div>
 
-  <h2 class="h4 open-sans">Mesures globales.</h2>
+  <h3 class="h4 open-sans">Mesures globales.</h3>
   <div class="row">
     <div class="col-sm-12 col-md-3 col-lg-3">
       <div class="card border-dark mb-3 card-font-size">
