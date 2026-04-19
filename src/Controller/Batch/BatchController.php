@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\{JsonResponse, Response, Request};
-use Symfony\Component\Routing\Annotation\Route;
+use \Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{BatchTraitement, BatchExecution, BatchExecutionJournal};
@@ -91,7 +91,7 @@ class BatchController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/secure/traitement/information', name: 'traitement_information', methods:'POST')]
+    #[Route('/api/secure/traitement/information', name: 'traitement_information', methods: ['POST'])]
     public function traitementInformation(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/secure/traitement/information");
@@ -117,8 +117,8 @@ class BatchController extends AbstractController
         /** On récupère les données du POST */
         $data = json_decode($request->getContent());
 
-        if ($data === null || !property_exists($data, 'traitement_id')){
-            $this->logger->error("[Information-Traitement] ❌ Requête invalide : clé 'traitement_id' manquante ou JSON mal formé.",[
+        if ($data === null || !property_exists($data, 'traitement_id')) {
+            $this->logger->error("[Information-Traitement] ❌ Requête invalide : clé 'traitement_id' manquante ou JSON mal formé.", [
                 'utilisateur' => $user,
                 'payload' => $data
             ]);
@@ -133,10 +133,10 @@ class BatchController extends AbstractController
         /** On va chercher les infos du traitement en utilisant traitement_id */
         $traitement_info = $batchTraitementRepos->selectBatchTraitementByTraitementId($data->traitement_id);
 
-        if ($traitement_info['code'] !== 200){
-            $this->logger->alert("[Information-Traitement] ❌ Échec de la requête selectBatchTraitementByTraitementId", [
-            'code' => $traitement_info['code'],
-            'message' => $traitement_info['erreur'] ?? null
+        if ($traitement_info['code'] !== 200) {
+            $this->logger->error("[Information-Traitement] ❌ Échec de la requête selectBatchTraitementByTraitementId", [
+                'code' => $traitement_info['code'],
+                'message' => $traitement_info['erreur'] ?? null
             ]);
 
             return new JsonResponse([
@@ -152,10 +152,10 @@ class BatchController extends AbstractController
         /** On récupère le job_id du dernier traitement_id */
         $find_job_id = $batchExecutionRepos->selectBatchExecutionLastTraitementId($traitement_info['traitement_id']);
 
-        if ($find_job_id['code'] !== 200){
-            $this->logger->alert("[Information-Traitement] ❌ Échec de la requête selectBatchExecutionLastTraitementId", [
-            'code' => $find_job_id['code'],
-            'message' => $find_job_id['erreur'] ?? null
+        if ($find_job_id['code'] !== 200) {
+            $this->logger->error("[Information-Traitement] ❌ Échec de la requête selectBatchExecutionLastTraitementId", [
+                'code' => $find_job_id['code'],
+                'message' => $find_job_id['erreur'] ?? null
             ]);
 
             return new JsonResponse([
@@ -169,10 +169,10 @@ class BatchController extends AbstractController
         /** On va chercher les infos depuis batch_execution_journal */
         $count_traitement_journal = $batchExecutionJournalRepos->countBatchExecutionJournalCode($find_job_id['id']);
 
-        if ($count_traitement_journal['code'] !== 200){
-            $this->logger->alert("[Information-Traitement] ❌ Échec de la requête countBatchExecutionJournalCode.", [
-            'code' => $count_traitement_journal['code'],
-            'message' => $count_traitement_journal['erreur'] ?? null
+        if ($count_traitement_journal['code'] !== 200) {
+            $this->logger->error("[Information-Traitement] ❌ Échec de la requête countBatchExecutionJournalCode.", [
+                'code' => $count_traitement_journal['code'],
+                'message' => $count_traitement_journal['erreur'] ?? null
             ]);
 
             return new JsonResponse([
@@ -187,10 +187,10 @@ class BatchController extends AbstractController
         $projets = $batchExecutionJournalRepos
             ->selectBatchExecutionJournalNomProjetAndStatus($find_job_id['id']);
 
-        if ($projets['code'] !== 200){
-            $this->logger->alert("[Information-Traitement] ❌ Échec de la requête selectBatchExecutionJournalNomProjetAndStatus.", [
-            'code' => $projets['code'],
-            'message' => $projets['erreur'] ?? null
+        if ($projets['code'] !== 200) {
+            $this->logger->error("[Information-Traitement] ❌ Échec de la requête selectBatchExecutionJournalNomProjetAndStatus.", [
+                'code' => $projets['code'],
+                'message' => $projets['erreur'] ?? null
             ]);
 
             return new JsonResponse([
@@ -223,9 +223,9 @@ class BatchController extends AbstractController
         ];
 
         return new JsonResponse([
-                'code' => 200,
-                'message' => "Récupération des données d'information sur le traitement {$data->traitement_id}.",
-                'map' => $map,
+            'code' => 200,
+            'message' => "Récupération des données d'information sur le traitement {$data->traitement_id}.",
+            'map' => $map,
         ], Response::HTTP_OK);
     }
 
@@ -240,7 +240,7 @@ class BatchController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('api/secure/traitement/journal', name: 'traitement_journal', methods:'POST')]
+    #[Route('api/secure/traitement/journal', name: 'traitement_journal', methods: 'POST')]
     public function traitementJournal(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur api/secure/traitement/journal");
@@ -264,10 +264,12 @@ class BatchController extends AbstractController
         /** On récupère les données du POST */
         $data = json_decode($request->getContent());
 
-        if ($data === null ||
+        if (
+            $data === null ||
             !property_exists($data, 'job') ||
-            !property_exists($data, 'nom_projet')){
-            $this->logger->error("[Information-Traitement] ❌ Requête invalide : clé 'job' ou 'nom_projet' manquante ou JSON mal formé.",[
+            !property_exists($data, 'nom_projet')
+        ) {
+            $this->logger->error("[Information-Traitement] ❌ Requête invalide : clé 'job' ou 'nom_projet' manquante ou JSON mal formé.", [
                 'utilisateur' => $user,
                 'payload' => $data
             ]);
@@ -281,16 +283,16 @@ class BatchController extends AbstractController
 
         /** On va chercher les infos depuis batch_execution_journal */
         $map = [
-                'job_id' => $data->job,
-                'nom_projet' => $data->nom_projet
+            'job_id' => $data->job,
+            'nom_projet' => $data->nom_projet
         ];
 
         $get_journal = $batchExecutionJournalRepos->selectBatchExecutionJournalByJob($map);
 
-        if ($get_journal['code'] !== 200){
-            $this->logger->alert("[Information-Traitement] ❌ Échec de la requête selectBatchExecutionJournalByJob.", [
-            'code' => $get_journal['code'],
-            'message' => $get_journal['erreur'] ?? null
+        if ($get_journal['code'] !== 200) {
+            $this->logger->error("[Information-Traitement] ❌ Échec de la requête selectBatchExecutionJournalByJob.", [
+                'code' => $get_journal['code'],
+                'message' => $get_journal['erreur'] ?? null
             ]);
 
             return new JsonResponse([
@@ -308,9 +310,9 @@ class BatchController extends AbstractController
             $this->logger->warning("Le champ compte_rendu n'est pas un flux valide.");
 
             return new JsonResponse([
-                    'code' => 204,
-                    'type' => 'error',
-                    'message' => "Le journal pour le  projet {$data->nom_projet} n'a pas pu être extrait (Erreur 204).",
+                'code' => 204,
+                'type' => 'error',
+                'message' => "Le journal pour le  projet {$data->nom_projet} n'a pas pu être extrait (Erreur 204).",
             ], Response::HTTP_OK);
         }
 
@@ -323,9 +325,9 @@ class BatchController extends AbstractController
             $this->logger->warning("Le contenu du champ compte_rendu est vide.");
 
             return new JsonResponse([
-                    'code' => 204,
-                    'type' => 'warning',
-                    'message' => "Le journal n'est plus disponible pour le  projet {$data->nom_projet} (Erreur 204).",
+                'code' => 204,
+                'type' => 'warning',
+                'message' => "Le journal n'est plus disponible pour le  projet {$data->nom_projet} (Erreur 204).",
             ], Response::HTTP_OK);
         }
 
@@ -340,9 +342,9 @@ class BatchController extends AbstractController
                 $this->logger->error("Erreur lors de la décompression GZIP du compte_rendu (flux corrompu ?).");
 
                 return new JsonResponse([
-                        'code' => 500,
-                        'type' => 'warning',
-                        'message' => "Erreur lors de la décompression GZIP du journal (flux corrompu ?) pour le  projet {$data->nom_projet} (Erreur 500).",
+                    'code' => 500,
+                    'type' => 'warning',
+                    'message' => "Erreur lors de la décompression GZIP du journal (flux corrompu ?) pour le  projet {$data->nom_projet} (Erreur 500).",
                 ], Response::HTTP_OK);
             }
         }
@@ -357,9 +359,9 @@ class BatchController extends AbstractController
         }
 
         return new JsonResponse([
-                'code' => 200,
-                'message' => "Récupération du journal d'execution pour le projet {$data->nom_projet}.",
-                'html' => $html,
+            'code' => 200,
+            'message' => "Récupération du journal d'execution pour le projet {$data->nom_projet}.",
+            'html' => $html,
         ], Response::HTTP_OK);
     }
 
@@ -373,7 +375,7 @@ class BatchController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/traitement/suivi', name: 'traitement_suivi', methods:'GET')]
+    #[Route('/traitement/suivi', name: 'traitement_suivi', methods: 'GET')]
     public function traitementSuivi(): Response
     {
         $this->tracking->track('BATCH');
@@ -464,7 +466,7 @@ class BatchController extends AbstractController
             }, 0);
 
             $traitements[] = [
-                'processus' =>"Tout va bien !",
+                'processus' => "Tout va bien !",
                 'mode_collecte' =>  $traitement['mode_collecte'],
                 'message' =>  $message,
                 'css' =>  $css,
@@ -494,7 +496,7 @@ class BatchController extends AbstractController
 
         // Statistiques
         $total = count($traitements);
-        $nombre_success = $nombre_erreur = $nombre_bypass =0;
+        $nombre_success = $nombre_erreur = $nombre_bypass = 0;
 
         foreach ($traitements as $traitement) {
             $codes = array_map(fn($j) => $j->getCode(), $traitement->getCollectes()->toArray());
@@ -534,7 +536,8 @@ class BatchController extends AbstractController
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/public/traitement/rapport/pdf/{token}/{download?0}', name: 'rapport_execution_pdf')]
-    public function rapportExecutionPdf(string $token, bool $download = false): Response {
+    public function rapportExecutionPdf(string $token, bool $download = false): Response
+    {
 
         $batchExecution = $this->em->getRepository(BatchExecution::class)->findBy(
             ['traitementId' => $token],
@@ -555,8 +558,7 @@ class BatchController extends AbstractController
 
         return new Response($pdfContent, 200, [
             'Content-Type' => 'application/pdf',
-            'Content-Disposition' => $disposition.'; filename='. $filename,
+            'Content-Disposition' => $disposition . '; filename=' . $filename,
         ]);
     }
-
 }
