@@ -16,7 +16,7 @@ namespace App\Controller\Projet;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\{JsonResponse, Response, Request};
-use Symfony\Component\Routing\Annotation\Route;
+use \Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Utilisateur, ListeProjet};
@@ -29,8 +29,8 @@ class ApiProjetController extends AbstractController
     /** Définition des constantes */
     private static $erreur400 = "La requête est incorrecte (Erreur 400).";
     private static $erreur404 = "Vous devez être rattaché à une équipe (Erreur 404).";
-    private static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. ".
-    "Vérifie le nom du tag utilisé dans SonarQube (Erreur 406).";
+    private static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. " .
+        "Vérifie le nom du tag utilisé dans SonarQube (Erreur 406).";
 
     /**
      * [Description for __construct]
@@ -43,8 +43,7 @@ class ApiProjetController extends AbstractController
         private EntityManagerInterface $em,
         private LoggerInterface $logger,
         private Security $security,
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for favori]
@@ -155,7 +154,7 @@ class ApiProjetController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message'=> static::$erreur400,
+                'message' => static::$erreur400,
             ], Response::HTTP_OK);
         }
 
@@ -208,7 +207,7 @@ class ApiProjetController extends AbstractController
         $user = $this->security->getUser();
         $username = $user->getUserIdentifier();
         $listeProjetRepos = $this->em->getRepository(ListeProjet::class);
-        $groupes = $user->getGroupe();
+        $groupes = $user->getListeGroupeFonctionnel();
 
         if (empty($groupes)) {
             $this->logger->warning("[Projet-Liste] ⚠️ Aucun groupe associé à l'utilisateur.", [
@@ -239,7 +238,8 @@ class ApiProjetController extends AbstractController
         $map = ['clause_where' => $inTrim];
 
         $this->logger->debug('[Projet-Liste] 🛠️ Clause WHERE construite.', [
-            'clause' => $inTrim]);
+            'clause' => $inTrim
+        ]);
 
         $requestListe = $listeProjetRepos->selectListeProjetByGroupe($map);
 
@@ -263,7 +263,7 @@ class ApiProjetController extends AbstractController
         if (empty($projets)) {
             $this->logger->warning('[Projet-Liste] ⚠️ Aucun projet trouvé pour les groupes spécifiés.', [
                 'utilisateur' => $username,
-                'groupes' => $groupes
+                'groupes fonctionnels' => $groupes
             ]);
 
             return new JsonResponse([
