@@ -29,7 +29,8 @@
     <br>
 
     <header class="grid-container margin-top-1">
-      <nav id="fil-ariane" aria-label="vous êtes ici :">
+      {# WCAG 2.4.8 : indication "vous êtes ici" portée par aria-label ; aria-current="page" sur l'élément courant #}
+      <nav id="fil-ariane" aria-label="Fil d'Ariane, vous êtes ici">
         <ol class="claire-hand breadcrumbs">
           <li>
             <a href="{{ path('accueil', {}) }}">Accueil</a>
@@ -37,13 +38,13 @@
           <li>
             <a href="{{ path('actuator', {}) }}">Actuator</a>
           </li>
-          <li>
-            <span class="show-for-sr">vous êtes ici :</span>Ajout</li>
+          <li aria-current="page">Ajout</li>
         </ol>
       </nav>
     </header>
 
-    <main class="grid-container">
+    {# WCAG 2.4.1 : id="main-content" (cible du skip link) #}
+    <main id="main-content" class="grid-container">
       {% for message in app.flashes('notice') %}
         <div class="callout {{message.type}} alert-callout-border" data-closable>
           <p class="open-sans text-justify callout-message">
@@ -55,8 +56,9 @@
         </div>
       {% endfor %}
 
-      <h1 class="h4 claire-hand">Actuator</h1>
-      <h2 class="h5 claire-hand">Ajouter une application.</h2>
+      {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page ; descente d'un niveau pour les titres #}
+      <h2 class="h4 claire-hand">Actuator</h2>
+      <h3 class="h5 claire-hand">Ajouter une application.</h3>
 
       <div class="small-12 medium-12 large-12 cell">
         {% form_theme form 'foundation_6_layout.html.twig' %}
