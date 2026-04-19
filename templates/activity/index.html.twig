@@ -28,10 +28,11 @@
     {{ include('header.html.twig') }}
     <br>
     <header class="grid-container margin-top-1">
-      <nav id="fil-ariane" aria-label="vous êtes ici :">
+      {# WCAG 2.4.8 : indication "vous êtes ici" portée par aria-label ; aria-current="page" sur l'élément courant #}
+      <nav id="fil-ariane" aria-label="Fil d'Ariane, vous êtes ici">
         <ol class="claire-hand breadcrumbs">
           <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
-          <li><span class="show-for-sr">vous êtes ici :</span>Activité</li>
+          <li aria-current="page">Activité</li>
         </ol>
       </nav>
     </header>
@@ -39,9 +40,11 @@
     {# Message d'information php #}
     {{ include('_message.html.twig') }}
 
-    <main class="grid-container">
-      <h1 class="h2 claire-hand">Suivi des analyses SonarQube</h1>
-      <h2 class="claire-hand h4">Tableau de bord consolidé. </h2>
+    {# WCAG 2.4.1 : ajout de id="main-content" (cible du skip link du header) #}
+    <main id="main-content" class="grid-container">
+      {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page (header "Ma-Moulinette") ; descente d'un niveau pour les titres de section #}
+      <h2 class="h2 claire-hand">Suivi des analyses SonarQube</h2>
+      <h3 class="claire-hand h4">Tableau de bord consolidé. </h3>
 
       <p id="js-date-enregistrement" class="h4 open-sans">
           <strong>Dernière date d'enregistrement : </strong> {{data[0]['date_enregistrement']}}
