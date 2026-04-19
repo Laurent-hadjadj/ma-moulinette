@@ -26,21 +26,24 @@
 		<br>
 
 		<header class="grid-container margin-top-1">
-			<nav aria-label="Vous êtes sur la page">
+			{# WCAG 2.4.8 : aria-label enrichi ; aria-current="page" sur l'élément courant #}
+			<nav aria-label="Fil d'Ariane, vous êtes ici">
 				<ol class="claire-hand breadcrumbs">
 					<li>
 						<a href="{{ path('accueil', {}) }}">Accueil</a>
 					</li>
-					<li>
-						<span class="show-for-sr">Vous êtes sur la page :</span>mentions-légales</li>
+					<li aria-current="page">Mentions légales</li>
 				</ol>
 			</nav>
 		</header>
-		<main class="grid-container grid-x">
-			<h1 class="h2 claire-hand">Mentions légales</h1>
+		{# WCAG 2.4.1 : id="main-content" (cible du skip link) #}
+		<main id="main-content" class="grid-container grid-x">
+			{# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page ; titre descendu en <h2> #}
+			<h2 class="h2 claire-hand">Mentions légales</h2>
 			<hr>
 			<section id="section-editeur" class="cell">
-				<h2 class="h4 claire-hand">Éditeur</h2>
+				{# WCAG 1.3.1 : descente d'un niveau des titres de section #}
+					<h3 class="h4 claire-hand">Éditeur</h3>
 				<p id="editeur" class="open-sans text-justify">Ce site est édité par
 					{{ editeur| default("Ma Moulinette, l'équipe en charge des développements de l'application Ma-Moulinette.") }}.</p>
 				<p id="adresse" class="open-sans">{{ adresse | default("Ma-moulinette, <br> La Mi-Voie, route du grand chemin. <br> BP 770, Brooklyn. N.Y")|raw }}</p>
@@ -60,20 +63,23 @@
 			</section>
 
 			<section id="section-directeur-de-publication" class="cell">
-				<h2 class="h4 claire-hand cell">Directeur de publication</h2>
+				{# WCAG 1.3.1 : descente d'un niveau #}
+				<h3 class="h4 claire-hand cell">Directeur de publication</h3>
 				<p id="directeur-publication" class="open-sans text-left">{{ directeurPublication | default("Laurent HADJADJ") }}</p>
 				<br>
 			</section>
 
 			<section id="section-conception-gestion-du-site" class="cell">
-				<h2 class="h4 claire-hand">Conception et gestion du site</h2>
+				{# WCAG 1.3.1 : descente d'un niveau #}
+				<h3 class="h4 claire-hand">Conception et gestion du site</h3>
 				<p class="open-sans text-justify">Ce site est développé selon un principe d’amélioration continue.</p>
 				<p class="open-sans text-justify">Le suivi éditorial et graphique est assuré au quotidien par l'équipe de conception de Ma-Moulinette. L'ensemble des technologies utilisé est respectueuse des bonnes pratiques formalisées par le W3C et le WCAG.</p>
 				<br>
 			</section>
 
 			<section id="section-code-source" class="cell">
-				<h2 class="h4 claire-hand cell">Code source du site</h2>
+				{# WCAG 1.3.1 : descente d'un niveau #}
+				<h3 class="h4 claire-hand cell">Code source du site</h3>
 				<p id="code-source" class="open-sans">Le code source du site est
 					<a class="source-link" href="{{ sourceURL | default('https://github.com/Laurent-hadjadj/ma-moulinette') }}">
 						disponible sur {{ sourceSCM | default("github") }}</a>.</p>
@@ -81,7 +87,8 @@
 			</section>
 
 			<section id="section-propriete-intellectuelle" class="cell">
-				<h2 class="h3 claire-hand">Propriété intellectuelle</h2>
+				{# WCAG 1.3.1 : descente d'un niveau #}
+				<h3 class="h3 claire-hand">Propriété intellectuelle</h3>
 				<p class="open-sans text-justify">Tout site public ou privé est autorisé à établir, sans autorisation préalable, un lien (y compris profond) vers les informations diffusées sur ma-moulinette.fr</p>
 
 				<div class="callout alert-callout-border primary">
@@ -107,7 +114,8 @@
 			</section>
 
 			<section id="section-hebergement" class="cell">
-				<h2 class="h3 claire-hand">Hébergement</h2>
+				{# WCAG 1.3.1 : descente d'un niveau #}
+				<h3 class="h3 claire-hand">Hébergement</h3>
 				<p id="hebergement" class="open-sans">
 					{{ hebergement | default("Ma-moulinette, <br> La Mi-Voie, route du grand chemin. <br> BP 770, Brooklyn. N.Y")|raw }}
 				</p>
