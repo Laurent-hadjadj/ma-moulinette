@@ -1,22 +1,23 @@
 <div class="grid-container">
   <section class="container-detail-titre">
     <div class="small-4 medium-4 large-4">
-      <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="icon">
+      <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="">
     </div>
     <div class="small-8 medium-8 large-8">
-      <h1 class="h2 claire-hand margin-left-1">A05:2021 – Mauvaise configuration de sécurité</h1>
+      {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page (celui du header) ; descente d'un niveau pour tous les titres (h1->h2, h2->h3, h3->h4) #}
+      <h2 class="h2 claire-hand margin-left-1">A05:2021 – Mauvaise configuration de sécurité</h2>
     </div>
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Résumé</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Résumé</strong></h3>
     <div class="callout open-sans font-size-11 text-justify">
       {{ owasp.description }}
     </div>
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Facteurs</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Facteurs</strong></h3>
     <div class="table-scroll">
       <table class="responsive-card-table unstriped">
         <thead>
@@ -50,12 +51,12 @@
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Aperçu</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Aperçu</strong></h3>
     <p class="open-sans font-size-11 text-justify">En progression depuis la sixième place, 90&nbsp;% des applications ont été testées pour une forme de mauvaise configuration, avec un taux d'incidence moyen de 4,51&nbsp;% et plus de 208&nbsp;000 occurrences de <em>Common Weakness Enumeration</em> (CWE) dans cette catégorie. Avec une plus grande part de logiciels offrant une configuration riche, il n'est pas surprenant de voir cette catégorie gagner une place. Les CWEs notables incluses sont <em>CWE-16 Configuration</em> et <em>CWE-611 Improper Restriction of XML External Entity Reference</em>.</p>
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Description</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Description</strong></h3>
     <p class="open-sans font-size-11 text-justify">Une application est vulnérable quand&nbsp;:</p>
     <ul class="open-sans font-size-11 margin-left-2">
       <li>elle n'a pas fait l'objet d'un durcissement de la sécurité approprié sur l'ensemble des couches protocolaires applicatives, ou si les permissions sont mal configurées sur les services cloud&nbsp;;</li>
@@ -71,7 +72,7 @@
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Comment s'en prémunir</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Comment s'en prémunir</strong></h3>
     <p class="open-sans font-size-11 text-justify">Des processus d'installation sécurisés doivent être mis en œuvre, avec notamment&nbsp;:</p>
     <ul class="open-sans font-size-11 margin-left-2">
       <li>un processus de durcissement répétable qui permette de déployer rapidement et facilement un autre environnement correctement sécurisé avec une configuration verrouillée. Les environnements de développement, d'assurance qualité et de production doivent tous être configurés de manière identique, avec des droits différents pour chaque environnement. Ce processus devrait être automatisé afin de réduire au minimum les efforts requis pour mettre en place un nouvel environnement sécurisé&nbsp;;</li>
@@ -84,7 +85,7 @@
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>☠️ Exemple de scénarios d'attaque</strong></h2>
+    <h3 class="h4 claire-hand"><strong>☠️ Exemple de scénarios d'attaque</strong></h3>
     <p class="open-sans font-size-11 text-justify"><strong>🤫 Scénario 1</strong>&nbsp;: Le serveur d'application est livré avec des applications classiques qui ne sont pas supprimées du serveur mis en production. Ces mêmes applications ont des failles de sécurité connues que les attaquants utilisent afin de compromettre le serveur. Si l'une de ces applications est la console d'administration, et que les comptes par défaut n'ont pas été modifiés, l'attaquant se connecte avec les mots de passe par défaut et prend la main sur la cible.</p>
     <p class="open-sans font-size-11 text-justify"><strong>🤫 Scénario 2</strong>&nbsp;: La fonctionnalité de listage des répertoires n'est pas désactivée sur le serveur. Un attaquant découvre qu'il peut simplement lister les répertoires. L'attaquant trouve et télécharge les classes Java compilées, qu'il décompose et fait de l'ingénierie inversée pour visualiser le code. L'attaquant trouve alors un grave défaut dans le contrôle d'accès de l'application.</p>
     <p class="open-sans font-size-11 text-justify"><strong>🤫 Scénario 3</strong>&nbsp;: La configuration du serveur d'application permet de renvoyer aux utilisateurs des messages d'erreur détaillés, par exemple avec des traces des couches protocolaires applicatives. Cela peut ainsi exposer des informations sensibles ou des vulnérabilités sous-jacentes telles que les versions de composants dont on sait qu'elles sont vulnérables.</p>
@@ -92,7 +93,7 @@
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Références</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Références</strong></h3>
     <ul class="open-sans font-size-11 margin-left-2">
       <li>
         <a href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/02-Configuration_and_Deployment_Management_Testing/README" target="_blank" rel="noopener noreferrer" aria-label="OWASP Testing Guide: Configuration Management">
@@ -128,7 +129,7 @@
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Liste des CWEs associées</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Liste des CWEs associées</strong></h3>
     <ul class="open-sans font-size-11 margin-left-2">
       <li>
         <a href="https://cwe.mitre.org/data/definitions/2.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-2 7PK - Environment">
