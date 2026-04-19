@@ -9,8 +9,9 @@
 
   <p class="show-for-sr">Appuyez sur la touche Échap pour fermer cette fenêtre.</p>
   <header>
-    <h1 id="titre-modal-information-utilisateur" class="h3 claire-hand">
-      <span aria-hidden="true">ℹ️</span> Informations</h1>
+    {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page (header "Ma-Moulinette"), le titre de la modale devient <h2> ; descente de toute la hiérarchie d'un niveau #}
+      <h2 id="titre-modal-information-utilisateur" class="h3 claire-hand">
+      <span aria-hidden="true">ℹ️</span> Informations</h2>
     <p id="desc-modal-information-utilisateur" class="show-for-sr">
         Affiche les informations personnelles de l'utilisateur et permet de changer son mot de passe.
     </p>
