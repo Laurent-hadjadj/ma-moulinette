@@ -80,7 +80,7 @@ class PortefeuilleRepository extends ServiceEntityRepository
   {
     $sql = "SELECT liste
             FROM ma_moulinette.portefeuille
-            WHERE titre=:portefeuille";
+            WHERE portefeuille = :portefeuille";
     try {
           /** On escape les ' : normalement on en a pas besoin */
           //"$reEncode = str_replace("'", "''", $map['portefeuille']);
@@ -91,6 +91,6 @@ class PortefeuilleRepository extends ServiceEntityRepository
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'liste'=>$liste, 'erreur'=>''];
+    return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
   }
 }
