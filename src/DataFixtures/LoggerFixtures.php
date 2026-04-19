@@ -25,7 +25,7 @@ class LoggerFixtures extends Fixture
       $modeCollecte=['COLLECTE', 'TRAITEMENT MANUEL', 'TRAITEMENT AUTOMATIQUE'];
 
       foreach($modeCollecte as $mode){
-        $logger=(new Logger())
+        $logger=(new Logger(static::$mavenKey, static::$loggerInfo, static::$loggerWarn, static::$loggerError, static::$loggerDebug, $mode, static::$utilisateurCollecte, new \DateTimeImmutable(static::$dateEnregistrement)))
             ->setMavenKey(static::$mavenKey)
             ->setLoggerInfo(static::$loggerInfo)
             ->setLoggerWarn(static::$loggerWarn)
