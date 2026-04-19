@@ -15,7 +15,7 @@ namespace App\Controller\Cosui;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{Request, Response};
-use Symfony\Component\Routing\Annotation\Route;
+use \Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use App\Service\{ProjetCosuiService, UserAgentTrackingFacade};
 
@@ -47,14 +47,14 @@ class CosuiController extends AbstractController
     /**
      * [Description for addFlashAndRender]
      *
-    * Ajoute un message flash de type 'notice' puis rend la page demandée.
-    *
-    * @param string $type    Type du message flash (ex. : success, error, warning).
-    * @param string $message Message principal à afficher à l'utilisateur.
-    * @param string $debug   Message de débogage (visible uniquement en DEV).
-    * @param array  $render  Données à passer au template.
-    *
-    * @return Response
+     * Ajoute un message flash de type 'notice' puis rend la page demandée.
+     *
+     * @param string $type    Type du message flash (ex. : success, error, warning).
+     * @param string $message Message principal à afficher à l'utilisateur.
+     * @param string $debug   Message de débogage (visible uniquement en DEV).
+     * @param array  $render  Données à passer au template.
+     *
+     * @return Response
      *
      * Created at: 06/03/2025 12:17:33 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -149,11 +149,6 @@ class CosuiController extends AbstractController
             return $this->addFlashAndRender('alert', static::$erreur400, 'token', $render);
         }
 
-        if (!$this->isGranted('ROLE_COLLECTE')) {
-            $this->logger->warning("[COSUI] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).");
-            return $this->addFlashAndRender('warning', static::$erreur403, 'auth', $render);
-        }
-
         $maven_key = $this->decodeToken($token);
         if (null === $maven_key) {
             $this->logger->error('[COSUI] ❌ Échec du décodage du token.');
@@ -163,24 +158,24 @@ class CosuiController extends AbstractController
         $this->logger->info('[COSUI] ℹ️ Token décodé, maven_key reçu', ['maven_key' => $maven_key]);
 
         try {
-                $result = $this->cosuiService->generateRender($maven_key);
+            $result = $this->cosuiService->generateRender($maven_key);
 
-                if (isset($result['code']) && $result['code'] !== 200) {
-                    $this->logger->error("[COSUI] ❌ {$result['message']}", [
-                        'maven_key' => $maven_key,
-                        'trace' => $result['trace'] ?? 'Non disponible'
-                    ]);
-                    return $this->addFlashAndRender(
-                        $result['type'],
-                        "❌ {$result['message']}",
-                        $result['trace'] ?? '',
-                        $render);
-                }
+            if (isset($result['code']) && $result['code'] !== 200) {
+                $this->logger->error("[COSUI] ❌ {$result['message']}", [
+                    'maven_key' => $maven_key,
+                    'trace' => $result['trace'] ?? 'Non disponible'
+                ]);
+                return $this->addFlashAndRender(
+                    $result['type'],
+                    "❌ {$result['message']}",
+                    $result['trace'] ?? '',
+                    $render
+                );
+            }
         } catch (\RuntimeException $e) {
             return $this->addFlashAndRender('alert', '🔴 Erreur lors de la génération COSUI.', $e->getMessage(), $render);
         }
 
         return $this->render(static::$page, $result);
     }
-
 }
