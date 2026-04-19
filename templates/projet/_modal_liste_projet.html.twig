@@ -1,9 +1,12 @@
     {# Affichage du tableau des projets #}
-    <dialog id="modal-liste-projet" class="reveal" data-reveal data-close-on-click="true" data-animation-in="fade-in" data-animation-out="fade-out" aria-modal="true">
-      <h1 class="h2 claire-hand">Mes projets.</h1>
-      <h2 class="h4 claire-hand">
+    {# WCAG 4.1.2 : ajout de aria-labelledby (référence au titre interne) et aria-describedby pour que les lecteurs d'écran annoncent correctement la modale ; le <h1> du contenu est descendu en <h2> car on conserve un seul h1 par page (celui du header) #}
+    <dialog id="modal-liste-projet" class="reveal" data-reveal data-close-on-click="true" data-animation-in="fade-in" data-animation-out="fade-out"
+            aria-modal="true" aria-labelledby="modal-liste-projet-title" aria-describedby="modal-liste-projet-desc">
+      {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page, on descend les titres d'un cran #}
+      <h2 id="modal-liste-projet-title" class="h2 claire-hand">Mes projets.</h2>
+      <h3 id="modal-liste-projet-desc" class="h4 claire-hand">
         <span id="affiche-total-projet"></span>
-        trouvé(s).</h2>
+        trouvé(s).</h3>
       <table>
         <caption class="claire-hand">Liste des projets.</caption>
         <thead>
@@ -29,7 +32,8 @@
         </tbody>
       </table>
 
-      <p class="open-sans-bold information-statut" role="alert">Statut :
+      {# WCAG 4.1.3 : role="status" (préféré à role="alert" pour un message non critique qui ne doit pas interrompre le flux) #}
+      <p class="open-sans-bold information-statut" role="status" aria-live="polite">Statut :
         <span id="information-texte" class="information-texte"></span>
       </p>
 
@@ -42,10 +46,11 @@
 
       <footer class="grid-x grid-margin-x align-right margin-top-2">
         <div class="cell shrink">
+          {# WCAG 3.3.2 : aria-label complet + emoji décoratif masqué aux lecteurs d'écran (sinon annoncé "croix rouge") #}
           <button id="bouton-fermer-liste-projet" data-close
                   class="button open-sans focus-light"
                   type="button"
-                  aria-label="Ferme modale"><span aria-hidden="true">❌</span> Fermer
+                  aria-label="Fermer la fenêtre Mes projets"><span aria-hidden="true">❌</span> Fermer
           </button>
       </footer>
     </dialog>
