@@ -30,22 +30,24 @@
     {{ include('header.html.twig') }}
 
     <header class="grid-container margin-top-1">
-      <nav aria-label="vous êtes ici :">
-        <ul class="claire-hand breadcrumbs">
+      {# WCAG 2.4.8 : aria-label enrichi ; <ol> à la place de <ul> ; aria-current="page" #}
+      <nav aria-label="Fil d'Ariane, vous êtes ici">
+        <ol class="claire-hand breadcrumbs">
           <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
           <li><a href="{{ path('projet', {}) }}">Projet</a></li>
-          <li><span class="show-for-sr">vous êtes ici :</span>Répartition</li>
-        </ul>
+          <li aria-current="page">Répartition</li>
+        </ol>
       </nav>
     </header>
 
-    <header class="grid-container"
+    {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page ; titre descendu en <h2> ; ajout de id="main-content" (cible du skip link) #}
+    <header id="main-content" class="grid-container"
             aria-labelledby="titre-repartition">
-      <h1 id="titre-repartition"
+      <h2 id="titre-repartition"
           class="h3 claire-hand"
           data-application="{{maven_key}}">
           <span aria-hidden="true">🧩</span> Répartition des anomalies pour {{mon_application}}
-      </h1>
+      </h2>
       <div class="show-for-sr">Sur cette page, vous pouvez collecter et analyser les anomalies SonarQube, par type, sévérité et par module.</div>
     </header>
 
@@ -72,6 +74,7 @@
       </div>
     </section>
 
+    {# WCAG 2.4.1 : le skip link cible id="main-content" placé sur le <header> plus haut qui introduit la page #}
     <main class="grid-container">
       <p class="open-sans">
         <span>Setup : </span>
