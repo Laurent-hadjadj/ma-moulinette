@@ -29,6 +29,8 @@ use App\Exception\SqlRequestException;
  */
 class BatchCrudController extends AbstractCrudController
 {
+    private static $europeParis = 'Europe/Paris';
+
     /**
      * [Description for __construct]
      *
@@ -191,11 +193,11 @@ class BatchCrudController extends AbstractCrudController
             ->setHelp('Responsable du traitement.');
 
         yield DateTimeField::new('dateModification')
-            ->setTimezone('Europe/Paris')
+            ->setTimezone(static::$europeParis)
             ->hideOnForm();
 
         yield DateTimeField::new('dateEnregistrement')
-            ->setTimezone('Europe/Paris')
+            ->setTimezone(static::$europeParis)
             ->hideOnForm();
 
     }
@@ -249,7 +251,7 @@ class BatchCrudController extends AbstractCrudController
         $entityInstance->setResponsableShort($responsable_short);
 
         /** On créé un clé unique pour lier  */
-        $traitement_id = new ulid();
+        $traitement_id = new Ulid();
         $entityInstance->setTraitementId($traitement_id);
         $entityInstance->setNombreProjet($nombre_projet);
         $entityInstance->setDateEnregistrement(new \DateTimeImmutable());
@@ -334,7 +336,7 @@ class BatchCrudController extends AbstractCrudController
         $conn->executeStatement();
 
         /** On ajoute la date de modification  */
-        $entityInstance->setDateModification(new \DateTime());
+        $entityInstance->setDateModification(new \DateTime('now', new \DateTimeZone(static::$europeParis)));
 
         parent::updateEntity($em, $entityInstance);
     }
