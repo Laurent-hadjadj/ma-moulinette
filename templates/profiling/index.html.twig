@@ -25,25 +25,29 @@
     {{ include('header.html.twig') }}
 
     <header class="grid-container margin-top-1">
-      <nav aria-label="vous êtes ici :">
-        <ul class="claire-hand breadcrumbs">
+      {# WCAG 2.4.8 : aria-label enrichi ; <ol> à la place de <ul> ; aria-current="page" sur l'élément courant #}
+      <nav aria-label="Fil d'Ariane, vous êtes ici">
+        <ol class="claire-hand breadcrumbs">
           <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
           <li><a href="{{ path('traitement_suivi', {}) }}">Traitement</a></li>
-          <li><span class="show-for-sr">vous êtes sur la page :</span> Dashboard Profiling</li>
-        </ul>
+          <li aria-current="page">Dashboard Profiling</li>
+        </ol>
       </nav>
     </header>
 
     {# Message d'information php #}
     {{ include('_message.html.twig') }}
 
-    <main class="grid-container margin-top-2" role="main">
-      <h1 class="h3 claire-hand" aria-label="Indicateurs de performances">
-        <span aria-hidden="true" class="emoji">📊</span> Dashboard Profiling
-      </h1>
+    {# WCAG 2.4.1 / 4.1.1 : id="main-content" (cible du skip link) ; retrait du role="main" redondant #}
+    <main id="main-content" class="grid-container margin-top-2">
+      {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page ; descente d'un niveau (h1->h2, h2->h3) ; aria-label retiré car redondant #}
+      <h2 class="h3 claire-hand">
+        <span aria-hidden="true">📊</span> Dashboard Profiling
+      </h2>
 
       <div class="profiling-summary">
-        <h2 class="h4 claire-hand">Résumé global des performances</h2>
+        {# WCAG 1.3.1 : descente d'un niveau #}
+        <h4 class="h4 claire-hand">Résumé global des performances</h4>
         <table id="summaryTable">
           <thead>
             <tr>
@@ -59,7 +63,7 @@
         </table>
 
         <div class="profiling-summary-charts">
-          <h2 class="h4 claire-hand">Indicateurs de performances </h2>
+          <h3 class="h4 claire-hand">Indicateurs de performances </h3>
           <div class="charts-grid">
             <div class="hauteur-max">
             <canvas id="chart-kpi-time-donut"></canvas>
@@ -75,30 +79,30 @@
       </div>
 
     <div class="dashboard margin-top-2">
-      <h2 class="h4 claire-hand">Tableaux de bord</h2>
+      <h3 class="h4 claire-hand">Tableaux de bord</h3>
 
-      <h3 class="h5 claire-hand">Granularité</h3>
+      <h4 class="h5 claire-hand">Granularité</h4>
       <div id="indicateur-granularite" class="card-container">
         <!-- Les cartes utilisateurs seront insérées ici -->
       </div>
-      <h3 class="h5 claire-hand">Période</h3>
+      <h4 class="h5 claire-hand">Période</h4>
       <div id="indicateur-periode" class="card-container">
         <!-- Les cartes utilisateurs seront insérées ici -->
       </div>
 
-      <h3 class="h5 claire-hand">Utilisateurs</h3>
+      <h4 class="h5 claire-hand">Utilisateurs</h4>
       <div id="indicateur-utilisateur" class="card-container">
         <!-- Les cartes utilisateurs seront insérées ici -->
       </div>
-      <h3 class="h5 claire-hand">Portefeuille</h3>
+      <h4 class="h5 claire-hand">Portefeuille</h4>
       <div id="indicateur-portefeuille" class="card-container">
         <!-- Les cartes utilisateurs seront insérées ici -->
       </div>
-      <h3 class="h5 claire-hand">Execution</h3>
+      <h4 class="h5 claire-hand">Execution</h4>
       <div id="indicateur-exec" class="card-container">
         <!-- Les cartes utilisateurs seront insérées ici -->
       </div>
-      <h3 class="h5 claire-hand">Dernière execution</h3>
+      <h4 class="h5 claire-hand">Dernière execution</h4>
       <div id="indicateur-execution" class="card-container">
         <!-- Les cartes utilisateurs seront insérées ici -->
       </div>
@@ -108,13 +112,13 @@
       {# Graphiques globaux #}
       <section class="grid-x grid-margin-x margin-top-2">
         <div class="cell medium-6">
-          <h2 class="h4">Temps moyen par portefeuille</h2>
+          <h3 class="h4">Temps moyen par portefeuille</h3>
           <div class="chart-container">
             <canvas id="chartTime"></canvas>
           </div>
         </div>
         <div class="cell medium-6">
-          <h2 class="h4">Mémoire peak moyenne</h2>
+          <h3 class="h4">Mémoire peak moyenne</h3>
           <div class="chart-container">
             <canvas id="chartMemory"></canvas>
           </div>
@@ -124,13 +128,13 @@
       {# Évolution hebdomadaire #}
       <section class="grid-x grid-margin-x margin-top-2">
         <div class="cell medium-6">
-          <h2 class="h4">Évolution hebdomadaire - Temps moyen</h2>
+          <h3 class="h4">Évolution hebdomadaire - Temps moyen</h3>
           <div class="chart-container">
             <canvas id="chartWeeklyTime"></canvas>
           </div>
         </div>
         <div class="cell medium-6">
-          <h2 class="h4">Évolution hebdomadaire - Mémoire</h2>
+          <h3 class="h4">Évolution hebdomadaire - Mémoire</h3>
           <div class="chart-container">
             <canvas id="chartWeeklyMemory"></canvas>
           </div>
@@ -140,13 +144,13 @@
       {# Évolution mensuelle #}
       <section class="grid-x grid-margin-x margin-top-2">
         <div class="cell medium-6">
-          <h2 class="h4">Évolution mensuelle - Temps moyen</h2>
+          <h3 class="h4">Évolution mensuelle - Temps moyen</h3>
           <div class="chart-container">
             <canvas id="chartMonthlyTime"></canvas>
           </div>
         </div>
         <div class="cell medium-6">
-          <h2 class="h4">Évolution mensuelle - Mémoire</h2>
+          <h3 class="h4">Évolution mensuelle - Mémoire</h3>
           <div class="chart-container">
             <canvas id="chartMonthlyMemory"></canvas>
           </div>
@@ -156,11 +160,11 @@
       {# Comparaison utilisateurs #}
       <section class="grid-x grid-margin-x margin-top-2">
         <div class="cell medium-6">
-          <h2 class="h4">Comparaison utilisateur - Temps moyen</h2>
+          <h3 class="h4">Comparaison utilisateur - Temps moyen</h3>
           <canvas id="chartUsersTime"></canvas>
         </div>
         <div class="cell medium-6">
-          <h2  class="h4">Comparaison utilisateur - Mémoire</h2>
+          <h3  class="h4">Comparaison utilisateur - Mémoire</h3>
           <div class="chart-container">
             <canvas id="chartUsersMemory"></canvas>
           </div>
@@ -169,7 +173,7 @@
 
       {# Tableau dernières exécutions #}
       <section class="margin-top-2">
-        <h2 class="h4">Dernières exécutions</h2>
+        <h3 class="h4">Dernières exécutions</h3>
         <table class="table-scroll" id="tableExecutions">
           <thead>
             <tr>
