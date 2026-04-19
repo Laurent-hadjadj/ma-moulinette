@@ -58,27 +58,30 @@
     {{ include('header.html.twig') }}
 
     <header class="grid-container margin-top-1">
-      <nav aria-label="vous êtes ici :">
-        <ul class="claire-hand breadcrumbs">
+      {# WCAG 2.4.8 : aria-label enrichi ; <ol> à la place de <ul> ; aria-current="page" #}
+      <nav aria-label="Fil d'Ariane, vous êtes ici">
+        <ol class="claire-hand breadcrumbs">
           <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
           <li><a href="{{ path('projet', {}) }}">Projet</a></li>
-          <li><span class="show-for-sr">vous êtes ici :</span>COSUI</li>
-        </ul>
+          <li aria-current="page">COSUI</li>
+        </ol>
       </nav>
     </header>
 
     {# Message d'information php #}
     {{ include('_message.html.twig') }}
 
+    {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page ; descente d'un niveau (h1->h2, h2->h3) ; aria-describedby auto-référent retiré ; aria-label redondant retiré #}
     <header class="grid-container"
             aria-labelledby="titre-cosui"
             aria-describedby="desc-cosui">
-      <h1 id="titre-cosui" class="h3 claire-hand" aria-label="Collecte et analyse des indicateurs SonarQube" aria-describedby="titre-cosui"><span aria-hidden="true">📈</span>COmité de SUIvi</h1>
-      <h2 id="desc-cosui" class="h4 claire-hand"><span aria-hidden="true">📌</span>Suivi des indicateurs clés</h2>
+      <h2 id="titre-cosui" class="h3 claire-hand"><span aria-hidden="true">📈</span>COmité de SUIvi — Collecte et analyse des indicateurs SonarQube</h2>
+      <h3 id="desc-cosui" class="h4 claire-hand"><span aria-hidden="true">📌</span>Suivi des indicateurs clés</h3>
       <div class="show-for-sr">Cette page affiche pour le projet les indicateurs de suivi clés entre une version de référence et la version courante.</div>
     </header>
 
-    <main class="grid-container">
+    {# WCAG 2.4.1 : id="main-content" (cible du skip link) #}
+    <main id="main-content" class="grid-container">
       <p class="open-sans">
         <span class="open-sans">Setup :</span>
         <span id="js-setup" class="open-sans color-noir">{{setup}}</span>
@@ -98,7 +101,8 @@
       <br>
       <div id="tableau-notes" class="table-scroll">
         <table>
-          <caption id="js-series" class="no-caption" aria-hidden="true" data-initial="{{dataset1}}" data-actuel="{{dataset2}}" data-labela="{{label1}}" data-labelb="{{label2}}"></caption>
+          {# WCAG 1.3.1 : caption réelle (était vide avec aria-hidden). Masquée visuellement via .show-for-sr au lieu de aria-hidden #}
+          <caption id="js-series" class="show-for-sr" data-initial="{{dataset1}}" data-actuel="{{dataset2}}" data-labela="{{label1}}" data-labelb="{{label2}}">Tableau de comparaison des notes SonarQube entre {{label1}} et {{label2}}.</caption>
           <thead>
             <tr class="open-sans">
               <th colspan="1" scope="col" class="text-center">Application référence</th>
@@ -199,9 +203,11 @@
       </div>
       <br>
       <div id="tableau-repartition" class="table-scroll">
-        <h2 class="h3 claire-hand">Répartition des défauts.</h2>
+        {# WCAG 1.3.1 : descente d'un niveau des titres #}
+        <h3 class="h3 claire-hand">Répartition des défauts.</h3>
         <table class="hover">
-          <caption class="no-caption" aria-hidden="true"></caption>
+          {# WCAG 1.3.1 : caption réelle (anciennement vide avec aria-hidden). Masquée visuellement via .show-for-sr pour ne pas casser la présentation #}
+          <caption class="show-for-sr">Répartition des défauts par critère (maintenabilité, fiabilité, vulnérabilité) et par module (métier, présentation), entre la version de référence et la version courante.</caption>
           <thead>
             <tr class="open-sans">
               <th colspan="1" scope="col" class="text-center">Application référence</th>
@@ -293,7 +299,8 @@
       </div>
       <br>
       <div>
-        <h2 class="h3 claire-hand">Notes SonarQube</h2>
+        {# WCAG 1.3.1 : descente d'un niveau #}
+        <h3 class="h3 claire-hand">Notes SonarQube</h3>
         <div class="float-center graphique-note-container">
           <canvas id="graphique-note" aria-label="Distribution des notes."></canvas>
         </div>
@@ -301,12 +308,13 @@
     </main>
 
     {# Affichage du tableau des projets #}
-    <div id="modal-projet-reference" class="reveal" data-reveal data-close-on-click="true" data-animation-in="fade-in" data-animation-out="fade-out" aria-modal="true">
-      <h1 class="h2 claire-hand">Projet de référence.</h1>
-      <h2 class="h4 claire-hand">{{monApplication}}</h2>
-      <h3 class="h4 open-sans">
+    {# WCAG 4.1.2 : ajout de aria-labelledby sur la modale pour que les lecteurs d'écran annoncent correctement son titre ; descente de la hiérarchie des titres (un seul h1 par page) #}
+    <div id="modal-projet-reference" class="reveal" data-reveal data-close-on-click="true" data-animation-in="fade-in" data-animation-out="fade-out" aria-modal="true" aria-labelledby="modal-projet-reference-title">
+      <h2 id="modal-projet-reference-title" class="h2 claire-hand">Projet de référence.</h2>
+      <h3 class="h4 claire-hand">{{monApplication}}</h3>
+      <h4 class="h4 open-sans">
         {{initial_date_application|format_datetime('full', 'short', locale='fr') }}
-      </h3>
+      </h4>
       <table>
         <caption class="claire-hand"></caption>
         <thead>
