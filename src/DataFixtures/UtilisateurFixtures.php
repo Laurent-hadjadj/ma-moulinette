@@ -12,35 +12,35 @@ use Doctrine\Persistence\ObjectManager;
 class UtilisateurFixtures extends Fixture
 {
     public static $preferenceVide = ['{
-      "statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
-      "projet":[],"favori":[],"version":[],"bookmark":[]}'];
+        "statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
+        "projet":[],"favori":[],"version":[],"bookmark":[]}'];
 
     public static array $preference = [
-      'statut' => [
-          'bookmark' => true,
-          'suivi_projet' => false,
-          'favori_projet' => true,
-          'favori_version' => true,
-      ],
-      'suivi_projet' => [],
-      'favori_projet' => ['fr.ma-petite-entreprise:ma-moulinette'],
-      'favori_version' => [
-          [
-              'fr.ma-petite-entreprise:ma-moulinette' => [
-                  '1.2.0-RELEASE',
-                  '1.2.3-RELEASE'
-              ]
-          ]
-      ]
-  ];
+        'statut' => [
+            'bookmark' => true,
+            'suivi_projet' => false,
+            'favori_projet' => true,
+            'favori_version' => true,
+        ],
+        'suivi_projet' => [],
+        'favori_projet' => ['fr.ma-petite-entreprise:ma-moulinette'],
+        'favori_version' => [
+            [
+                'fr.ma-petite-entreprise:ma-moulinette' => [
+                    '1.2.0-RELEASE',
+                    '1.2.3-RELEASE'
+                ]
+            ]
+        ]
+    ];
 
-  public static $dateEnregistrement = '1980-01-01 00:00:00+01';
+    public static $dateEnregistrement = '1980-01-01 00:00:00+01';
 
-  public function load(ObjectManager $manager): void
+    public function load(ObjectManager $manager): void
     {
 
-      /** création de l'utilisateur  ADMIN */
-      $admin=(new Utilisateur())
+        /** création de l'utilisateur  ADMIN */
+        $admin=(new Utilisateur())
         ->setResetPassword(false)
         ->setResetPasswordCount(1)
         ->setAvatar('chiffre/01.png')
@@ -50,7 +50,7 @@ class UtilisateurFixtures extends Fixture
         ->setPassword('$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K')
         ->setActif(true)
         ->setRoles(["ROLE_GESTIONNAIRE"])
-        ->setGroupe([])
+        ->setListeGroupeFonctionnel([])
         ->setPreference(static::$preference)
         ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
         $manager->persist($admin);
@@ -66,7 +66,7 @@ class UtilisateurFixtures extends Fixture
         ->setPassword('$2y$13$HMk1rgFp5OiveduUd.dNXeaxq1y/HiActAv3hiMpAFCNsCjNHIFya')
         ->setActif(false)
         ->setRoles(["ROLE_GESTIONNAIRE"])
-        ->setGroupe([])
+        ->setListeGroupeFonctionnel([])
         ->setPreference(static::$preference)
         ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
         $manager->persist($aurelie);
@@ -82,7 +82,7 @@ class UtilisateurFixtures extends Fixture
         ->setPassword('$2y$13$BrmmLZ3WiFwZcOllwh9zNOrjBRH9RSLEdLCW2y8by5CFX5zS.b1MG')
         ->setActif(false)
         ->setRoles(["ROLE_BATCH"])
-        ->setGroupe([])
+        ->setListeGroupeFonctionnel([])
         ->setPreference(static::$preference)
         ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
         $manager->persist($emma);
@@ -98,7 +98,7 @@ class UtilisateurFixtures extends Fixture
         ->setPassword('$2y$13$hwX0QJOw8fSgjiBq1CL/FuJsf4miOeLJRBw8jzt1WrsV/qLR.DxN.')
         ->setActif(0)
         ->setRoles(["ROLE_COLLECTE"])
-        ->setGroupe([])
+        ->setListeGroupeFonctionnel([])
         ->setPreference(static::$preference)
         ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
         $manager->persist($nathan);
@@ -114,7 +114,7 @@ class UtilisateurFixtures extends Fixture
         ->setPassword('$2y$13$ON.wYv3nmwkB9N3eOSubt.HFA46NjBHgyvOo6PBs3PVcCPtRb5MSa')
         ->setActif(false)
         ->setRoles(["ROLE_UTILISATEUR"])
-        ->setGroupe([])
+        ->setListeGroupeFonctionnel([])
         ->setPreference(static::$preference)
         ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
         $manager->persist($josh);
