@@ -33,12 +33,12 @@ use Symfony\Component\Uid\Ulid;
  */
 #[ORM\Entity(repositoryClass: UserAgentEventRepository::class)]
 #[ORM\Table(name: "user_agent_event", schema: "ma_moulinette")]
-#[ORM\Index(name: "user_agent_event_idx_processing_status", columns: ["processing_status"])]
-#[ORM\Index(name: "user_agent_event_idx_event_type", columns: ["event_type"])]
-#[ORM\Index(name: "user_agent_event_idx_created_at", columns: ["created_at"])]
-#[ORM\Index(name: "user_agent_event_idx_user_id", columns: ["user_id"])]
-#[ORM\Index(name: "user_agent_event_idx_session_id", columns: ["session_id"])]
-#[ORM\Index(name: "user_agent_event_idx_visitor_id", columns: ["visitor_id"])]
+#[ORM\Index(name: "idx_event_processing_status", columns: ["processing_status"])]
+#[ORM\Index(name: "idx_event_type", columns: ["event_type"])]
+#[ORM\Index(name: "idx_event_created_at", columns: ["created_at"])]
+#[ORM\Index(name: "idx_event_user_id", columns: ["user_id"])]
+#[ORM\Index(name: "idx_event_session_id", columns: ["session_id"])]
+#[ORM\Index(name: "idx_event_visitor_id", columns: ["visitor_id"])]
 class UserAgentEvent {
 
     /**

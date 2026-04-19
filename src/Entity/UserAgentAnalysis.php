@@ -27,15 +27,15 @@ use Symfony\Component\Uid\Ulid;
  * Les données sont volontairement dénormalisées pour faciliter les agrégations.
  */
 #[ORM\Entity(repositoryClass: UserAgentAnalysisRepository::class)]
-#[ORM\Index(name: 'user_agent_analysis_idx_device_type_device', columns: ["device_type"])]
-#[ORM\Index(name: 'user_agent_analysis_idx_os_name', columns: ["os_name"])]
-#[ORM\Index(name: 'user_agent_analysis_idx_browser_name', columns: ["browser_name"])]
-#[ORM\Index(name: 'user_agent_analysis_idx_is_bot', columns: ["is_bot"])]
-#[ORM\Index(name: 'user_agent_analysis_idx_created_at', columns: ["created_at"])]
-#[ORM\Index(name: 'user_agent_analysis_idx_event_type', columns: ["event_type"])]
-#[ORM\Index(name: 'user_agent_analysis_idx_session_id', columns: ["session_id"])]
-#[ORM\Index(name: "user_agent_analysis_idx_user_id", columns: ["user_id"])]
-#[ORM\Index(name: "user_agent_analysis_idx_visitor_id", columns: ["visitor_id"])]
+#[ORM\Index(name: 'idx_analysis_device_type', columns: ["device_type"])]
+#[ORM\Index(name: 'idx_analysis_os_name', columns: ["os_name"])]
+#[ORM\Index(name: 'idx_analysis_browser_name', columns: ["browser_name"])]
+#[ORM\Index(name: 'idx_analysis_is_bot', columns: ["is_bot"])]
+#[ORM\Index(name: 'idx_analysis_created_at', columns: ["created_at"])]
+#[ORM\Index(name: 'idx_analysis_event_type', columns: ["event_type"])]
+#[ORM\Index(name: 'idx_analysis_session_id', columns: ["session_id"])]
+#[ORM\Index(name: "idx_analysis_user_id", columns: ["user_id"])]
+#[ORM\Index(name: "idx_analysis_visitor_id", columns: ["visitor_id"])]
 #[ORM\Table(
     name: 'user_agent_analysis',
     schema: 'ma_moulinette',
