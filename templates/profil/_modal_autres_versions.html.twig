@@ -5,8 +5,9 @@
         aria-labelledby="titre-autre-profil"
         aria-describedby="js-nombre-profil">
 
-      <h1 id="titre-autre-profil" class="h3 claire-hand js-titre-autre-profil" tabindex="-1"><span aria-hidden="true">🧑‍💻</span>Profils</h1>
-      <h2 id="js-nombre-profil" class="h4 open-sans">Il y a 1 profil disponible dans SonarQube</h2>
+      {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page ; descente d'un niveau (h1->h2, h2->h3) #}
+      <h2 id="titre-autre-profil" class="h3 claire-hand js-titre-autre-profil" tabindex="-1"><span aria-hidden="true">🧑‍💻</span>Profils</h2>
+      <h3 id="js-nombre-profil" class="h4 open-sans">Il y a 1 profil disponible dans SonarQube</h3>
       {# Construction du tableau #}
       <table class="hover">
         <caption>Liste des autres profils disponibles.</caption>
@@ -25,10 +26,11 @@
 
       <footer class="grid-x grid-margin-x align-right margin-top-2">
         <div class="cell shrink">
+          {# WCAG 1.1.1 : emoji décoratif masqué aux lecteurs d'écran ; aria-label plus explicite #}
           <button id="bouton-fermer-autre-profil" data-close
                   class="button open-sans focus-light"
                   type="button"
-                  aria-label="Ferme modale">❌ Fermer
+                  aria-label="Fermer la fenêtre Autres profils"><span aria-hidden="true">❌</span> Fermer
           </button>
       </footer>
     </dialog>
