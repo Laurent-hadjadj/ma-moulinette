@@ -20,67 +20,53 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PortefeuilleRepository::class)]
 #[ORM\Table(
-    name: 'portefeuille',
-    schema: "ma_moulinette",
-    options: ['comment' => "table des portefeuilles d'application"])]
+    name: "portefeuille",
+    schema: "ma_moulinette")]
 class Portefeuille
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(
         name: 'id',
-        type: Types::INTEGER,
+        type: Types::INTEGER, nullable: false,
         options: ['comment' => 'Identifiant unique pour chaque portefeuille'])]
-    private ?int $id = null;
+    private $id;
 
     #[ORM\Column(
-        name: 'titre',
-        type: Types::STRING,
-        length: 32,
-        nullable: false,
-        unique: true,
-        options: ['comment' => 'Titre unique du portefeuille'])]
+        name: 'portefeuille',
+        type: Types::STRING, length: 32, nullable: false, unique: true,
+        options: ['comment' => 'Nom unique du portefeuille'])]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 32, maxMessage: "Le titre ne peut pas dépasser 32 caractères.")]
-    private string $titre;
+    #[Assert\Length(max: 32,
+        maxMessage: "Le nom du portefeuille ne peut pas dépasser 32 caractères.")]
+    private $portefeuille;
 
     #[ORM\Column(
-        name: 'groupe',
-        type: Types::STRING,
-        length: 32,
-        nullable: false,
-        options: ['comment' => 'Nom de l’équipe associée au portefeuille'])]
+        name: 'groupe_fonctionnel',
+        type: Types::STRING, length: 128, nullable: false,
+        options: ['comment' => 'Nom du groupe fonctionnel associé au portefeuille'])]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 32, maxMessage: "Le nom de l'équipe ne peut pas dépasser 32 caractères.")]
-    private string $groupe;
+    #[Assert\Length(max: 128,
+        maxMessage: "Le nom du groupe fonctionnel ne peut pas dépasser 128 caractères.")]
+    private $groupeFonctionnel;
 
     #[ORM\Column(
         name: 'liste',
-        type: Types::JSON,
-        nullable: false,
+        type: 'json',
         options: ['comment' => 'Liste des éléments ou des activités du portefeuille'])]
-    #[Assert\NotNull]
-    private array $liste = [];
+    private ?array $liste = [];
 
     #[ORM\Column(
         name: 'date_modification',
-        type: Types::DATETIME_MUTABLE,
-        nullable: true,
+        type: Types::DATETIME_MUTABLE, nullable: true,
         options: ['comment' => 'Date de la dernière modification du portefeuille'])]
-    private ?\DateTimeInterface $dateModification = null;
+    private $dateModification;
 
     #[ORM\Column(
         name: 'date_enregistrement',
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
+        type: Types::DATETIMETZ_IMMUTABLE,  nullable: false,
         options: ['comment' => 'Date d’enregistrement du portefeuille'])]
-    #[Assert\NotNull]
-    private \DateTimeImmutable $dateEnregistrement;
-
-    public function __construct()
-    {
-        $this->dateEnregistrement = new \DateTimeImmutable();
-    }
+    private $dateEnregistrement;
 
     public function getId(): ?int
     {
@@ -92,26 +78,26 @@ class Portefeuille
         return $this;
     }
 
-    public function getTitre(): ?string
+    public function getPortefeuille(): ?string
     {
-        return $this->titre;
+        return $this->portefeuille;
     }
 
-    public function setTitre(string $titre): self
+    public function setPortefeuille(string $portefeuille): static
     {
-        $this->titre = $titre;
+        $this->portefeuille = $portefeuille;
 
         return $this;
     }
 
-    public function getGroupe(): ?string
+    public function getGroupeFonctionnel(): ?string
     {
-        return $this->groupe;
+        return $this->groupeFonctionnel;
     }
 
-    public function setGroupe(string $groupe): self
+    public function setGroupeFonctionnel(string $groupeFonctionnel): static
     {
-        $this->groupe = $groupe;
+        $this->groupeFonctionnel = $groupeFonctionnel;
 
         return $this;
     }
@@ -121,7 +107,7 @@ class Portefeuille
         return $this->liste;
     }
 
-    public function setListe(array $liste): self
+    public function setListe(array $liste): static
     {
         $this->liste = $liste;
 
@@ -133,7 +119,7 @@ class Portefeuille
         return $this->dateModification;
     }
 
-    public function setDateModification(?\DateTimeInterface $dateModification): self
+    public function setDateModification(?\DateTimeInterface $dateModification): static
     {
         $this->dateModification = $dateModification;
 
@@ -145,7 +131,7 @@ class Portefeuille
         return $this->dateEnregistrement;
     }
 
-    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): self
+    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
     {
         $this->dateEnregistrement = $dateEnregistrement;
 
