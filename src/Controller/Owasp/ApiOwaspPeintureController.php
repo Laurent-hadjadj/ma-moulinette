@@ -14,8 +14,8 @@
 namespace App\Controller\Owasp;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\{JsonResponse,Response, Request};
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\{JsonResponse, Response, Request};
+use \Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Owasp, HotspotOwasp, HotspotDetails};
@@ -31,8 +31,7 @@ class ApiOwaspPeintureController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         private LoggerInterface $logger,
-    )
-    {}
+    ) {}
 
     /**
      * [Description for total]
@@ -46,11 +45,11 @@ class ApiOwaspPeintureController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function somme(array $liste, string|null $severity):int
+    private function somme(array $liste, string|null $severity): int
     {
         $i = 1;
         $total = 0;
-        for($i; $i<11; $i++){
+        for ($i; $i < 11; $i++) {
             if ($severity !== null) {
                 $total += $liste["a{$i}{$severity}"];
             } else {
@@ -84,9 +83,11 @@ class ApiOwaspPeintureController extends AbstractController
         $data = json_decode($request->getContent());
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'maven_key')
-        || !property_exists($data, 'referential_owasp')) {
-            $this->logger->alert("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key', 'referential_owasp' manquante ou JSON mal formé.", [
+        if (
+            $data === null || !property_exists($data, 'maven_key')
+            || !property_exists($data, 'referential_owasp')
+        ) {
+            $this->logger->error("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key', 'referential_owasp' manquante ou JSON mal formé.", [
                 'payload' => $data
             ]);
 
@@ -141,65 +142,65 @@ class ApiOwaspPeintureController extends AbstractController
         $mineur = self::somme($liste, '_minor');
 
         $data = [
-                'code' => 200,
-                'referential_owasp' => $referential_owasp,
-                'total' => $total,
-                'version' => $request['liste'][0]['version'],
-                'date_version' => $request['liste'][0]['date_version'],
-                'bloquant' => $bloquant,
-                'critique' => $critique,
-                'majeur' => $majeur,
-                'mineur' => $mineur,
-                'a1' => $request['liste'][0]['a1'],
-                'a2' => $request['liste'][0]['a2'],
-                'a3' => $request['liste'][0]['a3'],
-                'a4' => $request['liste'][0]['a4'],
-                'a5' => $request['liste'][0]['a5'],
-                'a6' => $request['liste'][0]['a6'],
-                'a7' => $request['liste'][0]['a7'],
-                'a8' => $request['liste'][0]['a8'],
-                'a9' => $request['liste'][0]['a9'],
-                'a10' => $request['liste'][0]['a10'],
-                'a1Blocker' => $request['liste'][0]['a1_blocker'],
-                'a2Blocker' => $request['liste'][0]['a2_blocker'],
-                'a3Blocker' => $request['liste'][0]['a3_blocker'],
-                'a4Blocker' => $request['liste'][0]['a4_blocker'],
-                'a5Blocker' => $request['liste'][0]['a5_blocker'],
-                'a6Blocker' => $request['liste'][0]['a6_blocker'],
-                'a7Blocker' => $request['liste'][0]['a7_blocker'],
-                'a8Blocker' => $request['liste'][0]['a8_blocker'],
-                'a9Blocker' => $request['liste'][0]['a9_blocker'],
-                'a10Blocker' => $request['liste'][0]['a10_blocker'],
-                'a1Critical' => $request['liste'][0]['a1_critical'],
-                'a2Critical' => $request['liste'][0]['a2_critical'],
-                'a3Critical' => $request['liste'][0]['a3_critical'],
-                'a4Critical' => $request['liste'][0]['a4_critical'],
-                'a5Critical' => $request['liste'][0]['a5_critical'],
-                'a6Critical' => $request['liste'][0]['a6_critical'],
-                'a7Critical' => $request['liste'][0]['a7_critical'],
-                'a8Critical' => $request['liste'][0]['a8_critical'],
-                'a9Critical' => $request['liste'][0]['a9_critical'],
-                'a10Critical' => $request['liste'][0]['a10_critical'],
-                'a1Major' => $request['liste'][0]['a1_major'],
-                'a2Major' => $request['liste'][0]['a2_major'],
-                'a3Major' => $request['liste'][0]['a3_major'],
-                'a4Major' => $request['liste'][0]['a4_major'],
-                'a5Major' => $request['liste'][0]['a5_major'],
-                'a6Major' => $request['liste'][0]['a6_major'],
-                'a7Major' => $request['liste'][0]['a7_major'],
-                'a8Major' => $request['liste'][0]['a8_major'],
-                'a9Major' => $request['liste'][0]['a9_major'],
-                'a10Major' => $request['liste'][0]['a10_major'],
-                'a1Minor' => $request['liste'][0]['a1_minor'],
-                'a2Minor' => $request['liste'][0]['a2_minor'],
-                'a3Minor' => $request['liste'][0]['a3_minor'],
-                'a4Minor' => $request['liste'][0]['a4_minor'],
-                'a5Minor' => $request['liste'][0]['a5_minor'],
-                'a6Minor' => $request['liste'][0]['a6_minor'],
-                'a7Minor' => $request['liste'][0]['a7_minor'],
-                'a8Minor' => $request['liste'][0]['a8_minor'],
-                'a9Minor' => $request['liste'][0]['a9_minor'],
-                'a10Minor' => $request['liste'][0]['a10_minor']
+            'code' => 200,
+            'referential_owasp' => $referential_owasp,
+            'total' => $total,
+            'version' => $request['liste'][0]['version'],
+            'date_version' => $request['liste'][0]['date_version'],
+            'bloquant' => $bloquant,
+            'critique' => $critique,
+            'majeur' => $majeur,
+            'mineur' => $mineur,
+            'a1' => $request['liste'][0]['a1'],
+            'a2' => $request['liste'][0]['a2'],
+            'a3' => $request['liste'][0]['a3'],
+            'a4' => $request['liste'][0]['a4'],
+            'a5' => $request['liste'][0]['a5'],
+            'a6' => $request['liste'][0]['a6'],
+            'a7' => $request['liste'][0]['a7'],
+            'a8' => $request['liste'][0]['a8'],
+            'a9' => $request['liste'][0]['a9'],
+            'a10' => $request['liste'][0]['a10'],
+            'a1Blocker' => $request['liste'][0]['a1_blocker'],
+            'a2Blocker' => $request['liste'][0]['a2_blocker'],
+            'a3Blocker' => $request['liste'][0]['a3_blocker'],
+            'a4Blocker' => $request['liste'][0]['a4_blocker'],
+            'a5Blocker' => $request['liste'][0]['a5_blocker'],
+            'a6Blocker' => $request['liste'][0]['a6_blocker'],
+            'a7Blocker' => $request['liste'][0]['a7_blocker'],
+            'a8Blocker' => $request['liste'][0]['a8_blocker'],
+            'a9Blocker' => $request['liste'][0]['a9_blocker'],
+            'a10Blocker' => $request['liste'][0]['a10_blocker'],
+            'a1Critical' => $request['liste'][0]['a1_critical'],
+            'a2Critical' => $request['liste'][0]['a2_critical'],
+            'a3Critical' => $request['liste'][0]['a3_critical'],
+            'a4Critical' => $request['liste'][0]['a4_critical'],
+            'a5Critical' => $request['liste'][0]['a5_critical'],
+            'a6Critical' => $request['liste'][0]['a6_critical'],
+            'a7Critical' => $request['liste'][0]['a7_critical'],
+            'a8Critical' => $request['liste'][0]['a8_critical'],
+            'a9Critical' => $request['liste'][0]['a9_critical'],
+            'a10Critical' => $request['liste'][0]['a10_critical'],
+            'a1Major' => $request['liste'][0]['a1_major'],
+            'a2Major' => $request['liste'][0]['a2_major'],
+            'a3Major' => $request['liste'][0]['a3_major'],
+            'a4Major' => $request['liste'][0]['a4_major'],
+            'a5Major' => $request['liste'][0]['a5_major'],
+            'a6Major' => $request['liste'][0]['a6_major'],
+            'a7Major' => $request['liste'][0]['a7_major'],
+            'a8Major' => $request['liste'][0]['a8_major'],
+            'a9Major' => $request['liste'][0]['a9_major'],
+            'a10Major' => $request['liste'][0]['a10_major'],
+            'a1Minor' => $request['liste'][0]['a1_minor'],
+            'a2Minor' => $request['liste'][0]['a2_minor'],
+            'a3Minor' => $request['liste'][0]['a3_minor'],
+            'a4Minor' => $request['liste'][0]['a4_minor'],
+            'a5Minor' => $request['liste'][0]['a5_minor'],
+            'a6Minor' => $request['liste'][0]['a6_minor'],
+            'a7Minor' => $request['liste'][0]['a7_minor'],
+            'a8Minor' => $request['liste'][0]['a8_minor'],
+            'a9Minor' => $request['liste'][0]['a9_minor'],
+            'a10Minor' => $request['liste'][0]['a10_minor']
         ];
 
         $this->logger->debug('[OWASP-Peinture] 🛠️ Liste des menaces OWASP.', [
@@ -211,7 +212,7 @@ class ApiOwaspPeintureController extends AbstractController
     /**
      * [Description for peintureOwaspHotspotInfo]
      * On récupère les résultats des hotspots
-       *
+     *
      * @param Request $request
      *
      * @return JsonResponse
@@ -233,14 +234,14 @@ class ApiOwaspPeintureController extends AbstractController
 
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key')) {
-            $this->logger->alert("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé..", [
+            $this->logger->error("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé..", [
                 'payload' => $data
             ]);
 
             return new JsonResponse([
                 'code' => 400,
-                'type'=>'alert',
-                'message'=> static::$erreur400
+                'type' => 'alert',
+                'message' => static::$erreur400
             ], Response::HTTP_OK);
         }
 
@@ -269,7 +270,7 @@ class ApiOwaspPeintureController extends AbstractController
         /** On compte le nombre de hotspot TO_REVIEW */
         $map = [
             'maven_key' => $data->maven_key,
-            'status'=> 'TO_REVIEW'
+            'status' => 'TO_REVIEW'
         ];
         $toReview = $hotspotOwaspRepos->countHotspotOwaspStatus($map);
 
@@ -282,7 +283,7 @@ class ApiOwaspPeintureController extends AbstractController
             ]);
 
             return new JsonResponse([
-                'code'=>$toReview['code'],
+                'code' => $toReview['code'],
                 'type' => 'alert',
                 'message' => "Une Erreur est survenue lors de la récupération des données pour les menaces au statut 'TO_REVIEW' ({$toReview['code']}).",
                 'trace' => $toReview['erreur'] ?? null
@@ -326,7 +327,9 @@ class ApiOwaspPeintureController extends AbstractController
             'reviewed' => $reviewed['request'][0]['nombre'],
             'toReview' => $toReview['request'][0]['nombre'],
             'total' => $reviewed['request'][0]['nombre'] + $toReview['request'][0]['nombre'],
-            'high' => $high, 'medium' => $medium, 'low' => $low
+            'high' => $high,
+            'medium' => $medium,
+            'low' => $low
         ], Response::HTTP_OK);
     }
 
@@ -354,15 +357,15 @@ class ApiOwaspPeintureController extends AbstractController
         $data = json_decode($request->getContent());
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'maven_key') ) {
-            $this->logger->alert("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé.", [
+        if ($data === null || !property_exists($data, 'maven_key')) {
+            $this->logger->error("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé.", [
                 'payload' => $data
             ]);
 
             return new JsonResponse([
                 'code' => 400,
-                'type'=>'alert',
-                'message'=> static::$erreur400
+                'type' => 'alert',
+                'message' => static::$erreur400
             ], Response::HTTP_OK);
         }
 
@@ -420,13 +423,18 @@ class ApiOwaspPeintureController extends AbstractController
         }
 
         return new JsonResponse([
-                'code' => 200,
-                'menaceA1' => $menaceA1, 'menaceA2' => $menaceA2,
-                'menaceA3' => $menaceA3, 'menaceA4' => $menaceA4,
-                'menaceA5' => $menaceA5, 'menaceA6' => $menaceA6,
-                'menaceA7' => $menaceA7, 'menaceA8' => $menaceA8,
-                'menaceA9' => $menaceA9, 'menaceA10' => $menaceA10
-            ], Response::HTTP_OK);
+            'code' => 200,
+            'menaceA1' => $menaceA1,
+            'menaceA2' => $menaceA2,
+            'menaceA3' => $menaceA3,
+            'menaceA4' => $menaceA4,
+            'menaceA5' => $menaceA5,
+            'menaceA6' => $menaceA6,
+            'menaceA7' => $menaceA7,
+            'menaceA8' => $menaceA8,
+            'menaceA9' => $menaceA9,
+            'menaceA10' => $menaceA10
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -454,7 +462,7 @@ class ApiOwaspPeintureController extends AbstractController
 
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key')) {
-            $this->logger->alert("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé.", [
+            $this->logger->error("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé.", [
                 'payload' => $data
             ]);
 
@@ -514,17 +522,19 @@ class ApiOwaspPeintureController extends AbstractController
         $data = json_decode($request->getContent());
 
         /** On teste si le body est correcte */
-        if ($data === null ||
+        if (
+            $data === null ||
             !property_exists($data, 'maven_key') ||
-            !property_exists($data, 'menace')) {
-            $this->logger->alert("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key', 'menace' manquante ou JSON mal formé.", [
+            !property_exists($data, 'menace')
+        ) {
+            $this->logger->error("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key', 'menace' manquante ou JSON mal formé.", [
                 'payload' => $data
             ]);
 
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message'=> static::$erreur400
+                'message' => static::$erreur400
             ], Response::HTTP_OK);
         }
 
@@ -610,5 +620,4 @@ class ApiOwaspPeintureController extends AbstractController
             'low' => $x_low
         ], Response::HTTP_OK);
     }
-
 }
