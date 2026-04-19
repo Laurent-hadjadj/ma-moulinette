@@ -32,13 +32,13 @@
     {{ include('header.html.twig') }}
 
     <header class="grid-container margin-top-1">
-      <nav id="fil-ariane" aria-label="vous êtes ici :">
+      {# WCAG 2.4.8 : indication "vous êtes ici" portée par aria-label ; aria-current="page" sur l'élément courant #}
+      <nav id="fil-ariane" aria-label="Fil d'Ariane, vous êtes ici">
         <ol class="claire-hand breadcrumbs">
           <li>
             <a href="{{ path('accueil', {}) }}">Accueil</a>
           </li>
-          <li>
-            <span class="show-for-sr">vous êtes ici :</span>Actuator</li>
+          <li aria-current="page">Actuator</li>
         </ol>
       </nav>
     </header>
@@ -46,11 +46,13 @@
     {# Message d'information php #}
     {{ include('_message.html.twig') }}
 
-    <main class="grid-container">
-      <h1 class="h4 claire-hand">Actuator</h1>
+    {# WCAG 2.4.1 : id="main-content" (cible du skip link) #}
+    <main id="main-content" class="grid-container">
+      {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page ; descente d'un niveau des titres de section #}
+      <h2 class="h4 claire-hand">Actuator</h2>
       <div class="small-12 cell">
         <div class="callout">
-          <h2 class="h5 claire-hand">Filtres d'affichage.</h2>
+          <h3 class="h5 claire-hand">Filtres d'affichage.</h3>
           {% if pagination is not empty %}
             {{ knp_pagination_sortable(pagination, 'Application', 'nom_application', {}, {}, '/actuator/_zf6_fa_sortable_link.html.twig') }}
             {{ knp_pagination_sortable(pagination, 'URL','url', {}, {}, '/actuator/_zf6_fa_sortable_link.html.twig') }}
@@ -87,8 +89,8 @@
             </div>
           {% endfor %}
         {% else %}
-          <p class="open-sans text-center color-rouge">
-            <strong>Aucun résultat trouvé</strong.</p>
+          <p class="open-sans text-center color-rouge" aria-label="couleur rouge">
+            <strong>Aucun résultat trouvé</strong></p>
           {% endif %}
 
           {# display navigation #}
