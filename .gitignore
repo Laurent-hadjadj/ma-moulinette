@@ -101,3 +101,7 @@ phpstan.neon
 ###> js/secrets ###
 **/secrets.local.js
 ###< js/secrets ###
+
+###> claude ###
+.claude/
+###< claude ###
