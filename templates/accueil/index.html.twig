@@ -31,9 +31,10 @@
     {{ include('header.html.twig') }}
 
     <header class="grid-container margin-top-1">
-      <nav id="fil-ariane" aria-label="vous êtes ici :">
+      {# WCAG 2.4.8 : l'indication "vous êtes ici" est portée par aria-label du <nav>, inutile de la répéter dans chaque <li> #}
+      <nav id="fil-ariane" aria-label="Fil d'Ariane, vous êtes ici">
         <ol class="claire-hand breadcrumbs">
-          <li><span class="show-for-sr">Vous êtes sur la page :</span>Accueil</li>
+          <li aria-current="page">Accueil</li>
         </ol>
       </nav>
     </header>
@@ -71,10 +72,12 @@
       </div>
     </header>
 
-    <main class="grid-container margin-bottom-1" role="main">
-      <h1 class="h3 claire-hand" aria-label="Informations et outils">
+    {# WCAG 4.1.1 : le rôle "main" est implicite sur <main>, on le supprime pour éviter la redondance. Ajout de id="main-content" (cible du skip link du header) #}
+    <main id="main-content" class="grid-container margin-bottom-1">
+      {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page (celui du header "Ma-Moulinette") ; ce titre de section devient <h2>. aria-label redondant avec le texte supprimé. #}
+      <h2 class="h3 claire-hand">
         <span aria-hidden="true" class="emoji">🏠</span> Informations et outils
-      </h1>
+      </h2>
 
       <div id="container-information" class="grid-x cell">
         {# Information référentiel #}
@@ -149,7 +152,8 @@
               </div>
             </fieldset>
             <div class="referential-filler">
-              <img class="svg-sonarqube-serveur" src="{{ asset('images/sonarqubeserver.svg') }}" alt="SonarQube Serveur">
+              {# WCAG 1.1.1 : alt décoratif "" car l'information est portée par le texte adjacent (version du serveur) #}
+              <img class="svg-sonarqube-serveur" src="{{ asset('images/sonarqubeserver.svg') }}" alt="">
               <span class="color-noir font-size-09"> Version du serveur : {{version_serveur_sonar}}.</span>
             </div>
           </div>
@@ -178,14 +182,17 @@
                 <div class="small-12 medium-6 large-6 cell">
                   {# si le nombre de tags est plus petit que le nombre de projet, alors
                   cela veut dire qu'il y a des projets qui ne seront pas rattachés à une équipe et ils ne seront pas visible pour les utilisateurs #}
+                  {# WCAG 1.4.1 : l'information n'est plus transmise uniquement par la couleur, on ajoute un texte explicite via aria-label (lu par les lecteurs d'écran) #}
                   {% if nombre_tag < nombre_projet_local %}
-                    {% set statut_tag='couleur-rouge' %}
+                    {% set statut_tag = 'couleur-rouge' %}
+                    {% set statut_tag_label = 'Nombre de tags (' ~ nombre_tag ~ ') inférieur au nombre de projets (' ~ nombre_projet_local ~ '), attention : des projets ne sont rattachés à aucune équipe.' %}
                   {% else %}
-                    {% set statut_tag='couleur-vert' %}
+                    {% set statut_tag = 'couleur-vert' %}
+                    {% set statut_tag_label = 'Nombre de tags (' ~ nombre_tag ~ ') cohérent avec le nombre de projets (' ~ nombre_projet_local ~ ').' %}
                   {% endif %}
                   <div class="container-stat visibility-box tag-box-tag">
                     <span class="titre-stat">Tags</span>
-                    <span id="js-tag-nombre" class="stat-tag {{statut_tag}}">{{nombre_tag}}</span>
+                    <span id="js-tag-nombre" class="stat-tag {{statut_tag}}" aria-label="{{ statut_tag_label }}">{{nombre_tag}}</span>
                   </div>
                 </div>
               </div>
