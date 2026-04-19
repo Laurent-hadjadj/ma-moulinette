@@ -1,3 +1,6 @@
+{# WCAG 2.4.1 : skip link pour aller directement au contenu principal (cible #main-content placé sur <main>) #}
+<a href="#main-content" class="show-for-sr show-on-focus skip-link">Aller au contenu principal</a>
+
 <!-- head -->
 {% set badge ='' %}
 {% if  env == 'DEV' %}
@@ -12,9 +15,11 @@
 <div class="grid-x cell">
   <div class="small-6 medium-6 large-6 cell">
     <div class="logo-container">
-      <div class="logo" aria-label="Logo ma-moulinette">
-        <img class="show-for-medium marque-entreprise" src="{{ asset('images/' ~logo_entreprise) }}" alt="Marque entreprise">
-        <img class="marque-mm" src="{{ asset('images/logo-mm-300x150.min.svg') }}" alt="Logo Ma-moulinette">
+      <div class="logo">
+        {# WCAG 1.1.1 : alt descriptif (ex. "Logo de {{ marque_entreprise_long }}") remplace "Marque entreprise" générique ; suppression du aria-label redondant avec les alt des images #}
+        <img class="show-for-medium marque-entreprise" src="{{ asset('images/' ~logo_entreprise) }}" alt="Logo de {{ marque_entreprise_long ?? 'l''entreprise' }}">
+        {# WCAG 1.1.1 : précision de la version dans l'alt du logo #}
+        <img class="marque-mm" src="{{ asset('images/logo-mm-300x150.min.svg') }}" alt="Logo Ma-Moulinette v{{ version }}">
       </div>
 
       <div class="ma-moulinette-container">
@@ -41,15 +46,21 @@
     <div class="float-right right no-select">
       {% if is_granted('ROLE_UTILISATEUR') %}
         <a href="{{ path('admin', {}) }}" title="Gestion des utilisateurs">
+          {# WCAG 1.1.1 / 4.1.2 : SVG porteur de sens : ajout de role="img" + <title> accessible aux lecteurs d'écran #}
           <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
             shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
-            width="100%" height="100%" viewbox="0 0 64 64" class="preferences-svg">
+            width="100%" height="100%" viewbox="0 0 64 64" class="preferences-svg"
+            role="img" aria-labelledby="svg-preferences-title">
+            <title id="svg-preferences-title">Gestion des utilisateurs</title>
             <path d="M20.704 63.211c-4.858.429-8.215-1.536-10.073-5.892a13.346 13.346 0 01-.399-1.978c-3.218.04-6.436.03-9.654-.03-.444-.556-.395-1.064.148-1.524 3.165-.091 6.331-.132 9.498-.121.847-4.867 3.793-7.52 8.837-7.962 5.09.308 8.113 2.908 9.07 7.8 11.892-.03 23.779-.01 35.659.06.41.486.413.968.007 1.447-11.886.082-23.772.214-35.657.397-.771 4.18-3.25 6.78-7.436 7.803zm-.475-1.673c-4.35.166-7.085-1.8-8.205-5.9-.298-4.154 1.583-6.829 5.645-8.024 4.278-.502 7.116 1.236 8.512 5.215.579 4.598-1.405 7.501-5.952 8.71z" opacity=".912"/><path d="M20.904 40.67c-4.392.574-7.696-.984-9.91-4.675a11.12 11.12 0 01-.872-3.042c-3.115.04-6.23.03-9.343-.032-.58-.255-.763-.686-.552-1.292.14-.184.32-.312.543-.383 3.114-.091 6.228-.132 9.343-.12.84-4.937 3.811-7.54 8.915-7.81 5.03.264 8.028 2.814 8.991 7.648a2104.67 2104.67 0 0135.66.136c.485.624.383 1.133-.304 1.524l-35.346.32c-.713 4.059-3.088 6.634-7.125 7.725zm-.475-1.674c-4.538.331-7.376-1.635-8.516-5.9-.306-4.236 1.627-6.91 5.8-8.023 4.642-.353 7.48 1.69 8.517 6.128.118 4.077-1.816 6.675-5.801 7.795z" opacity=".878"/><path d="M45.708 18.163c-4.129.045-7.122-1.718-8.98-5.288-.3-.826-.537-1.663-.713-2.51L.512 10.38c-.548-.455-.602-.962-.164-1.522 11.887-.082 23.772-.215 35.658-.398C37.22 2.896 40.738.316 46.556.72c4.316.925 6.768 3.528 7.357 7.809 3.219-.041 6.437-.031 9.655.03.444.556.394 1.064-.148 1.524-3.166.09-6.332.131-9.499.12-.783 4.601-3.521 7.254-8.213 7.96zm.77-1.832c-4.277.428-7.114-1.335-8.513-5.29-.63-3.905.887-6.679 4.552-8.322 4.332-1.085 7.427.347 9.287 4.296 1.053 4.683-.722 7.789-5.327 9.316z" opacity=".912"/>
           </svg>
         </a>
         <a href="{{ path('logout', {}) }}" title="Déconnexion">
+          {# WCAG 1.1.1 / 4.1.2 : SVG porteur de sens : ajout de role="img" + <title> accessible aux lecteurs d'écran #}
           <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
-            width="100%" height="100%" viewbox="0 0 64 64" class="logout-svg">
+            width="100%" height="100%" viewbox="0 0 64 64" class="logout-svg"
+            role="img" aria-labelledby="svg-logout-title">
+            <title id="svg-logout-title">Déconnexion</title>
               <path d="M3.845 0h35.841c2.24.654 3.543 2.15 3.907 4.488.082 3.491.082 6.982 0 10.473-.315.944-.955 1.256-1.923.935-.392-.185-.62-.496-.682-.935l-.124-10.597c-.321-.864-.92-1.425-1.798-1.684a2400.697 2400.697 0 00-34.601 0c-.93.27-1.53.873-1.799 1.808-.082 18.286-.082 36.571 0 54.856.27.935.869 1.538 1.799 1.808 11.664.124 23.322.082 34.973-.125a2.647 2.647 0 001.426-1.558l.124-11.345c.145-.706.579-1.08 1.303-1.122.723.042 1.157.416 1.302 1.122.082 3.74.082 7.48 0 11.22-.364 2.339-1.666 3.835-3.907 4.489H3.845C1.86 63.25.579 61.963 0 59.968V3.865C.579 1.87 1.86.582 3.845 0z" opacity=".964"/><path d="M63.498 31.293v1.247a1428.11 1428.11 0 01-11.162 11.283c-1.191.502-1.894.128-2.108-1.122.014-.341.117-.653.31-.936l8.371-8.415-40.058-.125c-.972-.397-1.24-1.082-.806-2.057a1.38 1.38 0 01.806-.56l40.058-.125-8.371-8.416c-.508-.875-.364-1.602.434-2.182.47-.104.925-.062 1.364.125a1428.11 1428.11 0 0111.162 11.283z" opacity=".935"/>
           </svg>
         </a>
@@ -59,7 +70,7 @@
     {# MENU Utilisateur #}
     {% if is_granted('ROLE_UTILISATEUR') %}
       <div id="container-information-user" class="cell container-identifiant">
-        <span class="identifiant-titre color-bleu">⚙️{{ app.user.courriel}}</span>
+        <span class="identifiant-titre color-bleu"><span aria-hidden="true">⚙️</span>{{ app.user.courriel}}</span>
       </div>
     {% endif %}
   </div>
