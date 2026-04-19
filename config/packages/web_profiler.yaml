@@ -7,7 +7,6 @@ when@dev:
     framework:
         profiler:
             only_exceptions: true
-            collect_serializer_data: false
 
 when@test:
     web_profiler:
