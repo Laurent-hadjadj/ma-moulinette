@@ -3,7 +3,7 @@
 /**
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common CC-BY-NC-SA 4.0.
 *  ---
@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\{Request, Response, JsonResponse, BinaryFileResponse};
-use Symfony\Component\Routing\Annotation\Route;
+use \Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Uid\Ulid;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -46,13 +46,12 @@ class BatchManuelController extends AbstractController
         private LoggerInterface $profilerLogger,
         private Security $security,
         private ListeProjetPortefeuilleService $listeProjetService
-    ) {
-    }
+    ) {}
 
     #[Route('/workers/pendingWorker.js', name: 'worker_pending')]
     public function worker(): Response
     {
-        $path = $this->getParameter('kernel.project_dir').'/assets/js/mon-application/batch/pendingWorker.js';
+        $path = $this->getParameter('kernel.project_dir') . '/assets/js/mon-application/batch/pendingWorker.js';
         return new BinaryFileResponse($path, 200, ['Content-Type' => 'application/javascript']);
     }
 
@@ -73,7 +72,7 @@ class BatchManuelController extends AbstractController
         $batchTraitementRepos = $this->em->getRepository(BatchTraitement::class);
         $count = $batchTraitementRepos->countBatchTraitementPendingAndProgress();
 
-        if ($count['code'] !== 200){
+        if ($count['code'] !== 200) {
             $this->logger->error("[Traitement-Manuel] ❌ Échec de la requête countBatchTraitementPendingAndProgress.", [
                 'erreur' => $count['erreur'],
             ]);
@@ -115,36 +114,36 @@ class BatchManuelController extends AbstractController
         /** On récupère les données du POST */
         $data = json_decode($request->getContent());
 
-        if ($data === null || !property_exists($data, 'traitement_id')){
-                $this->logger->error("[Traitement-Manuel] ❌ Requête invalide : clé 'traitement_id' manquante ou JSON mal formé.",[ 'payload' => $data ]);
+        if ($data === null || !property_exists($data, 'traitement_id')) {
+            $this->logger->error("[Traitement-Manuel] ❌ Requête invalide : clé 'traitement_id' manquante ou JSON mal formé.", ['payload' => $data]);
 
-                return new JsonResponse([
-                    'code' => 400,
-                    'type' => 'error',
-                    'message' => static::$erreur400
-                ], Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'error',
+                'message' => static::$erreur400
+            ], Response::HTTP_OK);
         }
 
         $map = [
-                'traitement_id' => $data->traitement_id,
-                'pending' => true
-            ];
+            'traitement_id' => $data->traitement_id,
+            'pending' => true
+        ];
 
-            $add_pending = $batchTraitementRepos->updateBatchTraitementPending($map);
+        $add_pending = $batchTraitementRepos->updateBatchTraitementPending($map);
 
-            if ($add_pending !== 200){
-                $this->logger->alert("[Traitement-Manuel] ❌ Échec de la requête updateBatchTraitementPending.", [
+        if ($add_pending !== 200) {
+            $this->logger->error("[Traitement-Manuel] ❌ Échec de la requête updateBatchTraitementPending.", [
                 'code' => $add_pending['code'],
                 'message' => $add_pending['erreur'] ?? null
-                ]);
+            ]);
 
-                return new JsonResponse([
-                    'code' => $add_pending['code'],
-                    'type' => 'error',
-                    'message' => "Il n'est pas possible de mettre le traitement en file d'attente (Erreur {$add_pending['code']}).",
-                    'trace' => $add_pending['erreur']
-                ], Response::HTTP_OK);
-            }
+            return new JsonResponse([
+                'code' => $add_pending['code'],
+                'type' => 'error',
+                'message' => "Il n'est pas possible de mettre le traitement en file d'attente (Erreur {$add_pending['code']}).",
+                'trace' => $add_pending['erreur']
+            ], Response::HTTP_OK);
+        }
 
         return new JsonResponse([
             'code' => 200,
@@ -182,31 +181,36 @@ class BatchManuelController extends AbstractController
         $batchTraitementRepos = $this->em->getRepository(BatchTraitement::class);
         $user = $this->security->getUser();
 
-        $this->denyAccessUnlessGranted("ROLE_BATCH",
-        null, "L'utilisateur essaye d’accéder à la page sans avoir le rôle ROLE_BATCH");
+        $this->denyAccessUnlessGranted(
+            "ROLE_BATCH",
+            null,
+            "L'utilisateur essaye d’accéder à la page sans avoir le rôle ROLE_BATCH"
+        );
 
         /** On récupère les données du POST */
         $data = json_decode($request->getContent());
 
-        if ($data === null ||
-                !property_exists($data, 'traitement_id') ||
-                !property_exists($data, 'titre_portefeuille') ||
-                !property_exists($data, 'portefeuille')){
-                $this->logger->error("[Traitement-Manuel] ❌ Requête invalide : clé 'traitement_id', 'titre_portefeuille' ou 'portefeuille' manquante ou JSON mal formé.",[
-                    'utilisateur' => $user,
-                    'payload' => $data
-                ]);
+        if (
+            $data === null ||
+            !property_exists($data, 'traitement_id') ||
+            !property_exists($data, 'titre_portefeuille') ||
+            !property_exists($data, 'portefeuille')
+        ) {
+            $this->logger->error("[Traitement-Manuel] ❌ Requête invalide : clé 'traitement_id', 'titre_portefeuille' ou 'portefeuille' manquante ou JSON mal formé.", [
+                'utilisateur' => $user,
+                'payload' => $data
+            ]);
 
-                return new JsonResponse([
-                    'code' => 400,
-                    'type' => 'error',
-                    'message' => static::$erreur400
-                ], Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'error',
+                'message' => static::$erreur400
+            ], Response::HTTP_OK);
         }
 
         /** On regarde si un traitement est déjà démarré */
         $isStarted = $batchTraitementRepos->findBy(['inProgress' => true]);
-        if ($isStarted){
+        if ($isStarted) {
             $this->logger->info("[Traitement-Manuel] ⚠️ Un traitement est déjà en cours d'execution.");
 
             $map = [
@@ -216,10 +220,10 @@ class BatchManuelController extends AbstractController
 
             $add_pending = $batchTraitementRepos->updateBatchTraitementPending($map);
 
-            if ($add_pending['code'] !== 200){
-                $this->logger->alert("[Traitement-Manuel] ❌ Échec de la requête updateBatchTraitementPending.", [
-                'code' => $add_pending,
-                'message' => $add_pending['erreur'] ?? null
+            if ($add_pending['code'] !== 200) {
+                $this->logger->error("[Traitement-Manuel] ❌ Échec de la requête updateBatchTraitementPending.", [
+                    'code' => $add_pending,
+                    'message' => $add_pending['erreur'] ?? null
                 ]);
 
                 return new JsonResponse([
@@ -240,7 +244,7 @@ class BatchManuelController extends AbstractController
         // On extrait la liste des projets pour le portefeuille depuis la table batch_traitement
         $les_projets = $this->listeProjetService->listeProjet($data->titre_portefeuille, $data->portefeuille);
 
-        if ($les_projets['code'] === 404){
+        if ($les_projets['code'] === 404) {
             $this->logger->warning("[Traitement-Manuel] ❌ La liste est vide ou n'existe plus.", [
                 'code' => $les_projets,
                 'message' => $les_projets['erreur'] ?? null
@@ -291,7 +295,7 @@ class BatchManuelController extends AbstractController
                 'erreur' => $update['erreur'] ?? static::$noError,
                 'id' => $data->projet_id ?? 'inconnu',
                 'wip' => 'in_progress = true'
-                ]);
+            ]);
 
             return new JsonResponse([
                 'code' => $update['code'],
@@ -302,8 +306,8 @@ class BatchManuelController extends AbstractController
         }
 
         /** =============================
-        *  Création du job principal
-        *  ============================= */
+         *  Création du job principal
+         *  ============================= */
         $batchExecution = new BatchExecution(
             'Collecte du ' . date('d/m/Y H:i'),
             $execution_id,
@@ -417,9 +421,9 @@ class BatchManuelController extends AbstractController
             }
 
             // === Flush périodique et nettoyage mémoire ===
-            $this->logger->debug('peak before flush: ' . memory_get_peak_usage(true)/1024/1024 . ' MB');
+            $this->logger->debug('peak before flush: ' . memory_get_peak_usage(true) / 1024 / 1024 . ' MB');
             $this->em->flush();
-            $this->logger->debug('peak after flush: ' . memory_get_peak_usage(true)/1024/1024 . ' MB');
+            $this->logger->debug('peak after flush: ' . memory_get_peak_usage(true) / 1024 / 1024 . ' MB');
             $this->em->clear();
 
             $batchExecution = $this->em->getReference(BatchExecution::class, $batchExecution->getId());
@@ -484,9 +488,9 @@ class BatchManuelController extends AbstractController
         );
 
         $this->em->persist($profiling);
-        $this->logger->debug('peak before flush: ' . memory_get_peak_usage(true)/1024/1024 . ' MB');
+        $this->logger->debug('peak before flush: ' . memory_get_peak_usage(true) / 1024 / 1024 . ' MB');
         $this->em->flush();
-        $this->logger->debug('peak after flush: ' . memory_get_peak_usage(true)/1024/1024 . ' MB');
+        $this->logger->debug('peak after flush: ' . memory_get_peak_usage(true) / 1024 / 1024 . ' MB');
         $this->em->clear();
 
         /** On met à jour la table des traitements */
@@ -528,5 +532,4 @@ class BatchManuelController extends AbstractController
             'temps_traitement' => $temps_traitement
         ], Response::HTTP_OK);
     }
-
 }
