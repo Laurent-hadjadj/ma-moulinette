@@ -1,21 +1,78 @@
-{% block _Groupe_information_widget %}
+{% block _GroupeUtilisateur_information_widget %}
 <div class="alert alert-info">
-    <h4>Note d'Information</h4>
-		⚠️ Attention, le groupe permet de <strong>rattacher des utilisateurs</strong> mais aussi <strong>définit</strong> le groupe SonarQube. En d'autres termes, le groupe permettra de relier les projets rattacher dans un groupe SonarQube.<br>
-    Vous devez donc utiliser le tag ajouté sur les projets SonarQube pour permettre leur regroupement dans ma-moulinette.<br><br>
-    Par exemple, si les projets sont tagués '<strong>JAVA IS COOL</strong>', il faudra créer un groupe 'JAVA-IS-COOL' dans l'application ma-moulinette.
+    <h2 class="h5 claire-hand mb-2">ℹ️ Groupe d’utilisateurs</h2>
+    <p class="open-sans">
+        Le groupe d’utilisateurs permet de <strong>regrouper les utilisateurs</strong>
+        (équipe, activité, périmètre fonctionnel) afin de mieux organiser l’application.
+    </p>
+
+    <p class="open-sans mb-0">
+        ⚠️ <strong>Important :</strong> ce groupe n’a <u>aucun impact sur les droits d’accès</u>.
+        Les permissions sont gérées uniquement par les <strong>rôles</strong>.
+    </p>
+</div>
+<div class="alert alert-secondary mt-2">
+    <h3 class="h6 claire-hand mb-2">📝 Règles de nommage</h3>
+    <ul class="mb-2">
+        <li class="open-sans">Lettres (A–Z, a–z) et chiffres (0–9)</li>
+        <li class="open-sans">Caractères autorisés : <code>-</code>, <code>_</code> et espace</li>
+        <li class="open-sans">Pas de caractère spécial en début ou en fin</li>
+        <li class="open-sans">Nom <strong>insensible à la casse</strong> (stocké en minuscules)</li>
+        <li class="open-sans">Nom <strong>unique</strong> dans l’application</li>
+    </ul>
+
+    <p class="open-sans mb-0">
+        💡 Exemple : <code>Service Informatique</code>, <code>service_informatique</code>
+    </p>
+</div>
+{% endblock %}
+
+{% block _GroupeFonctionnel_information_widget %}
+<div class="alert alert-info">
+    <h2 class="h5 claire-hand mb-2">ℹ️ Groupe fonctionnel</h2>
+    <p class="open-sans">
+        Le groupe fonctionnel permet de <strong>regrouper les projets</strong> tagger dans SonarQube selon des critères fonctionnels
+        (équipe, activité, périmètre fonctionnel) afin de mieux organiser l’application.
+    </p>
+    <p class="open-sans mb-0">
+        ⚠️ <strong>Important :</strong> ce groupe a <u>un impact sur la visibilité des projets dans l'application</u>.
+        Il est donc <strong>important de bien marquer (tagger) les projets</strong> dans l'application SonarQube et de <strong>reporter chaque tag par un groupe fonctionnel</strong>.
+    </p>
+</div>
+<div class="alert alert-secondary mt-2">
+    <h3 class="h6 claire-hand mb-2">📝 Règles de nommage</h3>
+    <ul class="mb-2">
+        <li class="open-sans">Lettres (A–Z, a–z) et chiffres (0–9)</li>
+        <li class="open-sans">Caractères autorisés : <code>-</code>, <code>_</code></li>
+        <li class="open-sans">Pas d'espaces — Utilisation du trait d'union ou du caractère souligné en remplacement</li>
+        <li class="open-sans">Pas de caractère spécial en début ou en fin</li>
+        <li class="open-sans">Nom <strong>insensible à la casse</strong> (stocké en minuscules)</li>
+        <li class="open-sans">Nom <strong>unique</strong> dans l’application</li>
+    </ul>
+
+    <p class="open-sans mb-0">
+        💡 Exemple : <code>java-is-cool</code>, <code>app-php</code>
+    </p>
 </div>
 {% endblock %}
 
 {% block _Portefeuille_information_widget %}
 <div class="alert alert-info">
-    <h4>Note d'Information</h4>
-		ℹ️ Ce formulaire vous permet de définir le nom du <em>portefeuille</em>, c'est-à-dire la liste des projets rattachés à un groupe, qui sera utilisée lors des traitements manuels ou automatiques de collecte des données SonarQube. Le nom et le portefeuille seront utilisés lors du traitement de la collecte.
-    <br><br>
-    <h4>Recommandations</h4>
+    <h2 class="h5 claire-hand mb-2">ℹ️ Portefeuille</h2>
+    <p class="open-sans">
+        Ce formulaire vous permet de définir le nom du <em>portefeuille</em>, c'est-à-dire la liste des projets rattachés à un groupe fonctionnel, qui sera utilisée lors des traitements manuels ou automatiques de collecte des indicateurs SonarQube.
+    </p>
+
+    <p class="open-sans mb-0">
+        ⚠️ <strong>Important :</strong> ce groupe n’a <u>aucun impact sur les droits d’accès</u>.
+        Les permissions sont gérées uniquement par les <strong>rôles</strong>.
+    </p>
+</div>
+<div class="alert alert-secondary mt-2">
+    <h3 class="h6 claire-hand mb-2">📝Recommandations</h3>
     📌 <strong>Taille du Portefeuille</strong> : Limitez le portefeuille à un maximum de 50 projets pour une empreinte mémoire de 400 MO et un temps d'exécution d'environ 8 minutes.<br>
     📌 <strong>Projets Très Actifs</strong> : Regroupez les projets très actifs dans un portefeuille dédié, par exemple <b>[groupe]-quotidien</b>, pour lesquels une analyse quotidienne est réalisée.<br>
     📌 <strong>Projets Moins Actifs</strong> : Regroupez les projets moins actifs dans un portefeuille dédié, par exemple <b>[groupe]-hebdomadaire</b>, pour lesquels une analyse hebdomadaire est nécessaire.<br>
-    📌 <strong>Projets Inactifs</strong> : Regroupez les projets inactifs dans un portefeuille dédié, par exemple <b>[groupe]-mensuel</b>, pour lesquels une analyse régulière n'est pas nécessaire.
+    📌 <strong>Projets Inactifs</strong> : Regroupez les projets inactifs dans un portefeuille dédié, par exemple <b>[groupe]-archive</b>, pour lesquels une analyse régulière n'est pas nécessaire.
 </div>
 {% endblock %}
