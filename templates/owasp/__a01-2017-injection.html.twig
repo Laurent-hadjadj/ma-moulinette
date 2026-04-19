@@ -1,22 +1,23 @@
 <div class="grid-container">
   <section class="container-detail-titre">
     <div class="small-4 medium-4 large-4">
-      <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="icon">
+      <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="">
     </div>
     <div class="small-8 medium-8 large-8">
-      <h1 class="h2 claire-hand margin-left-1">A1:2017 Injection</h1>
+      {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page (celui du header) ; descente d'un niveau pour tous les titres (h1->h2, h2->h3, h3->h4) #}
+      <h2 class="h2 claire-hand margin-left-1">A1:2017 Injection</h2>
     </div>
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Résumé</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Résumé</strong></h3>
     <div class="callout open-sans font-size-11 text-justify">
       {{ owasp.description }}
     </div>
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Facteurs de Menace/Vecteurs d'Attaque</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Facteurs de Menace/Vecteurs d'Attaque</strong></h3>
     <div class="table-scroll">
       <table class="responsive-card-table unstriped">
         <thead>
@@ -61,7 +62,7 @@
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Suis-je vulnérable à l’Injection ?</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Suis-je vulnérable à l’Injection ?</strong></h3>
     <p class="open-sans font-size-11 text-justify">Une application est vulnérable quand&nbsp;:</p>
     <ul class="open-sans font-size-11 margin-left-2">
       <li>les données venant de l'utilisateur ne sont pas validées, filtrées ou nettoyées par l'application&nbsp;;</li>
@@ -73,7 +74,7 @@
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Comment empêcher l'Injection ?</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Comment empêcher l'Injection ?</strong></h3>
     <p class="open-sans font-size-11 text-justify">Prévenir l’Injection exige de séparer les données non fiables des commandes et requêtes.&nbsp;:</p>
     <ul class="open-sans font-size-11 margin-left-2">
       <li>La meilleure option est d’utiliser une API saine qui évite complètement l’utilisation de l’interpréteur ou fournit une interface paramétrable, ou bien de migrer pour utiliser les outils d'Object Relational Mapping Tools (ORMs). <strong>Note</strong>: Attention aux API, telles les procédures stockées, qui sont paramétrables, mais qui pourraient introduire une Injection SQL si PL/SQL ou T-SQL concatène requêtes et données ou exécute des données non saines avec EXECUTE IMMEDIATE ou exec().</li>
@@ -84,7 +85,7 @@
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Exemple de scénarios d'attaque</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Exemple de scénarios d'attaque</strong></h3>
 
     <p class="open-sans font-size-11 text-justify"><strong>Scénario 1</strong>&nbsp;: L’application utilise des données non fiables dans la construction de l’appel SQL vulnérable suivant&nbsp;:</p>
     <pre>
@@ -112,8 +113,8 @@ http://example.com/app/accountView?id=' UNION SELECT SLEEP(10);--
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Références</strong></h2>
-    <h3 class="h5 claire-hand">OWASP</h3>
+    <h3 class="h4 claire-hand"><strong>Références</strong></h3>
+    <h4 class="h5 claire-hand">OWASP</h4>
     <ul class="open-sans font-size-11 margin-left-2">
       <li><a href="https://www.owasp.org/index.php/OWASP_Proactive_Controls#2:_Parameterize_Queries" target="_blank" rel="noopener noreferrer" aria-label="OWASP Proactive Controls: Parameterize Queries"><span class="source-link">OWASP Proactive Controls: Parameterize Queries</a></li>
       <li><a href="https://www.owasp.org/index.php/ASVS_V5_Input_validation_and_output_encoding" target="_blank" rel="noopener noreferrer" aria-label="OWASP ASVS: V5 Input Validation and Encoding"><span class="source-link">OWASP ASVS: V5 Input Validation and Encoding</span></a></li>
@@ -129,7 +130,7 @@ http://example.com/app/accountView?id=' UNION SELECT SLEEP(10);--
       <li><span class="source-link"><a href="https://www.owasp.org/index.php/OWASP_Automated_Threats_to_Web_Applications" target="_blank" rel="noopener noreferrer" aria-label="OWASP Automated Threats to Web Applications – OAT-014"><span class="source-link">OWASP Automated Threats to Web Applications – OAT-014</span></a></li>
     </ul>
 
-    <h3 class="h5 claire-hand">Externes</h3>
+    <h4 class="h5 claire-hand">Externes</h4>
     <ul class="open-sans font-size-11 margin-left-2">
       <li><a href="https://cwe.mitre.org/data/definitions/77.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-77: Command Injection"><span class="source-link">CWE-77: Command Injection</span></a></li>
       <li><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-89: SQL Injection"><span class="source-link">CWE-89: SQL Injection</span></a></li>
