@@ -15,7 +15,7 @@ namespace App\Controller\Activity;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\Routing\Annotation\Route;
+use \Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
 use Psr\Log\LoggerInterface;
@@ -31,6 +31,7 @@ class ApiActivityController extends AbstractController
 {
     /** Définition des constantes */
     private static $sonarUrl = "sonar.url";
+    private static $europeParis = 'Europe/Paris';
     private static $plus7days = "+7 days";
     private static $erreur400 = "La requête est incorrecte (Erreur 400).";
     private static $erreur403 = "Vous devez avoir le rôle ACTIVITY pour réaliser cette action (Erreur 403).";
@@ -69,7 +70,7 @@ class ApiActivityController extends AbstractController
      */
     private function lancerBatch(\DateTime $oldestDate): void
     {
-        $dateFin = (new \DateTime())->modify('-1 day'); // Jusqu'à J-1
+        $dateFin = (new \DateTime('now', new \DateTimeZone(static::$europeParis)))->modify('-1 day'); // Jusqu'à J-1
 
         while ($oldestDate <= $dateFin) {
             $fromDate = $oldestDate->format('Y-m-d H:i:s');
@@ -86,7 +87,7 @@ class ApiActivityController extends AbstractController
         }
     }
 
-    private function calculDifferenceDate(\DateTime $premiereDate, \DateTime $secondeDate) : int
+    private function calculDifferenceDate(\DateTime $premiereDate, \DateTime $secondeDate): int
     {
         return (int) $premiereDate->diff($secondeDate)->format('%a');
     }
@@ -96,14 +97,14 @@ class ApiActivityController extends AbstractController
         return gmdate("H:i:s", $data);
     }
 
-    private function calculAnalyseMoyenne($nbJour,$nbAnalyse): int
+    private function calculAnalyseMoyenne($nbJour, $nbAnalyse): int
     {
-        return (int) $nbJour/$nbAnalyse;
+        return (int) $nbJour / $nbAnalyse;
     }
 
-    private function calculeTauxReussite($nbAnalyseTotal,$nbAnalyseReussite): float
+    private function calculeTauxReussite($nbAnalyseTotal, $nbAnalyseReussite): float
     {
-        return $nbAnalyseTotal/$nbAnalyseReussite*100;
+        return $nbAnalyseTotal / $nbAnalyseReussite * 100;
     }
 
     /**
@@ -121,17 +122,17 @@ class ApiActivityController extends AbstractController
     private function organisationDonnee($data): array
     {
         $map = [];
-        $id= 0;
-        foreach($data['tasks'] as $value){
+        $id = 0;
+        foreach ($data['tasks'] as $value) {
             $map[$id]['maven_key'] = $value['componentKey'];
             $map[$id]['project_name'] = $value['componentName'];
             $map[$id]['analyse_id'] = $value['analysisId'];
             $map[$id]['status'] = $value['status'];
-            $map[$id]['submitter_login']= $value['submitterLogin'];
+            $map[$id]['submitter_login'] = $value['submitterLogin'];
             $map[$id]['submitted_at'] =  new \DateTimeImmutable($value['submittedAt']);
             $map[$id]['started_at'] = new \DateTimeImmutable($value['startedAt']);
             $map[$id]['executed_at'] = new \DateTimeImmutable($value['executedAt']);
-            $map[$id]['execution_time'] = (int) round($value['executionTimeMs'] / 1000)+1; // Conversion de l'input en ms en s
+            $map[$id]['execution_time'] = (int) round($value['executionTimeMs'] / 1000) + 1; // Conversion de l'input en ms en s
             $id++;
         }
         return $map;
@@ -160,13 +161,13 @@ class ApiActivityController extends AbstractController
         $activityHistoriqueRepository = $this->em->getRepository(ActivityHistorique::class);
 
         /** si on est pas GESTIONNAIRE on ne fait rien. */
-        if (!$this->isGranted('ROLE_ACTIVITY')){
-            $this->logger->error(static::$loggerE403, [ 'user' => $user ]);
+        if (!$this->isGranted('ROLE_ACTIVITY')) {
+            $this->logger->error(static::$loggerE403, ['user' => $user]);
 
             return new JsonResponse([
-                    'code' => 403,
-                    'type'=>'warning',
-                    'message' => static::$erreur403
+                'code' => 403,
+                'type' => 'warning',
+                'message' => static::$erreur403
             ], Response::HTTP_OK);
         }
 
@@ -222,24 +223,24 @@ class ApiActivityController extends AbstractController
         $dateBase = $activityRepos->dernierDate();
 
         /* La liste est vide ? */
-        if (empty($dateBase['liste'])){
+        if (empty($dateBase['liste'])) {
             // méthode pour insérer si la base est vierge
             $map = static::organisationDonnee($result['json']);
             $insert = $activityRepos->insertActivity($map);
-            if  ($insert['code']!==200){
-                return new jsonResponse(['code'=>$insert['code'], 'erreur' => $insert['erreur']]);
+            if ($insert['code'] !== 200) {
+                return new jsonResponse(['code' => $insert['code'], 'erreur' => $insert['erreur']]);
             }
         } else {
             // Méthode pour insérer si la base n'est pas vierge.
             // Cette méthode consiste à prendre toutes les analyse dans un intervalle de date représenter par dateMin et dateMax.
             // Puis vas insérer ces analyses
             $dateBase = (new \DateTime($dateBase['liste'][0]['date']))->modify('+1 days');
-            $dateActuelle = new \DateTime();
+            $dateActuelle = new \DateTime('now', new \DateTimeZone(static::$europeParis));
             $dateActuelleMoins1 = $dateActuelle->modify('-1 days');
             $dateMin = clone $dateBase;
             $dateMax = (clone $dateMin)->modify(static::$plus7days);
-            while($dateMin < $dateActuelleMoins1){
-                $url = $this->getParameter(static::$sonarUrl) . "/api/ce/activity?minSubmittedAt=".$dateMin->format('Y-m-d')."&maxExecutedAt=".$dateMax->format('Y-m-d')."";
+            while ($dateMin < $dateActuelleMoins1) {
+                $url = $this->getParameter(static::$sonarUrl) . "/api/ce/activity?minSubmittedAt=" . $dateMin->format('Y-m-d') . "&maxExecutedAt=" . $dateMax->format('Y-m-d') . "";
                 $result = $this->client->httpActivity($url);
                 $formattedData = static::organisationDonnee($result['json']);
                 $activityRepos->insertActivity($formattedData);
@@ -264,15 +265,15 @@ class ApiActivityController extends AbstractController
         // Le nombre d'analyse réussi ou en échec pour cette année
         // Réussi
         $statusRechercher = 'SUCCESS';
-        $result = $activityRepos->nombreStatus($year,$statusRechercher);
+        $result = $activityRepos->nombreStatus($year, $statusRechercher);
         $donneeTableau[$year]['success'] = $result['liste']['nb_status'];
         // Échec
         $statusRechercher = 'FAILED';
-        $result = $activityRepos->nombreStatus($year,$statusRechercher);
+        $result = $activityRepos->nombreStatus($year, $statusRechercher);
         $donneeTableau[$year]['fail'] = $result['liste']['nb_status'];
 
         // Le temps max d'execution pour cette année
-        $result=$activityRepos->tempsExecutionMax($year);
+        $result = $activityRepos->tempsExecutionMax($year);
         $donneeTableau[$year]['max_time'] = static::formatDureeMax($result['liste']['max_time']);
 
         // La moyenne d'analyse par jour
@@ -325,10 +326,12 @@ class ApiActivityController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-      /** On teste si la clé est valide */
+        /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'source')) {
-            $this->logger->error("[Activity-Dessin] ❌ Requête invalide : clé 'source' manquante ou JSON mal formé.",
-            [ 'payload' => $data ]);
+            $this->logger->error(
+                "[Activity-Dessin] ❌ Requête invalide : clé 'source' manquante ou JSON mal formé.",
+                ['payload' => $data]
+            );
 
             return new JsonResponse([
                 'code' => 400,
@@ -351,8 +354,10 @@ class ApiActivityController extends AbstractController
                 $response = $response = $activityRepos->listeAnalyseProjet($dateActuelle->format('Y'));
                 break;
             default:
-                $this->logger->error("[Activity-Dessin] ❌ Données incorrectes.",
-                [ 'source' => $source ]);
+                $this->logger->error(
+                    "[Activity-Dessin] ❌ Données incorrectes.",
+                    ['source' => $source]
+                );
                 break;
         }
 
