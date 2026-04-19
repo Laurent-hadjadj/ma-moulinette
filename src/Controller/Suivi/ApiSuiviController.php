@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Suivi;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
+use \Symfony\Component\Routing\Attribute\Route;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
 use Doctrine\ORM\EntityManagerInterface;
@@ -27,8 +27,7 @@ class ApiSuiviController extends AbstractController
         private EntityManagerInterface $em,
         private ClientService $client,
         private Security $security
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for listeVersion]
@@ -64,7 +63,7 @@ class ApiSuiviController extends AbstractController
         $request = $informationProjetRepository->selectInformationProjetVersion($map);
         if ($request['code'] !== 200) {
             return new JsonResponse([
-                'code'=>$request['code'],
+                'code' => $request['code'],
                 'erreur' => $request['erreur']
             ], Response::HTTP_OK);
         }
@@ -77,7 +76,8 @@ class ApiSuiviController extends AbstractController
             $cc = $ts->format("d-m-Y H:i:s");
             $objet = [
                 'id' => $id,
-                'text' => $version['version'] . " (" . $cc . ")"];
+                'text' => $version['version'] . " (" . $cc . ")"
+            ];
             array_push($liste, $objet);
             $id++;
         }
@@ -105,8 +105,8 @@ class ApiSuiviController extends AbstractController
         $tempoUrl = $this->getParameter(static::$sonarUrl);
 
         /** Appelle le client HTTP */
-        $queryParams = ['project' => $data->maven_key, 'p'=>1, 'ps'=>100 ];
-        $result = $this->client->httpSonarQube("$tempoUrl/api/project_analyses/search?".http_build_query($queryParams));
+        $queryParams = ['project' => $data->maven_key, 'p' => 1, 'ps' => 100];
+        $result = $this->client->httpSonarQube("$tempoUrl/api/project_analyses/search?" . http_build_query($queryParams));
         if (in_array($result['code'] ?? -1, [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
             return new JsonResponse([
                 'code' => $result['code'],
@@ -124,7 +124,8 @@ class ApiSuiviController extends AbstractController
             $cc = $ts->format('d-m-Y H:i:sO');
             $objet = [
                 'id' => $id,
-                'text' => $version['projectVersion'] . " (" . $cc . ")"];
+                'text' => $version['projectVersion'] . " (" . $cc . ")"
+            ];
             array_push($liste, $objet);
             $id++;
         }
@@ -153,17 +154,20 @@ class ApiSuiviController extends AbstractController
     {
         /** On récupère la maven_Key */
         $data = json_decode($request->getContent());
-        if ($data === null || !property_exists($data, 'maven_key') ||
-            !property_exists($data, 'date')) {
+        if (
+            $data === null || !property_exists($data, 'maven_key') ||
+            !property_exists($data, 'date')
+        ) {
             return new JsonResponse([
-                'code' => 400, 'type' => 'alert',
+                'code' => 400,
+                'type' => 'alert',
                 'message' => static::$erreur400
             ], Response::HTTP_OK);
         }
 
         /**  On a pas besoin d'encodé la date */
         //28-06-2024 20:48:20 to 2024-06-28T20:48:20+0200"
-        $date_convert=new \Datetime($data->date);
+        $date_convert = new \Datetime($data->date);
         $date_format = $date_convert->format('Y-m-d\TH:i:sO');
         $url = $this->getParameter(static::$sonarUrl);
 
@@ -178,7 +182,8 @@ class ApiSuiviController extends AbstractController
                 'component' => $data->maven_key,
                 'metrics' => 'violations',
                 'from' => $date_format,
-                'to' => $date_format ],
+                'to' => $date_format
+            ],
             'size' => [
                 'component' => $data->maven_key,
                 'metrics' => 'classes,comment_lines,comment_lines_density,files,lines,ncloc,ncloc_language_distribution,functions',
@@ -207,15 +212,15 @@ class ApiSuiviController extends AbstractController
 
         $results = [];
         foreach ($paramsList as $key => $params) {
-            $request=$this->client->httpSonarQube("$url/api/measures/search_history?".http_build_query($params));
+            $request = $this->client->httpSonarQube("$url/api/measures/search_history?" . http_build_query($params));
             $results[$key] = $request['json'];
         }
-        $keys=['coverage', 'issues', 'size', 'maintainability', 'reliability', 'security'];
+        $keys = ['coverage', 'issues', 'size', 'maintainability', 'reliability', 'security'];
 
-        if (array_key_exists('coverage', $results) && array_key_exists('code', $results['coverage'])){
-            return new JsonResponse(['code' => $results['coverage']['code'], 'erreur'=>$results['coverage']['erreur']], Response::HTTP_OK);
+        if (array_key_exists('coverage', $results) && array_key_exists('code', $results['coverage'])) {
+            return new JsonResponse(['code' => $results['coverage']['code'], 'erreur' => $results['coverage']['erreur']], Response::HTTP_OK);
         }
-        foreach ($keys as $key){
+        foreach ($keys as $key) {
             $metricsData[$key] = [];
             foreach ($results[$key]['measures'] as $measure) {
                 $metric = $measure['metric'];
@@ -272,13 +277,15 @@ class ApiSuiviController extends AbstractController
         ];
 
         // Définition de la fonction pour traiter ncloc_language_distribution
-        function handleNclocLanguageDistribution($value) {
+        function handleNclocLanguageDistribution($value)
+        {
             return $value;
         }
 
         // Fonction pour extraire et convertir les métriques
-        $data=[];
-        function extractMetrics(&$data, $metricsData, $group, $metricTypes) {
+        $data = [];
+        function extractMetrics(&$data, $metricsData, $group, $metricTypes)
+        {
             foreach ($metricTypes as $metric => $type) {
                 if (isset($metricsData[$group][$metric])) {
                     $data[$metric] = is_callable($type) ? $type($metricsData[$group][$metric]) : $type($metricsData[$group][$metric]);
@@ -296,7 +303,7 @@ class ApiSuiviController extends AbstractController
         extractMetrics($data, $metricsData, 'reliability', $metricTypesReliability);
         extractMetrics($data, $metricsData, 'security', $metricTypesSecurity);
 
-        return new JsonResponse(['code' => 200, 'data'=>$data], Response::HTTP_OK);
+        return new JsonResponse(['code' => 200, 'data' => $data], Response::HTTP_OK);
     }
 
     /**
@@ -342,11 +349,11 @@ class ApiSuiviController extends AbstractController
         ];
         $version = [
             'version_release' => -1,
-            'version_snapshot'=> -1,
+            'version_snapshot' => -1,
             'version_autre' => -1
         ];
         $nosonar = [
-            'suppress_warning' =>-1,
+            'suppress_warning' => -1,
             'no_sonar' => -1
         ];
         $todo = [
@@ -358,21 +365,21 @@ class ApiSuiviController extends AbstractController
             'logger_error' => -1,
             'logger_debug' => -1
         ];
-        $repartition=[
-            'frontend'=> -1,
-            'backend'=> -1,
-            'autre'=> -1,
+        $repartition = [
+            'frontend' => -1,
+            'backend' => -1,
+            'autre' => -1,
         ];
         $coverage = [
-            'coverage' =>$data->coverage,
-            'duplicated_lines_density' =>$data->duplicated_lines_density,
-            'tests' =>$data->tests,
+            'coverage' => $data->coverage,
+            'duplicated_lines_density' => $data->duplicated_lines_density,
+            'tests' => $data->tests,
             'skipped_tests' => $data->skipped_tests,
             'test_errors' => $data->test_errors,
             'test_failures' => $data->test_failures,
         ];
         $issues = [
-            'violations'=>$data->violations
+            'violations' => $data->violations
         ];
         $size = [
             'classes' => $data->classes,
@@ -381,69 +388,69 @@ class ApiSuiviController extends AbstractController
             'files' => $data->files,
             'nombre_ligne' => $data->lines,
             'nombre_ligne_code' => $data->ncloc,
-            'ncloc_language_distribution' =>$data->ncloc_language_distribution,
+            'ncloc_language_distribution' => $data->ncloc_language_distribution,
             'functions' => $data->functions,
         ];
         // dette = squale_index
-        $dette=[
-            'sqale_debt_ratio'=>$data->sqale_debt_ratio,
-            'dette'=>$data->dette,
+        $dette = [
+            'sqale_debt_ratio' => $data->sqale_debt_ratio,
+            'dette' => $data->dette,
         ];
         $maintainability = [
-            'note_sqale'=>$data->sqale_rating,
-            'nombre_code_smell'=>$data->code_smells,
-            'sqale_debt_ratio'=>$data->sqale_debt_ratio,
+            'note_sqale' => $data->sqale_rating,
+            'nombre_code_smell' => $data->code_smells,
+            'sqale_debt_ratio' => $data->sqale_debt_ratio,
         ];
         $reliability = [
-            'nombre_bug' =>$data->bugs,
-            'note_reliability' =>$data->reliability_rating
+            'nombre_bug' => $data->bugs,
+            'note_reliability' => $data->reliability_rating
         ];
         $security = [
-            'nombre_vulnerability'=>$data->vulnerabilities,
-            'note_security'=>$data->security_rating,
-            'note_hotspot'=>$data->security_review_rating,
-            'nombre_hotspot'=>$data->security_hotspots
+            'nombre_vulnerability' => $data->vulnerabilities,
+            'note_security' => $data->security_rating,
+            'note_hotspot' => $data->security_review_rating,
+            'nombre_hotspot' => $data->security_hotspots
         ];
         $severity = [
-            'bug_blocker'=> -1,
-            'bug_critical'=> -1,
-            'bug_major'=> -1,
-            'bug_minor'=> -1,
-            'bug_info'=> -1,
-            'vulnerability_blocker'=>-1,
-            'vulnerability_critical'=>-1,
-            'vulnerability_major'=> -1,
-            'vulnerability_minor'=> -1,
-            'vulnerability_info'=> -1,
-            'code_smell_blocker'=> -1,
-            'code_smell_critical'=> -1,
-            'code_smell_major'=> -1,
-            'code_smell_minor'=> -1,
-            'code_smell_info'=> -1,
+            'bug_blocker' => -1,
+            'bug_critical' => -1,
+            'bug_major' => -1,
+            'bug_minor' => -1,
+            'bug_info' => -1,
+            'vulnerability_blocker' => -1,
+            'vulnerability_critical' => -1,
+            'vulnerability_major' => -1,
+            'vulnerability_minor' => -1,
+            'vulnerability_info' => -1,
+            'code_smell_blocker' => -1,
+            'code_smell_critical' => -1,
+            'code_smell_major' => -1,
+            'code_smell_minor' => -1,
+            'code_smell_info' => -1,
             'nombre_anomalie_bloquant' => -1,
             'nombre_anomalie_critique' => -1,
             'nombre_anomalie_majeur' => -1,
             'nombre_anomalie_mineur' => -1,
-            'nombre_anomalie_info' =>-1
+            'nombre_anomalie_info' => -1
         ];
-        $hotspot=[
-                'hotspot_high' => -1,
-                'hotspot_medium' => -1,
-                'hotspot_low' => -1,
-                'date_enregistrement' => $dateEnregistrement
-            ];
-        $autre=[
-            'mode_collecte' =>'COLLECTE',
+        $hotspot = [
+            'hotspot_high' => -1,
+            'hotspot_medium' => -1,
+            'hotspot_low' => -1,
+            'date_enregistrement' => $dateEnregistrement
+        ];
+        $autre = [
+            'mode_collecte' => 'COLLECTE',
             'utilisateur_collecte' => $this->security->getUser()->getCourriel() ?? 'null',
             'date_enregistrement' => $dateEnregistrement
         ];
 
-        $map=$info+$version+$nosonar+$todo+$logger+$repartition+$coverage+$issues+$size+$dette+$maintainability+$reliability+$security+$severity+$hotspot+$autre;
-        $json='{}';
+        $map = $info + $version + $nosonar + $todo + $logger + $repartition + $coverage + $issues + $size + $dette + $maintainability + $reliability + $security + $severity + $hotspot + $autre;
+        $json = '{}';
         /** On enregistre */
-        $request=$historiqueRepository->insertHistoriqueAjoutProjet($map,$json);
-        if ($request['code']!=200) {
-            return new JsonResponse(['code' => $request['code'], 'message'=>$request['erreur']],Response::HTTP_OK);
+        $request = $historiqueRepository->insertHistoriqueAjoutProjet($map, $json);
+        if ($request['code'] != 200) {
+            return new JsonResponse(['code' => $request['code'], 'message' => $request['erreur']], Response::HTTP_OK);
         }
 
         return new JsonResponse(['code' => 200], Response::HTTP_OK);
@@ -480,19 +487,18 @@ class ApiSuiviController extends AbstractController
 
         /**  On récupère les versions et la date pour la clé du projet. */
         $map = ['maven_key' => $data->maven_key];
-        $request=$historiqueRepository->selectHistoriqueProjetByDate($map);
-        if ($request['code']!=200) {
+        $request = $historiqueRepository->selectHistoriqueProjetByDate($map);
+        if ($request['code'] != 200) {
             return new JsonResponse([
                 'code' => $request['code'],
-                'message'=>$request['erreur']
-            ],Response::HTTP_OK);
+                'message' => $request['erreur']
+            ], Response::HTTP_OK);
         }
 
         /** On récupère les préférences de l'utilisateur */
         $preference = $this->getUser()->getPreference();
         /* ? l'utilisateur a activer la gestion des favoris */
-        //$preferenceStatutFavoriVersion=$preference['statut']['favori_version'] ?? false;
-        $preferenceFavoriVersion=$preference['favori_version'] ?? false;
+        $preferenceFavoriVersion = $preference['favori_version'] ?? false;
         // Récupérer les versions favorites pour la maven_key
         $listeVersions = static::getFavoriVersions($preferenceFavoriVersion, $data->maven_key);
 
@@ -561,17 +567,17 @@ class ApiSuiviController extends AbstractController
         $courriel = $this->getUser()->getCourriel();
 
         $map = [
-            'favori'=>$data->favori,
-            'courriel'=> $courriel,
-            'maven_key'=>$data->maven_key,
-            'version'=>$data->version,
-            'date_version'=>$data->date_version
+            'favori' => $data->favori,
+            'courriel' => $courriel,
+            'maven_key' => $data->maven_key,
+            'version' => $data->version,
+            'date_version' => $data->date_version
         ];
 
         $request = $utilisateurRepository->updateUtilisateurFavoriVersion($preference, $map);
-        if ($request['code']!=200) {
+        if ($request['code'] != 200) {
             return new JsonResponse([
-                'code'=>$request['code'],
+                'code' => $request['code'],
                 'erreur' => $request['erreur']
             ], Response::HTTP_OK);
         }
@@ -601,11 +607,13 @@ class ApiSuiviController extends AbstractController
 
         /** On décode le body */
         $data = json_decode($request->getContent());
-        if ($data === null ||
+        if (
+            $data === null ||
             !property_exists($data, 'maven_key') ||
             !property_exists($data, 'initial') ||
             !property_exists($data, 'version') ||
-            !property_exists($data, 'date_version')) {
+            !property_exists($data, 'date_version')
+        ) {
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
@@ -613,8 +621,8 @@ class ApiSuiviController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-         /** si on est pas GESTIONNAIRE on ne fait rien. */
-        if (!$this->security->isGranted('ROLE_GESTIONNAIRE')){
+        /** si on est pas GESTIONNAIRE on ne fait rien. */
+        if (!$this->security->isGranted('ROLE_SUIVI')) {
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'warning',
@@ -623,13 +631,13 @@ class ApiSuiviController extends AbstractController
         }
 
         /** On créé la map pour la requête de mise à jour */
-        $map=[ 'initial'=>$data->initial, 'maven_key'=>$data->maven_key, 'version'=>$data->version, 'date_version'=>$data->date_version];
-        $request=$historiqueRepository->updateHistoriqueReference($map);
-        if ($request['code']!=200) {
+        $map = ['initial' => $data->initial, 'maven_key' => $data->maven_key, 'version' => $data->version, 'date_version' => $data->date_version];
+        $request = $historiqueRepository->updateHistoriqueReference($map);
+        if ($request['code'] != 200) {
             return new JsonResponse([
-                'code'=>$request['code'],
+                'code' => $request['code'],
                 'erreur' => $request['erreur']
-            ],Response::HTTP_OK);
+            ], Response::HTTP_OK);
         }
 
         /** Tout c'est bien passé */
@@ -661,32 +669,34 @@ class ApiSuiviController extends AbstractController
         $data = json_decode($request->getContent());
 
         /** On regarde si $data est valide */
-        if ($data === null ||
+        if (
+            $data === null ||
             !property_exists($data, 'maven_key') ||
             !property_exists($data, 'version') ||
-            !property_exists($data, 'date_version')) {
-                return new JsonResponse([
-                    'code' => 400,
-                    'type' => 'alert',
-                    'message' => static::$erreur400
-                ], Response::HTTP_OK);
-            }
+            !property_exists($data, 'date_version')
+        ) {
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'alert',
+                'message' => static::$erreur400
+            ], Response::HTTP_OK);
+        }
 
         /** si on est pas GESTIONNAIRE on ne fait rien. */
-        if (!$this->security->isGranted('ROLE_GESTIONNAIRE')){
+        if (!$this->security->isGranted('ROLE_SUIVI')) {
             return new JsonResponse([
                 'code' => 403,
-                'type'=>'warning',
+                'type' => 'warning',
                 'message' => static::$erreur403
             ], Response::HTTP_OK);
         }
 
         /** On supprime la version du projet */
-        $map=['maven_key'=>$data->maven_key, 'version'=>$data->version, 'date_version'=>$data->date_version];
-        $request=$historiqueRepository->deleteHistoriqueProjet($map);
-        if ($request['code']!=200) {
+        $map = ['maven_key' => $data->maven_key, 'version' => $data->version, 'date_version' => $data->date_version];
+        $request = $historiqueRepository->deleteHistoriqueProjet($map);
+        if ($request['code'] != 200) {
             return new JsonResponse([
-                'code'=>$request['code'],
+                'code' => $request['code'],
                 'erreur' => $request['erreur']
             ], Response::HTTP_OK);
         }
@@ -698,18 +708,18 @@ class ApiSuiviController extends AbstractController
          * On regarde si le le projet est un favori ?
          * Si le projet a une version en favori alors il est un projet favori.
          * */
-        $message='';
-        if  (str_contains(\serialize($preference['favori_version']), $data->maven_key)){
+        $message = '';
+        if (str_contains(\serialize($preference['favori_version']), $data->maven_key)) {
             $courriel = $this->security->getUser()->getCourriel();
-            $map=['favori' => 0, 'courriel' => $courriel, 'maven_key' => $data->maven_key, 'version' => $data->version, 'date_version' => $data->date_version];
-            $request=$utilisateurRepository->updateUtilisateurFavoriVersion($preference, $map);
-            $message='Le projet a également été supprimé de vos préférences.';
+            $map = ['favori' => 0, 'courriel' => $courriel, 'maven_key' => $data->maven_key, 'version' => $data->version, 'date_version' => $data->date_version];
+            $request = $utilisateurRepository->updateUtilisateurFavoriVersion($preference, $map);
+            $message = 'Le projet a également été supprimé de vos préférences.';
         }
 
         /** Tout c'est bien passé */
         return new JsonResponse([
             'code' => 200,
-            'message'=>$message
+            'message' => $message
         ], Response::HTTP_OK);
     }
 }
