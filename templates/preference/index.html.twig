@@ -29,25 +29,29 @@
 		{{ include('header.html.twig') }}
 
 		<header class="grid-container margin-top-1">
-			<nav aria-label="Ici : " role="navigation">
-				<ul class="claire-hand breadcrumbs">
+			{# WCAG 2.4.8 / 4.1.1 : aria-label enrichi ; role="navigation" implicite (retiré) ; <ol> à la place de <ul> ; aria-current="page" #}
+			<nav aria-label="Fil d'Ariane, vous êtes ici">
+				<ol class="claire-hand breadcrumbs">
 					<li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
-					<li><span class="show-for-sr">Current:</span>Mes préférences</li>
-				</ul>
+					<li aria-current="page">Mes préférences</li>
+				</ol>
 			</nav>
 		</header>
 
 		{# Message d'information php #}
     {{ include('_message.html.twig') }}
 
-		<div class="grid-container">
-			<h1 class="h4 claire-hand">Mes Informations personnelles.</h1>
+		{# WCAG 2.4.1 : id="main-content" (cible du skip link) #}
+		<div id="main-content" class="grid-container">
+			{# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page ; titre descendu en <h2> #}
+			<h2 class="h4 claire-hand">Mes Informations personnelles.</h2>
 			<div class="fieldset fieldset-information">
 				<div
 					class="grid-x">
 					{# Prénom + Nom #}
 					<div class="small-12 medium-1 large-1 cell">
-						<img id="ma-tete" src="{{ asset('build/avatar/{{avatar}}') }}" alt="mOi"/>
+						{# WCAG 1.1.1 : alt décoratif "" car le prénom/nom est affiché juste à côté #}
+					<img id="ma-tete" src="{{ asset('build/avatar/{{avatar}}') }}" alt=""/>
 					</div>
 					<div class="small-12 medium-11 large-11 cell">
 						<p class="open-sans prenom-nom">{{prenom}}
@@ -162,8 +166,9 @@
 
 			{# Fenêtre modale pour les bookmarks. #}
 			<div id="modal-bookmark" class="reveal" data-reveal data-close-on-click="true" aria-modal="true">
-				<h1 class="h2 claire-hand">Mes préférences.</h1>
-				<h2 class="h3 claire-hand">Bookmark</h2>
+				{# WCAG 1.3.1 / 2.4.6 : ce <h1> dans la modale crée un doublon avec le <h1> du header ; descendu en <h3> (la page a déjà un h2 "Mes Informations personnelles") #}
+					<h3 class="h2 claire-hand">Mes préférences.</h3>
+				<h4 class="h3 claire-hand">Bookmark</h4>
 				<br>
 
 				<blockquote class="text-justify">
@@ -187,8 +192,9 @@
 
 			{# Fenêtre modale pour la liste des favoris. #}
 			<div id="modal-favori" class="reveal" data-reveal data-close-on-click="true" aria-modal="true">
-				<h1 class="h2 claire-hand">Mes préférences.</h1>
-				<h2 class="h3 claire-hand">Favoris</h2>
+				{# WCAG 1.3.1 / 2.4.6 : ce <h1> dans la modale crée un doublon avec le <h1> du header ; descendu en <h3> (la page a déjà un h2 "Mes Informations personnelles") #}
+					<h3 class="h2 claire-hand">Mes préférences.</h3>
+				<h4 class="h3 claire-hand">Favoris</h4>
 				<br>
 
 				<blockquote class="text-justify">
@@ -231,8 +237,9 @@
 
 			{# Fenêtre modale pour la liste des projets. #}
 			<div id="modal-projet" class="reveal" data-reveal data-close-on-click="true" aria-modal="true">
-				<h1 class="h2 claire-hand">Mes préférences.</h1>
-				<h2 class="h3 claire-hand">Projets</h2>
+				{# WCAG 1.3.1 / 2.4.6 : ce <h1> dans la modale crée un doublon avec le <h1> du header ; descendu en <h3> (la page a déjà un h2 "Mes Informations personnelles") #}
+					<h3 class="h2 claire-hand">Mes préférences.</h3>
+				<h4 class="h3 claire-hand">Projets</h4>
 				<br>
 
 				<blockquote class="text-justify">
@@ -273,8 +280,9 @@
 
 			{# Fenêtre modale pour la liste des versions. #}
 			<div id="modal-version" class="reveal" data-reveal data-close-on-click="true" aria-modal="true">
-				<h1 class="h2 claire-hand">Mes préférences.</h1>
-				<h2 class="h3 claire-hand">Versions</h2>
+				{# WCAG 1.3.1 / 2.4.6 : ce <h1> dans la modale crée un doublon avec le <h1> du header ; descendu en <h3> (la page a déjà un h2 "Mes Informations personnelles") #}
+					<h3 class="h2 claire-hand">Mes préférences.</h3>
+				<h4 class="h3 claire-hand">Versions</h4>
 				<br>
 
 				<blockquote class="text-justify">
