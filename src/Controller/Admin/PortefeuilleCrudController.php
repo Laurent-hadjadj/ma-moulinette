@@ -17,7 +17,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\{Crud, Filters};
 use EasyCorp\Bundle\EasyAdminBundle\Field\{FormField, ChoiceField, TextField, DateTimeField};
 use Symfony\Component\HttpFoundation\{JsonResponse, Request};
-use Symfony\Component\Routing\Annotation\Route;
+use \Symfony\Component\Routing\Attribute\Route;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Portefeuille, Batch, BatchTraitement};
 
@@ -26,6 +26,8 @@ use App\Entity\{Portefeuille, Batch, BatchTraitement};
  */
 class PortefeuilleCrudController extends AbstractCrudController
 {
+    private static $europeParis = 'Europe/Paris';
+
     /**
      * [Description for __construct]
      *
@@ -66,10 +68,16 @@ class PortefeuilleCrudController extends AbstractCrudController
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
+            ->setPageTitle(Crud::PAGE_INDEX, 'Liste des portefeuilles')
+            ->setPageTitle(Crud::PAGE_NEW, 'Créer un portefeuille')
+            ->setPageTitle(Crud::PAGE_EDIT, function ($entity) {
+                            return sprintf('Modifier le portefeuille "%s"', $entity->getPortefeuille());
+            })
+            ->setPageTitle(Crud::PAGE_DETAIL, 'Détail du portefeuille')
             ->setFormThemes([
-                '@EasyAdmin/crud/form_theme.html.twig',
-                'admin/form/custom_choice_widget.html.twig',
                 'admin/form/custom_info_widget.html.twig',
+                '@EasyAdmin/crud/form_theme.html.twig',
+                'admin/form/custom_choice_widget.html.twig'
             ]);
     }
 
@@ -88,8 +96,8 @@ class PortefeuilleCrudController extends AbstractCrudController
     public function configureFilters(Filters $filters): Filters
     {
         return $filters
-            ->add('titre')
-            ->add('groupe');
+            ->add('portefeuille')
+            ->add('groupeFonctionnel');
     }
 
     /**
@@ -113,13 +121,17 @@ class PortefeuilleCrudController extends AbstractCrudController
             ->onlyOnForms()
             ->setFormTypeOption('mapped', false);
 
-        yield FormField::addColumn(6);
-        yield TextField::new('titre')
-            ->setLabel('Nom')
+        yield FormField::addColumn(4);
+        yield TextField::new('portefeuille')
+            ->setLabel('Portefeuille')
+            ->setFormTypeOption('attr', [
+                    'placeholder' => 'Application - [Groupe Fonctionnel]',
+                    'readonly' => $pageName === Crud::PAGE_EDIT
+            ])
             ->setHelp('Nom de la liste des projets. Ex. Application - [Groupe]');
 
-        // On récupère la liste des groupes
-        $sql = "SELECT titre, description FROM groupe ORDER BY titre ASC";
+        // On récupère la liste des groupes fonctionnels pour alimenter le champ de sélection
+        $sql = "SELECT groupe_fonctionnel, description FROM groupe_fonctionnel ORDER BY groupe_fonctionnel ASC";
         $stmt = $this->emm->getConnection()->prepare($sql);
         $exec = $stmt->executeQuery();
         $result = $exec->fetchAllAssociative();
@@ -128,30 +140,30 @@ class PortefeuilleCrudController extends AbstractCrudController
         if (empty($result)) {
             $result = [
                 [
-                    "titre" => "Aucune",
-                    "description" =>
-                    "Aucune équipe."
+                    "groupe_fonctionnel" => "Aucun groupe fonctionnel",
+                    "description" => "Aucune description."
                 ]
             ];
         }
 
         $key1 = $val1 = [];
         foreach ($result as $i => $value) {
-            $key1[$i] = $value['titre'] . " - " . $value['description'];
-            $val1[$i] = $value['titre'];
+            $key1[$i] = $value['groupe_fonctionnel'] . " - " . $value['description'];
+            $val1[$i] = $value['groupe_fonctionnel'];
         }
 
-        yield ChoiceField::new('groupe')
+        yield ChoiceField::new('groupeFonctionnel')
             ->setChoices(array_combine($key1, $val1))
-            ->renderExpanded()
-            ->setHelp("Nom du groupe en charge des projets.");
+            ->setLabel('Groupe fonctionnel')
+            ->setFormTypeOption('attr', ['readonly' => $pageName === Crud::PAGE_EDIT])
+            ->setHelp("Nom du groupe fonctionnel regroupant les projets SonarQube.");
 
-         // --- Filtrage selon équipe sélectionnée ---
+        // --- Filtrage selon le groupe fonctionnel sélectionné ---
         $request = $this->getContext()->getRequest();
         $selectedGroupe = $request->query->get('groupe');
         if (empty($selectedGroupe) && $this->getContext()?->getEntity()?->getInstance()) {
-                    $entity = $this->getContext()->getEntity()->getInstance();
-                    $selectedGroupe = $entity->getGroupe();
+            $entity = $this->getContext()->getEntity()->getInstance();
+            $selectedGroupe = $entity->getGroupeFonctionnel();
         }
 
         // --- Liste des projets ---
@@ -213,13 +225,12 @@ class PortefeuilleCrudController extends AbstractCrudController
             ->setHelp(sprintf('Liste des projets du portefeuille — %d projet(s) trouvés. Tape pour filtrer.', $count));
 
         yield DateTimeField::new('dateModification')
-            ->setTimezone('Europe/Paris')
+            ->setTimezone(static::$europeParis)
             ->hideOnForm();
 
         yield DateTimeField::new('dateEnregistrement')
-            ->setTimezone('Europe/Paris')
+            ->setTimezone(static::$europeParis)
             ->hideOnForm();
-
     }
 
     /**
@@ -240,17 +251,17 @@ class PortefeuilleCrudController extends AbstractCrudController
         if (!$entityInstance instanceof Portefeuille) {
             return;
         }
-        /** On récupère le titre du portefeuille */
-        $titre = $entityInstance->getTitre();
+        /** On récupère le nom du portefeuille */
+        $nom_portefeuille = $entityInstance->getPortefeuille();
 
         /** On enregistre le données que l'on veut modifier */
-        $entityInstance->setTitre(mb_strtoupper($titre));
+        $entityInstance->setPortefeuille(mb_strtoupper($nom_portefeuille));
         $entityInstance->setDateEnregistrement(new \DateTimeImmutable());
 
         /** retourne 1 ou null */
-        $record = $this->emm->getRepository(Portefeuille::class)->findOneBy(['titre' => mb_strtoupper($titre)]);
+        $record = $this->emm->getRepository(Portefeuille::class)->findOneBy(['portefeuille' => mb_strtoupper($nom_portefeuille)]);
 
-        /** Si la valeur de l'attribut 'titre' n'existe pas, on enregistre.*/
+        /** Si la valeur de l'attribut 'portefeuille' n'existe pas, on enregistre.*/
         if (is_null($record)) {
             parent::persistEntity($em, $entityInstance);
         }
@@ -277,29 +288,28 @@ class PortefeuilleCrudController extends AbstractCrudController
         /** On récupère le nombre de projet pour ce portefeuille */
         $nombre_projet = count($entityInstance->getListe());
         /** On récupère le nom du portefeuille */
-        $nom_portefeuille = $entityInstance->getTitre();
+        $nom_portefeuille = $entityInstance->getPortefeuille();
         /** On ajoute la date de modification  */
-        $entityInstance->setDateModification(new \DateTime());
+        $entityInstance->setDateModification(new \DateTime('now', new \DateTimeZone(static::$europeParis)));
 
         try {
-                parent::persistEntity($em, $entityInstance);
+            parent::persistEntity($em, $entityInstance);
 
-                /** On met à jour le nombre de projet pour ce portefeuille */
-                $isExist = $this->emm->getRepository(Batch::class)->findOneBy(['titre' => mb_strtoupper($nom_portefeuille)]);
+            /** On met à jour le nombre de projet pour ce portefeuille */
+            $isExist = $this->emm->getRepository(Batch::class)->findOneBy(['portefeuille' => mb_strtoupper($nom_portefeuille)]);
 
-                $map = [
-                    'portefeuille' => $nom_portefeuille,
-                    'nombre_projet' => $nombre_projet
-                ];
+            $map = [
+                'portefeuille' => $nom_portefeuille,
+                'nombre_projet' => $nombre_projet
+            ];
 
-                if($isExist){
-                    $this->emm->getRepository(Batch::class)->updatePortefeuille($map);
-                    $this->emm->getRepository(BatchTraitement::class)->updatePortefeuille($map);
-                }
+            if ($isExist) {
+                $this->emm->getRepository(Batch::class)->updatePortefeuille($map);
+                $this->emm->getRepository(BatchTraitement::class)->updatePortefeuille($map);
+            }
         } catch (\Exception $e) {
             $this->addFlash('danger', 'Une erreur est survenue lors de la mise à jour du portefeuille : ' . $e->getMessage());
         }
-
     }
 
     #[Route('/admin/portefeuille/list-projets', name: 'admin_list_projets')]
