@@ -1,22 +1,23 @@
 <div class="grid-container">
   <section class="container-detail-titre">
   <div class="small-4 medium-4 large-4">
-    <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="icon">
+    <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="">
   </div>
   <div class="small-8 medium-8 large-8">
-    <h1 class="h2 claire-hand margin-left-1">A10:2021 – A10 Falsification de requête côté serveur (SSRF)</h1>
+    {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page (celui du header) ; descente d'un niveau pour tous les titres (h1->h2, h2->h3, h3->h4) #}
+      <h2 class="h2 claire-hand margin-left-1">A10:2021 – A10 Falsification de requête côté serveur (SSRF)</h2>
   </div>
   </section>
 
   <section>
-  <h2 class="h4 claire-hand"><strong>Résumé</strong></h2>
+  <h3 class="h4 claire-hand"><strong>Résumé</strong></h3>
   <div class="callout open-sans font-size-11 text-justify">
       {{ owasp.description }}
   </div>
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Facteurs</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Facteurs</strong></h3>
     <div class="table-scroll">
       <table class="responsive-card-table unstriped">
         <thead>
@@ -50,21 +51,21 @@
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Aperçu</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Aperçu</strong></h3>
     <p class="open-sans font-size-11 text-justify">Cette catégorie est ajoutée à partir de l'enquête communautaire Top 10 (n°1). Les données montrent un taux d'incidence relativement faible avec une couverture de test supérieure à la moyenne et des évaluations du potentiel d'exploitation et d'impact supérieures à la moyenne. Comme les nouvelles entrées sont susceptibles d'être une seule ou un petit groupe de <em>Common Weakness Enumerations</em> (CWE) pour l'attention et la sensibilisation, l'espoir est qu'elles fassent l'objet d'une attention particulière et qu'elles puissent être intégrées dans une catégorie plus importante dans une prochaine édition.></p>
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Description</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Description</strong></h3>
     <p class="open-sans font-size-11 text-justify">Une faille SSRF se produit lorsqu'une application web récupère une ressource distante sans valider l'URL fournie par l'utilisateur. Elle permet à un attaquant de contraindre l'application à envoyer une requête élaborée à une destination inattendue, même si elle est protégée par un pare-feu, un VPN ou un autre type de liste de contrôle d'accès au réseau (ACL).</p>
     <p class="open-sans font-size-11 text-justify">Comme les applications Web modernes offrent aux utilisateurs finaux des fonctions pratiques, la récupération d'une URL devient un scénario courant. Par conséquent, l'incidence d'une SSRF augmente. De même, la gravité de ce phénomène augmente en raison des services en nuage et de la complexité des architectures.</p>
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Comment s'en prémunir</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Comment s'en prémunir</strong></h3>
     <p class="open-sans font-size-11 text-justify">Les développeurs peuvent prévenir ce type de vulnérabilité en mettant en œuvre tout ou partie des contrôles de défense en profondeur suivants&nbsp;:</p>
 
-    <h3 class="h5 claire-hand">Couche réseau&nbsp;:</h3>
+    <h4 class="h5 claire-hand">Couche réseau&nbsp;:</h4>
     <ul class="open-sans font-size-11 margin-left-2">
       <li>segmenter la fonctionnalité d'accès aux ressources à distance dans des réseaux distincts pour réduire l'impact d'une SSRF&nbsp;;</li>
       <li>appliquer des politiques de pare-feu ou des règles de contrôle d'accès au réseau "refusant par défaut" afin de bloquer tout le trafic intranet sauf celui qui est essentiel.<br/>
@@ -73,7 +74,7 @@
       <li>Consigner tous les flux réseau acceptés <em>et</em> bloqués sur les pare-feu (voir <strong>[A09:2021-Carence des systèmes de contrôle et de journalisation]</strong>).></li>
     </ul>
 
-    <h3 class="h5 claire-hand">Couche applicative&nbsp;:</h3>
+    <h4 class="h5 claire-hand">Couche applicative&nbsp;:</h4>
     <ul class="open-sans font-size-11 margin-left-2">
       <li>assainir et valider toutes les données d'entrée fournies par le client&nbsp;;</li>
       <li>imposer le schéma d'URL, le port et la destination avec une liste positive d'autorisation&nbsp;;</li>
@@ -84,7 +85,7 @@
 
     <p class="open-sans font-size-11 text-justify color-rouge">N'atténuez pas les SSRF par l'utilisation d'une liste de refus ou d'une expression régulière. Les attaquants disposent de dictionnaires, d'outils et de compétences pour contourner les listes de refus.</p>
 
-    <h3 class="h5 claire-hand">Mesures complémentaires&nbsp;:</h3>
+    <h4 class="h5 claire-hand">Mesures complémentaires&nbsp;:</h4>
     <ul class="open-sans font-size-11 margin-left-2">
       <li>ne pas déployer d'autres services liés à la sécurité sur les systèmes frontaux (par exemple, OpenID). Contrôlez le trafic local sur ces systèmes (par exemple, localhost)&nbsp;;</li>
       <li>pour les frontaux avec des groupes d'utilisateurs dédiés et gérables, utilisez le chiffrement du réseau (par exemple, les VPN) sur des systèmes indépendants pour prendre en compte les besoins de protection très élevés.</li>
@@ -92,7 +93,7 @@
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Exemple de scénarios d'attaque</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Exemple de scénarios d'attaque</strong></h3>
     <p class="open-sans font-size-11 text-justify">Les attaquants peuvent utiliser SSRF pour attaquer des systèmes protégés derrière des pare-feu d'applications web, des pare-feu ou des ACL de réseau, en utilisant des scénarios tels que&nbsp;:</p>
 
     <p class="open-sans font-size-11 text-justify"><strong>Scénario 1</strong>&nbsp;: Analyse des ports des serveurs internes - Si l'architecture du réseau n'est pas segmentée, les attaquants peuvent cartographier les réseaux internes et déterminer si les ports sont ouverts ou fermés sur les serveurs internes à partir des résultats de connexion ou du temps écoulé pour connecter ou les connexions rejetées avec une charge utile de type SSRF.</p>
@@ -105,7 +106,7 @@
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Références</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Références</strong></h3>
     <ul class="open-sans font-size-11 margin-left-2">
       <li>
         <a href="https://cheatsheetseries.owasp.org/cheatsheets/Server_Side_Request_Forgery_Prevention_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP - Server-Side Request Forgery Prevention Cheat Sheet">
@@ -136,7 +137,7 @@
   </section>
 
   <section>
-    <h2 class="h4 claire-hand"><strong>Liste des CWEs associées</strong></h2>
+    <h3 class="h4 claire-hand"><strong>Liste des CWEs associées</strong></h3>
     <ul class="open-sans font-size-11 margin-left-2">
       <li>
         <a href="https://cwe.mitre.org/data/definitions/918.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-918 Server-Side Request Forgery (SSRF)">
