@@ -11,9 +11,12 @@ use Doctrine\Persistence\ObjectManager;
  */
 class BatchFixtures extends Fixture
 {
-    private static $statut = false;
+    // v2.0.0 : renommage `statut` → `activated`, ajout `automatique`, `responsableShort`
+    private static $activated = false;
+    private static $automatique = false;
     private static $description = 'Mon batch à moi';
     private static $responsable = 'Laurent HADJADJ';
+    private static $responsableShort = 'L.HADJADJ';
     private static $nombreProjet = 1;
     private static $execution = 'OK';
     private static $dateModification = '2025-01-02 12:00:00+02';
@@ -25,10 +28,12 @@ class BatchFixtures extends Fixture
 
       foreach($data as $titre){
         $batch=(new Batch())
-          ->setStatut(static::$statut)
+          ->setActivated(static::$activated)
+          ->setAutomatique(static::$automatique)
           ->setTitre($titre)
           ->setDescription(static::$description)
           ->setResponsable(static::$responsable)
+          ->setResponsableShort(static::$responsableShort)
           ->setPortefeuille($titre)
           ->setNombreProjet(static::$nombreProjet)
           ->setExecution(static::$execution)
