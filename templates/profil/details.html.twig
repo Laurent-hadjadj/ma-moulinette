@@ -30,12 +30,13 @@
     {{ include('header.html.twig') }}
 
     <header class="grid-container margin-top-1">
-      <nav aria-label="Vous êtes Ici :" role="navigation">
-        <ul class="claire-hand breadcrumbs">
+      {# WCAG 2.4.8 / 4.1.1 : aria-label enrichi ; role="navigation" implicite sur <nav> (retiré) ; <ol> pour la sémantique ordonnée ; aria-current="page" sur l'élément courant #}
+      <nav aria-label="Fil d'Ariane, vous êtes ici">
+        <ol class="claire-hand breadcrumbs">
           <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
           <li><a href="{{ path('profil', {}) }}">Profil</a></li>
-          <li><span class="show-for-sr">Vous êtes ici :</span>Détails</li>
-        </ul>
+          <li aria-current="page">Détails</li>
+        </ol>
       </nav>
     </header>
 
@@ -62,15 +63,17 @@
       </div>
     </header>
 
-    <main class="grid-container" role="main">
-      <h1 class="h3 claire-hand" aria-label="Page Profil/Détails">
+    {# WCAG 2.4.1 / 4.1.1 : id="main-content" (cible du skip link) ; retrait du role="main" redondant #}
+    <main id="main-content" class="grid-container">
+      {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page ; descente d'un niveau (h1->h2, h2->h3, h3->h4) #}
+      <h2 class="h3 claire-hand">
         <span aria-hidden="true">🧾</span>Profil - Détails
-      </h1>
-      <h2 class="h4 claire-hand" aria-label="Liste des modifications et changements du profil.">
-        <span aria-hidden="true">📈</span>Liste des modifications du profil {{langage|upper}}
       </h2>
+      <h3 class="h4 claire-hand">
+        <span aria-hidden="true">📈</span>Liste des modifications du profil {{langage|upper}}
+      </h3>
 
-      <h3 class="h4 profil-titre">Informations générales</h3>
+      <h4 class="h4 profil-titre">Informations générales</h4>
       {# Message d'alerte sur le nombre de changements récupéré #}
       <div class="callout alert-callout-border primary callout-ombre">
         <strong>Attention</strong> - Seul les 500 premiers changements sont affichés.
