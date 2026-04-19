@@ -4,11 +4,10 @@ doctrine:
         driver: pdo_pgsql
         url: '%env(resolve:DATABASE_URL)%'
         charset: UTF8
-        server_version: '15'
+        server_version: '18'
         logging: false
         profiling_collect_backtrace: '%kernel.debug%'
         profiling: false
-        use_savepoints: true
     orm:
         auto_generate_proxy_classes: true
         enable_lazy_ghost_objects: true
