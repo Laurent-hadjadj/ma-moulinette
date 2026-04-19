@@ -30,10 +30,11 @@
     {{ include('header.html.twig') }}
 
     <header class="grid-container margin-top-1">
-      <nav id="fil-ariane" aria-label="vous êtes ici :">
+      {# WCAG 2.4.8 : aria-label enrichi ; aria-current="page" sur l'élément courant #}
+      <nav id="fil-ariane" aria-label="Fil d'Ariane, vous êtes ici">
         <ol class="claire-hand breadcrumbs">
           <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
-          <li><span class="show-for-sr">vous êtes ici :</span>Profil</li>
+          <li aria-current="page">Profil</li>
         </ol>
       </nav>
     </header>
@@ -41,19 +42,21 @@
     {# Message d'information php #}
     {{ include('_message.html.twig') }}
 
-    <main class="grid-container margin-bottom-1" role="main">
+    {# WCAG 2.4.1 / 4.1.1 : id="main-content" (cible du skip link) ; retrait du role="main" redondant #}
+    <main id="main-content" class="grid-container margin-bottom-1">
       {% if liste|length <= 1 %}
         {% set s='' %}
       {% else %}
         {% set s='s' %}
       {% endif %}
-      <h1 class="h3 claire-hand" aria-label="Liste des profils qualités">
+      {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page ; descente d'un niveau (h1->h2, h2->h3) ; aria-label retiré car redondant avec le texte #}
+      <h2 class="h3 claire-hand">
         <span aria-hidden="true">📋</span> Liste des profils qualités
-      </h1>
-      <h2 class="h4 claire-hand" aria-label="{{liste|length}} profils qualité par défaut trouvés">
+      </h2>
+      <h3 class="h4 claire-hand" aria-label="{{liste|length}} profils qualité par défaut trouvés">
         <span id="affiche-total-profil" class="h4 stat">{{liste|length}}</span>
         <span aria-hidden="true">🗂️</span> profil{{s}} par défaut trouvé{{s}}.
-      </h2>
+      </h3>
 
       {# Affiche le nombre total de règles #}
       {% set total = 0 %}
