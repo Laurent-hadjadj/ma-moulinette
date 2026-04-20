@@ -113,7 +113,9 @@ class Actuator
         nullable: true,
         options: ['comment' => 'Date de la dernière modification']
     )]
-    private ?\DateTime $dateModification = null;
+    // Type aligné avec la signature du setter (?\DateTimeInterface) pour accepter \DateTime ET \DateTimeImmutable.
+    // Doctrine hydrate via DATETIME_MUTABLE → un \DateTime à la lecture ; à l'écriture les deux types sont supportés.
+    private ?\DateTimeInterface $dateModification = null;
 
     #[ORM\Column(
         name: 'date_enregistrement',
