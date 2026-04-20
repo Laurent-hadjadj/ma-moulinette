@@ -79,6 +79,12 @@ class ActuatorInfo
         return $this->id;
     }
 
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
     public function getActuatorInfoDescription(): string
     {
         return $this->actuatorInfoDescription;
