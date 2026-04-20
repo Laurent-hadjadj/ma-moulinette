@@ -389,7 +389,7 @@ class Historique
         nullable: true,
         options: ['comment' => 'Rating des commentaires']
     )]
-    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
     private ?string $commentLinesRating = null;
 
     #[ORM\Column(
@@ -562,7 +562,7 @@ class Historique
         nullable: true,
         options: ['comment' => 'Note pour la complexité']
     )]
-    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
     private ?string $complexityRating = null;
 
     #[ORM\Column(
@@ -581,7 +581,7 @@ class Historique
         nullable: true,
         options: ['comment' => 'Note pour la complexité cognitive']
     )]
-    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
     private ?string $cognitiveComplexityRating = null;
 
     #[ORM\Column(
@@ -855,7 +855,7 @@ class Historique
         nullable: true,
         options: ['comment' => 'Note SQALE attribuée au projet']
     )]
-    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
     private ?string $sqaleRating = null;
 
     #[ORM\Column(
@@ -883,7 +883,7 @@ class Historique
         nullable: true,
         options: ['comment' => 'Note SQALE attribuée au projet']
     )]
-    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
     private ?string $softwareQualityMaintainabilityRating = null;
 
     #[ORM\Column(
@@ -987,7 +987,7 @@ class Historique
         nullable: true,
         options: ['comment' => "Note de fiabilité attribuée au projet"]
     )]
-    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
     private ?string $reliabilityRating = null;
 
     #[ORM\Column(
@@ -1015,7 +1015,7 @@ class Historique
         nullable: true,
         options: ['comment' => "Note de fiabilité attribuée au projet"]
     )]
-    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
     private ?string $softwareQualityReliabilityRating = null;
 
     #[ORM\Column(
@@ -1101,7 +1101,7 @@ class Historique
         nullable: true,
         options: ['comment' => "Note de sécurité attribuée au projet"]
     )]
-    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
     private ?string $securityRating = null;
 
     #[ORM\Column(
@@ -1129,7 +1129,7 @@ class Historique
         nullable: true,
         options: ['comment' => "Note de sécurité attribuée au projet"]
     )]
-    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
     private ?string $softwareQualitySecurityRating = null;
 
     #[ORM\Column(
