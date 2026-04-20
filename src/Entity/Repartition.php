@@ -117,6 +117,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de bug info'])]
+    #[Assert\PositiveOrZero]
     private int $bugInfo = 0;
 
     /**
@@ -126,6 +127,7 @@ class Repartition
         name: 'vulnerability_blocker',
         type: Types::INTEGER,
         options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité bloquante'])]
+    #[Assert\PositiveOrZero]
     private int $vulnerabilityBlocker = 0;
 
     /**
@@ -137,6 +139,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de vulnérabilité critique'])]
+    #[Assert\PositiveOrZero]
     private int $vulnerabilityCritical = 0;
 
     /**
@@ -148,6 +151,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de vulnérabilité majeure'])]
+    #[Assert\PositiveOrZero]
     private int $vulnerabilityMajor = 0;
 
     /**
@@ -159,6 +163,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de vulnérabilité mineure'])]
+    #[Assert\PositiveOrZero]
     private int $vulnerabilityMinor = 0;
 
     /**
@@ -170,6 +175,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de vulnérabilité en info'])]
+    #[Assert\PositiveOrZero]
     private int $vulnerabilityInfo = 0;
 
     /**
@@ -181,6 +187,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de mauvaise pratique bloquante'])]
+    #[Assert\PositiveOrZero]
     private int $codeSmellBlocker = 0;
 
     /**
@@ -192,6 +199,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de mauvaise pratique critique'])]
+    #[Assert\PositiveOrZero]
     private int $codeSmellCritical = 0;
 
     /**
@@ -203,6 +211,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de mauvaise pratique majeure'])]
+    #[Assert\PositiveOrZero]
     private int $codeSmellMajor = 0;
 
     /**
@@ -214,6 +223,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de mauvaise pratique mineure'])]
+    #[Assert\PositiveOrZero]
     private int $codeSmellMinor = 0;
 
     /**
@@ -225,6 +235,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de mauvaise pratique en info'])]
+    #[Assert\PositiveOrZero]
     private int $codeSmellInfo = 0;
 
     /**
@@ -236,6 +247,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => "Répartition des anomalies de l’application frontend"])]
+    #[Assert\PositiveOrZero]
     private int $frontend = 0;
 
     // FRONTEND
@@ -245,6 +257,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de bug bloquant (frontend)'])]
+    #[Assert\PositiveOrZero]
     private int $frontendBugBlocker = 0;
 
     #[ORM\Column(
@@ -253,6 +266,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de bug critique (frontend)'])]
+    #[Assert\PositiveOrZero]
     private int $frontendBugCritical = 0;
 
     #[ORM\Column(
@@ -261,6 +275,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de bug majeur (frontend)'])]
+    #[Assert\PositiveOrZero]
     private int $frontendBugMajor = 0;
 
     #[ORM\Column(
@@ -269,6 +284,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de bug mineur (frontend)'])]
+    #[Assert\PositiveOrZero]
     private int $frontendBugMinor = 0;
 
     #[ORM\Column(
@@ -277,6 +293,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de bug informatif (frontend)'])]
+    #[Assert\PositiveOrZero]
     private int $frontendBugInfo = 0;
 
     #[ORM\Column(
@@ -285,6 +302,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de vulnérabilité bloquante (frontend)'])]
+    #[Assert\PositiveOrZero]
     private int $frontendVulnerabilityBlocker = 0;
 
     #[ORM\Column(
@@ -293,6 +311,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de vulnérabilité critique (frontend)'])]
+    #[Assert\PositiveOrZero]
     private int $frontendVulnerabilityCritical = 0;
 
     #[ORM\Column(
@@ -301,6 +320,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de vulnérabilité majeure (frontend)'])]
+    #[Assert\PositiveOrZero]
     private int $frontendVulnerabilityMajor = 0;
 
     #[ORM\Column(
@@ -309,6 +329,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de vulnérabilité mineure (frontend)'])]
+    #[Assert\PositiveOrZero]
     private int $frontendVulnerabilityMinor = 0;
 
     #[ORM\Column(
@@ -317,6 +338,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de vulnérabilité informative (frontend)'])]
+    #[Assert\PositiveOrZero]
     private int $frontendVulnerabilityInfo = 0;
 
     #[ORM\Column(
@@ -325,6 +347,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de code smell bloquant (frontend)'])]
+    #[Assert\PositiveOrZero]
     private int $frontendCodeSmellBlocker = 0;
 
     #[ORM\Column(
@@ -333,6 +356,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de code smell critique (frontend)'])]
+    #[Assert\PositiveOrZero]
     private int $frontendCodeSmellCritical = 0;
 
     #[ORM\Column(
@@ -341,6 +365,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de code smell majeur (frontend)'])]
+    #[Assert\PositiveOrZero]
     private int $frontendCodeSmellMajor = 0;
 
     #[ORM\Column(
@@ -349,6 +374,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de code smell mineur (frontend)'])]
+    #[Assert\PositiveOrZero]
     private int $frontendCodeSmellMinor = 0;
 
     #[ORM\Column(
@@ -357,6 +383,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de code smell informatif (frontend)'])]
+    #[Assert\PositiveOrZero]
     private int $frontendCodeSmellInfo = 0;
 
     /**
@@ -368,6 +395,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => "Répartition des anomalies de l’application backend"])]
+    #[Assert\PositiveOrZero]
     private int $backend = 0;
 
     // BACKEND
@@ -377,6 +405,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de bug bloquant (backend)'])]
+    #[Assert\PositiveOrZero]
     private int $backendBugBlocker = 0;
 
     #[ORM\Column(
@@ -385,6 +414,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de bug critique (backend)'])]
+    #[Assert\PositiveOrZero]
     private int $backendBugCritical = 0;
 
     #[ORM\Column(
@@ -393,6 +423,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de bug majeur (backend)'])]
+    #[Assert\PositiveOrZero]
     private int $backendBugMajor = 0;
 
     #[ORM\Column(
@@ -401,6 +432,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de bug mineur (backend)'])]
+    #[Assert\PositiveOrZero]
     private int $backendBugMinor = 0;
 
     #[ORM\Column(
@@ -409,6 +441,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de bug informatif (backend)'])]
+    #[Assert\PositiveOrZero]
     private int $backendBugInfo = 0;
 
     #[ORM\Column(
@@ -417,6 +450,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de vulnérabilité bloquante (backend)'])]
+    #[Assert\PositiveOrZero]
     private int $backendVulnerabilityBlocker = 0;
 
     #[ORM\Column(
@@ -425,6 +459,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de vulnérabilité critique (backend)'])]
+    #[Assert\PositiveOrZero]
     private int $backendVulnerabilityCritical = 0;
 
     #[ORM\Column(
@@ -433,6 +468,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de vulnérabilité majeure (backend)'])]
+    #[Assert\PositiveOrZero]
     private int $backendVulnerabilityMajor = 0;
 
     #[ORM\Column(
@@ -441,6 +477,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de vulnérabilité mineure (backend)'])]
+    #[Assert\PositiveOrZero]
     private int $backendVulnerabilityMinor = 0;
 
     #[ORM\Column(
@@ -449,6 +486,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de vulnérabilité informative (backend)'])]
+    #[Assert\PositiveOrZero]
     private int $backendVulnerabilityInfo = 0;
 
     #[ORM\Column(
@@ -457,6 +495,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de mauvaise pratique bloquant (backend)'])]
+    #[Assert\PositiveOrZero]
     private int $backendCodeSmellBlocker = 0;
 
     #[ORM\Column(
@@ -465,6 +504,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de mauvaise pratique critique (backend)'])]
+    #[Assert\PositiveOrZero]
     private int $backendCodeSmellCritical = 0;
 
     #[ORM\Column(
@@ -473,6 +513,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de mauvaise pratique majeur (backend)'])]
+    #[Assert\PositiveOrZero]
     private int $backendCodeSmellMajor = 0;
 
     #[ORM\Column(
@@ -481,6 +522,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de mauvaise pratique mineur (backend)'])]
+    #[Assert\PositiveOrZero]
     private int $backendCodeSmellMinor = 0;
 
     #[ORM\Column(
@@ -489,6 +531,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de mauvaise pratique informatif (backend)'])]
+    #[Assert\PositiveOrZero]
     private int $backendCodeSmellInfo = 0;
 
     /**
@@ -500,6 +543,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => "Répartition des anomalies de l’application autres"])]
+    #[Assert\PositiveOrZero]
     private int $autre = 0;
 
     // AUTRE
@@ -509,6 +553,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de bug bloquant (autre)'])]
+    #[Assert\PositiveOrZero]
     private int $autreBugBlocker = 0;
 
     #[ORM\Column(
@@ -517,6 +562,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de bug critique (autre)'])]
+    #[Assert\PositiveOrZero]
     private int $autreBugCritical = 0;
 
     #[ORM\Column(
@@ -525,6 +571,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de bug majeur (autre)'])]
+    #[Assert\PositiveOrZero]
     private int $autreBugMajor = 0;
 
     #[ORM\Column(
@@ -533,6 +580,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de bug mineur (autre)'])]
+    #[Assert\PositiveOrZero]
     private int $autreBugMinor = 0;
 
     #[ORM\Column(
@@ -541,6 +589,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de bug informatif (autre)'])]
+    #[Assert\PositiveOrZero]
     private int $autreBugInfo = 0;
 
     #[ORM\Column(
@@ -549,6 +598,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de vulnérabilité bloquante (autre)'])]
+    #[Assert\PositiveOrZero]
     private int $autreVulnerabilityBlocker = 0;
 
     #[ORM\Column(
@@ -557,6 +607,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de vulnérabilité critique (autre)'])]
+    #[Assert\PositiveOrZero]
     private int $autreVulnerabilityCritical = 0;
 
     #[ORM\Column(
@@ -565,6 +616,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de vulnérabilité majeure (autre)'])]
+    #[Assert\PositiveOrZero]
     private int $autreVulnerabilityMajor = 0;
 
     #[ORM\Column(
@@ -573,6 +625,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de vulnérabilité mineure (autre)'])]
+    #[Assert\PositiveOrZero]
     private int $autreVulnerabilityMinor = 0;
 
     #[ORM\Column(
@@ -581,6 +634,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de vulnérabilité informative (autre)'])]
+    #[Assert\PositiveOrZero]
     private int $autreVulnerabilityInfo = 0;
 
     #[ORM\Column(
@@ -589,6 +643,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de mauvaise pratique bloquant (autre)'])]
+    #[Assert\PositiveOrZero]
     private int $autreCodeSmellBlocker = 0;
 
     #[ORM\Column(
@@ -597,6 +652,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de mauvaise pratique critique (autre)'])]
+    #[Assert\PositiveOrZero]
     private int $autreCodeSmellCritical = 0;
 
     #[ORM\Column(
@@ -605,6 +661,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de mauvaise pratique majeur (autre)'])]
+    #[Assert\PositiveOrZero]
     private int $autreCodeSmellMajor = 0;
 
     #[ORM\Column(
@@ -613,12 +670,14 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de mauvaise pratique mineur (autre)'])]
+    #[Assert\PositiveOrZero]
     private int $autreCodeSmellMinor = 0;
 
     #[ORM\Column(
         name: 'autre_code_smell_info',
         type: Types::INTEGER,
         options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique informatif (autre)'])]
+    #[Assert\PositiveOrZero]
     private int $autreCodeSmellInfo = 0;
 
     /**
@@ -628,6 +687,7 @@ class Repartition
         name: 'inconnu',
         type: Types::INTEGER,
         options: ['default' => 0, 'comment' => "Répartition des anomalies de l’application non définies"])]
+    #[Assert\PositiveOrZero]
     private int $inconnu = 0;
 
     // inconnu
@@ -637,6 +697,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de bug bloquant (inconnu)'])]
+    #[Assert\PositiveOrZero]
     private int $inconnuBugBlocker = 0;
 
     #[ORM\Column(
@@ -645,6 +706,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de bug critique (inconnu)'])]
+    #[Assert\PositiveOrZero]
     private int $inconnuBugCritical = 0;
 
     #[ORM\Column(
@@ -653,6 +715,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de bug majeur (inconnu)'])]
+    #[Assert\PositiveOrZero]
     private int $inconnuBugMajor = 0;
 
     #[ORM\Column(
@@ -661,6 +724,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de bug mineur (inconnu)'])]
+    #[Assert\PositiveOrZero]
     private int $inconnuBugMinor = 0;
 
     #[ORM\Column(
@@ -669,6 +733,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de bug informatif (inconnu)'])]
+    #[Assert\PositiveOrZero]
     private int $inconnuBugInfo = 0;
 
     #[ORM\Column(
@@ -677,6 +742,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de vulnérabilité bloquante (inconnu)'])]
+    #[Assert\PositiveOrZero]
     private int $inconnuVulnerabilityBlocker = 0;
 
     #[ORM\Column(
@@ -685,6 +751,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de vulnérabilité critique (inconnu)'])]
+    #[Assert\PositiveOrZero]
     private int $inconnuVulnerabilityCritical = 0;
 
     #[ORM\Column(
@@ -693,6 +760,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de vulnérabilité majeure (inconnu)'])]
+    #[Assert\PositiveOrZero]
     private int $inconnuVulnerabilityMajor = 0;
 
     #[ORM\Column(
@@ -701,12 +769,14 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de vulnérabilité mineure (inconnu)'])]
+    #[Assert\PositiveOrZero]
     private int $inconnuVulnerabilityMinor = 0;
 
     #[ORM\Column(
         name: 'inconnu_vulnerability_info',
         type: Types::INTEGER,
         options: ['default' => 0, 'comment' => 'Nombre de vulnérabilité informative (inconnu)'])]
+    #[Assert\PositiveOrZero]
     private int $inconnuVulnerabilityInfo = 0;
 
     #[ORM\Column(
@@ -715,6 +785,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de mauvaise pratique bloquant (inconnu)'])]
+    #[Assert\PositiveOrZero]
     private int $inconnuCodeSmellBlocker = 0;
 
     #[ORM\Column(
@@ -723,6 +794,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de mauvaise pratique critique (inconnu)'])]
+    #[Assert\PositiveOrZero]
     private int $inconnuCodeSmellCritical = 0;
 
     #[ORM\Column(
@@ -731,6 +803,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de mauvaise pratique majeur (inconnu)'])]
+    #[Assert\PositiveOrZero]
     private int $inconnuCodeSmellMajor = 0;
 
     #[ORM\Column(
@@ -739,6 +812,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de mauvaise pratique mineur (inconnu)'])]
+    #[Assert\PositiveOrZero]
     private int $inconnuCodeSmellMinor = 0;
 
     #[ORM\Column(
@@ -747,6 +821,7 @@ class Repartition
         options: [
             'default' => 0,
             'comment' => 'Nombre de mauvaise pratique informatif (inconnu)'])]
+    #[Assert\PositiveOrZero]
     private int $inconnuCodeSmellInfo = 0;
 
     /**
@@ -757,7 +832,7 @@ class Repartition
         type: Types::BIGINT,
         nullable: false,
         options: ['comment' => 'Timestamp en milliseconde unique pour chaque analyse'])]
-    #[Assert\NotBlank()]
+    #[Assert\PositiveOrZero]
     private int $setup;
 
     /**
