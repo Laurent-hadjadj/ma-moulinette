@@ -15,7 +15,7 @@ namespace App\Entity;
 use App\Repository\BatchTraitementRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Uid\Ulid;
+use Symfony\Component\Uid\{Ulid};
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: BatchTraitementRepository::class)]
@@ -159,12 +159,13 @@ class BatchTraitement
 
     #[ORM\Column(
         name: 'traitement_id',
-        type: 'ulid',
+        type: Types::STRING,
+        length: 36,
         unique: true,
         nullable: false,
         options: ['comment' => 'Identifiant unique pour lier un traitement (ULID sous forme de texte)']
     )]
-    private Ulid $traitementId;
+    private string $traitementId;
 
     #[ORM\Column(
         name: 'date_enregistrement',
@@ -346,12 +347,12 @@ class BatchTraitement
         return $this;
     }
 
-    public function getTraitementId(): ?Ulid
+    public function getTraitementId(): string
     {
         return $this->traitementId;
     }
 
-    public function setTraitementId(Ulid $traitementId): self
+    public function setTraitementId(string $traitementId): self
     {
         $this->traitementId = $traitementId;
 
