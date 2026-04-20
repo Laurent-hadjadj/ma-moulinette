@@ -160,6 +160,12 @@ class BatchExecution
         return $this->id;
     }
 
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
     public function getNomTraitement(): string
     {
         return $this->nomTraitement;
