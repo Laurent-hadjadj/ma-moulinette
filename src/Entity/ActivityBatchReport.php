@@ -173,12 +173,12 @@ class ActivityBatchReport
         return $this;
     }
 
-    public function getLastError(): array
+    public function getLastError(): ?array
     {
         return $this->lastError;
     }
 
-    public function setLastError(array $lastError): self
+    public function setLastError(?array $lastError): self
     {
         $this->lastError = $lastError;
         return $this;
