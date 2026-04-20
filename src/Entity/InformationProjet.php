@@ -96,6 +96,7 @@ class InformationProjet
         options: [
             'default' => 0,
             'comment' => 'Nombre total de version sur le serveur SonarQube.'])]
+    #[Assert\PositiveOrZero]
     private int $versionSonar = 0;
 
     #[ORM\Column(
@@ -167,6 +168,7 @@ class InformationProjet
     {
         return $this->id;
     }
+
     public function setId(int $id): self
     {
         $this->id = $id;
