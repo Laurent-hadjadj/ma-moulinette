@@ -234,6 +234,12 @@ class UserAgentEvent {
         return $this->id;
     }
 
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
     public function getEventType(): ?string
     {
         return $this->eventType;
