@@ -124,6 +124,12 @@ class BatchExecutionJournal
         return $this->id;
     }
 
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
     public function setCompteRendu(string $html): void
     {
         // 9 = niveau de compression le plus haut (0–9)
