@@ -93,6 +93,14 @@ class Mesures
     private ?int $ncloc = null;
 
     #[ORM\Column(
+        name: 'ncloc_language_distribution',
+        type: Types::TEXT,
+        nullable: true,
+        options: ['comment' => 'Distribution du code par langage']
+    )]
+    private ?string $nclocLanguageDistribution = null;
+
+    #[ORM\Column(
         name: 'files',
         type: Types::INTEGER,
         nullable: true,
@@ -153,7 +161,7 @@ class Mesures
         nullable: true,
         options: ['comment' => 'Rating des commentaires']
     )]
-    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
     private ?string $commentLinesRating = null;
 
     #[ORM\Column(
@@ -326,7 +334,7 @@ class Mesures
         nullable: true,
         options: ['comment' => 'Note pour la complexité']
     )]
-    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
     private ?string $complexityRating = null;
 
     #[ORM\Column(
@@ -345,7 +353,7 @@ class Mesures
         nullable: true,
         options: ['comment' => 'Note pour la complexité cognitive']
     )]
-    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
     private ?string $cognitiveComplexityRating = null;
 
     #[ORM\Column(
@@ -619,7 +627,7 @@ class Mesures
         nullable: true,
         options: ['comment' => 'Note SQALE attribuée au projet']
     )]
-    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
     private ?string $sqaleRating = null;
 
     #[ORM\Column(
@@ -647,7 +655,7 @@ class Mesures
         nullable: true,
         options: ['comment' => 'Note SQALE attribuée au projet']
     )]
-    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
     private ?string $softwareQualityMaintainabilityRating = null;
 
     #[ORM\Column(
@@ -751,7 +759,7 @@ class Mesures
         nullable: true,
         options: ['comment' => "Note de fiabilité attribuée au projet"]
     )]
-    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
     private ?string $reliabilityRating = null;
 
     #[ORM\Column(
@@ -779,7 +787,7 @@ class Mesures
         nullable: true,
         options: ['comment' => "Note de fiabilité attribuée au projet"]
     )]
-    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
     private ?string $softwareQualityReliabilityRating = null;
 
     #[ORM\Column(
@@ -865,7 +873,7 @@ class Mesures
         nullable: true,
         options: ['comment' => "Note de sécurité attribuée au projet"]
     )]
-    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
     private ?string $securityRating = null;
 
     #[ORM\Column(
@@ -893,7 +901,7 @@ class Mesures
         nullable: true,
         options: ['comment' => "Note de sécurité attribuée au projet"]
     )]
-    #[Assert\Choice(['A', 'B', 'C', 'D', 'E'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
     private ?string $softwareQualitySecurityRating = null;
 
     #[ORM\Column(
@@ -1040,6 +1048,12 @@ class Mesures
         return $this->id;
     }
 
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
     public function getMavenKey(): string
     {
         return $this->mavenKey;
@@ -1092,6 +1106,17 @@ class Mesures
     public function setNcloc(?int $ncloc): self
     {
         $this->ncloc = $ncloc;
+        return $this;
+    }
+
+    public function getNclocLanguageDistribution(): ?string
+    {
+        return $this->nclocLanguageDistribution;
+    }
+
+    public function setNclocLanguageDistribution(?string $nclocLanguageDistribution): self
+    {
+        $this->nclocLanguageDistribution = $nclocLanguageDistribution;
         return $this;
     }
 
