@@ -919,7 +919,10 @@ body {
   display: flex;
   flex-direction: column;
 }
-.logo-container { display: flex; }
+.logo-container {
+  display: flex;
+  align-items: center;
+}
 
 /* Titre */
 .ma-moulinette {
