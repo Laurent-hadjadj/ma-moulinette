@@ -13,7 +13,7 @@
 
 namespace App\Controller\Admin;
 
-use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\{AdminDashboard, AdminRoute};
 use EasyCorp\Bundle\EasyAdminBundle\Config\{Crud, Assets, Action, Actions, MenuItem, UserMenu, Dashboard};
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 
@@ -98,7 +98,7 @@ class DashboardController extends AbstractDashboardController
     }
 
     #[IsGranted('ROLE_GESTIONNAIRE')]
-    #[Route('/admin', name: 'admin')]
+    #[AdminRoute('/admin', name: 'admin')]
     public function index(): Response
     {
         $this->tracking->track('EASY_ADMIN_ACCUEIL');
