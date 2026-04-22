@@ -200,7 +200,7 @@ class UtilisateurCrudController extends AbstractCrudController
         yield ChoiceField::new('roles')
             ->onlyOnIndex()
             ->setSortable(false)
-            ->setChoices($assignableRoles)
+            ->setChoices($allRoles)
             ->renderAsBadges($badges);
 
         yield ChoiceField::new('roles')
@@ -288,6 +288,34 @@ class UtilisateurCrudController extends AbstractCrudController
             $entityInstance->setRoles(['ROLE_NONE']);
         }
 
+        // Si l'utilisateur est désactivé, on lui retire tous les rôles
+        if (!$entityInstance->isActif()) {
+            $entityInstance->setRoles(['ROLE_NONE']);
+        }
+
+        // si l'utilisateur est réactivé et n’a que ROLE_NONE, on le promeut à ROLE_UTILISATEUR
+        if ($entityInstance->isActif() && $entityInstance->getRoles() === ['ROLE_NONE']) {
+            $entityInstance->setRoles(['ROLE_UTILISATEUR']);
+        }
+
+        // si l'utilisateur a le rôle ROLE_INTERNAL, il ne peut pas être désactivé
+        if (in_array('ROLE_INTERNAL', $entityInstance->getRoles(), true)) {
+            $entityInstance->setIsActif(true);
+        }
+
+        //si l'utilisateur a le rôle ROLE_NONE, il ne peut pas avoir d'autres rôles
+        $roles = $entityInstance->getRoles();
+        if (in_array('ROLE_NONE', $roles) && count($roles) > 1) {
+                $roles = array_diff($roles, ['ROLE_NONE']);
+                $entityInstance->setRoles($roles);
+        }
+
+        // si l'utilisateur a le rôle ROLE_GESTIONNAIRE, il doit toujours l'avoir même s’il ajoute d’autres rôles. Cela garantit que les gestionnaires conservent leurs privilèges même s’ils ajoutent d’autres rôles.
+        if (in_array('ROLE_GESTIONNAIRE', $roles)) {
+                $roles = array_unique(array_merge(['ROLE_GESTIONNAIRE'], $roles));
+                $entityInstance->setRoles($roles);
+        }
+
         $entityInstance->setDateModification(new \DateTime('now', new \DateTimeZone(static::$europeParis)));
 
         parent::persistEntity($em, $entityInstance);
@@ -311,19 +339,56 @@ class UtilisateurCrudController extends AbstractCrudController
             return;
         }
 
+        // Récupérer les rôles actuels de l'utilisateur et son courriel
+        $roles = $entityInstance->getRoles();
+        $courriel = $entityInstance->getCourriel();
+
+        // On récupère l'utilisateur en base pour comparer les rôles
+        $sql = "SELECT roles FROM utilisateur WHERE courriel = '$courriel' limit 1";
+        $conn = $this->emm->getConnection()->prepare($sql)->executeQuery();
+        $result = $conn->fetchOne();
+        $currentRoles = json_decode($result, true) ?: [];
+
+        // Si l'utilisateur a le rôle ROLE_INTERNAL, il ne peut pas avoir d'autres rôles
+        if (in_array('ROLE_INTERNAL', $roles, true) && count($roles) > 1) {
+            $entityInstance->setRoles(['ROLE_INTERNAL']);
+        }
+
         // Si l'utilisateur n'a pas le rôle ROLE_GESTIONNAIRE, il ne peut pas attribuer de rôles sensibles
         if (!$this->isGranted('ROLE_GESTIONNAIRE')) {
             $entityInstance->setRoles(['ROLE_UTILISATEUR']);
         }
 
-        // Si l'utilisateur a le rôle ROLE_INTERNAL, il ne peut pas avoir d'autres rôles
-        $roles = $entityInstance->getRoles();
-        if (in_array('ROLE_INTERNAL', $roles, true) && count($roles) > 1) {
-            $entityInstance->setRoles(['ROLE_INTERNAL']);
-        }
         // Si l'utilisateur a le rôle ROLE_NONE, il ne peut pas avoir d'autres rôles
         if (in_array('ROLE_NONE', $roles, true)) {
             $entityInstance->setRoles(['ROLE_NONE']);
+        }
+
+        // Si l'utilisateur est désactivé, on lui retire tous les rôles
+        if (!$entityInstance->isActif()) {
+            $entityInstance->setRoles(['ROLE_NONE']);
+        }
+
+        // Si l'utilisateur est actif et a le rôle ROLE_NONE, il ne peut pas avoir d'autres rôles
+        if ($entityInstance->isActif() && in_array('ROLE_NONE', $roles) && count($roles) > 1) {
+                $roles = array_diff($roles, ['ROLE_NONE']);
+                $entityInstance->setRoles($roles);
+        }
+
+        // Si l'utilisateur est réactivé et n’a que ROLE_NONE, on le promeut à ROLE_UTILISATEUR
+        if ($entityInstance->isActif() && $entityInstance->getRoles() === ['ROLE_NONE']) {
+            $entityInstance->setRoles(['ROLE_UTILISATEUR']);
+        }
+
+        // si l'utilisateur a le rôle ROLE_INTERNAL, il ne peut pas être désactivé
+        if (in_array('ROLE_INTERNAL', $entityInstance->getRoles(), true)) {
+            $entityInstance->setIsActif(true);
+        }
+
+        // si l'utilisateur a le rôle ROLE_GESTIONNAIRE, il doit toujours l'avoir même si on lui ajoute d’autres rôles. Cela garantit que les gestionnaires conservent leurs privilèges même s’ils ajoutent d’autres rôles.
+        if (in_array('ROLE_GESTIONNAIRE', $currentRoles, true) && !in_array('ROLE_GESTIONNAIRE', $roles, true)) {
+                $roles = array_unique(array_merge(['ROLE_GESTIONNAIRE'], $roles));
+                $entityInstance->setRoles($roles);
         }
 
         /** On récupère le groupe_id à partir du groupe_utilisateur */
