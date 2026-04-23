@@ -25,10 +25,12 @@ doctrine:
             auto_mapping: false
 
 when@test:
+    # DATABASE_URL de test est définie explicitement dans .env.test.local (pointe sur ma_moulinette_test).
+    # Le `dbname_suffix: '_test%env(default::TEST_TOKEN)%'` a été retiré : combiné avec un DATABASE_URL
+    # se terminant déjà par _test, il produisait `ma_moulinette_test_test`.
     doctrine:
         dbal:
-            # "TEST_TOKEN" is typically set by ParaTest
-            dbname_suffix: '_test%env(default::TEST_TOKEN)%'
+            url: '%env(resolve:DATABASE_URL)%'
 
 when@prod:
     doctrine:
