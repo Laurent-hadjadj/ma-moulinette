@@ -15,6 +15,7 @@ namespace App\Controller\Admin;
 
 use App\Entity\Utilisateur;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Service\RoleManagerService;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\{Crud, Filters};
@@ -38,10 +39,12 @@ class UtilisateurCrudController extends AbstractCrudController
     public function __construct(
         private EntityManagerInterface $emm,
         private LoggerInterface $logger,
-        private UserPasswordHasherInterface $passwordHasher)
+        private UserPasswordHasherInterface $passwordHasher,
+        private RoleManagerService $roleManager)
     {
         $this->emm = $emm;
         $this->logger = $logger;
+        $this->passwordHasher = $passwordHasher;
     }
 
     /**
@@ -108,6 +111,50 @@ class UtilisateurCrudController extends AbstractCrudController
      */
     public function configureFields(string $pageName): iterable
     {
+        // mapping des rôles vers les classes de badge Bootstrap
+        $badges = [
+                'ROLE_NONE' => 'secondary',
+                'ROLE_UTILISATEUR' => 'primary',
+                'ROLE_COLLECTE' => 'success',
+                'ROLE_SUIVI' => 'warning',
+                'ROLE_BATCH' => 'warning',
+                'ROLE_ACTUATOR' => 'info',
+                'ROLE_ACTIVITY' => 'info',
+                'ROLE_GESTIONNAIRE' => 'danger',
+                'ROLE_INTERNAL' => 'dark',
+            ];
+
+        // liste complète des rôles pour les formulaires (filtrée ensuite selon le rôle de l’éditeur et de l’utilisateur édité)
+        $allRoles = [
+            'Aucun accès' => 'ROLE_NONE',
+            'Utilisateur' => 'ROLE_UTILISATEUR',
+            'Collecte' => 'ROLE_COLLECTE',
+            'Suivi' => 'ROLE_SUIVI',
+            'Activité' => 'ROLE_ACTIVITY',
+            'Batch' => 'ROLE_BATCH',
+            'Actuator' => 'ROLE_ACTUATOR',
+            'Gestionnaire' => 'ROLE_GESTIONNAIRE',
+            'Interne' => 'ROLE_INTERNAL',
+        ];
+
+        // rôles qui impliquent automatiquement ROLE_UTILISATEUR
+        $rolesImplicitUser = [
+            'ROLE_COLLECTE',
+            'ROLE_SUIVI',
+            'ROLE_BATCH',
+            'ROLE_ACTUATOR',
+            'ROLE_ACTIVITY',
+            'ROLE_GESTIONNAIRE',
+            'ROLE_INTERNAL'
+        ];
+
+        $entityInstance = null;
+        $context = $this->getContext();
+        // on récupère l’entité en cours d’édition pour adapter dynamiquement les champs en fonction de son état et du rôle de l’éditeur
+        if ($context) {
+                $entityInstance = $context->getEntity()->getInstance();
+        }
+
         /** @var mixed $_callback Variable non utilisée */
         yield FormField::addColumn(6);
         yield AvatarField::new('avatar')
@@ -138,19 +185,6 @@ class UtilisateurCrudController extends AbstractCrudController
 
         yield BooleanField::new('actif')->renderAsSwitch(false);
 
-        // tous les rôles possibles
-        $allRoles = [
-            'Aucun accès' => 'ROLE_NONE',
-            'Utilisateur' => 'ROLE_UTILISATEUR',
-            'Collecte' => 'ROLE_COLLECTE',
-            'Suivi' => 'ROLE_SUIVI',
-            'Activité' => 'ROLE_ACTIVITY',
-            'Batch' => 'ROLE_BATCH',
-            'Actuator' => 'ROLE_ACTUATOR',
-            'Gestionnaire' => 'ROLE_GESTIONNAIRE',
-            'Interne' => 'ROLE_INTERNAL',
-        ];
-
         // rôle de l’éditeur
         if ($this->isGranted('ROLE_INTERNAL')) {
             $assignableRoles = $allRoles;
@@ -161,42 +195,34 @@ class UtilisateurCrudController extends AbstractCrudController
                 'Collecte' => 'ROLE_COLLECTE',
                 'Suivi' => 'ROLE_SUIVI',
             ];
+
+            // Si on édite un gestionnaire → on garde visible son rôle
+            if ($entityInstance && in_array('ROLE_GESTIONNAIRE', $entityInstance->getRoles(), true)) {
+                $assignableRoles['Gestionnaire'] = 'ROLE_GESTIONNAIRE';
+            }
         } else {
             $assignableRoles = ['Aucun accès' => 'ROLE_NONE'];
-        }
-
-        $entityInstance = null;
-        $context = $this->getContext();
-        if ($context) {
-            $entityInstance = $context->getEntity()->getInstance();
         }
 
         // rôle de l’utilisateur édité
         $currentRoles = $entityInstance ? $entityInstance->getRoles() : [];
 
-        // masquer ROLE_UTILISATEUR si déjà implicite
-        if (count(array_intersect(['ROLE_COLLECTE','ROLE_BATCH','ROLE_ACTUATOR','ROLE_GESTIONNAIRE','ROLE_INTERNAL'], $currentRoles)) > 0) {
-            unset($assignableRoles['Utilisateur']);
-        }
-
-        // si utilisateur n’a que ROLE_NONE, on doit pouvoir le promouvoir
+        // si l’utilisateur n’a pas de rôle ou que son rôle est ROLE_NONE, on affiche uniquement ROLE_UTILISATEUR pour éviter les incohérences
         if ($currentRoles === ['ROLE_NONE']) {
-            $assignableRoles['Utilisateur'] = 'ROLE_UTILISATEUR'; // réactiver explicitement
+            $assignableRoles['Utilisateur'] = 'ROLE_UTILISATEUR';
         }
 
-        $badges = [
-                'ROLE_NONE' => 'secondary',
-                'ROLE_UTILISATEUR' => 'primary',
-                'ROLE_COLLECTE' => 'success',
-                'ROLE_SUIVI' => 'warning',
-                'ROLE_BATCH' => 'warning',
-                'ROLE_ACTUATOR' => 'info',
-                'ROLE_ACTIVITY' => 'info',
-                'ROLE_GESTIONNAIRE' => 'danger',
-                'ROLE_INTERNAL' => 'dark',
-            ];
+        $helper_role = 'Accès restreint.';
+        if ($this->isGranted('ROLE_INTERNAL')) {
+            $helper_role = 'Accès complet';
+        }
+
+        if ($this->isGranted('ROLE_GESTIONNAIRE')) {
+            $helper_role = 'Accès limité aux rôles standards';
+        }
 
         yield FormField::addColumn(6);
+        // affichage en badges colorés sur la page d’index, formulaire avec cases à cocher pour l’édition/création
         yield ChoiceField::new('roles')
             ->onlyOnIndex()
             ->setSortable(false)
@@ -207,9 +233,41 @@ class UtilisateurCrudController extends AbstractCrudController
             ->onlyOnForms()
             ->setChoices($assignableRoles)
             ->allowMultipleChoices()
-            ->renderExpanded();
+            ->renderExpanded()
+            ->setFormTypeOption('choice_attr', function ($choice, $key, $value) use ($entityInstance) {
+                if (!$entityInstance) {
+                    return [];
+                }
+                $currentRoles = $entityInstance->getRoles();
 
-        /** On récupère la liste des groupes fonctionnels */
+                /** Empêcher ROLE_NONE si actif */
+                if (
+                    $entityInstance->isActif() &&
+                    $value === 'ROLE_NONE'
+                ) {
+                    return ['disabled' => 'disabled'];
+                }
+
+                /** empêcher suppression ROLE_GESTIONNAIRE */
+                if (
+                    in_array('ROLE_GESTIONNAIRE', $currentRoles, true) &&
+                    $value === 'ROLE_GESTIONNAIRE'
+                ) {
+                    return ['disabled' => 'disabled'];
+                }
+
+                /** empêcher modification ROLE_INTERNAL */
+                if (
+                    in_array('ROLE_INTERNAL', $currentRoles, true)
+                ) {
+                    return ['disabled' => 'disabled'];
+                }
+
+                return [];
+            })
+            ->setHelp($helper_role);
+
+        /** On récupère la liste des groupes utilisateurs */
         $sql = "SELECT groupe_utilisateur, description FROM groupe_utilisateur ORDER BY groupe_utilisateur ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $result = $l->fetchAllAssociative();
@@ -230,8 +288,31 @@ class UtilisateurCrudController extends AbstractCrudController
             ->setChoices(array_combine($key, $val))
             ->setHelp('Sélectionne le groupe utilisateur.');
 
-        yield TextField::new('groupeId')
-        ->hideOnForm();
+        /** On récupère la liste des groupes fonctionnels */
+        $sql = "SELECT groupe_fonctionnel, description FROM groupe_fonctionnel ORDER BY groupe_fonctionnel ASC";
+        $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
+        $result = $l->fetchAllAssociative();
+
+        $choices = [];
+
+        foreach ($result as $value) {
+            $description = $value['description'];
+
+            if (mb_strlen($description, 'UTF-8') > 18) {
+                $description = mb_substr($description, 0, 18, 'UTF-8') . '...';
+            }
+
+            $label = $value['groupe_fonctionnel'] . ' - ' . $description;
+            $choices[$label] = $value['groupe_fonctionnel'];
+        }
+
+        yield ChoiceField::new('listeGroupeFonctionnel')
+            ->setLabel('Groupe fonctionnel')
+            ->setChoices($choices)
+            ->allowMultipleChoices()
+            ->setFormTypeOption('placeholder', 'Choisissez un groupe fonctionnel')
+            ->setFormTypeOption('by_reference', false)
+            ->setHelp('Sélectionne le groupe fonctionnel.');
 
         yield DateTimeField::new('dateModification')
             ->setTimezone(static::$europeParis)
@@ -265,13 +346,6 @@ class UtilisateurCrudController extends AbstractCrudController
             $this->passwordHasher->hashPassword($entityInstance, bin2hex(random_bytes(32)))
         );
 
-        /** On récupère le groupe_id à partir du groupe_utilisateur */
-        $groupe_utilisateur = $entityInstance->getGroupeUtilisateur();
-        $sql = "SELECT groupe_id FROM groupe_utilisateur WHERE groupe_utilisateur = '$groupe_utilisateur' limit 1";
-        $conn = $this->emm->getConnection()->prepare($sql)->executeQuery();
-        $result = $conn->fetchOne();
-        $entityInstance->setGroupeId($result);
-
         // Si l'utilisateur n'a pas le rôle ROLE_GESTIONNAIRE, il ne peut pas attribuer de rôles sensibles
         if (!$this->isGranted('ROLE_GESTIONNAIRE')) {
             $entityInstance->setRoles(['ROLE_UTILISATEUR']);
@@ -288,33 +362,16 @@ class UtilisateurCrudController extends AbstractCrudController
             $entityInstance->setRoles(['ROLE_NONE']);
         }
 
-        // Si l'utilisateur est désactivé, on lui retire tous les rôles
-        if (!$entityInstance->isActif()) {
-            $entityInstance->setRoles(['ROLE_NONE']);
-        }
+        /** On récupère le groupe_id à partir du groupe_utilisateur */
+        $groupe_utilisateur = $entityInstance->getListeGroupeUtilisateur();
+        $sql = "SELECT groupe_id FROM groupe_utilisateur WHERE groupe_utilisateur = '$groupe_utilisateur' limit 1";
+        $conn = $this->emm->getConnection()->prepare($sql)->executeQuery();
+        $result = $conn->fetchOne();
+        $entityInstance->setGroupeId($result);
 
-        // si l'utilisateur est réactivé et n’a que ROLE_NONE, on le promeut à ROLE_UTILISATEUR
-        if ($entityInstance->isActif() && $entityInstance->getRoles() === ['ROLE_NONE']) {
-            $entityInstance->setRoles(['ROLE_UTILISATEUR']);
-        }
-
-        // si l'utilisateur a le rôle ROLE_INTERNAL, il ne peut pas être désactivé
-        if (in_array('ROLE_INTERNAL', $entityInstance->getRoles(), true)) {
-            $entityInstance->setIsActif(true);
-        }
-
-        //si l'utilisateur a le rôle ROLE_NONE, il ne peut pas avoir d'autres rôles
-        $roles = $entityInstance->getRoles();
-        if (in_array('ROLE_NONE', $roles) && count($roles) > 1) {
-                $roles = array_diff($roles, ['ROLE_NONE']);
-                $entityInstance->setRoles($roles);
-        }
-
-        // si l'utilisateur a le rôle ROLE_GESTIONNAIRE, il doit toujours l'avoir même s’il ajoute d’autres rôles. Cela garantit que les gestionnaires conservent leurs privilèges même s’ils ajoutent d’autres rôles.
-        if (in_array('ROLE_GESTIONNAIRE', $roles)) {
-                $roles = array_unique(array_merge(['ROLE_GESTIONNAIRE'], $roles));
-                $entityInstance->setRoles($roles);
-        }
+        // On enregistre la liste des groupes fonctionnels sélectionnés dans un champ non mappé (logique métier)
+        $groupe_fonctionnel = $entityInstance->getListeGroupeFonctionnel() ?? [];
+        $entityInstance->setListeGroupeFonctionnel($groupe_fonctionnel);
 
         $entityInstance->setDateModification(new \DateTime('now', new \DateTimeZone(static::$europeParis)));
 
@@ -330,7 +387,7 @@ class UtilisateurCrudController extends AbstractCrudController
      * @return void
      *
      * Created at: 02/01/2023, 18:37:59 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function updateEntity(EntityManagerInterface $em, $entityInstance): void
@@ -339,73 +396,50 @@ class UtilisateurCrudController extends AbstractCrudController
             return;
         }
 
-        // Récupérer les rôles actuels de l'utilisateur et son courriel
-        $roles = $entityInstance->getRoles();
-        $courriel = $entityInstance->getCourriel();
+        $conn = $this->emm->getConnection();
 
-        // On récupère l'utilisateur en base pour comparer les rôles
-        $sql = "SELECT roles FROM utilisateur WHERE courriel = '$courriel' limit 1";
-        $conn = $this->emm->getConnection()->prepare($sql)->executeQuery();
-        $result = $conn->fetchOne();
+        /** Récupération sécurisée */
+        // On récupère les rôles actuels de l’utilisateur depuis la base de données pour éviter les manipulations malveillantes
+        $result = $conn->fetchOne(
+            "SELECT roles FROM utilisateur WHERE courriel = :courriel LIMIT 1",
+            ['courriel' => $entityInstance->getCourriel()]
+        );
+
+        // Si l’utilisateur n’existe pas ou n’a pas de rôles, on considère qu’il n’a que ROLE_NONE
         $currentRoles = json_decode($result, true) ?: [];
 
-        // Si l'utilisateur a le rôle ROLE_INTERNAL, il ne peut pas avoir d'autres rôles
-        if (in_array('ROLE_INTERNAL', $roles, true) && count($roles) > 1) {
-            $entityInstance->setRoles(['ROLE_INTERNAL']);
-        }
+        /** NORMALISATION CENTRALISÉE */
+        $roles = $this->roleManager->normalize(
+            $entityInstance->getRoles(),
+            $currentRoles,
+            $entityInstance,
+            $this->getUser()
+        );
 
-        // Si l'utilisateur n'a pas le rôle ROLE_GESTIONNAIRE, il ne peut pas attribuer de rôles sensibles
-        if (!$this->isGranted('ROLE_GESTIONNAIRE')) {
-            $entityInstance->setRoles(['ROLE_UTILISATEUR']);
-        }
-
-        // Si l'utilisateur a le rôle ROLE_NONE, il ne peut pas avoir d'autres rôles
-        if (in_array('ROLE_NONE', $roles, true)) {
-            $entityInstance->setRoles(['ROLE_NONE']);
-        }
-
-        // Si l'utilisateur est désactivé, on lui retire tous les rôles
-        if (!$entityInstance->isActif()) {
-            $entityInstance->setRoles(['ROLE_NONE']);
-        }
-
-        // Si l'utilisateur est actif et a le rôle ROLE_NONE, il ne peut pas avoir d'autres rôles
-        if ($entityInstance->isActif() && in_array('ROLE_NONE', $roles) && count($roles) > 1) {
-                $roles = array_diff($roles, ['ROLE_NONE']);
-                $entityInstance->setRoles($roles);
-        }
-
-        // Si l'utilisateur est réactivé et n’a que ROLE_NONE, on le promeut à ROLE_UTILISATEUR
-        if ($entityInstance->isActif() && $entityInstance->getRoles() === ['ROLE_NONE']) {
-            $entityInstance->setRoles(['ROLE_UTILISATEUR']);
-        }
-
-        // si l'utilisateur a le rôle ROLE_INTERNAL, il ne peut pas être désactivé
-        if (in_array('ROLE_INTERNAL', $entityInstance->getRoles(), true)) {
-            $entityInstance->setIsActif(true);
-        }
-
-        // si l'utilisateur a le rôle ROLE_GESTIONNAIRE, il doit toujours l'avoir même si on lui ajoute d’autres rôles. Cela garantit que les gestionnaires conservent leurs privilèges même s’ils ajoutent d’autres rôles.
-        if (in_array('ROLE_GESTIONNAIRE', $currentRoles, true) && !in_array('ROLE_GESTIONNAIRE', $roles, true)) {
-                $roles = array_unique(array_merge(['ROLE_GESTIONNAIRE'], $roles));
-                $entityInstance->setRoles($roles);
-        }
-
-        /** On récupère le groupe_id à partir du groupe_utilisateur */
+        $entityInstance->setRoles($roles);
         $groupe_utilisateur = $entityInstance->getGroupeUtilisateur();
-        $sql = "SELECT groupe_id FROM groupe_utilisateur WHERE groupe_utilisateur = '$groupe_utilisateur' limit 1";
-        $conn = $this->emm->getConnection()->prepare($sql)->executeQuery();
-        $result = $conn->fetchOne();
-        $entityInstance->setGroupeId($result);
 
-        // Si le groupe utilisateur est vide, on le définit à "Aucun"
-        if  (empty($entityInstance->getGroupeUtilisateur())) {
+        // On récupère le groupe_id à partir du groupe_utilisateur
+        $groupeId = $conn->fetchOne(
+            "SELECT groupe_id FROM groupe_utilisateur WHERE groupe_utilisateur = :groupe LIMIT 1",
+            ['groupe' => $groupe_utilisateur]
+        );
+        $entityInstance->setGroupeId($groupeId);
+
+        // si aucun groupe utilisateur n’est sélectionné, on met "Aucun" par défaut pour éviter les incohérences
+        if (empty($entityInstance->getGroupeUtilisateur())) {
             $entityInstance->setGroupeUtilisateur('Aucun');
         }
+        // si  aucun groupe fonctionnel n'est sélectionné, on met une liste vide par défaut pour éviter les incohérences
+        $entityInstance->setListeGroupeFonctionnel(
+            $entityInstance->getListeGroupeFonctionnel() ?? []
+        );
 
-        $entityInstance->setDateModification(new \DateTime('now', new \DateTimeZone(static::$europeParis)));
+        // On met à jour la date de modification à chaque mise à jour de l’entité
+        $entityInstance->setDateModification(
+            new \DateTime('now', new \DateTimeZone(static::$europeParis))
+        );
 
         parent::updateEntity($em, $entityInstance);
     }
-
 }
