@@ -19,6 +19,7 @@
         "dragonmantank/cron-expression": "^3.6.0",
         "easycorp/easyadmin-bundle": "^5.0.5",
         "knplabs/knp-paginator-bundle": "^6.10.0",
+        "matomo/device-detector": "^6.5",
         "symfony/asset": "^8.0.8",
         "symfony/asset-mapper": "^8.0.8",
         "symfony/cache": "^8.0.8",
@@ -114,7 +115,12 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
-        ]
+        ],
+        "test": "@php -d xdebug.mode=off vendor/bin/phpunit",
+        "test:unit": "@php -d xdebug.mode=off vendor/bin/phpunit --testsuite=unit",
+        "test:integration": "@php -d xdebug.mode=off vendor/bin/phpunit --testsuite=integration",
+        "test:functional": "@php -d xdebug.mode=off vendor/bin/phpunit --testsuite=functional",
+        "test:coverage": "@php -d xdebug.mode=off -d pcov.enabled=1 vendor/bin/phpunit --coverage-text=var/coverage.txt"
     },
     "conflict": {
         "symfony/symfony": "*"
