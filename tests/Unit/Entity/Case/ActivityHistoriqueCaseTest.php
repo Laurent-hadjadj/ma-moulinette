@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -106,4 +106,9 @@ class ActivityHistoriqueCaseTest extends TestCase
         $this->assertEquals($newDate, $this->activityHistorique->getDateEnregistrement());
     }
 
+    public function testCountAttribut(): void
+    {
+        $reflectionClass = new \ReflectionClass(new \App\Entity\ActivityHistorique());
+        $this->assertEquals(10, count($reflectionClass->getProperties()));
+    }
 }

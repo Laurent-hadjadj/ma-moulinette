@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -23,7 +23,7 @@ class BatchCaseTest extends TestCase
 {
     private $batch;
 
-    private static $statut = false;
+    private static $automatique = false;
     private static $titre = 'mon-batch à moi';
     private static $description = 'Mon batch à moi';
     private static $responsable = 'Laurent HADJADJ';
@@ -33,10 +33,10 @@ class BatchCaseTest extends TestCase
     private static $dateModification = '2025-01-02 12:00:00+02';
     private static $dateEnregistrement = '2024-07-31 12:27:05+02';
 
-    private function getEntity(): batch
+    private function getEntity(): Batch
     {
         return (new batch())
-        ->setStatut(static::$statut)
+        ->setAutomatique(static::$automatique)
         ->setTitre(static::$titre)
         ->setDescription(static::$description)
         ->setResponsable(static::$responsable)
@@ -55,14 +55,14 @@ class BatchCaseTest extends TestCase
 
     public function testSettingAndGettingId(): void
     {
-        $this->batch->setId(1);
-        $this->assertEquals(1, $this->batch->getId());
+        $this->batch->setId(true);
+        $this->assertEquals(true, $this->batch->getId());
     }
 
-    public function testSettingAndGettingStatut(): void
+    public function testSettingAndGettingAutomatique(): void
     {
-        $this->batch->setStatut(static::$statut);
-        $this->assertEquals(static::$statut, $this->batch->isStatut());
+        $this->batch->setAutomatique(static::$automatique);
+        $this->assertEquals(static::$automatique, $this->batch->isAutomatique());
     }
 
     public function testSettingAndGettingTitre(): void
