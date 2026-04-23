@@ -66,8 +66,17 @@ class RepartitionTempValidatorTest extends KernelTestCase
 
   public function testValidIntegerEntity(): void
   {
-    $this->assertHasErrors($this->getEntity()->setSetup(-1), 0);
-  }
+    // v2.0.0 : valeurs limites BASSES acceptees par PositiveOrZero (>= 0)
+    $this->assertHasErrors($this->getEntity()->setSetup(0), 0);
+    }
+
+  /**
+   * v2.0.0 : valeurs negatives REJETEES par les contraintes PositiveOrZero / Positive / Range.
+   */
+  public function testInvalidIntegerEntity(): void
+  {
+    $this->assertHasErrors($this->getEntity()->setSetup(-1), 1);
+    }
 
   public function testCountAttribut(): void
   {

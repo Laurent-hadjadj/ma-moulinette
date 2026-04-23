@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -14,186 +14,235 @@
 namespace App\Tests\Unit\Entity\Validator;
 
 use App\Entity\Historique;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\ConstraintViolation;
 
 /**
  * [Description HistoriqueValidatorTest]
+ *
+ * v2.0.0 : tests de validation pour les contraintes de l'entite Historique.
  */
 class HistoriqueValidatorTest extends KernelTestCase
 {
-
-  private function getEntity(): Historique
-  {
-      return (new historique())
-      ->setMavenKey('fr.ma-petite-entreprise:ma-moulinette')
-      ->setAnalyseKey('AZCc05qWgfifxdiJPzns')
-      ->setVersion('1.2.0-RELEASE')
-      ->setDateVersion('2024-07-12 16:34:46')
-      ->setNomProjet('ma-moulinette')
-      ->setVersionRelease('0')
-      ->setVersionSnapshot('0')
-      ->setVersionAutre('1')
-      ->setSuppressWarning('8')
-      ->setNoSonar('0')
-      ->setTodo('17')
-      ->setLoggerInfo('14')
-      ->setLoggerWarn('0')
-      ->setLoggerError('15')
-      ->setLoggerDebug('8')
-      ->setNombreLigne('17049')
-      ->setNombreLigneCode('8928')
-      ->setFiles('180')
-      ->setClasses('123')
-      ->setFunctions('457')
-      ->setCoverage('50.1')
-      ->setDuplicatedLinesDensity('0.2')
-      ->setSqaleDebtRatio('1')
-      ->setTests('55')
-      ->setViolations('295')
-      ->setDette('3054')
-      ->setNombreBug('88')
-      ->setNombreVulnerability('9')
-      ->setNombreCodeSmell('198')
-      ->setBugBlocker('7')
-      ->setBugCritical('0')
-      ->setBugMajor('44')
-      ->setBugMinor('0')
-      ->setBugInfo('37')
-      ->setVulnerabilityBlocker('0')
-      ->setVulnerabilityCritical('9')
-      ->setVulnerabilityMajor('0')
-      ->setVulnerabilityMinor('0')
-      ->setVulnerabilityInfo('0')
-      ->setCodeSmellBlocker('0')
-      ->setCodeSmellCritical('4')
-      ->setCodeSmellMajor('109')
-      ->setCodeSmellMinor('13')
-      ->setCodeSmellInfo('72')
-      ->setFrontend('21')
-      ->setBackend('136')
-      ->setAutre('0')
-      ->setInconnue('10')
-      ->setNombreAnomalieBloquant('7')
-      ->setNombreAnomalieCritique('13')
-      ->setNombreAnomalieMajeur('153')
-      ->setNombreAnomalieMineur('13')
-      ->setNombreAnomalieInfo('109')
-      ->setNoteReliability('E')
-      ->setNoteSecurity('D')
-      ->setNoteSqale('A')
-      ->setNoteHotspot('A')
-      ->setNombreHotspot('0')
-      ->setHotspotHigh('0')
-      ->setHotspotMedium('0')
-      ->setHotspotLow('0')
-      ->setInitial('false')
-      ->setModeCollecte('COLLECTE')
-      ->setUtilisateurCollecte('admin@ma-moulinette.fr')
-      ->setDateEnregistrement(new \DateTimeImmutable('2024-06-28 17:55:45+02'));
-  }
-
-  public function assertHasErrors(Historique $entity, int $number = 0): void
-  {
-    self::bootKernel();
-    $container = static::getContainer();
-    $errors = $container->get('validator')->validate($entity);
-    $messages = [];
-    /** @var ConstraintViolation $error */
-    foreach($errors as $error) {
-      $messages[] = $error->getPropertyPath() . ' => ' . $error->getMessage();
+    private function getEntity(): Historique
+    {
+        return (new Historique())
+            ->setMavenKey('fr.ma-petite-entreprise:ma-moulinette')
+            ->setVersion('1.2.0-RELEASE')
+            ->setDateVersion('2024-07-12 16:34:46')
+            ->setNomProjet('ma-moulinette')
+            ->setAnalyseKey('AZCc05qWgfifxdiJPzns')
+            ->setInitial(false)
+            ->setDateEnregistrement(new \DateTimeImmutable('2024-06-28 17:55:45+02:00'));
     }
-    $this->assertCount($number, $errors, implode(', ', $messages));
-  }
 
-  public function testValidEntity(): void
-  {
-    $this->assertHasErrors($this->getEntity(), 0);
-  }
+    public function assertHasErrors(Historique $entity, int $number = 0): void
+    {
+        self::bootKernel();
+        $errors = static::getContainer()->get('validator')->validate($entity);
+        $messages = [];
+        /** @var ConstraintViolation $error */
+        foreach ($errors as $error) {
+            $messages[] = $error->getPropertyPath() . ' => ' . $error->getMessage();
+        }
+        $this->assertCount($number, $errors, implode(', ', $messages));
+    }
 
-  public function testInvalidBlankEntity(): void
-  {
-    $this->assertHasErrors($this->getEntity()->setMavenKey(''), 0);
-    $this->assertHasErrors($this->getEntity()->setAnalyseKey(''), 1);
-    $this->assertHasErrors($this->getEntity()->setVersion(''), 1);
-    $this->assertHasErrors($this->getEntity()->setDateVersion(''), 1);
-    $this->assertHasErrors($this->getEntity()->setNomProjet(''), 1);
-    $this->assertHasErrors($this->getEntity()->setModeCollecte(''), 0);
-    $this->assertHasErrors($this->getEntity()->setUtilisateurCollecte(''), 0);
-  }
+    public function testValidEntity(): void
+    {
+        $this->assertHasErrors($this->getEntity(), 0);
+    }
 
-  public function testValidIntegerEntity(): void
-  {
-    $this->assertHasErrors($this->getEntity()->setVersionRelease(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setVersionSnapshot(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setVersionAutre(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setSuppressWarning(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setNoSonar(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setTodo(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setLoggerInfo(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setLoggerWarn(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setLoggerError(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setLoggerDebug(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setNombreLigne(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setNombreLigneCode(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setFiles(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setClasses(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setFunctions(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setTests(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setViolations(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setDette(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setNombreBug(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setNombreVulnerability(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setNombreCodeSmell(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setBugBlocker(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setBugCritical(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setBugMajor(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setBugMinor(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setBugInfo(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setVulnerabilityBlocker(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setVulnerabilityCritical(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setVulnerabilityMajor(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setVulnerabilityMinor(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setVulnerabilityInfo(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setCodeSmellBlocker(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setCodeSmellCritical(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setCodeSmellMajor(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setCodeSmellMinor(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setCodeSmellInfo(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setFrontend(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setBackend(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setAutre(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setInconnue(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setNombreAnomalieBloquant(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setNombreAnomalieCritique(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setNombreAnomalieMajeur(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setNombreAnomalieMineur(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setNombreAnomalieInfo(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setNoteReliability(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setNoteSecurity(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setNoteSqale(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setNoteHotspot(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setNombreHotspot(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setHotspotHigh(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setHotspotMedium(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setHotspotLow(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setInitial(-1), 0);
-  }
+    public function testInvalidBlankEntity(): void
+    {
+        // Cle composite + cles requises : NotBlank
+        $this->assertHasErrors($this->getEntity()->setMavenKey(''), 1);
+        $this->assertHasErrors($this->getEntity()->setVersion(''), 1);
+        $this->assertHasErrors($this->getEntity()->setDateVersion(''), 1);
+        $this->assertHasErrors($this->getEntity()->setNomProjet(''), 1);
+        $this->assertHasErrors($this->getEntity()->setAnalyseKey(''), 1);
+        // modeCollecte / utilisateurCollecte sont nullable et n'ont pas NotBlank.
+        $this->assertHasErrors($this->getEntity()->setModeCollecte(''), 0);
+        $this->assertHasErrors($this->getEntity()->setUtilisateurCollecte(''), 0);
+    }
 
+    public function testInvalidLengthEntity(): void
+    {
+        $this->assertHasErrors($this->getEntity()->setMavenKey(str_repeat('a', 256)), 1);
+        $this->assertHasErrors($this->getEntity()->setVersion(str_repeat('a', 33)), 1);
+        $this->assertHasErrors($this->getEntity()->setDateVersion(str_repeat('a', 129)), 1);
+        $this->assertHasErrors($this->getEntity()->setNomProjet(str_repeat('a', 129)), 1);
+        $this->assertHasErrors($this->getEntity()->setAnalyseKey(str_repeat('a', 33)), 1);
+        $this->assertHasErrors($this->getEntity()->setModeCollecte(str_repeat('a', 33)), 1);
+        $this->assertHasErrors($this->getEntity()->setUtilisateurCollecte(str_repeat('a', 321)), 1);
+    }
 
-  public function testValidFloatEntity(): void
-  {
-    $this->assertHasErrors($this->getEntity()->setCoverage(0.0), 0);
-    $this->assertHasErrors($this->getEntity()->setDuplicatedLinesDensity(0.0), 0);
-    $this->assertHasErrors($this->getEntity()->setSqaleDebtRatio(0.0), 0);
+    /**
+     * Liste des setters int contraints par PositiveOrZero (>= 0).
+     */
+    public static function positiveOrZeroIntProvider(): iterable
+    {
+        $names = [
+            // Versions / repartition / langages
+            'VersionRelease', 'VersionSnapshot', 'VersionAutre',
+            'RepartitionFrontend', 'RepartitionBackend', 'RepartitionAutre', 'RepartitionInconnu',
+            'JavaNoSonar', 'PythonNoSonar', 'PhpNoSonar',
+            'SuppressWarning', 'NoPmd', 'CheckStyle',
+            'JavaTodo', 'PythonTodo', 'PhpTodo', 'XmlTodo', 'JavascriptTodo', 'TypescriptTodo', 'RubyTodo',
+            // Statistiques de code
+            'Lines', 'Ncloc', 'Files', 'Classes', 'Functions', 'Statements', 'CommentLines',
+            'LineCoverage', 'LinesToCover', 'ConditionsToCover', 'UncoveredConditions',
+            // Tests
+            'Tests', 'TestExecutionTime', 'TestErrors', 'TestFailures', 'SkippedTests',
+            // Duplication / complexity
+            'DuplicatedFiles', 'DuplicatedBlocks', 'DuplicatedLines',
+            'Complexity', 'CognitiveComplexity',
+            // Anomalies
+            'OpenIssues', 'ReopenedIssues', 'ConfirmedIssues', 'FalsePositiveIssues',
+            'AcceptedIssues', 'HighImpactAcceptedIssues',
+            'Violations', 'BlockerViolations', 'CriticalViolations', 'MajorViolations',
+            'MinorViolations', 'InfoViolations',
+            'SoftwareQualityBlockerIssues', 'SoftwareQualityHighIssues', 'SoftwareQualityMediumIssues',
+            'SoftwareQualityLowIssues', 'SoftwareQualityInfoIssues',
+            // Code smells / maintenabilite
+            'CodeSmells', 'CodeSmellBlocker', 'CodeSmellCritical', 'CodeSmellMajor',
+            'CodeSmellMinor', 'CodeSmellInfo',
+            'MaintainabilityIssues', 'SqaleIndex', 'EffortToReachMaintainabilityRatingA',
+            'SoftwareQualityMaintainabilityRemediationEffort',
+            'EffortToReachSoftwareQualityMaintainabilityRatingA',
+            // Bugs / fiabilite
+            'Bugs', 'BugBlocker', 'BugCritical', 'BugMajor', 'BugMinor', 'BugInfo',
+            'ReliabilityRemediationEffort', 'SoftwareQualityReliabilityRemediationEffort',
+            // Vulnerabilites / securite
+            'Vulnerabilities', 'VulnerabilityBlocker', 'VulnerabilityCritical', 'VulnerabilityMajor',
+            'VulnerabilityMinor', 'VulnerabilityInfo',
+            'SecurityRemediationEffort', 'SoftwareQualitySecurityRemediationEffort',
+            // Hotspots / menaces
+            'SecurityHotspot',
+            'MenacePotentielleToReviewHigh', 'MenacePotentielleToReviewMedium', 'MenacePotentielleToReviewLow',
+            'MenacePotentielleReviewedHigh', 'MenacePotentielleReviewedMedium', 'MenacePotentielleReviewedLow',
+            'MenacePotentielleTotale',
+        ];
+        foreach ($names as $n) {
+            yield $n => [$n];
+        }
+    }
 
-  }
+    #[DataProvider('positiveOrZeroIntProvider')]
+    public function testValidPositiveOrZeroInt(string $suffix): void
+    {
+        $entity = $this->getEntity();
+        $entity->{'set' . $suffix}(0);
+        $this->assertHasErrors($entity, 0);
+    }
 
-  public function testCountAttribut(): void
-  {
-      $entity = $this->getEntity();
-      $reflectionClass = new \ReflectionClass($entity);
-      $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 66);
-  }
+    #[DataProvider('positiveOrZeroIntProvider')]
+    public function testInvalidPositiveOrZeroInt(string $suffix): void
+    {
+        $entity = $this->getEntity();
+        $entity->{'set' . $suffix}(-1);
+        $this->assertHasErrors($entity, 1);
+    }
+
+    /**
+     * Floats contraints par PositiveOrZero (>= 0).
+     */
+    public static function positiveOrZeroFloatProvider(): iterable
+    {
+        yield 'CommentLinesDensity' => ['CommentLinesDensity'];
+        yield 'SecurityHotspotsReviewed' => ['SecurityHotspotsReviewed'];
+    }
+
+    #[DataProvider('positiveOrZeroFloatProvider')]
+    public function testValidPositiveOrZeroFloat(string $suffix): void
+    {
+        $entity = $this->getEntity();
+        $entity->{'set' . $suffix}(0.0);
+        $this->assertHasErrors($entity, 0);
+    }
+
+    #[DataProvider('positiveOrZeroFloatProvider')]
+    public function testInvalidPositiveOrZeroFloat(string $suffix): void
+    {
+        $entity = $this->getEntity();
+        $entity->{'set' . $suffix}(-0.1);
+        $this->assertHasErrors($entity, 1);
+    }
+
+    /**
+     * Floats contraints par Range(0, 100).
+     */
+    public static function rangeFloatProvider(): iterable
+    {
+        yield 'TestSuccessDensity' => ['TestSuccessDensity'];
+        yield 'DuplicatedLinesDensity' => ['DuplicatedLinesDensity'];
+        yield 'ComplexityRatio' => ['ComplexityRatio'];
+        yield 'CognitiveComplexityRatio' => ['CognitiveComplexityRatio'];
+        yield 'SqaleDebtRatio' => ['SqaleDebtRatio'];
+        yield 'SoftwareQualityMaintainabilityDebtRatio' => ['SoftwareQualityMaintainabilityDebtRatio'];
+    }
+
+    #[DataProvider('rangeFloatProvider')]
+    public function testValidRangeFloat(string $suffix): void
+    {
+        $entity = $this->getEntity();
+        $entity->{'set' . $suffix}(0.0);
+        $this->assertHasErrors($entity, 0);
+        $entity->{'set' . $suffix}(100.0);
+        $this->assertHasErrors($entity, 0);
+    }
+
+    #[DataProvider('rangeFloatProvider')]
+    public function testInvalidRangeFloat(string $suffix): void
+    {
+        $entity = $this->getEntity();
+        $entity->{'set' . $suffix}(-1.0);
+        $this->assertHasErrors($entity, 1);
+        $entity->{'set' . $suffix}(101.0);
+        $this->assertHasErrors($entity, 1);
+    }
+
+    /**
+     * Strings contraints par Choice(A..E).
+     */
+    public static function choiceRatingProvider(): iterable
+    {
+        $names = [
+            'CommentLinesRating', 'ComplexityRating', 'CognitiveComplexityRating',
+            'SqaleRating', 'SoftwareQualityMaintainabilityRating',
+            'ReliabilityRating', 'SoftwareQualityReliabilityRating',
+            'SecurityRating', 'SoftwareQualitySecurityRating',
+        ];
+        foreach ($names as $n) {
+            yield $n => [$n];
+        }
+    }
+
+    #[DataProvider('choiceRatingProvider')]
+    public function testValidChoiceRating(string $suffix): void
+    {
+        foreach (['A', 'B', 'C', 'D', 'E'] as $rating) {
+            $entity = $this->getEntity();
+            $entity->{'set' . $suffix}($rating);
+            $this->assertHasErrors($entity, 0);
+        }
+    }
+
+    #[DataProvider('choiceRatingProvider')]
+    public function testInvalidChoiceRating(string $suffix): void
+    {
+        $entity = $this->getEntity();
+        $entity->{'set' . $suffix}('Z');
+        $this->assertHasErrors($entity, 1);
+    }
+
+    /**
+     * v2.0.0 : l'entite Historique comporte 133 attributs.
+     */
+    public function testCountAttribut(): void
+    {
+        $reflectionClass = new \ReflectionClass(new Historique());
+        $this->assertEquals(133, count($reflectionClass->getProperties()));
+    }
 }

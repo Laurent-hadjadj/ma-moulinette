@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -20,8 +20,8 @@ use Symfony\Component\Validator\ConstraintViolation;
 class PortefeuilleValidatorTest extends KernelTestCase
 {
 
-  private static $titre = 'MES PROJETS';
-  private static $groupe = 'MA PETITE ENTREPRISE';
+  private static $portefeuille = 'MES PROJETS';
+  private static $groupeFonctionnel = 'MA PETITE ENTREPRISE';
   private static $liste =  ['fr.ma-petite-entreprise:ma-moulinette'];
   private static $dateModification = '2024-03-26 14:46:38+01';
   private static $dateEnregistrement = '2024-03-25 12:26:58+01';
@@ -29,8 +29,8 @@ class PortefeuilleValidatorTest extends KernelTestCase
   private function getEntity(): Portefeuille
   {
       return (new portefeuille())
-      ->setTitre(static::$titre)
-      ->setGroupe(static::$groupe)
+      ->setPortefeuille(static::$portefeuille)
+      ->setGroupeFonctionnel(static::$groupeFonctionnel)
       ->setListe(static::$liste)
       ->setDateModification(new \DateTime(static::$dateModification))
       ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
@@ -54,28 +54,28 @@ class PortefeuilleValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity(), 0);
   }
 
-  public function testTitreInvalidBlankEntity(): void
+  public function testPortefeuilleInvalidBlankEntity(): void
   {
-    $this->assertHasErrors($this->getEntity()->setTitre(''), 1);
+    $this->assertHasErrors($this->getEntity()->setPortefeuille(''), 1);
   }
 
-  public function testTitreNotNullEntity(): void
+  public function testPortefeuilleNotNullEntity(): void
   {
     $portefeuille = new portefeuille();
-    $portefeuille->setTitre('mon titre');
-    $this->assertNotNull($portefeuille->getTitre());
+    $portefeuille->setPortefeuille('mon portefeuille');
+    $this->assertNotNull($portefeuille->getPortefeuille());
   }
 
-  public function testGroupeInvalidBlankEntity(): void
+  public function testGroupeFonctionnelInvalidBlankEntity(): void
   {
-    $this->assertHasErrors($this->getEntity()->setGroupe(''), 1);
+    $this->assertHasErrors($this->getEntity()->setGroupeFonctionnel(''), 1);
   }
 
-  public function testGroupeNotNullEntity(): void
+  public function testGroupeFonctionnelNotNullEntity(): void
   {
     $portefeuille = new portefeuille();
-    $portefeuille->setGroupe('mon groupe');
-    $this->assertNotNull($portefeuille->getGroupe());
+    $portefeuille->setGroupeFonctionnel('mon groupe fonctionnel');
+    $this->assertNotNull($portefeuille->getGroupeFonctionnel());
   }
 
   public function testListeValidNullEntity(): void

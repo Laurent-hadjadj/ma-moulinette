@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -31,11 +31,11 @@ class ListeProjetValidatorTest extends KernelTestCase
 
   private function getEntity(): ListeProjet
   {
-      return (new ListeProjet())
-      ->setMavenKey(static::$mavenKey)
-      ->setName(static::$name)
-      ->setTags(static::$tags)
-      ->setVisibility(static::$visibility)
+      return (new ListeProjet(
+        static::$mavenKey,
+        static::$name,
+        static::$visibility,
+        static::$tags))
       ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
   }
 

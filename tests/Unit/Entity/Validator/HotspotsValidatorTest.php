@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -89,8 +89,17 @@ class HotspotsValidatorTest extends KernelTestCase
 
   public function testValidIntegerEntity(): void
   {
-    $this->assertHasErrors($this->getEntity()->setNiveau(-1), 0);
-  }
+    // v2.0.0 : valeurs limites BASSES acceptees par PositiveOrZero (>= 0)
+    $this->assertHasErrors($this->getEntity()->setNiveau(0), 0);
+    }
+
+  /**
+   * v2.0.0 : valeurs negatives REJETEES par les contraintes PositiveOrZero / Positive / Range.
+   */
+  public function testInvalidIntegerEntity(): void
+  {
+    $this->assertHasErrors($this->getEntity()->setNiveau(-1), 1);
+    }
 
   public function testCountAttribut(): void
   {

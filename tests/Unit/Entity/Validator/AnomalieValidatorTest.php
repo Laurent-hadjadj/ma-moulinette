@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -17,6 +17,9 @@ use App\Entity\Anomalie;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\ConstraintViolation;
 
+/**
+ * [Description AnomalieValidatorTest]
+ */
 class AnomalieValidatorTest extends KernelTestCase
 {
 
@@ -34,7 +37,7 @@ class AnomalieValidatorTest extends KernelTestCase
   private static $frontend = 806;
   private static $backend = 0;
   private static $autre = 0;
-  private static $inconnue = 1;
+  private static $inconnu = 1;
   private static $blocker = 0;
   private static $critical = 0;
   private static $major = 4750;
@@ -64,7 +67,7 @@ class AnomalieValidatorTest extends KernelTestCase
       ->setFrontend(static::$frontend)
       ->setBackend(static::$backend)
       ->setAutre(static::$autre)
-      ->setInconnue(static::$inconnue)
+      ->setInconnu(static::$inconnu)
       ->setBlocker(static::$blocker)
       ->setCritical(static::$critical)
       ->setMajor(static::$major)
@@ -110,28 +113,51 @@ class AnomalieValidatorTest extends KernelTestCase
 
   public function testValidIntegerEntity(): void
   {
-    $this->assertHasErrors($this->getEntity()->setAnomalieTotal(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setDetteMinute(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setDetteReliabilityMinute(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setDetteVulnerabilityMinute(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setDetteCodeSmellMinute(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setFrontend(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setBackend(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setAutre(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setInconnue(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setBlocker(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setCritical(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setMajor(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setMinor(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setInfo(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setBug(-1), 0);
-  }
+    // v2.0.0 : valeurs limites BASSES acceptees par PositiveOrZero (>= 0)
+    $this->assertHasErrors($this->getEntity()->setAnomalieTotal(0), 0);
+    $this->assertHasErrors($this->getEntity()->setDetteMinute(0), 0);
+    $this->assertHasErrors($this->getEntity()->setDetteReliabilityMinute(0), 0);
+    $this->assertHasErrors($this->getEntity()->setDetteVulnerabilityMinute(0), 0);
+    $this->assertHasErrors($this->getEntity()->setDetteCodeSmellMinute(0), 0);
+    $this->assertHasErrors($this->getEntity()->setFrontend(0), 0);
+    $this->assertHasErrors($this->getEntity()->setBackend(0), 0);
+    $this->assertHasErrors($this->getEntity()->setAutre(0), 0);
+    $this->assertHasErrors($this->getEntity()->setInconnu(0), 0);
+    $this->assertHasErrors($this->getEntity()->setBlocker(0), 0);
+    $this->assertHasErrors($this->getEntity()->setCritical(0), 0);
+    $this->assertHasErrors($this->getEntity()->setMajor(0), 0);
+    $this->assertHasErrors($this->getEntity()->setMinor(0), 0);
+    $this->assertHasErrors($this->getEntity()->setInfo(0), 0);
+    $this->assertHasErrors($this->getEntity()->setBug(0), 0);
+    }
+
+  /**
+   * v2.0.0 : valeurs negatives REJETEES par les contraintes PositiveOrZero / Positive / Range.
+   */
+  public function testInvalidIntegerEntity(): void
+  {
+    $this->assertHasErrors($this->getEntity()->setAnomalieTotal(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setDetteMinute(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setDetteReliabilityMinute(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setDetteVulnerabilityMinute(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setDetteCodeSmellMinute(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setFrontend(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setBackend(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setAutre(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setInconnu(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setBlocker(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setCritical(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setMajor(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setMinor(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setInfo(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setBug(-1), 1);
+    }
 
   public function testCountAttribut(): void
   {
       $entity = $this->getEntity();
       $reflectionClass = new \ReflectionClass($entity);
       $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 26);
+      $this->assertEquals($nbAttributs, 27);
   }
 }

@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -18,95 +18,123 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\ConstraintViolation;
 
 /**
- * [Description UtilisateurKernelTest]
+ * [Description UtilisateurValidatorTest]
+ *
+ * v2.0.0 : couvre les contraintes Assert sur prenom, nom, courriel,
+ * password, groupeUtilisateur, groupeId, resetPasswordCount.
  */
 class UtilisateurValidatorTest extends KernelTestCase
 {
+    public static $resetPassword = true;
+    public static $resetPasswordCount = 1;
+    public static $avatar = 'chiffre/01.png';
+    public static $prenom = 'Laurent';
+    public static $nom = 'HADJADJ';
+    public static $courriel = 'laurent.hadjadj@ma-petite-entreprise.fr';
+    public static $pass = '$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K';
+    public static $actif = true;
+    public static $roles = ["ROLE_GESTIONNAIRE"];
+    public static $groupeUtilisateur = 'admin';
+    public static $groupeId = '01HK7XMKQGM3F5XZJ4S6T7VWE2';
+    public static $listeGroupeFonctionnel = [];
+    public static $preference = ['{
+        "statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
+        "projet":[],"favori":[],"version":[],"bookmark":[]}'];
+    public static $dateModification = '1981-01-01 00:00:00';
+    public static $dateEnregistrement = '1980-01-01 00:00:00';
 
-  public static $resetPassword = 1;
-  public static $resetPasswordCount = 1;
-  public static $avatar = 'chiffre/01.png';
-  public static $prenom = 'Laurent';
-  public static $nom = 'HADJADJ';
-  public static $courriel = 'laurent.hadjadj@ma-petite-entreprise.fr';
-  public static $password = '$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K';
-  public static $actif = true;
-  public static $roles = ["ROLE_GESTIONNAIRE"];
-  public static $groupe = [];
-  public static $preference = ['{
-    "statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
-    "projet":[],"favori":[],"version":[],"bookmark":[]}'];
-  public static $dateModification = '1981-01-01 00:00:00';
-  public static $dateEnregistrement = '1980-01-01 00:00:00';
-
-  public function getEntity(): Utilisateur
-  {
-    return (new utilisateur())
-      ->setResetPassword((bool) static::$resetPassword)
-      ->setResetPasswordCount(1)
-      ->setAvatar(static::$avatar)
-      ->setPrenom(static::$prenom)
-      ->setNom(static::$nom)
-      ->setCourriel(static::$courriel)
-      ->setPassword(static::$password)
-      ->setActif(static::$actif)
-      ->setRoles(static::$roles)
-      ->setGroupe(static::$groupe)
-      ->setPreference(static::$preference)
-      ->setDateModification(new \DateTime(static::$dateModification))
-      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
-  }
-
-  public function assertHasErrors(Utilisateur $entity, int $number = 0, array $groups = ['default'])
-  {
-    self::bootKernel();
-    $container = static::getContainer();
-    $errors = $container->get('validator')->validate($entity, null, $groups);
-    $messages = [];
-    /** @var ConstraintViolation $error */
-    foreach($errors as $error) {
-      $messages[] = $error->getPropertyPath() . ' => ' . $error->getMessage();
+    public function getEntity(): Utilisateur
+    {
+        return (new Utilisateur())
+            ->setResetPassword(static::$resetPassword)
+            ->setResetPasswordCount(static::$resetPasswordCount)
+            ->setAvatar(static::$avatar)
+            ->setPrenom(static::$prenom)
+            ->setNom(static::$nom)
+            ->setCourriel(static::$courriel)
+            ->setPassword(static::$pass)
+            ->setActif(static::$actif)
+            ->setRoles(static::$roles)
+            ->setGroupeUtilisateur(static::$groupeUtilisateur)
+            ->setGroupeId(static::$groupeId)
+            ->setListeGroupeFonctionnel(static::$listeGroupeFonctionnel)
+            ->setPreference(static::$preference)
+            ->setDateModification(new \DateTime(static::$dateModification))
+            ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
     }
-    $this->assertCount($number, $errors, implode(', ', $messages));
-  }
 
-  public function testValidEntity(): void
-  {
-    $this->assertHasErrors($this->getEntity(), 0);
-  }
+    public function assertHasErrors(Utilisateur $entity, int $number = 0, ?array $groups = ['default']): void
+    {
+        self::bootKernel();
+        $errors = static::getContainer()->get('validator')->validate($entity, null, $groups);
+        $messages = [];
+        /** @var ConstraintViolation $error */
+        foreach ($errors as $error) {
+            $messages[] = $error->getPropertyPath() . ' => ' . $error->getMessage();
+        }
+        $this->assertCount($number, $errors, implode(', ', $messages));
+    }
 
-  public function testInvalidBlankEntity(): void
-  {
-    $this->assertHasErrors($this->getEntity()->setPrenom(''), 1, ['default']);
-    $this->assertHasErrors($this->getEntity()->setNom(''), 1, ['default']);
-    $this->assertHasErrors($this->getEntity()->setCourriel(''), 1, ['default']);
-    $this->assertHasErrors($this->getEntity()->setPassword(''), 1, ['default']);
-  }
+    public function testValidEntity(): void
+    {
+        $this->assertHasErrors($this->getEntity(), 0);
+    }
 
-  public function testValidBlankEntity(): void
-  {
-    $this->assertHasErrors($this->getEntity()->setAvatar(''), 0);
-    $this->assertHasErrors($this->getEntity()->setGroupe([]), 0);
-    $this->assertHasErrors($this->getEntity()->setPreference([]), 0);
-    $this->assertHasErrors($this->getEntity()->setRoles([]), 0);
-  }
+    public function testInvalidBlankEntity(): void
+    {
+        $this->assertHasErrors($this->getEntity()->setPrenom(''), 1, ['default']);
+        $this->assertHasErrors($this->getEntity()->setNom(''), 1, ['default']);
+        // Symfony court-circuite Email quand la valeur est vide => 1 seule violation NotBlank
+        $this->assertHasErrors($this->getEntity()->setCourriel(''), 1, ['default']);
+        $this->assertHasErrors($this->getEntity()->setPassword(''), 1, ['default']);
+        // groupeId : NotBlank declare sans `groups` => valider en groupe Default automatique (null)
+        $this->assertHasErrors($this->getEntity()->setGroupeId(''), 1, null);
+    }
 
-  public function testValidIntegerEntity(): void
-  {
-    $this->assertHasErrors($this->getEntity()->setResetPasswordCount(-1), 0);
-  }
+    public function testInvalidEmailCourriel(): void
+    {
+        $this->assertHasErrors($this->getEntity()->setCourriel('not-an-email'), 1, ['default']);
+    }
 
-  public function testValidBooleanEntity(): void
-  {
-    $this->assertHasErrors($this->getEntity()->setActif(true), 0);
-    $this->assertHasErrors($this->getEntity()->setResetCount(true), 0);
-  }
+    public function testInvalidLengthGroupeUtilisateur(): void
+    {
+        // Length declare sans `groups` => valider en groupe Default automatique (null)
+        $this->assertHasErrors($this->getEntity()->setGroupeUtilisateur(str_repeat('a', 65)), 1, null);
+    }
 
-  public function testCountAttribut(): void
-  {
-      $entity = $this->getEntity();
-      $reflectionClass = new \ReflectionClass($entity);
-      $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 14);
-  }
+    public function testInvalidLengthGroupeId(): void
+    {
+        // Length declare sans `groups` => valider en groupe Default automatique (null)
+        $this->assertHasErrors($this->getEntity()->setGroupeId(str_repeat('a', 27)), 1, null);
+    }
+
+    public function testValidBlankOptionalFields(): void
+    {
+        // avatar, listeGroupeFonctionnel, preference, roles ne portent pas de NotBlank.
+        $this->assertHasErrors($this->getEntity()->setAvatar(''), 0);
+        $this->assertHasErrors($this->getEntity()->setListeGroupeFonctionnel([]), 0);
+        $this->assertHasErrors($this->getEntity()->setPreference([]), 0);
+        $this->assertHasErrors($this->getEntity()->setRoles([]), 0);
+    }
+
+    public function testValidIntegerEntity(): void
+    {
+        // resetPasswordCount n'a pas de contrainte explicite ; toute valeur int est valide.
+        $this->assertHasErrors($this->getEntity()->setResetPasswordCount(0), 0);
+        $this->assertHasErrors($this->getEntity()->setResetPasswordCount(42), 0);
+    }
+
+    public function testValidBooleanEntity(): void
+    {
+        $this->assertHasErrors($this->getEntity()->setActif(true), 0);
+        $this->assertHasErrors($this->getEntity()->setActif(false), 0);
+        $this->assertHasErrors($this->getEntity()->setResetPassword(true), 0);
+        $this->assertHasErrors($this->getEntity()->setResetPassword(false), 0);
+    }
+
+    public function testCountAttribut(): void
+    {
+        $reflectionClass = new \ReflectionClass(new Utilisateur());
+        $this->assertEquals(17, count($reflectionClass->getProperties()));
+    }
 }

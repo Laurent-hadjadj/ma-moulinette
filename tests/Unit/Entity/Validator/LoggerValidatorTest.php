@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -34,15 +34,15 @@ class LoggerValidatorTest extends KernelTestCase
 
   private function getEntity(): Logger
   {
-      return (new logger())
-      ->setMavenKey(static::$mavenKey)
-      ->setLoggerInfo(static::$loggerInfo)
-      ->setLoggerWarn(static::$loggerWarn)
-      ->setLoggerError(static::$loggerError)
-      ->setLoggerDebug(static::$loggerDebug)
-      ->setModeCollecte(static::$modeCollecte)
-      ->setUtilisateurCollecte(static::$utilisateurCollecte)
-      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+      return (new logger(
+        static::$mavenKey,
+        static::$loggerInfo,
+        static::$loggerWarn,
+        static::$loggerError,
+        static::$loggerDebug,
+        static::$modeCollecte,
+        static::$utilisateurCollecte))
+        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
   }
 
   public function assertHasErrors(Logger $entity, int $number = 0): void
@@ -72,11 +72,23 @@ class LoggerValidatorTest extends KernelTestCase
 
   public function testValidIntegerEntity(): void
   {
-    $this->assertHasErrors($this->getEntity()->setLoggerInfo(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setLoggerWarn(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setLoggerError(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setLoggerDebug(-1), 0);
-  }
+    // v2.0.0 : valeurs limites BASSES acceptees par PositiveOrZero (>= 0)
+    $this->assertHasErrors($this->getEntity()->setLoggerInfo(0), 0);
+    $this->assertHasErrors($this->getEntity()->setLoggerWarn(0), 0);
+    $this->assertHasErrors($this->getEntity()->setLoggerError(0), 0);
+    $this->assertHasErrors($this->getEntity()->setLoggerDebug(0), 0);
+    }
+
+  /**
+   * v2.0.0 : valeurs negatives REJETEES par les contraintes PositiveOrZero / Positive / Range.
+   */
+  public function testInvalidIntegerEntity(): void
+  {
+    $this->assertHasErrors($this->getEntity()->setLoggerInfo(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setLoggerWarn(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setLoggerError(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setLoggerDebug(-1), 1);
+    }
 
   public function testCountAttribut(): void
   {

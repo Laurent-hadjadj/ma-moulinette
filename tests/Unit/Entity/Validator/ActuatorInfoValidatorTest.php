@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -18,6 +18,9 @@ use App\Entity\ActuatorInfo;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\ConstraintViolation;
 
+/**
+ * [Description ActuatorInfoValidatorTest]
+ */
 class ActuatorInfoValidatorTest extends KernelTestCase
 {
   private static $actuatorId = 1;

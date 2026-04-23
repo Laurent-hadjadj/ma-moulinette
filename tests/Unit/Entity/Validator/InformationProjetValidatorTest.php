@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -17,6 +17,9 @@ use App\Entity\InformationProjet;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\ConstraintViolation;
 
+/**
+ * [Description InformationProjetValidatorTest]
+ */
 class InformationProjetValidatorTest extends KernelTestCase
 {
 
@@ -81,11 +84,12 @@ class InformationProjetValidatorTest extends KernelTestCase
 
   public function testValidIntegerEntity(): void
   {
-    $this->assertHasErrors($this->getEntity()->setVersionSonar(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setVersionReleaseSonar(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setVersionSnapshotSonar(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setVersionAutreSonar(-1), 0);
-  }
+    // v2.0.0 : valeurs limites BASSES acceptees par PositiveOrZero (>= 0)
+    $this->assertHasErrors($this->getEntity()->setVersionSonar(0), 0);
+    $this->assertHasErrors($this->getEntity()->setVersionReleaseSonar(0), 0);
+    $this->assertHasErrors($this->getEntity()->setVersionSnapshotSonar(0), 0);
+    $this->assertHasErrors($this->getEntity()->setVersionAutreSonar(0), 0);
+    }
 
   public function testCountAttribut(): void
   {

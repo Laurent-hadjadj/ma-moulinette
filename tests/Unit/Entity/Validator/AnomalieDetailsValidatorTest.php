@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -17,6 +17,9 @@ use App\Entity\AnomalieDetails;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\ConstraintViolation;
 
+/**
+ * [Description AnomalieDetailsValidatorTest]
+ */
 class AnomalieDetailsValidatorTest extends KernelTestCase
 {
 
@@ -95,22 +98,45 @@ class AnomalieDetailsValidatorTest extends KernelTestCase
 
   public function testValidIntegerEntity(): void
   {
-    $this->assertHasErrors($this->getEntity()->setBugBlocker(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setBugCritical(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setBugMajor(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setBugMinor(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setBugInfo(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setVulnerabilityBlocker(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setVulnerabilityCritical(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setVulnerabilityMajor(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setVulnerabilityMinor(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setVulnerabilityInfo(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setCodeSmellBlocker(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setCodeSmellCritical(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setCodeSmellMajor(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setCodeSmellMinor(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setCodeSmellInfo(-1), 0);
-  }
+    // v2.0.0 : valeurs limites BASSES acceptees par PositiveOrZero (>= 0)
+    $this->assertHasErrors($this->getEntity()->setBugBlocker(0), 0);
+    $this->assertHasErrors($this->getEntity()->setBugCritical(0), 0);
+    $this->assertHasErrors($this->getEntity()->setBugMajor(0), 0);
+    $this->assertHasErrors($this->getEntity()->setBugMinor(0), 0);
+    $this->assertHasErrors($this->getEntity()->setBugInfo(0), 0);
+    $this->assertHasErrors($this->getEntity()->setVulnerabilityBlocker(0), 0);
+    $this->assertHasErrors($this->getEntity()->setVulnerabilityCritical(0), 0);
+    $this->assertHasErrors($this->getEntity()->setVulnerabilityMajor(0), 0);
+    $this->assertHasErrors($this->getEntity()->setVulnerabilityMinor(0), 0);
+    $this->assertHasErrors($this->getEntity()->setVulnerabilityInfo(0), 0);
+    $this->assertHasErrors($this->getEntity()->setCodeSmellBlocker(0), 0);
+    $this->assertHasErrors($this->getEntity()->setCodeSmellCritical(0), 0);
+    $this->assertHasErrors($this->getEntity()->setCodeSmellMajor(0), 0);
+    $this->assertHasErrors($this->getEntity()->setCodeSmellMinor(0), 0);
+    $this->assertHasErrors($this->getEntity()->setCodeSmellInfo(0), 0);
+    }
+
+  /**
+   * v2.0.0 : valeurs negatives REJETEES par les contraintes PositiveOrZero / Positive / Range.
+   */
+  public function testInvalidIntegerEntity(): void
+  {
+    $this->assertHasErrors($this->getEntity()->setBugBlocker(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setBugCritical(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setBugMajor(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setBugMinor(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setBugInfo(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setVulnerabilityBlocker(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setVulnerabilityCritical(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setVulnerabilityMajor(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setVulnerabilityMinor(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setVulnerabilityInfo(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setCodeSmellBlocker(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setCodeSmellCritical(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setCodeSmellMajor(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setCodeSmellMinor(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setCodeSmellInfo(-1), 1);
+    }
 
   public function testCountAttribut(): void
   {

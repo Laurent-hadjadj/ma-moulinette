@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -18,6 +18,9 @@ use App\Entity\ActuatorInfo;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\ConstraintViolation;
 
+/**
+ * [Description ActuatorValidatorTest]
+ */
 class ActuatorValidatorTest extends KernelTestCase
 {
   private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
@@ -96,6 +99,6 @@ private function getEntity(): Actuator
       $entity = $this->getEntity();
       $reflectionClass = new \ReflectionClass($entity);
       $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 10);
+      $this->assertEquals($nbAttributs, 11);
   }
 }

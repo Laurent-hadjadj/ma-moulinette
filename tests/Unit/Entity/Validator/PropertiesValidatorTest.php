@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -70,11 +70,23 @@ class PropertiesValidatorTest extends KernelTestCase
 
   public function testValidIntegerEntity(): void
   {
-    $this->assertHasErrors($this->getEntity()->setprojetBd(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setProjetSonar(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setprofilBd(-1), 0);
-    $this->assertHasErrors($this->getEntity()->setProfilSonar(-1), 0);
-  }
+    // v2.0.0 : valeurs limites BASSES acceptees par PositiveOrZero (>= 0)
+    $this->assertHasErrors($this->getEntity()->setprojetBd(0), 0);
+    $this->assertHasErrors($this->getEntity()->setProjetSonar(0), 0);
+    $this->assertHasErrors($this->getEntity()->setprofilBd(0), 0);
+    $this->assertHasErrors($this->getEntity()->setProfilSonar(0), 0);
+    }
+
+  /**
+   * v2.0.0 : valeurs negatives REJETEES par les contraintes PositiveOrZero / Positive / Range.
+   */
+  public function testInvalidIntegerEntity(): void
+  {
+    $this->assertHasErrors($this->getEntity()->setprojetBd(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setProjetSonar(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setprofilBd(-1), 1);
+    $this->assertHasErrors($this->getEntity()->setProfilSonar(-1), 1);
+    }
 
   public function testCountAttribut(): void
   {

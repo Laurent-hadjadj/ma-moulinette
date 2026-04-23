@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -88,47 +88,92 @@ class OwaspValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setUtilisateurCollecte(''), 0);
   }
 
+  // v2.0.0 : `effortTotal`, `aN`, `aNBlocker`, `aNCritical`, `aNMajor`, `aNMinor`, `aNInfo`
+  // sont contraints par Assert\PositiveOrZero (>= 0) — 0 valide, -1 rejeté.
+
   public function testValidIntegerAEntity(): void
   {
-    $this->assertHasErrors($this->getEntity()->setEffortTotal(-1), 0);
+    $this->assertHasErrors($this->getEntity()->setEffortTotal(0), 0);
     for ($i = 0; $i < 10; $i++) {
-      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1)}(-1), 0);
+      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1)}(0), 0);
     }
+  }
 
+  public function testInvalidIntegerAEntity(): void
+  {
+    $this->assertHasErrors($this->getEntity()->setEffortTotal(-1), 1);
+    for ($i = 0; $i < 10; $i++) {
+      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1)}(-1), 1);
+    }
   }
 
   public function testValidIntegerABlockerEntity(): void
   {
     for ($i = 0; $i < 10; $i++) {
-      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Blocker"}(-1), 0);
+      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Blocker"}(0), 0);
+    }
+  }
+
+  public function testInvalidIntegerABlockerEntity(): void
+  {
+    for ($i = 0; $i < 10; $i++) {
+      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Blocker"}(-1), 1);
     }
   }
 
   public function testValidIntegerACriticalEntity(): void
   {
     for ($i = 0; $i < 10; $i++) {
-      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Critical"}(-1), 0);
+      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Critical"}(0), 0);
+    }
+  }
+
+  public function testInvalidIntegerACriticalEntity(): void
+  {
+    for ($i = 0; $i < 10; $i++) {
+      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Critical"}(-1), 1);
     }
   }
 
   public function testValidIntegerAMajorEntity(): void
   {
     for ($i = 0; $i < 10; $i++) {
-      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Major"}(-1), 0);
+      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Major"}(0), 0);
+    }
+  }
+
+  public function testInvalidIntegerAMajorEntity(): void
+  {
+    for ($i = 0; $i < 10; $i++) {
+      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Major"}(-1), 1);
     }
   }
 
   public function testValidIntegerAMinorEntity(): void
   {
     for ($i = 0; $i < 10; $i++) {
-      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Minor"}(-1), 0);
+      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Minor"}(0), 0);
+    }
+  }
+
+  public function testInvalidIntegerAMinorEntity(): void
+  {
+    for ($i = 0; $i < 10; $i++) {
+      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Minor"}(-1), 1);
     }
   }
 
   public function testValidIntegerAInfoEntity(): void
   {
     for ($i = 0; $i < 10; $i++) {
-      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Info"}(-1), 0);
+      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Info"}(0), 0);
+    }
+  }
+
+  public function testInvalidIntegerAInfoEntity(): void
+  {
+    for ($i = 0; $i < 10; $i++) {
+      $this->assertHasErrors($this->getEntity()->{"setA" . ($i + 1) . "Info"}(-1), 1);
     }
   }
 

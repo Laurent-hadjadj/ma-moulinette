@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -17,6 +17,9 @@ use App\Entity\Activity;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\ConstraintViolation;
 
+/**
+ * [Description ActivityValidatorTest]
+ */
 class ActivityValidatorTest extends KernelTestCase
 {
 
@@ -71,9 +74,22 @@ class ActivityValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setSubmitterLogin(''), 1);
   }
 
+  /**
+   * v2.0.0 : `executionTime` est contraint par Assert\PositiveOrZero (>= 0).
+   * Les valeurs valides : 0 et positives.
+   */
   public function testValidIntegerEntity(): void
   {
-    $this->assertHasErrors($this->getEntity()->setExecutionTime(-1), 0);
+    $this->assertHasErrors($this->getEntity()->setExecutionTime(0), 0);
+    $this->assertHasErrors($this->getEntity()->setExecutionTime(42), 0);
+  }
+
+  /**
+   * Les valeurs négatives sont rejetées par Assert\PositiveOrZero.
+   */
+  public function testInvalidIntegerEntity(): void
+  {
+    $this->assertHasErrors($this->getEntity()->setExecutionTime(-1), 1);
   }
 
   public function testCountAttribut(): void
@@ -81,6 +97,8 @@ class ActivityValidatorTest extends KernelTestCase
       $entity = $this->getEntity();
       $reflectionClass = new \ReflectionClass($entity);
       $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 10);
+      // 10 attributs : id, mavenKey, projectName, analyseId, status, submitterLogin,
+      //                submittedAt, startedAt, executedAt, executionTime
+      $this->assertEquals(10, $nbAttributs);
   }
 }
