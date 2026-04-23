@@ -1,0 +1,16 @@
+---
+# Overrides pour l'environnement de test uniquement.
+# Charge automatiquement apres services.yaml quand APP_ENV=test.
+services:
+    # Enregistre le double de test explicitement, avec autowire pour hériter
+    # des arguments du constructeur de ClientService (HttpClient, ParameterBag, Logger).
+    App\Tests\Support\SonarFixtureClientService:
+        autowire: true
+        public: true
+
+    # Alias : toute injection de ClientService utilise en fait le double
+    # en env test. Ecrase l'auto-registration issue du glob `App\:` de services.yaml.
+    App\Service\ClientService:
+        alias: App\Tests\Support\SonarFixtureClientService
+        public: true
+...
