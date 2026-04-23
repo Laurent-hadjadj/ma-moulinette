@@ -14,491 +14,227 @@
 namespace App\Tests\Unit\Entity\Case;
 
 use App\Entity\Historique;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
  * [Description HistoriqueCaseTest]
+ *
+ * v2.0.0 : test compact via dataProvider couvrant les 133 attributs de l'entite Historique.
  */
 class HistoriqueCaseTest extends TestCase
 {
-    private $historique;
-    private static $mel = 'fr.ma-petite-entreprise:ma-moulinette';
-    private static $version = '1.2.0-RELEASE';
-    private static $dateVersion = '2024-07-12 16:34:46';
-    private static $courriel = 'admin@ma-moulinette.fr';
-
-    private function getEntity(): Historique
+    /**
+     * Liste des [setter/getter suffix, valeur a injecter] pour 131 attributs simples.
+     * `initial` (bool) et `dateEnregistrement` (DateTimeImmutable) sont testes a part.
+     */
+    public static function attributesProvider(): iterable
     {
-        return (new historique())
-        ->setMavenKey(static::$mel)
-        ->setAnalyseKey('AZCc05qWgfifxdiJPzns')
-        ->setVersion(static::$version)
-        ->setDateVersion(static::$dateVersion)
-        ->setNomProjet('ma-moulinette')
-        ->setVersionRelease('0')
-        ->setVersionSnapshot('0')
-        ->setVersionAutre('1')
-        ->setSuppressWarning('8')
-        ->setNoSonar('0')
-        ->setTodo('17')
-        ->setLoggerInfo('14')
-        ->setLoggerWarn('0')
-        ->setLoggerError('15')
-        ->setLoggerDebug('8')
-        ->setNombreLigne('17049')
-        ->setNombreLigneCode('8928')
-        ->setClasses('123')
-        ->setFunctions('457')
-        ->setFunctions('226')
-        ->setCoverage('50.1')
-        ->setDuplicatedLinesDensity('0.2')
-        ->setSqaleDebtRatio('1')
-        ->setTests('55')
-        ->setViolations('295')
-        ->setDette('3054')
-        ->setNombreBug('88')
-        ->setNombreVulnerability('9')
-        ->setNombreCodeSmell('198')
-        ->setBugBlocker('7')
-        ->setBugCritical('0')
-        ->setBugMajor('44')
-        ->setBugMinor('0')
-        ->setBugInfo('37')
-        ->setVulnerabilityBlocker('0')
-        ->setVulnerabilityCritical('9')
-        ->setVulnerabilityMajor('0')
-        ->setVulnerabilityMinor('0')
-        ->setVulnerabilityInfo('0')
-        ->setCodeSmellBlocker('0')
-        ->setCodeSmellCritical('4')
-        ->setCodeSmellMajor('109')
-        ->setCodeSmellMinor('13')
-        ->setCodeSmellInfo('72')
-        ->setFrontend('21')
-        ->setBackend('136')
-        ->setAutre('0')
-        ->setInconnue('10')
-        ->setNombreAnomalieBloquant('7')
-        ->setNombreAnomalieCritique('13')
-        ->setNombreAnomalieMajeur('153')
-        ->setNombreAnomalieMineur('13')
-        ->setNombreAnomalieInfo('109')
-        ->setNoteReliability('E')
-        ->setNoteSecurity('D')
-        ->setNoteSqale('A')
-        ->setNoteHotspot('A')
-        ->setNombreHotspot('0')
-        ->setHotspotHigh('0')
-        ->setHotspotMedium('0')
-        ->setHotspotLow('0')
-        ->setInitial('false')
-        ->setActuatorInfo([])
-        ->setModeCollecte('COLLECTE')
-        ->setUtilisateurCollecte(static::$courriel)
-        ->setDateEnregistrement(new \DateTimeImmutable('2024-06-28 17:55:45+02'));
+        // Cle composite + identifiants
+        yield 'mavenKey' => ['MavenKey', 'fr.ma-petite-entreprise:ma-moulinette'];
+        yield 'version' => ['Version', '1.2.0-RELEASE'];
+        yield 'dateVersion' => ['DateVersion', '2024-07-12 16:34:46'];
+        yield 'nomProjet' => ['NomProjet', 'ma-moulinette'];
+        yield 'analyseKey' => ['AnalyseKey', 'AZCc05qWgfifxdiJPzns'];
+
+        // Versions
+        yield 'versionRelease' => ['VersionRelease', 0];
+        yield 'versionSnapshot' => ['VersionSnapshot', 0];
+        yield 'versionAutre' => ['VersionAutre', 1];
+
+        // Repartition modules
+        yield 'repartitionFrontend' => ['RepartitionFrontend', 21];
+        yield 'repartitionBackend' => ['RepartitionBackend', 136];
+        yield 'repartitionAutre' => ['RepartitionAutre', 0];
+        yield 'repartitionInconnu' => ['RepartitionInconnu', 10];
+
+        // NoSonar par langage
+        yield 'javaNoSonar' => ['JavaNoSonar', 0];
+        yield 'pythonNoSonar' => ['PythonNoSonar', 0];
+        yield 'phpNoSonar' => ['PhpNoSonar', 0];
+
+        // Avertissements
+        yield 'suppressWarning' => ['SuppressWarning', 8];
+        yield 'noPmd' => ['NoPmd', 0];
+        yield 'checkStyle' => ['CheckStyle', 0];
+
+        // Todo par langage
+        yield 'javaTodo' => ['JavaTodo', 17];
+        yield 'pythonTodo' => ['PythonTodo', 0];
+        yield 'phpTodo' => ['PhpTodo', 0];
+        yield 'xmlTodo' => ['XmlTodo', 0];
+        yield 'javascriptTodo' => ['JavascriptTodo', 0];
+        yield 'typescriptTodo' => ['TypescriptTodo', 0];
+        yield 'rubyTodo' => ['RubyTodo', 0];
+
+        // Quality gate
+        yield 'alertStatus' => ['AlertStatus', 'OK'];
+
+        // Statistiques de code
+        yield 'lines' => ['Lines', 17049];
+        yield 'ncloc' => ['Ncloc', 8928];
+        yield 'files' => ['Files', 226];
+        yield 'classes' => ['Classes', 123];
+        yield 'functions' => ['Functions', 457];
+        yield 'statements' => ['Statements', 1024];
+        yield 'commentLines' => ['CommentLines', 200];
+        yield 'commentLinesDensity' => ['CommentLinesDensity', 12.5];
+        yield 'commentLinesRating' => ['CommentLinesRating', 'A'];
+
+        // Coverage
+        yield 'coverage' => ['Coverage', 50.1];
+        yield 'branchCoverage' => ['BranchCoverage', 40.2];
+        yield 'lineCoverage' => ['LineCoverage', 5];
+        yield 'linesToCover' => ['LinesToCover', 100];
+        yield 'conditionsToCover' => ['ConditionsToCover', 50];
+        yield 'uncoveredConditions' => ['UncoveredConditions', 12];
+
+        // Tests
+        yield 'tests' => ['Tests', 55];
+        yield 'testExecutionTime' => ['TestExecutionTime', 4200];
+        yield 'testErrors' => ['TestErrors', 0];
+        yield 'testFailures' => ['TestFailures', 1];
+        yield 'skippedTests' => ['SkippedTests', 2];
+        yield 'testSuccessDensity' => ['TestSuccessDensity', 99.5];
+
+        // Duplication
+        yield 'duplicatedFiles' => ['DuplicatedFiles', 3];
+        yield 'duplicatedBlocks' => ['DuplicatedBlocks', 5];
+        yield 'duplicatedLines' => ['DuplicatedLines', 250];
+        yield 'duplicatedLinesDensity' => ['DuplicatedLinesDensity', 0.2];
+
+        // Complexity
+        yield 'complexity' => ['Complexity', 1500];
+        yield 'complexityRating' => ['ComplexityRating', 'B'];
+        yield 'cognitiveComplexity' => ['CognitiveComplexity', 800];
+        yield 'cognitiveComplexityRating' => ['CognitiveComplexityRating', 'C'];
+        yield 'complexityRatio' => ['ComplexityRatio', 30.4];
+        yield 'cognitiveComplexityRatio' => ['CognitiveComplexityRatio', 22.7];
+
+        // Anomalies status
+        yield 'openIssues' => ['OpenIssues', 200];
+        yield 'reopenedIssues' => ['ReopenedIssues', 4];
+        yield 'confirmedIssues' => ['ConfirmedIssues', 6];
+        yield 'falsePositiveIssues' => ['FalsePositiveIssues', 2];
+        yield 'acceptedIssues' => ['AcceptedIssues', 1];
+        yield 'highImpactAcceptedIssues' => ['HighImpactAcceptedIssues', 0];
+
+        // Anomalies par severite
+        yield 'violations' => ['Violations', 295];
+        yield 'blockerViolations' => ['BlockerViolations', 7];
+        yield 'criticalViolations' => ['CriticalViolations', 13];
+        yield 'majorViolations' => ['MajorViolations', 153];
+        yield 'minorViolations' => ['MinorViolations', 13];
+        yield 'infoViolations' => ['InfoViolations', 109];
+        yield 'softwareQualityBlockerIssues' => ['SoftwareQualityBlockerIssues', 0];
+        yield 'softwareQualityHighIssues' => ['SoftwareQualityHighIssues', 5];
+        yield 'softwareQualityMediumIssues' => ['SoftwareQualityMediumIssues', 12];
+        yield 'softwareQualityLowIssues' => ['SoftwareQualityLowIssues', 8];
+        yield 'softwareQualityInfoIssues' => ['SoftwareQualityInfoIssues', 1];
+
+        // Code smells
+        yield 'codeSmells' => ['CodeSmells', 198];
+        yield 'codeSmellBlocker' => ['CodeSmellBlocker', 0];
+        yield 'codeSmellCritical' => ['CodeSmellCritical', 4];
+        yield 'codeSmellMajor' => ['CodeSmellMajor', 109];
+        yield 'codeSmellMinor' => ['CodeSmellMinor', 13];
+        yield 'codeSmellInfo' => ['CodeSmellInfo', 72];
+        yield 'maintainabilityIssues' => ['MaintainabilityIssues', 198];
+        yield 'sqaleIndex' => ['SqaleIndex', 3054];
+        yield 'sqaleDebtRatio' => ['SqaleDebtRatio', 1.0];
+        yield 'sqaleRating' => ['SqaleRating', 'A'];
+        yield 'effortToReachMaintainabilityRatingA' => ['EffortToReachMaintainabilityRatingA', 0];
+        yield 'softwareQualityMaintainabilityIssues' => ['SoftwareQualityMaintainabilityIssues', '198'];
+        yield 'softwareQualityMaintainabilityRating' => ['SoftwareQualityMaintainabilityRating', 'A'];
+        yield 'softwareQualityMaintainabilityDebtRatio' => ['SoftwareQualityMaintainabilityDebtRatio', 1.0];
+        yield 'softwareQualityMaintainabilityRemediationEffort' => ['SoftwareQualityMaintainabilityRemediationEffort', 3054];
+        yield 'effortToReachSoftwareQualityMaintainabilityRatingA' => ['EffortToReachSoftwareQualityMaintainabilityRatingA', 0];
+
+        // Bug
+        yield 'bugs' => ['Bugs', 88];
+        yield 'bugBlocker' => ['BugBlocker', 7];
+        yield 'bugCritical' => ['BugCritical', 0];
+        yield 'bugMajor' => ['BugMajor', 44];
+        yield 'bugMinor' => ['BugMinor', 0];
+        yield 'bugInfo' => ['BugInfo', 37];
+        yield 'reliabilityIssues' => ['ReliabilityIssues', '88'];
+        yield 'reliabilityRating' => ['ReliabilityRating', 'E'];
+        yield 'reliabilityRemediationEffort' => ['ReliabilityRemediationEffort', 1500];
+        yield 'softwareQualityReliabilityIssues' => ['SoftwareQualityReliabilityIssues', '88'];
+        yield 'softwareQualityReliabilityRating' => ['SoftwareQualityReliabilityRating', 'E'];
+        yield 'softwareQualityReliabilityRemediationEffort' => ['SoftwareQualityReliabilityRemediationEffort', 1500];
+
+        // Vulnerabilities
+        yield 'vulnerabilities' => ['Vulnerabilities', 9];
+        yield 'vulnerabilityBlocker' => ['VulnerabilityBlocker', 0];
+        yield 'vulnerabilityCritical' => ['VulnerabilityCritical', 9];
+        yield 'vulnerabilityMajor' => ['VulnerabilityMajor', 0];
+        yield 'vulnerabilityMinor' => ['VulnerabilityMinor', 0];
+        yield 'vulnerabilityInfo' => ['VulnerabilityInfo', 0];
+        yield 'securityIssues' => ['SecurityIssues', '9'];
+        yield 'securityRating' => ['SecurityRating', 'D'];
+        yield 'securityRemediationEffort' => ['SecurityRemediationEffort', 540];
+        yield 'softwareQualitySecurityIssues' => ['SoftwareQualitySecurityIssues', '9'];
+        yield 'softwareQualitySecurityRating' => ['SoftwareQualitySecurityRating', 'D'];
+        yield 'softwareQualitySecurityRemediationEffort' => ['SoftwareQualitySecurityRemediationEffort', 540];
+
+        // Menaces potentielles
+        yield 'securityHotspot' => ['SecurityHotspot', 0];
+        yield 'securityReviewRating' => ['SecurityReviewRating', 'A'];
+        yield 'securityHotspotsReviewed' => ['SecurityHotspotsReviewed', 75.5];
+        yield 'menacePotentielleToReviewHigh' => ['MenacePotentielleToReviewHigh', 0];
+        yield 'menacePotentielleToReviewMedium' => ['MenacePotentielleToReviewMedium', 0];
+        yield 'menacePotentielleToReviewLow' => ['MenacePotentielleToReviewLow', 0];
+        yield 'menacePotentielleReviewedHigh' => ['MenacePotentielleReviewedHigh', 0];
+        yield 'menacePotentielleReviewedMedium' => ['MenacePotentielleReviewedMedium', 0];
+        yield 'menacePotentielleReviewedLow' => ['MenacePotentielleReviewedLow', 0];
+        yield 'menacePotentielleTotale' => ['MenacePotentielleTotale', 0];
+
+        // Actuator info (JSON)
+        yield 'actuatorInfo' => ['ActuatorInfo', ['build' => '1.2.3', 'env' => 'prod']];
+
+        // Logger Java
+        yield 'loggerInfo' => ['LoggerInfo', 14];
+        yield 'loggerWarn' => ['LoggerWarn', 0];
+        yield 'loggerError' => ['LoggerError', 15];
+        yield 'loggerDebug' => ['LoggerDebug', 8];
+
+        // Mode collecte / utilisateur
+        yield 'modeCollecte' => ['ModeCollecte', 'COLLECTE'];
+        yield 'utilisateurCollecte' => ['UtilisateurCollecte', 'admin@ma-moulinette.fr'];
     }
 
-    protected function setUp(): void
+    #[DataProvider('attributesProvider')]
+    public function testGetterSetter(string $suffix, mixed $value): void
     {
-        parent::setUp();
-        $this->historique = $this->getEntity();
-    }
-
-    public function testSettingAndGettingMavenKey(): void
-    {
-        $this->historique->setMavenKey(static::$mel);
-        $this->assertEquals(static::$mel, $this->historique->getMavenKey());
-    }
-
-    public function testSettingAndGettingAnalyseKey(): void
-    {
-        $this->historique->setAnalyseKey('AZCc05qWgfifxdiJPzns');
-        $this->assertEquals('AZCc05qWgfifxdiJPzns', $this->historique->getAnalyseKey());
-    }
-
-    public function testSettingAndGettingVersion(): void
-    {
-        $this->historique->setVersion(static::$version);
-        $this->assertEquals(static::$version, $this->historique->getVersion());
-    }
-
-    public function testSettingAndGettingDateVersion(): void
-    {
-        $this->historique->setDateVersion(static::$dateVersion);
-        $this->assertEquals(static::$dateVersion, $this->historique->getDateVersion());
-    }
-
-    public function testSettingAndGettingNomProjet(): void
-    {
-        $this->historique->setNomProjet('ma-moulinette');
-        $this->assertEquals('ma-moulinette', $this->historique->getNomProjet());
-    }
-
-    public function testSettingAndGettingVersionRelease(): void
-    {
-        $this->historique->setVersionRelease('0');
-        $this->assertEquals('0', $this->historique->getVersionRelease());
-    }
-
-    public function testSettingAndGettingVersionSnapshot(): void
-    {
-        $this->historique->setVersionSnapshot('0');
-        $this->assertEquals('0', $this->historique->getVersionSnapshot());
-    }
-
-    public function testSettingAndGettingVersionAutre(): void
-    {
-        $this->historique->setVersionAutre('1');
-        $this->assertEquals('1', $this->historique->getVersionAutre());
-    }
-
-    public function testSettingAndGettingSuppressWarning(): void
-    {
-        $this->historique->setSuppressWarning('8');
-        $this->assertEquals('8', $this->historique->getSuppressWarning());
-    }
-
-    public function testSettingAndGettingNoSonar(): void
-    {
-        $this->historique->setNoSonar('0');
-        $this->assertEquals('0', $this->historique->getNoSonar());
-    }
-
-    public function testSettingAndGettingTodo(): void
-    {
-        $this->historique->setTodo('17');
-        $this->assertEquals('17', $this->historique->getTodo());
-    }
-
-    public function testSettingAndGettingLoggerInfo(): void
-    {
-        $this->historique->setLoggerInfo('14');
-        $this->assertEquals('14', $this->historique->getLoggerInfo());
-    }
-
-    public function testSettingAndGettingLoggerWarn(): void
-    {
-        $this->historique->setLoggerWarn('0');
-        $this->assertEquals('0', $this->historique->getLoggerWarn());
-    }
-
-    public function testSettingAndGettingLoggerError(): void
-    {
-        $this->historique->setLoggerError('15');
-        $this->assertEquals('15', $this->historique->getLoggerError());
-    }
-
-    public function testSettingAndGettingLoggerDebug(): void
-    {
-        $this->historique->setLoggerDebug('8');
-        $this->assertEquals('8', $this->historique->getLoggerDebug());
-    }
-
-    public function testSettingAndGettingNombreLigne(): void
-    {
-        $this->historique->setNombreLigne('17049');
-        $this->assertEquals('17049', $this->historique->getNombreLigne());
-    }
-
-    public function testSettingAndGettingNombreLigneCode(): void
-    {
-        $this->historique->setNombreLigneCode('8928');
-        $this->assertEquals('8928', $this->historique->getNombreLigneCode());
-    }
-
-    public function testSettingAndGettingFiles(): void
-    {
-        $this->historique->setFiles('226');
-        $this->assertEquals('226', $this->historique->getFiles());
-    }
-
-    public function testSettingAndGettingClasses(): void
-    {
-        $this->historique->setClasses('123');
-        $this->assertEquals('123', $this->historique->getClasses());
-    }
-
-    public function testSettingAndGettingFunctions(): void
-    {
-        $this->historique->setFunctions('457');
-        $this->assertEquals('457', $this->historique->getFunctions());
-    }
-
-    public function testSettingAndGettingCoverage(): void
-    {
-        $this->historique->setCoverage('50.1');
-        $this->assertEquals('50.1', $this->historique->getCoverage());
-    }
-
-    public function testSettingAndGettingDuplicatedLinesDensity(): void
-    {
-        $this->historique->setDuplicatedLinesDensity('0.2');
-        $this->assertEquals('0.2', $this->historique->getDuplicatedLinesDensity());
-    }
-
-    public function testSettingAndGettingSqaleDebtRatio(): void
-    {
-        $this->historique->setSqaleDebtRatio('1');
-        $this->assertEquals('1', $this->historique->getSqaleDebtRatio());
-    }
-
-    public function testSettingAndGettingTests(): void
-    {
-        $this->historique->setTests('55');
-        $this->assertEquals('55', $this->historique->getTests());
-    }
-
-    public function testSettingAndGettingViolations(): void
-    {
-        $this->historique->setViolations('295');
-        $this->assertEquals('295', $this->historique->getViolations());
-    }
-
-    public function testSettingAndGettingDette(): void
-    {
-        $this->historique->setDette('3054');
-        $this->assertEquals('3054', $this->historique->getDette());
-    }
-
-    public function testSettingAndGettingNombreBug(): void
-    {
-        $this->historique->setNombreBug('88');
-        $this->assertEquals('88', $this->historique->getNombreBug());
-    }
-
-    public function testSettingAndGettingNombreVulnerability(): void
-    {
-        $this->historique->setNombreVulnerability('9');
-        $this->assertEquals('9', $this->historique->getNombreVulnerability());
-    }
-
-    public function testSettingAndGettingNombreCodeSmell(): void
-    {
-        $this->historique->setNombreCodeSmell('198');
-        $this->assertEquals('198', $this->historique->getNombreCodeSmell());
-    }
-
-    public function testSettingAndGettingBugBlocker(): void
-    {
-        $this->historique->setBugBlocker('7');
-        $this->assertEquals('7', $this->historique->getBugBlocker());
-    }
-
-    public function testSettingAndGettingBugCritical(): void
-    {
-        $this->historique->setBugCritical('0');
-        $this->assertEquals('0', $this->historique->getBugCritical());
-    }
-
-    public function testSettingAndGettingBugMajor(): void
-    {
-        $this->historique->setBugMajor('44');
-        $this->assertEquals('44', $this->historique->getBugMajor());
-    }
-
-    public function testSettingAndGettingBugMinor(): void
-    {
-        $this->historique->setBugMinor('0');
-        $this->assertEquals('0', $this->historique->getBugMinor());
-    }
-
-    public function testSettingAndGettingBugInfo(): void
-    {
-        $this->historique->setBugInfo('37');
-        $this->assertEquals('37', $this->historique->getBugInfo());
-    }
-
-    public function testSettingAndGettingVulnerabilityBlocker(): void
-    {
-        $this->historique->setVulnerabilityBlocker('0');
-        $this->assertEquals('0', $this->historique->getVulnerabilityBlocker());
-    }
-
-    public function testSettingAndGettingVulnerabilityCritical(): void
-    {
-        $this->historique->setVulnerabilityCritical('9');
-        $this->assertEquals('9', $this->historique->getVulnerabilityCritical());
-    }
-
-    public function testSettingAndGettingVulnerabilityMajor(): void
-    {
-        $this->historique->setVulnerabilityMajor('0');
-        $this->assertEquals('0', $this->historique->getVulnerabilityMajor());
-    }
-
-    public function testSettingAndGettingVulnerabilityMinor(): void
-    {
-        $this->historique->setVulnerabilityMinor('0');
-        $this->assertEquals('0', $this->historique->getVulnerabilityMinor());
-    }
-
-    public function testSettingAndGettingVulnerabilityInfo(): void
-    {
-        $this->historique->setVulnerabilityInfo('0');
-        $this->assertEquals('0', $this->historique->getVulnerabilityInfo());
-    }
-
-    public function testSettingAndGettingCodeSmellBlocker(): void
-    {
-        $this->historique->setCodeSmellBlocker('0');
-        $this->assertEquals('0', $this->historique->getCodeSmellBlocker());
-    }
-
-    public function testSettingAndGettingCodeSmellCritical(): void
-    {
-        $this->historique->setCodeSmellCritical('4');
-        $this->assertEquals('4', $this->historique->getCodeSmellCritical());
-    }
-
-    public function testSettingAndGettingCodeSmellMajor(): void
-    {
-        $this->historique->setCodeSmellMajor('109');
-        $this->assertEquals('109', $this->historique->getCodeSmellMajor());
-    }
-
-    public function testSettingAndGettingCodeSmellMinor(): void
-    {
-        $this->historique->setCodeSmellMinor('13');
-        $this->assertEquals('13', $this->historique->getCodeSmellMinor());
-    }
-
-    public function testSettingAndGettingCodeSmellInfo(): void
-    {
-        $this->historique->setCodeSmellInfo('72');
-        $this->assertEquals('72', $this->historique->getCodeSmellInfo());
-    }
-
-    public function testSettingAndGettingFrontend(): void
-    {
-        $this->historique->setFrontend('21');
-        $this->assertEquals('21', $this->historique->getFrontend());
-    }
-
-    public function testSettingAndGettingBackend(): void
-    {
-        $this->historique->setBackend('136');
-        $this->assertEquals('136', $this->historique->getBackend());
-    }
-
-    public function testSettingAndGettingAutre(): void
-    {
-        $this->historique->setAutre('0');
-        $this->assertEquals('0', $this->historique->getAutre());
-    }
-
-    public function testSettingAndGettingInconnue(): void
-    {
-        $this->historique->setInconnue('10');
-        $this->assertEquals('10', $this->historique->getInconnue());
-    }
-
-    public function testSettingAndGettingNombreAnomalieBloquant(): void
-    {
-        $this->historique->setNombreAnomalieBloquant('7');
-        $this->assertEquals('7', $this->historique->getNombreAnomalieBloquant());
-    }
-
-    public function testSettingAndGettingNombreAnomalieCritique(): void
-    {
-        $this->historique->setNombreAnomalieCritique('13');
-        $this->assertEquals('13', $this->historique->getNombreAnomalieCritique());
-    }
-
-    public function testSettingAndGettingNombreAnomalieMajeur(): void
-    {
-        $this->historique->setNombreAnomalieMajeur('153');
-        $this->assertEquals('153', $this->historique->getNombreAnomalieMajeur());
-    }
-
-    public function testSettingAndGettingNombreAnomalieMineur(): void
-    {
-        $this->historique->setNombreAnomalieMineur('13');
-        $this->assertEquals('13', $this->historique->getNombreAnomalieMineur());
-    }
-
-    public function testSettingAndGettingNombreAnomalieInfo(): void
-    {
-        $this->historique->setNombreAnomalieInfo('109');
-        $this->assertEquals('109', $this->historique->getNombreAnomalieInfo());
-    }
-
-    public function testSettingAndGettingNoteReliability(): void
-    {
-        $this->historique->setNoteReliability('E');
-        $this->assertEquals('E', $this->historique->getNoteReliability());
-    }
-
-    public function testSettingAndGettingNoteSecurity(): void
-    {
-        $this->historique->setNoteSecurity('D');
-        $this->assertEquals('D', $this->historique->getNoteSecurity());
-    }
-
-    public function testSettingAndGettingNoteSqale(): void
-    {
-        $this->historique->setNoteSqale('A');
-        $this->assertEquals('A', $this->historique->getNoteSqale());
-    }
-
-    public function testSettingAndGettingNoteHotspot(): void
-    {
-        $this->historique->setNoteHotspot('A');
-        $this->assertEquals('A', $this->historique->getNoteHotspot());
-    }
-
-    public function testSettingAndGettingNombreHotspot(): void
-    {
-        $this->historique->setNombreHotspot('0');
-        $this->assertEquals('0', $this->historique->getNombreHotspot());
-    }
-
-    public function testSettingAndGettingHotspotHigh(): void
-    {
-        $this->historique->setHotspotHigh('0');
-        $this->assertEquals('0', $this->historique->getHotspotHigh());
-    }
-
-    public function testSettingAndGettingHotspotMedium(): void
-    {
-        $this->historique->setHotspotMedium('0');
-        $this->assertEquals('0', $this->historique->getHotspotMedium());
-    }
-
-    public function testSettingAndGettingHotspotLow(): void
-    {
-        $this->historique->setHotspotLow('0');
-        $this->assertEquals('0', $this->historique->getHotspotLow());
+        $entity = new Historique();
+        $entity->{'set' . $suffix}($value);
+        $this->assertSame($value, $entity->{'get' . $suffix}());
     }
 
     public function testSettingAndGettingInitial(): void
     {
-        $this->historique->setInitial('false');
-        $this->assertEquals('false', $this->historique->isInitial());
-    }
-
-    public function testSettingAndGettingActuatorInfo(): void
-    {
-        $this->historique->setActuatorInfo([]);
-        $this->assertEquals([], $this->historique->getActuatorInfo());
-    }
-
-    public function testSettingAndGettingModeCollecte(): void
-    {
-        $this->historique->setModeCollecte('COLLECTE');
-        $this->assertEquals('COLLECTE', $this->historique->getModeCollecte());
-    }
-
-    public function testSettingAndGettingUtilisateurCollecte(): void
-    {
-        $this->historique->setUtilisateurCollecte(static::$courriel);
-        $this->assertEquals(static::$courriel, $this->historique->getUtilisateurCollecte());
+        $entity = new Historique();
+        $entity->setInitial(true);
+        $this->assertTrue($entity->isInitial());
+        $entity->setInitial(false);
+        $this->assertFalse($entity->isInitial());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate = new \DateTimeImmutable('2024-07-12 16:34:46+2000');
-        $this->historique->setDateEnregistrement($newDate);
-        $this->assertEquals($newDate, $this->historique->getDateEnregistrement());
+        $entity = new Historique();
+        $date = new \DateTimeImmutable('2024-06-28 17:55:45+02:00');
+        $entity->setDateEnregistrement($date);
+        $this->assertEquals($date, $entity->getDateEnregistrement());
     }
 
+    /**
+     * v2.0.0 : l'entite Historique comporte 133 attributs.
+     */
+    public function testCountAttribut(): void
+    {
+        $reflectionClass = new \ReflectionClass(new Historique());
+        $this->assertEquals(133, count($reflectionClass->getProperties()));
+    }
 }

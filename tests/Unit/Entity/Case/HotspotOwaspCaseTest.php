@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -153,4 +153,9 @@ class HotspotOwaspCaseTest extends TestCase
         $this->assertEquals($newDate, $this->hotspotOwasp->getDateEnregistrement());
     }
 
+    public function testCountAttribut(): void
+    {
+        $reflectionClass = new \ReflectionClass(new \App\Entity\HotspotOwasp());
+        $this->assertEquals(15, count($reflectionClass->getProperties()));
+    }
 }

@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -14,162 +14,96 @@
 namespace App\Tests\Unit\Entity\Case;
 
 use App\Entity\Owasp;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
  * [Description OwaspCaseTest]
+ *
+ * v2.0.0 : test compact via dataProvider couvrant les 69 attributs de l'entite Owasp.
  */
 class OwaspCaseTest extends TestCase
 {
-    private $owasp;
-
-    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-    private static $referentialOwasp = 2017;
-    private static $version = '1.2.0-RELEASE';
-    private static $dateVersion = '2024-07-10 15:26:07+02';
-    private static $effortTotal = 0;
-    private static $a = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static $aBlocker = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static $aCritical = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static $aMajor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static $aInfo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static $aMinor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static $modeCollecte = 'TRAITEMENT MANUEL';
-    private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
-    private static $dateEnregistrement = '2024-03-26 14:46:38+02';
-
-    private function getEntity(): Owasp
+    /**
+     * Liste des [setter/getter suffix, valeur a injecter] pour 65 attributs simples.
+     * id, referentialOwasp, dateVersion, dateEnregistrement testes a part.
+     */
+    public static function attributesProvider(): iterable
     {
-        $owasp = new Owasp();
-            $owasp->setMavenKey(static::$mavenKey);
-            $owasp->setReferentialOwasp(static::$referentialOwasp);
-            $owasp->setVersion(static::$version);
-            $owasp->setDateVersion(new \DateTimeImmutable(static::$dateVersion));
-            $owasp->setEffortTotal(static::$effortTotal);
+        // Identification
+        yield 'mavenKey' => ['MavenKey', 'fr.ma-petite-entreprise:ma-moulinette'];
+        yield 'version' => ['Version', '1.2.0-RELEASE'];
 
-        for ($i = 0; $i < 10; $i++) {
-            $owasp->{"setA" . ($i + 1)}(static::$a[$i]);
-            $owasp->{"setA" . ($i + 1) . "Blocker"}(static::$aBlocker[$i]);
-            $owasp->{"setA" . ($i + 1) . "Critical"}(static::$aCritical[$i]);
-            $owasp->{"setA" . ($i + 1) . "Major"}(static::$aMajor[$i]);
-            $owasp->{"setA" . ($i + 1) . "Info"}(static::$aInfo[$i]);
-            $owasp->{"setA" . ($i + 1) . "Minor"}(static::$aMinor[$i]);
+        // Effort global
+        yield 'effortTotal' => ['EffortTotal', 1500];
+
+        // Totaux par categorie A1..A10
+        for ($i = 1; $i <= 10; $i++) {
+            yield "a{$i}" => ["A{$i}", $i * 10];
         }
 
-            $owasp->setModeCollecte(static::$modeCollecte);
-            $owasp->setUtilisateurCollecte(static::$utilisateurCollecte);
-            $owasp->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
-        return $owasp;
+        // Detail par severite pour chaque A1..A10
+        $severities = ['Blocker', 'Critical', 'Major', 'Info', 'Minor'];
+        for ($i = 1; $i <= 10; $i++) {
+            foreach ($severities as $idx => $sev) {
+                yield "a{$i}{$sev}" => ["A{$i}{$sev}", $i + $idx];
+            }
+        }
+
+        // Mode de collecte / utilisateur
+        yield 'modeCollecte' => ['ModeCollecte', 'COLLECTE'];
+        yield 'utilisateurCollecte' => ['UtilisateurCollecte', 'admin@ma-moulinette.fr'];
     }
 
-    protected function setUp(): void
+    #[DataProvider('attributesProvider')]
+    public function testGetterSetter(string $suffix, mixed $value): void
     {
-        parent::setUp();
-        $this->owasp = $this->getEntity();
+        $entity = new Owasp();
+        $entity->{'set' . $suffix}($value);
+        $this->assertSame($value, $entity->{'get' . $suffix}());
     }
 
     public function testSettingAndGettingId(): void
     {
-        $this->owasp->setId(1);
-        $this->assertEquals(1, $this->owasp->getId());
+        $entity = new Owasp();
+        $entity->setId(42);
+        $this->assertSame(42, $entity->getId());
     }
 
-    public function testSettingAndGettingMavenKey(): void
-    {
-        $this->owasp->setMavenKey(static::$mavenKey);
-        $this->assertEquals(static::$mavenKey, $this->owasp->getMavenKey());
-    }
-
+    /**
+     * setReferentialOwasp accepte une string mais ecrit dans une propriete int.
+     * PHP coerce automatiquement la chaine numerique vers int (sans strict_types).
+     * Le getter renvoie la valeur convertie en string par PHP.
+     */
     public function testSettingAndGettingReferentialOwasp(): void
     {
-        $this->owasp->setReferentialOwasp(static::$referentialOwasp);
-        $this->assertEquals(static::$referentialOwasp, $this->owasp->getReferentialOwasp());
-    }
-
-    public function testSettingAndGettingVersion(): void
-    {
-        $this->owasp->setVersion(static::$version);
-        $this->assertEquals(static::$version, $this->owasp->getVersion());
+        $entity = new Owasp();
+        $entity->setReferentialOwasp('2021');
+        $this->assertEquals('2021', $entity->getReferentialOwasp());
     }
 
     public function testSettingAndGettingDateVersion(): void
     {
-        $newDate=new \DateTimeImmutable(static::$dateVersion);
-        $this->owasp->setDateVersion($newDate);
-        $this->assertEquals($newDate, $this->owasp->getDateVersion());
-    }
-
-
-    public function testSettingAndGettingEffortTotal(): void
-    {
-        $this->owasp->setEffortTotal(static::$effortTotal);
-        $this->assertEquals(static::$effortTotal, $this->owasp->getEffortTotal());
-    }
-
-    public function testSettingAndGettingA(): void
-    {
-        for ($i = 0; $i < 10; $i++) {
-            $this->owasp->{"setA" . ($i + 1)}(static::$a[$i]);
-            $this->assertEquals(static::$a[$i], $this->owasp->{"getA" . ($i + 1)}());
-        }
-    }
-
-    public function testSettingAndGettingABlocker(): void
-    {
-        for ($i = 0; $i < 10; $i++) {
-            $this->owasp->{"setA" . ($i + 1) . "Blocker"}(static::$aBlocker[$i]);
-            $this->assertEquals(static::$aBlocker[$i], $this->owasp->{"getA" . ($i + 1) . "Blocker"}());
-        }
-    }
-
-    public function testSettingAndGettingACritical(): void
-    {
-        for ($i = 0; $i < 10; $i++) {
-            $this->owasp->{"setA" . ($i + 1) . "Critical"}(static::$aCritical[$i]);
-            $this->assertEquals(static::$aCritical[$i], $this->owasp->{"getA" . ($i + 1) . "Critical"}());
-        }
-    }
-
-    public function testSettingAndGettingAMajor(): void
-    {
-        for ($i = 0; $i < 10; $i++) {
-            $this->owasp->{"setA" . ($i + 1) . "Major"}(static::$aMajor[$i]);
-            $this->assertEquals(static::$aMajor[$i], $this->owasp->{"getA" . ($i + 1) . "Major"}());
-        }
-    }
-
-    public function testSettingAndGettingAInfo(): void
-    {
-        for ($i = 0; $i < 10; $i++) {
-            $this->owasp->{"setA" . ($i + 1) . "Info"}(static::$aInfo[$i]);
-            $this->assertEquals(static::$aInfo[$i], $this->owasp->{"getA" . ($i + 1) . "Info"}());
-        }
-    }
-
-    public function testSettingAndGettingAMinor(): void
-    {
-        for ($i = 0; $i < 10; $i++) {
-            $this->owasp->{"setA" . ($i + 1) . "Minor"}(static::$aMinor[$i]);
-            $this->assertEquals(static::$aMinor[$i], $this->owasp->{"getA" . ($i + 1) . "Minor"}());
-        }
-    }
-
-    public function testSettingAndGettingModeCollecte(): void
-    {
-        $this->owasp->setModeCollecte(static::$modeCollecte);
-        $this->assertEquals(static::$modeCollecte, $this->owasp->getModeCollecte());
-    }
-    public function testSettingAndGettingUtilisateurCollecte(): void
-    {
-        $this->owasp->setUtilisateurCollecte(static::$utilisateurCollecte);
-        $this->assertEquals(static::$utilisateurCollecte, $this->owasp->getUtilisateurCollecte());
+        $entity = new Owasp();
+        $date = new \DateTimeImmutable('2024-07-12 16:34:46');
+        $entity->setDateVersion($date);
+        $this->assertEquals($date, $entity->getDateVersion());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(static::$dateEnregistrement);
-        $this->owasp->setDateEnregistrement($newDate);
-        $this->assertEquals($newDate, $this->owasp->getDateEnregistrement());
+        $entity = new Owasp();
+        $date = new \DateTimeImmutable('2024-06-28 17:55:45+02:00');
+        $entity->setDateEnregistrement($date);
+        $this->assertEquals($date, $entity->getDateEnregistrement());
     }
 
+    /**
+     * v2.0.0 : l'entite Owasp comporte 69 attributs.
+     */
+    public function testCountAttribut(): void
+    {
+        $reflectionClass = new \ReflectionClass(new Owasp());
+        $this->assertEquals(69, count($reflectionClass->getProperties()));
+    }
 }

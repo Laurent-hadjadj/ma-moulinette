@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -34,14 +34,14 @@ class LoggerCaseTest extends TestCase
 
     private function getEntity(): Logger
     {
-        return (new logger())
-        ->setMavenKey(static::$mavenKey)
-        ->setLoggerInfo(static::$loggerInfo)
-        ->setLoggerWarn(static::$loggerWarn)
-        ->setLoggerError(static::$loggerError)
-        ->setLoggerDebug(static::$loggerDebug)
-        ->setModeCollecte(static::$modeCollecte)
-        ->setUtilisateurCollecte(static::$utilisateurCollecte)
+        return (new logger(
+            static::$mavenKey,
+            static::$loggerInfo,
+            static::$loggerWarn,
+            static::$loggerError,
+            static::$loggerDebug,
+            static::$modeCollecte,
+            static::$utilisateurCollecte))
         ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
     }
 

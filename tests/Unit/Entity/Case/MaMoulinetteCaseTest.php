@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -29,8 +29,7 @@ class MaMoulinetteCaseTest extends TestCase
 
     private function getEntity(): MaMoulinette
     {
-        return (new MaMoulinette())
-        ->setVersion(static::$version)
+        return (new MaMoulinette(static::$version))
         ->setDateVersion(new \DateTimeImmutable(static::$dateVersion))
         ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
     }

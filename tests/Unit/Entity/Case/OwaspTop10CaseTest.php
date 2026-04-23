@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2025.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common  CC-BY-NC-SA 4.0.
 *  ---
@@ -15,7 +15,6 @@ namespace App\Tests\Unit\Entity\Case;
 
 use App\Entity\OwaspTop10;
 use PHPUnit\Framework\TestCase;
-
 
 /**
  * [Description OwaspTop10CaseTest]

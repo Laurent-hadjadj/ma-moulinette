@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -28,13 +28,16 @@ class UtilisateurCaseTest extends TestCase
   public static $prenom = 'admin';
   public static $nom = '@ma-moulinette';
   public static $courriel = 'admin@ma-moulinette.fr';
-  public static $password = '$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K';
+  public static $pass = '$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K';
   public static $actif = true;
   public static $roles = ["ROLE_GESTIONNAIRE"];
-  public static $groupe = [];
+  public static $groupeUtilisateur = 'admin';
+  public static $groupeId = 'gest-001';
+  public static $listeGroupeFonctionnel = ['fr.ma-petite-entreprise:ma-moulinette'];
   public static $preference = ['{
     "statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
     "projet":[],"favori":[],"version":[],"bookmark":[]}'];
+  public static $lastActivityAt = '2024-12-15 09:42:00';
   public static $dateModification = '1981-01-01 00:00:00';
   public static $dateEnregistrement = '1980-01-01 00:00:00';
 
@@ -47,11 +50,14 @@ class UtilisateurCaseTest extends TestCase
       ->setPrenom(static::$prenom)
       ->setNom(static::$nom)
       ->setCourriel(static::$courriel)
-      ->setPassword(static::$password)
+      ->setPassword(static::$pass)
       ->setActif(static::$actif)
       ->setRoles(static::$roles)
-      ->setGroupe(static::$groupe)
+      ->setGroupeUtilisateur(static::$groupeUtilisateur)
+      ->setGroupeId(static::$groupeId)
+      ->setListeGroupeFonctionnel(static::$listeGroupeFonctionnel)
       ->setPreference(static::$preference)
+      ->setLastActivityAt(new \DateTimeImmutable(static::$lastActivityAt))
       ->setDateModification(new \DateTime(static::$dateModification))
       ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
   }
@@ -96,11 +102,14 @@ class UtilisateurCaseTest extends TestCase
     $entity->setPrenom(static::$prenom);
     $entity->setNom(static::$nom);
     $entity->setCourriel(static::$courriel);
-    $entity->setPassword(static::$password);
+    $entity->setPassword(static::$pass);
     $entity->setActif(static::$actif);
     $entity->setRoles(static::$roles);
-    $entity->setGroupe(static::$groupe);
+    $entity->setGroupeUtilisateur(static::$groupeUtilisateur);
+    $entity->setGroupeId(static::$groupeId);
+    $entity->setListeGroupeFonctionnel(static::$listeGroupeFonctionnel);
     $entity->setPreference(static::$preference);
+    $entity->setLastActivityAt(new \DateTimeImmutable(static::$lastActivityAt));
     $entity->setDateModification(new \DateTime(static::$dateModification));
     $entity->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
 
@@ -113,14 +122,23 @@ class UtilisateurCaseTest extends TestCase
     $this->assertEquals(static::$nom, $entity->getNom(), "Erreur NOM");
     $this->assertEquals(static::$courriel, $entity->getCourriel(), "Erreur COURRIEL");
     $this->assertEquals(static::$courriel, $entity->getUserIdentifier(), "Erreur USERIdent");
-    $this->assertEquals(static::$password, $entity->getPassword(), "Erreur PASSWORD");
+    $this->assertEquals(static::$pass, $entity->getPassword(), "Erreur PASSWORD");
     $entity->eraseCredentials();
     $this->assertNotNull($entity->getPassword(), "Mot de passe null");
-    $this->assertTrue(true, $entity->isActif(), "isActif doit être vrai");
+    $this->assertTrue($entity->isActif(), "isActif doit être vrai");
     $this->assertEquals(static::$roles, $entity->getRoles(), "Erreur ROLES");
-    $this->assertEquals(static::$groupe, $entity->getGroupe(), "Erreur GROUPE");
+    $this->assertEquals(static::$groupeUtilisateur, $entity->getGroupeUtilisateur(), "Erreur GROUPE_UTILISATEUR");
+    $this->assertEquals(static::$groupeId, $entity->getGroupeId(), "Erreur GROUPE_ID");
+    $this->assertEquals(static::$listeGroupeFonctionnel, $entity->getListeGroupeFonctionnel(), "Erreur LISTE_GROUPE_FONCTIONNEL");
     $this->assertEquals(static::$preference, $entity->getPreference(),"Erreur PREFERENCE");
+    $this->assertEquals(new \DateTimeImmutable(static::$lastActivityAt), $entity->getLastActivityAt(), "Erreur LAST_ACTIVITY_AT");
     $this->assertEquals(new \DateTime(static::$dateModification), $entity->getDateModification(), "Erreur DATEModification");
     $this->assertEquals(new \DateTimeImmutable(static::$dateEnregistrement), $entity->getDateEnregistrement(), "Erreur DATEEnregistrement");
+  }
+
+  public function testCountAttribut(): void
+  {
+    $reflectionClass = new \ReflectionClass(new Utilisateur());
+    $this->assertEquals(17, count($reflectionClass->getProperties()));
   }
 }

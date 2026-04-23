@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -15,6 +15,7 @@ namespace App\Tests\Unit\Entity\Case;
 
 use App\Entity\BatchTraitement;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\Uid\{Ulid};
 
 /**
  * [Description BatchTraitementCaseTest]
@@ -24,26 +25,35 @@ class BatchTraitementCaseTest extends TestCase
     private $batchTraitement;
 
     private static $modeCollecte = 'TRAITEMENT MANUEL';
-    private static $result = true;
+    private static $activated = true;
+    private static $success = true;
+    private static $pending = false;
+    private static $inProgress = false;
     private static $titre = 'mon-batch à moi';
     private static $portefeuille = 'application-ma-moulinette';
     private static $nombreProjet = 4;
     private static $responsable = 'Laurent HADJADJ';
+    private static $responsableShort = 'L. HADJADJ';
     private static $debutTraitement = '2025-01-02 12:00:00+02';
     private static $finTraitement = '2025-01-02 12:02:00+02';
     private static $dateEnregistrement = '2025-01-02 12:02:00+02';
 
-    private function getEntity(): batchTraitement
+    private function getEntity(): BatchTraitement
     {
-        return (new batchTraitement())
-        ->setModeCollecte(static::$modeCollecte)
-        ->setResult(static::$result)
-        ->setTitre(static::$titre)
-        ->setPortefeuille(static::$portefeuille)
-        ->setNombreProjet(static::$nombreProjet)
-        ->setResponsable(static::$responsable)
+        return (new batchTraitement(
+            static::$titre,
+            static::$portefeuille,
+            static::$responsable,
+            static::$responsableShort,
+            static::$modeCollecte,
+            static::$nombreProjet))
+        ->setActivated(static::$activated)
+        ->setSuccess(static::$success)
+        ->setPending(static::$pending)
+        ->setInProgress(static::$inProgress)
         ->setDebutTraitement(new \DateTimeImmutable(static::$debutTraitement))
         ->setFinTraitement(new \DateTimeImmutable(static::$finTraitement))
+        ->setTraitementId((string) new Ulid())
         ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
     }
 
@@ -66,11 +76,32 @@ class BatchTraitementCaseTest extends TestCase
         $this->assertEquals($newModeCollecte, $this->batchTraitement->getModeCollecte());
     }
 
-    public function testSettingAndGettingResult(): void
+    public function testSettingAndGettingActivated(): void
     {
-        $newResult = false;
-        $this->batchTraitement->setResult($newResult);
-        $this->assertEquals($newResult, $this->batchTraitement->isResult());
+        $newActivated = false;
+        $this->batchTraitement->setActivated($newActivated);
+        $this->assertEquals($newActivated, $this->batchTraitement->isActivated());
+    }
+
+    public function testSettingAndGettingSuccess(): void
+    {
+        $newSuccess = false;
+        $this->batchTraitement->setSuccess($newSuccess);
+        $this->assertEquals($newSuccess, $this->batchTraitement->isSuccess());
+    }
+
+    public function testSettingAndGettingPending(): void
+    {
+        $newPending = false;
+        $this->batchTraitement->setPending($newPending);
+        $this->assertEquals($newPending, $this->batchTraitement->isPending());
+    }
+
+    public function testSettingAndGettingInProgress(): void
+    {
+        $newInProgress = false;
+        $this->batchTraitement->setInProgress($newInProgress);
+        $this->assertEquals($newInProgress, $this->batchTraitement->isInProgress());
     }
 
     public function testSettingAndGettingTitre(): void
@@ -101,6 +132,13 @@ class BatchTraitementCaseTest extends TestCase
         $this->assertEquals($newResponsable, $this->batchTraitement->getResponsable());
     }
 
+    public function testSettingAndGettingResponsableShort(): void
+    {
+        $newResponsableShort = 'J. Dupont';
+        $this->batchTraitement->setResponsableShort($newResponsableShort);
+        $this->assertEquals($newResponsableShort, $this->batchTraitement->getResponsableShort());
+    }
+
     public function testSettingAndGettingDebutTraitement(): void
     {
         $newDebutTraitement = new \DateTimeImmutable('2025-01-03 12:00:00+02');
@@ -113,6 +151,13 @@ class BatchTraitementCaseTest extends TestCase
         $newFinTraitement = new \DateTimeImmutable('2025-01-03 12:30:00+02');
         $this->batchTraitement->setFinTraitement($newFinTraitement);
         $this->assertEquals($newFinTraitement, $this->batchTraitement->getFinTraitement());
+    }
+
+    public function testSettingAndGettingTraitementId(): void
+    {
+        $newTraitementId = (string) new Ulid();
+        $this->batchTraitement->setTraitementId($newTraitementId);
+        $this->assertEquals($newTraitementId, $this->batchTraitement->getTraitementId());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void

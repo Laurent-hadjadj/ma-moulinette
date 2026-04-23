@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -105,5 +105,11 @@ class PropertiesCaseTest extends TestCase
         $newDate=new \DateTime(static::$dateModificationProfil);
         $this->properties->setDateModificationProfil($newDate);
         $this->assertEquals($newDate, $this->properties->getDateModificationProfil());
+    }
+
+    public function testCountAttribut(): void
+    {
+        $reflectionClass = new \ReflectionClass(new \App\Entity\Properties());
+        $this->assertEquals(9, count($reflectionClass->getProperties()));
     }
 }

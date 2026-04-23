@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -23,8 +23,8 @@ class PortefeuilleCaseTest extends TestCase
 {
     private $portefeuille;
 
-    private static $titre = 'MES PROJETS';
-    private static $groupe = 'MA PETITE ENTREPRISE';
+    private static $portefeuilles = 'MES PROJETS';
+    private static $groupeFonctionnel = 'MA PETITE ENTREPRISE';
     private static $liste =  ['fr.ma-petite-entreprise:ma-moulinette'];
     private static $dateModification = '2024-03-26 14:46:38+01';
     private static $dateEnregistrement = '2024-03-25 12:26:58+01';
@@ -32,8 +32,8 @@ class PortefeuilleCaseTest extends TestCase
     private function getEntity(): Portefeuille
     {
         return (new portefeuille())
-        ->setTitre(static::$titre)
-        ->setGroupe(static::$groupe)
+        ->setPortefeuille(static::$portefeuilles)
+        ->setGroupeFonctionnel(static::$groupeFonctionnel)
         ->setListe(static::$liste)
         ->setDateModification(new \DateTime(static::$dateModification))
         ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
@@ -51,16 +51,16 @@ class PortefeuilleCaseTest extends TestCase
         $this->assertEquals(1, $this->portefeuille->getId());
     }
 
-    public function testSettingAndGettingTitre(): void
+    public function testSettingAndGettingPortefeuille(): void
     {
-        $this->portefeuille->setTitre(static::$titre);
-        $this->assertEquals(static::$titre, $this->portefeuille->getTitre());
+        $this->portefeuille->setPortefeuille(static::$portefeuilles);
+        $this->assertEquals(static::$portefeuilles, $this->portefeuille->getPortefeuille());
     }
 
-    public function testSettingAndGettingGroupe(): void
+    public function testSettingAndGettingGroupeFonctionnel(): void
     {
-        $this->portefeuille->setGroupe(static::$groupe);
-        $this->assertEquals(static::$groupe, $this->portefeuille->getGroupe());
+        $this->portefeuille->setGroupeFonctionnel(static::$groupeFonctionnel);
+        $this->assertEquals(static::$groupeFonctionnel, $this->portefeuille->getGroupeFonctionnel());
     }
 
     public function testSettingAndGettingListe(): void

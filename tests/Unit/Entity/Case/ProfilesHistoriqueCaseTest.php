@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -116,4 +116,9 @@ class ProfilesHistoriqueCaseTest extends TestCase
         $this->assertEquals($newDate, $this->profilesHistorique->getDateEnregistrement());
     }
 
+    public function testCountAttribut(): void
+    {
+        $reflectionClass = new \ReflectionClass(new \App\Entity\ProfilesHistorique());
+        $this->assertEquals(10, count($reflectionClass->getProperties()));
+    }
 }
