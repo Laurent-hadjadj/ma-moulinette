@@ -1,0 +1,9 @@
+---
+# Limitation de débit pour la route de healthcheck
+framework:
+    rate_limiter:
+        healthcheck:
+            policy: 'fixed_window'
+            limit: 10
+            interval: '1 minute'
+...
