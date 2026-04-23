@@ -1,53 +1,92 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- https://phpunit.readthedocs.io/en/latest/configuration.html -->
+<!--
+    Configuration PHPUnit 13 pour Ma-Moulinette.
+    Documentation : https://docs.phpunit.de/en/13.0/configuration.html
+
+    Trois suites de tests :
+      - unit        : tests unitaires (pas de conteneur Symfony, pas de DB)
+      - integration : KernelTestCase (conteneur, DB de test, services DI)
+      - functional  : WebTestCase (requêtes HTTP simulées, fixtures Doctrine)
+
+    Pour exécuter :
+      vendor/bin/phpunit --testsuite=unit
+      vendor/bin/phpunit --testsuite=integration
+      vendor/bin/phpunit --testsuite=functional
+      vendor/bin/phpunit                       (tout)
+-->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-        backupGlobals="false"
-        colors="true"
-        bootstrap="tests/bootstrap.php"
-        convertDeprecationsToExceptions="false">
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         backupGlobals="false"
+         colors="true"
+         bootstrap="tests/bootstrap.php"
+         cacheDirectory=".phpunit.cache"
+         executionOrder="depends,defects"
+         requireCoverageMetadata="false"
+         beStrictAboutCoverageMetadata="false"
+         beStrictAboutOutputDuringTests="true"
+         failOnWarning="false"
+         failOnDeprecation="false"
+         failOnNotice="false"
+         failOnRisky="false"
+         displayDetailsOnIncompleteTests="true"
+         displayDetailsOnSkippedTests="true">
     <php>
         <ini name="display_errors" value="1" />
         <ini name="error_reporting" value="-1" />
         <server name="APP_ENV" value="test" force="true" />
         <server name="SHELL_VERBOSITY" value="-1" />
         <server name="SYMFONY_PHPUNIT_REMOVE" value="" />
-        <server name="SYMFONY_PHPUNIT_VERSION" value="9.6" />
+        <server name="SYMFONY_PHPUNIT_VERSION" value="13.1" />
         <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled" />
+        <env name="SYMFONY_PHPUNIT_DISABLE_DATABASE_PURGER" value="0" />
 
         <!-- ###+ symfony/framework-bundle ### -->
-        <env name="APP_ENV" value="dev"/>
         <env name="APP_SECRET" value="e2d3599f3e2beac6b46b54693a065526"/>
         <!-- ###- symfony/framework-bundle ### -->
 
         <!-- ###+ doctrine/doctrine-bundle ### -->
-        <!-- Format described at https://www.doctrine-project.org/projects/doctrine-dbal/en/latest/reference/configuration.html#connecting-using-a-url -->
-        <!-- IMPORTANT: You MUST configure your server version, either here or in config/packages/doctrine.yaml -->
-        <!--  -->
-        <!-- DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db" -->
-        <!-- DATABASE_URL="mysql://app:!ChangeMe!@127.0.0.1:3306/app?serverVersion=8.0.32&charset=utf8mb4" -->
-        <!-- DATABASE_URL="mysql://app:!ChangeMe!@127.0.0.1:3306/app?serverVersion=10.11.2-MariaDB&charset=utf8mb4" -->
-        <!-- <env name="DATABASE_URL" value="postgresql://app:!ChangeMe!@127.0.0.1:5432/app?serverVersion=16&amp;charset=utf8"/> -->
+        <!-- DATABASE_URL est défini dans .env.test.local pour la base PostgreSQL de test -->
+        <!-- Exemple : postgresql://db_user:db_password@localhost:5432/ma_moulinette_test?serverVersion=18&charset=utf8 -->
         <!-- ###- doctrine/doctrine-bundle ### -->
     </php>
 
     <testsuites>
-        <testsuite name="Project Test Suite">
-            <directory>tests/Unit/</directory>
+        <testsuite name="unit">
+            <directory>tests/Unit</directory>
+        </testsuite>
+        <testsuite name="integration">
+            <directory>tests/Integration</directory>
+        </testsuite>
+        <testsuite name="functional">
+            <directory>tests/Functional</directory>
         </testsuite>
     </testsuites>
 
-    <coverage processUncoveredFiles="true">
+    <!--
+        PHPUnit 13 : `restrictDeprecations` (12.x) supprimé du schéma.
+        Remplacé par `ignoreIndirectDeprecations` (sémantique inverse).
+        Migration appliquée par `vendor/bin/phpunit --migrate-configuration`.
+    -->
+    <source restrictNotices="true" restrictWarnings="true" ignoreIndirectDeprecations="true">
         <include>
             <directory suffix=".php">src</directory>
         </include>
+        <exclude>
+            <directory>src/DataFixtures</directory>
+            <directory>src/Kernel.php</directory>
+        </exclude>
+    </source>
+
+    <coverage includeUncoveredFiles="true">
+        <report>
+            <clover outputFile="build/logs/clover.xml" />
+            <html outputDirectory="build/coverage-report" />
+            <text outputFile="php://stdout" showOnlySummary="true" />
+        </report>
     </coverage>
 
-    <listeners>
-        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener" />
-    </listeners>
-
     <extensions>
+        <bootstrap class="Symfony\Bridge\PhpUnit\SymfonyExtension" />
     </extensions>
 </phpunit>
