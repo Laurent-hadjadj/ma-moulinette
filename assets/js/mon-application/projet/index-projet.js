@@ -62,12 +62,30 @@ import Chance from 'chance';
  */
 import {remplissage, afficheHotspotDetails} from './peinture.js';
 import {enregistrement} from './enregistrement.js';
+import {clean_screen} from './clean-screen.js';
 
 /***************************************************************************/
 /***                                                                     ***/
 /***                       Variables globales                            ***/
 /***                                                                     ***/
 /***************************************************************************/
+
+/**
+ * [Description for clean]
+ *
+ * @return void
+ *
+ * Created at: 01/12/2025 12:50:28 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ */
+const clean = async function(type){
+  console.log('clean', type)
+    return new Promise((resolve) => {
+      clean_screen(type);
+      resolve();
+    });
+}
 
 /**
  * [Description for shuffle]
@@ -1588,6 +1606,9 @@ $('.js-analyse').on('click', function () {
     return;
   }
 
+  /* On clean les données */
+  const bob = clean('collecte');
+
   const collecte = sessionStorage.getItem('ma_moulinette_collecte');
   if (!collecte || collecte != 'Tout va bien!') {
     log(` - ❌ Une erreur s'est produite sur le projet ${idProject}.`);
@@ -1663,6 +1684,10 @@ $('.js-analyse').on('click', function () {
  * On passe à la peinture
  */
 $('.js-affiche-result').on('click', async() => {
+  /* On clean les données */
+
+  const bob = clean('peinture');
+
   /* On récupère la clé du projet. */
   const apiMaven = $('#select-result').text().trim();
 
