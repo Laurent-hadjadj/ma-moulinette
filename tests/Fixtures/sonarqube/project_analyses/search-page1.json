@@ -1,0 +1,28 @@
+﻿{
+    "paging":  {
+                   "pageIndex":  1,
+                   "pageSize":  500,
+                   "total":  1
+               },
+    "analyses":  [
+                     {
+                         "key":  "ef3af66d-2cc2-4050-b1ed-596123dc63c5",
+                         "date":  "2026-04-22T08:59:02+0200",
+                         "events":  [
+                                        {
+                                            "key":  "8b815cea-16d2-4340-b563-01646de4713c",
+                                            "category":  "SQ_UPGRADE",
+                                            "name":  "26.3.0.120487"
+                                        },
+                                        {
+                                            "key":  "30099aed-da01-4b77-a57e-0802a461d4ca",
+                                            "category":  "VERSION",
+                                            "name":  "1.1.0-RELEASE"
+                                        }
+                                    ],
+                         "projectVersion":  "1.1.0-RELEASE",
+                         "manualNewCodePeriodBaseline":  false,
+                         "detectedCI":  "undetected"
+                     }
+                 ]
+}

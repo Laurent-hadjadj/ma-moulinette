@@ -1,0 +1,18 @@
+﻿{
+    "key":  "tetris:TetrisGame",
+    "uuid":  "2ffaae20-9805-407a-b426-89740b3522e2",
+    "name":  "TetrisGame",
+    "longName":  "TetrisGame",
+    "q":  "TRK",
+    "project":  "tetris:TetrisGame",
+    "projectName":  "TetrisGame",
+    "fav":  false,
+    "canMarkAsFavorite":  true,
+    "measures":  {
+                     "lines":  "1404.0",
+                     "coverage":  "0.0",
+                     "duplicationDensity":  "3.0",
+                     "issues":  "132.0",
+                     "tests":  "1.0"
+                 }
+}

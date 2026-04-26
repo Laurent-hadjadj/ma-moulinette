@@ -1,0 +1,18 @@
+{
+  "paging": {
+    "pageIndex": 1,
+    "pageSize": 500,
+    "total": 1
+  },
+  "components": [
+    {
+      "organization": "default-organization",
+      "key": "tetris:TetrisGame",
+      "name": "TetrisGame",
+      "qualifier": "TRK",
+      "visibility": "public",
+      "lastAnalysisDate": "2026-04-25T18:00:00+0200",
+      "tags": ["tetris-game"]
+    }
+  ]
+}
