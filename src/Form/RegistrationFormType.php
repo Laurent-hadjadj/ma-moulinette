@@ -56,15 +56,14 @@ class RegistrationFormType extends AbstractType
                 'label' => 'label.nom',
                 'trim' => true,
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Merci de saisir votre nom.',
-                    ]),
-                    new Length([
-                        'min' => 2,
-                        'minMessage' => 'Le nom doit comporter au moins de {{ limit }} caractères.',
-                        'max' => 32,
-                        'maxMessage' => 'Le nom ne doit pas comporter plus de {{ limit }} caractères.',
-                    ]), ]
+                    new NotBlank(message: 'Merci de saisir votre nom.'),
+                    new Length(
+                        min: 2,
+                        max: 32,
+                        minMessage: 'Le nom doit comporter au moins de {{ limit }} caractères.',
+                        maxMessage: 'Le nom ne doit pas comporter plus de {{ limit }} caractères.',
+                    ),
+                ],
             ])
             ->add('prenom', TextType::class, [
                 'required' => true,
@@ -75,15 +74,14 @@ class RegistrationFormType extends AbstractType
                             'class' => 'color-bleu',
                             'autocomplete' => 'given-name' ],
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Merci de saisir votre prénom.',
-                    ]),
-                    new Length([
-                        'min' => 2,
-                        'minMessage' => 'Le prénom doit comporter au moins {{ limit }} caractères.',
-                        'max' => 32,
-                        'maxMessage' => 'Le prénom ne doit pas comporter plus de {{ limit }} caractères.',
-                    ]), ]
+                    new NotBlank(message: 'Merci de saisir votre prénom.'),
+                    new Length(
+                        min: 2,
+                        max: 32,
+                        minMessage: 'Le prénom doit comporter au moins {{ limit }} caractères.',
+                        maxMessage: 'Le prénom ne doit pas comporter plus de {{ limit }} caractères.',
+                    ),
+                ],
             ])
 
             //Honey pot
@@ -122,15 +120,13 @@ class RegistrationFormType extends AbstractType
                         'aria-label'=>'Mot de passe',
                         'aria-describedby'=>'registration_form_plainPassword_first'],
                     'constraints' => [
-                        new NotBlank([
-                            'message' => 'Merci de saisir ton mot de passe.',
-                        ]),
-                        new Length([
-                            'min' => 8,
-                            'minMessage' => 'Ton mot de passe doit comporter au moins {{ limit }} caractères.',
-                            'max' => 52,
-                            'maxMessage' => 'Ton mot de passe ne doit pas comporter plus de {{ limit }} caractères.',
-                        ]),
+                        new NotBlank(message: 'Merci de saisir ton mot de passe.'),
+                        new Length(
+                            min: 8,
+                            max: 52,
+                            minMessage: 'Ton mot de passe doit comporter au moins {{ limit }} caractères.',
+                            maxMessage: 'Ton mot de passe ne doit pas comporter plus de {{ limit }} caractères.',
+                        ),
                     ],
                 ],
                 'second_options' => [
@@ -144,15 +140,13 @@ class RegistrationFormType extends AbstractType
                         'aria-describedby'=>'registration_form_plainPassword_second' ],
                 ],
                 'constraints' => [
-                    new NotBlank([
-                        'message' => 'Merci de re-saisir ton mot de passe.',
-                    ]),
-                    new Length([
-                        'min' => 8,
-                        'minMessage' => 'Ton mot de passe doit comporter au moins {{ limit }} caractères.',
-                        'max' => 52,
-                        'maxMessage' => 'Ton mot de passe ne doit pas comporter plus de {{ limit }} caractères.',
-                    ]),
+                    new NotBlank(message: 'Merci de re-saisir ton mot de passe.'),
+                    new Length(
+                        min: 8,
+                        max: 52,
+                        minMessage: 'Ton mot de passe doit comporter au moins {{ limit }} caractères.',
+                        maxMessage: 'Ton mot de passe ne doit pas comporter plus de {{ limit }} caractères.',
+                    ),
                 ],
             ])
             /** On ajoute le champ avatar mais on ne l'affiche pas */

@@ -40,9 +40,7 @@ class ResetPasswordFormType extends AbstractType
                 'aria-describedby'=>'reset_password_form_ancienMotDePasse',
             ],
             'constraints' => [
-                new NotBlank([
-                    'message' => 'Merci de saisir votre mot de passe actuel.',
-                ]),
+                new NotBlank(message: 'Merci de saisir votre mot de passe actuel.'),
             ]
         ])
         ->add('plainPassword', RepeatedType::class, [
@@ -70,15 +68,13 @@ class ResetPasswordFormType extends AbstractType
                     'aria-describedby'=>'reset_password_form_plainPassword_second' ],
             ],
             'constraints' => [
-                new NotBlank([
-                    'message' => 'Merci de saisir votre mot de passe.',
-                ]),
-                new Length([
-                    'min' => 8,
-                    'minMessage' => 'Votre mot de passe doit comporter au moins {{ limit }} caractères.',
-                    'max' => 52,
-                    'maxMessage' => 'Votre mot de passe ne doit pas comporter plus de {{ limit }} caractères.',
-                ]),
+                new NotBlank(message: 'Merci de saisir votre mot de passe.'),
+                new Length(
+                    min: 8,
+                    max: 52,
+                    minMessage: 'Votre mot de passe doit comporter au moins {{ limit }} caractères.',
+                    maxMessage: 'Votre mot de passe ne doit pas comporter plus de {{ limit }} caractères.',
+                ),
             ],
         ]);
     }
