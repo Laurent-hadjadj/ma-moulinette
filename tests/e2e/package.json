@@ -1,0 +1,19 @@
+{
+  "name": "ma-moulinette-e2e",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tests End-to-End Playwright pour Ma-Moulinette (Phase K).",
+  "scripts": {
+    "test": "playwright test",
+    "test:headed": "playwright test --headed",
+    "test:ui": "playwright test --ui",
+    "test:debug": "playwright test --debug",
+    "report": "playwright show-report",
+    "install:browsers": "playwright install --with-deps chromium"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.49.0",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}
