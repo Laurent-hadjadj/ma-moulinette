@@ -218,13 +218,13 @@ class HotspotDetails
     #[ORM\Column(
         name: 'hotspot_key',
         type: Types::STRING,
-        length: 32,
+        length: 64,
         nullable: false,
-        options: ['comment' => 'Clé unique du hotspot'])]
+        options: ['comment' => 'Clé unique du hotspot (UUID SonarQube)'])]
     #[Assert\NotBlank]
     #[Assert\Length(
-        max: 32,
-        maxMessage: "La clé ne doit pas dépasser 32 caractères.")]
+        max: 64,
+        maxMessage: "La clé ne doit pas dépasser 64 caractères.")]
     private string $hotspotKey;
 
     #[ORM\Column(
