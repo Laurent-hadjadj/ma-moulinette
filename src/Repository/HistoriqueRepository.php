@@ -113,12 +113,12 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function getProjetFavori($where): array
     {
         $sql = "SELECT DISTINCT
-                    maven_key as mavenkey, nom_projet as nom,
-                    version, date_version as date, note_reliability as reliability,
-                    note_security as security, note_hotspot as hotspot,
-                    note_sqale as sqale, nombre_bug as bug,
-                    nombre_vulnerability as vulnerability,
-                    nombre_code_smell as code_smell, menace_potentielle_totale as hotspots
+                    maven_key as mavenkey, project_name as nom,
+                    version, date_version as date, reliability_rating as reliability,
+                    security_rating as security, security_review_rating as hotspot,
+                    sqale_rating as sqale, bugs as bug,
+                    vulnerabilities as vulnerability,
+                    code_smells as code_smell, menace_potentielle_totale as hotspots
                 FROM ma_moulinette.historique
                 WHERE ". $where ." ORDER BY date DESC limit 4";
 
@@ -241,45 +241,45 @@ class HistoriqueRepository extends ServiceEntityRepository
             FROM (
                 (
                     SELECT
-                        nom_projet AS nom,
+                        project_name AS nom,
                         date_version AS date,
                         version,
                         suppress_warning,
-                        no_sonar,
-                        nombre_bug AS bug,
-                        nombre_vulnerability AS faille,
-                        nombre_code_smell AS mauvaise_pratique,
+                        (java_no_sonar + python_no_sonar + php_no_sonar) AS no_sonar,
+                        bugs AS bug,
+                        vulnerabilities AS faille,
+                        code_smells AS mauvaise_pratique,
                         menace_potentielle_totale,
-                        frontend AS presentation,
-                        backend AS metier,
-                        autre,
-                        inconnu,
-                        note_reliability AS reliability,
-                        note_security AS security,
-                        note_hotspot,
-                        note_sqale AS maintainability,
+                        repartition_frontend AS presentation,
+                        repartition_backend AS metier,
+                        repartition_autre AS autre,
+                        repartition_inconnu AS inconnu,
+                        reliability_rating AS reliability,
+                        security_rating AS security,
+                        security_review_rating AS note_hotspot,
+                        sqale_rating AS maintainability,
                         initial
                     FROM ma_moulinette.historique
                     WHERE maven_key = :maven_key AND initial = :initial_true
                 ) UNION ALL (
                     SELECT
-                        nom_projet AS nom,
+                        project_name AS nom,
                         date_version AS date,
                         version,
                         suppress_warning,
-                        no_sonar,
-                        nombre_bug AS bug,
-                        nombre_vulnerability AS faille,
-                        nombre_code_smell AS mauvaise_pratique,
+                        (java_no_sonar + python_no_sonar + php_no_sonar) AS no_sonar,
+                        bugs AS bug,
+                        vulnerabilities AS faille,
+                        code_smells AS mauvaise_pratique,
                         menace_potentielle_totale,
-                        frontend AS presentation,
-                        backend AS metier,
-                        autre,
-                        inconnu,
-                        note_reliability AS reliability,
-                        note_security AS security,
-                        note_hotspot,
-                        note_sqale AS maintainability,
+                        repartition_frontend AS presentation,
+                        repartition_backend AS metier,
+                        repartition_autre AS autre,
+                        repartition_inconnu AS inconnu,
+                        reliability_rating AS reliability,
+                        security_rating AS security,
+                        security_review_rating AS note_hotspot,
+                        sqale_rating AS maintainability,
                         initial
                     FROM ma_moulinette.historique
                     WHERE maven_key = :maven_key AND initial = :initial_false
@@ -319,20 +319,20 @@ class HistoriqueRepository extends ServiceEntityRepository
         $sql = "SELECT *
                 FROM (
                         (SELECT date_version AS date,
-                                nombre_ligne,
-                                nombre_ligne_code,
-                                nombre_files,
-                                nombre_classes,
-                                nombre_functions
+                                lines AS nombre_ligne,
+                                ncloc AS nombre_ligne_code,
+                                files AS nombre_files,
+                                classes AS nombre_classes,
+                                functions AS nombre_functions
                         FROM ma_moulinette.historique
                         WHERE maven_key = :maven_key AND initial = :initial_true)
                         UNION ALL
                         (SELECT date_version AS date,
-                                nombre_ligne,
-                                nombre_ligne_code,
-                                nombre_files,
-                                nombre_classes,
-                                nombre_functions
+                                lines AS nombre_ligne,
+                                ncloc AS nombre_ligne_code,
+                                files AS nombre_files,
+                                classes AS nombre_classes,
+                                functions AS nombre_functions
                         FROM ma_moulinette.historique
                         WHERE maven_key = :maven_key AND initial = :initial_false
                         ORDER BY date_version DESC
@@ -370,18 +370,18 @@ class HistoriqueRepository extends ServiceEntityRepository
         $sql = "SELECT *
                 FROM (
                     (SELECT date_version AS date,
-                            nombre_anomalie_bloquant AS bloquant,
-                            nombre_anomalie_critique AS critique,
-                            nombre_anomalie_majeur AS majeur,
-                            nombre_anomalie_mineur AS mineur
+                            blocker_violations AS bloquant,
+                            critical_violations AS critique,
+                            major_violations AS majeur,
+                            minor_violations AS mineur
                     FROM ma_moulinette.historique
                     WHERE maven_key = :maven_key AND initial = :initial_true)
                     UNION ALL
                     (SELECT date_version AS date,
-                        nombre_anomalie_bloquant AS bloquant,
-                        nombre_anomalie_critique AS critique,
-                        nombre_anomalie_majeur AS majeur,
-                        nombre_anomalie_mineur AS mineur
+                        blocker_violations AS bloquant,
+                        critical_violations AS critique,
+                        major_violations AS majeur,
+                        minor_violations AS mineur
                     FROM ma_moulinette.historique
                     WHERE maven_key = :maven_key AND initial = :initial_false
                     ORDER BY date_version DESC
@@ -473,13 +473,13 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function selectHistoriqueAnomalieGraphique($map): array
     {
         /** On prépare la requête */
-        $sql = "SELECT nombre_bug AS bug,
-                        nombre_vulnerability AS sec,
-                        nombre_code_smell AS code_smell,
+        $sql = "SELECT bugs AS bug,
+                        vulnerabilities AS sec,
+                        code_smells AS code_smell,
                         date_version AS date
                 FROM ma_moulinette.historique
                 WHERE maven_key = :maven_key
-                GROUP BY nombre_bug, nombre_vulnerability, nombre_code_smell, date_version
+                GROUP BY bugs, vulnerabilities, code_smells, date_version
                 ORDER BY date ASC";
 
         try {
@@ -514,22 +514,22 @@ class HistoriqueRepository extends ServiceEntityRepository
         /** On prépare la requête */
         $sql = "INSERT INTO ma_moulinette.historique
             (maven_key, analyse_key, version, date_version,
-            nom_projet, version_release, version_snapshot, version_autre,
-            suppress_warning, no_sonar, todo,
+            project_name, version_release, version_snapshot, version_autre,
+            suppress_warning,
             logger_info, logger_warn, logger_error, logger_debug,
-            nombre_ligne, nombre_ligne_code,
-            nombre_files, nombre_classes, nombre_functions,
-            coverage, duplicated_lines_density, sqale_debt_ratio, tests, violations, dette,
-            nombre_bug, nombre_vulnerability, nombre_code_smell,
+            lines, ncloc,
+            files, classes, functions,
+            coverage, duplicated_lines_density, sqale_debt_ratio, tests, violations, sqale_index,
+            bugs, vulnerabilities, code_smells,
             bug_blocker, bug_critical, bug_major, bug_minor, bug_info,
             vulnerability_blocker, vulnerability_critical, vulnerability_major,
             vulnerability_minor, vulnerability_info,
             code_smell_blocker, code_smell_critical, code_smell_major,
             code_smell_minor, code_smell_info,
-            frontend, backend, autre, inconnu,
-            nombre_anomalie_bloquant, nombre_anomalie_critique, nombre_anomalie_majeur,
-            nombre_anomalie_mineur, nombre_anomalie_info,
-            note_reliability, note_security, note_sqale, note_hotspot,
+            repartition_frontend, repartition_backend, repartition_autre, repartition_inconnu,
+            blocker_violations, critical_violations, major_violations,
+            minor_violations, info_violations,
+            reliability_rating, security_rating, sqale_rating, security_review_rating,
             menace_potentielle_totale,
             menace_potentielle_to_review_high,
             menace_potentielle_to_review_medium,
@@ -544,7 +544,7 @@ class HistoriqueRepository extends ServiceEntityRepository
             VALUES (
                 :maven_key, :analyse_key, :version, :date_version, :nom_projet,
                 :version_release, :version_snapshot, :version_autre,
-                :suppress_warning, :no_sonar, :todo,
+                :suppress_warning,
                 :logger_info, :logger_warn, :logger_error, :logger_debug,
                 :nombre_ligne, :nombre_ligne_code,
                 :nombre_files, :nombre_classes, :nombre_functions,
@@ -582,8 +582,6 @@ class HistoriqueRepository extends ServiceEntityRepository
                         $stmt->bindValue(':version_snapshot', $map['version_snapshot']);
                         $stmt->bindValue(':version_autre', $map['version_autre']);
                         $stmt->bindValue(':suppress_warning', $map['suppress_warning']);
-                        $stmt->bindValue(':no_sonar', $map['no_sonar']);
-                        $stmt->bindValue(':todo', $map['todo']);
                         $stmt->bindValue(':logger_info', $map['logger_info']);
                         $stmt->bindValue(':logger_warn', $map['logger_warn']);
                         $stmt->bindValue(':logger_error', $map['logger_error']);
@@ -704,8 +702,9 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function selectHistoriqueProjetLast($map): array
     {
         /** On prépare la requête */
-        $sql =  "SELECT version, nom_projet AS name, date_version,
-                        note_reliability, note_security, note_hotspot,note_sqale,
+        $sql =  "SELECT version, project_name AS name, date_version,
+                        reliability_rating AS note_reliability, security_rating AS note_security,
+                        security_review_rating AS note_hotspot, sqale_rating AS note_sqale,
                         bug_blocker, bug_critical, bug_major,
                         vulnerability_blocker, vulnerability_critical, vulnerability_major,
                         code_smell_blocker, code_smell_critical, code_smell_major,
@@ -740,7 +739,8 @@ class HistoriqueRepository extends ServiceEntityRepository
     {
         /** On prépare la requête */
         $sql = "SELECT version, date_version,
-                        note_reliability, note_security, note_hotspot, note_sqale,
+                        reliability_rating AS note_reliability, security_rating AS note_security,
+                        security_review_rating AS note_hotspot, sqale_rating AS note_sqale,
                         bug_blocker, bug_critical, bug_major,
                         vulnerability_blocker, vulnerability_critical, vulnerability_major,
                         code_smell_blocker, code_smell_critical, code_smell_major,
@@ -774,13 +774,13 @@ class HistoriqueRepository extends ServiceEntityRepository
     {
         /** On prépare la requête */
         $sql = "WITH LastVersions AS (
-                SELECT  maven_key AS mavenkey, nom_projet AS nom,
+                SELECT  maven_key AS mavenkey, project_name AS nom,
                         version, date_version AS date,
-                        note_reliability AS reliability,
-                        note_security AS security, note_hotspot AS hotspot,
-                        note_sqale AS sqale, nombre_bug AS bug,
-                        nombre_vulnerability AS vulnerability,
-                        nombre_code_smell AS code_smell,
+                        reliability_rating AS reliability,
+                        security_rating AS security, security_review_rating AS hotspot,
+                        sqale_rating AS sqale, bugs AS bug,
+                        vulnerabilities AS vulnerability,
+                        code_smells AS code_smell,
                         menace_potentielle_totale AS hotspots,
                 ROW_NUMBER() OVER (PARTITION BY maven_key ORDER BY date_version DESC) AS rn
                 FROM ma_moulinette.historique
@@ -814,7 +814,7 @@ class HistoriqueRepository extends ServiceEntityRepository
     public function selectHistoriqueIsValide($map): array
     {
         /** On prépare la requête */
-        $sql = "SELECT version, nom_projet AS name,
+        $sql = "SELECT version, project_name AS name,
                         date_version, analyse_key
                 FROM ma_moulinette.historique
                 WHERE maven_key=:maven_key
@@ -849,7 +849,16 @@ class HistoriqueRepository extends ServiceEntityRepository
     {
         /** On prépare la requête */
         $sql = "SELECT DISTINCT ON (maven_key)
-                    nom_projet, version, suppress_warning, no_sonar, todo, nombre_ligne, nombre_ligne_code, tests, violations, nombre_bug, nombre_vulnerability, nombre_code_smell, frontend, backend, autre, inconnu, note_reliability, note_security, note_sqale, note_hotspot, logger_info, logger_warn, logger_error, logger_debug
+                    project_name, version, suppress_warning,
+                    (java_no_sonar + python_no_sonar + php_no_sonar) AS no_sonar,
+                    (java_todo + python_todo + php_todo + xml_todo + javascript_todo + typescript_todo + ruby_todo) AS todo,
+                    lines AS nombre_ligne, ncloc AS nombre_ligne_code, tests, violations,
+                    bugs AS nombre_bug, vulnerabilities AS nombre_vulnerability, code_smells AS nombre_code_smell,
+                    repartition_frontend AS frontend, repartition_backend AS backend,
+                    repartition_autre AS autre, repartition_inconnu AS inconnu,
+                    reliability_rating AS note_reliability, security_rating AS note_security,
+                    sqale_rating AS note_sqale, security_review_rating AS note_hotspot,
+                    logger_info, logger_warn, logger_error, logger_debug
                 FROM ma_moulinette.historique
                 WHERE maven_key IN (".$map.") ORDER BY maven_key ASC, version DESC, date_version DESC";
 
