@@ -13,7 +13,7 @@
 --     a la 1ere connexion, teste une seule fois en spec 04)
 --
 -- Usage : appele APRES reset-e2e-data.sql + seed-after-spec-02-groupes.sql
--- via bin/seed-e2e.ps1.
+-- via bin/e2e/seed-e2e.ps1.
 
 \c ma_moulinette db_user
 

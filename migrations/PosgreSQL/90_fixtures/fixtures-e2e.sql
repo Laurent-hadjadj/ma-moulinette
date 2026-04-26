@@ -25,7 +25,7 @@
 -- APPLICATIF) sont crees par l'internal en cours de scenario via l'UI.
 --
 -- CONVENTION : password = courriel (bcrypt cost 13)
--- Genere via bin/generate-e2e-hashes.php
+-- Genere via bin/e2e/generate-e2e-hashes.php
 --
 -- USAGE :
 --   psql -U postgres -d ma_moulinette -v ON_ERROR_STOP=1 \

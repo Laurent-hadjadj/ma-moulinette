@@ -10,7 +10,7 @@
 -- par l'internal). Permet de tester les specs 03+ en isolation sans rejouer
 -- spec 02 via l'UI a chaque fois.
 --
--- Usage : appele APRES reset-e2e-data.sql via bin/seed-e2e.ps1
+-- Usage : appele APRES reset-e2e-data.sql via bin/e2e/seed-e2e.ps1
 -- Pas de ON CONFLICT : la table n'a pas de contrainte UNIQUE sur
 -- groupe_utilisateur (controle d'unicite gere au niveau application).
 -- Le reset prealable wipe les groupes custom -> pas de duplicat possible.

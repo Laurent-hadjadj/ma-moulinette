@@ -26,7 +26,7 @@
 --   - tables d'activite et batch
 --
 -- Usage :
---   bin/reset-e2e-data.ps1
+--   bin/e2e/reset-e2e-data.ps1
 --   ou directement : psql -U db_user -d ma_moulinette -f reset-e2e-data.sql
 
 \c ma_moulinette db_user
