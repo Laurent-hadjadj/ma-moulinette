@@ -73,7 +73,7 @@ class HistoriqueValidatorTest extends KernelTestCase
         $this->assertHasErrors($this->getEntity()->setVersion(str_repeat('a', 33)), 1);
         $this->assertHasErrors($this->getEntity()->setDateVersion(str_repeat('a', 129)), 1);
         $this->assertHasErrors($this->getEntity()->setNomProjet(str_repeat('a', 129)), 1);
-        $this->assertHasErrors($this->getEntity()->setAnalyseKey(str_repeat('a', 33)), 1);
+        $this->assertHasErrors($this->getEntity()->setAnalyseKey(str_repeat('a', 65)), 1);
         $this->assertHasErrors($this->getEntity()->setModeCollecte(str_repeat('a', 33)), 1);
         $this->assertHasErrors($this->getEntity()->setUtilisateurCollecte(str_repeat('a', 321)), 1);
     }

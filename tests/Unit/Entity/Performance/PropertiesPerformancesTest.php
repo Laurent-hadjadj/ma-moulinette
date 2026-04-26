@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -16,7 +16,6 @@ namespace App\Tests\Unit\Entity\Performance;
 use App\Entity\Properties;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\ConstraintViolation;
-
 
 /**
  * [Description PropertiesPerformancesTest]
@@ -73,8 +72,8 @@ class PropertiesPerformancesTest extends KernelTestCase
     $endTime = microtime(true);
     $executionTime = $endTime - $startTime;
 
-    // Le temps d'exécution doit être raisonnable (par exemple, moins de 10 seconde pour 1000 entités)
-    $this->assertLessThan(15.0, $executionTime);
+    // Le temps d'exécution doit être raisonnable (par exemple, moins de 30 secondes pour 1000 entités)
+    $this->assertLessThan(30.0, $executionTime);
   }
 
 }

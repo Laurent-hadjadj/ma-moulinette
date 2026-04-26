@@ -41,7 +41,7 @@ class UrlBuilderServiceTest extends TestCase
         $logger->expects($this->once())
             ->method('error')
             ->with(
-                $this->equalTo('URLBuilder: URL invalide générée'),
+                $this->equalTo('❌ [URLBuilder] URL invalide générée'),
                 $this->arrayHasKey('fullUrl')
             );
 
