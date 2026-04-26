@@ -32,6 +32,5 @@ CREATE TABLE ma_moulinette.utilisateur
   preference json NOT NULL,
   last_activity_at TIMESTAMP WITHOUT TIME ZONE NULL DEFAULT NULL,
   date_modification TIMESTAMP DEFAULT NULL,
-  last_activity_at TIMESTAMP WITHOUT TIME ZONE NULL DEFAULT NULL;
   date_enregistrement TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
