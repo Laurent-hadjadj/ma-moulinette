@@ -335,7 +335,7 @@ class BuildMapHistoryService
         if ($coverage >= 80) { return 'A'; }
         if ($coverage >= 70) { return 'B'; }
         if ($coverage >= 50) { return 'C'; }
-        if ($coverage >= 30 && $coverage < 10) { return 'D'; }
+        if ($coverage >= 30 && $coverage < 50) { return 'D'; }
         return 'E';
     }
 
@@ -508,7 +508,7 @@ class BuildMapHistoryService
             'software_quality_medium_issues' => isset($measures['software_quality_medium_issues']) ? (int) $measures['software_quality_medium_issues'] : null,
         ];
 
-        // On calcul les ration de complexité
+        // On calcul les ratos de complexité
         $complexity = isset($measures['complexity']) ? (int) $measures['complexity'] : null;
         $cognitive_complexity = isset($measures['cognitive_complexity']) ? (int) $measures['cognitive_complexity'] : null;
         $ncloc = isset($measures['ncloc']) ? (int) $measures['ncloc'] : null;
