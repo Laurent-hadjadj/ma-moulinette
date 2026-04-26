@@ -59,6 +59,10 @@
   $('#date-version').text('').removeAttr('data-date-version');
   $('#suppress-warning').text('').removeAttr('data-s1309');
   $('#no-sonar').text('').removeAttr('data-nosonar');
+  $('#no-pmd').text('');
+  $('#check-style').text('');
+  $('#no-sonar-python').text('');
+  $('#no-sonar-php').text('');
   $('#todo-liste').text('').removeAttr('data-todo');
 
   $('#logger-liste').text('').removeAttr('data-logger-liste');
@@ -72,6 +76,13 @@
   $('#nombre-fichier').text('').removeAttr('data-nombre-fichier');
   $('#nombre-classe').text('').removeAttr('data-nombre-classe');
   $('#nombre-fonction').text('').removeAttr('data-nombre-fonction');
+  $('#nombre-statement').text('');
+
+  /** Complexité (Phase L.6) */
+  $('#complexity-ratio').text('');
+  $('#cognitive-complexity-ratio').text('');
+  $('#note-complexity').text('');
+  $('#note-cognitive-complexity').text('');
 
   $('#coverage').text('').removeAttr('data-coverage');
   $('#ratio-dette-technique').text('').removeAttr('data-sqale-debt-ratio');
@@ -99,6 +110,20 @@
   $('#note-security').text('').removeAttr('data-note-security');
   $('#note-sqale').text('').removeAttr('data-note-sqale');
   $('#note-menace-potentielle').text('').removeAttr('data-note-menace-potentielle');
+
+  /** Phase L.7 — 6 indicateurs supplémentaires */
+  $('#alert-status').text('');
+  $('#note-coverage').text('');
+  $('#note-duplication').text('');
+  $('#comment-lines').text('');
+  $('#comment-lines-density').text('');
+  $('#note-comment-lines').text('');
+  $('#test-errors').text('');
+  $('#test-failures').text('');
+  $('#skipped-tests').text('');
+  $('#test-success-density').text('');
+  $('#accepted-issues').text('');
+  $('#false-positive-issues').text('');
 
   $('#menace-potentielle-to-review-high').text('').removeAttr('data-menace-potentielle-to-review-high');
   $('#menace-potentielle-to-review-medium').text('').removeAttr('data-nombre-anomalie-critique');
