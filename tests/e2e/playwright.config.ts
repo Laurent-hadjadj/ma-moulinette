@@ -10,7 +10,7 @@ import { defineConfig, devices } from '@playwright/test';
  * Contraintes :
  *   - workers: 1 (état partagé en DB, pas de parallélisme)
  *   - fullyParallel: false (ordre garanti par tri alphabétique des fichiers)
- *   - DB clean obligatoire avant la 1ère spec : `bin/rebuild-database.ps1`
+ *   - DB clean obligatoire avant la 1ère spec : `bin/e2e/rebuild-database.ps1`
  *   - Symfony serve doit tourner sur localhost:8000 avec APP_ENV=test
  *     (pour activer SonarFixtureClientService — pas de vrai SonarQube requis)
  */
