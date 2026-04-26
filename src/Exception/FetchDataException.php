@@ -14,7 +14,7 @@ class FetchDataException extends Exception
     private $debug;
     private $render;
 
-    public function __construct(string $message, string $debug, array $render, int $code = 0, Exception $previous = null)
+    public function __construct(string $message, string $debug, array $render, int $code = 0, ?Exception $previous = null)
     {
         parent::__construct($message, $code, $previous);
         $this->debug = $debug;
