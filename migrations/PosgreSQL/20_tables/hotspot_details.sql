@@ -2,11 +2,12 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.0.0 - 30/11/2025                  ##
+##           V2.1.0 - 26/04/2026                  ##
 ##                                                ##
 ####################################################*/
 
 --- 2025-11-30 : Migration postGreSql 18
+--- 2026-04-26 : Augmentation de la taille de analyse_key
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette db_user;
@@ -38,7 +39,7 @@ CREATE TABLE ma_moulinette.hotspot_details
     line INT NOT NULL,
     message VARCHAR(255) NOT NULL,
 
-    hotspot_key VARCHAR(32) NOT NULL,
+    analyse_key VARCHAR(64) NOT NULL,
 
     mode_collecte VARCHAR(32),
     utilisateur_collecte VARCHAR(320),
