@@ -24,6 +24,9 @@ import { log } from '../../common/log.js';
 import {content_type, dateOptions, http_400, http_401, http_403, http_404, http_406, http_500,
 http_503, http_504, un, deux, trois, quatre, cinq, dix, cent, dixMille} from '../../common/constante.js';
 
+/** Helpers d'affichage null-safe (null/undefined/NaN -> "-") */
+import { displayNumber, displayPercent, displayValue } from '../../common/displayHelper.js';
+
 let token;
 import("../../common/secrets.local.js").then((module) => {
   token = module.token;
@@ -233,13 +236,17 @@ export const remplissage = async function(maven_key) {
           return;
         }
 
-      $('#suppress-warning').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.s1309));
-      $('#no-sonar').html( new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.nosonar));
+      $('#suppress-warning').html(displayNumber(t.suppress_warning));
+      $('#no-pmd').html(displayNumber(t.no_pmd));
+      $('#check-style').html(displayNumber(t.check_style));
+      $('#no-sonar').html(displayNumber(t.java_no_sonar));
+      $('#no-sonar-python').html(displayNumber(t.python_no_sonar));
+      $('#no-sonar-php').html(displayNumber(t.php_no_sonar));
       const t5 = document.getElementById('suppress-warning');
       const t6 = document.getElementById('no-sonar');
-      t5.dataset.s1309=(t.s1309);
-      t6.dataset.nosonar=(t.nosonar);
-      log(' - 🎨 [Peinture] Affichage des informations NoSOnar.');
+      t5.dataset.s1309=(t.suppress_warning);
+      t6.dataset.nosonar=(t.java_no_sonar);
+      log(' - 🎨 [Peinture] Affichage des informations NoSonar.');
     } catch(error) {
           ErrorButtonAffiche();
           const trace = prepareTechnicalDetails(error);
@@ -281,12 +288,12 @@ export const remplissage = async function(maven_key) {
       }
 
     /** On injecte dans la fenêtre modale les résultats */
-    $('#todo-liste').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.todo));
-    $('#js-java').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.java));
-    $('#js-javascript').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.javascript));
-    $('#js-typescript').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.typescript));
-    $('#js-html').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.html));
-    $('#js-xml').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.xml));
+    $('#todo-liste').html(displayNumber(t.todo));
+    $('#js-java').html(displayNumber(t.java));
+    $('#js-javascript').html(displayNumber(t.javascript));
+    $('#js-typescript').html(displayNumber(t.typescript));
+    $('#js-html').html(displayNumber(t.html));
+    $('#js-xml').html(displayNumber(t.xml));
 
     /* On ajoute la liste détaillée des fichiers */
     let l, cutRule, cutComponent;
@@ -382,12 +389,12 @@ export const remplissage = async function(maven_key) {
     logger3.dataset.loggerError = (t.logger_error == -1) ? '0' : t.logger_error;
     logger4.dataset.loggerDebug = (t.logger_debug == -1) ? '0' : t.logger_debug;
 
-    $('#logger-liste').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format((t.total > 0) ? t.total : 0));
-    $('#js-logger-total').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format((t.total > 0) ? t.total : 0));
-    $('#js-logger-info').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format((t.logger_info>0) ? t.logger_info : 0));
-    $('#js-logger-warn').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format((t.logger_warn > 0) ? t.logger_warn : 0));
-    $('#js-logger-error').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format((t.logger_error > 0) ? t.logger_error : 0));
-    $('#js-logger-debug').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format((t.logger_debug > 0) ? t.logger_debug : 0));
+    $('#logger-liste').html(displayNumber(t.total));
+    $('#js-logger-total').html(displayNumber(t.total));
+    $('#js-logger-info').html(displayNumber(t.logger_info));
+    $('#js-logger-warn').html(displayNumber(t.logger_warn));
+    $('#js-logger-error').html(displayNumber(t.logger_error));
+    $('#js-logger-debug').html(displayNumber(t.logger_debug));
 
     log(' - 🎨 [Peinture] Affichage des informations sur les loggers JAVA.');
   } catch(error) {
@@ -434,7 +441,7 @@ export const remplissage = async function(maven_key) {
       }
 
         /** On affiche les langages supportés */
-    const jsonObject=t.languages;
+    const jsonObject=t.ncloc_language_distribution;
     let i=0;
     let total=0;
 
@@ -463,15 +470,19 @@ export const remplissage = async function(maven_key) {
       }
     }
 
-    $('#nombre-ligne').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.lines));
-    $('#nombre-ligne-de-code').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.ncloc));
+    $('#nombre-ligne').html(displayNumber(t.lines));
+    $('#nombre-ligne-de-code').html(displayNumber(t.ncloc));
 
-    $('#nombre-fichier').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.files));
-    $('#nombre-classe').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.classes));
-    $('#nombre-fonction').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.functions));
+    $('#nombre-fichier').html(displayNumber(t.files));
+    $('#nombre-classe').html(displayNumber(t.classes));
+    $('#nombre-fonction').html(displayNumber(t.functions));
+    $('#nombre-statement').html(displayNumber(t.statements));
 
-    $('#coverage').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseFloat(t.coverage)/cent));
-    $('#ratio-dette-technique').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseFloat(t.sqale_debt_ratio)/cent));
+    $('#complexity-ratio').html(displayNumber(t.complexity_ratio));
+    $('#cognitive-complexity-ratio').html(displayNumber(t.cognitive_complexity_ratio));
+
+    $('#coverage').html(displayPercent(t.coverage));
+    $('#ratio-dette-technique').html(displayPercent(t.sqale_debt_ratio));
 
     /** On colorise le résultat */
     if (t.sqale_debt_ratio <= 30){
@@ -491,9 +502,59 @@ export const remplissage = async function(maven_key) {
       $('#ratio-dette-technique').addClass('couleur-bordeaux');
     }
 
-    $('#duplicated-lines-density').html(new Intl.NumberFormat('fr-FR', { style: 'percent' }).format(parseFloat(t.duplicated_lines_density,10)/cent));
-    $('#tests').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.tests));
-    $('#violations').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.issues));
+    $('#duplicated-lines-density').html(displayPercent(t.duplicated_lines_density));
+    $('#tests').html(displayNumber(t.tests));
+    $('#violations').html(displayNumber(t.violations));
+
+    /**
+     * Notes SonarQube pour la version courante.
+     * Les ratings (reliability/security/sqale) viennent de la réponse mesures
+     * sous forme de lettres 'A'..'E' (déjà converties par BuildMapHistoryService).
+     * Si null/absent : affichage "-" sans classe couleur.
+     */
+    const colorByRating = {
+      'A': 'note-vert1',
+      'B': 'note-vert2',
+      'C': 'note-jaune',
+      'D': 'note-orange',
+      'E': 'note-rouge'
+    };
+    const renderRating = (selector, rating) => {
+      const cssClass = colorByRating[rating] ?? '';
+      $(selector).html(`<span class="${cssClass}">${displayValue(rating)}</span>`);
+    };
+    renderRating('#note-reliability', t.reliability_rating);
+    renderRating('#note-security', t.security_rating);
+    renderRating('#note-sqale', t.sqale_rating);
+    renderRating('#note-menace-potentielle', t.security_review_rating);
+    renderRating('#note-complexity', t.complexity_rating);
+    renderRating('#note-cognitive-complexity', t.cognitive_complexity_rating);
+    renderRating('#note-coverage', t.coverage_rating);
+    renderRating('#note-duplication', t.duplicated_lines_rating);
+    renderRating('#note-comment-lines', t.comment_lines_rating);
+
+    /** Quality Gate : OK / WARN / ERROR */
+    const colorByQualityGate = {
+      'OK': 'note-vert1',
+      'WARN': 'note-jaune',
+      'ERROR': 'note-rouge'
+    };
+    const qgClass = colorByQualityGate[t.alert_status] ?? '';
+    $('#alert-status').html(`<span class="${qgClass}">${displayValue(t.alert_status)}</span>`);
+
+    /** Documentation */
+    $('#comment-lines').html(displayNumber(t.comment_lines));
+    $('#comment-lines-density').html(displayPercent(t.comment_lines_density));
+
+    /** Détail Tests */
+    $('#test-errors').html(displayNumber(t.test_errors));
+    $('#test-failures').html(displayNumber(t.test_failures));
+    $('#skipped-tests').html(displayNumber(t.skipped_tests));
+    $('#test-success-density').html(displayPercent(t.test_success_density));
+
+    /** Statut anomalies (workflow de tri) */
+    $('#accepted-issues').html(displayNumber(t.accepted_issues));
+    $('#false-positive-issues').html(displayNumber(t.false_positive_issues));
 
     //Historique
     const t7 = document.getElementById('nombre-ligne');
@@ -517,7 +578,7 @@ export const remplissage = async function(maven_key) {
     t9a.dataset.sqaleDebtRatio = t.sqale_debt_ratio;
     t10.dataset.duplicatedLinesDensity = t.duplicated_lines_density;
     t11.dataset.tests = t.tests;
-    t12.dataset.violations = t.issues;
+    t12.dataset.violations = t.violations;
     log(' - 🎨 [Peinture] Affichage des informations sur les mesures.');
   } catch(error) {
       ErrorButtonAffiche();
@@ -572,9 +633,9 @@ export const remplissage = async function(maven_key) {
       t13.dataset.detteMinute=t.detteMinute;
 
       /* Nombre d'anomalie */
-      $('#nombre-bug').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bug));
-      $('#nombre-vulnerability').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerability));
-      $('#nombre-mauvaise-pratique').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmell));
+      $('#nombre-bug').html(displayNumber(t.bug));
+      $('#nombre-vulnerability').html(displayNumber(t.vulnerability));
+      $('#nombre-mauvaise-pratique').html(displayNumber(t.codeSmell));
       /** 10000 = le nombre max des retours possibles */
       if (t.codeSmell===dixMille) {
         $('#nombre-mauvaise-pratique').addClass('couleur-rouge');
@@ -700,73 +761,6 @@ export const remplissage = async function(maven_key) {
       t26.dataset.nombreAnomalieMajeur=t.major;
       t27.dataset.nombreAnomalieMineur=t.minor;
 
-      /** On récupère les notes SonarQube pour la version courante */
-      let couleur1, couleur2, couleur3 = '';
-      const tNotes = ['', 'A', 'B', 'C', 'D', 'E'];
-
-      const noteVert1 = 'note-vert1';
-      const noteVert2 = 'note-vert2';
-      const noteJaune = 'note-jaune';
-      const noteOrange = 'note-orange';
-      const noteRouge = 'note-rouge';
-
-      if (t.noteReliability === un ) {
-        couleur1 = noteVert1;
-      }
-      if (t.noteSecurity === un) {
-        couleur2 = noteVert1;
-      }
-      if (t.noteSqale === un) {
-        couleur3 = noteVert1;
-      }
-
-      if (t.noteReliability === deux) {
-        couleur1 = noteVert2;
-      }
-      if (t.noteSecurity === deux) {
-        couleur2 = noteVert2;
-      }
-      if (t.noteSqale === deux) {
-        couleur3 = noteVert2;
-      }
-
-      if (t.noteReliability === trois) {
-        couleur1 = noteJaune;
-      }
-      if (t.noteSecurity === trois) {
-        couleur2 = noteJaune;
-      }
-      if (t.noteSqale === trois) {
-        couleur3 = noteJaune;
-      }
-
-      if (t.noteReliability === quatre) {
-        couleur1 = noteOrange;
-      }
-      if (t.noteSecurity === quatre) {
-        couleur2 = noteOrange;
-      }
-      if (t.noteSqale === quatre) {
-        couleur3 = noteOrange;
-      }
-
-      if (t.noteReliability === cinq) {
-        couleur1 = noteRouge;
-      }
-      if (t.noteSecurity === cinq) {
-        couleur2 = noteRouge;
-      }
-      if (t.noteSqale === cinq) {
-        couleur3 = noteRouge;
-      }
-
-      const noteReliability = tNotes[Number(t.noteReliability)];
-      const noteSecurity = tNotes[Number(t.noteSecurity)];
-      const noteSqale = tNotes[Number(t.noteSqale)];
-
-      $('#note-reliability').html(`<span class="${couleur1}">${noteReliability}</span>`);
-      $('#note-security').html(`<span class="${couleur2}">${noteSecurity}</span>`);
-      $('#note-sqale').html(`<span class="${couleur3}">${noteSqale}</span>`);
       log(' - 🎨 [Peinture] Affichage des informations sur les anomalies.');
     } catch(error) {
           ErrorButtonAffiche();
@@ -811,25 +805,6 @@ export const remplissage = async function(maven_key) {
           return;
       }
 
-      let couleur='';
-
-      if (t.note === 'E') {
-          couleur = 'note-rouge';
-      }
-      if (t.note === 'D') {
-          couleur = 'note-orange';
-      }
-      if (t.note === 'C') {
-          couleur = 'note-jaune';
-      }
-      if (t.note === 'B') {
-          couleur = 'note-vert2';
-        }
-      if (t.note === 'A') {
-          couleur = 'note-vert1';
-      }
-
-      $('#note-menace-potentielle').html(`<span class="${couleur}">${t.note}</span>`);
       log(' - 🎨 [Peinture] Affichage des informations sur les menaces potentielles.');
     } catch(error) {
           ErrorButtonAffiche();
@@ -874,11 +849,11 @@ export const remplissage = async function(maven_key) {
       }
 
 
-    $('#js-bug-blocker').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bugBlocker));
-    $('#js-bug-critical').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bugCritical));
-    $('#js-bug-major').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bugMajor));
-    $('#js-bug-minor').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bugMinor));
-    $('#js-bug-info').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.bugInfo));
+    $('#js-bug-blocker').html(displayNumber(t.bugBlocker));
+    $('#js-bug-critical').html(displayNumber(t.bugCritical));
+    $('#js-bug-major').html(displayNumber(t.bugMajor));
+    $('#js-bug-minor').html(displayNumber(t.bugMinor));
+    $('#js-bug-info').html(displayNumber(t.bugInfo));
 
     const t28 = document.getElementById('js-bug-blocker');
     const t29 = document.getElementById('js-bug-critical');
@@ -891,11 +866,11 @@ export const remplissage = async function(maven_key) {
     t31.dataset.bugMinor = t.bugMinor;
     t32.dataset.bugInfo = t.bugInfo;
 
-    $('#js-vulnerability-blocker').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilityBlocker));
-    $('#js-vulnerability-critical').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilityCritical));
-    $('#js-vulnerability-major').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilityMajor));
-    $('#js-vulnerability-minor').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilityMinor));
-    $('#js-vulnerability-info').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.vulnerabilityInfo));
+    $('#js-vulnerability-blocker').html(displayNumber(t.vulnerabilityBlocker));
+    $('#js-vulnerability-critical').html(displayNumber(t.vulnerabilityCritical));
+    $('#js-vulnerability-major').html(displayNumber(t.vulnerabilityMajor));
+    $('#js-vulnerability-minor').html(displayNumber(t.vulnerabilityMinor));
+    $('#js-vulnerability-info').html(displayNumber(t.vulnerabilityInfo));
 
     const t33 = document.getElementById('js-vulnerability-blocker');
     const t34 = document.getElementById('js-vulnerability-critical');
@@ -908,11 +883,11 @@ export const remplissage = async function(maven_key) {
     t36.dataset.vulnerabilityMinor = t.vulnerabilityMinor;
     t37.dataset.vulnerabilityInfo = t.vulnerabilityInfo;
 
-    $('#js-code-smell-blocker').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmellBlocker));
-    $('#js-code-smell-critical').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmellCritical));
-    $('#js-code-smell-major').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmellMajor));
-    $('#js-code-smell-minor').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmellMinor));
-    $('#js-code-smell-info').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.codeSmellInfo));
+    $('#js-code-smell-blocker').html(displayNumber(t.codeSmellBlocker));
+    $('#js-code-smell-critical').html(displayNumber(t.codeSmellCritical));
+    $('#js-code-smell-major').html(displayNumber(t.codeSmellMajor));
+    $('#js-code-smell-minor').html(displayNumber(t.codeSmellMinor));
+    $('#js-code-smell-info').html(displayNumber(t.codeSmellInfo));
 
     const t38 = document.getElementById('js-code-smell-blocker');
     const t39 = document.getElementById('js-code-smell-critical');
@@ -989,20 +964,20 @@ export const afficheHotspotDetails = async function (maven_key){
       <tr id="to-review">
         <td class="open-sans text-left">Review</td>
         <td id="menace-potentielle-to-review-high" class="text-center stat" data-menace-potentielle-to-review-high="${t.to_review_high}">
-          ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.to_review_high)}</td>
+          ${displayNumber(t.to_review_high)}</td>
         <td id="menace-potentielle-to-review-medium" class="text-center stat" data-menace-potentielle-to-review-medium="${t.to_review_medium}">
-          ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.to_review_medium)}</td>
+          ${displayNumber(t.to_review_medium)}</td>
         <td id="menace-potentielle-to-review-low" class="text-center stat" data-menace-potentielle-to-review-low="${t.to_review_low}">
-          ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.to_review_low)}</td>
+          ${displayNumber(t.to_review_low)}</td>
       </tr>
       <tr id="reviewed">
         <td class="open-sans text-left">Reviewed</td>
         <td id="menace-potentielle-reviewed-high" class="text-center stat" data-menace-potentielle-reviewed-high="${t.reviewed_high}">
-          ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.reviewed_high)}</td>
+          ${displayNumber(t.reviewed_high)}</td>
         <td id="menace-potentielle-reviewed-medium" class="text-center stat" data-menace-potentielle-reviewed-medium="${t.reviewed_medium}">
-          ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.reviewed_medium)}</td>
+          ${displayNumber(t.reviewed_medium)}</td>
         <td id="menace-potentielle-reviewed-low" class="text-center stat" data-menace-potentielle-reviewed-low="${t.to_review_low}">
-          ${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.reviewed_low)}</td>
+          ${displayNumber(t.reviewed_low)}</td>
       </tr>`;
 
     $('#tableau-menace-potentielle').append(str);
