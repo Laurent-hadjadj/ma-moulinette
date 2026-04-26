@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.5.0 - 07/04/2026                  ##
+##           V2.6.0 - 26/04/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -14,6 +14,8 @@
 --- 2026-03-29 : Ajout de coverage_rating et duplicated_lines_rating.
 --- 2026-04-07 : Ajout des commentaires sur les tables groupe_utilisateur, groupe_fonctionnel et utilisateur
 --- 2026-04-07 : Ajout des commentaires sur les colonnes de la table portefeuille
+--- 2026-04-26 : Correction des commentaires date et type de la table information_projet en date_analyse et type_analyse
+--- 2026-04-26 : Ajout des commentaires sur les colonnes de la table user_role_log
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette db_user
@@ -444,9 +446,9 @@ COMMENT ON COLUMN ma_moulinette.hotspots.date_enregistrement IS 'Date d’enregi
 COMMENT ON COLUMN ma_moulinette.information_projet.id IS 'Identifiant unique pour chaque instance de InformationProjet';
 COMMENT ON COLUMN ma_moulinette.information_projet.maven_key IS 'Clé Maven du projet';
 COMMENT ON COLUMN ma_moulinette.information_projet.analyse_key IS 'Clé d’analyse du projet';
-COMMENT ON COLUMN ma_moulinette.information_projet.date IS 'Date de l’analyse du projet';
+COMMENT ON COLUMN ma_moulinette.information_projet.date_analyse IS 'Date de l’analyse du projet';
 COMMENT ON COLUMN ma_moulinette.information_projet.project_version IS 'Version du projet lors de l’analyse';
-COMMENT ON COLUMN ma_moulinette.information_projet.type IS 'Type d’analyse effectuée';
+COMMENT ON COLUMN ma_moulinette.information_projet.type_analyse IS 'Type d’analyse effectuée';
 COMMENT ON COLUMN ma_moulinette.information_projet.version_sonar IS 'Nombre total de version sur le serveur SonarQube';
 COMMENT ON COLUMN ma_moulinette.information_projet.version_release_sonar IS 'Nombre de version Release sur le serveur SonarQube';
 COMMENT ON COLUMN ma_moulinette.information_projet.version_snapshot_sonar IS 'Nombre de version Snapshot sur le serveur SonarQube';
@@ -828,6 +830,16 @@ COMMENT ON COLUMN ma_moulinette.utilisateur.reset_password_count IS 'Nombre de t
 COMMENT ON COLUMN ma_moulinette.utilisateur.last_activity_at IS 'Dernière connexion.';
 COMMENT ON COLUMN ma_moulinette.utilisateur.date_modification IS 'Date de modification';
 COMMENT ON COLUMN ma_moulinette.utilisateur.date_enregistrement IS 'Date de création';
+
+-- ============================================
+-- TABLE user_role_log
+-- ============================================
+COMMENT ON COLUMN ma_moulinette.user_role_log.old_roles IS 'Rôles anciens de l’utilisateur';
+COMMENT ON COLUMN ma_moulinette.user_role_log.new_roles IS 'Nouveaux rôles de l’utilisateur';
+COMMENT ON COLUMN ma_moulinette.user_role_log.old_active IS 'Ancien statut actif de l’utilisateur';
+COMMENT ON COLUMN ma_moulinette.user_role_log.new_active IS 'Nouveau statut actif de l’utilisateur';
+COMMENT ON COLUMN ma_moulinette.user_role_log.alerts IS 'Alertes associées au log';
+COMMENT ON COLUMN ma_moulinette.user_role_log.created_at IS 'Date de création du log';
 
 -- ============================================
 -- TABLE user_agent_analysis
