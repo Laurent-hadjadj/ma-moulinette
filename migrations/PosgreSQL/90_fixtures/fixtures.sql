@@ -35,7 +35,8 @@ VALUES
 ('1.5.0-RC1', '2022-10-06', NOW()),
 ('1.5.0', '2022-10-12', NOW()),
 ('1.6.0', '2022-11-29', NOW()),
-('2.0.0', '2026-03-31', NOW());
+('2.0.0', '2026-03-31', NOW()),
+('2.1.0', '2026-04-26', NOW());
 
 -- =====================================================================
 -- Table : ma_moulinette.utilisateur
@@ -61,85 +62,10 @@ true,
 '12345678901234567890123456'
 );
 
--- AURÉLIE PETIT COEUR
-INSERT INTO ma_moulinette.utilisateur
-(preference, reset_password, courriel, roles, password, prenom, nom, date_enregistrement, actif, avatar, liste_groupe_fonctionnel, groupe_utilisateur, groupe_id)
-VALUES (
-'{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false,"bookmark":false},
-"suivi_projet":[],"favori_projet":[],"favori_version":[]}',
-true,
-'aurelie.petit-coeur@ma-moulinette.fr',
-'["ROLE_GESTIONNAIRE"]',
-'$2y$13$HMk1rgFp5OiveduUd.dNXeaxq1y/HiActAv3hiMpAFCNsCjNHIFya',
-'Aurélie',
-'PETIT COEUR',
-'1980-01-01 00:00:00',
-false,
-'fille-1/05.png',
-'["@AUCUN"]',
-'En attente',
-'00000000000000000000000000'
-);
-
--- EMMA VAN DE BERG
-INSERT INTO ma_moulinette.utilisateur
-(preference, reset_password, courriel, roles, password, prenom, nom, date_enregistrement, actif, avatar, liste_groupe_fonctionnel, groupe_utilisateur, groupe_id)
-VALUES (
-'{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false,"bookmark":false},
-"suivi_projet":[],"favori_projet":[],"favori_version":[]}',
-true,
-'emma.van-de-berg@ma-moulinette.fr',
-'["ROLE_BATCH"]',
-'$2y$13$BrmmLZ3WiFwZcOllwh9zNOrjBRH9RSLEdLCW2y8by5CFX5zS.b1MG',
-'Emma',
-'VAN DE BERG',
-'1980-01-01 00:00:00',
-false,
-'fille-2/03.png',
-'["@AUCUN"]',
-'En attente',
-'00000000000000000000000000'
-);
-
--- NATHAN JONES
-INSERT INTO ma_moulinette.utilisateur
-(preference, reset_password, courriel, roles, password, prenom, nom, date_enregistrement, actif, avatar, liste_groupe_fonctionnel, groupe_utilisateur, groupe_id)
-VALUES (
-'{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false,"bookmark":false},
-"suivi_projet":[],"favori_projet":[],"favori_version":[]}',
-true,
-'nathan.jones@ma-moulinette.fr',
-'["ROLE_COLLECTE"]',
-'$2y$13$hwX0QJOw8fSgjiBq1CL/FuJsf4miOeLJRBw8jzt1WrsV/qLR.DxN.',
-'Nathan',
-'Jones',
-'1980-01-01 00:00:00',
-false,
-'garcon-1/05.png',
-'["@AUCUN"]',
-'En attente',
-'00000000000000000000000000'
-);
-
--- JOSH LIBERMAN
-INSERT INTO ma_moulinette.utilisateur
-(preference, reset_password, courriel, roles, password, prenom, nom, date_enregistrement, actif, avatar, liste_groupe_fonctionnel, groupe_utilisateur, groupe_id)
-VALUES (
-'{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false,"bookmark":false},
-"suivi_projet":[],"favori_projet":[],"favori_version":[]}',
-true,
-'josh.liberman@ma-moulinette.fr',
-'["ROLE_UTILISATEUR"]',
-'$2y$13$ON.wYv3nmwkB9N3eOSubt.HFA46NjBHgyvOo6PBs3PVcCPtRb5MSa',
-'Josh',
-'LIBERMAN',
-'1980-01-01 00:00:00',
-false,
-'garcon-1/10.png',
-'["@AUCUN"]',
-'En attente',
-'00000000000000000000000000'
-);
+-- Les 4 utilisateurs de test (aurelie, emma, nathan, josh) + les 3 nouveaux
+-- (sophie, lucas, mia) sont desormais dans fixtures-e2e.sql,
+-- charges a part pour les tests E2E Playwright (Phase K).
+-- fixtures.sql ne contient plus que admin + les referentiels OWASP.
 
 -- =====================================================================
 -- Groupe par défaut
