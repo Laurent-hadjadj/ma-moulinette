@@ -2,13 +2,21 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.1.1 - 13/04/2026                  ##
+##           V2.2.0 - 26/04/2026                  ##
 ##                                                ##
 ####################################################*/
 
 --- 2025-11-30 : Migration postGreSql 18
 --- 2026-02-05 : Ajout de l'index pour visitor_id et user_id de la table user_agent_analysis
 --- 2026-04-13 : Corrections des indexes pour la tables portefeuille (titre, groupe)
+--- 2026-04-26 : Suppression de  idx_batch_execution_journal_job et idx_batch_execution_journal_date_execution de la table batch_execution_journal (non utilisés et peu sélectifs)
+--- 2026-04-26 : Suppression des indexes pour la table batch_profiling en double (portefeuille et utilisateur sont déjà indexés dans un index combiné)
+--- 2026-04-26 : Renommage de idx_groupe_date en idx_groupe_fonctionnel_date de la table groupe_fonctionnel pour plus de clarté
+--- 2026-04-26 : Correction de la colonne date en date_analyse de la table information_projet
+--- 2026-04-26 : Suppression des indexes de la tables notes
+--- 2026-04-26 : Ajout des indexes pour user_role_log
+
+
 
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
@@ -52,19 +60,15 @@ CREATE INDEX IF NOT EXISTS idx_anomalie_details_name ON ma_moulinette.anomalie_d
 -- batch_execution
 CREATE INDEX IF NOT EXISTS idx_batch_execution_traitement_id ON ma_moulinette.batch_execution(traitement_id);
 CREATE INDEX IF NOT EXISTS idx_batch_execution_execution_id ON ma_moulinette.batch_execution (execution_id);
-CREATE INDEX IF NOT EXISTS idx_batch_execution_journal_job ON ma_moulinette.batch_execution_journal(job_id);
 CREATE INDEX IF NOT EXISTS idx_batch_execution_date_enregistrement ON ma_moulinette.batch_execution(date_enregistrement);
-CREATE INDEX IF NOT EXISTS idx_batch_execution_journal_date_execution ON ma_moulinette.batch_execution_journal(date_execution);
 
 -- batch_execution_journal
 CREATE INDEX IF NOT EXISTS idx_batch_exec_journal_job_id ON ma_moulinette.batch_execution_journal (job_id);
 CREATE INDEX IF NOT EXISTS idx_batch_exec_journal_date ON ma_moulinette.batch_execution_journal (date_execution);
 CREATE INDEX IF NOT EXISTS idx_batch_exec_journal_nom_projet ON ma_moulinette.batch_execution_journal (nom_projet);
 
--- batch_profiling
-CREATE INDEX IF NOT EXISTS idx_batch_profiling_portefeuille ON ma_moulinette.batch_profiling (portefeuille);
-CREATE INDEX IF NOT EXISTS idx_batch_profiling_date ON ma_moulinette.batch_profiling (date_execution DESC);
-CREATE INDEX IF NOT EXISTS idx_batch_profiling_utilisateur ON ma_moulinette.batch_profiling (utilisateur);
+-- batch_profiling — voir bloc complet documenté plus bas (L215+)
+-- (les 3 indexes portefeuille/date/utilisateur sont creees la-bas)
 
 -- batch_traitement
 CREATE INDEX IF NOT EXISTS idx_batch_traitement_portefeuille ON ma_moulinette.batch_traitement(portefeuille);
@@ -85,7 +89,7 @@ CREATE INDEX IF NOT EXISTS idx_groupe_date ON ma_moulinette.groupe_utilisateur (
 
 -- groupe fonctionnel
 CREATE INDEX IF NOT EXISTS idx_groupe_groupe_fonctionnel ON ma_moulinette.groupe_fonctionnel (groupe_fonctionnel);
-CREATE INDEX IF NOT EXISTS idx_groupe_date ON ma_moulinette.groupe_fonctionnel (date_enregistrement);
+CREATE INDEX IF NOT EXISTS idx_groupe_fonctionnel_date ON ma_moulinette.groupe_fonctionnel (date_enregistrement);
 
 -- historique
 CREATE INDEX IF NOT EXISTS idx_historique_maven_key ON ma_moulinette.historique (maven_key);
@@ -111,7 +115,7 @@ CREATE INDEX IF NOT EXISTS idx_hotspots_date_enregistrement ON ma_moulinette.hot
 
 -- information_projet
 CREATE INDEX IF NOT EXISTS idx_information_projet_maven_key ON ma_moulinette.information_projet (maven_key);
-CREATE INDEX IF NOT EXISTS idx_information_projet_date ON ma_moulinette.information_projet (date);
+CREATE INDEX IF NOT EXISTS idx_information_projet_date ON ma_moulinette.information_projet (date_analyse);
 CREATE INDEX IF NOT EXISTS idx_information_projet_enregistrement ON ma_moulinette.information_projet (date_enregistrement);
 
 -- liste_projet
@@ -136,11 +140,6 @@ CREATE INDEX IF NOT EXISTS idx_mesures_date ON ma_moulinette.mesures (date_enreg
 -- nosonar
 CREATE INDEX IF NOT EXISTS idx_no_sonar_maven_key ON ma_moulinette.no_sonar (maven_key);
 CREATE INDEX IF NOT EXISTS idx_no_sonar_date_enregistrement ON ma_moulinette.no_sonar (date_enregistrement);
-
--- notes
-CREATE INDEX IF NOT EXISTS idx_notes_maven_key ON ma_moulinette.notes (maven_key);
-CREATE INDEX IF NOT EXISTS idx_notes_type ON ma_moulinette.notes (type);
-CREATE INDEX IF NOT EXISTS idx_notes_date ON ma_moulinette.notes (date_enregistrement);
 
 -- owasp_top10
 CREATE INDEX IF NOT EXISTS idx_owasp_top10_year ON ma_moulinette.owasp_top10 (year);
@@ -191,6 +190,11 @@ CREATE INDEX IF NOT EXISTS idx_todo_maven_rule ON ma_moulinette.todo (maven_key,
 CREATE INDEX IF NOT EXISTS idx_utilisateur_courriel ON ma_moulinette.utilisateur (courriel);
 CREATE INDEX IF NOT EXISTS idx_utilisateur_nom_prenom ON ma_moulinette.utilisateur (nom, prenom);
 CREATE INDEX IF NOT EXISTS idx_utilisateur_actif ON ma_moulinette.utilisateur (actif);
+
+--- user_role_log
+CREATE INDEX IF NOT EXISTS idx_user_role_log_user_email ON ma_moulinette.user_role_log (user_email);
+CREATE INDEX IF NOT EXISTS idx_user_role_log_editor_email ON ma_moulinette.user_role_log (editor_email);
+CREATE INDEX IF NOT EXISTS idx_user_role_log_created_at ON ma_moulinette.user_role_log (created_at);
 
 -- user_agent_analysis
 
