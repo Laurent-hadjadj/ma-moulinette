@@ -2,11 +2,12 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.0.0 - 30/11/2025                  ##
+##           V2.1.0 - 26/04/2026                  ##
 ##                                                ##
 ####################################################*/
 
 --- 2025-11-30 : Migration postGreSql 18
+--- 2026-04-26 : Augmentation de la taille de hotspot_key
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette db_user;
@@ -19,7 +20,7 @@ CREATE TABLE ma_moulinette.hotspots
   maven_key VARCHAR(255) NOT NULL,
   version VARCHAR(32) NOT NULL,
   date_version TIMESTAMPTZ NOT NULL,
-  hotspot_key VARCHAR(32) NOT NULL,
+  hotspot_key VARCHAR(64) NOT NULL,
   security_category VARCHAR(64) NOT NULL,
   rule_key VARCHAR(128) NOT NULL,
   probability VARCHAR(8) NOT NULL,
