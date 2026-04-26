@@ -918,7 +918,7 @@ class Mesures
     // -------------------------
 
     #[ORM\Column(
-        name: 'security_hotspot',
+        name: 'security_hotspots',
         type: Types::INTEGER,
         nullable: true,
         options: ['comment' => 'Nombre total de menaces potentielles.']
