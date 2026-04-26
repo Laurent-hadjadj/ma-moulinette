@@ -78,7 +78,7 @@ class Historique
     // Informations sur le projet
     // -------------------------
     #[ORM\Column(
-        name: 'nom_projet',
+        name: 'project_name',
         type: Types::STRING,
         length: 128,
         nullable: false,
@@ -94,14 +94,14 @@ class Historique
     #[ORM\Column(
         name: 'analyse_key',
         type: Types::STRING,
-        length: 32,
+        length: 64,
         nullable: false,
-        options: ['comment' => 'Clé d’analyse du projet']
+        options: ['comment' => 'Clé d’analyse du projet (UUID SonarQube 36 chars, marge à 64)']
     )]
     #[Assert\NotBlank(message: "La clé d'analyse ne peut pas être vide.")]
     #[Assert\Length(
-        max: 32,
-        maxMessage: "La clé d'analyse ne doit pas dépasser 32 caractères."
+        max: 64,
+        maxMessage: "La clé d'analyse ne doit pas dépasser 64 caractères."
     )]
     private string $analyseKey;
 
@@ -1146,7 +1146,7 @@ class Historique
     // -------------------------
 
     #[ORM\Column(
-        name: 'security_hotspot',
+        name: 'security_hotspots',
         type: Types::INTEGER,
         nullable: true,
         options: ['comment' => 'Nombre total de menaces potentielles.']
