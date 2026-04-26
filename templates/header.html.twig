@@ -17,7 +17,7 @@
     <div class="logo-container">
       <div class="logo">
         {# WCAG 1.1.1 : alt descriptif (ex. "Logo de {{ marque_entreprise_long }}") remplace "Marque entreprise" générique ; suppression du aria-label redondant avec les alt des images #}
-        <img class="show-for-medium marque-entreprise" src="{{ asset('images/' ~logo_entreprise) }}" alt="Logo de {{ marque_entreprise_long ?? 'l''entreprise' }}">
+        <img class="show-for-medium marque-entreprise" src="{{ asset('images/' ~logo_entreprise) }}" alt="Logo de {{ marque_entreprise_long ?? 'l\'entreprise' }}">
         {# WCAG 1.1.1 : précision de la version dans l'alt du logo #}
         <img class="marque-mm" src="{{ asset('images/logo-mm-300x150.min.svg') }}" alt="Logo Ma-Moulinette v{{ version }}">
       </div>
