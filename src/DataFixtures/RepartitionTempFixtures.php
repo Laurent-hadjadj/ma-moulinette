@@ -23,14 +23,15 @@ class RepartitionTempFixtures extends Fixture
 
       /** création du jeu de données pour la table RepartitionTemp */
       foreach($types as $type){
-        $i = \random_int(0,4);
-        $repartitionTemp=(new RepartitionTemp())
-            ->setComponent(static::$component)
-            ->setType($type)
-            ->setSeverity($severities[$i])
-            ->setSetup(static::$setup)
-            ->setMavenKey(static::$mavenKey);
-        $manager->persist($repartitionTemp);
+        foreach($severities as $severity){
+          $repartitionTemp=(new RepartitionTemp())
+              ->setComponent(static::$component)
+              ->setType($type)
+              ->setSeverity($severity)
+              ->setSetup(static::$setup)
+              ->setMavenKey(static::$mavenKey);
+          $manager->persist($repartitionTemp);
+        }
       }
 
       /** Enregistrement des données dans la base de tests */
