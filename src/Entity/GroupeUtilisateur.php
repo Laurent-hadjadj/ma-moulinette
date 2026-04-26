@@ -34,7 +34,7 @@ class GroupeUtilisateur
     private $id;
 
     #[ORM\Column(
-        name: 'groupe_fonctionnel',
+        name: 'groupe_utilisateur',
         type: Types::STRING,
         length: 64,
         nullable: false,
