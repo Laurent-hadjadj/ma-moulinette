@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.5.2 - 29/03/2026                  ##
+##           V2.6.0 - 26/04/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -14,6 +14,7 @@
 --- 2026-03-30 : Renommage nom_projet en project_name.
 --- 2026-03-30 : Ajout de coverage_rating.
 --- 2026-03-30 : Ajout des attributs duplicated_lines_rating.
+--- 2026-04-26 : Ajustement de la taille de analyse_key
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette db_user;
@@ -26,7 +27,7 @@ CREATE TABLE ma_moulinette.historique
     version VARCHAR(32) NOT NULL,
     date_version VARCHAR(128) NOT NULL,
 
-    analyse_key VARCHAR(32) NOT NULL,
+    analyse_key VARCHAR(64) NOT NULL,
     project_name VARCHAR(128) NOT NULL,
 
     version_release INT,
