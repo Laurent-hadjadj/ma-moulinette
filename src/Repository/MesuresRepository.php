@@ -133,7 +133,6 @@ class MesuresRepository extends ServiceEntityRepository
             'lines_to_cover',
             'conditions_to_cover',
             'uncovered_conditions',
-            'coverage_rating',
 
             'tests',
             'test_execution_time',
@@ -146,7 +145,6 @@ class MesuresRepository extends ServiceEntityRepository
             'duplicated_blocks',
             'duplicated_lines',
             'duplicated_lines_density',
-            'duplicated_lines_rating',
 
             'complexity',
             'complexity_rating',
