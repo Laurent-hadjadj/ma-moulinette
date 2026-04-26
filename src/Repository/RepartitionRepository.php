@@ -80,7 +80,7 @@ class RepartitionRepository extends ServiceEntityRepository
   public function selectOrUpdateRepartitionInitial(array $map): array
   {
     $sqlCheck = "SELECT id FROM ma_moulinette.repartition
-                  WHERE maven_key = :maven_key AND control = 'initial'
+                  WHERE maven_key = :maven_key AND initial = 'initial'
                   ORDER BY date_enregistrement DESC LIMIT 1";
     $sqlUpdate = "UPDATE ma_moulinette.repartition SET
                     name = :name,
@@ -103,11 +103,11 @@ class RepartitionRepository extends ServiceEntityRepository
                     setup = :setup,
                     utilisateur_collecte = :utilisateur_collecte,
                     date_enregistrement = :date_enregistrement
-                  WHERE id = :id AND control = 'initial'";
+                  WHERE id = :id AND initial = 'initial'";
 
     $sqlInsert = "INSERT INTO ma_moulinette.repartition (
-                maven_key, name, bug_blocker, bug_critical, bug_major, bug_minor, bug_info, vulnerability_blocker, vulnerability_critical, vulnerability_major, vulnerability_minor, vulnerability_info, code_smell_blocker,code_smell_critical, code_smell_major, code_smell_minor, code_smell_info, setup, mode_collecte, utilisateur_collecte,date_enregistrement)
-                VALUES (:maven_key, :name, :bug_blocker, :bug_critical, :bug_major, :bug_minor, :bug_info, :vulnerability_blocker, :vulnerability_critical, :vulnerability_major, :vulnerability_minor, :vulnerability_info, :code_smell_blocker, :code_smell_critical, :code_smell_major, :code_smell_minor, :code_smell_info, :setup, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
+                maven_key, name, bug_blocker, bug_critical, bug_major, bug_minor, bug_info, vulnerability_blocker, vulnerability_critical, vulnerability_major, vulnerability_minor, vulnerability_info, code_smell_blocker,code_smell_critical, code_smell_major, code_smell_minor, code_smell_info, setup, initial, mode_collecte, utilisateur_collecte,date_enregistrement)
+                VALUES (:maven_key, :name, :bug_blocker, :bug_critical, :bug_major, :bug_minor, :bug_info, :vulnerability_blocker, :vulnerability_critical, :vulnerability_major, :vulnerability_minor, :vulnerability_info, :code_smell_blocker, :code_smell_critical, :code_smell_major, :code_smell_minor, :code_smell_info, :setup, 'initial', :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
 
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
@@ -202,7 +202,7 @@ class RepartitionRepository extends ServiceEntityRepository
                 FROM ma_moulinette.repartition
                 WHERE maven_key = :maven_key
                 AND setup = :setup
-                AND control = 'initial'
+                AND initial = 'initial'
                 ORDER BY date_enregistrement DESC LIMIT 1";
 
     /*
@@ -252,12 +252,12 @@ class RepartitionRepository extends ServiceEntityRepository
     }
 
     // Ajout des autres colonnes obligatoires
-    $setParts[] = "control = :control";
+    $setParts[] = "initial = :control";
     $setParts[] = "date_enregistrement = :date_enregistrement";
 
     $sqlUpdate = "UPDATE ma_moulinette.repartition SET " . implode(", ", $setParts) . "
                   WHERE id = :id
-                  AND control = 'initial'
+                  AND initial = 'initial'
                   AND setup = :setup";
 
     try {
@@ -339,7 +339,7 @@ class RepartitionRepository extends ServiceEntityRepository
   {
       $sql = 'SELECT *
               FROM repartition
-              WHERE control = :control AND maven_key = :maven_key
+              WHERE initial = :control AND maven_key = :maven_key
               ORDER BY date_enregistrement DESC
               limit 1';
 
