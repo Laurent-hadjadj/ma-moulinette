@@ -2,6 +2,10 @@
 security:
 
     role_hierarchy:
+        # ROLE_NONE : sentinelle pour user désactivé / pas encore affecté.
+        # Sans inheritance et sans privilege, ne donne accès à rien (utilisé
+        # en E2E pour les users disabled qui seront activés par l'internal).
+        ROLE_NONE: []
         ROLE_UTILISATEUR: []
         ROLE_COLLECTE: ['ROLE_UTILISATEUR']
         ROLE_SUIVI: ['ROLE_UTILISATEUR']
