@@ -7,15 +7,18 @@
 ┃┃┃┃┃┃━━┃┃━━┃┗━┛┃  
 ┃┗┛┗┛┃━━┃┃━━┃┏━━┛  
 ┗┓┏┓┏┛━┏┫┣┓━┃┃  
-━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.0.0 Release on November 2025 !
+━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.0.0 — Work in Progress (cible 2026) !
 
-**Ma-Moulinette** est une application web open-source dont l’objectif est de **simplifier la consultation et le suivi des indicateurs de qualité logicielle** collectés depuis un serveur **SonarQube**.
+**Ma-Moulinette** est une application web open-source dont l'objectif est de **simplifier la consultation et le suivi des indicateurs de qualité logicielle** collectés depuis un serveur **SonarQube**.
 
-Elle s’appuie sur les **API publiques** de SonarQube et est **compatible** avec les versions :
+Elle s'appuie sur les **API publiques** de SonarQube et est **compatible** avec les versions :
 
 - SonarQube **8.9.9 LTS**
 - SonarQube **9.9.4 LTS**
 - SonarQube **10 LTA**
+- SonarQube **2024**
+- SonarQube **2025 LTA**
+- SonarQube **2026**
 
 ---
 
@@ -67,24 +70,29 @@ La **version 2.0.0** est actuellement en développement et apporte de nombreuses
 
 ### ✅ Fonctionnalités disponibles
 
-- [x] Base de données **PostgreSQL** centralisée ;
-- [x] Gestion des **utilisateurs** et **groupes** ;
-- [x] Gestion des **portefeuilles de projets** SonarQube ;
-- [x] **Collecte asynchrone** des indicateurs manuellement ou via un batch PHP ;
-- [x] **Historisation** des résultats et métriques en base ;
-- [x] Tableaux de bord et **visualisation** des indicateurs ;
-- [x] Nouveau système de **documentation** avec **MkDocs**.
+- [x] Framework **Symfony 8.0** sur **PHP 8.5 NTS** ;
+- [x] Base de données **PostgreSQL 18** centralisée (SQLite décommissionné) ;
+- [x] Gestion des **utilisateurs**, **groupes**, **équipes** et **portefeuilles** de projets SonarQube ;
+- [x] Authentification **locale + LDAP** (OpenLDAP, Microsoft AD) avec fallback et provisioning automatique ;
+- [x] **Hiérarchie de rôles** étendue : `COLLECTE`, `SUIVI`, `BATCH`, `ACTUATOR`, `GESTIONNAIRE`, `ACTIVITY`, `INTERNAL` ;
+- [x] **Collecte asynchrone** des indicateurs manuellement ou via Symfony Messenger (transport Doctrine) ;
+- [x] **Scheduler Symfony** pour la collecte automatique nocturne (activité SonarQube) ;
+- [x] Support **Actuator** et collecte de la **répartition des LOGGER Java** pour les applications Spring Boot ;
+- [x] **Historisation** des résultats et métriques en base pour les versions SonarQube **8, 9, 10, 2024, 2025 et 2026** ;
+- [x] Tableaux de bord et **visualisation** des indicateurs (projet, profil, OWASP 2017/2021, COSUI, répartition, activité, statistiques) ;
+- [x] Back-office **EasyAdmin 5** avec CRUD dédiés pour groupes, portefeuilles et batchs ;
+- [x] **Cypress** pour les tests fonctionnels ;
+- [x] Déploiement conteneurisé via **docker-compose** ;
+- [x] Nouveau système de **documentation** avec **MkDocs** (thème Material).
 
 ---
 
 ### 🧱 Fonctionnalités en cours de finalisation
 
-- [ ] Mise à jour et refonte des **tests unitaires** ;
-- [ ] Alignement complet de la **documentation** avec la version 2.0.0 ;
-- [ ] Finalisation de la **gestion des préférences utilisateurs** ;
-- [ ] Support complet de la **collecte Actuator** ;
-- [ ] Gestion avancée du **multi-projet (portefeuille étendu)** ;
-- [ ] Mise en place de la **gestion de session sécurisée** ;
-- [ ] Ajout de nouveaux **indicateurs SonarQube 10.x**.
+- [x] ~~Finalisation de la refonte des **tests unitaires** et de la couverture ;~~
+- [x] ~~Complétion de la documentation **FR / EN** ;~~
+- [x] ~~Polissage de la **gestion des préférences utilisateurs** ;~~
+- [x] ~~Finalisation de la récupération "j'ai oublié mon mot de passe" ;~~
+- [x] ~~Ajout de nouveaux **indicateurs SonarQube 2026**.~~
 
 -**-- FIN --**-
