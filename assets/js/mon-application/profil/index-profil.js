@@ -114,7 +114,7 @@ const refreshQuality = async function() {
       return;
   }
 
-  let id = 0, str_container = '', str_total='', total = 0;
+  let id = 0, str_container = '', str_total_rule = '', total = 0;
 
   /** On efface le container */
   $('#js-container-langage').html('');
@@ -200,10 +200,11 @@ const refreshQuality = async function() {
       total = total + profil.rule;
   });
 
-  str_total = new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(total);
+  str_total_rule = new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(total);
 
-  /** Affiche le container */
-  $('.js-total').html(str_total);
+  /** Affiche les résultats dans le container */
+  $('#affiche-total-profil').html(id);
+  $('.js-total').html(str_total_rule);
   $('#js-container-langage').html(str_container);
   showMessage('success', 'La liste des profils qualités a été mise à jour.');
   setTimeout(()=> hideMessage(), 3000);
