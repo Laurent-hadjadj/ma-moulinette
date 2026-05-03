@@ -46,7 +46,7 @@ VALUES
 INSERT INTO ma_moulinette.utilisateur
 (preference, reset_password, courriel, roles, password, prenom, nom, date_enregistrement, actif, avatar, liste_groupe_fonctionnel, groupe_utilisateur, groupe_id)
 VALUES (
-'{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false,"bookmark":false},
+'{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false},
 "suivi_projet":[],"favori_projet":[],"favori_version":[]}',
 false,
 'admin@ma-moulinette.fr',
