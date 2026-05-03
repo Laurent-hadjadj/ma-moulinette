@@ -37,17 +37,12 @@ final class ActivityHandler
         private ParameterBagInterface $params,
         private ClientService $client,
     ) {
-        $this->activityReportService = $activityReportService;
-        $this->messengerBus = $messengerBus;
-        $this->logger = $logger;
-        $this->params = $params;
-        $this->client = $client;
     }
 
     /**
      * [Description for __invoke]
      *
-     * @param ApiCallMessage $message
+     * @param ActivityMessage $message
      *
      * @return void
      *

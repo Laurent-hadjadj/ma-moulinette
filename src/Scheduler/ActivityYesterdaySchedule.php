@@ -32,13 +32,12 @@ final class ActivityYesterdaySchedule implements ScheduleProviderInterface
         private CacheInterface $cache,
         private LoggerInterface $logger,
     ) {
-        $this->logger = $logger;
     }
 
     /**
      * [Description for getYesterdayDates]
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 27/12/2024 13:53:51 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

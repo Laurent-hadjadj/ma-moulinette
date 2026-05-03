@@ -19,6 +19,9 @@ namespace App\Message;
 class ProcessTaskMessage
 {
     private array $task;
+/**
+ * @param array<int|string, mixed> $task
+ */
 
     public function __construct(array $task)
     {
@@ -28,7 +31,7 @@ class ProcessTaskMessage
     /**
      * [Description for getTask]
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 31/12/2024 16:32:35 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
