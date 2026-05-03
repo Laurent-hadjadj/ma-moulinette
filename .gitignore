@@ -92,6 +92,7 @@ phpstan.neon
 *.old
 *.backup
 *.log
+*.bak
 
 ###> symfony/asset-mapper ###
 /public/assets/
