@@ -21,8 +21,8 @@ class ProjetCosuiService
     private string $version;
     private string $dateCopyright;
 
-    private static $erreurInconnue = 'Erreur inconnue';
-    private static $defaultVersion = '0.0.0';
+    private static string $erreurInconnue = 'Erreur inconnue';
+    private static string $defaultVersion = '0.0.0';
 
     public function __construct(
         private readonly LoggerInterface $logger,
@@ -41,16 +41,12 @@ class ProjetCosuiService
      * Génère le tableau final de rendu COSUI pour un projet donné.
      *
      * @param string   $maven_key        Clé du projet
-     * @param callable $fetchNotes      Fonction callback pour récupérer les notes actuelles
-     * @param callable $fetchReference  Fonction callback pour récupérer les notes de référence
-     * @param callable $fetchSetup      Fonction callback pour récupérer le setup
-     * @param callable $traitement      Fonction callback pour récupérer les répartitions
      *
-     * @return array
+     * @return array<int|string, mixed>
      */
     public function generateRender(string $maven_key): array
     {
-        $this->logger->info("[COSUI] ℹ️ Démarrage génération du rendu pour {$maven_key}");
+        $this->logger->info("ℹ️ [COSUI] Démarrage génération du rendu pour {$maven_key}");
 
         $render = array_merge(
             self::genericRender(),
@@ -60,25 +56,25 @@ class ProjetCosuiService
             self::initializeChartRender()
         );
 
-        $this->logger->debug("[COSUI] 🛠️ Structure initiale du render générée.");
+        $this->logger->debug("🛠️ [COSUI] Structure initiale du render générée.");
 
         // 1. Données projet actuel
         $n = $this->notes($maven_key);
         if ($n['code'] !== 200) {
             $message = '❌ Problème récupération des données projet actuel (notes)';
-            $messageLog = '[COSUI] ❌ Problème récupération des données projet actuel (notes)';
+            $messageLog = '❌ [COSUI] Problème récupération des données projet actuel (notes)';
             $this->logger->error($messageLog);
             return [
                 'code' => $n['code'],
                 'type' => 'error',
                 'message' => $message,
-                'trace' => $n['erreur'] ?? static::$erreurInconnue
+                'trace' => $n['trace'] ?? self::$erreurInconnue
             ];
         }
 
-        if ($n['code'] == 200 && $n['result'] === false) {
+        if ($n['result'] === false) {
             $message = '⚠️ Aucune données présentent dans la table historique pour ce projet (Erreur 404).';
-            $messageLog = '[COSUI] ⚠️ Aucune données présentent dans la table historique pour ce projet (Erreur 404).';
+            $messageLog = '⚠️ [COSUI] Aucune données présentent dans la table historique pour ce projet (Erreur 404).';
             $this->logger->warning($messageLog);
             return [
                 'code' => 404,
@@ -94,19 +90,19 @@ class ProjetCosuiService
         $nn = $this->reference($maven_key);
         if ($nn['code'] !== 200) {
             $message = "❌ Échec récupération des données de référence.";
-            $messageLog = "[COSUI] ❌ Échec récupération des données de référence.";
+            $messageLog = "❌ [COSUI] Échec récupération des données de référence.";
             $this->logger->error($messageLog);
             return [
                 'code' => $nn['code'],
                 'type' => 'error',
                 'message' => $message,
-                'trace' => $nn['erreur'] ?? static::$erreurInconnue
+                'trace' => $nn['trace'] ?? self::$erreurInconnue
             ];
         }
 
-        if ($nn['code'] == 200 && $nn['result'] === false) {
+        if ($nn['result'] === false) {
             $message = '⚠️ Aucune données de références présentent dans la table historique pour ce projet (Erreur 404).';
-            $messageLog = '[COSUI] ⚠️ Aucune données de références présentent dans la table historique pour ce projet (Erreur 404).';
+            $messageLog = '⚠️ [COSUI] Aucune données de références présentent dans la table historique pour ce projet (Erreur 404).';
             $this->logger->warning($messageLog);
         } else {
             $this->injectNotesReference($render, $nn);
@@ -119,7 +115,7 @@ class ProjetCosuiService
             } catch (\Throwable $e) {
                 $render['setup'] = 'inconnu';
                 $message = '🔴 Erreur lors de la récupération du setup';
-                $messageLog = '[COSUI] 🔴 Erreur lors de la récupération du setup';
+                $messageLog = '🔴 [COSUI] Erreur lors de la récupération du setup';
                 $this->logger->critical($messageLog, ['exception' => $e->getMessage()]);
                 return [
                         'code' => 500,
@@ -156,7 +152,7 @@ class ProjetCosuiService
             }
         } catch (\Throwable $e) {
         $message = '🔴 Erreur durant le traitement des anomalies.';
-        $messageLog = '[COSUI] 🔴 Erreur durant le traitement des anomalies.';
+        $messageLog = '🔴 [COSUI] Erreur durant le traitement des anomalies.';
         $this->logger->critical($messageLog, ['exception' => $e->getMessage()]);
         return [
             'code' => 500,
@@ -169,14 +165,14 @@ class ProjetCosuiService
         $this->calculerEvolutions($render);
         $this->construireRadarChart($render);
 
-        $this->logger->info("[COSUI] ℹ️ Rendu généré avec succès pour {$maven_key}");
+        $this->logger->info("ℹ️ [COSUI] Rendu généré avec succès pour {$maven_key}");
         return $render;
     }
 
     /**
      * [Description for initialRender]
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 29/07/2025 19:40:29 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -184,7 +180,7 @@ class ProjetCosuiService
      */
     public function initialRender(): array
     {
-        $this->logger->debug("[COSUI] 🛠️ Initialisation du rendu par défaut.");
+        $this->logger->debug("🛠️ [COSUI] Initialisation du rendu par défaut.");
         return array_merge(
             self::genericRender(),
             self::initializeNotesRender(),
@@ -200,7 +196,7 @@ class ProjetCosuiService
      *
      * Retourne les paramètres génériques de rendu (logo, marque, version, etc.).
      *
-     * @return array<string, mixed>
+     * @return array<int|string, mixed>
      *
      * Created at: 29/07/2025 19:39:10 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -218,14 +214,14 @@ class ProjetCosuiService
         'date_copyright' => $this->dateCopyright,
         ];
 
-        $this->logger->debug('[COSUI] 🛠️ Préparation des paramètres de rendu générique', $data);
+        $this->logger->debug('🛠️ [COSUI] Préparation des paramètres de rendu générique', $data);
 
         if (empty($this->logoEntreprise)) {
-            $this->logger->warning('[COSUI] ⚠️ Logo entreprise non défini dans genericRender()');
+            $this->logger->warning('⚠️ [COSUI] Logo entreprise non défini dans genericRender()');
         }
 
         if (empty($this->marqueEntrepriseShort) || empty($this->marqueEntrepriseLong)) {
-            $this->logger->warning('[COSUI] ⚠️ Nom de marque incomplet dans genericRender()');
+            $this->logger->warning('⚠️ [COSUI] Nom de marque incomplet dans genericRender()');
         }
 
         return $data;
@@ -234,7 +230,7 @@ class ProjetCosuiService
     /**
      * [Description for chartDataRender]
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 30/07/2025 15:12:28 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -255,7 +251,7 @@ class ProjetCosuiService
      *
      * Initialise le tableau de rendu des notes avec des valeurs par défaut.
      *
-     * @return array<string, mixed>
+     * @return array<int|string, mixed>
      *
      * Created at: 29/07/2025 20:09:30 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -315,7 +311,7 @@ class ProjetCosuiService
      *
      * Initialise les données de référence avec des valeurs par défaut.
      *
-     * @return array<string, mixed>
+     * @return array<int|string, mixed>
      *
      * Created at: 29/07/2025 20:10:56 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -323,7 +319,7 @@ class ProjetCosuiService
      */
     public static function initializeReferenceRender(): array
     {
-        $defaultString = static::$defaultVersion;
+        $defaultString = self::$defaultVersion;
         $defaultDate = '01/01/1980';
         $defaultNote = 'F';
         $defaultCount = 0;
@@ -422,8 +418,8 @@ class ProjetCosuiService
     /**
      * [Description for injectNotesActuelles]
      *
-     * @param array $render
-     * @param array $n
+     * @param array<int|string, mixed> $render
+     * @param array<int|string, mixed> $n
      *
      * @return void
      *
@@ -461,8 +457,8 @@ class ProjetCosuiService
     /**
      * [Description for injectNotesReference]
      *
-     * @param array $render
-     * @param array $nn
+     * @param array<int|string, mixed> $render
+     * @param array<int|string, mixed> $nn
      *
      * @return void
      *
@@ -484,8 +480,8 @@ class ProjetCosuiService
     /**
      * [Description for injectRepartition]
      *
-     * @param array $render
-     * @param array $map
+     * @param array<int|string, mixed> $render
+     * @param array<int|string, mixed> $map
      *
      * @return void
      *
@@ -503,7 +499,7 @@ class ProjetCosuiService
     /**
      * [Description for calculerEvolutions]
      *
-     * @param array $render
+     * @param array<int|string, mixed> $render
      *
      * @return void
      *
@@ -527,7 +523,7 @@ class ProjetCosuiService
     /**
      * [Description for construireRadarChart]
      *
-     * @param array $render
+     * @param array<int|string, mixed> $render
      *
      * @return void
      *
@@ -563,7 +559,7 @@ class ProjetCosuiService
      * Récupère la version du dernier setup pour un projet donné via son mavenKey.
      *
      * @param string $maven_key
-     * @return string
+     * @return array<int|string, mixed>
      *
      * Created at: 29/07/2025 19:55:02 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -571,35 +567,35 @@ class ProjetCosuiService
      */
     private function setup(string $maven_key): array
     {
-        $this->logger->debug("[COSUI] 🛠️ Recherche du dernier setup pour le projet", ['maven_key' => $maven_key]);
+        $this->logger->debug("🛠️ [COSUI] Recherche du dernier setup pour le projet", ['maven_key' => $maven_key]);
         $repartitionRepos = $this->em->getRepository(Repartition::class);
         $getSetup = $repartitionRepos->findLatestSetupByMavenKey($maven_key);
 
         if ($getSetup['code'] != 200) {
             $message = "❌ Échec de récupération du dernier setup pour le projet.";
-            $messageLog = "[COSUI] ❌ Échec de récupération du dernier setup pour le projet.";
+            $messageLog = "❌ [COSUI] Échec de récupération du dernier setup pour le projet.";
             $this->logger->error($messageLog, $getSetup['erreur']);
             return [
                 'code' => $getSetup['code'],
                 'type' => 'alert',
                 'message' => $message,
-                'trace' => $getSetup['erreur'] ?? static::$erreurInconnue
+                'trace' => $getSetup['erreur'] ?? self::$erreurInconnue
             ];
         }
 
         if ($getSetup['result'] === 'NaN') {
-            $this->logger->warning("[COSUI] ⚠️ Aucun setup trouvé pour ce maven_key", ['mavenKey' => $maven_key]);
+            $this->logger->warning("⚠️ [COSUI] Aucun setup trouvé pour ce maven_key", ['mavenKey' => $maven_key]);
             return ['NaN'];
         }
 
         $setup = $getSetup['result'];
 
         if ($setup === null) {
-            $this->logger->error("[COSUI] ❌ Setup null dans l'entité Repartition pour ce maven_key", ['maven_key' => $maven_key]);
+            $this->logger->error("❌ [COSUI] Setup null dans l'entité Repartition pour ce maven_key", ['maven_key' => $maven_key]);
             return ['NaN'];
         }
 
-        $this->logger->info("[COSUI] ℹ️ Dernier setup récupéré avec succès",
+        $this->logger->info("ℹ️ [COSUI] Dernier setup récupéré avec succès",
             ['mavenKey' => $maven_key, 'setup' => $setup]);
         return [$setup];
     }
@@ -631,9 +627,9 @@ class ProjetCosuiService
         $point = $map[$note] ?? 0;
 
         if (!array_key_exists($note, $map)) {
-            $this->logger->warning("[COSUI] ⚠️ Note inconnue reçue dans note2point()", ['note' => $note]);
+            $this->logger->warning("⚠️ [COSUI] Note inconnue reçue dans note2point()", ['note' => $note]);
         } else {
-            $this->logger->debug("[COSUI] 🛠️ Conversion de note : $note → $point points");
+            $this->logger->debug("🛠️ [COSUI] Conversion de note : $note → $point points");
         }
 
         return $point;
@@ -650,7 +646,7 @@ class ProjetCosuiService
     private function variation(float|int $ancienneValeur, float|int $nouvelleValeur): string
     {
         if ($ancienneValeur === 0) {
-            $this->logger->warning("[COSUI] ⚠️ Division par zéro évitée dans variation()", [
+            $this->logger->warning("⚠️ [COSUI] Division par zéro évitée dans variation()", [
                 'ancienne' => $ancienneValeur,
                 'nouvelle' => $nouvelleValeur,
             ]);
@@ -659,7 +655,7 @@ class ProjetCosuiService
 
         $result = (($nouvelleValeur - $ancienneValeur) / $ancienneValeur) * 100;
 
-        $this->logger->debug("[COSUI] 🛠️ Variation calculée", [
+        $this->logger->debug("🛠️ [COSUI] Variation calculée", [
             'ancienne' => $ancienneValeur,
             'nouvelle' => $nouvelleValeur,
             'variation_pct' => $result,
@@ -680,7 +676,7 @@ class ProjetCosuiService
      * Récupère les indicateurs qualité du dernier historique pour un projet donné.
      *
      * @param string $maven_key
-     * @return array<string, mixed>
+     * @return array<int|string, mixed>
      *
      * Created at: 29/07/2025 20:00:17 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -688,23 +684,23 @@ class ProjetCosuiService
      */
     private function notes(string $maven_key): array
     {
-        $this->logger->debug("[COSUI] 🛠️ Recherche des notes pour le projet", ['maven_key' => $maven_key]);
+        $this->logger->debug("🛠️ [COSUI] Recherche des notes pour le projet", ['maven_key' => $maven_key]);
 
         $historiqueRepos = $this->em->getRepository(Historique::class);
         $request = $historiqueRepos->selectHistoriqueProjetLast(['maven_key' => $maven_key]);
 
         if ($request['code'] !== 200) {
             $message = "❌ Erreur lors de la récupération des notes.";
-            $messageLog = "[COSUI] ❌ Erreur lors de la récupération des notes.";
+            $messageLog = "❌ [COSUI] Erreur lors de la récupération des notes.";
             $this->logger->error($messageLog, [
                 'maven_key' => $maven_key,
                 'code' => $request['code'],
-                'erreur' => $request['erreur'] ?? static::$erreurInconnue
+                'erreur' => $request['erreur'] ?? self::$erreurInconnue
             ]);
             return [
                 'code' => $request['code'],
                 'message' => $message,
-                'trace' => $request['erreur'] ?? static::$erreurInconnue
+                'trace' => $request['erreur'] ?? self::$erreurInconnue
             ];
         }
 
@@ -717,7 +713,7 @@ class ProjetCosuiService
 
         // Vérification du format de version
         $versionSplit = explode('-', $info['version']);
-        $version = $versionSplit[0] ?? static::$defaultVersion;
+        $version = $versionSplit[0] !== '' ? $versionSplit[0] : self::$defaultVersion;
         $type = $versionSplit[1] ?? 'undefined';
 
         $this->logger->info("ℹ️ [COSUI] Indicateurs qualité récupérés avec succès", [
@@ -758,7 +754,7 @@ class ProjetCosuiService
      * Récupère les indicateurs du projet de référence à partir de l’historique.
      *
      * @param string $maven_key
-     * @return array<string, mixed>
+     * @return array<int|string, mixed>
      *
      * Created at: 29/07/2025 20:02:14 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -766,35 +762,35 @@ class ProjetCosuiService
      */
     private function reference(string $maven_key): array
     {
-        $this->logger->debug("[COSUI] 🛠️  Recherche du projet de référence", ['maven_key' => $maven_key]);
+        $this->logger->debug("🛠️ [COSUI] Recherche du projet de référence", ['maven_key' => $maven_key]);
 
         $historiqueRepos = $this->em->getRepository(Historique::class);
         $request = $historiqueRepos->selectHistoriqueProjetReference(['maven_key' => $maven_key]);
 
         if ($request['code'] !== 200) {
-            $this->logger->error("[COSUI] ❌ Erreur lors de la récupération du projet de référence", [
+            $this->logger->error("❌ [COSUI] Erreur lors de la récupération du projet de référence", [
                 'mavenKey' => $maven_key,
                 'code' => $request['code'],
-                'erreur' => $request['erreur'] ?? static::$erreurInconnue
+                'erreur' => $request['erreur'] ?? self::$erreurInconnue
             ]);
             return [
                 'maven_key' => $maven_key,
                 'code' => $request['code'],
-                'trace' => $request['erreur'] ?? static::$erreurInconnue
+                'trace' => $request['erreur'] ?? self::$erreurInconnue
             ];
         }
 
         if (empty($request['reference']) || !isset($request['reference'][0])) {
-            $this->logger->warning("[COSUI] ⚠️ Aucune donnée de référence trouvée", ['mavenKey' => $maven_key]);
+            $this->logger->warning("⚠️ [COSUI] Aucune donnée de référence trouvée", ['mavenKey' => $maven_key]);
             return ['code' => 200, 'result' => false];
         }
 
         $ref = $request['reference'][0];
         $versionSplit = explode('-', $ref['version'] ?? '');
-        $version = $versionSplit[0] ?? static::$defaultVersion;
+        $version = $versionSplit[0] !== '' ? $versionSplit[0] : self::$defaultVersion;
         $type = $versionSplit[1] ?? 'undefined';
 
-        $this->logger->info("[COSUI] ℹ️ Données de référence récupérées", ['mavenKey' => $maven_key, 'version' => $version, 'type' => $type]);
+        $this->logger->info("ℹ️ [COSUI] Données de référence récupérées", ['mavenKey' => $maven_key, 'version' => $version, 'type' => $type]);
 
         return [
             'code' => 200,
@@ -825,10 +821,9 @@ class ProjetCosuiService
      *
      * @param string $maven_key
      * @param string $setup
-     * @param string $type
      * @param string $severity
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 15/12/2022, 22:17:46 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
@@ -856,12 +851,12 @@ class ProjetCosuiService
                         ->setParameter('setup', $setup);
                 $query = $qb->getQuery();
                 $result = $query->getArrayResult();
-                //'$trace = $querry->getSQL();
-                $this->logger->debug("[COSUI] 🛠️ Query Result: " . json_encode($result));
+                //"$trace = $querry->getSQL();
+                $this->logger->debug("🛠️ Query Result: " . json_encode($result));
 
                 return $result;
         } catch(\Throwable $e) {
-            $this->logger->critical('[COSUI] 🔴 Erreur dans le createQueryBuilder : ' . $e->getMessage());
+            $this->logger->critical('🔴 Erreur dans le createQueryBuilder : ' . $e->getMessage());
         }
         return [];
     }

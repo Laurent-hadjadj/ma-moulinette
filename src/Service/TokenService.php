@@ -27,13 +27,12 @@ class TokenService
       private CsrfTokenManagerInterface $csrfTokenManager,
       private LoggerInterface $logger)
     {
-      $this->csrfTokenManager = $csrfTokenManager;
     }
 
     /**
      * [Description for generateToken]
      *
-     * @param array $data
+     * @param array<int|string, mixed> $data
      *
      * @return string
      *
@@ -53,7 +52,7 @@ class TokenService
      *
      * @param string $token
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 08/09/2025 16:27:20 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -63,23 +62,17 @@ class TokenService
     {
         /** token doit disposé d'un séparateur de type point */
         $parts = explode('.', $token, 2);
-        try {
-          if (count($parts) !== 2) {
-              $this->logger->critical(
-                "[Welcome] ℹ️ Le token a été correctement décodé.",
-                ['parts' =>  $parts]
-              );
-          }
-        } catch (\InvalidArgumentException $e){
-              $this->logger->critical("[Welcome] 🔴 Le token est incorrect ou mal formé.", [
-                      'token' =>  $token ?? 'trop pourri',
-                      'erreur'  => $e->getMessage()]);
-              throw new \InvalidArgumentException('Invalid token format');
+        if (count($parts) !== 2) {
+            $this->logger->critical(
+                "[Welcome] 🔴 Le token est incorrect ou mal formé.",
+                ['parts' => $parts]
+            );
+            throw new \InvalidArgumentException('Invalid token format');
         }
 
-        list($csrfToken, $tokenData) = $parts;
+        [$csrfToken, $tokenData] = $parts;
         if ($this->csrfTokenManager->isTokenValid(new CsrfToken('intention', $csrfToken))) {
-            $this->logger->critical("[Welcome] ℹ️ Le token est correcte.", ['parts' =>  $parts]);
+            $this->logger->critical("[Welcome] ℹ️ Le token est correcte.", ['parts' => $parts]);
             return json_decode(base64_decode($tokenData), true);
         }
         throw new \InvalidArgumentException('Invalid token');

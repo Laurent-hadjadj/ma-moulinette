@@ -16,7 +16,6 @@ namespace App\Service;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Dompdf\{Dompdf, Options};
 use Twig\Environment;
-use Symfony\Component\HttpFoundation\Response;
 use App\Entity\BatchExecution;
 
 /**
@@ -30,7 +29,6 @@ class PdfExportService
         private ParameterBagInterface $params,
 )
     {
-        $this->params = $params;
     }
 
     /**
@@ -38,7 +36,7 @@ class PdfExportService
      * Génère un PDF pour un BatchExecution
      *
      * @param BatchExecution $batchExecution
-     * @param mixed $document_type
+     * @param string|null $document_type
      *
      * @return string
      *
@@ -46,7 +44,7 @@ class PdfExportService
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function generateRapportPdf(BatchExecution $batchExecution, $document_type): string
+    public function generateRapportPdf(BatchExecution $batchExecution, ?string $document_type = null): string
     {
         // Préparer les données pour le template
         $collectes = $batchExecution->getCollectes()->map(function($journal) {
@@ -107,7 +105,7 @@ class PdfExportService
         $colorText = [0/255, 68/255, 91/255]; // #00445b
 
         // Ligne horizontale sur toutes les pages
-        $canvas->page_script(function($pageNumber, $pageCount, $canvas, $fontMetrics) use ($pageWidth, $y, $document_type, $colorLine, $colorText, $font,$fontSize) {
+        $canvas->page_script(function($pageNumber, $pageCount, $canvas, $fontMetrics) use ($pageWidth, $y, $document_type, $colorLine, $colorText, $font, $fontSize) {
             // Ligne
             $canvas->line(40, $y - 5, $pageWidth - 40, $y - 5, $colorLine, 0.5);
 

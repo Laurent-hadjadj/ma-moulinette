@@ -31,9 +31,9 @@ class ActivityReportService
     /**
      * [Description for generateReport]
      *
-     * @param array $infos
+     * @param array<int|string, mixed> $infos
      * @param int $successfulTasksCount
-     * @param array $errors
+     * @param array<int|string, mixed> $errors
      *
      * @return void
      *

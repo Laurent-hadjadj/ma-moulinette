@@ -32,7 +32,7 @@ class HealthCheckService
     /**
      * [Description for check]
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 21/04/2026 19:49:24 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

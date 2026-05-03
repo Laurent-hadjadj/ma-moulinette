@@ -36,12 +36,12 @@ class RoleManagerService
     /**
      * [Description for normalize]
      *
-     * @param array $roles
-     * @param array $currentRoles
+     * @param array<int|string, mixed> $roles
+     * @param array<int|string, mixed> $currentRoles
      * @param Utilisateur $targetUser
      * @param Utilisateur $editor
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 23/04/2026 11:12:35 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -83,12 +83,7 @@ class RoleManagerService
             return [self::ROLE_INTERNAL];
         }
 
-        /** 🔐 6. INTERNAL force actif */
-        if (in_array(self::ROLE_INTERNAL, $roles, true)) {
-            $targetUser->setIsActif(true);
-        }
-
-        /** 🔐 7. GESTIONNAIRE persistant */
+        /** 🔐 6. GESTIONNAIRE persistant */
         if (
             in_array(self::ROLE_GESTIONNAIRE, $currentRoles, true) &&
             !in_array(self::ROLE_GESTIONNAIRE, $roles, true)

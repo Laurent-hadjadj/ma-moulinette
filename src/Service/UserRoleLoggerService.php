@@ -20,7 +20,7 @@ use App\Entity\Utilisateur;
 use Doctrine\ORM\EntityManagerInterface;
 
 /**
- * [Description UserRoleLoggerService]
+ * [Description UserRoleLogger]
  */
 class UserRoleLoggerService
 {
@@ -31,8 +31,8 @@ class UserRoleLoggerService
      *
      * @param Utilisateur $user
      * @param Utilisateur $editor
-     * @param array $oldRoles
-     * @param array $newRoles
+     * @param array<int|string, mixed> $oldRoles
+     * @param array<int|string, mixed> $newRoles
      * @param bool $oldActive
      * @param bool $newActive
      *

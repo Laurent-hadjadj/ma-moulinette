@@ -23,7 +23,6 @@ class ExtractName
  * [Description for extractNameFromMavenKey]
  * Extraction du nom du projet depuis une mavenKey
  *
- * @param mixed $mavenKey
  *
  * @return string
  *

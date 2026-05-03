@@ -31,7 +31,7 @@ class UrlBuilderService
      *
      * @param string $baseUrl
      * @param string $path
-     * @param array $queryParams
+     * @param array<int|string, mixed> $queryParams
      *
      * @return string
      *

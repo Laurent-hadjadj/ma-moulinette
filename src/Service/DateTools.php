@@ -24,7 +24,7 @@ class DateTools
      * [Description for date_to_minute]
      * Fonction pour convertir une date au format xxd aah xxmin en minutes
      *
-     * @param mixed $str
+     * @param string $str
      *
      * return ($jour * 24 * 60) + ($heure * 60) + intval($minute)
      *
@@ -32,11 +32,12 @@ class DateTools
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function dateToMinute($str)
+    public function dateToMinute(string $str)
     {
         $jour = $heure = $minute = 0;
         //[2d1h1min]-- >[2] [1h1min]
         $j = explode('d', $str);
+        $h = [];
         if (count($j) == 1) {
             $h = explode('h', $j[0]);
         }
@@ -46,6 +47,7 @@ class DateTools
         }
 
         //heure [1], [1min]
+        $m = [];
         if (count($h) == 1) {
             $m = explode('min', $h[0]);
         }
@@ -70,7 +72,7 @@ class DateTools
      * [Description for minutesTo]
      * Converti les minutes en jours, heures et minutes
      *
-     * @param mixed $minutes
+     * @param string $minutes
      *
      * @return string
      *
@@ -78,12 +80,12 @@ class DateTools
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function minutesTo($minutes): string
+    public function minutesTo(string $minutes): string
     {
         $j = (int)($minutes / 1440);
         $h = (int)(($minutes - ($j * 1440)) / 60);
         $m = round($minutes % 60);
-        if (empty($h) || is_null($h)) {
+        if (empty($h)) {
             $h = 0;
         }
         if ($j > 0) {

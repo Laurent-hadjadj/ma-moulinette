@@ -24,8 +24,8 @@ use App\Entity\BatchTraitement;
  */
 class ListeProjetPortefeuilleService
 {
-    private static $noMessage = 'Aucun message remonté.';
-    private static $noError = 'Aucune erreur remontée.';
+    private static string $noMessage = 'Aucun message remonté.';
+    private static string $noError = 'Aucune erreur remontée.';
 
     public function __construct(
         private EntityManagerInterface $em,
@@ -40,7 +40,7 @@ class ListeProjetPortefeuilleService
      * @param string $titre_portefeuille
      * @param string $portefeuille
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 09/12/2022, 12:05:30 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
@@ -63,9 +63,9 @@ class ListeProjetPortefeuilleService
         if ($liste_projets['code'] !== 200) {
             $this->logger->error('[ListeProjetPortefeuilleService] ❌ Échec de la requête selectPortefeuille', [
                 'code' => $liste_projets['code'],
-                'message' => $liste_projets['message'] ?? static::$noMessage,
-                'erreur' => $liste_projets['erreur'] ?? static::$noError,
-                'portefeuille' => $titre_portefeuille ?? 'inconnu'
+                'message' => $liste_projets['message'] ?? self::$noMessage,
+                'erreur' => $liste_projets['erreur'] ?? self::$noError,
+                'portefeuille' => $titre_portefeuille
                 ]);
 
             return [
@@ -79,16 +79,16 @@ class ListeProjetPortefeuilleService
         if (empty($liste_projets['liste'])) {
             $this->logger->warning('[ListeProjetPortefeuilleService] ⚠️ La liste des traitements ne contient pas votre portefeuille !', [
                 'code' => $liste_projets['code'],
-                'message' => $liste_projets['message'] ?? static::$noMessage,
-                'erreur' => $liste_projets['erreur'] ?? static::$noError,
-                'portefeuille' => $titre_portefeuille ?? 'inconnu'
+                'message' => $liste_projets['message'] ?? self::$noMessage,
+                'erreur' => $liste_projets['erreur'] ?? self::$noError,
+                'portefeuille' => $titre_portefeuille
                 ]);
 
             return [
                 'code' => 404,
                 'type' => 'warning',
                 'message' => "Votre portefeuille ne contient pas ce projet (Erreur {$liste_projets['code']}).",
-                'erreur' => $liste_projets['erreur'] ?? static::$noError
+                'erreur' => $liste_projets['erreur'] ?? self::$noError
             ];
         }
 

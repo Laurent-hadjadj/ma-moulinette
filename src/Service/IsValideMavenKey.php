@@ -25,7 +25,6 @@ class IsValideMavenKey
     public function __construct(
         private EntityManagerInterface $em,
     ) {
-        $this->em = $em;
     }
 
     /**
@@ -37,13 +36,13 @@ class IsValideMavenKey
      *
      * @param string $mavenKey
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 20/05/2024 21:38:26 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function isValideInformation($mavenKey): array
+    public function isValideInformation(string $mavenKey): array
     {
         /** On instancie l'entityRepository */
         $informationProjetRepository = $this->em->getRepository(InformationProjet::class);
@@ -54,7 +53,7 @@ class IsValideMavenKey
         return ['code' => $request['code'], 'request'=>$request['is_valide'] ?? $request['erreur']];
     }
 
-    public function isValideHistorique($mavenKey): array
+    public function isValideHistorique(string $mavenKey): array
     {
         /** On instancie l'entityRepository */
         $historiqueRepository = $this->em->getRepository(Historique::class);
