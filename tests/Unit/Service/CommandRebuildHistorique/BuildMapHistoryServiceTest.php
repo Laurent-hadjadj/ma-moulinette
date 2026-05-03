@@ -261,13 +261,13 @@ class BuildMapHistoryServiceTest extends TestCase
     public static function commentDensityRatingProvider(): array
     {
         return [
-            '3 → E (trop peu)' => [3.0, 'E'],
-            '20 → A'           => [20.0, 'A'],
-            '27 → B'           => [27.0, 'B'],
-            '32 → C'           => [32.0, 'C'],
-            '37 → D'           => [37.0, 'D'],
-            '45 → E (trop)'    => [45.0, 'E'],
-            '10 → -- (gap)'    => [10.0, '--'], // zone sans rating défini
+            '3 → E (trop peu)'         => [3.0, 'E'],
+            '10 → D (zone basse)'      => [10.0, 'D'], // fix 2026-05-03 : avant le gap retournait '--'
+            '20 → A'                   => [20.0, 'A'],
+            '27 → B'                   => [27.0, 'B'],
+            '32 → C'                   => [32.0, 'C'],
+            '37 → D'                   => [37.0, 'D'],
+            '45 → E (trop)'            => [45.0, 'E'],
         ];
     }
 
