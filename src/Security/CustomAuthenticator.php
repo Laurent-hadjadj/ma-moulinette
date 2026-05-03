@@ -102,10 +102,13 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
                 $utilisateur->setPassword($correctHash);
                 $this->em->flush();
 
-                $request->getSession()->getFlashBag()->add('notice', [
+                $session = $request->getSession();
+                if ($session instanceof \Symfony\Component\HttpFoundation\Session\FlashBagAwareSessionInterface) {
+                    $session->getFlashBag()->add('notice', [
                     'type' => 'success',
                     'message' => 'Votre mot de passe a été automatiquement mis à jour.'
                 ]);
+                }
 
                 return $this->createPassport($login, $utilisateur, $request);
             }
@@ -117,8 +120,7 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
         try {
 
             // Bind direct via UPN
-            // Utiliser le courriel comme DN pour le bind LDAP
-            $userDn = $courriel;
+            $userDn = $courriel; // Utiliser le courriel comme DN pour le bind LDAP
 
             $this->ldap->bind($userDn, $passwordRaw);
 
@@ -186,7 +188,7 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
             $utilisateur->setPrenom($prenom);
             $utilisateur->setRoles($roles);
             $utilisateur->setGroupeUtilisateur('En attente');
-            $preference = '{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false,"bookmark":false}, "suivi_projet":[],"favori_projet":[],"favori_version":[]}';
+            $preference = '{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false}, "suivi_projet":[],"favori_projet":[],"favori_version":[]}';
             $utilisateur->setPreference(json_decode($preference, true));
             $utilisateur->setActif(false); // non habilité
             $utilisateur->setResetPassword(false);

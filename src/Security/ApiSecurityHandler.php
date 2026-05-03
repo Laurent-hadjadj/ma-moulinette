@@ -55,7 +55,7 @@ class ApiSecurityHandler implements AuthenticationEntryPointInterface, AccessDen
         ]);
 
         // Vérifie un header spécifique pour décider si on renvoie HTTP 200 ou 403
-        $useHttp200 = (bool) $request->headers->get('x-api-custom-401', false);
+        $useHttp200 = (bool) $request->headers->get('x-api-custom-401');
 
         $web_message = 'Votre session a expiré. Vous allez être redirigé dans quelques secondes sur la page de connexion (Erreur 401).';
         $api_message = '[API-Core] ☠️ Vous devez être authentifié pour accéder à cette ressource (Erreur 401).';
@@ -87,8 +87,9 @@ class ApiSecurityHandler implements AuthenticationEntryPointInterface, AccessDen
       $token = $this->tokenStorage->getToken();
       $user = $token?->getUser();
 
-      // Si pas de token ou anonyme -> session expirée -> 401
-      if (!$token || !$user || $user === 'anon.') {
+      // Si pas de token ou pas d'utilisateur -> session expirée -> 401
+      // (Symfony 6+ : plus de marqueur 'anon.', un user absent suffit)
+      if (!$token || !$user) {
           return $this->start($request, null); // renvoie 401
       }
 
@@ -96,7 +97,7 @@ class ApiSecurityHandler implements AuthenticationEntryPointInterface, AccessDen
               'path' => $request->getPathInfo(),
               'ip' => $request->getClientIp(),
               'user' => $request->getUser(),
-              'message' => $accessDeniedException?->getMessage(),
+              'message' => $accessDeniedException->getMessage(),
       ]);
 
       // Récupère le rôle requis depuis l'attribut de la route
@@ -108,7 +109,7 @@ class ApiSecurityHandler implements AuthenticationEntryPointInterface, AccessDen
         $api_message = '[API-Credential] Vous n’avez pas les droits pour accéder à cette ressource.';
 
         // Vérifie un header spécifique pour décider si on renvoie HTTP 200 ou 403
-        $useHttp200 = (bool) $request->headers->get('X-Api-Custom-403', false);
+        $useHttp200 = (bool) $request->headers->get('X-Api-Custom-403');
 
         return new JsonResponse([
             'x-api-custom-403' => true,

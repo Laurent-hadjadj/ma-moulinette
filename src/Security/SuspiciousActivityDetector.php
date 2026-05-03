@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  *  Ma-Moulinette
  *  --------------
@@ -37,10 +35,10 @@ class SuspiciousActivityDetector
      *
      * @param Utilisateur $target
      * @param Utilisateur $editor
-     * @param array $oldRoles
-     * @param array $newRoles
+     * @param array<int|string, mixed> $oldRoles
+     * @param array<int|string, mixed> $newRoles
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 23/04/2026 14:48:14 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -54,7 +52,6 @@ class SuspiciousActivityDetector
     ): array {
         $alerts = [];
 
-        // 🚨 1. modification d'un INTERNAL par non INTERNAL
         if (
             in_array('ROLE_INTERNAL', $target->getRoles(), true) &&
             !in_array('ROLE_INTERNAL', $editor->getRoles(), true)
@@ -62,7 +59,6 @@ class SuspiciousActivityDetector
             $alerts[] = 'MODIFICATION_INTERNAL_NON_AUTORISEE';
         }
 
-        // 🚨 2. tentative de rôles sensibles par non INTERNAL
         if (!in_array('ROLE_INTERNAL', $editor->getRoles(), true)) {
             $diff = array_diff($newRoles, $oldRoles);
 
@@ -74,12 +70,10 @@ class SuspiciousActivityDetector
             }
         }
 
-        // 🚨 3. changement massif de rôles
         if (abs(count($newRoles) - count($oldRoles)) >= 3) {
             $alerts[] = 'CHANGEMENT_MASSIF_ROLES';
         }
 
-        // 🚨 4. retrait GESTIONNAIRE
         if (
             in_array('ROLE_GESTIONNAIRE', $oldRoles, true) &&
             !in_array('ROLE_GESTIONNAIRE', $newRoles, true)
@@ -87,7 +81,7 @@ class SuspiciousActivityDetector
             $alerts[] = 'RETRAIT_GESTIONNAIRE';
         }
 
-        if ($alerts !== []) {
+        if (!empty($alerts)) {
             $this->log->warning('[SuspiciousActivityDetector] ⚠️ Suspicious activity detected', [
                 'target_user' => $target->getCourriel(),
                 'editor_user' => $editor->getCourriel(),
@@ -96,7 +90,6 @@ class SuspiciousActivityDetector
                 'alerts' => $alerts,
             ]);
         }
-
         return $alerts;
     }
 }
