@@ -57,6 +57,9 @@
         </p>
       </div>
       <div class="small-12 medium-5 large-5 cell">
+        <p class="open-sans ligne">Quality Gate :
+          <span id="alert-status" class="result"></span>
+        </p>
         <p class="open-sans ligne">Violation :
           <span id="violations" class="result"></span>
           <span class="result-note"></span>
@@ -120,6 +123,7 @@
         </p>
         <p class="open-sans ligne">% Duplication :
           <span id="duplicated-lines-density" class="result"></span>
+          <span id="duplicated-lines-rating" class="result-note"></span>
         </p>
         <p class="open-sans ligne">Dette (j/h):
           <span id="dette" class="result"></span>
@@ -129,12 +133,40 @@
       <div class="small-12 medium-6 large-6 cell">
         <p class="open-sans ligne">% Commentaire :
           <span id="comment-lines-density" class="result"></span>
+          <span id="comment-lines-rating" class="result-note"></span>
         </p>
         <p class="open-sans ligne">% Couverture :
           <span id="coverage" class="result"></span>
+          <span id="coverage-rating" class="result-note"></span>
         </p>
         <p class="open-sans ligne">Ratio de dette technique :
           <span id="sqale-debt-ratio" class="result"></span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  {# Bloc Complexité — métriques + ratios + ratings dérivés calculés par metricsRebuild #}
+  <div class="fieldset cell">
+    <div class="grid-x">
+      {# Colonne gauche : cyclomatique #}
+      <div class="small-12 medium-6 large-6 cell">
+        <p class="open-sans ligne">Complexité cyclomatique :
+          <span id="complexity" class="result"></span>
+          <span id="complexity-rating" class="result-note"></span>
+        </p>
+        <p class="open-sans ligne">Ratio cyclomatique (ncloc/complexity) :
+          <span id="complexity-ratio" class="result"></span>
+        </p>
+      </div>
+      {# Colonne droite : cognitive #}
+      <div class="small-12 medium-6 large-6 cell">
+        <p class="open-sans ligne">Complexité cognitive :
+          <span id="cognitive-complexity" class="result"></span>
+          <span id="cognitive-complexity-rating" class="result-note"></span>
+        </p>
+        <p class="open-sans ligne">Ratio cognitif (ncloc/cognitive_complexity) :
+          <span id="cognitive-complexity-ratio" class="result"></span>
         </p>
       </div>
     </div>
