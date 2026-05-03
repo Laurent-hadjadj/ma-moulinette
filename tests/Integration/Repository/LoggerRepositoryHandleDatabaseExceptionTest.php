@@ -94,7 +94,7 @@ class LoggerRepositoryHandleDatabaseExceptionTest extends TestCase
     public function testNoDatabase(): void
     {
         // Créer un mock pour une exception Driver\Exception
-      /** @var \Doctrine\DBAL\Driver\Exception|\PHPUnit\Framework\MockObject\MockObject */
+      /** @var \Doctrine\DBAL\Driver\Exception&\PHPUnit\Framework\MockObject\MockObject */
         $driverExceptionMock = $this->createMock(\Doctrine\DBAL\Driver\Exception::class);
 
         // Créer la ConnectionException en passant null pour la requête
@@ -105,7 +105,7 @@ class LoggerRepositoryHandleDatabaseExceptionTest extends TestCase
         );
 
         // Crée un repository mock
-        /** @var \Doctrine\Persistence\ManagerRegistry|\PHPUnit\Framework\MockObject\MockObject */
+        /** @var \Doctrine\Persistence\ManagerRegistry&\PHPUnit\Framework\MockObject\MockObject */
         $managerRegistryMock = $this->createMock(ManagerRegistry::class);
         $repo = new LoggerRepository($managerRegistryMock);
 
@@ -122,7 +122,7 @@ class LoggerRepositoryHandleDatabaseExceptionTest extends TestCase
     public function testNotNullViolation(): void
     {
         // Créer un mock pour une exception Driver\Exception
-        /** @var \Doctrine\DBAL\Driver\Exception|\PHPUnit\Framework\MockObject\MockObject */
+        /** @var \Doctrine\DBAL\Driver\Exception&\PHPUnit\Framework\MockObject\MockObject */
         $driverExceptionMock = $this->createMock(\Doctrine\DBAL\Driver\Exception::class);
 
         // Créer la NotNullConstraintViolationException en passant null pour la requête
@@ -133,7 +133,7 @@ class LoggerRepositoryHandleDatabaseExceptionTest extends TestCase
         );
 
         // Crée un repository mock
-        /** @var \Doctrine\Persistence\ManagerRegistry|\PHPUnit\Framework\MockObject\MockObject */
+        /** @var \Doctrine\Persistence\ManagerRegistry&\PHPUnit\Framework\MockObject\MockObject */
         $managerRegistryMock = $this->createMock(ManagerRegistry::class);
         $repo = new LoggerRepository($managerRegistryMock);
 
@@ -150,7 +150,7 @@ class LoggerRepositoryHandleDatabaseExceptionTest extends TestCase
     public function testUniqueViolation(): void
     {
         // Créer un mock pour une exception Driver\Exception
-        /** @var \Doctrine\DBAL\Driver\Exception|\PHPUnit\Framework\MockObject\MockObject */
+        /** @var \Doctrine\DBAL\Driver\Exception&\PHPUnit\Framework\MockObject\MockObject */
         $driverExceptionMock = $this->createMock(\Doctrine\DBAL\Driver\Exception::class);
 
         // Créer la UniqueConstraintViolationException en passant null pour la requête
@@ -161,7 +161,7 @@ class LoggerRepositoryHandleDatabaseExceptionTest extends TestCase
         );
 
         // Crée un repository mock
-        /** @var \Doctrine\Persistence\ManagerRegistry|\PHPUnit\Framework\MockObject\MockObject */
+        /** @var \Doctrine\Persistence\ManagerRegistry&\PHPUnit\Framework\MockObject\MockObject */
         $managerRegistryMock = $this->createMock(ManagerRegistry::class);
         $repo = new LoggerRepository($managerRegistryMock);
 
