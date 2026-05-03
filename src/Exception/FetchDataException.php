@@ -11,8 +11,12 @@ use Exception;
  */
 class FetchDataException extends Exception
 {
-    private $debug;
-    private $render;
+    private string $debug;
+    /** @var array<int|string, mixed> */
+    private array $render;
+/**
+ * @param array<int|string, mixed> $render
+ */
 
     public function __construct(string $message, string $debug, array $render, int $code = 0, ?Exception $previous = null)
     {
