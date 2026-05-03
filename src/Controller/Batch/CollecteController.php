@@ -32,7 +32,6 @@ class CollecteController extends AbstractController
     private static string $noMessage = 'Aucun message remonté.';
     private static string $noError = 'Aucune erreur remontée.';
     private static string $jeNeSaisPas = 'Je ne sais pas.';
-    private static string $erreurFinTraitement = '[Batch] ❌ Erreur lors du traitement des notes du projet.';
 
     /**
      * [Description for __construct]
@@ -148,8 +147,6 @@ class CollecteController extends AbstractController
 
     /**
      * [Description for collecte]
-     *
-     * @param Request $request
      *
      * @return array<int|string, mixed>
      *
@@ -535,52 +532,6 @@ class CollecteController extends AbstractController
                 'compte_rendu' => $compte_rendu
             ];
         }
-
-        /** On calcule la note pour les hotspot */
-        /*$this->logger->info('[Batch] ℹ️ Démarrage de la collecte de la note des menaces potentielle pour le projet.');
-        $collecte[] =
-        '<h2 class="h5"><span aria-hidden="true">🔜</span>07 - Collecte de la note Hotspot pour le projet</h2>';
-
-        $noteHotspot = $this->batchCollecteNote->batchCollecteNoteHotspot(
-            $maven_key,
-            $mode_collecte,
-            $utilisateur_collecte);
-
-            if ($noteHotspot['code'] === 200){
-                $item = $noteHotspot['historique'];
-                $collecte[] ='
-                <section>
-                    <p>'. $noteHotspot['message'] .'</p>
-                    <ul>
-                        <li><span>Note pour les menaces potentielles : </span>' . $item['note_hotspot'] . '</li>
-                    </ul>
-                </section>';
-
-                /** On met à jour le tableau des données pour la table historique */
-          /*      $mergeHistorique = array_merge($mergeHistorique, $noteHotspot['historique']);
-            } else {
-                $this->logger->error('[Batch] ❌ Erreur lors du traitement de la note des menaces potentielles du projet.', [
-                            'code' => $noteHotspot['code'],
-                            'message' => $noteHotspot['message'] ?? static::$noMessage,
-                            'erreur' => $noteHotspot['erreur'] ?? static::$noError,
-                    ]);
-
-                $erreurTitre = '<h2 class="h5"><span aria-hidden="true">🔚</span>07 - Fin de la collecte de la note des menaces potentielles pour le projet</h2>';
-
-                $erreurContain = $this->generateHtmlErrorContain(
-                    $noteHotspot['code'],
-                    $noteHotspot['message'] ?? static::$noMessage,
-                    $noteHotspot['erreur'] ?? static::$noError );
-
-                $collecte[] = $erreurTitre . $erreurContain;
-                $compte_rendu = implode("\n", $collecte);
-
-                return [
-                    'code' => $noteHotspot['code'],
-                    'compte_rendu' => $compte_rendu
-                ];
-            }
-        */
         /** Signalement du détail des Hotspots pour le projet */
         $this->logger->info('[Batch] ℹ️ Démarrage de la collecte du détail des hotspots pour le projet.');
         $collecte[] =
