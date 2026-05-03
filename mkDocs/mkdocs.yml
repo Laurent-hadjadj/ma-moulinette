@@ -16,6 +16,7 @@ nav:
         - Environnement de développement: ma-moulinette/developpement/pour_bien_demarrer.md
         - Gestion de la sécurité: ma-moulinette/developpement/securite.md
         - Test Unitaires: ma-moulinette/developpement/test-unitaire.md
+        - Annuaire LDAP local: ma-moulinette/developpement/openldap-local.md
         - Migration PostgreSQL: ma-moulinette/developpement/guide-migration.md
         - MOM RabbitMQ: ma-moulinette/developpement/rabbitMQ.md
         - Travailler à plusieurs: ma-moulinette/developpement/tuto-git.md
