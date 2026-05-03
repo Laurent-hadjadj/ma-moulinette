@@ -118,22 +118,24 @@
 .imprimer-pdf-svg { fill: #971c09; }
 
 /* bouton */
-.enregistrer-analyse {
-  padding: 1rem 3rem 0.5rem 3rem;
-  display: flex;
-  align-items: center;
-}
-
-.enregistrer-analyse,
-#fermer-choisir-analyse,
-#fermer-modifier-analyse {
+#bouton-fermer-ajouter-analyse,
+#bouton-fermer-modifier-analyse,
+#bouton-enregistrer-analyse
+{
+  min-width: 9rem;
+  font-size: 0.95rem;
+  border-radius: 0.375rem;
+  margin: 0 0.25rem 0.5rem 0.25rem;
+  padding: 0.8rem 0.6rem;
   color: #fff;
+  text-align: center;
   background-color: #00445b;
 }
 
 .enregistrer-analyse:hover,
-#fermer-modifier-analyse:hover,
-#fermer-choisir-analyse:hover { background-color: #006182; }
+#bouton-fermer-modifier-analyse:hover,
+#bouton-fermer-ajouter-analyse:hover,
+#bouton-enregistrer-analyse:hover { background-color: #006182; }
 
 .lien-ajouter,
 .lien-modifier,
