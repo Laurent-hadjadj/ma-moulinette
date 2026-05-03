@@ -7,10 +7,17 @@ const projectRoot = resolve(__dirname, '..', '..', '..');
 const resetScript = resolve(projectRoot, 'bin', 'e2e', 'reset-e2e-data.ps1');
 const seedScript  = resolve(projectRoot, 'bin', 'e2e', 'seed-e2e.ps1');
 
+// Base CIBLE des seeds/resets E2E. Override via env E2E_DB_NAME si besoin.
+// Les scripts ps1 refusent ma_moulinette (PROD) sauf -AllowProd explicite.
+const E2E_DB = process.env.E2E_DB_NAME || 'ma_moulinette_test';
+
 function runPs(scriptPath: string, args: string[] = []): void {
+  // Toujours injecter -DbName (defense in depth : le defaut ps1 est deja test,
+  // mais on rend la cible explicite cote helper pour eviter toute surprise).
+  const fullArgs = ['-DbName', E2E_DB, ...args];
   execFileSync(
     'powershell.exe',
-    ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', scriptPath, ...args],
+    ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', scriptPath, ...fullArgs],
     { stdio: ['ignore', 'inherit', 'inherit'] }
   );
 }

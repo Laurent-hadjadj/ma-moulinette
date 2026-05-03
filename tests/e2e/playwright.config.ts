@@ -11,8 +11,21 @@ import { defineConfig, devices } from '@playwright/test';
  *   - workers: 1 (état partagé en DB, pas de parallélisme)
  *   - fullyParallel: false (ordre garanti par tri alphabétique des fichiers)
  *   - DB clean obligatoire avant la 1ère spec : `bin/e2e/rebuild-database.ps1`
- *   - Symfony serve doit tourner sur localhost:8000 avec APP_ENV=test
- *     (pour activer SonarFixtureClientService — pas de vrai SonarQube requis)
+ *
+ * ⚠️  CRITIQUE — Lancer le serveur Symfony AVEC APP_ENV=test (sinon écrit en PROD) :
+ *
+ *      $env:APP_ENV='test'; symfony serve --port=8000 --no-tls
+ *
+ *   Sans APP_ENV=test, Symfony charge .env.local → DATABASE_URL=ma_moulinette
+ *   (PROD) au lieu de ma_moulinette_test. Toute action UI Playwright écrirait
+ *   alors dans la base de prod (incident 2026-05-02 : marqueurs E2E retrouvés
+ *   en prod avant correction). Les helpers DB côté tests forcent désormais
+ *   -DbName ma_moulinette_test (cf. helpers/db.ts) — mais le serveur HTTP doit
+ *   être démarré correctement pour que les inserts via UI atterrissent au bon
+ *   endroit.
+ *
+ *   APP_ENV=test active aussi SonarFixtureClientService (pas de vrai SonarQube
+ *   requis).
  */
 export default defineConfig({
   testDir: './specs',

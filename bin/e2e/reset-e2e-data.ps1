@@ -20,7 +20,9 @@ param(
     [int]    $Port       = 5432,
     [string] $DbUser     = "db_user",
     [string] $DbPassword = "db_password",
+    [string] $DbName     = "ma_moulinette_test",
     [string] $PsqlPath   = "psql",
+    [switch] $AllowProd,
     [switch] $Quiet
 )
 
@@ -28,6 +30,13 @@ $ErrorActionPreference = "Stop"
 
 # Force UTF-8
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
+# GARDE-FOU CRITIQUE : refus explicite de cibler la base de PROD
+if ($DbName -eq "ma_moulinette" -and -not $AllowProd) {
+    Write-Host "[reset-e2e] REFUS : DbName='ma_moulinette' est la base de PROD." -ForegroundColor Red
+    Write-Host "[reset-e2e]         Utilisez -DbName ma_moulinette_test (defaut), ou -AllowProd pour forcer." -ForegroundColor Red
+    exit 2
+}
 
 $scriptDir     = Split-Path -Parent $MyInvocation.MyCommand.Path
 # Script in bin/e2e/ -> remonter 2 niveaux pour atteindre la racine
@@ -41,7 +50,7 @@ if (-not (Test-Path (Join-Path $migrationsDir $resetScript))) {
 }
 
 if (-not $Quiet) {
-    Write-Host "[reset-e2e] Reset DB E2E (db_user, sans prompt)..." -ForegroundColor Cyan
+    Write-Host "[reset-e2e] Reset DB E2E sur '$DbName' (db_user, sans prompt)..." -ForegroundColor Cyan
 }
 
 # PGPASSWORD evite tout prompt
@@ -52,7 +61,7 @@ $psqlArgs = @(
     "-h", $DbHost,
     "-p", $Port,
     "-U", $DbUser,
-    "-d", "ma_moulinette",
+    "-d", $DbName,
     "-v", "ON_ERROR_STOP=1",
     "--set=AUTOCOMMIT=on",
     "-f", $resetScript
