@@ -412,6 +412,28 @@ const populerMetriques = function (data) {
   document.getElementById('sqale-rating').dataset.sqaleRating = data.sqale_rating;
   document.getElementById('security-review-rating').dataset.securityReviewRating = data.security_review_rating;
 
+  /* Ratings dérivés calculés par metricsRebuild (lettres A-E ou null) */
+  const ratingDerives = [
+    ['coverage-rating', data.coverage_rating],
+    ['duplicated-lines-rating', data.duplicated_lines_rating],
+    ['comment-lines-rating', data.comment_lines_rating],
+    ['complexity-rating', data.complexity_rating],
+    ['cognitive-complexity-rating', data.cognitive_complexity_rating],
+  ];
+  ratingDerives.forEach(([id, value]) => {
+    const r = displayRating(value);
+    $(`#${id}`).html(`<span class="note note-${r.couleur}">${r.lettre}</span>`);
+  });
+
+  /* Quality Gate : 'OK' / 'ERROR' / 'WARN' / 'UNKNOWN' / null → icône + libellé */
+  const alertMap = {
+    OK:      '<span class="note note-a">✓ OK</span>',
+    ERROR:   '<span class="note note-e">✗ ERROR</span>',
+    WARN:    '<span class="note note-c">⚠ WARN</span>',
+    WARNING: '<span class="note note-c">⚠ WARN</span>',
+  };
+  $('#alert-status').html(alertMap[data.alert_status] ?? '<span>—</span>');
+
   /* Bugs / vulnerabilites / mauvaises pratiques */
   const fmtDecimal = new Intl.NumberFormat('fr-FR', { style: 'decimal' });
   const fmtPercent = new Intl.NumberFormat('fr-FR', { style: 'percent', maximumFractionDigits: 2 });
@@ -457,6 +479,12 @@ const populerMetriques = function (data) {
   $('#skipped-tests').html(displayMetric(data.skipped_tests, fmtDecimal));
   $('#test-errors').html(displayMetric(data.test_errors, fmtDecimal));
   $('#test-failures').html(displayMetric(data.test_failures, fmtDecimal));
+
+  /* Complexité cyclomatique + cognitive (valeurs brutes + ratios calculés par metricsRebuild) */
+  $('#complexity').html(displayMetric(data.complexity, fmtDecimal));
+  $('#cognitive-complexity').html(displayMetric(data.cognitive_complexity, fmtDecimal));
+  $('#complexity-ratio').html(displayMetric(data.complexity_ratio, fmtDecimal));
+  $('#cognitive-complexity-ratio').html(displayMetric(data.cognitive_complexity_ratio, fmtDecimal));
 
   /* Historique */
   document.getElementById('ncloc-language-distribution').dataset.nclocLanguageDistribution = data.ncloc_language_distribution;
