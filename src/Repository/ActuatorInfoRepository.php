@@ -16,7 +16,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ActuatorInfoRepository extends ServiceEntityRepository
 {
-    public static $removeReturnLine = "/\s+/u";
+    private static string $removeReturnLine = "/\s+/u";
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -26,9 +26,9 @@ class ActuatorInfoRepository extends ServiceEntityRepository
     /**
      * [Description for findActuatorInfoById]
      *
-     * @param array $map
+     * @param array<int|string, mixed> $map
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 26/06/2024 21:06:05 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -40,14 +40,14 @@ class ActuatorInfoRepository extends ServiceEntityRepository
                 $sql = "SELECT actuator_info_description AS nom, actuator_info_value as valeur
                         FROM ma_moulinette.actuator_info
                         WHERE actuator_id= :actuator_id";
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':actuator_id', $map['actuator_id']);
-                    $exec=$stmt->executeQuery();
-                    $liste=$exec->fetchAllAssociative();
+            $exec = $stmt->executeQuery();
+            $liste = $exec->fetchAllAssociative();
         } catch (\Doctrine\DBAL\Exception $e) {
-            return ['code'=>500, 'erreur'=> $e->getMessage()];
+            return ['code' => 500, 'erreur' => $e->getMessage()];
         }
-        return ['code'=>200, 'liste'=>$liste,'erreur'=>''];
+        return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
     }
 
 }

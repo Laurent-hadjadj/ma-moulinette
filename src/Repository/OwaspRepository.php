@@ -17,10 +17,13 @@ use App\Entity\Owasp;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<Owasp>
+ */
 class OwaspRepository extends ServiceEntityRepository
 {
-  public static $removeReturnLine = "/\s+/u";
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
+  private static string $removeReturnLine = "/\s+/u";
+  private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -32,7 +35,7 @@ class OwaspRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 21/10/2024 16:55:20 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -64,15 +67,15 @@ class OwaspRepository extends ServiceEntityRepository
    * [Description for selectOwaspOrderByDateEnregistrement]
    * On récupère les infos de la dernière analyse.
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 02/03/2024 23:20:29 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectOwaspOrderByDateEnregistrement($map): array
+  public function selectOwaspOrderByDateEnregistrement(array $map): array
   {
     $sql = "SELECT *
             FROM ma_moulinette.owasp
@@ -95,15 +98,14 @@ class OwaspRepository extends ServiceEntityRepository
    * [Description for deleteOwaspMavenKey]
    * Supprime les données de la version courante (i.e. correspondant à la maven_key)
    *
-   * @param mixed $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 11/03/2024 08:37:44 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function deleteOwaspMavenKey($map): array
+  public function deleteOwaspMavenKey(array $map): array
   {
     $sql = "DELETE
             FROM ma_moulinette.owasp
@@ -111,7 +113,7 @@ class OwaspRepository extends ServiceEntityRepository
 
       try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-              $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ",$sql));
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(':maven_key', $map['maven_key']);
                 $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
@@ -119,22 +121,22 @@ class OwaspRepository extends ServiceEntityRepository
           $this->getEntityManager()->getConnection()->rollBack();
           return $this->handleDatabaseException($e);
       }
-      return ['code'=>200, 'erreur'=>''];
+    return ['code' => 200, 'erreur' => ''];
   }
 
   /**
    * [Description for InsertOwasp]
    * Ajoute les signalements et les issues OWASP pour le projet
    *
-   * @param array $map
+   * @param array<int|string, mixed> $owaspDataList
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 26/05/2024 13:03:43 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function insertOwasp($owaspDataList): array
+  public function insertOwasp(array $owaspDataList): array
   {
     $sql = "INSERT INTO ma_moulinette.owasp
                 (referential_owasp, maven_key, version, date_version, effort_total,
@@ -166,13 +168,13 @@ class OwaspRepository extends ServiceEntityRepository
 
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              foreach ($owaspDataList as $map){
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+      foreach ($owaspDataList as $map) {
                 foreach ($map as $key => $value) {
                   if ($value instanceof \DateTimeImmutable) {
                       $stmt->bindValue(":$key", $value->format('Y-m-d H:i:sO'));
                   } else {
-                      if ( $key !== 'total'){
+            if ($key !== 'total') {
                           $stmt->bindValue(":$key", $value);
                       }
                   }

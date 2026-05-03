@@ -17,12 +17,15 @@ use App\Entity\Activity;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<Activity>
+ */
 class ActivityRepository extends ServiceEntityRepository
 {
-    public static $removeReturnLine = "/\s+/u";
-    public static $formatDate = 'Y-m-d H:i:sO';
-    public static $noDataBase = 'La connexion à la base de données a échoué.';
-    public static $year = ':year';
+    private static string $removeReturnLine = "/\s+/u";
+    private static string $formatDate = 'Y-m-d H:i:sO';
+    private static string $noDataBase = 'La connexion à la base de données a échoué.';
+    private static string $year = ':year';
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -55,13 +58,13 @@ class ActivityRepository extends ServiceEntityRepository
      * [Description for selectActivity]
      * On récupère la liste de toute les activités
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectActivity($year): array
+    public function selectActivity(int|string $year): array
     {
         $sql = "SELECT *
                 FROM ma_moulinette.activity
@@ -73,20 +76,20 @@ class ActivityRepository extends ServiceEntityRepository
             } catch (\Throwable $e) {
                 return $this->handleDatabaseException($e);
         }
-        return [ 'code' => 200, 'liste' => $liste, 'erreur' => ''];
+        return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
     }
 
     /**
      * [Description for insertActivity]
      * On insère la liste de toute les activités qui sont envoyé
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function insertActivity($data): array
+    public function insertActivity(array $data): array
     {
         $sql = "INSERT INTO ma_moulinette.activity (
                     maven_key, project_name, analyse_id,
@@ -99,7 +102,7 @@ class ActivityRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 foreach ($data as $ref) {
-                    $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                         $stmt->bindValue(':maven_key', $ref['maven_key']);
                         $stmt->bindValue(':project_name', $ref['project_name']);
                         $stmt->bindValue(':analyse_id', $ref['analyse_id']);
@@ -116,20 +119,20 @@ class ActivityRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->rollBack();
             return $this->handleDatabaseException($e);
         }
-        return [ 'code' => 200, 'erreur' => ''];
+        return ['code' => 200, 'erreur' => ''];
     }
 
     /**
      * [Description for nombreJourAnneeDonnee]
      * On compte le nombre de jour pour une année donnée
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function nombreJourAnneeDonnee($year): array
+    public function nombreJourAnneeDonnee(int|string $year): array
     {
         $sql = "SELECT COUNT(DISTINCT started_at) AS unique_days
                 FROM ma_moulinette.activity
@@ -141,20 +144,20 @@ class ActivityRepository extends ServiceEntityRepository
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
-        return [ 'code' => 200, 'request' => $request[0], 'erreur' => ''];
+        return ['code' => 200, 'request' => $request[0], 'erreur' => ''];
     }
 
     /**
      * [Description for tempsExecutionMax]
      * On recherche du temps max d'execution pour une année donnée
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function tempsExecutionMax($year): array
+    public function tempsExecutionMax(int|string $year): array
     {
         $sql = "SELECT max(execution_time) AS max_time
                 FROM ma_moulinette.activity
@@ -166,20 +169,20 @@ class ActivityRepository extends ServiceEntityRepository
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
-        return [ 'code' => 200, 'request' => $request[0], 'erreur' => ''];
+        return ['code' => 200, 'request' => $request[0], 'erreur' => ''];
     }
 
     /**
      * [Description for nombreStatus]
      * On compte le nombre de status (SUCCESS,FAILED) envoyer pour une année donnée
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function nombreStatus($year, $status): array
+    public function nombreStatus(int|string $year, string $status): array
     {
         $sql = "SELECT COUNT(*) AS nb_status
                 FROM ma_moulinette.activity
@@ -194,20 +197,20 @@ class ActivityRepository extends ServiceEntityRepository
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
-        return [ 'code' => 200, 'request' => $request[0], 'erreur' => ''];
+        return ['code' => 200, 'request' => $request[0], 'erreur' => ''];
     }
 
     /**
      * [Description for nombreAnalyse]
      * On compte le nombre d'analyse pour une année donnée
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function nombreAnalyse($year): array
+    public function nombreAnalyse(int|string $year): array
     {
         $sql = "SELECT COUNT(*) AS nb_analyse
                 FROM ma_moulinette.activity
@@ -220,20 +223,20 @@ class ActivityRepository extends ServiceEntityRepository
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
-        return [ 'code' => 200, 'request' => $request[0], 'erreur' => ''];
+        return ['code' => 200, 'request' => $request[0], 'erreur' => ''];
     }
 
     /**
      * [Description for dernierDate]
      * On récupère la date la plus récente dans la table pour une année donnée ou non
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function dernierDate(?int $year = null): array
+    public function dernierDate(int|string|null $year = null): array
     {
         // Base SQL
         $sql = "SELECT executed_at AS date FROM ma_moulinette.activity";
@@ -250,7 +253,7 @@ class ActivityRepository extends ServiceEntityRepository
 
             // Ajout des paramètres si nécessaire
             if ($year !== null) {
-                $stmt->bindValue(':year', $year);
+                $stmt->bindValue(self::$year, $year);
             }
             // Exécution de la requête
             $liste = $stmt->executeQuery()->fetchAssociative();
@@ -264,13 +267,13 @@ class ActivityRepository extends ServiceEntityRepository
      * [Description for premiereDate]
      * On récupère la date la plus récente dans la table pour une année donnée
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function premiereDate(?int $year = null): array
+    public function premiereDate(int|string|null $year = null): array
     {
         // Construction de la base de la requête SQL
         $sql = "SELECT executed_at AS date FROM ma_moulinette.activity";
@@ -289,7 +292,7 @@ class ActivityRepository extends ServiceEntityRepository
 
             // Ajout des paramètres si une année est spécifiée
             if ($year !== null) {
-                $stmt->bindValue(':year', $year);
+                $stmt->bindValue(self::$year, $year);
             }
 
             // Exécution de la requête et récupération du résultat
@@ -299,7 +302,8 @@ class ActivityRepository extends ServiceEntityRepository
             return [
                 // Retourne un tableau vide si aucun résultat n'est trouvé
                 'liste' => $liste ?: [],
-                'code' => 200, 'erreur' => '',
+                'code' => 200,
+                'erreur' => '',
             ];
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
@@ -310,13 +314,13 @@ class ActivityRepository extends ServiceEntityRepository
      * [Description for listeProjectAnalyse]
      * On récupère la date la plus récente dans la table pour une année donnée
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function listeProjectAnalyse($year = null): array
+    public function listeProjectAnalyse(int|string|null $year = null): array
     {
         $sql = "SELECT DATE(executed_at) AS day,
                     COUNT(DISTINCT project_name) AS count
@@ -335,20 +339,20 @@ class ActivityRepository extends ServiceEntityRepository
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
-        return [ 'code' => 200, 'request' => $request, 'erreur' => ''];
+        return ['code' => 200, 'request' => $request, 'erreur' => ''];
     }
 
     /**
      * [Description for  listeAnalyseJour]
      * On récupère la date la plus récente dans la table pour une année donnée
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function listeAnalyseJour($year = null): array
+    public function listeAnalyseJour(int|string|null $year = null): array
     {
         try {
             $sql = "SELECT DATE(executed_at) AS day,
@@ -366,20 +370,20 @@ class ActivityRepository extends ServiceEntityRepository
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
-        return [ 'code' => 200, 'request' => $request, 'erreur' => ''];
+        return ['code' => 200, 'request' => $request, 'erreur' => ''];
     }
 
     /**
      * [Description for listeAnalyseProjet]
      * On récupère la date la plus récente dans la table pour une année donnée
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
      * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function listeAnalyseProjet($year = null): array
+    public function listeAnalyseProjet(int|string|null $year = null): array
     {
         try {
             $sql = "SELECT DATE(executed_at) AS day,
@@ -399,6 +403,6 @@ class ActivityRepository extends ServiceEntityRepository
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
-        return [ 'code' => 200, 'request' => $request, 'erreur' => ''];
+        return ['code' => 200, 'request' => $request, 'erreur' => ''];
     }
 }

@@ -17,11 +17,14 @@ use App\Entity\NoSonar;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<NoSonar>
+ */
 class NoSonarRepository extends ServiceEntityRepository
 {
-  public static $removeReturnLine = "/\s+/u";
-  public static $mavenKey = ':maven_key';
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
+  private static string $removeReturnLine = "/\s+/u";
+  private static string $mavenKey = ':maven_key';
+  private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -33,7 +36,7 @@ class NoSonarRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 18/12/2024 15:25:17 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -65,22 +68,22 @@ class NoSonarRepository extends ServiceEntityRepository
    * [Description for deleteNoSonarMavenKey]
    * Supprime les données de la version courante (i.e. correspondant à la maven_key)
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 11/03/2024 17:36:11 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function deleteNoSonarMavenKey($map): array
+  public function deleteNoSonarMavenKey(array $map): array
   {
     $sql = "DELETE
             FROM ma_moulinette.no_sonar
             WHERE maven_key=:maven_key";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(static::$mavenKey, $map['maven_key']);
               $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
@@ -88,22 +91,22 @@ class NoSonarRepository extends ServiceEntityRepository
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'erreur'=>''];
+    return ['code' => 200, 'erreur' => ''];
   }
 
   /**
    * [Description for selectNoSonarRuleGroupByRule]
    * Retourne la liste des règles pour un projet groupé par règle.
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 22/03/2024 11:08:28 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectNoSonarRuleGroupByRule($map): array
+  public function selectNoSonarRuleGroupByRule(array $map): array
   {
     $sql = "SELECT rule, count(*) as total
             FROM ma_moulinette.no_sonar
@@ -123,15 +126,15 @@ class NoSonarRepository extends ServiceEntityRepository
    * [Description for insertNoSonar]
    * Ajout d'un noSonar ou d'un suppressWarning
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 07/05/2024 13:19:22 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function insertNoSonar($map): array
+  public function insertNoSonar(array $map): array
   {
     $sql = "INSERT INTO ma_moulinette.no_sonar
                 (maven_key, rule, component, line, mode_collecte, utilisateur_collecte, date_enregistrement)
@@ -139,8 +142,8 @@ class NoSonarRepository extends ServiceEntityRepository
                 (:maven_key, :rule, :component, :line, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            foreach($map as $item){
-              $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ",$sql));
+      foreach ($map as $item) {
+        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                   $stmt->bindValue(static::$mavenKey, $item['maven_key']);
                   $stmt->bindValue(':rule', $item['rule']);
                   $stmt->bindValue(':component', $item['component']);
@@ -155,6 +158,6 @@ class NoSonarRepository extends ServiceEntityRepository
         $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
-    return ['code'=>200, 'erreur'=>''];
+    return ['code' => 200, 'erreur' => ''];
   }
 }

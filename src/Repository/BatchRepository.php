@@ -18,12 +18,12 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * [Description BatchRepository]
+ * @extends ServiceEntityRepository<Batch>
  */
 class BatchRepository extends ServiceEntityRepository
 {
-  public static $removeReturnLine = "/\s+/u";
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
+  private static string $removeReturnLine = "/\s+/u";
+  private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -35,7 +35,7 @@ class BatchRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 26/10/2025 12:19:01 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -66,7 +66,7 @@ class BatchRepository extends ServiceEntityRepository
   /**
    * [Description for selectBatchByStatut]
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 22/05/2024 18:04:17 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -90,15 +90,14 @@ class BatchRepository extends ServiceEntityRepository
   /**
    * [Description for updatePortefeuille]
    *
-   * @param mixed $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 26/10/2025 13:05:57 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function updatePortefeuille($map): array
+  public function updatePortefeuille(array $map): array
   {
     $sql = "UPDATE ma_moulinette.batch
             SET nombre_projet = :nombre_projet

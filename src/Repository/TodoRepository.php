@@ -18,14 +18,14 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * [Description TodoRepository]
+ * @extends ServiceEntityRepository<Todo>
  */
 class TodoRepository extends ServiceEntityRepository
 {
 
-  public static $removeReturnLine = "/\s+/u";
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
-  public static $mavenKey = ':maven_key';
+  private static string $removeReturnLine = "/\s+/u";
+  private static string $noDataBase = 'La connexion à la base de données a échoué.';
+  private static string $mavenKey = ':maven_key';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -37,7 +37,7 @@ class TodoRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 06/07/2025 12:11:45 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -69,15 +69,15 @@ class TodoRepository extends ServiceEntityRepository
    * [Description for deleteTodoMavenKey]
    * Supprime les T_do pour la version courante (i.e. correspondant à la maven_key)
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 14/03/2024 11:16:47 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function deleteTodoMavenKey($map): array
+  public function deleteTodoMavenKey(array $map): array
   {
     $sql = "DELETE
             FROM ma_moulinette.todo
@@ -99,15 +99,15 @@ class TodoRepository extends ServiceEntityRepository
    * [Description for selectTodoRuleGroupByRule]
    * Retourne la liste des to.do pour un projet groupé par règle.
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 22/03/2024 11:33:43 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectTodoRuleGroupByRule($map): array
+  public function selectTodoRuleGroupByRule(array $map): array
   {
     $sql = "SELECT rule, count(*) as total
             FROM ma_moulinette.todo
@@ -127,19 +127,18 @@ class TodoRepository extends ServiceEntityRepository
    * [Description for selectTodoComponentOrderByRule]
    * On retourne la liste des règle et du détail pour le projet.
    *
-   * @param mixed $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 22/03/2024 11:38:16 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectTodoComponentOrderByRule($map): array
+  public function selectTodoComponentOrderByRule(array $map): array
   {
     $sql = "SELECT rule, component, line
             FROM ma_moulinette.todo
-            WHERE maven_key = :maven_key
+            WHERE maven_key=:maven_key
             ORDER BY rule";
     try {
           $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
@@ -148,21 +147,20 @@ class TodoRepository extends ServiceEntityRepository
     } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
     }
-    return ['code' => 200, 'liste' => $liste, 'erreur'=>''];
+    return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
   }
 
   /**
    * [Description for insertTodo]
    *
-   * @param mixed $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 31/05/2024 20:21:10 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function insertTodo($map): array
+  public function insertTodo(array $map): array
   {
       $sql = "INSERT INTO ma_moulinette.todo
                   (maven_key, rule, component, line, mode_collecte, utilisateur_collecte, date_enregistrement)
@@ -170,7 +168,7 @@ class TodoRepository extends ServiceEntityRepository
                   (:maven_key, :rule, :component, :line, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
       try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-              foreach($map as $item){
+      foreach ($map as $item) {
                   $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(static::$mavenKey, $item['maven_key']);
                     $stmt->bindValue(':rule', $item['rule']);

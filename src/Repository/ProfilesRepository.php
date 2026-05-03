@@ -18,12 +18,12 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * [Description ProfilesRepository]
+ * @extends ServiceEntityRepository<Profiles>
  */
 class ProfilesRepository extends ServiceEntityRepository
 {
-  public static $removeReturnLine = "/\s+/u";
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
+  private static string $removeReturnLine = "/\s+/u";
+  private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -35,7 +35,7 @@ class ProfilesRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 21/10/2024 16:55:20 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -67,28 +67,28 @@ class ProfilesRepository extends ServiceEntityRepository
    * [Description for countProfiles]
    * Compte le nombre total de profiles (par default on compte les profils actifs)
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 27/10/2023 13:56:31 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function countProfiles($referential_default = 'true', $langage = null): array
+  public function countProfiles(string $referential_default = 'true', ?string $langage = null): array
   {
     $sql = "SELECT COUNT(*) AS total
             FROM ma_moulinette.profiles
             WHERE referential_default = :referential_default";
     try {
-      if ($langage !== null ){
+      if ($langage !== null) {
           $sql .= ' AND language_name LIKE :langage ';
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, ' ', $sql));
+        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, ' ', $sql));
             $stmt->bindValue('referential_default', $referential_default);
             $stmt->bindValue('langage', $langage);
       } else {
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, ' ', $sql));
+        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, ' ', $sql));
             $stmt->bindValue('referential_default', $referential_default);
       }
-      $request=$stmt->executeQuery()->fetchAllAssociative();
+      $request = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
     }
@@ -99,13 +99,13 @@ class ProfilesRepository extends ServiceEntityRepository
    * [Description for selectProfiles]
    * On récupère la liste des profils (par default on récupère les profils actifs)
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 19/02/2024 17:08:03 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectProfiles($referential_default = 'true', $langage = null): array
+  public function selectProfiles(string $referential_default = 'true', ?string $langage = null): array
   {
     $sql = "SELECT name AS profil,
                 language_name AS langage,
@@ -121,9 +121,9 @@ class ProfilesRepository extends ServiceEntityRepository
             WHERE referential_default = :referential_default";
             //ORDER BY langage, name;
     try {
-          if ($langage !== null ){
+      if ($langage !== null) {
             $sql .= ' AND language_name LIKE :langage ';
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue('referential_default', $referential_default);
             $stmt->bindValue('langage', $langage);
           } else {
@@ -142,7 +142,7 @@ class ProfilesRepository extends ServiceEntityRepository
    * [Description for deleteProfiles]
    * Suppression des enregistrements de la table profiles
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 19/02/2024 17:11:56 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -167,7 +167,7 @@ class ProfilesRepository extends ServiceEntityRepository
   /**
    * [Description for selectProfilesLanguage]
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 20/02/2024 11:15:53 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -179,7 +179,7 @@ class ProfilesRepository extends ServiceEntityRepository
             FROM ma_moulinette.profiles
             WHERE referential_default = true";
     try {
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
           $labels = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
@@ -191,7 +191,7 @@ class ProfilesRepository extends ServiceEntityRepository
    * [Description for selectProfilesRuleCount]
    * Remonte le nombre de règle active pour un profil
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 27/02/2024 21:36:40 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -203,7 +203,7 @@ class ProfilesRepository extends ServiceEntityRepository
               FROM ma_moulinette.profiles
               WHERE referential_default = true";
       try {
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $dataSets = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
@@ -214,15 +214,14 @@ class ProfilesRepository extends ServiceEntityRepository
   /**
    * [Description for insertProfiles]
    * Ajout les référentiels de règles
-   * @param mixed $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 07/11/2024 14:01:38 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function insertProfiles($map): array
+  public function insertProfiles(array $map): array
   {
       $sql = "INSERT INTO ma_moulinette.profiles
                   (key, name, language_name, referential_default, active_rule_count, rules_updated_at, date_enregistrement)
@@ -231,9 +230,9 @@ class ProfilesRepository extends ServiceEntityRepository
       try {
             $nombre = 0;
             $this->getEntityManager()->getConnection()->beginTransaction();
-              foreach($map['profiles'] as $profil){
+      foreach ($map['profiles'] as $profil) {
                 $nombre = $nombre + 1;
-                $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':key', $profil['key']);
                     $stmt->bindValue(':name', $profil['name']);
                     $stmt->bindValue(':language_name', $profil['languageName']);

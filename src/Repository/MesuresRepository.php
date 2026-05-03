@@ -18,13 +18,13 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * [Description MesuresRepository]
+ * @extends ServiceEntityRepository<Mesures>
  */
 class MesuresRepository extends ServiceEntityRepository
 {
-    public static $removeReturnLine = "/\s+/u";
-    public static $mavenKey = ':maven_key';
-    public static $noDataBase = 'La connexion à la base de données a échoué.';
+    private static string $removeReturnLine = "/\s+/u";
+    private static string $mavenKey = ':maven_key';
+    private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -36,7 +36,7 @@ class MesuresRepository extends ServiceEntityRepository
      *
      * @param \Throwable $e
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 18/12/2024 15:29:21 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -68,15 +68,15 @@ class MesuresRepository extends ServiceEntityRepository
      * [Description for selectMesuresVersionLast]
      * Retourne les mesures de la dernière version d'un projet
      *
-     * @param array $map
+     * @param array<int|string, mixed> $map
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 17/03/2024 22:51:02 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectMesuresVersionLast($map): array
+    public function selectMesuresVersionLast(array $map): array
     {
         $sql = "SELECT *
                 FROM ma_moulinette.mesures
@@ -99,15 +99,15 @@ class MesuresRepository extends ServiceEntityRepository
     /**
      * [Description for insertMesures]
      *
-     * @param array $map
+     * @param array<int|string, mixed> $map
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 21/05/2024 22:57:29 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function insertMesures($map): array
+    public function insertMesures(array $map): array
     {
         $columns = [
             'maven_key',
@@ -251,19 +251,19 @@ class MesuresRepository extends ServiceEntityRepository
      * [Description for deleteMesuresMavenKey]
      * Supprime les mesures de la version courante (i.e. correspondant à la maven_key)
      *
-     * @param array $map
+     * @param array<int|string, mixed> $map
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 26/05/2024 10:51:36 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteMesuresMavenKey($map): array
+    public function deleteMesuresMavenKey(array $map): array
     {
         $sql = "DELETE
                 FROM ma_moulinette.mesures
-                WHERE maven_key = :maven_key";
+            WHERE maven_key=:maven_key";
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));

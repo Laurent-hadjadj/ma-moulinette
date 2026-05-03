@@ -17,11 +17,14 @@ use App\Entity\HotspotOwasp;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<HotspotOwasp>
+ */
 class HotspotOwaspRepository extends ServiceEntityRepository
 {
-  public static $removeReturnLine = "/\s+/u";
-  public static $mavenKey = ':maven_key';
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
+    private static string $removeReturnLine = "/\s+/u";
+    private static string $mavenKey = ':maven_key';
+    private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -33,7 +36,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 21/12/2024 19:47:50 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -64,15 +67,15 @@ class HotspotOwaspRepository extends ServiceEntityRepository
   /**
    * [Description for countHotspotOwaspStatus]
    * On compte le nombre de hotspot REVIEWED
-   * @param array $map
+     * @param array<int|string, mixed> $map
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 02/03/2024 23:23:25 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function countHotspotOwaspStatus($map): array
+    public function countHotspotOwaspStatus(array $map): array
   {
       $sql = "SELECT count(*) AS nombre
               FROM ma_moulinette.hotspot_owasp
@@ -91,15 +94,14 @@ class HotspotOwaspRepository extends ServiceEntityRepository
   /**
    * [Description for countOwaspStatus]
    * On récupère le nombre de hotspot owasp par niveau de sévérité potentiel.
-   * @param mixed $map
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 02/03/2024 23:37:22 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function countHotspotOwaspProbability($map): array
+    public function countHotspotOwaspProbability(array $map): array
   {
     $sql = "SELECT probability, count(*) as total
             FROM ma_moulinette.hotspot_owasp
@@ -119,15 +121,15 @@ class HotspotOwaspRepository extends ServiceEntityRepository
   /**
    * [Description for countHotspotOwaspMenaces]
    * On récupère le nombre de hotspot au status TO_REVIEW
-   * @param array $map
+     * @param array<int|string, mixed> $map
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 03/03/2024 12:38:43 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function countHotspotOwaspMenaces($map): array
+    public function countHotspotOwaspMenaces(array $map): array
   {
     $sql = "SELECT menace, count(*) as total
             FROM ma_moulinette.hotspot_owasp
@@ -148,15 +150,15 @@ class HotspotOwaspRepository extends ServiceEntityRepository
    * [Description for countHotspotOwaspMenaceByStatus]
    *  On compte le nombre de menace probable par type de status
    *
-   * @param array $map
+     * @param array<int|string, mixed> $map
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 03/03/2024 16:01:48 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function countHotspotOwaspMenaceByStatus($map): array
+    public function countHotspotOwaspMenaceByStatus(array $map): array
   {
     $sql = "SELECT count(*) as total
             FROM ma_moulinette.hotspot_owasp
@@ -180,15 +182,14 @@ class HotspotOwaspRepository extends ServiceEntityRepository
   /**
    * [Description for deleteHotpotOwaspMavenKey]
    * Supprime les hotspots de type owasp pour la version courante (i.e. correspondant à la maven_key)
-   * @param mixed $map
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 14/03/2024 08:21:10 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function deleteHotspotOwaspMavenKey($map): array
+    public function deleteHotspotOwaspMavenKey(array $map): array
   {
     $sql = "DELETE
             FROM ma_moulinette.hotspot_owasp
@@ -209,15 +210,14 @@ class HotspotOwaspRepository extends ServiceEntityRepository
   /**
    * [Description for insertHotspotOwasp]
    *
-   * @param mixed $map
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 30/05/2024 15:54:30 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function insertHotspotOwasp($map): array
+    public function insertHotspotOwasp(array $map): array
   {
     $sql = "INSERT INTO ma_moulinette.hotspot_owasp
               (referential_owasp, maven_key, version, date_version, menace, security_category, rule_key, probability, status, resolution, niveau, mode_collecte, utilisateur_collecte, date_enregistrement)

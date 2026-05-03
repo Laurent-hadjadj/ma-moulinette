@@ -19,14 +19,15 @@ use Doctrine\Persistence\ManagerRegistry;
 use App\Repository\Traits\DoctrineParamHelperTrait;
 
 /**
- * [Description BatchExecutionJournalRepository]
+ * @extends ServiceEntityRepository<BatchExecutionJournal>
  */
 class BatchExecutionJournalRepository extends ServiceEntityRepository
 {
   use DoctrineParamHelperTrait;
 
-  public static $removeReturnLine = "/\s+/u";
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
+  private static string $removeReturnLine = "/\s+/u";
+  private static string $noDataBase = 'La connexion à la base de données a échoué.';
+  private static string $jobId = ':job_id';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -38,7 +39,7 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 07/07/2025 09:36:06 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -69,15 +70,14 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
   /**
    * [Description for deleteTraitement]
    *
-   * @param mixed $traitement_id
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 11/11/2025 13:05:12 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function deleteJournal($job_id): array
+  public function deleteJournal(string $job_id): array
   {
     $sql = "DELETE
             FROM ma_moulinette.batch_execution_journal
@@ -88,7 +88,7 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
     try {
         $conn->beginTransaction();
         $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-          $this->bindValue(':job_id', $job_id);
+          $stmt->bindValue(self::$jobId, $job_id);
           $stmt->executeStatement();
         $conn->commit();
     } catch (\Throwable $e) {
@@ -103,14 +103,13 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
   /**
    * [Description for countBatchExecutionJournalCode]
    *
-   * @param mixed $job_id
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 11/11/2025 13:12:29 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function countBatchExecutionJournalCode($job_id): array
+  public function countBatchExecutionJournalCode(string $job_id): array
   {
     $sql = "SELECT
               SUM(CASE WHEN code = 200 THEN 1 ELSE 0 END) AS ok_count,
@@ -122,7 +121,7 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
 
     try {
             $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(':job_id', $job_id);
+              $stmt->bindValue(self::$jobId, $job_id);
             $exec = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
@@ -140,15 +139,14 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
   /**
    * [Description for selectBatchExecutionJournalNomProjetAndStatus]
    *
-   * @param mixed $job_id
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 11/11/2025 13:27:34 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectBatchExecutionJournalNomProjetAndStatus($job_id): array
+  public function selectBatchExecutionJournalNomProjetAndStatus(string $job_id): array
   {
     $sql = "SELECT nom_projet, job_id,
               CASE
@@ -164,7 +162,7 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
 
     try {
             $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(':job_id', $job_id);
+              $stmt->bindValue(self::$jobId, $job_id);
             $exec = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
@@ -177,7 +175,7 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
     ];
   }
 
-  public function selectBatchExecutionJournalByJob($map): array
+  public function selectBatchExecutionJournalByJob(array $map): array
   {
     $sql = "SELECT compte_rendu
             FROM ma_moulinette.batch_execution_journal
@@ -188,7 +186,7 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
 
     try {
             $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(':job_id', $map['job_id']);
+              $stmt->bindValue(self::$jobId, $map['job_id']);
               $stmt->bindValue(':nom_projet', $map['nom_projet']);
             $exec = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {

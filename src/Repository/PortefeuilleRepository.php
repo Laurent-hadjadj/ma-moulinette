@@ -18,12 +18,12 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * [Description PortefeuilleRepository]
+ * @extends ServiceEntityRepository<Portefeuille>
  */
 class PortefeuilleRepository extends ServiceEntityRepository
 {
-  public static $removeReturnLine = "/\s+/u";
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
+  private static string $removeReturnLine = "/\s+/u";
+  private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -36,7 +36,7 @@ class PortefeuilleRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 18/12/2024 15:12:12 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -68,15 +68,15 @@ class PortefeuilleRepository extends ServiceEntityRepository
    * [Description for selectPortefeuille]
    * Retourne la liste des projets d'un portefeuille
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 10/04/2024 11:23:35 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectPortefeuille($map): array
+  public function selectPortefeuille(array $map): array
   {
     $sql = "SELECT liste
             FROM ma_moulinette.portefeuille

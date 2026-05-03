@@ -18,13 +18,13 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * [Description InformationProjetRepository]
+ * @extends ServiceEntityRepository<InformationProjet>
  */
 class InformationProjetRepository extends ServiceEntityRepository
 {
-  public static $removeReturnLine = "/\s+/u";
-  public static $mavenKey = ':maven_key';
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
+  private static string $removeReturnLine = "/\s+/u";
+  private static string $mavenKey = ':maven_key';
+  private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -36,7 +36,7 @@ class InformationProjetRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 18/12/2024 15:51:18 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -68,15 +68,15 @@ class InformationProjetRepository extends ServiceEntityRepository
    * [Description for selectInformationProjetIsValide]
    * Vérifie si le projet existe.
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 16/03/2024 21:06:43 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectInformationProjetIsValide($map): array
+  public function selectInformationProjetIsValide(array $map): array
   {
     $sql = "SELECT *
             FROM ma_moulinette.information_projet
@@ -86,8 +86,8 @@ class InformationProjetRepository extends ServiceEntityRepository
               $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $isValide = $stmt->executeQuery()->fetchAllAssociative();
             /** j'ai pas trouvé de projet */
-            if (!$isValide){
-              return ['code'=>404, 'erreur' => "Je n'ai pas trouvé le projet dans la base de données."];
+      if (!$isValide) {
+        return ['code' => 404, 'erreur' => "Je n'ai pas trouvé le projet dans la base de données."];
             }
           } catch (\Throwable $e) {
               return $this->handleDatabaseException($e);
@@ -99,18 +99,18 @@ class InformationProjetRepository extends ServiceEntityRepository
    * [Description for selectInformationProjetVersion]
    * Retourne la liste des versions pour un projet.
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 27/02/2024 21:44:39 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectInformationProjetVersion($map): array
+  public function selectInformationProjetVersion(array $map): array
   {
-    $sql = "SELECT maven_key, analyse_key, project_version as version, date,
-                    type, version_sonar, version_release_sonar, version_snapshot_sonar, version_autre_sonar
+    $sql = "SELECT maven_key, analyse_key, project_version as version, date_analyse AS date,
+                    type_analyse AS type, version_sonar, version_release_sonar, version_snapshot_sonar, version_autre_sonar
             FROM ma_moulinette.information_projet
             WHERE maven_key=:maven_key";
       try {
@@ -118,7 +118,7 @@ class InformationProjetRepository extends ServiceEntityRepository
               $stmt->bindValue(static::$mavenKey, $map['maven_key']);
             $liste = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
-          $this->getEntityManager()->getConnection()->rollBack();
+      $this->getEntityManager()->getConnection()->rollBack();
           return $this->handleDatabaseException($e);
       }
       return ['code' => 200, 'info' => $liste, 'erreur' => ''];
@@ -128,15 +128,15 @@ class InformationProjetRepository extends ServiceEntityRepository
    * [Description for TestDeleteInformationProjetMavenKey]
    * On supprime les informations sur le projet
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 11/03/2024 19:03:15 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function deleteInformationProjetMavenKey($map): array
+  public function deleteInformationProjetMavenKey(array $map): array
   {
     $sql = "DELETE
             FROM ma_moulinette.information_projet
@@ -157,18 +157,18 @@ class InformationProjetRepository extends ServiceEntityRepository
   /**
    * [Description for insertInformationProjet]
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 20/05/2024 23:09:33 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function insertInformationProjet($map): array
+  public function insertInformationProjet(array $map): array
   {
     $sql = "INSERT INTO ma_moulinette.information_projet
-              (maven_key, analyse_key, date, project_version, type, version_sonar, version_release_sonar, version_snapshot_sonar, version_autre_sonar, mode_collecte, utilisateur_collecte, date_enregistrement)
+              (maven_key, analyse_key, date_analyse, project_version, type_analyse, version_sonar, version_release_sonar, version_snapshot_sonar, version_autre_sonar, mode_collecte, utilisateur_collecte, date_enregistrement)
             VALUES
               (:maven_key, :analyse_key, :date, :project_version, :type, :version_sonar, :version_release_sonar, :version_snapshot_sonar, :version_autre_sonar,:mode_collecte, :utilisateur_collecte, :date_enregistrement)";
     try {

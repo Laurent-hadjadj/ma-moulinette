@@ -18,14 +18,14 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * [Description HotspotsRepository]
+ * @extends ServiceEntityRepository<Hotspots>
  */
 class HotspotsRepository extends ServiceEntityRepository
 {
-  public static $removeReturnLine = "/\s+/u";
-  public static $mavenKey = ':maven_key';
-  public static $status = ':status';
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
+  private static string $removeReturnLine = "/\s+/u";
+  private static string $mavenKey = ':maven_key';
+  private static string $status = ':status';
+  private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -37,7 +37,7 @@ class HotspotsRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 05/02/2025 09:34:19 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -68,15 +68,14 @@ class HotspotsRepository extends ServiceEntityRepository
   /**
    * [Description for deleteHotspotsMavenKey]
    * Supprime les hotspots pour la version courante (i.e. correspondant à la maven_key)
-   * @param mixed $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 12/03/2024 21:49:02 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function deleteHotspotsMavenKey($map): array
+  public function deleteHotspotsMavenKey(array $map): array
   {
     $sql = "DELETE
             FROM ma_moulinette.hotspots
@@ -97,15 +96,15 @@ class HotspotsRepository extends ServiceEntityRepository
   /**
    * [Description for selectHotspotsToReview]
    * Retourne la liste des hotspots pour le status TO_REVIEW
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 14/03/2024 08:50:52 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectHotspotsToReview($map): array
+  public function selectHotspotsToReview(array $map): array
   {
     $sql = "SELECT *
             FROM ma_moulinette.hotspots
@@ -124,15 +123,15 @@ class HotspotsRepository extends ServiceEntityRepository
   /**
    * [Description for countHotspotsStatus]
    * Compte le nombre de hotspots au status TO_REVIEW, REVIEWED
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 20/03/2024 16:45:58 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function countHotspotsStatus($map): array
+  public function countHotspotsStatus(array $map): array
   {
     $sql = "SELECT COUNT(*) as nombre
             FROM ma_moulinette.hotspots
@@ -151,15 +150,15 @@ class HotspotsRepository extends ServiceEntityRepository
   /**
    * [Description for selectHotspotsByNiveau]
    * Retourne la liste du niveau et du nombre de hotspots pour une version au status TO_REVIEWED
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 20/03/2024 19:50:36 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectHotspotsByNiveau($map): array
+  public function selectHotspotsByNiveau(array $map): array
   {
     $sql = "SELECT niveau, count(*) as hotspot
             FROM ma_moulinette.hotspots
@@ -179,9 +178,9 @@ class HotspotsRepository extends ServiceEntityRepository
   /**
    * [Description for insertHotspots]
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 26/05/2024 17:57:58 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -196,7 +195,7 @@ class HotspotsRepository extends ServiceEntityRepository
                 (:maven_key, :version, :date_version, :rule_key, :security_category, :hotspot_key, :probability, :status, :resolution, :niveau, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
       try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            foreach( $map as $item){
+      foreach ($map as $item) {
               $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
                 $stmt->bindValue(static::$mavenKey, $item['maven_key']);
                 $stmt->bindValue(':version', $item['version']);

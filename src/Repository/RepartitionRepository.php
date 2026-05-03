@@ -16,12 +16,12 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class RepartitionRepository extends ServiceEntityRepository
 {
-  private static $removeReturnLine = "/\s+/u";
-  private static $noDataBase = 'La connexion à la base de données a échoué.';
-  private static $mavenKey = ':maven_key';
-  private static $setup = ':setup';
-  private static $dateEnregistrement = ':date_enregistrement';
-  private static $dateFormated = 'Y-m-d H:i:sO';
+  private static string $removeReturnLine = "/\s+/u";
+  private static string $noDataBase = 'La connexion à la base de données a échoué.';
+  private static string $mavenKey = ':maven_key';
+  private static string $setup = ':setup';
+  private static string $dateEnregistrement = ':date_enregistrement';
+  private static string $dateFormated = 'Y-m-d H:i:sO';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -33,7 +33,7 @@ class RepartitionRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 12/02/2025 18:50:03 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -45,7 +45,7 @@ class RepartitionRepository extends ServiceEntityRepository
 
       // message = 'SQLSTATE[08006]'
       if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-          $message = static::$noDataBase;
+          $message = self::$noDataBase;
       }
 
       // state = '23502'
@@ -69,9 +69,9 @@ class RepartitionRepository extends ServiceEntityRepository
   /**
    * [Description for selectOrUpdateRepartitionInitial]
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 14/02/2025 12:32:54 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -80,7 +80,7 @@ class RepartitionRepository extends ServiceEntityRepository
   public function selectOrUpdateRepartitionInitial(array $map): array
   {
     $sqlCheck = "SELECT id FROM ma_moulinette.repartition
-                  WHERE maven_key = :maven_key AND initial = 'initial'
+                  WHERE maven_key = :maven_key AND control = 'initial'
                   ORDER BY date_enregistrement DESC LIMIT 1";
     $sqlUpdate = "UPDATE ma_moulinette.repartition SET
                     name = :name,
@@ -103,24 +103,24 @@ class RepartitionRepository extends ServiceEntityRepository
                     setup = :setup,
                     utilisateur_collecte = :utilisateur_collecte,
                     date_enregistrement = :date_enregistrement
-                  WHERE id = :id AND initial = 'initial'";
+                  WHERE id = :id AND control = 'initial'";
 
     $sqlInsert = "INSERT INTO ma_moulinette.repartition (
-                maven_key, name, bug_blocker, bug_critical, bug_major, bug_minor, bug_info, vulnerability_blocker, vulnerability_critical, vulnerability_major, vulnerability_minor, vulnerability_info, code_smell_blocker,code_smell_critical, code_smell_major, code_smell_minor, code_smell_info, setup, initial, mode_collecte, utilisateur_collecte,date_enregistrement)
-                VALUES (:maven_key, :name, :bug_blocker, :bug_critical, :bug_major, :bug_minor, :bug_info, :vulnerability_blocker, :vulnerability_critical, :vulnerability_major, :vulnerability_minor, :vulnerability_info, :code_smell_blocker, :code_smell_critical, :code_smell_major, :code_smell_minor, :code_smell_info, :setup, 'initial', :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
+                maven_key, name, bug_blocker, bug_critical, bug_major, bug_minor, bug_info, vulnerability_blocker, vulnerability_critical, vulnerability_major, vulnerability_minor, vulnerability_info, code_smell_blocker,code_smell_critical, code_smell_major, code_smell_minor, code_smell_info, setup, mode_collecte, utilisateur_collecte,date_enregistrement)
+                VALUES (:maven_key, :name, :bug_blocker, :bug_critical, :bug_major, :bug_minor, :bug_info, :vulnerability_blocker, :vulnerability_critical, :vulnerability_major, :vulnerability_minor, :vulnerability_info, :code_smell_blocker, :code_smell_critical, :code_smell_major, :code_smell_minor, :code_smell_info, :setup, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
 
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
             // Vérification d'existence
-            $stmtCheck = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sqlCheck));
-              $stmtCheck->bindValue(static::$mavenKey, $map['maven_key']);
+            $stmtCheck = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sqlCheck));
+              $stmtCheck->bindValue(self::$mavenKey, $map['maven_key']);
               $result = $stmtCheck->executeQuery();
               $existingId = $result->fetchOne();
             /** Si control = initial  on update */
             if ($existingId) {
-                $stmtUpdate = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sqlUpdate));
+                $stmtUpdate = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sqlUpdate));
                   $stmtUpdate->bindValue(':name', $map['name']);
-                  $stmtUpdate->bindValue(static::$setup, $map['setup']);
+                  $stmtUpdate->bindValue(self::$setup, $map['setup']);
                   $stmtUpdate->bindValue(':bug_blocker', $map['bug_blocker']);
                   $stmtUpdate->bindValue(':bug_critical', $map['bug_critical']);
                   $stmtUpdate->bindValue(':bug_major', $map['bug_major']);
@@ -140,7 +140,7 @@ class RepartitionRepository extends ServiceEntityRepository
                   $stmtUpdate->bindValue(':code_smell_info', $map['code_smell_info']);
                   $stmtUpdate->bindValue(':mode_collecte', $map['mode_collecte']);
                   $stmtUpdate->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
-                  $stmtUpdate->bindValue(static::$dateEnregistrement, $map['date_enregistrement']->format(static::$dateFormated));
+                  $stmtUpdate->bindValue(self::$dateEnregistrement, $map['date_enregistrement']->format(self::$dateFormated));
                   $stmtUpdate->bindValue('id', $existingId);
                   $stmtUpdate->executeStatement();
                 $this->getEntityManager()->getConnection()->commit();
@@ -148,10 +148,10 @@ class RepartitionRepository extends ServiceEntityRepository
             }
 
           /** sinon on insert  */
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sqlInsert));
-            $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sqlInsert));
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
             $stmt->bindValue(':name', $map['name']);
-            $stmt->bindValue(static::$setup, $map['setup']);
+            $stmt->bindValue(self::$setup, $map['setup']);
 
             $stmt->bindValue(':bug_blocker', $map['bug_blocker']);
             $stmt->bindValue(':bug_critical', $map['bug_critical']);
@@ -173,7 +173,7 @@ class RepartitionRepository extends ServiceEntityRepository
 
             $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
             $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
-            $stmt->bindValue(static::$dateEnregistrement, $map['date_enregistrement']->format(static::$dateFormated));
+            $stmt->bindValue(self::$dateEnregistrement, $map['date_enregistrement']->format(self::$dateFormated));
             $stmt->executeStatement();
         $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
@@ -187,9 +187,9 @@ class RepartitionRepository extends ServiceEntityRepository
   /**
    * [Description for updateRepartition]
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 30/07/2025 09:11:10 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -202,7 +202,7 @@ class RepartitionRepository extends ServiceEntityRepository
                 FROM ma_moulinette.repartition
                 WHERE maven_key = :maven_key
                 AND setup = :setup
-                AND initial = 'initial'
+                AND control = 'initial'
                 ORDER BY date_enregistrement DESC LIMIT 1";
 
     /*
@@ -252,25 +252,24 @@ class RepartitionRepository extends ServiceEntityRepository
     }
 
     // Ajout des autres colonnes obligatoires
-    $setParts[] = "initial = :control";
+    $setParts[] = "control = :control";
     $setParts[] = "date_enregistrement = :date_enregistrement";
 
     $sqlUpdate = "UPDATE ma_moulinette.repartition SET " . implode(", ", $setParts) . "
                   WHERE id = :id
-                  AND initial = 'initial'
+                  AND control = :control
                   AND setup = :setup";
 
     try {
       $this->getEntityManager()->getConnection()->beginTransaction();
           // Vérification de l'existence de l'enregistrement
-          $stmtCheck = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sqlCheck));
+          $stmtCheck = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sqlCheck));
             $stmtCheck->bindValue(':maven_key', $map['maven_key']);
-            $stmtCheck->bindValue(static::$setup, $map['setup']);
+            $stmtCheck->bindValue(self::$setup, $map['setup']);
             $result = $stmtCheck->executeQuery();
             $existingId = $result->fetchOne();
           if ($existingId) {
-              $stmtUpdate = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sqlUpdate));
-
+              $stmtUpdate = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sqlUpdate));
               // Pour chaque champ des 3 types, vérification dans $map,
               // et affectation de -1 si la donnée n'est pas présente
               foreach ($allFields as $field) {
@@ -280,9 +279,10 @@ class RepartitionRepository extends ServiceEntityRepository
 
               // Liaison des autres paramètres obligatoires
               $stmtUpdate->bindValue(':control', $map['control']);
-              $stmtUpdate->bindValue(static::$dateEnregistrement, $map['date_enregistrement']->format(static::$dateFormated));
+
+              $stmtUpdate->bindValue(self::$dateEnregistrement, $map['date_enregistrement']->format(self::$dateFormated));
               $stmtUpdate->bindValue(':id', $existingId);
-              $stmtUpdate->bindValue(static::$setup, $map['setup']);
+              $stmtUpdate->bindValue(self::$setup, $map['setup']);
 
               // Exécution de la mise à jour
               $stmtUpdate->executeStatement();
@@ -300,7 +300,7 @@ class RepartitionRepository extends ServiceEntityRepository
    *
    * @param string $maven_key
    *
-   * @return string|null
+   * @return array<int|string, mixed>
    *
    * Created at: 30/07/2025 09:23:35 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -314,8 +314,8 @@ class RepartitionRepository extends ServiceEntityRepository
               ORDER BY setup DESC LIMIT 1';
 
       try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(static::$mavenKey, $maven_key);
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(self::$mavenKey, $maven_key);
               $result = $stmt->executeQuery()->fetchOne();
     } catch (\Throwable $e) {
       $this->getEntityManager()->getConnection()->rollBack();
@@ -329,7 +329,7 @@ class RepartitionRepository extends ServiceEntityRepository
    *
    * @param string $maven_key
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 28/08/2025 10:31:46 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -339,13 +339,13 @@ class RepartitionRepository extends ServiceEntityRepository
   {
       $sql = 'SELECT *
               FROM repartition
-              WHERE initial = :control AND maven_key = :maven_key
+              WHERE control = :control AND maven_key = :maven_key
               ORDER BY date_enregistrement DESC
               limit 1';
 
       try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(static::$mavenKey, $maven_key);
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(self::$mavenKey, $maven_key);
               $stmt->bindValue('control', "complet (100%)");
               $result = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {

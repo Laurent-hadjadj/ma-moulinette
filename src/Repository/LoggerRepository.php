@@ -18,14 +18,14 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * [Description LoggerRepository]
+ * @extends ServiceEntityRepository<Logger>
  */
 class LoggerRepository extends ServiceEntityRepository
 {
 
-  public static $removeReturnLine = "/\s+/u";
-  public static $mavenKey = ':maven_key';
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
+  private static string $removeReturnLine = "/\s+/u";
+  private static string $mavenKey = ':maven_key';
+  private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -37,7 +37,7 @@ class LoggerRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 18/12/2024 15:44:27 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -69,15 +69,15 @@ class LoggerRepository extends ServiceEntityRepository
    * [Description for deleteLoggerMavenKey]
    * Supprime les Logger pour la version courante (i.e. correspondant à la maven_key)
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 10/07/2024 20:16:47 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function deleteLoggerMavenKey($map): array
+  public function deleteLoggerMavenKey(array $map): array
   {
     $sql = "DELETE
             FROM ma_moulinette.logger
@@ -100,17 +100,17 @@ class LoggerRepository extends ServiceEntityRepository
    *
    * @param mixed $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 12/07/2024 08:18:20 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectLogger($map): array
+  public function selectLogger(array $map): array
   {
     $sql = "SELECT logger_info, logger_warn, logger_error, logger_debug
             FROM ma_moulinette.logger
-            WHERE maven_key = :maven_key";
+            WHERE maven_key=:maven_key";
       try {
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(static::$mavenKey, $map['maven_key']);
@@ -126,13 +126,13 @@ class LoggerRepository extends ServiceEntityRepository
    *
    * @param mixed $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 10/07/2024 19:29:10 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function insertLogger($map): array
+  public function insertLogger(array $map): array
   {
       $sql = "INSERT INTO ma_moulinette.logger
                   (maven_key, logger_info, logger_warn, logger_error, logger_debug, mode_collecte, utilisateur_collecte, date_enregistrement)
@@ -140,7 +140,7 @@ class LoggerRepository extends ServiceEntityRepository
                   (:maven_key, :logger_info, :logger_warn, :logger_error, :logger_debug, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
       try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-              $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ",$sql));
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                 $stmt->bindValue(':logger_info', $map['logger_info']);
                 $stmt->bindValue(':logger_warn', $map['logger_warn']);

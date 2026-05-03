@@ -17,10 +17,13 @@ use App\Entity\OwaspTop10;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<OwaspTop10>
+ */
 class OwaspTop10Repository extends ServiceEntityRepository
 {
-  public static $removeReturnLine = "/\s+/u";
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
+  private static string $removeReturnLine = "/\s+/u";
+  private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -32,7 +35,7 @@ class OwaspTop10Repository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 21/10/2024 16:55:20 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -65,13 +68,13 @@ class OwaspTop10Repository extends ServiceEntityRepository
    *
    * @param mixed $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 19/11/2024 20:24:00 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectOwaspTop10Referential($map): array
+  public function selectOwaspTop10Referential(array $map): array
   {
     $sql = "SELECT *
             FROM ma_moulinette.owasp_top10
@@ -92,13 +95,13 @@ class OwaspTop10Repository extends ServiceEntityRepository
    *
    * @param mixed $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 21/11/2024 20:11:03 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectOwaspTop10Details($map): array
+  public function selectOwaspTop10Details(array $map): array
   {
     $sql = "SELECT *
             FROM ma_moulinette.owasp_top10

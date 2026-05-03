@@ -19,12 +19,12 @@ use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\DBAL\Exception as DBALException;
 
 /**
- * [Description MaMoulinetteRepository]
+ * @extends ServiceEntityRepository<MaMoulinette>
  */
 class MaMoulinetteRepository extends ServiceEntityRepository
 {
-  public static $removeReturnLine = "/\s+/u";
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
+    private static string $removeReturnLine = "/\s+/u";
+    private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -36,7 +36,7 @@ class MaMoulinetteRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 18/12/2024 15:40:39 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -67,7 +67,7 @@ class MaMoulinetteRepository extends ServiceEntityRepository
   /**
    * [Description for  getMaMoulinetteVersion]
    * Récupère la version de Ma Moulinette
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 27/10/2023 15:45:02 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>

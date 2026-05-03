@@ -16,10 +16,10 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class RepartitionTempRepository extends ServiceEntityRepository
 {
-    private static $removeReturnLine = "/\s+/u";
-    private static $noDataBase = 'La connexion à la base de données a échoué.';
-    private static $mavenKey = ':maven_key';
-    private static $setup = ':setup';
+    private static string $removeReturnLine = "/\s+/u";
+    private static string $noDataBase = 'La connexion à la base de données a échoué.';
+    private static string $mavenKey = ':maven_key';
+    private static string $setup = ':setup';
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -31,7 +31,7 @@ class RepartitionTempRepository extends ServiceEntityRepository
      *
      * @param \Throwable $e
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 14/02/2025 11:31:13 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -43,7 +43,7 @@ class RepartitionTempRepository extends ServiceEntityRepository
 
         // message = 'SQLSTATE[08006]'
         if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-            $message = static::$noDataBase;
+            $message = self::$noDataBase;
         }
 
         // state = '23502'
@@ -62,9 +62,9 @@ class RepartitionTempRepository extends ServiceEntityRepository
     /**
      * [Description for batchInsertIssuesSQL]
      *
-     * @param array $issues
+     * @param array<int|string, mixed> $issues
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 14/02/2025 16:16:15 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -125,9 +125,9 @@ class RepartitionTempRepository extends ServiceEntityRepository
     /**
      * [Description for deleteOldRecords]
      *
-     * @param array $map
+     * @param array<int|string, mixed> $map
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 14/02/2025 18:34:29 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -148,16 +148,16 @@ class RepartitionTempRepository extends ServiceEntityRepository
                         WHERE maven_key = :maven_key and setup <> :setup";
         try {
                 $this->getEntityManager()->getConnection()->beginTransaction();
-                    $stmtCheck = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sqlCheck));
-                        $stmtCheck->bindValue(static::$mavenKey, $map['maven_key']);
-                        $stmtCheck->bindValue(static::$setup, $map['setup']);
+                    $stmtCheck = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sqlCheck));
+                        $stmtCheck->bindValue(self::$mavenKey, $map['maven_key']);
+                        $stmtCheck->bindValue(self::$setup, $map['setup']);
                     $result = $stmtCheck->executeQuery();
                     $existingId = $result->fetchOne();
 
                 if ($existingId) {
-                    $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sqlDelete));
-                        $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-                        $stmt->bindValue(static::$setup, $map['setup']);
+                    $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sqlDelete));
+                        $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+                        $stmt->bindValue(self::$setup, $map['setup']);
                         $stmt->executeStatement();
                     }
                 $this->getEntityManager()->getConnection()->commit();
@@ -173,9 +173,9 @@ class RepartitionTempRepository extends ServiceEntityRepository
     /**
      * [Description for selectRepartitionByTypeAndSeverity]
      *
-     * @param array $map
+     * @param array<int|string, mixed> $map
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 12/02/2025 19:01:18 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -190,11 +190,11 @@ class RepartitionTempRepository extends ServiceEntityRepository
                 AND severity = :severity
                 AND setup = :setup";
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                    $stmt->bindValue(self::$mavenKey, $map['maven_key']);
                     $stmt->bindValue(':category', $map['category']);
                     $stmt->bindValue(':severity', $map['severity']);
-                    $stmt->bindValue(static::$setup, $map['setup']);
+                    $stmt->bindValue(self::$setup, $map['setup']);
                 $liste = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
@@ -206,9 +206,9 @@ class RepartitionTempRepository extends ServiceEntityRepository
     /**
      * [Description for checkExistData]
      *
-     * @param array $map
+     * @param array<int|string, mixed> $map
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 27/08/2025 15:57:07 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -223,16 +223,16 @@ class RepartitionTempRepository extends ServiceEntityRepository
                 AND severity = :severity
                 AND setup = :setup";
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                    $stmt->bindValue(self::$mavenKey, $map['maven_key']);
                     $stmt->bindValue(':category', $map['category']);
                     $stmt->bindValue(':severity', $map['severity']);
-                    $stmt->bindValue(static::$setup, $map['setup']);
+                    $stmt->bindValue(self::$setup, $map['setup']);
                 $result = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
 
-        return ['code' => 200, 'total' => $result['0']['total'], 'erreur' => ''];
+        return ['code' => 200, 'total' => $result[0]['total'] ?? 0, 'erreur' => ''];
     }
 }

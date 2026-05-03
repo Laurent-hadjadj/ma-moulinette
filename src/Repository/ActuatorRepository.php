@@ -16,8 +16,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ActuatorRepository extends ServiceEntityRepository
 {
-  public static $removeReturnLine = "/\s+/u";
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
+    private static string $removeReturnLine = "/\s+/u";
+    private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -30,7 +30,7 @@ class ActuatorRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 07/07/2025 09:36:59 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -62,22 +62,21 @@ class ActuatorRepository extends ServiceEntityRepository
   /**
    * [Description for deleteActuatorUrl]
    *
-   * @param mixed $map
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 23/06/2024 14:56:24 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function deleteActuatorUrl($map): array
+    public function deleteActuatorUrl(array $map): array
   {
     $sql = "DELETE
             FROM actuator
             WHERE url = :url";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(':url', $map['url']);
               $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
@@ -88,27 +87,42 @@ class ActuatorRepository extends ServiceEntityRepository
     return ['code' => 200, 'erreur' => ''];
   }
 
+    /** Colonnes triables autorisees (defense en profondeur cote repo) */
+    private const ALLOWED_SORT_COLUMNS = ['nom_application', 'url', 'personne', 'date_modification', 'date_enregistrement'];
+
+    /**
+     * Sanitize la direction de tri (ASC ou DESC, fallback DESC).
+     */
+    private static function sanitizeSortDirection(string $direction): string
+    {
+        $direction = strtoupper($direction);
+        return ($direction === 'ASC' || $direction === 'DESC') ? $direction : 'DESC';
+    }
+
   /**
    * [Description for findActuatorOrderBy]
    *
-   * @param mixed $sortColumn
-   * @param mixed $sortDirection
+     * @param string $sortColumn
+     * @param string $sortDirection
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 23/06/2024 14:56:20 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function findActuatorOrderBy($sortColumn, $sortDirection): array
+    public function findActuatorOrderBy(string $sortColumn, string $sortDirection): array
   {
+        $sortColumn = in_array($sortColumn, self::ALLOWED_SORT_COLUMNS, true) ? $sortColumn : 'nom_application';
+        $sortDirection = self::sanitizeSortDirection((string) $sortDirection);
+
     $sql = "SELECT *
             FROM ma_moulinette.actuator
-            ORDER BY ".$sortColumn." ".$sortDirection;
+                ORDER BY {$sortColumn} {$sortDirection}";
 
     try {
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-          $paginator=$stmt->executeQuery()->fetchAllAssociative();
+         $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+         $paginator = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
       }
@@ -118,25 +132,27 @@ class ActuatorRepository extends ServiceEntityRepository
   /**
    * [Description for findActuatorOrderByDate]
    *
-   * @param mixed $sortDirection
+     * @param string $sortDirection
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 23/06/2024 14:56:13 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function findActuatorOrderByDate($sortDirection): array
+    public function findActuatorOrderByDate(string $sortDirection): array
   {
+        $sortDirection = self::sanitizeSortDirection((string) $sortDirection);
+
     $sql = "SELECT * FROM ma_moulinette.actuator
             ORDER BY
                 CASE
                     WHEN date_modification IS NOT NULL THEN date_modification
                     ELSE date_enregistrement
-                END ".$sortDirection;
+                    END {$sortDirection}";
     try {
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-          $paginator=$stmt->executeQuery()->fetchAllAssociative();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $paginator = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
       }
@@ -146,23 +162,22 @@ class ActuatorRepository extends ServiceEntityRepository
   /**
    * [Description for findActuatorMavenKey]
    *
-   * @param mixed $map
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 26/06/2024 18:57:59 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function findActuatorMavenKey($map): array
+    public function findActuatorMavenKey(array $map): array
   {
     $sql = "SELECT id, url, actuator_user, actuator_password
             FROM ma_moulinette.actuator
             WHERE maven_key = :maven_key";
     try {
-          $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
             $stmt->bindValue(':maven_key', $map['maven_key']);
-            $liste=$stmt->executeQuery()->fetchAllAssociative();
+            $liste = $stmt->executeQuery()->fetchAllAssociative();
             if (empty($liste)) {
                 return ['code' => 404, 'message' => "Le projet n'a pas de point d'accès défini"];
             }
@@ -170,10 +185,10 @@ class ActuatorRepository extends ServiceEntityRepository
           return $this->handleDatabaseException($e);
       }
 
-      $id=$liste[0]['id'];
-      $url=$liste[0]['url'];
-      $user=$liste[0]['actuator_user'] ?? null;
-      $password=$liste[0]['actuator_password'] ?? null;
+        $id = $liste[0]['id'];
+        $url = $liste[0]['url'];
+        $user = $liste[0]['actuator_user'] ?? null;
+        $password = $liste[0]['actuator_password'] ?? null;
 
       return ['code' => 200, 'erreur' => ''] + compact('url', 'user', 'password', 'id');
   }

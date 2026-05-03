@@ -14,22 +14,24 @@
 namespace App\Repository;
 
 use App\Entity\Historique;
+use Doctrine\DBAL\ArrayParameterType;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
- * [Description HistoriqueRepository]
+ * @extends ServiceEntityRepository<Historique>
  */
 class HistoriqueRepository extends ServiceEntityRepository
 {
-    public static $removeReturnLine = "/\s+/u";
-    public static $mavenKey = ':maven_key';
-    public static $version = ':version';
-    public static $dateVersion = ':date_version';
-    public static $initialTrue = ':initial_true';
-    public static $initialFalse = ':initial_false';
-    public static $limit = ':limit';
-    public static $noDataBase = 'La connexion à la base de données a échoué.';
+    private static string $removeReturnLine = "/\s+/u";
+    private static string $mavenKey = ':maven_key';
+    private static string $version = ':version';
+    private static string $dateVersion = ':date_version';
+    private static string $initialTrue = ':initial_true';
+    private static string $initialFalse = ':initial_false';
+    private static string $limit = ':limit';
+    private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -41,7 +43,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * @param \Throwable $e
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 21/12/2024 19:59:31 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -74,15 +76,15 @@ class HistoriqueRepository extends ServiceEntityRepository
      * [Description for countHistoriqueProjet]
      * On veut savoir si le projet a été historisé ?
      *
-     * @param array $map
+     * @param array<int|string, mixed> $map
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 16/02/2024 12:08:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function countHistoriqueProjet($map): array
+    public function countHistoriqueProjet(array $map): array
     {
         $sql = "SELECT count(*) AS nombre
                 FROM ma_moulinette.historique
@@ -101,30 +103,40 @@ class HistoriqueRepository extends ServiceEntityRepository
 
     /**
      * [Description for getProjetFavori]
-     * Récupère les indicateurs du projet favori
-     * @param mixed $where
+     * Récupère les indicateurs du projet favori pour un maven_key et une liste de versions.
      *
-     * @return array
+     * @param string $mavenKey
+     * @param array<int, string> $versions
+     *
+     * @return array<int|string, mixed>
      *
      * Created at: 27/10/2023 15:37:32 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getProjetFavori($where): array
+    public function getProjetFavori(string $mavenKey, array $versions): array
     {
+        if ($versions === []) {
+            return ['code' => 200, 'version' => [], 'erreur' => ''];
+        }
+
         $sql = "SELECT DISTINCT
-                    maven_key as mavenkey, project_name as nom,
-                    version, date_version as date, reliability_rating as reliability,
-                    security_rating as security, security_review_rating as hotspot,
-                    sqale_rating as sqale, bugs as bug,
-                    vulnerabilities as vulnerability,
-                    code_smells as code_smell, menace_potentielle_totale as hotspots
+                    maven_key as mavenkey, nom_projet as nom,
+                    version, date_version as date, note_reliability as reliability,
+                    note_security as security, note_hotspot as hotspot,
+                    note_sqale as sqale, nombre_bug as bug,
+                    nombre_vulnerability as vulnerability,
+                    nombre_code_smell as code_smell, menace_potentielle_totale as hotspots
                 FROM ma_moulinette.historique
-                WHERE ". $where ." ORDER BY date DESC limit 4";
+                WHERE maven_key = :maven_key AND version IN (:versions)
+                ORDER BY date DESC LIMIT 4";
 
         try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-            $request = $stmt->executeQuery()->fetchAllAssociative();
+            $request = $this->getEntityManager()->getConnection()->executeQuery(
+                preg_replace(static::$removeReturnLine, " ", $sql),
+                ['maven_key' => $mavenKey, 'versions' => $versions],
+                ['maven_key' => ParameterType::STRING, 'versions' => ArrayParameterType::STRING],
+            )->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
@@ -135,22 +147,22 @@ class HistoriqueRepository extends ServiceEntityRepository
     /**
      * [Description for updateHistoriqueReference]
      *  Met à jour la version de référence pour un projet
-     * @param array $map
+     * @param array<int|string, mixed> $map
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 16/02/2024 10:57:32 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function updateHistoriqueReference($map): array
+    public function updateHistoriqueReference(array $map): array
     {
         $sql = "UPDATE ma_moulinette.historique
                 SET initial = false
                 WHERE maven_key = :maven_key";
 
         /** on prépare la réponse */
-        $response=['code' => 200, 'erreur' => ''];
+        $response = ['code' => 200, 'erreur' => ''];
         try {
             /** On désactive toutes les versions */
             $this->getEntityManager()->getConnection()->beginTransaction();
@@ -189,15 +201,15 @@ class HistoriqueRepository extends ServiceEntityRepository
     /**
      * [Description for deleteHistoriqueProjet]
      * Suppression de la table historique du projet
-     * @param array $map
+     * @param array<int|string, mixed> $map
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 14/02/2024 10:29:11 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function deleteHistoriqueProjet($map): array
+    public function deleteHistoriqueProjet(array $map): array
     {
         /** On prépare la requête */
         $sql = "DELETE FROM ma_moulinette.historique
@@ -223,21 +235,21 @@ class HistoriqueRepository extends ServiceEntityRepository
     /**
      * [Description for selectUnionHistoriqueProjet]
      * Remonte les projets en historique
-     * @param array $map
+     * @param array<int|string, mixed> $map
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 25/02/2024 10:13:53 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectUnionHistoriqueProjet($map): array
+    public function selectUnionHistoriqueProjet(array $map): array
     {
         /** On prépare la requête */
         // -- Sélection de la version initiale (la plus ancienne)
         // -- Sélection des 10 dernières versions (triées par date décroissante)
         // -- Tri final : version initiale en premier, puis les autres par date croissante
-        $sql="SELECT *
+        $sql = "SELECT *
             FROM (
                 (
                     SELECT
@@ -307,13 +319,13 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * @param mixed $map
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 20/01/2025 11:28:49 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectUnionHistoriqueMesure($map): array
+    public function selectUnionHistoriqueMesure(array $map): array
     {
         /** On prépare la requête */
         $sql = "SELECT *
@@ -356,15 +368,15 @@ class HistoriqueRepository extends ServiceEntityRepository
     /**
      * [Description for selectUnionHistoriqueAnomalie]
      * On remonte les anomalies des projets favoris
-     * @param array $map
+     * @param array<int|string, mixed> $map
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 25/02/2024 12:38:18 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectUnionHistoriqueAnomalie($map): array
+    public function selectUnionHistoriqueAnomalie(array $map): array
     {
         /** On prépare la requête */
         $sql = "SELECT *
@@ -405,15 +417,15 @@ class HistoriqueRepository extends ServiceEntityRepository
     /**
      * [Description for selectUnionHistoriqueDetails]
      * remonte les anomalies par type des favoris
-     * @param array $map
+     * @param array<int|string, mixed> $map
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 25/02/2024 12:48:30 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectUnionHistoriqueDetails($map): array
+    public function selectUnionHistoriqueDetails(array $map): array
     {
         /** On prépare la requête */
         $sql = "SELECT *
@@ -462,15 +474,15 @@ class HistoriqueRepository extends ServiceEntityRepository
     /**
      * [Description for selectHistoriqueAnomalieGraphique]
      * On remonte les données pour construire le graphique.
-     * @param array $map
+     * @param array<int|string, mixed> $map
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 25/02/2024 17:31:09 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHistoriqueAnomalieGraphique($map): array
+    public function selectHistoriqueAnomalieGraphique(array $map): array
     {
         /** On prépare la requête */
         $sql = "SELECT bugs AS bug,
@@ -501,148 +513,128 @@ class HistoriqueRepository extends ServiceEntityRepository
     /**
      * [Description for insertHistoriqueAjoutProjet]
      * On ajoute une version à l'historique à partir des données SonarQube historisées.
-     * @param array $map
+     * @param array<int|string, mixed> $map
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 25/02/2024 17:34:11 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function insertHistoriqueAjoutProjet($map, $json): array
+    /**
+     * Whitelist exhaustive des colonnes de la table historique alignées sur les
+     * clés SonarQube (= sortie BuildMapHistoryService::metricsRebuild). Toute
+     * nouvelle métrique se câble en 1 ligne ici. `actuator_info` est exclu car
+     * il est inséré comme littéral JSON encodé dans la SQL (pas un bind param).
+     */
+    private static array $historiqueColumns = [
+        // Identité projet / version
+        'maven_key', 'analyse_key', 'version', 'date_version', 'project_name',
+        // Version typée par parser ma-moulinette
+        'version_release', 'version_snapshot', 'version_autre',
+        // Répartition langages (parser ma-moulinette)
+        'repartition_frontend', 'repartition_backend', 'repartition_autre', 'repartition_inconnu',
+        // No-sonar / suppress / pmd / checkstyle (parser ma-moulinette)
+        'java_no_sonar', 'python_no_sonar', 'php_no_sonar',
+        'suppress_warning', 'no_pmd', 'check_style',
+        // TODO par langage (parser ma-moulinette)
+        'java_todo', 'python_todo', 'php_todo', 'xml_todo',
+        'javascript_todo', 'typescript_todo', 'ruby_todo',
+        // Quality gate
+        'alert_status',
+        // Size
+        'lines', 'ncloc', 'files', 'classes', 'functions', 'statements',
+        // Comments
+        'comment_lines', 'comment_lines_density', 'comment_lines_rating',
+        // Coverage
+        'coverage', 'branch_coverage', 'line_coverage',
+        'lines_to_cover', 'conditions_to_cover', 'uncovered_conditions',
+        // Tests
+        'tests', 'test_execution_time', 'test_errors', 'test_failures',
+        'skipped_tests', 'test_success_density',
+        // Duplication
+        'duplicated_files', 'duplicated_blocks', 'duplicated_lines', 'duplicated_lines_density',
+        // Complexity (cyclomatique + cognitive + ratios + ratings dérivés)
+        'complexity', 'complexity_rating', 'cognitive_complexity', 'cognitive_complexity_rating',
+        'complexity_ratio', 'cognitive_complexity_ratio',
+        // Issues status (Core + LTA10)
+        'open_issues', 'reopened_issues', 'confirmed_issues', 'false_positive_issues',
+        'accepted_issues', 'high_impact_accepted_issues',
+        // Violations (Core severity breakdown)
+        'violations', 'blocker_violations', 'critical_violations',
+        'major_violations', 'minor_violations', 'info_violations',
+        // Software quality issues (LTA24/26 severity breakdown)
+        'software_quality_blocker_issues', 'software_quality_high_issues',
+        'software_quality_medium_issues', 'software_quality_low_issues',
+        'software_quality_info_issues',
+        // Code smells (Core + ma-moulinette severity legacy)
+        'code_smells', 'code_smell_blocker', 'code_smell_critical',
+        'code_smell_major', 'code_smell_minor', 'code_smell_info',
+        // Maintainability (Core + LTA10 + LTA24/26)
+        'maintainability_issues', 'sqale_index', 'sqale_debt_ratio', 'sqale_rating',
+        'effort_to_reach_maintainability_rating_a',
+        'software_quality_maintainability_issues', 'software_quality_maintainability_rating',
+        'software_quality_maintainability_debt_ratio',
+        'software_quality_maintainability_remediation_effort',
+        'effort_to_reach_software_quality_maintainability_rating_a',
+        // Reliability (Core + LTA10 + LTA24/26)
+        'bugs', 'bug_blocker', 'bug_critical', 'bug_major', 'bug_minor', 'bug_info',
+        'reliability_issues', 'reliability_rating', 'reliability_remediation_effort',
+        'software_quality_reliability_issues', 'software_quality_reliability_rating',
+        'software_quality_reliability_remediation_effort',
+        // Security (Core + LTA10 + LTA24/26)
+        'vulnerabilities', 'vulnerability_blocker', 'vulnerability_critical',
+        'vulnerability_major', 'vulnerability_minor', 'vulnerability_info',
+        'security_issues', 'security_rating', 'security_remediation_effort',
+        'software_quality_security_issues', 'software_quality_security_rating',
+        'software_quality_security_remediation_effort',
+        // Security review
+        'security_hotspots', 'security_review_rating', 'security_hotspots_reviewed',
+        // Menace potentielle (custom ma-moulinette)
+        'menace_potentielle_to_review_high', 'menace_potentielle_to_review_medium',
+        'menace_potentielle_to_review_low',
+        'menace_potentielle_reviewed_high', 'menace_potentielle_reviewed_medium',
+        'menace_potentielle_reviewed_low',
+        'menace_potentielle_totale',
+        // Logger (parser ma-moulinette)
+        'logger_info', 'logger_warn', 'logger_error', 'logger_debug',
+        // Méta enregistrement
+        'initial', 'mode_collecte', 'utilisateur_collecte', 'date_enregistrement',
+    ];
+
+    public function insertHistoriqueAjoutProjet(array $map, array $json): array
     {
-        /** On prépare la requête */
-        $sql = "INSERT INTO ma_moulinette.historique
-            (maven_key, analyse_key, version, date_version,
-            project_name, version_release, version_snapshot, version_autre,
-            suppress_warning,
-            logger_info, logger_warn, logger_error, logger_debug,
-            lines, ncloc,
-            files, classes, functions,
-            coverage, duplicated_lines_density, sqale_debt_ratio, tests, violations, sqale_index,
-            bugs, vulnerabilities, code_smells,
-            bug_blocker, bug_critical, bug_major, bug_minor, bug_info,
-            vulnerability_blocker, vulnerability_critical, vulnerability_major,
-            vulnerability_minor, vulnerability_info,
-            code_smell_blocker, code_smell_critical, code_smell_major,
-            code_smell_minor, code_smell_info,
-            repartition_frontend, repartition_backend, repartition_autre, repartition_inconnu,
-            blocker_violations, critical_violations, major_violations,
-            minor_violations, info_violations,
-            reliability_rating, security_rating, sqale_rating, security_review_rating,
-            menace_potentielle_totale,
-            menace_potentielle_to_review_high,
-            menace_potentielle_to_review_medium,
-            menace_potentielle_to_review_low,
-            menace_potentielle_reviewed_high,
-            menace_potentielle_reviewed_medium,
-            menace_potentielle_reviewed_low,
-            initial,
-            mode_collecte, utilisateur_collecte,
-            actuator_info,
-            date_enregistrement)
-            VALUES (
-                :maven_key, :analyse_key, :version, :date_version, :nom_projet,
-                :version_release, :version_snapshot, :version_autre,
-                :suppress_warning,
-                :logger_info, :logger_warn, :logger_error, :logger_debug,
-                :nombre_ligne, :nombre_ligne_code,
-                :nombre_files, :nombre_classes, :nombre_functions,
-                :coverage, :duplicated_lines_density, :sqale_debt_ratio, :tests,
-                :violations, :dette, :nombre_bug, :nombre_vulnerability,
-                :nombre_code_smell, :bug_blocker, :bug_critical, :bug_major,
-                :bug_minor, :bug_info, :vulnerability_blocker, :vulnerability_critical,
-                :vulnerability_major, :vulnerability_minor, :vulnerability_info,
-                :code_smell_blocker, :code_smell_critical, :code_smell_major,
-                :code_smell_minor, :code_smell_info, :frontend, :backend, :autre, :inconnu,
-                :nombre_anomalie_bloquant, :nombre_anomalie_critique,
-                :nombre_anomalie_majeur, :nombre_anomalie_mineur,
-                :nombre_anomalie_info, :note_reliability, :note_security,
-                :note_sqale, :note_hotspot,
-                :menace_potentielle_totale,
-                :menace_potentielle_to_review_high,
-                :menace_potentielle_to_review_medium,
-                :menace_potentielle_to_review_low,
-                :menace_potentielle_reviewed_high,
-                :menace_potentielle_reviewed_medium,
-                :menace_potentielle_reviewed_low,
-                :initial,
-                :mode_collecte, :utilisateur_collecte, '".json_encode($json)."',
-                :date_enregistrement)";
+        /** SQL générée à partir du whitelist + champ actuator_info en littéral JSON. */
+        $cols = self::$historiqueColumns;
+        $colList = implode(', ', $cols) . ', actuator_info';
+        $placeholders = implode(', ', array_map(static fn (string $c): string => ':' . $c, $cols))
+            . ", '" . json_encode($json) . "'";
+        $sql = "INSERT INTO ma_moulinette.historique ($colList) VALUES ($placeholders)";
+
+        /** 🔍 DEBUG temporaire : décommente pour voir le SQL exécuté + le map.
+         *  À retirer une fois le bug "pas d'INSERT" diagnostiqué. */
+        // dd(['sql' => preg_replace(static::$removeReturnLine, ' ', $sql), 'map' => $map]);
 
         try {
-                $this->getEntityManager()->getConnection()->beginTransaction();
-                    $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                        $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-                        $stmt->bindValue(':analyse_key', $map['analyse_key']);
-                        $stmt->bindValue(static::$version, $map['version']);
-                        $stmt->bindValue(static::$dateVersion, $map['date_version']);
-                        $stmt->bindValue(':nom_projet', $map['nom_projet']);
-                        $stmt->bindValue(':version_release', $map['version_release']);
-                        $stmt->bindValue(':version_snapshot', $map['version_snapshot']);
-                        $stmt->bindValue(':version_autre', $map['version_autre']);
-                        $stmt->bindValue(':suppress_warning', $map['suppress_warning']);
-                        $stmt->bindValue(':logger_info', $map['logger_info']);
-                        $stmt->bindValue(':logger_warn', $map['logger_warn']);
-                        $stmt->bindValue(':logger_error', $map['logger_error']);
-                        $stmt->bindValue(':logger_debug', $map['logger_debug']);
-                        $stmt->bindValue(':nombre_ligne', $map['nombre_ligne']);
-                        $stmt->bindValue(':nombre_ligne_code', $map['nombre_ligne_code']);
-                        $stmt->bindValue(':nombre_files', $map['nombre_files']);
-                        $stmt->bindValue(':nombre_classes', $map['nombre_classes']);
-                        $stmt->bindValue(':nombre_functions', $map['nombre_functions']);
-                        $stmt->bindValue(':coverage', $map['coverage']);
-                        $stmt->bindValue(':duplicated_lines_density', $map['duplicated_lines_density']);
-                        $stmt->bindValue(':sqale_debt_ratio', $map['sqale_debt_ratio']);
-                        $stmt->bindValue(':tests', $map['tests']);
-                        $stmt->bindValue(':violations', $map['violations']);
-                        $stmt->bindValue(':dette', $map['dette']);
-                        $stmt->bindValue(':nombre_bug', $map['nombre_bug']);
-                        $stmt->bindValue(':nombre_vulnerability', $map['nombre_vulnerability']);
-                        $stmt->bindValue(':nombre_code_smell', $map['nombre_code_smell']);
-                        $stmt->bindValue(':bug_blocker', $map['bug_blocker']);
-                        $stmt->bindValue(':bug_critical', $map['bug_critical']);
-                        $stmt->bindValue(':bug_major', $map['bug_major']);
-                        $stmt->bindValue(':bug_minor', $map['bug_minor']);
-                        $stmt->bindValue(':bug_info', $map['bug_info']);
-                        $stmt->bindValue(':vulnerability_blocker', $map['vulnerability_blocker']);
-                        $stmt->bindValue(':vulnerability_critical', $map['vulnerability_critical']);
-                        $stmt->bindValue(':vulnerability_major', $map['vulnerability_major']);
-                        $stmt->bindValue(':vulnerability_minor', $map['vulnerability_minor']);
-                        $stmt->bindValue(':vulnerability_info', $map['vulnerability_info']);
-                        $stmt->bindValue(':code_smell_blocker', $map['code_smell_blocker']);
-                        $stmt->bindValue(':code_smell_critical', $map['code_smell_critical']);
-                        $stmt->bindValue(':code_smell_major', $map['code_smell_major']);
-                        $stmt->bindValue(':code_smell_minor', $map['code_smell_minor']);
-                        $stmt->bindValue(':code_smell_info', $map['code_smell_info']);
-                        $stmt->bindValue(':frontend', $map['frontend']);
-                        $stmt->bindValue(':backend', $map['backend']);
-                        $stmt->bindValue(':autre', $map['autre']);
-                        $stmt->bindValue(':inconnu', $map['inconnu']);
-                        $stmt->bindValue(':nombre_anomalie_bloquant', $map['nombre_anomalie_bloquant']);
-                        $stmt->bindValue(':nombre_anomalie_critique', $map['nombre_anomalie_critique']);
-                        $stmt->bindValue(':nombre_anomalie_majeur', $map['nombre_anomalie_majeur']);
-                        $stmt->bindValue(':nombre_anomalie_mineur', $map['nombre_anomalie_mineur']);
-                        $stmt->bindValue(':nombre_anomalie_info', $map['nombre_anomalie_info']);
-                        $stmt->bindValue(':note_reliability', $map['note_reliability']);
-                        $stmt->bindValue(':note_security', $map['note_security']);
-                        $stmt->bindValue(':note_sqale', $map['note_sqale']);
-                        $stmt->bindValue(':note_hotspot', $map['note_hotspot']);
-                        $stmt->bindValue(':menace_potentielle_totale', $map['menace_potentielle_totale']);
-                        $stmt->bindValue(':menace_potentielle_to_review_high', $map['menace_potentielle_to_review_high']);
-                        $stmt->bindValue(':menace_potentielle_to_review_medium', $map['menace_potentielle_to_review_medium']);
-                        $stmt->bindValue(':menace_potentielle_to_review_low', $map['menace_potentielle_to_review_low']);
-                        $stmt->bindValue(':menace_potentielle_reviewed_high', $map['menace_potentielle_reviewed_high']);
-                        $stmt->bindValue(':menace_potentielle_reviewed_medium', $map['menace_potentielle_reviewed_medium']);
-                        $stmt->bindValue(':menace_potentielle_reviewed_low', $map['menace_potentielle_reviewed_low']);
-                        /** On ne peut pas binder la valeur d'un boolean en true/false
-                         * car le type est toujours string/number ou dateTime */
-                        $stmt->bindValue(':initial', 'false');
-                        $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
-                        $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
-                        $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
-                        $stmt->executeStatement();
-                $this->getEntityManager()->getConnection()->commit();
+            $this->getEntityManager()->getConnection()->beginTransaction();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            foreach ($cols as $col) {
+                /** Cas spéciaux :
+                 *   - 'initial' : Doctrine ne peut pas binder un bool, on force la chaîne 'false'
+                 *     (les nouvelles versions ne sont jamais "version de référence" à la création
+                 *     — le toggle se fait via updateHistoriqueReference).
+                 *   - 'date_enregistrement' : DateTimeInterface → string ISO avec offset.
+                 *   - Tout le reste : valeur du map ou null si absent (colonnes nullable). */
+                $value = $map[$col] ?? null;
+                if ($col === 'initial') {
+                    $value = 'false';
+                } elseif ($col === 'date_enregistrement' && $value instanceof \DateTimeInterface) {
+                    $value = $value->format('Y-m-d H:i:sO');
+                }
+                $stmt->bindValue(':' . $col, $value);
+            }
+            $stmt->executeStatement();
+            $this->getEntityManager()->getConnection()->commit();
         } catch (\Throwable $e) {
             $this->getEntityManager()->getConnection()->rollBack();
             return $this->handleDatabaseException($e);
@@ -655,16 +647,15 @@ class HistoriqueRepository extends ServiceEntityRepository
      * [Description for selectHistoriqueProjetByDate]
      * Retourne ma liste des projet par date décroissant
      *
-     * @param string $mode
-     * @param array $map
+     * @param array<int|string, mixed> $map
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 27/02/2024 19:08:46 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHistoriqueProjetByDate($map): array
+    public function selectHistoriqueProjetByDate(array $map): array
     {
         /** On prépare la requête */
         $sql = "SELECT maven_key, version, date_version as date, initial
@@ -691,15 +682,15 @@ class HistoriqueRepository extends ServiceEntityRepository
      * [Description for selectHistoriqueProjetLast]
      * On récupère les informations du projet le plus récent
      * (i.e ayant la date d'analyse la plus récente).
-     * @param array $map
+     * @param array<int|string, mixed> $map
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 29/02/2024 18:15:37 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHistoriqueProjetLast($map): array
+    public function selectHistoriqueProjetLast(array $map): array
     {
         /** On prépare la requête */
         $sql =  "SELECT version, project_name AS name, date_version,
@@ -727,15 +718,15 @@ class HistoriqueRepository extends ServiceEntityRepository
     /**
      * [Description for selectHistoriqueProjetReference]
      * Remonte les informations du projet de référence.
-     * @param string $map
+     * @param array<int|string, mixed> $map
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 29/02/2024 18:49:45 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHistoriqueProjetReference($map): array
+    public function selectHistoriqueProjetReference(array $map): array
     {
         /** On prépare la requête */
         $sql = "SELECT version, date_version,
@@ -761,17 +752,25 @@ class HistoriqueRepository extends ServiceEntityRepository
 
     /**
      * [Description for selectHistoriqueProjetFavori]
-     * retourne la liste des données pour la dernière version des projets favoris .
-     * @param array $map
+     * Retourne la liste des données pour la dernière version des projets favoris.
      *
-     * @return array
+     * @param array<int|string, mixed> $map  ['liste_projet' => string[], 'nombre_projet_favori' => int]
+     *
+     * @return array<int|string, mixed>
      *
      * Created at: 27/03/2024 19:07:45 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHistoriqueProjetFavori($map): array
+    public function selectHistoriqueProjetFavori(array $map): array
     {
+        $listeProjet = (array) ($map['liste_projet'] ?? []);
+        $nombreFavori = (int) ($map['nombre_projet_favori'] ?? 0);
+
+        if ($listeProjet === [] || $nombreFavori <= 0) {
+            return ['code' => 200, 'liste' => [], 'erreur' => ''];
+        }
+
         /** On prépare la requête */
         $sql = "WITH LastVersions AS (
                 SELECT  maven_key AS mavenkey, project_name AS nom,
@@ -789,10 +788,13 @@ class HistoriqueRepository extends ServiceEntityRepository
                         vulnerability, code_smell, hotspots
                 FROM LastVersions
                 WHERE rn = 1
-                LIMIT ".$map['nombre_projet_favori'];
+                LIMIT :nombre_favori";
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $liste = $stmt->executeQuery()->fetchAllAssociative();
+            $liste = $this->getEntityManager()->getConnection()->executeQuery(
+                preg_replace(static::$removeReturnLine, " ", $sql),
+                ['liste_projet' => $listeProjet, 'nombre_favori' => $nombreFavori],
+                ['liste_projet' => ArrayParameterType::STRING, 'nombre_favori' => ParameterType::INTEGER],
+            )->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
@@ -803,15 +805,14 @@ class HistoriqueRepository extends ServiceEntityRepository
     /**
      * [Description for selectHistoriqueIsValide]
      *
-     * @param mixed $map
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 18/06/2024 21:12:26 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHistoriqueIsValide($map): array
+    public function selectHistoriqueIsValide(array $map): array
     {
         /** On prépare la requête */
         $sql = "SELECT version, project_name AS name,
@@ -824,7 +825,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                     $stmt->bindValue(static::$mavenKey, $map['maven_key']);
                 $isValide = $stmt->executeQuery()->fetchAllAssociative();
                     /** j'ai pas trouvé de projet */
-                if (!$isValide){
+            if (!$isValide) {
                     return ['code' => 404, 'erreur' => "Je n'ai pas trouvé le projet dans la base de données."];
                 }
         } catch (\Throwable $e) {
@@ -837,16 +838,20 @@ class HistoriqueRepository extends ServiceEntityRepository
     /**
      * [Description for selectHistoriqueIndicateurs]
      *
-     * @param string $map
+     * @param array<int, string> $mavenKeys
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 24/09/2024 16:47:27 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectHistoriqueIndicateurs(string $map): array
+    public function selectHistoriqueIndicateurs(array $mavenKeys): array
     {
+        if ($mavenKeys === []) {
+            return ['code' => 200, 'indicateur' => [], 'erreur' => ''];
+        }
+
         /** On prépare la requête */
         $sql = "SELECT DISTINCT ON (maven_key)
                     project_name, version, suppress_warning,
@@ -863,9 +868,11 @@ class HistoriqueRepository extends ServiceEntityRepository
                 WHERE maven_key IN (".$map.") ORDER BY maven_key ASC, version DESC, date_version DESC";
 
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $indicateur = $stmt->executeQuery()->fetchAllAssociative();
-                /** j'ai pas trouvé de projet */
+            $indicateur = $this->getEntityManager()->getConnection()->executeQuery(
+                preg_replace(static::$removeReturnLine, " ", $sql),
+                ['maven_keys' => $mavenKeys],
+                ['maven_keys' => ArrayParameterType::STRING],
+            )->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }

@@ -18,17 +18,17 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * [Description AnomalieDetailsRepository]
+ * @extends ServiceEntityRepository<AnomalieDetails>
  */
 class AnomalieDetailsRepository extends ServiceEntityRepository
 {
-  public static $removeReturnLine = "/\s+/u";
-  public static $mavenKey = ':maven_key';
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
+  private static string $removeReturnLine = "/\s+/u";
+  private static string $mavenKey = ':maven_key';
+  private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(
-    ManagerRegistry $registry)
-  {
+    ManagerRegistry $registry
+  ) {
       parent::__construct($registry, AnomalieDetails::class);
   }
 
@@ -37,7 +37,7 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 07/07/2025 09:36:06 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -69,15 +69,15 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
    * [Description for deleteAnomalieDetailsMavenKey]
    *  On supprime le détails des anomalies du projet
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 13/03/2024 18:39:13 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function deleteAnomalieDetailsMavenKey($map): array
+  public function deleteAnomalieDetailsMavenKey(array $map): array
   {
     $sql = "DELETE
             FROM ma_moulinette.anomalie_details
@@ -99,15 +99,14 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
    * [Description for selectAnomalieDetailsMavenKey]
    * Retourne la liste du détails des anomalies pour un projet.
    *
-   * @param mixed $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 20/03/2024 16:33:35 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectAnomalieDetailsMavenKey($map): array
+  public function selectAnomalieDetailsMavenKey(array $map): array
   {
     $sql = "SELECT *
             FROM ma_moulinette.anomalie_details
@@ -125,15 +124,14 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
   /**
    * [Description for insertAnomalieDetail]
    *
-   * @param mixed $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 03/06/2024 17:18:16 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function insertAnomalieDetail($map): array
+  public function insertAnomalieDetail(array $map): array
   {
     $sql = "INSERT INTO ma_moulinette.anomalie_details
                 (maven_key, name, bug_blocker, bug_critical, bug_major, bug_minor, bug_info, vulnerability_blocker, vulnerability_critical, vulnerability_major, vulnerability_minor, vulnerability_info, code_smell_blocker, code_smell_critical, code_smell_major, code_smell_minor, code_smell_info, mode_collecte, utilisateur_collecte, date_enregistrement)
@@ -142,7 +140,7 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
 
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
               $stmt->bindValue(static::$mavenKey, $map['maven_key']);
               $stmt->bindValue(':name', $map['name']);
 
@@ -176,5 +174,4 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
     }
     return ['code' => 200, 'erreur' => ''];
   }
-
 }

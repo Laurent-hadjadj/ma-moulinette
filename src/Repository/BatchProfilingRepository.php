@@ -18,12 +18,12 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * [Description BatchProfilingRepository]
+ * @extends ServiceEntityRepository<BatchProfiling>
  */
 class BatchProfilingRepository extends ServiceEntityRepository
 {
-  public static $removeReturnLine = "/\s+/u";
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
+  private static string $removeReturnLine = "/\s+/u";
+  private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -35,7 +35,7 @@ class BatchProfilingRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 26/10/2025 12:19:01 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -66,7 +66,7 @@ class BatchProfilingRepository extends ServiceEntityRepository
   /**
    * [Description for getGlobalKpi]
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 16/11/2025 15:21:45 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -98,19 +98,26 @@ class BatchProfilingRepository extends ServiceEntityRepository
   /**
    * [Description for findGlobalSummary]
    *
-   * @param mixed $indicateur
+   * @param string $indicateur
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 16/11/2025 21:00:01 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function findGlobalSummary($indicateur, $limit=10): array
+  public function findGlobalSummary(string $indicateur, int $limit = 10): array
   {
     // Liste des colonnes autorisées (à adapter selon les colonnes que tu veux autoriser)
-    $validIndicators = ['utilisateur', 'portefeuille', 'granularite',
-            'periode', 'nb_projets', 'nb_exec', 'derniere_execution'];
+    $validIndicators = [
+      'utilisateur',
+      'portefeuille',
+      'granularite',
+      'periode',
+      'nb_projets',
+      'nb_exec',
+      'derniere_execution'
+    ];
 
     // Vérifie que l'indicateur fourni est valide
     if (!in_array($indicateur, $validIndicators)) {
@@ -134,7 +141,7 @@ class BatchProfilingRepository extends ServiceEntityRepository
     } catch (\Throwable $e) {
       return $this->handleDatabaseException($e);
     }
-    return ['code' => 200, 'indicateur' => $result ?? [], 'erreur' => ''];
+    return ['code' => 200, 'indicateur' => $result, 'erreur' => ''];
   }
 
 
@@ -143,7 +150,7 @@ class BatchProfilingRepository extends ServiceEntityRepository
    *
    * @param int $limit
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 16/11/2025 15:10:36 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -161,7 +168,7 @@ class BatchProfilingRepository extends ServiceEntityRepository
   /**
    * [Description for findStatsByPortefeuille]
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 16/11/2025 15:10:29 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -184,7 +191,7 @@ class BatchProfilingRepository extends ServiceEntityRepository
   /**
    * [Description for findWeeklyStats]
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 16/11/2025 15:10:26 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -207,7 +214,7 @@ class BatchProfilingRepository extends ServiceEntityRepository
   /**
    * [Description for findMonthlyStats]
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 16/11/2025 15:10:22 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -230,7 +237,7 @@ class BatchProfilingRepository extends ServiceEntityRepository
   /**
    * [Description for findUsersStats]
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 16/11/2025 15:10:18 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>

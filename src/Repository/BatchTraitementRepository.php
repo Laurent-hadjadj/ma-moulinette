@@ -26,10 +26,10 @@ class BatchTraitementRepository extends ServiceEntityRepository
 {
   use DoctrineParamHelperTrait;
 
-  private static $removeReturnLine = "/\s+/u";
-  private static $noDataBase = 'La connexion à la base de données a échoué.';
-  private static $traitementId = ':traitement_id';
-  private static $pending = ':pending';
+  private static string $removeReturnLine = "/\s+/u";
+  private static string $noDataBase = 'La connexion à la base de données a échoué.';
+  private static string $traitementId = ':traitement_id';
+  private static string $pending = ':pending';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -41,7 +41,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 29/10/2025 22:36:06 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -53,7 +53,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
 
     // message = 'SQLSTATE[08006]'
     if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-        $message = static::$noDataBase;
+        $message = self::$noDataBase;
     }
 
     // state = '23502'
@@ -72,7 +72,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
   /**
    * [Description for selectBatchTraitementAutomatiqueListe]
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 06/11/2025 17:51:11 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -91,7 +91,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
       $conn = $this->getEntityManager()->getConnection();
 
       try {
-            $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             $liste = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
@@ -105,9 +105,8 @@ class BatchTraitementRepository extends ServiceEntityRepository
    * On récupère la liste des derniers traitements,
    * groupé par titre et ordonné par responsable
    *
-   * @param string $date
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 10/04/2024 09:38:41 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -132,7 +131,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
       $conn = $this->getEntityManager()->getConnection();
 
       try {
-            $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             $liste = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
@@ -143,15 +142,15 @@ class BatchTraitementRepository extends ServiceEntityRepository
   /**
    * [Description for selectBatchTraitementByTraitementId]
    *
-   * @param array $map
+   * @param string $traitement_id
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 10/11/2025 11:36:58 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectBatchTraitementByTraitementId($traitement_id): array
+  public function selectBatchTraitementByTraitementId(string $traitement_id): array
   {
     $sql = "SELECT *
             FROM ma_moulinette.batch_traitement
@@ -160,7 +159,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
     $conn = $this->getEntityManager()->getConnection();
 
     try {
-          $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             $stmt->bindValue(':traitement_id', $traitement_id);
           $traitement = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
@@ -173,7 +172,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
    * [Description for countBatchTraitementPendingAndProgress]
    *
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 27/10/2025 19:41:15 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -193,7 +192,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
     $conn = $this->getEntityManager()->getConnection();
 
     try {
-            $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             $exec = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
@@ -212,15 +211,14 @@ class BatchTraitementRepository extends ServiceEntityRepository
   /**
    * [Description for updateBatchTraitementPending]
    *
-   * @param mixed $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 02/11/2025 21:30:02 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function updateBatchTraitementPending($map): array
+  public function updateBatchTraitementPending(array $map): array
   {
     $sql = "UPDATE ma_moulinette.batch_traitement
             SET pending = :pending
@@ -230,9 +228,9 @@ class BatchTraitementRepository extends ServiceEntityRepository
 
     try {
           $conn->beginTransaction();
-          $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                  $this->bindNullableBool($stmt, static::$pending, $map['pending']);
-                  $this->bindUlidAsString($stmt, static::$traitementId, $map['traitement_id']);
+          $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                  $this->bindNullableBool($stmt, self::$pending, $map['pending']);
+                  $this->bindUlidAsString($stmt, self::$traitementId, $map['traitement_id']);
           $stmt->executeStatement();
           $conn->commit();
         } catch (\Throwable $e) {
@@ -247,15 +245,15 @@ class BatchTraitementRepository extends ServiceEntityRepository
   /**
    * [Description for updateBatchTraitement]
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 22/05/2024 17:56:41 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function updateBatchTraitement($map): array
+  public function updateBatchTraitement(array $map): array
   {
     $sql = "UPDATE ma_moulinette.batch_traitement
             SET debut_traitement = :debut_traitement,
@@ -269,15 +267,15 @@ class BatchTraitementRepository extends ServiceEntityRepository
 
     try {
         $conn->beginTransaction();
-        $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+        $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
           $stmt->bindValue(':debut_traitement', $map['debut_traitement']);
           $stmt->bindValue(':fin_traitement', $map['fin_traitement']);
 
           // Gestion du type ULID pour PostgreSQL
           $this->bindNullableBool($stmt, ':success', $map['success']);
-          $this->bindNullableBool($stmt, static::$pending, $map['pending']);
+          $this->bindNullableBool($stmt, self::$pending, $map['pending']);
           $this->bindNullableBool($stmt, ':in_progress', $map['in_progress']);
-          $this->bindUlidAsString($stmt, static::$traitementId, $map['traitement_id']);
+          $this->bindUlidAsString($stmt, self::$traitementId, $map['traitement_id']);
 
         // Exécution
         $stmt->executeStatement();
@@ -293,9 +291,8 @@ class BatchTraitementRepository extends ServiceEntityRepository
   /**
    * [Description for insertBatchTraitement]
    *
-   * @param mixed $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 07/06/2024 11:54:14 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -318,7 +315,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
 
       try {
           $conn->beginTransaction();
-          $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
 
                   // Paramètres texte / int
                   $stmt->bindValue(':mode_collecte', $map['mode_collecte'], ParameterType::STRING);
@@ -331,9 +328,9 @@ class BatchTraitementRepository extends ServiceEntityRepository
 
                   $this->bindNullableBool($stmt, ':activated', $map['activated']);
                   $this->bindNullableBool($stmt, ':success', $map['success']);
-                  $this->bindNullableBool($stmt, static::$pending, $map['pending']);
+                  $this->bindNullableBool($stmt, self::$pending, $map['pending']);
                   $this->bindNullableBool($stmt, ':in_progress', $map['in_progress']);
-                  $this->bindUlidAsString($stmt, static::$traitementId, $map['traitement_id']);
+                  $this->bindUlidAsString($stmt, self::$traitementId, $map['traitement_id']);
 
           // Exécution
           $stmt->executeStatement();
@@ -351,13 +348,13 @@ class BatchTraitementRepository extends ServiceEntityRepository
    *
    * @param mixed $traitement_id
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 29/10/2025 21:40:32 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function deleteTraitement($traitement_id): array
+  public function deleteTraitement(string $traitement_id): array
   {
     $sql = "DELETE
             FROM ma_moulinette.batch_traitement
@@ -367,8 +364,8 @@ class BatchTraitementRepository extends ServiceEntityRepository
 
     try {
         $conn->beginTransaction();
-        $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-          $this->bindUlidAsString($stmt, static::$traitementId, $traitement_id);
+        $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+          $this->bindUlidAsString($stmt, self::$traitementId, $traitement_id);
           $stmt->executeStatement();
         $conn->commit();
     } catch (\Throwable $e) {
@@ -382,15 +379,14 @@ class BatchTraitementRepository extends ServiceEntityRepository
   /**
    * [Description for updatePortefeuille]
    *
-   * @param mixed $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 26/10/2025 15:29:27 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function updatePortefeuille($map): array
+  public function updatePortefeuille(array $map): array
   {
     $sql = "UPDATE ma_moulinette.batch_traitement
             SET nombre_projet = :nombre_projet
@@ -399,7 +395,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
 
     try {
           $conn->beginTransaction();
-          $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
                   $stmt->bindValue(':portefeuille', $map['portefeuille']);
                   $stmt->bindValue(':nombre_projet', $map['nombre_projet']);
                   $stmt->executeStatement();

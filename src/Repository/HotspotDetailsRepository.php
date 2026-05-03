@@ -18,11 +18,14 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 
+/**
+ * @extends ServiceEntityRepository<HotspotDetails>
+ */
 class HotspotDetailsRepository extends ServiceEntityRepository
 {
-  public static $removeReturnLine = "/\s+/u";
-  public static $mavenKey = ':maven_key';
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
+    private static string $removeReturnLine = "/\s+/u";
+    private static string $mavenKey = ':maven_key';
+    private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -34,7 +37,7 @@ class HotspotDetailsRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 21/12/2024 19:54:41 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -65,15 +68,15 @@ class HotspotDetailsRepository extends ServiceEntityRepository
   /**
    * [Description for selectHotspotDetailsByNiveau]
    * On récupère la liste des hotspots status de la table détails.
-   * @param array $map
+     * @param array<int|string, mixed> $map
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 03/03/2024 12:44:10 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectHotspotDetailsByStatus($map): array
+    public function selectHotspotDetailsByStatus(array $map): array
   {
     /** Utiliser dans la page OWASP */
     $sql = "SELECT *
@@ -94,15 +97,15 @@ class HotspotDetailsRepository extends ServiceEntityRepository
   /**
    * [Description for deleteHotspotDetailsMavenKey]
    * On supprime le détails des hotspots  pour la version courante
-   * @param array $map
+     * @param array<int|string, mixed> $map
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 14/03/2024 09:42:33 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function deleteHotspotDetailsMavenKey($map): array
+    public function deleteHotspotDetailsMavenKey(array $map): array
   {
     $sql = "DELETE
             FROM ma_moulinette.hotspot_details
@@ -124,15 +127,14 @@ class HotspotDetailsRepository extends ServiceEntityRepository
   /**
    * [Description for insertHotspotDetails]
    *
-   * @param mixed $map
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 31/05/2024 14:43:52 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function insertHotspotDetails($map): array
+    public function insertHotspotDetails(array $map): array
   {
     $sql = "INSERT INTO ma_moulinette.hotspot_details
                 (maven_key, version, date_version, security_category, rule_key, rule_name, severity, status, resolution, niveau, frontend, backend, autre, file_name, file_path, line, message, hotspot_key,

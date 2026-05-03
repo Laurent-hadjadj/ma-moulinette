@@ -18,17 +18,17 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * [Description UtilisateurRepository]
+ * @extends ServiceEntityRepository<Utilisateur>
  */
 class UtilisateurRepository extends ServiceEntityRepository
 {
-  private static $removeReturnLine = "/\s+/u";
-  private static $noDataBase = 'La connexion à la base de données a échoué.';
-  private static $courriel = ':courriel';
-  private static $preference = ':preference';
-  private static $dateModification = ':date_modification';
-  private static $dateFormatted = 'Y-m-d H:i:sO';
-  private static $erreur400 = 'Format des préférences invalide (Erreur 400).';
+  private static string $removeReturnLine = "/\s+/u";
+  private static string $noDataBase = 'La connexion à la base de données a échoué.';
+  private static string $courriel = ':courriel';
+  private static string $preference = ':preference';
+  private static string $dateModification = ':date_modification';
+  private static string $dateFormatted = 'Y-m-d H:i:sO';
+  private static string $erreur400 = 'Format des préférences invalide (Erreur 400).';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -40,7 +40,7 @@ class UtilisateurRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 06/07/2025 12:50:49 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -52,7 +52,7 @@ class UtilisateurRepository extends ServiceEntityRepository
 
       // message = 'SQLSTATE[08006]'
       if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-          $message = static::$noDataBase;
+          $message = self::$noDataBase;
       }
 
       // state = '23502'
@@ -73,19 +73,22 @@ class UtilisateurRepository extends ServiceEntityRepository
    * On ajoute ou supprime la version du projet dans les favori_version
    * Utilisé par le contrôleur SUIVI
    *
-   * @param array $preference
-   * @param array $map
+   * @param array<int|string, mixed> $preference
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 17/02/2024 23:05:33 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function updateUtilisateurFavoriVersion($preference, $map): array
+  public function updateUtilisateurFavoriVersion(array $preference, array $map): array
   {
     /** On génère une date  */
     $now = new \DateTime();
+
+    /** valeur par defaut: si aucune branche ne s'applique, on persiste l'etat courant */
+    $listeVersion = $preference['favori_version'];
 
     /**
      * On récupère la valeur de l'index pour le projet en favori et
@@ -148,6 +151,7 @@ class UtilisateurRepository extends ServiceEntityRepository
 
     /** On supprime la version du projet en favori, le nombre de version est > 1 */
     if (str_contains(\serialize($preference['favori_version']), $map['maven_key']) && $map['favori'] === 0){
+      $listeVersion = [];
 
       /** On supprime pour le projet la version */
       $nouvelleListeVersion = array_diff($preference['favori_version'][$index][$map['maven_key']], [$map['version']]);
@@ -173,7 +177,6 @@ class UtilisateurRepository extends ServiceEntityRepository
           'suivi_projet' => $preference['suivi_projet'],
           'favori_projet' => $preference['favori_projet'],
           'favori_version' => $listeVersion,
-          'bookmark' => $preference['bookmark']
           ])
     );
 
@@ -183,10 +186,10 @@ class UtilisateurRepository extends ServiceEntityRepository
             WHERE courriel = :courriel";
     try {
         $this->getEntityManager()->getConnection()->beginTransaction();
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-            $stmt->bindValue(static::$courriel, $map['courriel']);
-            $stmt->bindValue(static::$preference, $jsonArray);
-            $stmt->bindValue(static::$dateModification, $now->format(static::$dateFormatted));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$courriel, $map['courriel']);
+            $stmt->bindValue(self::$preference, $jsonArray);
+            $stmt->bindValue(self::$dateModification, $now->format(self::$dateFormatted));
             $stmt->executeStatement();
         $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
@@ -201,28 +204,24 @@ class UtilisateurRepository extends ServiceEntityRepository
    * Met à jour pour le projet le statut de favori - true ou false
    * Utilisé par le contrôleur PROJET
    *
-   * @param mixed $preference
-   * @param mixed $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 26/03/2024 17:00:51 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function updateUtilisateurFavoriProjet($preference, $map): array
+  public function updateUtilisateurFavoriProjet(array $preference, array $map): array
   {
     // Vérifier si la structure des préférences est valide
     if (
-      !is_array($preference) ||
-      !isset($preference['statut'], $preference['suivi_projet'], $preference['favori_projet'], $preference['favori_version'], $preference['bookmark']) ||
+      !isset($preference['statut'], $preference['suivi_projet'], $preference['favori_projet'], $preference['favori_version']) ||
       !is_array($preference['statut']) ||
       !is_array($preference['suivi_projet']) ||
       !is_array($preference['favori_projet']) ||
-      !is_array($preference['favori_version']) ||
-      !is_array($preference['bookmark'])
+      !is_array($preference['favori_version'])
     ) {
-      return ['code' => 400, 'erreur' => static::$erreur400];
+      return ['code' => 400, 'erreur' => self::$erreur400];
     }
 
     /** On regarde si la projet est dans la liste des favoris (true) */
@@ -244,25 +243,12 @@ class UtilisateurRepository extends ServiceEntityRepository
         $preference['statut']['favori_projet'] = false;
       }
 
-      // Vérifier si la structure des préférences est valide
-      if (
-        !is_array($preference) ||
-        !isset($preference['statut'], $preference['suivi_projet'], $preference['favori_projet'], $preference['favori_version'], $preference['bookmark']) ||
-        !is_array($preference['statut']) ||
-        !is_array($preference['suivi_projet']) ||
-        !is_array($preference['favori_projet']) ||
-        !is_array($preference['favori_version']) ||
-        !is_array($preference['bookmark'])
-      ) {
-        return ['code' => 400, 'erreur' => static::$erreur400];
-      }
 
       $jsonArray = json_encode([
         'statut' => $preference['statut'],
         'suivi_projet' => $preference['suivi_projet'],
         'favori_projet' => $nouvelleListeFavori,
         'favori_version' => $preference['favori_version'],
-        'bookmark' => $preference['bookmark']
       ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
       // Vérification de l'erreur JSON
@@ -278,10 +264,10 @@ class UtilisateurRepository extends ServiceEntityRepository
 
         try {
               $this->getEntityManager()->getConnection()->beginTransaction();
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                  $stmt->bindValue(static::$preference, $jsonArray);
-                  $stmt->bindValue(static::$dateModification, $now->format(static::$dateFormatted));
-                  $stmt->bindValue(static::$courriel, $map['courriel']);
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                  $stmt->bindValue(self::$preference, $jsonArray);
+                  $stmt->bindValue(self::$dateModification, $now->format(self::$dateFormatted));
+                  $stmt->bindValue(self::$courriel, $map['courriel']);
                   $stmt->executeStatement();
               $this->getEntityManager()->getConnection()->commit();
         } catch (\Throwable $e) {
@@ -294,25 +280,12 @@ class UtilisateurRepository extends ServiceEntityRepository
       array_push($preference['favori_projet'], $map['maven_key']);
       $preference['statut']['favori_projet'] = true;
 
-      // Vérifier si la structure des préférences est valide
-      if (
-        !is_array($preference) ||
-        !isset($preference['statut'], $preference['suivi_projet'], $preference['favori_projet'], $preference['favori_version'], $preference['bookmark']) ||
-        !is_array($preference['statut']) ||
-        !is_array($preference['suivi_projet']) ||
-        !is_array($preference['favori_projet']) ||
-        !is_array($preference['favori_version']) ||
-        !is_array($preference['bookmark'])
-      ) {
-        return ['code' => 400, 'erreur' => static::$erreur400];
-      }
       /** On met à jour l'objet. */
       $jsonArray = json_encode([
         'statut' => $preference['statut'],
         'suivi_projet' => $preference['suivi_projet'],
         'favori_projet' => $preference['favori_projet'],
         'favori_version' => $preference['favori_version'],
-        'bookmark' => $preference['bookmark']
       ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 
       // Vérification de l'erreur JSON
@@ -328,10 +301,10 @@ class UtilisateurRepository extends ServiceEntityRepository
         /** On met à jour les préférences. */
         try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(static::$preference, $jsonArray);
-                $stmt->bindValue(static::$courriel, $map['courriel']);
-                $stmt->bindValue(static::$dateModification, $now->format(static::$dateFormatted));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                $stmt->bindValue(self::$preference, $jsonArray);
+                $stmt->bindValue(self::$courriel, $map['courriel']);
+                $stmt->bindValue(self::$dateModification, $now->format(self::$dateFormatted));
                 $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
         } catch (\Throwable $e) {
@@ -347,15 +320,15 @@ class UtilisateurRepository extends ServiceEntityRepository
    * [Description for updateUtilisateurResetPassword]
    * Modifie l'indicateur reset du mot de passe.
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 03/04/2024 19:34:48 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function updateUtilisateurResetPassword($map): array
+  public function updateUtilisateurResetPassword(array $map): array
   {
     $sql = "UPDATE ma_moulinette.utilisateur
             SET reset_password = :reset_password,
@@ -365,11 +338,11 @@ class UtilisateurRepository extends ServiceEntityRepository
 
     try {
         $this->getEntityManager()->getConnection()->beginTransaction();
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             $stmt->bindValue(':reset_password', $map['reset_password']);
             $stmt->bindValue(':reset_password_count', 1);
-            $stmt->bindValue(static::$courriel, $map['courriel']);
-            $stmt->bindValue(':date_modification', $map['date_modification']->format(static::$dateFormatted));
+            $stmt->bindValue(self::$courriel, $map['courriel']);
+            $stmt->bindValue(':date_modification', $map['date_modification']->format(self::$dateFormatted));
             $stmt->executeStatement();
         $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {

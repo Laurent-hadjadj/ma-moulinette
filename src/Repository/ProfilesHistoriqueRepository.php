@@ -15,16 +15,17 @@ namespace App\Repository;
 
 use App\Entity\ProfilesHistorique;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\DBAL\ParameterType;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * [Description ProfilesHistoriqueRepository]
+ * @extends ServiceEntityRepository<ProfilesHistorique>
  */
 class ProfilesHistoriqueRepository extends ServiceEntityRepository
 {
-  public static $removeReturnLine = "/\s+/u";
-  public static $language = ':language';
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
+  private static string $removeReturnLine = "/\s+/u";
+  private static string $language = ':language';
+  private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -36,7 +37,7 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 21/10/2024 16:55:20 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -68,15 +69,15 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
    * [Description for insertProfilesHistorique]
    * Mise à jour des changements sur les règles.
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 21/02/2024 08:41:24 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function insertProfilesHistorique($map): array
+  public function insertProfilesHistorique(array $map): array
   {
     $sql = "INSERT INTO ma_moulinette.profiles_historique (
                         date_courte, language, date,
@@ -90,7 +91,7 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->beginTransaction();
               /** On escape les ' */
               /* "$reEncode = str_replace("'", "''", $map['description']);" */
-              $stmt=$this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(':date_courte', $map['date_courte']);
                 $stmt->bindValue(static::$language, $map['language']);
                 $stmt->bindValue(':date', $map['date']);
@@ -113,15 +114,15 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
    * [Description for selectProfilesHistoriqueAction]
    * Nombre de règles activé/désactivé/mise à jour
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 21/02/2024 09:43:45 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectProfilesHistoriqueAction($map): array
+  public function selectProfilesHistoriqueAction(array $map): array
   {
     $sql = "SELECT COUNT(*) AS nombre
                     FROM ma_moulinette.profiles_historique
@@ -139,26 +140,34 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
 
   /**
    * [Description for selectProfilesHistoriqueDateTri]
-   * Remonte les n premieres dates trié ordre croissant ou décroissant
+   * Remonte les n premieres dates triees en ordre croissant ou decroissant.
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map  ['language' => string, 'tri' => 'ASC'|'DESC', 'limit' => int]
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 21/02/2024 10:01:56 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectProfilesHistoriqueDateTri($map): array
+  public function selectProfilesHistoriqueDateTri(array $map): array
   {
+    /** Whitelist du sens de tri (ne peut pas etre parametre PostgreSQL) */
+    $tri = strtoupper((string) ($map['tri'] ?? 'DESC'));
+    if ($tri !== 'ASC' && $tri !== 'DESC') {
+      $tri = 'DESC';
+    }
+
     $sql = "SELECT date
             FROM ma_moulinette.profiles_historique
-            WHERE language=:language
-            ORDER BY date ".$map['tri']." limit ".$map['limit'];
+            WHERE language = :language
+            ORDER BY date {$tri} LIMIT :limit";
       try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(static::$language, $map['language']);
-            $liste = $stmt->executeQuery()->fetchAllAssociative();
+      $liste = $this->getEntityManager()->getConnection()->executeQuery(
+        preg_replace(static::$removeReturnLine, " ", $sql),
+        ['language' => $map['language'], 'limit' => (int) ($map['limit'] ?? 1)],
+        ['language' => ParameterType::STRING, 'limit' => ParameterType::INTEGER],
+      )->fetchAllAssociative();
       } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
       }
@@ -169,15 +178,15 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
    * [Description for selectProfilesHistoriqueDateCourteGroupeBy]
    * Retourne la liste groupé et trié par date courte
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 21/02/2024 13:57:22 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectProfilesHistoriqueDateCourteGroupeBy($map): array
+  public function selectProfilesHistoriqueDateCourteGroupeBy(array $map): array
   {
     $sql = "SELECT date_courte
             FROM ma_moulinette.profiles_historique
@@ -198,15 +207,15 @@ class ProfilesHistoriqueRepository extends ServiceEntityRepository
    * [Description for selectProfilesHistoriqueLangageDateCourte]
    * Retourne la liste par langage et par date courte
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 21/02/2024 14:08:47 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectProfilesHistoriqueLangageDateCourte($map): array
+  public function selectProfilesHistoriqueLangageDateCourte(array $map): array
   {
     $sql = "SELECT *
             FROM ma_moulinette.profiles_historique

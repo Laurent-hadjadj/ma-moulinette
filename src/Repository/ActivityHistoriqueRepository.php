@@ -17,12 +17,15 @@ use App\Entity\ActivityHistorique;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+/**
+ * @extends ServiceEntityRepository<ActivityHistorique>
+ */
 class ActivityHistoriqueRepository extends ServiceEntityRepository
 {
-  public static $removeReturnLine = "/\s+/u";
-  public static $formatDate = 'Y-m-d H:i:sO';
-  public static $year = ':year';
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
+    private static string $removeReturnLine = "/\s+/u";
+    private static string $formatDate = 'Y-m-d H:i:sO';
+    private static string $year = ':year';
+    private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -55,13 +58,13 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
    * [Description for insertHistoriqueActivity]
    * On insère la liste de toutes les activités qui sont envoyé
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
    * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function insertHistoriqueActivity($data): array
+    public function insertHistoriqueActivity(array $data): array
   {
     $sql = "INSERT INTO ma_moulinette.activity_historique
                     (year, day, \"analyse\", analyse_average,
@@ -98,13 +101,13 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
    * [Description for updateHistoriqueActivity]
    * On insérer la liste de toute les activities qui sont envoyé
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
    * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function updateHistoriqueActivity($data): array
+    public function updateHistoriqueActivity(array $data): array
   {
     $sql = "UPDATE ma_moulinette.activity_historique
             SET day = :day,
@@ -145,13 +148,13 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
    * [Description for selectActivity]
    * On récupère la liste de toute les activities
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 14/06/2024, 16:00:00 (Europe/Paris)
    * @author    Quentin BOUETEL <pro.qbouetel1@gmail.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectActivity($year = null): array
+    public function selectActivity(int|string|null $year = null): array
   {
     $sql = "SELECT *
             FROM ma_moulinette.activity_historique";

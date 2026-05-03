@@ -18,12 +18,12 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * [Description ListeProjetRepository]
+ * @extends ServiceEntityRepository<ListeProjet>
  */
 class ListeProjetRepository extends ServiceEntityRepository
 {
-  public static $removeReturnLine = "/\s+/u";
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
+    private static string $removeReturnLine = "/\s+/u";
+    private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -35,7 +35,7 @@ class ListeProjetRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 21/10/2024 16:55:20 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -69,7 +69,7 @@ class ListeProjetRepository extends ServiceEntityRepository
    *
    * @param string $type
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 27/10/2023 12:59:43 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
@@ -93,7 +93,7 @@ class ListeProjetRepository extends ServiceEntityRepository
   /**
    * [Description for countListProjet]
    * Compte le nombre total de projet.
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 27/10/2023 13:54:53 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
@@ -109,7 +109,7 @@ class ListeProjetRepository extends ServiceEntityRepository
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
     }
-    return ['code' => 200, 'request' => $nombre, 'erreur'=>''];
+        return ['code' => 200, 'request' => $nombre, 'erreur' => ''];
   }
 
   /**
@@ -117,7 +117,7 @@ class ListeProjetRepository extends ServiceEntityRepository
    * On retourne le nombre de projet récupéré du serveur SonarQube et
    * le nombre de tag disponible
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 19/05/2024 09:27:26 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -144,29 +144,69 @@ class ListeProjetRepository extends ServiceEntityRepository
   }
 
   /**
+     * Normalise une liste de noms de groupes en prefixes de tag :
+     * trim, lowercase, espaces remplaces par tirets, valeur 'null' ignoree.
+     *
+     * @param array<int|string, mixed> $groupes
+     * @return array<int, string>
+     */
+    public static function normalizeGroupesToTagPrefixes(array $groupes): array
+    {
+        $prefixes = [];
+        foreach ($groupes as $groupe) {
+            if ($groupe === 'null' || $groupe === null) {
+                continue;
+            }
+            $minus = trim(strtolower((string) $groupe));
+            if ($minus === '') {
+                continue;
+            }
+            $prefixes[] = preg_replace('/\s+/', '-', $minus);
+        }
+        return $prefixes;
+    }
+
+    /**
    * [Description for selectListeProjetByGroupe]
-   * retourne la liste des projets en fonction de(s) (l')équipes.
+     * Retourne la liste des projets dont au moins un tag correspond a l'un des
+     * prefixes fournis (LIKE 'prefix%').
    *
-   * @param array $map
+     * @param array<int, string> $tagPrefixes  liste de prefixes (sans le %)
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 26/03/2024 17:37:27 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectListeProjetByGroupe($map): array
+    public function selectListeProjetByGroupe(array $tagPrefixes): array
   {
+        if ($tagPrefixes === []) {
+            return ['code' => 200, 'liste' => [], 'erreur' => ''];
+        }
+
+        /** Generation des placeholders nommes et de la map de parametres */
+        $placeholders = [];
+        $params = [];
+        foreach ($tagPrefixes as $i => $prefix) {
+            $key = "p$i";
+            $placeholders[] = ":$key";
+            $params[$key] = $prefix . '%';
+        }
+        $array = implode(', ', $placeholders);
+
     $sql = "SELECT DISTINCT
                 liste_projet.maven_key AS id,
                 LOWER(liste_projet.name) AS text
             FROM
                 ma_moulinette.liste_projet,
-                jsonb_array_elements_text(liste_projet.tags::jsonb) AS tag
-            WHERE ".$map['clause_where'];
+                json_array_elements_text(liste_projet.tags) AS tag
+            WHERE tag LIKE ANY(ARRAY[$array])";
     try {
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-          $liste = $stmt->executeQuery()->fetchAllAssociative();
+            $liste = $this->getEntityManager()->getConnection()->executeQuery(
+                preg_replace(static::$removeReturnLine, " ", $sql),
+                $params,
+            )->fetchAllAssociative();
     } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
     }
@@ -177,9 +217,7 @@ class ListeProjetRepository extends ServiceEntityRepository
    * [Description for deleteListeProjet]
    *  Supprime tous les projets de la table
    *
-   * @param array $map
-   *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 03/04/2024 09:47:35 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>

@@ -19,14 +19,14 @@ use Doctrine\Persistence\ManagerRegistry;
 use App\Repository\Traits\DoctrineParamHelperTrait;
 
 /**
- * [Description BatchExecutionRepository]
+ * @extends ServiceEntityRepository<BatchExecution>
  */
 class BatchExecutionRepository extends ServiceEntityRepository
 {
   use DoctrineParamHelperTrait;
 
-  public static $removeReturnLine = "/\s+/u";
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
+    private static string $removeReturnLine = "/\s+/u";
+    private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -38,7 +38,7 @@ class BatchExecutionRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 07/07/2025 09:36:06 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -69,15 +69,14 @@ class BatchExecutionRepository extends ServiceEntityRepository
   /**
    * [Description for deleteTraitement]
    *
-   * @param mixed $traitement_id
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 29/10/2025 21:22:32 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function deleteTraitement($traitement_id): array
+    public function deleteTraitement(string $traitement_id): array
   {
     $sql = "DELETE
             FROM ma_moulinette.batch_execution
@@ -102,15 +101,14 @@ class BatchExecutionRepository extends ServiceEntityRepository
   /**
    * [Description for selectBatchExecutionTraitementId]
    *
-   * @param mixed $traitement_id
    *
-   * @return array
+     * @return array<int|string, mixed>
    *
    * Created at: 11/11/2025 14:17:43 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectBatchExecutionLastTraitementId($traitement_id): array
+    public function selectBatchExecutionLastTraitementId(string $traitement_id): array
   {
       $sql = "SELECT id
               FROM ma_moulinette.batch_execution
@@ -128,6 +126,5 @@ class BatchExecutionRepository extends ServiceEntityRepository
       }
       return ['code' => 200, 'id' => $find[0]['id'], 'erreur' => ''];
   }
-
 
 }

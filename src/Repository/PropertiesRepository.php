@@ -18,14 +18,14 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * [Description PropertiesRepository]
+ * @extends ServiceEntityRepository<Properties>
  */
 class PropertiesRepository extends ServiceEntityRepository
 {
-  public static $removeReturnLine = "/\s+/u";
-  public static $type = ':type';
-  public static $horodatage = 'Y-m-d H:i:sO';
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
+  private static string $removeReturnLine = "/\s+/u";
+  private static string $type = ':type';
+  private static string $horodatage = 'Y-m-d H:i:sO';
+  private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -37,7 +37,7 @@ class PropertiesRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 21/10/2024 16:55:20 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -71,7 +71,7 @@ class PropertiesRepository extends ServiceEntityRepository
    *
    * @param string $type
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 27/10/2023 14:06:11 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
@@ -97,15 +97,15 @@ class PropertiesRepository extends ServiceEntityRepository
    * [Description for insertProperties]
    * Ajoute les properties
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 27/10/2023 15:14:39 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function insertProperties($map): array
+  public function insertProperties(array $map): array
   {
     $sql = "INSERT INTO ma_moulinette.properties (
                         type,
@@ -146,15 +146,15 @@ class PropertiesRepository extends ServiceEntityRepository
    * [Description for updatePropertiesProjet]
    * Mise à jour des properties pour les projets
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 27/10/2023 15:23:33 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function updatePropertiesProjet($map): array
+  public function updatePropertiesProjet(array $map): array
   {
     $sql = "UPDATE ma_moulinette.properties
             SET projet_bd = :projet_bd,
@@ -182,15 +182,15 @@ class PropertiesRepository extends ServiceEntityRepository
    * [Description for updatePropertiesProfiles]
    * Mise à jour des properties pour les profils
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 27/10/2023 15:23:09 (Europe/Paris)
    * @author    Laurent HADJADJ <laurent_h@me.com>
    * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function updatePropertiesProfiles($map): array
+  public function updatePropertiesProfiles(array $map): array
   {
     $sql = "UPDATE ma_moulinette.properties
             SET profil_bd=:profil_bd,

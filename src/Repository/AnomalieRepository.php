@@ -18,13 +18,13 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * [Description AnomalieRepository]
+ * @extends ServiceEntityRepository<Anomalie>
  */
 class AnomalieRepository extends ServiceEntityRepository
 {
-  public static $removeReturnLine = "/\s+/u";
-  public static $mavenKey = ':maven_key';
-  public static $noDataBase = 'La connexion à la base de données a échoué.';
+  private static string $removeReturnLine = "/\s+/u";
+  private static string $mavenKey = ':maven_key';
+  private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
   public function __construct(ManagerRegistry $registry)
   {
@@ -36,7 +36,7 @@ class AnomalieRepository extends ServiceEntityRepository
    *
    * @param \Throwable $e
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 21/12/2024 20:17:39 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -68,15 +68,15 @@ class AnomalieRepository extends ServiceEntityRepository
    * [Description for deleteAnomalieMavenKey]
    *  On supprime les anomalies sur le projet
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 13/03/2024 18:01:52 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function deleteAnomalieMavenKey($map): array
+  public function deleteAnomalieMavenKey(array $map): array
   {
     $sql = "DELETE
             FROM ma_moulinette.anomalie
@@ -98,9 +98,7 @@ class AnomalieRepository extends ServiceEntityRepository
    * [Description for selectAnomalieByProjectName]
    * Retourne la liste des anomalies par projet, trié  par ordre alphabétique
    *
-   * @param array $map
-   *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 16/03/2024 21:24:57 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -124,15 +122,15 @@ class AnomalieRepository extends ServiceEntityRepository
   /**
    * [Description for selectAnomalie]
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 20/03/2024 16:17:09 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function selectAnomalie($map): array
+  public function selectAnomalie(array $map): array
   {
     $sql = "SELECT *
             FROM ma_moulinette.anomalie
@@ -150,15 +148,15 @@ class AnomalieRepository extends ServiceEntityRepository
   /**
    * [Description for insertAnomalie]
    *
-   * @param array $map
+   * @param array<int|string, mixed> $map
    *
-   * @return array
+   * @return array<int|string, mixed>
    *
    * Created at: 29/05/2024 18:15:21 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  public function insertAnomalie($map): array
+  public function insertAnomalie(array $map): array
   {
     $sql = "INSERT INTO ma_moulinette.anomalie
               (maven_key, project_name, anomalie_total, dette_minute, dette_reliability_minute, dette_vulnerability_minute, dette_code_smell_minute, dette, dette_reliability, dette_vulnerability, dette_code_smell, frontend, backend, autre, inconnu, blocker, critical, major, info, minor, bug, vulnerability, code_smell, mode_collecte, utilisateur_collecte, date_enregistrement)
