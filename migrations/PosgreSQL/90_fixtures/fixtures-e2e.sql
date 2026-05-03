@@ -45,7 +45,7 @@ INSERT INTO ma_moulinette.utilisateur
  date_enregistrement, actif, avatar, liste_groupe_fonctionnel,
  groupe_utilisateur, groupe_id)
 VALUES (
-    '{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false,"bookmark":false},"suivi_projet":[],"favori_projet":[],"favori_version":[]}'::json,
+    '{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false},"suivi_projet":[],"favori_projet":[],"favori_version":[]}'::json,
     false,
     'interne@ma-moulinette.fr',
     '["ROLE_INTERNAL"]'::json,
@@ -65,7 +65,7 @@ INSERT INTO ma_moulinette.utilisateur
  date_enregistrement, actif, avatar, liste_groupe_fonctionnel,
  groupe_utilisateur, groupe_id)
 VALUES (
-    '{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false,"bookmark":false},"suivi_projet":[],"favori_projet":[],"favori_version":[]}'::json,
+    '{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false},"suivi_projet":[],"favori_projet":[],"favori_version":[]}'::json,
     false,
     'josh.liberman@ma-moulinette.fr',
     '["ROLE_NONE"]'::json,
@@ -85,7 +85,7 @@ INSERT INTO ma_moulinette.utilisateur
  date_enregistrement, actif, avatar, liste_groupe_fonctionnel,
  groupe_utilisateur, groupe_id)
 VALUES (
-    '{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false,"bookmark":false},"suivi_projet":[],"favori_projet":[],"favori_version":[]}'::json,
+    '{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false},"suivi_projet":[],"favori_projet":[],"favori_version":[]}'::json,
     false,
     'nathan.jones@ma-moulinette.fr',
     '["ROLE_NONE"]'::json,
@@ -105,7 +105,7 @@ INSERT INTO ma_moulinette.utilisateur
  date_enregistrement, actif, avatar, liste_groupe_fonctionnel,
  groupe_utilisateur, groupe_id)
 VALUES (
-    '{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false,"bookmark":false},"suivi_projet":[],"favori_projet":[],"favori_version":[]}'::json,
+    '{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false},"suivi_projet":[],"favori_projet":[],"favori_version":[]}'::json,
     false,
     'sophie.martin@ma-moulinette.fr',
     '["ROLE_NONE"]'::json,
@@ -128,7 +128,7 @@ INSERT INTO ma_moulinette.utilisateur
  date_enregistrement, actif, avatar, liste_groupe_fonctionnel,
  groupe_utilisateur, groupe_id)
 VALUES (
-    '{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false,"bookmark":false},"suivi_projet":[],"favori_projet":[],"favori_version":[]}'::json,
+    '{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false},"suivi_projet":[],"favori_projet":[],"favori_version":[]}'::json,
     false,
     'aurelie.petit-coeur@ma-moulinette.fr',
     '["ROLE_NONE"]'::json,

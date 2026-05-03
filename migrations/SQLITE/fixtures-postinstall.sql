@@ -98,8 +98,8 @@ WHERE equipe IS NULL or equipe = "";
 
 UPDATE utilisateur
 SET preference = '{
-"statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
-"projet":[],"favori":[],"version":[],"bookmark":[]}'
+"statut":{"projet":false,"favori":false,"version":false},
+"projet":[],"favori":[],"version":[]}'
 WHERE preference IS NULL OR preference = "";
 
 COMMIT;
