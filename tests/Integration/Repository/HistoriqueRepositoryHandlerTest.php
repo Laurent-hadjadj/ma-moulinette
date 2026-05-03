@@ -127,8 +127,7 @@ class HistoriqueRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $where = "'maven_key' = ".self::$mavenKey;
-        $result = $repo->getProjetFavori($where);
+        $result = $repo->getProjetFavori(self::$mavenKey, ['1.0.0-RELEASE']);
 
         // 9) Vérification
         $this->assertSame($expected, $result);

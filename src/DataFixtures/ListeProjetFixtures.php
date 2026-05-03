@@ -35,12 +35,7 @@ class ListeProjetFixtures extends Fixture
           self::$mavenKey,
           self::$name,
           self::$visibility,
-          self::$tags,
-          new \DateTimeImmutable(self::$dateEnregistrement)))
-            ->setMavenKey(self::$mavenKey)
-            ->setName(self::$name)
-            ->setTags(self::$tags)
-            ->setVisibility(self::$visibility)
+          self::$tags))
             ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
         $manager->persist($listeProjet);
       /** Enregistrement des données dans la base de tests */

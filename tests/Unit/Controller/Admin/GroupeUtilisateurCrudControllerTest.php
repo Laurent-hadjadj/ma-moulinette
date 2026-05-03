@@ -50,7 +50,7 @@ class GroupeUtilisateurCrudControllerTest extends TestCase
             ['request_stack', 1, $containerRequestStack],
         ]);
 
-        $this->controller = new GroupeUtilisateurCrudController($this->em, $this->requestStack);
+        $this->controller = new GroupeUtilisateurCrudController();
         $this->controller->setContainer($container);
     }
 

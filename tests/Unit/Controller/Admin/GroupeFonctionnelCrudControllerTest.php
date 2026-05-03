@@ -68,7 +68,7 @@ class GroupeFonctionnelCrudControllerTest extends TestCase
             ['request_stack', 1, $containerRequestStack],
         ]);
 
-        $this->controller = new GroupeFonctionnelCrudController($this->em, $this->requestStack);
+        $this->controller = new GroupeFonctionnelCrudController($this->em);
         $this->controller->setContainer($container);
     }
 

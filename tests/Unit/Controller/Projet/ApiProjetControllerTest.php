@@ -57,7 +57,7 @@ class ApiProjetControllerTest extends TestCase
         $container->method('get')->willReturnMap([
             ['security.token_storage', 1, $tokenStorage],
         ]);
-        $this->controller = new ApiProjetController($this->em, $this->logger, $this->security);
+        $this->controller = new ApiProjetController($this->em, $this->logger);
         $this->controller->setContainer($container);
     }
 

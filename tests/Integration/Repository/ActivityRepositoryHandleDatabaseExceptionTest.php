@@ -98,9 +98,8 @@ class ActivityRepositoryHandleDatabaseExceptionTest extends TestCase
 
         // Créer la ConnectionException en passant null pour la requête
         $exception = new \Doctrine\DBAL\Exception\ConnectionException(
-            $driverExceptionMock, // Passer le mock Driver\Exception ici
-            null, // Passer null pour la requête
-            self::$sqlState8006 // Message d'erreur
+            $driverExceptionMock,
+            null
         );
 
         // Crée un repository mock
@@ -126,9 +125,8 @@ class ActivityRepositoryHandleDatabaseExceptionTest extends TestCase
 
         // Créer la NotNullConstraintViolationException en passant null pour la requête
         $exception = new \Doctrine\DBAL\Exception\NotNullConstraintViolationException(
-            $driverExceptionMock, // Passer le mock Driver\Exception ici
-            null, // Passer null pour la requête
-            'An exception occurred in the driver: ' // Message d'erreur
+            $driverExceptionMock,
+            null
         );
 
         // Crée un repository mock
@@ -154,9 +152,8 @@ class ActivityRepositoryHandleDatabaseExceptionTest extends TestCase
 
         // Créer la UniqueConstraintViolationException en passant null pour la requête
         $exception = new \Doctrine\DBAL\Exception\UniqueConstraintViolationException(
-            $driverExceptionMock, // Passer le mock Driver\Exception ici
-            null, // Passer null pour la requête
-            self::$sqlState23505 // Message d'erreur
+            $driverExceptionMock,
+            null
         );
 
         // Crée un repository mock

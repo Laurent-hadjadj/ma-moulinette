@@ -1072,11 +1072,7 @@ class ApiCollecteController extends AbstractController
         ]);
 
         /** collecte des to.do présent dans le projet */
-        $actuatorInfo = $this->batchCollecteActuator->BatchCollecteActuatorInfo(
-            $data->maven_key,
-            'COLLECTE',
-            $utilisateur_collecte
-        );
+        $actuatorInfo = $this->batchCollecteActuator->BatchCollecteActuatorInfo($data->maven_key);
 
         if ($actuatorInfo['code'] !== 200) {
             $this->logger->error('[Collecte] ❌ Échec de collecte des informations Actuator du projet JAVA.', [

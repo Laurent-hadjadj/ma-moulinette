@@ -187,12 +187,10 @@ class ApiAccueilController extends AbstractController
                 $this->logger->debug('🛠️ [Accueil-projet] Projet ignoré (SVN)', ['key' => $projet['key']]);
                 continue;
             }
-            $listeProjet = new ListeProjet('','','',[],'',new \DateTimeImmutable()); 
-            $listeProjet->setMavenKey($projet["key"]);
-            $listeProjet->setName($projet["name"]);
+            /** Constructor signature : (mavenKey, name, visibility, tags = []).
+             *  setDateEnregistrement override la date init par le constructor. */
             $tags = (empty($projet['tags'])) ? ['@AUCUN'] : $projet['tags'];
-            $listeProjet->setTags($tags);
-            $listeProjet->setVisibility($projet["visibility"]);
+            $listeProjet = new ListeProjet($projet["key"], $projet["name"], $projet["visibility"], $tags);
             $listeProjet->setDateEnregistrement($date);
 
             $this->em->persist($listeProjet);
