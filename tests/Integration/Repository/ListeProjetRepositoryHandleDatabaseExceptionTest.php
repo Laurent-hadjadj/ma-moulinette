@@ -38,7 +38,7 @@ class ListeProjetRepositoryHandleDatabaseExceptionTest extends TestCase
     {
         // 1) Exception "générique" sans SQLSTATE particulier
         $ex = new class('Une erreur inconnue') extends \Exception {
-            public function getSqlState(): ?string { return null; }
+            public function getSqlState(): null { return null; }
         };
 
         $res = $this->repo->handleDatabaseException($ex);
@@ -50,7 +50,7 @@ class ListeProjetRepositoryHandleDatabaseExceptionTest extends TestCase
     {
         // 2) Exception avec message contenant SQLSTATE[08006]
         $ex = new class(self::$sqlState8006) extends \Exception {
-            public function getSqlState(): ?string { return null; }
+            public function getSqlState(): null { return null; }
         };
 
         $res = $this->repo->handleDatabaseException($ex);
@@ -68,7 +68,7 @@ class ListeProjetRepositoryHandleDatabaseExceptionTest extends TestCase
         $ex = new class($msg) extends \Exception {
             private string $msg;
             public function __construct(string $m) { parent::__construct($m); $this->msg = $m; }
-            public function getSqlState(): ?string { return '23502'; }
+            public function getSqlState(): string { return '23502'; }
         };
 
         $res = $this->repo->handleDatabaseException($ex);
@@ -80,7 +80,7 @@ class ListeProjetRepositoryHandleDatabaseExceptionTest extends TestCase
     {
         // 4) SQLSTATE 23505 → code 23505 + message fixe
         $ex = new class(self::$sqlState23505) extends \Exception {
-            public function getSqlState(): ?string { return '23505'; }
+            public function getSqlState(): string { return '23505'; }
         };
 
         $res = $this->repo->handleDatabaseException($ex);

@@ -239,7 +239,7 @@ class ProfilesRepositoryHandlerTest extends TestCase
     {
         // 1) Crée une vraie exception qui implémente DBAL\Exception et Throwable
         $fakeException = new class('erreur delete') extends \Exception implements DBALExceptionInterface {
-            public function getSqlState(): ?string { return null; }
+            public function getSqlState(): null { return null; }
         };
 
         // 2) Stub partiel de Statement : bindValue ok, executeStatement jette l'exception
@@ -287,7 +287,7 @@ class ProfilesRepositoryHandlerTest extends TestCase
     {
         // 1) Crée une vraie exception qui implémente DBAL\Exception et Throwable
         $fakeException = new class('erreur insert') extends \Exception implements DBALExceptionInterface {
-            public function getSqlState(): ?string { return null; }
+            public function getSqlState(): null { return null; }
         };
 
         // 2) Stub partiel de Statement : bindValue ok, executeStatement jette l'exception
