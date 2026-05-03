@@ -18,7 +18,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Ldap\Ldap;
-
+use Symfony\Component\Ldap\Exception\LdapException;
 
 /**
  * [Description LdapTestCommand]
@@ -43,15 +43,20 @@ class LdapTestCommand extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
+        $ldapHost = $_ENV['LDAP_HOST'];
+        $ldapPort = (int) $_ENV['LDAP_PORT'];
+        $ldapEncryption = $_ENV['LDAP_ENCRYPTION'];
+
         $ldap = Ldap::create('ext_ldap', [
-            'host' => $_ENV['LDAP_HOST'],
-            'port' => (int) $_ENV['LDAP_PORT'],
-            'encryption' => $_ENV['LDAP_ENCRYPTION'],
-            'options' => [
-                'protocol_version' => 3,
-                'referrals' => false,
-                'network_timeout' => 3,
-            ],
+                'host' => $ldapHost,
+                'port' => $ldapPort,
+                'encryption' => $ldapEncryption,
+                'options' => [
+                        'protocol_version' => 3,
+                        'referrals' => false,
+                        'network_timeout' => 3,
+                        'x_tls_require_cert' => 0
+                ],
         ]);
 
         try {
@@ -61,9 +66,15 @@ class LdapTestCommand extends Command
             );
 
             $output->writeln('<info>✅ Connexion LDAP OK</info>');
-        } catch (\Exception $e) {
-            $output->writeln('<error>❌ Erreur LDAP: '.$e->getMessage().'</error>');
-        }
+        } catch (LdapException $e) {
+                        $output->writeln('<error>❌ Erreur LDAP: ' . $e->getMessage() . '</error>');
+                        $output->writeln('<error>❌ Code d\'erreur LDAP: ' . $e->getCode() . '</error>');
+                        $output->writeln('<error>❌ Trace de l\'erreur: ' . $e->getTraceAsString() . '</error>');
+                } catch (\Exception $e) {
+                        $output->writeln('<error>❌ Erreur générale: ' . $e->getMessage() . '</error>');
+                        $output->writeln('<error>❌ Code d\'erreur: ' . $e->getCode() . '</error>');
+                        $output->writeln('<error>❌ Trace de l\'erreur: ' . $e->getTraceAsString() . '</error>');
+                }
 
         return Command::SUCCESS;
     }
