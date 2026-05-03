@@ -12,18 +12,18 @@ use Doctrine\Persistence\ObjectManager;
 class HotspotsFixtures extends Fixture
 {
 
-  private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-  private static $version = '1.2.0-RELEASE';
-  private static $dateVersion = '2024-07-10 15:26:07+02';
-  private static $hotspotKey = 'AZCc06XbgfifxdiJPzw6';
-  private static $securityCategory = 'dos';
-  private static $ruleKey = 'typescript:S5852';
-  private static $probability = 'MEDIUM';
-  private static $status = 'TO_REVIEW';
-  private static $resolution = 'Todo';
-  private static $niveau = 2;
-  private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
-  private static $dateEnregistrement = '2024-04-12 16:23:11+01';
+  private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+  private static string $version = '1.2.0-RELEASE';
+  private static string $dateVersion = '2024-07-10 15:26:07+02';
+  private static string $hotspotKey = 'AZCc06XbgfifxdiJPzw6';
+  private static string $securityCategory = 'dos';
+  private static string $ruleKey = 'typescript:S5852';
+  private static string $probability = 'MEDIUM';
+  private static string $status = 'TO_REVIEW';
+  private static string $resolution = 'Todo';
+  private static int $niveau = 2;
+  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+  private static string $dateEnregistrement = '2024-04-12 16:23:11+01';
 
   public function load(ObjectManager $manager): void
     {

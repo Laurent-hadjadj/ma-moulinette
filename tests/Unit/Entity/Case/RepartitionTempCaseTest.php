@@ -23,11 +23,11 @@ class RepartitionTempCaseTest extends TestCase
 {
     private $repartitionTemp;
 
-    private static $setup = 1000000000000;
-    private static $component = '/src/Controller/ApiController.php';
-    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-    private static $type = 'CODE_SMELL';
-    private static $severity = 'CRITICAL';
+    private static int $setup = 1000000000000;
+    private static string $component = '/src/Controller/ApiController.php';
+    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $type = 'CODE_SMELL';
+    private static string $severity = 'CRITICAL';
 
     private function getEntity(): RepartitionTemp
     {

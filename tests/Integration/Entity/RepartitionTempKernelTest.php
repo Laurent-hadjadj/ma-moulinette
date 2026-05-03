@@ -25,8 +25,8 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 class RepartitionTempKernelTest extends KernelTestCase
 {
 
-    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-    private static $setup = 1000000000001;
+    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static int $setup = 1000000000001;
 
     protected function setUp(): void
     {

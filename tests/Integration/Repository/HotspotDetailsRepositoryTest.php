@@ -26,8 +26,8 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  */
 class HotspotDetailsRepositoryTest extends KernelTestCase
 {
-    private static $erreurCode200 = 'Erreur le code retour doit être 200';
-    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $erreurCode200 = 'Erreur le code retour doit être 200';
+    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
 
     protected function setUp(): void
     {

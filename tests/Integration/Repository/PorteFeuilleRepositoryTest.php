@@ -25,8 +25,8 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  */
 class PorteFeuilleRepositoryTest extends KernelTestCase
 {
-    private static $portefeuille = 'MES PROJETS';
-    private static $erreurCode200 = 'Erreur le code retour doit être 200.';
+    private static string $portefeuille = 'MES PROJETS';
+    private static string $erreurCode200 = 'Erreur le code retour doit être 200.';
 
     protected function setUp(): void
     {

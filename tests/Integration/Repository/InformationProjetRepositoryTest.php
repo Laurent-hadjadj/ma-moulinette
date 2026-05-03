@@ -25,8 +25,8 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  */
 class InformationProjetRepositoryTest extends KernelTestCase
 {
-    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-    private static $erreurCode200 = 'Erreur le code retour doit être 200.';
+    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $erreurCode200 = 'Erreur le code retour doit être 200.';
 
     protected function setUp(): void
     {

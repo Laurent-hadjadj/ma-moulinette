@@ -27,7 +27,7 @@ use PHPUnit\Framework\TestCase;
  */
 class ProfilesRepositoryHandlerTest extends TestCase
 {
-    private static $gestionTest = 'gestion test';
+    private static string $gestionTest = 'gestion test';
 
     public function testCountProfiles_WhenSQLException(): void
     {

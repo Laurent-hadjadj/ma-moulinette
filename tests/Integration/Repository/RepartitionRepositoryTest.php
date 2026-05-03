@@ -13,7 +13,7 @@ class RepartitionRepositoryTest extends KernelTestCase
 {
     private ?EntityManagerInterface $em = null;
 
-    private static $setup = 1000000000000;
+    private static int $setup = 1000000000000;
 
     protected function setUp(): void
     {

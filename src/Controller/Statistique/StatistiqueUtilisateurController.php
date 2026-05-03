@@ -30,9 +30,9 @@ use App\Service\UserAgentReportingService;
  */
 class StatistiqueUtilisateurController extends AbstractController
 {
-    private static $erreur403 = "Vous devez avoir le rôle <strong>GESTIONNAIRE</strong> pour accéder à cette page (Erreur 403).";
-    private static $message = "Les données n'ont pas été correctement récupérées ";
-    private static $index='statistique/utilisateur.html.twig';
+    private static string $erreur403 = "Vous devez avoir le rôle <strong>GESTIONNAIRE</strong> pour accéder à cette page (Erreur 403).";
+    private static string $message = "Les données n'ont pas été correctement récupérées ";
+    private static string $index = 'statistique/utilisateur.html.twig';
 
     private $logoEntreprise;
     private $marqueEntrepriseShort;

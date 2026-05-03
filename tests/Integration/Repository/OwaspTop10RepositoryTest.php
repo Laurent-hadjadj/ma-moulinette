@@ -28,7 +28,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class OwaspTop10RepositoryTest extends KernelTestCase
 {
 
-    private static $erreurCode200 = 'Erreur le code retour doit être 200.';
+    private static string $erreurCode200 = 'Erreur le code retour doit être 200.';
 
     /**
      * [Description for setUp]

@@ -27,8 +27,8 @@ use PHPUnit\Framework\TestCase;
  */
 class MesuresRepositoryHandlerTest extends TestCase
 {
-    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-    private static $gestionTest = 'gestion test';
+    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $gestionTest = 'gestion test';
 
     public function testSelectMesuresVersionLast_WhenSQLException(): void
     {

@@ -22,11 +22,11 @@ use Symfony\Component\Validator\ConstraintViolation;
  */
 class RepartitionTempValidatorTest extends KernelTestCase
 {
-  private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-  private static $setup = 1739816022572;
-  private static $component = '/src/Controller/Accueil/AccueilController.php';
-  private static $type = 'CODE_SMELL';
-  private static $severity = 'INFO';
+  private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+  private static int $setup = 1739816022572;
+  private static string $component = '/src/Controller/Accueil/AccueilController.php';
+  private static string $type = 'CODE_SMELL';
+  private static string $severity = 'INFO';
 
   private function getEntity(): RepartitionTemp
   {

@@ -25,7 +25,7 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 class ActivityHistoriqueKernelTest extends KernelTestCase
 {
 
-    private static $year = 2024;
+    private static int $year = 2024;
 
     protected function setUp(): void
     {

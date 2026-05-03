@@ -26,7 +26,7 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 class PropertiesKernelTest extends KernelTestCase
 {
 
-    private static $type = 'properties';
+    private static string $type = 'properties';
 
     protected function setUp(): void
     {

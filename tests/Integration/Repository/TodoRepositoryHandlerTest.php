@@ -27,14 +27,14 @@ use PHPUnit\Framework\TestCase;
  */
 class TodoRepositoryHandlerTest extends TestCase
 {
-    private static $gestionTest = 'gestion test';
-    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-    private static $rule = 'java:S1135';
-    private static $component = 'fr.ma-petite-entreprise:ma-moulinette:ma-moulinette/src/main/java/fr/ma-petite-entreprise/service/AnalyseTraceService.java';
-    private static $line = 81;
-    private static $modeCollecte = 'TRAITEMENT AUTOMATIQUE';
-    private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
-    private static $dateEnregistrement = '2024-03-26 14:46:38+02';
+    private static string $gestionTest = 'gestion test';
+    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $rule = 'java:S1135';
+    private static string $component = 'fr.ma-petite-entreprise:ma-moulinette:ma-moulinette/src/main/java/fr/ma-petite-entreprise/service/AnalyseTraceService.java';
+    private static int $line = 81;
+    private static string $modeCollecte = 'TRAITEMENT AUTOMATIQUE';
+    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+    private static string $dateEnregistrement = '2024-03-26 14:46:38+02';
 
     /**
      * [Description for testDeleteTodoMavenKey_WhenSQLException]

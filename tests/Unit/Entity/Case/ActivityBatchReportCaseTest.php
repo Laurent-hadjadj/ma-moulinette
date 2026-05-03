@@ -23,13 +23,13 @@ class ActivityBatchReportCaseTest extends TestCase
 {
     private $activityBatchReport;
 
-    private static $dateStart = '2025-01-01 12:26:58+01';
-    private static $dateEnd = '2025-01-01 12:27:12+01';
-    private static $taskCount = 12;
-    private static $taskDone = 11;
-    private static $page = 1;
+    private static string $dateStart = '2025-01-01 12:26:58+01';
+    private static string $dateEnd = '2025-01-01 12:27:12+01';
+    private static int $taskCount = 12;
+    private static int $taskDone = 11;
+    private static int $page = 1;
     private static $lastError = ['Erreur inconnue.'];
-    private static $dateEnregistrement = '2024-07-31 12:27:05+02';
+    private static string $dateEnregistrement = '2024-07-31 12:27:05+02';
 
     private function getEntity(): ActivityBatchReport
     {

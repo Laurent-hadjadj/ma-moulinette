@@ -27,21 +27,21 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class OwaspRepositoryTest extends KernelTestCase
 {
 
-    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-    private static $version = '1.2.0-RELEASE';
-    private static $dateVersion = '2024-07-10 15:26:07+02';
-    private static $effortTotal = 0;
+    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $version = '1.2.0-RELEASE';
+    private static string $dateVersion = '2024-07-10 15:26:07+02';
+    private static int $effortTotal = 0;
     private static $a = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     private static $aBlocker = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     private static $aCritical = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     private static $aMajor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     private static $aInfo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     private static $aMinor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static $modeCollecte = 'TRAITEMENT MANUEL';
-    private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
-    private static $dateEnregistrement = '2024-03-26 14:46:38+02';
+    private static string $modeCollecte = 'TRAITEMENT MANUEL';
+    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+    private static string $dateEnregistrement = '2024-03-26 14:46:38+02';
 
-    private static $erreurCode200 = 'Erreur le code retour doit être 200.';
+    private static string $erreurCode200 = 'Erreur le code retour doit être 200.';
 
     /**
      * [Description for setUp]

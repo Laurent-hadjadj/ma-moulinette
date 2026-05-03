@@ -23,8 +23,8 @@ use PHPUnit\Framework\TestCase;
 class HotspotsRepositoryHandleDatabaseExceptionTest extends TestCase
 {
     private HotspotsRepository $repo;
-    private static $sqlState8006 = 'SQLSTATE[08006] connexion impossible';
-    private static $sqlState23505 = 'Les informations existent déjà.';
+    private static string $sqlState8006 = 'SQLSTATE[08006] connexion impossible';
+    private static string $sqlState23505 = 'Les informations existent déjà.';
 
     protected function setUp(): void
     {

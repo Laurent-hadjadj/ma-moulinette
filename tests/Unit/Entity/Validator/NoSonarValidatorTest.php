@@ -23,14 +23,14 @@ use Symfony\Component\Validator\ConstraintViolation;
 class NoSonarValidatorTest extends KernelTestCase
 {
 
-  private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-  private static $rule = 'java:S1309';
+  private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+  private static string $rule = 'java:S1309';
   private static $component = 'fr.ma-petite-entreprise:mo-moulinette:
   ma-moulinette-service/src/main/java/fr/ma-petite-entreprise/ma-moulinette/service/ClamAvService.java';
-  private static $line = 118;
-  private static $modeCollecte = 'TRAITEMENT MANUEL';
-  private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
-  private static $dateEnregistrement = '2024-03-26 14:46:38+01';
+  private static int $line = 118;
+  private static string $modeCollecte = 'TRAITEMENT MANUEL';
+  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+  private static string $dateEnregistrement = '2024-03-26 14:46:38+01';
 
   private function getEntity(): NoSonar
   {

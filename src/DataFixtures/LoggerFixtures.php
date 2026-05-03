@@ -12,13 +12,13 @@ use Doctrine\Persistence\ObjectManager;
 class LoggerFixtures extends Fixture
 {
 
-  private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-  private static $loggerInfo = 14;
-  private static $loggerWarn = 0;
-  private static $loggerError = 15;
-  private static $loggerDebug = 8;
-  private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
-  private static $dateEnregistrement = '2024-03-26 14:46:38+02';
+  private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+  private static int $loggerInfo = 14;
+  private static int $loggerWarn = 0;
+  private static int $loggerError = 15;
+  private static int $loggerDebug = 8;
+  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+  private static string $dateEnregistrement = '2024-03-26 14:46:38+02';
 
   public function load(ObjectManager $manager): void
     {

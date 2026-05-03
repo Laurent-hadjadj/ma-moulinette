@@ -17,20 +17,20 @@ class MesuresFixtures extends Fixture
   //  - `issues` (int agrégé) : remplacé par des compteurs granulaires (openIssues,
   //    maintainabilityIssues, reliabilityIssues, securityIssues, etc.).
   //    Ici on utilise `openIssues` comme approximation compatible.
-  private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-  private static $projectName = 'Ma-Moulinette';
-  private static $lines = 22015;
-  private static $ncloc = 10043;
-  private static $files = 18;
-  private static $classes = 26;
-  private static $functions = 52;
-  private static $coverage = 10.3;
-  private static $duplicatedLinesDensity = 5.1;
-  private static $sqaleDebtRatio = 26.0;
-  private static $openIssues = 200;
-  private static $tests = 123;
-  private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
-  private static $dateEnregistrement = '2024-04-12 16:23:11+01';
+  private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+  private static string $projectName = 'Ma-Moulinette';
+  private static int $lines = 22015;
+  private static int $ncloc = 10043;
+  private static int $files = 18;
+  private static int $classes = 26;
+  private static int $functions = 52;
+  private static float $coverage = 10.3;
+  private static float $duplicatedLinesDensity = 5.1;
+  private static float $sqaleDebtRatio = 26.0;
+  private static int $openIssues = 200;
+  private static int $tests = 123;
+  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+  private static string $dateEnregistrement = '2024-04-12 16:23:11+01';
 
   public function load(ObjectManager $manager): void
     {

@@ -23,15 +23,15 @@ class ProfilesHistoriqueCaseTest extends TestCase
 {
     private $profilesHistorique;
 
-    private static $dateCourte = '2022-04-14';
-    private static $language = 'java';
-    private static $date  = '2022-08-30T18:42:41+0200';
-    private static $action = 'ACTIVATED';
-    private static $auteur = 'HADJADJ Laurent';
-    private static $rule = 'java:S5679';
-    private static $description = 'OpenSAML2 should be configured to prevent authentication bypass';
-    private static $detail = '{"severity":"MAJOR"}';
-    private static $dateEnregistrement = '2024-04-12 16:23:11+01';
+    private static string $dateCourte = '2022-04-14';
+    private static string $language = 'java';
+    private static string $date = '2022-08-30T18:42:41+0200';
+    private static string $action = 'ACTIVATED';
+    private static string $auteur = 'HADJADJ Laurent';
+    private static string $rule = 'java:S5679';
+    private static string $description = 'OpenSAML2 should be configured to prevent authentication bypass';
+    private static string $detail = '{"severity":"MAJOR"}';
+    private static string $dateEnregistrement = '2024-04-12 16:23:11+01';
 
     private function getEntity(): ProfilesHistorique
     {

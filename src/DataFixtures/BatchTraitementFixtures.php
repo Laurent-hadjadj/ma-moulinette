@@ -13,16 +13,16 @@ class BatchTraitementFixtures extends Fixture
 {
   // v2.0.0 : le constructeur BatchTraitement exige titre/portefeuille/responsable/responsableShort.
   // `result` (bool) est remplacé par `success` (bool, nullable) — true = succès.
-  private static $mode = 'TRAITEMENT MANUEL';
-  private static $success = true;
-  private static $titre = 'mon-batch à moi';
-  private static $portefeuille = 'application-ma-moulinette';
-  private static $nombreProjet = 1;
-  private static $responsable = 'Laurent HADJADJ';
-  private static $responsableShort = 'L.HADJADJ';
-  private static $debutTraitement = '2025-01-02 12:00:00+02';
-  private static $finTraitement = '2025-01-02 12:02:00+02';
-  private static $dateEnregistrement = '2025-01-02 12:02:00+02';
+  private static string $mode = 'TRAITEMENT MANUEL';
+  private static bool $success = true;
+  private static string $titre = 'mon-batch à moi';
+  private static string $portefeuille = 'application-ma-moulinette';
+  private static int $nombreProjet = 1;
+  private static string $responsable = 'Laurent HADJADJ';
+  private static string $responsableShort = 'L.HADJADJ';
+  private static string $debutTraitement = '2025-01-02 12:00:00+02';
+  private static string $finTraitement = '2025-01-02 12:02:00+02';
+  private static string $dateEnregistrement = '2025-01-02 12:02:00+02';
 
 
     public function load(ObjectManager $manager): void

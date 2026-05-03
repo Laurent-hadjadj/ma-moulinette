@@ -12,11 +12,11 @@ use Doctrine\Persistence\ObjectManager;
 class PortefeuilleFixtures extends Fixture
 {
 
-  private static $titre = 'MES PROJETS';
-  private static $groupe = 'MA PETITE ENTREPRISE';
+  private static string $titre = 'MES PROJETS';
+  private static string $groupe = 'MA PETITE ENTREPRISE';
   private static $liste =  ['fr.ma-petite-entreprise:ma-moulinette'];
-  private static $dateModification = '2024-03-26 14:46:38+01';
-  private static $dateEnregistrement = '2024-03-25 12:26:58+01';
+  private static string $dateModification = '2024-03-26 14:46:38+01';
+  private static string $dateEnregistrement = '2024-03-25 12:26:58+01';
 
   /**
    * [Description for load]

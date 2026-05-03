@@ -22,24 +22,24 @@ use App\Entity\Utilisateur;
 class UtilisateurCaseTest extends TestCase
 {
 
-  public static $resetPassword = 1;
-  public static $resetPasswordCount = 1;
-  public static $avatar = 'chiffre/01.png';
-  public static $prenom = 'admin';
-  public static $nom = '@ma-moulinette';
-  public static $courriel = 'admin@ma-moulinette.fr';
-  public static $pass = '$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K';
-  public static $actif = true;
+  public static int $resetPassword = 1;
+  public static int $resetPasswordCount = 1;
+  public static string $avatar = 'chiffre/01.png';
+  public static string $prenom = 'admin';
+  public static string $nom = '@ma-moulinette';
+  public static string $courriel = 'admin@ma-moulinette.fr';
+  public static string $pass = '$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K';
+  public static bool $actif = true;
   public static $roles = ["ROLE_GESTIONNAIRE"];
-  public static $groupeUtilisateur = 'admin';
-  public static $groupeId = 'gest-001';
+  public static string $groupeUtilisateur = 'admin';
+  public static string $groupeId = 'gest-001';
   public static $listeGroupeFonctionnel = ['fr.ma-petite-entreprise:ma-moulinette'];
   public static $preference = ['{
     "statut":{"projet":false,"favori":false,"version":false},
     "projet":[],"favori":[],"version":[]}'];
-  public static $lastActivityAt = '2024-12-15 09:42:00';
-  public static $dateModification = '1981-01-01 00:00:00';
-  public static $dateEnregistrement = '1980-01-01 00:00:00';
+  public static string $lastActivityAt = '2024-12-15 09:42:00';
+  public static string $dateModification = '1981-01-01 00:00:00';
+  public static string $dateEnregistrement = '1980-01-01 00:00:00';
 
   public function getEntity(): Utilisateur
   {

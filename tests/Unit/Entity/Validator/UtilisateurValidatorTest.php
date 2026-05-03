@@ -25,23 +25,23 @@ use Symfony\Component\Validator\ConstraintViolation;
  */
 class UtilisateurValidatorTest extends KernelTestCase
 {
-    public static $resetPassword = true;
-    public static $resetPasswordCount = 1;
-    public static $avatar = 'chiffre/01.png';
-    public static $prenom = 'Laurent';
-    public static $nom = 'HADJADJ';
-    public static $courriel = 'laurent.hadjadj@ma-petite-entreprise.fr';
-    public static $pass = '$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K';
-    public static $actif = true;
+    public static bool $resetPassword = true;
+    public static int $resetPasswordCount = 1;
+    public static string $avatar = 'chiffre/01.png';
+    public static string $prenom = 'Laurent';
+    public static string $nom = 'HADJADJ';
+    public static string $courriel = 'laurent.hadjadj@ma-petite-entreprise.fr';
+    public static string $pass = '$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K';
+    public static bool $actif = true;
     public static $roles = ["ROLE_GESTIONNAIRE"];
-    public static $groupeUtilisateur = 'admin';
-    public static $groupeId = '01HK7XMKQGM3F5XZJ4S6T7VWE2';
+    public static string $groupeUtilisateur = 'admin';
+    public static string $groupeId = '01HK7XMKQGM3F5XZJ4S6T7VWE2';
     public static $listeGroupeFonctionnel = [];
     public static $preference = ['{
         "statut":{"projet":false,"favori":false,"version":false},
         "projet":[],"favori":[],"version":[]}'];
-    public static $dateModification = '1981-01-01 00:00:00';
-    public static $dateEnregistrement = '1980-01-01 00:00:00';
+    public static string $dateModification = '1981-01-01 00:00:00';
+    public static string $dateEnregistrement = '1980-01-01 00:00:00';
 
     public function getEntity(): Utilisateur
     {

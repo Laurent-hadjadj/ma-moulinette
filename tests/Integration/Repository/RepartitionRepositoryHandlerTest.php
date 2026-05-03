@@ -26,11 +26,11 @@ use PHPUnit\Framework\TestCase;
  */
 class RepartitionRepositoryHandlerTest extends TestCase
 {
-    private static $gestionTest = 'gestion test';
-    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-    private static $modeCollecte = 'COLLECTE';
-    private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
-    private static $dateEnregistrement = '2025-02-17 19:13:59';
+    private static string $gestionTest = 'gestion test';
+    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $modeCollecte = 'COLLECTE';
+    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+    private static string $dateEnregistrement = '2025-02-17 19:13:59';
 
     public function testSelectOrUpdateRepartitionInitial_WhenSQLException(): void
     {

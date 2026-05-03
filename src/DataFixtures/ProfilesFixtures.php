@@ -12,13 +12,13 @@ use Doctrine\Persistence\ObjectManager;
 class ProfilesFixtures extends Fixture
 {
 
-  private static $key = 'AXyXMubJRtAGLwAs7Zcv';
-  private static $name = 'Ma-Petite-Entreprise v1.0.0 (2024)';
-  private static $languageName = 'css';
-  private static $activeRuleCount = 31;
-  private static $rulesUpdatedAt = '2024-04-13 12:10:51+01';
-  private static $referentialDefault = true;
-  private static $dateEnregistrement = '2024-04-12 16:23:11+01';
+  private static string $key = 'AXyXMubJRtAGLwAs7Zcv';
+  private static string $name = 'Ma-Petite-Entreprise v1.0.0 (2024)';
+  private static string $languageName = 'css';
+  private static int $activeRuleCount = 31;
+  private static string $rulesUpdatedAt = '2024-04-13 12:10:51+01';
+  private static bool $referentialDefault = true;
+  private static string $dateEnregistrement = '2024-04-12 16:23:11+01';
 
   public function load(ObjectManager $manager): void
     {

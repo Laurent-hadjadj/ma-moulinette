@@ -12,14 +12,14 @@ use Doctrine\Persistence\ObjectManager;
 class PropertiesFixtures extends Fixture
 {
 
-  private static $type = 'properties';
-  private static $projetBd = 100;
-  private static $projetSonar = 12;
-  private static $profilBd = 12;
-  private static $profilSonar = 18;
-  private static $dateCreation = '2024-03-26 14:46:38+01';
-  private static $dateModificationProjet = '2024-03-27 10:26:31+01';
-  private static $dateModificationProfil = '2024-04-12 16:23:11+01';
+  private static string $type = 'properties';
+  private static int $projetBd = 100;
+  private static int $projetSonar = 12;
+  private static int $profilBd = 12;
+  private static int $profilSonar = 18;
+  private static string $dateCreation = '2024-03-26 14:46:38+01';
+  private static string $dateModificationProjet = '2024-03-27 10:26:31+01';
+  private static string $dateModificationProfil = '2024-04-12 16:23:11+01';
 
   public function load(ObjectManager $manager): void
     {

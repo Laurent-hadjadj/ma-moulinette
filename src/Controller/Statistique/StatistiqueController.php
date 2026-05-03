@@ -30,8 +30,8 @@ use App\Service\UserAgentAnalysisService;
 class StatistiqueController extends AbstractController
 {
 
-    private static $erreur403 = "Vous devez avoir le rôle <strong>GESTIONNAIRE</strong> pour accéder à cette page (Erreur 403).";
-    private static $index='statistique/index.html.twig';
+    private static string $erreur403 = "Vous devez avoir le rôle <strong>GESTIONNAIRE</strong> pour accéder à cette page (Erreur 403).";
+    private static string $index = 'statistique/index.html.twig';
 
     private $logoEntreprise;
     private $marqueEntrepriseShort;

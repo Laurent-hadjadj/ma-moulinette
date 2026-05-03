@@ -23,18 +23,18 @@ class InformationProjetCaseTest extends TestCase
 {
     private $informationProjet;
 
-    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-    private static $analyseKey = 'AYVyxZcQo0TJpgSeq-ph';
-    private static $date = '2024-04-12 16:23:11';
-    private static $projectVersion = '2.0.0-RELEASE';
-    private static $type = 'RELEASE';
-    private static $versionSonar = 59;
-    private static $versionReleaseSonar = 54;
-    private static $versionSnapshotSonar = 3;
-    private static $versionAutreSonar = 2;
-    private static $modeCollecte = 'TRAITEMENT MANUEL';
-    private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
-    private static $dateEnregistrement = '2024-04-12 16:23:11+01';
+    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $analyseKey = 'AYVyxZcQo0TJpgSeq-ph';
+    private static string $date = '2024-04-12 16:23:11';
+    private static string $projectVersion = '2.0.0-RELEASE';
+    private static string $type = 'RELEASE';
+    private static int $versionSonar = 59;
+    private static int $versionReleaseSonar = 54;
+    private static int $versionSnapshotSonar = 3;
+    private static int $versionAutreSonar = 2;
+    private static string $modeCollecte = 'TRAITEMENT MANUEL';
+    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+    private static string $dateEnregistrement = '2024-04-12 16:23:11+01';
 
     private function getEntity(): InformationProjet
     {

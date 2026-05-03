@@ -23,26 +23,26 @@ use Symfony\Component\Validator\ConstraintViolation;
 class AnomalieDetailsValidatorTest extends KernelTestCase
 {
 
-  private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-  private static $name = 'ma-moulinette';
-  private static $bugBlocker = 7;
-  private static $bugCritical = 0;
-  private static $bugMajor = 44;
-  private static $bugInfo = 37;
-  private static $bugMinor = 0;
-  private static $vulnerabilityBlocker = 0;
-  private static $vulnerabilityCritical = 9;
-  private static $vulnerabilityMajor = 0;
-  private static $vulnerabilityInfo = 0;
-  private static $vulnerabilityMinor = 0;
-  private static $codeSmellBlocker = 0;
-  private static $codeSmellCritical = 4;
-  private static $codeSmellMajor = 109;
-  private static $codeSmellInfo = 72;
-  private static $codeSmellMinor = 13;
-  private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
-  private static $modeCollecte = 'TRAITEMENT MANUEL';
-  private static $dateEnregistrement = '2024-07-14 19:36:33+02';
+  private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+  private static string $name = 'ma-moulinette';
+  private static int $bugBlocker = 7;
+  private static int $bugCritical = 0;
+  private static int $bugMajor = 44;
+  private static int $bugInfo = 37;
+  private static int $bugMinor = 0;
+  private static int $vulnerabilityBlocker = 0;
+  private static int $vulnerabilityCritical = 9;
+  private static int $vulnerabilityMajor = 0;
+  private static int $vulnerabilityInfo = 0;
+  private static int $vulnerabilityMinor = 0;
+  private static int $codeSmellBlocker = 0;
+  private static int $codeSmellCritical = 4;
+  private static int $codeSmellMajor = 109;
+  private static int $codeSmellInfo = 72;
+  private static int $codeSmellMinor = 13;
+  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+  private static string $modeCollecte = 'TRAITEMENT MANUEL';
+  private static string $dateEnregistrement = '2024-07-14 19:36:33+02';
 
 
   private function getEntity(): AnomalieDetails

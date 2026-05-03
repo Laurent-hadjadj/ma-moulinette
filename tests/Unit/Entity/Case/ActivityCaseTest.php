@@ -23,15 +23,15 @@ class ActivityCaseTest extends TestCase
 {
     private $activity;
 
-    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-    private static $projectName = 'ma-moulinette';
-    private static $analyseId = 'vtrf14lkiutq9mp';
-    private static $status = 'SUCCESS';
-    private static $submitterLogin = 'laurent.hadjadj';
-    private static $submittedAt = '2024-07-31 12:26:58+02';
-    private static $startedAt = '2024-07-31 12:27:05+02';
-    private static $executedAt = '2024-07-31 12:27:47+02';
-    private static $executionTime = 42;
+    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $projectName = 'ma-moulinette';
+    private static string $analyseId = 'vtrf14lkiutq9mp';
+    private static string $status = 'SUCCESS';
+    private static string $submitterLogin = 'laurent.hadjadj';
+    private static string $submittedAt = '2024-07-31 12:26:58+02';
+    private static string $startedAt = '2024-07-31 12:27:05+02';
+    private static string $executedAt = '2024-07-31 12:27:47+02';
+    private static int $executionTime = 42;
 
     private function getEntity(): Activity
     {

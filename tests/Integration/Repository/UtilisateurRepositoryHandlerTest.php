@@ -26,10 +26,10 @@ use PHPUnit\Framework\TestCase;
  */
 class UtilisateurRepositoryHandlerTest extends TestCase
 {
-    private static $utilisateurTest = 'utilisateur test';
-    public static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-    private static $courriel = 'aurelie.petit-coeur@ma-moulinette.fr';
-    private static $dateModification = '1981-01-01 00:00:00';
+    private static string $utilisateurTest = 'utilisateur test';
+    public static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $courriel = 'aurelie.petit-coeur@ma-moulinette.fr';
+    private static string $dateModification = '1981-01-01 00:00:00';
 
 
     /**

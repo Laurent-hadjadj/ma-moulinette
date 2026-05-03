@@ -25,7 +25,7 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 class ProfilesHistoriqueKernelTest extends KernelTestCase
 {
 
-    private static $language = 'java';
+    private static string $language = 'java';
 
     protected function setUp(): void
     {

@@ -27,15 +27,15 @@ use PHPUnit\Framework\TestCase;
  */
 class ProfilesHistoriqueRepositoryHandlerTest extends TestCase
 {
-    private static $gestionTest = 'gestion test';
-    private static $dateCourte = '2022-04-14';
-    private static $language = 'java';
-    private static $date  = '2022-08-30T18:42:41+0200';
-    private static $action = 'ACTIVATED';
-    private static $auteur = 'HADJADJ Laurent';
-    private static $rule = 'java:S5679';
-    private static $description = 'OpenSAML2 should be configured to prevent authentication bypass';
-    private static $detail = '{"severity":"MAJOR"}';
+    private static string $gestionTest = 'gestion test';
+    private static string $dateCourte = '2022-04-14';
+    private static string $language = 'java';
+    private static string $date = '2022-08-30T18:42:41+0200';
+    private static string $action = 'ACTIVATED';
+    private static string $auteur = 'HADJADJ Laurent';
+    private static string $rule = 'java:S5679';
+    private static string $description = 'OpenSAML2 should be configured to prevent authentication bypass';
+    private static string $detail = '{"severity":"MAJOR"}';
 
     public function testSelectProfilesHistoriqueAction_WhenSQLException(): void
     {

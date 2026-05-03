@@ -25,8 +25,8 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 class ActuatorKernelTest extends KernelTestCase
 {
 
-    private static $mavenKey = 'fr.ma-moulinette:app4';
-    private static $nomApplication = 'Application 04';
+    private static string $mavenKey = 'fr.ma-moulinette:app4';
+    private static string $nomApplication = 'Application 04';
 
     protected function setUp(): void
     {

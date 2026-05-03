@@ -25,8 +25,8 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  */
 class ListeProjetRepositoryTest extends KernelTestCase
 {
-    private static $visibility = 'private';
-    private static $erreurCode200 = 'Erreur le code retour doit être 200.';
+    private static string $visibility = 'private';
+    private static string $erreurCode200 = 'Erreur le code retour doit être 200.';
 
     protected function setUp(): void
     {

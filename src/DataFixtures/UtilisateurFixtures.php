@@ -33,7 +33,7 @@ class UtilisateurFixtures extends Fixture
         ]
     ];
 
-    public static $dateEnregistrement = '1980-01-01 00:00:00+01';
+    public static string $dateEnregistrement = '1980-01-01 00:00:00+01';
 
     public function load(ObjectManager $manager): void
     {

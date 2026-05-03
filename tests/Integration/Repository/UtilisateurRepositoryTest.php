@@ -26,11 +26,11 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class UtilisateurRepositoryTest extends KernelTestCase
 {
 
-    public static $courriel = 'aurelie.petit-coeur@ma-moulinette.fr';
-    public static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-    public static $version = '2.0.0-RELEASE';
-    public static $dateModification = '1981-01-01 00:00:00';
-    public static $erreurCode200 = 'Erreur le code retour doit être 200';
+    public static string $courriel = 'aurelie.petit-coeur@ma-moulinette.fr';
+    public static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    public static string $version = '2.0.0-RELEASE';
+    public static string $dateModification = '1981-01-01 00:00:00';
+    public static string $erreurCode200 = 'Erreur le code retour doit être 200';
 
     /**
      * [Description for setUp]

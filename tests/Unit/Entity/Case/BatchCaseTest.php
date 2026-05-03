@@ -23,15 +23,15 @@ class BatchCaseTest extends TestCase
 {
     private $batch;
 
-    private static $automatique = false;
-    private static $titre = 'mon-batch à moi';
-    private static $description = 'Mon batch à moi';
-    private static $responsable = 'Laurent HADJADJ';
-    private static $portefeuille = 'application-ma-moulinette';
-    private static $nombreProjet = 4;
-    private static $execution = 'OK';
-    private static $dateModification = '2025-01-02 12:00:00+02';
-    private static $dateEnregistrement = '2024-07-31 12:27:05+02';
+    private static bool $automatique = false;
+    private static string $titre = 'mon-batch à moi';
+    private static string $description = 'Mon batch à moi';
+    private static string $responsable = 'Laurent HADJADJ';
+    private static string $portefeuille = 'application-ma-moulinette';
+    private static int $nombreProjet = 4;
+    private static string $execution = 'OK';
+    private static string $dateModification = '2025-01-02 12:00:00+02';
+    private static string $dateEnregistrement = '2024-07-31 12:27:05+02';
 
     private function getEntity(): Batch
     {

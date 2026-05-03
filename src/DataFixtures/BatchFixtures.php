@@ -12,15 +12,15 @@ use Doctrine\Persistence\ObjectManager;
 class BatchFixtures extends Fixture
 {
     // v2.0.0 : renommage `statut` → `activated`, ajout `automatique`, `responsableShort`
-    private static $activated = false;
-    private static $automatique = false;
-    private static $description = 'Mon batch à moi';
-    private static $responsable = 'Laurent HADJADJ';
-    private static $responsableShort = 'L.HADJADJ';
-    private static $nombreProjet = 1;
-    private static $execution = 'OK';
-    private static $dateModification = '2025-01-02 12:00:00+02';
-    private static $dateEnregistrement = '2024-07-31 12:27:05+02';
+    private static bool $activated = false;
+    private static bool $automatique = false;
+    private static string $description = 'Mon batch à moi';
+    private static string $responsable = 'Laurent HADJADJ';
+    private static string $responsableShort = 'L.HADJADJ';
+    private static int $nombreProjet = 1;
+    private static string $execution = 'OK';
+    private static string $dateModification = '2025-01-02 12:00:00+02';
+    private static string $dateEnregistrement = '2024-07-31 12:27:05+02';
 
     public function load(ObjectManager $manager): void
     {

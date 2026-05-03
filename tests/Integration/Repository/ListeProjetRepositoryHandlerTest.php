@@ -27,7 +27,7 @@ use PHPUnit\Framework\TestCase;
  */
 class ListeProjetRepositoryHandlerTest extends TestCase
 {
-    private static $gestionTest = 'gestion test';
+    private static string $gestionTest = 'gestion test';
 
     public function testCountListeProjetVisibility_WhenSQLException(): void
     {

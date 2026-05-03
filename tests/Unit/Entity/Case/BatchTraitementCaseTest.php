@@ -24,19 +24,19 @@ class BatchTraitementCaseTest extends TestCase
 {
     private $batchTraitement;
 
-    private static $modeCollecte = 'TRAITEMENT MANUEL';
-    private static $activated = true;
-    private static $success = true;
-    private static $pending = false;
-    private static $inProgress = false;
-    private static $titre = 'mon-batch à moi';
-    private static $portefeuille = 'application-ma-moulinette';
-    private static $nombreProjet = 4;
-    private static $responsable = 'Laurent HADJADJ';
-    private static $responsableShort = 'L. HADJADJ';
-    private static $debutTraitement = '2025-01-02 12:00:00+02';
-    private static $finTraitement = '2025-01-02 12:02:00+02';
-    private static $dateEnregistrement = '2025-01-02 12:02:00+02';
+    private static string $modeCollecte = 'TRAITEMENT MANUEL';
+    private static bool $activated = true;
+    private static bool $success = true;
+    private static bool $pending = false;
+    private static bool $inProgress = false;
+    private static string $titre = 'mon-batch à moi';
+    private static string $portefeuille = 'application-ma-moulinette';
+    private static int $nombreProjet = 4;
+    private static string $responsable = 'Laurent HADJADJ';
+    private static string $responsableShort = 'L. HADJADJ';
+    private static string $debutTraitement = '2025-01-02 12:00:00+02';
+    private static string $finTraitement = '2025-01-02 12:02:00+02';
+    private static string $dateEnregistrement = '2025-01-02 12:02:00+02';
 
     private function getEntity(): BatchTraitement
     {

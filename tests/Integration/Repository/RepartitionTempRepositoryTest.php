@@ -29,9 +29,9 @@ class RepartitionTempRepositoryTest extends KernelTestCase
 {
     private ?EntityManagerInterface $em = null;
 
-    private static $setup = 1000000000001;
-    private static $component = '/src/Controller/ApiController.php';
-    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static int $setup = 1000000000001;
+    private static string $component = '/src/Controller/ApiController.php';
+    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
 
     protected function setUp(): void
     {

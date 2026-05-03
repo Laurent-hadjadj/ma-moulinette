@@ -27,7 +27,7 @@ use PHPUnit\Framework\TestCase;
  */
 class PropertiesRepositoryHandlerTest extends TestCase
 {
-    private static $gestionTest = 'properties test';
+    private static string $gestionTest = 'properties test';
 
     public function testGetProperties_WhenSQLException(): void
     {

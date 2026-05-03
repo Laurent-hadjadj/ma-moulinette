@@ -148,6 +148,7 @@ class CollecteController extends AbstractController
     /**
      * [Description for collecte]
      *
+
      * @return array<int|string, mixed>
      *
      * Created at: 11/06/2024 12:58:00 (Europe/Paris)

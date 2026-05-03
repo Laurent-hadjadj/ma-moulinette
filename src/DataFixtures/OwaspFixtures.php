@@ -11,19 +11,19 @@ use Doctrine\Persistence\ObjectManager;
  */
 class OwaspFixtures extends Fixture
 {
-    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-    private static $referentialOwasp = 2017;
+    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static int $referentialOwasp = 2017;
     private string $version = '1.2.0-RELEASE';
-    private static $dateVersion = '2024-07-10 15:26:07+02';
-    private static $effortTotal = 0;
+    private static string $dateVersion = '2024-07-10 15:26:07+02';
+    private static int $effortTotal = 0;
     private static $a = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     private static $aBlocker = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     private static $aCritical = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     private static $aMajor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     private static $aInfo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     private static $aMinor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
-    private static $dateEnregistrement = '2024-03-26 14:46:38+02';
+    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+    private static string $dateEnregistrement = '2024-03-26 14:46:38+02';
 
     public function load(ObjectManager $manager): void
     {

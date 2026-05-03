@@ -23,15 +23,15 @@ class ActivityHistoriqueCaseTest extends TestCase
 {
     private $activityHistorique;
 
-    private static $year = 2024;
-    private static $day = 326;
-    private static $analyse = 1253;
-    private static $analyseAverage = 87.3;
-    private static $success = 1249;
-    private static $failed = 4;
-    private static $successRate = 0.99;
-    private static $maxTime = 34;
-    private static $dateEnregistrement = '2024-07-14 19:36:33+02';
+    private static int $year = 2024;
+    private static int $day = 326;
+    private static int $analyse = 1253;
+    private static float $analyseAverage = 87.3;
+    private static int $success = 1249;
+    private static int $failed = 4;
+    private static float $successRate = 0.99;
+    private static int $maxTime = 34;
+    private static string $dateEnregistrement = '2024-07-14 19:36:33+02';
 
     private function getEntity(): activityHistorique
     {

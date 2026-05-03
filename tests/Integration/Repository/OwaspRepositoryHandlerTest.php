@@ -27,11 +27,11 @@ use PHPUnit\Framework\TestCase;
  */
 class OwaspRepositoryHandlerTest extends TestCase
 {
-    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-    private static $gestionTest = 'gestion test';
-    private static $version = '1.2.0-RELEASE';
-    private static $dateVersion = '2024-07-10 15:26:07+02';
-    private static $effortTotal = 0;
+    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $gestionTest = 'gestion test';
+    private static string $version = '1.2.0-RELEASE';
+    private static string $dateVersion = '2024-07-10 15:26:07+02';
+    private static int $effortTotal = 0;
     private static $a = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     private static $aBlocker = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     private static $aCritical = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];

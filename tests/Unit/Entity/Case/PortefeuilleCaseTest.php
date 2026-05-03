@@ -23,11 +23,11 @@ class PortefeuilleCaseTest extends TestCase
 {
     private $portefeuille;
 
-    private static $portefeuilles = 'MES PROJETS';
-    private static $groupeFonctionnel = 'MA PETITE ENTREPRISE';
+    private static string $portefeuilles = 'MES PROJETS';
+    private static string $groupeFonctionnel = 'MA PETITE ENTREPRISE';
     private static $liste =  ['fr.ma-petite-entreprise:ma-moulinette'];
-    private static $dateModification = '2024-03-26 14:46:38+01';
-    private static $dateEnregistrement = '2024-03-25 12:26:58+01';
+    private static string $dateModification = '2024-03-26 14:46:38+01';
+    private static string $dateEnregistrement = '2024-03-25 12:26:58+01';
 
     private function getEntity(): Portefeuille
     {

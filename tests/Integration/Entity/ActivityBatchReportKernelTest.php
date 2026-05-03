@@ -24,8 +24,8 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
  */
 class ActivityBatchReportKernelTest extends KernelTestCase
 {
-    private static $taskCount = 12;
-    private static $taskDone = 11;
+    private static int $taskCount = 12;
+    private static int $taskDone = 11;
 
     protected function setUp(): void
     {

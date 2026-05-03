@@ -34,20 +34,20 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 class ClientTest extends TestCase
 {
     /** Constantes miroir des messages du service ClientService. */
-    public static $erreur400 = 'La requête est incorrecte  (Erreur 400).';
-    public static $erreur401 = "Erreur d'Authentification. La clé n'est pas correcte  (Erreur 401).";
-    public static $erreur403 = 'Vous n’êtes pas autorisé à vous connecter (Erreur 403).';
-    public static $erreur404 = "Le service n'a pas trouvé les éléments (Erreur 404).";
-    public static $erreur407 = "La requête n'a pas été appliquée à cause d'un manque d'authentification (Erreur 407).";
-    public static $erreur414 = "L'URI demandée par le client est plus trop longue (Erreur 414).";
-    public static $erreur418 = '«Je suis une théière », je refuse de préparer du café (Erreur 418).';
-    public static $erreur429 = 'Le client a envoyé trop de requêtes en un temps donné (Erreur 429).';
-    public static $erreur500 = "Le serveur a rencontré un problème inattendu qui l'empêche de répondre à la requête (Erreur 500).";
-    public static $erreur502 = 'Le serveur, agissant comme une passerelle ou un proxy, a reçu une réponse invalide (Erreur 502).';
-    public static $erreur504 = 'Temps d’attente d’une réponse écoulé... (Erreur 504).';
-    public static $erreur505 = "La version du protocole HTTP utilisée dans la requête n'est pas prise en charge par le serveur (Erreur 505).";
+    public static string $erreur400 = 'La requête est incorrecte  (Erreur 400).';
+    public static string $erreur401 = "Erreur d'Authentification. La clé n'est pas correcte  (Erreur 401).";
+    public static string $erreur403 = 'Vous n’êtes pas autorisé à vous connecter (Erreur 403).';
+    public static string $erreur404 = "Le service n'a pas trouvé les éléments (Erreur 404).";
+    public static string $erreur407 = "La requête n'a pas été appliquée à cause d'un manque d'authentification (Erreur 407).";
+    public static string $erreur414 = "L'URI demandée par le client est plus trop longue (Erreur 414).";
+    public static string $erreur418 = '«Je suis une théière », je refuse de préparer du café (Erreur 418).';
+    public static string $erreur429 = 'Le client a envoyé trop de requêtes en un temps donné (Erreur 429).';
+    public static string $erreur500 = "Le serveur a rencontré un problème inattendu qui l'empêche de répondre à la requête (Erreur 500).";
+    public static string $erreur502 = 'Le serveur, agissant comme une passerelle ou un proxy, a reçu une réponse invalide (Erreur 502).';
+    public static string $erreur504 = 'Temps d’attente d’une réponse écoulé... (Erreur 504).';
+    public static string $erreur505 = "La version du protocole HTTP utilisée dans la requête n'est pas prise en charge par le serveur (Erreur 505).";
 
-    public static $sonarToken = '123456789ABCDEF';
+    public static string $sonarToken = '123456789ABCDEF';
 
     /** @var HttpClientInterface */
     private $httpClient;

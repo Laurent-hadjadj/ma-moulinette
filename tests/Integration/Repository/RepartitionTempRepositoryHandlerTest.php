@@ -26,10 +26,10 @@ use PHPUnit\Framework\TestCase;
  */
 class RepartitionTempRepositoryHandlerTest extends TestCase
 {
-    private static $gestionTest = 'repartition test';
-    private static $setup = 1000000000001;
-    private static $component = '/src/Controller/ApiController.php';
-    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $gestionTest = 'repartition test';
+    private static int $setup = 1000000000001;
+    private static string $component = '/src/Controller/ApiController.php';
+    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
 
     public function testSelectRepartitionByTypeAndSeverity_WhenSQLException(): void
     {

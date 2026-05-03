@@ -25,8 +25,8 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 */
 class BatchTraitementKernelTest extends KernelTestCase
 {
-    private static $modeCollecte = 'TRAITEMENT MANUEL';
-    private static $success = true;
+    private static string $modeCollecte = 'TRAITEMENT MANUEL';
+    private static bool $success = true;
 
     protected function setUp(): void
     {

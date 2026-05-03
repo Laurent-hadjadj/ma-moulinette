@@ -25,7 +25,7 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 class PortefeuilleKernelTest extends KernelTestCase
 {
 
-    private static $titre = 'MES PROJETS';
+    private static string $titre = 'MES PROJETS';
 
     protected function setUp(): void
     {

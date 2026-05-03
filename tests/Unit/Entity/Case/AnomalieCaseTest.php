@@ -23,32 +23,32 @@ class AnomalieCaseTest extends TestCase
 {
     private $anomalie;
 
-    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-    private static $projectName = 'ma-moulinette';
-    private static $anomalieTotal = 1956;
-    private static $detteMinute = 19586;
-    private static $detteReliabilityMinute = 107;
-    private static $detteVulnerabilityMinute = 0;
-    private static $detteCodeSmellMinute = 7369;
-    private static $detteReliability = '0h:5min';
-    private static $detteVulnerability = '0h:0min';
-    private static $dette = '4d, 19h:32min';
-    private static $detteCodeSmell = '5d, 2h:49min';
-    private static $frontend = 806;
-    private static $backend = 0;
-    private static $autre = 0;
-    private static $inconnu = 1;
-    private static $blocker = 0;
-    private static $critical = 0;
-    private static $major = 4750;
-    private static $info = 0;
-    private static $minor = 222;
-    private static $bug = 0;
-    private static $vulnerability = 0;
-    private static $codeSmell = 801;
-    private static $modeCollecte = 'TRAITEMENT MANUEL';
-    private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
-    private static $dateEnregistrement = '2024-06-28 17:55:45+02';
+    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $projectName = 'ma-moulinette';
+    private static int $anomalieTotal = 1956;
+    private static int $detteMinute = 19586;
+    private static int $detteReliabilityMinute = 107;
+    private static int $detteVulnerabilityMinute = 0;
+    private static int $detteCodeSmellMinute = 7369;
+    private static string $detteReliability = '0h:5min';
+    private static string $detteVulnerability = '0h:0min';
+    private static string $dette = '4d, 19h:32min';
+    private static string $detteCodeSmell = '5d, 2h:49min';
+    private static int $frontend = 806;
+    private static int $backend = 0;
+    private static int $autre = 0;
+    private static int $inconnu = 1;
+    private static int $blocker = 0;
+    private static int $critical = 0;
+    private static int $major = 4750;
+    private static int $info = 0;
+    private static int $minor = 222;
+    private static int $bug = 0;
+    private static int $vulnerability = 0;
+    private static int $codeSmell = 801;
+    private static string $modeCollecte = 'TRAITEMENT MANUEL';
+    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+    private static string $dateEnregistrement = '2024-06-28 17:55:45+02';
 
     private function getEntity(): Anomalie
     {

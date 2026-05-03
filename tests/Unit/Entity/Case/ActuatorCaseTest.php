@@ -23,13 +23,13 @@ class ActuatorCaseTest extends TestCase
 {
     private $actuator;
 
-    private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-    private static $nomApplication = 'Application 04';
-    private static $url = 'http://ma-moulinette.fr/app04';
-    private static $actuatorUser = 'user4';
-    private static $actuatorPassword = 'password4';
-    private static $personne = 'Elsa Davis';
-    private static $dateModification = '2024-06-23 11:59:51.854783+02';
+    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $nomApplication = 'Application 04';
+    private static string $url = 'http://ma-moulinette.fr/app04';
+    private static string $actuatorUser = 'user4';
+    private static string $actuatorPassword = 'password4';
+    private static string $personne = 'Elsa Davis';
+    private static string $dateModification = '2024-06-23 11:59:51.854783+02';
 
     private function getEntity(): Actuator
     {

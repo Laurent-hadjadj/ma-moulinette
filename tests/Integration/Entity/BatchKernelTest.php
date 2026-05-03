@@ -25,7 +25,7 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 class BatchKernelTest extends KernelTestCase
 {
 
-    private static $responsable = 'Laurent HADJADJ';
+    private static string $responsable = 'Laurent HADJADJ';
 
     /**
      * [Description for setUp]

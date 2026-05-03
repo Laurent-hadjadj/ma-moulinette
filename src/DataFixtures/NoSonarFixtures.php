@@ -12,13 +12,13 @@ use Doctrine\Persistence\ObjectManager;
 class NoSonarFixtures extends Fixture
 {
 
-  private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-  private static $rule = 'java:S1309';
+  private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+  private static string $rule = 'java:S1309';
   private static $component = 'fr.ma-petite-entreprise:mo-moulinette:
   ma-moulinette-service/src/main/java/fr/ma-petite-entreprise/ma-moulinette/service/ClamAvService.java';
-  private static $line = 118;
-  private static $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
-  private static $dateEnregistrement = '2024-03-26 14:46:38+02';
+  private static int $line = 118;
+  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+  private static string $dateEnregistrement = '2024-03-26 14:46:38+02';
 
   public function load(ObjectManager $manager): void
     {

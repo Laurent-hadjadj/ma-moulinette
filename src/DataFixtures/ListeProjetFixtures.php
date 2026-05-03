@@ -11,11 +11,11 @@ use Doctrine\Persistence\ObjectManager;
  */
 class ListeProjetFixtures extends Fixture
 {
-  private static $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-  private static $name = 'Ma-Moulinette';
+  private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+  private static string $name = 'Ma-Moulinette';
   private static $tags = ['ma-moulinette', '2048'];
-  private static $visibility = 'private';
-  private static $dateEnregistrement = '2024-04-12 16:23:11+01';
+  private static string $visibility = 'private';
+  private static string $dateEnregistrement = '2024-04-12 16:23:11+01';
 
   /**
    * [Description for load]

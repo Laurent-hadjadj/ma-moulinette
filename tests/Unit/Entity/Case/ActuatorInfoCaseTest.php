@@ -24,9 +24,9 @@ class ActuatorInfoCaseTest extends TestCase
 {
     private $actuatorInfo;
 
-    private static $actuatorId = 1;
-    private static $actuatorInfoDescription = '[SOCLE][ARCHETYPE]';
-    private static $actuatorInfoValue = 'socle.archetype';
+    private static int $actuatorId = 1;
+    private static string $actuatorInfoDescription = '[SOCLE][ARCHETYPE]';
+    private static string $actuatorInfoValue = 'socle.archetype';
 
     private function getEntity(): ActuatorInfo
     {

@@ -25,8 +25,8 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 class OwaspTop10KernelTest extends KernelTestCase
 {
 
-    private static $category = "A1 - Attaques d'injection";
-    private static $year = 2017;
+    private static string $category = "A1 - Attaques d'injection";
+    private static int $year = 2017;
 
     protected function setUp(): void
     {

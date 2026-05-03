@@ -23,11 +23,11 @@ class OwaspTop10CaseTest extends TestCase
 {
     private $owaspTop10;
 
-    private static $year = 2017;
-    private static $category = "A1 - Attaques d'injection";
-    private static $description = "Les failles d'injection, telles que l'injection SQL, NoSQL, OS et LDAP, se produisent lorsque des données non fiables sont envoyées à un interpréteur dans le cadre d'une commande ou d'une requête. Les données hostiles de l'attaquant peuvent inciter l'interpréteur à exécuter des commandes non souhaitées ou à accéder à des données sans autorisation appropriée.";
-    private static $lien = '__a01-2017-injection.html.twig';
-    private static $dateEnregistrement = '2024-03-26 14:46:38+02';
+    private static int $year = 2017;
+    private static string $category = "A1 - Attaques d'injection";
+    private static string $description = "Les failles d'injection, telles que l'injection SQL, NoSQL, OS et LDAP, se produisent lorsque des données non fiables sont envoyées à un interpréteur dans le cadre d'une commande ou d'une requête. Les données hostiles de l'attaquant peuvent inciter l'interpréteur à exécuter des commandes non souhaitées ou à accéder à des données sans autorisation appropriée.";
+    private static string $lien = '__a01-2017-injection.html.twig';
+    private static string $dateEnregistrement = '2024-03-26 14:46:38+02';
 
     private function getEntity(): OwaspTop10
     {
