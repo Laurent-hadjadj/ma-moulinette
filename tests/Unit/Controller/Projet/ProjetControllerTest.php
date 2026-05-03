@@ -15,8 +15,9 @@ use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
@@ -27,7 +28,8 @@ use Twig\Environment;
 class ProjetControllerTest extends TestCase
 {
     /** @var MesProjets&MockObject */                private MockObject $mesProjets;
-    /** @var Security&MockObject */                  private MockObject $security;
+    /** @var TokenStorageInterface&MockObject */     private MockObject $tokenStorage;
+    /** @var TokenInterface&MockObject */            private MockObject $token;
     /** @var EntityManagerInterface&MockObject */    private MockObject $em;
     /** @var ParameterBagInterface&MockObject */     private MockObject $params;
     /** @var LoggerInterface&MockObject */           private MockObject $logger;
@@ -41,7 +43,9 @@ class ProjetControllerTest extends TestCase
     protected function setUp(): void
     {
         $this->mesProjets = $this->createMock(MesProjets::class);
-        $this->security = $this->createMock(Security::class);
+        $this->tokenStorage = $this->createMock(TokenStorageInterface::class);
+        $this->token = $this->createMock(TokenInterface::class);
+        $this->tokenStorage->method('getToken')->willReturn($this->token);
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->params = $this->createMock(ParameterBagInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
@@ -68,17 +72,18 @@ class ProjetControllerTest extends TestCase
         $container = $this->createMock(ContainerInterface::class);
         $container->method('has')->willReturnCallback(
             fn(string $id): bool => in_array($id, [
-                'twig', 'request_stack', 'parameter_bag',
+                'twig', 'request_stack', 'parameter_bag', 'security.token_storage',
             ], true)
         );
         $container->method('get')->willReturnMap([
             ['twig', 1, $this->twig],
             ['request_stack', 1, $requestStack],
             ['parameter_bag', 1, $this->params],
+            ['security.token_storage', 1, $this->tokenStorage],
         ]);
 
         $this->controller = new ProjetController(
-            $this->mesProjets, $this->security, $this->em, $this->params, $this->logger, $this->tracking
+            $this->mesProjets, $this->em, $this->params, $this->logger, $this->tracking
         );
         $this->controller->setContainer($container);
     }
@@ -100,7 +105,7 @@ class ProjetControllerTest extends TestCase
     public function testMesProjetsFlashesWarningWhenNoGroupes(): void
     {
         $user = $this->makeUser([]);
-        $this->security->method('getUser')->willReturn($user);
+        $this->token->method('getUser')->willReturn($user);
 
         $this->flashBag->expects($this->once())
             ->method('add')
@@ -116,7 +121,7 @@ class ProjetControllerTest extends TestCase
     public function testMesProjetsFlashesWarningWhenNoProjets(): void
     {
         $user = $this->makeUser(['TeamA']);
-        $this->security->method('getUser')->willReturn($user);
+        $this->token->method('getUser')->willReturn($user);
 
         $this->mesProjets->expects($this->once())
             ->method('liste')
@@ -135,7 +140,7 @@ class ProjetControllerTest extends TestCase
     public function testMesProjetsFlashesAlertWhenRepoFails(): void
     {
         $user = $this->makeUser(['TeamA']);
-        $this->security->method('getUser')->willReturn($user);
+        $this->token->method('getUser')->willReturn($user);
 
         $this->mesProjets->method('liste')->willReturn([
             'code' => 200, 'projets' => [['id' => 'com.acme:app']],
@@ -157,7 +162,7 @@ class ProjetControllerTest extends TestCase
     public function testMesProjetsHappyPath(): void
     {
         $user = $this->makeUser(['TeamA']);
-        $this->security->method('getUser')->willReturn($user);
+        $this->token->method('getUser')->willReturn($user);
 
         $this->mesProjets->method('liste')->willReturn([
             'code' => 200,

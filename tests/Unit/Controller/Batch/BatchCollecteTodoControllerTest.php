@@ -145,6 +145,40 @@ class BatchCollecteTodoControllerTest extends TestCase
         $this->assertSame(1, $result['historique']['xml_todo']);
     }
 
+    /**
+     * Régression 2026-05-03 : suppression de l'init `$java_todo = ... = $inconnu = 0;`
+     * faisait crasher en runtime avec "Warning: Undefined variable $inconnu" dès la
+     * première règle non reconnue. Ce test exerce le default du switch et vérifie
+     * que tous les compteurs sont des entiers (init effective).
+     */
+    public function testCountersAreInitializedToZeroEvenWhenAllRulesUnknown(): void
+    {
+        $issues = [
+            ['rule' => 'unknown:rule1', 'component' => 'x:a', 'line' => 1],
+            ['rule' => 'unknown:rule2', 'component' => 'x:b', 'line' => 2],
+        ];
+
+        $this->client->expects($this->exactly(3))
+            ->method('httpSonarQube')
+            ->willReturnOnConsecutiveCalls(
+                ['code' => 200, 'json' => ['paging' => ['total' => count($issues)], 'issues' => [$issues[0]]]],
+                ['code' => 200, 'json' => ['paging' => ['total' => count($issues)], 'issues' => $issues]],
+                ['code' => 200, 'json' => ['paging' => ['total' => count($issues)], 'issues' => []]],
+            );
+        $this->repo->method('deleteTodoMavenKey')->willReturn(['code' => 200]);
+        $this->repo->method('insertTodo')->willReturn(['code' => 200]);
+
+        $result = $this->controller->BatchCollecteTodo(self::MAVEN_KEY, 'auto', 'u');
+
+        $this->assertSame(200, $result['code']);
+        // Chaque clé doit être un int (0), pas null/undefined → garantit l'init
+        foreach (['java_todo', 'python_todo', 'php_todo', 'xml_todo', 'web_todo',
+                  'javascript_todo', 'typescript_todo', 'ruby_todo'] as $k) {
+            $this->assertIsInt($result['historique'][$k], "$k devrait être initialisé à 0");
+            $this->assertSame(0, $result['historique'][$k], "$k devrait valoir 0 (aucune règle connue)");
+        }
+    }
+
     public function testReturnsErrorWhenInsertFails(): void
     {
         $issues = [['rule' => 'java:S1135', 'component' => 'x:a.java', 'line' => 1]];
@@ -161,6 +195,6 @@ class BatchCollecteTodoControllerTest extends TestCase
         $result = $this->controller->BatchCollecteTodo(self::MAVEN_KEY, 'auto', 'u');
 
         $this->assertSame(500, $result['code']);
-        $this->assertSame('alert', $result['type']);
+        $this->assertSame('error', $result['type']);
     }
 }

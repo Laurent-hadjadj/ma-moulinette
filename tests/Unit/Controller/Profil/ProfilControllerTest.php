@@ -74,14 +74,16 @@ class ProfilControllerTest extends TestCase
         $this->controller->setContainer($container);
     }
 
-    public function testIndexFlashesAlertAndWarningWhenRepoFailsAndListEmpty(): void
+    public function testIndexFlashesErrorWhenRepoFails(): void
     {
-        // selectProfiles retourne une erreur : deux flashes (alert + warning vide)
+        // selectProfiles retourne une erreur : un seul flash 'error' puis return early (refacto 2026)
         $this->repo->expects($this->once())
             ->method('selectProfiles')
             ->willReturn(['code' => 500, 'erreur' => 'db fail', 'liste' => []]);
 
-        $this->flashBag->expects($this->exactly(2))->method('add');
+        $this->flashBag->expects($this->once())
+            ->method('add')
+            ->with('notice', $this->callback(fn($v) => $v['type'] === 'error'));
 
         $this->twig->expects($this->once())
             ->method('render')
@@ -137,7 +139,7 @@ class ProfilControllerTest extends TestCase
 
         $this->flashBag->expects($this->once())
             ->method('add')
-            ->with('notice', $this->callback(fn($v) => $v['type'] === 'alert'));
+            ->with('notice', $this->callback(fn($v) => $v['type'] === 'critical'));
 
         $this->twig->expects($this->once())
             ->method('render')

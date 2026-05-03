@@ -101,7 +101,7 @@ class ApiActivityControllerTest extends TestCase
         $data = json_decode($response->getContent(), true);
 
         $this->assertSame(503, $data['code']);
-        $this->assertSame('alert', $data['type']);
+        $this->assertSame('error', $data['type']);
     }
 
     public function testSauvegardeReturns204WhenTasksEmpty(): void
@@ -201,6 +201,7 @@ class ApiActivityControllerTest extends TestCase
 
     public function testDessinReturns400OnInvalidJson(): void
     {
+        $this->authChecker->method('isGranted')->willReturn(true);
         $response = $this->controller->apiDessin($this->jsonRequest('garbage'));
         $data = json_decode($response->getContent(), true);
 
@@ -209,6 +210,7 @@ class ApiActivityControllerTest extends TestCase
 
     public function testDessinReturns400WhenSourceMissing(): void
     {
+        $this->authChecker->method('isGranted')->willReturn(true);
         $response = $this->controller->apiDessin($this->jsonRequest(['other' => 'x']));
         $data = json_decode($response->getContent(), true);
 
@@ -217,6 +219,7 @@ class ApiActivityControllerTest extends TestCase
 
     public function testDessinAnalyseCallsListeAnalyseJour(): void
     {
+        $this->authChecker->method('isGranted')->willReturn(true);
         $this->activityRepo->expects($this->once())
             ->method('listeAnalyseJour')
             ->willReturn(['code' => 200, 'liste' => [['day' => 1]]]);
@@ -230,6 +233,7 @@ class ApiActivityControllerTest extends TestCase
 
     public function testDessinProjetCallsListeProjectAnalyse(): void
     {
+        $this->authChecker->method('isGranted')->willReturn(true);
         $this->activityRepo->expects($this->once())
             ->method('listeProjectAnalyse')
             ->willReturn(['code' => 200, 'liste' => []]);
@@ -242,6 +246,7 @@ class ApiActivityControllerTest extends TestCase
 
     public function testDessinProjetAnalyseCallsListeAnalyseProjet(): void
     {
+        $this->authChecker->method('isGranted')->willReturn(true);
         $this->activityRepo->expects($this->once())
             ->method('listeAnalyseProjet')
             ->willReturn(['code' => 200, 'liste' => []]);
@@ -254,6 +259,7 @@ class ApiActivityControllerTest extends TestCase
 
     public function testDessinReturns400OnUnknownSource(): void
     {
+        $this->authChecker->method('isGranted')->willReturn(true);
         $this->activityRepo->expects($this->never())->method('listeAnalyseJour');
         $this->activityRepo->expects($this->never())->method('listeProjectAnalyse');
         $this->activityRepo->expects($this->never())->method('listeAnalyseProjet');
@@ -262,7 +268,8 @@ class ApiActivityControllerTest extends TestCase
         $data = json_decode($response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
-        $this->assertStringContainsString('bogus', $data['message']);
+        // Le contrôleur n'écho plus la source utilisateur dans le message (sécurité)
+        $this->assertStringContainsString('inconnue', $data['message']);
     }
 
     /* ============ helper ============ */

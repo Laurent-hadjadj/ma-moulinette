@@ -53,7 +53,7 @@ class BatchCollecteAnomalieControllerTest extends TestCase
 
         $this->urlBuilder->method('build')->willReturn('https://sonar/api/...');
         $this->extractName->method('extractNameFromMavenKey')->willReturn('app');
-        $this->dateTools->method('minutesTo')->willReturnCallback(fn (int $min) => $min . 'min');
+        $this->dateTools->method('minutesTo')->willReturnCallback(fn ($min) => (string) $min . 'min');
 
         $this->parameterBag->method('get')->willReturnMap([
             ['sonar.url', 'https://sonar.example.com'],

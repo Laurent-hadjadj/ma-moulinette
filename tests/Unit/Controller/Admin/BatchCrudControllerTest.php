@@ -22,6 +22,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
@@ -50,7 +51,16 @@ class BatchCrudControllerTest extends TestCase
             [BatchExecution::class, $this->batchExecutionRepo],
         ]);
 
-        $this->controller = new BatchCrudController($this->em, $this->token);
+        $container = $this->createMock(ContainerInterface::class);
+        $container->method('has')->willReturnCallback(
+            fn(string $id): bool => $id === 'security.token_storage'
+        );
+        $container->method('get')->willReturnMap([
+            ['security.token_storage', 1, $this->token],
+        ]);
+
+        $this->controller = new BatchCrudController($this->em);
+        $this->controller->setContainer($container);
     }
 
     public function testGetEntityFqcnReturnsBatch(): void

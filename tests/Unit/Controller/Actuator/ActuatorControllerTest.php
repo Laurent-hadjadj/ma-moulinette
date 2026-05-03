@@ -15,6 +15,7 @@ use Knp\Component\Pager\PaginatorInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,6 +32,7 @@ class ActuatorControllerTest extends TestCase
     /** @var ClientService&MockObject */                  private MockObject $client;
     /** @var PaginatorInterface&MockObject */             private MockObject $paginator;
     /** @var ParameterBagInterface&MockObject */          private MockObject $params;
+    /** @var LoggerInterface&MockObject */                private MockObject $logger;
     /** @var UserAgentTrackingFacade&MockObject */        private MockObject $tracking;
     /** @var ActuatorRepository&MockObject */             private MockObject $repo;
     /** @var AuthorizationCheckerInterface&MockObject */  private MockObject $authChecker;
@@ -45,6 +47,7 @@ class ActuatorControllerTest extends TestCase
         $this->client = $this->createMock(ClientService::class);
         $this->paginator = $this->createMock(PaginatorInterface::class);
         $this->params = $this->createMock(ParameterBagInterface::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
         $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
         $this->repo = $this->createMock(ActuatorRepository::class);
         $this->authChecker = $this->createMock(AuthorizationCheckerInterface::class);
@@ -85,6 +88,7 @@ class ActuatorControllerTest extends TestCase
             $this->client,
             $this->paginator,
             $this->params,
+            $this->logger,
             $this->tracking
         );
         $this->controller->setContainer($container);
@@ -172,7 +176,7 @@ class ActuatorControllerTest extends TestCase
         $query = new \stdClass();
         $this->repo->expects($this->once())
             ->method('findActuatorOrderBy')
-            ->with('nom', 'DESC')
+            ->with('nom_application', 'DESC')
             ->willReturn(['code' => 200, 'paginator_query' => $query]);
 
         $pagination = $this->createMock(PaginationInterface::class);
@@ -180,7 +184,7 @@ class ActuatorControllerTest extends TestCase
 
         $this->twig->expects($this->once())->method('render')->willReturn('<html>ok</html>');
 
-        $this->controller->actuator(new Request(['sort' => 'nom']));
+        $this->controller->actuator(new Request(['sort' => 'nom_application']));
     }
 
     /* ============ actuatorInfo ============ */

@@ -27,6 +27,8 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 #[AllowMockObjectsWithoutExpectations]
@@ -83,14 +85,22 @@ class ApiCollecteControllerTest extends TestCase
         // Par défaut, le rôle est accordé — les tests 403 overridet
         $this->authChecker->method('isGranted')->willReturn(true);
 
+        // appUser() (via AbstractController::getUser()) interroge security.token_storage
+        $token = $this->createMock(TokenInterface::class);
+        $token->method('getUser')->willReturn($user);
+        $tokenStorage = $this->createMock(TokenStorageInterface::class);
+        $tokenStorage->method('getToken')->willReturn($token);
+
         $container = $this->createMock(ContainerInterface::class);
         $container->method('has')->willReturnMap([
             ['security.authorization_checker', true],
+            ['security.token_storage', true],
             ['parameter_bag', false],
             ['serializer', false],
         ]);
         $container->method('get')->willReturnMap([
             ['security.authorization_checker', 1, $this->authChecker],
+            ['security.token_storage', 1, $tokenStorage],
         ]);
 
         $this->controller = new ApiCollecteController(
@@ -128,14 +138,25 @@ class ApiCollecteControllerTest extends TestCase
         $strictAuthChecker = $this->createMock(AuthorizationCheckerInterface::class);
         $strictAuthChecker->method('isGranted')->willReturn(false);
 
+        // Réutilise le token_storage du setUp via un nouveau container limité au strict checker
+        $user = $this->createMock(Utilisateur::class);
+        $user->method('getCourriel')->willReturn(self::USER_EMAIL);
+        $user->method('getUserIdentifier')->willReturn(self::USER_EMAIL);
+        $token = $this->createMock(TokenInterface::class);
+        $token->method('getUser')->willReturn($user);
+        $tokenStorage = $this->createMock(TokenStorageInterface::class);
+        $tokenStorage->method('getToken')->willReturn($token);
+
         $container = $this->createMock(ContainerInterface::class);
         $container->method('has')->willReturnMap([
             ['security.authorization_checker', true],
+            ['security.token_storage', true],
             ['parameter_bag', false],
             ['serializer', false],
         ]);
         $container->method('get')->willReturnMap([
             ['security.authorization_checker', 1, $strictAuthChecker],
+            ['security.token_storage', 1, $tokenStorage],
         ]);
         $this->controller->setContainer($container);
 

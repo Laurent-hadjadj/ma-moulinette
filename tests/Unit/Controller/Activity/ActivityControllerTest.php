@@ -15,6 +15,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -28,6 +29,7 @@ class ActivityControllerTest extends TestCase
     /** @var EntityManagerInterface&MockObject */         private MockObject $em;
     /** @var ClientService&MockObject */                  private MockObject $client;
     /** @var ParameterBagInterface&MockObject */          private MockObject $params;
+    /** @var LoggerInterface&MockObject */                private MockObject $logger;
     /** @var UserAgentTrackingFacade&MockObject */        private MockObject $tracking;
     /** @var ActivityRepository&MockObject */             private MockObject $activityRepo;
     /** @var ActivityHistoriqueRepository&MockObject */   private MockObject $historiqueRepo;
@@ -41,6 +43,7 @@ class ActivityControllerTest extends TestCase
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->client = $this->createMock(ClientService::class);
         $this->params = $this->createMock(ParameterBagInterface::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
         $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
         $this->activityRepo = $this->createMock(ActivityRepository::class);
         $this->historiqueRepo = $this->createMock(ActivityHistoriqueRepository::class);
@@ -82,6 +85,7 @@ class ActivityControllerTest extends TestCase
             $this->em,
             $this->params,
             $this->client,
+            $this->logger,
             $this->tracking
         );
         $this->controller->setContainer($container);
@@ -95,7 +99,7 @@ class ActivityControllerTest extends TestCase
 
         $this->flashBag->expects($this->once())
             ->method('add')
-            ->with('notice', $this->callback(fn($v) => $v['type'] === 'alert'));
+            ->with('notice', $this->callback(fn($v) => $v['type'] === 'error'));
 
         $this->twig->expects($this->once())
             ->method('render')

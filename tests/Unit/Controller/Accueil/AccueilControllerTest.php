@@ -24,7 +24,8 @@ use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -41,7 +42,8 @@ class AccueilControllerTest extends TestCase
     /** @var ParameterBagInterface&MockObject */     private MockObject $params;
     /** @var UrlBuilderService&MockObject */         private MockObject $urlBuilder;
     /** @var LoggerInterface&MockObject */           private MockObject $logger;
-    /** @var Security&MockObject */                  private MockObject $security;
+    /** @var TokenStorageInterface&MockObject */     private MockObject $tokenStorage;
+    /** @var TokenInterface&MockObject */            private MockObject $token;
     /** @var UserAgentTrackingFacade&MockObject */   private MockObject $tracking;
     /** @var ListeProjetRepository&MockObject */     private MockObject $listeProjetRepo;
     /** @var ProfilesRepository&MockObject */        private MockObject $profilesRepo;
@@ -61,7 +63,9 @@ class AccueilControllerTest extends TestCase
         $this->params = $this->createMock(ParameterBagInterface::class);
         $this->urlBuilder = $this->createMock(UrlBuilderService::class);
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->security = $this->createMock(Security::class);
+        $this->tokenStorage = $this->createMock(TokenStorageInterface::class);
+        $this->token = $this->createMock(TokenInterface::class);
+        $this->tokenStorage->method('getToken')->willReturn($this->token);
         $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
         $this->listeProjetRepo = $this->createMock(ListeProjetRepository::class);
         $this->profilesRepo = $this->createMock(ProfilesRepository::class);
@@ -101,7 +105,7 @@ class AccueilControllerTest extends TestCase
         $container = $this->createMock(ContainerInterface::class);
         $container->method('has')->willReturnCallback(
             fn(string $id): bool => in_array($id, [
-                'twig', 'request_stack', 'parameter_bag', 'security.authorization_checker',
+                'twig', 'request_stack', 'parameter_bag', 'security.authorization_checker', 'security.token_storage',
             ], true)
         );
         $container->method('get')->willReturnMap([
@@ -109,11 +113,12 @@ class AccueilControllerTest extends TestCase
             ['request_stack', 1, $requestStack],
             ['parameter_bag', 1, $this->params],
             ['security.authorization_checker', 1, $this->authChecker],
+            ['security.token_storage', 1, $this->tokenStorage],
         ]);
 
         $this->controller = new AccueilController(
             $this->em, $this->client, $this->params, $this->urlBuilder,
-            $this->logger, $this->security, $this->tracking
+            $this->logger, $this->tracking
         );
         $this->controller->setContainer($container);
     }
@@ -322,7 +327,7 @@ class AccueilControllerTest extends TestCase
             'favori_projet' => ['acme:app'],
             'favori_version' => [],
         ]);
-        $this->security->method('getUser')->willReturn($user);
+        $this->token->method('getUser')->willReturn($user);
         $this->historiqueRepo->method('selectHistoriqueProjetFavori')->willReturn([
             'code' => 200, 'request' => [['maven_key' => 'acme:app']],
         ]);
@@ -383,7 +388,7 @@ class AccueilControllerTest extends TestCase
             'favori_projet' => [],
             'favori_version' => [],
         ]);
-        $this->security->method('getUser')->willReturn($user);
+        $this->token->method('getUser')->willReturn($user);
 
         $this->client->method('httpSonarQube')->willReturn([
             'code' => 200, 'json' => ['texte' => '10.4'],

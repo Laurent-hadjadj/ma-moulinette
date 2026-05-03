@@ -12,15 +12,19 @@ use App\Repository\HistoriqueRepository;
 use App\Repository\InformationProjetRepository;
 use App\Repository\UtilisateurRepository;
 use App\Service\ClientService;
+use App\Service\CommandRebuildHistorique\BuildMapHistoryService;
+use App\Service\ExtractName;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
@@ -30,6 +34,8 @@ class ApiSuiviControllerTest extends TestCase
     /** @var EntityManagerInterface&MockObject */            private MockObject $em;
     /** @var ClientService&MockObject */                     private MockObject $client;
     /** @var Security&MockObject */                          private MockObject $security;
+    /** @var LoggerInterface&MockObject */                   private MockObject $logger;
+    private BuildMapHistoryService $buildMap;
     /** @var HistoriqueRepository&MockObject */              private MockObject $historiqueRepo;
     /** @var InformationProjetRepository&MockObject */       private MockObject $informationRepo;
     /** @var UtilisateurRepository&MockObject */             private MockObject $utilisateurRepo;
@@ -44,6 +50,10 @@ class ApiSuiviControllerTest extends TestCase
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->client = $this->createMock(ClientService::class);
         $this->security = $this->createMock(Security::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
+        // Vrai service utilisé : on teste l'intégration metricsKey + metricsRebuild
+        // (typage, conversion ratings 1-5 → A-E, ratios cyclomatique/cognitif, etc.).
+        $this->buildMap = new BuildMapHistoryService(new ExtractName());
         $this->historiqueRepo = $this->createMock(HistoriqueRepository::class);
         $this->informationRepo = $this->createMock(InformationProjetRepository::class);
         $this->utilisateurRepo = $this->createMock(UtilisateurRepository::class);
@@ -71,7 +81,18 @@ class ApiSuiviControllerTest extends TestCase
             ['parameter_bag', 1, $this->params],
         ]);
 
-        $this->controller = new ApiSuiviController($this->em, $this->client, $this->security);
+        // appUser() trait → getUser() → tokenStorage->getToken()->getUser()
+        $defaultUser = new Utilisateur();
+        $defaultUser->setCourriel('test@example.com');
+        $defaultUser->setPreference([
+            'statut' => ['favori_projet' => false, 'favori_version' => false],
+            'favori_projet' => [], 'favori_version' => [],
+        ]);
+        $token = $this->createMock(TokenInterface::class);
+        $token->method('getUser')->willReturn($defaultUser);
+        $this->tokenStorage->method('getToken')->willReturn($token);
+
+        $this->controller = new ApiSuiviController($this->em, $this->client, $this->security, $this->logger, $this->buildMap);
         $this->controller->setContainer($container);
     }
 
@@ -266,6 +287,35 @@ class ApiSuiviControllerTest extends TestCase
 
         $response = $this->controller->suiviVersionFavori($this->jsonRequest([
             'favori' => true,
+            'courriel' => 'u@x',
+            'maven_key' => 'k',
+            'version' => '1.0',
+            'date_version' => '2026-04-10',
+        ]));
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertSame(200, $data['code']);
+    }
+
+    /**
+     * Régression 2026-05-03 : le payload UI n'envoie pas 'courriel' (déjà
+     * connu côté serveur via appUser()). Le check property_exists 'courriel'
+     * faisait retourner 400 et empêchait le toggle favori côté UI.
+     */
+    public function testSuiviVersionFavoriAcceptsPayloadWithoutCourriel(): void
+    {
+        $user = new Utilisateur();
+        $user->setCourriel('u@x');
+        $user->setPreference(['favori_version' => []]);
+        $this->stubTokenStorageUser($user);
+
+        $this->utilisateurRepo->expects($this->once())
+            ->method('updateUtilisateurFavoriVersion')
+            ->willReturn(['code' => 200]);
+
+        // payload SANS courriel (comme le JS en envoie actuellement)
+        $response = $this->controller->suiviVersionFavori($this->jsonRequest([
+            'favori' => true,
             'maven_key' => 'k',
             'version' => '1.0',
             'date_version' => '2026-04-10',
@@ -311,6 +361,28 @@ class ApiSuiviControllerTest extends TestCase
         $data = json_decode($response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
+    }
+
+    /**
+     * Régression 2026-05-03 : la branche d'erreur lisait $result['code'] alors
+     * que la variable de retour s'appelait $request → null silencieux côté UI,
+     * la response sortait avec code=null et le switch UI restait incohérent.
+     */
+    public function testSuiviVersionReferencePropagatesRepoErrorCode(): void
+    {
+        $this->security->method('isGranted')->willReturn(true);
+
+        $this->historiqueRepo->expects($this->once())
+            ->method('updateHistoriqueReference')
+            ->willReturn(['code' => 500, 'erreur' => 'db down']);
+
+        $response = $this->controller->suiviVersionReference($this->jsonRequest([
+            'maven_key' => 'k', 'initial' => 1, 'version' => '1.0', 'date_version' => '2026-04-10',
+        ]));
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertSame(500, $data['code'], 'Le code repo doit remonter (avant le fix : null)');
+        $this->assertSame('db down', $data['trace']);
     }
 
     /* ============ suiviVersionPoubelle ============ */
@@ -413,7 +485,38 @@ class ApiSuiviControllerTest extends TestCase
         $this->assertSame(80.5, $data['data']['coverage']);
         $this->assertSame(42, $data['data']['tests']);
         $this->assertSame(7, $data['data']['violations']);
-        $this->assertSame(-1, $data['data']['skipped_tests']); // absent → -1
+        $this->assertNull($data['data']['skipped_tests']); // absent → null (helper JS displayMetric → '-')
+    }
+
+    /**
+     * Régression 2026-05-03 : SonarQube renvoie parfois des entrées history sans
+     * la clé 'value' (métrique non calculée pour cette analyse). Le code lisait
+     * $history['value'] directement → Warning "Undefined array key" et 500.
+     */
+    public function testGetVersionSkipsHistoryEntriesWithoutValueKey(): void
+    {
+        $this->client->method('httpSonarQube')->willReturn([
+            'code' => 200,
+            'json' => [
+                'measures' => [
+                    // Mix : une mesure avec valeur, une autre dont l'history est sans 'value'
+                    ['metric' => 'coverage', 'history' => [['date' => '2026-04-10']]], // pas de 'value'
+                    ['metric' => 'tests', 'history' => [['value' => '42']]],
+                ],
+            ],
+        ]);
+
+        $response = $this->controller->getVersion($this->jsonRequest([
+            'maven_key' => 'acme:app',
+            'date' => '28-06-2024 20:48:20',
+        ]));
+        $data = json_decode($response->getContent(), true);
+
+        // Le call ne doit PAS crasher (avant le fix : Warning + 500)
+        $this->assertSame(200, $data['code']);
+        // coverage absent → null (helper JS affiche '-'), tests présent → 42
+        $this->assertNull($data['data']['coverage']);
+        $this->assertSame(42, $data['data']['tests']);
     }
 
     /* ============ helpers ============ */
@@ -438,15 +541,16 @@ class ApiSuiviControllerTest extends TestCase
 
     private function buildSuiviPayload(): array
     {
+        // Payload aligné sur les clés SonarQube (= colonnes DB historique).
         return [
             'maven_key' => 'k', 'version' => '1.0', 'date_version' => '2026-04-10',
-            'nom_projet' => 'App', 'initial' => 0,
+            'project_name' => 'App', 'initial' => 0,
             'coverage' => 80, 'duplicated_lines_density' => 1, 'tests' => 10,
             'skipped_tests' => 0, 'test_errors' => 0, 'test_failures' => 0,
             'violations' => 5, 'classes' => 10, 'comment_lines' => 100,
             'comment_lines_density' => 20, 'files' => 5, 'lines' => 1000, 'ncloc' => 800,
             'ncloc_language_distribution' => 'java=800',
-            'functions' => 20, 'sqale_debt_ratio' => 2, 'dette' => 100,
+            'functions' => 20, 'sqale_debt_ratio' => 2, 'sqale_index' => 100,
             'sqale_rating' => 1.0, 'code_smells' => 3,
             'bugs' => 1, 'reliability_rating' => 2.0,
             'vulnerabilities' => 0, 'security_rating' => 1.0,

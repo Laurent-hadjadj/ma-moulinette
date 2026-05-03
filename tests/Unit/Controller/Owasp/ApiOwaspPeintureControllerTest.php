@@ -72,7 +72,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
             $this->jsonRequest(['referential_owasp' => 2017]) // pas de maven_key
         );
 
-        $this->assertJsonStatus($response, 400, 'alert');
+        $this->assertJsonStatus($response, 400, 'error');
     }
 
     public function testPeintureOwaspListePropagatesRepositoryError(): void
@@ -86,7 +86,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
             'referential_owasp' => 2017,
         ]));
 
-        $this->assertJsonStatus($response, 500, 'alert');
+        $this->assertJsonStatus($response, 500, 'error');
     }
 
     public function testPeintureOwaspListeReturns406WhenListIsEmpty(): void
@@ -146,7 +146,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
     {
         $response = $this->controller->peintureOwaspHotspotInfo($this->jsonRequest([]));
 
-        $this->assertJsonStatus($response, 400, 'alert');
+        $this->assertJsonStatus($response, 400, 'error');
     }
 
     public function testPeintureOwaspHotspotInfoPropagatesReviewedQueryError(): void
@@ -162,7 +162,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
             'maven_key' => self::MAVEN_KEY,
         ]));
 
-        $this->assertJsonStatus($response, 500, 'alert');
+        $this->assertJsonStatus($response, 500, 'error');
     }
 
     public function testPeintureOwaspHotspotInfoAggregatesReviewedAndToReviewTotals(): void
@@ -202,7 +202,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
     {
         $response = $this->controller->peintureOwaspHotspotListe($this->jsonRequest([]));
 
-        $this->assertJsonStatus($response, 400, 'alert');
+        $this->assertJsonStatus($response, 400, 'error');
     }
 
     public function testPeintureOwaspHotspotListePropagatesRepositoryError(): void
@@ -248,7 +248,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
     {
         $response = $this->controller->peintureOwaspHotspotDetails($this->jsonRequest([]));
 
-        $this->assertJsonStatus($response, 400, 'alert');
+        $this->assertJsonStatus($response, 400, 'error');
     }
 
     public function testPeintureOwaspHotspotDetailsPropagatesRepositoryError(): void
@@ -261,7 +261,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
             'maven_key' => self::MAVEN_KEY,
         ]));
 
-        $this->assertJsonStatus($response, 500, 'alert');
+        $this->assertJsonStatus($response, 500, 'error');
     }
 
     public function testPeintureOwaspHotspotDetailsReturnsDetailsOnSuccess(): void
@@ -288,7 +288,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
             'maven_key' => self::MAVEN_KEY, // pas de 'menace'
         ]));
 
-        $this->assertJsonStatus($response, 400, 'alert');
+        $this->assertJsonStatus($response, 400, 'error');
     }
 
     public function testPeintureOwaspSeverityReturnsAllThreeProbabilityBuckets(): void
@@ -325,7 +325,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
             'menace' => 'a1',
         ]));
 
-        $this->assertJsonStatus($response, 500, 'alert');
+        $this->assertJsonStatus($response, 500, 'error');
     }
 
     public function testPeintureOwaspSeverityPropagatesErrorFromMediumQuery(): void
@@ -377,7 +377,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
             'maven_key' => self::MAVEN_KEY,
         ]));
 
-        $this->assertJsonStatus($response, 500, 'alert');
+        $this->assertJsonStatus($response, 500, 'error');
     }
 
     public function testPeintureOwaspHotspotInfoPropagatesProbabilityQueryError(): void
@@ -393,7 +393,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
             'maven_key' => self::MAVEN_KEY,
         ]));
 
-        $this->assertJsonStatus($response, 500, 'alert');
+        $this->assertJsonStatus($response, 500, 'error');
     }
 
     // ═══════════════════════ helpers ═══════════════════════════════════════

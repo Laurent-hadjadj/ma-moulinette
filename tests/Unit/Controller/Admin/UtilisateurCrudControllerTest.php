@@ -23,6 +23,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Asset\Packages;
 use EasyCorp\Bundle\EasyAdminBundle\Contracts\Provider\AdminContextProviderInterface;
 
 #[AllowMockObjectsWithoutExpectations]
@@ -37,6 +38,7 @@ class UtilisateurCrudControllerTest extends TestCase
     /** @var Connection&MockObject */                        private MockObject $connection;
     /** @var TokenStorageInterface&MockObject */             private MockObject $tokenStorage;
     /** @var AuthorizationCheckerInterface&MockObject */    private MockObject $authChecker;
+    /** @var Packages&MockObject */                          private MockObject $assets;
 
     private UtilisateurCrudController $controller;
 
@@ -51,6 +53,7 @@ class UtilisateurCrudControllerTest extends TestCase
         $this->connection = $this->createMock(Connection::class);
         $this->tokenStorage = $this->createMock(TokenStorageInterface::class);
         $this->authChecker = $this->createMock(AuthorizationCheckerInterface::class);
+        $this->assets = $this->createMock(Packages::class);
 
         $this->em->method('getConnection')->willReturn($this->connection);
 
@@ -71,7 +74,7 @@ class UtilisateurCrudControllerTest extends TestCase
 
         $this->controller = new UtilisateurCrudController(
             $this->em, $this->logger, $this->passwordHasher,
-            $this->roleManager, $this->roleLogger, $this->detector
+            $this->roleManager, $this->roleLogger, $this->detector, $this->assets
         );
         $this->controller->setContainer($container);
     }

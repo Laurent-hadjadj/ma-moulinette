@@ -16,13 +16,14 @@ use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Twig\Environment;
 
@@ -36,7 +37,8 @@ class RepartitionControllerTest extends TestCase
     /** @var EntityManagerInterface&MockObject */              private MockObject $em;
     /** @var ExtractName&MockObject */                         private MockObject $extractName;
     /** @var ParameterBagInterface&MockObject */               private MockObject $params;
-    /** @var Security&MockObject */                            private MockObject $security;
+    /** @var TokenStorageInterface&MockObject */               private MockObject $tokenStorage;
+    /** @var TokenInterface&MockObject */                      private MockObject $token;
     /** @var BatchCollecteRepartitionController&MockObject */  private MockObject $batchCollecte;
     /** @var LoggerInterface&MockObject */                     private MockObject $logger;
     /** @var UserAgentTrackingFacade&MockObject */             private MockObject $tracking;
@@ -54,7 +56,9 @@ class RepartitionControllerTest extends TestCase
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->extractName = $this->createMock(ExtractName::class);
         $this->params = $this->createMock(ParameterBagInterface::class);
-        $this->security = $this->createMock(Security::class);
+        $this->tokenStorage = $this->createMock(TokenStorageInterface::class);
+        $this->token = $this->createMock(TokenInterface::class);
+        $this->tokenStorage->method('getToken')->willReturn($this->token);
         $this->batchCollecte = $this->createMock(BatchCollecteRepartitionController::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
@@ -81,12 +85,13 @@ class RepartitionControllerTest extends TestCase
         $container = $this->createMock(ContainerInterface::class);
         $container->method('has')->willReturnCallback(
             fn(string $id): bool => in_array($id, [
-                'twig', 'security.authorization_checker', 'request_stack', 'parameter_bag',
+                'twig', 'security.authorization_checker', 'security.token_storage', 'request_stack', 'parameter_bag',
             ], true)
         );
         $container->method('get')->willReturnMap([
             ['twig', 1, $this->twig],
             ['security.authorization_checker', 1, $this->authChecker],
+            ['security.token_storage', 1, $this->tokenStorage],
             ['request_stack', 1, $requestStack],
             ['parameter_bag', 1, $this->params],
         ]);
@@ -95,7 +100,6 @@ class RepartitionControllerTest extends TestCase
             $this->em,
             $this->extractName,
             $this->params,
-            $this->security,
             $this->batchCollecte,
             $this->logger,
             $this->tracking
@@ -105,7 +109,7 @@ class RepartitionControllerTest extends TestCase
 
     public function testRepartitionThrowsAccessDeniedWhenUserMissing(): void
     {
-        $this->security->method('getUser')->willReturn(null);
+        $this->token->method('getUser')->willReturn(null);
 
         $this->expectException(\Symfony\Component\Security\Core\Exception\AccessDeniedException::class);
 
@@ -115,11 +119,11 @@ class RepartitionControllerTest extends TestCase
     public function testRepartitionFlashes400WhenTokenEmpty(): void
     {
         $user = $this->makeUser();
-        $this->security->method('getUser')->willReturn($user);
+        $this->token->method('getUser')->willReturn($user);
 
         $this->flashBag->expects($this->once())
             ->method('add')
-            ->with('notice', $this->callback(fn($v) => $v['type'] === 'alert'));
+            ->with('notice', $this->callback(fn($v) => $v['type'] === 'error'));
 
         $this->twig->expects($this->once())
             ->method('render')
@@ -133,7 +137,7 @@ class RepartitionControllerTest extends TestCase
     public function testRepartitionFlashes403WhenNoCollecteRole(): void
     {
         $user = $this->makeUser();
-        $this->security->method('getUser')->willReturn($user);
+        $this->token->method('getUser')->willReturn($user);
         $this->authChecker->method('isGranted')->willReturn(false);
 
         $this->flashBag->expects($this->once())
@@ -148,12 +152,12 @@ class RepartitionControllerTest extends TestCase
     public function testRepartitionFlashes400OnInvalidTokenDecoding(): void
     {
         $user = $this->makeUser();
-        $this->security->method('getUser')->willReturn($user);
+        $this->token->method('getUser')->willReturn($user);
         $this->authChecker->method('isGranted')->willReturn(true);
 
         $this->flashBag->expects($this->once())
             ->method('add')
-            ->with('notice', $this->callback(fn($v) => $v['type'] === 'alert'));
+            ->with('notice', $this->callback(fn($v) => $v['type'] === 'error'));
 
         $this->twig->expects($this->once())->method('render')->willReturn('<html>bad-token</html>');
 
@@ -165,7 +169,7 @@ class RepartitionControllerTest extends TestCase
     public function testRepartitionFlashesAlertWhenBatchFails(): void
     {
         $user = $this->makeUser();
-        $this->security->method('getUser')->willReturn($user);
+        $this->token->method('getUser')->willReturn($user);
         $this->authChecker->method('isGranted')->willReturn(true);
 
         // BUG → fail
@@ -175,7 +179,7 @@ class RepartitionControllerTest extends TestCase
 
         $this->flashBag->expects($this->once())
             ->method('add')
-            ->with('notice', $this->callback(fn($v) => $v['type'] === 'alert' && str_contains($v['message'], 'collecte')));
+            ->with('notice', $this->callback(fn($v) => $v['type'] === 'error' && str_contains($v['message'], 'collecte')));
 
         $this->twig->expects($this->once())->method('render')->willReturn('<html>batch-fail</html>');
 
@@ -185,7 +189,7 @@ class RepartitionControllerTest extends TestCase
     public function testRepartitionHappyPath(): void
     {
         $user = $this->makeUser();
-        $this->security->method('getUser')->willReturn($user);
+        $this->token->method('getUser')->willReturn($user);
         $this->authChecker->method('isGranted')->willReturn(true);
 
         // 3 categories: BUG / VULNERABILITY / CODE_SMELL
@@ -226,7 +230,7 @@ class RepartitionControllerTest extends TestCase
     public function testRepartitionFlashesWhenInsertFails(): void
     {
         $user = $this->makeUser();
-        $this->security->method('getUser')->willReturn($user);
+        $this->token->method('getUser')->willReturn($user);
         $this->authChecker->method('isGranted')->willReturn(true);
 
         $this->batchCollecte->method('CollecteRepartitionModule')->willReturn([
@@ -241,7 +245,7 @@ class RepartitionControllerTest extends TestCase
 
         $this->flashBag->expects($this->once())
             ->method('add')
-            ->with('notice', $this->callback(fn($v) => $v['type'] === 'alert' && str_contains($v['debug'], 'insert fail')));
+            ->with('notice', $this->callback(fn($v) => $v['type'] === 'error' && str_contains($v['debug'], 'insert fail')));
 
         $this->twig->expects($this->once())->method('render')->willReturn('<html>insert-fail</html>');
 

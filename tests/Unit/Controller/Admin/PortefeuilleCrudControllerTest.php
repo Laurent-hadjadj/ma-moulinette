@@ -265,4 +265,50 @@ class PortefeuilleCrudControllerTest extends TestCase
 
         $this->controller->updateEntity($this->em, $p);
     }
+
+    // Note : configureFields() utilise $this->getContext() qui retourne le type
+    // concret AdminContext (final non mockable). Cette méthode reste non testée
+    // unitairement (couverte indirectement par les E2E Playwright phase K).
+
+    /* ============ listProjets — variantes de bind ============ */
+
+    public function testListProjetsEscapesSpecialCharsInMultipleGroupes(): void
+    {
+        $statement = $this->createMock(Statement::class);
+        $result = $this->createMock(Result::class);
+        $capturedBinds = [];
+        $this->connection->method('prepare')->willReturn($statement);
+        $statement->method('bindValue')->willReturnCallback(function ($k, $v) use (&$capturedBinds) {
+            $capturedBinds[$k] = $v;
+            return true;
+        });
+        $statement->method('executeQuery')->willReturn($result);
+        $result->method('fetchAllAssociative')->willReturn([]);
+
+        $this->controller->listProjets(new Request(['groupe' => 'java,php,python']));
+
+        $this->assertArrayHasKey('eqArray', $capturedBinds);
+        $this->assertStringContainsString('java', $capturedBinds['eqArray']);
+        $this->assertStringContainsString('php', $capturedBinds['eqArray']);
+        $this->assertStringContainsString('python', $capturedBinds['eqArray']);
+    }
+
+    public function testListProjetsLowercasesGroupeNames(): void
+    {
+        $statement = $this->createMock(Statement::class);
+        $result = $this->createMock(Result::class);
+        $capturedBinds = [];
+        $this->connection->method('prepare')->willReturn($statement);
+        $statement->method('bindValue')->willReturnCallback(function ($k, $v) use (&$capturedBinds) {
+            $capturedBinds[$k] = $v;
+            return true;
+        });
+        $statement->method('executeQuery')->willReturn($result);
+        $result->method('fetchAllAssociative')->willReturn([]);
+
+        // Mixed case → lowercased before binding (correspond aux tags JSON stockés en lowercase)
+        $this->controller->listProjets(new Request(['groupe' => 'JAVA']));
+
+        $this->assertSame('java', $capturedBinds['eq0']);
+    }
 }

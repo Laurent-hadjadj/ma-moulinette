@@ -67,13 +67,9 @@ class BatchCollecteInformationProjetControllerTest extends TestCase
         $this->assertSame(['total' => 0, 'release' => 0, 'snapshot' => 0, 'autre' => 0], $r);
     }
 
-    public function testCalculRepartitionWithNonArrayInput(): void
-    {
-        $r = $this->controller->calculRepartitionProjet('oops');
-        $this->assertSame(['total' => 0, 'release' => 0, 'snapshot' => 0, 'autre' => 0], $r);
-    }
+    // Test removed : refacto a typé `array $analyses` → la défense runtime est désormais au niveau type-system
 
-    public function testCalculRepartitionCountsReleaseSnapshotAndAutre(): void
+public function testCalculRepartitionCountsReleaseSnapshotAndAutre(): void
     {
         $analyses = [
             ['projectVersion' => '1.0-RELEASE'],

@@ -71,7 +71,7 @@ class ResetPasswordControllerTest extends TestCase
         ]);
 
         $this->controller = new ResetPasswordController(
-            $this->utilisateurRepo, $this->em, $this->params, $this->logger, $this->passwordHasher, $this->tracking
+            $this->em, $this->params, $this->logger, $this->passwordHasher, $this->tracking
         );
         $this->controller->setContainer($container);
     }

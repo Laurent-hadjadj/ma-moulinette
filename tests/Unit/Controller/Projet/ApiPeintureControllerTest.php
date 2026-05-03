@@ -33,6 +33,8 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 #[AllowMockObjectsWithoutExpectations]
 class ApiPeintureControllerTest extends TestCase
@@ -45,6 +47,8 @@ class ApiPeintureControllerTest extends TestCase
     private MockObject $isValide;
     /** @var LoggerInterface&MockObject */
     private MockObject $logger;
+    /** @var TokenInterface&MockObject */
+    private MockObject $token;
 
     /** @var AnomalieRepository&MockObject */       private MockObject $anomalieRepo;
     /** @var AnomalieDetailsRepository&MockObject */ private MockObject $anomalieDetailsRepo;
@@ -83,9 +87,19 @@ class ApiPeintureControllerTest extends TestCase
             [LoggerEntity::class, $this->loggerRepo],
         ]);
 
-        // Container pour AbstractController::json()
+        // appUser() (trait AppUserAware) appelle AbstractController::getUser() qui interroge security.token_storage
+        $this->token = $this->createMock(TokenInterface::class);
+        $tokenStorage = $this->createMock(TokenStorageInterface::class);
+        $tokenStorage->method('getToken')->willReturn($this->token);
+
+        // Container pour AbstractController::json() + getUser()
         $container = $this->createMock(ContainerInterface::class);
-        $container->method('has')->willReturn(false);
+        $container->method('has')->willReturnCallback(
+            fn(string $id): bool => $id === 'security.token_storage'
+        );
+        $container->method('get')->willReturnMap([
+            ['security.token_storage', 1, $tokenStorage],
+        ]);
 
         $this->controller = new ApiPeintureController($this->em, $this->isValide, $this->logger);
         $this->controller->setContainer($container);
@@ -132,6 +146,8 @@ class ApiPeintureControllerTest extends TestCase
             'favori_projet' => ['com.acme:app', 'com.acme:api', 'com.acme:absent'],
             'favori_version' => ['com.acme:app' => '1.0.0'],
         ]);
+        // appUser() (trait AppUserAware) lit security.token_storage, pas le param Security
+        $this->token->method('getUser')->willReturn($user);
         $security = $this->createMock(Security::class);
         $security->method('getUser')->willReturn($user);
 

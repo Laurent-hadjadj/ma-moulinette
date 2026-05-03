@@ -14,6 +14,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -26,6 +27,8 @@ class ChangeMeControllerTest extends TestCase
     /** @var Security&MockObject */                       private MockObject $security;
     /** @var LoggerInterface&MockObject */                private MockObject $logger;
     /** @var AuthorizationCheckerInterface&MockObject */  private MockObject $authChecker;
+    /** @var TokenStorageInterface&MockObject */          private MockObject $tokenStorage;
+    private TokenInterface|MockObject $token;
 
     private ChangeMeController $controller;
 
@@ -36,12 +39,18 @@ class ChangeMeControllerTest extends TestCase
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->authChecker = $this->createMock(AuthorizationCheckerInterface::class);
 
+        // appUser() (trait AppUserAware) appelle AbstractController::getUser() qui interroge security.token_storage
+        $this->token = $this->createMock(TokenInterface::class);
+        $this->tokenStorage = $this->createMock(TokenStorageInterface::class);
+        $this->tokenStorage->method('getToken')->willReturn($this->token);
+
         $container = $this->createMock(ContainerInterface::class);
         $container->method('has')->willReturnCallback(
-            fn(string $id): bool => $id === 'security.authorization_checker'
+            fn(string $id): bool => in_array($id, ['security.authorization_checker', 'security.token_storage'], true)
         );
         $container->method('get')->willReturnMap([
             ['security.authorization_checker', 1, $this->authChecker],
+            ['security.token_storage', 1, $this->tokenStorage],
         ]);
 
         $this->controller = new ChangeMeController($this->em, $this->security, $this->logger);
@@ -143,6 +152,7 @@ class ChangeMeControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(true);
         $user = $this->makeUser();
         $this->security->method('getUser')->willReturn($user);
+        $this->token->method('getUser')->willReturn($user);
         $token = new UsernamePasswordToken($user, 'main', ['ROLE_USER']);
 
         $this->em->expects($this->once())->method('flush');

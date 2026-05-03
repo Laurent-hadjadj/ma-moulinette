@@ -199,7 +199,7 @@ class BatchCollecteActuatorControllerTest extends TestCase
         $result = $this->controller->BatchCollecteActuatorInfo(self::MAVEN_KEY);
 
         $this->assertSame(500, $result['code']);
-        $this->assertSame('alert', $result['type']);
+        $this->assertSame('error', $result['type']);
         $this->assertStringContainsString('Connection refused', $result['erreur'][0]);
     }
 

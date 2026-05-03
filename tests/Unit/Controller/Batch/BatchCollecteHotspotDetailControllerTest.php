@@ -345,7 +345,7 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
         $r = $this->controller->batchCollecteHotspotDetail(self::MAVEN_KEY, 'auto', 'u');
 
         $this->assertSame(500, $r['code']);
-        $this->assertSame('alert', $r['type']);
+        $this->assertSame('error', $r['type']);
         $this->assertSame('TO_REVIEW', $r['test']);
     }
 

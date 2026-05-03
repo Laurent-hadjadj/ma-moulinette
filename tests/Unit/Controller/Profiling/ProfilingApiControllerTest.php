@@ -49,14 +49,15 @@ class ProfilingApiControllerTest extends TestCase
 
     /* ============ indicateur ============ */
 
-    public function testIndicateurReturns404WithoutRole(): void
+    public function testIndicateurReturns403WithoutRole(): void
     {
         $this->authChecker->method('isGranted')->willReturn(false);
 
         $response = $this->controller->indicateur($this->jsonRequest(['indicateur' => 'utilisateur']));
         $data = json_decode($response->getContent(), true);
 
-        $this->assertSame(404, $data['code']);
+        // Refacto sémantique : 404 → 403 (Forbidden plus correct pour absence de rôle)
+        $this->assertSame(403, $data['code']);
     }
 
     public function testIndicateurReturns400OnInvalidJson(): void

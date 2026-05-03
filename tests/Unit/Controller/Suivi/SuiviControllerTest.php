@@ -16,7 +16,6 @@ use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -24,13 +23,16 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Twig\Environment;
 
 #[AllowMockObjectsWithoutExpectations]
 class SuiviControllerTest extends TestCase
 {
     /** @var EntityManagerInterface&MockObject */   private MockObject $em;
-    /** @var Security&MockObject */                 private MockObject $security;
+    /** @var TokenStorageInterface&MockObject */    private MockObject $tokenStorage;
+    /** @var TokenInterface&MockObject */           private MockObject $token;
     /** @var ParameterBagInterface&MockObject */    private MockObject $params;
     /** @var LoggerInterface&MockObject */          private MockObject $logger;
     /** @var UserAgentTrackingFacade&MockObject */  private MockObject $tracking;
@@ -46,7 +48,9 @@ class SuiviControllerTest extends TestCase
     protected function setUp(): void
     {
         $this->em = $this->createMock(EntityManagerInterface::class);
-        $this->security = $this->createMock(Security::class);
+        $this->tokenStorage = $this->createMock(TokenStorageInterface::class);
+        $this->token = $this->createMock(TokenInterface::class);
+        $this->tokenStorage->method('getToken')->willReturn($this->token);
         $this->params = $this->createMock(ParameterBagInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
@@ -78,7 +82,7 @@ class SuiviControllerTest extends TestCase
         $container = $this->createMock(ContainerInterface::class);
         $container->method('has')->willReturnCallback(
             fn(string $id): bool => in_array($id, [
-                'twig', 'router', 'request_stack', 'parameter_bag',
+                'twig', 'router', 'request_stack', 'parameter_bag', 'security.token_storage',
             ], true)
         );
         $container->method('get')->willReturnMap([
@@ -86,10 +90,11 @@ class SuiviControllerTest extends TestCase
             ['router', 1, $this->router],
             ['request_stack', 1, $requestStack],
             ['parameter_bag', 1, $this->params],
+            ['security.token_storage', 1, $this->tokenStorage],
         ]);
 
         $this->controller = new SuiviController(
-            $this->em, $this->security, $this->params, $this->logger, $this->tracking
+            $this->em, $this->params, $this->logger, $this->tracking
         );
         $this->controller->setContainer($container);
     }
@@ -124,11 +129,11 @@ class SuiviControllerTest extends TestCase
         $this->session->method('get')->willReturn(null);
 
         $user = $this->makeUser([]);
-        $this->security->method('getUser')->willReturn($user);
+        $this->token->method('getUser')->willReturn($user);
 
         $this->flashBag->expects($this->once())
             ->method('add')
-            ->with('notice', $this->callback(fn($v) => $v['type'] === 'alert'));
+            ->with('notice', $this->callback(fn($v) => $v['type'] === 'error'));
 
         $this->twig->expects($this->once())
             ->method('render')
@@ -146,7 +151,7 @@ class SuiviControllerTest extends TestCase
 
         // Empty groupes via getListeGroupeFonctionnel
         $user = $this->makeUser([]);
-        $this->security->method('getUser')->willReturn($user);
+        $this->token->method('getUser')->willReturn($user);
 
         $this->flashBag->expects($this->once())
             ->method('add')
@@ -164,7 +169,7 @@ class SuiviControllerTest extends TestCase
         $this->session->method('get')->willReturn('com.acme:app');
 
         $user = $this->makeUser(['TeamA']);
-        $this->security->method('getUser')->willReturn($user);
+        $this->token->method('getUser')->willReturn($user);
 
         $this->listeProjetRepo->expects($this->once())
             ->method('selectListeProjetByGroupe')
@@ -189,7 +194,7 @@ class SuiviControllerTest extends TestCase
         $this->session->method('get')->willReturn('com.acme:app');
 
         $user = $this->makeUser(['TeamA']);
-        $this->security->method('getUser')->willReturn($user);
+        $this->token->method('getUser')->willReturn($user);
 
         $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
             'code' => 200,
@@ -217,7 +222,7 @@ class SuiviControllerTest extends TestCase
         $this->session->method('get')->willReturn('com.acme:app');
 
         $user = $this->makeUser(['TeamA']);
-        $this->security->method('getUser')->willReturn($user);
+        $this->token->method('getUser')->willReturn($user);
 
         $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
             'code' => 200,
@@ -275,7 +280,7 @@ class SuiviControllerTest extends TestCase
         $this->session->method('get')->willReturn('com.acme:app');
 
         $user = $this->makeUser(['TeamA']);
-        $this->security->method('getUser')->willReturn($user);
+        $this->token->method('getUser')->willReturn($user);
 
         $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
             'code' => 200,
@@ -291,7 +296,7 @@ class SuiviControllerTest extends TestCase
 
         $this->flashBag->expects($this->once())
             ->method('add')
-            ->with('notice', $this->callback(fn($v) => $v['type'] === 'alert'));
+            ->with('notice', $this->callback(fn($v) => $v['type'] === 'error'));
 
         $this->twig->expects($this->once())->method('render')->willReturn('<html>throw</html>');
 

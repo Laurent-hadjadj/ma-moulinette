@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -24,6 +25,7 @@ class OwaspControllerTest extends TestCase
 {
     /** @var ParameterBagInterface&MockObject */   private MockObject $params;
     /** @var EntityManagerInterface&MockObject */  private MockObject $em;
+    /** @var LoggerInterface&MockObject */         private MockObject $logger;
     /** @var UserAgentTrackingFacade&MockObject */ private MockObject $tracking;
     /** @var OwaspTop10Repository&MockObject */    private MockObject $repo;
     /** @var Environment&MockObject */             private MockObject $twig;
@@ -35,6 +37,7 @@ class OwaspControllerTest extends TestCase
     {
         $this->params = $this->createMock(ParameterBagInterface::class);
         $this->em = $this->createMock(EntityManagerInterface::class);
+        $this->logger = $this->createMock(LoggerInterface::class);
         $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
         $this->repo = $this->createMock(OwaspTop10Repository::class);
         $this->twig = $this->createMock(Environment::class);
@@ -69,7 +72,7 @@ class OwaspControllerTest extends TestCase
             ['parameter_bag', 1, $this->params],
         ]);
 
-        $this->controller = new OwaspController($this->params, $this->em, $this->tracking);
+        $this->controller = new OwaspController($this->params, $this->em, $this->logger, $this->tracking);
         $this->controller->setContainer($container);
     }
 
@@ -83,7 +86,7 @@ class OwaspControllerTest extends TestCase
 
         $this->flashBag->expects($this->once())
             ->method('add')
-            ->with('notice', $this->callback(fn($v) => $v['type'] === 'alert'));
+            ->with('notice', $this->callback(fn($v) => $v['type'] === 'error'));
 
         $this->twig->expects($this->once())
             ->method('render')
@@ -164,7 +167,7 @@ class OwaspControllerTest extends TestCase
 
         $this->flashBag->expects($this->once())
             ->method('add')
-            ->with('notice', $this->callback(fn($v) => $v['type'] === 'alert'));
+            ->with('notice', $this->callback(fn($v) => $v['type'] === 'error'));
 
         $this->twig->expects($this->once())
             ->method('render')

@@ -17,6 +17,8 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 #[AllowMockObjectsWithoutExpectations]
 class ApiProjetControllerTest extends TestCase
@@ -26,6 +28,7 @@ class ApiProjetControllerTest extends TestCase
     /** @var Security&MockObject */                private MockObject $security;
     /** @var UtilisateurRepository&MockObject */   private MockObject $utilisateurRepo;
     /** @var ListeProjetRepository&MockObject */   private MockObject $listeProjetRepo;
+    /** @var TokenInterface&MockObject */          private MockObject $token;
 
     private ApiProjetController $controller;
 
@@ -42,8 +45,18 @@ class ApiProjetControllerTest extends TestCase
             [ListeProjet::class, $this->listeProjetRepo],
         ]);
 
+        // appUser() (trait AppUserAware) appelle AbstractController::getUser() qui interroge security.token_storage
+        $this->token = $this->createMock(TokenInterface::class);
+        $tokenStorage = $this->createMock(TokenStorageInterface::class);
+        $tokenStorage->method('getToken')->willReturn($this->token);
+
         $container = $this->createMock(ContainerInterface::class);
-        $container->method('has')->willReturn(false);
+        $container->method('has')->willReturnCallback(
+            fn(string $id): bool => $id === 'security.token_storage'
+        );
+        $container->method('get')->willReturnMap([
+            ['security.token_storage', 1, $tokenStorage],
+        ]);
         $this->controller = new ApiProjetController($this->em, $this->logger, $this->security);
         $this->controller->setContainer($container);
     }
@@ -220,6 +233,8 @@ class ApiProjetControllerTest extends TestCase
         $u->setCourriel($courriel);
         $u->setListeGroupeFonctionnel($groupes);
         $u->setPreference([]);
+        // Synchronise avec le mock token pour que appUser() (trait AppUserAware) renvoie le même user
+        $this->token->method('getUser')->willReturn($u);
         return $u;
     }
 }

@@ -15,10 +15,11 @@ use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 #[AllowMockObjectsWithoutExpectations]
@@ -28,7 +29,8 @@ class BatchManuelControllerTest extends TestCase
     /** @var EntityManagerInterface&MockObject */         private MockObject $em;
     /** @var LoggerInterface&MockObject */                private MockObject $logger;
     /** @var LoggerInterface&MockObject */                private MockObject $profiler;
-    /** @var Security&MockObject */                       private MockObject $security;
+    /** @var TokenStorageInterface&MockObject */          private MockObject $tokenStorage;
+    /** @var TokenInterface&MockObject */                 private MockObject $token;
     /** @var ListeProjetPortefeuilleService&MockObject */ private MockObject $listeProjetService;
     /** @var BatchTraitementRepository&MockObject */      private MockObject $batchTraitementRepo;
     /** @var AuthorizationCheckerInterface&MockObject */  private MockObject $authChecker;
@@ -42,7 +44,9 @@ class BatchManuelControllerTest extends TestCase
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->profiler = $this->createMock(LoggerInterface::class);
-        $this->security = $this->createMock(Security::class);
+        $this->tokenStorage = $this->createMock(TokenStorageInterface::class);
+        $this->token = $this->createMock(TokenInterface::class);
+        $this->tokenStorage->method('getToken')->willReturn($this->token);
         $this->listeProjetService = $this->createMock(ListeProjetPortefeuilleService::class);
         $this->batchTraitementRepo = $this->createMock(BatchTraitementRepository::class);
         $this->authChecker = $this->createMock(AuthorizationCheckerInterface::class);
@@ -53,19 +57,25 @@ class BatchManuelControllerTest extends TestCase
         $container = $this->createMock(ContainerInterface::class);
         $container->method('has')->willReturnMap([
             ['security.authorization_checker', true],
+            ['security.token_storage', true],
             ['parameter_bag', true],
         ]);
         $container->method('get')->willReturnMap([
             ['security.authorization_checker', 1, $this->authChecker],
+            ['security.token_storage', 1, $this->tokenStorage],
             ['parameter_bag', 1, $this->params],
         ]);
+
+        // Default user for appUser() trait — tests qui n'écrasent pas tomberont sur celui-ci
+        $defaultUser = new Utilisateur();
+        $defaultUser->setCourriel('default@test');
+        $this->token->method('getUser')->willReturn($defaultUser);
 
         $this->controller = new BatchManuelController(
             $this->collecte,
             $this->em,
             $this->logger,
             $this->profiler,
-            $this->security,
             $this->listeProjetService
         );
         $this->controller->setContainer($container);
@@ -227,7 +237,7 @@ class BatchManuelControllerTest extends TestCase
 
         $user = new Utilisateur();
         $user->setCourriel('u@example.com');
-        $this->security->method('getUser')->willReturn($user);
+        $this->token->method('getUser')->willReturn($user);
 
         $this->batchTraitementRepo->expects($this->once())
             ->method('updateBatchTraitement')
@@ -256,7 +266,7 @@ class BatchManuelControllerTest extends TestCase
 
         $user = new Utilisateur();
         $user->setCourriel('u@example.com');
-        $this->security->method('getUser')->willReturn($user);
+        $this->token->method('getUser')->willReturn($user);
 
         $this->batchTraitementRepo->method('updateBatchTraitement')->willReturn(['code' => 200]);
 
@@ -287,7 +297,7 @@ class BatchManuelControllerTest extends TestCase
 
         $user = new Utilisateur();
         $user->setCourriel('u@example.com');
-        $this->security->method('getUser')->willReturn($user);
+        $this->token->method('getUser')->willReturn($user);
 
         // Both updateBatchTraitement calls succeed (before loop + after loop)
         $this->batchTraitementRepo->method('updateBatchTraitement')->willReturn(['code' => 200]);
@@ -319,7 +329,7 @@ class BatchManuelControllerTest extends TestCase
 
         $user = new Utilisateur();
         $user->setCourriel('u@example.com');
-        $this->security->method('getUser')->willReturn($user);
+        $this->token->method('getUser')->willReturn($user);
 
         // First updateBatchTraitement (before loop) succeeds, second (after loop) fails
         $this->batchTraitementRepo->method('updateBatchTraitement')->willReturnOnConsecutiveCalls(

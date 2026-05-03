@@ -195,7 +195,7 @@ class BatchCollecteRepartitionControllerTest extends TestCase
         $result = $this->controller->batchCollecteRepartition(self::MAVEN_KEY, 'BUG', 'BLOCKER', self::SETUP);
 
         $this->assertSame(500, $result['code']);
-        $this->assertSame('alert', $result['type']);
+        $this->assertSame('error', $result['type']);
     }
 
     public function testBatchCollecteRepartitionHappyPathPersistsAllPages(): void
@@ -236,7 +236,7 @@ class BatchCollecteRepartitionControllerTest extends TestCase
         $result = $this->controller->batchCollecteRepartitionAnalyse('N.C', 'BUG', 'BLOCKER', self::SETUP);
 
         $this->assertSame(400, $result['code']);
-        $this->assertSame('alert', $result['type']);
+        $this->assertSame('error', $result['type']);
     }
 
     public function testBatchCollecteRepartitionAnalysePropagatesRepositoryError(): void

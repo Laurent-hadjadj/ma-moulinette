@@ -43,7 +43,7 @@ class MesProjetsTest extends TestCase
 
         $this->repository->expects($this->once())
             ->method('selectListeProjetByGroupe')
-            ->with(['clause_where' => " tag LIKE 'team-a%'"])
+            ->with(['team-a'])
             ->willReturn(['code' => 200, 'liste' => $projets]);
 
         $this->assertSame(
@@ -80,7 +80,7 @@ class MesProjetsTest extends TestCase
     {
         $this->repository->expects($this->once())
             ->method('selectListeProjetByGroupe')
-            ->with(['clause_where' => " tag LIKE 'team-a%' OR  tag LIKE 'team-b%'"])
+            ->with(['team-a', 'team-b'])
             ->willReturn(['code' => 200, 'liste' => [['x' => 1]]]);
 
         // 'null' en tant que chaîne (sentinelle "pas de groupe") est ignoré
@@ -91,7 +91,7 @@ class MesProjetsTest extends TestCase
     {
         $this->repository->expects($this->once())
             ->method('selectListeProjetByGroupe')
-            ->with(['clause_where' => " tag LIKE 'my-big-team%' OR  tag LIKE 'other-squad%'"])
+            ->with(['my-big-team', 'other-squad'])
             ->willReturn(['code' => 200, 'liste' => [['x' => 1]]]);
 
         $this->service->liste(['  My Big Team  ', 'OTHER SQUAD']);
@@ -101,7 +101,7 @@ class MesProjetsTest extends TestCase
     {
         $this->repository->expects($this->once())
             ->method('selectListeProjetByGroupe')
-            ->with(['clause_where' => ''])
+            ->with([])
             ->willReturn(['code' => 200, 'liste' => [['x' => 1]]]);
 
         $this->service->liste(['null']);
