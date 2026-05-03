@@ -13,6 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Historique, Utilisateur, InformationProjet};
 use App\Service\ClientService;
 use App\Service\CommandRebuildHistorique\BuildMapHistoryService;
+use App\Service\CommandRebuildHistorique\SonarAnalysisFetcherService;
 use Psr\Log\LoggerInterface;
 
 
@@ -36,7 +37,8 @@ class ApiSuiviController extends AbstractController
         private ClientService $client,
         private Security $security,
         private LoggerInterface $logger,
-        private BuildMapHistoryService $buildMap
+        private BuildMapHistoryService $buildMap,
+        private SonarAnalysisFetcherService $analysisFetcher
     ) {
     }
 
@@ -136,7 +138,9 @@ class ApiSuiviController extends AbstractController
         /** On construit l'URL */
         $tempoUrl = $this->getParameter(self::$sonarUrl);
 
-        /** Appelle le client HTTP */
+        /** Appelle le client HTTP (limité à 100 analyses/page — suffisant pour
+         *  la modale Ajouter ; les gros projets utiliseront SonarAnalysisFetcher
+         *  via le batch RebuildHistoriqueCommand). */
         $queryParams = ['project' => $data->maven_key, 'p' => 1, 'ps' => 100];
         $result = $this->client->httpSonarQube("$tempoUrl/api/project_analyses/search?" . http_build_query($queryParams));
         if (in_array($result['code'] ?? -1, [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
@@ -153,15 +157,24 @@ class ApiSuiviController extends AbstractController
                 'trace' => $result['erreur'] ?? self::$noData
             ], Response::HTTP_OK);
         }
-        //analyses/date "date" => "2024-11-15T15:52:03+0100"
-        //analyses/projectVersion "projectVersion" => "1.1.0-RELEASE"
-        /** Tri : version desc (natural sort, "1.0.10" > "1.0.9") puis date desc
-         *  en tiebreaker. Le tri sur date seule plaçait 1.0.32-RELEASE (date
-         *  récente) avant 1.0.33-SNAPSHOT (version supérieure mais date plus
-         *  ancienne) — incohérent pour un sélecteur de versions. */
-        $analyses = $result['json']['analyses'] ?? [];
-        usort($analyses, static function (array $a, array $b): int {
-            $cmp = strnatcmp($b['projectVersion'] ?? '', $a['projectVersion'] ?? '');
+
+        /** On adapte la réponse SonarQube au format attendu par
+         *  SonarAnalysisFetcherService::computeVersionCounters (clés
+         *  analysisKey/date/version). Le service calcule les compteurs
+         *  cumulés version_release/snapshot/autre à la date de chaque
+         *  analyse (métrique custom ma-moulinette). */
+        $adapted = array_map(static fn (array $a): array => [
+            'analysisKey' => $a['key'] ?? null,
+            'date' => $a['date'] ?? null,
+            'version' => $a['projectVersion'] ?? 'unknown',
+            'events' => $a['events'] ?? [],
+        ], $result['json']['analyses'] ?? []);
+        $adapted = $this->analysisFetcher->computeVersionCounters($adapted);
+
+        /** Tri pour le sélecteur : version desc (natural sort, "1.0.10" > "1.0.9")
+         *  puis date desc en tiebreaker. */
+        usort($adapted, static function (array $a, array $b): int {
+            $cmp = strnatcmp($b['version'] ?? '', $a['version'] ?? '');
             if ($cmp !== 0) {
                 return $cmp;
             }
@@ -170,15 +183,20 @@ class ApiSuiviController extends AbstractController
 
         $liste = [];
         $id = 0;
-        /** objet = { id: clé, text: "blablabla" }; */
-        foreach ($analyses as $version) {
-            $ts = new \DateTime($version['date'], new \DateTimeZone(self::$europeParis));
+        /** objet select2 = { id, text, ...metadata cachée } — analyse_key et
+         *  les compteurs version_* sont attachés à l'option et récupérés via
+         *  $('#liste-version').select2('data')[0] au moment du change. */
+        foreach ($adapted as $analysis) {
+            $ts = new \DateTime($analysis['date'], new \DateTimeZone(self::$europeParis));
             $cc = $ts->format('d-m-Y H:i:sO');
-            $objet = [
+            $liste[] = [
                 'id' => $id,
-                'text' => $version['projectVersion'] . " (" . $cc . ")"
+                'text' => ($analysis['version'] ?? 'unknown') . ' (' . $cc . ')',
+                'analyse_key' => $analysis['analysisKey'] ?? null,
+                'version_release' => $analysis['version_release'] ?? null,
+                'version_snapshot' => $analysis['version_snapshot'] ?? null,
+                'version_autre' => $analysis['version_autre'] ?? null,
             ];
-            array_push($liste, $objet);
             $id++;
         }
 

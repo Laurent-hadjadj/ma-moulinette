@@ -13,6 +13,7 @@ use App\Repository\InformationProjetRepository;
 use App\Repository\UtilisateurRepository;
 use App\Service\ClientService;
 use App\Service\CommandRebuildHistorique\BuildMapHistoryService;
+use App\Service\CommandRebuildHistorique\SonarAnalysisFetcherService;
 use App\Service\ExtractName;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
@@ -36,6 +37,7 @@ class ApiSuiviControllerTest extends TestCase
     /** @var Security&MockObject */                          private MockObject $security;
     /** @var LoggerInterface&MockObject */                   private MockObject $logger;
     private BuildMapHistoryService $buildMap;
+    /** @var SonarAnalysisFetcherService&MockObject */         private MockObject $analysisFetcher;
     /** @var HistoriqueRepository&MockObject */              private MockObject $historiqueRepo;
     /** @var InformationProjetRepository&MockObject */       private MockObject $informationRepo;
     /** @var UtilisateurRepository&MockObject */             private MockObject $utilisateurRepo;
@@ -54,6 +56,10 @@ class ApiSuiviControllerTest extends TestCase
         // Vrai service utilisé : on teste l'intégration metricsKey + metricsRebuild
         // (typage, conversion ratings 1-5 → A-E, ratios cyclomatique/cognitif, etc.).
         $this->buildMap = new BuildMapHistoryService(new ExtractName());
+        // Mock minimal : computeVersionCounters renvoie l'input tel quel —
+        // les tests n'asserrtent pas sur les compteurs version_release/etc.
+        $this->analysisFetcher = $this->createMock(SonarAnalysisFetcherService::class);
+        $this->analysisFetcher->method('computeVersionCounters')->willReturnArgument(0);
         $this->historiqueRepo = $this->createMock(HistoriqueRepository::class);
         $this->informationRepo = $this->createMock(InformationProjetRepository::class);
         $this->utilisateurRepo = $this->createMock(UtilisateurRepository::class);
@@ -92,7 +98,7 @@ class ApiSuiviControllerTest extends TestCase
         $token->method('getUser')->willReturn($defaultUser);
         $this->tokenStorage->method('getToken')->willReturn($token);
 
-        $this->controller = new ApiSuiviController($this->em, $this->client, $this->security, $this->logger, $this->buildMap);
+        $this->controller = new ApiSuiviController($this->em, $this->client, $this->security, $this->logger, $this->buildMap, $this->analysisFetcher);
         $this->controller->setContainer($container);
     }
 
