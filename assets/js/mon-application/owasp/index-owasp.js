@@ -827,7 +827,7 @@ const remplissageHotspotDetails = async function(maven_key, referential_owasp) {
       /** On efface le tableau et on ajoute les lignes */
       /** On calcul l'impact sur les modules */
       $('#tbody').html('');
-      for ( const detail of r.details){
+      for (const detail of r.details.menaces){
         number++;
         if (number < dix) {
           monNumber = '0' + number;
