@@ -12,12 +12,11 @@ use Doctrine\Persistence\ObjectManager;
 class UtilisateurFixtures extends Fixture
 {
     public static $preferenceVide = ['{
-        "statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
-        "projet":[],"favori":[],"version":[],"bookmark":[]}'];
+        "statut":{"projet":false,"favori":false,"version":false},
+        "projet":[],"favori":[],"version":[]}'];
 
     public static array $preference = [
         'statut' => [
-            'bookmark' => true,
             'suivi_projet' => false,
             'favori_projet' => true,
             'favori_version' => true,
