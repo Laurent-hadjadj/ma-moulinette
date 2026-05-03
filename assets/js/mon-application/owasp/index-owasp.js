@@ -854,7 +854,10 @@ const remplissageHotspotDetails = async function(maven_key, referential_owasp) {
           autre++;
         }
 
-        injectionHotspotDetails(monNumber, serveurURL, c, detail.rule, detail.severity, detail.file, detail.line, detail.message, detail.status);
+        /** Les colonnes de la table hotspot_details : rule_key (clé technique
+         *  pour le deep-link SonarQube), rule_name (libellé), file_path,
+         *  line. Avant : detail.rule / detail.file → undefined. */
+        injectionHotspotDetails(monNumber, serveurURL, c, detail.rule_key, detail.severity, detail.file_path, detail.line, detail.message, detail.status);
       }
 
     /** Met à jour la répartition par module */
@@ -1070,14 +1073,16 @@ $('#js-owasp-select').val('2021');
 $('#js-owasp-select').trigger('change');
 selectReferentialOwasp('2021');
 
-/** On appel les fonctions de remplissage pour la version OWASP*/
+/** On appel les fonctions de remplissage pour la version OWASP.
+ *  Fix 2026-05-03 : ligne `setItem(..., 2021)` parasite supprimée — elle
+ *  écrasait la valeur 2017 juste après l'avoir posée → l'export PDF lisait
+ *  systématiquement 2021 dans sessionStorage quel que soit le bouton cliqué. */
 $('#version-2017').on('click', ()=>{
   sessionStorage.setItem('ma_moulinette_referential_owasp', 2017);
   $('#version-2017').addClass('active');
   $('#version-2021').removeClass('active');
   if ($('#version-2017').hasClass('disable') === false){
     selectAnalyseVersion('2017');
-    sessionStorage.setItem('ma_moulinette_referential_owasp', 2021);
   }
 });
 
@@ -1086,6 +1091,7 @@ $('#version-2021').on('click', ()=>{
   if ($('#version-2021').hasClass('disable') === false){
     $('#version-2017').removeClass('active');
     $('#version-2021').addClass('active');
+    sessionStorage.setItem('ma_moulinette_referential_owasp', 2021);
     selectAnalyseVersion('2021');
   }
 });
@@ -1094,6 +1100,20 @@ $('#version-2021').on('click', ()=>{
 $('select[name="owasp"]').on('change', function () {
   const version=$('select[name="owasp"]').val();
   selectReferentialOwasp(version);
+});
+
+/** Export PDF : ouvre /owasp/rapport/pdf?maven_key=...&referential_owasp=...
+ *  dans un nouvel onglet (rendu inline). Le serveur agrège les données via
+ *  les repos Owasp / HotspotOwasp / HotspotDetails. */
+$('#js-export-owasp-pdf').on('click', () => {
+  const mavenKey = sessionStorage.getItem('ma_moulinette_projet');
+  const referential = sessionStorage.getItem('ma_moulinette_referential_owasp') || '2021';
+  if (!mavenKey) {
+    showMessage('warning', "Aucun projet sélectionné — impossible d'exporter le rapport.", null);
+    return;
+  }
+  const params = new URLSearchParams({ maven_key: mavenKey, referential_owasp: referential });
+  window.open(`${serveur()}/owasp/rapport/pdf?${params.toString()}`, '_blank');
 });
 
 /**
