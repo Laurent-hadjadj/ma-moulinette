@@ -63,7 +63,7 @@ class TestCompteRenduSampleCommand extends Command
 
         foreach ($items as $item) {
             $id = $item->getId();
-            $raw = $item->getCompteRendu();
+            $raw = $item->getCompteRenduBrut();
 
             // Si le champ est un flux (BYTEA)
             if (is_resource($raw)) {
@@ -73,7 +73,7 @@ class TestCompteRenduSampleCommand extends Command
                 $binary = $raw;
             }
 
-            if ($binary === null || $binary === '') {
+            if ($binary === null || $binary === false || $binary === '') {
                 $output->writeln("⚠️  ID {$id} : vide");
                 continue;
             }
