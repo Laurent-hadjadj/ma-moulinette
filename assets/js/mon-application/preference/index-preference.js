@@ -64,50 +64,6 @@ const modifierStatut = async function(statut, categorie) {
 }
 
 /**
- * [Description for bookmark]
- *
- * @return [type]
- *
- * Created at: 15/05/2023, 13:15:06 (Europe/Paris)
- * @author    Laurent HADJADJ <laurent_h@me.com>
- * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
- */
-const bookmark=async function(){
-  /** on récupère les préférences */
-  const data={ categorie: 'bookmark' }
-  const options = {
-    url: `${serveur()}/api/secure/preference/categorie`, type: 'GET',
-    dataType: 'json',
-    data,
-    contentType: content_type,
-    headers: {
-      'X-API-Custom-403': 'true',
-      'X-Internal-Front': 'front-app'
-    },
-  };
-
-  const r = await $.ajax(options);
-  $('#js-modal-bookmark-statut').html(`<span class="option-false"><strong>Désactivée.</strong></span>`);
-  /** On a un bookmark */
-  if (r.statut.bookmark && r['bookmark'].length > 0)
-  {
-    $('#js-modal-bookmark-statut').html(`<span class="option-true"><strong>Activée.</strong></span>`);
-    $('#js-modal-bookmark-nom').html(`<span>${ r.bookmark }</span>`);
-  } else
-  {
-    if (r['bookmark'].length > 0)
-    {
-      $('#js-modal-bookmark-nom').html(`<span>${ r.bookmark }</span>`);
-    } else
-    {
-      $('#js-modal-bookmark-nom').html(`<span>AUCUN</span>`);
-    }
-  }
-  /** On ouvre la fenêtre modal */
-  $('#modal-bookmark').foundation('open');
-}
-
-/**
  * [Description for favori]
  * Récupération de la liste et suppression d'un favori
  *
@@ -368,21 +324,6 @@ const projet=async function(){
 /*************** ÉVÉNEMENT *************/
 /**
  * Description
- * On active ou pas le bookmark
- */
-$('#js-switch-bookmark').on('click', ()=> {
-  const ouinon = $('#js-switch-bookmark').is(':checked');
-  if (ouinon===true) {
-    /** on active l'option */
-    modifierStatut(true, 'bookmark');
-  } else {
-    /** on désactive l'option */
-    modifierStatut(false, 'bookmark');
-  }
-});
-
-/**
- * Description
  * On active ou pas les favoris
  */
 $('#js-switch-favori').on('click', ()=> {
@@ -437,9 +378,6 @@ $('.js-preference-information').on('click', e=> {
       break;
     case 'js-favori':
       favori();
-      break;
-    case 'js-bookmark':
-      bookmark();
       break;
     case 'js-version':
       version();
