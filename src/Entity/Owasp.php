@@ -657,7 +657,7 @@ class Owasp
         nullable: false,
         options: ['comment' => 'Date d’enregistrement des données'])]
     #[Assert\NotNull]
-    private \DateTimeInterface $dateEnregistrement;
+    private \DateTimeImmutable $dateEnregistrement;
 
     public function __construct()
     {

@@ -72,7 +72,7 @@ class UserAgentEvent {
         nullable: false,
         options: ['comment' => 'Type fonctionnel de l’événement déclencheur']
     )]
-    private ?string $eventType = null;
+    private string $eventType = '';
 
     /**
      * URL ou chemin ayant déclenché l'événement.
@@ -92,7 +92,7 @@ class UserAgentEvent {
         nullable: false,
         options: ['comment' => 'URL ou path déclencheur de l’événement']
     )]
-    private ?string $url = null;
+    private string $url = '';
 
     /**
      * User-Agent HTTP brut tel que reçu dans la requête.
@@ -109,7 +109,7 @@ class UserAgentEvent {
         nullable: false,
         options: ['comment' => 'User-Agent HTTP brut fourni par le client']
     )]
-    private ?string $userAgent = null;
+    private string $userAgent = '';
 
     /**
      * Identifiant de session PHP.
@@ -172,7 +172,7 @@ class UserAgentEvent {
         nullable: false,
         options: ['comment' => 'État d’authentification lors de l’événement']
     )]
-    private ?string $authState = null;
+    private string $authState = '';
 
     /**
      * Statut de traitement de l'événement par le service d'analyse.
@@ -190,7 +190,7 @@ class UserAgentEvent {
         nullable: false,
         options: ['comment' => 'Statut de traitement par le batch d’analyse']
     )]
-    private ?string $processingStatus = null;
+    private string $processingStatus = '';
 
     /**
      * Hash de l'adresse IP (SHA-256 + salt applicatif).
@@ -216,7 +216,7 @@ class UserAgentEvent {
         nullable: false,
         options: ['comment' => 'Date de création de l’événement']
     )]
-    private ?\DateTimeImmutable $createdAt = null;
+    private \DateTimeImmutable $createdAt;
 
     /**
      * Date de fin de traitement par le service d'analyse.
@@ -228,6 +228,13 @@ class UserAgentEvent {
         options: ['comment' => 'Date de traitement de l’événement']
     )]
     private ?\DateTimeImmutable $processedAt = null;
+
+    public function __construct()
+    {
+        /** Init obligatoire car createdAt est typé non-nullable
+         *  (column NOT NULL — fix doctrine.columnType 2026-05-03). */
+        $this->createdAt = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {

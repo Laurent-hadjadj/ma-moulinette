@@ -229,7 +229,7 @@ class UserAgentAnalysis {
         nullable: false,
         options: ['comment' => 'Version du moteur Matomo DeviceDetector']
     )]
-    private ?string $detectorVersion = null;
+    private string $detectorVersion = '';
 
     /**
      * Date de création de l'analyse.
@@ -240,7 +240,14 @@ class UserAgentAnalysis {
         nullable: false,
         options: ['comment' => 'Date de création de l’analyse']
     )]
-    private ?\DateTimeImmutable $createdAt = null;
+    private \DateTimeImmutable $createdAt;
+
+    public function __construct()
+    {
+        /** Init obligatoire car createdAt est typé non-nullable
+         *  (column NOT NULL — fix doctrine.columnType 2026-05-03). */
+        $this->createdAt = new \DateTimeImmutable();
+    }
 
     public function getId(): ?int
     {

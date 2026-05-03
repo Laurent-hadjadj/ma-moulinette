@@ -68,7 +68,7 @@ class GroupeUtilisateur
     #[Assert\Length(
         max: 255,
         maxMessage: "La description du groupe utilisateur ne doit pas dépasser 255 caractères.")]
-    private ?string $description = null;
+    private string $description = '';
 
     #[ORM\Column(
         name: 'date_modification',

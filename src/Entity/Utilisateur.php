@@ -47,7 +47,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         options: ['comment' => "Prénom de l'utilisateur"]
     )]
     #[Assert\NotBlank(groups: ['form', 'default'])]
-    private ?string $prenom = null;
+    private string $prenom = '';
 
     #[ORM\Column(
         name: "nom",
@@ -57,7 +57,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         options: ['comment' => "Nom de l'utilisateur"]
     )]
     #[Assert\NotBlank(groups: ['form', 'default'])]
-    private ?string $nom = null;
+    private string $nom = '';
 
     #[ORM\Column(
         name: "avatar",
@@ -78,7 +78,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     #[Assert\NotBlank(groups: ['form', 'default'])]
     #[Assert\Email(groups: ['form', 'default'])]
-    private ?string $courriel = null;
+    private string $courriel = '';
 
     #[ORM\Column(
         name: "roles",
@@ -110,7 +110,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     #[Assert\NotBlank]
     #[Assert\Length(max: 26, maxMessage: "L'identifiant du groupe utilisateur ne doit pas dépasser 26 caractères.")]
-    private ?string $groupeId = null;
+    private string $groupeId = '00000000000000000000000000';
 
     #[ORM\Column(type: Types::JSON, nullable: true, options: ['comment' => "Liste de groupes fonctionnels"])]
     private array $listeGroupeFonctionnel = [];
@@ -155,7 +155,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         nullable: false,
         options: ['default' => 1, 'comment' => 'Nombre de tentative de changement du mot de passe.']
     )]
-    private ?int $resetPasswordCount = 1;
+    private int $resetPasswordCount = 1;
 
     #[ORM\Column(
         name: "last_activity_at",
@@ -177,7 +177,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         type: Types::DATETIMETZ_IMMUTABLE,
         options: ['comment' => "Date de création"]
     )]
-    private ?\DateTimeImmutable $dateEnregistrement = null;
+    private \DateTimeImmutable $dateEnregistrement;
 
     public function __construct()
     {
@@ -421,7 +421,11 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
      */
     public function setDateEnregistrement(\DateTimeInterface $dateEnregistrement): \App\Entity\Utilisateur
     {
-        $this->dateEnregistrement = $dateEnregistrement;
+        /** Cast DateTime mutable → DateTimeImmutable pour cohérence avec
+         *  la column DATETIMETZ_IMMUTABLE (fix doctrine.columnType). */
+        $this->dateEnregistrement = $dateEnregistrement instanceof \DateTimeImmutable
+            ? $dateEnregistrement
+            : \DateTimeImmutable::createFromInterface($dateEnregistrement);
 
         return $this;
     }
