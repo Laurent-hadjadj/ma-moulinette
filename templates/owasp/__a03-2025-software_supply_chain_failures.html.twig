@@ -1,0 +1,286 @@
+<div class="grid-container">
+    <section class="container-detail-titre">
+        <div class="small-4 medium-4 large-4">
+            <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="">
+        </div>
+        <div class="small-8 medium-8 large-8">
+            {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page (celui du header) ; descente d'un niveau pour tous les titres (h1->h2, h2->h3, h3->h4) #}
+            <h2 class="h2 claire-hand margin-left-1">A03:2025 – Défaillances de la chaîne d’approvisionnement des logiciels (nouveau)</h2>
+        </div>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">📄</span><strong>Résumé</strong></h3>
+        <div class="callout open-sans font-size-11 text-justify">
+            {{ owasp.description }}
+        </div>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">📊</span><strong>Facteurs</strong></h3>
+        <div class="table-scroll">
+            <table class="responsive-card-table unstriped">
+                <thead>
+                    <tr>
+                        <th>CWEs associées</th>
+                        <th>Taux d'incidence max</th>
+                        <th>Taux d'incidence moyen</th>
+                        <th>Exploitation pondérée moyenne</th>
+                        <th>Impact pondéré moyen</th>
+                        <th>Couverture max</th>
+                        <th>Couverture moyenne</th>
+                        <th>Nombre total d'occurrences</th>
+                        <th>Nombre total de CVEs</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="text-center">
+                        <td data-label="CWEs associées">6</td>
+                        <td data-label="Taux d'incidence max">9,56 %</td>
+                        <td data-label="Taux d'incidence moyen">5,72 %</td>
+                        <td data-label="Exploitation pondérée moyenne">8,17</td>
+                        <td data-label="Impact pondéré moyen">5,23</td>
+                        <td data-label="Couverture max">65,42 %</td>
+                        <td data-label="Couverture moyenne">27,47 %</td>
+                        <td data-label="Nombre total d'occurrences">215 248</td>
+                        <td data-label="Nombre total de CVEs">11</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">🔍</span><strong>Aperçu</strong></h3>
+        <p class="open-sans font-size-11 text-justify">
+            Ce risque s'est classé en tête du Top 10 de l'enquête auprès de la communauté, avec exactement 50&nbsp;% des répondants le plaçant en première position. Depuis son apparition initiale dans le Top 10 de 2013 sous le nom « A9 – Utilisation de composants présentant des vulnérabilités connues », la portée de ce risque s'est élargie pour inclure toutes les défaillances de la chaîne d'approvisionnement, et non plus uniquement celles impliquant des vulnérabilités connues.<br>
+            Malgré cette extension de la portée, les défaillances de la chaîne d'approvisionnement restent difficiles à identifier, seules 11 vulnérabilités et expositions communes (CVE) disposant des CWE associées. Cependant, lorsqu'elle est testée et signalée dans les données fournies, cette catégorie présente le taux d'incidence moyen le plus élevé, à 5,19&nbsp;%.<br>
+            Les CWE pertinentes sont les suivantes&nbsp;:</p>
+            <ul class="open-sans font-size-11 margin-left-2">
+                <li>CWE-477 : Utilisation d'une fonction obsolète</li>
+                <li>CWE-1104 : Utilisation de composants tiers non maintenus</li>
+                <li>CWE-1329 : Recours à un composant non mis à jour</li>
+                <li>CWE-1395 : Dépendance à l'égard d'un composant tiers vulnérable</li>.
+            </ul>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">🏷️</span><strong>Description</strong></h3>
+        <p class="open-sans font-size-11 text-justify">Les défaillances de la chaîne logistique logicielle désignent des dysfonctionnements ou d'autres failles survenant au cours du processus de développement, de distribution ou de mise à jour des logiciels. Elles sont souvent dues à des vulnérabilités ou à des modifications malveillantes apportées au code, aux outils ou à d'autres dépendances tiers sur lesquels le système s'appuie. Une application est vulnérable quand&nbsp;:</p>
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>vous ne suivez pas attentivement les versions de tous les composants que vous utilisez (tant côté client que côté serveur). Cela inclut les composants que vous utilisez directement ainsi que les dépendances imbriquées (transitives).</li>
+            <li>le logiciel est vulnérable, n'est plus pris en charge ou est obsolète. Cela inclut le système d'exploitation, le serveur web/d'applications, le système de gestion de base de données (SGBD), les applications, les API et tous les composants, environnements d'exécution et bibliothèques.</li>
+            <li>vous ne recherchez pas régulièrement les vulnérabilités et ne vous abonnez pas aux bulletins de sécurité relatifs aux composants que vous utilisez.</li>
+            <li>vous ne disposez pas d'un processus de gestion des changements ni de suivi des modifications au sein de votre chaîne d'approvisionnement, y compris le suivi des IDE, des extensions et mises à jour des IDE, des modifications apportées au référentiel de code de votre organisation, aux sandbox, aux référentiels d'images et de bibliothèques, à la manière dont les artefacts sont créés et stockés, etc. Chaque partie de votre chaîne d'approvisionnement doit être documentée, en particulier les changements.</li>
+            <li>vous n'avez pas renforcé la sécurité de chaque partie de votre chaîne d'approvisionnement, en mettant particulièrement l'accent sur le contrôle d'accès et l'application du principe du moindre privilège.</li>
+            <li>Vos systèmes de chaîne d'approvisionnement ne disposent d'aucune séparation des tâches. Aucune personne ne devrait pouvoir écrire du code et le faire passer jusqu'à la production sans la supervision d'un autre individu.</li>
+            <li>Des composants provenant de sources non fiables, à n'importe quel niveau de la pile technologique, sont utilisés dans les environnements de production ou peuvent avoir un impact sur ceux-ci.</li>
+            <li>vous ne corrigez ni ne mettez à niveau la plateforme sous-jacente, les frameworks et les dépendances de manière opportune et en fonction des risques. Cela se produit souvent dans les environnements où l'application des correctifs est une tâche mensuelle ou trimestrielle soumise à un contrôle des changements, ce qui expose les organisations à des risques inutiles pendant des jours, voire des mois, avant que les vulnérabilités ne soient corrigées.</li>
+            <li>les développeurs de logiciels ne testent pas la compatibilité des bibliothèques mises à jour, mises à niveau ou corrigées.</li>
+            <li>vous ne sécurisez pas les configurations de chaque partie de votre système (voir A02:2025 - Mauvaise configuration de sécurité).</li>
+            <li>votre pipeline CI/CD présente une sécurité plus faible que celle des systèmes qu'il construit et déploie, en particulier s'il est complexe.</li>
+        </ul>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">🛟</span><strong>Comment s'en prémunir</strong></h3>
+        <p class="open-sans font-size-11 text-justify">Un processus de gestion des correctifs doit être mis en place pour :</p>
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>Générer et gérer de manière centralisée la nomenclature logicielle (SBOM) de l'ensemble de vos logiciels.</li>
+            <li>Suivre non seulement vos dépendances directes, mais aussi leurs dépendances (transitives), et ainsi de suite.</li>
+            <li>Réduire la surface d'attaque en supprimant les dépendances inutilisées, les fonctionnalités, composants, fichiers et documentation superflus.</li>
+            <li>Répertorier en continu les versions des composants côté client et côté serveur (par exemple, les frameworks, les bibliothèques) ainsi que leurs dépendances à l'aide d'outils tels que OWASP Dependency Track, OWASP Dependency Check, retire.js, etc.</li>
+            <li>Surveillez en permanence des sources telles que Common Vulnerability and Exposures (CVE), National Vulnerability Database (NVD) et Open Source Vulnerabilities (OSV) pour détecter les vulnérabilités dans les composants que vous utilisez. Utilisez des outils d'analyse de la composition logicielle, de la chaîne d'approvisionnement logicielle ou des outils SBOM axés sur la sécurité pour automatiser le processus. Abonnez-vous aux alertes concernant les vulnérabilités de sécurité liées aux composants que vous utilisez.</li>
+            <li>Ne vous procurez des composants qu'auprès de sources officielles (de confiance) via des liens sécurisés. Privilégiez les paquets signés afin de réduire le risque d'inclure un composant modifié ou malveillant (voir A08:2025 - Défaillances de l'intégrité des logiciels et des données).</li>
+            <li>Choisissez délibérément la version d'une dépendance que vous utilisez et ne la mettez à jour qu'en cas de nécessité.</li>
+            <li>Surveillez les bibliothèques et les composants qui ne sont plus maintenus ou pour lesquels aucun correctif de sécurité n'est publié pour les anciennes versions. Si l'application d'un correctif n'est pas possible, envisagez de migrer vers une alternative. Si cela n'est pas possible, envisagez de déployer un correctif virtuel pour surveiller, détecter ou vous protéger contre le problème identifié.</li>
+            <li>Mettez régulièrement à jour vos outils CI/CD, IDE et tout autre outil de développement.</li>
+            <li>Évitez de déployer les mises à jour sur tous les systèmes simultanément. Utilisez des déploiements par étapes ou des déploiements « canary » pour limiter l'exposition au cas où un fournisseur de confiance serait compromis.</li>
+        </ul>
+
+        <p class="open-sans font-size-11 text-justify">Un processus de gestion des changements ou un système de suivi doit être mis en place pour suivre les modifications apportées aux éléments suivants :</p>
+
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>Paramètres CI/CD (tous les outils de build et pipelines)</li>
+            <li>Référentiels de code</li>
+            <li>Environnements de test</li>
+            <li>IDE des développeurs</li>
+            <li>Outils SBOM et artefacts créés</li>
+            <li>Systèmes de journalisation et journaux</li>
+            <li>Intégrations tierces, telles que les solutions SaaS</li>
+            <li>Référentiels d'artefacts</li>
+            <li>Registres de conteneurs</li>
+        </ul>
+
+        <p class="open-sans font-size-11 text-justify">Renforcez la sécurité des systèmes suivants, notamment en activant l'authentification multifactorielle (MFA) et en renforçant la sécurité de l'IAM :</p>
+
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>Votre référentiel de code (ce qui implique de ne pas enregistrer de secrets, de protéger les branches et d'effectuer des sauvegardes)</li>
+            <li>Les postes de travail des développeurs (application régulière des correctifs, MFA, surveillance, etc.)</li>
+            <li>Votre serveur de build et votre CI/CD (séparation des tâches, contrôle d'accès, builds signés, secrets limités à l'environnement, journaux inviolables, etc.)</li>
+            <li>Vos artefacts (garantissez leur intégrité via la traçabilité, la signature et l'horodatage, privilégiez la promotion des artefacts plutôt que la reconstruction pour chaque environnement, assurez-vous que les builds sont immuables)</li>
+            <li>L'infrastructure en tant que code (gérée comme tout code, y compris l'utilisation des PR et du contrôle de version)</li>
+        </ul>
+
+        <p class="open-sans font-size-11 text-justify">Toute organisation doit mettre en place un plan continu visant à surveiller, trier et appliquer les mises à jour ou les modifications de configuration tout au long du cycle de vie de l'application ou du portefeuille.</p>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">☠️</span><strong>Exemple de scénarios d'attaque</strong></h3>
+
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scenario #1&nbsp;:</strong> un fournisseur de confiance est infecté par un logiciel malveillant, ce qui entraîne la compromission de vos systèmes informatiques lors de la mise à jour</p>
+
+        <p class="open-sans font-size-11 text-justify"> L'exemple le plus célèbre est sans doute la violation de <strong>SolarWinds en 2019</strong>, qui a entraîné la compromission d'environ 18 000 organisations.</p>
+        <ul>
+            <li>🔗  https://www.npr.org/2021/04/16/985439655/a-worst-nightmare-cyberattack-the-untold-story-of-the-solarwinds-hack</li>
+        </ul>
+
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scenario #2&nbsp;:</strong> Un fournisseur de confiance est compromis de telle sorte qu'il n'adopte un comportement malveillant que dans des conditions bien précises.</p>
+
+        <p class="open-sans font-size-11 text-justify">The 2025 Bybit theft of $1.5 billion was caused by a supply chain attack in wallet software that only executed when the target wallet was being used.</p>
+        <ul>
+            <li>🔗 https://www.sygnia.co/blog/sygnia-investigation-bybit-hack/</li>
+        </ul>
+
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scenario #3&nbsp;:</strong> L'attaque de la chaîne d'approvisionnement Shai-Hulud, survenue en 2025, a été le premier ver npm auto-propagateur à avoir réussi. Les attaques ont introduit des versions malveillantes de paquets populaires, qui utilisaient un script post-installation pour collecter et exfiltrer des données sensibles vers des dépôts GitHub publics. Le logiciel malveillant détectait également les jetons npm dans l'environnement de la victime et les utilisait automatiquement pour publier des versions malveillantes de tout paquet accessible. Le ver a touché plus de 500 versions de paquets avant d'être neutralisé par npm. Cette attaque de la chaîne d'approvisionnement était sophistiquée, se propageait rapidement et causait des dommages importants. En ciblant les machines des développeurs, elle a démontré que ces derniers constituent désormais des cibles de choix pour les attaques de la chaîne d'approvisionnement.</p>
+        <ul>
+            <li>🔗 https://www.cisa.gov/news-events/alerts/2025/09/23/widespread-supply-chain-compromise-impacting-npm-ecosystem</li>
+        </ul>
+
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scenario #4&nbsp;:</strong>
+    Les composants fonctionnent généralement avec les mêmes privilèges que l'application elle-même ; par conséquent, toute faille dans un composant peut avoir de graves conséquences. Ces failles peuvent être accidentelles (par exemple, une erreur de codage) ou intentionnelles (par exemple, une porte dérobée dans un composant). Voici quelques exemples de vulnérabilités exploitables découvertes dans des composants :</p>
+
+    <ul>
+        <li>La faille CVE-2017-5638, une vulnérabilité de Struts 2 permettant l'exécution de code à distance et l'exécution de code arbitraire sur le serveur, a été mise en cause dans plusieurs violations de sécurité majeures.</li>
+        <li>La faille CVE-2021-44228 (« Log4Shell »), une vulnérabilité « zero-day » permettant l'exécution de code à distance dans Apache Log4j, a été mise en cause dans des campagnes de ransomware, de minage de cryptomonnaie et d'autres attaques.</li>
+    </ul>
+</section>
+
+<section>
+    <h3 class="h4 claire-hand"><span aria-hidden="true">📘</span><strong>Références</strong></h3>
+    <ul class="open-sans font-size-11 margin-left-2">
+        <li>
+            <a href="OWASP Application Security Verification Standard: V15 Secure Coding and Architecture" target="_blank" rel="noopener noreferrer" aria-label="OWASP Application Security Verification Standard: V15 Secure Coding and Architecture">
+                <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Application Security Verification Standard: V15 Secure Coding and Architecture</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cheatsheetseries.owasp.org/cheatsheets/Dependency_Graph_SBOM_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet Series: Dependency Graph SBOMg">
+                <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Cheat Sheet Series: Dependency Graph SBOM</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cheatsheetseries.owasp.org/cheatsheets/Vulnerable_Dependency_Management_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet Series: Vulnerable Dependency Management">
+                <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Cheat Sheet Series: Vulnerable Dependency Management</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://owasp.org/www-project-dependency-track/" target="_blank" rel="noopener noreferrer" aria-label="OWASP Dependency-Track">
+                <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Dependency-Track</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://owasp.org/www-project-cyclonedx/" target="_blank" rel="noopener noreferrer" aria-label="OWASP CycloneDX">
+                <span class="source-link"><span aria-hidden="true">🔗</span> OWASP CycloneDX</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://owasp-aasvs.readthedocs.io/en/latest/v1.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Application Security Verification Standard: V1 Architecture, design and threat modelling">
+                <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Application Security Verification Standard: V1 Architecture, design and threat modelling</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://owasp.org/www-project-dependency-check/" target="_blank" rel="noopener noreferrer" aria-label="OWASP Dependency Check (for Java and .NET libraries)">
+                <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Dependency Check (for Java and .NET libraries)</span>
+            </a>
+        </li>
+        <li>
+            <a href="OWASP Virtual Patching Best Practices" target="_blank" rel="noopener noreferrer" aria-label="OWASP Virtual Patching Best Practices">
+                <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Virtual Patching Best Practices</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://github.com/OWASP/OWASP-Testing-Guide/blob/master/4-Web-Application-Security-Testing/4.2.10%20Map%20Application%20Architecture%20(OTG-INFO-010).md" target="_blank" rel="noopener noreferrer" aria-label="OWASP Testing Guide - Map Application Architecture (OTG-INFO-010)">
+                <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Testing Guide - Map Application Architecture (OTG-INFO-010)</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://www.scribd.com/document/105692739/JeffWilliamsPreso-Sm" target="_blank" rel="noopener noreferrer" aria-label="The Unfortunate Reality of Insecure Libraries">
+                <span class="source-link"><span aria-hidden="true">🔗</span> The Unfortunate Reality of Insecure Libraries</span>
+            </a>
+        </li>
+        <li>
+            <a href="Retire.js for detecting known vulnerable JavaScript libraries" target="_blank" rel="noopener noreferrer" aria-label="Retire.js for detecting known vulnerable JavaScript libraries">
+                <span class="source-link"><span aria-hidden="true">🔗</span> Retire.js for detecting known vulnerable JavaScript libraries</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://github.com/advisories" target="_blank" rel="noopener noreferrer" aria-label="GitHub Advisory Database">
+                <span class="source-link"><span aria-hidden="true">🔗</span> GitHub Advisory Database</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://safecode.org/publication/SAFECode_Software_Integrity_Controls0610.pdf" target="_blank" rel="noopener noreferrer" aria-label="SAFECode Software Integrity Controls (PDF)">
+                <span class="source-link"><span aria-hidden="true">🔗</span> SAFECode Software Integrity Controls (PDF)</span>
+            </a>
+        </li>
+        <li>
+            <a href="Glassworm supply chain attack" target="_blank" rel="noopener noreferrer" aria-label="Glassworm supply chain attack">
+                <span class="source-link"><span aria-hidden="true">🔗</span> Glassworm supply chain attack</span>
+            </a>
+        </li>
+        <li>
+            <a href="PhantomRaven supply chain attack campaign" target="_blank" rel="noopener noreferrer" aria-label="PhantomRaven supply chain attack campaign">
+                <span class="source-link"><span aria-hidden="true">🔗</span> PhantomRaven supply chain attack campaign</span>
+            </a>
+        </li>
+    </ul>
+</section>
+
+<section>
+    <h3 class="h4 claire-hand"><span aria-hidden="true">📋</span><strong>Liste des CWEs associées</strong></h3>
+    <ul class="open-sans font-size-11 margin-left-2">
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/447.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-447 Use of Obsolete Function">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-447 Use of Obsolete Function</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/1035.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1035 2017 Top 10 A9: Using Components with Known Vulnerabilities">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-1035 2017 Top 10 A9: Using Components with Known Vulnerabilities</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/1104.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1104 Use of Unmaintained Third Party Components">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-1104 Use of Unmaintained Third Party Components</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/1329.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1329 Reliance on Component That is Not Updateable">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-1329 Reliance on Component That is Not Updateable</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/1357.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1357 Reliance on Insufficiently Trustworthy Component">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-1357 Reliance on Insufficiently Trustworthy Component</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/1395.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1395 Dependency on Vulnerable Third-Party Component">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-1395 Dependency on Vulnerable Third-Party Component</span>
+            </a>
+        </li>
+    </ul>
+</section>
+</div>
+
+<div class="grid-container">
+    <div class="callout primary alert-callout-border">
+        <p class="open-sans text-justify">
+            Copyright ©️ 2003-2025 La Fondation OWASP™.<br>
+            Ce document est publié sous la licence Creative Commons Attribution Share-Alike 4.0 (CC 4.0 BY-SA).
+        </p>
+        <p class="open-sans text-justify">Traduction française - Laurent HADJADJ (CC 4.0 BY-SA)</p>
+    </div>
+</div>
+<br><br>

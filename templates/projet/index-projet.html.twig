@@ -43,8 +43,8 @@
     {# Message d'information php #}
     {{ include('_message.html.twig') }}
 
-    {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page ; titre descendu en <h2> ; aria-describedby auto-référent retiré ; aria-label redondant retiré #}
-    <header class="grid-container"
+    {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page ; titre descendu en <h2> ; aria-label et aria-describedby redondants retirés (le texte du titre est déjà accessible) ; id="main-content" pour le skip link #}
+    <header id="main-content" class="grid-container"
             aria-labelledby="titre-sonarqube">
       <h2 id="titre-sonarqube" class="h3 claire-hand"><span aria-hidden="true">📊</span>Collecte et analyse des indicateurs SonarQube</h2>
       <div class="show-for-sr">Sur cette page, vous pouvez collecter et visualiser les métriques clés de vos projets SonarQube.</div>
@@ -84,7 +84,7 @@
         <div class="small-12 medium-12 large-12 cell">
           <label for="liste-projet">Liste des projets disponibles.</label>
           <select id="liste-projet"
-                  class="js-projet form-control open-class"
+                  class="js-projet form-control open-sans"
                   name="projet"
                   title="Choisi un projet">
             <option value="TheID" selected="selected">--- Application ---</option>
@@ -93,8 +93,8 @@
       </div>
     </section>
 
-    {# WCAG 2.4.1 : id="main-content" (cible du skip link) #}
-    <main id="main-content" class="grid-container margin-top-1 margin-bottom-2">
+    {# WCAG 2.4.1 : le skip link cible id="main-content" placé sur le <header> plus haut qui introduit la page ; le <main> reste sans id pour ne pas créer deux cibles #}
+    <main class="grid-container margin-top-1 margin-bottom-2">
       <p id="feedback" class="open-sans grid-x cell">
         <span>La clé du projet est :&nbsp;</span>
         <output id="select-result" aria-live="polite"><strong>N.C</strong></output>

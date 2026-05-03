@@ -36,10 +36,10 @@
                 <tbody>
                     <tr class="text-center">
                         <td data-label="CWEs associées">33</td>
-                        <td data-label="Taux d'incidence max">19.9 %</td>
-                        <td data-label="Taux d'incidence moyen">3.37 %</td>
-                        <td data-label="Exploitation pondérée moyenne">7.25</td>
-                        <td data-label="Impact pondéré moyen">7.15</td>
+                        <td data-label="Taux d'incidence max">19,9 %</td>
+                        <td data-label="Taux d'incidence moyen">3,37 %</td>
+                        <td data-label="Exploitation pondérée moyenne">7,25</td>
+                        <td data-label="Impact pondéré moyen">7,15</td>
                         <td data-label="Couverture max">94,04 %</td>
                         <td data-label="Couverture moyenne">47,90 %</td>
                         <td data-label="Nombre total d'occurrences">274 228</td>
@@ -53,8 +53,13 @@
     <section>
         <h3 class="h4 claire-hand"><span aria-hidden="true">🔍 </span><strong>Aperçu</strong></h3>
         <p class="open-sans font-size-11 text-justify">
-            Injection glisse à la troisième place. 94&nbsp;% des applications ont été testées pour une forme d'injection avec un taux d'incidence maximal de 19&nbsp;%, un taux d'incidence moyen de 3&nbsp;% et 274&nbsp;000 occurrences. Les <em>Common Weakness Enumerations</em> (CWEs) notables incluses sont <em>CWE-79: Cross-site Scripting</em>, <em>CWE-89: SQL Injection</em>, et <em>CWE-73: External Control of File Name or Path</em>.
-        </p>
+            Injection glisse à la troisième place. 94&nbsp;% des applications ont été testées pour une forme d'injection avec un taux d'incidence maximal de 19&nbsp;%, un taux d'incidence moyen de 3&nbsp;% et 274&nbsp;000 occurrences.<br>
+            Les <em>Common Weakness Enumerations</em> (CWEs) notables incluses sont&nbsp;:</p>
+            <ul class="open-sans font-size-11 margin-left-2">
+                <li>CWE-79: Cross-site Scripting</li>
+                <li>CWE-89: SQL Injection</li>
+                <li>CWE-73: External Control of File Name or Path</li>
+            </ul>
     </section>
 
     <section>
@@ -82,7 +87,7 @@
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><strong>Exemple de scénarios d'attaque</strong></h3>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">☠️</span><strong>Exemple de scénarios d'attaque</strong></h3>
         <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scenario #1&nbsp;:</strong> L’application utilise des données non fiables dans la construction de l’appel SQL suivant&nbsp;:</p>
         <pre>
             <code class="code-block source-code">

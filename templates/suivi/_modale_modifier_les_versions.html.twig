@@ -1,15 +1,22 @@
 {# Formulaire - Modifier les versions #}
-<div id="modal-modifier-analyse" class="reveal large" data-reveal data-close-on-click="true" data-animation-in="fade-in" data-animation-out="fade-out" aria-modal="true">
-  <h1 class="h2 claire-hand">Modifier la configuration.</h1>
-  <br>
-  <div class="grid-x cell">
-    <div class="small-12 medium-12 large-12 cell">
-      <h2 class="h3 claire-hand">Liste des versions disponibles.</h2>
-      <div id="message">
-        <span class="color-rouge font-size-09">Patientez, je construis la liste !!!</span>
-      </div>
-    </div>
-  </div>
+<div id="modal-modifier-analyse"
+      class="reveal large"
+      data-close-on-click="true"
+      data-animation-in="fade-in"
+      data-animation-out="fade-out"
+      data-reveal
+      aria-modal="true"
+      aria-labelledby="titre-modifier-version"
+      aria-describedby="desc-modifier-version">
+
+  <header>
+    <h1 id="titre-modifier-version" class="h3 claire-hand"><span aria-hidden="true">ℹ️</span>Suivi des versions</h1>
+    <h2 id="desc-modifier-version" class="h4 claire-hand"><span aria-hidden="true">📋</span>Modifier les paramètres d'une version</h2>
+    <span class="show-for-sr">
+      Cette page présente la listes des version présentes dans l'historique de suivi.
+    </span>
+  </header>
+
   <div class="table-scroll">
     <table class="hover">
       <caption class="claire-hand">Modifier les propriétés d'une version.</caption>
@@ -28,7 +35,14 @@
       </tbody>
     </table>
   </div>
-  <br>
+
   {# fermeture de la fenêtre modale #}
-  <button id="fermer-modifier-analyse" class="expanded button open-sans" data-close aria-label="Close reveal" type="button">Fermer</button>
+  <footer class="grid-x grid-margin-x align-right margin-top-2">
+    <div class="cell shrink">
+      <button id="bouton-fermer-modifier-analyse" data-close
+              class="button open-sans focus-light"
+              type="button"
+              aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span>Fermer
+      </button>
+  </footer>
 </div>

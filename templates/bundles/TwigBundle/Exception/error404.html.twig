@@ -46,8 +46,9 @@
       <p class="information-erreur pop-pins">Désolé, la page que vous recherchez n'existe pas.</p>
 
       <div class="bouton-container" >
-        {# WCAG 4.1.2 : le nesting <button><a> n'est pas valide en HTML (interactif dans interactif) ; remplacé par un <a> stylé comme bouton #}
-        <a href="{{ path('accueil', {}) }}" class="bouton pop-pins" aria-label="Aller à la page d'accueil">Accueil</a>
+        <button class="bouton pop-pins">
+          <a href="{{ path('accueil', {}) }}" aria-label="Aller à la page d'accueil">Accueil</a>
+        </button>
       </div>
     </main>
   </body>

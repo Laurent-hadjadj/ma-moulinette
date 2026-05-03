@@ -85,16 +85,16 @@
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><strong>Exemple de scénarios d'attaque</strong></h3>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">☠️</span><strong>Exemple de scénarios d'attaque</strong></h3>
 
-        <p class="open-sans font-size-11 text-justify"><strong>Scénario 1</strong>&nbsp;: L’application utilise des données non fiables dans la construction de l’appel SQL vulnérable suivant&nbsp;:</p>
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 1</strong>&nbsp;: L’application utilise des données non fiables dans la construction de l’appel SQL vulnérable suivant&nbsp;:</p>
         <pre>
             <code class="code-block source-code">
                 String query = "SELECT * FROM accounts WHERE custID='" + request.getParameter("id") + "'";
             </code>
         </pre>
 
-        <p class="open-sans font-size-11 text-justify"><strong>Scénario 2</strong>&nbsp;: De même, la confiance aveugle d'une application dans les frameworks qu'elle utilise peut faire que ses requêtes sont toujours vulnérables (par exemple Hibernate Query Language (HQL))&nbsp;:</p>
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 2</strong>&nbsp;: De même, la confiance aveugle d'une application dans les frameworks qu'elle utilise peut faire que ses requêtes sont toujours vulnérables (par exemple Hibernate Query Language (HQL))&nbsp;:</p>
         <pre>
             <code class="code-block source-code">
                 Query HQLQuery = session.createQuery("FROM accounts WHERE custID='" + request.getParameter("id") + "'");

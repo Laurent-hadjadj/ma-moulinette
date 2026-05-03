@@ -1,0 +1,234 @@
+<div class="grid-container">
+    <section class="container-detail-titre">
+        <div class="small-4 medium-4 large-4">
+            <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="">
+        </div>
+        <div class="small-8 medium-8 large-8">
+            {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page (celui du header) ; descente d'un niveau pour tous les titres (h1->h2, h2->h3, h3->h4) #}
+            <h2 class="h2 claire-hand margin-left-1">A08:2025 – Défauts d’intégrité des logiciels ou des données</h2>
+        </div>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">📄</span><strong>Résumé</strong></h3>
+        <div class="callout open-sans font-size-11 text-justify">
+            {{ owasp.description }}
+        </div>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">📊</span><strong>Facteurs</strong></h3>
+        <div class="table-scroll">
+            <table class="responsive-card-table unstriped">
+                <thead>
+                    <tr>
+                        <th>CWEs associées</th>
+                        <th>Taux d'incidence max</th>
+                        <th>Taux d'incidence moyen</th>
+                        <th>Exploitation pondérée moyenne</th>
+                        <th>Impact pondéré moyen</th>
+                        <th>Couverture max</th>
+                        <th>Couverture moyenne</th>
+                        <th>Nombre total d'occurrences</th>
+                        <th>Nombre total de CVEs</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="text-center">
+                        <td data-label="CWEs associées">14</td>
+                        <td data-label="Taux d'incidence max">8,98 %</td>
+                        <td data-label="Taux d'incidence moyen">2,75 %</td>
+                        <td data-label="Exploitation pondérée moyenne">7,11 %</td>
+                        <td data-label="Impact pondéré moyen">4,79 %</td>
+                        <td data-label="Couverture max">78,52 %</td>
+                        <td data-label="Couverture moyenne">45,49 %</td>
+                        <td data-label="Nombre total d'occurrences">501 327</td>
+                        <td data-label="Nombre total de CVEs">3 331</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">🔍 </span><strong>Aperçu</strong></h3>
+        <p class="open-sans font-size-11 text-justify">Les défaillances d’intégrité des logiciels ou des données se maintiennent à la 8<sup>e</sup> place, avec un léger changement de nom visant à clarifier, passant de «&nbsp;Défaillances d’intégrité des logiciels et des données&nbsp;».<br>
+        Cette catégorie se concentre sur l’incapacité à maintenir des frontières de confiance et à vérifier l’intégrité des logiciels, du code et des artefacts de données à un niveau plus bas que celui des défaillances de la chaîne d’approvisionnement logicielle (Software Supply Chain Failures). Elle met en évidence les hypothèses faites concernant les mises à jour logicielles et les données critiques, sans vérification de leur intégrité.<br>
+        Parmi les faiblesses notables (CWE – Common Weakness Enumerations), on trouve&nbsp;:</p>
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>CWE-829 : inclusion de fonctionnalités provenant d’un domaine de contrôle non fiable ;</li>
+            <li>CWE-915 : modification insuffisamment contrôlée des attributs d’objets déterminés dynamiquement ;<li>
+            <li>CWE-502 : désérialisation de données non fiables.</li>
+        </ul>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">🏷️</span><strong>Description</strong></h3>
+        <p class="open-sans font-size-11 text-justify">Les défaillances d’intégrité des logiciels et des données concernent du code et des infrastructures qui ne protègent pas contre le fait que du code ou des données invalides ou non fiables soient traités comme s’ils étaient fiables et valides.<br>
+        Un exemple est celui d’une application qui dépend de plugins, de bibliothèques ou de modules provenant de sources, de dépôts ou de réseaux de diffusion de contenu (CDN) non fiables. Un pipeline CI/CD non sécurisé, qui ne consomme ni ne fournit de mécanismes de vérification de l’intégrité logicielle, peut introduire des risques d’accès non autorisé, de code malveillant ou non sécurisé, voire de compromission du système.<br>
+        Un autre exemple est un pipeline CI/CD qui récupère du code ou des artefacts depuis des sources non fiables et/ou ne les vérifie pas avant utilisation (par exemple via une signature ou un mécanisme similaire).<br>
+        Enfin, de nombreuses applications intègrent aujourd’hui des fonctionnalités de mise à jour automatique, où les mises à jour sont téléchargées sans vérification suffisante de leur intégrité puis appliquées à une application précédemment considérée comme fiable. Des attaquants pourraient potentiellement publier leurs propres mises à jour afin qu’elles soient distribuées et exécutées sur toutes les installations.<br>
+        Un autre cas concerne les objets ou les données encodés ou sérialisés dans une structure visible et modifiable par un attaquant, ce qui les rend vulnérables à la désérialisation non sécurisée.</p>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">🛟</span><strong>Comment s'en prémunir</strong></h3>
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>Utilisez des signatures numériques ou des mécanismes similaires afin de vérifier que le logiciel ou les données proviennent de la source attendue et n’ont pas été altérés.</li>
+            <li>Assurez-vous que les bibliothèques et dépendances, telles que celles provenant de npm ou Maven, sont uniquement issues de dépôts de confiance. Si votre niveau de risque est élevé, envisagez d’héberger un dépôt interne de confiance, validé au préalable.</li>
+            <li>Mettez en place un processus de revue du code et des modifications de configuration afin de réduire le risque d’introduction de code ou de configurations malveillants dans votre pipeline logiciel.</li>
+            <li>Assurez-vous que votre pipeline CI/CD dispose d’une séparation appropriée, d’une configuration sécurisée et de contrôles d’accès adéquats afin de garantir l’intégrité du code tout au long des processus de build et de déploiement.</li>
+            <li>Veillez à ce que des données sérialisées non signées ou non chiffrées ne soient pas reçues de clients non fiables puis utilisées sans vérification d’intégrité ou signature numérique permettant de détecter toute altération ou rejeu de ces données sérialisées.</li>
+        </ul>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">☠️</span><strong>Exemple de scénarios d'attaque</strong></h3>
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 1</strong> Inclusion de fonctionnalités web provenant d’une source non fiable : une entreprise utilise un prestataire externe pour fournir des fonctionnalités de support. Par commodité, elle met en place un mappage DNS de <em>myCompany.SupportProvider.com</em> vers <em>support.myCompany.com</em>.<br>
+        Cela signifie que tous les cookies, y compris les cookies d’authentification, définis sur le domaine myCompany.com seront désormais envoyés au prestataire de support. Toute personne ayant accès à l’infrastructure de ce prestataire peut alors voler les cookies de tous les utilisateurs ayant visité support.myCompany.com et mener une attaque de détournement de session.</p>
+
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 2</strong> De nombreux routeurs domestiques, décodeurs, firmwares d’appareils et autres ne vérifient pas les mises à jour à l’aide de firmwares signés. Les firmwares non signés constituent une cible de plus en plus importante pour les attaquants, et cette tendance devrait s’aggraver.<br>
+        C’est une préoccupation majeure, car il n’existe souvent aucun mécanisme de correction autre que la publication d’une version ultérieure et l’attente que les versions précédentes deviennent obsolètes.</p>
+
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 3</strong>Utilisation d’un paquet provenant d’une source non fiable : un développeur a des difficultés à trouver la version mise à jour d’un paquet qu’il recherche, il le télécharge donc non pas depuis le gestionnaire de paquets habituel et de confiance, mais depuis un site web en ligne.<br>
+        Le paquet n’est pas signé, il n’est donc pas possible d’en garantir l’intégrité. Ce paquet contient du code malveillant.</p>
+
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 4</strong>Une application React appelle un ensemble de microservices Spring Boot. En tant que programmeurs fonctionnels, ils ont essayé de s’assurer que leur code soit immuable. La solution qu’ils ont trouvée consiste à sérialiser l’état de l’utilisateur et à le transmettre dans les deux sens à chaque requête.<br>
+        Un attaquant remarque la signature d’objet Java « rO0 » (en base64) et utilise un scanner de désérialisation Java pour obtenir une exécution de code à distance sur le serveur de l’application.</p>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">📘</span><strong>Références</strong></h3>
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>OWASP Cheat Sheet: Software Supply Chain Security (à venir)</li>
+            <li>OWASP Cheat Sheet: Secure build and deployment (à venir)</li>
+            <li>
+                <a href="https://cheatsheetseries.owasp.org/cheatsheets/Software_Supply_Chain_Security_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Software Supply Chain Security">
+                    <span class="source-link"><span aria-hidden="true">🔗</span>OWASP Cheat Sheet: Software Supply Chain Security</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cheatsheetseries.owasp.org/cheatsheets/Infrastructure_as_Code_Security_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Infrastructure as Code">
+                    <span class="source-link"><span aria-hidden="true">🔗</span>OOWASP Cheat Sheet: Infrastructure as Code</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://wiki.owasp.org/index.php/Deserialization_Cheat_Sheet" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Deserialization">
+                    <span class="source-link"><span aria-hidden="true">🔗</span>SOWASP Cheat Sheet: Deserialization</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://safecode.org/publication/SAFECode_Software_Integrity_Controls0610.pdf" target="_blank" rel="noopener noreferrer" aria-label="SAFECode Software Integrity Controls">
+                    <span class="source-link"><span aria-hidden="true">🔗</span>SAFECode Software Integrity Controls</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://www.npr.org/2021/04/16/985439655/a-worst-nightmare-cyberattack-the-untold-story-of-the-solarwinds-hack" target="_blank" rel="noopener noreferrer" aria-label="A 'Worst Nightmare' Cyberattack: The Untold Story Of The SolarWinds Hack">
+                    <span class="source-link"><span aria-hidden="true">🔗</span>A 'Worst Nightmare' Cyberattack: The Untold Story Of The SolarWinds Hack</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://about.codecov.io/security-update" target="_blank" rel="noopener noreferrer" aria-label="CodeCov Bash Uploader Compromise">
+                    <span class="source-link"><span aria-hidden="true">🔗</span>CodeCov Bash Uploader Compromise</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://www.manning.com/books/securing-devops" target="_blank" rel="noopener noreferrer" aria-label="Securing DevOps by Julien Vehent">
+                    <span class="source-link"><span aria-hidden="true">🔗</span>Securing DevOps by Julien Vehent</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://www.manning.com/books/securing-devops" target="_blank" rel="noopener noreferrer" aria-label="Insecure Deserialization by Tenendo">
+                    <span class="source-link"><span aria-hidden="true">🔗</span>Insecure Deserialization by Tenendo</span>
+                </a>
+            </li>
+        </ul>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">📋</span><strong>Liste des CWEs associées</strong></h3>
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/345.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-345 Insufficient Verification of Data Authenticity">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-345 Insufficient Verification of Data Authenticity</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/353.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-353 Missing Support for Integrity Check">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-353 Missing Support for Integrity Check</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/426.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-426 Untrusted Search Path">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-426 Untrusted Search Path</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/427.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-427 Uncontrolled Search Path Element">
+                    <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-427 Uncontrolled Search Path Element</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/494.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-494 Download of Code Without Integrity Check">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-494 Download of Code Without Integrity Check</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/502.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-502 Deserialization of Untrusted Data">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-502 Deserialization of Untrusted Data</span>
+                </a>
+            </li>
+                        <li>
+                <a href="https://cwe.mitre.org/data/definitions/506.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-506 Embedded Malicious Code">
+                    <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-506 Embedded Malicious Code</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/509.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-509 Replicating Malicious Code (Virus or Worm)">
+                    <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-509 Replicating Malicious Code (Virus or Worm)</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/565.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-565 Reliance on Cookies without Validation and Integrity Checking">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-565 Reliance on Cookies without Validation and Integrity Checking</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/784.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-784 Reliance on Cookies without Validation and Integrity Checking in a Security Decision">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-784 Reliance on Cookies without Validation and Integrity Checking in a Security Decision</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/829.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-829 Inclusion of Functionality from Untrusted Control Sphere">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-829 Inclusion of Functionality from Untrusted Control Sphere</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/830.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-830 Inclusion of Web Functionality from an Untrusted Source">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-830 Inclusion of Web Functionality from an Untrusted Source</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/915.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-915 Improperly Controlled Modification of Dynamically-Determined Object Attributes">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-915 Improperly Controlled Modification of Dynamically-Determined Object Attributes</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/926.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-926 Improper Export of Android Application Components">
+                    <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-926 Improper Export of Android Application Components</span>
+                </a>
+            </li>
+        </ul>
+    </section>
+</div>
+
+<div class="grid-container">
+    <div class="callout primary alert-callout-border">
+        <p class="open-sans text-justify">
+            Copyright ©️ 2003-2021 La Fondation OWASP™.<br>
+            Ce document est publié sous la licence Creative Commons Attribution Share-Alike 4.0 (CC 4.0 BY-SA).
+        </p>
+        <p class="open-sans text-justify">Traduction française - Laurent HADJADJ (CC 4.0 BY-SA)</p>
+    </div>
+</div>
+<br><br>

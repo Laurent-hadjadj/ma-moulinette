@@ -89,7 +89,7 @@
             <section>
                 <h3 class="h4 claire-hand"><strong>Exemple de scénarios d'attaques</strong></h3>
                 <p class="open-sans font-size-11 text-justify">De nombreux problèmes XXE ont été rendu public, notamment des attaques sur des périphériques intégrés. XXE se produit dans de nombreux endroits inattendus, y compris des dépendances profondément imbriquées. Le moyen le plus simple est d'uploader un fichier XML illicite, s’il est accepté&nbsp;:</p>
-                <p class="open-sans font-size-11 text-justify"><strong>Scénario 1</strong>&nbsp;: L'attaquant tente   d'extraire des données du serveur.</p>
+                <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 1</strong>&nbsp;: L'attaquant tente   d'extraire des données du serveur.</p>
                 <pre>
                     <code class="code-block source-code">
                         &lt;?xml version="1.0" encoding="ISO-8859-1"?&gt;
@@ -100,14 +100,14 @@
                     </code>
                 </pre>
 
-                <p class="open-sans font-size-11 text-justify"><strong>Scénario 2</strong>&nbsp;: Un attaquant scan le réseau privé du serveur en modifiant la ligne ENTITY ci-dessous en&nbsp;:</p>
+                <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 2</strong>&nbsp;: Un attaquant scan le réseau privé du serveur en modifiant la ligne ENTITY ci-dessous en&nbsp;:</p>
                 <pre>
                     <code class="code-block source-code">
                         &lt;!ENTITY xxe SYSTEM "https://192.168.1.1/private" &gt;]&gt;
                     </code>
                 </pre>
 
-                <p class="open-sans font-size-11 text-justify"><strong>Scénario 3</strong>&nbsp;: Un attaquant tente une attaque par déni de service en incluant un fichier potentiellement sans fin&nbsp;:</p>
+                <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 3</strong>&nbsp;: Un attaquant tente une attaque par déni de service en incluant un fichier potentiellement sans fin&nbsp;:</p>
                 <pre>
                     <code class="code-block source-code">
                         &lt;!!ENTITY xxe SYSTEM "file:///dev/random" &gt;]&gt;

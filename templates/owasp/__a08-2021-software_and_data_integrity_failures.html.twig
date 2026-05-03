@@ -52,7 +52,13 @@
 
     <section>
         <h3 class="h4 claire-hand"><span aria-hidden="true">🔍 </span><strong>Aperçu</strong></h3>
-        <p class="open-sans font-size-11 text-justify">Une nouvelle catégorie pour 2021 qui se concentre sur la formulation d'hypothèses relatives aux mises à jour logicielles, aux données critiques et aux pipelines CI/CD sans vérification de l'intégrité. Il s'agit de l'un des impacts pondérés les plus élevés des données CVE/CVSS (Common Vulnerability and Exposures/Common Vulnerability Scoring System). Les <em>Common Weakness Enumerations</em> (CWE) notables comprennent <em>CWE-829&nbsp;: Inclusion of Functionality from Untrusted Control Sphere</em>, <em>CWE-494&nbsp;: Download of Code Without Integrity Check</em>, et <em>CWE-502&nbsp;: Deserialization of Untrusted Data</em>.</p>
+        <p class="open-sans font-size-11 text-justify">Une nouvelle catégorie pour 2021 qui se concentre sur la formulation d'hypothèses relatives aux mises à jour logicielles, aux données critiques et aux pipelines CI/CD sans vérification de l'intégrité. Il s'agit de l'un des impacts pondérés les plus élevés des données CVE/CVSS (Common Vulnerability and Exposures/Common Vulnerability Scoring System).<br>
+        Les <em>Common Weakness Enumerations</em> (CWE) notables comprennent&nbsp;:</p>
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>CWE-829&nbsp;: Inclusion of Functionality from Untrusted Control Sphere</li>
+            <li>CWE-494&nbsp;: Download of Code Without Integrity Check</li>
+            <li>CWE-502&nbsp;: Deserialization of Untrusted Data</li>
+        </ul>
     </section>
 
     <section>
@@ -75,12 +81,12 @@
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><strong>Exemple de scénarios d'attaque</strong></h3>
-        <p class="open-sans font-size-11 text-justify"><strong>Scénario 1</strong> mise à jour sans signature&nbsp;: de nombreux routeurs domestiques, décodeurs, firmwares de périphériques et autres ne vérifient pas les mises à jour via un firmware signé. Les microprogrammes non signés constituent une cible de plus en plus importante pour les attaquants et leur nombre ne devrait cesser d'augmenter. Il s'agit d'une préoccupation majeure car, bien souvent, il n'y a pas de mécanisme pour y remédier, si ce n'est de corriger dans une version future et d'attendre que les versions précédentes soient périmées.</p>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">☠️</span><strong>Exemple de scénarios d'attaque</strong></h3>
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 1</strong> mise à jour sans signature&nbsp;: de nombreux routeurs domestiques, décodeurs, firmwares de périphériques et autres ne vérifient pas les mises à jour via un firmware signé. Les microprogrammes non signés constituent une cible de plus en plus importante pour les attaquants et leur nombre ne devrait cesser d'augmenter. Il s'agit d'une préoccupation majeure car, bien souvent, il n'y a pas de mécanisme pour y remédier, si ce n'est de corriger dans une version future et d'attendre que les versions précédentes soient périmées.</p>
 
-        <p class="open-sans font-size-11 text-justify"><strong>Scénario 2</strong> mise à jour malveillante de SolarWinds&nbsp;: les États-nations sont connus pour attaquer les mécanismes de mise à jour, avec une attaque récente notable, l'attaque <strong>SolarWinds Orion</strong>. La société qui développe le logiciel a mis en place des processus sécurisés de construction et d'intégrité des mises à jour. Néanmoins, ces processus ont pu être contournés et, pendant plusieurs mois, la société a distribué une mise à jour malveillante très ciblée à plus de 18 000 organisations, dont une centaine ont été touchées. Il s'agit de l'une des violations de cette nature les plus étendues et les plus importantes de l'histoire.</p>
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 2</strong> mise à jour malveillante de SolarWinds&nbsp;: les États-nations sont connus pour attaquer les mécanismes de mise à jour, avec une attaque récente notable, l'attaque <strong>SolarWinds Orion</strong>. La société qui développe le logiciel a mis en place des processus sécurisés de construction et d'intégrité des mises à jour. Néanmoins, ces processus ont pu être contournés et, pendant plusieurs mois, la société a distribué une mise à jour malveillante très ciblée à plus de 18 000 organisations, dont une centaine ont été touchées. Il s'agit de l'une des violations de cette nature les plus étendues et les plus importantes de l'histoire.</p>
 
-        <p class="open-sans font-size-11 text-justify"><strong>Scénario 3</strong> désérialisation non sécurisée&nbsp;: une application React appelle un ensemble de microservices Spring Boot. Étant des programmeurs fonctionnels, ils ont essayé de s'assurer que leur code est immuable. La solution qu'ils ont trouvée consiste à sérialiser l'état de l'utilisateur et à le transmettre dans les deux sens à chaque requête. Un attaquant remarque la signature d'objet Java "rO0" (en base64) et utilise l'outil Java Serial Killer pour obtenir l'exécution de code à distance sur le serveur d'application.</p>
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 3</strong> désérialisation non sécurisée&nbsp;: une application React appelle un ensemble de microservices Spring Boot. Étant des programmeurs fonctionnels, ils ont essayé de s'assurer que leur code est immuable. La solution qu'ils ont trouvée consiste à sérialiser l'état de l'utilisateur et à le transmettre dans les deux sens à chaque requête. Un attaquant remarque la signature d'objet Java "rO0" (en base64) et utilise l'outil Java Serial Killer pour obtenir l'exécution de code à distance sur le serveur d'application.</p>
     </section>
 
     <section>

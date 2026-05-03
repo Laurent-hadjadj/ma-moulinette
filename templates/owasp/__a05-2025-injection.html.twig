@@ -1,0 +1,394 @@
+<div class="grid-container">
+    <section class="container-detail-titre">
+        <div class="small-4 medium-4 large-4">
+            <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="">
+        </div>
+        <div class="small-8 medium-8 large-8">
+            {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page (celui du header) ; descente d'un niveau pour tous les titres (h1->h2, h2->h3, h3->h4) #}
+            <h2 class="h2 claire-hand margin-left-1">A05:2025 – Injection</h2>
+        </div>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">📄</span><strong>Résumé</strong></h3>
+        <div class="callout open-sans font-size-11 text-justify">
+            {{ owasp.description }}
+        </div>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">📊</span><strong>Facteurs</strong></h3>
+        <div class="table-scroll">
+            <table class="responsive-card-table unstriped">
+                <thead>
+                    <tr>
+                        <th>CWEs associées</th>
+                        <th>Taux d'incidence max</th>
+                        <th>Taux d'incidence moyen</th>
+                        <th>Exploitation pondérée moyenne</th>
+                        <th>Impact pondéré moyen</th>
+                        <th>Couverture max</th>
+                        <th>Couverture moyenne</th>
+                        <th>Nombre total d'occurrences</th>
+                        <th>Nombre total de CVEs</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="text-center">
+                        <td data-label="CWEs associées">37</td>
+                        <td data-label="Taux d'incidence max">13,77 %</td>
+                        <td data-label="Taux d'incidence moyen">3,08 %</td>
+                        <td data-label="Exploitation pondérée moyenne">7,15</td>
+                        <td data-label="Impact pondéré moyen">4,32</td>
+                        <td data-label="Couverture max">100 %</td>
+                        <td data-label="Couverture moyenne">42,93 %</td>
+                        <td data-label="Nombre total d'occurrences">1 404 249</td>
+                        <td data-label="Nombre total de CVEs">62 445</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">🔍</span><strong>Aperçu</strong></h3>
+        <p class="open-sans font-size-11 text-justify">
+            Les failles par injection reculent de deux places, passant de la 3<sup>e</sup> à la 5<sup>e</sup> position du classement, tout en conservant leur rang par rapport aux catégories <strong>A04:2025 (Défaillances cryptographiques)</strong> et  <strong>A06:2025 (Conception non sécurisée)</strong>. Les failles par injection constituent l'une des catégories les plus testées, 100&nbsp;% des applications ayant fait l'objet d'un test pour détecter une forme ou une autre d'injection. Cette catégorie a enregistré le plus grand nombre de CVE parmi toutes les catégories, avec 37 CVE recensés. L'injection comprend le Cross-site Scripting (haute fréquence/faible impact) avec plus de 30&nbsp;000 CVE et l'injection SQL (faible fréquence/impact élevé) avec plus de 14&nbsp;000 CVE. Le nombre massif de CVE signalés pour <em>CWE-79 Neutralisation incorrecte des entrées lors de la génération de pages Web (« Cross-site Scripting »)</em> fait baisser l'impact moyen pondéré de cette catégorie.
+        </p>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">🏷️</span><strong>Description</strong></h3>
+        <p class="open-sans font-size-11 text-justify">Une vulnérabilité par injection est une faille d'application qui permet d'envoyer des données non fiables saisies par l'utilisateur à un interpréteur (par exemple, un navigateur, une base de données ou la ligne de commande) et qui amène cet interpréteur à exécuter certaines parties de ces données comme s'il s'agissait de commandes. Une application est vulnérable quand&nbsp;:</p>
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>les données venant de l'utilisateur ne sont pas validées, filtrées ou nettoyées par l'application&nbsp;;</li>
+            <li>des requêtes dynamiques ou des appels non paramétrés sans échappement par rapport au contexte sont envoyés à l'interpréteur&nbsp;;</li>
+            <li>Des données non validées sont utilisées dans les paramètres de recherche du mappage objet-relationnel (ORM) pour extraire des enregistrements supplémentaires contenant des informations sensibles&nbsp;;</li>
+            <li>Les données potentiellement malveillantes sont utilisées directement ou concaténées. Le code SQL ou la commande contient la structure et les données malveillantes dans des requêtes dynamiques, des commandes ou des procédures stockées.</li>
+        </ul>
+
+        <p class="open-sans font-size-11 text-justify">
+            Parmi les injections les plus courantes, on trouve les injections SQL, NoSQL, de commandes du système d'exploitation, ORM (Object Relational Mapping), LDAP, ainsi que les injections EL (Expression Language) ou OGNL (Object Graph Navigation Library). Le principe est identique pour tous les interpréteurs. La détection est optimisée par une combinaison de révision du code source et de tests automatisés (y compris le fuzzing) de tous les paramètres, en-têtes, URL, cookies, données JSON, SOAP et XML. L'intégration d'outils de test de sécurité des applications statiques (SAST), dynamiques (DAST) et interactifs (IAST) dans le pipeline CI/CD peut également s'avérer utile pour identifier les failles d'injection avant le déploiement en production.
+        </p>
+
+        <p class="open-sans font-size-11 text-justify">
+            Une catégorie connexe de vulnérabilités par injection est devenue courante dans les grands modèles de langage (LLM). Celles-ci sont abordées séparément dans le classement OWASP LLM Top 10, plus précisément dans la vulnérabilité LLM01:2025 « Prompt Injection ».
+        </p>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">🛟</span><strong>Comment s'en prémunir</strong></h3>
+        <p class="open-sans font-size-11 text-justify">Le meilleur moyen de prévenir les injections consiste à séparer les données des commandes et des requêtes :</p>
+
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>La solution privilégiée consiste à utiliser une API sécurisée, qui évite totalement le recours à l'interpréteur, offre une interface paramétrée ou permet de migrer vers des outils de mappage objet-relationnel (ORM). Remarque : même lorsqu'elles sont paramétrées, les procédures stockées peuvent toujours donner lieu à des injections SQL si PL/SQL ou T-SQL concatène des requêtes et des données ou exécute des données malveillantes à l'aide de EXECUTE IMMEDIATE ou exec().</li>
+        </ul>
+
+        <p class="open-sans font-size-11 text-justify">When it is not possible to separate the data from commands, you can reduce threats using the following techniques.</p>
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>Utilisez une validation positive des entrées côté serveur. Cela ne constitue toutefois pas une protection totale, car de nombreuses applications nécessitent l'utilisation de caractères spéciaux, comme les zones de texte ou les API destinées aux applications mobiles.</li>
+            <li>Pour toute requête dynamique restante, échappez les caractères spéciaux en utilisant la syntaxe d'échappement spécifique à cet interpréteur. Remarque : les structures SQL telles que les noms de tables, les noms de colonnes, etc. ne peuvent pas être échappées ; par conséquent, les noms de structures fournis par l'utilisateur présentent un risque. Il s'agit d'un problème courant dans les logiciels de création de rapports.</li>
+        </ul>
+
+        <p class="open-sans font-size-11 text-justify">⚠️ Attention : ces techniques impliquent l'analyse et l'échappement de chaînes de caractères complexes, ce qui les rend sujettes aux erreurs et peu robustes face à des modifications mineures du système sous-jacent.</p>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">☠️</span><strong>Exemple de scénarios d'attaque</strong></h3>
+
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scenario #1&nbsp;:</strong> L’application utilise des données non fiables dans la construction de l’appel SQL suivant&nbsp;:</p>
+        <pre>
+            <code class="code-block source-code">
+                String query = "SELECT * FROM accounts WHERE custID='" + request.getParameter("id") + "'";
+            </code>
+        </pre>
+        <p class="open-sans font-size-11 text-justify">Un pirate modifie la valeur du paramètre « id » dans son navigateur pour envoyer : « OR » « 1 » « = » « 1 ». Par exemple :</p>
+
+        <pre>
+            <code class="code-block source-code">
+                http://example.com/app/accountView?id=' OR '1'='1
+            </code>
+        </pre>
+
+        <p class="open-sans font-size-11 text-justify">Cela modifie la signification de la requête afin de renvoyer tous les enregistrements de la table « accounts ». Des attaques plus dangereuses pourraient modifier ou supprimer des données, voire déclencher des procédures stockées.</p>
+
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scenario #2&nbsp;:</strong> La confiance aveugle dans les frameworks peut rendre les requêtes vulnérables. Par exemple, le langage de requête Hibernate (HQL)&nbsp;:</p>
+        <pre>
+            <code class="code-block source-code">
+                Query HQLQuery = session.createQuery("FROM accounts WHERE custID='" + request.getParameter("id") + "'");
+            </code>
+        </pre>
+        <p class="open-sans font-size-11 text-justify">
+            Un attaquant saisit : « OR custID IS NOT NULL OR custID= ». Cela contourne le filtre et renvoie tous les comptes. Bien que le HQL comporte moins de fonctions dangereuses que le SQL brut, il permet tout de même un accès non autorisé aux données lorsque les entrées de l'utilisateur sont intégrées dans les requêtes.
+        </p>
+
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scenario #3&nbsp;:</strong> Une application transmet directement les données saisies par l'utilisateur à une commande du système d'exploitation :&nbsp;:</p>
+
+        <pre>
+            <code class="code-block source-code">
+                String cmd = "nslookup " + request.getParameter("domain");
+                Runtime.getRuntime().exec(cmd);
+            </code>
+        </pre>
+
+        <p class="open-sans font-size-11 text-justify">Un pirate saisit « example.com ; cat /etc/passwd » pour exécuter des commandes arbitraires sur le serveur.</p>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">📘</span><strong>Références</strong></h3>
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>
+                <a href="https://owasp.org/www-project-proactive-controls/v3/en/c3-secure-database" target="_blank" rel="noopener noreferrer" aria-label="OWASP Proactive Controls: Secure Database Access">
+                    <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Proactive Controls: Secure Database Access</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://owasp.org/www-project-application-security-verification-standard" target="_blank" rel="noopener noreferrer" aria-label="OWASP ASVS: V5 Input Validation and Encoding">
+                    <span class="source-link"><span aria-hidden="true">🔗</span> OWASP ASVS: V5 Input Validation and Encoding</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/07-Input_Validation_Testing/12-Testing_for_Command_Injection" target="_blank" rel="noopener noreferrer" aria-label="OWASP Testing Guide: SQL Injection, Command Injection">
+                    <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Testing Guide: SQL Injection, Command Injectiong</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cheatsheetseries.owasp.org/cheatsheets/Injection_Prevention_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Injection Prevention">
+                    <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Cheat Sheet: Injection Prevention</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/07-Input_Validation_Testing/05-Testing_for_SQL_Injection" target="_blank" rel="noopener noreferrer" aria-label="OWASP Testing Guide: SQL Injection">
+                    <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Testing Guide: SQL Injection</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cheatsheetseries.owasp.org/cheatsheets/Injection_Prevention_Cheat_Sheet_in_Java.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Injection Prevention in Java">
+                    <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Cheat Sheet: Injection Prevention in Java</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cheatsheetseries.owasp.org/cheatsheets/Query_Parameterization_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Query Parameterization">
+                    <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Cheat Sheet: Query Parameterization</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://owasp.org/www-project-automated-threats-to-web-applications/" target="_blank" rel="noopener noreferrer" aria-label="OWASP Automated Threats to Web Applications – OAT-014">
+                    <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Automated Threats to Web Applications – OAT-014</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://portswigger.net/kb/issues/00101080_serversidetemplateinjection" target="_blank" rel="noopener noreferrer" aria-label="PortSwigger: Server-side template injection">
+                    <span class="source-link"><span aria-hidden="true">🔗</span> PortSwigger: Server-side template injection</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/secfigo/Awesome-Fuzzing" target="_blank" rel="noopener noreferrer" aria-label="Awesome Fuzzing: a list of fuzzing resources">
+                    <span class="source-link"><span aria-hidden="true">🔗</span> Awesome Fuzzing: a list of fuzzing resources</span>
+                </a>
+            </li>
+        </ul>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">📋</span><strong>Liste des CWEs associées</strong></h3>
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/20.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-20 Improper Input Validation">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-20 Improper Input Validation</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/74.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-74 Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-74 Improper Neutralization of Special Elements in Output Used by a Downstream Component ('Injection')</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/76.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-76 Improper Neutralization of Equivalent Special Elements">
+                    <span class="source-link"><span aria-hidden="true">📌 🆕</span> CWE-76 Improper Neutralization of Equivalent Special Elements</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/77.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-77 Improper Neutralization of Special Elements used in a Command ('Command Injection')">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-77 Improper Neutralization of Special Elements used in a Command ('Command Injection')</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/78.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-78 Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-78 Improper Neutralization of Special Elements used in an OS Command ('OS Command Injection')</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/79.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-79 Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-79 Improper Neutralization of Input During Web Page Generation ('Cross-site Scripting')</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/80.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-80 Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS)">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-80 Improper Neutralization of Script-Related HTML Tags in a Web Page (Basic XSS)</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/83.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-83 Improper Neutralization of Script in Attributes in a Web Page">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-83 Improper Neutralization of Script in Attributes in a Web Page</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/86.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-86 Improper Neutralization of Invalid Characters in Identifiers in Web Pages">
+                    <span class="source-link"><span aria-hidden="true">📌 🆕</span> CWE-86 Improper Neutralization of Invalid Characters in Identifiers in Web Pages</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/88.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-88 Improper Neutralization of Argument Delimiters in a Command ('Argument Injection')">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-88 Improper Neutralization of Argument Delimiters in a Command ('Argument Injection')</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-89 Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-89 Improper Neutralization of Special Elements used in an SQL Command ('SQL Injection')</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/90.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-90 Improper Neutralization of Special Elements used in an LDAP Query ('LDAP Injection')">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-90 Improper Neutralization of Special Elements used in an LDAP Query ('LDAP Injection')</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/91.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-91 XML Injection (aka Blind XPath Injection)">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE-91 XML Injection (aka Blind XPath Injection)</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/93.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-93 Improper Neutralization of CRLF Sequences ('CRLF Injection')">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-93 Improper Neutralization of CRLF Sequences ('CRLF Injection')</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/94.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-94 Improper Control of Generation of Code ('Code Injection')">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-94 Improper Control of Generation of Code ('Code Injection')</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/95.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-95 Improper Neutralization of Directives in Dynamically Evaluated Code ('Eval Injection')">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-95 Improper Neutralization of Directives in Dynamically Evaluated Code ('Eval Injection')</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/96.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-96 Improper Neutralization of Directives in Statically Saved Code ('Static Code Injection')">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-96 Improper Neutralization of Directives in Statically Saved Code ('Static Code Injection')</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/97.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-97 Improper Neutralization of Server-Side Includes (SSI) Within a Web Page">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-97 Improper Neutralization of Server-Side Includes (SSI) Within a Web Page</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/98.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-98 Improper Control of Filename for Include/Require Statement in PHP Program ('PHP Remote File Inclusion')">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-98 Improper Control of Filename for Include/Require Statement in PHP Program ('PHP Remote File Inclusion')</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/99.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-99 Improper Control of Resource Identifiers ('Resource Injection')">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-99 Improper Control of Resource Identifiers ('Resource Injection')</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/103.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-103 Struts: Incomplete validate() Method Definition">
+                    <span class="source-link"><span aria-hidden="true">📌 🆕</span> CWE-103 Struts: Incomplete validate() Method Definition</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/104.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-104 Struts: Form Bean Does Not Extend Validation Class">
+                    <span class="source-link"><span aria-hidden="true">📌 🆕</span> CWE-104 Struts: Form Bean Does Not Extend Validation Class</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/112.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-112 Missing XML Validation">
+                    <span class="source-link"><span aria-hidden="true">📌 🆕</span> CWE-112 Missing XML Validation</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/113.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-113 Improper Neutralization of CRLF Sequences in HTTP Headers ('HTTP Response Splitting')">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-113 Improper Neutralization of CRLF Sequences in HTTP Headers ('HTTP Response Splitting')</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/114.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-114 Process Control">
+                    <span class="source-link"><span aria-hidden="true">📌 🆕</span> CWE-114 Process Control</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/115.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-115 Misinterpretation of Output">
+                    <span class="source-link"><span aria-hidden="true">📌 🆕</span> CWE-115 Misinterpretation of Output</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/116.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-116 Improper Encoding or Escaping of Output">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-116 Improper Encoding or Escaping of Output</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/129.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-129 Improper Validation of Array Index">
+                    <span class="source-link"><span aria-hidden="true">📌 🆕</span> CWE-129 Improper Validation of Array Index</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/159.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-159 Improper Handling of Invalid Use of Special Elements">
+                    <span class="source-link"><span aria-hidden="true">📌 🆕</span> CWE-159 Improper Handling of Invalid Use of Special Elements</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/470.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-470 Use of Externally-Controlled Input to Select Classes or Code ('Unsafe Reflection')">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-470 Use of Externally-Controlled Input to Select Classes or Code ('Unsafe Reflection')</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/493.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-493 Critical Public Variable Without Final Modifier">
+                    <span class="source-link"><span aria-hidden="true">📌 🆕</span> CWE-493 Critical Public Variable Without Final Modifier</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/500.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-500 Public Static Field Not Marked Final">
+                    <span class="source-link"><span aria-hidden="true">📌 🆕</span> CWE-500 Public Static Field Not Marked Final</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/564.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-564 SQL Injection: Hibernate">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-564 SQL Injection: Hibernate</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/610.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-610 Externally Controlled Reference to a Resource in Another Sphere">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-610 Externally Controlled Reference to a Resource in Another Sphere</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/643.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-643 Improper Neutralization of Data within XPath Expressions ('XPath Injection')">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-643 Improper Neutralization of Data within XPath Expressions ('XPath Injection')</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/644.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-644 Improper Neutralization of HTTP Headers for Scripting Syntax">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-644 Improper Neutralization of HTTP Headers for Scripting Syntax</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/917.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-917 Improper Neutralization of Special Elements used in an Expression Language Statement ('Expression Language Injection')">
+                    <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-917 Improper Neutralization of Special Elements used in an Expression Language Statement ('Expression Language Injection')</span>
+                </a>
+            </li>
+        </ul>
+    </section>
+</div>
+
+<div class="grid-container">
+    <div class="callout primary alert-callout-border">
+        <p class="open-sans text-justify">
+            Copyright ©️ 2003-2025 La Fondation OWASP™.<br>
+            Ce document est publié sous la licence Creative Commons Attribution Share-Alike 4.0 (CC 4.0 BY-SA).
+        </p>
+        <p class="open-sans text-justify">Traduction française - Laurent HADJADJ (CC 4.0 BY-SA)</p>
+    </div>
+</div>
+<br><br>

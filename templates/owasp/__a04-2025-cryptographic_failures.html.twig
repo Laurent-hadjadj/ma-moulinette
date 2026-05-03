@@ -1,0 +1,351 @@
+<div class="grid-container">
+    <section class="container-detail-titre">
+        <div class="small-4 medium-4 large-4">
+            <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="">
+        </div>
+        <div class="small-8 medium-8 large-8">
+            {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page (celui du header) ; descente d'un niveau pour tous les titres (h1->h2, h2->h3, h3->h4) #}
+            <h2 class="h2 claire-hand margin-left-1">A04:2025 – Défaillances cryptographiques</h2>
+        </div>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">📄</span><strong>Résumé</strong></h3>
+        <div class="callout open-sans font-size-11 text-justify">
+            {{ owasp.description }}
+        </div>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">📊</span><strong>Facteurs</strong></h3>
+        <div class="table-scroll">
+            <table class="responsive-card-table unstriped">
+                <thead>
+                    <tr>
+                        <th>CWEs associées</th>
+                        <th>Taux d'incidence max</th>
+                        <th>Taux d'incidence moyen</th>
+                        <th>Exploitation pondérée moyenne</th>
+                        <th>Impact pondéré moyen</th>
+                        <th>Couverture max</th>
+                        <th>Couverture moyenne</th>
+                        <th>Nombre total d'occurrences</th>
+                        <th>Nombre total de CVEs</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="text-center">
+                        <td data-label="CWEs associées">32</td>
+                        <td data-label="Taux d'incidence max">13,77&nbsp;%</td>
+                        <td data-label="Taux d'incidence moyen">3,80&nbsp;%</td>
+                        <td data-label="Exploitation pondérée moyenne">7,23</td>
+                        <td data-label="Impact pondéré moyen">3,90</td>
+                        <td data-label="Couverture max">100&nbsp;%</td>
+                        <td data-label="Couverture moyenne">47,74&nbsp;%</td>
+                        <td data-label="Nombre total d'occurrences">1 665 348</td>
+                        <td data-label="Nombre total de CVEs">2 185</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">🔍 </span><strong>Aperçu</strong></h3>
+        <p class="open-sans font-size-11 text-justify">Reculant de deux places pour se classer en 4<sup>e</sup> position, cette vulnérabilité concerne les défaillances liées à l'absence de cryptographie, à une cryptographie insuffisamment solide, à la divulgation de clés cryptographiques et aux erreurs associées. Trois des Common Weakness Enumerations (CWE) les plus courantes dans ce domaine concernaient l'utilisation d'un générateur de nombres pseudo-aléatoires faible&nbsp;:</p>
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>CWE-327 : Utilisation d'un algorithme cryptographique défaillant ou à risque</li>
+            <li>CWE-331 : Entropie insuffisante</li>
+            <li>CWE-338 : Utilisation d'un générateur de nombres pseudo-aléatoires (PRNG) cryptographiquement faible.</li>
+            <li>CWE-1241 : Utilisation d'un algorithme prévisible dans un générateur de nombres aléatoires</li>
+        </ul>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">🏷️</span><strong>Description</strong></h3>
+        <p class="open-sans font-size-11 text-justify">D'une manière générale, toutes les données en transit devraient être chiffrées au niveau de la couche de transport (couche 4 du modèle OSI). Les obstacles rencontrés auparavant, tels que les performances des processeurs et la gestion des clés privées et des certificats, sont désormais surmontés grâce à des processeurs dotés d'instructions conçues pour accélérer le chiffrement (par exemple, la prise en charge de l'AES) et à la simplification de la gestion des clés privées et des certificats par des services comme LetsEncrypt.org, les principaux fournisseurs de services cloud proposant même des services de gestion des certificats encore plus étroitement intégrés à leurs plateformes spécifiques.</p>
+
+        <p class="open-sans font-size-11 text-justify">Au-delà de la sécurisation de la couche de transport, il est important de déterminer quelles données doivent être chiffrées au repos et lesquelles nécessitent un chiffrement supplémentaire en transit (au niveau de la couche 7 du modèle OSI). Par exemple, les mots de passe, les numéros de carte de crédit, les dossiers médicaux, les informations personnelles et les secrets d'entreprise nécessitent une protection supplémentaire, en particulier si ces données relèvent de lois sur la protection de la vie privée, comme le Règlement général sur la protection des données (RGPD) de l'UE, ou de réglementations telles que la norme PCI DSS (PCI Data Security Standard). Pour toutes ces données :</p>
+
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>Des algorithmes ou protocoles cryptographiques obsolètes ou peu sûrs sont-ils utilisés par défaut ou dans du code ancien ?</li>
+            <li>Des clés cryptographiques par défaut sont-elles utilisées, des clés cryptographiques peu sûres sont-elles générées, les clés sont-elles réutilisées, ou une gestion et une rotation adéquates des clés font-elles défaut ?</li>
+            <li>Les clés cryptographiques sont-elles enregistrées dans les référentiels de code source ?</li>
+            <li>Le chiffrement n'est-il pas appliqué, par exemple, des directives de sécurité ou des en-têtes HTTP (navigateur) sont-ils manquants ?</li>
+            <li>Le certificat de serveur reçu et la chaîne de confiance sont-ils correctement validés ?</li>
+            <li>Les vecteurs d'initialisation sont-ils ignorés, réutilisés ou générés de manière insuffisamment sécurisée pour le mode de fonctionnement cryptographique ? Un mode de fonctionnement non sécurisé tel que l'ECB est-il utilisé ? Le chiffrement est-il utilisé alors qu'un chiffrement authentifié serait plus approprié ?</li>
+            <li>Les mots de passe sont-ils utilisés comme clés cryptographiques en l'absence d'une fonction de dérivation de clé basée sur un mot de passe ?</li>
+            <li>Utilise-t-on un générateur aléatoire qui n'a pas été conçu pour répondre aux exigences cryptographiques ? Même que la fonction appropriée soit choisie, doit-elle être initialisée par le développeur ? Si ce n'est pas le cas, le développeur a-t-il remplacé la fonctionnalité d'initialisation robuste intégrée à cette fonction par une graine qui ne présente pas une entropie ou une imprévisibilité suffisante ?</li>
+            <li>Des fonctions de hachage obsolètes telles que MD5 ou SHA1 sont-elles utilisées, ou des fonctions de hachage non cryptographiques sont-elles utilisées alors que des fonctions de hachage cryptographiques sont nécessaires ?</li>
+            <li>Les messages d'erreur cryptographiques ou les informations de canal auxiliaire sont-ils exploitables, par exemple sous la forme d'attaques par oracle de remplissage ?</li>
+            <li>L'algorithme cryptographique peut-il être rétrogradé ou contourné ?</li>
+        </ul>
+        <p class="open-sans font-size-11 text-justify">Se référer à l'<em>ASVS</em> <em>Crypto</em> (V11), <em>Data Protection</em> (V14), et <em>Secure Communication</em> (V12).</p>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">🛟</span><strong>Comment s'en prémunir</strong></h3>
+        <p class="open-sans font-size-11 text-justify">On veillera au minimum à suivre les recommandations suivantes, mais il reste nécessaire de consulter les références&nbsp;:</p>
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>Classifier les données traitées, stockées ou transmises par l'application. Identifier quelles données sont sensibles selon les lois concernant la protection de la vie privée, les exigences réglementaires ou les besoins métier.</li>
+            <li>Conservez vos clés les plus sensibles dans un HSM matériel ou dans le cloud.</li>
+            <li>Utilisez autant que possible des implémentations éprouvées des algorithmes cryptographiques.</li>
+            <li>Ne pas stocker de données sensibles sans que cela ne soit nécessaire. Les rejeter ou utiliser une tokenisation conforme à la norme de sécurité de l’industrie des cartes de paiement (PCI DSS) ou même une troncature. Les données que l’on ne possède pas ne peuvent être volées.</li>
+            <li>S'assurer de chiffrer toutes les données sensibles au repos.</li>
+            <li>Choisir des algorithmes éprouvés et générer des clés robustes. S'assurer qu'une gestion des clés est en place.</li>
+            <li>Chiffrer toutes les données en transit en utilisant exclusivement des protocoles TLS 1.2 ou supérieurs, avec des algorithmes de chiffrement garantissant la confidentialité persistante (FS) ; abandonner la prise en charge des algorithmes de chiffrement en mode CBC (Cipher Block Chaining) ; prendre en charge les algorithmes de changement de clé quantique. Pour le protocole HTTPS, imposer le chiffrement à l'aide du protocole HSTS (HTTP Strict Transport Security). Vérifier l'ensemble de ces éléments à l'aide d'un outil.</li>
+            <li>Désactiver le cache pour les réponses contenant des données sensibles.</li>
+            <li>Appliquer les contrôles de sécurité requis selon la classification de la donnée.</li>
+            <li>Ne pas utiliser de vieux protocoles tels que FTP et SMTP pour échanger des données sensibles.</li>
+            <li>utilisez des mots de passe générés à l'aide de fonctions de hachage robustes, adaptatives et salées, intégrant un facteur de travail (facteur de délai), telles que Argon2, yescrypt, scrypt ou PBKDF2-HMAC-SHA-512. Pour les systèmes existants utilisant bcrypt, consultez la fiche pratique de l'OWASP : Stockage des mots de passe (https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html).</li>
+            <li>Les vecteurs d'initialisation doivent être choisis en fonction du mode de fonctionnement. Cela peut impliquer l'utilisation d'un générateur de nombres pseudo-aléatoires cryptographiquement sécurisé (CSPRNG). Pour les modes nécessitant un nonce, le vecteur d'initialisation (IV) ne doit pas provenir d'un CSPRNG. Dans tous les cas, le vecteur d'initialisation ne doit jamais être réutilisé pour une clé fixe.</li>
+            <li>Utiliser toujours un chiffrement authentifié plutôt qu'un chiffrement simple</li>
+            <li>Les clés devraient toujours être générées de façon cryptographiquement aléatoire et stockées en mémoire sous la forme de tableau d'octets. Si un mot de passe est utilisée, alors il faut obligatoirement le transformer en clé via une fonction de dérivation de clé appropriée.</li>
+            <li>S'assurer qu'une génération cryptographiquement aléatoire est utilisée là où c'est approprié, et qu'elle n'a pas une graine aléatoire prévisible ou avec une faible entropie. La plupart des APIs modernes ne demandent pas au développeur de fournir une graine au CSPRNG pour être sécurisé.</li>
+            <li>Évitez les fonctions cryptographiques, les méthodes de construction de blocs et les schémas de remplissage obsolètes, tels que MD5, SHA-1, le mode CBC (Cipher Block Chaining) et PKCS n° 1 v1.5.</li>
+            <li>Assurez-vous que les paramètres et les configurations répondent aux exigences de sécurité en les faisant vérifier par des spécialistes de la sécurité, à l'aide d'outils conçus à cet effet, ou les deux.</li>
+            <li>Vous devez vous préparer dès maintenant à la cryptographie post-quantique (PQC) (voir la référence ENISA) afin que les systèmes à haut risque soient sécurisés au plus tard fin 2030.</li>
+        </ul>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><strong>☠️Exemple de scénarios d'attaque</strong></h3>
+
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 1</strong>&nbsp;: Un site n'utilise pas ou n'applique pas le protocole TLS sur toutes ses pages, ou utilise un cryptage faible. Un attaquant surveille le trafic réseau (par exemple, sur un réseau sans fil non sécurisé), fait passer les connexions de HTTPS à HTTP, intercepte les requêtes et vole le cookie de session de l'utilisateur. L'attaquant réutilise ensuite ce cookie et détourne la session (authentifiée) de l'utilisateur, accédant ainsi à ses données privées ou les modifiant. Au lieu de cela, il pourrait modifier toutes les données transmises, par exemple le destinataire d'un virement bancaire.</p>
+
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 2</strong>&nbsp;:La base de données des mots de passe utilise des hachages sans sel ou simples pour stocker les mots de passe de tous les utilisateurs. Une faille liée au téléchargement de fichiers permet à un pirate de récupérer la base de données des mots de passe. Tous les hachages sans sel peuvent être exposés à l'aide d'une table arc-en-ciel contenant des hachages précalculés. Les hachages générés par des fonctions de hachage simples ou rapides peuvent être déchiffrés par des processeurs graphiques (GPU), même s'ils ont été salés.</p>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">📘</span><strong>Références</strong></h3>
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>
+                <a href="https://top10proactive.owasp.org/archive/2024/the-top-10/c2-crypto/" target="_blank" rel="noopener noreferrer" aria-label="OWASP Proactive Controls: C2: Use Cryptography to Protect Data">
+                    <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Proactive Controls: C2: Use Cryptography to Protect Data</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://owasp.org/www-project-application-security-verification-standard" target="_blank" rel="noopener noreferrer" aria-label="OWASP Application Security Verification Standard (ASVS): V11, 12, 14">
+                    <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Application Security Verification Standard (ASVS): V11, 12, 14</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cheatsheetseries.owasp.org/cheatsheets/Transport_Layer_Protection_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Transport Layer Protection">
+                    <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Cheat Sheet: Transport Layer Protection</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cheatsheetseries.owasp.org/cheatsheets/User_Privacy_Protection_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: User Privacy Protection">
+                    <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Cheat Sheet: User Privacy Protection</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Password Storage">
+                    <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Cheat Sheet: Password Storage</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cheatsheetseries.owasp.org/cheatsheets/Cryptographic_Storage_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Cryptographic Storage">
+                    <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Cheat Sheet: Cryptographic Storage</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cheatsheetseries.owasp.org/cheatsheets/HTTP_Strict_Transport_Security_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: HSTS">
+                    <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Cheat Sheet: HSTS</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://owasp.org/www-project-web-security-testing-guide/stable/4-Web_Application_Security_Testing/09-Testing_for_Weak_Cryptography/README" target="_blank" rel="noopener noreferrer" aria-label="OWASP Testing Guide: Testing for weak cryptography">
+                    <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Testing Guide: Testing for weak cryptography</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://digital-strategy.ec.europa.eu/en/library/coordinated-implementation-roadmap-transition-post-quantum-cryptography" target="_blank" rel="noopener noreferrer" aria-label="ENISA: A Coordinated Implementation Roadmap for the Transition to Post-Quantum Cryptography">
+                    <span class="source-link"><span aria-hidden="true">🔗</span> ENISA: A Coordinated Implementation Roadmap for the Transition to Post-Quantum Cryptography</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://www.nist.gov/news-events/news/2024/08/nist-releases-first-3-finalized-post-quantum-encryption-standards" target="_blank" rel="noopener noreferrer" aria-label="NIST Releases First 3 Finalized Post-Quantum Encryption Standards">
+                    <span class="source-link"><span aria-hidden="true">🔗</span> NIST Releases First 3 Finalized Post-Quantum Encryption Standards</span>
+                </a>
+            </li>
+        </ul>
+    </section>
+
+    <section>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">📋</span><strong>Liste des CWEs associées</strong></h3>
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/261.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-261 Weak Encoding for Password">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE-261 Weak Encoding for Password</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/296.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-296 Improper Following of a Certificate's Chain of Trust">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-296 Improper Following of a Certificate's Chain of Trust</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/319.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-319 Cleartext Transmission of Sensitive Information">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-319 Cleartext Transmission of Sensitive Information</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/320.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-320 Key Management Errors (Prohibited)n">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span> CWE-320 Key Management Errors (Prohibited)</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/321.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-321 Use of Hard-coded Cryptographic Key">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-321 Use of Hard-coded Cryptographic Key</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/322.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-322 Key Exchange without Entity Authentication">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-322 Key Exchange without Entity Authentication</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/323.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-323 Reusing a Nonce, Key Pair in Encryption">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-323 Reusing a Nonce, Key Pair in Encryption</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/324.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-324 Use of a Key Past its Expiration Date">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-324 Use of a Key Past its Expiration Date</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/325.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-325 Missing Required Cryptographic Step">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-325 Missing Required Cryptographic Step</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/326.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-326 Inadequate Encryption Strength">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-326 Inadequate Encryption Strength</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/327.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-327 Use of a Broken or Risky Cryptographic Algorithm">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-327 Use of a Broken or Risky Cryptographic Algorithm</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/328.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-328 Reversible One-Way Hash">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-328 Reversible One-Way Hash</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/329.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-329 Not Using a Random IV with CBC Mode">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-329 Not Using a Random IV with CBC Mode</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/330.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-330 Use of Insufficiently Random Values">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-330 Use of Insufficiently Random Values</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/331.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-331 Insufficient Entropy">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-331 Insufficient Entropy</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/332.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-332 Insufficient Entropy in PRNG">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span> CWE-332 Insufficient Entropy in PRNG</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/334.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-334 Small Space of Random Values">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-334 Small Space of Random Values</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/335.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-335 Incorrect Usage of Seeds in Pseudo-Random Number Generator (PRNG)">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-335 Incorrect Usage of Seeds in Pseudo-Random Number Generator (PRNG)</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/336.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-336 Same Seed in Pseudo-Random Number Generator (PRNG)">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-336 Same Seed in Pseudo-Random Number Generator (PRNG)</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/337.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-337 Predictable Seed in Pseudo-Random Number Generator (PRNG)">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-337 Predictable Seed in Pseudo-Random Number Generator (PRNG)</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/338.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-338 Use of Cryptographically Weak Pseudo-Random Number Generator (PRNG)">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-338 Use of Cryptographically Weak Pseudo-Random Number Generator (PRNG)</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/340.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-340 Generation of Predictable Numbers or Identifiers">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-340 Generation of Predictable Numbers or Identifiers</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/342.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-342 Predictable Exact Value from Previous Values">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span> CWE-342 Predictable Exact Value from Previous Values</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/347.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-347 Improper Verification of Cryptographic Signature">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-347 Improper Verification of Cryptographic Signature</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/523.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-523 Unprotected Transport of Credentials">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-523 Unprotected Transport of Credentials</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/757.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-757 Selection of Less-Secure Algorithm During Negotiation ('Algorithm Downgrade')">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-757 Selection of Less-Secure Algorithm During Negotiation ('Algorithm Downgrade')</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/759.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-759 Use of a One-Way Hash without a Salt">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-759 Use of a One-Way Hash without a Salt</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/760.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-760 Use of a One-Way Hash with a Predictable Salt">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-760 Use of a One-Way Hash with a Predictable Salt</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/780.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-780 Use of RSA Algorithm without OAEP">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-780 Use of RSA Algorithm without OAEP</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/916.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-916 Use of Password Hash With Insufficient Computational Effort">
+                <span class="source-link"><span aria-hidden="true">📌</span> CWE CWE-916 Use of Password Hash With Insufficient Computational Effort</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/1240.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1240 Use of a Cryptographic Primitive with a Risky Implementationt">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span> CWE-1240 Use of a Cryptographic Primitive with a Risky Implementation</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/1241.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1241 Use of Predictable Algorithm in Random Number Generator">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span> CWE-1241 Use of Predictable Algorithm in Random Number Generator</span>
+            </a>
+        </li>
+    </ul>
+</section>
+</div>
+
+<div class="grid-container">
+    <div class="callout primary alert-callout-border">
+        <p class="open-sans text-justify">
+            Copyright ©️ 2003-2025 La Fondation OWASP™.<br>
+            Ce document est publié sous la licence Creative Commons Attribution Share-Alike 4.0 (CC 4.0 BY-SA).
+        </p>
+        <p class="open-sans text-justify">Traduction française - Laurent HADJADJ (CC 4.0 BY-SA)</p>
+    </div>
+</div>
+<br><br>

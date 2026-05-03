@@ -52,7 +52,13 @@
 
     <section>
         <h3 class="h4 claire-hand"><span aria-hidden="true">🔍 </span><strong>Aperçu</strong></h3>
-        <p class="open-sans font-size-11 text-justify">En deuxième position, en progression d'une place. Auparavant connu sous le nom d'<em>Exposition de données sensibles</em>, qui est plus un symptôme générique qu'une cause racine. L'accent est mis sur les défaillances liées à la cryptographie (ou son absence). Cela entraîne souvent l'exposition de données sensibles. Les <em>Common Weakness Enumerations</em> (CWE) notables incluses sont <em>CWE-259: Use of Hard-coded Password</em>, <em>CWE-327: Broken or Risky Crypto Algorithm</em>, et <em>CWE-331 Insufficient Entropy</em>.</p>
+        <p class="open-sans font-size-11 text-justify">En deuxième position, en progression d'une place. Auparavant connu sous le nom d'<em>Exposition de données sensibles</em>, qui est plus un symptôme générique qu'une cause racine. L'accent est mis sur les défaillances liées à la cryptographie (ou son absence). Cela entraîne souvent l'exposition de données sensibles.<br>
+        Les <em>Common Weakness Enumerations</em> (CWE) notables incluses sont&nbsp;:</p>
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>CWE-259: Use of Hard-coded Password</li>
+            <li>CWE-327: Broken or Risky Crypto Algorithm</li>
+            <li>CWE-331 Insufficient Entropy</li>
+        </ul>
     </section>
 
     <section>
@@ -97,10 +103,10 @@
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><strong>Exemple de scénarios d'attaque</strong></h3>
-        <p class="open-sans font-size-11 text-justify"><strong>Scénario 1</strong>&nbsp;: Une application chiffre des numéros de cartes de crédit dans une base de données utilisant un chiffrement en base automatique. Cependant, ces données sont automatiquement déchiffrées lorsqu'elles sont récupérées, permettant, à une injection SQL de récupérer des numéros de carte de crédit en clair.</p>
-        <p class="open-sans font-size-11 text-justify"><strong>Scénario 2</strong>&nbsp;: Un site n'utilise pas ou ne force pas l'utilisation de TLS sur toutes les pages ou supporte des protocoles de chiffrement faibles. Un attaquant surveille le trafic réseau (par exemple sur un réseau sans fil non sécurisé), dégrade les connexions de HTTPS à HTTP, intercepte les requêtes et vole le cookie de session d'un utilisateur. L'attaquant réutilise alors ce cookie et détourne la session de l'utilisateur (authentifié), pouvant ainsi accéder aux données privées de l'utilisateur ou les modifier. Un attaquant pourrait également modifier toutes les données en transit, par exemple le destinataire d'un virement d'argent.</p>
-        <p class="open-sans font-size-11 text-justify"><strong>Scénario 3</strong>&nbsp;: La base de données contenant les mots de passe n'utilise pas de sel, ou alors de simples hachés pour stocker les mots de passe de chacun. Une faille d'upload de fichier permet à un attaquant de récupérer la base de données de mots de passe. Tous les hachés non salés peuvent alors être révélés avec une rainbow table de hachés pré-calculés. Des hachés générés par des fonctions de hachage simples ou rapides peuvent être déchiffrés par des GPUs, même salés.</p>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">☠️</span><strong>Exemple de scénarios d'attaque</strong></h3>
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 1</strong>&nbsp;: Une application chiffre des numéros de cartes de crédit dans une base de données utilisant un chiffrement en base automatique. Cependant, ces données sont automatiquement déchiffrées lorsqu'elles sont récupérées, permettant, à une injection SQL de récupérer des numéros de carte de crédit en clair.</p>
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 2</strong>&nbsp;: Un site n'utilise pas ou ne force pas l'utilisation de TLS sur toutes les pages ou supporte des protocoles de chiffrement faibles. Un attaquant surveille le trafic réseau (par exemple sur un réseau sans fil non sécurisé), dégrade les connexions de HTTPS à HTTP, intercepte les requêtes et vole le cookie de session d'un utilisateur. L'attaquant réutilise alors ce cookie et détourne la session de l'utilisateur (authentifié), pouvant ainsi accéder aux données privées de l'utilisateur ou les modifier. Un attaquant pourrait également modifier toutes les données en transit, par exemple le destinataire d'un virement d'argent.</p>
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 3</strong>&nbsp;: La base de données contenant les mots de passe n'utilise pas de sel, ou alors de simples hachés pour stocker les mots de passe de chacun. Une faille d'upload de fichier permet à un attaquant de récupérer la base de données de mots de passe. Tous les hachés non salés peuvent alors être révélés avec une rainbow table de hachés pré-calculés. Des hachés générés par des fonctions de hachage simples ou rapides peuvent être déchiffrés par des GPUs, même salés.</p>
     </section>
 
     <section>

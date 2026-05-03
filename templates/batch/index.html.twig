@@ -42,12 +42,10 @@
     {# Message d'information php #}
     {{ include('_message.html.twig') }}
 
-    {# WCAG 2.4.1 / 4.1.1 : id="main-content" (cible du skip link) ; retrait du role="main" redondant #}
-    <main id="main-content" class="grid-container">
-      {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page ; titre descendu en <h2> ; aria-label redondant retiré #}
-      <h2 class="h3 claire-hand">
-        <span aria-hidden="true">🕒</span> Traitements du jour
-      </h2>
+    <main class="grid-container" role="main">
+      <h1 class="h3 claire-hand" aria-label="Traitements du jour">
+        <span aria-hidden="true" class="emoji">🕒</span> Traitements
+      </h1>
 
       <p class="open-sans">
         Collecte du

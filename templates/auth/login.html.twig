@@ -31,8 +31,7 @@
 
     {# Fil d’Ariane #}
     <header class="grid-container margin-top-1">
-      {# WCAG 2.4.8 : indication "vous êtes ici" portée par aria-label ; aria-current="page" sur l'élément courant #}
-      <nav id="fil-ariane" aria-label="Fil d'Ariane, vous êtes ici">
+      <nav id="fil-ariane" aria-label="vous êtes ici :">
         <ol class="claire-hand breadcrumbs">
           <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
           <li aria-current="page">Authentification</li>
@@ -77,8 +76,8 @@
                     placeholder="prenom.nom ou email@domaine.fr"
                     required aria-required="true"
                     autofocus autocomplete="username"
-                    inputmode="email"
-                    pattern="^[a-zA-Z0-9._@-]+$">
+                    inputmode="email">
+                    {# ne fonctionne pas pour une adresse UNP : pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$"#}
             </div>
 
             <div class="floated-label-wrapper">
