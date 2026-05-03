@@ -15,7 +15,7 @@ namespace App\EventSubscriber;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\HttpFoundation\{JsonResponse, Request};
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -28,6 +28,9 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
     private string $internalHeaderName;
     private string $internalHeaderValue;
     private LoggerInterface $logger;
+/**
+ * @param array<int|string, mixed> $allowedOrigins
+ */
 
     public function __construct(
         string $appClientToken,
@@ -46,7 +49,7 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
     /**
      * [Description for getSubscribedEvents]
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 21/10/2025 09:30:50 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -85,8 +88,8 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
 
         //🔒 seules les requêtes venant d’un Origin ou Referer autorisé et portant le header interne correct (X-Internal-Front: front-app) peuvent appeler /api/secure/*.
         $isAllowedOriginOrReferer =
-            $this->isAllowedOrigin($origin, $request) ||
-            $this->isAllowedOrigin($referer, $request);
+            $this->isAllowedOrigin($origin) ||
+            $this->isAllowedOrigin($referer);
 
         $hasInternalHeader =
             $internalHeader === $this->internalHeaderValue;
@@ -120,8 +123,14 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
     /**
      * [Description for isAllowedOrigin]
      *
+     * Verifie que le host extrait de l'URL (Origin ou Referer) appartient
+     * a la liste des origines autorisees.
+     *
+     * Why: l'ancienne version retombait sur $request->getHost() quand l'URL
+     * etait vide, ce qui validait la requete via le host du serveur lui-meme
+     * (toujours dans allowedOrigins) et neutralisait le controle Origin/Referer.
+     *
      * @param string $url
-     * @param Request|null $request
      *
      * @return bool
      *
@@ -129,26 +138,20 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function isAllowedOrigin(string $url, ?Request $request = null): bool
+    private function isAllowedOrigin(string $url): bool
     {
-        if (empty($url) && $request === null) {
+        if ($url === '') {
             return false;
         }
 
-        $originsToCheck = [];
-        if (!empty($url)) {
-            $originsToCheck[] = parse_url($url, PHP_URL_HOST);
-        }
-        if ($request) {
-            $originsToCheck[] = $request->getHost();
+        $host = parse_url($url, PHP_URL_HOST);
+        if (!is_string($host) || $host === '') {
+            return false;
         }
 
-        foreach ($originsToCheck as $host) {
             foreach ($this->allowedOrigins as $allowed) {
-                // Compare proprement les domaines, pas juste un "contains"
                 if ($host === $allowed || str_ends_with($host, '.' . $allowed)) {
                     return true;
-                }
             }
         }
 
