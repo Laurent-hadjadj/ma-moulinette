@@ -35,7 +35,7 @@ class ActivityHistoriqueValidatorTest extends KernelTestCase
 
   private function getEntity(): ActivityHistorique
   {
-      return (new activityHistorique())
+      return (new ActivityHistorique())
       ->setYear(self::$year)
       ->setDay(self::$day)
       ->setAnalyse(self::$analyse)

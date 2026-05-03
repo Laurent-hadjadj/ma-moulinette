@@ -36,7 +36,7 @@ class ActivityHistoriqueFixtures extends Fixture
    */
   public function load(ObjectManager $manager): void
     {
-      $activityHistorique=(new ActivityHistorique())
+      $ActivityHistorique=(new ActivityHistorique())
           ->setYear(self::$year)
           ->setDay(self::$day)
           ->setAnalyse(self::$analyse)
@@ -46,7 +46,7 @@ class ActivityHistoriqueFixtures extends Fixture
           ->setSuccessRate(self::$successRate)
           ->setMaxTime(self::$maxTime)
           ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
-      $manager->persist($activityHistorique);
+      $manager->persist($ActivityHistorique);
       /** Enregistrement des données dans la base de tests */
         $manager->flush();
     }

@@ -38,7 +38,7 @@ class AnomalieDetailsRepositoryTest extends KernelTestCase
         $connection = $entityManager->getConnection();
         $platform = $connection->getDatabasePlatform('SET search_path TO ma_moulinette_test');
 
-        if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform) {
+        if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSQLPlatform) {
             $sequence = 'ma_moulinette.anomalie_details_id_seq';
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }

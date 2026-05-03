@@ -38,7 +38,7 @@ class BatchTraitementKernelTest extends KernelTestCase
         $connection = $entityManager->getConnection();
         $platform = $connection->getDatabasePlatform();
 
-        if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform) {
+        if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSQLPlatform) {
             $sequence = 'ma_moulinette.batch_traitement_id_seq';
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }

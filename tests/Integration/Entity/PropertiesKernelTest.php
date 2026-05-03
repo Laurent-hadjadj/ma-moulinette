@@ -38,7 +38,7 @@ class PropertiesKernelTest extends KernelTestCase
         $connection = $entityManager->getConnection();
         $platform = $connection->getDatabasePlatform();
 
-        if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform) {
+        if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSQLPlatform) {
             $sequence = 'ma_moulinette.properties_id_seq';
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }

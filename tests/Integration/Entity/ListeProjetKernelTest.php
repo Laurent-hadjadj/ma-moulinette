@@ -37,7 +37,7 @@ class ListeProjetKernelTest extends KernelTestCase
         $connection = $entityManager->getConnection();
         $platform = $connection->getDatabasePlatform();
 
-        if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSqlPlatform) {
+        if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSQLPlatform) {
             $sequence = 'ma_moulinette.liste_projet_id_seq';
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
