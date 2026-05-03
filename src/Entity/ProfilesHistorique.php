@@ -217,7 +217,7 @@ class ProfilesHistorique
         return $this;
     }
 
-    public function getDetail()
+    public function getDetail(): mixed
     {
         return $this->detail;
     }

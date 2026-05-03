@@ -20,7 +20,7 @@ class DateToolsTest extends TestCase
     /**
      * Tests pour la méthode dateToMinute
      */
-    public function testDateToMinute()
+    public function testDateToMinute(): void
     {
         // Test avec jours, heures et minutes
         $this->assertEquals(2941, $this->dateTools->dateToMinute('2d1h1min'));
@@ -41,7 +41,7 @@ class DateToolsTest extends TestCase
     /**
      * Tests pour la méthode minutesTo
      */
-    public function testMinutesTo()
+    public function testMinutesTo(): void
     {
         // Test avec plusieurs jours
         $this->assertEquals('2d, 1h:1min', $this->dateTools->minutesTo(2941));
@@ -59,7 +59,7 @@ class DateToolsTest extends TestCase
     /**
      * Tests pour la méthode minutesToString
      */
-    public function testMinutesToString()
+    public function testMinutesToString(): void
     {
         // Test avec plusieurs jours
         $this->assertEquals('2d, 1h:1m', $this->dateTools->minutesToString(2941));
@@ -80,7 +80,7 @@ class DateToolsTest extends TestCase
     /**
      * Tests de robustesse
      */
-    public function testRobustness()
+    public function testRobustness(): void
     {
         // Test avec une chaîne vide pour dateToMinute
         $this->assertEquals(0, $this->dateTools->dateToMinute(''));

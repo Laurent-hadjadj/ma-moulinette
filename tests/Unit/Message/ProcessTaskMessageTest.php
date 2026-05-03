@@ -36,7 +36,7 @@ class ProcessTaskMessageTest extends TestCase
     /**
      * Teste la construction et la récupération d'une tâche valide
      */
-    public function testConstructorAndGetTask()
+    public function testConstructorAndGetTask(): void
     {
         $processTaskMessage = new ProcessTaskMessage($this->validTask);
 
@@ -47,7 +47,7 @@ class ProcessTaskMessageTest extends TestCase
     /**
      * Teste le comportement avec une tâche vide
      */
-    public function testEmptyTask()
+    public function testEmptyTask(): void
     {
         $emptyTask = [];
         $processTaskMessage = new ProcessTaskMessage($emptyTask);
@@ -59,7 +59,7 @@ class ProcessTaskMessageTest extends TestCase
     /**
      * Teste si toutes les clés nécessaires sont présentes dans une tâche valide
      */
-    public function testValidTaskKeys()
+    public function testValidTaskKeys(): void
     {
         $processTaskMessage = new ProcessTaskMessage($this->validTask);
         $task = $processTaskMessage->getTask();
@@ -92,7 +92,7 @@ class ProcessTaskMessageTest extends TestCase
     /**
      * Teste les valeurs d'une tâche valide
      */
-    public function testValidTaskValues()
+    public function testValidTaskValues(): void
     {
         $processTaskMessage = new ProcessTaskMessage($this->validTask);
         $task = $processTaskMessage->getTask();
@@ -109,7 +109,7 @@ class ProcessTaskMessageTest extends TestCase
     /**
      * Teste le comportement avec des données corrompues ou non valides
      */
-    public function testInvalidTaskData()
+    public function testInvalidTaskData(): void
     {
         $invalidTask = [
             "organization" => null,

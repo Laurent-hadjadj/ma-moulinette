@@ -244,7 +244,11 @@ class UserAgentReportingService
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getUtilisateurDisponible(){
+    /**
+     * @return array<string, mixed>
+     */
+    public function getUtilisateurDisponible(): array
+    {
         /** On récupère le nombre d'utilisateur créé dans la table */
         $result = $this->userRepos->countUtilisateurDisponible();
         if ($result['code'] !== 200) {

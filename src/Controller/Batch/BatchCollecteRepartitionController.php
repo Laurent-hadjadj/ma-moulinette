@@ -366,7 +366,8 @@ class BatchCollecteRepartitionController extends AbstractController
      * @param array<int|string, mixed> $groupData
      * @param array<int|string, mixed> $fields
      */
-    private function flattenGroupData(array $groupData, array $fields, array &$map){
+    private function flattenGroupData(array $groupData, array $fields, array &$map): void
+    {
         // Fonction d'aplatissement qui, pour une category donné, affecte chaque valeur aux clés correspondantes
         // Chaque category doit contenir 5 sous-tableaux de 4 valeurs = 20 valeurs
         if (count($groupData) === 5) {

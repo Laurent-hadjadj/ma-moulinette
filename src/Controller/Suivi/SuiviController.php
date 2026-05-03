@@ -154,7 +154,7 @@ class SuiviController extends AbstractController
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/suivi/set', name: 'suivi_set', methods: ['GET'])]
-    public function setSession(Request $request)
+    public function setSession(Request $request): Response
     {
         $maven_key = $request->query->get('maven_key');
         // Stocker des données dans la session via l'objet Request

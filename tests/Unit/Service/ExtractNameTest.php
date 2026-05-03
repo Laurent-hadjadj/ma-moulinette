@@ -18,7 +18,7 @@ class ExtractNameTest extends TestCase
         $this->extractName = new ExtractName();
     }
 
-    public function testExtractNameFromValidMavenKey()
+    public function testExtractNameFromValidMavenKey(): void
     {
         $mavenKey = "fr.ma-petite-entreprise:ma-moulinette";
         $result = $this->extractName->extractNameFromMavenKey($mavenKey);
@@ -27,7 +27,7 @@ class ExtractNameTest extends TestCase
         $this->assertEquals("ma-moulinette", $result);
     }
 
-    public function testExtractNameFromMavenKeyWithoutColon()
+    public function testExtractNameFromMavenKeyWithoutColon(): void
     {
         $mavenKey = "ma-petite-entreprise";
         $result = $this->extractName->extractNameFromMavenKey($mavenKey);
@@ -36,7 +36,7 @@ class ExtractNameTest extends TestCase
         $this->assertEquals("ma-petite-entreprise", $result);
     }
 
-    public function testExtractNameFromEmptyMavenKey()
+    public function testExtractNameFromEmptyMavenKey(): void
     {
         $mavenKey = "";
         $result = $this->extractName->extractNameFromMavenKey($mavenKey);
@@ -45,7 +45,7 @@ class ExtractNameTest extends TestCase
         $this->assertEquals("", $result);
     }
 
-    public function testExtractNameFromNullMavenKey()
+    public function testExtractNameFromNullMavenKey(): void
     {
         $mavenKey = null;  // On passe null pour tester ce cas
         $result = $this->extractName->extractNameFromMavenKey($mavenKey);
@@ -54,7 +54,7 @@ class ExtractNameTest extends TestCase
         $this->assertEquals('', $result);
     }
 
-    public function testExtractNameFromMavenKeyWithMultipleColons()
+    public function testExtractNameFromMavenKeyWithMultipleColons(): void
     {
         $mavenKey = "org.apache:project:name";
         $result = $this->extractName->extractNameFromMavenKey($mavenKey);
@@ -63,7 +63,7 @@ class ExtractNameTest extends TestCase
         $this->assertEquals("project", $result);
     }
 
-    public function testExtractNameFromSingleElementMavenKey()
+    public function testExtractNameFromSingleElementMavenKey(): void
     {
         $mavenKey = "my-single-key";
         $result = $this->extractName->extractNameFromMavenKey($mavenKey);

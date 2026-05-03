@@ -158,7 +158,7 @@ class LoginController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/logout', name: 'logout')]
-    public function logout()
+    public function logout(): RedirectResponse
     {
         $this->logger->info('[Auth] ℹ️ Déconnexion utilisateur – redirection vers la page login.');
         return new RedirectResponse($this->router->generate('login'));

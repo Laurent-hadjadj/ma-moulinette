@@ -16,7 +16,7 @@ class ActivityMessageTest extends TestCase
     /**
      * Teste la construction d'un ActivityMessage et les getters
      */
-    public function testConstructorAndGetters()
+    public function testConstructorAndGetters(): void
     {
         $fromDate = self::$fromDate;
         $toDate = self::$toDate;
@@ -31,7 +31,7 @@ class ActivityMessageTest extends TestCase
     /**
      * Teste les formats de date/heure valides
      */
-    public function testValidDateTimeFormats()
+    public function testValidDateTimeFormats(): void
     {
         $fromDate = self::$fromDate;
         $toDate = self::$toDate;
@@ -52,7 +52,7 @@ class ActivityMessageTest extends TestCase
     /**
      * Teste le comportement avec des dates vides
      */
-    public function testEmptyDates()
+    public function testEmptyDates(): void
     {
         $fromDate = '';
         $toDate = '';
@@ -66,7 +66,7 @@ class ActivityMessageTest extends TestCase
     /**
      * Teste avec des formats de date/heure non valides
      */
-    public function testInvalidDateTimeFormats()
+    public function testInvalidDateTimeFormats(): void
     {
         $fromDate = '2025-01-01'; // Manque l'heure
         $toDate = '31/12/2025 23:59:59'; // Mauvais format (slash)
@@ -81,7 +81,7 @@ class ActivityMessageTest extends TestCase
     /**
      * Teste une plage de dates valide
      */
-    public function testValidDateRange()
+    public function testValidDateRange(): void
     {
         $fromDate = self::$fromDate;
         $toDate = self::$toDate;
