@@ -36,6 +36,8 @@ import html2canvas from 'html2canvas';
 /** On importe les paramètres serveur */
 import {serveur} from '../../common/properties.js';
 
+import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
+
 import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import 'chartjs-adapter-date-fns';
@@ -47,19 +49,7 @@ Chart.register(...registerables);
 Chart.register(ChartDataLabels);
 
 /** On importe les constantes */
-import { http_200, http_201,http_400, http_404, chartColors, zero, un,
-        deux, soixante, cent, dateOptions, content_type } from '../../common/constante.js';
-
-/* Construction des callouts pour les messages */
-const messageInformation=`<div id="js-message-info" class="callout alert-callout-border primary" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu padding-right-1"><strong>Information ! </strong>`;
-const messageSuccess=`<div id="js-message-success" class="callout alert-callout-border success" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu padding-right-1"><strong>Bravo ! </strong>`;
-const messageWarning=`<div id="js-message-warning" class="callout alert-callout-border warning" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu padding-right-1"><strong>Attention ! </strong>`;
-const messageAlert=`<div id="js-message-error" class="callout alert-callout-border alert" data-closable="slide-out-right" role="alert"><p class="open-sans color-bleu padding-right-1"><strong>Oups !!! </strong>`;
-const noticePrimary=`</p><button class="close-button primary"`;
-const noticeSuccess=`</p><button class="close-button success"`;
-const noticeWarning=`</p><button class="close-button warning"`;
-const noticeAlert=`</p><button class="close-button alert"`;
-const messageClose=` aria-label="Fermer la fenêtre" type="button" data-close><span aria-hidden="true">&times;</span></button></div>`;
+import { http_200, http_201, http_400, http_401, http_403, http_404, http_500, http_503, http_504, chartColors, zero, un, deux, soixante, cent, dateOptions, content_type } from '../../common/constante.js';
 
 /**
  * [Description for dessineMoiUnMouton]
@@ -204,38 +194,83 @@ dessineMoiUnMouton(
 );
 
 /**
-* [Description for selectVersion]
-* Création de la liste des projets pour le sélecteur.
-*
-* @param string mavenKey
-*
-* @return [type]
-*
-* Created at: 19/12/2022, 23:00:07 (Europe/Paris)
-* @author     Laurent HADJADJ <laurent_h@me.com>
-*/
-const selectVersion=async function(mavenKey) {
-  const data={ maven_key: mavenKey };
+ * Drapeau de validite des donnees chargees pour la modale "ajouter une analyse".
+ * Mis a true uniquement si getVersion a abouti (code 200 + data).
+ * Empeche l'enregistrement si l'utilisateur n'a pas selectionne / si la version est invalide.
+ */
+let donneesAjoutValides = false;
+
+/**
+ * Snapshot des dernières métriques renvoyées par /api/secure/get/version
+ * (sortie de BuildMapHistoryService::metricsRebuild côté backend, ~50 fields
+ * typés). Mémorisé pour round-trip vers /api/secure/suivi/mise-a-jour sans
+ * dupliquer chaque champ en dataset.*. Reset à chaque ouverture de modale.
+ */
+let dernieresMetriques = {};
+
+/**
+ * [Description for versionSonarQubeListe]
+ * Charge la liste des versions disponibles depuis SonarQube pour la cle maven donnee.
+ * POST /api/secure/liste/v2.0/version
+ *
+ * @param string maven_key
+ * @return object|null
+ */
+const versionSonarQubeListe = async function (maven_key) {
+  const data = { maven_key };
   const options = {
     url: `${serveur()}/api/secure/liste/v2.0/version`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType: content_type,
+    content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
-    },
+    }
   };
 
-  const r = await $.ajax(options);
-  // 📌 Vérification des erreurs
-  if (r.code === http_400) {
-    const message=`La requête est incorrecte (Erreur 400).`;
-    $('#message-ajout-projet').html(messageAlert+message+noticeAlert+messageClose
-    );
+  let t;
+  try {
+    t = await $.ajax(options);
+
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+    if (errorCodes.includes(t.code)) {
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      return null;
+    }
+  } catch (error) {
+    const trace = prepareTechnicalDetails(error);
+    const message = "Une erreur inattendue s'est produite lors du chargement des versions SonarQube (Erreur 500).";
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_critical', trace);
+    return null;
+  }
+
+  return t;
+};
+
+/**
+ * description
+ * On affiche la liste des projets
+ */
+$('.js-ajouter-analyse').on('click', async function () {
+  const mavenKey = $('#titre-js-nom').data('maven');
+
+  /** Si la cle mavenKey n'est pas definie on n'ouvre pas la fenetre modale */
+  if (mavenKey === undefined || mavenKey === null || mavenKey === '') {
+    showMessage('warning', "La cle maven n'est pas valide !", null);
     return;
   }
+
+  /** On reinitialise le drapeau a chaque ouverture */
+  donneesAjoutValides = false;
+
+  /* On charge la liste du formulaire d'ajout */
+  const t = await versionSonarQubeListe(mavenKey);
+  if (!t) return;
 
   $('.js-version').select2({
     placeholder: 'Cliquez pour ouvrir la liste',
@@ -243,68 +278,30 @@ const selectVersion=async function(mavenKey) {
     width: '100%',
     minimumResultsForSearch: 5,
     language: 'fr',
-    data: r.liste
+    data: t.liste
   });
   $('.analyse').removeClass('hide');
-  };
 
-/**
- * description
- * On affiche la liste des projets
- */
-$('.js-ajouter-analyse').on('click', function () {
-  const mavenKey=$('#js-nom').data('maven');
-
-  /** Si la clé mavenKey n'est pas défini on ouvre pas la fenêtre modale */
-  if (mavenKey===null || mavenKey==='') {
-    return;
-  }
-
-  /* On charge la liste du formulaire d'ajout */
-  selectVersion(mavenKey);
-
-  /* On ouvre la fenêtre modale */
+  /* On ouvre la fenetre modale */
   $('#modal-ajouter-analyse').foundation('open');
 });
 
 /* On recharge la page pour mettre à jour la vue */
-$('#fermer-choisir-analyse').on('click', ()=>{
+$('#fermer-modifier-analyse').on('click', ()=>{
   location.reload();
 });
 
 /**
- * description
- * On charge les données de la version sélectionnée depuis la fenêtre ajouté
+ * [Description for versionDataGet]
+ * Recupere les metriques d'une version pour la cle maven et la date donnees.
+ * POST /api/secure/get/version
+ *
+ * @param string maven_key
+ * @param string date
+ * @return object|null
  */
-$('select[name="version"]').on('change', function () {
-  /** si la valeur sélectionné est TheId alors on sort */
-  if ($('select[name="version"]')==='TheId'){
-    return;
-  }
-  /* On affiche la clé */
-  $('#key-maven').html($('#js-nom').data('maven').trim());
-
-  /* On affiche le nom */
-  const n=$('#js-nom').data('maven').trim();
-  const name=n.split(':');
-  $('#nom').html(name[1]);
-  /* On récupère la date et on l'a nettoie avant de l'envoyer */
-  const d=$('#liste-version :selected').text();
-  //4.2.1-RELEASE (18-09-2024 16:57:50)
-  const d1=d.split('(');
-  const d2=d1[1].split(')');
-  const t0 = document.getElementById('date');
-  t0.dataset.date=(d2[0]);
-
-  /* On affiche la version */
-  $('#version').html(d1[0]);
-  /* On affiche la date */
-  $('#date').html(d2);
-
-  /**
-   *  On appel l'API de récupération des versions
-  */
-  const data = { maven_key: $('#key-maven').text().trim(), date:d2[0] };
+const versionDataGet = async function (maven_key, date) {
+  const data = { maven_key, date };
   const options = {
     url: `${serveur()}/api/secure/get/version`,
     type: 'POST',
@@ -314,323 +311,341 @@ $('select[name="version"]').on('change', function () {
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
-    },
+    }
   };
 
-  $.ajax(options).then(t => {
-    // 📌 Vérification des erreurs
-      /** On récupère le message
-     * Si 404 --> le projet n'existe plus
-     * Si 200 --> on continue
-     * si <> 200 et 404, exception symfony
-    */
-    if (t.code === http_400 && t.data===null || t.code === http_400 && t.maven_key === null) {
-      const message=`La requête est incorrecte (Erreur 400).`;
-      $('#message-ajout-projet').html(messageAlert+message+noticeAlert+messageClose
-      );
-      return;
+  let t;
+  try {
+    t = await $.ajax(options);
+
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+    if (errorCodes.includes(t.code)) {
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      return null;
     }
-    if (t.code === http_404) {
-      const message=`Le projet n'existe plus sur le serveur SonarQube ! (Erreur 406)`;
-      $('#message-ajout-projet').html(messageAlert+message+noticeAlert+messageClose
-      );
-      return;
-    }
+  } catch (error) {
+    const trace = prepareTechnicalDetails(error);
+    const message = "Une erreur inattendue s'est produite lors du chargement des metriques (Erreur 500).";
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_critical', trace);
+    return null;
+  }
 
-    /** Tout va bien. */
-    if (t.code===http_200) {
-      const message=`Les données pour le projet sont disponibles.`;
-      $('#message-ajout-projet').html(messageInformation+message+noticePrimary+messageClose
-      );
-    }
-    const tNotes1 = ['', 'a', 'b', 'c', 'd', 'e', 'z'];
-    const tNotes2 = ['', 'A', 'B', 'C', 'D', 'E', 'Z'];
-    const couleurReliability = tNotes1[Number(t.data.reliability_rating)];
-    const couleurSecurity = tNotes1[Number(t.data.security_rating)];
-    const couleurSqale = tNotes1[Number(t.data.sqale_rating)];
-    const couleurHotspotsReview = tNotes1[Number(t.data.security_review_rating)];
+  return t;
+};
 
-    const reliability_rating = tNotes2[Number(t.data.reliability_rating)];
-    const security_rating = tNotes2[Number(t.data.security_rating)];
-    const sqale_rating = tNotes2[Number(t.data.sqale_rating)];
-    const security_review_rating = tNotes2[Number(t.data.security_review_rating)];
+/**
+ * [Description for displayMetric]
+ * Helper d'affichage des métriques. Si la valeur est null/undefined (métrique
+ * absente côté SonarQube — selon la version, certaines ne sont pas remontées),
+ * on affiche '-'. Sinon on applique la transformation `mapper` puis le formatter.
+ *
+ * @param mixed value
+ * @param object formatter Intl.NumberFormat
+ * @param function|null mapper Transformation optionnelle (ex: v => v / 100)
+ * @return string
+ */
+const displayMetric = function (value, formatter, mapper = null) {
+  if (value === null || value === undefined) {
+    return '-';
+  }
+  const v = mapper ? mapper(value) : value;
+  return formatter.format(v);
+};
 
-    /*  On affiche les notes */
-    $('#reliability-rating').html(`<span class="note note-${couleurReliability}">${reliability_rating}</span>`);
-    $('#security-rating').html(`<span class="note note-${couleurSecurity}">${security_rating}</span>`);
-    $('#sqale-rating').html(`<span class="note note-${couleurSqale}">${sqale_rating}</span>`);
-    $('#security-review-rating').html(`<span class="note note-${couleurHotspotsReview}">${security_review_rating}</span>`);
+/**
+ * [Description for displayRating]
+ * Helper pour les notes A-E. Accepte deux formats :
+ *  - lettre directe ('A','B','C','D','E','--') sortie de
+ *    BuildMapHistoryService::metricsRebuild → ratingToLetter() côté PHP.
+ *  - nombre 1-5 (legacy, avant la refacto getVersion).
+ * null/undefined/'--' ou hors plage → '-'.
+ *
+ * @param mixed value
+ * @return object {couleur, lettre}
+ */
+const displayRating = function (value) {
+  if (value === null || value === undefined || value === '--') {
+    return { couleur: '', lettre: '-' };
+  }
+  // Format lettre (A-E) — sortie courante de metricsRebuild
+  if (typeof value === 'string' && /^[A-E]$/i.test(value)) {
+    const upper = value.toUpperCase();
+    return { couleur: upper.toLowerCase(), lettre: upper };
+  }
+  // Format numérique 1-5 — fallback legacy
+  const tNotes1 = ['', 'a', 'b', 'c', 'd', 'e', 'z'];
+  const tNotes2 = ['', 'A', 'B', 'C', 'D', 'E', 'Z'];
+  const idx = Number(value);
+  return { couleur: tNotes1[idx] ?? '', lettre: tNotes2[idx] ?? '-' };
+};
 
-    /* Historique*/
-    const t1 = document.getElementById('reliability-rating');
-    const t2 = document.getElementById('security-rating');
-    const t3 = document.getElementById('sqale-rating');
-    const t4 = document.getElementById('security-review-rating');
-    t1.dataset.reliabilityRating=(reliability_rating);
-    t2.dataset.securityRating=(security_rating);
-    t3.dataset.sqaleRating=(sqale_rating);
-    t4.dataset.securityReviewRating=(security_review_rating);
+/**
+ * [Description for populerMetriques]
+ * Affiche les metriques recuperees dans la modale "ajouter une analyse".
+ * Stocke aussi les valeurs en data-* pour les recuperer a l'enregistrement.
+ *
+ * @param object data
+ */
+const populerMetriques = function (data) {
+  /** Snapshot complet pour round-trip vers suiviMiseAJour. */
+  dernieresMetriques = data;
 
-    /* On affiche le nombre de bugs, de vulnérabilités et de mauvaises pratiques. */
-    $('#violations').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.violations));
-    $('#bugs').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.bugs));
-    $('#vulnerabilities').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.vulnerabilities));
-    $('#code-smells').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.code_smells));
-    const verifyHotspotsReview=t.data.security_hotspots;
-    if (verifyHotspotsReview !== -1) {
-      $('#security-hotspots').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(verifyHotspotsReview));
-    } else {
-      $('#security-hotspots').html('-');
-    }
+  const reliability = displayRating(data.reliability_rating);
+  const security = displayRating(data.security_rating);
+  const sqale = displayRating(data.sqale_rating);
+  const hotspotsReview = displayRating(data.security_review_rating);
 
-    /* historique */
-    const t5 = document.getElementById('violations');
-    const t5a = document.getElementById('bugs');
-    const t6 = document.getElementById('vulnerabilities');
-    const t7 = document.getElementById('code-smells');
-    const t8 = document.getElementById('security-hotspots');
-    t5.dataset.violations=(t.data.violations);
-    t5a.dataset.bugs=(t.data.bugs);
-    t6.dataset.vulnerabilities=(t.data.vulnerabilities);
-    t7.dataset.codeSmells=(t.data.code_smells);
-    t8.dataset.securityHotspots=(t.data.security_hotspots);
+  /* On affiche les notes */
+  $('#reliability-rating').html(`<span class="note note-${reliability.couleur}">${reliability.lettre}</span>`);
+  $('#security-rating').html(`<span class="note note-${security.couleur}">${security.lettre}</span>`);
+  $('#sqale-rating').html(`<span class="note note-${sqale.couleur}">${sqale.lettre}</span>`);
+  $('#security-review-rating').html(`<span class="note note-${hotspotsReview.couleur}">${hotspotsReview.lettre}</span>`);
 
-    /* On affiche les autres métriques */
-    const liste=t.data.ncloc_language_distribution;
-    // Étape 1 : Diviser la chaîne en paires clé=valeur
-    const pairs = liste.split(';');
+  /* Historique des notes via data-* — on stocke la valeur BRUTE de
+   * metricsRebuild ('A'-'E' ou null), pas le résultat formaté '-' du helper.
+   * Permet à la normalisation backend de convertir 'null' string → null PHP. */
+  document.getElementById('reliability-rating').dataset.reliabilityRating = data.reliability_rating;
+  document.getElementById('security-rating').dataset.securityRating = data.security_rating;
+  document.getElementById('sqale-rating').dataset.sqaleRating = data.sqale_rating;
+  document.getElementById('security-review-rating').dataset.securityReviewRating = data.security_review_rating;
 
-    // Étape 2 : Extraire les clés (noms des langages) de chaque paire
-    const langages = pairs.map(pair => pair.split('=')[0]);
+  /* Bugs / vulnerabilites / mauvaises pratiques */
+  const fmtDecimal = new Intl.NumberFormat('fr-FR', { style: 'decimal' });
+  const fmtPercent = new Intl.NumberFormat('fr-FR', { style: 'percent', maximumFractionDigits: 2 });
 
-    // Étape 3 : Créer un <span> pour chaque langage et l'ajouter au conteneur #affiche
-    let ponctuation=',';
-    const nombreLangage=langages.length;
-    let i=0;
-    langages.forEach(language => {
-      i++;
-      if (nombreLangage === i) { ponctuation='.' }
-      const span = `<span class="nasa">${language}</span>${ponctuation}&nbsp;`;
-      $('#ncloc-language-distribution').append(span);
+  $('#violations').html(displayMetric(data.violations, fmtDecimal));
+  $('#bugs').html(displayMetric(data.bugs, fmtDecimal));
+  $('#vulnerabilities').html(displayMetric(data.vulnerabilities, fmtDecimal));
+  $('#code-smells').html(displayMetric(data.code_smells, fmtDecimal));
+  $('#security-hotspots').html(displayMetric(data.security_hotspots, fmtDecimal));
+
+  /* Historique */
+  document.getElementById('violations').dataset.violations = data.violations;
+  document.getElementById('bugs').dataset.bugs = data.bugs;
+  document.getElementById('vulnerabilities').dataset.vulnerabilities = data.vulnerabilities;
+  document.getElementById('code-smells').dataset.codeSmells = data.code_smells;
+  document.getElementById('security-hotspots').dataset.securityHotspots = data.security_hotspots;
+
+  /* Repartition des langages */
+  $('#ncloc-language-distribution').empty();
+  const liste = data.ncloc_language_distribution;
+  if (typeof liste === 'string' && liste.length > 0) {
+    const langages = liste.split(';').map(pair => pair.split('=')[0]);
+    const nombreLangage = langages.length;
+    langages.forEach((language, idx) => {
+      const ponctuation = (idx + un === nombreLangage) ? '.' : ',';
+      $('#ncloc-language-distribution').append(`<span class="nasa">${language}</span>${ponctuation}&nbsp;`);
     });
-    $('#files').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.files));
-    $('#classes').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.classes));
-    $('#functions').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.functions));
+  }
 
-    $('#ncloc').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.ncloc));
-    $('#lines').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.lines));
+  $('#files').html(displayMetric(data.files, fmtDecimal));
+  $('#classes').html(displayMetric(data.classes, fmtDecimal));
+  $('#functions').html(displayMetric(data.functions, fmtDecimal));
+  $('#ncloc').html(displayMetric(data.ncloc, fmtDecimal));
+  $('#lines').html(displayMetric(data.lines, fmtDecimal));
+  $('#comment-lines').html(displayMetric(data.comment_lines, fmtDecimal));
+  $('#comment-lines-density').html(displayMetric(data.comment_lines_density, fmtPercent, v => v / cent));
+  $('#dette').html(displayMetric(data.sqale_index, fmtDecimal, v => v / soixante / soixante));
+  $('#sqale-debt-ratio').html(displayMetric(data.sqale_debt_ratio, fmtPercent, v => v / cent));
+  $('#coverage').html(displayMetric(data.coverage, fmtPercent, v => v / cent));
+  $('#duplicated-lines-density').html(displayMetric(data.duplicated_lines_density, fmtPercent, v => v / cent));
+  $('#tests').html(displayMetric(data.tests, fmtDecimal));
+  $('#test-success-density').html(displayMetric(data.test_success_density, fmtPercent, v => v / cent));
+  $('#skipped-tests').html(displayMetric(data.skipped_tests, fmtDecimal));
+  $('#test-errors').html(displayMetric(data.test_errors, fmtDecimal));
+  $('#test-failures').html(displayMetric(data.test_failures, fmtDecimal));
 
-    $('#comment-lines').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.comment_lines));
-    $('#comment-lines-density').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.data.comment_lines_density/cent));
-
-    $('#dette').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.sqale_index/soixante/soixante));
-    $('#sqale-debt-ratio').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.data.sqale_debt_ratio/cent));
-
-    $('#coverage').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.data.coverage/cent));
-    $('#duplicated-lines-density').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.data.duplicated_lines_density/cent));
-
-    $('#tests').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.tests));
-    $('#test-success-density').html(new Intl.NumberFormat('fr-FR', { style: 'percent',maximumFractionDigits: 2 }).format(t.data.test_success_density/cent));
-    $('#skipped-tests').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.skipped_tests));
-    $('#test-errors').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.test_errors));
-    $('#test-failures').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(t.data.test_failures));
-
-    /* historique */
-    const t9 = document.getElementById('ncloc-language-distribution');
-
-    const t10 = document.getElementById('files');
-    const t11 = document.getElementById('classes');
-    const t12 = document.getElementById('functions');
-
-    const t13 = document.getElementById('ncloc');
-    const t14 = document.getElementById('lines');
-
-    const t15 = document.getElementById('comment-lines');
-    const t16 = document.getElementById('comment-lines-density');
-
-    const t17 = document.getElementById('coverage');
-    const t18 = document.getElementById('duplicated-lines-density');
-
-    const t19 = document.getElementById('dette');
-    const t20 = document.getElementById('sqale-debt-ratio');
-
-    const t21 = document.getElementById('tests');
-    const t22 = document.getElementById('test-success-density');
-    const t23 = document.getElementById('skipped-tests');
-    const t24 = document.getElementById('test-errors');
-    const t25 = document.getElementById('test-failures');
-
-    t9.dataset.nclocLanguageDistribution=(t.data.ncloc_language_distribution);
-    t10.dataset.files=(t.data.files);
-    t11.dataset.classes=(t.data.classes);
-    t12.dataset.functions=(t.data.functions);
-
-    t13.dataset.ncloc=(t.data.ncloc);
-    t14.dataset.lines=(t.data.lines);
-
-    t15.dataset.commentLines=(t.data.comment_lines);
-    t16.dataset.commentLinesDensity=(t.data.comment_lines_density);
-
-    t17.dataset.coverage=(t.data.coverage);
-    t18.dataset.duplicatedLinesDensity=(t.data.duplicated_lines_density);
-
-    t19.dataset.dette=(t.data.sqale_index);
-    t20.dataset.sqaleDebtRatio=(t.data.sqale_debt_ratio);
-
-    t21.dataset.tests=(t.data.tests);
-    t22.dataset.testSuccessDensity=(t.data.test_success_density);
-    t23.dataset.skippedTests=(t.data.skipped_tests);
-    t24.dataset.testErrors=(t.data.test_errors);
-    t25.dataset.testFailures=(t.data.test_failures);
-  });
-});
+  /* Historique */
+  document.getElementById('ncloc-language-distribution').dataset.nclocLanguageDistribution = data.ncloc_language_distribution;
+  document.getElementById('files').dataset.files = data.files;
+  document.getElementById('classes').dataset.classes = data.classes;
+  document.getElementById('functions').dataset.functions = data.functions;
+  document.getElementById('ncloc').dataset.ncloc = data.ncloc;
+  document.getElementById('lines').dataset.lines = data.lines;
+  document.getElementById('comment-lines').dataset.commentLines = data.comment_lines;
+  document.getElementById('comment-lines-density').dataset.commentLinesDensity = data.comment_lines_density;
+  document.getElementById('coverage').dataset.coverage = data.coverage;
+  document.getElementById('duplicated-lines-density').dataset.duplicatedLinesDensity = data.duplicated_lines_density;
+  document.getElementById('dette').dataset.dette = data.sqale_index;
+  document.getElementById('sqale-debt-ratio').dataset.sqaleDebtRatio = data.sqale_debt_ratio;
+  document.getElementById('tests').dataset.tests = data.tests;
+  document.getElementById('test-success-density').dataset.testSuccessDensity = data.test_success_density;
+  document.getElementById('skipped-tests').dataset.skippedTests = data.skipped_tests;
+  document.getElementById('test-errors').dataset.testErrors = data.test_errors;
+  document.getElementById('test-failures').dataset.testFailures = data.test_failures;
+};
 
 /**
  * description
- * Ajouter/Enregistrement les données d'une analyse
+ * On charge les donnees de la version selectionnee depuis la fenetre "ajouter".
+ */
+$('select[name="version"]').on('change', async function () {
+  /** Si la valeur selectionnee est TheID alors on sort */
+  const selection = $('select[name="version"]').val();
+  if (selection === 'TheID' || selection === undefined) {
+    return;
+  }
+
+  /** A chaque changement de selection, on invalide les donnees jusqu'a confirmation */
+  donneesAjoutValides = false;
+
+  /* On affiche la cle */
+  const mavenKey = $('#titre-js-nom').data('maven').trim();
+  $('#key-maven').html(mavenKey);
+
+  /* On affiche le nom */
+  const name = mavenKey.split(':');
+  $('#nom').html(name[un]);
+
+  /* On recupere la date depuis le texte du select : "4.2.1-RELEASE (18-09-2024 16:57:50)" */
+  const texteVersion = $('#liste-version :selected').text();
+  const apresParenthese = texteVersion.split('(')[un];
+  const dateBrute = apresParenthese ? apresParenthese.split(')')[zero] : '';
+
+  /* On stocke la date pour l'enregistrement */
+  document.getElementById('date').dataset.date = dateBrute;
+
+  /* On affiche la version et la date */
+  $('#version').html(texteVersion.split('(')[zero]);
+  $('#date').html(dateBrute);
+
+  /* On appelle l'API de recuperation des metriques */
+  const t = await versionDataGet(mavenKey, dateBrute);
+  if (!t) return;
+
+  if (t.code !== http_200) {
+    showMessage(t.type ?? 'warning', t.message ?? `Erreur ${t.code} lors du chargement des metriques.`, null);
+    return;
+  }
+
+  /** Tout va bien : on populent les metriques et on autorise l'enregistrement. */
+  populerMetriques(t.data);
+
+  /** On enrichit dernieresMetriques avec les meta-données SonarQube
+   *  attachées à l'option select2 — analyse_key et compteurs cumulés
+   *  version_release/snapshot/autre calculés par SonarAnalysisFetcherService.
+   *  Ces champs ne viennent pas de getVersion (search_history) mais de
+   *  listeVersionV2 (project_analyses/search) — ils sont donc injectés ici
+   *  pour propagation jusqu'à suiviMiseAJour. */
+  const selectedOption = $('#liste-version').select2('data')[zero] || {};
+  dernieresMetriques.analyse_key = selectedOption.analyse_key ?? null;
+  dernieresMetriques.version_release = selectedOption.version_release ?? null;
+  dernieresMetriques.version_snapshot = selectedOption.version_snapshot ?? null;
+  dernieresMetriques.version_autre = selectedOption.version_autre ?? null;
+
+  donneesAjoutValides = true;
+  showMessage('info', "Les donnees du projet sont disponibles.", null);
+  setTimeout(() => { hideMessage(); }, 3000);
+});
+
+/**
+ * [Description for historiqueAjouter]
+ * Enregistre une version dans l'historique.
+ * PUT /api/secure/suivi/mise-a-jour
+ *
+ * @param object data
+ * @return object|null
+ */
+const historiqueAjouter = async function (data) {
+  const options = {
+    url: `${serveur()}/api/secure/suivi/mise-a-jour`,
+    type: 'PUT',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    content_type,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    }
+  };
+
+  let t;
+  try {
+    t = await $.ajax(options);
+
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+    if (errorCodes.includes(t.code)) {
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      return null;
+    }
+  } catch (error) {
+    const trace = prepareTechnicalDetails(error);
+    const message = "Une erreur inattendue s'est produite lors de l'enregistrement de la version (Erreur 500).";
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_critical', trace);
+    return null;
+  }
+
+  return t;
+};
+
+/**
+ * description
+ * Ajouter/enregistrer les donnees d'une analyse.
 */
-$('.js-enregistrer-analyse').on('click', ()=>{
-  const selectionVersion=$('select[name="version"]').val();
-  /** Si le projet n'a pas été sélectionné */
-  if (selectionVersion==='TheID') {
-    const message='Vous devez choisir un projet !';
-    $('#message-ajout-projet').html(messageAlert+message+noticeAlert+messageClose
-    );
+$('.js-enregistrer-analyse').on('click', async () => {
+  const selectionVersion = $('select[name="version"]').val();
+
+  /** Si le projet n'a pas ete selectionne */
+  if (selectionVersion === undefined || selectionVersion === 'TheID') {
+    showMessage('warning', 'Vous devez choisir une version !', null);
     return;
   }
 
-  /** Si le projet n'existe plus dans SonarQube 'error 404' */
-  if ($('#js-message').hasClass('error')===true) {
+  /** Si les donnees n'ont pas ete chargees correctement (404, erreur API, ...) */
+  if (donneesAjoutValides !== true) {
+    showMessage('warning', "Les donnees de la version ne sont pas disponibles, l'enregistrement est impossible.", null);
     return;
   }
 
-  const maven_key=$('#js-nom').data('maven').trim();
-  const nom=$('#js-nom').text().trim();
-  const version=$('#version').text().trim();
-
-  const t1 = document.getElementById('date');
-  const t2 = document.getElementById('reliability-rating');
-  const t3 = document.getElementById('security-rating');
-  const t4 = document.getElementById('sqale-rating');
-  const t5 = document.getElementById('security-review-rating');
-  const t6 = document.getElementById('violations');
-  const t7 = document.getElementById('bugs');
-  const t8 = document.getElementById('vulnerabilities');
-  const t9 = document.getElementById('code-smells');
-  const t10 = document.getElementById('security-hotspots');
-  const t11 = document.getElementById('ncloc-language-distribution');
-  const t12 = document.getElementById('files');
-  const t13 = document.getElementById('classes');
-  const t14 = document.getElementById('functions');
-  const t15 = document.getElementById('ncloc');
-  const t16 = document.getElementById('lines');
-  const t17 = document.getElementById('comment-lines');
-  const t18 = document.getElementById('comment-lines-density');
-  const t19 = document.getElementById('coverage');
-  const t20 = document.getElementById('duplicated-lines-density');
-  const t21 = document.getElementById('dette');
-  const t22 = document.getElementById('sqale-debt-ratio');
-  const t23 = document.getElementById('tests');
-  const t24 = document.getElementById('test-success-density');
-  const t25 = document.getElementById('skipped-tests');
-  const t26 = document.getElementById('test-errors');
-  const t27 = document.getElementById('test-failures');
-
-  /** On reformate la date pour avoir l'année en premier */
-  const parsed_date = parse(t1.dataset.date, "dd-MM-yyyy HH:mm:ssXXX", new Date());
+  /** On reformate la date pour avoir l'annee en premier.
+   *  PHP format 'O' produit "+0200" (sans ':') → token date-fns "XX".
+   *  Avant : "XXX" attendait "+02:00" → parse échouait avec RangeError. */
+  const dateBrute = document.getElementById('date').dataset.date;
+  const parsed_date = parse(dateBrute, "dd-MM-yyyy HH:mm:ssXX", new Date());
   const formatted_date = format(parsed_date, "yyyy-MM-dd HH:mm:ss");
 
-  const nom_projet=nom;
-  const date_version=formatted_date;
-  const reliability_rating=t2.dataset.reliabilityRating;
-  const security_rating=t3.dataset.securityRating;
-  const sqale_rating=t4.dataset.sqaleRating;
-  const security_review_rating=t5.dataset.securityReviewRating;
-  const violations=t6.dataset.violations;
-  const bugs=t7.dataset.bugs;
-  const vulnerabilities=t8.dataset.vulnerabilities;
-  const code_smells=t9.dataset.codeSmells;
-  const security_hotspots=t10.dataset.securityHotspots;
-  const ncloc_language_distribution=t11.dataset.nclocLanguageDistribution;
-  const files=t12.dataset.files;
-  const classes=t13.dataset.classes;
-  const functions=t14.dataset.functions;
-  const ncloc=t15.dataset.ncloc;
-  const lines=t16.dataset.lines;
-  const comment_lines=t17.dataset.commentLines;
-  const comment_lines_density=t18.dataset.commentLinesDensity;
-  const coverage=t19.dataset.coverage;
-  const duplicated_lines_density=t20.dataset.duplicatedLinesDensity;
-  const dette=t21.dataset.dette;
-  const sqale_debt_ratio=t22.dataset.sqaleDebtRatio;
-  const tests=t23.dataset.tests;
-  const test_success_density=t24.dataset.testSuccessDensity;
-  const skipped_tests=t25.dataset.skippedTests;
-  const test_errors=t26.dataset.testErrors;
-  const test_failures=t27.dataset.testFailures;
-  const initial=0;
+  /** Payload aligné sur les clés SonarQube (= colonnes DB historique).
+   *  project_name = dernier segment du mavenKey (ex: "fr.acme:paddpm" → "paddpm").
+   *  On spread `dernieresMetriques` (snapshot complet de getVersion → ~50
+   *  fields enrichis par metricsRebuild) puis on override avec les méta de
+   *  la version sélectionnée. Le backend ne retient que les colonnes connues
+   *  via la whitelist du repo. */
+  const mavenKey = $('#titre-js-nom').data('maven').trim();
+  const data = {
+    ...dernieresMetriques,
+    maven_key: mavenKey,
+    project_name: mavenKey.split(':').pop(),
+    version: $('#version').text().trim(),
+    date_version: formatted_date,
+    initial: zero,
+  };
 
-  const data={
-    'maven_key': maven_key,
-    'nom_projet': nom_projet,
-    'version': version,
-    'date_version': date_version,
-    'reliability_rating': reliability_rating,
-    'security_rating': security_rating,
-    'sqale_rating': sqale_rating,
-    'security_review_rating': security_review_rating,
-    'violations': violations,
-    'bugs': bugs,
-    'vulnerabilities': vulnerabilities,
-    'code_smells': code_smells,
-    'security_hotspots': security_hotspots,
-    'ncloc_language_distribution': ncloc_language_distribution,
-    'files': files,
-    'classes': classes,
-    'functions': functions,
-    'ncloc': ncloc,
-    'lines': lines,
-    'comment_lines': comment_lines,
-    'comment_lines_density': comment_lines_density,
-    'coverage': coverage,
-    'duplicated_lines_density': duplicated_lines_density,
-    'dette': dette,
-    'sqale_debt_ratio': sqale_debt_ratio,
-    'tests': tests,
-    'test_success_density': test_success_density,
-    'skipped_tests': skipped_tests,
-    'test_errors': test_errors,
-    'test_failures': test_failures,
-    'initial': initial};
+  const t = await historiqueAjouter(data);
+  if (!t) return;
 
-    /**
-     * On lance l'API de mise à jour
-     */
-    const options = {
-    url: `${serveur()}/api/secure/suivi/mise-a-jour`, type: 'PUT',
-    dataType: 'json', data: JSON.stringify(data), content_type };
+  /** Doublon : warning explicite (la version existe deja). */
+  if (t.code === 23505) {
+    showMessage(t.type ?? 'warning', t.message ?? 'Cette version est deja présente dans l\'historique.', null);
+    return;
+  }
 
-    $.ajax(options).then(t => {
-      // 📌 Vérification des erreurs
-      let message='';
-      if (t.code===http_200){
-        message=`Enregistrement des informations effectué.`;
-        $('#message-ajout-projet').html(messageSuccess+message+noticeSuccess+messageClose
-        );
-      }
+  if (t.code === http_200) {
+    showMessage(t.type ?? 'success', t.message ?? 'Enregistrement effectué.', null);
+    setTimeout(() => { hideMessage(); }, 5000);
+    /** On bloque un nouvel enregistrement de la meme version sans recharger */
+    donneesAjoutValides = false;
+    return;
+  }
 
-    if (t.code===23505){
-      $('#message-ajout-projet').html(messageWarning+message+noticeWarning+messageClose
-      );
-    }
-    if (t.code!==http_200 && t.code!==23505) {
-        message=`Erreur lors de la mise à jour (${t.code}).`;
-        $('#message-ajout-projet').html(messageAlert+message);
-        $('#message-ajout-projet').append(t.erreur+noticeAlert+messageClose
-        );
-    }
-
-  });
+  /** Autres codes inattendus */
+  const trace = t.trace ? prepareTechnicalDetails(t.trace) : null;
+  showMessage(t.type ?? 'error', t.message ?? `Erreur lors de la mise a jour (${t.code}).`, trace);
 });
 
 /**
@@ -720,19 +735,24 @@ $('.lien-imprimer-pdf').on('click', async () => {
   }
 
   // Récupération du nom
-  const n = $('#js-nom').data('maven').trim();
+  const n = $('#titre-js-nom').data('maven').trim();
   const name = n.split(':');
 
   // Enregistrer le PDF
   doc.save(`rapport_suivi_indicateurs_${name[1]}.pdf`);
 });
 
-
 /**
- * description
- * On affiche la liste des projets et on nettoie le formulaire
+ * [Description for versionListe]
+ *
+ *  return json
+ *
+ * Created at: 30/04/2026 20:19:16 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-$('.js-modifier-analyse').on('click', function () {
+const versionListe = async function(){
+
   const poubelle=`<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewbox="0 0 32 32"  class="poubelle-svg">
   title>Icône pour le bouton poubelle.</title>
   <desc>Supprime la version du suivi.</desc>
@@ -740,257 +760,329 @@ $('.js-modifier-analyse').on('click', function () {
   </svg>`;
 
   /* On récupère la clé maven */
-  const data = { maven_key: $('#js-nom').data('maven') };
+  const data = { maven_key: $('#titre-js-nom').data('maven') };
 
   const options = {
     url: `${serveur()}/api/secure/suivi/version/liste`,
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType: content_type,
+    content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
-    },
+    }
   };
 
-  $.ajax(options).then(t => {
-    // 📌 Vérification des erreurs
-    /* On gère le résultat de la requête */
-    if (t.code === http_200) {
-      const message=`La liste des versions a été chargée correctement.`;
-      $('#message').html(messageInformation+message+noticePrimary+messageClose);
+  let t;
+  try {
+        t = await $.ajax(options);
+
+        // 📌 Vérification des erreurs
+        const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+        if (errorCodes.includes(t.code)){
+            const hasTrace = !!t.trace;
+            const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+            showMessage(t.type, t.message, trace);
+          return
+        }
+  } catch(error) {
+        const trace = prepareTechnicalDetails(error);
+        const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les versions (Erreur 500).";
+        showMessage('critical', message, trace);
+        sessionStorage.setItem('ma_moulinette_critical', trace);
+        return;
+  }
+
+  // On affiche un bo message.
+  showMessage(t.type, t.message, null);
+  setTimeout(() => { hideMessage(); }, 3000);
+
+  /* On boucle pour construire le tableau */
+  let ligne = 0 , html = '', switchFavori = '', switchReference = '';
+
+  $('#tableau-liste-version').html(html);
+
+  t.versions.forEach(version => {
+    ligne++;
+    /* On défini le switch pour le favori */
+    switchFavori = '<div class="switch custom-switch-favori js-switch-favori">';
+    switchFavori += `<input class="switch-input" id="switch-favori-${ligne}" type="checkbox" name="switch-favori-${ligne}">`;
+    switchFavori += `<label class="switch-paddle" for="switch-favori-${ligne}">`;
+    switchFavori += '<span class="show-for-sr">Projet favori</span>';
+    switchFavori += '</label></div>';
+
+    /* On défini le switch pour la référence (checkbox : type="radio" empêchait le toggle off → "renvoie toujours true") */
+    switchReference = '<div class="switch custom-switch-reference js-switch-reference">';
+    switchReference += `<input class="switch-input" id="switch-reference-${ligne}" type="checkbox" name="switch-reference-${ligne}">`;
+    switchReference += `<label class="switch-paddle" for="switch-reference-${ligne}">`;
+    switchReference += '<span class="show-for-sr">Projet de référence</span>';
+    switchReference += '</label></div>';
+
+    /*  On construit le tableau */
+    const date_version=new Intl.DateTimeFormat('default', dateOptions).format(new Date(version.date));
+
+    html = `<tr id="ligne-${ligne}">`;
+    html += `<td id="poubelle-${ligne}" headers="modifier-preference action" class="text-left">${poubelle}</td>`;
+    html += `<td id="date-${ligne}" data-date="${version.date}" headers="modifier-preference date" class="text-left">${date_version}</td>`;
+    html += `<td id="version-${ligne}" headers="modifier-preference version" class="text-left">${version.version}</td>`;
+    html += `<td id="favori-${ligne}" headers="modifier-preference favori" class="text-left">${switchFavori}</td>`;
+    html += `<td id="reference-${ligne}" headers="modifier-preference reference" class="text-left">${switchReference}</td>`;
+    html += '</tr>';
+
+    /* On ajoute la ligne */
+    $('#tableau-liste-version').append(html);
+
+    /**
+      * Favori|reference enable
+      * Il faut que l'utilisateur ait activé les favoris dans ces préférences.
+      */
+    if (version.favori===true) {
+      $(`#switch-favori-${ligne}`).trigger('click');
     }
 
-    if (t.code === http_400) {
-      const message = `Je n'ai pas réussi à charger la liste des versions (${t.code}).`;
-      $('#message').html(messageAlert+message+noticeAlert+messageClose);
+    if (version.initial===true) {
+      $(`#switch-reference-${ligne}`).trigger('click');
     }
-
-    /* On boucle pour construire le tableau */
-    let ligne=0, html='', switchFavori='', switchReference='';
-    $('#tableau-liste-version').html(html);
-    t.versions.forEach(version => {
-      ligne++;
-      /* On défini le switch pour le favori */
-      switchFavori='<div class="switch custom-switch-favori js-switch-favori">';
-      switchFavori+=`<input class="switch-input" id="switch-favori-${ligne}" type="checkbox" name="switch-favori-${ligne}">`;
-      switchFavori+=`<label class="switch-paddle" for="switch-favori-${ligne}">`;
-      switchFavori+='<span class="show-for-sr">Projet favori</span>';
-      switchFavori+='</label></div>';
-
-      /* On défini le switch pour la référence */
-      switchReference='<div class="switch custom-switch-reference js-switch-reference">';
-      switchReference+=`<input class="switch-input" id="switch-reference-${ligne}" type="radio" name="switch-reference">`;
-      switchReference+=`<label class="switch-paddle" for="switch-reference-${ligne}">`;
-      switchReference+='<span class="show-for-sr">Projet de référence</span>';
-      switchReference+='</label></div>';
-
-      /*  On construit le tableau */
-      const date_version=new Intl.DateTimeFormat('default', dateOptions).format(new Date(version.date));
-
-      html  =`<tr id="ligne-${ligne}">`;
-      html +=`<td id="poubelle-${ligne}" headers="modifier-preference action" class="text-left">${poubelle}</td>`;
-      html +=`<td id="date-${ligne}" headers="modifier-preference date" class="text-left">${date_version}</td>`;
-      html +=`<td id="version-${ligne}" headers="modifier-preference version" class="text-left">${version.version}</td>`;
-      html +=`<td id="favori-${ligne}" headers="modifier-preference favori" class="text-left">${switchFavori}</td>`;
-      html +=`<td id="reference-${ligne}" headers="modifier-preference reference" class="text-left">${switchReference}</td>`;
-      html +='</tr>';
-
-      /* On ajoute la ligne */
-      $('#tableau-liste-version').append(html);
-
-      /**
-        * Favori|reference enable
-        * Il faut que l'utilisateur ait activé les favoris dans ces préférences.
-        */
-      if (version.favori===true) {
-        $(`#switch-favori-${ligne}`).trigger('click');
-      }
-
-      if (version.initial===true) {
-        $(`#switch-reference-${ligne}`).trigger('click');
-      }
-    });
-
-    /* On gère le changement de favori pour la version du projet */
-    $('[id^=switch-favori-]').on('click', e =>{
-      if (t.preference_favori===false) {
-        const message=`Vous n'avez pas activé les favoris dans vos préférences.`;
-        $('#message').html(messageWarning+message+noticeWarning+messageClose);
-        return;
-      }
-
-      /** on récupère la version et la date */
-      const id=$(e.currentTarget).attr('id');
-      const l=id.split('-');
-      const version = $(`#version-${l[deux]}`).text().trim();
-      const date = $(`#date-${l[deux]}`).text().trim();
-
-      /** On reformate la date */
-      const parsed_date = parse(date, "dd/MM/yyyy HH:mm:ss", new Date());
-      const formatted_date = format(parsed_date, "yyyy-MM-dd HH:mm:ss");
-
-      let favori=zero;
-      if ($(`#${id}:checked`).length===un) {
-        /** 0 (false) and 1 (true). */
-        favori=un;
-      }
-        const maven_key=$('#js-nom').data('maven');
-        /** On vérifie la clé maven */
-        if (maven_key===undefined) {
-          const message=`La clé maven n'est pas valide !`;
-          $('#message').html(messageAlert+message+noticeAlert+messageClose);
-          return;
-        }
-
-        const dataFavori = { maven_key, favori, version, date_version: formatted_date };
-
-        const optionsFavori = {
-          url: `${serveur()}/api/secure/suivi/version/favori`, type: 'PUT',
-          dataType: 'json',
-          data: JSON.stringify(dataFavori),
-          contentType: content_type,
-          headers: {
-            'X-API-Custom-403': 'true',
-            'X-Internal-Front': 'front-app'
-          },
-        };
-
-        /**
-         * On appel l'API de mise à jour du favori
-         */
-        $.ajax(optionsFavori).then((t) => {
-          if (t.code===http_200) {
-            const message=`Mise à jour du favori effectuée.`;
-            $('#message').html(messageSuccess+message+noticeSuccess+messageClose);
-          } else if (t.code===http_201) {
-            const message=`Cette version a été supprimé des favoris.`;
-            $('#message').html(messageWarning+message+noticeWarning+messageClose);
-          } else {
-            const message=`Erreur lors de la mise à jour (${t.erreur}).`;
-            $('#message').html(messageAlert+message+noticeAlert+messageClose);
-          }
-        });
-    });
-
-    /* On gère le changement de version de reference */
-    $('[id^=switch-reference-]').on('click', e=>{
-      /* on récupère la version et la date */
-      const id=$(e.currentTarget).attr('id');
-      const l=id.split('-');
-      const version=$(`#version-${l[deux]}`).text().trim();
-      const date=$(`#date-${l[deux]}`).text().trim();
-      /** On reformate la date */
-      const parsed_date = parse(date, "dd/MM/yyyy HH:mm:ss", new Date());
-      const formatted_date = format(parsed_date, "yyyy-MM-dd HH:mm:ss");
-
-      const maven_key=$('#js-nom').data('maven');
-
-      let initial=zero;
-      if ($(`#${id}:checked`).length===un){
-        /** 0 (false) and 1 (true). */
-        initial=un;
-      }
-
-      /** On vérifie la clé maven */
-      if (maven_key===undefined) {
-        const message=`La clé maven n'est pas valide !`;
-        $('#message').html(messageAlert+message+noticeAlert+messageClose);
-        return;
-      }
-
-      /**
-       * On appel l'API de mise à jour de la version de référence
-       */
-      const dataReference = { maven_key, initial, version, date_version: formatted_date };
-      const optionsReference = {
-        url: `${serveur()}/api/secure/suivi/version/reference`, type: 'PUT',
-        dataType: 'json',
-        data: JSON.stringify(dataReference),
-        contentType: content_type,
-        headers: {
-            'X-API-Custom-403': 'true',
-            'X-Internal-Front': 'front-app'
-          },
-      };
-
-      $.ajax(optionsReference).then((t) => {
-      if (t.code===200) {
-          const message='Mise à jour de la version de référence.';
-          $('#message').html(messageSuccess+message+noticeSuccess+messageClose);
-        } else if (t.code===403) {
-          const message=`Vous n'êtes pas autorisé à effectuer cette opération.`;
-          $('#message').html(messageWarning+message+noticeWarning+messageClose);
-        } else {
-          const message=`Erreur lors de la mise à jour (${t.erreur}).`;
-          $('#message').html(messageAlert+message+noticeAlert+messageClose);
-        }
-      });
-    });
-
-    /** On supprime la version du projet en table et on masque la ligne */
-    $('[id^=poubelle-]').on('click', e=>{
-      /* On récupère la version et la date */
-      const id=$(e.currentTarget).attr('id');
-      const l=id.split('-');
-      const  version = $(`#version-${l[1]}`).text().trim();
-      const  date = $(`#date-${l[1]}`).text().trim();
-      /** On reformate la date */
-      const parsed_date = parse(date, "dd/MM/yyyy HH:mm:ss", new Date());
-      const formatted_date = format(parsed_date, "yyyy-MM-dd HH:mm:ss");
-
-      /** On vérifie que la clé maven n'est pas null */
-      let maven_key = $('#js-nom').data('maven');
-      if (maven_key===undefined || maven_key=== null ) {
-        maven_key = 'null';
-      }
-
-      /**
-       * On l'API de suppression de la version dans l'historique
-       */
-      const dataPoubelle = { maven_key, version, 'date_version': formatted_date };
-      const optionsPoubelle = {
-        url: `${serveur()}/api/secure/suivi/version/poubelle`, type: 'PUT',
-        dataType: 'json',
-        data: JSON.stringify(dataPoubelle),
-        contentType: content_type,
-        headers: {
-          'X-API-Custom-403': 'true',
-          'X-Internal-Front': 'front-app'
-        },
-      };
-
-      let message;
-      $.ajax(optionsPoubelle).then((t) => {
-        console.log(t);
-        switch (t.code) {
-          case 200 :
-            message=`Le projet a été correctement supprimé. ${t.message}`;
-            $('#message').html(messageSuccess+message+noticeSuccess+messageClose);
-            // On masque la ligne
-            $('#ligne-'+l[1]).hide();
-            break;
-          case 202:
-            message=`Le projet n'a pas été supprimé ! `;
-            $('#message').html(messageAlert+message+`(${t.erreur}).`+noticeAlert+messageClose);
-          break;
-          case 400:
-            message='La clé maven est vide !';
-            $('#message').html(messageAlert+message+noticeAlert+messageClose);
-            break;
-          case 403:
-            message=`Vous n'êtes pas autorisé à effectuer cette opération.`;
-            $('#message').html(messageWarning+message+noticeWarning+messageClose);
-            break;
-          default:
-            message = `Le projet n'a pas été supprimé ! `;
-            $('#message').html(messageAlert+message+`(${t.erreur}).`+noticeAlert+messageClose);
-        }
-      });
-    });
   });
 
-  /** fin de la méthode on ouvre la fenêtre */
+  return t;
+};
+
+/**
+ * [Description for versionFavoriUpdate]
+ * Met a jour le statut "favori" d'une version d'un projet.
+ * PUT /api/secure/suivi/version/favori
+ */
+const versionFavoriUpdate = async function (maven_key, favori, version, date_version) {
+  const data = { maven_key, favori, version, date_version };
+  const options = {
+    url: `${serveur()}/api/secure/suivi/version/favori`,
+    type: 'PUT',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    content_type,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    }
+  };
+
+  let t;
+  try {
+    t = await $.ajax(options);
+
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+    if (errorCodes.includes(t.code)) {
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      return null;
+    }
+  } catch (error) {
+    const trace = prepareTechnicalDetails(error);
+    const message = "Une erreur inattendue s'est produite lors de la mise a jour du favori (Erreur 500).";
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_critical', trace);
+    return null;
+  }
+
+  return t;
+};
+
+/**
+ * [Description for versionReferenceUpdate]
+ * Met a jour la version de reference d'un projet.
+ * PUT /api/secure/suivi/version/reference
+ */
+const versionReferenceUpdate = async function (maven_key, initial, version, date_version) {
+  const data = { maven_key, initial, version, date_version };
+  const options = {
+    url: `${serveur()}/api/secure/suivi/version/reference`,
+    type: 'PUT',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    content_type,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    }
+  };
+
+  let t;
+  try {
+    t = await $.ajax(options);
+
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+    if (errorCodes.includes(t.code)) {
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      return null;
+    }
+  } catch (error) {
+    const trace = prepareTechnicalDetails(error);
+    const message = "Une erreur inattendue s'est produite lors de la mise a jour de la version de reference (Erreur 500).";
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_critical', trace);
+    return null;
+  }
+
+  return t;
+};
+
+/**
+ * [Description for versionPoubelleDelete]
+ * Supprime une version d'un projet de l'historique.
+ * PUT /api/secure/suivi/version/poubelle
+ */
+const versionPoubelleDelete = async function (maven_key, version, date_version) {
+  const data = { maven_key, version, date_version };
+  const options = {
+    url: `${serveur()}/api/secure/suivi/version/poubelle`,
+    type: 'PUT',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    content_type,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    }
+  };
+
+  let t;
+  try {
+    t = await $.ajax(options);
+
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+    if (errorCodes.includes(t.code)) {
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      return null;
+    }
+  } catch (error) {
+    const trace = prepareTechnicalDetails(error);
+    const message = "Une erreur inattendue s'est produite lors de la suppression de la version (Erreur 500).";
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_critical', trace);
+    return null;
+  }
+
+  return t;
+};
+
+/**
+ * description
+ * On charge la liste des versions, puis on bind les sous-events sur les
+ * elements construits par versionListe (favori, reference, poubelle).
+ */
+$('.js-modifier-analyse').on('click', async function () {
+  const result = await versionListe();
+  if (!result) {
+    /** versionListe a deja affiche le message d'erreur */
+    return;
+  }
+  const preferenceFavori = !!result.preference_favori;
+
+  /** On gere le changement de favori pour la version du projet */
+  $('[id^=switch-favori-]').on('click', async function (e) {
+    if (preferenceFavori === false) {
+      const message = "Vous n'avez pas active les favoris dans vos preferences.";
+      showMessage('warning', message, null);
+      return;
+    }
+
+    /** on recupere la version et la date */
+    const id = $(e.currentTarget).attr('id');
+    const l = id.split('-');
+    const version = $(`#version-${l[deux]}`).text().trim();
+    /** On lit la date brute (TIMESTAMPTZ PG) depuis data-date pour eviter les pieges de format/locale */
+    const formatted_date = $(`#date-${l[deux]}`).data('date');
+
+    /** 0 (false) and 1 (true). */
+    const favori = $(`#${id}:checked`).length === un ? un : zero;
+
+    const maven_key = $('#titre-js-nom').data('maven');
+    if (maven_key === undefined) {
+      showMessage('warning', "La cle maven n'est pas valide !", null);
+      return;
+    }
+
+    const t = await versionFavoriUpdate(maven_key, favori, version, formatted_date);
+    if (!t) return;
+
+    if (t.code === http_200) {
+      showMessage('info', "Mise a jour du favori effectuée.", null);
+      setTimeout(() => { hideMessage(); }, 3000);
+    } else if (t.code === http_201) {
+      showMessage('warning', "Cette version a ete supprimée des favoris.", null);
+    }
+  });
+
+  /** On gere le changement de version de reference */
+  $('[id^=switch-reference-]').on('click', async function (e) {
+    /** on recupere la version et la date */
+    const id = $(e.currentTarget).attr('id');
+    const l = id.split('-');
+    const version = $(`#version-${l[deux]}`).text().trim();
+    /** On lit la date brute (TIMESTAMPTZ PG) depuis data-date pour eviter les pieges de format/locale */
+    const formatted_date = $(`#date-${l[deux]}`).data('date');
+
+    const maven_key = $('#titre-js-nom').data('maven');
+    if (maven_key === undefined) {
+      showMessage('warning', "La cle maven n'est pas valide !", null);
+      return;
+    }
+
+    /** 0 (false) and 1 (true). */
+    const initial = $(`#${id}:checked`).length === un ? un : zero;
+
+    /** Exclusion mutuelle UI : une seule version peut être référence. Si on en
+     *  coche une, on décoche visuellement toutes les autres (le serveur fait
+     *  déjà UPDATE initial=false WHERE maven_key=...). */
+    if (initial === un) {
+      $('[id^=switch-reference-]').not(`#${id}`).prop('checked', false);
+    }
+
+    const t = await versionReferenceUpdate(maven_key, initial, version, formatted_date);
+    if (!t) return;
+
+    const type = t.type ?? 'info';
+    showMessage(type, t.message ?? 'Mise a jour de la version de reference.', null);
+    if (type === 'info' || type === 'success') {
+      setTimeout(() => { hideMessage(); }, 3000);
+    }
+  });
+
+  /** On supprime la version du projet en table et on masque la ligne */
+  $('[id^=poubelle-]').on('click', async function (e) {
+    /** On recupere la version et la date */
+    const id = $(e.currentTarget).attr('id');
+    const l = id.split('-');
+    const version = $(`#version-${l[un]}`).text().trim();
+    /** On lit la date brute (TIMESTAMPTZ PG) depuis data-date pour eviter les pieges de format/locale */
+    const formatted_date = $(`#date-${l[un]}`).data('date');
+
+    let maven_key = $('#titre-js-nom').data('maven');
+    if (maven_key === undefined || maven_key === null) {
+      maven_key = 'null';
+    }
+
+    const t = await versionPoubelleDelete(maven_key, version, formatted_date);
+    if (!t) return;
+
+    if (t.code === http_200) {
+      const tail = t.message ? ` ${t.message}` : '';
+      showMessage('info', `Le projet a ete correctement supprime.${tail}`, null);
+      setTimeout(() => { hideMessage(); }, 3000);
+      $(`#ligne-${l[un]}`).hide();
+    } else {
+      const trace = t.erreur ? prepareTechnicalDetails(t.erreur) : null;
+      showMessage(t.type ?? 'warning', t.message ?? "Le projet n'a pas ete supprime !", trace);
+    }
+  });
+
+  /** fin de la methode on ouvre la fenetre */
   $('#modal-modifier-analyse').foundation('open');
 });
