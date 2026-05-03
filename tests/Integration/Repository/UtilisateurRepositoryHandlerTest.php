@@ -147,11 +147,10 @@ class UtilisateurRepositoryHandlerTest extends TestCase
 
         // 8) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
         $map = [ 'maven_key' => static::$mavenKey, 'courriel' => static::$courriel ];
-        $preference['statut'] = ['bookmark' => true, 'suivi_projet' => false, 'favori_projet' => true,'favori_version' => true];
+        $preference['statut'] = ['suivi_projet' => false, 'favori_projet' => true,'favori_version' => true];
         $preference['suivi_projet'] = [];
         $preference['favori_projet'] = [static::$mavenKey];
         $preference['favori_version'] = [];
-        $preference['bookmark'] = [];
 
         $result = $repo->updateUtilisateurFavoriProjet($preference, $map);
 
@@ -205,7 +204,6 @@ class UtilisateurRepositoryHandlerTest extends TestCase
         $preference['suivi_projet'] = [];
         $preference['favori_projet'] = [];
         $preference['favori_version'] = [];
-        $preference['bookmark'] = [];
 
         // Nouveau projet à ajouter en favori
         $map = [

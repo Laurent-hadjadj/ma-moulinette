@@ -36,8 +36,8 @@ class UtilisateurKernelTest extends KernelTestCase
   public static $roles = ["ROLE_GESTIONNAIRE"];
   public static $groupe = [];
   public static $preference = ['{
-    "statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
-    "projet":[],"favori":[],"version":[],"bookmark":[]}'];
+    "statut":{"projet":false,"favori":false,"version":false},
+    "projet":[],"favori":[],"version":[]}'];
   public static $dateEnregistrement = '1980-01-01 00:00:00';
 
   public function getEntity(): Utilisateur
