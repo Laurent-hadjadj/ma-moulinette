@@ -434,7 +434,7 @@ const projetMesure = async function(mavenKey) {
       }
     if ( t.code === http_200){
         log(' - ℹ️ (02) Collecte des mesures globales.');
-        log(` -     📌 ${t.message.issues} problème(s) trouvé(s).`);
+        log(` -     📌 ${t.message.violations} problème(s) trouvé(s).`);
     } else {
         log(` - ❌ (02) Collecte des mesures en échec.`);
     }
@@ -449,73 +449,8 @@ const projetMesure = async function(mavenKey) {
   }
 };
 
-/**
-  * [Description for projetRating]
-  * Récupère la note pour la fiabilité, la sécurité et les mauvaises pratiques.
-  * http://{url}'/api/secure/collecte/note
-  *
-  * Phase 03
-  * {mavenKey} = clé du projet
-  * {type} = reliability, security, sqale
-  *
-  * @param string mavenKey
-  * @param string type
-  *
-  * @return response
-  *
-  * Created at: 19/12/2022, 22:15:12 (Europe/Paris)
-  * @author     Laurent HADJADJ <laurent_h@me.com>
-  */
-const projetRating = async function(mavenKey, type) {
-  const collecte = sessionStorage.getItem('ma_moulinette_collecte');
-  if (!collecte || collecte != 'Tout va bien!') {
-    return;
-  }
-
-  const data = { maven_key: mavenKey, type };
-  const options = {
-    url: `${serveur()}/api/secure/collecte/note`,
-    type: 'POST',
-    dataType: 'json',
-    data: JSON.stringify(data),
-    contentType: content_type,
-    headers: {
-      'X-API-Custom-403': 'true',
-      'X-Internal-Front': 'front-app'
-    },
-  };
-
-  const $boutonCollecteIndicateur = $('.js-analyse');
-  const aria_label = 'La collecte est interrompue.';
-
-  try {
-    const t = await $.ajax(options);
-    // 📌 Vérification des erreurs
-    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
-    if (errorCodes.includes(t.code)){
-        const hasTrace = !!t.trace;
-        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
-        showMessage(t.type, t.message, trace);
-        sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 03');
-        errorButton($boutonCollecteIndicateur, aria_label);
-        return;
-      }
-    if (t.code === http_200){
-      log(` - ℹ️ (03) Collecte de la note pour le type : ${t.type}`);
-      log(` -     📌 La note est : ${t.message.note}`);
-    } else {
-      log(` - ❌ (03) Collecte de la note pour ${t.message.note} en échec.`);
-    }
-  } catch(error) {
-      const trace = prepareTechnicalDetails(error);
-      const message = "Une erreur inattendue s'est produite lors de la phase 03.";
-      showMessage('alert', message, trace);
-      sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 03');
-      log(` - ❌ (03) Collecte de la note pour ${t.message.note} en échec.`);
-      errorButton($boutonCollecteIndicateur, aria_label);
-      return;
-  }
-};
+/* (v2.0) projetRating() supprime : les notes sont desormais
+   collectees dans mesures en phase (02) via projetMesure(). */
 
 /**
  * [Description for projetOwasp]
@@ -570,12 +505,12 @@ const projetOwasp = async function(mavenKey) {
       }
 
     if (t.code === http_200){
-      log(' - ℹ️ (04) Collecte des menaces OWASP.');
+      log(' - ℹ️ (03) Collecte des menaces OWASP.');
       if (t.owasp2021 === 'NC') {
       log(` -     📌  Le référentiel OWASP2021 n'est pas supporté par votre serveur SonarQube.`);
       }
     } else {
-      log(' - ❌ (04) Collecte des menaces OWASP en échec.');
+      log(' - ❌ (03) Collecte des menaces OWASP en échec.');
     }
 
     if (t.code === http_200 && t.owasp2017 === 0) {
@@ -600,7 +535,7 @@ const projetOwasp = async function(mavenKey) {
       const message = "Une erreur inattendue s'est produite lors de la phase 04.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 04');
-      log(' - ❌ (04) Collecte des menaces OWASP en échec.');
+      log(' - ❌ (03) Collecte des menaces OWASP en échec.');
       errorButton($boutonCollecteIndicateur, aria_label);
       return;
   }
@@ -660,9 +595,9 @@ const projetHotspot = async function(mavenKey) {
       }
 
     if (t.code === http_200){
-        log(' - ℹ️ (05) Collecte des menaces potentielles.');
+        log(' - ℹ️ (04) Collecte des menaces potentielles.');
     } else {
-        log(' - ❌ (05) Collecte des menaces potentielles en échec.');
+        log(' - ❌ (04) Collecte des menaces potentielles en échec.');
     }
 
     if (t.code === http_200 && t.nombre === 0){
@@ -677,7 +612,7 @@ const projetHotspot = async function(mavenKey) {
       const message = "Une erreur inattendue s'est produite lors de la phase 05.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 05');
-      log(' - ❌ (05) Collecte des menaces potentielles en échec.');
+      log(' - ❌ (04) Collecte des menaces potentielles en échec.');
       errorButton($boutonCollecteIndicateur, aria_label);
       return;
   }
@@ -736,17 +671,17 @@ const projetAnomalie = async function(mavenKey) {
       }
 
       if (t.code === http_200){
-          log(' - ℹ️ (06) Collecte des anomalies.');
+          log(' - ℹ️ (05) Collecte des anomalies.');
           log(` -     📌 ${t.info}`);
       } else {
-        log(' - ❌ (06) Collecte des anomalies en échec.');
+        log(' - ❌ (05) Collecte des anomalies en échec.');
       }
     } catch(error) {
       const trace = prepareTechnicalDetails(error);
       const message = "Une erreur inattendue s'est produite lors de la phase 06.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 06');
-      log(' - ❌ (06) Collecte des anomalies en échec.');
+      log(' - ❌ (05) Collecte des anomalies en échec.');
       errorButton($boutonCollecteIndicateur, aria_label);
       return;
     }
@@ -804,16 +739,16 @@ const projetAnomalieDetails = async function(mavenKey) {
       }
 
     if (t.code === http_200){
-        log(' - ℹ️ (07) La fréquence des sévérités par type a été collectée.');
+        log(' - ℹ️ (06) La fréquence des sévérités par type a été collectée.');
     } else {
-        log(` - ❌ (07) Je n'ai pas réussi à collecter les données.`);
+        log(` - ❌ (06) Je n'ai pas réussi à collecter les données.`);
     }
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
       const message = "Une erreur inattendue s'est produite lors de la phase 07.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 07');
-      log(` - ❌ (07) Je n'ai pas réussi à collecter les données.`);
+      log(` - ❌ (06) Je n'ai pas réussi à collecter les données.`);
       errorButton($boutonCollecteIndicateur, aria_label);
       return;
   }
@@ -876,9 +811,9 @@ const projetHotspotOwasp = async function(maven_key, menace) {
       }
 
       if (t.code === http_200 && t.info === 'effacement'){
-        log(' - ℹ️ (08) Les enregistrements ont été supprimé de la table hotspot_owasp.');
+        log(' - ℹ️ (07) Les enregistrements ont été supprimé de la table hotspot_owasp.');
         if (t.owasp2021 === 'NC') {
-        log(` - 📌 (09) Le référentiel OWASP2021 n'est pas supporté par votre serveur SonarQube.`);
+        log(` - 📌 (08) Le référentiel OWASP2021 n'est pas supporté par votre serveur SonarQube.`);
         }
       }
 
@@ -892,12 +827,12 @@ const projetHotspotOwasp = async function(maven_key, menace) {
       if (t.code === http_200 && t.owasp2017 !== 0 && t.info === 'enregistrement' && t.owasp2017 != 'NC') {
         let s='';
         if(parseInt(t.owasp2017,10)>1){ s='s' ;}
-        log(` -     ⚠️ J'ai trouvé ${t.owasp2017} faille${s} OWASP ${menace} potentielle${s}.`);
+        log(` -     ⚠️ J'ai trouvé ${t.owasp2017} faille${s} OWASP2017 ${menace} potentielle${s}.`);
       }
       if (t.code === http_200 && t.owasp2021 !== 0 && t.owasp2021 !== 'NC' && t.info === 'enregistrement') {
         let s='';
         if(parseInt(t.owasp2021,10)>1){ s='s' ;}
-        log(` -     ⚠️ J'ai trouvé ${t.owasp2021} faille${s} OWASP ${menace} potentielle${s}.`);
+        log(` -     ⚠️ J'ai trouvé ${t.owasp2021} faille${s} OWASP2021 ${menace} potentielle${s}.`);
       }
     } catch(error) {
       const trace = prepareTechnicalDetails(error);
@@ -962,22 +897,20 @@ const projetHotspotOwaspDetails = async function(mavenKey) {
       }
 
     if (t.code === http_200) {
-      log(` - ℹ️ (10) Collecte des informations détaillées pour les hotspots.`);
-      let s='';
-      if (parseInt(t.nombre,10) > 1){ s='s'; }
+      log(` - ℹ️ (09) Collecte des informations détaillées pour les hotspots.`);
+      const s = parseInt(t.nombre, 10) > 1 ? 's' : '';
       log(` -     ✅ On a trouvé ${t.nombre} description${s}.`);
-    }
-    if (t.code===http_406){
+    } else if (t.code === http_406) {
       log(` -     📌 Aucune information n'est disponible pour les hotspots.`);
-    }  else {
-      log(` - ❌ (10) Collecte des informations détaillées pour les hotspots en échec.`);
+    } else {
+      log(` - ❌ (09) Collecte des informations détaillées pour les hotspots en échec.`);
     }
   } catch(error) {
       const trace = prepareTechnicalDetails(error);
       const message = "Une erreur inattendue s'est produite lors de la phase 10.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 10');
-      log(` - ❌ (10) Collecte des informations détaillées pour les hotspots en échec.`);
+      log(` - ❌ (09) Collecte des informations détaillées pour les hotspots en échec.`);
       errorButton($boutonCollecteIndicateur, aria_label);
       return;
   }
@@ -1036,17 +969,20 @@ const projetNoSonar = async function(mavenKey){
       }
 
     if (t.code === http_200) {
-      log (` - ℹ️ (11) Collecte des annotations NoSonar/SuppressWarning.`);
+      log (` - ℹ️ (10) Collecte des annotations NoSonar/SuppressWarning.`);
     } else {
-      log (` - ❌ (11) Collecte des annotations NoSonar/SuppressWarning en échec.`);
+      log (` - ❌ (10) Collecte des annotations NoSonar/SuppressWarning en échec.`);
     }
 
     if (t.code === http_200 && t.nombre !== 0) {
-      let s='';
-      if (t.nombre>1) { s='s'; }
+      const s = t.nombre > 1 ? 's' : '';
       log(` -     ⚠️ J'ai trouvé ${t.nombre} exclusion${s}.`);
-      log(`           📌 NoSonar : ${t.historique.no_sonar}`);
-      log(`           📌 Suppress warning : ${t.historique.suppress_warning}`);
+      log(`           📌 NoSonar Java   : ${t.historique.java_no_sonar}`);
+      log(`           📌 NoSonar Python : ${t.historique.python_no_sonar}`);
+      log(`           📌 NoSonar PHP    : ${t.historique.php_no_sonar}`);
+      log(`           📌 @SuppressWarnings : ${t.historique.suppress_warning}`);
+      log(`           📌 Checkstyle (S1315) : ${t.historique.check_style}`);
+      log(`           📌 PMD (S1310)        : ${t.historique.no_pmd}`);
     } else {
       log(` -     ✅ Bravo !!! ${t.nombre} exclusion NoSonar trouvée.`);
     }
@@ -1055,7 +991,7 @@ const projetNoSonar = async function(mavenKey){
       const message = "Une erreur inattendue s'est produite lors de la phase 11.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 11');
-      log (` - ❌ (11) Collecte des annotations NoSonar/SuppressWarning en échec.`);
+      log (` - ❌ (10) Collecte des annotations NoSonar/SuppressWarning en échec.`);
       errorButton($boutonCollecteIndicateur, aria_label);
       return;
   }
@@ -1113,9 +1049,9 @@ const projetTodo = async function(mavenKey){
       }
 
     if (t.code === http_200) {
-      log (` - ℹ️ (12) Collecte des commentaires Todo.`);
+      log (` - ℹ️ (11) Collecte des commentaires Todo.`);
     } else {
-      log (` - ❌ (12) Collecte des commentaires Todo.`);
+      log (` - ❌ (11) Collecte des commentaires Todo.`);
     }
 
     if (t.code === http_200 && t.nombre !== 0) {
@@ -1134,7 +1070,7 @@ const projetTodo = async function(mavenKey){
       const message = "Une erreur inattendue s'est produite lors de la phase 12.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 12');
-      log (` - ❌ (12) Collecte des commentaires Todo.`);
+      log (` - ❌ (11) Collecte des commentaires Todo.`);
       errorButton($boutonCollecteIndicateur, aria_label);
       return;
     }
@@ -1192,22 +1128,21 @@ const data = { maven_key: mavenKey };
       }
 
     if (t.code === http_404){
-      log(` - 📌 (13) La collecte des LOGGERS n'a pas été activée.`);
+      log(` - 📌 (12) La collecte des LOGGERS n'a pas été activée.`);
     }
 
     if (t.code === http_200) {
-      log(` - ℹ️ (13) Collecte des LOGGERS pour l'application JAVA.`);
-      const a = parseInt(t.message.logger_info,10);
-      const b = parseInt(t.message.logger_warn,10);
-      const c = parseInt(t.message.logger_error,10);
-      const d = parseInt(t.message.logger_debug,10);
+      log(` - ℹ️ (12) Collecte des LOGGERS pour l'application JAVA.`);
+      const a = parseInt(t.data.logger_info,10);
+      const b = parseInt(t.data.logger_warn,10);
+      const c = parseInt(t.data.logger_error,10);
+      const d = parseInt(t.data.logger_debug,10);
       const nombre = a+b+c+d;
-      let s='';
-      if (t.nombre>1){
-          s = 's';
-          log(` -     ✅ J'ai trouvé ${nombre} Logger${s}.`);
-      } else {
+      if (nombre === 0) {
           log(` -     ⚠️ Je n'ai pas trouvé de Logger.`);
+      } else {
+          const s = nombre > 1 ? 's' : '';
+          log(` -     ✅ J'ai trouvé ${nombre} Logger${s}.`);
       }
     }
   } catch(error) {
@@ -1215,7 +1150,7 @@ const data = { maven_key: mavenKey };
       const message = "Une erreur inattendue s'est produite lors de la phase 13.";
       showMessage('alert', message, trace);
       sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 13');
-      log (` - ❌ (13) Collecte des Loggers en échec.`);
+      log (` - ❌ (12) Collecte des Loggers en échec.`);
       errorButton($boutonCollecteIndicateur, aria_label);
       return;
   }
@@ -1237,7 +1172,7 @@ const finCollecte = function(maven_key){
   const aria_label = 'Lancer la collecte des indicateurs SonarQube';
 
   if (collecte === 'Tout va bien!') {
-    log(` - ℹ️ (14) La collecte des données est terminée.`);
+    log(` - ℹ️ (13) La collecte des données est terminée.`);
     showMessage('success', `<strong>${collecte}</strong> Le processus de collecte a été réalisé avec success pour le projet ${maven_key} !`);
     setTimeout( ()=> { hideMessage(); }, troisMille);
     enableButton($boutonCollecteIndicateur, aria_label);
@@ -1625,47 +1560,45 @@ $('.js-analyse').on('click', function () {
     await projetInformation(idProject);           /*(01)*/
     await projetMesure(idProject);                /*(02)*/
 
-    /* Collecte des notes */
-    await projetRating(idProject, 'reliability'); /*(03)*/
-    await projetRating(idProject, 'security');    /*(03)*/
-    await projetRating(idProject, 'sqale');      /*(03)*/
+    /* (v2.0) Les notes (reliability/security/sqale) sont desormais
+       collectees dans mesures en phase (02). Plus de phase (03). */
 
     /* Analyse Sécurité et Owasp. */
-    await projetOwasp(idProject);                 /*(04)*/
-    await projetHotspot(idProject);               /*(05)*/
+    await projetOwasp(idProject);                 /*(03)*/
+    await projetHotspot(idProject);               /*(04)*/
 
     /* On récupère les infos sur les anomalies*/
-    await projetAnomalie(idProject);              /*(06)*/
+    await projetAnomalie(idProject);              /*(05)*/
 
     /* On récupère le détails sur les anomalies*/
-    await projetAnomalieDetails(idProject);       /*(07)*/
+    await projetAnomalieDetails(idProject);       /*(06)*/
 
     /* On efface les traces :)*/
-    await projetHotspotOwasp(idProject, 'a0');    /*(08)*/
+    await projetHotspotOwasp(idProject, 'a0');    /*(07)*/
 
     /* On enregistre les résultats*/
-    await projetHotspotOwasp(idProject, 'a1');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a2');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a3');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a4');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a5');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a6');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a7');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a8');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a9');    /*(09)*/
-    await projetHotspotOwasp(idProject, 'a10');   /*(09)*/
+    await projetHotspotOwasp(idProject, 'a1');    /*(08)*/
+    await projetHotspotOwasp(idProject, 'a2');    /*(08)*/
+    await projetHotspotOwasp(idProject, 'a3');    /*(08)*/
+    await projetHotspotOwasp(idProject, 'a4');    /*(08)*/
+    await projetHotspotOwasp(idProject, 'a5');    /*(08)*/
+    await projetHotspotOwasp(idProject, 'a6');    /*(08)*/
+    await projetHotspotOwasp(idProject, 'a7');    /*(08)*/
+    await projetHotspotOwasp(idProject, 'a8');    /*(08)*/
+    await projetHotspotOwasp(idProject, 'a9');    /*(08)*/
+    await projetHotspotOwasp(idProject, 'a10');   /*(08)*/
 
     /* On enregistre le détails de chaque hotspot owasp. */
-    await projetHotspotOwaspDetails(idProject);   /*(10)*/
+    await projetHotspotOwaspDetails(idProject);   /*(09)*/
 
     /* Récupération des signalements noSonar et SuppressWarning. */
-    await projetNoSonar(idProject);               /*(11)*/
+    await projetNoSonar(idProject);               /*(10)*/
 
     /* Récupération des signalements To do (TS, JAVA, XML). */
-    await projetTodo(idProject);                  /*(12)*/
+    await projetTodo(idProject);                  /*(11)*/
 
     /* Récupération des signalements Logger (logger_info, logger_warn, logger_error_, logger_debug). */
-    await projetLogger(idProject);                /*(13)*/
+    await projetLogger(idProject);                /*(12)*/
 
     /* Renvoie le statut de fin */
     finCollecte(idProject);
