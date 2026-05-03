@@ -27,14 +27,17 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
+/**
+ * @extends AbstractType<Utilisateur>
+ */
 class RegistrationFormType extends AbstractType
 {
 
     /**
      * [Description for buildForm]
      *
-     * @param FormBuilderInterface $builder
-     * @param array $options
+     * @param FormBuilderInterface<Utilisateur|null> $builder
+     * @param array<int|string, mixed> $options
      *
      * @return void
      *

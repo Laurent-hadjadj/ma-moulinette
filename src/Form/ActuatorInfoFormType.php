@@ -10,6 +10,9 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
+/**
+ * @extends AbstractType<ActuatorInfo>
+ */
 class ActuatorInfoFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
@@ -26,14 +29,15 @@ class ActuatorInfoFormType extends AbstractType
                 'attr' => [ 'placeholder' => 'placeholder.actuator.info.value',
                             'class' => 'color-bleu open-sans margin-left-05' ],
                 'constraints' => [
-                    new NotBlank(message: "Entrez la valeur de la clé."),
+                    new NotBlank([
+                        'message' => "Entrez la valeur de la clé.",
+                    ]),
                     new Length(
                         min: 2,
                         max: 255,
                         minMessage: "La valeur de la clé doit comporter au moins {{ limit }} caractères.",
                         maxMessage: "La valeur de la clé ne doit pas comporter plus de {{ limit }} caractères.",
-                    ),
-                ],
+                    ), ],
             ])
             ->add('actuatorInfoDescription', TextType::class,
             [
@@ -46,14 +50,15 @@ class ActuatorInfoFormType extends AbstractType
                 'attr' => [ 'placeholder' => 'placeholder.actuator.info.description',
                             'class' => 'color-bleu open-sans' ],
                 'constraints' => [
-                    new NotBlank(message: "Entrez une description courte."),
+                    new NotBlank([
+                        'message' => "Entrez une description courte.",
+                    ]),
                     new Length(
                         min: 1,
                         max: 255,
                         minMessage: "La description doit comporter au moins {{ limit }} caractère.",
                         maxMessage: "La description ne doit pas comporter plus de {{ limit }} caractères.",
-                    ),
-                ],
+                    ), ],
             ])
         ;
     }

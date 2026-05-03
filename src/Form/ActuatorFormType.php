@@ -14,6 +14,8 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 
 /**
  * [Description ActuatorFormType]
+ *
+ * @extends AbstractType<Actuator>
  */
 class ActuatorFormType extends AbstractType
 {
@@ -31,14 +33,15 @@ class ActuatorFormType extends AbstractType
                 'attr' => [ 'placeholder' => 'placeholder.actuator.url',
                             'class' => 'color-bleu' ],
                 'constraints' => [
-                    new NotBlank(message: "Entrez l'adresse du site web."),
+                    new NotBlank([
+                        'message' => "Entrez l'adresse du site web.",
+                    ]),
                     new Length(
                         min: 12,
                         max: 128,
                         minMessage: "L'URL doit comporter au moins {{ limit }} caractères.",
                         maxMessage: "L'URL ne doit pas comporter plus de {{ limit }} caractères.",
-                    ),
-                ],
+                    ), ],
             ])
             ->add('actuatorUser', TextType::class, [
                     'label' => 'label.actuator.user',

@@ -22,6 +22,9 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use App\Entity\Utilisateur;
 
+/**
+ * @extends AbstractType<Utilisateur>
+ */
 class ResetPasswordFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
