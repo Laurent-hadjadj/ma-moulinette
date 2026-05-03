@@ -236,14 +236,12 @@
 .avatar-container { display: flex; }
 #mon-avatar { width: 48px; }
 
-/******* fenetre modal bookmark, favori *****/
-#fermer-preference-bookmark,
+/******* fenetre modal favori *****/
 #fermer-preference-favori {
   background-color: #00445b;
   color: #fff;
 }
 
-#fermer-preference-bookmark:hover,
 #fermer-preference-favori:hover {
   background-color: #006182;
   color: #fff;
@@ -253,7 +251,6 @@
 .option-true { color: #0a0; }
 .option-false { color: #d4333f; }
 
-#modal-bookmark-label,
 #modal-favori-label,
 .option-true,
 .option-false,
@@ -265,7 +262,6 @@
 
 /** Bouton Ajouter/modifier/supprimer */
 .bouton-preference-ajouter-liste-favoris,
-.bouton-preference-ajouter-liste-bookmark,
 .preference-valider,
 .preference-effacer {
   background-color: #00445b;
@@ -273,7 +269,6 @@
 
 /* gestion du passage sur les boutons */
 .bouton-preference-ajouter-liste-favoris:hover,
-.bouton-preference-ajouter-liste-bookmark:hover,
 .preference-valider:hover,
 .preference-effacer:hover {
   background-color: #006182;

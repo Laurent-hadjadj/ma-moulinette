@@ -155,8 +155,7 @@ input:checked ~ .switch-paddle { background-color: #00445b; }
 
 #ma-tete { width: 50px; }
 
-/******* fenêtre modal bookmark, favori *****/
-#fermer-preference-bookmark,
+/******* fenêtre modal favori *****/
 #fermer-preference-favori,
 #fermer-preference-projet,
 #fermer-preference-version {
@@ -164,7 +163,6 @@ input:checked ~ .switch-paddle { background-color: #00445b; }
   color: #fff;
 }
 
-#fermer-preference-bookmark:hover,
 #fermer-preference-favori:hover,
 #fermer-preference-projet:hover,
 #fermer-preference-version:hover {
@@ -176,7 +174,6 @@ input:checked ~ .switch-paddle { background-color: #00445b; }
 .option-true { color: #0a0; }
 .option-false { color: #d4333f; }
 
-#modal-bookmark-label,
 #modal-favori-label,
 .option-true,
 .option-false,
