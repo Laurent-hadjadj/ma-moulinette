@@ -21,7 +21,7 @@ use Knp\Component\Pager\PaginatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Actuator, ActuatorInfo};
 use App\Form\ActuatorFormType;
-use App\Service\{ClientService, UserAgentTrackingFacade};
+use App\Service\UserAgentTrackingFacade;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -42,7 +42,6 @@ class ActuatorController extends AbstractController
 
     public function __construct(
         private EntityManagerInterface $em,
-        private ClientService $client,
         private PaginatorInterface $paginator,
         ParameterBagInterface $params,
         private LoggerInterface $logger,

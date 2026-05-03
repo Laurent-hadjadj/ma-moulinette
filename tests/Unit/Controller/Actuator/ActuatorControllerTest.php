@@ -7,7 +7,6 @@ namespace App\Tests\Unit\Controller\Actuator;
 use App\Controller\Actuator\ActuatorController;
 use App\Entity\Actuator;
 use App\Repository\ActuatorRepository;
-use App\Service\ClientService;
 use App\Service\UserAgentTrackingFacade;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
@@ -29,7 +28,6 @@ use Twig\Environment;
 class ActuatorControllerTest extends TestCase
 {
     /** @var EntityManagerInterface&MockObject */         private MockObject $em;
-    /** @var ClientService&MockObject */                  private MockObject $client;
     /** @var PaginatorInterface&MockObject */             private MockObject $paginator;
     /** @var ParameterBagInterface&MockObject */          private MockObject $params;
     /** @var LoggerInterface&MockObject */                private MockObject $logger;
@@ -44,7 +42,6 @@ class ActuatorControllerTest extends TestCase
     protected function setUp(): void
     {
         $this->em = $this->createMock(EntityManagerInterface::class);
-        $this->client = $this->createMock(ClientService::class);
         $this->paginator = $this->createMock(PaginatorInterface::class);
         $this->params = $this->createMock(ParameterBagInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
@@ -85,7 +82,6 @@ class ActuatorControllerTest extends TestCase
 
         $this->controller = new ActuatorController(
             $this->em,
-            $this->client,
             $this->paginator,
             $this->params,
             $this->logger,

@@ -6,7 +6,6 @@ namespace App\Tests\Unit\Controller;
 
 use App\Controller\PreferenceController;
 use App\Entity\Utilisateur;
-use App\Service\ClientService;
 use App\Service\UserAgentTrackingFacade;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Result;
@@ -32,7 +31,6 @@ class PreferenceControllerTest extends TestCase
     /** @var ParameterBagInterface&MockObject */      private MockObject $params;
     /** @var TokenStorageInterface&MockObject */      private MockObject $tokenStorage;
     /** @var TokenInterface&MockObject */             private MockObject $token;
-    /** @var ClientService&MockObject */              private MockObject $client;
     /** @var LoggerInterface&MockObject */            private MockObject $logger;
     /** @var UserAgentTrackingFacade&MockObject */    private MockObject $tracking;
     /** @var Environment&MockObject */                private MockObject $twig;
@@ -50,7 +48,6 @@ class PreferenceControllerTest extends TestCase
         $this->tokenStorage = $this->createMock(TokenStorageInterface::class);
         $this->token = $this->createMock(TokenInterface::class);
         $this->tokenStorage->method('getToken')->willReturn($this->token);
-        $this->client = $this->createMock(ClientService::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
         $this->twig = $this->createMock(Environment::class);
@@ -88,7 +85,6 @@ class PreferenceControllerTest extends TestCase
         $this->controller = new PreferenceController(
             $this->em,
             $this->params,
-            $this->client,
             $this->logger,
             $this->tracking
         );

@@ -41,11 +41,10 @@ class StatistiqueController extends AbstractController
     private $dateCopyright;
 
     public function __construct(
-        private ParameterBagInterface $params,
+        ParameterBagInterface $params,
         private UserAgentTrackingFacade $tracking,
         private UserAgentAnalysisService $analysis
     ) {
-        $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');

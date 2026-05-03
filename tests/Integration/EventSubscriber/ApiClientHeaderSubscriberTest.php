@@ -6,10 +6,8 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class ApiClientHeaderSubscriberTest extends WebTestCase
 {
-    private array $allowedOrigins = ['front.monsite.com'];
     private string $internalHeaderName = 'X-Internal-Front';
     private string $internalHeaderValue = 'front-app';
-    private string $appClientToken = '123456-FAKE-TOKEN';
 
     public function testSecureApiWithValidHeadersIsAllowed(): void
     {

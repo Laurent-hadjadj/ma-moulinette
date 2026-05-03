@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
 use Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Service\{ClientService, UserAgentTrackingFacade};
+use App\Service\UserAgentTrackingFacade;
 
 class PreferenceController extends AbstractController
 {
@@ -51,7 +51,6 @@ class PreferenceController extends AbstractController
     public function __construct(
         private EntityManagerInterface $em,
         ParameterBagInterface $params,
-        private ClientService $client,
         private LoggerInterface $logger,
         private UserAgentTrackingFacade $tracking
     ){

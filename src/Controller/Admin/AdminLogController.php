@@ -52,12 +52,11 @@ class AdminLogController extends AbstractController
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function __construct(
-        private ParameterBagInterface $params,
+        ParameterBagInterface $params,
         private LoggerInterface $logger,
         private LogArchiveService $logArchive,
         private UserAgentTrackingFacade $tracking
     ) {
-        $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');

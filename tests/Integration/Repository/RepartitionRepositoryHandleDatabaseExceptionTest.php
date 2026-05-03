@@ -66,8 +66,7 @@ class RepartitionRepositoryHandleDatabaseExceptionTest extends TestCase
         // 3) SQLSTATE 23502 → retour du message d'origine
         $msg = 'Colonne non nulle manquante';
         $ex = new class($msg) extends \Exception {
-            private string $msg;
-            public function __construct(string $m) { parent::__construct($m); $this->msg = $m; }
+            public function __construct(string $m) { parent::__construct($m); }
             public function getSqlState(): string { return '23502'; }
         };
 
