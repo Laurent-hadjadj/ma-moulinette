@@ -6,7 +6,8 @@ when@dev:
 
     framework:
         profiler:
-            only_exceptions: true
+            # true pour désactiver le profiler
+            only_exceptions: false
 
 when@test:
     web_profiler:
