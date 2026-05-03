@@ -41,20 +41,20 @@ class HotspotOwaspValidatorTest extends KernelTestCase
   private function getEntity(): HotspotOwasp
   {
       return (new hotspotOwasp())
-      ->setMavenKey(static::$mavenKey)
-      ->setReferentialOwasp(static::$referentialOwasp)
-      ->setVersion(static::$version)
-      ->setDateVersion(new \DateTimeImmutable(static::$dateVersion))
-      ->setMenace(static::$menace)
-      ->setSecurityCategory(static::$securityCategory)
-      ->setRuleKey(static::$ruleKey)
-      ->setProbability(static::$probability)
-      ->setStatus(static::$status)
-      ->setResolution(static::$resolution)
-      ->setNiveau(static::$niveau)
-      ->setModeCollecte(static::$modeCollecte)
-      ->setUtilisateurCollecte(static::$utilisateurCollecte)
-      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+      ->setMavenKey(self::$mavenKey)
+      ->setReferentialOwasp(self::$referentialOwasp)
+      ->setVersion(self::$version)
+      ->setDateVersion(new \DateTimeImmutable(self::$dateVersion))
+      ->setMenace(self::$menace)
+      ->setSecurityCategory(self::$securityCategory)
+      ->setRuleKey(self::$ruleKey)
+      ->setProbability(self::$probability)
+      ->setStatus(self::$status)
+      ->setResolution(self::$resolution)
+      ->setNiveau(self::$niveau)
+      ->setModeCollecte(self::$modeCollecte)
+      ->setUtilisateurCollecte(self::$utilisateurCollecte)
+      ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
   }
 
   public function assertHasErrors(HotspotOwasp $entity, int $number = 0): void

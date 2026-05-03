@@ -56,14 +56,14 @@ class MesuresRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         // Appel de la méthode
         $mesuresRepository = $entityManager->getRepository(Mesures::class);
         $r = $mesuresRepository->selectMesuresVersionLast($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -75,7 +75,7 @@ class MesuresRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey,
+        $map = ['maven_key' => self::$mavenKey,
                 'project_name' => 'Ma-Moulinette', 'lines' => 22015,
                 'ncloc' => 10043, 'language_distribution' => ['java' => 4278, 'ts' => 18690], 'files' => 18, 'classes' => 26, 'functions' => '52', 'coverage' => 10.3, 'duplicated_lines_density' => 5.1, 'sqale_debt_ratio' => 26.0, 'issues' => 200, 'tests' => 123,
                 'mode_collecte' => 'TRAITEMENT MANUEL','utilisateur_collecte' => 'laurent.hadjadj@ma-petite-entreprise.fr',
@@ -86,7 +86,7 @@ class MesuresRepositoryTest extends KernelTestCase
         $r = $mesuresRepository->insertMesures($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -98,14 +98,14 @@ class MesuresRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         // Appel de la méthode
         $mesuresRepository = $entityManager->getRepository(Mesures::class);
         $r = $mesuresRepository->deleteMesuresMavenKey($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 

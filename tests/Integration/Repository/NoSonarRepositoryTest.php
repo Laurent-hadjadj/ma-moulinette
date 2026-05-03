@@ -58,14 +58,14 @@ class NoSonarRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         // Appel de la méthode
         $noSonarRepository = $entityManager->getRepository(NoSonar::class);
         $r = $noSonarRepository->deleteNoSonarMavenKey($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -77,14 +77,14 @@ class NoSonarRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         // Appel de la méthode
         $noSonarRepository = $entityManager->getRepository(NoSonar::class);
         $r = $noSonarRepository->selectNoSonarRuleGroupByRule($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -96,7 +96,7 @@ class NoSonarRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = [['maven_key' => static::$mavenKey, 'rule' => 'java:S1309',
+        $map = [['maven_key' => self::$mavenKey, 'rule' => 'java:S1309',
                 'component'=> 'fr.ma-petite-entreprise:mo-moulinette:
                 ma-moulinette-service/src/main/java/fr/ma-petite-entreprise/ma-moulinette/service/ClamAvService.java', 'line' => 118,
                 'mode_collecte' => 'TRAITEMENT MANUEL','utilisateur_collecte' => 'laurent.hadjadj@ma-petite-entreprise.fr',
@@ -107,7 +107,7 @@ class NoSonarRepositoryTest extends KernelTestCase
         $r = $nosonarRepository->insertNoSonar($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 

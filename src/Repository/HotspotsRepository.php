@@ -49,7 +49,7 @@ class HotspotsRepository extends ServiceEntityRepository
 
       // message = 'SQLSTATE[08006]'
       if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-          $message = static::$noDataBase;
+          $message = self::$noDataBase;
       }
 
       // state = '23502'
@@ -82,8 +82,8 @@ class HotspotsRepository extends ServiceEntityRepository
             WHERE maven_key=:maven_key";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(self::$mavenKey, $map['maven_key']);
               $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
@@ -111,8 +111,8 @@ class HotspotsRepository extends ServiceEntityRepository
             WHERE maven_key=:maven_key AND status='TO_REVIEW'
             ORDER BY niveau";
     try {
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-            $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
             $liste = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
@@ -137,9 +137,9 @@ class HotspotsRepository extends ServiceEntityRepository
             FROM ma_moulinette.hotspots
             WHERE maven_key=:maven_key AND status=:status";
       try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-              $stmt->bindValue(static::$status, $map['status']);
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+              $stmt->bindValue(self::$status, $map['status']);
             $nombre = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
@@ -165,9 +165,9 @@ class HotspotsRepository extends ServiceEntityRepository
             WHERE maven_key=:maven_key AND status=:status
             GROUP BY niveau";
       try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-              $stmt->bindValue(static::$status, $map['status']);
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+              $stmt->bindValue(self::$status, $map['status']);
             $liste = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
@@ -197,14 +197,14 @@ class HotspotsRepository extends ServiceEntityRepository
           $this->getEntityManager()->getConnection()->beginTransaction();
       foreach ($map as $item) {
               $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
-                $stmt->bindValue(static::$mavenKey, $item['maven_key']);
+                $stmt->bindValue(self::$mavenKey, $item['maven_key']);
                 $stmt->bindValue(':version', $item['version']);
                 $stmt->bindValue(':date_version', $item['date_version']->format('Y-m-d H:i:sO'));
                 $stmt->bindValue(':rule_key', $item['rule_key']);
                 $stmt->bindValue(':security_category', $item['security_category']);
                 $stmt->bindValue(':hotspot_key', $item['hotspot_key']);
                 $stmt->bindValue(':probability', $item['probability']);
-                $stmt->bindValue(static::$status, $item['status']);
+                $stmt->bindValue(self::$status, $item['status']);
                 $stmt->bindValue(':resolution', $item['resolution']);
                 $stmt->bindValue(':niveau', $item['niveau']);
                 $stmt->bindValue(':mode_collecte', $item['mode_collecte']);

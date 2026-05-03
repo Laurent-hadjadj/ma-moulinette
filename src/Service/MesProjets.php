@@ -47,7 +47,7 @@ class MesProjets
 
         /** j'ai pas trouvé de projet pour cette équipe. */
         if (empty($projets)) {
-            return ['code' => 406, 'message' => static::$erreur406];
+            return ['code' => 406, 'message' => self::$erreur406];
         }
 
         return ['code' => 200, 'projets' => $projets];

@@ -30,18 +30,18 @@ class InformationProjetFixtures extends Fixture
       /** création du jeu de données pour la table INFORMATION_PROJET */
       foreach($modeCollecte as $mode){
         $listeProjet=(new InformationProjet())
-          ->setMavenKey(static::$mavenKey)
-          ->setAnalyseKey(static::$analyseKey)
-          ->setDate(new \DateTimeImmutable(static::$date))
-          ->setProjectVersion(static::$projectVersion)
-          ->setType(static::$type)
-          ->setVersionSonar(static::$versionSonar)
-          ->setVersionReleaseSonar(static::$versionReleaseSonar)
-          ->setVersionSnapshotSonar(static::$versionSnapshotSonar)
-          ->setVersionAutreSonar(static::$versionAutreSonar)
+          ->setMavenKey(self::$mavenKey)
+          ->setAnalyseKey(self::$analyseKey)
+          ->setDate(new \DateTimeImmutable(self::$date))
+          ->setProjectVersion(self::$projectVersion)
+          ->setType(self::$type)
+          ->setVersionSonar(self::$versionSonar)
+          ->setVersionReleaseSonar(self::$versionReleaseSonar)
+          ->setVersionSnapshotSonar(self::$versionSnapshotSonar)
+          ->setVersionAutreSonar(self::$versionAutreSonar)
           ->setModeCollecte($mode)
-          ->setUtilisateurCollecte(static::$utilisateurCollecte)
-          ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+          ->setUtilisateurCollecte(self::$utilisateurCollecte)
+          ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
           $manager->persist($listeProjet);
       }
 

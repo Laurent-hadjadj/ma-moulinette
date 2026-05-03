@@ -75,7 +75,7 @@ class LoggerRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
         $result = $repo->selectLogger($map);
 
         // 9) Vérification
@@ -116,7 +116,7 @@ class LoggerRepositoryHandlerTest extends TestCase
                         ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
-        $expected = ['code' => 500, 'erreur' => static::$gestionTest];
+        $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
                 ->with($fakeException)
                 ->willReturn($expected);
@@ -126,7 +126,7 @@ class LoggerRepositoryHandlerTest extends TestCase
 
         // 8) Prépare un jeu de données minimal pour le $map
         $map = [
-            'maven_key' => static::$mavenKey,
+            'maven_key' => self::$mavenKey,
             'logger_info' => 14,
             'logger_warn' => 0,
             'logger_error' => 15,
@@ -181,7 +181,7 @@ class LoggerRepositoryHandlerTest extends TestCase
                         ->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
-        $expected = ['code' => 500, 'erreur' => static::$gestionTest];
+        $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
                 ->with($fakeException)
                 ->willReturn($expected);
@@ -190,7 +190,7 @@ class LoggerRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Prépare un jeu de données minimal pour le $map
-        $map = [ 'maven_key' => static::$mavenKey ];
+        $map = [ 'maven_key' => self::$mavenKey ];
 
         // 9) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
         $result = $repo->deleteLoggerMavenKey($map);

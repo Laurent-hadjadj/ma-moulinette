@@ -50,8 +50,8 @@ class UtilisateurFixtures extends Fixture
         ->setActif(true)
         ->setRoles(["ROLE_GESTIONNAIRE"])
         ->setListeGroupeFonctionnel([])
-        ->setPreference(static::$preference)
-        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+        ->setPreference(self::$preference)
+        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
         $manager->persist($admin);
 
         /** Création de l'utilisateur AURELIE */
@@ -66,8 +66,8 @@ class UtilisateurFixtures extends Fixture
         ->setActif(false)
         ->setRoles(["ROLE_GESTIONNAIRE"])
         ->setListeGroupeFonctionnel([])
-        ->setPreference(static::$preference)
-        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+        ->setPreference(self::$preference)
+        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
         $manager->persist($aurelie);
 
         /** Création de l'utilisateur EMMA */
@@ -82,8 +82,8 @@ class UtilisateurFixtures extends Fixture
         ->setActif(false)
         ->setRoles(["ROLE_BATCH"])
         ->setListeGroupeFonctionnel([])
-        ->setPreference(static::$preference)
-        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+        ->setPreference(self::$preference)
+        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
         $manager->persist($emma);
 
         /** Création de l'utilisateur NATHAN */
@@ -98,8 +98,8 @@ class UtilisateurFixtures extends Fixture
         ->setActif(0)
         ->setRoles(["ROLE_COLLECTE"])
         ->setListeGroupeFonctionnel([])
-        ->setPreference(static::$preference)
-        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+        ->setPreference(self::$preference)
+        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
         $manager->persist($nathan);
 
         /** Création de l'utilisateur JOSH */
@@ -114,8 +114,8 @@ class UtilisateurFixtures extends Fixture
         ->setActif(false)
         ->setRoles(["ROLE_UTILISATEUR"])
         ->setListeGroupeFonctionnel([])
-        ->setPreference(static::$preference)
-        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+        ->setPreference(self::$preference)
+        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
         $manager->persist($josh);
 
         /** Enregistrement des données dans la base de tests */

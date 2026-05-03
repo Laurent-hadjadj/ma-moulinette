@@ -50,13 +50,13 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         $historiqueRepository = $entityManager->getRepository(Historique::class);
         $r = $historiqueRepository->countHistoriqueProjet($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -68,13 +68,13 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $where = " maven_key='".static::$mavenKey."' AND version='1.2.0-RELEASE'";
+        $where = " maven_key='".self::$mavenKey."' AND version='1.2.0-RELEASE'";
 
         $historiqueRepository = $entityManager->getRepository(Historique::class);
         $r = $historiqueRepository->getProjetFavori($where);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -86,7 +86,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map=['maven_key' => static::$mavenKey,
+        $map=['maven_key' => self::$mavenKey,
             'initial' => true, 'version' => '1.2.0-RELEASE', 'date_version' => '2024-07-12 16:34:46'];
 
         // Appel de la méthode
@@ -94,7 +94,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $r = $historiqueRepository->updateHistoriqueReference($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -106,7 +106,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey,
+        $map = ['maven_key' => self::$mavenKey,
                 'version' => '1.5.0-RELEASE', 'date_version' => '2024-08-18 15:54:26'];
 
         // Appel de la méthode
@@ -114,7 +114,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $r = $historiqueRepository->deleteHistoriqueProjet($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -126,7 +126,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey,
+        $map = ['maven_key' => self::$mavenKey,
                 'limit' => 1];
 
         // Appel de la méthode
@@ -134,7 +134,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $r = $historiqueRepository->selectUnionHistoriqueProjet($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -146,7 +146,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey,
+        $map = ['maven_key' => self::$mavenKey,
                 'limit' => 1];
 
         // Appel de la méthode
@@ -154,7 +154,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $r = $historiqueRepository->selectUnionHistoriqueMesure($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -166,7 +166,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey,
+        $map = ['maven_key' => self::$mavenKey,
                 'limit' => 1];
 
         // Appel de la méthode
@@ -174,7 +174,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $r = $historiqueRepository->selectUnionHistoriqueAnomalie($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -186,7 +186,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey,
+        $map = ['maven_key' => self::$mavenKey,
                 'limit' => 1];
 
         // Appel de la méthode
@@ -194,7 +194,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $r = $historiqueRepository->selectUnionHistoriqueDetails($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -206,7 +206,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey,
+        $map = ['maven_key' => self::$mavenKey,
                 'limit' => 1];
 
         // Appel de la méthode
@@ -214,7 +214,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $r = $historiqueRepository->selectHistoriqueAnomalieGraphique($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -226,7 +226,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey,
+        $map = ['maven_key' => self::$mavenKey,
         'analyse_key' => 'AZCc05qWgfifxdiJPzns', 'version' => '1.5.0-RELEASE',
         'date_version' => '2024-08-18 15:54:26', 'nom_projet' => 'ma-moulinette',
         'version_release' => 2, 'version_snapshot' => 0, 'version_autre' => 1,
@@ -250,7 +250,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $r = $historiqueRepository->insertHistoriqueAjoutProjet($map, $json);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
 
         $r = $historiqueRepository->insertHistoriqueAjoutProjet($map, $json);
@@ -265,14 +265,14 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         // Appel de la méthode
         $historiqueRepository = $entityManager->getRepository(Historique::class);
         $r = $historiqueRepository->selectHistoriqueProjetByDate($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -284,14 +284,14 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         // Appel de la méthode
         $historiqueRepository = $entityManager->getRepository(Historique::class);
         $r = $historiqueRepository->selectHistoriqueProjetLast($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -303,14 +303,14 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         // Appel de la méthode
         $historiqueRepository = $entityManager->getRepository(Historique::class);
         $r = $historiqueRepository->selectHistoriqueProjetReference($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -322,14 +322,14 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['liste_projet' => "'".static::$mavenKey."'", 'nombre_projet_favori' => 5];
+        $map = ['liste_projet' => "'".self::$mavenKey."'", 'nombre_projet_favori' => 5];
 
         // Appel de la méthode
         $historiqueRepository = $entityManager->getRepository(Historique::class);
         $r = $historiqueRepository->selectHistoriqueProjetFavori($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -341,14 +341,14 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         // Appel de la méthode
         $historiqueRepository = $entityManager->getRepository(Historique::class);
         $r = $historiqueRepository->selectHistoriqueIsValide($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -360,14 +360,14 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
         /* C'est une liste 'xxx', 'yyy' */
-        $map = "'" . static::$mavenKey. "'";
+        $map = "'" . self::$mavenKey. "'";
 
         // Appel de la méthode
         $historiqueRepository = $entityManager->getRepository(Historique::class);
         $r = $historiqueRepository->selectHistoriqueIndicateurs($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 

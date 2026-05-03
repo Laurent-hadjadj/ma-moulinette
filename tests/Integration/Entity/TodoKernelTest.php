@@ -54,7 +54,7 @@ class TodoKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $todoRepository = $entityManager->getRepository(Todo::class);
-        $response = $todoRepository->findOneBy(['mavenKey' => static::$mavenKey]);
+        $response = $todoRepository->findOneBy(['mavenKey' => self::$mavenKey]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'MAVENKEY: Aucune réponse trouvée');
@@ -67,7 +67,7 @@ class TodoKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $todoRepository = $entityManager->getRepository(Todo::class);
-        $response = $todoRepository->findBy(['mavenKey' => static::$mavenKey]);
+        $response = $todoRepository->findBy(['mavenKey' => self::$mavenKey]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(3, $response, 'MAVENKEY: Aucune réponse trouvée');

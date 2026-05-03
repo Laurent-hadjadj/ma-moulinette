@@ -69,7 +69,7 @@ class RepartitionRepositoryHandlerTest extends TestCase
                                 ->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
-        $expected = ['code' => 500, 'erreur' => static::$gestionTest];
+        $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
                 ->with($this->isInstanceOf(\Throwable::class))
                 ->willReturn($expected);
@@ -79,10 +79,10 @@ class RepartitionRepositoryHandlerTest extends TestCase
 
         // 8) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
         $map = [
-                'maven_key' => static::$mavenKey,
-                'mode_collecte' => static::$modeCollecte,
-                'utilisateur_collecte' => static::$utilisateurCollecte,
-                'date_enregistrement' => new \DateTimeImmutable(static::$dateEnregistrement)
+                'maven_key' => self::$mavenKey,
+                'mode_collecte' => self::$modeCollecte,
+                'utilisateur_collecte' => self::$utilisateurCollecte,
+                'date_enregistrement' => new \DateTimeImmutable(self::$dateEnregistrement)
         ];
         $result = $repo->selectOrUpdateRepartitionInitial($map);
         $this->assertSame($expected, $result);
@@ -125,7 +125,7 @@ class RepartitionRepositoryHandlerTest extends TestCase
                                 ->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
-        $expected = ['code' => 500, 'erreur' => static::$gestionTest];
+        $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
                 ->with($this->isInstanceOf(\Throwable::class))
                 ->willReturn($expected);
@@ -135,10 +135,10 @@ class RepartitionRepositoryHandlerTest extends TestCase
 
         // 8) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
         $map = [
-                'maven_key' => static::$mavenKey,
-                'mode_collecte' => static::$modeCollecte,
-                'utilisateur_collecte' => static::$utilisateurCollecte,
-                'date_enregistrement' => new \DateTimeImmutable(static::$dateEnregistrement)
+                'maven_key' => self::$mavenKey,
+                'mode_collecte' => self::$modeCollecte,
+                'utilisateur_collecte' => self::$utilisateurCollecte,
+                'date_enregistrement' => new \DateTimeImmutable(self::$dateEnregistrement)
         ];
         $result = $repo->updateRepartition($map);
         $this->assertSame($expected, $result);

@@ -126,7 +126,7 @@ class ActuatorController extends AbstractController
                 'type' => 'warning',
                 'message' => '⚠️' . ($paginatorQuery['erreur'] ?? 'Erreur inconnue.')
             ]);
-            return $this->render(static::$index, $render);
+            return $this->render(self::$index, $render);
         }
 
         $pagination = $this->paginator->paginate(

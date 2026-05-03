@@ -24,13 +24,13 @@ class TodoFixtures extends Fixture
 
       foreach($modeCollecte as $mode){
         $todo=(new Todo())
-            ->setMavenKey(static::$mavenKey)
-            ->setRule(static::$rule)
-            ->setComponent(static::$component)
-            ->setLine(static::$line)
+            ->setMavenKey(self::$mavenKey)
+            ->setRule(self::$rule)
+            ->setComponent(self::$component)
+            ->setLine(self::$line)
             ->setModeCollecte($mode)
-            ->setUtilisateurCollecte(static::$utilisateurCollecte)
-            ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+            ->setUtilisateurCollecte(self::$utilisateurCollecte)
+            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
         $manager->persist($todo);
       }
       /** Enregistrement des données dans la base de tests */

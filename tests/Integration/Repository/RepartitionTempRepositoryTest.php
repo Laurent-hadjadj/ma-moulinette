@@ -98,18 +98,18 @@ class RepartitionTempRepositoryTest extends KernelTestCase
         // Préparation des données de test
         $issues = [
             [
-                'maven_key' => static::$mavenKey,
-                'component' => static::$component,
+                'maven_key' => self::$mavenKey,
+                'component' => self::$component,
                 'category' => 'BUG',
                 'severity' => 'CRITICAL',
-                'setup' => static::$setup + 1
+                'setup' => self::$setup + 1
             ],
             [
-                'maven_key' => static::$mavenKey,
-                'component' => static::$component,
+                'maven_key' => self::$mavenKey,
+                'component' => self::$component,
                 'category' => 'CODE_SMELL',
                 'severity' => 'MAJOR',
-                'setup' => static::$setup + 1
+                'setup' => self::$setup + 1
             ]
         ];
 
@@ -123,12 +123,12 @@ class RepartitionTempRepositoryTest extends KernelTestCase
 
         // Vérifie que l’un des enregistrements a bien été inséré
         $repartitionTemp = $repo->findOneBy([
-            'mavenKey' => static::$mavenKey,
-            'setup' => static::$setup + 1
+            'mavenKey' => self::$mavenKey,
+            'setup' => self::$setup + 1
         ]);
 
         $this->assertNotNull($repartitionTemp);
-        $this->assertEquals(static::$setup + 1, $repartitionTemp->getSetup());
+        $this->assertEquals(self::$setup + 1, $repartitionTemp->getSetup());
     }
 
     /**
@@ -173,24 +173,24 @@ class RepartitionTempRepositoryTest extends KernelTestCase
     {
         $repo = $this->getRepository();
         // On ajoute 2 enregistrements pour la même maven_key mais avec des setup différents
-        $this->insertTempIssue(static::$mavenKey, static::$component, 'BUG', 'MAJOR', static::$setup + 2);
-        $this->insertTempIssue(static::$mavenKey, static::$component, 'BUG', 'MAJOR', static::$setup + 3);
+        $this->insertTempIssue(self::$mavenKey, self::$component, 'BUG', 'MAJOR', self::$setup + 2);
+        $this->insertTempIssue(self::$mavenKey, self::$component, 'BUG', 'MAJOR', self::$setup + 3);
 
         // Appel de la méthode
         $result = $repo->deleteOldRecords([
-            'maven_key' => static::$mavenKey,
-            'setup' => static::$setup + 2,
+            'maven_key' => self::$mavenKey,
+            'setup' => self::$setup + 2,
         ]);
 
         // Vérifie que la suppression a fonctionné
         $this->assertEquals(['code' => 200, 'erreur' => ''], $result);
 
         // L'ancien enregistrement doit avoir été supprimé
-        $old = $repo->findOneBy(['mavenKey' => static::$mavenKey, 'setup' => static::$setup]);
+        $old = $repo->findOneBy(['mavenKey' => self::$mavenKey, 'setup' => self::$setup]);
         $this->assertNull($old);
 
         // Le nouveau doit toujours exister
-        $current = $repo->findOneBy(['mavenKey' => static::$mavenKey, 'setup' => static::$setup + 2]);
+        $current = $repo->findOneBy(['mavenKey' => self::$mavenKey, 'setup' => self::$setup + 2]);
         $this->assertNotNull($current);
     }
 
@@ -226,10 +226,10 @@ class RepartitionTempRepositoryTest extends KernelTestCase
         $repo = $this->getRepository();
 
         $map = [
-            'maven_key' => static::$mavenKey,
+            'maven_key' => self::$mavenKey,
             'category' => 'BUG',
             'severity' => 'CRITICAL',
-            'setup' => static::$setup
+            'setup' => self::$setup
         ];
 
         $result = $repo->selectRepartitionByTypeAndSeverity($map);
@@ -291,11 +291,11 @@ class RepartitionTempRepositoryTest extends KernelTestCase
     public function testBatchInsertIssuesSQL_WithSingleIssueAsArray(): void
     {
         $singleIssue = [
-            'maven_key' => static::$mavenKey,
-            'component' => static::$component,
+            'maven_key' => self::$mavenKey,
+            'component' => self::$component,
             'category' => 'BUG',
             'severity' => 'MAJOR',
-            'setup' => static::$setup,
+            'setup' => self::$setup,
         ];
 
         $connectionMock = $this->createMock(Connection::class);

@@ -25,11 +25,11 @@ class RepartitionTempFixtures extends Fixture
       foreach($types as $type){
         foreach($severities as $severity){
           $repartitionTemp=(new RepartitionTemp())
-              ->setComponent(static::$component)
+              ->setComponent(self::$component)
               ->setType($type)
               ->setSeverity($severity)
-              ->setSetup(static::$setup)
-              ->setMavenKey(static::$mavenKey);
+              ->setSetup(self::$setup)
+              ->setMavenKey(self::$mavenKey);
           $manager->persist($repartitionTemp);
         }
       }

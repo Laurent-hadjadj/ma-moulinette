@@ -54,7 +54,7 @@ class ListeProjetKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $listeProjetRepository = $entityManager->getRepository(ListeProjet::class);
-        $response = $listeProjetRepository->findOneBy(['mavenKey' => static::$mavenKey]);
+        $response = $listeProjetRepository->findOneBy(['mavenKey' => self::$mavenKey]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'MAVENKEY: Aucune réponse trouvée');

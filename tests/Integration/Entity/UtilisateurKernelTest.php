@@ -43,18 +43,18 @@ class UtilisateurKernelTest extends KernelTestCase
   public function getEntity(): Utilisateur
   {
     return (new utilisateur())
-      ->setResetPassword((bool) static::$resetPassword)
+      ->setResetPassword((bool) self::$resetPassword)
       ->setResetPasswordCount(1)
-      ->setAvatar(static::$avatar)
-      ->setPrenom(static::$prenom)
-      ->setNom(static::$nom)
-      ->setCourriel(static::$courriel)
-      ->setPassword(static::$password)
-      ->setActif(static::$actif)
-      ->setRoles(static::$roles)
-      ->setListeGroupeFonctionnel(static::$groupe)
-      ->setPreference(static::$preference)
-      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+      ->setAvatar(self::$avatar)
+      ->setPrenom(self::$prenom)
+      ->setNom(self::$nom)
+      ->setCourriel(self::$courriel)
+      ->setPassword(self::$password)
+      ->setActif(self::$actif)
+      ->setRoles(self::$roles)
+      ->setListeGroupeFonctionnel(self::$groupe)
+      ->setPreference(self::$preference)
+      ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
   }
 
     protected function setUp(): void

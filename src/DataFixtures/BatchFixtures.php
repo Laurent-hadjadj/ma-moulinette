@@ -28,17 +28,17 @@ class BatchFixtures extends Fixture
 
       foreach($data as $titre){
         $batch=(new Batch())
-          ->setActivated(static::$activated)
-          ->setAutomatique(static::$automatique)
+          ->setActivated(self::$activated)
+          ->setAutomatique(self::$automatique)
           ->setTitre($titre)
-          ->setDescription(static::$description)
-          ->setResponsable(static::$responsable)
-          ->setResponsableShort(static::$responsableShort)
+          ->setDescription(self::$description)
+          ->setResponsable(self::$responsable)
+          ->setResponsableShort(self::$responsableShort)
           ->setPortefeuille($titre)
-          ->setNombreProjet(static::$nombreProjet)
-          ->setExecution(static::$execution)
-          ->setDateModification(new \DateTime(static::$dateModification))
-          ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+          ->setNombreProjet(self::$nombreProjet)
+          ->setExecution(self::$execution)
+          ->setDateModification(new \DateTime(self::$dateModification))
+          ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
         $manager->persist($batch);
       }
 

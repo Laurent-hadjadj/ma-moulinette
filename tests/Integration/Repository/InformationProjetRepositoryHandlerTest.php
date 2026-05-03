@@ -75,7 +75,7 @@ class InformationProjetRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
         $result = $repo->selectInformationProjetIsValide($map);
 
         // 9) Vérification
@@ -127,7 +127,7 @@ class InformationProjetRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
         $result = $repo->selectInformationProjetVersion($map);
 
         // 9) Vérification
@@ -168,7 +168,7 @@ class InformationProjetRepositoryHandlerTest extends TestCase
                         ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
-        $expected = ['code' => 500, 'erreur' => static::$gestionTest];
+        $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
                 ->with($fakeException)
                 ->willReturn($expected);
@@ -177,7 +177,7 @@ class InformationProjetRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Prépare un jeu de données minimal pour le $map
-        $map = ['maven_key' => static::$mavenKey,
+        $map = ['maven_key' => self::$mavenKey,
         'analyse_key' => 'BYVyxZcQo0TJpgSeq-ph',
         'date' => '2024-08-12 16:23:11+02',
         'project_version' => '3.0.0-RELEASE',
@@ -235,7 +235,7 @@ class InformationProjetRepositoryHandlerTest extends TestCase
                         ->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
-        $expected = ['code' => 500, 'erreur' => static::$gestionTest];
+        $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
                 ->with($fakeException)
                 ->willReturn($expected);
@@ -244,7 +244,7 @@ class InformationProjetRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Prépare un jeu de données minimal pour le $map
-        $map = [ 'maven_key' => static::$mavenKey ];
+        $map = [ 'maven_key' => self::$mavenKey ];
 
         // 9) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
         $result = $repo->deleteInformationProjetMavenKey($map);

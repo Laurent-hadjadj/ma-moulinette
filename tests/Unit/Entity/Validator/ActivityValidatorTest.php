@@ -36,15 +36,15 @@ class ActivityValidatorTest extends KernelTestCase
   private function getEntity(): Activity
   {
       return (new activity())
-        ->setMavenKey(static::$mavenKey)
-        ->setProjectName(static::$projectName)
-        ->setAnalyseId(static::$analyseId)
-        ->setStatus(static::$status)
-        ->setSubmitterLogin(static::$submitterLogin)
-        ->setSubmittedAt(new \DateTimeImmutable(static::$submittedAt))
-        ->setStartedAt(new \DateTimeImmutable(static::$startedAt))
-        ->setExecutedAt(new \DateTimeImmutable(static::$executedAt))
-        ->setExecutionTime(static::$executionTime);
+        ->setMavenKey(self::$mavenKey)
+        ->setProjectName(self::$projectName)
+        ->setAnalyseId(self::$analyseId)
+        ->setStatus(self::$status)
+        ->setSubmitterLogin(self::$submitterLogin)
+        ->setSubmittedAt(new \DateTimeImmutable(self::$submittedAt))
+        ->setStartedAt(new \DateTimeImmutable(self::$startedAt))
+        ->setExecutedAt(new \DateTimeImmutable(self::$executedAt))
+        ->setExecutionTime(self::$executionTime);
   }
 
   public function assertHasErrors(Activity $entity, int $number = 0): void

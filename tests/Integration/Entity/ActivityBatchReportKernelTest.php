@@ -54,7 +54,7 @@ class ActivityBatchReportKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $activityBatchReportRepository = $entityManager->getRepository(ActivityBatchReport::class);
-        $response = $activityBatchReportRepository->findOneBy(['taskCount' => static::$taskCount]);
+        $response = $activityBatchReportRepository->findOneBy(['taskCount' => self::$taskCount]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'TASK_COUNT: Aucune réponse trouvée');
@@ -67,7 +67,7 @@ class ActivityBatchReportKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $activityBatchReportRepository = $entityManager->getRepository(ActivityBatchReport::class);
-        $response = $activityBatchReportRepository->findBy(['taskDone' => static::$taskDone]);
+        $response = $activityBatchReportRepository->findBy(['taskDone' => self::$taskDone]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, $response, 'TASK_DONE: Aucune réponse trouvée');

@@ -39,18 +39,18 @@ class InformationProjetCaseTest extends TestCase
     private function getEntity(): InformationProjet
     {
         return (new informationProjet())
-        ->setMavenKey(static::$mavenKey)
-        ->setAnalyseKey(static::$analyseKey)
-        ->setDate(new \DateTimeImmutable(static::$date))
-        ->setProjectVersion(static::$projectVersion)
-        ->setType(static::$type)
-        ->setVersionSonar(static::$versionSonar)
-        ->setVersionReleaseSonar(static::$versionReleaseSonar)
-        ->setVersionSnapshotSonar(static::$versionSnapshotSonar)
-        ->setVersionAutreSonar(static::$versionAutreSonar)
-        ->setModeCollecte(static::$modeCollecte)
-        ->setUtilisateurCollecte(static::$utilisateurCollecte)
-        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+        ->setMavenKey(self::$mavenKey)
+        ->setAnalyseKey(self::$analyseKey)
+        ->setDate(new \DateTimeImmutable(self::$date))
+        ->setProjectVersion(self::$projectVersion)
+        ->setType(self::$type)
+        ->setVersionSonar(self::$versionSonar)
+        ->setVersionReleaseSonar(self::$versionReleaseSonar)
+        ->setVersionSnapshotSonar(self::$versionSnapshotSonar)
+        ->setVersionAutreSonar(self::$versionAutreSonar)
+        ->setModeCollecte(self::$modeCollecte)
+        ->setUtilisateurCollecte(self::$utilisateurCollecte)
+        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -67,73 +67,73 @@ class InformationProjetCaseTest extends TestCase
 
     public function testSettingAndGettingMavenKey(): void
     {
-        $this->informationProjet->setMavenKey(static::$mavenKey);
-        $this->assertEquals(static::$mavenKey, $this->informationProjet->getMavenKey());
+        $this->informationProjet->setMavenKey(self::$mavenKey);
+        $this->assertEquals(self::$mavenKey, $this->informationProjet->getMavenKey());
     }
 
     public function testSettingAndGettingAnalyseKey(): void
     {
-        $this->informationProjet->setAnalyseKey(static::$analyseKey);
-        $this->assertEquals(static::$analyseKey, $this->informationProjet->getAnalyseKey());
+        $this->informationProjet->setAnalyseKey(self::$analyseKey);
+        $this->assertEquals(self::$analyseKey, $this->informationProjet->getAnalyseKey());
     }
 
     public function testSettingAndGettingDate(): void
     {
-        $newDate=new \DateTimeImmutable(static::$date);
+        $newDate=new \DateTimeImmutable(self::$date);
         $this->informationProjet->setDate($newDate);
         $this->assertEquals($newDate, $this->informationProjet->getDate());
     }
 
     public function testSettingAndGettingProjectVersion(): void
     {
-        $this->informationProjet->setProjectVersion(static::$projectVersion);
-        $this->assertEquals(static::$projectVersion, $this->informationProjet->getProjectVersion());
+        $this->informationProjet->setProjectVersion(self::$projectVersion);
+        $this->assertEquals(self::$projectVersion, $this->informationProjet->getProjectVersion());
     }
 
     public function testSettingAndGettingType(): void
     {
-        $this->informationProjet->setType(static::$type);
-        $this->assertEquals(static::$type, $this->informationProjet->getType());
+        $this->informationProjet->setType(self::$type);
+        $this->assertEquals(self::$type, $this->informationProjet->getType());
     }
 
     public function testSettingAndGettingVersionSonar(): void
     {
-        $this->informationProjet->setVersionSonar(static::$versionSonar);
-        $this->assertEquals(static::$versionSonar, $this->informationProjet->getVersionSonar());
+        $this->informationProjet->setVersionSonar(self::$versionSonar);
+        $this->assertEquals(self::$versionSonar, $this->informationProjet->getVersionSonar());
     }
 
     public function testSettingAndGettingVersionReleaseSonar(): void
     {
-        $this->informationProjet->setVersionReleaseSonar(static::$versionReleaseSonar);
-        $this->assertEquals(static::$versionReleaseSonar, $this->informationProjet->getVersionReleaseSonar());
+        $this->informationProjet->setVersionReleaseSonar(self::$versionReleaseSonar);
+        $this->assertEquals(self::$versionReleaseSonar, $this->informationProjet->getVersionReleaseSonar());
     }
 
     public function testSettingAndGettingVersionSnapshotSonar(): void
     {
-        $this->informationProjet->setVersionSnapshotSonar(static::$versionSnapshotSonar);
-        $this->assertEquals(static::$versionSnapshotSonar, $this->informationProjet->getVersionSnapshotSonar());
+        $this->informationProjet->setVersionSnapshotSonar(self::$versionSnapshotSonar);
+        $this->assertEquals(self::$versionSnapshotSonar, $this->informationProjet->getVersionSnapshotSonar());
     }
 
     public function testSettingAndGettingVersionAutreSonar(): void
     {
-        $this->informationProjet->setVersionAutreSonar(static::$versionAutreSonar);
-        $this->assertEquals(static::$versionAutreSonar, $this->informationProjet->getVersionAutreSonar());
+        $this->informationProjet->setVersionAutreSonar(self::$versionAutreSonar);
+        $this->assertEquals(self::$versionAutreSonar, $this->informationProjet->getVersionAutreSonar());
     }
 
     public function testSettingAndGettingModeCollecte(): void
     {
-        $this->informationProjet->setModeCollecte(static::$modeCollecte);
-        $this->assertEquals(static::$modeCollecte, $this->informationProjet->getModeCollecte());
+        $this->informationProjet->setModeCollecte(self::$modeCollecte);
+        $this->assertEquals(self::$modeCollecte, $this->informationProjet->getModeCollecte());
     }
     public function testSettingAndGettingUtilisateurCollecte(): void
     {
-        $this->informationProjet->setUtilisateurCollecte(static::$utilisateurCollecte);
-        $this->assertEquals(static::$utilisateurCollecte, $this->informationProjet->getUtilisateurCollecte());
+        $this->informationProjet->setUtilisateurCollecte(self::$utilisateurCollecte);
+        $this->assertEquals(self::$utilisateurCollecte, $this->informationProjet->getUtilisateurCollecte());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(static::$dateEnregistrement);
+        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
         $this->informationProjet->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->informationProjet->getDateEnregistrement());
     }

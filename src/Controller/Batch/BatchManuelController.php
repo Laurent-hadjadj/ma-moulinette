@@ -174,7 +174,7 @@ class BatchManuelController extends AbstractController
         /*$this->collecte->collecte(
                 'test_portefeuille',
                 'fr.ma-moulinette:monapplication',
-                static::$traitementManuel,
+                self::$traitementManuel,
                 'test_utilisateur'
             );
         die('Debug collecte terminée');*/

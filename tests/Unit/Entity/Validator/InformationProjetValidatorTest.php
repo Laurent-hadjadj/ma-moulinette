@@ -39,18 +39,18 @@ class InformationProjetValidatorTest extends KernelTestCase
   private function getEntity(): InformationProjet
   {
       return (new informationProjet())
-        ->setMavenKey(static::$mavenKey)
-        ->setAnalyseKey(static::$analyseKey)
-        ->setDate(new \DateTimeImmutable(static::$date))
-        ->setProjectVersion(static::$projectVersion)
-        ->setType(static::$type)
-        ->setVersionSonar(static::$versionSonar)
-        ->setVersionReleaseSonar(static::$versionReleaseSonar)
-        ->setVersionSnapshotSonar(static::$versionSnapshotSonar)
-        ->setVersionAutreSonar(static::$versionAutreSonar)
-        ->setModeCollecte(static::$modeCollecte)
-        ->setUtilisateurCollecte(static::$utilisateurCollecte)
-        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+        ->setMavenKey(self::$mavenKey)
+        ->setAnalyseKey(self::$analyseKey)
+        ->setDate(new \DateTimeImmutable(self::$date))
+        ->setProjectVersion(self::$projectVersion)
+        ->setType(self::$type)
+        ->setVersionSonar(self::$versionSonar)
+        ->setVersionReleaseSonar(self::$versionReleaseSonar)
+        ->setVersionSnapshotSonar(self::$versionSnapshotSonar)
+        ->setVersionAutreSonar(self::$versionAutreSonar)
+        ->setModeCollecte(self::$modeCollecte)
+        ->setUtilisateurCollecte(self::$utilisateurCollecte)
+        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
 }
 
   public function assertHasErrors(InformationProjet $entity, int $number = 0): void

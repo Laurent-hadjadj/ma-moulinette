@@ -55,7 +55,7 @@ class RepartitionKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $repartitionRepository = $entityManager->getRepository(Repartition::class);
-        $response = $repartitionRepository->findOneBy(['mavenKey' => static::$mavenKey, 'setup' => static::$setup]);
+        $response = $repartitionRepository->findOneBy(['mavenKey' => self::$mavenKey, 'setup' => self::$setup]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'MavenKey & Setup: Aucune réponse trouvée');
@@ -68,7 +68,7 @@ class RepartitionKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $repartitionRepository = $entityManager->getRepository(Repartition::class);
-        $response = $repartitionRepository->findBy(['setup' => static::$setup]);
+        $response = $repartitionRepository->findBy(['setup' => self::$setup]);
 
         $this->assertNotNull($response, 'Une entité doit être présente.');
         $this->assertCount(1, $response, 'Une valeur pour setup doit être trouvée.');

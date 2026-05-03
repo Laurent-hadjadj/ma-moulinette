@@ -50,7 +50,7 @@ class BatchExecutionRepository extends ServiceEntityRepository
 
     // message = 'SQLSTATE[08006]'
     if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-        $message = static::$noDataBase;
+        $message = self::$noDataBase;
     }
 
     // state = '23502'
@@ -86,7 +86,7 @@ class BatchExecutionRepository extends ServiceEntityRepository
 
     try {
         $conn->beginTransaction();
-        $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+        $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
           $this->bindUlidAsString($stmt, ':traitement_id', $traitement_id);
           $stmt->executeStatement();
         $conn->commit();
@@ -118,7 +118,7 @@ class BatchExecutionRepository extends ServiceEntityRepository
       $conn = $this->getEntityManager()->getConnection();
 
       try {
-            $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
               $stmt->bindValue(':traitement_id', $traitement_id);
             $find = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {

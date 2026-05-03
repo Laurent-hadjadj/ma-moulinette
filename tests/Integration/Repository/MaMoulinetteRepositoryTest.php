@@ -59,7 +59,7 @@ class MaMoulinetteRepositoryTest extends KernelTestCase
         $r = $maMoulinetteRepository->getMaMoulinetteVersion();
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 

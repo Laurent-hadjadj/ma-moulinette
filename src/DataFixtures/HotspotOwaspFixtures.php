@@ -33,20 +33,20 @@ class HotspotOwaspFixtures extends Fixture
 
       foreach($modeCollecte as $mode){
         $hotspotOwasp=(new HotspotOwasp())
-          ->setMavenKey(static::$mavenKey)
-          ->setReferentialOwasp(static::$referentialOwasp)
-          ->setVersion(static::$version)
-          ->setDateVersion(new \DateTimeImmutable(static::$dateVersion))
-          ->setMenace(static::$menace)
-          ->setSecurityCategory(static::$securityCategory)
-          ->setRuleKey(static::$ruleKey)
-          ->setProbability(static::$probability)
-          ->setStatus(static::$status)
-          ->setResolution(static::$resolution)
-          ->setNiveau(static::$niveau)
+          ->setMavenKey(self::$mavenKey)
+          ->setReferentialOwasp(self::$referentialOwasp)
+          ->setVersion(self::$version)
+          ->setDateVersion(new \DateTimeImmutable(self::$dateVersion))
+          ->setMenace(self::$menace)
+          ->setSecurityCategory(self::$securityCategory)
+          ->setRuleKey(self::$ruleKey)
+          ->setProbability(self::$probability)
+          ->setStatus(self::$status)
+          ->setResolution(self::$resolution)
+          ->setNiveau(self::$niveau)
           ->setModeCollecte($mode)
-          ->setUtilisateurCollecte(static::$utilisateurCollecte)
-          ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+          ->setUtilisateurCollecte(self::$utilisateurCollecte)
+          ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
         $manager->persist($hotspotOwasp);
       }
       /** Enregistrement des données dans la base de tests */

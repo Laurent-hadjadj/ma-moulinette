@@ -81,14 +81,14 @@ class OwaspRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey, 'referential_owasp' => 2017];
+        $map = ['maven_key' => self::$mavenKey, 'referential_owasp' => 2017];
 
         // Appel de la méthode
         $owaspRepository = $entityManager->getRepository(Owasp::class);
         $r = $owaspRepository->selectOwaspOrderByDateEnregistrement($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -100,14 +100,14 @@ class OwaspRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         // Appel de la méthode
         $owaspRepository = $entityManager->getRepository(Owasp::class);
         $r = $owaspRepository->deleteOwaspMavenKey($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -123,30 +123,30 @@ class OwaspRepositoryTest extends KernelTestCase
 
         // Ajouter les propriétés de l'objet $owasp au tableau $map
         $map['referential_owasp'] = 2017;
-        $map['maven_key'] = static::$mavenKey;
-        $map['version'] = static::$version;
-        $map['date_version'] = static::$dateVersion;
-        $map['effort_total'] = static::$effortTotal;
+        $map['maven_key'] = self::$mavenKey;
+        $map['version'] = self::$version;
+        $map['date_version'] = self::$dateVersion;
+        $map['effort_total'] = self::$effortTotal;
 
         for ($i = 0; $i < 10; $i++) {
-            $map["a" . ($i + 1)] = static::$a[$i];
-            $map["a" . ($i + 1) . "_blocker"] = static::$aBlocker[$i];
-            $map["a" . ($i + 1) . "_critical"] = static::$aCritical[$i];
-            $map["a" . ($i + 1) . "_major"] = static::$aMajor[$i];
-            $map["a" . ($i + 1) . "_info"] = static::$aInfo[$i];
-            $map["a" . ($i + 1) . "_minor"] = static::$aMinor[$i];
+            $map["a" . ($i + 1)] = self::$a[$i];
+            $map["a" . ($i + 1) . "_blocker"] = self::$aBlocker[$i];
+            $map["a" . ($i + 1) . "_critical"] = self::$aCritical[$i];
+            $map["a" . ($i + 1) . "_major"] = self::$aMajor[$i];
+            $map["a" . ($i + 1) . "_info"] = self::$aInfo[$i];
+            $map["a" . ($i + 1) . "_minor"] = self::$aMinor[$i];
         }
 
-        $map['mode_collecte'] = static::$modeCollecte;
-        $map['utilisateur_collecte'] = static::$utilisateurCollecte;
-        $map['date_enregistrement'] = new \DateTimeImmutable(static::$dateEnregistrement);
+        $map['mode_collecte'] = self::$modeCollecte;
+        $map['utilisateur_collecte'] = self::$utilisateurCollecte;
+        $map['date_enregistrement'] = new \DateTimeImmutable(self::$dateEnregistrement);
 
         // Appel de la méthode
         $owaspRepository = $entityManager->getRepository(Owasp::class);
         $r = $owaspRepository->insertOwasp([$map]);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 

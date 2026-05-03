@@ -63,7 +63,7 @@ class ActivityHistoriqueRepositoryTest extends KernelTestCase
         $r = $activityHistoriqueRepository->insertHistoriqueActivity($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -84,7 +84,7 @@ class ActivityHistoriqueRepositoryTest extends KernelTestCase
         $r = $activiteHistoriqueRepository->updateHistoriqueActivity($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -105,9 +105,9 @@ class ActivityHistoriqueRepositoryTest extends KernelTestCase
         $r2 = $activityHistoriqueRepository->selectActivity($year);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
-        $this->assertEquals(200, $r2['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r2['code'], self::$erreurCode200);
         $this->assertEmpty($r2['erreur'], $r2['erreur']);
     }
 

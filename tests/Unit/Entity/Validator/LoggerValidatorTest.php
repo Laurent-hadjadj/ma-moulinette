@@ -35,14 +35,14 @@ class LoggerValidatorTest extends KernelTestCase
   private function getEntity(): Logger
   {
       return (new logger(
-        static::$mavenKey,
-        static::$loggerInfo,
-        static::$loggerWarn,
-        static::$loggerError,
-        static::$loggerDebug,
-        static::$modeCollecte,
-        static::$utilisateurCollecte))
-        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+        self::$mavenKey,
+        self::$loggerInfo,
+        self::$loggerWarn,
+        self::$loggerError,
+        self::$loggerDebug,
+        self::$modeCollecte,
+        self::$utilisateurCollecte))
+        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
   }
 
   public function assertHasErrors(Logger $entity, int $number = 0): void

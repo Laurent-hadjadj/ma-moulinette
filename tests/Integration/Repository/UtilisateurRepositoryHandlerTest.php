@@ -75,7 +75,7 @@ class UtilisateurRepositoryHandlerTest extends TestCase
                         ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
-        $expected = ['code' => 500, 'erreur' => static::$utilisateurTest];
+        $expected = ['code' => 500, 'erreur' => self::$utilisateurTest];
         $repo->expects($this->once())->method('handleDatabaseException')
                 ->with($fakeException)
                 ->willReturn($expected);
@@ -86,8 +86,8 @@ class UtilisateurRepositoryHandlerTest extends TestCase
         // 8) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
         $map = [
             'init' => 1,
-            'date_modification' => new \DateTimeImmutable(static::$dateModification),
-            'courriel' => static::$courriel
+            'date_modification' => new \DateTimeImmutable(self::$dateModification),
+            'courriel' => self::$courriel
         ];
         $result = $repo->updateUtilisateurResetPassword($map);
 
@@ -137,7 +137,7 @@ class UtilisateurRepositoryHandlerTest extends TestCase
                         ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
-        $expected = ['code' => 500, 'erreur' => static::$utilisateurTest];
+        $expected = ['code' => 500, 'erreur' => self::$utilisateurTest];
         $repo->expects($this->once())->method('handleDatabaseException')
                 ->with($fakeException)
                 ->willReturn($expected);
@@ -146,10 +146,10 @@ class UtilisateurRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
-        $map = [ 'maven_key' => static::$mavenKey, 'courriel' => static::$courriel ];
+        $map = [ 'maven_key' => self::$mavenKey, 'courriel' => self::$courriel ];
         $preference['statut'] = ['suivi_projet' => false, 'favori_projet' => true,'favori_version' => true];
         $preference['suivi_projet'] = [];
-        $preference['favori_projet'] = [static::$mavenKey];
+        $preference['favori_projet'] = [self::$mavenKey];
         $preference['favori_version'] = [];
 
         $result = $repo->updateUtilisateurFavoriProjet($preference, $map);
@@ -191,7 +191,7 @@ class UtilisateurRepositoryHandlerTest extends TestCase
                         ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
-        $expected = ['code' => 500, 'erreur' => static::$utilisateurTest];
+        $expected = ['code' => 500, 'erreur' => self::$utilisateurTest];
         $repo->expects($this->once())->method('handleDatabaseException')
                 ->with($fakeException)
                 ->willReturn($expected);
@@ -208,10 +208,10 @@ class UtilisateurRepositoryHandlerTest extends TestCase
         // Nouveau projet à ajouter en favori
         $map = [
             'favori' => 1,
-            'courriel' => static::$courriel,
-            'maven_key' => static::$mavenKey,
+            'courriel' => self::$courriel,
+            'maven_key' => self::$mavenKey,
             'version' => '1.0.0-Release',
-            'date_version' => static::$dateModification,
+            'date_version' => self::$dateModification,
         ];
 
         $result = $repo->updateUtilisateurFavoriVersion($preference, $map);

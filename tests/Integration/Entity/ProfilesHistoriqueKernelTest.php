@@ -54,7 +54,7 @@ class ProfilesHistoriqueKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $informationProjetRepository = $entityManager->getRepository(ProfilesHistorique::class);
-        $response = $informationProjetRepository->findOneBy(['language' => static::$language]);
+        $response = $informationProjetRepository->findOneBy(['language' => self::$language]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'LANGUAGE: Aucune réponse trouvée');

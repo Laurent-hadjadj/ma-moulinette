@@ -58,13 +58,13 @@ class LoggerRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map=['maven_key' => static::$mavenKey];
+        $map=['maven_key' => self::$mavenKey];
 
         $notesRepository = $entityManager->getRepository(Logger::class);
         $r = $notesRepository->deleteLoggerMavenKey($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -77,13 +77,13 @@ class LoggerRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map=['maven_key' => static::$mavenKey];
+        $map=['maven_key' => self::$mavenKey];
 
         $loggerRepository = $entityManager->getRepository(Logger::class);
         $r = $loggerRepository->selectLogger($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -96,7 +96,7 @@ class LoggerRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $map = [
-            'maven_key' => static::$mavenKey,
+            'maven_key' => self::$mavenKey,
             'logger_info' => 14,
             'logger_warn' => 0,
             'logger_error' => 15,
@@ -110,7 +110,7 @@ class LoggerRepositoryTest extends KernelTestCase
         $r = $loggerRepository->insertLogger($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 

@@ -36,13 +36,13 @@ class ActuatorValidatorTest extends KernelTestCase
   private function getEntityActuator(): Actuator
   {
     $actuator = new Actuator();
-    $actuator->setMavenKey(static::$mavenKey)
-                ->setNomApplication(static::$nomApplication)
-                ->setUrl(static::$url)
-                ->setActuatorUser(static::$actuatorUser)
-                ->setActuatorPassword(static::$actuatorPassword)
-                ->setPersonne(static::$personne)
-                ->setDateModification(new \DateTimeImmutable(static::$dateModification))
+    $actuator->setMavenKey(self::$mavenKey)
+                ->setNomApplication(self::$nomApplication)
+                ->setUrl(self::$url)
+                ->setActuatorUser(self::$actuatorUser)
+                ->setActuatorPassword(self::$actuatorPassword)
+                ->setPersonne(self::$personne)
+                ->setDateModification(new \DateTimeImmutable(self::$dateModification))
                 ->setDateEnregistrement(new \DateTimeImmutable());
   return $actuator;
 }
@@ -50,18 +50,18 @@ class ActuatorValidatorTest extends KernelTestCase
 private function getEntity(): Actuator
 {
   $actuator = new Actuator();
-  $actuator->setMavenKey(static::$mavenKey)
-              ->setNomApplication(static::$nomApplication)
-              ->setActuatorUser(static::$actuatorUser)
-              ->setActuatorPassword(static::$actuatorPassword)
-              ->setUrl(static::$url)
-              ->setPersonne(static::$personne)
-              ->setDateModification(new \DateTimeImmutable(static::$dateModification));
+  $actuator->setMavenKey(self::$mavenKey)
+              ->setNomApplication(self::$nomApplication)
+              ->setActuatorUser(self::$actuatorUser)
+              ->setActuatorPassword(self::$actuatorPassword)
+              ->setUrl(self::$url)
+              ->setPersonne(self::$personne)
+              ->setDateModification(new \DateTimeImmutable(self::$dateModification));
 
   $actuatorInfo = new ActuatorInfo();
   $actuatorInfo->setActuator($actuator);
-  $actuatorInfo->setActuatorInfoDescription(static::$actuatorInfoDescription);
-  $actuatorInfo->setActuatorInfoValue(static::$infoValue);
+  $actuatorInfo->setActuatorInfoDescription(self::$actuatorInfoDescription);
+  $actuatorInfo->setActuatorInfoValue(self::$infoValue);
   $actuator->addActuatorInfo($actuatorInfo);
 
   return $actuator;

@@ -35,14 +35,14 @@ class PropertiesPerformancesTest extends KernelTestCase
   private function getEntity(): Properties
   {
     return (new properties())
-    ->setType(static::$type)
-    ->setProjetBd(static::$projetBd)
-    ->setProjetSonar(static::$projetSonar)
-    ->setProfilBd(static::$profilBd)
-    ->setProfilSonar(static::$profilSonar)
-    ->setDateCreation(new \DateTimeImmutable(static::$dateCreation))
-    ->setDateModificationProjet(new \DateTime(static::$dateModificationProjet))
-    ->setDateModificationProfil(new \DateTime(static::$dateModificationProfil));
+    ->setType(self::$type)
+    ->setProjetBd(self::$projetBd)
+    ->setProjetSonar(self::$projetSonar)
+    ->setProfilBd(self::$profilBd)
+    ->setProfilSonar(self::$profilSonar)
+    ->setDateCreation(new \DateTimeImmutable(self::$dateCreation))
+    ->setDateModificationProjet(new \DateTime(self::$dateModificationProjet))
+    ->setDateModificationProfil(new \DateTime(self::$dateModificationProfil));
   }
 
   public function assertHasErrors(Properties $entity, int $number = 0): void

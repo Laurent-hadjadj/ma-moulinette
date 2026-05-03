@@ -32,11 +32,11 @@ class OwaspTop10CaseTest extends TestCase
     private function getEntity(): OwaspTop10
     {
         return (new owaspTop10())
-        ->setYear(static::$year)
-        ->setCategory(static::$category)
-        ->setDescription(static::$description)
-        ->setLien(static::$lien)
-        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+        ->setYear(self::$year)
+        ->setCategory(self::$category)
+        ->setDescription(self::$description)
+        ->setLien(self::$lien)
+        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -88,10 +88,10 @@ class OwaspTop10CaseTest extends TestCase
 
     public function testInitialValues(): void
     {
-        $this->assertEquals(static::$year, $this->owaspTop10->getYear());
-        $this->assertEquals(static::$category, $this->owaspTop10->getCategory());
-        $this->assertEquals(static::$description, $this->owaspTop10->getDescription());
-        $this->assertEquals(static::$lien, $this->owaspTop10->getLien());
-        $this->assertEquals(new \DateTimeImmutable(static::$dateEnregistrement), $this->owaspTop10->getDateEnregistrement());
+        $this->assertEquals(self::$year, $this->owaspTop10->getYear());
+        $this->assertEquals(self::$category, $this->owaspTop10->getCategory());
+        $this->assertEquals(self::$description, $this->owaspTop10->getDescription());
+        $this->assertEquals(self::$lien, $this->owaspTop10->getLien());
+        $this->assertEquals(new \DateTimeImmutable(self::$dateEnregistrement), $this->owaspTop10->getDateEnregistrement());
     }
 }

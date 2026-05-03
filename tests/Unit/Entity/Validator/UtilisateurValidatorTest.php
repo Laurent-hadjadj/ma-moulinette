@@ -46,21 +46,21 @@ class UtilisateurValidatorTest extends KernelTestCase
     public function getEntity(): Utilisateur
     {
         return (new Utilisateur())
-            ->setResetPassword(static::$resetPassword)
-            ->setResetPasswordCount(static::$resetPasswordCount)
-            ->setAvatar(static::$avatar)
-            ->setPrenom(static::$prenom)
-            ->setNom(static::$nom)
-            ->setCourriel(static::$courriel)
-            ->setPassword(static::$pass)
-            ->setActif(static::$actif)
-            ->setRoles(static::$roles)
-            ->setGroupeUtilisateur(static::$groupeUtilisateur)
-            ->setGroupeId(static::$groupeId)
-            ->setListeGroupeFonctionnel(static::$listeGroupeFonctionnel)
-            ->setPreference(static::$preference)
-            ->setDateModification(new \DateTime(static::$dateModification))
-            ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+            ->setResetPassword(self::$resetPassword)
+            ->setResetPasswordCount(self::$resetPasswordCount)
+            ->setAvatar(self::$avatar)
+            ->setPrenom(self::$prenom)
+            ->setNom(self::$nom)
+            ->setCourriel(self::$courriel)
+            ->setPassword(self::$pass)
+            ->setActif(self::$actif)
+            ->setRoles(self::$roles)
+            ->setGroupeUtilisateur(self::$groupeUtilisateur)
+            ->setGroupeId(self::$groupeId)
+            ->setListeGroupeFonctionnel(self::$listeGroupeFonctionnel)
+            ->setPreference(self::$preference)
+            ->setDateModification(new \DateTime(self::$dateModification))
+            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     public function assertHasErrors(Utilisateur $entity, int $number = 0, ?array $groups = ['default']): void

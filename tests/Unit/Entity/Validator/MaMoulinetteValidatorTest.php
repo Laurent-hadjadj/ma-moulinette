@@ -29,9 +29,9 @@ class MaMoulinetteValidatorTest extends KernelTestCase
 
   private function getEntity(): MaMoulinette
   {
-      return (new MaMoulinette(static::$version))
-      ->setDateVersion(new \DateTimeImmutable(static::$dateVersion))
-      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+      return (new MaMoulinette(self::$version))
+      ->setDateVersion(new \DateTimeImmutable(self::$dateVersion))
+      ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
 }
 
   public function assertHasErrors(MaMoulinette $entity, int $number = 0): void

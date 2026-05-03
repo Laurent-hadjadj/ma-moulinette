@@ -27,15 +27,15 @@ class ProfilesHistoriqueFixtures extends Fixture
 
       /** création du jeu de données pour la table PROFILES HISTORIQUE */
       $profiles=(new ProfilesHistorique())
-          ->setDateCourte(new \DateTimeImmutable(static::$dateCourte))
-          ->setLanguage(static::$language)
-          ->setDate(new \DateTimeImmutable(static::$date))
-          ->setAction(static::$action)
-          ->setAuteur(static::$auteur)
-          ->setRule(static::$rule)
-          ->setDescription(static::$description)
-          ->setDetail(static::$detail)
-          ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+          ->setDateCourte(new \DateTimeImmutable(self::$dateCourte))
+          ->setLanguage(self::$language)
+          ->setDate(new \DateTimeImmutable(self::$date))
+          ->setAction(self::$action)
+          ->setAuteur(self::$auteur)
+          ->setRule(self::$rule)
+          ->setDescription(self::$description)
+          ->setDetail(self::$detail)
+          ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
       $manager->persist($profiles);
 
       /** Enregistrement des données dans la base de tests */

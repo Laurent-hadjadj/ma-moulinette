@@ -48,7 +48,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
 
       // message = 'SQLSTATE[08006]'
       if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-          $message = static::$noDataBase;
+          $message = self::$noDataBase;
       }
 
       // state = '23502'
@@ -81,8 +81,8 @@ class HotspotOwaspRepository extends ServiceEntityRepository
               FROM ma_moulinette.hotspot_owasp
               WHERE maven_key=:maven_key AND status=:status";
       try {
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-            $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
             $stmt->bindValue(':status', $map['status']);
           $nombre = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
@@ -109,8 +109,8 @@ class HotspotOwaspRepository extends ServiceEntityRepository
             AND status='TO_REVIEW' GROUP BY probability";
 
     try {
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-          $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+          $stmt->bindValue(self::$mavenKey, $map['maven_key']);
           $nombre = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
@@ -137,8 +137,8 @@ class HotspotOwaspRepository extends ServiceEntityRepository
             AND status='TO_REVIEW' GROUP BY menace";
 
     try {
-        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-            $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
         $nombre = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
@@ -168,8 +168,8 @@ class HotspotOwaspRepository extends ServiceEntityRepository
             AND probability=:probability";
 
     try {
-        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-          $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+          $stmt->bindValue(self::$mavenKey, $map['maven_key']);
           $stmt->bindValue(':menace', $map['menace']);
           $stmt->bindValue(':probability', $map['probability']);
         $nombre = $stmt->executeQuery()->fetchAllAssociative();
@@ -196,8 +196,8 @@ class HotspotOwaspRepository extends ServiceEntityRepository
             WHERE maven_key=:maven_key";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(self::$mavenKey, $map['maven_key']);
               $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
@@ -226,9 +226,9 @@ class HotspotOwaspRepository extends ServiceEntityRepository
     try {
         $this->getEntityManager()->getConnection()->beginTransaction();
             foreach ($map as $ref) {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':referential_owasp', $ref['referential_owasp']);
-                    $stmt->bindValue(static::$mavenKey, $ref['maven_key']);
+                    $stmt->bindValue(self::$mavenKey, $ref['maven_key']);
                     $stmt->bindValue(':version', $ref['version']);
                     $stmt->bindValue(':date_version', $ref['date_version']->format('Y-m-d H:i:sO'));
                     $stmt->bindValue(':menace', $ref['menace']);

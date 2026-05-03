@@ -63,7 +63,7 @@ class RepartitionTempRepositoryHandlerTest extends TestCase
                                 ->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
-        $expected = ['code' => 500, 'erreur' => static::$gestionTest];
+        $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
                 ->with($this->isInstanceOf(\Throwable::class))
                 ->willReturn($expected);
@@ -73,10 +73,10 @@ class RepartitionTempRepositoryHandlerTest extends TestCase
 
         // 8) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
         $map = [
-            'maven_key' => static::$mavenKey,
+            'maven_key' => self::$mavenKey,
             'category' => 'BUG',
             'severity' => 'CRITICAL',
-            'setup' => static::$setup
+            'setup' => self::$setup
         ];
 
         $result = $repo->selectRepartitionByTypeAndSeverity($map);
@@ -121,7 +121,7 @@ class RepartitionTempRepositoryHandlerTest extends TestCase
             ->getMock();
 
         // 5) Simule le retour du handler d'erreur
-        $expected = ['code' => 500, 'erreur' => static::$gestionTest];
+        $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())
             ->method('handleDatabaseException')
             ->with($this->isInstanceOf(\Throwable::class))
@@ -132,11 +132,11 @@ class RepartitionTempRepositoryHandlerTest extends TestCase
         // 6) Données à insérer
         $issues = [
             [
-                'maven_key' => static::$mavenKey,
-                'component' => static::$component,
+                'maven_key' => self::$mavenKey,
+                'component' => self::$component,
                 'category' => 'BUG',
                 'severity' => 'CRITICAL',
-                'setup' => static::$setup + 1
+                'setup' => self::$setup + 1
             ]
         ];
 
@@ -182,7 +182,7 @@ class RepartitionTempRepositoryHandlerTest extends TestCase
                                 ->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
-        $expected = ['code' => 500, 'erreur' => static::$gestionTest];
+        $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
                 ->with($this->isInstanceOf(\Throwable::class))
                 ->willReturn($expected);
@@ -192,8 +192,8 @@ class RepartitionTempRepositoryHandlerTest extends TestCase
 
         // 8) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
         $map = [
-                    'maven_key' => static::$mavenKey,
-                    'setup' => static::$setup + 2,
+                    'maven_key' => self::$mavenKey,
+                    'setup' => self::$setup + 2,
                 ];
         $result = $repo->deleteOldRecords($map);
         $this->assertSame($expected, $result);

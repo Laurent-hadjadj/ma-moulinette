@@ -47,7 +47,7 @@ class ListeProjetRepository extends ServiceEntityRepository
 
       // message = 'SQLSTATE[08006]'
       if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-          $message = static::$noDataBase;
+          $message = self::$noDataBase;
       }
 
       // state = '23502'
@@ -81,7 +81,7 @@ class ListeProjetRepository extends ServiceEntityRepository
             FROM ma_moulinette.liste_projet
             WHERE visibility=:visibility";
     try {
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             $stmt->bindValue(":visibility", $type);
           $request = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
@@ -104,7 +104,7 @@ class ListeProjetRepository extends ServiceEntityRepository
     $sql = "SELECT COUNT(*) AS total
             FROM ma_moulinette.liste_projet";
     try {
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
           $nombre = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
@@ -135,7 +135,7 @@ class ListeProjetRepository extends ServiceEntityRepository
                 WHERE elem = 'aucun')";
 
     try {
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
           $nombre = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
@@ -204,7 +204,7 @@ class ListeProjetRepository extends ServiceEntityRepository
             WHERE tag LIKE ANY(ARRAY[$array])";
     try {
             $liste = $this->getEntityManager()->getConnection()->executeQuery(
-                preg_replace(static::$removeReturnLine, " ", $sql),
+                preg_replace(self::$removeReturnLine, " ", $sql),
                 $params,
             )->fetchAllAssociative();
     } catch (\Throwable $e) {
@@ -228,7 +228,7 @@ class ListeProjetRepository extends ServiceEntityRepository
     $sql = "DELETE FROM ma_moulinette.liste_projet";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {

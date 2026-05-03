@@ -58,13 +58,13 @@ class HotspotsRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         $hotspotsRepository = $entityManager->getRepository(Hotspots::class);
         $r = $hotspotsRepository->deleteHotspotsMavenKey($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -77,13 +77,13 @@ class HotspotsRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map=['maven_key' => static::$mavenKey];
+        $map=['maven_key' => self::$mavenKey];
 
         $hotspotsRepository = $entityManager->getRepository(Hotspots::class);
         $r = $hotspotsRepository->selectHotspotsToReview($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -96,17 +96,17 @@ class HotspotsRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map1 = ['maven_key' => static::$mavenKey, 'status' => 'TO_REVIEW'];
-        $map2 = ['maven_key' => static::$mavenKey, 'status' => 'REVIEWED'];
+        $map1 = ['maven_key' => self::$mavenKey, 'status' => 'TO_REVIEW'];
+        $map2 = ['maven_key' => self::$mavenKey, 'status' => 'REVIEWED'];
 
         $hotspotsRepository = $entityManager->getRepository(Hotspots::class);
         $r1 = $hotspotsRepository->countHotspotsStatus($map1);
         $r2 = $hotspotsRepository->countHotspotsStatus($map2);
 
         // Assert
-        $this->assertEquals(200, $r1['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r1['code'], self::$erreurCode200);
         $this->assertEmpty($r1['erreur'], $r1['erreur']);
-        $this->assertEquals(200, $r2['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r2['code'], self::$erreurCode200);
         $this->assertEmpty($r2['erreur'], $r2['erreur']);
     }
 
@@ -119,18 +119,18 @@ class HotspotsRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map1 = ['maven_key' => static::$mavenKey, 'status' => 'TO_REVIEW'];
-        $map2 = ['maven_key' => static::$mavenKey, 'status' => 'REVIEWED'];
+        $map1 = ['maven_key' => self::$mavenKey, 'status' => 'TO_REVIEW'];
+        $map2 = ['maven_key' => self::$mavenKey, 'status' => 'REVIEWED'];
 
         $hotspotsRepository = $entityManager->getRepository(Hotspots::class);
         $r1 = $hotspotsRepository->selectHotspotsByNiveau($map1);
         $r2 = $hotspotsRepository->selectHotspotsByNiveau($map2);
 
         // Assert
-        $this->assertEquals(200, $r1['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r1['code'], self::$erreurCode200);
         $this->assertArrayHasKey('liste', $r1);
         $this->assertEmpty($r1['erreur'], $r1['erreur']);
-        $this->assertEquals(200, $r2['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r2['code'], self::$erreurCode200);
         $this->assertArrayHasKey('liste', $r2);
         $this->assertEmpty($r2['erreur'], $r2['erreur']);
     }
@@ -144,7 +144,7 @@ class HotspotsRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map = [['maven_key' => static::$mavenKey,
+        $map = [['maven_key' => self::$mavenKey,
             'version' => '2.0.0-RELEASE',
             'date_version' => new \DateTimeImmutable('2024-07-10 15:26:07+02'),
             'hotspot_key' => 'AZCc06XbgfifxdiJPzw6', 'security_category' => 'dos',
@@ -158,7 +158,7 @@ class HotspotsRepositoryTest extends KernelTestCase
         $r = $hotspotsRepository->insertHotspots($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 

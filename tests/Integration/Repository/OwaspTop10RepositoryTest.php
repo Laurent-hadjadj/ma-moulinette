@@ -84,7 +84,7 @@ class OwaspTop10RepositoryTest extends KernelTestCase
         $response = $owaspTop10Repository->selectOwaspTop10Referential($map);
 
         // Assert
-        $this->assertEquals(200, $response['code'], static::$erreurCode200);
+        $this->assertEquals(200, $response['code'], self::$erreurCode200);
         $this->assertEmpty($response['erreur'], $response['erreur']);
 
         $liste = $response['liste'][0];
@@ -111,7 +111,7 @@ class OwaspTop10RepositoryTest extends KernelTestCase
         $response = $owaspTop10Repository->selectOwaspTop10Details($map);
 
         // Assert
-        $this->assertEquals(200, $response['code'], static::$erreurCode200);
+        $this->assertEquals(200, $response['code'], self::$erreurCode200);
         $this->assertEmpty($response['erreur'], $response['erreur']);
 
         $liste = $response['details'][0];

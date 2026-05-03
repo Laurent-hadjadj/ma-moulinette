@@ -30,12 +30,12 @@ class ActuatorInfoValidatorTest extends KernelTestCase
 private function getEntity(): ActuatorInfo
 {
   $actuator = new Actuator();
-  $actuator->setId(static::$actuatorId);
+  $actuator->setId(self::$actuatorId);
 
   $actuatorInfo = new ActuatorInfo();
   $actuatorInfo->setActuator($actuator)
-              ->setActuatorInfoDescription(static::$actuatorInfoDescription)
-              ->setActuatorInfoValue(static::$actuatorInfoValue);
+              ->setActuatorInfoDescription(self::$actuatorInfoDescription)
+              ->setActuatorInfoValue(self::$actuatorInfoValue);
   return $actuatorInfo;
 }
 

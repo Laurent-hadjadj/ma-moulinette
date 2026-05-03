@@ -82,7 +82,7 @@ class ProfilesHistoriqueRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['language' => static::$language, 'action' => static::$action];
+        $map = ['language' => self::$language, 'action' => self::$action];
         $result = $repo->SelectProfilesHistoriqueAction($map);
 
         // 9) Vérification
@@ -134,7 +134,7 @@ class ProfilesHistoriqueRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['language' => static::$language, 'tri' => 'ASC', 'limit' => 1];
+        $map = ['language' => self::$language, 'tri' => 'ASC', 'limit' => 1];
         $result = $repo->selectProfilesHistoriqueDateTri($map);
 
         // 9) Vérification
@@ -186,7 +186,7 @@ class ProfilesHistoriqueRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['language' => static::$language];
+        $map = ['language' => self::$language];
         $result = $repo->selectProfilesHistoriqueDateCourteGroupeBy($map);
 
         // 9) Vérification
@@ -238,7 +238,7 @@ class ProfilesHistoriqueRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['language' => static::$language, 'date_courte' => static::$dateCourte];
+        $map = ['language' => self::$language, 'date_courte' => self::$dateCourte];
         $result = $repo->selectProfilesHistoriqueLangageDateCourte($map);
 
         // 9) Vérification
@@ -279,7 +279,7 @@ class ProfilesHistoriqueRepositoryHandlerTest extends TestCase
                         ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
-        $expected = ['code' => 500, 'erreur' => static::$gestionTest];
+        $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
                 ->with($fakeException)
                 ->willReturn($expected);
@@ -288,10 +288,10 @@ class ProfilesHistoriqueRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Prépare un jeu de données minimal pour le $map
-        $map=[  'date_courte'=>static::$dateCourte, 'language'=>static::$language,
-        'date'=>static::$date, 'action'=>static::$action, 'auteur'=>static::$auteur,
-        'rule'=>static::$rule, 'description'=>static::$description,
-        'detail'=>static::$detail, 'date_enregistrement'=> new \DateTimeImmutable('2024-03-26 14:46:38')];
+        $map=[  'date_courte'=>self::$dateCourte, 'language'=>self::$language,
+        'date'=>self::$date, 'action'=>self::$action, 'auteur'=>self::$auteur,
+        'rule'=>self::$rule, 'description'=>self::$description,
+        'detail'=>self::$detail, 'date_enregistrement'=> new \DateTimeImmutable('2024-03-26 14:46:38')];
 
         // 9) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
         $result = $repo->insertProfilesHistorique($map);

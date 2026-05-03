@@ -51,7 +51,7 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
 
     // message = 'SQLSTATE[08006]'
     if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-        $message = static::$noDataBase;
+        $message = self::$noDataBase;
     }
 
     // state = '23502'
@@ -87,7 +87,7 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
 
     try {
         $conn->beginTransaction();
-        $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+        $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
           $stmt->bindValue(self::$jobId, $job_id);
           $stmt->executeStatement();
         $conn->commit();
@@ -120,7 +120,7 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
     $conn = $this->getEntityManager()->getConnection();
 
     try {
-            $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
               $stmt->bindValue(self::$jobId, $job_id);
             $exec = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
@@ -161,7 +161,7 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
     $conn = $this->getEntityManager()->getConnection();
 
     try {
-            $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
               $stmt->bindValue(self::$jobId, $job_id);
             $exec = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
@@ -185,7 +185,7 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
     $conn = $this->getEntityManager()->getConnection();
 
     try {
-            $stmt = $conn->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $conn->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
               $stmt->bindValue(self::$jobId, $map['job_id']);
               $stmt->bindValue(':nom_projet', $map['nom_projet']);
             $exec = $stmt->executeQuery()->fetchAllAssociative();

@@ -65,17 +65,17 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map=[  'date_courte'=>static::$dateCourte, 'language'=>static::$language,
-                'date'=>static::$date, 'action'=>static::$action, 'auteur'=>static::$auteur,
-                'rule'=>static::$rule, 'description'=>static::$description,
-                'detail'=>static::$detail, 'date_enregistrement'=> new \DateTimeImmutable(static::$dateEnregistrement)];
+        $map=[  'date_courte'=>self::$dateCourte, 'language'=>self::$language,
+                'date'=>self::$date, 'action'=>self::$action, 'auteur'=>self::$auteur,
+                'rule'=>self::$rule, 'description'=>self::$description,
+                'detail'=>self::$detail, 'date_enregistrement'=> new \DateTimeImmutable(self::$dateEnregistrement)];
 
         // Appel de la méthode
         $profilesHistoriqueRepository = $entityManager->getRepository(ProfilesHistorique::class);
         $r = $profilesHistoriqueRepository->insertProfilesHistorique($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -87,14 +87,14 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map=[ 'language' => static::$language, 'action' => static::$action];
+        $map=[ 'language' => self::$language, 'action' => self::$action];
 
         // Appel de la méthode
         $profilesHistoriqueRepository = $entityManager->getRepository(ProfilesHistorique::class);
         $r = $profilesHistoriqueRepository->selectProfilesHistoriqueAction($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -106,14 +106,14 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['language' => static::$language, 'tri' => 'ASC', 'limit' => 1];
+        $map = ['language' => self::$language, 'tri' => 'ASC', 'limit' => 1];
 
         // Appel de la méthode
         $profilesHistoriqueRepository = $entityManager->getRepository(ProfilesHistorique::class);
         $r = $profilesHistoriqueRepository->selectProfilesHistoriqueDateTri($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -125,14 +125,14 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['language' => static::$language];
+        $map = ['language' => self::$language];
 
         // Appel de la méthode
         $profilesHistoriqueRepository = $entityManager->getRepository(ProfilesHistorique::class);
         $r = $profilesHistoriqueRepository->selectProfilesHistoriqueDateCourteGroupeBy($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -144,14 +144,14 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['language' => static::$language, 'date_courte' => static::$dateCourte];
+        $map = ['language' => self::$language, 'date_courte' => self::$dateCourte];
 
         // Appel de la méthode
         $profilesHistoriqueRepository = $entityManager->getRepository(ProfilesHistorique::class);
         $r = $profilesHistoriqueRepository->selectProfilesHistoriqueLangageDateCourte($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 

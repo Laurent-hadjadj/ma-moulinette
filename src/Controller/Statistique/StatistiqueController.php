@@ -92,7 +92,7 @@ class StatistiqueController extends AbstractController
         $this->tracking->track('STATISTIQUES');
 
         $render=static::genericRender();
-        return $this->render(static::$index, $render);
+        return $this->render(self::$index, $render);
     }
 
     #[Route('/statistique/run_batch', name: 'runBatchAnalysis', methods: ['GET'])]
@@ -107,9 +107,9 @@ class StatistiqueController extends AbstractController
         if (!$this->isGranted('ROLE_INTERNAL')) {
             $this->addFlash('notice', [
                 'type' => 'error',
-                'message' => static::$erreur403,
+                'message' => self::$erreur403,
                 'trace' => '']);
-            return $this->render(static::$index, $render);
+            return $this->render(self::$index, $render);
         }
 
         $exec = $this->analysis->runBatch(50);
@@ -120,7 +120,7 @@ class StatistiqueController extends AbstractController
                 'message' => "Une erreur s'est produite pendant l'analyse des données UserAgent ({$exec['code']})",
                 'trace' => count($exec['erreurs'])
             ]);
-            return $this->render(static::$index, $render);
+            return $this->render(self::$index, $render);
         }
 
         $erreur = count($exec['erreurs']) ?? 0;
@@ -129,7 +129,7 @@ class StatistiqueController extends AbstractController
             'message' => "Collecte terminée : {$exec['processed']} collecté, {$erreur} erreurs.",
             'trace' => null
         ]);
-        return $this->render(static::$index, $render);
+        return $this->render(self::$index, $render);
     }
 
 }

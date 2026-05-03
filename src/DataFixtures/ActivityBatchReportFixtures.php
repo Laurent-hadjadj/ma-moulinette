@@ -36,13 +36,13 @@ class ActivityBatchReportFixtures extends Fixture
     {
 
         $activityReport=(new ActivityBatchReport())
-          ->setDateStart(new \DateTimeImmutable(static::$dateStart))
-          ->setDateEnd(new \DateTimeImmutable(static::$dateEnd))
-          ->setTaskCount(static::$taskCount)
-          ->setTaskDone(static::$taskDone)
-          ->setPage(static::$page)
-          ->setLastError(static::$lastError)
-          ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+          ->setDateStart(new \DateTimeImmutable(self::$dateStart))
+          ->setDateEnd(new \DateTimeImmutable(self::$dateEnd))
+          ->setTaskCount(self::$taskCount)
+          ->setTaskDone(self::$taskDone)
+          ->setPage(self::$page)
+          ->setLastError(self::$lastError)
+          ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
         $manager->persist($activityReport);
 
       /** Enregistrement des données dans la base de tests */

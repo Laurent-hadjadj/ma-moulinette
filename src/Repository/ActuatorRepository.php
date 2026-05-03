@@ -42,7 +42,7 @@ class ActuatorRepository extends ServiceEntityRepository
 
     // message = 'SQLSTATE[08006]'
     if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-        $message = static::$noDataBase;
+        $message = self::$noDataBase;
     }
 
     // state = '23502'
@@ -76,7 +76,7 @@ class ActuatorRepository extends ServiceEntityRepository
             WHERE url = :url";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
               $stmt->bindValue(':url', $map['url']);
               $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
@@ -121,7 +121,7 @@ class ActuatorRepository extends ServiceEntityRepository
                 ORDER BY {$sortColumn} {$sortDirection}";
 
     try {
-         $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+         $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
          $paginator = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
@@ -151,7 +151,7 @@ class ActuatorRepository extends ServiceEntityRepository
                     ELSE date_enregistrement
                     END {$sortDirection}";
     try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             $paginator = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
@@ -175,7 +175,7 @@ class ActuatorRepository extends ServiceEntityRepository
             FROM ma_moulinette.actuator
             WHERE maven_key = :maven_key";
     try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             $stmt->bindValue(':maven_key', $map['maven_key']);
             $liste = $stmt->executeQuery()->fetchAllAssociative();
             if (empty($liste)) {

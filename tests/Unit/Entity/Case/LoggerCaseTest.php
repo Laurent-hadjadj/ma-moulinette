@@ -35,14 +35,14 @@ class LoggerCaseTest extends TestCase
     private function getEntity(): Logger
     {
         return (new logger(
-            static::$mavenKey,
-            static::$loggerInfo,
-            static::$loggerWarn,
-            static::$loggerError,
-            static::$loggerDebug,
-            static::$modeCollecte,
-            static::$utilisateurCollecte))
-        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+            self::$mavenKey,
+            self::$loggerInfo,
+            self::$loggerWarn,
+            self::$loggerError,
+            self::$loggerDebug,
+            self::$modeCollecte,
+            self::$utilisateurCollecte))
+        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -59,48 +59,48 @@ class LoggerCaseTest extends TestCase
 
     public function testSettingAndGettingMavenKey(): void
     {
-        $this->logger->setMavenKey(static::$mavenKey);
-        $this->assertEquals(static::$mavenKey, $this->logger->getMavenKey());
+        $this->logger->setMavenKey(self::$mavenKey);
+        $this->assertEquals(self::$mavenKey, $this->logger->getMavenKey());
     }
 
     public function testSettingAndGettingLoggerInfo(): void
     {
-        $this->logger->setLoggerInfo(static::$loggerInfo);
-        $this->assertEquals(static::$loggerInfo, $this->logger->getLoggerInfo());
+        $this->logger->setLoggerInfo(self::$loggerInfo);
+        $this->assertEquals(self::$loggerInfo, $this->logger->getLoggerInfo());
     }
 
     public function testSettingAndGettingLoggerWarn(): void
     {
-        $this->logger->setLoggerWarn(static::$loggerWarn);
-        $this->assertEquals(static::$loggerWarn, $this->logger->getLoggerWarn());
+        $this->logger->setLoggerWarn(self::$loggerWarn);
+        $this->assertEquals(self::$loggerWarn, $this->logger->getLoggerWarn());
     }
 
     public function testSettingAndGettingLoggerError(): void
     {
-        $this->logger->setLoggerError(static::$loggerError);
-        $this->assertEquals(static::$loggerError, $this->logger->getLoggerError());
+        $this->logger->setLoggerError(self::$loggerError);
+        $this->assertEquals(self::$loggerError, $this->logger->getLoggerError());
     }
 
     public function testSettingAndGettingLoggerDebug(): void
     {
-        $this->logger->setLoggerDebug(static::$loggerDebug);
-        $this->assertEquals(static::$loggerDebug, $this->logger->getLoggerDebug());
+        $this->logger->setLoggerDebug(self::$loggerDebug);
+        $this->assertEquals(self::$loggerDebug, $this->logger->getLoggerDebug());
     }
 
     public function testSettingAndGettingModeCollecte(): void
     {
-        $this->logger->setModeCollecte(static::$modeCollecte);
-        $this->assertEquals(static::$modeCollecte, $this->logger->getModeCollecte());
+        $this->logger->setModeCollecte(self::$modeCollecte);
+        $this->assertEquals(self::$modeCollecte, $this->logger->getModeCollecte());
     }
     public function testSettingAndGettingUtilisateurCollecte(): void
     {
-        $this->logger->setUtilisateurCollecte(static::$utilisateurCollecte);
-        $this->assertEquals(static::$utilisateurCollecte, $this->logger->getUtilisateurCollecte());
+        $this->logger->setUtilisateurCollecte(self::$utilisateurCollecte);
+        $this->assertEquals(self::$utilisateurCollecte, $this->logger->getUtilisateurCollecte());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(static::$dateEnregistrement);
+        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
         $this->logger->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->logger->getDateEnregistrement());
     }

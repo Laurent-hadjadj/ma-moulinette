@@ -34,13 +34,13 @@ class ProfilesValidatorTest extends KernelTestCase
   private function getEntity(): Profiles
   {
       return (new profiles())
-      ->setKey(static::$key)
-      ->setName(static::$name)
-      ->setLanguageName(static::$languageName)
-      ->setActiveRuleCount(static::$activeRuleCount)
-      ->setRulesUpdatedAt(new \DateTimeImmutable(static::$rulesUpdatedAt))
-      ->setReferentialDefault(static::$referentialDefault)
-      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+      ->setKey(self::$key)
+      ->setName(self::$name)
+      ->setLanguageName(self::$languageName)
+      ->setActiveRuleCount(self::$activeRuleCount)
+      ->setRulesUpdatedAt(new \DateTimeImmutable(self::$rulesUpdatedAt))
+      ->setReferentialDefault(self::$referentialDefault)
+      ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
   }
 
   public function assertHasErrors(Profiles $entity, int $number = 0): void

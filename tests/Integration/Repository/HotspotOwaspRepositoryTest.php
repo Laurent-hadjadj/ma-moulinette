@@ -58,17 +58,17 @@ class HotspotOwaspRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map1=['maven_key' => static::$mavenKey, 'status' =>'TO_REVIEW'];
-        $map2=['maven_key' => static::$mavenKey, 'status' =>'REVIEWED'];
+        $map1=['maven_key' => self::$mavenKey, 'status' =>'TO_REVIEW'];
+        $map2=['maven_key' => self::$mavenKey, 'status' =>'REVIEWED'];
 
         $hotspotOwaspRepository = $entityManager->getRepository(HotspotOwasp::class);
         $r1 = $hotspotOwaspRepository->countHotspotOwaspStatus($map1);
         $r2 = $hotspotOwaspRepository->countHotspotOwaspStatus($map2);
 
         // Assert
-        $this->assertEquals(200, $r1['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r1['code'], self::$erreurCode200);
         $this->assertEmpty($r1['erreur'], $r1['erreur']);
-        $this->assertEquals(200, $r2['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r2['code'], self::$erreurCode200);
         $this->assertEmpty($r2['erreur'], $r2['erreur']);
     }
 
@@ -81,13 +81,13 @@ class HotspotOwaspRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         $hotspotOwaspRepository = $entityManager->getRepository(HotspotOwasp::class);
         $r = $hotspotOwaspRepository->countHotspotOwaspProbability($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -100,13 +100,13 @@ class HotspotOwaspRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         $hotspotOwaspRepository = $entityManager->getRepository(HotspotOwasp::class);
         $r = $hotspotOwaspRepository->countHotspotOwaspMenaces($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -119,13 +119,13 @@ class HotspotOwaspRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey, 'menace' => 'a1', 'probability' => 'MEDIUM'];
+        $map = ['maven_key' => self::$mavenKey, 'menace' => 'a1', 'probability' => 'MEDIUM'];
 
         $hotspotOwaspRepository = $entityManager->getRepository(HotspotOwasp::class);
         $r = $hotspotOwaspRepository->countHotspotOwaspMenaceByStatus($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -138,13 +138,13 @@ class HotspotOwaspRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         $hotspotOwaspRepository = $entityManager->getRepository(HotspotOwasp::class);
         $r = $hotspotOwaspRepository->deleteHotspotOwaspMavenKey($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -158,7 +158,7 @@ class HotspotOwaspRepositoryTest extends KernelTestCase
 
         // Appel de la méthode
         $map = [['referential_owasp' => 2017, 'version' => '2.0.0-RELEASE',
-                'maven_key' => static::$mavenKey,
+                'maven_key' => self::$mavenKey,
                 'date_version' => new \DateTimeImmutable('2024-08-10 15:26:07+02'), 'menace' => 'a1', 'security_category' => 'dos',
                 'rule_key' => 'typescript:S5852', 'probability' => 'MEDIUM',
                 'status' => 'TO_REVIEW', 'resolution' => 'Todo', 'niveau' => 2,
@@ -168,7 +168,7 @@ class HotspotOwaspRepositoryTest extends KernelTestCase
         $r = $hotspotOwaspRepository->insertHotspotOwasp($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 

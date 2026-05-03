@@ -113,7 +113,7 @@ class BatchCollecteMesureController extends AbstractController
         $versionSonar = getenv('SONAR_VERSION') ?: 8;
         $metrics = $this->apiBuildRequest->metricsKey($versionSonar);
         $url = $this->urlBuilder->build(
-            $this->getParameter(static::$sonarUrl),
+            $this->getParameter(self::$sonarUrl),
             '/api/measures/component', [
                 'component' => $maven_key,
                 'metricKeys' => $metrics

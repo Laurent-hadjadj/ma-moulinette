@@ -55,7 +55,7 @@ class HistoriqueRepository extends ServiceEntityRepository
 
         // message = 'SQLSTATE[08006]'
         if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-            $message = static::$noDataBase;
+            $message = self::$noDataBase;
         }
 
         // state = '23502'
@@ -91,8 +91,8 @@ class HistoriqueRepository extends ServiceEntityRepository
                 WHERE maven_key=:maven_key";
 
         try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                $stmt->bindValue(self::$mavenKey, $map['maven_key']);
             $request = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
@@ -133,7 +133,7 @@ class HistoriqueRepository extends ServiceEntityRepository
 
         try {
             $request = $this->getEntityManager()->getConnection()->executeQuery(
-                preg_replace(static::$removeReturnLine, " ", $sql),
+                preg_replace(self::$removeReturnLine, " ", $sql),
                 ['maven_key' => $mavenKey, 'versions' => $versions],
                 ['maven_key' => ParameterType::STRING, 'versions' => ArrayParameterType::STRING],
             )->fetchAllAssociative();
@@ -166,8 +166,8 @@ class HistoriqueRepository extends ServiceEntityRepository
         try {
             /** On désactive toutes les versions */
             $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                $stmt->bindValue(self::$mavenKey, $map['maven_key']);
                 $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Throwable $e) {
@@ -184,11 +184,11 @@ class HistoriqueRepository extends ServiceEntityRepository
         /** On met à jour la version de reference pour le projet */
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql2));
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql2));
                 $stmt->bindValue(':initial', $map['initial']);
-                $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-                $stmt->bindValue(static::$version, $map['version']);
-                $stmt->bindValue(static::$dateVersion, $map['date_version']);
+                $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+                $stmt->bindValue(self::$version, $map['version']);
+                $stmt->bindValue(self::$dateVersion, $map['date_version']);
                 $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Throwable $e) {
@@ -219,10 +219,10 @@ class HistoriqueRepository extends ServiceEntityRepository
 
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-                $stmt->bindValue(static::$version, $map['version']);
-                $stmt->bindValue(static::$dateVersion, $map['date_version']);
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+                $stmt->bindValue(self::$version, $map['version']);
+                $stmt->bindValue(self::$dateVersion, $map['date_version']);
                 $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
         } catch (\Throwable $e) {
@@ -300,11 +300,11 @@ class HistoriqueRepository extends ServiceEntityRepository
                 ORDER BY date ASC";
 
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-                    $stmt->bindValue(static::$initialTrue, 1);
-                    $stmt->bindValue(static::$initialFalse, 0);
-                    $stmt->bindValue(static::$limit, $map['limit']);
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                    $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+                    $stmt->bindValue(self::$initialTrue, 1);
+                    $stmt->bindValue(self::$initialFalse, 0);
+                    $stmt->bindValue(self::$limit, $map['limit']);
                 $suivi = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
@@ -352,11 +352,11 @@ class HistoriqueRepository extends ServiceEntityRepository
                 ORDER BY date ASC";
 
         try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-                $stmt->bindValue(static::$initialTrue, 1);
-                $stmt->bindValue(static::$initialFalse, 0);
-                $stmt->bindValue(static::$limit, $map['limit']);
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+                $stmt->bindValue(self::$initialTrue, 1);
+                $stmt->bindValue(self::$initialFalse, 0);
+                $stmt->bindValue(self::$limit, $map['limit']);
             $liste = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
@@ -401,11 +401,11 @@ class HistoriqueRepository extends ServiceEntityRepository
                 ORDER BY date ASC";
 
         try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-                $stmt->bindValue(static::$initialTrue, 1);
-                $stmt->bindValue(static::$initialFalse, 0);
-                $stmt->bindValue(static::$limit, $map['limit']);
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+                $stmt->bindValue(self::$initialTrue, 1);
+                $stmt->bindValue(self::$initialFalse, 0);
+                $stmt->bindValue(self::$limit, $map['limit']);
             $liste = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
@@ -458,11 +458,11 @@ class HistoriqueRepository extends ServiceEntityRepository
                     ORDER BY date ASC";
 
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(static::$mavenKey, $map['maven_key']);
-                    $stmt->bindValue(static::$initialTrue, 1);
-                    $stmt->bindValue(static::$initialFalse, 0);
-                    $stmt->bindValue(static::$limit, $map['limit']);
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                    $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+                    $stmt->bindValue(self::$initialTrue, 1);
+                    $stmt->bindValue(self::$initialFalse, 0);
+                    $stmt->bindValue(self::$limit, $map['limit']);
                 $details = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
@@ -495,8 +495,8 @@ class HistoriqueRepository extends ServiceEntityRepository
                 ORDER BY date ASC";
 
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                $stmt->bindValue(self::$mavenKey, $map['maven_key']);
                 $graph = $stmt->executeQuery()->fetchAllAssociative();
 
             // Conversion des dates en format ISO 8601 (DateTime::ATOM)
@@ -613,11 +613,11 @@ class HistoriqueRepository extends ServiceEntityRepository
 
         /** 🔍 DEBUG temporaire : décommente pour voir le SQL exécuté + le map.
          *  À retirer une fois le bug "pas d'INSERT" diagnostiqué. */
-        // dd(['sql' => preg_replace(static::$removeReturnLine, ' ', $sql), 'map' => $map]);
+        // dd(['sql' => preg_replace(self::$removeReturnLine, ' ', $sql), 'map' => $map]);
 
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             foreach ($cols as $col) {
                 /** Cas spéciaux :
                  *   - 'initial' : Doctrine ne peut pas binder un bool, on force la chaîne 'false'
@@ -665,8 +665,8 @@ class HistoriqueRepository extends ServiceEntityRepository
 
         try {
                 $this->getEntityManager()->getConnection()->beginTransaction();
-                    $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+                    $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                    $stmt->bindValue(self::$mavenKey, $map['maven_key']);
                     $version = $stmt->executeQuery()->fetchAllAssociative();
                 $this->getEntityManager()->getConnection()->commit();
         } catch (\Throwable $e) {
@@ -705,8 +705,8 @@ class HistoriqueRepository extends ServiceEntityRepository
                 ORDER BY date_version DESC LIMIT 1";
 
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                $stmt->bindValue(self::$mavenKey, $map['maven_key']);
                 $infos = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
@@ -740,8 +740,8 @@ class HistoriqueRepository extends ServiceEntityRepository
                 WHERE maven_key=:maven_key AND initial=true";
 
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                    $stmt->bindValue(self::$mavenKey, $map['maven_key']);
                 $liste = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
@@ -791,7 +791,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                 LIMIT :nombre_favori";
         try {
             $liste = $this->getEntityManager()->getConnection()->executeQuery(
-                preg_replace(static::$removeReturnLine, " ", $sql),
+                preg_replace(self::$removeReturnLine, " ", $sql),
                 ['liste_projet' => $listeProjet, 'nombre_favori' => $nombreFavori],
                 ['liste_projet' => ArrayParameterType::STRING, 'nombre_favori' => ParameterType::INTEGER],
             )->fetchAllAssociative();
@@ -821,8 +821,8 @@ class HistoriqueRepository extends ServiceEntityRepository
                 WHERE maven_key=:maven_key
                 ORDER BY date_version DESC LIMIT 1";
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                    $stmt->bindValue(self::$mavenKey, $map['maven_key']);
                 $isValide = $stmt->executeQuery()->fetchAllAssociative();
                     /** j'ai pas trouvé de projet */
             if (!$isValide) {
@@ -869,7 +869,7 @@ class HistoriqueRepository extends ServiceEntityRepository
 
         try {
             $indicateur = $this->getEntityManager()->getConnection()->executeQuery(
-                preg_replace(static::$removeReturnLine, " ", $sql),
+                preg_replace(self::$removeReturnLine, " ", $sql),
                 ['maven_keys' => $mavenKeys],
                 ['maven_keys' => ArrayParameterType::STRING],
             )->fetchAllAssociative();

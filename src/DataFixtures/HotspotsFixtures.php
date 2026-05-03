@@ -32,19 +32,19 @@ class HotspotsFixtures extends Fixture
 
       foreach($modeCollecte as $mode){
         $hotspots=(new Hotspots())
-          ->setMavenKey(static::$mavenKey)
-          ->setVersion(static::$version)
-          ->setDateVersion(new \DateTimeImmutable(static::$dateVersion))
-          ->setHotspotKey(static::$hotspotKey)
-          ->setSecurityCategory(static::$securityCategory)
-          ->setRuleKey(static::$ruleKey)
-          ->setProbability(static::$probability)
-          ->setStatus(static::$status)
-          ->setResolution(static::$resolution)
-          ->setNiveau(static::$niveau)
+          ->setMavenKey(self::$mavenKey)
+          ->setVersion(self::$version)
+          ->setDateVersion(new \DateTimeImmutable(self::$dateVersion))
+          ->setHotspotKey(self::$hotspotKey)
+          ->setSecurityCategory(self::$securityCategory)
+          ->setRuleKey(self::$ruleKey)
+          ->setProbability(self::$probability)
+          ->setStatus(self::$status)
+          ->setResolution(self::$resolution)
+          ->setNiveau(self::$niveau)
           ->setModeCollecte($mode)
-          ->setUtilisateurCollecte(static::$utilisateurCollecte)
-          ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+          ->setUtilisateurCollecte(self::$utilisateurCollecte)
+          ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
         $manager->persist($hotspots);
       }
       /** Enregistrement des données dans la base de tests */

@@ -117,7 +117,7 @@ class RepartitionRepositoryTest extends KernelTestCase
         // Valeurs essentielles à remplir pour l'appel
         $map['maven_key'] = 'ma-cle-maven';
         $map['name'] = 'ma-moulinette';
-        $map['setup'] = static::$setup;
+        $map['setup'] = self::$setup;
         $map['mode_collecte'] = 'COLLECTE';
         $map['utilisateur_collecte'] = 'mOi';
         $map['control'] = 'initial';

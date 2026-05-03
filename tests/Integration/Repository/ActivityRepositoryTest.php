@@ -62,7 +62,7 @@ class ActivityRepositoryTest extends KernelTestCase
         $r = $activityRepository->selectActivity($year);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -87,7 +87,7 @@ class ActivityRepositoryTest extends KernelTestCase
         $r = $activityRepository->insertActivity($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -106,7 +106,7 @@ class ActivityRepositoryTest extends KernelTestCase
         $r = $activityRepository->nombreJourAnneeDonnee($year);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -125,7 +125,7 @@ class ActivityRepositoryTest extends KernelTestCase
         $r = $activityRepository->tempsExecutionMax($year);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -145,7 +145,7 @@ class ActivityRepositoryTest extends KernelTestCase
         $r = $activityRepository->nombreStatus($year, $status);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -165,7 +165,7 @@ class ActivityRepositoryTest extends KernelTestCase
         $r = $activityRepository->nombreAnalyse($year);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -186,9 +186,9 @@ class ActivityRepositoryTest extends KernelTestCase
         $r2 = $activityRepository->dernierDate($yearNull);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
-        $this->assertEquals(200, $r2['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r2['code'], self::$erreurCode200);
         $this->assertEmpty($r2['erreur'], $r2['erreur']);
     }
 
@@ -209,9 +209,9 @@ class ActivityRepositoryTest extends KernelTestCase
         $r2 = $activityRepository->premiereDate($yearNull);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
-        $this->assertEquals(200, $r2['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r2['code'], self::$erreurCode200);
         $this->assertEmpty($r2['erreur'], $r2['erreur']);
     }
 
@@ -232,9 +232,9 @@ class ActivityRepositoryTest extends KernelTestCase
         $r2 = $activityRepository->listeProjectAnalyse($yearNull);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
-        $this->assertEquals(200, $r2['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r2['code'], self::$erreurCode200);
         $this->assertEmpty($r2['erreur'], $r2['erreur']);
     }
 
@@ -255,9 +255,9 @@ class ActivityRepositoryTest extends KernelTestCase
         $r2 = $activityRepository->listeAnalyseJour($yearNull);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
-        $this->assertEquals(200, $r2['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r2['code'], self::$erreurCode200);
         $this->assertEmpty($r2['erreur'], $r2['erreur']);
     }
 
@@ -278,9 +278,9 @@ class ActivityRepositoryTest extends KernelTestCase
         $r2 = $activityRepository->listeAnalyseProjet($yearNull);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
-        $this->assertEquals(200, $r2['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r2['code'], self::$erreurCode200);
         $this->assertEmpty($r2['erreur'], $r2['erreur']);
     }
 

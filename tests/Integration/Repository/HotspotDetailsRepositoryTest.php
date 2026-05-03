@@ -58,13 +58,13 @@ class HotspotDetailsRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map=['maven_key' => static::$mavenKey];
+        $map=['maven_key' => self::$mavenKey];
 
         $hotspotDetailsRepository = $entityManager->getRepository(HotspotDetails::class);
         $r = $hotspotDetailsRepository->selectHotspotDetailsByStatus($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -77,13 +77,13 @@ class HotspotDetailsRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map=['maven_key' => static::$mavenKey];
+        $map=['maven_key' => self::$mavenKey];
 
         $hotspotDetailsRepository = $entityManager->getRepository(HotspotDetails::class);
         $r = $hotspotDetailsRepository->deleteHotspotDetailsMavenKey($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -96,7 +96,7 @@ class HotspotDetailsRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map= [['maven_key' => static::$mavenKey,
+        $map= [['maven_key' => self::$mavenKey,
         'version' => '2.0.0-RELEASE', 'date_version' => new \DateTimeImmutable('2024-08-30 10:12:17+02'),
         'security_category' => 'dos', 'rule_key' => 'typescript:S5852',
         'rule_name' => 'Using slow regular expressions is security-sensitive',
@@ -113,7 +113,7 @@ class HotspotDetailsRepositoryTest extends KernelTestCase
         $r = $hotspotDetailsRepository->insertHotspotDetails($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 

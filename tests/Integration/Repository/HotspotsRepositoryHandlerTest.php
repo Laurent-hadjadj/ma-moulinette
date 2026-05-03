@@ -75,7 +75,7 @@ class HotspotsRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
         $result = $repo->selectHotspotsToReview($map);
 
         // 9) Vérification
@@ -127,7 +127,7 @@ class HotspotsRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey, 'status' => 'REVIEW'];
+        $map = ['maven_key' => self::$mavenKey, 'status' => 'REVIEW'];
         $result = $repo->countHotspotsStatus($map);
 
         // 9) Vérification
@@ -179,7 +179,7 @@ class HotspotsRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey, 'status' => 'REVIEW'];
+        $map = ['maven_key' => self::$mavenKey, 'status' => 'REVIEW'];
         $result = $repo->selectHotspotsByNiveau($map);
 
         // 9) Vérification
@@ -220,7 +220,7 @@ class HotspotsRepositoryHandlerTest extends TestCase
                         ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
-        $expected = ['code' => 500, 'erreur' => static::$gestionTest];
+        $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
                 ->with($fakeException)
                 ->willReturn($expected);
@@ -229,7 +229,7 @@ class HotspotsRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Prépare un jeu de données minimal pour le $map
-        $map = [['maven_key' => static::$mavenKey,
+        $map = [['maven_key' => self::$mavenKey,
             'version' => '2.0.0-RELEASE',
             'date_version' => new \DateTimeImmutable('2024-07-10 15:26:07+02'),
             'hotspot_key' => 'AZCc06XbgfifxdiJPzw6', 'security_category' => 'dos',
@@ -285,7 +285,7 @@ class HotspotsRepositoryHandlerTest extends TestCase
                         ->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
-        $expected = ['code' => 500, 'erreur' => static::$gestionTest];
+        $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
                 ->with($fakeException)
                 ->willReturn($expected);
@@ -294,7 +294,7 @@ class HotspotsRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Prépare un jeu de données minimal pour le $map
-        $map = [ 'maven_key' => static::$mavenKey ];
+        $map = [ 'maven_key' => self::$mavenKey ];
 
         // 9) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
         $result = $repo->deleteHotspotsMavenKey($map);

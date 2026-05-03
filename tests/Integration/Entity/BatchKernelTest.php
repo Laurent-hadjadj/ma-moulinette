@@ -63,7 +63,7 @@ class BatchKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $batchRepository = $entityManager->getRepository(Batch::class);
-        $response = $batchRepository->findOneBy(['responsable' => static::$responsable]);
+        $response = $batchRepository->findOneBy(['responsable' => self::$responsable]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'RESPONSABLE: Aucune réponse trouvée');
@@ -76,7 +76,7 @@ class BatchKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $batchRepository = $entityManager->getRepository(Batch::class);
-        $response = $batchRepository->findBy(['responsable' => static::$responsable]);
+        $response = $batchRepository->findBy(['responsable' => self::$responsable]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(3, $response, 'RESPONSABLE: Aucune réponse trouvée');

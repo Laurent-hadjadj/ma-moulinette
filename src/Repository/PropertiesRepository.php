@@ -49,7 +49,7 @@ class PropertiesRepository extends ServiceEntityRepository
 
       // message = 'SQLSTATE[08006]'
       if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-          $message = static::$noDataBase;
+          $message = self::$noDataBase;
       }
 
       // state = '23502'
@@ -84,8 +84,8 @@ class PropertiesRepository extends ServiceEntityRepository
             WHERE type=:type";
 
     try {
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-            $stmt->bindValue(static::$type, $type);
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$type, $type);
           $request = $stmt->executeQuery()->fetchAllAssociative();
         return ['code' => 200, 'request' => $request, 'erreur' => ''];
     } catch (\Throwable $e) {
@@ -123,16 +123,16 @@ class PropertiesRepository extends ServiceEntityRepository
                         :date_creation)";
     try {
         $this->getEntityManager()->getConnection()->beginTransaction();
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             $stmt->bindValue(":type", 'properties');
             $stmt->bindValue(":projet_bd", $map["projet_bd"]);
             $stmt->bindValue(":projet_sonar", $map["projet_sonar"]);
             $stmt->bindValue(":profil_bd", $map["profil_bd"]);
             $stmt->bindValue(":profil_sonar", $map["profil_sonar"]);
             /** Les dates sont déjà en string */
-            $stmt->bindValue(":date_modification_projet", $map["date_modification_projet"]->format(static::$horodatage));
-            $stmt->bindValue(":date_modification_profil", $map["date_modification_profil"]->format(static::$horodatage));
-            $stmt->bindValue(":date_creation", $map["date_creation"]->format(static::$horodatage));
+            $stmt->bindValue(":date_modification_projet", $map["date_modification_projet"]->format(self::$horodatage));
+            $stmt->bindValue(":date_modification_profil", $map["date_modification_profil"]->format(self::$horodatage));
+            $stmt->bindValue(":date_creation", $map["date_creation"]->format(self::$horodatage));
             $stmt->executeStatement();
         $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
@@ -164,11 +164,11 @@ class PropertiesRepository extends ServiceEntityRepository
 
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
               $stmt->bindValue(':projet_bd', $map['projet_bd']);
               $stmt->bindValue(':projet_sonar', $map['projet_sonar']);
-              $stmt->bindValue(':date_modification_projet', $map['date_modification_projet']->format(static::$horodatage));
-              $stmt->bindValue(static::$type, 'properties');
+              $stmt->bindValue(':date_modification_projet', $map['date_modification_projet']->format(self::$horodatage));
+              $stmt->bindValue(self::$type, 'properties');
               $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
@@ -200,11 +200,11 @@ class PropertiesRepository extends ServiceEntityRepository
 
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
               $stmt->bindValue(':profil_bd', $map['profil_bd']);
               $stmt->bindValue(':profil_sonar', $map['profil_sonar']);
-              $stmt->bindValue(':date_modification_profil', $map['date_modification_profil']->format(static::$horodatage));
-              $stmt->bindValue(static::$type, 'properties');
+              $stmt->bindValue(':date_modification_profil', $map['date_modification_profil']->format(self::$horodatage));
+              $stmt->bindValue(self::$type, 'properties');
               $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {

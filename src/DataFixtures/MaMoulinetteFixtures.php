@@ -19,10 +19,10 @@ class MaMoulinetteFixtures extends Fixture
   public function load(ObjectManager $manager): void
     {
       /** création du jeu de données pour la table MA_MOULINETTE */
-      $maMoulinette=(new MaMoulinette(static::$version, new \DateTimeImmutable(static::$dateVersion), new \DateTimeImmutable(static::$dateEnregistrement)))
-          ->setVersion(static::$version)
-          ->setDateVersion(new \DateTimeImmutable(static::$dateVersion))
-          ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+      $maMoulinette=(new MaMoulinette(self::$version, new \DateTimeImmutable(self::$dateVersion), new \DateTimeImmutable(self::$dateEnregistrement)))
+          ->setVersion(self::$version)
+          ->setDateVersion(new \DateTimeImmutable(self::$dateVersion))
+          ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
       $manager->persist($maMoulinette);
 
       /** Enregistrement des données dans la base de tests */

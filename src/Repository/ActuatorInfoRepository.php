@@ -40,7 +40,7 @@ class ActuatorInfoRepository extends ServiceEntityRepository
                 $sql = "SELECT actuator_info_description AS nom, actuator_info_value as valeur
                         FROM ma_moulinette.actuator_info
                         WHERE actuator_id= :actuator_id";
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':actuator_id', $map['actuator_id']);
             $exec = $stmt->executeQuery();
             $liste = $exec->fetchAllAssociative();

@@ -34,13 +34,13 @@ class ActivityBatchReportCaseTest extends TestCase
     private function getEntity(): ActivityBatchReport
     {
         return (new activityBatchReport())
-        ->setDateStart(new \DateTimeImmutable(static::$dateStart))
-        ->setDateEnd(new \DateTimeImmutable(static::$dateEnd))
-        ->setTaskCount(static::$taskCount)
-        ->setTaskDone(static::$taskDone)
-        ->setPage(static::$page)
-        ->setLastError(static::$lastError)
-        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+        ->setDateStart(new \DateTimeImmutable(self::$dateStart))
+        ->setDateEnd(new \DateTimeImmutable(self::$dateEnd))
+        ->setTaskCount(self::$taskCount)
+        ->setTaskDone(self::$taskDone)
+        ->setPage(self::$page)
+        ->setLastError(self::$lastError)
+        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -57,45 +57,45 @@ class ActivityBatchReportCaseTest extends TestCase
 
     public function testSettingAndGettingDateStart(): void
     {
-        $newDate=new \DateTimeImmutable(static::$dateStart);
+        $newDate=new \DateTimeImmutable(self::$dateStart);
         $this->activityBatchReport->setDateStart($newDate);
         $this->assertEquals($newDate, $this->activityBatchReport->getDateStart());
     }
 
     public function testSettingAndGettingDateEnd(): void
     {
-        $newDate=new \DateTimeImmutable(static::$dateEnd);
+        $newDate=new \DateTimeImmutable(self::$dateEnd);
         $this->activityBatchReport->setDateEnd($newDate);
         $this->assertEquals($newDate, $this->activityBatchReport->getDateEnd());
     }
 
     public function testSettingAndGettingTaskCount(): void
     {
-        $this->activityBatchReport->setTaskCount(static::$taskCount);
-        $this->assertEquals(static::$taskCount, $this->activityBatchReport->getTaskCount());
+        $this->activityBatchReport->setTaskCount(self::$taskCount);
+        $this->assertEquals(self::$taskCount, $this->activityBatchReport->getTaskCount());
     }
 
     public function testSettingAndGettingTaskDone(): void
     {
-        $this->activityBatchReport->setTaskDone(static::$taskDone);
-        $this->assertEquals(static::$taskDone, $this->activityBatchReport->getTaskDone());
+        $this->activityBatchReport->setTaskDone(self::$taskDone);
+        $this->assertEquals(self::$taskDone, $this->activityBatchReport->getTaskDone());
     }
 
     public function testSettingAndGettingPage(): void
     {
-        $this->activityBatchReport->setPage(static::$page);
-        $this->assertEquals(static::$page, $this->activityBatchReport->getPage());
+        $this->activityBatchReport->setPage(self::$page);
+        $this->assertEquals(self::$page, $this->activityBatchReport->getPage());
     }
 
     public function testSettingAndGettingLastError(): void
     {
-        $this->activityBatchReport->setLastError(static::$lastError);
-        $this->assertEquals(static::$lastError, $this->activityBatchReport->getLastError());
+        $this->activityBatchReport->setLastError(self::$lastError);
+        $this->assertEquals(self::$lastError, $this->activityBatchReport->getLastError());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(static::$dateEnregistrement);
+        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
         $this->activityBatchReport->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->activityBatchReport->getDateEnregistrement());
     }

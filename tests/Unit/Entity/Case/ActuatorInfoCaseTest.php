@@ -32,12 +32,12 @@ class ActuatorInfoCaseTest extends TestCase
     {
         // Créé une instance de Actuator
         $actuator = new Actuator();
-        $actuator->setId(static::$actuatorId);
+        $actuator->setId(self::$actuatorId);
 
         $actuatorInfo = new ActuatorInfo();
         $actuatorInfo->setActuator($actuator)
-                    ->setActuatorInfoDescription(static::$actuatorInfoDescription)
-                    ->setActuatorInfoValue(static::$actuatorInfoValue);
+                    ->setActuatorInfoDescription(self::$actuatorInfoDescription)
+                    ->setActuatorInfoValue(self::$actuatorInfoValue);
     return $actuatorInfo;
 }
 
@@ -50,19 +50,19 @@ class ActuatorInfoCaseTest extends TestCase
     public function testSettingAndGettingActuatorIdSignature(): void
     {
         $actuatorInfo = $this->getEntity();
-        $this->assertSame(static::$actuatorId, $actuatorInfo->getActuator()->getId());
+        $this->assertSame(self::$actuatorId, $actuatorInfo->getActuator()->getId());
     }
 
     public function testSettingAndGettingActuatorInfoDescription(): void
     {
-        $this->actuatorInfo->setActuatorInfoDescription(static::$actuatorInfoDescription);
-        $this->assertEquals(static::$actuatorInfoDescription, $this->actuatorInfo->getActuatorInfoDescription());
+        $this->actuatorInfo->setActuatorInfoDescription(self::$actuatorInfoDescription);
+        $this->assertEquals(self::$actuatorInfoDescription, $this->actuatorInfo->getActuatorInfoDescription());
     }
 
     public function testSettingAndGettingActuatorInfoValue(): void
     {
-        $this->actuatorInfo->setActuatorInfoValue(static::$actuatorInfoValue);
-        $this->assertEquals(static::$actuatorInfoValue, $this->actuatorInfo->getActuatorInfoValue());
+        $this->actuatorInfo->setActuatorInfoValue(self::$actuatorInfoValue);
+        $this->assertEquals(self::$actuatorInfoValue, $this->actuatorInfo->getActuatorInfoValue());
     }
 
 }

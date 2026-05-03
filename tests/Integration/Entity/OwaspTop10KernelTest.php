@@ -55,7 +55,7 @@ class OwaspTop10KernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $owaspRepository = $entityManager->getRepository(OwaspTop10::class);
-        $response = $owaspRepository->findOneBy(['category' => static::$category]);
+        $response = $owaspRepository->findOneBy(['category' => self::$category]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'CATEGORY: Aucune réponse trouvée');
@@ -68,7 +68,7 @@ class OwaspTop10KernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $owaspRepository = $entityManager->getRepository(OwaspTop10::class);
-        $response = $owaspRepository->findBy(['year' => static::$year]);
+        $response = $owaspRepository->findBy(['year' => self::$year]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, $response, 'CATEGORY: Aucune réponse trouvée');

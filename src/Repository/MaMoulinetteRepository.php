@@ -48,7 +48,7 @@ class MaMoulinetteRepository extends ServiceEntityRepository
 
       // message = 'SQLSTATE[08006]'
       if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-          $message = static::$noDataBase;
+          $message = self::$noDataBase;
       }
 
       // state = '23502'
@@ -79,7 +79,7 @@ class MaMoulinetteRepository extends ServiceEntityRepository
               FROM ma_moulinette.ma_moulinette
               ORDER BY date_version DESC LIMIT 1";
       try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             $request = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);

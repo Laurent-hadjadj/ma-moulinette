@@ -65,10 +65,10 @@ class PropertiesRepositoryTest extends KernelTestCase
 
         // Appel de la méthode
         $propertiesRepository = $entityManager->getRepository(Properties::class);
-        $r = $propertiesRepository->getProperties(static::$type);
+        $r = $propertiesRepository->getProperties(self::$type);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -79,13 +79,13 @@ class PropertiesRepositoryTest extends KernelTestCase
         /* On se connecte à la base de tests */
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
-        $d1 = new \DateTimeImmutable(static::$dateModificationProjet);
-        $d2 = new \DateTimeImmutable(static::$dateModificationProfil);
-        $d0 = new \DateTimeImmutable(static::$dateCreation);
-        $map = ['projet_bd' => static::$projetBd,
-                'projet_sonar' => static::$projetSonar,
-                'profil_bd' => static::$profilBd,
-                'profil_sonar' => static::$profilSonar,
+        $d1 = new \DateTimeImmutable(self::$dateModificationProjet);
+        $d2 = new \DateTimeImmutable(self::$dateModificationProfil);
+        $d0 = new \DateTimeImmutable(self::$dateCreation);
+        $map = ['projet_bd' => self::$projetBd,
+                'projet_sonar' => self::$projetSonar,
+                'profil_bd' => self::$profilBd,
+                'profil_sonar' => self::$profilSonar,
                 'date_creation' => $d0,
                 'date_modification_projet' => $d1,
                 'date_modification_profil' => $d2];
@@ -95,7 +95,7 @@ class PropertiesRepositoryTest extends KernelTestCase
         $r = $propertiesRepository->insertProperties($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -107,17 +107,17 @@ class PropertiesRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['projet_bd' => static::$projetBd,
-                'projet_sonar'=> static::$projetSonar,
-                'date_modification_projet' => new \DateTimeImmutable(static::$dateModificationProjet),
-                'type' => static::$type];
+        $map = ['projet_bd' => self::$projetBd,
+                'projet_sonar'=> self::$projetSonar,
+                'date_modification_projet' => new \DateTimeImmutable(self::$dateModificationProjet),
+                'type' => self::$type];
 
         // Appel de la méthode
         $propertiesRepository = $entityManager->getRepository(Properties::class);
         $r = $propertiesRepository->updatePropertiesProjet($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -129,17 +129,17 @@ class PropertiesRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['profil_bd' => static::$profilBd,
-                'profil_sonar'=> static::$profilSonar,
-                'date_modification_profil' => new \DateTimeImmutable(static::$dateModificationProfil),
-                'type' => static::$type];
+        $map = ['profil_bd' => self::$profilBd,
+                'profil_sonar'=> self::$profilSonar,
+                'date_modification_profil' => new \DateTimeImmutable(self::$dateModificationProfil),
+                'type' => self::$type];
 
         // Appel de la méthode
         $propertiesRepository = $entityManager->getRepository(Properties::class);
         $r = $propertiesRepository->updatePropertiesProfiles($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 

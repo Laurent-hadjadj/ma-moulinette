@@ -56,14 +56,14 @@ class InformationProjetRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         // Appel de la méthode
         $informationProjetRepository = $entityManager->getRepository(InformationProjet::class);
         $r = $informationProjetRepository->selectInformationProjetIsValide($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -75,14 +75,14 @@ class InformationProjetRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         // Appel de la méthode
         $informationProjetRepository = $entityManager->getRepository(InformationProjet::class);
         $r = $informationProjetRepository->selectInformationProjetVersion($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -94,14 +94,14 @@ class InformationProjetRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         // Appel de la méthode
         $informationProjetRepository = $entityManager->getRepository(InformationProjet::class);
         $r = $informationProjetRepository->deleteInformationProjetMavenKey($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -113,7 +113,7 @@ class InformationProjetRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey,
+        $map = ['maven_key' => self::$mavenKey,
                 'analyse_key' => 'BYVyxZcQo0TJpgSeq-ph',
                 'date' => '2024-08-12 16:23:11+02',
                 'project_version' => '3.0.0-RELEASE',
@@ -130,7 +130,7 @@ class InformationProjetRepositoryTest extends KernelTestCase
         $r = $informationProjetRepository->insertInformationProjet($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 

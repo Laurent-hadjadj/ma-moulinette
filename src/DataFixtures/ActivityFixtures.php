@@ -39,15 +39,15 @@ class ActivityFixtures extends Fixture
 
       foreach($statuses as $status){
         $activity=(new Activity())
-            ->setMavenKey(static::$mavenKey)
-            ->setProjectName(static::$projectName)
-            ->setAnalyseId(static::$analyseId)
+            ->setMavenKey(self::$mavenKey)
+            ->setProjectName(self::$projectName)
+            ->setAnalyseId(self::$analyseId)
             ->setStatus($status)
-            ->setSubmitterLogin(static::$submitterLogin)
-            ->setSubmittedAt(new \DateTimeImmutable(static::$submittedAt))
-            ->setStartedAt(new \DateTimeImmutable(static::$startedAt))
-            ->setExecutedAt(new \DateTimeImmutable(static::$executedAt))
-            ->setExecutionTime(static::$executionTime);
+            ->setSubmitterLogin(self::$submitterLogin)
+            ->setSubmittedAt(new \DateTimeImmutable(self::$submittedAt))
+            ->setStartedAt(new \DateTimeImmutable(self::$startedAt))
+            ->setExecutedAt(new \DateTimeImmutable(self::$executedAt))
+            ->setExecutionTime(self::$executionTime);
             $manager->persist($activity);
       }
       /** Enregistrement des données dans la base de tests */

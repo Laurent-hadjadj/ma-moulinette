@@ -52,7 +52,7 @@ class SonarMetricsFetcherService
     {
         $version = (int) trim($this->params->get('sonar.version'));
         $url = $this->urlBuilder->build(
-            $this->params->get(static::$sonarUrl),
+            $this->params->get(self::$sonarUrl),
             '/api/measures/component',
             [
                 'component' => $project_key,

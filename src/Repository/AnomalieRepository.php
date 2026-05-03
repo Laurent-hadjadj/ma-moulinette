@@ -48,7 +48,7 @@ class AnomalieRepository extends ServiceEntityRepository
 
     // message = 'SQLSTATE[08006]'
     if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-        $message = static::$noDataBase;
+        $message = self::$noDataBase;
     }
 
     // state = '23502'
@@ -83,8 +83,8 @@ class AnomalieRepository extends ServiceEntityRepository
             WHERE maven_key=:maven_key";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(self::$mavenKey, $map['maven_key']);
               $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
@@ -111,7 +111,7 @@ class AnomalieRepository extends ServiceEntityRepository
             GROUP BY maven_key, project_name
             ORDER BY project_name ASC";
     try {
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
           $liste = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
@@ -136,8 +136,8 @@ class AnomalieRepository extends ServiceEntityRepository
             FROM ma_moulinette.anomalie
             WHERE maven_key=:maven_key";
       try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(self::$mavenKey, $map['maven_key']);
             $liste = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
@@ -165,8 +165,8 @@ class AnomalieRepository extends ServiceEntityRepository
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
 
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(self::$mavenKey, $map['maven_key']);
               $stmt->bindValue(':project_name', $map['project_name']);
               $stmt->bindValue(':anomalie_total', $map['anomalie_total']);
               $stmt->bindValue(':dette', $map['dette']);

@@ -63,7 +63,7 @@ class AnomalieDetailsRepositoryTest extends KernelTestCase
         $r = $anomalieDetailsRepository->deleteAnomalieDetailsMavenKey($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -82,7 +82,7 @@ class AnomalieDetailsRepositoryTest extends KernelTestCase
         $r = $anomalieDetailsRepository->selectAnomalieDetailsMavenKey($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -110,7 +110,7 @@ class AnomalieDetailsRepositoryTest extends KernelTestCase
         $r = $anomalieDetailsRepository->insertAnomalieDetail($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 

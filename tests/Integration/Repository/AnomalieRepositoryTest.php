@@ -58,13 +58,13 @@ class AnomalieRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         $anomalieRepository = $entityManager->getRepository(Anomalie::class);
         $r = $anomalieRepository->deleteAnomalieMavenKey($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -80,7 +80,7 @@ class AnomalieRepositoryTest extends KernelTestCase
         $r = $anomalieRepository->selectAnomalieByProjectName();
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -92,14 +92,14 @@ class AnomalieRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map=['maven_key' => static::$mavenKey];
+        $map=['maven_key' => self::$mavenKey];
 
         // Appel de la méthode
         $anomalieRepository = $entityManager->getRepository(Anomalie::class);
         $r = $anomalieRepository->selectAnomalie($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -111,7 +111,7 @@ class AnomalieRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey,
+        $map = ['maven_key' => self::$mavenKey,
         'project_name' => 'ma-moulinette', 'anomalie_total' => 1956,
         'dette_minute' => 19586, 'dette_reliability_minute' => 107,
         'dette_vulnerability_minute' => 0, 'dette_code_smell_minute' => 7369,
@@ -127,7 +127,7 @@ class AnomalieRepositoryTest extends KernelTestCase
         $r = $anomalieRepository->insertAnomalie($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 

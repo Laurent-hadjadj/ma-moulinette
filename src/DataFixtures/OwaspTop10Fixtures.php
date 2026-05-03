@@ -32,11 +32,11 @@ class OwaspTop10Fixtures extends Fixture
     public function load(ObjectManager $manager): void
     {
         $owaspTop10=(new OwaspTop10())
-            ->setYear(static::$year)
-            ->setCategory(static::$category)
-            ->setDescription(static::$description)
-            ->setLien(static::$lien)
-            ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+            ->setYear(self::$year)
+            ->setCategory(self::$category)
+            ->setDescription(self::$description)
+            ->setLien(self::$lien)
+            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
         $manager->persist($owaspTop10);
 
       /** Enregistrement des données dans la base de tests */

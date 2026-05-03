@@ -35,14 +35,14 @@ class PropertiesCaseTest extends TestCase
     private function getEntity(): Properties
     {
         return (new properties())
-        ->setType(static::$type)
-        ->setProjetBd(static::$projetBd)
-        ->setProjetSonar(static::$projetSonar)
-        ->setProfilBd(static::$profilBd)
-        ->setProfilSonar(static::$profilSonar)
-        ->setDateCreation(new \DateTimeImmutable(static::$dateCreation))
-        ->setDateModificationProjet(new \DateTime(static::$dateModificationProjet))
-        ->setDateModificationProfil(new \DateTime(static::$dateModificationProfil));
+        ->setType(self::$type)
+        ->setProjetBd(self::$projetBd)
+        ->setProjetSonar(self::$projetSonar)
+        ->setProfilBd(self::$profilBd)
+        ->setProfilSonar(self::$profilSonar)
+        ->setDateCreation(new \DateTimeImmutable(self::$dateCreation))
+        ->setDateModificationProjet(new \DateTime(self::$dateModificationProjet))
+        ->setDateModificationProfil(new \DateTime(self::$dateModificationProfil));
     }
 
     protected function setUp(): void
@@ -59,50 +59,50 @@ class PropertiesCaseTest extends TestCase
 
     public function testSettingAndGettingType(): void
     {
-        $this->properties->setType(static::$type);
-        $this->assertEquals(static::$type, $this->properties->getType());
+        $this->properties->setType(self::$type);
+        $this->assertEquals(self::$type, $this->properties->getType());
     }
 
     public function testSettingAndGettingProjetBd(): void
     {
-        $this->properties->setProjetBd(static::$projetBd);
-        $this->assertEquals(static::$projetBd, $this->properties->getProjetBd());
+        $this->properties->setProjetBd(self::$projetBd);
+        $this->assertEquals(self::$projetBd, $this->properties->getProjetBd());
     }
 
     public function testSettingAndGettingProjetSonar(): void
     {
-        $this->properties->setProjetSonar(static::$projetSonar);
-        $this->assertEquals(static::$projetSonar, $this->properties->getProjetSonar());
+        $this->properties->setProjetSonar(self::$projetSonar);
+        $this->assertEquals(self::$projetSonar, $this->properties->getProjetSonar());
     }
 
     public function testSettingAndGettingProfilBd(): void
     {
-        $this->properties->setProfilBd(static::$profilBd);
-        $this->assertEquals(static::$profilBd, $this->properties->getProfilBd());
+        $this->properties->setProfilBd(self::$profilBd);
+        $this->assertEquals(self::$profilBd, $this->properties->getProfilBd());
     }
 
     public function testSettingAndGettingProfilSonar(): void
     {
-        $this->properties->setProfilSonar(static::$profilSonar);
-        $this->assertEquals(static::$profilSonar, $this->properties->getProfilSonar());
+        $this->properties->setProfilSonar(self::$profilSonar);
+        $this->assertEquals(self::$profilSonar, $this->properties->getProfilSonar());
     }
     public function testSettingAndGettingDateCreation(): void
     {
-        $newDate=new \DateTimeImmutable(static::$dateCreation);
+        $newDate=new \DateTimeImmutable(self::$dateCreation);
         $this->properties->setDateCreation($newDate);
         $this->assertEquals($newDate, $this->properties->getDateCreation());
     }
 
     public function testSettingAndGettingDateModificationProjet(): void
     {
-        $newDate=new \DateTime(static::$dateModificationProjet);
+        $newDate=new \DateTime(self::$dateModificationProjet);
         $this->properties->setDatemodificationProjet($newDate);
         $this->assertEquals($newDate, $this->properties->getDatemodificationProjet());
     }
 
     public function testSettingAndGettingDateModificationProfil(): void
     {
-        $newDate=new \DateTime(static::$dateModificationProfil);
+        $newDate=new \DateTime(self::$dateModificationProfil);
         $this->properties->setDateModificationProfil($newDate);
         $this->assertEquals($newDate, $this->properties->getDateModificationProfil());
     }

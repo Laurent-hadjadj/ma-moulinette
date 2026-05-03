@@ -72,17 +72,17 @@ class ActivityHandlerTest extends TestCase
     public function testHandlerProcessesValidMessage(): void
     {
         // Création des dates fixes (par exemple : 2025-01-02 10:33:27)
-        $fixedDateStart = new \DateTimeImmutable('now', new \DateTimeZone(static::$timeZone));
-        $fixedDateEnd = new \DateTimeImmutable('now', new \DateTimeZone(static::$timeZone));
+        $fixedDateStart = new \DateTimeImmutable('now', new \DateTimeZone(self::$timeZone));
+        $fixedDateEnd = new \DateTimeImmutable('now', new \DateTimeZone(self::$timeZone));
 
         // Création du mock de message
         $message = $this->createMock(ActivityMessage::class);
-        $message->method('getFromDate')->willReturn($fixedDateStart->format(static::$fromDate));
-        $message->method('getToDate')->willReturn($fixedDateEnd->format(static::$toDate));
+        $message->method('getFromDate')->willReturn($fixedDateStart->format(self::$fromDate));
+        $message->method('getToDate')->willReturn($fixedDateEnd->format(self::$toDate));
 
         // Mock des paramètres et autres dépendances
         $this->params->method('get')->willReturnMap([
-            ['sonar.url', null, static::$urlSonar],
+            ['sonar.url', null, self::$urlSonar],
             ['sonar.version', null, 9],
         ]);
 
@@ -124,17 +124,17 @@ class ActivityHandlerTest extends TestCase
     public function testHandlerHandlesEmptyTasksGracefully(): void
     {
         // Création des dates fixes (par exemple : 2025-01-02 10:57:05)
-        $fixedDateStart = new \DateTimeImmutable('now', new \DateTimeZone(static::$timeZone));
-        $fixedDateEnd = new \DateTimeImmutable('now', new \DateTimeZone(static::$timeZone));
+        $fixedDateStart = new \DateTimeImmutable('now', new \DateTimeZone(self::$timeZone));
+        $fixedDateEnd = new \DateTimeImmutable('now', new \DateTimeZone(self::$timeZone));
 
         // Création du mock de message
         $message = $this->createMock(ActivityMessage::class);
-        $message->method('getFromDate')->willReturn($fixedDateStart->format(static::$fromDate));
-        $message->method('getToDate')->willReturn($fixedDateEnd->format(static::$toDate));
+        $message->method('getFromDate')->willReturn($fixedDateStart->format(self::$fromDate));
+        $message->method('getToDate')->willReturn($fixedDateEnd->format(self::$toDate));
 
         // Mock des paramètres et autres dépendances
         $this->params->method('get')->willReturnMap([
-            ['sonar.url', null, static::$urlSonar],
+            ['sonar.url', null, self::$urlSonar],
             ['sonar.version', null, 9],
         ]);
 
@@ -202,17 +202,17 @@ class ActivityHandlerTest extends TestCase
     public function testHandlerLogsErrorOnClientFailure(): void
     {
         // Création d'un message avec une date valide
-        $fixedDateStart = new \DateTimeImmutable('now', new \DateTimeZone(static::$timeZone));
-        $fixedDateEnd = new \DateTimeImmutable('now', new \DateTimeZone(static::$timeZone));
+        $fixedDateStart = new \DateTimeImmutable('now', new \DateTimeZone(self::$timeZone));
+        $fixedDateEnd = new \DateTimeImmutable('now', new \DateTimeZone(self::$timeZone));
 
         // Création du mock de message
         $message = $this->createMock(ActivityMessage::class);
-        $message->method('getFromDate')->willReturn($fixedDateStart->format(static::$fromDate));
-        $message->method('getToDate')->willReturn($fixedDateEnd->format(static::$toDate));
+        $message->method('getFromDate')->willReturn($fixedDateStart->format(self::$fromDate));
+        $message->method('getToDate')->willReturn($fixedDateEnd->format(self::$toDate));
 
         // Mock des paramètres
         $this->params->method('get')->willReturnMap([
-            ['sonar.url', null, static::$urlSonar],
+            ['sonar.url', null, self::$urlSonar],
             ['sonar.version', null, 9],
         ]);
 

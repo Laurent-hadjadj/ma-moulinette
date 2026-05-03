@@ -35,13 +35,13 @@ class NoSonarCaseTest extends TestCase
     private function getEntity(): NoSonar
     {
         return (new nosonar())
-        ->setMavenKey(static::$mavenKey)
-        ->setRule(static::$rule)
-        ->setComponent(static::$component)
-        ->setLine(static::$line)
-        ->setModeCollecte(static::$modeCollecte)
-        ->setUtilisateurCollecte(static::$utilisateurCollecte)
-        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+        ->setMavenKey(self::$mavenKey)
+        ->setRule(self::$rule)
+        ->setComponent(self::$component)
+        ->setLine(self::$line)
+        ->setModeCollecte(self::$modeCollecte)
+        ->setUtilisateurCollecte(self::$utilisateurCollecte)
+        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -58,42 +58,42 @@ class NoSonarCaseTest extends TestCase
 
     public function testSettingAndGettingMavenKey(): void
     {
-        $this->nosonar->setMavenKey(static::$mavenKey);
-        $this->assertEquals(static::$mavenKey, $this->nosonar->getMavenKey());
+        $this->nosonar->setMavenKey(self::$mavenKey);
+        $this->assertEquals(self::$mavenKey, $this->nosonar->getMavenKey());
     }
 
     public function testSettingAndGettingRule(): void
     {
-        $this->nosonar->setRule(static::$rule);
-        $this->assertEquals(static::$rule, $this->nosonar->getRule());
+        $this->nosonar->setRule(self::$rule);
+        $this->assertEquals(self::$rule, $this->nosonar->getRule());
     }
 
     public function testSettingAndGettingComponent(): void
     {
-        $this->nosonar->setComponent(static::$component);
-        $this->assertEquals(static::$component, $this->nosonar->getComponent());
+        $this->nosonar->setComponent(self::$component);
+        $this->assertEquals(self::$component, $this->nosonar->getComponent());
     }
 
     public function testSettingAndGettingLine(): void
     {
-        $this->nosonar->setLine(static::$line);
-        $this->assertEquals(static::$line, $this->nosonar->getLine());
+        $this->nosonar->setLine(self::$line);
+        $this->assertEquals(self::$line, $this->nosonar->getLine());
     }
 
     public function testSettingAndGettingModeCollecte(): void
     {
-        $this->nosonar->setModeCollecte(static::$modeCollecte);
-        $this->assertEquals(static::$modeCollecte, $this->nosonar->getModeCollecte());
+        $this->nosonar->setModeCollecte(self::$modeCollecte);
+        $this->assertEquals(self::$modeCollecte, $this->nosonar->getModeCollecte());
     }
     public function testSettingAndGettingUtilisateurCollecte(): void
     {
-        $this->nosonar->setUtilisateurCollecte(static::$utilisateurCollecte);
-        $this->assertEquals(static::$utilisateurCollecte, $this->nosonar->getUtilisateurCollecte());
+        $this->nosonar->setUtilisateurCollecte(self::$utilisateurCollecte);
+        $this->assertEquals(self::$utilisateurCollecte, $this->nosonar->getUtilisateurCollecte());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(static::$dateEnregistrement);
+        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
         $this->nosonar->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->nosonar->getDateEnregistrement());
     }

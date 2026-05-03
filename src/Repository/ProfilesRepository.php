@@ -47,7 +47,7 @@ class ProfilesRepository extends ServiceEntityRepository
 
       // message = 'SQLSTATE[08006]'
       if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-          $message = static::$noDataBase;
+          $message = self::$noDataBase;
       }
 
       // state = '23502'
@@ -81,11 +81,11 @@ class ProfilesRepository extends ServiceEntityRepository
     try {
       if ($langage !== null) {
           $sql .= ' AND language_name LIKE :langage ';
-        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, ' ', $sql));
+        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, ' ', $sql));
             $stmt->bindValue('referential_default', $referential_default);
             $stmt->bindValue('langage', $langage);
       } else {
-        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, ' ', $sql));
+        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, ' ', $sql));
             $stmt->bindValue('referential_default', $referential_default);
       }
       $request = $stmt->executeQuery()->fetchAllAssociative();
@@ -123,12 +123,12 @@ class ProfilesRepository extends ServiceEntityRepository
     try {
       if ($langage !== null) {
             $sql .= ' AND language_name LIKE :langage ';
-        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             $stmt->bindValue('referential_default', $referential_default);
             $stmt->bindValue('langage', $langage);
           } else {
             //On sélectionne les profils actifs
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, ' ', $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, ' ', $sql));
             $stmt->bindValue('referential_default', $referential_default);
           }
           $liste = $stmt->executeQuery()->fetchAllAssociative();
@@ -154,7 +154,7 @@ class ProfilesRepository extends ServiceEntityRepository
 
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
               $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
@@ -179,7 +179,7 @@ class ProfilesRepository extends ServiceEntityRepository
             FROM ma_moulinette.profiles
             WHERE referential_default = true";
     try {
-      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
           $labels = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
@@ -203,7 +203,7 @@ class ProfilesRepository extends ServiceEntityRepository
               FROM ma_moulinette.profiles
               WHERE referential_default = true";
       try {
-      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             $dataSets = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
@@ -232,7 +232,7 @@ class ProfilesRepository extends ServiceEntityRepository
             $this->getEntityManager()->getConnection()->beginTransaction();
       foreach ($map['profiles'] as $profil) {
                 $nombre = $nombre + 1;
-        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
                     $stmt->bindValue(':key', $profil['key']);
                     $stmt->bindValue(':name', $profil['name']);
                     $stmt->bindValue(':language_name', $profil['languageName']);

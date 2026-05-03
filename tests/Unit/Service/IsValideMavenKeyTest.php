@@ -48,14 +48,14 @@ class IsValideMavenKeyTest extends TestCase
 
         $repository = $this->createMock(InformationProjetRepository::class);
         $repository->method('selectInformationProjetIsValide')->with(['maven_key' => $mavenKey])
-            ->willReturn(['code' => 404, 'erreur' => static::$notFound]);
+            ->willReturn(['code' => 404, 'erreur' => self::$notFound]);
 
         $this->entityManager->method('getRepository')->with(InformationProjet::class)
             ->willReturn($repository);
 
         $result = $this->service->isValideInformation($mavenKey);
 
-        $this->assertEquals(['code' => 404, 'request' => static::$notFound], $result);
+        $this->assertEquals(['code' => 404, 'request' => self::$notFound], $result);
     }
 
     public function testIsValideHistoriqueSuccess(): void
@@ -80,13 +80,13 @@ class IsValideMavenKeyTest extends TestCase
 
         $repository = $this->createMock(HistoriqueRepository::class);
         $repository->method('selectHistoriqueIsValide')->with(['maven_key' => $mavenKey])
-            ->willReturn(['code' => 404, 'erreur' => static::$notFound]);
+            ->willReturn(['code' => 404, 'erreur' => self::$notFound]);
 
         $this->entityManager->method('getRepository')->with(Historique::class)
             ->willReturn($repository);
 
         $result = $this->service->isValideHistorique($mavenKey);
 
-        $this->assertEquals(['code' => 404, 'request' => static::$notFound], $result);
+        $this->assertEquals(['code' => 404, 'request' => self::$notFound], $result);
     }
 }

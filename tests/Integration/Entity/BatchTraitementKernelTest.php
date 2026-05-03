@@ -55,7 +55,7 @@ class BatchTraitementKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $batchTraitementRepository = $entityManager->getRepository(BatchTraitement::class);
-        $response = $batchTraitementRepository->findOneBy(['modeCollecte' => static::$modeCollecte]);
+        $response = $batchTraitementRepository->findOneBy(['modeCollecte' => self::$modeCollecte]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée.');
         $this->assertCount(1, [$response], 'MODE_COLLECTE: Aucune réponse trouvée');
@@ -68,7 +68,7 @@ class BatchTraitementKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $batchTraitementRepository = $entityManager->getRepository(BatchTraitement::class);
-        $response = $batchTraitementRepository->findBy(['modeCollecte' => static::$modeCollecte]);
+        $response = $batchTraitementRepository->findBy(['modeCollecte' => self::$modeCollecte]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(3, $response, 'MODE_COLLECTE: Aucune réponse trouvée');
@@ -81,7 +81,7 @@ class BatchTraitementKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $batchTraitementRepository = $entityManager->getRepository(BatchTraitement::class);
-        $response = $batchTraitementRepository->findBy(['success' => static::$success]);
+        $response = $batchTraitementRepository->findBy(['success' => self::$success]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée.');
         $this->assertCount(5, $response, 'SUCCESS: Aucune réponse trouvée');

@@ -48,27 +48,27 @@ class HotspotDetailsCaseTest extends TestCase
     private function getEntity(): HotspotDetails
     {
         return (new hotspotDetails())
-            ->setMavenKey(static::$mavenKey)
-            ->setVersion(static::$version)
-            ->setDateVersion(new \DateTimeImmutable(static::$dateVersion))
-            ->setSecurityCategory(static::$securityCategory)
-            ->setRuleKey(static::$ruleKey)
-            ->setRuleName(static::$ruleName)
-            ->setSeverity(static::$severity)
-            ->setStatus(static::$status)
+            ->setMavenKey(self::$mavenKey)
+            ->setVersion(self::$version)
+            ->setDateVersion(new \DateTimeImmutable(self::$dateVersion))
+            ->setSecurityCategory(self::$securityCategory)
+            ->setRuleKey(self::$ruleKey)
+            ->setRuleName(self::$ruleName)
+            ->setSeverity(self::$severity)
+            ->setStatus(self::$status)
             ->setResolution($this->resolution)
-            ->setNiveau(static::$niveau)
-            ->setFrontend(static::$frontend)
-            ->setBackend(static::$backend)
-            ->setAutre(static::$autre)
-            ->setFileName(static::$fileName)
-            ->setFilePath(static::$filePath)
-            ->setLine(static::$line)
-            ->setMessage(static::$message)
-            ->setHotspotKey(static::$key)
-            ->setModeCollecte(static::$modeCollecte)
-            ->setUtilisateurCollecte(static::$utilisateurCollecte)
-            ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+            ->setNiveau(self::$niveau)
+            ->setFrontend(self::$frontend)
+            ->setBackend(self::$backend)
+            ->setAutre(self::$autre)
+            ->setFileName(self::$fileName)
+            ->setFilePath(self::$filePath)
+            ->setLine(self::$line)
+            ->setMessage(self::$message)
+            ->setHotspotKey(self::$key)
+            ->setModeCollecte(self::$modeCollecte)
+            ->setUtilisateurCollecte(self::$utilisateurCollecte)
+            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -85,51 +85,51 @@ class HotspotDetailsCaseTest extends TestCase
 
     public function testSettingAndGettingMavenKey(): void
     {
-        $this->hotspotDetails->setMavenKey(static::$mavenKey);
-        $this->assertEquals(static::$mavenKey, $this->hotspotDetails->getMavenKey());
+        $this->hotspotDetails->setMavenKey(self::$mavenKey);
+        $this->assertEquals(self::$mavenKey, $this->hotspotDetails->getMavenKey());
     }
 
     public function testSettingAndGettingVersion(): void
     {
-        $this->hotspotDetails->setVersion(static::$version);
-        $this->assertEquals(static::$version, $this->hotspotDetails->getVersion());
+        $this->hotspotDetails->setVersion(self::$version);
+        $this->assertEquals(self::$version, $this->hotspotDetails->getVersion());
     }
 
     public function testSettingAndGettingDateVersion(): void
     {
-        $newDate = new \DateTimeImmutable(static::$dateVersion);
+        $newDate = new \DateTimeImmutable(self::$dateVersion);
         $this->hotspotDetails->setDateVersion($newDate);
         $this->assertEquals($newDate, $this->hotspotDetails->getDateVersion());
     }
 
     public function testSettingAndGettingSecurityCategory(): void
     {
-        $this->hotspotDetails->setSecurityCategory(static::$securityCategory);
-        $this->assertEquals(static::$securityCategory, $this->hotspotDetails->getSecurityCategory());
+        $this->hotspotDetails->setSecurityCategory(self::$securityCategory);
+        $this->assertEquals(self::$securityCategory, $this->hotspotDetails->getSecurityCategory());
     }
 
     public function testSettingAndGettingRuleKey(): void
     {
-        $this->hotspotDetails->setRuleKey(static::$ruleKey);
-        $this->assertEquals(static::$ruleKey, $this->hotspotDetails->getRuleKey());
+        $this->hotspotDetails->setRuleKey(self::$ruleKey);
+        $this->assertEquals(self::$ruleKey, $this->hotspotDetails->getRuleKey());
     }
 
     public function testSettingAndGettingRuleName(): void
     {
-        $this->hotspotDetails->setRuleName(static::$ruleName);
-        $this->assertEquals(static::$ruleName, $this->hotspotDetails->getRuleName());
+        $this->hotspotDetails->setRuleName(self::$ruleName);
+        $this->assertEquals(self::$ruleName, $this->hotspotDetails->getRuleName());
     }
 
     public function testSettingAndGettingSeverity(): void
     {
-        $this->hotspotDetails->setSeverity(static::$severity);
-        $this->assertEquals(static::$severity, $this->hotspotDetails->getSeverity());
+        $this->hotspotDetails->setSeverity(self::$severity);
+        $this->assertEquals(self::$severity, $this->hotspotDetails->getSeverity());
     }
 
     public function testSettingAndGettingStatus(): void
     {
-        $this->hotspotDetails->setStatus(static::$status);
-        $this->assertEquals(static::$status, $this->hotspotDetails->getStatus());
+        $this->hotspotDetails->setStatus(self::$status);
+        $this->assertEquals(self::$status, $this->hotspotDetails->getStatus());
     }
 
     public function testSettingAndGettingResolution(): void
@@ -140,72 +140,72 @@ class HotspotDetailsCaseTest extends TestCase
 
     public function testSettingAndGettingNiveau(): void
     {
-        $this->hotspotDetails->setNiveau(static::$niveau);
-        $this->assertEquals(static::$niveau, $this->hotspotDetails->getNiveau());
+        $this->hotspotDetails->setNiveau(self::$niveau);
+        $this->assertEquals(self::$niveau, $this->hotspotDetails->getNiveau());
     }
 
     public function testSettingAndGettingFrontend(): void
     {
-        $this->hotspotDetails->setFrontend(static::$frontend);
-        $this->assertEquals(static::$frontend, $this->hotspotDetails->getFrontend());
+        $this->hotspotDetails->setFrontend(self::$frontend);
+        $this->assertEquals(self::$frontend, $this->hotspotDetails->getFrontend());
     }
 
     public function testSettingAndGettingBackend(): void
     {
-        $this->hotspotDetails->setBackend(static::$backend);
-        $this->assertEquals(static::$backend, $this->hotspotDetails->getBackend());
+        $this->hotspotDetails->setBackend(self::$backend);
+        $this->assertEquals(self::$backend, $this->hotspotDetails->getBackend());
     }
 
     public function testSettingAndGettingAutre(): void
     {
-        $this->hotspotDetails->setAutre(static::$autre);
-        $this->assertEquals(static::$autre, $this->hotspotDetails->getAutre());
+        $this->hotspotDetails->setAutre(self::$autre);
+        $this->assertEquals(self::$autre, $this->hotspotDetails->getAutre());
     }
 
     public function testSettingAndGettingFileName(): void
     {
-        $this->hotspotDetails->setFileName(static::$fileName);
-        $this->assertEquals(static::$fileName, $this->hotspotDetails->getFileName());
+        $this->hotspotDetails->setFileName(self::$fileName);
+        $this->assertEquals(self::$fileName, $this->hotspotDetails->getFileName());
     }
 
     public function testSettingAndGettingFilePath(): void
     {
-        $this->hotspotDetails->setFilePath(static::$filePath);
-        $this->assertEquals(static::$filePath, $this->hotspotDetails->getFilePath());
+        $this->hotspotDetails->setFilePath(self::$filePath);
+        $this->assertEquals(self::$filePath, $this->hotspotDetails->getFilePath());
     }
 
     public function testSettingAndGettingLine(): void
     {
-        $this->hotspotDetails->setLine(static::$line);
-        $this->assertEquals(static::$line, $this->hotspotDetails->getLine());
+        $this->hotspotDetails->setLine(self::$line);
+        $this->assertEquals(self::$line, $this->hotspotDetails->getLine());
     }
 
     public function testSettingAndGettingMessage(): void
     {
-        $this->hotspotDetails->setMessage(static::$message);
-        $this->assertEquals(static::$message, $this->hotspotDetails->getMessage());
+        $this->hotspotDetails->setMessage(self::$message);
+        $this->assertEquals(self::$message, $this->hotspotDetails->getMessage());
     }
 
     public function testSettingAndGettingKey(): void
     {
-        $this->hotspotDetails->setHotspotKey(static::$key);
-        $this->assertEquals(static::$key, $this->hotspotDetails->getHotspotKey());
+        $this->hotspotDetails->setHotspotKey(self::$key);
+        $this->assertEquals(self::$key, $this->hotspotDetails->getHotspotKey());
     }
 
     public function testSettingAndGettingModeCollecte(): void
     {
-        $this->hotspotDetails->setModeCollecte(static::$modeCollecte);
-        $this->assertEquals(static::$modeCollecte, $this->hotspotDetails->getModeCollecte());
+        $this->hotspotDetails->setModeCollecte(self::$modeCollecte);
+        $this->assertEquals(self::$modeCollecte, $this->hotspotDetails->getModeCollecte());
     }
     public function testSettingAndGettingUtilisateurCollecte(): void
     {
-        $this->hotspotDetails->setUtilisateurCollecte(static::$utilisateurCollecte);
-        $this->assertEquals(static::$utilisateurCollecte, $this->hotspotDetails->getUtilisateurCollecte());
+        $this->hotspotDetails->setUtilisateurCollecte(self::$utilisateurCollecte);
+        $this->assertEquals(self::$utilisateurCollecte, $this->hotspotDetails->getUtilisateurCollecte());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(static::$dateEnregistrement);
+        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
         $this->hotspotDetails->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->hotspotDetails->getDateEnregistrement());
     }

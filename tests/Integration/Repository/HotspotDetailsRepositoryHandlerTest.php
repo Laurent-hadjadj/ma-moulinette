@@ -75,7 +75,7 @@ class HotspotDetailsRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
         $result = $repo->selectHotspotDetailsByStatus($map);
 
         // 9) Vérification
@@ -116,7 +116,7 @@ class HotspotDetailsRepositoryHandlerTest extends TestCase
                         ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
-        $expected = ['code' => 500, 'erreur' => static::$gestionTest];
+        $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
                 ->with($fakeException)
                 ->willReturn($expected);
@@ -125,7 +125,7 @@ class HotspotDetailsRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Prépare un jeu de données minimal pour le $map
-        $map = [['maven_key' => static::$mavenKey,
+        $map = [['maven_key' => self::$mavenKey,
         'version' => '2.0.0-RELEASE', 'date_version' => new \DateTimeImmutable('2024-08-30 10:12:17+02'),
         'security_category' => 'dos', 'rule_key' => 'typescript:S5852',
         'rule_name' => 'Using slow regular expressions is security-sensitive',
@@ -184,7 +184,7 @@ class HotspotDetailsRepositoryHandlerTest extends TestCase
                         ->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
-        $expected = ['code' => 500, 'erreur' => static::$gestionTest];
+        $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
                 ->with($fakeException)
                 ->willReturn($expected);
@@ -193,7 +193,7 @@ class HotspotDetailsRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Prépare un jeu de données minimal pour le $map
-        $map = [ 'maven_key' => static::$mavenKey];
+        $map = [ 'maven_key' => self::$mavenKey];
 
         // 9) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
         $result = $repo->deleteHotspotDetailsMavenKey($map);

@@ -31,11 +31,11 @@ class RepartitionTempValidatorTest extends KernelTestCase
   private function getEntity(): RepartitionTemp
   {
       return (new RepartitionTemp())
-      ->setMavenKey(static::$mavenKey)
-      ->setSetup(static::$setup)
-      ->setType(static::$type)
-      ->setComponent(static::$component)
-      ->setSeverity(static::$severity);
+      ->setMavenKey(self::$mavenKey)
+      ->setSetup(self::$setup)
+      ->setType(self::$type)
+      ->setComponent(self::$component)
+      ->setSeverity(self::$severity);
   }
 
   public function assertHasErrors(RepartitionTemp $entity, int $number = 0): void

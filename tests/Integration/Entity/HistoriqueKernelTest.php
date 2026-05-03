@@ -47,7 +47,7 @@ class HistoriqueKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $historiqueRepository = $entityManager->getRepository(Historique::class);
-        $response = $historiqueRepository->findOneBy(['mavenKey' => static::$mavenKey]);
+        $response = $historiqueRepository->findOneBy(['mavenKey' => self::$mavenKey]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'Maven_key: Aucune réponse trouvée');
@@ -60,7 +60,7 @@ class HistoriqueKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $historiqueRepository = $entityManager->getRepository(Historique::class);
-        $response = $historiqueRepository->findBy(['mavenKey' => static::$mavenKey]);
+        $response = $historiqueRepository->findBy(['mavenKey' => self::$mavenKey]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(2, $response, 'Maven_Key: Aucune réponse trouvée');

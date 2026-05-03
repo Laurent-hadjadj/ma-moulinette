@@ -71,10 +71,10 @@ class ClientTest extends TestCase
             ['sonar.url', 'https://sonarqube.ma-petite-entreprise.fr'],
             ['proxy', ''],
             ['ciphers', 'DEFAULT:!DH'],
-            ['sonar.token', static::$sonarToken],
+            ['sonar.token', self::$sonarToken],
             ['sonar.user', 'laurent.hadjadj'],
             ['sonar.password', 'change-me'],
-            ['sonar.activity.token', static::$sonarToken],
+            ['sonar.activity.token', self::$sonarToken],
             ['sonar.activity.user', 'laurent.hadjadj'],
             ['sonar.activity.password', 'change-me'],
             ['verify.host', 'true'],
@@ -101,7 +101,7 @@ class ClientTest extends TestCase
 
         $this->logger->expects($this->once())
             ->method('error')
-            ->with('[handleTimeoutException] ❌ ' . static::$erreur504, [
+            ->with('[handleTimeoutException] ❌ ' . self::$erreur504, [
                 'code' => 504,
                 'erreur' => 'Timeout message',
             ]);
@@ -109,7 +109,7 @@ class ClientTest extends TestCase
         $result = $this->invokePrivateMethod('handleTimeoutException', [$exception]);
 
         $this->assertSame(504, $result['code']);
-        $this->assertSame(static::$erreur504, $result['erreur']);
+        $this->assertSame(self::$erreur504, $result['erreur']);
     }
 
     public function testHandleTransportExceptionFailedToOpenStream(): void
@@ -199,7 +199,7 @@ class ClientTest extends TestCase
         $result = $this->invokePrivateMethod('handleClientException', [$exception]);
 
         $this->assertSame($code, $result['code']);
-        $this->assertSame(static::${$expectedKey}, $result['erreur']);
+        $this->assertSame(self::${$expectedKey}, $result['erreur']);
     }
 
     public static function clientExceptionCodesProvider(): iterable
@@ -235,7 +235,7 @@ class ClientTest extends TestCase
         $result = $this->invokePrivateMethod('handleServerException', [$exception]);
 
         $this->assertSame($code, $result['code']);
-        $this->assertSame(static::${$expectedKey}, $result['erreur']);
+        $this->assertSame(self::${$expectedKey}, $result['erreur']);
     }
 
     public static function serverExceptionCodesProvider(): iterable
@@ -425,7 +425,7 @@ class ClientTest extends TestCase
     {
         $params = $this->createMock(ParameterBagInterface::class);
         $params->method('get')->willReturnMap([
-            ['sonar.token', static::$sonarToken],
+            ['sonar.token', self::$sonarToken],
             ['sonar.user', 'laurent'],
             ['proxy', 'http://proxy.example.com:8080'],
             ['ciphers', 'DEFAULT'],
@@ -506,7 +506,7 @@ class ClientTest extends TestCase
     {
         $params = $this->createMock(ParameterBagInterface::class);
         $params->method('get')->willReturnMap([
-            ['sonar.activity.token', static::$sonarToken],
+            ['sonar.activity.token', self::$sonarToken],
             ['sonar.activity.user', 'laurent'],
             ['proxy', 'http://proxy:8080'],
             ['ciphers', 'DEFAULT'],

@@ -54,7 +54,7 @@ class MaMoulinetteKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $maMoulinetteRepository = $entityManager->getRepository(MaMoulinette::class);
-        $response = $maMoulinetteRepository->findOneBy(['version' => static::$version]);
+        $response = $maMoulinetteRepository->findOneBy(['version' => self::$version]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'VERSION: Aucune réponse trouvée');

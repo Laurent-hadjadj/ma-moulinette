@@ -36,15 +36,15 @@ class ActivityHistoriqueValidatorTest extends KernelTestCase
   private function getEntity(): ActivityHistorique
   {
       return (new activityHistorique())
-      ->setYear(static::$year)
-      ->setDay(static::$day)
-      ->setAnalyse(static::$analyse)
-      ->setAnalyseAverage(static::$analyseAverage)
-      ->setSuccess(static::$success)
-      ->setFailed(static::$failed)
-      ->setSuccessRate(static::$successRate)
-      ->setMaxTime(static::$maxTime)
-      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+      ->setYear(self::$year)
+      ->setDay(self::$day)
+      ->setAnalyse(self::$analyse)
+      ->setAnalyseAverage(self::$analyseAverage)
+      ->setSuccess(self::$success)
+      ->setFailed(self::$failed)
+      ->setSuccessRate(self::$successRate)
+      ->setMaxTime(self::$maxTime)
+      ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
 }
 
   public function assertHasErrors(ActivityHistorique $entity, int $number = 0): void

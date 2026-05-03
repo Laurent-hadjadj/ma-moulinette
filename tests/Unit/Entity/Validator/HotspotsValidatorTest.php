@@ -40,19 +40,19 @@ class HotspotsValidatorTest extends KernelTestCase
   private function getEntity(): Hotspots
   {
       return (new hotspots())
-      ->setMavenKey(static::$mavenKey)
-      ->setVersion(static::$version)
-      ->setDateVersion(new \DateTimeImmutable(static::$dateVersion))
-      ->setHotspotKey(static::$hotspotKey)
-      ->setSecurityCategory(static::$securityCategory)
-      ->setRuleKey(static::$ruleKey)
-      ->setProbability(static::$probability)
-      ->setStatus(static::$status)
-      ->setResolution(static::$resolution)
-      ->setNiveau(static::$niveau)
-      ->setModeCollecte(static::$modeCollecte)
-      ->setUtilisateurCollecte(static::$utilisateurCollecte)
-      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+      ->setMavenKey(self::$mavenKey)
+      ->setVersion(self::$version)
+      ->setDateVersion(new \DateTimeImmutable(self::$dateVersion))
+      ->setHotspotKey(self::$hotspotKey)
+      ->setSecurityCategory(self::$securityCategory)
+      ->setRuleKey(self::$ruleKey)
+      ->setProbability(self::$probability)
+      ->setStatus(self::$status)
+      ->setResolution(self::$resolution)
+      ->setNiveau(self::$niveau)
+      ->setModeCollecte(self::$modeCollecte)
+      ->setUtilisateurCollecte(self::$utilisateurCollecte)
+      ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
   }
 
   public function assertHasErrors(Hotspots $entity, int $number = 0): void

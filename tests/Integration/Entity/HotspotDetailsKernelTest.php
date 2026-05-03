@@ -54,7 +54,7 @@ class HotspotDetailsKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $hotspotDetailsRepository = $entityManager->getRepository(HotspotDetails::class);
-        $response = $hotspotDetailsRepository->findOneBy(['mavenKey' => static::$mavenKey]);
+        $response = $hotspotDetailsRepository->findOneBy(['mavenKey' => self::$mavenKey]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'MAVENKEY: Aucune réponse trouvée');
@@ -67,7 +67,7 @@ class HotspotDetailsKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $hotspotDetailsRepository = $entityManager->getRepository(HotspotDetails::class);
-        $response = $hotspotDetailsRepository->findBy(['mavenKey' => static::$mavenKey]);
+        $response = $hotspotDetailsRepository->findBy(['mavenKey' => self::$mavenKey]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(3, $response, 'MAVENKEY: Aucune réponse trouvée');

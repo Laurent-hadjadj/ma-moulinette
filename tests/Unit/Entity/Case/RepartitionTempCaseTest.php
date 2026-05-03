@@ -32,11 +32,11 @@ class RepartitionTempCaseTest extends TestCase
     private function getEntity(): RepartitionTemp
     {
         return (new RepartitionTemp())
-        ->setComponent(static::$component)
-        ->setType(static::$type)
-        ->setSeverity(static::$severity)
-        ->setSetup(static::$setup)
-        ->setMavenKey(static::$mavenKey);
+        ->setComponent(self::$component)
+        ->setType(self::$type)
+        ->setSeverity(self::$severity)
+        ->setSetup(self::$setup)
+        ->setMavenKey(self::$mavenKey);
     }
 
     protected function setUp(): void
@@ -53,31 +53,31 @@ class RepartitionTempCaseTest extends TestCase
 
     public function testSettingAndGettingMavenKey(): void
     {
-        $this->repartitionTemp->setMavenKey(static::$mavenKey);
-        $this->assertEquals(static::$mavenKey, $this->repartitionTemp->getMavenKey());
+        $this->repartitionTemp->setMavenKey(self::$mavenKey);
+        $this->assertEquals(self::$mavenKey, $this->repartitionTemp->getMavenKey());
     }
 
     public function testSettingAndGettingComponent(): void
     {
-        $this->repartitionTemp->setComponent(static::$component);
-        $this->assertEquals(static::$component, $this->repartitionTemp->getComponent());
+        $this->repartitionTemp->setComponent(self::$component);
+        $this->assertEquals(self::$component, $this->repartitionTemp->getComponent());
     }
 
     public function testSettingAndGettingType(): void
     {
-        $this->repartitionTemp->setType(static::$type);
-        $this->assertEquals(static::$type, $this->repartitionTemp->getType());
+        $this->repartitionTemp->setType(self::$type);
+        $this->assertEquals(self::$type, $this->repartitionTemp->getType());
     }
 
     public function testSettingAndGettingSeverity(): void
     {
-        $this->repartitionTemp->setSeverity(static::$severity);
-        $this->assertEquals(static::$severity, $this->repartitionTemp->getSeverity());
+        $this->repartitionTemp->setSeverity(self::$severity);
+        $this->assertEquals(self::$severity, $this->repartitionTemp->getSeverity());
     }
 
     public function testSettingAndGettingSetup(): void
     {
-        $this->repartitionTemp->setSetup(static::$setup);
-        $this->assertEquals(static::$setup, $this->repartitionTemp->getSetup());
+        $this->repartitionTemp->setSetup(self::$setup);
+        $this->assertEquals(self::$setup, $this->repartitionTemp->getSetup());
     }
 }

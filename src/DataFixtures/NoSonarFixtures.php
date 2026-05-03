@@ -26,13 +26,13 @@ class NoSonarFixtures extends Fixture
 
       foreach($modeCollecte as $mode){
         $nosonar=(new NoSonar())
-            ->setMavenKey(static::$mavenKey)
-            ->setRule(static::$rule)
-            ->setComponent(static::$component)
-            ->setLine(static::$line)
+            ->setMavenKey(self::$mavenKey)
+            ->setRule(self::$rule)
+            ->setComponent(self::$component)
+            ->setLine(self::$line)
             ->setModeCollecte($mode)
-            ->setUtilisateurCollecte(static::$utilisateurCollecte)
-            ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+            ->setUtilisateurCollecte(self::$utilisateurCollecte)
+            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
         $manager->persist($nosonar);
       }
       /** Enregistrement des données dans la base de tests */

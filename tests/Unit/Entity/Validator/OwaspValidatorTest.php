@@ -41,24 +41,24 @@ class OwaspValidatorTest extends KernelTestCase
   private function getEntity(): Owasp
   {
     $owasp = new Owasp();
-    $owasp->setMavenKey(static::$mavenKey);
-    $owasp->setReferentialOwasp(static::$referentialOwasp);
-    $owasp->setVersion(static::$version);
-    $owasp->setDateVersion(new \DateTimeImmutable(static::$dateVersion));
-    $owasp->setEffortTotal(static::$effortTotal);
+    $owasp->setMavenKey(self::$mavenKey);
+    $owasp->setReferentialOwasp(self::$referentialOwasp);
+    $owasp->setVersion(self::$version);
+    $owasp->setDateVersion(new \DateTimeImmutable(self::$dateVersion));
+    $owasp->setEffortTotal(self::$effortTotal);
 
     for ($i = 0; $i < 10; $i++) {
-        $owasp->{"setA" . ($i + 1)}(static::$a[$i]);
-        $owasp->{"setA" . ($i + 1) . "Blocker"}(static::$aBlocker[$i]);
-        $owasp->{"setA" . ($i + 1) . "Critical"}(static::$aCritical[$i]);
-        $owasp->{"setA" . ($i + 1) . "Major"}(static::$aMajor[$i]);
-        $owasp->{"setA" . ($i + 1) . "Info"}(static::$aInfo[$i]);
-        $owasp->{"setA" . ($i + 1) . "Minor"}(static::$aMinor[$i]);
+        $owasp->{"setA" . ($i + 1)}(self::$a[$i]);
+        $owasp->{"setA" . ($i + 1) . "Blocker"}(self::$aBlocker[$i]);
+        $owasp->{"setA" . ($i + 1) . "Critical"}(self::$aCritical[$i]);
+        $owasp->{"setA" . ($i + 1) . "Major"}(self::$aMajor[$i]);
+        $owasp->{"setA" . ($i + 1) . "Info"}(self::$aInfo[$i]);
+        $owasp->{"setA" . ($i + 1) . "Minor"}(self::$aMinor[$i]);
     }
 
-    $owasp->setModeCollecte(static::$modeCollecte);
-    $owasp->setUtilisateurCollecte(static::$utilisateurCollecte);
-    $owasp->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+    $owasp->setModeCollecte(self::$modeCollecte);
+    $owasp->setUtilisateurCollecte(self::$utilisateurCollecte);
+    $owasp->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     return $owasp;
   }
 

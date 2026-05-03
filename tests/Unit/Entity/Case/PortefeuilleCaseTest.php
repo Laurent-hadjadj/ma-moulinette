@@ -32,11 +32,11 @@ class PortefeuilleCaseTest extends TestCase
     private function getEntity(): Portefeuille
     {
         return (new portefeuille())
-        ->setPortefeuille(static::$portefeuilles)
-        ->setGroupeFonctionnel(static::$groupeFonctionnel)
-        ->setListe(static::$liste)
-        ->setDateModification(new \DateTime(static::$dateModification))
-        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+        ->setPortefeuille(self::$portefeuilles)
+        ->setGroupeFonctionnel(self::$groupeFonctionnel)
+        ->setListe(self::$liste)
+        ->setDateModification(new \DateTime(self::$dateModification))
+        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -53,32 +53,32 @@ class PortefeuilleCaseTest extends TestCase
 
     public function testSettingAndGettingPortefeuille(): void
     {
-        $this->portefeuille->setPortefeuille(static::$portefeuilles);
-        $this->assertEquals(static::$portefeuilles, $this->portefeuille->getPortefeuille());
+        $this->portefeuille->setPortefeuille(self::$portefeuilles);
+        $this->assertEquals(self::$portefeuilles, $this->portefeuille->getPortefeuille());
     }
 
     public function testSettingAndGettingGroupeFonctionnel(): void
     {
-        $this->portefeuille->setGroupeFonctionnel(static::$groupeFonctionnel);
-        $this->assertEquals(static::$groupeFonctionnel, $this->portefeuille->getGroupeFonctionnel());
+        $this->portefeuille->setGroupeFonctionnel(self::$groupeFonctionnel);
+        $this->assertEquals(self::$groupeFonctionnel, $this->portefeuille->getGroupeFonctionnel());
     }
 
     public function testSettingAndGettingListe(): void
     {
-        $this->portefeuille->setListe(static::$liste);
-        $this->assertEquals(static::$liste, $this->portefeuille->getListe());
+        $this->portefeuille->setListe(self::$liste);
+        $this->assertEquals(self::$liste, $this->portefeuille->getListe());
     }
 
     public function testSettingAndGettingDateModification(): void
     {
-        $newDate=new \DateTime(static::$dateModification);
+        $newDate=new \DateTime(self::$dateModification);
         $this->portefeuille->setDateModification($newDate);
         $this->assertEquals($newDate, $this->portefeuille->getDateModification());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(static::$dateEnregistrement);
+        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
         $this->portefeuille->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->portefeuille->getDateEnregistrement());
     }

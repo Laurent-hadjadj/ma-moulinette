@@ -35,13 +35,13 @@ class NoSonarValidatorTest extends KernelTestCase
   private function getEntity(): NoSonar
   {
       return (new nosonar())
-      ->setMavenKey(static::$mavenKey)
-      ->setRule(static::$rule)
-      ->setComponent(static::$component)
-      ->setLine(static::$line)
-      ->setModeCollecte(static::$modeCollecte)
-      ->setUtilisateurCollecte(static::$utilisateurCollecte)
-      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+      ->setMavenKey(self::$mavenKey)
+      ->setRule(self::$rule)
+      ->setComponent(self::$component)
+      ->setLine(self::$line)
+      ->setModeCollecte(self::$modeCollecte)
+      ->setUtilisateurCollecte(self::$utilisateurCollecte)
+      ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
   }
 
   public function assertHasErrors(NoSonar $entity, int $number = 0): void

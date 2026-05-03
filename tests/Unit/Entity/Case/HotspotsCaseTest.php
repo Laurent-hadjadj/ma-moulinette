@@ -40,19 +40,19 @@ class HotspotsCaseTest extends TestCase
     private function getEntity(): Hotspots
     {
         return (new hotspots())
-            ->setMavenKey(static::$mavenKey)
-            ->setVersion(static::$version)
-            ->setDateVersion(new \DateTimeImmutable(static::$dateVersion))
-            ->setHotspotKey(static::$hotspotKey)
-            ->setSecurityCategory(static::$securityCategory)
-            ->setRuleKey(static::$ruleKey)
-            ->setProbability(static::$probability)
-            ->setStatus(static::$status)
-            ->setResolution(static::$resolution)
-            ->setNiveau(static::$niveau)
-            ->setModeCollecte(static::$modeCollecte)
-            ->setUtilisateurCollecte(static::$utilisateurCollecte)
-            ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+            ->setMavenKey(self::$mavenKey)
+            ->setVersion(self::$version)
+            ->setDateVersion(new \DateTimeImmutable(self::$dateVersion))
+            ->setHotspotKey(self::$hotspotKey)
+            ->setSecurityCategory(self::$securityCategory)
+            ->setRuleKey(self::$ruleKey)
+            ->setProbability(self::$probability)
+            ->setStatus(self::$status)
+            ->setResolution(self::$resolution)
+            ->setNiveau(self::$niveau)
+            ->setModeCollecte(self::$modeCollecte)
+            ->setUtilisateurCollecte(self::$utilisateurCollecte)
+            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -69,79 +69,79 @@ class HotspotsCaseTest extends TestCase
 
     public function testSettingAndGettingMavenKey(): void
     {
-        $this->hotspots->setMavenKey(static::$mavenKey);
-        $this->assertEquals(static::$mavenKey, $this->hotspots->getMavenKey());
+        $this->hotspots->setMavenKey(self::$mavenKey);
+        $this->assertEquals(self::$mavenKey, $this->hotspots->getMavenKey());
     }
 
     public function testSettingAndGettingVersion(): void
     {
-        $this->hotspots->setVersion(static::$version);
-        $this->assertEquals(static::$version, $this->hotspots->getVersion());
+        $this->hotspots->setVersion(self::$version);
+        $this->assertEquals(self::$version, $this->hotspots->getVersion());
     }
 
     public function testSettingAndGettingDateVersion(): void
     {
-        $newDate = new \DateTimeImmutable(static::$dateVersion);
+        $newDate = new \DateTimeImmutable(self::$dateVersion);
         $this->hotspots->setDateVersion($newDate);
         $this->assertEquals($newDate, $this->hotspots->getDateVersion());
     }
 
     public function testSettingAndGettingHotspotKey(): void
     {
-        $this->hotspots->setHotspotKey(static::$hotspotKey);
-        $this->assertEquals(static::$hotspotKey, $this->hotspots->getHotspotKey());
+        $this->hotspots->setHotspotKey(self::$hotspotKey);
+        $this->assertEquals(self::$hotspotKey, $this->hotspots->getHotspotKey());
     }
 
     public function testSettingAndGettingSecurityCategory(): void
     {
-        $this->hotspots->setSecurityCategory(static::$securityCategory);
-        $this->assertEquals(static::$securityCategory, $this->hotspots->getSecurityCategory());
+        $this->hotspots->setSecurityCategory(self::$securityCategory);
+        $this->assertEquals(self::$securityCategory, $this->hotspots->getSecurityCategory());
     }
 
     public function testSettingAndGettingRuleKey(): void
     {
-        $this->hotspots->setRuleKey(static::$ruleKey);
-        $this->assertEquals(static::$ruleKey, $this->hotspots->getRuleKey());
+        $this->hotspots->setRuleKey(self::$ruleKey);
+        $this->assertEquals(self::$ruleKey, $this->hotspots->getRuleKey());
     }
 
     public function testSettingAndGettingProbability(): void
     {
-        $this->hotspots->setProbability(static::$probability);
-        $this->assertEquals(static::$probability, $this->hotspots->getProbability());
+        $this->hotspots->setProbability(self::$probability);
+        $this->assertEquals(self::$probability, $this->hotspots->getProbability());
     }
 
     public function testSettingAndGettingStatus(): void
     {
-        $this->hotspots->setStatus(static::$status);
-        $this->assertEquals(static::$status, $this->hotspots->getStatus());
+        $this->hotspots->setStatus(self::$status);
+        $this->assertEquals(self::$status, $this->hotspots->getStatus());
     }
 
     public function testSettingAndGettingResolution(): void
     {
-        $this->hotspots->setResolution(static::$resolution);
-        $this->assertEquals(static::$resolution, $this->hotspots->getResolution());
+        $this->hotspots->setResolution(self::$resolution);
+        $this->assertEquals(self::$resolution, $this->hotspots->getResolution());
     }
 
     public function testSettingAndGettingNiveau(): void
     {
-        $this->hotspots->setNiveau(static::$niveau);
-        $this->assertEquals(static::$niveau, $this->hotspots->getNiveau());
+        $this->hotspots->setNiveau(self::$niveau);
+        $this->assertEquals(self::$niveau, $this->hotspots->getNiveau());
     }
 
     public function testSettingAndGettingModeCollecte(): void
     {
-        $this->hotspots->setModeCollecte(static::$modeCollecte);
-        $this->assertEquals(static::$modeCollecte, $this->hotspots->getModeCollecte());
+        $this->hotspots->setModeCollecte(self::$modeCollecte);
+        $this->assertEquals(self::$modeCollecte, $this->hotspots->getModeCollecte());
     }
     public function testSettingAndGettingUtilisateurCollecte(): void
     {
-        $this->hotspots->setUtilisateurCollecte(static::$utilisateurCollecte);
-        $this->assertEquals(static::$utilisateurCollecte, $this->hotspots->getUtilisateurCollecte());
+        $this->hotspots->setUtilisateurCollecte(self::$utilisateurCollecte);
+        $this->assertEquals(self::$utilisateurCollecte, $this->hotspots->getUtilisateurCollecte());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(static::$dateEnregistrement);
+        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
         $this->hotspots->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->hotspots->getDateEnregistrement());
     }

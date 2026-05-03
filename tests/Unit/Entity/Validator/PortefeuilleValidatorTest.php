@@ -29,11 +29,11 @@ class PortefeuilleValidatorTest extends KernelTestCase
   private function getEntity(): Portefeuille
   {
       return (new portefeuille())
-      ->setPortefeuille(static::$portefeuille)
-      ->setGroupeFonctionnel(static::$groupeFonctionnel)
-      ->setListe(static::$liste)
-      ->setDateModification(new \DateTime(static::$dateModification))
-      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+      ->setPortefeuille(self::$portefeuille)
+      ->setGroupeFonctionnel(self::$groupeFonctionnel)
+      ->setListe(self::$liste)
+      ->setDateModification(new \DateTime(self::$dateModification))
+      ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
 }
 
   public function assertHasErrors(Portefeuille $entity, int $number = 0): void

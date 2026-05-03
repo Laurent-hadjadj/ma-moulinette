@@ -54,7 +54,7 @@ class PortefeuilleKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $groupeRepository = $entityManager->getRepository(Portefeuille::class);
-        $response = $groupeRepository->findOneBy(['portefeuille' => static::$titre]);
+        $response = $groupeRepository->findOneBy(['portefeuille' => self::$titre]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'PORTEFEUILLE: Aucune réponse trouvée');

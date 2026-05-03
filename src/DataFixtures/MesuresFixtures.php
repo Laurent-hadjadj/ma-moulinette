@@ -39,21 +39,21 @@ class MesuresFixtures extends Fixture
 
       foreach($modeCollecte as $mode){
         $mesures=(new Mesures())
-            ->setMavenKey(static::$mavenKey)
-            ->setProjectName(static::$projectName)
-            ->setLines(static::$lines)
-            ->setNcloc(static::$ncloc)
-            ->setFiles(static::$files)
-            ->setClasses(static::$classes)
-            ->setFunctions(static::$functions)
-            ->setCoverage(static::$coverage)
-            ->setDuplicatedLinesDensity(static::$duplicatedLinesDensity)
-            ->setSqaleDebtRatio(static::$sqaleDebtRatio)
-            ->setOpenIssues(static::$openIssues)
-            ->setTests(static::$tests)
+            ->setMavenKey(self::$mavenKey)
+            ->setProjectName(self::$projectName)
+            ->setLines(self::$lines)
+            ->setNcloc(self::$ncloc)
+            ->setFiles(self::$files)
+            ->setClasses(self::$classes)
+            ->setFunctions(self::$functions)
+            ->setCoverage(self::$coverage)
+            ->setDuplicatedLinesDensity(self::$duplicatedLinesDensity)
+            ->setSqaleDebtRatio(self::$sqaleDebtRatio)
+            ->setOpenIssues(self::$openIssues)
+            ->setTests(self::$tests)
             ->setModeCollecte($mode)
-            ->setUtilisateurCollecte(static::$utilisateurCollecte)
-            ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+            ->setUtilisateurCollecte(self::$utilisateurCollecte)
+            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
         $manager->persist($mesures);
       }
       /** Enregistrement des données dans la base de tests */

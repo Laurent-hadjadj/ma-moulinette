@@ -34,13 +34,13 @@ class TodoCaseTest extends TestCase
     private function getEntity(): Todo
     {
         return (new todo())
-        ->setMavenKey(static::$mavenKey)
-        ->setRule(static::$rule)
-        ->setComponent(static::$component)
-        ->setLine(static::$line)
-        ->setModeCollecte(static::$modeCollecte)
-        ->setUtilisateurCollecte(static::$utilisateurCollecte)
-        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+        ->setMavenKey(self::$mavenKey)
+        ->setRule(self::$rule)
+        ->setComponent(self::$component)
+        ->setLine(self::$line)
+        ->setModeCollecte(self::$modeCollecte)
+        ->setUtilisateurCollecte(self::$utilisateurCollecte)
+        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -57,42 +57,42 @@ class TodoCaseTest extends TestCase
 
     public function testSettingAndGettingMavenKey(): void
     {
-        $this->todo->setMavenKey(static::$mavenKey);
-        $this->assertEquals(static::$mavenKey, $this->todo->getMavenKey());
+        $this->todo->setMavenKey(self::$mavenKey);
+        $this->assertEquals(self::$mavenKey, $this->todo->getMavenKey());
     }
 
     public function testSettingAndGettingRule(): void
     {
-        $this->todo->setRule(static::$rule);
-        $this->assertEquals(static::$rule, $this->todo->getRule());
+        $this->todo->setRule(self::$rule);
+        $this->assertEquals(self::$rule, $this->todo->getRule());
     }
 
     public function testSettingAndGettingComponent(): void
     {
-        $this->todo->setComponent(static::$component);
-        $this->assertEquals(static::$component, $this->todo->getComponent());
+        $this->todo->setComponent(self::$component);
+        $this->assertEquals(self::$component, $this->todo->getComponent());
     }
 
     public function testSettingAndGettingLine(): void
     {
-        $this->todo->setLine(static::$line);
-        $this->assertEquals(static::$line, $this->todo->getLine());
+        $this->todo->setLine(self::$line);
+        $this->assertEquals(self::$line, $this->todo->getLine());
     }
 
     public function testSettingAndGettingModeCollecte(): void
     {
-        $this->todo->setModeCollecte(static::$modeCollecte);
-        $this->assertEquals(static::$modeCollecte, $this->todo->getModeCollecte());
+        $this->todo->setModeCollecte(self::$modeCollecte);
+        $this->assertEquals(self::$modeCollecte, $this->todo->getModeCollecte());
     }
     public function testSettingAndGettingUtilisateurCollecte(): void
     {
-        $this->todo->setUtilisateurCollecte(static::$utilisateurCollecte);
-        $this->assertEquals(static::$utilisateurCollecte, $this->todo->getUtilisateurCollecte());
+        $this->todo->setUtilisateurCollecte(self::$utilisateurCollecte);
+        $this->assertEquals(self::$utilisateurCollecte, $this->todo->getUtilisateurCollecte());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(static::$dateEnregistrement);
+        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
         $this->todo->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->todo->getDateEnregistrement());
     }

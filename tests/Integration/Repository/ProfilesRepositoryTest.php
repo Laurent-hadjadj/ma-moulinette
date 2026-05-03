@@ -62,13 +62,13 @@ class ProfilesRepositoryTest extends KernelTestCase
         $r4 = $profilesRepository->countProfiles('false', null);
 
         // Assert
-        $this->assertEquals(200, $r1['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r1['code'], self::$erreurCode200);
         $this->assertEmpty($r1['erreur'], $r1['erreur']);
-        $this->assertEquals(200, $r2['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r2['code'], self::$erreurCode200);
         $this->assertEmpty($r2['erreur'], $r2['erreur']);
-        $this->assertEquals(200, $r3['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r3['code'], self::$erreurCode200);
         $this->assertEmpty($r3['erreur'], $r3['erreur']);
-        $this->assertEquals(200, $r4['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r4['code'], self::$erreurCode200);
         $this->assertEmpty($r4['erreur'], $r4['erreur']);
     }
 
@@ -88,13 +88,13 @@ class ProfilesRepositoryTest extends KernelTestCase
         $r4 = $profilesRepository->selectProfiles('false', null);
 
         // Assert
-        $this->assertEquals(200, $r1['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r1['code'], self::$erreurCode200);
         $this->assertEmpty($r1['erreur'], $r1['erreur']);
-        $this->assertEquals(200, $r2['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r2['code'], self::$erreurCode200);
         $this->assertEmpty($r2['erreur'], $r2['erreur']);
-        $this->assertEquals(200, $r3['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r3['code'], self::$erreurCode200);
         $this->assertEmpty($r3['erreur'], $r3['erreur']);
-        $this->assertEquals(200, $r4['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r4['code'], self::$erreurCode200);
         $this->assertEmpty($r4['erreur'], $r4['erreur']);
     }
 
@@ -110,7 +110,7 @@ class ProfilesRepositoryTest extends KernelTestCase
         $r = $profilesRepository->deleteProfiles();
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -126,7 +126,7 @@ class ProfilesRepositoryTest extends KernelTestCase
         $r = $profilesRepository->selectProfilesLanguage();
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -142,7 +142,7 @@ class ProfilesRepositoryTest extends KernelTestCase
         $r = $profilesRepository->selectProfilesRuleCount();
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -160,7 +160,7 @@ class ProfilesRepositoryTest extends KernelTestCase
             'date_enregistrement' => new \DateTimeImmutable('2024-04-12 16:23:11+01')];
         $r = $profilesRepository->insertProfiles($map);
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 

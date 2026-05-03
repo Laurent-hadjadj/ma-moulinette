@@ -38,7 +38,7 @@ class ActivityRepository extends ServiceEntityRepository
 
         // message = 'SQLSTATE[08006]'
         if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-            $message = static::$noDataBase;
+            $message = self::$noDataBase;
         }
 
         // state = '23502'
@@ -70,8 +70,8 @@ class ActivityRepository extends ServiceEntityRepository
                 FROM ma_moulinette.activity
                 WHERE EXTRACT(YEAR FROM started_at) = :year ";
             try {
-                    $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                        $stmt->bindValue(static::$year, $year);
+                    $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                        $stmt->bindValue(self::$year, $year);
                     $liste = $stmt->executeQuery()->fetchAllAssociative();
             } catch (\Throwable $e) {
                 return $this->handleDatabaseException($e);
@@ -102,15 +102,15 @@ class ActivityRepository extends ServiceEntityRepository
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
                 foreach ($data as $ref) {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
                         $stmt->bindValue(':maven_key', $ref['maven_key']);
                         $stmt->bindValue(':project_name', $ref['project_name']);
                         $stmt->bindValue(':analyse_id', $ref['analyse_id']);
                         $stmt->bindValue(':status', $ref['status']);
                         $stmt->bindValue(':submitter_login', $ref['submitter_login']);
-                        $stmt->bindValue(':submitted_at', $ref['submitted_at']->format(static::$formatDate));
-                        $stmt->bindValue(':started_at', $ref['started_at']->format(static::$formatDate));
-                        $stmt->bindValue(':executed_at', $ref['executed_at']->format(static::$formatDate));
+                        $stmt->bindValue(':submitted_at', $ref['submitted_at']->format(self::$formatDate));
+                        $stmt->bindValue(':started_at', $ref['started_at']->format(self::$formatDate));
+                        $stmt->bindValue(':executed_at', $ref['executed_at']->format(self::$formatDate));
                         $stmt->bindValue(':execution_time', $ref['execution_time']);
                         $stmt->executeStatement();
                 }
@@ -138,8 +138,8 @@ class ActivityRepository extends ServiceEntityRepository
                 FROM ma_moulinette.activity
                 WHERE EXTRACT(YEAR FROM started_at) = :year ";
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(static::$year, $year);
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                    $stmt->bindValue(self::$year, $year);
                 $request = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
@@ -163,7 +163,7 @@ class ActivityRepository extends ServiceEntityRepository
                 FROM ma_moulinette.activity
                 WHERE EXTRACT(YEAR FROM started_at) = :year ";
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
                     $stmt->bindValue("year", $year);
                 $request = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
@@ -190,8 +190,8 @@ class ActivityRepository extends ServiceEntityRepository
                 AND status LIKE :status";
 
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(static::$year, $year);
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                    $stmt->bindValue(self::$year, $year);
                     $stmt->bindValue(':status', $status);
                 $request = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
@@ -217,8 +217,8 @@ class ActivityRepository extends ServiceEntityRepository
                 WHERE EXTRACT(YEAR FROM started_at) = :year";
 
         try {
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(static::$year, $year);
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                    $stmt->bindValue(self::$year, $year);
                 $request = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
@@ -249,7 +249,7 @@ class ActivityRepository extends ServiceEntityRepository
             // Ajout de l'ordre et de la limite
             $sql .= " ORDER BY executed_at DESC LIMIT 1";
 
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
 
             // Ajout des paramètres si nécessaire
             if ($year !== null) {
@@ -288,7 +288,7 @@ class ActivityRepository extends ServiceEntityRepository
             $sql .= " ORDER BY executed_at ASC LIMIT 1";
 
             // Préparation de la requête
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
 
             // Ajout des paramètres si une année est spécifiée
             if ($year !== null) {
@@ -329,11 +329,11 @@ class ActivityRepository extends ServiceEntityRepository
             if ($year !== null) {
                 $sql .= "WHERE EXTRACT(YEAR FROM executed_at) = :year
                         GROUP BY DATE(executed_at) ORDER BY day ASC";
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(static::$year, $year);
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                $stmt->bindValue(self::$year, $year);
             } else {
                 $sql .= "GROUP BY DATE(executed_at) ORDER BY day DESC ";
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             }
             $request = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
@@ -360,11 +360,11 @@ class ActivityRepository extends ServiceEntityRepository
             if ($year !== null) {
                 $sql .= "WHERE EXTRACT(YEAR FROM executed_at) = :year
                 GROUP BY DATE(executed_at) ORDER BY day ASC";
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(static::$year, $year);
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                $stmt->bindValue(self::$year, $year);
             } else {
                 $sql .= "GROUP BY DATE(executed_at) ORDER BY day DESC";
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             }
             $request = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
@@ -393,11 +393,11 @@ class ActivityRepository extends ServiceEntityRepository
             if ($year !== null) {
                 $sql .= "WHERE EXTRACT(YEAR FROM executed_at) = :year
                         GROUP BY DATE(executed_at) ORDER BY day ASC";
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                $stmt->bindValue(static::$year, $year);
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                $stmt->bindValue(self::$year, $year);
             } else {
                 $sql .= "GROUP BY DATE(executed_at) ORDER BY day DESC";
-                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             }
             $request = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {

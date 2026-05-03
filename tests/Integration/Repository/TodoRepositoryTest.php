@@ -64,14 +64,14 @@ class TodoRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map=['maven_key' => static::$mavenKey];
+        $map=['maven_key' => self::$mavenKey];
 
         // Appel de la méthode
         $todoRepository = $entityManager->getRepository(Todo::class);
         $r = $todoRepository->deleteTodoMavenKey($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -83,14 +83,14 @@ class TodoRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         // Appel de la méthode
         $todoRepository = $entityManager->getRepository(Todo::class);
         $r = $todoRepository->selectTodoRuleGroupByRule($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -102,14 +102,14 @@ class TodoRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         // Appel de la méthode
         $todoRepository = $entityManager->getRepository(Todo::class);
         $r = $todoRepository->selectTodoComponentOrderByRule($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -121,20 +121,20 @@ class TodoRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = [['maven_key' => static::$mavenKey,
-                'rule' => static::$rule,
-                'component' => static::$component,
-                'line' => static::$line,
-                'mode_collecte' => static::$modeCollecte,
-                'utilisateur_collecte' => static::$utilisateurCollecte,
-                'date_enregistrement' =>  new \DateTimeImmutable(static::$dateEnregistrement)]];
+        $map = [['maven_key' => self::$mavenKey,
+                'rule' => self::$rule,
+                'component' => self::$component,
+                'line' => self::$line,
+                'mode_collecte' => self::$modeCollecte,
+                'utilisateur_collecte' => self::$utilisateurCollecte,
+                'date_enregistrement' =>  new \DateTimeImmutable(self::$dateEnregistrement)]];
 
         // Appel de la méthode
         $todoRepository = $entityManager->getRepository(Todo::class);
         $r = $todoRepository->insertTodo($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 

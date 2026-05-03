@@ -33,13 +33,13 @@ class ProfilesCaseTest extends TestCase
 
     private function getEntity(): Profiles    {
         return (new profiles())
-        ->setKey(static::$key)
-        ->setName(static::$name)
-        ->setLanguageName(static::$languageName)
-        ->setActiveRuleCount(static::$activeRuleCount)
-        ->setRulesUpdatedAt(new \DateTimeImmutable(static::$rulesUpdatedAt))
-        ->setReferentialDefault(static::$referentialDefault)
-        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+        ->setKey(self::$key)
+        ->setName(self::$name)
+        ->setLanguageName(self::$languageName)
+        ->setActiveRuleCount(self::$activeRuleCount)
+        ->setRulesUpdatedAt(new \DateTimeImmutable(self::$rulesUpdatedAt))
+        ->setReferentialDefault(self::$referentialDefault)
+        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -56,42 +56,42 @@ class ProfilesCaseTest extends TestCase
 
     public function testSettingAndGettingKey(): void
     {
-        $this->profiles->setKey(static::$key);
-        $this->assertEquals(static::$key, $this->profiles->getKey());
+        $this->profiles->setKey(self::$key);
+        $this->assertEquals(self::$key, $this->profiles->getKey());
     }
 
     public function testSettingAndGettingName(): void
     {
-        $this->profiles->setName(static::$name);
-        $this->assertEquals(static::$name, $this->profiles->getName());
+        $this->profiles->setName(self::$name);
+        $this->assertEquals(self::$name, $this->profiles->getName());
     }
     public function testSettingAndGettingLanguageName(): void
     {
-        $this->profiles->setLanguageName(static::$languageName);
-        $this->assertEquals(static::$languageName, $this->profiles->getLanguageName());
+        $this->profiles->setLanguageName(self::$languageName);
+        $this->assertEquals(self::$languageName, $this->profiles->getLanguageName());
     }
     public function testSettingAndGettingActiveRuleCount(): void
     {
-        $this->profiles->setActiveRuleCount(static::$activeRuleCount);
-        $this->assertEquals(static::$activeRuleCount, $this->profiles->getActiveRuleCount());
+        $this->profiles->setActiveRuleCount(self::$activeRuleCount);
+        $this->assertEquals(self::$activeRuleCount, $this->profiles->getActiveRuleCount());
     }
 
     public function testSettingAndGettingRulesUpdateAt(): void
     {
-        $newDate=new \DateTimeImmutable(static::$rulesUpdatedAt);
+        $newDate=new \DateTimeImmutable(self::$rulesUpdatedAt);
         $this->profiles->setRulesUpdatedAt($newDate);
         $this->assertEquals($newDate, $this->profiles->getRulesUpdatedAt());
     }
 
     public function testSettingAndGettingReferentialDefault(): void
     {
-        $this->profiles->setReferentialDefault(static::$referentialDefault);
-        $this->assertEquals(static::$referentialDefault, $this->profiles->isReferentialDefault());
+        $this->profiles->setReferentialDefault(self::$referentialDefault);
+        $this->assertEquals(self::$referentialDefault, $this->profiles->isReferentialDefault());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(static::$dateEnregistrement);
+        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
         $this->profiles->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->profiles->getDateEnregistrement());
     }

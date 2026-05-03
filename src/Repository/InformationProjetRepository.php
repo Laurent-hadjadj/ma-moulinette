@@ -48,7 +48,7 @@ class InformationProjetRepository extends ServiceEntityRepository
 
       // message = 'SQLSTATE[08006]'
       if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-          $message = static::$noDataBase;
+          $message = self::$noDataBase;
       }
 
       // state = '23502'
@@ -82,8 +82,8 @@ class InformationProjetRepository extends ServiceEntityRepository
             FROM ma_moulinette.information_projet
             WHERE maven_key=:maven_key LIMIT 1";
       try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(self::$mavenKey, $map['maven_key']);
             $isValide = $stmt->executeQuery()->fetchAllAssociative();
             /** j'ai pas trouvé de projet */
       if (!$isValide) {
@@ -114,8 +114,8 @@ class InformationProjetRepository extends ServiceEntityRepository
             FROM ma_moulinette.information_projet
             WHERE maven_key=:maven_key";
       try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(self::$mavenKey, $map['maven_key']);
             $liste = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
       $this->getEntityManager()->getConnection()->rollBack();
@@ -143,8 +143,8 @@ class InformationProjetRepository extends ServiceEntityRepository
             WHERE maven_key=:maven_key";
       try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(self::$mavenKey, $map['maven_key']);
               $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
       } catch (\Throwable $e) {
@@ -173,8 +173,8 @@ class InformationProjetRepository extends ServiceEntityRepository
               (:maven_key, :analyse_key, :date, :project_version, :type, :version_sonar, :version_release_sonar, :version_snapshot_sonar, :version_autre_sonar,:mode_collecte, :utilisateur_collecte, :date_enregistrement)";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(self::$mavenKey, $map['maven_key']);
               $stmt->bindValue(':analyse_key', $map['analyse_key']);
               $stmt->bindValue(':date', $map['date']);
               $stmt->bindValue(':project_version', $map['project_version']);

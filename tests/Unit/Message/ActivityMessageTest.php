@@ -18,8 +18,8 @@ class ActivityMessageTest extends TestCase
      */
     public function testConstructorAndGetters()
     {
-        $fromDate = static::$fromDate;
-        $toDate = static::$toDate;
+        $fromDate = self::$fromDate;
+        $toDate = self::$toDate;
 
         $activityMessage = new ActivityMessage($fromDate, $toDate);
 
@@ -33,8 +33,8 @@ class ActivityMessageTest extends TestCase
      */
     public function testValidDateTimeFormats()
     {
-        $fromDate = static::$fromDate;
-        $toDate = static::$toDate;
+        $fromDate = self::$fromDate;
+        $toDate = self::$toDate;
 
         $activityMessage = new ActivityMessage($fromDate, $toDate);
 
@@ -83,8 +83,8 @@ class ActivityMessageTest extends TestCase
      */
     public function testValidDateRange()
     {
-        $fromDate = static::$fromDate;
-        $toDate = static::$toDate;
+        $fromDate = self::$fromDate;
+        $toDate = self::$toDate;
 
         $activityMessage = new ActivityMessage($fromDate, $toDate);
 

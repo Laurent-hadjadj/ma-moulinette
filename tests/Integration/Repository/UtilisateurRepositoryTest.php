@@ -71,7 +71,7 @@ class UtilisateurRepositoryTest extends KernelTestCase
 
         // Récupère un utilisateur de test depuis les fixtures
         $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
-        $utilisateur = $utilisateurRepository->findOneBy(['courriel' => static::$courriel]);
+        $utilisateur = $utilisateurRepository->findOneBy(['courriel' => self::$courriel]);
         $preference = $utilisateur->getPreference();
 
         // Assurer un état de départ contrôlé
@@ -84,19 +84,19 @@ class UtilisateurRepositoryTest extends KernelTestCase
         // Nouveau projet à ajouter en favori
         $map = [
             'favori' => 1,
-            'courriel' => static::$courriel,
-            'maven_key' => static::$mavenKey,
-            'version' => static::$version,
-            'date_version' => static::$dateModification,
+            'courriel' => self::$courriel,
+            'maven_key' => self::$mavenKey,
+            'version' => self::$version,
+            'date_version' => self::$dateModification,
         ];
 
         // Appel de la méthode à tester
         $response = $utilisateurRepository->updateUtilisateurFavoriVersion($preference, $map);
         // Assertions
         $this->assertEquals(200, $response['code']);
-        $this->assertContains(static::$mavenKey, $response['preference']['favori_projet']);
+        $this->assertContains(self::$mavenKey, $response['preference']['favori_projet']);
         $this->assertEquals([
-                [static::$mavenKey => [static::$version]]
+                [self::$mavenKey => [self::$version]]
             ], $response['preference']['favori_version']);
     }
 
@@ -118,7 +118,7 @@ class UtilisateurRepositoryTest extends KernelTestCase
 
         // Récupère un utilisateur de test depuis les fixtures
         $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
-        $utilisateur = $utilisateurRepository->findOneBy(['courriel' => static::$courriel]);
+        $utilisateur = $utilisateurRepository->findOneBy(['courriel' => self::$courriel]);
         $preference = $utilisateur->getPreference();
 
         // Assurer un état de départ contrôlé
@@ -128,16 +128,16 @@ class UtilisateurRepositoryTest extends KernelTestCase
         $preference['favori_projet'] = [];
         $preference['favori_version'] = [
             [
-                static::$mavenKey => ['1.0.1-RELEASE']
+                self::$mavenKey => ['1.0.1-RELEASE']
             ]
         ];
         // Nouveau projet à ajouter en favori
         $map = [
             'favori' => 0,
-            'courriel' => static::$courriel,
-            'maven_key' => static::$mavenKey,
-            'version' => static::$version,
-            'date_version' => static::$dateModification,
+            'courriel' => self::$courriel,
+            'maven_key' => self::$mavenKey,
+            'version' => self::$version,
+            'date_version' => self::$dateModification,
         ];
 
         // Appel de la méthode à tester
@@ -164,7 +164,7 @@ class UtilisateurRepositoryTest extends KernelTestCase
 
         // Récupère un utilisateur de test depuis les fixtures
         $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
-        $utilisateur = $utilisateurRepository->findOneBy(['courriel' => static::$courriel]);
+        $utilisateur = $utilisateurRepository->findOneBy(['courriel' => self::$courriel]);
         $preference = $utilisateur->getPreference();
 
         // Assurer un état de départ contrôlé
@@ -174,7 +174,7 @@ class UtilisateurRepositoryTest extends KernelTestCase
         $preference['favori_projet'] = [];
         $preference['favori_version'] = [
             [
-                static::$mavenKey => [
+                self::$mavenKey => [
                     "1.0.0-RELEASE",
                     '2.0.0-RELEASE',
                     '3.0.0-RELEASE']
@@ -184,10 +184,10 @@ class UtilisateurRepositoryTest extends KernelTestCase
         // Nouveau projet à ajouter en favori
         $map = [
             'favori' => 0,
-            'courriel' => static::$courriel,
-            'maven_key' => static::$mavenKey,
-            'version' => static::$version,
-            'date_version' => static::$dateModification,
+            'courriel' => self::$courriel,
+            'maven_key' => self::$mavenKey,
+            'version' => self::$version,
+            'date_version' => self::$dateModification,
         ];
 
         // Appel de la méthode à tester
@@ -198,9 +198,9 @@ class UtilisateurRepositoryTest extends KernelTestCase
         // On décode le jsonArray qui a été utilisé pour stocker les données
         $updatedPreferences = json_decode($response[0], true);
 
-        $versions = $updatedPreferences['favori_version'][0][static::$mavenKey] ?? [];
+        $versions = $updatedPreferences['favori_version'][0][self::$mavenKey] ?? [];
 
-        $this->assertNotContains(static::$version, $versions);
+        $this->assertNotContains(self::$version, $versions);
         $this->assertContains('1.0.0-RELEASE', $versions);
         $this->assertContains('3.0.0-RELEASE', $versions);
         $this->assertCount(2, $versions);
@@ -224,13 +224,13 @@ class UtilisateurRepositoryTest extends KernelTestCase
 
         // Récupère un utilisateur de test depuis les fixtures
         $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
-        $utilisateur = $utilisateurRepository->findOneBy(['courriel' => static::$courriel]);
+        $utilisateur = $utilisateurRepository->findOneBy(['courriel' => self::$courriel]);
         $preference = $utilisateur->getPreference();
 
-        $map = [ 'maven_key' => static::$mavenKey, 'courriel' => static::$courriel ];
+        $map = [ 'maven_key' => self::$mavenKey, 'courriel' => self::$courriel ];
         $preference['statut'] = 'invalid'; // structure invalide → erreur 400 (statut doit être un array)
         $preference['suivi_projet'] = [];
-        $preference['favori_projet'] = [static::$mavenKey];
+        $preference['favori_projet'] = [self::$mavenKey];
         $preference['favori_version'] = [];
 
         // Appel de la méthode à tester
@@ -248,10 +248,10 @@ class UtilisateurRepositoryTest extends KernelTestCase
 
         // Récupère un utilisateur de test depuis les fixtures
         $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
-        $utilisateur = $utilisateurRepository->findOneBy(['courriel' => static::$courriel]);
+        $utilisateur = $utilisateurRepository->findOneBy(['courriel' => self::$courriel]);
         $preference = $utilisateur->getPreference();
 
-        $map = [ 'maven_key' => static::$mavenKey, 'courriel' => static::$courriel ];
+        $map = [ 'maven_key' => self::$mavenKey, 'courriel' => self::$courriel ];
         $preference['statut'] = [];
         $preference['suivi_projet'] = [];
         $preference['favori_projet'] = [];
@@ -287,8 +287,8 @@ class UtilisateurRepositoryTest extends KernelTestCase
 
         $map = [
             'reset_password' => 1,
-            'date_modification' => new \DateTimeImmutable(static::$dateModification),
-            'courriel' => static::$courriel
+            'date_modification' => new \DateTimeImmutable(self::$dateModification),
+            'courriel' => self::$courriel
         ];
 
         // Appel de la méthode
@@ -296,7 +296,7 @@ class UtilisateurRepositoryTest extends KernelTestCase
         $r = $utilisateurRepository->updateUtilisateurResetPassword($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 

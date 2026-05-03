@@ -36,15 +36,15 @@ class ProfilesHistoriqueCaseTest extends TestCase
     private function getEntity(): ProfilesHistorique
     {
         return (new profilesHistorique())
-        ->setDateCourte(new \DateTimeImmutable(static::$dateCourte))
-        ->setLanguage(static::$language)
-        ->setDate(new \DateTimeImmutable(static::$date))
-        ->setAction(static::$action)
-        ->setAuteur(static::$auteur)
-        ->setRule(static::$rule)
-        ->setDescription(static::$description)
-        ->setDetail(static::$detail)
-        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+        ->setDateCourte(new \DateTimeImmutable(self::$dateCourte))
+        ->setLanguage(self::$language)
+        ->setDate(new \DateTimeImmutable(self::$date))
+        ->setAction(self::$action)
+        ->setAuteur(self::$auteur)
+        ->setRule(self::$rule)
+        ->setDescription(self::$description)
+        ->setDetail(self::$detail)
+        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -61,57 +61,57 @@ class ProfilesHistoriqueCaseTest extends TestCase
 
     public function testSettingAndGettingDateCourte(): void
     {
-        $newDate=new \DateTimeImmutable(static::$dateCourte);
+        $newDate=new \DateTimeImmutable(self::$dateCourte);
         $this->profilesHistorique->setDateCourte($newDate);
         $this->assertEquals($newDate, $this->profilesHistorique->getDateCourte());
     }
 
     public function testSettingAndGettingLanguage(): void
     {
-        $this->profilesHistorique->setLanguage(static::$language);
-        $this->assertEquals(static::$language, $this->profilesHistorique->getLanguage());
+        $this->profilesHistorique->setLanguage(self::$language);
+        $this->assertEquals(self::$language, $this->profilesHistorique->getLanguage());
     }
 
     public function testSettingAndGettingDate(): void
     {
-        $newDate=new \DateTimeImmutable(static::$date);
+        $newDate=new \DateTimeImmutable(self::$date);
         $this->profilesHistorique->setDate($newDate);
         $this->assertEquals($newDate, $this->profilesHistorique->getDate());
     }
 
     public function testSettingAndGettingAction(): void
     {
-        $this->profilesHistorique->setAction(static::$action);
-        $this->assertEquals(static::$action, $this->profilesHistorique->getAction());
+        $this->profilesHistorique->setAction(self::$action);
+        $this->assertEquals(self::$action, $this->profilesHistorique->getAction());
     }
 
     public function testSettingAndGettingAuteur(): void
     {
-        $this->profilesHistorique->setAuteur(static::$auteur);
-        $this->assertEquals(static::$auteur, $this->profilesHistorique->getAuteur());
+        $this->profilesHistorique->setAuteur(self::$auteur);
+        $this->assertEquals(self::$auteur, $this->profilesHistorique->getAuteur());
     }
 
     public function testSettingAndGettingRule(): void
     {
-        $this->profilesHistorique->setRule(static::$rule);
-        $this->assertEquals(static::$rule, $this->profilesHistorique->getRule());
+        $this->profilesHistorique->setRule(self::$rule);
+        $this->assertEquals(self::$rule, $this->profilesHistorique->getRule());
     }
 
     public function testSettingAndGettingDescription(): void
     {
-        $this->profilesHistorique->setDescription(static::$description);
-        $this->assertEquals(static::$description, $this->profilesHistorique->getDescription());
+        $this->profilesHistorique->setDescription(self::$description);
+        $this->assertEquals(self::$description, $this->profilesHistorique->getDescription());
     }
 
     public function testSettingAndGettingDetail(): void
     {
-        $this->profilesHistorique->setDetail(static::$detail);
-        $this->assertEquals(static::$detail, $this->profilesHistorique->getDetail());
+        $this->profilesHistorique->setDetail(self::$detail);
+        $this->assertEquals(self::$detail, $this->profilesHistorique->getDetail());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(static::$dateEnregistrement);
+        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
         $this->profilesHistorique->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->profilesHistorique->getDateEnregistrement());
     }

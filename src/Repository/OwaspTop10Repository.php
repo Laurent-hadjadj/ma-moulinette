@@ -47,7 +47,7 @@ class OwaspTop10Repository extends ServiceEntityRepository
 
       // message = 'SQLSTATE[08006]'
       if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-          $message = static::$noDataBase;
+          $message = self::$noDataBase;
       }
 
       // state = '23502'
@@ -81,7 +81,7 @@ class OwaspTop10Repository extends ServiceEntityRepository
             WHERE year = :referential_version
             ORDER BY id";
     try {
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             $stmt->bindValue(':referential_version', $map['referential_version']);
             $liste = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
@@ -107,7 +107,7 @@ class OwaspTop10Repository extends ServiceEntityRepository
             FROM ma_moulinette.owasp_top10
             WHERE id = :menace";
     try {
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             $stmt->bindValue(':menace', $map['menace']);
           $details = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {

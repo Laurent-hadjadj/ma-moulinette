@@ -27,22 +27,22 @@ class BatchTraitementFixtures extends Fixture
 
     public function load(ObjectManager $manager): void
     {
-      $data = ['COLLECTE', static::$mode, static::$mode, static::$mode, 'TRAITEMENT AUTOMATIQUE'];
+      $data = ['COLLECTE', self::$mode, self::$mode, self::$mode, 'TRAITEMENT AUTOMATIQUE'];
 
       foreach($data as $modeCollecte){
         $batchTraitement = new BatchTraitement(
-            titre: static::$titre,
-            portefeuille: static::$portefeuille,
-            responsable: static::$responsable,
-            responsableShort: static::$responsableShort,
+            titre: self::$titre,
+            portefeuille: self::$portefeuille,
+            responsable: self::$responsable,
+            responsableShort: self::$responsableShort,
             modeCollecte: $modeCollecte,
-            nombreProjet: static::$nombreProjet
+            nombreProjet: self::$nombreProjet
         );
         $batchTraitement
-          ->setSuccess(static::$success)
-          ->setDebutTraitement(new \DateTimeImmutable(static::$debutTraitement))
-          ->setFinTraitement(new \DateTimeImmutable(static::$finTraitement))
-          ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+          ->setSuccess(self::$success)
+          ->setDebutTraitement(new \DateTimeImmutable(self::$debutTraitement))
+          ->setFinTraitement(new \DateTimeImmutable(self::$finTraitement))
+          ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
         $manager->persist($batchTraitement);
       }
 

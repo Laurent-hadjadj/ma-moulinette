@@ -25,15 +25,15 @@ class LoggerFixtures extends Fixture
       $modeCollecte=['COLLECTE', 'TRAITEMENT MANUEL', 'TRAITEMENT AUTOMATIQUE'];
 
       foreach($modeCollecte as $mode){
-        $logger=(new Logger(static::$mavenKey, static::$loggerInfo, static::$loggerWarn, static::$loggerError, static::$loggerDebug, $mode, static::$utilisateurCollecte, new \DateTimeImmutable(static::$dateEnregistrement)))
-            ->setMavenKey(static::$mavenKey)
-            ->setLoggerInfo(static::$loggerInfo)
-            ->setLoggerWarn(static::$loggerWarn)
-            ->setLoggerError(static::$loggerError)
-            ->setLoggerDebug(static::$loggerDebug)
+        $logger=(new Logger(self::$mavenKey, self::$loggerInfo, self::$loggerWarn, self::$loggerError, self::$loggerDebug, $mode, self::$utilisateurCollecte, new \DateTimeImmutable(self::$dateEnregistrement)))
+            ->setMavenKey(self::$mavenKey)
+            ->setLoggerInfo(self::$loggerInfo)
+            ->setLoggerWarn(self::$loggerWarn)
+            ->setLoggerError(self::$loggerError)
+            ->setLoggerDebug(self::$loggerDebug)
             ->setModeCollecte($mode)
-            ->setUtilisateurCollecte(static::$utilisateurCollecte)
-            ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+            ->setUtilisateurCollecte(self::$utilisateurCollecte)
+            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
         $manager->persist($logger);
       }
       /** Enregistrement des données dans la base de tests */

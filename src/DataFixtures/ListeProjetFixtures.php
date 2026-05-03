@@ -32,16 +32,16 @@ class ListeProjetFixtures extends Fixture
     {
       /** création du jeu de données pour la table LISTE_PROJET */
         $listeProjet=(new ListeProjet(
-          static::$mavenKey,
-          static::$name,
-          static::$visibility,
-          static::$tags,
-          new \DateTimeImmutable(static::$dateEnregistrement)))
-            ->setMavenKey(static::$mavenKey)
-            ->setName(static::$name)
-            ->setTags(static::$tags)
-            ->setVisibility(static::$visibility)
-            ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+          self::$mavenKey,
+          self::$name,
+          self::$visibility,
+          self::$tags,
+          new \DateTimeImmutable(self::$dateEnregistrement)))
+            ->setMavenKey(self::$mavenKey)
+            ->setName(self::$name)
+            ->setTags(self::$tags)
+            ->setVisibility(self::$visibility)
+            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
         $manager->persist($listeProjet);
       /** Enregistrement des données dans la base de tests */
         $manager->flush();

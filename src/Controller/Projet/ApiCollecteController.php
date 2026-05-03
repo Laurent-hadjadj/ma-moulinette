@@ -90,7 +90,7 @@ class ApiCollecteController extends AbstractController
 
         // Vérifie si l'utilisateur a bien le rôle nécessaire
         if (!$this->isGranted('ROLE_COLLECTE')) {
-            $this->logger->warning(static::$loggerE403, [
+            $this->logger->warning(self::$loggerE403, [
                 'maven_key' => $data->maven_key,
                 'utilisateur' => $this->security->getUser()?->getUserIdentifier()
             ]);

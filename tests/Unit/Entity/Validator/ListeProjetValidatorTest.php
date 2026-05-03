@@ -32,11 +32,11 @@ class ListeProjetValidatorTest extends KernelTestCase
   private function getEntity(): ListeProjet
   {
       return (new ListeProjet(
-        static::$mavenKey,
-        static::$name,
-        static::$visibility,
-        static::$tags))
-      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+        self::$mavenKey,
+        self::$name,
+        self::$visibility,
+        self::$tags))
+      ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
   }
 
   public function assertHasErrors(ListeProjet $entity, int $number = 0): void

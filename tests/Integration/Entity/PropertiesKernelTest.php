@@ -55,7 +55,7 @@ class PropertiesKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $propertiesRepository = $entityManager->getRepository(Properties::class);
-        $response = $propertiesRepository->findOneBy(['type' => static::$type]);
+        $response = $propertiesRepository->findOneBy(['type' => self::$type]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'TYPE: Aucune réponse trouvée');

@@ -84,7 +84,7 @@ class OwaspRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey, 'referential_owasp' => 2017];
+        $map = ['maven_key' => self::$mavenKey, 'referential_owasp' => 2017];
         $result = $repo->selectOwaspOrderByDateEnregistrement($map);
 
         // 9) Vérification
@@ -125,7 +125,7 @@ class OwaspRepositoryHandlerTest extends TestCase
                         ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
-        $expected = ['code' => 500, 'erreur' => static::$gestionTest];
+        $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
                 ->with($fakeException)
                 ->willReturn($expected);
@@ -138,18 +138,18 @@ class OwaspRepositoryHandlerTest extends TestCase
 
         // Ajouter les propriétés de l'objet $owasp au tableau $map
         $map['referential_owasp'] = 2017;
-        $map['maven_key'] = static::$mavenKey;
-        $map['version'] = static::$version;
-        $map['date_version'] = static::$dateVersion;
-        $map['effort_total'] = static::$effortTotal;
+        $map['maven_key'] = self::$mavenKey;
+        $map['version'] = self::$version;
+        $map['date_version'] = self::$dateVersion;
+        $map['effort_total'] = self::$effortTotal;
 
         for ($i = 0; $i < 10; $i++) {
-            $map["a" . ($i + 1)] = static::$a[$i];
-            $map["a" . ($i + 1) . "_blocker"] = static::$aBlocker[$i];
-            $map["a" . ($i + 1) . "_critical"] = static::$aCritical[$i];
-            $map["a" . ($i + 1) . "_major"] = static::$aMajor[$i];
-            $map["a" . ($i + 1) . "_info"] = static::$aInfo[$i];
-            $map["a" . ($i + 1) . "_minor"] = static::$aMinor[$i];
+            $map["a" . ($i + 1)] = self::$a[$i];
+            $map["a" . ($i + 1) . "_blocker"] = self::$aBlocker[$i];
+            $map["a" . ($i + 1) . "_critical"] = self::$aCritical[$i];
+            $map["a" . ($i + 1) . "_major"] = self::$aMajor[$i];
+            $map["a" . ($i + 1) . "_info"] = self::$aInfo[$i];
+            $map["a" . ($i + 1) . "_minor"] = self::$aMinor[$i];
         }
 
         $map['mode_collecte'] = 'COLLECTE';
@@ -202,7 +202,7 @@ class OwaspRepositoryHandlerTest extends TestCase
                         ->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
-        $expected = ['code' => 500, 'erreur' => static::$gestionTest];
+        $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
                 ->with($fakeException)
                 ->willReturn($expected);
@@ -211,7 +211,7 @@ class OwaspRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Prépare un jeu de données minimal pour le $map
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         // 9) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
         $result = $repo->deleteOwaspMavenKey($map);

@@ -52,7 +52,7 @@ class UserAgentStatsRepository extends ServiceEntityRepository
 
         // message = 'SQLSTATE[08006]'
         if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-            $message = static::$noDataBase;
+            $message = self::$noDataBase;
         }
 
         // state = '23502'

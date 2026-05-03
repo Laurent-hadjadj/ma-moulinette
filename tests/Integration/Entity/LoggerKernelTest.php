@@ -54,7 +54,7 @@ class LoggerKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $loggerRepository = $entityManager->getRepository(Logger::class);
-        $response = $loggerRepository->findOneBy(['mavenKey' => static::$mavenKey]);
+        $response = $loggerRepository->findOneBy(['mavenKey' => self::$mavenKey]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'MAVENKEY: Aucune réponse trouvée');
@@ -67,7 +67,7 @@ class LoggerKernelTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $loggerRepository = $entityManager->getRepository(Logger::class);
-        $response = $loggerRepository->findBy(['mavenKey' => static::$mavenKey]);
+        $response = $loggerRepository->findBy(['mavenKey' => self::$mavenKey]);
 
         $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(3, $response, 'MAVENKEY: Aucune réponse trouvée');

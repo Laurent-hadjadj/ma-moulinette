@@ -48,7 +48,7 @@ class NoSonarRepository extends ServiceEntityRepository
 
       // message = 'SQLSTATE[08006]'
       if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-          $message = static::$noDataBase;
+          $message = self::$noDataBase;
       }
 
       // state = '23502'
@@ -83,8 +83,8 @@ class NoSonarRepository extends ServiceEntityRepository
             WHERE maven_key=:maven_key";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+              $stmt->bindValue(self::$mavenKey, $map['maven_key']);
               $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
@@ -113,8 +113,8 @@ class NoSonarRepository extends ServiceEntityRepository
             WHERE maven_key=:maven_key
             GROUP BY rule";
     try {
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-            $stmt->bindValue(static::$mavenKey, $map['maven_key']);
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
           $liste = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
@@ -143,8 +143,8 @@ class NoSonarRepository extends ServiceEntityRepository
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
       foreach ($map as $item) {
-        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
-                  $stmt->bindValue(static::$mavenKey, $item['maven_key']);
+        $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                  $stmt->bindValue(self::$mavenKey, $item['maven_key']);
                   $stmt->bindValue(':rule', $item['rule']);
                   $stmt->bindValue(':component', $item['component']);
                   $stmt->bindValue(':line', $item['line']);

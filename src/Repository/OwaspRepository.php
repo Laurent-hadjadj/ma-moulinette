@@ -47,7 +47,7 @@ class OwaspRepository extends ServiceEntityRepository
 
       // message = 'SQLSTATE[08006]'
       if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-          $message = static::$noDataBase;
+          $message = self::$noDataBase;
       }
 
       // state = '23502'
@@ -83,7 +83,7 @@ class OwaspRepository extends ServiceEntityRepository
             ORDER BY date_enregistrement DESC LIMIT 1";
 
     try {
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             $stmt->bindValue(':maven_key', $map['maven_key']);
             $stmt->bindValue(':referential_owasp', $map['referential_owasp']);
           $liste = $stmt->executeQuery()->fetchAllAssociative();
@@ -113,7 +113,7 @@ class OwaspRepository extends ServiceEntityRepository
 
       try {
             $this->getEntityManager()->getConnection()->beginTransaction();
-      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
                 $stmt->bindValue(':maven_key', $map['maven_key']);
                 $stmt->executeStatement();
             $this->getEntityManager()->getConnection()->commit();
@@ -168,7 +168,7 @@ class OwaspRepository extends ServiceEntityRepository
 
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
       foreach ($owaspDataList as $map) {
                 foreach ($map as $key => $value) {
                   if ($value instanceof \DateTimeImmutable) {

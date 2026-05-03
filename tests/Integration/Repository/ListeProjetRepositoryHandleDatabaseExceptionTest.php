@@ -49,7 +49,7 @@ class ListeProjetRepositoryHandleDatabaseExceptionTest extends TestCase
     public function testHandleDatabaseException_NoDatabase(): void
     {
         // 2) Exception avec message contenant SQLSTATE[08006]
-        $ex = new class(static::$sqlState8006) extends \Exception {
+        $ex = new class(self::$sqlState8006) extends \Exception {
             public function getSqlState(): ?string { return null; }
         };
 
@@ -57,7 +57,7 @@ class ListeProjetRepositoryHandleDatabaseExceptionTest extends TestCase
 
         $this->assertSame([
             'code'  => 500,
-            'erreur'=> static::$sqlState8006
+            'erreur'=> self::$sqlState8006
         ], $res);
     }
 
@@ -79,7 +79,7 @@ class ListeProjetRepositoryHandleDatabaseExceptionTest extends TestCase
     public function testHandleDatabaseException_UniqueViolation(): void
     {
         // 4) SQLSTATE 23505 → code 23505 + message fixe
-        $ex = new class(static::$sqlState23505) extends \Exception {
+        $ex = new class(self::$sqlState23505) extends \Exception {
             public function getSqlState(): ?string { return '23505'; }
         };
 
@@ -87,7 +87,7 @@ class ListeProjetRepositoryHandleDatabaseExceptionTest extends TestCase
 
         $this->assertSame([
             'code'  => 500,
-            'erreur'=> static::$sqlState23505
+            'erreur'=> self::$sqlState23505
         ], $res);
     }
 
@@ -101,7 +101,7 @@ class ListeProjetRepositoryHandleDatabaseExceptionTest extends TestCase
         $exception = new \Doctrine\DBAL\Exception\ConnectionException(
             $driverExceptionMock, // Passer le mock Driver\Exception ici
             null, // Passer null pour la requête
-            static::$sqlState8006 // Message d'erreur
+            self::$sqlState8006 // Message d'erreur
         );
 
         // Crée un repository mock
@@ -157,7 +157,7 @@ class ListeProjetRepositoryHandleDatabaseExceptionTest extends TestCase
         $exception = new \Doctrine\DBAL\Exception\UniqueConstraintViolationException(
             $driverExceptionMock, // Passer le mock Driver\Exception ici
             null, // Passer null pour la requête
-            static::$sqlState23505 // Message d'erreur
+            self::$sqlState23505 // Message d'erreur
         );
 
         // Crée un repository mock
@@ -171,7 +171,7 @@ class ListeProjetRepositoryHandleDatabaseExceptionTest extends TestCase
         // Vérifie que le message d'erreur retourné est le bon
         $this->assertSame([
             'code' => 23505,
-            'erreur' => static::$sqlState23505,
+            'erreur' => self::$sqlState23505,
         ], $result);
     }
 

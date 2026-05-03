@@ -79,7 +79,7 @@ class TodoRepositoryHandlerTest extends TestCase
                         ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
-        $expected = ['code' => 500, 'erreur' => static::$gestionTest];
+        $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
                 ->with($fakeException)
                 ->willReturn($expected);
@@ -88,7 +88,7 @@ class TodoRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
         $result = $repo->deleteTodoMavenKey($map);
 
         $this->assertSame($expected, $result);
@@ -148,7 +148,7 @@ class TodoRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map=['maven_key' => static::$mavenKey];
+        $map=['maven_key' => self::$mavenKey];
         $result = $repo->selectTodoRuleGroupByRule($map);
 
         // 9) Vérification
@@ -209,7 +209,7 @@ class TodoRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
         $result = $repo->selectTodoComponentOrderByRule($map);
 
         // 9) Vérification
@@ -259,7 +259,7 @@ class TodoRepositoryHandlerTest extends TestCase
                         ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
-        $expected = ['code' => 500, 'erreur' => static::$gestionTest];
+        $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
                 ->with($fakeException)
                 ->willReturn($expected);
@@ -269,13 +269,13 @@ class TodoRepositoryHandlerTest extends TestCase
 
         // 8) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
         $map = [
-                ['maven_key' => static::$mavenKey,
-                'rule' => static::$rule,
-                'component' => static::$component,
-                'line' => static::$line,
-                'mode_collecte' => static::$modeCollecte,
-                'utilisateur_collecte' => static::$utilisateurCollecte,
-                'date_enregistrement' =>  new \DateTimeImmutable(static::$dateEnregistrement)]
+                ['maven_key' => self::$mavenKey,
+                'rule' => self::$rule,
+                'component' => self::$component,
+                'line' => self::$line,
+                'mode_collecte' => self::$modeCollecte,
+                'utilisateur_collecte' => self::$utilisateurCollecte,
+                'date_enregistrement' =>  new \DateTimeImmutable(self::$dateEnregistrement)]
             ];
         $result = $repo->insertTodo($map);
 

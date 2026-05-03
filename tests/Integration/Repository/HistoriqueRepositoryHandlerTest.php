@@ -75,7 +75,7 @@ class HistoriqueRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
         $result = $repo->countHistoriqueProjet($map);
 
         // 9) Vérification
@@ -127,7 +127,7 @@ class HistoriqueRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $where = "'maven_key' = ".static::$mavenKey;
+        $where = "'maven_key' = ".self::$mavenKey;
         $result = $repo->getProjetFavori($where);
 
         // 9) Vérification
@@ -168,7 +168,7 @@ class HistoriqueRepositoryHandlerTest extends TestCase
                         ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
-        $expected = ['code' => 500, 'erreur' => static::$gestionTest];
+        $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
                 ->with($fakeException)
                 ->willReturn($expected);
@@ -177,7 +177,7 @@ class HistoriqueRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Prépare un jeu de données minimal pour le $map
-        $map = [ 'maven_key' => static::$mavenKey];
+        $map = [ 'maven_key' => self::$mavenKey];
 
         // 9) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
         $result = $repo->updateHistoriqueReference($map);
@@ -225,7 +225,7 @@ class HistoriqueRepositoryHandlerTest extends TestCase
                         ->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
-        $expected = ['code' => 500, 'erreur' => static::$gestionTest];
+        $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
                 ->with($fakeException)
                 ->willReturn($expected);
@@ -234,7 +234,7 @@ class HistoriqueRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Prépare un jeu de données minimal pour le $map
-        $map = [ 'maven_key' => static::$mavenKey, 'version' => '1.2.0-RELEASE', 'date_version' => '2024-07-12 16:34:46'];
+        $map = [ 'maven_key' => self::$mavenKey, 'version' => '1.2.0-RELEASE', 'date_version' => '2024-07-12 16:34:46'];
 
         // 9) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
         $result = $repo->deleteHistoriqueProjet($map);
@@ -287,7 +287,7 @@ class HistoriqueRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey, 'limit' => 5];
+        $map = ['maven_key' => self::$mavenKey, 'limit' => 5];
         $result = $repo->selectUnionHistoriqueProjet($map);
 
         // 9) Vérification
@@ -339,7 +339,7 @@ class HistoriqueRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey, 'limit' => 5];
+        $map = ['maven_key' => self::$mavenKey, 'limit' => 5];
         $result = $repo->selectUnionHistoriqueMesure($map);
 
         // 9) Vérification
@@ -391,7 +391,7 @@ class HistoriqueRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey, 'limit' => 5];
+        $map = ['maven_key' => self::$mavenKey, 'limit' => 5];
         $result = $repo->selectUnionHistoriqueAnomalie($map);
 
         // 9) Vérification
@@ -443,7 +443,7 @@ class HistoriqueRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey, 'limit' => 5];
+        $map = ['maven_key' => self::$mavenKey, 'limit' => 5];
         $result = $repo->selectUnionHistoriqueDetails($map);
 
         // 9) Vérification
@@ -495,7 +495,7 @@ class HistoriqueRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey, 'limit' => 5];
+        $map = ['maven_key' => self::$mavenKey, 'limit' => 5];
         $result = $repo->selectHistoriqueAnomalieGraphique($map);
 
         // 9) Vérification
@@ -536,7 +536,7 @@ class HistoriqueRepositoryHandlerTest extends TestCase
                         ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
-        $expected = ['code' => 500, 'erreur' => static::$gestionTest];
+        $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
                 ->with($fakeException)
                 ->willReturn($expected);
@@ -546,7 +546,7 @@ class HistoriqueRepositoryHandlerTest extends TestCase
 
         // 8) Prépare un jeu de données minimal pour le $map
         $map = [
-            'maven_key' => static::$mavenKey,
+            'maven_key' => self::$mavenKey,
             'analyse_key' => 'AZCc05qWgfifxdiJPzns',
             'version' => '1.2.0-RELEASE',
             'date_version' => '2024-07-12 16:34:46',
@@ -664,7 +664,7 @@ class HistoriqueRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
         $result = $repo->selectHistoriqueProjetByDate($map);
 
         // 9) Vérification
@@ -716,7 +716,7 @@ class HistoriqueRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
         $result = $repo->selectHistoriqueProjetLast($map);
 
         // 9) Vérification
@@ -768,7 +768,7 @@ class HistoriqueRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
         $result = $repo->selectHistoriqueProjetReference($map);
 
         // 9) Vérification
@@ -820,7 +820,7 @@ class HistoriqueRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['liste_projet' => static::$mavenKey, 'nombre_projet_favori' => 5];
+        $map = ['liste_projet' => self::$mavenKey, 'nombre_projet_favori' => 5];
         $result = $repo->selectHistoriqueProjetFavori($map);
 
         // 9) Vérification
@@ -872,7 +872,7 @@ class HistoriqueRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['maven_key' => static::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
         $result = $repo->selectHistoriqueIsValide($map);
 
         // 9) Vérification
@@ -924,7 +924,7 @@ class HistoriqueRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = static::$mavenKey;
+        $map = self::$mavenKey;
         $result = $repo->selectHistoriqueIndicateurs($map);
 
         // 9) Vérification

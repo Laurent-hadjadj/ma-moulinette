@@ -41,20 +41,20 @@ class BatchTraitementCaseTest extends TestCase
     private function getEntity(): BatchTraitement
     {
         return (new batchTraitement(
-            static::$titre,
-            static::$portefeuille,
-            static::$responsable,
-            static::$responsableShort,
-            static::$modeCollecte,
-            static::$nombreProjet))
-        ->setActivated(static::$activated)
-        ->setSuccess(static::$success)
-        ->setPending(static::$pending)
-        ->setInProgress(static::$inProgress)
-        ->setDebutTraitement(new \DateTimeImmutable(static::$debutTraitement))
-        ->setFinTraitement(new \DateTimeImmutable(static::$finTraitement))
+            self::$titre,
+            self::$portefeuille,
+            self::$responsable,
+            self::$responsableShort,
+            self::$modeCollecte,
+            self::$nombreProjet))
+        ->setActivated(self::$activated)
+        ->setSuccess(self::$success)
+        ->setPending(self::$pending)
+        ->setInProgress(self::$inProgress)
+        ->setDebutTraitement(new \DateTimeImmutable(self::$debutTraitement))
+        ->setFinTraitement(new \DateTimeImmutable(self::$finTraitement))
         ->setTraitementId((string) new Ulid())
-        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void

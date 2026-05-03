@@ -36,15 +36,15 @@ class BatchCaseTest extends TestCase
     private function getEntity(): Batch
     {
         return (new batch())
-        ->setAutomatique(static::$automatique)
-        ->setTitre(static::$titre)
-        ->setDescription(static::$description)
-        ->setResponsable(static::$responsable)
-        ->setPortefeuille(static::$portefeuille)
-        ->setNombreProjet(static::$nombreProjet)
-        ->setExecution(static::$execution)
-        ->setDateModification(new \DateTime(static::$dateModification))
-        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+        ->setAutomatique(self::$automatique)
+        ->setTitre(self::$titre)
+        ->setDescription(self::$description)
+        ->setResponsable(self::$responsable)
+        ->setPortefeuille(self::$portefeuille)
+        ->setNombreProjet(self::$nombreProjet)
+        ->setExecution(self::$execution)
+        ->setDateModification(new \DateTime(self::$dateModification))
+        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -61,44 +61,44 @@ class BatchCaseTest extends TestCase
 
     public function testSettingAndGettingAutomatique(): void
     {
-        $this->batch->setAutomatique(static::$automatique);
-        $this->assertEquals(static::$automatique, $this->batch->isAutomatique());
+        $this->batch->setAutomatique(self::$automatique);
+        $this->assertEquals(self::$automatique, $this->batch->isAutomatique());
     }
 
     public function testSettingAndGettingTitre(): void
     {
-        $this->batch->setTitre(static::$titre);
-        $this->assertEquals(static::$titre, $this->batch->getTitre());
+        $this->batch->setTitre(self::$titre);
+        $this->assertEquals(self::$titre, $this->batch->getTitre());
     }
 
     public function testSettingAndGettingDescription(): void
     {
-        $this->batch->setDescription(static::$description);
-        $this->assertEquals(static::$description, $this->batch->getDescription());
+        $this->batch->setDescription(self::$description);
+        $this->assertEquals(self::$description, $this->batch->getDescription());
     }
 
     public function testSettingAndGettingResponsable(): void
     {
-        $this->batch->setResponsable(static::$responsable);
-        $this->assertEquals(static::$responsable, $this->batch->getResponsable());
+        $this->batch->setResponsable(self::$responsable);
+        $this->assertEquals(self::$responsable, $this->batch->getResponsable());
     }
 
     public function testSettingAndGettingPortefeuille(): void
     {
-        $this->batch->setPortefeuille(static::$portefeuille);
-        $this->assertEquals(static::$portefeuille, $this->batch->getPortefeuille());
+        $this->batch->setPortefeuille(self::$portefeuille);
+        $this->assertEquals(self::$portefeuille, $this->batch->getPortefeuille());
     }
 
     public function testSettingAndGettingNombreProjet(): void
     {
-        $this->batch->setNombreProjet(static::$nombreProjet);
-        $this->assertEquals(static::$nombreProjet, $this->batch->getNombreProjet());
+        $this->batch->setNombreProjet(self::$nombreProjet);
+        $this->assertEquals(self::$nombreProjet, $this->batch->getNombreProjet());
     }
 
     public function testSettingAndGettingExecution(): void
     {
-        $this->batch->setExecution(static::$execution);
-        $this->assertEquals(static::$execution, $this->batch->getExecution());
+        $this->batch->setExecution(self::$execution);
+        $this->assertEquals(self::$execution, $this->batch->getExecution());
     }
 
     public function testSettingAndGettingDateModification(): void
@@ -110,7 +110,7 @@ class BatchCaseTest extends TestCase
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(static::$dateEnregistrement);
+        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
         $this->batch->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->batch->getDateEnregistrement());
     }

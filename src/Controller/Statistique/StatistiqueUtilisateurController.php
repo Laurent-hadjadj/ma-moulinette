@@ -135,9 +135,9 @@ class StatistiqueUtilisateurController extends AbstractController
         if (!$this->isGranted('ROLE_GESTIONNAIRE')) {
             $this->addFlash('notice', [
                 'type' => 'warning',
-                'message' => static::$erreur403,
+                'message' => self::$erreur403,
                 'trace' => '']);
-            return $this->render(static::$index, $render);
+            return $this->render(self::$index, $render);
         }
 
         /******************************************/
@@ -163,81 +163,81 @@ class StatistiqueUtilisateurController extends AbstractController
         $countUtilisateurDisponible = $this->reporting->getUtilisateurDisponible();
 
         if ($countUtilisateurDisponible['code'] !== 200) {
-            self::genericAddFlashMessage('error', static::$message, $countUtilisateurDisponible['code'], $countUtilisateurDisponible['erreur']);
-            return $this->render(static::$index, $render);
+            self::genericAddFlashMessage('error', self::$message, $countUtilisateurDisponible['code'], $countUtilisateurDisponible['erreur']);
+            return $this->render(self::$index, $render);
         }
 
         /* Utilisateur actif */
         $countUtilisateurActif = $this->reporting->getUtilisateurActif();
         if ($countUtilisateurActif['code'] !== 200) {
-            self::genericAddFlashMessage('error', static::$message, $countUtilisateurActif['code'],  $countUtilisateurActif['erreur']);
-            return $this->render(static::$index, $render);
+            self::genericAddFlashMessage('error', self::$message, $countUtilisateurActif['code'],  $countUtilisateurActif['erreur']);
+            return $this->render(self::$index, $render);
         }
 
         /* Type d'OS */
         $osStats = $this->reporting->getOsStats($start, $end, $label);
         if ($osStats['code'] !== 200) {
-            self::genericAddFlashMessage('error', static::$message, $osStats['code'],  $osStats['erreur']);
-            return $this->render(static::$index, $render);
+            self::genericAddFlashMessage('error', self::$message, $osStats['code'],  $osStats['erreur']);
+            return $this->render(self::$index, $render);
         }
 
         /* Type de navigateur */
         $browserStats = $this->reporting->getBrowserStats($start, $end, $label);
         if ($browserStats['code'] !== 200) {
-            self::genericAddFlashMessage('error', static::$message, $browserStats['code'],  $browserStats['erreur']);
-            return $this->render(static::$index, $render);
+            self::genericAddFlashMessage('error', self::$message, $browserStats['code'],  $browserStats['erreur']);
+            return $this->render(self::$index, $render);
         }
 
         /* Type de device */
         $deviceStats = $this->reporting->getDeviceStats($start, $end, $label);
         if ($deviceStats['code'] !== 200) {
-            self::genericAddFlashMessage('error', static::$message, $deviceStats['code'],  $deviceStats['erreur']);
-            return $this->render(static::$index, $render);
+            self::genericAddFlashMessage('error', self::$message, $deviceStats['code'],  $deviceStats['erreur']);
+            return $this->render(self::$index, $render);
         }
 
         $sessionPagesStats = $this->reporting->getSessionPagesReport($start, $end, $label);
         if ($sessionPagesStats['code'] !== 200) {
-            self::genericAddFlashMessage('error', static::$message, $sessionPagesStats['code'],  $sessionPagesStats['erreur']);
-            return $this->render(static::$index, $render);
+            self::genericAddFlashMessage('error', self::$message, $sessionPagesStats['code'],  $sessionPagesStats['erreur']);
+            return $this->render(self::$index, $render);
         }
 
         /* Durée de la session selon la période */
         $sessionDurationByPeriodStats = $this->reporting->getSessionDurationByPeriodStats($start, $end, $label);
 
         if ($sessionDurationByPeriodStats['code'] !== 200) {
-            self::genericAddFlashMessage('error', static::$message, $sessionDurationByPeriodStats['code'], $sessionDurationByPeriodStats['erreur']);
-            return $this->render(static::$index, $render);
+            self::genericAddFlashMessage('error', self::$message, $sessionDurationByPeriodStats['code'], $sessionDurationByPeriodStats['erreur']);
+            return $this->render(self::$index, $render);
         }
 
         /* Moyenne de la durée d'une session */
         $avgSessionDurationStats = $this->reporting->getAvgSessionDurationReport();
 
         if ($avgSessionDurationStats['code'] !== 200) {
-            self::genericAddFlashMessage('error', static::$message, $avgSessionDurationStats['code'], $avgSessionDurationStats['erreur']);
-            return $this->render(static::$index, $render);
+            self::genericAddFlashMessage('error', self::$message, $avgSessionDurationStats['code'], $avgSessionDurationStats['erreur']);
+            return $this->render(self::$index, $render);
         }
 
         /* Session unique */
         $uniqueSessionStats = $this->reporting->getUniqueSessionReport();
         if ($uniqueSessionStats['code'] !== 200) {
-            self::genericAddFlashMessage('error', static::$message, $uniqueSessionStats['code'], $uniqueSessionStats['erreur']);
-            return $this->render(static::$index, $render);
+            self::genericAddFlashMessage('error', self::$message, $uniqueSessionStats['code'], $uniqueSessionStats['erreur']);
+            return $this->render(self::$index, $render);
         }
 
         /* Session de type courte, moyenne, longue*/
         $categoryByUniqueSessionStats = $this->reporting->getCategoryByUniqueSessionReport();
 
         if ($categoryByUniqueSessionStats['code'] !== 200) {
-            self::genericAddFlashMessage('error', static::$message, $categoryByUniqueSessionStats['code'], $categoryByUniqueSessionStats['erreur']);
-            return $this->render(static::$index, $render);
+            self::genericAddFlashMessage('error', self::$message, $categoryByUniqueSessionStats['code'], $categoryByUniqueSessionStats['erreur']);
+            return $this->render(self::$index, $render);
         }
 
         /* Session unique typé par une catégorie */
         $uniqueSessionCategoryStats = $this->reporting->getUniqueSessionByCategoryReport();
 
         if ($uniqueSessionCategoryStats['code'] !== 200) {
-            self::genericAddFlashMessage('error', static::$message, $uniqueSessionCategoryStats['code'], $uniqueSessionCategoryStats['erreur']);
-            return $this->render(static::$index, $render);
+            self::genericAddFlashMessage('error', self::$message, $uniqueSessionCategoryStats['code'], $uniqueSessionCategoryStats['erreur']);
+            return $this->render(self::$index, $render);
         }
 
         /** Rendu final */
@@ -257,7 +257,7 @@ class StatistiqueUtilisateurController extends AbstractController
         $render['session_category'] = $categoryByUniqueSessionStats;
         $render['session_unique_category'] = $uniqueSessionCategoryStats;
 
-        return $this->render(static::$index, $render);
+        return $this->render(self::$index, $render);
     }
 
 }

@@ -58,10 +58,10 @@ class ListeProjetRepositoryTest extends KernelTestCase
 
         // Appel de la méthode
         $notesRepository = $entityManager->getRepository(ListeProjet::class);
-        $r = $notesRepository->countListeProjetVisibility(static::$visibility);
+        $r = $notesRepository->countListeProjetVisibility(self::$visibility);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -78,7 +78,7 @@ class ListeProjetRepositoryTest extends KernelTestCase
         $r = $listeProjetRepository->countListeProjet();
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -95,7 +95,7 @@ class ListeProjetRepositoryTest extends KernelTestCase
         $r = $listeProjetRepository->countListeProjetTags();
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -114,7 +114,7 @@ class ListeProjetRepositoryTest extends KernelTestCase
         $r = $listeProjetRepository->selectListeProjetByGroupe($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
@@ -131,7 +131,7 @@ class ListeProjetRepositoryTest extends KernelTestCase
         $r = $listeProjetRepository->deleteListeProjet();
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 

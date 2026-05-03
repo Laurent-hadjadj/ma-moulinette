@@ -162,7 +162,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
 
         /** On appelle les requêtes HTTP pour chaque référentiel */
         $url = $this->urlBuilder->build(
-            $this->getParameter(static::$sonarUrl),
+            $this->getParameter(self::$sonarUrl),
             '/api/hotspots/search',
             $queryParamsList['owasp2017']
         );

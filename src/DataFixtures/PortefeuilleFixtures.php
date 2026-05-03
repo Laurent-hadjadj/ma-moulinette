@@ -33,11 +33,11 @@ class PortefeuilleFixtures extends Fixture
   public function load(ObjectManager $manager): void
     {
       $portefeuille=(new Portefeuille())
-          ->setPortefeuille(static::$titre)
-          ->setGroupeFonctionnel(static::$groupe)
-          ->setListe(static::$liste)
-          ->setDateModification(new \DateTime(static::$dateModification))
-          ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+          ->setPortefeuille(self::$titre)
+          ->setGroupeFonctionnel(self::$groupe)
+          ->setListe(self::$liste)
+          ->setDateModification(new \DateTime(self::$dateModification))
+          ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
       $manager->persist($portefeuille);
 
 

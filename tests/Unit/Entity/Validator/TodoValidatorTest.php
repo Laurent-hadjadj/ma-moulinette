@@ -34,13 +34,13 @@ class TodoValidatorTest extends KernelTestCase
   private function getEntity(): Todo
   {
       return (new todo())
-      ->setMavenKey(static::$mavenKey)
-      ->setRule(static::$rule)
-      ->setComponent(static::$component)
-      ->setLine(static::$line)
-      ->setModeCollecte(static::$modeCollecte)
-      ->setUtilisateurCollecte(static::$utilisateurCollecte)
-      ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+      ->setMavenKey(self::$mavenKey)
+      ->setRule(self::$rule)
+      ->setComponent(self::$component)
+      ->setLine(self::$line)
+      ->setModeCollecte(self::$modeCollecte)
+      ->setUtilisateurCollecte(self::$utilisateurCollecte)
+      ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
   }
 
   public function assertHasErrors(Todo $entity, int $number = 0): void

@@ -53,32 +53,32 @@ class AnomalieCaseTest extends TestCase
     private function getEntity(): Anomalie
     {
         return (new anomalie())
-        ->setMavenKey(static::$mavenKey)
-        ->setProjectName(static::$projectName)
-        ->setAnomalieTotal(static::$anomalieTotal)
-        ->setDetteMinute(static::$detteMinute)
-        ->setDetteReliabilityMinute(static::$detteReliabilityMinute)
-        ->setDetteVulnerabilityMinute(static::$detteVulnerabilityMinute)
-        ->setDetteCodeSmellMinute(static::$detteCodeSmellMinute)
-        ->setDetteReliability(static::$detteReliability)
-        ->setDetteVulnerability(static::$detteVulnerability)
-        ->setDetteCodeSmell(static::$detteCodeSmell)
-        ->setDette(static::$dette)
-        ->setFrontend(static::$frontend)
-        ->setBackend(static::$backend)
-        ->setAutre(static::$autre)
-        ->setInconnu(static::$inconnu)
-        ->setBlocker(static::$blocker)
-        ->setCritical(static::$critical)
-        ->setMajor(static::$major)
-        ->setInfo(static::$info)
-        ->setMinor(static::$minor)
-        ->setBug(static::$bug)
-        ->setVulnerability(static::$vulnerability)
-        ->setCodeSmell(static::$codeSmell)
-        ->setModeCollecte(static::$modeCollecte)
-        ->setUtilisateurCollecte(static::$utilisateurCollecte)
-        ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+        ->setMavenKey(self::$mavenKey)
+        ->setProjectName(self::$projectName)
+        ->setAnomalieTotal(self::$anomalieTotal)
+        ->setDetteMinute(self::$detteMinute)
+        ->setDetteReliabilityMinute(self::$detteReliabilityMinute)
+        ->setDetteVulnerabilityMinute(self::$detteVulnerabilityMinute)
+        ->setDetteCodeSmellMinute(self::$detteCodeSmellMinute)
+        ->setDetteReliability(self::$detteReliability)
+        ->setDetteVulnerability(self::$detteVulnerability)
+        ->setDetteCodeSmell(self::$detteCodeSmell)
+        ->setDette(self::$dette)
+        ->setFrontend(self::$frontend)
+        ->setBackend(self::$backend)
+        ->setAutre(self::$autre)
+        ->setInconnu(self::$inconnu)
+        ->setBlocker(self::$blocker)
+        ->setCritical(self::$critical)
+        ->setMajor(self::$major)
+        ->setInfo(self::$info)
+        ->setMinor(self::$minor)
+        ->setBug(self::$bug)
+        ->setVulnerability(self::$vulnerability)
+        ->setCodeSmell(self::$codeSmell)
+        ->setModeCollecte(self::$modeCollecte)
+        ->setUtilisateurCollecte(self::$utilisateurCollecte)
+        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -95,135 +95,135 @@ class AnomalieCaseTest extends TestCase
 
     public function testSettingAndGettingMavenKey(): void
     {
-        $this->anomalie->setMavenKey(static::$mavenKey);
-        $this->assertEquals(static::$mavenKey, $this->anomalie->getMavenKey());
+        $this->anomalie->setMavenKey(self::$mavenKey);
+        $this->assertEquals(self::$mavenKey, $this->anomalie->getMavenKey());
     }
 
     public function testSettingAndGettingProjectName(): void
     {
-        $this->anomalie->setProjectName(static::$projectName);
-        $this->assertEquals(static::$projectName, $this->anomalie->getProjectName());
+        $this->anomalie->setProjectName(self::$projectName);
+        $this->assertEquals(self::$projectName, $this->anomalie->getProjectName());
     }
 
     public function testSettingAndGettingAnomalieTotal(): void
     {
-        $this->anomalie->setAnomalieTotal(static::$anomalieTotal);
-        $this->assertEquals(static::$anomalieTotal, $this->anomalie->getAnomalieTotal());
+        $this->anomalie->setAnomalieTotal(self::$anomalieTotal);
+        $this->assertEquals(self::$anomalieTotal, $this->anomalie->getAnomalieTotal());
     }
     public function testSettingAndGettingDetteMinute(): void
     {
-        $this->anomalie->setDetteMinute(static::$detteMinute);
-        $this->assertEquals(static::$detteMinute, $this->anomalie->getDetteMinute());
+        $this->anomalie->setDetteMinute(self::$detteMinute);
+        $this->assertEquals(self::$detteMinute, $this->anomalie->getDetteMinute());
     }
     public function testSettingAndGettingDetteReliabilityMinute(): void
     {
-        $this->anomalie->setDetteReliabilityMinute(static::$detteReliabilityMinute);
-        $this->assertEquals(static::$detteReliabilityMinute, $this->anomalie->getDetteReliabilityMinute());
+        $this->anomalie->setDetteReliabilityMinute(self::$detteReliabilityMinute);
+        $this->assertEquals(self::$detteReliabilityMinute, $this->anomalie->getDetteReliabilityMinute());
     }
     public function testSettingAndGettingDetteVulnerabilityMinute(): void
     {
-        $this->anomalie->setDetteVulnerabilityMinute(static::$detteVulnerabilityMinute);
-        $this->assertEquals(static::$detteVulnerabilityMinute, $this->anomalie->getDetteVulnerabilityMinute());
+        $this->anomalie->setDetteVulnerabilityMinute(self::$detteVulnerabilityMinute);
+        $this->assertEquals(self::$detteVulnerabilityMinute, $this->anomalie->getDetteVulnerabilityMinute());
     }
     public function testSettingAndGettingDetteCodeSmellMinute(): void
     {
-        $this->anomalie->setDetteCodeSmellMinute(static::$detteCodeSmellMinute);
-        $this->assertEquals(static::$detteCodeSmellMinute, $this->anomalie->getDetteCodeSmellMinute());
+        $this->anomalie->setDetteCodeSmellMinute(self::$detteCodeSmellMinute);
+        $this->assertEquals(self::$detteCodeSmellMinute, $this->anomalie->getDetteCodeSmellMinute());
     }
     public function testSettingAndGettingDetteReliability(): void
     {
-        $this->anomalie->setDetteReliability(static::$detteReliability);
-        $this->assertEquals(static::$detteReliability, $this->anomalie->getDetteReliability());
+        $this->anomalie->setDetteReliability(self::$detteReliability);
+        $this->assertEquals(self::$detteReliability, $this->anomalie->getDetteReliability());
     }
     public function testSettingAndGettingDetteVulnerability(): void
     {
-        $this->anomalie->setDetteVulnerability(static::$detteVulnerability);
-        $this->assertEquals(static::$detteVulnerability, $this->anomalie->getDetteVulnerability());
+        $this->anomalie->setDetteVulnerability(self::$detteVulnerability);
+        $this->assertEquals(self::$detteVulnerability, $this->anomalie->getDetteVulnerability());
     }
     public function testSettingAndGettingDetteCodeSmell(): void
     {
-        $this->anomalie->setDetteCodeSmell(static::$detteCodeSmell);
-        $this->assertEquals(static::$detteCodeSmell, $this->anomalie->getDetteCodeSmell());
+        $this->anomalie->setDetteCodeSmell(self::$detteCodeSmell);
+        $this->assertEquals(self::$detteCodeSmell, $this->anomalie->getDetteCodeSmell());
     }
     public function testSettingAndGettingDette(): void
     {
-        $this->anomalie->setDette(static::$dette);
-        $this->assertEquals(static::$dette, $this->anomalie->getDette());
+        $this->anomalie->setDette(self::$dette);
+        $this->assertEquals(self::$dette, $this->anomalie->getDette());
     }
     public function testSettingAndGettingFrontend(): void
     {
-        $this->anomalie->setFrontend(static::$frontend);
-        $this->assertEquals(static::$frontend, $this->anomalie->getFrontend());
+        $this->anomalie->setFrontend(self::$frontend);
+        $this->assertEquals(self::$frontend, $this->anomalie->getFrontend());
     }
     public function testSettingAndGettingBackend(): void
     {
-        $this->anomalie->setBackend(static::$backend);
-        $this->assertEquals(static::$backend, $this->anomalie->getBackend());
+        $this->anomalie->setBackend(self::$backend);
+        $this->assertEquals(self::$backend, $this->anomalie->getBackend());
     }
     public function testSettingAndGettingAutre(): void
     {
-        $this->anomalie->setAutre(static::$autre);
-        $this->assertEquals(static::$autre, $this->anomalie->getAutre());
+        $this->anomalie->setAutre(self::$autre);
+        $this->assertEquals(self::$autre, $this->anomalie->getAutre());
     }
     public function testSettingAndGettingInconnu(): void
     {
-        $this->anomalie->setInconnu(static::$inconnu);
-        $this->assertEquals(static::$inconnu, $this->anomalie->getInconnu());
+        $this->anomalie->setInconnu(self::$inconnu);
+        $this->assertEquals(self::$inconnu, $this->anomalie->getInconnu());
     }
     public function testSettingAndGettingBlocker(): void
     {
-        $this->anomalie->setBlocker(static::$blocker);
-        $this->assertEquals(static::$blocker, $this->anomalie->getBlocker());
+        $this->anomalie->setBlocker(self::$blocker);
+        $this->assertEquals(self::$blocker, $this->anomalie->getBlocker());
     }
     public function testSettingAndGettingCritical(): void
     {
-        $this->anomalie->setCritical(static::$critical);
-        $this->assertEquals(static::$critical, $this->anomalie->getCritical());
+        $this->anomalie->setCritical(self::$critical);
+        $this->assertEquals(self::$critical, $this->anomalie->getCritical());
     }
     public function testSettingAndGettingMajor(): void
     {
-        $this->anomalie->setMajor(static::$major);
-        $this->assertEquals(static::$major, $this->anomalie->getMajor());
+        $this->anomalie->setMajor(self::$major);
+        $this->assertEquals(self::$major, $this->anomalie->getMajor());
     }
     public function testSettingAndGettingInfo(): void
     {
-        $this->anomalie->setInfo(static::$info);
-        $this->assertEquals(static::$info, $this->anomalie->getInfo());
+        $this->anomalie->setInfo(self::$info);
+        $this->assertEquals(self::$info, $this->anomalie->getInfo());
     }
     public function testSettingAndGettingMinor(): void
     {
-        $this->anomalie->setMinor(static::$minor);
-        $this->assertEquals(static::$minor, $this->anomalie->getMinor());
+        $this->anomalie->setMinor(self::$minor);
+        $this->assertEquals(self::$minor, $this->anomalie->getMinor());
     }
     public function testSettingAndGettingBug(): void
     {
-        $this->anomalie->setBug(static::$bug);
-        $this->assertEquals(static::$bug, $this->anomalie->getBug());
+        $this->anomalie->setBug(self::$bug);
+        $this->assertEquals(self::$bug, $this->anomalie->getBug());
     }
     public function testSettingAndGettingVulnerability(): void
     {
-        $this->anomalie->setVulnerability(static::$vulnerability);
-        $this->assertEquals(static::$vulnerability, $this->anomalie->getVulnerability());
+        $this->anomalie->setVulnerability(self::$vulnerability);
+        $this->assertEquals(self::$vulnerability, $this->anomalie->getVulnerability());
     }
     public function testSettingAndGettingCodeSmell(): void
     {
-        $this->anomalie->setCodeSmell(static::$codeSmell);
-        $this->assertEquals(static::$codeSmell, $this->anomalie->getCodeSmell());
+        $this->anomalie->setCodeSmell(self::$codeSmell);
+        $this->assertEquals(self::$codeSmell, $this->anomalie->getCodeSmell());
     }
     public function testSettingAndGettingModeCollecte(): void
     {
-        $this->anomalie->setModeCollecte(static::$modeCollecte);
-        $this->assertEquals(static::$modeCollecte, $this->anomalie->getModeCollecte());
+        $this->anomalie->setModeCollecte(self::$modeCollecte);
+        $this->assertEquals(self::$modeCollecte, $this->anomalie->getModeCollecte());
     }
     public function testSettingAndGettingUtilisateurCollecte(): void
     {
-        $this->anomalie->setUtilisateurCollecte(static::$utilisateurCollecte);
-        $this->assertEquals(static::$utilisateurCollecte, $this->anomalie->getUtilisateurCollecte());
+        $this->anomalie->setUtilisateurCollecte(self::$utilisateurCollecte);
+        $this->assertEquals(self::$utilisateurCollecte, $this->anomalie->getUtilisateurCollecte());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(static::$dateEnregistrement);
+        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
         $this->anomalie->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->anomalie->getDateEnregistrement());
     }

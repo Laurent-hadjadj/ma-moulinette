@@ -56,14 +56,14 @@ class PorteFeuilleRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['portefeuille' => static::$portefeuille];
+        $map = ['portefeuille' => self::$portefeuille];
 
         // Appel de la méthode
         $informationProjetRepository = $entityManager->getRepository(Portefeuille::class);
         $r = $informationProjetRepository->selectPortefeuille($map);
 
         // Assert
-        $this->assertEquals(200, $r['code'], static::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 

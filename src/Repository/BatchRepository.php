@@ -47,7 +47,7 @@ class BatchRepository extends ServiceEntityRepository
 
     // message = 'SQLSTATE[08006]'
     if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-        $message = static::$noDataBase;
+        $message = self::$noDataBase;
     }
 
     // state = '23502'
@@ -79,7 +79,7 @@ class BatchRepository extends ServiceEntityRepository
             FROM batch
             ORDER BY activated ASC";
       try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             $liste = $stmt->executeQuery()->fetchAllAssociative();
       } catch (\Throwable $e) {
           return $this->handleDatabaseException($e);
@@ -104,7 +104,7 @@ class BatchRepository extends ServiceEntityRepository
             WHERE portefeuille = :portefeuille";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(static::$removeReturnLine, " ", $sql));
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
               $stmt->bindValue(':portefeuille', $map['portefeuille']);
               $stmt->bindValue(':nombre_projet', $map['nombre_projet']);
             $stmt->executeStatement();

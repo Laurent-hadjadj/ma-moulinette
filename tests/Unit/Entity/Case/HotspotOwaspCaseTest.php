@@ -41,20 +41,20 @@ class HotspotOwaspCaseTest extends TestCase
     private function getEntity(): HotspotOwasp
     {
         return (new hotspotOwasp())
-            ->setMavenKey(static::$mavenKey)
-            ->setReferentialOwasp(static::$referentialOwasp)
-            ->setVersion(static::$version)
-            ->setDateVersion(new \DateTimeImmutable(static::$dateVersion))
-            ->setMenace(static::$menace)
-            ->setSecurityCategory(static::$securityCategory)
-            ->setRuleKey(static::$ruleKey)
-            ->setProbability(static::$probability)
-            ->setStatus(static::$status)
-            ->setResolution(static::$resolution)
-            ->setNiveau(static::$niveau)
-            ->setModeCollecte(static::$modeCollecte)
-            ->setUtilisateurCollecte(static::$utilisateurCollecte)
-            ->setDateEnregistrement(new \DateTimeImmutable(static::$dateEnregistrement));
+            ->setMavenKey(self::$mavenKey)
+            ->setReferentialOwasp(self::$referentialOwasp)
+            ->setVersion(self::$version)
+            ->setDateVersion(new \DateTimeImmutable(self::$dateVersion))
+            ->setMenace(self::$menace)
+            ->setSecurityCategory(self::$securityCategory)
+            ->setRuleKey(self::$ruleKey)
+            ->setProbability(self::$probability)
+            ->setStatus(self::$status)
+            ->setResolution(self::$resolution)
+            ->setNiveau(self::$niveau)
+            ->setModeCollecte(self::$modeCollecte)
+            ->setUtilisateurCollecte(self::$utilisateurCollecte)
+            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -71,84 +71,84 @@ class HotspotOwaspCaseTest extends TestCase
 
     public function testSettingAndGettingMavenKey(): void
     {
-        $this->hotspotOwasp->setMavenKey(static::$mavenKey);
-        $this->assertEquals(static::$mavenKey, $this->hotspotOwasp->getMavenKey());
+        $this->hotspotOwasp->setMavenKey(self::$mavenKey);
+        $this->assertEquals(self::$mavenKey, $this->hotspotOwasp->getMavenKey());
     }
     public function testSettingAndGettingReferentialOwasp(): void
     {
-        $this->hotspotOwasp->setReferentialOwasp(static::$referentialOwasp);
-        $this->assertEquals(static::$referentialOwasp, $this->hotspotOwasp->getReferentialOwasp());
+        $this->hotspotOwasp->setReferentialOwasp(self::$referentialOwasp);
+        $this->assertEquals(self::$referentialOwasp, $this->hotspotOwasp->getReferentialOwasp());
     }
 
     public function testSettingAndGettingVersion(): void
     {
-        $this->hotspotOwasp->setVersion(static::$version);
-        $this->assertEquals(static::$version, $this->hotspotOwasp->getVersion());
+        $this->hotspotOwasp->setVersion(self::$version);
+        $this->assertEquals(self::$version, $this->hotspotOwasp->getVersion());
     }
 
     public function testSettingAndGettingDateVersion(): void
     {
-        $newDate = new \DateTimeImmutable(static::$dateVersion);
+        $newDate = new \DateTimeImmutable(self::$dateVersion);
         $this->hotspotOwasp->setDateVersion($newDate);
         $this->assertEquals($newDate, $this->hotspotOwasp->getDateVersion());
     }
 
     public function testSettingAndGettingMenace(): void
     {
-        $this->hotspotOwasp->setMenace(static::$menace);
-        $this->assertEquals(static::$menace, $this->hotspotOwasp->getMenace());
+        $this->hotspotOwasp->setMenace(self::$menace);
+        $this->assertEquals(self::$menace, $this->hotspotOwasp->getMenace());
     }
 
     public function testSettingAndGettingSecurityCategory(): void
     {
-        $this->hotspotOwasp->setSecurityCategory(static::$securityCategory);
-        $this->assertEquals(static::$securityCategory, $this->hotspotOwasp->getSecurityCategory());
+        $this->hotspotOwasp->setSecurityCategory(self::$securityCategory);
+        $this->assertEquals(self::$securityCategory, $this->hotspotOwasp->getSecurityCategory());
     }
 
     public function testSettingAndGettingRuleKey(): void
     {
-        $this->hotspotOwasp->setRuleKey(static::$ruleKey);
-        $this->assertEquals(static::$ruleKey, $this->hotspotOwasp->getRuleKey());
+        $this->hotspotOwasp->setRuleKey(self::$ruleKey);
+        $this->assertEquals(self::$ruleKey, $this->hotspotOwasp->getRuleKey());
     }
 
     public function testSettingAndGettingProbability(): void
     {
-        $this->hotspotOwasp->setProbability(static::$probability);
-        $this->assertEquals(static::$probability, $this->hotspotOwasp->getProbability());
+        $this->hotspotOwasp->setProbability(self::$probability);
+        $this->assertEquals(self::$probability, $this->hotspotOwasp->getProbability());
     }
 
     public function testSettingAndGettingStatus(): void
     {
-        $this->hotspotOwasp->setStatus(static::$status);
-        $this->assertEquals(static::$status, $this->hotspotOwasp->getStatus());
+        $this->hotspotOwasp->setStatus(self::$status);
+        $this->assertEquals(self::$status, $this->hotspotOwasp->getStatus());
     }
 
     public function testSettingAndGettingResolution(): void
     {
-        $this->hotspotOwasp->setResolution(static::$resolution);
-        $this->assertEquals(static::$resolution, $this->hotspotOwasp->getResolution());
+        $this->hotspotOwasp->setResolution(self::$resolution);
+        $this->assertEquals(self::$resolution, $this->hotspotOwasp->getResolution());
     }
 
     public function testSettingAndGettingNiveau(): void
     {
-        $this->hotspotOwasp->setNiveau(static::$niveau);
-        $this->assertEquals(static::$niveau, $this->hotspotOwasp->getNiveau());
+        $this->hotspotOwasp->setNiveau(self::$niveau);
+        $this->assertEquals(self::$niveau, $this->hotspotOwasp->getNiveau());
     }
 
     public function testSettingAndGettingModeCollecte(): void
     {
-        $this->hotspotOwasp->setModeCollecte(static::$modeCollecte);
-        $this->assertEquals(static::$modeCollecte, $this->hotspotOwasp->getModeCollecte());
+        $this->hotspotOwasp->setModeCollecte(self::$modeCollecte);
+        $this->assertEquals(self::$modeCollecte, $this->hotspotOwasp->getModeCollecte());
     }
     public function testSettingAndGettingUtilisateurCollecte(): void
     {
-        $this->hotspotOwasp->setUtilisateurCollecte(static::$utilisateurCollecte);
-        $this->assertEquals(static::$utilisateurCollecte, $this->hotspotOwasp->getUtilisateurCollecte());
+        $this->hotspotOwasp->setUtilisateurCollecte(self::$utilisateurCollecte);
+        $this->assertEquals(self::$utilisateurCollecte, $this->hotspotOwasp->getUtilisateurCollecte());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(static::$dateEnregistrement);
+        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
         $this->hotspotOwasp->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->hotspotOwasp->getDateEnregistrement());
     }

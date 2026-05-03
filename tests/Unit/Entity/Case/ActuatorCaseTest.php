@@ -34,13 +34,13 @@ class ActuatorCaseTest extends TestCase
     private function getEntity(): Actuator
     {
         $actuator = new Actuator();
-        $actuator->setMavenKey(static::$mavenKey)
-                    ->setNomApplication(static::$nomApplication)
-                    ->setUrl(static::$url)
-                    ->setActuatorUser(static::$actuatorUser)
-                    ->setActuatorPassword(static::$actuatorPassword)
-                    ->setPersonne(static::$personne)
-                    ->setDateModification(new \DateTimeImmutable(static::$dateModification))
+        $actuator->setMavenKey(self::$mavenKey)
+                    ->setNomApplication(self::$nomApplication)
+                    ->setUrl(self::$url)
+                    ->setActuatorUser(self::$actuatorUser)
+                    ->setActuatorPassword(self::$actuatorPassword)
+                    ->setPersonne(self::$personne)
+                    ->setDateModification(new \DateTimeImmutable(self::$dateModification))
                     ->setDateEnregistrement(new \DateTimeImmutable());
         return $actuator;
 }
@@ -59,43 +59,43 @@ class ActuatorCaseTest extends TestCase
 
     public function testSettingAndGettingMavenKey(): void
     {
-        $this->actuator->setMavenKey(static::$mavenKey);
-        $this->assertEquals(static::$mavenKey, $this->actuator->getMavenKey());
+        $this->actuator->setMavenKey(self::$mavenKey);
+        $this->assertEquals(self::$mavenKey, $this->actuator->getMavenKey());
     }
 
     public function testSettingAndGettingNomApplication(): void
     {
-        $this->actuator->setNomApplication(static::$nomApplication);
-        $this->assertEquals(static::$nomApplication, $this->actuator->getNomApplication());
+        $this->actuator->setNomApplication(self::$nomApplication);
+        $this->assertEquals(self::$nomApplication, $this->actuator->getNomApplication());
     }
 
     public function testSettingAndGettingUrl(): void
     {
-        $this->actuator->setUrl(static::$url);
-        $this->assertEquals(static::$url, $this->actuator->getUrl());
+        $this->actuator->setUrl(self::$url);
+        $this->assertEquals(self::$url, $this->actuator->getUrl());
     }
 
     public function testSettingAndGettingActuatorUser(): void
     {
-        $this->actuator->setActuatorUser(static::$actuatorUser);
-        $this->assertEquals(static::$actuatorUser, $this->actuator->getActuatorUser());
+        $this->actuator->setActuatorUser(self::$actuatorUser);
+        $this->assertEquals(self::$actuatorUser, $this->actuator->getActuatorUser());
     }
 
     public function testSettingAndGettingActuatorPassword(): void
     {
-        $this->actuator->setActuatorPassword(static::$actuatorPassword);
-        $this->assertEquals(static::$actuatorPassword, $this->actuator->getActuatorPassword());
+        $this->actuator->setActuatorPassword(self::$actuatorPassword);
+        $this->assertEquals(self::$actuatorPassword, $this->actuator->getActuatorPassword());
     }
 
     public function testSettingAndGettingPersonne(): void
     {
-        $this->actuator->setPersonne(static::$personne);
-        $this->assertEquals(static::$personne, $this->actuator->getPersonne());
+        $this->actuator->setPersonne(self::$personne);
+        $this->assertEquals(self::$personne, $this->actuator->getPersonne());
     }
 
     public function testSettingAndGettingDateModification(): void
     {
-        $newDate=new \DateTimeImmutable(static::$dateModification);
+        $newDate=new \DateTimeImmutable(self::$dateModification);
         $this->actuator->setDateModification($newDate);
         $this->assertEquals($newDate, $this->actuator->getDateModification());
     }
