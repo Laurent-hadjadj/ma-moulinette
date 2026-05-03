@@ -7,6 +7,7 @@ namespace App\Tests\Unit\Controller\Owasp;
 use App\Controller\Owasp\OwaspController;
 use App\Entity\OwaspTop10;
 use App\Repository\OwaspTop10Repository;
+use App\Service\PdfExportService;
 use App\Service\UserAgentTrackingFacade;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
@@ -27,6 +28,7 @@ class OwaspControllerTest extends TestCase
     /** @var EntityManagerInterface&MockObject */  private MockObject $em;
     /** @var LoggerInterface&MockObject */         private MockObject $logger;
     /** @var UserAgentTrackingFacade&MockObject */ private MockObject $tracking;
+    /** @var PdfExportService&MockObject */        private MockObject $pdfExport;
     /** @var OwaspTop10Repository&MockObject */    private MockObject $repo;
     /** @var Environment&MockObject */             private MockObject $twig;
     /** @var FlashBag&MockObject */                private MockObject $flashBag;
@@ -39,6 +41,7 @@ class OwaspControllerTest extends TestCase
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
+        $this->pdfExport = $this->createMock(PdfExportService::class);
         $this->repo = $this->createMock(OwaspTop10Repository::class);
         $this->twig = $this->createMock(Environment::class);
         $this->flashBag = $this->createMock(FlashBag::class);
@@ -72,7 +75,7 @@ class OwaspControllerTest extends TestCase
             ['parameter_bag', 1, $this->params],
         ]);
 
-        $this->controller = new OwaspController($this->params, $this->em, $this->logger, $this->tracking);
+        $this->controller = new OwaspController($this->params, $this->em, $this->logger, $this->tracking, $this->pdfExport);
         $this->controller->setContainer($container);
     }
 
