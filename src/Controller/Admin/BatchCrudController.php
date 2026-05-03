@@ -13,6 +13,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Controller\Traits\AppUserAware;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\{Action, Actions, Crud, Filters};
@@ -23,13 +24,13 @@ use App\Entity\{Batch, BatchTraitement, BatchExecution };
 use App\Exception\SqlRequestException;
 
 /**
- * [Description BatchCrudController]
- * Gère les traitements programmés ou manuels.
- *
+ * @extends AbstractCrudController<Batch>
  */
 class BatchCrudController extends AbstractCrudController
 {
-    private static $europeParis = 'Europe/Paris';
+    use AppUserAware;
+
+    private static string $europeParis = 'Europe/Paris';
 
     /**
      * [Description for __construct]
@@ -38,10 +39,8 @@ class BatchCrudController extends AbstractCrudController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-
     public function __construct(
-        private EntityManagerInterface $emm,
-        private TokenStorageInterface $token,
+        private EntityManagerInterface $emm
     ) {
     }
 
@@ -193,11 +192,11 @@ class BatchCrudController extends AbstractCrudController
             ->setHelp('Responsable du traitement.');
 
         yield DateTimeField::new('dateModification')
-            ->setTimezone(static::$europeParis)
+            ->setTimezone(self::$europeParis)
             ->hideOnForm();
 
         yield DateTimeField::new('dateEnregistrement')
-            ->setTimezone(static::$europeParis)
+            ->setTimezone(self::$europeParis)
             ->hideOnForm();
 
     }
@@ -207,7 +206,6 @@ class BatchCrudController extends AbstractCrudController
      * On enregistre les données lors de la création
      *
      * @param EntityManagerInterface $em
-     * @param mixed $entityInstance
      *
      * @return void
      *
@@ -227,7 +225,7 @@ class BatchCrudController extends AbstractCrudController
         $titre = $entityInstance->getTitre();
 
         /** On récupère l'objet user */
-        $user = $this->token->getToken()->getUser();
+        $user = $this->appUser();
 
         /** On récupère le nombre de projet du portefeuille */
         $portefeuille = $entityInstance->getPortefeuille();
@@ -287,7 +285,6 @@ class BatchCrudController extends AbstractCrudController
      * Mise à jour des données du formulaire
      *
      * @param EntityManagerInterface $em
-     * @param mixed $entityInstance
      *
      * @return void
      *
@@ -297,46 +294,52 @@ class BatchCrudController extends AbstractCrudController
      */
     public function updateEntity(EntityManagerInterface $em, $entityInstance): void
     {
-
         if (!$entityInstance instanceof Batch) {
             return;
         }
 
-        /** On vérifie que le nombre de projet n'a pas changé */
+        /** On vérifie que le nombre de projet n'a pas changé — bind parameters anti SQLi */
         $portefeuille = $entityInstance->getPortefeuille();
-        $sql = "SELECT liste FROM portefeuille where titre = '$portefeuille'";
-        $conn = $this->emm->getConnection()->prepare($sql);
-        $exec = $conn->executeQuery()->fetchAssociative();
+        $conn = $this->emm->getConnection();
+        $exec = $conn->executeQuery(
+            'SELECT liste FROM portefeuille WHERE titre = :portefeuille',
+            ['portefeuille' => $portefeuille]
+        )->fetchAssociative();
 
         $nombre_projet = 0;
-        if (isset($exec['liste'])){
+        if (isset($exec['liste'])) {
             $nombre_projet = count(json_decode($exec['liste'], true));
         }
 
         if ($nombre_projet > 0 && $nombre_projet != $entityInstance->getNombreProjet()) {
-            // On met à jour la table BATCH
-            $sql1 = "UPDATE batch
-                    SET nombre_projet = $nombre_projet
-                    WHERE portefeuille = '$portefeuille'";
-            $conn = $this->emm->getConnection()->prepare($sql1);
-            $conn->executeStatement();
+            // Met à jour la table BATCH avec bind parameters
+            $conn->executeStatement(
+                'UPDATE batch SET nombre_projet = :nombre_projet WHERE portefeuille = :portefeuille',
+                ['nombre_projet' => $nombre_projet, 'portefeuille' => $portefeuille]
+            );
         }
 
-        // On met à jour la table BATCH_TRAITEMENT
+        // Met à jour la table BATCH_TRAITEMENT
         $traitement_id = $entityInstance->getTraitementId()->toRfc4122();
-        $isActivated = $entityInstance->isActivated() ? 'TRUE' : 'FALSE';
+        $isActivated = $entityInstance->isActivated();
         $isAutomatique = ($entityInstance->isAutomatique() === true) ? 'TRAITEMENT AUTOMATIQUE' : 'TRAITEMENT MANUEL';
 
-        $sql2 = "UPDATE batch_traitement
-                    SET nombre_projet = $nombre_projet,
-                        activated = $isActivated,
-                        mode_collecte = '$isAutomatique'
-                    WHERE traitement_id = '$traitement_id'";
-        $conn = $this->emm->getConnection()->prepare($sql2);
-        $conn->executeStatement();
+        $conn->executeStatement(
+            'UPDATE batch_traitement
+                SET nombre_projet = :nombre_projet,
+                    activated = :activated,
+                    mode_collecte = :mode_collecte
+                WHERE traitement_id = :traitement_id',
+            [
+                'nombre_projet' => $nombre_projet,
+                'activated' => $isActivated,
+                'mode_collecte' => $isAutomatique,
+                'traitement_id' => $traitement_id,
+            ]
+        );
 
         /** On ajoute la date de modification  */
-        $entityInstance->setDateModification(new \DateTime('now', new \DateTimeZone(static::$europeParis)));
+        $entityInstance->setDateModification(new \DateTime('now', new \DateTimeZone(self::$europeParis)));
 
         parent::updateEntity($em, $entityInstance);
     }

@@ -13,6 +13,7 @@
 
 namespace App\Controller\Projet;
 
+use App\Controller\Traits\AppUserAware;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\{JsonResponse, Response, Request};
@@ -20,16 +21,19 @@ use \Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Utilisateur, ListeProjet};
+use App\Repository\ListeProjetRepository;
 
 /**
  * [Description ApiProjetController]
  */
 class ApiProjetController extends AbstractController
 {
+    use AppUserAware;
+
     /** Définition des constantes */
-    private static $erreur400 = "La requête est incorrecte (Erreur 400).";
-    private static $erreur404 = "Vous devez être rattaché à une équipe (Erreur 404).";
-    private static $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. " .
+    private static string $erreur400 = "La requête est incorrecte (Erreur 400).";
+    private static string $erreur404 = "Vous devez être rattaché à une équipe (Erreur 404).";
+    private static string $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. " .
         "Vérifie le nom du tag utilisé dans SonarQube (Erreur 406).";
 
     /**
@@ -41,8 +45,7 @@ class ApiProjetController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        private LoggerInterface $logger,
-        private Security $security,
+        private LoggerInterface $logger
     ) {}
 
     /**
@@ -63,7 +66,7 @@ class ApiProjetController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/favori");
 
-        $user = $this->security->getUser();
+        $user = $this->appUser();
         $username = $user->getUserIdentifier();
         $courriel = $user->getCourriel();
         $preference = $user->getPreference();
@@ -80,7 +83,7 @@ class ApiProjetController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$erreur400,
+                'message' => self::$erreur400,
             ], Response::HTTP_OK);
         }
 
@@ -141,7 +144,7 @@ class ApiProjetController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/favori/check");
 
-        $user = $this->security->getUser();
+        $user = $this->appUser();
         $username = $user->getUserIdentifier();
         $data = json_decode($request->getContent());
 
@@ -154,7 +157,7 @@ class ApiProjetController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$erreur400,
+                'message' => self::$erreur400,
             ], Response::HTTP_OK);
         }
 
@@ -191,8 +194,6 @@ class ApiProjetController extends AbstractController
      * Récupère la liste des projets nom + clé pour une équipe
      * http://{url}}/api/projet/liste
      *
-     * @param Security $security
-     *
      * @return JsonResponse
      *
      * Created at: 15/12/2022, 21:28:51 (Europe/Paris)
@@ -204,7 +205,7 @@ class ApiProjetController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/projet/liste");
 
-        $user = $this->security->getUser();
+        $user = $this->appUser();
         $username = $user->getUserIdentifier();
         $listeProjetRepos = $this->em->getRepository(ListeProjet::class);
         $groupes = $user->getListeGroupeFonctionnel();
@@ -217,7 +218,7 @@ class ApiProjetController extends AbstractController
             return new JsonResponse([
                 'code' => 404,
                 'type' => 'alert',
-                'message' => static::$erreur404
+                'message' => self::$erreur404
             ], Response::HTTP_OK);
         }
 
@@ -226,22 +227,12 @@ class ApiProjetController extends AbstractController
             'groupes' => $groupes
         ]);
 
-        $in = '';
-        foreach ($groupes as $groupe) {
-            if ($groupe !== 'null') {
-                $minus = trim(strtolower($groupe));
-                $in .= " tag LIKE '" . preg_replace('/\s+/', '-', $minus) . "%' OR ";
-            }
-        }
-
-        $inTrim = rtrim($in, " OR ");
-        $map = ['clause_where' => $inTrim];
-
-        $this->logger->debug('[Projet-Liste] 🛠️ Clause WHERE construite.', [
-            'clause' => $inTrim
+        $tagPrefixes = ListeProjetRepository::normalizeGroupesToTagPrefixes($groupes);
+        $this->logger->debug('[Projet-Liste] 🛠️ Prefixes tag construits.', [
+            'prefixes' => $tagPrefixes
         ]);
 
-        $requestListe = $listeProjetRepos->selectListeProjetByGroupe($map);
+        $requestListe = $listeProjetRepos->selectListeProjetByGroupe($tagPrefixes);
 
         if ($requestListe['code'] != 200) {
             $this->logger->error("[Projet-Liste] ❌ Erreur lors de la récupération des projets.", [
@@ -269,7 +260,7 @@ class ApiProjetController extends AbstractController
             return new JsonResponse([
                 'code' => 406,
                 'type' => 'warning',
-                'message' => static::$erreur406
+                'message' => self::$erreur406
             ], Response::HTTP_OK);
         }
 

@@ -25,9 +25,9 @@ use App\Service\{ClientService, UrlBuilderService};
 class BatchCollecteHotspotOwaspController extends AbstractController
 {
     /** Définition des constantes */
-    private static $sonarUrl = "sonar.url";
-    private static $europeParis = "Europe/Paris";
-    private static $erreur404 = "L'appel à l'API n'a pas abouti (Erreur 404).";
+    private static string $sonarUrl = "sonar.url";
+    private static string $europeParis = "Europe/Paris";
+    private static string $erreur404 = "L'appel à l'API n'a pas abouti (Erreur 404).";
 
     /**
      * [Description for __construct]
@@ -69,10 +69,9 @@ class BatchCollecteHotspotOwaspController extends AbstractController
     /**
      * [Description for BatchCollecteHotspotOwasp]
      *
-     * @param string $mavenKey
      * @param string $menace
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 30/05/2024 11:59:20 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -145,15 +144,17 @@ class BatchCollecteHotspotOwaspController extends AbstractController
             $this->logger->warning('[HotspotOwasp] ⚠️ Aucune information projet trouvée', ['maven_key' => $maven_key]);
             return [
                 'code' => 404,
-                'message' => static::$erreur404
+                'message' => self::$erreur404
             ];
         }
 
         /** On reconstruit les dates au format dateTimeImmutable */
-        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
-        $dateVersion = new \DateTimeImmutable($information['info'][0]['date'], new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
+        $dateVersion = new \DateTimeImmutable($information['info'][0]['date'], new \DateTimeZone(self::$europeParis));
 
-        /** Tableau des paramètres pour la requête HTTP */
+        /** Tableau des paramètres pour la requête HTTP
+         *  SonarQube 26.x accepte a1..a10 pour les DEUX versions OWASP (pas de zero-padding).
+         */
         $queryParamsList = [
             'owasp2017' => ['projectKey' => $maven_key, 'owaspTop10' => $menace,'p' => 1, 'ps' => 500 ],
             'owasp2021' => ['projectKey' => $maven_key, 'owaspTop10-2021' => $menace,'p' => 1, 'ps' => 500 ]
@@ -186,7 +187,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
         $owasp2021 = ['NC'];
         if ((int) $sonarVersion > 8){
             $url = $this->urlBuilder->build(
-                $this->getParameter(static::$sonarUrl),
+                $this->getParameter(self::$sonarUrl),
                 '/api/hotspots/search',
                 $queryParamsList['owasp2021']
             );

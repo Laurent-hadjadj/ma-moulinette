@@ -13,6 +13,7 @@
 
 namespace App\Controller\Auth;
 
+use App\Controller\Traits\AppUserAware;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -28,12 +29,15 @@ use App\Entity\Utilisateur;
  */
 class ChangeMeController extends AbstractController
 {
+    use AppUserAware;
+
     /** Définition des constantes */
-    private static $europeParis = "Europe/Paris";
-    private static $erreur400 = "La requête est incorrecte (Erreur 400).";
-    private static $erreur403 = "Vous devez avoir le rôle UTILISATEUR pour réaliser cette action (Erreur 403).";
-    private static $loggerE400 = "[Collecte] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé.";
-    private static $loggerE403 = "[Collecte] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_UTILISATEUR).";
+    private static string $europeParis = "Europe/Paris";
+    private static string $erreur400 = "La requête est incorrecte (Erreur 400).";
+    private static string $erreur403 = "Vous devez avoir le rôle UTILISATEUR pour réaliser cette action (Erreur 403).";
+    private static string $loggerE400 = "[Change-Me] ❌ Requête invalide : clé 'avatar' manquante ou JSON mal formé.";
+    private static string $loggerE403 = "[Change-Me] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_UTILISATEUR).";
+    private static string $noData = 'Pas de données';
 
     public function __construct(
         private EntityManagerInterface $em,
@@ -101,29 +105,27 @@ class ChangeMeController extends AbstractController
 
         // Vérifie si l'utilisateur a bien le rôle nécessaire
         if (!$this->isGranted('ROLE_UTILISATEUR')) {
-            $this->logger->warning(static::$loggerE403, [
+            $this->logger->warning(self::$loggerE403, [
                 'utilisateur' => $this->security->getUser()?->getUserIdentifier()
             ]);
 
             return new JsonResponse([
-                'type' => 'warning',
                 'code' => 403,
-                'message' => static::$erreur403,
-                'trace' => null
+                'type' => 'warning',
+                'message' => self::$erreur403
             ], Response::HTTP_OK);
         }
 
         // Vérification de la validité du corps de la requête
-        if (!is_object($data) || !property_exists($data, 'avatar')) {
-            $this->logger->error(static::$loggerE400, [
-                'payload' => $data ?? null
+        if (!is_object($data) || !property_exists($data, 'avatar') || !is_string($data->avatar)) {
+            $this->logger->error(self::$loggerE400, [
+                'payload' => $data ?? self::$noData
             ]);
 
             return new JsonResponse([
                 'code' => 400,
-                'type' => 'alert',
-                'message' => static::$erreur400,
-                'trace' => null
+                'type' => 'error',
+                'message' => self::$erreur400
             ], Response::HTTP_OK);
         }
 
@@ -146,12 +148,12 @@ class ChangeMeController extends AbstractController
         }
 
         /** On créé un objet DateTime */
-        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
         $utilisateur->setAvatar($data->avatar . '.png');
         $utilisateur->setDateModification($date);
         $this->em->flush();
 
-        $courriel = $this->security->getUser()->getCourriel() ?? 'john Do';
+        $courriel = $this->appUser()->getCourriel() ?? self::$noData;
         $this->logger->info("[Change-Me] ℹ️ mise à jour de l'avatar pour $courriel.");
 
         return new JsonResponse(
@@ -162,5 +164,4 @@ class ChangeMeController extends AbstractController
             Response::HTTP_OK
         );
     }
-
 }

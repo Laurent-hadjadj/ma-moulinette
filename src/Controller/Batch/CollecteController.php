@@ -27,11 +27,12 @@ use App\Controller\Batch\{BatchCollecteInformationProjetController, BatchCollect
  */
 class CollecteController extends AbstractController
 {
-    private static $dateFormat = 'Y-m-d H:i:s';
-    private static $europeParis = 'Europe/Paris';
-    private static $noMessage = 'Aucun message remonté.';
-    private static $noError = 'Aucune erreur remontée.';
-    private static $jeNeSaisPas = 'Je ne sais pas.';
+    private static string $dateFormat = 'Y-m-d H:i:s';
+    private static string $europeParis = 'Europe/Paris';
+    private static string $noMessage = 'Aucun message remonté.';
+    private static string $noError = 'Aucune erreur remontée.';
+    private static string $jeNeSaisPas = 'Je ne sais pas.';
+    private static string $erreurFinTraitement = '[Batch] ❌ Erreur lors du traitement des notes du projet.';
 
     /**
      * [Description for __construct]
@@ -62,7 +63,7 @@ class CollecteController extends AbstractController
     /**
      * [Description for generateHtmlForItem]
      *
-     * @param array $item
+     * @param array<int|string, mixed> $item
      *
      * @return string
      *
@@ -88,7 +89,7 @@ class CollecteController extends AbstractController
                 </tr>
                 <tr>
                     <th>Date Version</th>
-                    <td>' . $item['date_version']->format(static::$dateFormat) . '</td>
+                    <td>' . $item['date_version']->format(self::$dateFormat) . '</td>
                 </tr>
                 <tr>
                     <th>Menace</th>
@@ -112,7 +113,7 @@ class CollecteController extends AbstractController
                 </tr>
                 <tr>
                     <th>Date Enregistrement</th>
-                    <td>' . $item['date_enregistrement']->format(static::$dateFormat) . '</td>
+                    <td>' . $item['date_enregistrement']->format(self::$dateFormat) . '</td>
                 </tr>
             </table>';
     }
@@ -130,7 +131,7 @@ class CollecteController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function generateHtmlErrorContain(string $code, string $message, string $erreur): string
+    private function generateHtmlErrorContain(int|string $code, string $message, string $erreur): string
     {
         return '<div class="callout alert-callout-border alert callout-ombre"><p>
                         🔴 Le traitement de collecte pour ce projet est arrêté.</p>
@@ -150,13 +151,13 @@ class CollecteController extends AbstractController
      *
      * @param Request $request
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 11/06/2024 12:58:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function collecte($portefeuille, $maven_key, $mode_collecte, $utilisateur_collecte): array
+    public function collecte(string $portefeuille, string $maven_key, string $mode_collecte, string $utilisateur_collecte): array
     {
         /** On instancie l'entityRepository */
         $historiqueRepos = $this->em->getRepository(Historique::class);
@@ -178,7 +179,7 @@ class CollecteController extends AbstractController
         */
 
         /** On démarre la mesure du traitement */
-        $debutTraitement = new \DateTime('now', new \DateTimeZone(static::$europeParis));
+        $debutTraitement = new \DateTime('now', new \DateTimeZone(self::$europeParis));
         $this->logger->info("[Batch] ℹ️ Démarrage du traitement différé en mode {$mode_collecte}.");
 
         $collecte[] =
@@ -189,7 +190,7 @@ class CollecteController extends AbstractController
                         <li><span>Portefeuille : </span>'. $portefeuille . '</li>
                         <li><span>Projet : </span>' . $maven_key . '</li>
                         <li><span>Mode : </span>' . $mode_collecte .'</li>
-                        <li><span>Date : </span>' . $debutTraitement->format(static::$dateFormat) .'</li>
+                        <li><span>Date : </span>' . $debutTraitement->format(self::$dateFormat) .'</li>
                     </ul>
                 </div>
             </div>';
@@ -277,8 +278,8 @@ class CollecteController extends AbstractController
         if (!in_array($informationProjet['code'], ['200', '100'])) {
             $this->logger->info('[Batch] ❌ Erreur lors du traitement des informations du projet.', [
                 'code' => $informationProjet['code'],
-                'message' => $informationProjet['message'] ?? static::$noMessage,
-                'erreur' => $informationProjet['erreur'] ?? static::$noError,
+                'message' => $informationProjet['message'] ?? self::$noMessage,
+                'erreur' => $informationProjet['erreur'] ?? self::$noError,
 
             ]);
 
@@ -286,8 +287,8 @@ class CollecteController extends AbstractController
 
             $erreurContain = $this->generateHtmlErrorContain(
                 $informationProjet['code'],
-                $informationProjet['message'] ?? static::$noMessage,
-                $informationProjet['erreur'] ?? static::$noError );
+                $informationProjet['message'] ?? self::$noMessage,
+                $informationProjet['erreur'] ?? self::$noError );
 
             $collecte[] = $erreurTitre . $erreurContain;
             $compte_rendu = implode("\n", $collecte);
@@ -336,15 +337,15 @@ class CollecteController extends AbstractController
         } else {
             $this->logger->info('[Batch] ❌ Erreur lors du traitement des mesures du projet.', [
                 'code' => $mesure['code'],
-                'message' => $mesure['message'] ?? static::$noMessage,
-                'erreur' => $mesure['erreur'] ?? static::$noError,
+                'message' => $mesure['message'] ?? self::$noMessage,
+                'erreur' => $mesure['erreur'] ?? self::$noError,
             ]);
 
             $erreurTitre = '<h2 class="h5"><span aria-hidden="true">🔚</span>02 - Fin de la collecte des mesures pour le projet</h2>';
             $erreurContain = $this->generateHtmlErrorContain(
                 $mesure['code'],
-                $mesure['message'] ?? static::$noMessage,
-                $mesure['erreur'] ?? static::$noError );
+                $mesure['message'] ?? self::$noMessage,
+                $mesure['erreur'] ?? self::$noError );
 
             $collecte[] = $erreurTitre . $erreurContain;
             $compte_rendu = implode("\n", $collecte);
@@ -403,17 +404,17 @@ class CollecteController extends AbstractController
             $this->logger->error('[Batch] ❌ Erreur lors du traitement des anomalies du projet.', [
                     'code' => $anomalie['code'],
                     'type' => $anomalie['type'] ?? '',
-                    'message' => $anomalie['message'] ?? static::$noMessage,
-                    'erreur' => $anomalie['erreur'] ?? static::$noError,
+                    'message' => $anomalie['message'] ?? self::$noMessage,
+                    'erreur' => $anomalie['erreur'] ?? self::$noError,
             ]);
 
             $erreurTitre = '<h2 class="h5"><span aria-hidden="true">🔚</span>04 - Fin de la collecte des anomalies pour le projet</h2>';
-            $erreurSousTitre = '<h3> class="h5 opens-sans"><span aria-hidden="true">🔠</span>Type : </span>'. $anomalie['type'] ?? ' Information manquante' .'<h3>';
+            $erreurSousTitre = '<h3> class="h5 opens-sans"><span aria-hidden="true">🔠</span>Type : </span>'. ($anomalie['type'] ?? ' Information manquante') .'<h3>';
 
             $erreurContain = $this->generateHtmlErrorContain(
                     $anomalie['code'],
-                    $anomalie['message'] ?? static::$noMessage,
-                    $anomalie['erreur'] ?? static::$noError );
+                    $anomalie['message'] ?? self::$noMessage,
+                    $anomalie['erreur'] ?? self::$noError );
 
             $collecte[] = $erreurTitre . $erreurSousTitre. $erreurContain;
             $compte_rendu = implode("\n", $collecte);
@@ -469,17 +470,17 @@ class CollecteController extends AbstractController
             $this->logger->error('[Batch] ❌ Erreur lors du traitement du détail des anomalies du projet.', [
                     'code' => $anomalieDetail['code'],
                     'type' => $anomalieDetail['type'] ?? '',
-                    'message' => $anomalieDetail['message'] ?? static::$noMessage,
-                    'erreur' => $anomalieDetail['erreur'] ?? static::$noError,
+                    'message' => $anomalieDetail['message'] ?? self::$noMessage,
+                    'erreur' => $anomalieDetail['erreur'] ?? self::$noError,
             ]);
 
             $erreurTitre = '<h2 class="h5"><span aria-hidden="true">🔚</span>05 - Fin de la collecte du détails des anomalies pour le projet</h2>';
-            $erreurSousTitre = '<h3> class="h5 opens-sans"><span aria-hidden="true">🔠</span>Type : </span>'. $anomalieDetail['type'] ?? 'Information manquante' .'<h3>';
+            $erreurSousTitre = '<h3> class="h5 opens-sans"><span aria-hidden="true">🔠</span>Type : </span>'. ($anomalieDetail['type'] ?? 'Information manquante') .'<h3>';
 
             $erreurContain = $this->generateHtmlErrorContain(
                     $anomalieDetail['code'],
-                    $anomalieDetail['message'] ?? static::$noMessage,
-                    $anomalieDetail['erreur'] ?? static::$noError );
+                    $anomalieDetail['message'] ?? self::$noMessage,
+                    $anomalieDetail['erreur'] ?? self::$noError );
 
             $collecte[] = $erreurTitre . $erreurSousTitre. $erreurContain;
             $compte_rendu = implode("\n", $collecte);
@@ -516,15 +517,15 @@ class CollecteController extends AbstractController
         } else {
             $this->logger->error('[Batch] ❌ Erreur lors du traitement des menaces du projet.', [
                     'code' => $hotspot['code'],
-                    'message' => $hotspot['message'] ?? static::$noMessage,
-                    'erreur' => $hotspot['erreur'] ?? static::$noError,
+                    'message' => $hotspot['message'] ?? self::$noMessage,
+                    'erreur' => $hotspot['erreur'] ?? self::$noError,
             ]);
 
             $erreurTitre = '<h2 class="h5"><span aria-hidden="true">🔚</span>06 - Fin de la collecte des menaces potentielles pour le projet</h2>';
             $erreurContain = $this->generateHtmlErrorContain(
                 $hotspot['code'],
-                $hotspot['message'] ?? static::$noMessage,
-                $hotspot['erreur'] ?? static::$noError );
+                $hotspot['message'] ?? self::$noMessage,
+                $hotspot['erreur'] ?? self::$noError );
 
             $collecte[] = $erreurTitre . $erreurContain;
             $compte_rendu = implode("\n", $collecte);
@@ -601,21 +602,21 @@ class CollecteController extends AbstractController
                     <p>'. htmlspecialchars($hotspotDetails['message']) .'</p>
                     <ul>
                         <li><span>Nombre d’élément dans la liste  : </span>' .
-                            htmlspecialchars($hotspotDetails['nombre']) ?? static::$jeNeSaisPas . '</li>
+                            (htmlspecialchars($hotspotDetails['nombre']) ?: self::$jeNeSaisPas) . '</li>
                         <li><span>Nombre de menaces total  : </span>' .
-                            htmlspecialchars($item['menace_potentielle_totale']) ?? static::$jeNeSaisPas . '</li>
+                            (htmlspecialchars($item['menace_potentielle_totale']) ?: self::$jeNeSaisPas) . '</li>
                         <li><span>Nombre de menaces de niveau HIGH au statut REVIEW : </span>' .
-                            htmlspecialchars($item['menace_potentielle_review_high']) ?? static::$jeNeSaisPas . '</li>
+                            (htmlspecialchars($item['menace_potentielle_review_high']) ?: self::$jeNeSaisPas) . '</li>
                         <li><span>Menaces de niveau MEDIUM au statut REVIEW : </span>' .
-                            htmlspecialchars($item['menace_potentielle_review_medium']) ?? static::$jeNeSaisPas . '</li>
+                            (htmlspecialchars($item['menace_potentielle_review_medium']) ?: self::$jeNeSaisPas) . '</li>
                         <li><span>Menaces de niveau LOW au statut REVIEW : </span>' .
-                            htmlspecialchars($item['menace_potentielle_review_low']) ?? static::$jeNeSaisPas . '</li>
+                            (htmlspecialchars($item['menace_potentielle_review_low']) ?: self::$jeNeSaisPas) . '</li>
                         <li><span>Menaces de niveau HIGH au statut REVIEWED : </span>' .
-                            htmlspecialchars($item['menace_potentielle_reviewed_high']) ?? static::$jeNeSaisPas . '</li>
+                            (htmlspecialchars($item['menace_potentielle_reviewed_high']) ?: self::$jeNeSaisPas) . '</li>
                         <li><span>Menaces de niveau MEDIUM au statut REVIEWED : </span>' .
-                            htmlspecialchars($item['menace_potentielle_reviewed_medium']) ?? static::$jeNeSaisPas . '</li>
+                            (htmlspecialchars($item['menace_potentielle_reviewed_medium']) ?: self::$jeNeSaisPas) . '</li>
                         <li><span>Menaces de niveau LOW au statut REVIEWED : </span>' .
-                        htmlspecialchars($item['menace_potentielle_reviewed_low']) ?? static::$jeNeSaisPas . '</li>
+                        (htmlspecialchars($item['menace_potentielle_reviewed_low']) ?: self::$jeNeSaisPas) . '</li>
                     </ul>
                 </section>';
                 /** On met à jour le tableau des données pour la table historique */
@@ -624,16 +625,16 @@ class CollecteController extends AbstractController
         } else {
             $this->logger->error('[Batch] ❌ Erreur lors du traitement du détail des menaces potentielles du projet.', [
                         'code' => $hotspotDetails['code'],
-                        'message' => $hotspotDetails['message'] ?? static::$noMessage,
-                        'erreur' => $hotspotDetails['erreur'] ?? static::$noError,
+                        'message' => $hotspotDetails['message'] ?? self::$noMessage,
+                        'erreur' => $hotspotDetails['erreur'] ?? self::$noError,
                 ]);
 
             $erreurTitre = '<h2 class="h5"><span aria-hidden="true">🔚</span>08 - Fin de la collecte du détail des menaces potentielles pour le projet</h2>';
 
             $erreurContain = $this->generateHtmlErrorContain(
                 $hotspotDetails['code'],
-                $hotspotDetails['message'] ?? static::$noMessage,
-                $hotspotDetails['erreur'] ?? static::$noError );
+                $hotspotDetails['message'] ?? self::$noMessage,
+                $hotspotDetails['erreur'] ?? self::$noError );
 
             $collecte[] = $erreurTitre . $erreurContain;
             $compte_rendu = implode("\n", $collecte);
@@ -667,16 +668,16 @@ class CollecteController extends AbstractController
         } else {
             $this->logger->error('[Batch] ❌ Erreur lors du traitement des menaces OWASP du projet.', [
                         'code' => $owasp['code'],
-                        'message' => $owasp['message'] ?? static::$noMessage,
-                        'erreur' => $owasp['erreur'] ?? static::$noError,
+                        'message' => $owasp['message'] ?? self::$noMessage,
+                        'erreur' => $owasp['erreur'] ?? self::$noError,
                 ]);
 
             $erreurTitre = '<h2 class="h5"><span aria-hidden="true">🔚</span>09 - Fin de la collecte des menaces OWASP pour le projet</h2>';
 
             $erreurContain = $this->generateHtmlErrorContain(
                 $owasp['code'],
-                $owasp['message'] ?? static::$noMessage,
-                $owasp['erreur'] ?? static::$noError );
+                $owasp['message'] ?? self::$noMessage,
+                $owasp['erreur'] ?? self::$noError );
 
             $collecte[] = $erreurTitre . $erreurContain;
             $compte_rendu = implode("\n", $collecte);
@@ -722,17 +723,17 @@ class CollecteController extends AbstractController
                 $this->logger->error('[Batch] ❌ Erreur lors du traitement des menaces OWASP potentielles du projet.', [
                         'code' => $hotspotOwasp['code'],
                         'type' => $hotspotOwasp['type'] ?? 'inconnu',
-                        'message' => $hotspotOwasp['message'] ?? static::$noMessage,
-                        'erreur' => $hotspotOwasp['erreur'] ?? static::$noError,
+                        'message' => $hotspotOwasp['message'] ?? self::$noMessage,
+                        'erreur' => $hotspotOwasp['erreur'] ?? self::$noError,
                 ]);
 
                 $erreurTitre = '<h2 class="h5"><span aria-hidden="true">🔚</span>10 - Fin de la collecte des menaces OWASP potentielles pour le projet</h2>';
-                $erreurSousTitre = '<h3> class="h5 opens-sans"><span aria-hidden="true">🔠</span>Menace : </span>'. $hotspotOwasp['type'] ?? 'Information manquante' .'<h3>';
+                $erreurSousTitre = '<h3> class="h5 opens-sans"><span aria-hidden="true">🔠</span>Menace : </span>'. ($hotspotOwasp['type'] ?? 'Information manquante') .'<h3>';
 
                 $erreurContain = $this->generateHtmlErrorContain(
                         $hotspotOwasp['code'],
-                        $hotspotOwasp['message'] ?? static::$noMessage,
-                        $hotspotOwasp['erreur'] ?? static::$noError );
+                        $hotspotOwasp['message'] ?? self::$noMessage,
+                        $hotspotOwasp['erreur'] ?? self::$noError );
 
                 $collecte[] = $erreurTitre . $erreurSousTitre. $erreurContain;
                 $compte_rendu = implode("\n", $collecte);
@@ -773,16 +774,16 @@ class CollecteController extends AbstractController
         } else {
                 $this->logger->error('[Batch] ❌ Erreur lors du traitement des annotations noSonar/suppressWarning du projet.', [
                         'code' => $noSonar['code'],
-                        'message' => $noSonar['message'] ?? static::$noMessage,
-                        'erreur' => $noSonar['erreur'] ?? static::$noError,
+                        'message' => $noSonar['message'] ?? self::$noMessage,
+                        'erreur' => $noSonar['erreur'] ?? self::$noError,
                 ]);
 
             $erreurTitre = '<h2 class="h5"><span aria-hidden="true">🔚</span>11 Fin de la collecte des annotations noSonar et suppressWarning pour le projet</h2>';
 
             $erreurContain = $this->generateHtmlErrorContain(
                 $noSonar['code'],
-                $noSonar['message'] ?? static::$noMessage,
-                $noSonar['erreur'] ?? static::$noError );
+                $noSonar['message'] ?? self::$noMessage,
+                $noSonar['erreur'] ?? self::$noError );
 
             $collecte[] = $erreurTitre . $erreurContain;
             $compte_rendu = implode("\n", $collecte);
@@ -818,16 +819,16 @@ class CollecteController extends AbstractController
         } else {
             $this->logger->error('[Batch] ❌ Erreur lors du traitement des todo du projet.', [
                 'code' => $noSonar['code'],
-                'message' => $noSonar['message'] ?? static::$noMessage,
-                'erreur' => $noSonar['erreur'] ?? static::$noError,
+                'message' => $noSonar['message'] ?? self::$noMessage,
+                'erreur' => $noSonar['erreur'] ?? self::$noError,
             ]);
 
             $erreurTitre = '<h2 class="h5"><span aria-hidden="true">🔚</span>12 Fin de la collecte des todo pour le projet</h2>';
 
             $erreurContain = $this->generateHtmlErrorContain(
                 $todo['code'],
-                $todo['message'] ?? static::$noMessage,
-                $todo['erreur'] ?? static::$noError );
+                $todo['message'] ?? self::$noMessage,
+                $todo['erreur'] ?? self::$noError );
 
             $collecte[] = $erreurTitre . $erreurContain;
             $compte_rendu = implode("\n", $collecte);
@@ -852,16 +853,16 @@ class CollecteController extends AbstractController
         } else {
                 $this->logger->error('[Batch] ❌ Erreur lors du traitement des informations actuator du projet.', [
                         'code' => $actuatorInfo['code'],
-                        'message' => $actuatorInfo['message'] ?? static::$noMessage,
-                        'erreur' => $actuatorInfo['erreur'] ?? static::$noError,
+                        'message' => $actuatorInfo['message'] ?? self::$noMessage,
+                        'erreur' => $actuatorInfo['erreur'] ?? self::$noError,
                 ]);
 
                 $erreurTitre = '<h2 class="h5"><span aria-hidden="true">🔚</span>13 Fin de la collecte des informations actuator pour le projet</h2>>';
 
                 $erreurContain = $this->generateHtmlErrorContain(
                     $actuatorInfo['code'],
-                    $actuatorInfo['message'] ?? static::$noMessage,
-                    $actuatorInfo['erreur'] ?? static::$noError );
+                    $actuatorInfo['message'] ?? self::$noMessage,
+                    $actuatorInfo['erreur'] ?? self::$noError );
 
                 $collecte[] = $erreurTitre . $erreurContain;
                 $compte_rendu = implode("\n", $collecte);
@@ -900,18 +901,18 @@ class CollecteController extends AbstractController
         } else {
                 $this->logger->error('[Batch] ❌ Erreur lors du traitement des Logger Java pour le projet.', [
                             'code' => $loggerJava['code'],
-                            'message' => $loggerJava['message'] ?? static::$noMessage,
-                            'erreur' => $loggerJava['erreur'] ?? static::$noError,
-                            'tracker' => $loggerJava['tracker'] ?? static::$noError,
+                            'message' => $loggerJava['message'] ?? self::$noMessage,
+                            'erreur' => $loggerJava['erreur'] ?? self::$noError,
+                            'tracker' => $loggerJava['tracker'] ?? self::$noError,
                     ]);
 
                 $erreurTitre = '<h2 class="h5"><span aria-hidden="true">🔚</span>Fin de la collecte des informations du projet</h2>';
-                $erreurSousTitre = '<h3> class="h5 opens-sans"><span aria-hidden="true">🔠</span>Level : </span>'. $loggerJava['tracker'] ?? static::$noError .'<h3>';
+                $erreurSousTitre = '<h3> class="h5 opens-sans"><span aria-hidden="true">🔠</span>Level : </span>'. ($loggerJava['tracker'] ?? self::$noError) .'<h3>';
 
                 $erreurContain = $this->generateHtmlErrorContain(
                     $informationProjet['code'],
-                    $informationProjet['message'] ?? static::$noMessage,
-                    $informationProjet['erreur'] ?? static::$noError );
+                    $informationProjet['message'] ?? self::$noMessage,
+                    $informationProjet['erreur'] ?? self::$noError );
 
                 $collecte[] = $erreurTitre . $erreurSousTitre .$erreurContain;
                 $compte_rendu = implode("\n", $collecte);
@@ -927,7 +928,7 @@ class CollecteController extends AbstractController
         $collecte[] =
         '<h2 class="h5"><span aria-hidden="true">📜</span>15 - Consolidation des données dans la table historique</h2>';
 
-        $date_historique = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
+        $date_historique = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
 
         /** Consolidation des données */
         $mergeHistorique = array_merge($mergeHistorique, [
@@ -949,16 +950,16 @@ class CollecteController extends AbstractController
             } else {
             $this->logger->critical('[Batch] 🔴 Erreur lors du traitement des données pour la table historique.', [
                 'code' => $loggerJava['code'],
-                'message' => $loggerJava['message'] ?? static::$noMessage,
-                'erreur' => $loggerJava['erreur'] ?? static::$noError,
+                'message' => $loggerJava['message'] ?? self::$noMessage,
+                'erreur' => $loggerJava['erreur'] ?? self::$noError,
             ]);
 
             $erreurTitre = '<h2 class="h5"><span aria-hidden="true">🔴</span>Échec de mise à jour de la table Historique</h2>';
 
             $erreurContain = $this->generateHtmlErrorContain(
                 $historique['code'],
-                $historique['message'] ?? static::$noMessage,
-                $historique['erreur'] ?? static::$noError );
+                $historique['message'] ?? self::$noMessage,
+                $historique['erreur'] ?? self::$noError );
 
             $collecte[] = $erreurTitre . $erreurContain;
             $compte_rendu = implode("\n", $collecte);
@@ -972,7 +973,7 @@ class CollecteController extends AbstractController
         }
 
         /** Fin du traitement */
-        $finTraitement = new \DateTime('now', new \DateTimeZone(static::$europeParis));
+        $finTraitement = new \DateTime('now', new \DateTimeZone(self::$europeParis));
         $interval = $debutTraitement->diff($finTraitement);
 
         $collecte[] =
@@ -982,8 +983,8 @@ class CollecteController extends AbstractController
                 <li><span>Portefeuille : </span>' . $portefeuille . '</li>
                 <li><span>Projet : </span>' . $maven_key . '</li>
                 <li><span>Mode : </span>' . $mode_collecte .'</li>
-                <li><span>Démarrage : </span>' . $debutTraitement->format(static::$dateFormat) .'</li>
-                <li><span>Fin : </span>' . $finTraitement->format(static::$dateFormat) . '</li>
+                <li><span>Démarrage : </span>' . $debutTraitement->format(self::$dateFormat) .'</li>
+                <li><span>Fin : </span>' . $finTraitement->format(self::$dateFormat) . '</li>
                 <li><span>Temps d\'exécution : </span>' . $interval->format('%H:%i:%s.%f') . '</li>
             </ul>
         </div>';

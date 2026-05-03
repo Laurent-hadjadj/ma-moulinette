@@ -25,8 +25,9 @@ use App\Service\{ExtractName, ClientService, UrlBuilderService};
 class BatchCollecteAnomalieDetailController extends AbstractController
 {
     /** Définition des constantes */
-    private static $sonarUrl = "sonar.url";
-    private static $europeParis = "Europe/Paris";
+    private static string $sonarUrl = "sonar.url";
+    private static string $europeParis = "Europe/Paris";
+    private static string $noData = 'Pas de données';
 
     /**
      * [Description for __construct]
@@ -48,10 +49,9 @@ class BatchCollecteAnomalieDetailController extends AbstractController
      * [Description for makeRequest]
      * On renvoi un tableau avec le résultat de la requête ou un tableau avec un code erreur.
      *
-     * @param array $queryParams
-     * @param string $tempoUrl
+     * @param array<int|string, mixed> $queryParams
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 25/01/2025 21:27:28 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -61,7 +61,7 @@ class BatchCollecteAnomalieDetailController extends AbstractController
     {
         /** Sécurisation de l'URL */
         $url = $this->urlBuilder->build(
-            $this->getParameter(static::$sonarUrl),
+            $this->getParameter(self::$sonarUrl),
             '/api/issues/search',
             $queryParams
         );
@@ -84,7 +84,7 @@ class BatchCollecteAnomalieDetailController extends AbstractController
 
         $this->logger->debug("[Batch AnomalieDétail] 🛠️ Résultat JSON SonarQube reçu", [
             'queryParams' => $queryParams,
-            'result' => $result['json'] ?? null
+            'result' => $result['json'] ?? self::$noData
         ]);
 
         return $result['json'] ?? [];
@@ -93,9 +93,9 @@ class BatchCollecteAnomalieDetailController extends AbstractController
     /**
      * [Description for mapSeverities]
      *
-     * @param array $severities
+     * @param array<int|string, mixed> $severities
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 26/01/2025 00:29:20 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -128,7 +128,7 @@ class BatchCollecteAnomalieDetailController extends AbstractController
      * @param string $mode_collecte
      * @param string $utilisateur_collecte
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 03/06/2024 14:14:37 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -138,7 +138,7 @@ class BatchCollecteAnomalieDetailController extends AbstractController
     {
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
         $anomalieDetailsRepos = $this->em->getRepository(AnomalieDetails::class);
-        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
 
         $this->logger->info('[Batch AnomalieDétail] ℹ️ Début de collecte anomalies', [
             'maven_key' => $maven_key,

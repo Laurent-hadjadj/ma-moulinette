@@ -15,7 +15,7 @@ namespace App\Controller\Profiling;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{BatchProfiling};
@@ -25,7 +25,10 @@ use App\Entity\{BatchProfiling};
  */
 class ProfilingApiController extends AbstractController
 {
-    private static $erreur400 = "La requête est incorrecte (Erreur 400).";
+    private static string $erreur400 = "La requête est incorrecte (Erreur 400).";
+    private static string $erreur403 = "Vous devez avoir le rôle BATCH pour réaliser cette action (Erreur 403).";
+    private static string $loggerE403 = "[Profiling] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_BATCH).";
+    private static string $noData = 'Pas de données';
 
     public function __construct(
         private EntityManagerInterface $em,
@@ -36,21 +39,25 @@ class ProfilingApiController extends AbstractController
      * [Description for formatChartData]
      * Transforme un tableau de stats en format Chart.js
      *
-     * @param array $rows
+     * @param array<int|string, mixed> $rows
      * @param string $xKey
-     * @param array $yKeys
-     * @param mixed|null groupKey
+     * @param array<int|string, mixed> $yKeys
+     * @param string|null $groupKey
      * @param bool $round
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 16/11/2025 09:08:50 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function formatChartData(array $rows, string $xKey,
-        array $yKeys, ? string $groupKey = null, bool $round = true): array
-    {
+    private function formatChartData(
+        array $rows,
+        string $xKey,
+        array $yKeys,
+        ?string $groupKey = null,
+        bool $round = true
+    ): array {
         $labels = [];
         $series = [];
 
@@ -86,7 +93,6 @@ class ProfilingApiController extends AbstractController
 
             $series[$group]['time'][$xValue]   = $timeValue;
             $series[$group]['memory'][$xValue] = $memoryValue;
-
         }
 
         // Construire les datasets
@@ -112,44 +118,57 @@ class ProfilingApiController extends AbstractController
         ];
     }
 
-    #[Route('/api/secure/profiling/indicateur', name: 'profiling_indicateur', methods:['POST'])]
+    #[Route('/api/secure/profiling/indicateur', name: 'profiling_indicateur', methods: ['POST'])]
     public function indicateur(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/secure/profiling/indicateur");
 
-        if (!$this->isGranted('ROLE_BATCH')){
-            return $this->json([
-                'code' => 404,
+        if (!$this->isGranted('ROLE_BATCH')) {
+            $this->logger->error(self::$loggerE403);
+
+            return new JsonResponse([
+                'code' => 403,
+                'type' => 'warning',
+                'message' => self::$erreur403,
                 'indicateur' => []
-            ]);
+            ], Response::HTTP_OK);
         }
 
         /** On décode le body */
         $data = json_decode($request->getContent());
 
         $authorize_indicateur = [
-            'utilisateur', 'portefeuille', 'granularite',
-            'periode', 'nb_exec', 'derniere_execution'
+            'utilisateur',
+            'portefeuille',
+            'granularite',
+            'periode',
+            'nb_exec',
+            'derniere_execution'
         ];
 
         /** On teste si la clé est valide */
-        if ($data === null ||
-                !in_array($data->indicateur, $authorize_indicateur)) {
-            $this->logger->error("[Profil] ❌ Requête invalide : 'langage' manquant ou malformé", ['data' => $data]);
+        if (
+            $data === null
+            || !property_exists($data, 'indicateur') || !is_string($data->indicateur)
+            || !in_array($data->indicateur, $authorize_indicateur, true)
+        ) {
+            $this->logger->error("[Profiling] ❌ Requête invalide : 'indicateur' manquant ou non autorisé.", [
+                'payload' => $data ?? self::$noData
+            ]);
 
             return new JsonResponse([
-                    'code' => 400,
-                    'type' => 'alert',
-                    'message' => static::$erreur400
-                ], Response::HTTP_OK);
+                'code' => 400,
+                'type' => 'error',
+                'message' => self::$erreur400
+            ], Response::HTTP_OK);
         }
 
         $repo = $this->em->getRepository(BatchProfiling::class);
-        $data = $repo->findGlobalSummary($data->indicateur);
+        $result = $repo->findGlobalSummary($data->indicateur);
 
         return new JsonResponse([
             'code' => 200,
-            'indicateur' => $data ?? []
+            'indicateur' => $result
         ], Response::HTTP_OK);
     }
 
@@ -162,13 +181,20 @@ class ProfilingApiController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/secure/profiling/summary', name: 'profiling_summary', methods:['GET'])]
+    #[Route('/api/secure/profiling/summary', name: 'profiling_summary', methods: ['GET'])]
     public function summary(): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/secure/profiling/summary");
 
-        if (!$this->isGranted('ROLE_BATCH')){
-            return $this->json(['summary' => []]);
+        if (!$this->isGranted('ROLE_BATCH')) {
+            $this->logger->error(self::$loggerE403);
+
+            return new JsonResponse([
+                'code' => 403,
+                'type' => 'warning',
+                'message' => self::$erreur403,
+                'summary' => []
+            ], Response::HTTP_OK);
         }
 
         $repo = $this->em->getRepository(BatchProfiling::class);
@@ -189,13 +215,20 @@ class ProfilingApiController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/secure/profiling/latest', name: 'latest', methods:['GET'])]
+    #[Route('/api/secure/profiling/latest', name: 'latest', methods: ['GET'])]
     public function latest(): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/secure/profiling/latest");
 
-        if (!$this->isGranted('ROLE_BATCH')){
-            return $this->json(['latest' => []]);
+        if (!$this->isGranted('ROLE_BATCH')) {
+            $this->logger->error(self::$loggerE403);
+
+            return new JsonResponse([
+                'code' => 403,
+                'type' => 'warning',
+                'message' => self::$erreur403,
+                'latest' => []
+            ], Response::HTTP_OK);
         }
 
         $repo = $this->em->getRepository(BatchProfiling::class);
@@ -203,7 +236,7 @@ class ProfilingApiController extends AbstractController
 
         return new JsonResponse([
             'code' => 200,
-            'latest' => $data ?? [],
+            'latest' => $data
         ], Response::HTTP_OK);
     }
 
@@ -216,23 +249,34 @@ class ProfilingApiController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/secure/profiling/weekly/all', name: 'weekly_all', methods:['GET'])]
+    #[Route('/api/secure/profiling/weekly/all', name: 'weekly_all', methods: ['GET'])]
     public function weekly(): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/secure/profiling/weekly/all");
 
-        if (!$this->isGranted('ROLE_BATCH')){
-            return $this->json(['weekly' => []]);
+        if (!$this->isGranted('ROLE_BATCH')) {
+            $this->logger->error(self::$loggerE403);
+
+            return new JsonResponse([
+                'code' => 403,
+                'type' => 'warning',
+                'message' => self::$erreur403,
+                'weekly' => []
+            ], Response::HTTP_OK);
         }
 
         $repo = $this->em->getRepository(BatchProfiling::class);
         $rows = $repo->findWeeklyStats();
-        $data = $this->formatChartData($rows, 'semaine',
-            ['average_time', 'average_memory'], 'portefeuille');
+        $data = $this->formatChartData(
+            $rows,
+            'semaine',
+            ['average_time', 'average_memory'],
+            'portefeuille'
+        );
 
         return new JsonResponse([
             'code' => 200,
-            'weekly' => $data ?? [],
+            'weekly' => $data
         ], Response::HTTP_OK);
     }
 
@@ -245,23 +289,34 @@ class ProfilingApiController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/secure/profiling/monthly/all', name: 'monthly_all', methods:['GET'])]
+    #[Route('/api/secure/profiling/monthly/all', name: 'monthly_all', methods: ['GET'])]
     public function monthlyAll(): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/secure/profiling/monthly/all");
 
-        if (!$this->isGranted('ROLE_BATCH')){
-            return $this->json(['monthly' => []]);
+        if (!$this->isGranted('ROLE_BATCH')) {
+            $this->logger->error(self::$loggerE403);
+
+            return new JsonResponse([
+                'code' => 403,
+                'type' => 'warning',
+                'message' => self::$erreur403,
+                'monthly' => []
+            ], Response::HTTP_OK);
         }
 
         $repo = $this->em->getRepository(BatchProfiling::class);
         $rows = $repo->findMonthlyStats();
-        $data = $this->formatChartData($rows, 'mois',
-            ['average_time', 'average_memory'], 'portefeuille');
+        $data = $this->formatChartData(
+            $rows,
+            'mois',
+            ['average_time', 'average_memory'],
+            'portefeuille'
+        );
 
         return new JsonResponse([
             'code' => 200,
-            'monthly' => $data ?? [],
+            'monthly' => $data
         ], Response::HTTP_OK);
     }
 
@@ -274,23 +329,34 @@ class ProfilingApiController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/secure/profiling/users/all', name: 'users_all', methods:['GET'])]
+    #[Route('/api/secure/profiling/users/all', name: 'users_all', methods: ['GET'])]
     public function users(): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/secure/profiling/users/all");
 
-        if (!$this->isGranted('ROLE_BATCH')){
-            return $this->json(['user' => []]);
+        if (!$this->isGranted('ROLE_BATCH')) {
+            $this->logger->error(self::$loggerE403);
+
+            return new JsonResponse([
+                'code' => 403,
+                'type' => 'warning',
+                'message' => self::$erreur403,
+                'user' => []
+            ], Response::HTTP_OK);
         }
 
         $repo = $this->em->getRepository(BatchProfiling::class);
         $rows = $repo->findUsersStats();
-        $data = $this->formatChartData($rows, 'utilisateur',
-            ['average_time', 'average_memory'], null);
+        $data = $this->formatChartData(
+            $rows,
+            'utilisateur',
+            ['average_time', 'average_memory'],
+            null
+        );
 
         return new JsonResponse([
             'code' => 200,
-            'user' => $data ?? [],
+            'user' => $data
         ], Response::HTTP_OK);
     }
 
@@ -303,25 +369,34 @@ class ProfilingApiController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/secure/profiling/portefeuille/all', name: 'portefeuille_all', methods:['GET'])]
+    #[Route('/api/secure/profiling/portefeuille/all', name: 'portefeuille_all', methods: ['GET'])]
     public function allPortefeuille(): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/secure/profiling/portefeuille/all");
 
-        if (!$this->isGranted('ROLE_BATCH')){
-            return $this->json(['portefeuille' => []]);
+        if (!$this->isGranted('ROLE_BATCH')) {
+            $this->logger->error(self::$loggerE403);
+
+            return new JsonResponse([
+                'code' => 403,
+                'type' => 'warning',
+                'message' => self::$erreur403,
+                'portefeuille' => []
+            ], Response::HTTP_OK);
         }
 
         $repo = $this->em->getRepository(BatchProfiling::class);
         $rows = $repo->findStatsByPortefeuille();
-        $data = $this->formatChartData($rows,'portefeuille',
-                ['average_time', 'average_memory'], 'portefeuille');
+        $data = $this->formatChartData(
+            $rows,
+            'portefeuille',
+            ['average_time', 'average_memory'],
+            'portefeuille'
+        );
 
         return new JsonResponse([
             'code' => 200,
-            'portefeuille' => $data ?? [],
+            'portefeuille' => $data
         ], Response::HTTP_OK);
-
     }
-
 }

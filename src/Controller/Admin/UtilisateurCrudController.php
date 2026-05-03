@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2026.
+*  Copyright (c) 2021-2024.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common CC-BY-NC-SA 4.0.
 *  ---
@@ -13,9 +13,12 @@
 
 namespace App\Controller\Admin;
 
+use App\Controller\Traits\AppUserAware;
 use App\Entity\Utilisateur;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Service\RoleManagerService;
+use App\Service\{RoleManagerService, UserRoleLoggerService};
+use App\Security\SuspiciousActivityDetector;
+use Symfony\Component\Asset\Packages;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\{Crud, Filters};
@@ -23,11 +26,13 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\{FormField, TextField, EmailField, Ava
 use Psr\Log\LoggerInterface;
 
 /**
- * [Description UtilisateurCrudController]
+ * @extends AbstractCrudController<Utilisateur>
  */
 class UtilisateurCrudController extends AbstractCrudController
 {
-    private static $europeParis = 'Europe/Paris';
+    use AppUserAware;
+
+    private static string $europeParis = 'Europe/Paris';
 
     /**
      * [Description for __construct]
@@ -40,11 +45,11 @@ class UtilisateurCrudController extends AbstractCrudController
         private EntityManagerInterface $emm,
         private LoggerInterface $logger,
         private UserPasswordHasherInterface $passwordHasher,
-        private RoleManagerService $roleManager)
-    {
-        $this->emm = $emm;
-        $this->logger = $logger;
-        $this->passwordHasher = $passwordHasher;
+        private RoleManagerService $roleManager,
+        private UserRoleLoggerService $roleLogger,
+        private SuspiciousActivityDetector $detector,
+        private Packages $assets,
+    ) {
     }
 
     /**
@@ -137,17 +142,6 @@ class UtilisateurCrudController extends AbstractCrudController
             'Interne' => 'ROLE_INTERNAL',
         ];
 
-        // rôles qui impliquent automatiquement ROLE_UTILISATEUR
-        $rolesImplicitUser = [
-            'ROLE_COLLECTE',
-            'ROLE_SUIVI',
-            'ROLE_BATCH',
-            'ROLE_ACTUATOR',
-            'ROLE_ACTIVITY',
-            'ROLE_GESTIONNAIRE',
-            'ROLE_INTERNAL'
-        ];
-
         $entityInstance = null;
         $context = $this->getContext();
         // on récupère l’entité en cours d’édition pour adapter dynamiquement les champs en fonction de son état et du rôle de l’éditeur
@@ -160,12 +154,16 @@ class UtilisateurCrudController extends AbstractCrudController
         yield AvatarField::new('avatar')
             /** @var mixed $value Variable non utilisée */
             ->formatValue(
+                /**
+                 * Asset Mapper + Packages -> respecte le base path Symfony
+                 * (donc le X-Forwarded-Prefix injecte par le reverse proxy en prod).
+                 */
                 function ($callback, ?Utilisateur $utilisateur) {
                     $this->logger->debug('UtilisateurCrudController::configureFields - avatar - formatValue', [
                         'utilisateur' => $utilisateur?->getCourriel(),
-                        'avatarUrl' => $utilisateur?->getAvatarUrl(),
+                        'avatar' => $utilisateur?->getAvatar(),
                         'callback' => $callback,]);
-                    return '/assets'.$utilisateur?->getAvatarUrl() ?? '/assets/avatar/personne.png';
+                    return $this->assets->getUrl('avatar/' . ($utilisateur?->getAvatar() ?? 'personne.png'));
                 })
             ->setFormTypeOption('disabled',  in_array($pageName, [Crud::PAGE_DETAIL, Crud::PAGE_EDIT], true))
             ->hideOnForm();
@@ -182,8 +180,6 @@ class UtilisateurCrudController extends AbstractCrudController
 
         yield EmailField::new('courriel')
             ->setFormTypeOption('disabled', $pageName === Crud::PAGE_EDIT);
-
-        yield BooleanField::new('actif')->renderAsSwitch(false);
 
         // rôle de l’éditeur
         if ($this->isGranted('ROLE_INTERNAL')) {
@@ -221,7 +217,6 @@ class UtilisateurCrudController extends AbstractCrudController
             $helper_role = 'Accès limité aux rôles standards';
         }
 
-        yield FormField::addColumn(6);
         // affichage en badges colorés sur la page d’index, formulaire avec cases à cocher pour l’édition/création
         yield ChoiceField::new('roles')
             ->onlyOnIndex()
@@ -235,9 +230,6 @@ class UtilisateurCrudController extends AbstractCrudController
             ->allowMultipleChoices()
             ->renderExpanded()
             ->setFormTypeOption('choice_attr', function ($choice, $key, $value) use ($entityInstance) {
-                if (!$entityInstance) {
-                    return [];
-                }
                 $currentRoles = $entityInstance->getRoles();
 
                 /** Empêcher ROLE_NONE si actif */
@@ -267,6 +259,8 @@ class UtilisateurCrudController extends AbstractCrudController
             })
             ->setHelp($helper_role);
 
+        yield BooleanField::new('actif')->renderAsSwitch(false);
+
         /** On récupère la liste des groupes utilisateurs */
         $sql = "SELECT groupe_utilisateur, description FROM groupe_utilisateur ORDER BY groupe_utilisateur ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
@@ -284,6 +278,7 @@ class UtilisateurCrudController extends AbstractCrudController
             array_push($val, $value['groupe_utilisateur']);
         }
 
+        yield FormField::addColumn(6);
         yield ChoiceField::new('groupeUtilisateur')
             ->setChoices(array_combine($key, $val))
             ->setHelp('Sélectionne le groupe utilisateur.');
@@ -315,10 +310,10 @@ class UtilisateurCrudController extends AbstractCrudController
             ->setHelp('Sélectionne le groupe fonctionnel.');
 
         yield DateTimeField::new('dateModification')
-            ->setTimezone(static::$europeParis)
+            ->setTimezone(self::$europeParis)
             ->hideOnForm();
         yield DateTimeField::new('dateEnregistrement')
-            ->setTimezone(static::$europeParis)
+            ->setTimezone(self::$europeParis)
             ->hideOnForm();
     }
 
@@ -326,7 +321,6 @@ class UtilisateurCrudController extends AbstractCrudController
      * [Description for persistEntity]
      *
      * @param EntityManagerInterface $em
-     * @param mixed $entityInstance
      *
      * @return void
      *
@@ -336,44 +330,42 @@ class UtilisateurCrudController extends AbstractCrudController
      */
     public function persistEntity(EntityManagerInterface $em, $entityInstance): void
     {
-        if (!$entityInstance instanceof Utilisateur) {
-            return;
-        }
-
+        if (!$entityInstance instanceof Utilisateur) { return; }
         $entityInstance->setAvatar('personne.png');
         $entityInstance->setResetPassword(false);
+
         $entityInstance->setPassword(
-            $this->passwordHasher->hashPassword($entityInstance, bin2hex(random_bytes(32)))
+            $this->passwordHasher->hashPassword(
+                $entityInstance,
+                bin2hex(random_bytes(32))
+            )
         );
 
-        // Si l'utilisateur n'a pas le rôle ROLE_GESTIONNAIRE, il ne peut pas attribuer de rôles sensibles
-        if (!$this->isGranted('ROLE_GESTIONNAIRE')) {
-            $entityInstance->setRoles(['ROLE_UTILISATEUR']);
-        }
+        $roles = $this->roleManager->normalize(
+            $entityInstance->getRoles(),
+            [], // nouveau user = pas d'ancien rôle
+            $entityInstance,
+            $this->appUser()
+        );
 
-        // Si l'utilisateur a le rôle ROLE_INTERNAL, il ne peut pas avoir d'autres rôles
-        $roles = $entityInstance->getRoles();
-        if (in_array('ROLE_INTERNAL', $roles, true) && count($roles) > 1) {
-            $entityInstance->setRoles(['ROLE_INTERNAL']);
-        }
+        $entityInstance->setRoles($roles);
+        $groupe_utilisateur = $entityInstance->getGroupeUtilisateur();
 
-        // Si l'utilisateur a le rôle ROLE_NONE, il ne peut pas avoir d'autres rôles
-        if (in_array('ROLE_NONE', $roles, true)) {
-            $entityInstance->setRoles(['ROLE_NONE']);
-        }
+        $conn = $this->emm->getConnection();
+        $result = $conn->fetchOne(
+            "SELECT groupe_id FROM groupe_utilisateur WHERE groupe_utilisateur = :groupe LIMIT 1",
+            ['groupe' => $groupe_utilisateur]
+        );
 
-        /** On récupère le groupe_id à partir du groupe_utilisateur */
-        $groupe_utilisateur = $entityInstance->getListeGroupeUtilisateur();
-        $sql = "SELECT groupe_id FROM groupe_utilisateur WHERE groupe_utilisateur = '$groupe_utilisateur' limit 1";
-        $conn = $this->emm->getConnection()->prepare($sql)->executeQuery();
-        $result = $conn->fetchOne();
         $entityInstance->setGroupeId($result);
 
-        // On enregistre la liste des groupes fonctionnels sélectionnés dans un champ non mappé (logique métier)
-        $groupe_fonctionnel = $entityInstance->getListeGroupeFonctionnel() ?? [];
-        $entityInstance->setListeGroupeFonctionnel($groupe_fonctionnel);
+        $entityInstance->setListeGroupeFonctionnel(
+            $entityInstance->getListeGroupeFonctionnel()
+        );
 
-        $entityInstance->setDateModification(new \DateTime('now', new \DateTimeZone(static::$europeParis)));
+        $entityInstance->setDateModification(
+            new \DateTime('now', new \DateTimeZone(self::$europeParis))
+        );
 
         parent::persistEntity($em, $entityInstance);
     }
@@ -382,7 +374,6 @@ class UtilisateurCrudController extends AbstractCrudController
      * [Description for updateEntity]
      *
      * @param EntityManagerInterface $em
-     * @param mixed $entityInstance
      *
      * @return void
      *
@@ -392,10 +383,7 @@ class UtilisateurCrudController extends AbstractCrudController
      */
     public function updateEntity(EntityManagerInterface $em, $entityInstance): void
     {
-        if (!$entityInstance instanceof Utilisateur) {
-            return;
-        }
-
+        if (!$entityInstance instanceof Utilisateur) { return; }
         $conn = $this->emm->getConnection();
 
         /** Récupération sécurisée */
@@ -408,15 +396,35 @@ class UtilisateurCrudController extends AbstractCrudController
         // Si l’utilisateur n’existe pas ou n’a pas de rôles, on considère qu’il n’a que ROLE_NONE
         $currentRoles = json_decode($result, true) ?: [];
 
+        $oldRoles = $currentRoles;
+        $oldActive = $entityInstance->isActif();
+
         /** NORMALISATION CENTRALISÉE */
-        $roles = $this->roleManager->normalize(
+        $newRoles = $this->roleManager->normalize(
             $entityInstance->getRoles(),
             $currentRoles,
             $entityInstance,
-            $this->getUser()
+            $this->appUser()
         );
 
-        $entityInstance->setRoles($roles);
+        // Analyse des changements de rôles pour détecter les activités suspectes
+        $alerts = $this->detector->analyze($entityInstance, $this->appUser(), $currentRoles, $newRoles);
+
+        $newActive = $entityInstance->isActif();
+
+        // si les rôles ou le statut actif ont changé, on log l’événement avant de mettre à jour l’entité pour conserver les anciennes valeurs dans le log
+        if ($oldRoles !== $newRoles || $oldActive !== $newActive) {
+            $this->roleLogger->log(
+            $entityInstance,
+            $this->appUser(),
+            $oldRoles,
+            $newRoles,
+            $oldActive,
+            $newActive,
+            $alerts);
+        }
+
+        $entityInstance->setRoles($newRoles);
         $groupe_utilisateur = $entityInstance->getGroupeUtilisateur();
 
         // On récupère le groupe_id à partir du groupe_utilisateur
@@ -432,12 +440,12 @@ class UtilisateurCrudController extends AbstractCrudController
         }
         // si  aucun groupe fonctionnel n'est sélectionné, on met une liste vide par défaut pour éviter les incohérences
         $entityInstance->setListeGroupeFonctionnel(
-            $entityInstance->getListeGroupeFonctionnel() ?? []
+            $entityInstance->getListeGroupeFonctionnel()
         );
 
         // On met à jour la date de modification à chaque mise à jour de l’entité
         $entityInstance->setDateModification(
-            new \DateTime('now', new \DateTimeZone(static::$europeParis))
+            new \DateTime('now', new \DateTimeZone(self::$europeParis))
         );
 
         parent::updateEntity($em, $entityInstance);

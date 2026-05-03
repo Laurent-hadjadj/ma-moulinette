@@ -13,6 +13,7 @@
 
 namespace App\Controller\Accueil;
 
+use App\Controller\Traits\AppUserAware;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -29,16 +30,18 @@ use App\Service\{ClientService, UrlBuilderService, UserAgentTrackingFacade};
  */
 class AccueilController extends AbstractController
 {
-    private static $page = 'accueil/index.html.twig';
-    private static $sonarUrl = 'sonar.url';
-    private static $europeParis = 'Europe/Paris';
+    use AppUserAware;
 
-    private $logoEntreprise;
-    private $marqueEntrepriseShort;
-    private $marqueEntrepriseLong;
-    private $environnement;
-    private $version;
-    private $dateCopyright;
+    private static string $page = 'accueil/index.html.twig';
+    private static string $sonarUrl = 'sonar.url';
+    private static string $europeParis = 'Europe/Paris';
+
+    private string $logoEntreprise;
+    private string $marqueEntrepriseShort;
+    private string $marqueEntrepriseLong;
+    private string $environnement;
+    private string $version;
+    private string $dateCopyright;
 
     /**
      * [Description for __construct]
@@ -53,10 +56,8 @@ class AccueilController extends AbstractController
         private ParameterBagInterface $params,
         private UrlBuilderService $urlBuilder,
         private LoggerInterface $logger,
-        private Security $security,
         private UserAgentTrackingFacade $tracking
     ) {
-        $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
@@ -68,7 +69,7 @@ class AccueilController extends AbstractController
     /**
      * [Description for genericRender]
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 30/10/2024 08:21:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -90,32 +91,32 @@ class AccueilController extends AbstractController
     /************ getter méthode private  ****************/
     public function getCountProjetBD(): int
     {
-        return static::countProjetBD();
+        return $this->countProjetBD();
     }
 
     public function getCountProjetSonar(): int
     {
-        return static::countProjetSonar();
+        return $this->countProjetSonar();
     }
 
     public function getCountProfilBD(): int
     {
-        return static::countProfilBD();
+        return $this->countProfilBD();
     }
 
     public function getCountProfilSonar(): int
     {
-        return static::countProfilSonar();
+        return $this->countProfilSonar();
     }
 
     public function getGetProperties(): array
     {
-        return static::getProperties();
+        return $this->getProperties();
     }
 
     public function getGetVersion(): string
     {
-        return static::getVersion();
+        return $this->getVersion();
     }
 
     /****************** FIN *********************** */
@@ -160,7 +161,7 @@ class AccueilController extends AbstractController
     {
         /** Sécurisation de l'URL */
         $url = $this->urlBuilder->build(
-            $this->getParameter(static::$sonarUrl),
+            $this->getParameter(self::$sonarUrl),
             '/api/components/search',
             ['qualifiers' => 'TRK', 'p' => 1, 'ps' => 500]
         );
@@ -238,7 +239,7 @@ class AccueilController extends AbstractController
     {
         /** Sécurisation de l'URL */
         $url = $this->urlBuilder->build(
-            $this->getParameter(static::$sonarUrl),
+            $this->getParameter(self::$sonarUrl),
             '/api/qualityprofiles/search',
             ['defaults' => 'true', 'p' => 1, 'ps' => 500]
         );
@@ -291,7 +292,7 @@ class AccueilController extends AbstractController
         $propertiesRepos = $this->em->getRepository(Properties::class);
 
         /** On met à jour la date de modification */
-        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
 
         $map = [
             'projet_bd' => $bd,
@@ -313,7 +314,7 @@ class AccueilController extends AbstractController
      * [Description for getProperties]
      * Récupère les properties
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 15/12/2022, 22:08:36 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
@@ -331,7 +332,7 @@ class AccueilController extends AbstractController
         if (!$getProperties['request']) {
             $this->logger->warning('[Accueil] ⚠️ Table properties vide, initialisation.');
 
-            $date = new \DateTime('now', new \DateTimeZone(static::$europeParis));
+            $date = new \DateTime('now', new \DateTimeZone(self::$europeParis));
             $map = [
                 'projet_bd' => 0,
                 'projet_sonar' => 0,
@@ -410,7 +411,7 @@ class AccueilController extends AbstractController
 
         /** Sécurisation de l'URL */
         $url = $this->urlBuilder->build(
-            $this->getParameter(static::$sonarUrl),
+            $this->getParameter(self::$sonarUrl),
             '/api/server/version',
             []
         );
@@ -442,8 +443,6 @@ class AccueilController extends AbstractController
      * [Description for getListeFavoriProjet]
      * Récupère la liste des projets favoris.
      *
-     * @param Security $security
-     *
      * @return JsonResponse
      *
      * Created at: 14/06/2023, 06:35:37 (Europe/Paris)
@@ -461,7 +460,7 @@ class AccueilController extends AbstractController
         $nombreProjetFavori = $this->params->get('nombre.favori');
 
         /** On récupère l'objet User du contexte de sécurité */
-        $user = $this->security->getUser();
+        $user = $this->appUser();
         $preference = $user->getPreference();
 
         $statutFavoriProjet = $preference['statut']['favori_projet'] ?? [];
@@ -471,18 +470,13 @@ class AccueilController extends AbstractController
             'nb_favoris' => count($listeFavoriProjet)
         ]);
 
-        $liste = '';
         $listeProjet = '';
 
         /** Si la liste de favoris pour les projets est activée et que le nombre de projet > 0  */
         if ($statutFavoriProjet === true && count($listeFavoriProjet) > 0) {
-            foreach ($listeFavoriProjet as $value) {
-                $liste .=  "'{$value}', ";
-            }
-            /* on prépare les données pour la requête */
             $map = [
-                'liste_projet' => rtrim($liste, " , "),
-                'nombre_projet_favori' => $nombreProjetFavori
+                'liste_projet' => array_values(array_map('strval', $listeFavoriProjet)),
+                'nombre_projet_favori' => (int) $nombreProjetFavori,
             ];
             $listeProjet = $historiqueRepos->selectHistoriqueProjetFavori($map);
         } else {
@@ -534,7 +528,6 @@ class AccueilController extends AbstractController
      * [Description for getListeFavoriVersion]
      * Récupération de la liste des projets par version (limité à 4).
      *
-     * @param Security $security
      *
      * @return JsonResponse
      *
@@ -549,25 +542,23 @@ class AccueilController extends AbstractController
         $historiqueRepos = $this->em->getRepository(Historique::class);
 
         /** On récupère l'objet User du contexte de sécurité */
-        $preference = $this->security->getUser()->getPreference();
+        $preference = $this->appUser()->getPreference();
         $statutFavoriVersion = $preference['statut']['favori_version'];
         $listeFavoriVersion = $preference['favori_version'];
 
         $liste = [];
         /** Si la liste de favoris pour les versions est activée et que le nombre de projet > 0  */
         if ($statutFavoriVersion === true && count($listeFavoriVersion) > 0) {
-            /** Nombre de projets  */
-            $keys = array_values($listeFavoriVersion);
-            /** pour chaque projet */
-            for ($i = 0; $i < count($keys); $i++) {
-                $where = static::construitMaRequest($keys, array_keys($keys[$i]), $i);
-                $favori = $historiqueRepos->getProjetFavori($where);
-                array_push($liste, $favori);
+            /** Structure attendue : [{maven_key: [version1, version2, ...]}, ...] */
+            foreach ($listeFavoriVersion as $entry) {
+                $mavenKey = (string) array_key_first($entry);
+                $versions = array_map('strval', (array) $entry[$mavenKey]);
+                $liste[] = $historiqueRepos->getProjetFavori($mavenKey, $versions);
             }
         }
 
         $data = [
-            'code' => $liste['code'] ?? 200,
+            'code' => 200,
             'statut' => $statutFavoriVersion,
             'liste_version' => $liste,
             'nombre_projet' => count($listeFavoriVersion)
@@ -579,8 +570,6 @@ class AccueilController extends AbstractController
      * [Description for index]
      * Affiche ma page d'accueil
      *
-     * @param Request $request
-     * @param Security $security
      *
      * Created at: 15/12/2022, 22:09:19 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
@@ -606,7 +595,7 @@ class AccueilController extends AbstractController
         $this->logger->info("[Accueil] ℹ️ Chargement de la page d'accueil");
         $listeProjetRepo = $this->em->getRepository(ListeProjet::class);
 
-        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
 
         /** On récupère les properties des projets et profils */
         $properties = $this->getProperties();
@@ -631,7 +620,7 @@ class AccueilController extends AbstractController
 
         /** Le tableau des properties et il y a un code 500 */
         if (!empty($properties) && array_key_exists('code', $properties) && $properties['code'] !== 200) {
-            return $this->render(static::$page, $render);
+            return $this->render(self::$page, $render);
         }
 
         /** 1 - Les Dates  */
@@ -655,7 +644,7 @@ class AccueilController extends AbstractController
             /** On récupère le nombre de projet depuis le serveur sonar */
             $projetSonar = static::getCountProjetSonar();
             if ($projetSonar === -1) {
-                return $this->render(static::$page, $render);
+                return $this->render(self::$page, $render);
             }
             /** On récupère le nombre de projet en base */
             $projetBd = static::getCountProjetBD();
@@ -682,7 +671,7 @@ class AccueilController extends AbstractController
             $profilSonar = static::getCountProfilSonar();
 
             if ($profilSonar === -1) {
-                return $this->render(static::$page, $render);
+                return $this->render(self::$page, $render);
             }
             $dateVerificationProfil = true;
         } else {
@@ -758,8 +747,8 @@ class AccueilController extends AbstractController
         }
 
         /** On va chercher les projets favoris ou les versions des projets */
-        $favoriProjet = json_decode($this->getListeFavoriProjet($this->security)->getContent());
-        $favoriVersion = json_decode($this->getListeFavoriVersion($this->security)->getContent());
+        $favoriProjet = json_decode($this->getListeFavoriProjet()->getContent());
+        $favoriVersion = json_decode($this->getListeFavoriVersion()->getContent());
 
         /** On a choisi la liste des projets favori
          *  sinon la liste des versions
@@ -801,6 +790,6 @@ class AccueilController extends AbstractController
         $render['version_serveur_sonar'] = ($sonar_version != -1) ? $sonar_version : 'Version inconnue.';
 
         $this->logger->info("[Accueil] ℹ️ Rendu final de la page d'accueil.");
-        return $this->render(static::$page, $render);
+        return $this->render(self::$page, $render);
     }
 }

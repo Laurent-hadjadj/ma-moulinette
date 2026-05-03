@@ -25,8 +25,8 @@ use App\Service\{ClientService, UrlBuilderService};
 class BatchCollecteNoSonarController extends AbstractController
 {
     /** Définition des constantes */
-    private static $sonarUrl = "sonar.url";
-    private static $europeParis = "Europe/Paris";
+    private static string $sonarUrl = "sonar.url";
+    private static string $europeParis = "Europe/Paris";
 
     /**
      * [Description for __construct]
@@ -50,7 +50,7 @@ class BatchCollecteNoSonarController extends AbstractController
      * @param string $mode_collecte
      * @param string $utilisateur_collecte
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 21/05/2024 22:25:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -60,7 +60,7 @@ class BatchCollecteNoSonarController extends AbstractController
     {
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
         $noSonarRepository = $this->em->getRepository(NoSonar::class);
-        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
 
         $this->logger->info('[Batch NoSonar] ℹ️ Début de collecte des annotations noSonar et suppressWarning', [
             'maven_key' => $maven_key,
@@ -70,11 +70,11 @@ class BatchCollecteNoSonarController extends AbstractController
 
         /** Sécurisation de l'URL */
         $url = $this->urlBuilder->build(
-            $this->getParameter(static::$sonarUrl),
+            $this->getParameter(self::$sonarUrl),
             '/api/issues/search',
             [
                 'componentKeys' => $maven_key,
-                'rules' => 'java:S1309,java:S1310,java:S1315,java:NoSonar,python:NoSonar,php:NoSonar',
+                'rules' => 'java:S1309,java:NoSonar',
                 'p' => 1,
                 'ps' => 500
             ]
@@ -163,8 +163,8 @@ class BatchCollecteNoSonarController extends AbstractController
 
         $this->logger->debug('[Batch NoSonar] 🛠️  Résultats analysés', [
             'java_no_sonar' => $java_no_sonar,
-            'python_no_sonar' => $java_no_sonar,
-            'php_no_sonar' => $java_no_sonar,
+            'python_no_sonar' => $python_no_sonar,
+            'php_no_sonar' => $php_no_sonar,
             'check_style' => $check_style,
             'no_pmd' => $no_pmd,
             'suppress_warning' => $suppress_warning,
@@ -186,8 +186,8 @@ class BatchCollecteNoSonarController extends AbstractController
 
         $this->logger->info('[Batch NoSonar] ℹ️ Insertion terminée avec succès', [
             'java_no_sonar' => $java_no_sonar,
-            'python_no_sonar' => $java_no_sonar,
-            'php_no_sonar' => $java_no_sonar,
+            'python_no_sonar' => $python_no_sonar,
+            'php_no_sonar' => $php_no_sonar,
             'check_style' => $check_style,
             'no_pmd' => $no_pmd,
             'suppress_warning' => $suppress_warning,

@@ -13,24 +13,33 @@
 
 namespace App\Controller;
 
+use App\Controller\Traits\AppUserAware;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
+use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Service\{ClientService, UserAgentTrackingFacade};
 
 class PreferenceController extends AbstractController
 {
-    public static $returnLine = "/\s+/u";
+    use AppUserAware;
 
-    private $logoEntreprise;
-    private $marqueEntrepriseShort;
-    private $marqueEntrepriseLong;
-    private $environnement;
-    private $version;
-    private $dateCopyright;
+    /** Définition des constantes */
+    private static string $erreur400 = "La requête est incorrecte (Erreur 400).";
+    private static string $erreur500 = "Une erreur est survenue lors de la mise à jour des préférences (Erreur 500).";
+    private static string $noData = 'Pas de données';
+
+    /** Catégories autorisées pour la lecture/écriture des préférences */
+    private const CATEGORIES_AUTORISEES = ['statut', 'projet', 'favori', 'version'];
+
+    private string $logoEntreprise;
+    private string $marqueEntrepriseShort;
+    private string $marqueEntrepriseLong;
+    private string $environnement;
+    private string $version;
+    private string $dateCopyright;
 
     /**
      * [Description for __construct]
@@ -41,12 +50,11 @@ class PreferenceController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        private ParameterBagInterface $params,
-        private Security $security,
+        ParameterBagInterface $params,
         private ClientService $client,
+        private LoggerInterface $logger,
         private UserAgentTrackingFacade $tracking
     ){
-        $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
@@ -58,7 +66,7 @@ class PreferenceController extends AbstractController
     /**
      * [Description for genericRender]
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 21/12/2024 21:31:52 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -78,6 +86,35 @@ class PreferenceController extends AbstractController
     }
 
     /**
+     * [Description for updatePreference]
+     * Met à jour la colonne 'preference' de l'utilisateur via une requête paramétrée.
+     * Évite l'injection SQL en utilisant bindValue.
+     *
+     * @param string $jarray
+     * @param string $courriel
+     *
+     * @return bool true si succès, false sinon
+     */
+    private function updatePreference(string $jarray, string $courriel): bool
+    {
+        try {
+            $stmt = $this->em->getConnection()->prepare(
+                "UPDATE utilisateur SET preference = :preference WHERE courriel = :courriel"
+            );
+            $stmt->bindValue('preference', $jarray);
+            $stmt->bindValue('courriel', $courriel);
+            $stmt->executeStatement();
+            return true;
+        } catch (\Throwable $e) {
+            $this->logger->critical('[Preference] 🔴 Échec de la mise à jour des préférences.', [
+                'courriel' => $courriel,
+                'exception' => $e->getMessage()
+            ]);
+            return false;
+        }
+    }
+
+    /**
      * [Description for apiPreferenceStatut]
      * On met à jour le statut pour la catégorie
      *
@@ -89,24 +126,40 @@ class PreferenceController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/secure/preference/statut', name: 'api_preference_statut', methods:'POST')]
+    #[Route('/api/secure/preference/statut', name: 'api_preference_statut', methods: 'POST')]
     public function apiPreferenceStatut(Request $request): JsonResponse
     {
-        /** On récupère le filtre de recherche */
+        /** On décode le body */
         $data = json_decode($request->getContent());
+
+        /** Validation de la requête */
+        if (
+            $data === null
+            || !property_exists($data, 'statut')
+            || !property_exists($data, 'categorie') || !is_string($data->categorie)
+        ) {
+            $this->logger->error("[Preference-Statut] ❌ Requête invalide : clé 'statut' ou 'categorie' manquante ou JSON mal formé.", [
+                'payload' => $data ?? self::$noData
+            ]);
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'error',
+                'message' => self::$erreur400
+            ], Response::HTTP_OK);
+        }
+
         $etat = $data->statut;
         $categorie = $data->categorie;
 
         /** On récupère l'objet User du contexte de sécurité */
-        $preference = $this->security->getUser()->getPreference();
-        $courriel = $this->security->getUser()->getCourriel();
+        $preference = $this->appUser()->getPreference();
+        $courriel = $this->appUser()->getCourriel();
 
-        /** On récupères les préférences */
+        /** On récupère les préférences */
         $statut = $preference['statut'];
         $projet = $preference['projet'];
         $favori = $preference['favori'];
         $version = $preference['version'];
-        $bookmark = $preference['bookmark'];
 
         /** On change le statut pour la catégorie. */
         $statut[$categorie] = $etat;
@@ -117,24 +170,22 @@ class PreferenceController extends AbstractController
             'projet' => $projet,
             'favori' => $favori,
             'version' => $version,
-            'bookmark' => $bookmark
         ]);
 
-        /** On met à jour les préférences. */
-        $sql = "UPDATE utilisateur
-                SET preference = '$jarray'
-                WHERE courriel='$courriel';";
-        $trim = trim(preg_replace(static::$returnLine, " ", $sql));
-        $exec = $this->em->getConnection()->prepare($trim)->executeQuery();
+        /** On met à jour les préférences via une requête paramétrée. */
+        if ($jarray === false || !$this->updatePreference($jarray, (string) $courriel)) {
+            return new JsonResponse([
+                'code' => 500,
+                'type' => 'error',
+                'message' => self::$erreur500
+            ], Response::HTTP_OK);
+        }
 
-        $exec->fetchAllAssociative();
-
-
-        $data = [
+        return new JsonResponse([
+            'code' => 200,
             'statut' => $statut,
             'categorie' => $categorie
-        ];
-        return new JsonResponse($data,Response::HTTP_OK);
+        ], Response::HTTP_OK);
     }
 
     /**
@@ -143,31 +194,43 @@ class PreferenceController extends AbstractController
      *
      * @param Request $request
      *
-     * @return Response
+     * @return JsonResponse
      *
      * Created at: 12/06/2023, 14:34:11 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/secure/preference/favori/delete', name: 'api_preference_favori_delete', methods:'POST')]
+    #[Route('/api/secure/preference/favori/delete', name: 'api_preference_favori_delete', methods: 'POST')]
     public function apiPreferenceFavoriDelete(Request $request): JsonResponse
     {
-        /** On bind les arguments passés depuis l'URL */
+        /** On décode le body */
         $data = json_decode($request->getContent());
+
+        /** Validation de la requête */
+        if ($data === null || !property_exists($data, 'mavenKey') || !is_string($data->mavenKey)) {
+            $this->logger->error("[Preference-FavoriDelete] ❌ Requête invalide : clé 'mavenKey' manquante ou JSON mal formé.", [
+                'payload' => $data ?? self::$noData
+            ]);
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'error',
+                'message' => self::$erreur400
+            ], Response::HTTP_OK);
+        }
+
         $mavenKey = $data->mavenKey;
 
         /** On récupère l'objet User du contexte de sécurité */
-        $preference = $this->security->getUser()->getPreference();
-        $courriel = $this->security->getUser()->getCourriel();
+        $preference = $this->appUser()->getPreference();
+        $courriel = $this->appUser()->getCourriel();
 
-        /** On récupères les préférences */
+        /** On récupère les préférences */
         $statut = $preference['statut'];
         $projet = $preference['projet'];
         $version = $preference['version'];
-        $bookmark = $preference['bookmark'];
 
         /** On supprime le projet de la liste */
-        $nouvelleListeFavori = array_diff($preference['favori'], [$mavenKey]);
+        $nouvelleListeFavori = array_values(array_diff($preference['favori'], [$mavenKey]));
 
         /** On met à jour l'objet. */
         $jarray = json_encode([
@@ -175,18 +238,18 @@ class PreferenceController extends AbstractController
             'projet' => $projet,
             'favori' => $nouvelleListeFavori,
             'version' => $version,
-            'bookmark' => $bookmark
         ]);
 
-        /** On met à jour les préférences. */
-        $sql = "UPDATE utilisateur
-                SET preference = '$jarray'
-                WHERE courriel='$courriel';";
-        $trim = trim(preg_replace(static::$returnLine, " ", $sql));
-        $exec = $this->em->getConnection()->prepare($trim)->executeQuery();
-        $exec->fetchAllAssociative();
+        /** On met à jour les préférences via une requête paramétrée. */
+        if ($jarray === false || !$this->updatePreference($jarray, (string) $courriel)) {
+            return new JsonResponse([
+                'code' => 500,
+                'type' => 'error',
+                'message' => self::$erreur500
+            ], Response::HTTP_OK);
+        }
 
-        return new JsonResponse(['200'], Response::HTTP_OK);
+        return new JsonResponse(['code' => 200], Response::HTTP_OK);
     }
 
     /**
@@ -201,64 +264,91 @@ class PreferenceController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/secure/preference/version/delete', name: 'api_preference_version_delete', methods:'POST')]
+    #[Route('/api/secure/preference/version/delete', name: 'api_preference_version_delete', methods: 'POST')]
     public function apiPreferenceVersionDelete(Request $request): JsonResponse
     {
-        /** On bind les arguments passés depuis l'URL */
+        /** On décode le body */
         $data = json_decode($request->getContent());
+
+        /** Validation de la requête */
+        if (
+            $data === null
+            || !property_exists($data, 'index')
+            || !property_exists($data, 'mavenKey') || !is_string($data->mavenKey)
+            || !property_exists($data, 'version') || !is_string($data->version)
+        ) {
+            $this->logger->error("[Preference-VersionDelete] ❌ Requête invalide : clé 'index', 'mavenKey' ou 'version' manquante ou JSON mal formé.", [
+                'payload' => $data ?? self::$noData
+            ]);
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'error',
+                'message' => self::$erreur400
+            ], Response::HTTP_OK);
+        }
+
         $index = $data->index;
         $mavenKey = $data->mavenKey;
         $version = $data->version;
 
         /** On récupère l'objet User du contexte de sécurité */
-        $preference = $this->security->getUser()->getPreference();
-        $courriel = $this->security->getUser()->getCourriel();
+        $preference = $this->appUser()->getPreference();
+        $courriel = $this->appUser()->getCourriel();
 
-        /** On récupères les préférences */
+        /** On récupère les préférences */
         $statut = $preference['statut'];
         $projet = $preference['projet'];
         $favori = $preference['favori'];
-        $bookmark = $preference['bookmark'];
 
-        /** Le modèle
-         * "version":[ {"mavenKey":["version","version"]}, {"mavenKey":["version"]} ],
+        /**
+         * Le modèle :
+         * "version":[ {"mavenKey":["version","version"]}, {"mavenKey":["version"]} ]
         */
+        if (!isset($preference['version'][$index][$mavenKey]) || !is_array($preference['version'][$index][$mavenKey])) {
+            $this->logger->warning("[Preference-VersionDelete] ⚠️ Index ou mavenKey introuvable dans les préférences.", [
+                'courriel' => $courriel,
+                'index' => $index,
+                'mavenKey' => $mavenKey
+            ]);
+            return new JsonResponse([
+                'code' => 404,
+                'type' => 'warning',
+                'message' => "La version demandée n'existe pas dans les préférences (Erreur 404)."
+            ], Response::HTTP_OK);
+        }
 
         /** On construit la nouvelle liste */
-        $nouvelleListeVersion = array_diff($preference['version'][$index][$mavenKey], [$version]);
-        $nouvelleVersion = [ $mavenKey => $nouvelleListeVersion ];
+        $nouvelleListeVersion = array_values(array_diff($preference['version'][$index][$mavenKey], [$version]));
+        $nouvelleVersion = [$mavenKey => $nouvelleListeVersion];
+
         /** On reconstruit la liste des versions */
         $object = [];
         foreach ($preference['version'] as $key => $value) {
             if ($key === $index) {
-                array_push($object, $nouvelleVersion);
+                $object[] = $nouvelleVersion;
             } else {
-                array_push($object, $value);
+                $object[] = $value;
             }
         }
 
-        /** On met à jour l'objet et on vire les \. */
-        $jarray = stripslashes(
-            json_encode([
+        /** On met à jour l'objet. */
+        $jarray = json_encode([
             'statut' => $statut,
             'projet' => $projet,
             'favori' => $favori,
             'version' => $object,
-            'bookmark' => $bookmark
-        ])
-        );
+        ]);
 
-        /** On met à jour les préférences. */
-        $sql = "UPDATE utilisateur
-                SET preference = '$jarray'
-                WHERE courriel='$courriel';";
-        $trim = trim(preg_replace(static::$returnLine, " ", $sql));
-        $this->em->getConnection()->prepare($trim)->executeStatement();
-
-        /** On crée un objet de response JSON 'o'=>$object,'n'=>$nouvelleListeVersion,'t'=>$trim */
+        /** On met à jour les préférences via une requête paramétrée. */
+        if ($jarray === false || !$this->updatePreference($jarray, (string) $courriel)) {
         return new JsonResponse([
-            'code' => 200
+                'code' => 500,
+                'type' => 'error',
+                'message' => self::$erreur500
         ], Response::HTTP_OK);
+    }
+
+        return new JsonResponse(['code' => 200], Response::HTTP_OK);
     }
 
     /**
@@ -273,28 +363,38 @@ class PreferenceController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/secure/preference/categorie', name: 'api_preference_categorie', methods:'GET')]
+    #[Route('/api/secure/preference/categorie', name: 'api_preference_categorie', methods: 'GET')]
     public function apiPreferenceCategorie(Request $request): JsonResponse
     {
         /** On bind les arguments passés depuis l'URL */
-        $categorie = $request->get('categorie');
+        $categorie = $request->query->get('categorie');
+
+        /** Whitelist des catégories autorisées (évite l'accès arbitraire à des clés du tableau). */
+        if ($categorie === null || !in_array($categorie, self::CATEGORIES_AUTORISEES, true)) {
+            $this->logger->error("[Preference-Categorie] ❌ Catégorie inconnue ou non autorisée.", [
+                'categorie' => $categorie ?? self::$noData
+            ]);
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'error',
+                'message' => self::$erreur400
+            ], Response::HTTP_OK);
+        }
 
         /** On récupère l'objet User du contexte de sécurité */
-        $preference = $this->security->getUser()->getPreference();
+        $preference = $this->appUser()->getPreference();
 
-        $data = [
+        return new JsonResponse([
             'code' => 200,
             'statut' => $preference['statut'],
             $categorie => $preference[$categorie]
-        ];
-        return new JsonResponse($data, Response::HTTP_OK);
+        ], Response::HTTP_OK);
     }
 
     /**
      * [Description for index]
      *  Affiche la page des préférences
      *
-     * @param Request $request
      *
      * @return Response
      *
@@ -302,39 +402,43 @@ class PreferenceController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/preferences', name: 'preferences', methods:'GET')]
+    #[Route('/preferences', name: 'preferences', methods: 'GET')]
     public function index(): Response
     {
         $this->tracking->track('PREFERENCE');
         /** On bind les informations utilisateur */
-        $prenom = $this->security->getUser()->getPrenom();
-        $nom = $this->security->getUser()->getNom();
-        $avatar = $this->security->getUser()->getAvatar();
-        $courriel = $this->security->getUser()->getCourriel();
-        $roles = $this->security->getUser()->getRoles();
-        $groupes = $this->security->getUser()->getGroupe();
+        $prenom = $this->appUser()->getPrenom();
+        $nom = $this->appUser()->getNom();
+        $avatar = $this->appUser()->getAvatar();
+        $courriel = $this->appUser()->getCourriel();
+        $roles = $this->appUser()->getRoles();
+        $groupes = $this->appUser()->getListeGroupeFonctionnel();
         if (empty($groupes)) {
             $groupes[0] = "null";
         }
 
-        $preferences = $this->security->getUser()->getPreference();
+        $preferences = $this->appUser()->getPreference();
         /** Valeur par défaut */
         $descriptionSuiviProjet = "Liste des projets à suivre.";
         $descriptionFavoriProjet = "Liste des projets favoris.";
         $descriptionFavoriVersion = "Liste des versions favorites.";
-        $descriptionBookmark = "Afficher le dernier projet.";
 
         $mesPreferences = [
             "suivi_projet" => ["option" => "Projet", "description" => $descriptionSuiviProjet, "statut" => $preferences['statut']['suivi_projet']],
-            "favori_projet" => ["option" => "Favori", "description" => $descriptionFavoriProjet,
-            "statut" => $preferences['statut']['favori_projet']],
-            "favori_version" => ["option" => "Version","description" => $descriptionFavoriVersion,
-            "statut" => $preferences['statut']['favori_version']],
-            "bookmark" => ["option" => "Bookmark", "description" => $descriptionBookmark, "statut" => $preferences['statut']['bookmark']]
+            "favori_projet" => [
+                "option" => "Favori",
+                "description" => $descriptionFavoriProjet,
+                "statut" => $preferences['statut']['favori_projet']
+            ],
+            "favori_version" => [
+                "option" => "Version",
+                "description" => $descriptionFavoriVersion,
+                "statut" => $preferences['statut']['favori_version']
+            ],
         ];
 
          /** On charge le template du render */
-        $render = static::genericRender();
+        $render = $this->genericRender();
         $render['prenom'] = $prenom;
         $render['nom'] = $nom;
         $render['avatar'] = $avatar;
@@ -345,5 +449,4 @@ class PreferenceController extends AbstractController
         $render['version'] = $mesPreferences;
         return $this->render('preference/index.html.twig', $render);
     }
-
 }

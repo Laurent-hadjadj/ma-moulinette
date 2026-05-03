@@ -26,13 +26,14 @@ use App\Service\{ClientService, UrlBuilderService};
 class BatchCollecteRepartitionController extends AbstractController
 {
     /** Définition des constantes */
-    public static $sonarUrl = "sonar.url";
-    public static $europeParis = "Europe/Paris";
-    private static $reference = "<strong>[Répartition-Module]</strong> ";
-    private static $beginRegEx = '/\b(?:';
-    private static $endRegEx = ')\b/i';
-    private static $erreurInconnue = 'Erreur inconnue.';
-    private static $erreurSonarInconnue = 'Erreur SonarQube inconnue.';
+    private static string $sonarUrl = "sonar.url";
+    private static string $europeParis = "Europe/Paris";
+    private static string $reference = "<strong>[Répartition-Module]</strong> ";
+    private static string $beginRegEx = '/\b(?:';
+    private static string $endRegEx = ')\b/i';
+    private static string $erreurInconnue = 'Erreur inconnue.';
+    private static string $erreurSonarInconnue = 'Erreur SonarQube inconnue.';
+    private static string $noData = 'Pas de données';
 
     /**
      * [Description for __construct]
@@ -53,17 +54,16 @@ class BatchCollecteRepartitionController extends AbstractController
      * [Description for batchAnalyseAnomalie]
      * Analyse le path et détermine le type de module
      *
-     * @param mixed $elements
-     * @param mixed $maven_key
+     * @param array $elements
      *
-     * @return ['frontend'=>$frontend, 'backend'=>$backend, 'autre'=>$autre];
+     * @return array<string, mixed>
      *
      * Created at: 04/12/2022, 09:00:59 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      *
      */
-    private function batchAnalyseAnomalie($elements, $maven_key)
+    private function batchAnalyseAnomalie(array $elements, string $maven_key)
     {
         $this->logger->info('[Batch RépartitionAnalyse] ℹ️ Début de l’analyse des modules', [
             'maven_key' => $maven_key,
@@ -99,9 +99,9 @@ class BatchCollecteRepartitionController extends AbstractController
 
         // On prépare les regex pour une vérification rapide
         // Utilisation de preg_quote pour échapper d'éventuels caractères spéciaux dans les mots-clés
-        $regexFrontend = static::$beginRegEx . implode('|', array_map('preg_quote', $frontendKeywords)) . static::$endRegEx;
-        $regexBackend  = static::$beginRegEx . implode('|', array_map('preg_quote', $backendKeywords)) . static::$endRegEx;
-        $regexAutre  = static::$beginRegEx . implode('|', array_map('preg_quote', $autreKeywords)) . static::$endRegEx;
+        $regexFrontend = self::$beginRegEx . implode('|', array_map('preg_quote', $frontendKeywords)) . self::$endRegEx;
+        $regexBackend  = self::$beginRegEx . implode('|', array_map('preg_quote', $backendKeywords)) . self::$endRegEx;
+        $regexAutre  = self::$beginRegEx . implode('|', array_map('preg_quote', $autreKeywords)) . self::$endRegEx;
 
         try {
             foreach ($elements as $element) {
@@ -127,7 +127,7 @@ class BatchCollecteRepartitionController extends AbstractController
 
             return [
                 'code' => 500,
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => 'Une erreur inétendue lors de la réparation par module (<strong>batchAnalyseAnomalie</strong>) est survenue (Erreur 500).',
                 'trace' => $e->getMessage()
             ];
@@ -167,19 +167,19 @@ class BatchCollecteRepartitionController extends AbstractController
      * @param string $category
      * @param string $severity
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 04/12/2022, 09:02:29 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function batchCollecteAnomalie($maven_key, $index, $batchSize, $category, $severity) :array
+    private function batchCollecteAnomalie(string $maven_key, $index, $batchSize, string $category, string $severity) :array
     {
 
          /** Sécurisation de l'URL */
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
         $url = $this->urlBuilder->build(
-            $this->getParameter(static::$sonarUrl),
+            $this->getParameter(self::$sonarUrl),
             '/api/issues/search',
             [
                 'componentKeys' => $maven_key,
@@ -200,11 +200,11 @@ class BatchCollecteRepartitionController extends AbstractController
             $this->logger->error('[Batch Répartition] ❌ Erreur SonarQube', [
                 'url' => $url,
                 'code' => $result['code'],
-                'erreur' => $result['erreur'] ?? static::$erreurInconnue
+                'erreur' => $result['erreur'] ?? self::$erreurInconnue
             ]);
             return [
                 'code' => $result['code'],
-                'erreur' => $result['erreur'] ?? static::$erreurInconnue
+                'erreur' => $result['erreur'] ?? self::$erreurInconnue
             ];
         }
 
@@ -220,21 +220,19 @@ class BatchCollecteRepartitionController extends AbstractController
     /**
      * [Description for batchCollecteInformation]
      *
-     * @param mixed $maven_key
-     * @param mixed $type
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 11/02/2025 14:09:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function batchCollecteInformation($maven_key, $category): array
+    private function batchCollecteInformation(string $maven_key, string $category): array
     {
         /** Sécurisation de l'URL */
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
         $url = $this->urlBuilder->build(
-            $this->getParameter(static::$sonarUrl),
+            $this->getParameter(self::$sonarUrl),
             '/api/issues/search',
             [
                 'componentKeys' => $maven_key,
@@ -252,11 +250,11 @@ class BatchCollecteRepartitionController extends AbstractController
             $this->logger->error('[Batch Répartition Information] ❌ Erreur SonarQube', [
                 'url' => $url,
                 'code' => $result['code'],
-                'erreur' => $result['erreur'] ?? static::$erreurSonarInconnue
+                'erreur' => $result['erreur'] ?? self::$erreurSonarInconnue
             ]);
             return [
                 'code' => $result['code'],
-                'erreur' => $result['erreur'] ?? static::$erreurSonarInconnue
+                'erreur' => $result['erreur'] ?? self::$erreurSonarInconnue
             ];
         }
 
@@ -272,9 +270,8 @@ class BatchCollecteRepartitionController extends AbstractController
      * Récupère le total des anomalies par sévérité.
      *
      * @param string $maven_key
-     * @param string $type
      *
-     * @return array
+     * @return array<int|string, mixed>
      * INFO,MINOR,MAJOR,CRITICAL,BLOCKER
      *
      * Created at: 04/12/2022, 09:03:46 (Europe/Paris)
@@ -306,6 +303,7 @@ class BatchCollecteRepartitionController extends AbstractController
             ];
         }
         /** On traite les données */
+        $info = $minor = $major = $critical = $blocker = 0;
         if (isset($result['values'])){
             $this->logger->debug('[Batch Répartition Module] 🛠️ Informations disponibles dans les facets : ', [
                     'maven_key' => $maven_key,
@@ -335,37 +333,38 @@ class BatchCollecteRepartitionController extends AbstractController
 
         $this->logger->info('[Batch Répartition] ℹ️ Fin collecte répartition module', [
             'total' => $total,
-            'info' => $info ?? 0,
-            'minor' => $minor ?? 0,
-            'major' => $major ?? 0,
-            'critical' => $critical ?? 0,
-            'blocker' => $blocker ?? 0
+            'info' => $info,
+            'minor' => $minor,
+            'major' => $major,
+            'critical' => $critical,
+            'blocker' => $blocker
         ]);
 
         return [
                 'code' => 200,
-                'total' => $total ?? 0,
+                'total' => $total,
                 'category' => $category,
-                'blocker' => $blocker ?? 0,
-                'critical' => $critical ?? 0,
-                'major' => $major ?? 0,
-                'minor' => $minor ?? 0,
-                'info' => $info ?? 0
+                'blocker' => $blocker,
+                'critical' => $critical,
+                'major' => $major,
+                'minor' => $minor,
+                'info' => $info
             ];
     }
 
     /**
      * [Description for flattenGroupData]
      *
-     * @param array $groupData
-     * @param array $fields
-     * @param array $map
+     * @param array<int|string, mixed> $groupData
+     * @param array<int|string, mixed> $fields
+     * @param array<int|string, mixed> $map
      *
-     * @return [type]
      *
      * Created at: 17/02/2025 17:09:49 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @param array<int|string, mixed> $groupData
+     * @param array<int|string, mixed> $fields
      */
     private function flattenGroupData(array $groupData, array $fields, array &$map){
         // Fonction d'aplatissement qui, pour une category donné, affecte chaque valeur aux clés correspondantes
@@ -391,10 +390,8 @@ class BatchCollecteRepartitionController extends AbstractController
      * [Description for BatchCollecteRepartition]
      *
      * @param string $maven_key
-     * @param string $modeCollecte
-     * @param string $utilisateurCollecte
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 21/05/2024 22:25:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -429,7 +426,7 @@ class BatchCollecteRepartitionController extends AbstractController
             return [
                     'code' => 201,
                     'type' => 'primary',
-                    'message' => static::$reference . "Les données pour la clé <strong>{$maven_key}</strong> et le setup <strong>{$setup}</strong> existent déjà.",
+                    'message' => self::$reference . "Les données pour la clé <strong>{$maven_key}</strong> et le setup <strong>{$setup}</strong> existent déjà.",
             ];
         }
 
@@ -469,14 +466,14 @@ class BatchCollecteRepartitionController extends AbstractController
         if ($delete['code'] !== 200) {
             $this->logger->error('[Batch Répartition] ❌ Échec suppression données temporaires', [
                 'map' => $map,
-                'erreur' => $delete['erreur'] ?? null
+                'erreur' => $delete['erreur'] ?? self::$noData
             ]);
 
             return [
                     'code' => $delete['code'],
-                    'type' => 'alert',
-                    'message' => static::$reference . "Échec de suppression des données pour la clé {$maven_key} et le setup {$setup} (Erreur {$delete['code']}).",
-                    'trace' => $delete['erreur'] ?? null
+                    'type' => 'error',
+                    'message' => self::$reference . "Échec de suppression des données pour la clé {$maven_key} et le setup {$setup} (Erreur {$delete['code']}).",
+                    'trace' => $delete['erreur'] ?? self::$noData
                 ];
         }
 
@@ -506,14 +503,14 @@ class BatchCollecteRepartitionController extends AbstractController
             if ($batchInsert['code'] !== 200) {
                 $this->logger->error('[Batch Répartition] ❌ Échec de la requête batchInsertIssuesSQL', [
                     'page' => $i,
-                    'erreur' => $batchInsert['erreur'] ?? null
+                    'erreur' => $batchInsert['erreur'] ?? self::$noData
                 ]);
 
                 return [
                         'code' => $batchInsert['code'],
-                        'type' => 'alert',
-                        'message' => static::$reference . "[Batch Répartition] Échec de la mise à jour des données ({$batchInsert['erreur']}).",
-                        'trace' => $batchInsert['erreur'] ?? null
+                        'type' => 'error',
+                        'message' => self::$reference . "[Batch Répartition] Échec de la mise à jour des données ({$batchInsert['erreur']}).",
+                        'trace' => $batchInsert['erreur'] ?? self::$noData
                     ];
             }
 
@@ -552,7 +549,7 @@ class BatchCollecteRepartitionController extends AbstractController
      * @param string $severity
      * @param string $setup
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 27/08/2025 15:26:46 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -566,7 +563,7 @@ class BatchCollecteRepartitionController extends AbstractController
 
             return [
                 'code' => 400,
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => "La clé 'maven_key' n'est pas correctement définie (Erreur 400)."
             ];
         }
@@ -589,14 +586,14 @@ class BatchCollecteRepartitionController extends AbstractController
         if ($repartition['code'] != 200) {
             $this->logger->error('[Batch Répartition Analyse] ❌ Erreur lors de la récupération des issues temporaires', [
                 'code' => $repartition['code'],
-                'erreur' => $repartition['erreur'] ?? static::$erreurInconnue
+                'erreur' => $repartition['erreur'] ?? self::$erreurInconnue
             ]);
 
             return [
                 'code' => $repartition['code'],
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => "Erreur lors de la récupération des anomalies temporaires (Erreur {$repartition['code']}).",
-                'trace' => $repartition['erreur'] ?? null
+                'trace' => $repartition['erreur'] ?? self::$noData
             ];
         }
 
@@ -612,8 +609,8 @@ class BatchCollecteRepartitionController extends AbstractController
             return [
                 'code' => $analyse['code'],
                 'type' => $analyse['type'] ?? 'alert',
-                'message' => $analyse['message'] ?? static::$erreurInconnue,
-                'trace' => $analyse['debug'] ?? null
+                'message' => $analyse['message'] ?? self::$erreurInconnue,
+                'trace' => $analyse['debug'] ?? self::$noData
             ];
         }
 
@@ -635,10 +632,10 @@ class BatchCollecteRepartitionController extends AbstractController
      * [Description for batchCollecteRepartitionMaJ]
      *
      * @param string $maven_key
-     * @param array $calcul
+     * @param array<int|string, mixed> $calcul
      * @param string $setup
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 18/02/2025 09:11:57 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -694,8 +691,8 @@ class BatchCollecteRepartitionController extends AbstractController
         }
 
         // On construit le statut à enregistrer dans l'attribut 'control'
-        $controlStatut = [ 'complet (100%)', 'partiel (66%)', 'partiel (33%)' ];
-        $control = $controlStatut[$missingSets] ?? 'inconnue';
+        $control_statut = [ 'complet (100%)', 'partiel (66%)', 'partiel (33%)' ];
+        $control = $control_statut[$missingSets] ?? 'inconnue';
 
         // Préparation des tableaux de champs pour chaque category
         $fieldsBug = [
@@ -727,7 +724,7 @@ class BatchCollecteRepartitionController extends AbstractController
                 'maven_key' => $maven_key,
                 'setup' => $setup,
                 'control' => $control,
-                'date_enregistrement' => new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'))
+                'date_enregistrement' => new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis))
             ];
 
         // Aplatir les données pour chaque category
@@ -748,11 +745,11 @@ class BatchCollecteRepartitionController extends AbstractController
         if ($repartition['code'] != 200) {
             $this->logger->error('[Batch Répartition MaJ] ❌ Échec de la mise à jour', [
                 'code' => $repartition['code'],
-                'erreur' => $repartition['erreur'] ?? static::$erreurInconnue
+                'erreur' => $repartition['erreur'] ?? self::$erreurInconnue
             ]);
         return [
                 'code' => $repartition['code'],
-                'type' => 'alert',
+                'type' => 'error',
                 'erreur' => $repartition['erreur']
             ];
         }

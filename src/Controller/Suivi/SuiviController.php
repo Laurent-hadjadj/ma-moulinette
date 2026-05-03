@@ -13,14 +13,15 @@
 
 namespace App\Controller\Suivi;
 
+use App\Controller\Traits\AppUserAware;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\{Request, Response};
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Historique, ListeProjet};
+use App\Repository\ListeProjetRepository;
 use App\Exception\FetchDataException;
 use App\Service\UserAgentTrackingFacade;
 
@@ -29,19 +30,21 @@ use App\Service\UserAgentTrackingFacade;
  */
 class SuiviController extends AbstractController
 {
-    /** Définition des constantes */
-    public static $page= "suivi/index.html.twig";
-    public static $erreur400 = "❌ La requête est incorrecte (Erreur 400).";
-    public static $erreur404 = "⚠️ Vous devez être rattaché à une équipe (Erreur 404).";
-    public static $erreur406 = "⚠️ Je n'ai pas trouvé de projets pour ton équipe. ".
-    "Vérifies le nom du tag utilisé dans SonarQube (Erreur 406).";
+    use AppUserAware;
 
-    private $logoEntreprise;
-    private $marqueEntrepriseShort;
-    private $marqueEntrepriseLong;
-    private $environnement;
-    private $version;
-    private $dateCopyright;
+    /** Définition des constantes */
+    private static string $page = "suivi/index.html.twig";
+    private static string $erreur400 = "❌ La requête est incorrecte (Erreur 400).";
+    private static string $erreur404 = "⚠️ Vous devez être rattaché à une équipe (Erreur 404).";
+    private static string $erreur406 = "⚠️ Je n'ai pas trouvé de projets pour ton équipe. " .
+        "Vérifies le nom du tag utilisé dans SonarQube (Erreur 406).";
+
+    private string $logoEntreprise;
+    private string $marqueEntrepriseShort;
+    private string $marqueEntrepriseLong;
+    private string $environnement;
+    private string $version;
+    private string $dateCopyright;
 
     /**
      * [Description for __construct]
@@ -52,12 +55,10 @@ class SuiviController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        private Security $security,
-        private ParameterBagInterface $params,
+        ParameterBagInterface $params,
         private LoggerInterface $logger,
         private UserAgentTrackingFacade $tracking
     ) {
-        $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
@@ -69,7 +70,7 @@ class SuiviController extends AbstractController
     /**
      * [Description for genericRender]
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 30/10/2024 08:21:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -94,34 +95,19 @@ class SuiviController extends AbstractController
      * @param $maven_key array
      * @param $groupes array
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 16/07/2024 20:05:52 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function listeProjet($maven_key, $groupes): array
+    private function listeProjet(string $maven_key, array $groupes): array
     {
         /** On instancie l'entityRepository */
         $listeProjetRepository = $this->em->getRepository(ListeProjet::class);
 
-        /** On recherche les projets pour les équipes rattaché à l'utilisateur */
-        $in = '';
-        foreach ($groupes as $groupe) {
-            if ($groupe !== 'null') {
-                /** On met en minuscule */
-                $minus = trim(strtolower($groupe));
-                /** On construit la clause in et on remplace les espaces par des tirets  */
-                $in = $in." tag LIKE '".preg_replace('/\s+/', '-', $minus)."%' OR ";
-            }
-        }
-
-        /** On supprime le dernier OR */
-        $inTrim = rtrim($in, " OR ");
-
-        /** On construit la requête de selection des projets en fonction de(s) (l')équipes */
-        $map = ['clause_where' => $inTrim];
-        $requestListe = $listeProjetRepository->selectListeProjetByGroupe($map);
+        $tagPrefixes = ListeProjetRepository::normalizeGroupesToTagPrefixes($groupes);
+        $requestListe = $listeProjetRepository->selectListeProjetByGroupe($tagPrefixes);
         if ($requestListe['code'] != 200) {
             return ['code' => $requestListe['code']];
         }
@@ -132,7 +118,7 @@ class SuiviController extends AbstractController
         if (empty($projets)) {
             return [
                 'code' => 406,
-                'message' => static::$erreur406
+                'message' => self::$erreur406
             ];
         }
 
@@ -162,7 +148,6 @@ class SuiviController extends AbstractController
      *
      * @param Request $request
      *
-     * @return [type]
      *
      * Created at: 12/11/2024 17:39:37 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -171,7 +156,7 @@ class SuiviController extends AbstractController
     #[Route('/suivi/set', name: 'suivi_set', methods: ['GET'])]
     public function setSession(Request $request)
     {
-        $maven_key = $request->get('maven_key');
+        $maven_key = $request->query->get('maven_key');
         // Stocker des données dans la session via l'objet Request
         $session = $request->getSession();
         $session->set('maven_key', $maven_key);
@@ -179,13 +164,13 @@ class SuiviController extends AbstractController
         return $this->redirectToRoute('suivi');
     }
 
-        /**
+    /**
      * [Description for addFlashAndRender]
      *
      * @param string $type
      * @param string $message
-     * @param string debug
-     * @param array $render
+     * @param string $debug
+     * @param array<int|string, mixed> $render
      *
      * @return Response
      *
@@ -199,8 +184,8 @@ class SuiviController extends AbstractController
             'type' => $type,
             'message' => $message,
             'debug' => $debug
-            ]);
-        return $this->render(static::$page, $render);
+        ]);
+        return $this->render(self::$page, $render);
     }
 
     /**
@@ -208,13 +193,14 @@ class SuiviController extends AbstractController
      *
      * @param mixed $repository
      * @param string $method
-     * @param array $map
+     * @param array<int|string, mixed> $map
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 17/07/2024 08:58:29 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     * @param array<int|string, mixed> $map
      */
     private function fetchData($repository, string $method, array $map)
     {
@@ -225,8 +211,8 @@ class SuiviController extends AbstractController
                 'erreur' => $data['erreur']
             ]);
 
-            $debug = $method.' ---> '.$data['erreur'];
-            throw new FetchDataException("❌ Une erreur s'est produite (Erreur {$data['code']}).", $debug, $this->getDefaultRender($map['maven_key']));
+            $debug = $method . ' ---> ' . $data['erreur'];
+            throw new FetchDataException("❌ Une erreur s'est produite (Erreur {$data['code']}).", $debug, $this->genericRender());
         }
         return $data;
     }
@@ -234,9 +220,9 @@ class SuiviController extends AbstractController
     /**
      * [Description for processGraphData]
      *
-     * @param array $graphRequest
+     * @param array<int|string, mixed> $graphRequest
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 17/07/2024 08:58:34 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -263,14 +249,14 @@ class SuiviController extends AbstractController
      *
      * @param Request $request
      *
-     * @return response
+     * @return Response
      *
      * Created at: 15/12/2022, 22:34:25 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/suivi', name: 'suivi', methods: ['GET'])]
-    public function suivi(Request $request): response
+    public function suivi(Request $request): Response
     {
         $this->tracking->track('SUIVI');
 
@@ -281,11 +267,11 @@ class SuiviController extends AbstractController
 
         // Initialisation des variables
         $maven_key = $session->get('maven_key');
-        $groupes = $this->security->getUser()->getGroupe();
+        $groupes = $this->appUser()->getListeGroupeFonctionnel();
         $debug = '';
 
         /** On charge le template du render */
-        $render = static::genericRender();
+        $render = $this->genericRender();
         $render['suivi'] = $render['mesure'] = $render['severity'] = $render['details'] = [];
         $render['nom'] = 'N.C';
         $render['mavenKey'] = $maven_key ?? '';
@@ -293,17 +279,17 @@ class SuiviController extends AbstractController
 
         // Vérifications initiales
         if (empty($maven_key)) {
-            $this->logger->error('[Suivi] ❌ ' . static::$erreur400);
-            return $this->addFlashAndRender('alert', static::$erreur400, $debug, $render);
+            $this->logger->error('[Suivi] ❌ ' . self::$erreur400);
+            return $this->addFlashAndRender('error', self::$erreur400, $debug, $render);
         }
 
         if (empty($groupes)) {
-            $this->logger->warning('[Suivi] ❌ ' . static::$erreur404);
-            return $this->addFlashAndRender('warning', static::$erreur404, $debug, $render);
+            $this->logger->warning('[Suivi] ❌ ' . self::$erreur404);
+            return $this->addFlashAndRender('warning', self::$erreur404, $debug, $render);
         }
 
         // Vérification du projet
-        $listeProjet = self::listeProjet($maven_key, $groupes);
+        $listeProjet = $this->listeProjet($maven_key, $groupes);
         if ($listeProjet['code'] === 406) {
             $this->logger->warning('[Suivi] ⚠️ ' . $listeProjet['message']);
             return $this->addFlashAndRender('warning', $listeProjet['message'], $debug, $render);
@@ -350,15 +336,16 @@ class SuiviController extends AbstractController
                 'message' => $message
             ]);
 
-            return $this->render(static::$page, $render);
+            return $this->render(self::$page, $render);
         } catch (FetchDataException $e) {
             $this->logger->critical(
-                "[Suivi] 🔴 une erreur inattendue s'est produite (Erreur 500).", [
-                    'message' => $e-getMessage(),
+                "[Suivi] 🔴 une erreur inattendue s'est produite (Erreur 500).",
+                [
+                    'message' => $e->getMessage(),
                     'debug' => $e->getDebug()
-                ]);
-            return $this->addFlashAndRender('alert', $e->getMessage(), $e->getDebug(), $e->getRender());
+                ]
+            );
+            return $this->addFlashAndRender('error', $e->getMessage(), $e->getDebug(), $e->getRender());
         }
     }
-
 }

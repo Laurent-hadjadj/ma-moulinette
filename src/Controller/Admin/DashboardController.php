@@ -13,19 +13,21 @@
 
 namespace App\Controller\Admin;
 
-use EasyCorp\Bundle\EasyAdminBundle\Attribute\{AdminDashboard, AdminRoute};
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\Routing\RouterInterface;
+use App\Entity\{Utilisateur};
+use App\Service\{ClientService, UserAgentTrackingFacade};
+use Doctrine\ORM\EntityManagerInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
+use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminRoute;
 use EasyCorp\Bundle\EasyAdminBundle\Config\{Crud, Assets, Action, Actions, MenuItem, UserMenu, Dashboard};
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 
 use Symfony\Component\Asset\Packages;
-use Symfony\Component\HttpFoundation\{Response, JsonResponse, RedirectResponse};
+use Symfony\Component\HttpFoundation\{Response, JsonResponse};
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Routing\RouterInterface;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\{Utilisateur};
-use App\Service\UserAgentTrackingFacade;
 
 /**
  * [Description DashboardController]
@@ -33,12 +35,10 @@ use App\Service\UserAgentTrackingFacade;
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
 class DashboardController extends AbstractDashboardController
 {
-    private static $sonarUrl = "sonar.url";
+    private static string $sonarUrl = "sonar.url";
 
     /**
      * [Description for __construct]
-     *
-     * @param mixed
      *
      * Created at: 02/01/2023, 18:33:59 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
@@ -48,9 +48,9 @@ class DashboardController extends AbstractDashboardController
         private EntityManagerInterface $em,
         private Packages $assets,
         private RouterInterface $router,
-        private UserAgentTrackingFacade $tracking
-    ) {
-    }
+        private UserAgentTrackingFacade $tracking,
+        private ClientService $client,
+    ) {}
 
     /**
      * [Description for sonarHealth]
@@ -65,12 +65,12 @@ class DashboardController extends AbstractDashboardController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/secure/health', name: 'sonar_health', methods: ['POST'])]
-    public function sonarHealth(): response
+    public function sonarHealth(): Response
     {
-        $url = $this->getParameter(static::$sonarUrl) . "/api/system/health";
+        $url = $this->getParameter(self::$sonarUrl) . "/api/system/health";
 
         /** On appel le client http */
-        $result = $this->em->client->http($url);
+        $result = $this->client->httpSonarQube($url);
         return new JsonResponse($result, Response::HTTP_OK);
     }
 
@@ -88,12 +88,12 @@ class DashboardController extends AbstractDashboardController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/secure/system/info', name: 'information_system', methods: ['POST'])]
-    public function informationSystem(): response
+    public function informationSystem(): Response
     {
-        $url = $this->getParameter(static::$sonarUrl) . "/api/system/info";
+        $url = $this->getParameter(self::$sonarUrl) . "/api/system/info";
 
         /** On appel le client http */
-        $result = $this->em->http($url);
+        $result = $this->client->httpSonarQube($url);
         return new JsonResponse($result, Response::HTTP_OK);
     }
 
@@ -102,7 +102,7 @@ class DashboardController extends AbstractDashboardController
     public function index(): Response
     {
         $this->tracking->track('EASY_ADMIN_ACCUEIL');
-        return $this->render('admin/home.html.twig', [ 'dateCopyright' => date('Y')]);
+        return $this->render('admin/home.html.twig', ['dateCopyright' => date('Y')]);
     }
 
     #[Route('/admin/projet', name: 'admin_projet')]
@@ -190,7 +190,7 @@ class DashboardController extends AbstractDashboardController
             "mesure_vulnerability" => "SELECT sum(vulnerability) as total FROM anomalie",
 
             // Nombre de code smells
-            "mesure_codesmell" => "SELECT sum(code_smell) as total FROM anomalie",
+            "mesure_code_smell" => "SELECT sum(code_smell) as total FROM anomalie",
 
             // Nombre de lignes de code analysées
             "mesure_lines" => "SELECT count(DISTINCT project_name) as total FROM mesures"
@@ -201,6 +201,19 @@ class DashboardController extends AbstractDashboardController
         foreach ($queries as $key => $sql) {
             $stmt = $conn->prepare($sql);
             $results[$key] = $stmt->executeQuery()->fetchAllAssociative();
+        }
+
+        // pg_stat_statements (extension optionnelle PostgreSQL)
+        try {
+            $statSql = "SELECT
+                ROUND((AVG(total_exec_time)/1000)::numeric, 4) AS avg_total_exec_time_seconds,
+                ROUND((MIN(min_exec_time)/1000)::numeric, 4) AS avg_min_exec_time_seconds,
+                ROUND((MAX(max_exec_time)/1000)::numeric, 4) AS avg_max_exec_time_seconds,
+                ROUND((AVG(stddev_exec_time)/1000)::numeric, 4) AS avg_stddev_exec_time_seconds
+                FROM pg_stat_statements";
+            $results['pg_stat_statements'] = $conn->prepare($statSql)->executeQuery()->fetchAllAssociative();
+        } catch (\Throwable $e) {
+            $results['pg_stat_statements'] = [];
         }
 
         // Calcul des lignes de code et des tests unitaires
@@ -277,7 +290,7 @@ class DashboardController extends AbstractDashboardController
             'mesure_code_smell' => $results['mesure_code_smell'][0]['total'] ?? 0,
         ];
 
-        return $this->render('admin/dashboard.html.twig', $data);
+        return $this->render('admin/index.html.twig', $data);
     }
 
     /**
@@ -344,7 +357,11 @@ class DashboardController extends AbstractDashboardController
             throw new \LogicException('Mauvais utilisateur !!!');
         }
 
-        $url = '/assets' . $utilisateur?->getAvatarUrl() ?? '/assets/avatar/personne.png';
+        /**
+         * Asset Mapper + Packages -> respecte le base path Symfony
+         * (donc le X-Forwarded-Prefix injecte par le reverse proxy en prod).
+         */
+        $url = $this->assets->getUrl('avatar/' . ($utilisateur->getAvatar() ?? 'personne.png'));
 
         return parent::configureUserMenu($utilisateur)
             ->setAvatarUrl($url);

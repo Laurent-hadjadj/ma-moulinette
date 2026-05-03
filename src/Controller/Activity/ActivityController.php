@@ -14,9 +14,10 @@
 namespace App\Controller\Activity;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
+use Psr\Log\LoggerInterface;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Activity, ActivityHistorique};
@@ -28,15 +29,15 @@ use App\Service\{ClientService, UserAgentTrackingFacade};
 class ActivityController extends AbstractController
 {
 
-    private static $sonarUrl = "sonar.url";
-    private static $page = "activity/index.html.twig";
+    private static string $sonarUrl = "sonar.url";
+    private static string $page = "activity/index.html.twig";
 
-    private $logoEntreprise;
-    private $marqueEntrepriseShort;
-    private $marqueEntrepriseLong;
-    private $environnement;
-    private $version;
-    private $dateCopyright;
+    private string $logoEntreprise;
+    private string $marqueEntrepriseShort;
+    private string $marqueEntrepriseLong;
+    private string $environnement;
+    private string $version;
+    private string $dateCopyright;
 
     /**
      * [Description for __construct]
@@ -47,12 +48,12 @@ class ActivityController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        private ParameterBagInterface $params,
+        ParameterBagInterface $params,
         private ClientService $client,
+        private LoggerInterface $logger,
         private UserAgentTrackingFacade $tracking
     )
     {
-        $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
@@ -64,7 +65,7 @@ class ActivityController extends AbstractController
     /**
      * [Description for genericRender]
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 21/12/2024 20:50:02 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -79,7 +80,8 @@ class ActivityController extends AbstractController
             'marque_entreprise_long' => $this->marqueEntrepriseLong,
             'env' => $this->environnement,
             'version' => $this->version,
-            'date_copyright' => $this->dateCopyright];
+            'date_copyright' => $this->dateCopyright
+        ];
     }
 
     /**
@@ -105,92 +107,118 @@ class ActivityController extends AbstractController
         $actualYear = $actualDate->format('Y');
 
         // Initialise les valeurs par défaut
-        $data['year'] = '---';
-        $data['day'] = '---';
-        $data['analyse'] = '---';
-        $data['success'] = '---';
-        $data['fail'] = '---';
-        $data['max_time'] = '---';
-        $data['analyse_average'] = '---';
-        $data['success_rate'] = '---';
-        $data['date_enregistrement'] = '---';
+        $data = [
+            'year' => '---',
+            'day' => '---',
+            'analyse' => '---',
+            'success' => '---',
+            'fail' => '---',
+            'max_time' => '---',
+            'analyse_average' => '---',
+            'success_rate' => '---',
+            'date_enregistrement' => '---'
+        ];
+
+        $render = $this->genericRender();
+        $render['data'] = [$data];
 
         /** On récupère la dernière task */
-        $url = $this->getParameter(static::$sonarUrl);
+        $url = $this->getParameter(self::$sonarUrl);
         $queryParams = ['ps' => 1];
-        $result = $this->client->httpActivity("$url/api/ce/activity?".http_build_query($queryParams));
+        $result = $this->client->httpActivity("$url/api/ce/activity?" . http_build_query($queryParams));
 
         /** On catch les erreurs HTTP */
         if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
-            $this->addFlash('notice', [
-                'type' => 'alert',
-                'message' => '❌' . $result['erreur'],
+            $this->logger->error('[Activity-Page] ❌ Échec de l\'appel httpActivity.', [
+                'code' => $result['code'],
+                'erreur' => $result['erreur'] ?? 'Pas de données'
             ]);
-
-            $render = static::genericRender();
-            $render['data'] = [$data];
-            return $this->render(static::$page, $render);
+            $this->addFlash('notice', [
+                'type' => 'error',
+                'message' => '❌' . ($result['erreur'] ?? 'Erreur SonarQube')
+            ]);
+            return $this->render(self::$page, $render);
         }
 
         /** On vérifie si pour l'année courante, il y des enregistrement ou non  */
-        $listeAnalyse=$activityRepos->selectActivity($actualYear)['liste'];
+        $selectActivity = $activityRepos->selectActivity($actualYear);
+        if (($selectActivity['code'] ?? 0) !== 200) {
+            $this->logger->error('[Activity-Page] ❌ Échec de la requête selectActivity.', [
+                'code' => $selectActivity['code'] ?? 'Pas de données',
+                'erreur' => $selectActivity['erreur'] ?? 'Pas de données'
+            ]);
+            $this->addFlash('notice', [
+                'type' => 'error',
+                'message' => "❌ Une erreur est survenue lors de la récupération des analyses."
+            ]);
+            return $this->render(self::$page, $render);
+        }
+
+        $listeAnalyse = $selectActivity['liste'];
         if (empty($listeAnalyse)) {
             // Ajoute un message flash pour informer l'utilisateur que la liste des analyses est vide pour l'année courante.
             $this->addFlash('notice', [
                 'type' => 'warning',
                 'message' => "⚠️ La liste des analyses SonarQube est vide. Veuillez rafraîchir la liste."
             ]);
-
-            $render = static::genericRender();
-            $render['data'] = [$data];
-            return $this->render(static::$page, $render);
+            return $this->render(self::$page, $render);
         }
 
         /** On prend la date la plus récente en base et la dernière de l'analyse */
-        $dateBase = new \DateTime($activityRepos->dernierDate()['liste']['date']);
+        $dernierDate = $activityRepos->dernierDate();
+        if (($dernierDate['code'] ?? 0) !== 200 || empty($dernierDate['liste']['date'])) {
+            $this->logger->warning('[Activity-Page] ⚠️ Date de dernière analyse indisponible.');
+            $this->addFlash('notice', [
+                'type' => 'warning',
+                'message' => "⚠️ La date de dernière analyse est indisponible."
+            ]);
+            return $this->render(self::$page, $render);
+        }
+        $dateBase = new \DateTime($dernierDate['liste']['date']);
         $dateSonar = new \DateTime($result['json']['tasks'][0]['executedAt']);
 
         /** Si SonarQube contient des nouvelles tâches */
-        if ($dateSonar > $dateBase){
+        if ($dateSonar > $dateBase) {
             // Ici on calcule l'interval de jour entre la base et sonar
-            $interval = $dateBase->diff(new \DateTime($result['tasks'][0]['executedAt']))->format('%d');
+            $interval = $dateBase->diff($dateSonar)->format('%d');
             $this->addFlash('notice', [
                 'type' => 'warning',
-                'message' => "⚠️ Vous pouvez mettre à jour la liste des analyses SonarQube. Il y a " .$interval. " jours de retard."
+                'message' => "⚠️ Vous pouvez mettre à jour la liste des analyses SonarQube. Il y a " . $interval . " jours de retard."
             ]);
         }
 
         /** Si SonarQube ne contient pas de nouvelles tâches */
-        if ($dateSonar == $dateBase){
+        if ($dateSonar == $dateBase) {
             $this->addFlash('notice', [
-                'type' => 'default',
+                'type' => 'info',
                 'message' => "📌 La liste des analyses SonarQube est à jour."
             ]);
         }
 
         /** On récupère la listes des données statistiques. On suppose que la mise à jour a été faite. */
         $listeHistorique = $activityHistoriqueRepos->selectActivity();
-        if (empty($listeHistorique['liste'])){
+        if (empty($listeHistorique['liste'])) {
             $this->addFlash('notice', [
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => "❌ L'historique n'a pas correctement été initialisé pour cette année."
             ]);
-
-            $render = static::genericRender();
-            $render['data'] = [$data];
-            return $this->render(static::$page, $render);
+            return $this->render(self::$page, $render);
         }
 
         /** Pour chaque durée d'execution on converti les secondes en h:m:s */
-        for ($i = 0; $i < count($listeHistorique['liste']); $i++){
+        for ($i = 0; $i < count($listeHistorique['liste']); $i++) {
             $maxTime = new \DateTimeImmutable($listeHistorique['liste'][$i]['max_time']);
             $listeHistorique['liste'][$i]['max_time'] = $maxTime->format('H:i:s');
         }
-        // On injecte la date d'enregistrement à condition que la mise à jour ait été faite !
-        $listeHistorique['liste'][0]["date_enregistrement"] ? (new \DateTime($result['request'][0]["date_enregistrement"]))->format('d-m-Y H:i:s') : (new \DateTime('01/01/1980 00:00:00'))->format('d-m-Y H:i:s');
 
-        $render = static::genericRender();
-        return $this->render(static::$page, $render);
+        /** On formate la date d'enregistrement (depuis l'historique BDD, pas $result qui est l'API SonarQube) */
+        $rawDateEnregistrement = $listeHistorique['liste'][0]['date_enregistrement'] ?? null;
+        $listeHistorique['liste'][0]['date_enregistrement'] = $rawDateEnregistrement
+            ? (new \DateTime($rawDateEnregistrement))->format('d-m-Y H:i:s')
+            : (new \DateTime('1980-01-01 00:00:00'))->format('d-m-Y H:i:s');
+
+        $render['data'] = $listeHistorique['liste'];
+        return $this->render(self::$page, $render);
     }
 
 }

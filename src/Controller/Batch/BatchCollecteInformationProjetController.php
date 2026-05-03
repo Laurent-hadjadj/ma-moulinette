@@ -25,8 +25,8 @@ use App\Service\{IsValideMavenKey, ClientService, UrlBuilderService};
 class BatchCollecteInformationProjetController extends AbstractController
 {
     /** Définition des constantes */
-    private static $sonarUrl = "sonar.url";
-    private static $europeParis = "Europe/Paris";
+    private static string $sonarUrl = "sonar.url";
+    private static string $europeParis = "Europe/Paris";
 
     /**
      * [Description for __construct]
@@ -47,21 +47,20 @@ class BatchCollecteInformationProjetController extends AbstractController
     /**
      * [Description for controlVersionProjet]
      *
-     * @param mixed $mavenKey
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 04/06/2024 11:51:59 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function controlVersionProjet($mavenKey): array
+    public function controlVersionProjet(string $mavenKey): array
     {
         $maven_key = htmlspecialchars($mavenKey, ENT_QUOTES, 'UTF-8');
 
          /** Sécurisation de l'URL */
         $url = $this->urlBuilder->build(
-            $this->getParameter(static::$sonarUrl),
+            $this->getParameter(self::$sonarUrl),
             '/api/project_analyses/search',
             [ 'project' => $maven_key ]
         );
@@ -113,7 +112,7 @@ class BatchCollecteInformationProjetController extends AbstractController
                 'maven_key' => $maven_key]);
             return [
                 'code' => 202,
-                'message' => "Le projet est présent en base mais pas sur le serveur.",
+                'message' => "Le projet est présent sur le serveur mais pas en base.",
                 'data-sonarqube' => $result,
                 'data-baseInformation'=>[],
                 'data-baseHistorique' => []
@@ -150,7 +149,17 @@ class BatchCollecteInformationProjetController extends AbstractController
         }
 
         $this->logger->error('[Batch ControlVersionProjet] ❌  Erreur inattendue', [
-            'maven_key' => $maven_key]);
+            'maven_key' => $maven_key,
+            'isFound' => $isFound,
+            'inBase' => $inBase,
+            'isNotInBase' => $isNotInBase,
+            'isNotAuthorize' => $isNotAuthorize,
+            'isNotFound' => $isNotFound,
+            'isNotAvailable' => $isNotAvailable,
+            'result_code' => $result['code'] ?? 'N/A',
+            'requestInformation_code' => $requestInformation['code'] ?? 'N/A',
+            'requestHistorique_code' => $requestHistorique['code'] ?? 'N/A',
+        ]);
         return [
             'code' => 500,
             'message' => 'Une erreur inattendue est survenue (Erreur500).'
@@ -160,21 +169,20 @@ class BatchCollecteInformationProjetController extends AbstractController
     /**
      * [Description for calculRepartitionProjet]
      *
-     * @param mixed $analyses
+     * @param array $analyses
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 06/02/2025 13:28:46 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function calculRepartitionProjet($analyses): array
+    public function calculRepartitionProjet(array $analyses): array
     {
         /* si $analyses est  un tableau ? */
         $total = $release = $snapshot = $autre = 0;
-        if (is_array($analyses)){
-            foreach($analyses as $analyse){
-                if (array_key_exists('projectVersion', $analyse)){
+        foreach ($analyses as $analyse) {
+            if (array_key_exists('projectVersion', $analyse)) {
                     $total++;
                     if (strpos(strtolower($analyse['projectVersion']), 'release') !== false) {
                         $release++;
@@ -183,8 +191,7 @@ class BatchCollecteInformationProjetController extends AbstractController
                     }
                 }
             }
-            $autre = $total - ($release+$snapshot);
-        }
+        $autre = $total - ($release + $snapshot);
 
         $this->logger->debug('[Batch CalculRepartitionProjet] 🛠️ Répartition calculée', [
             'total' => $total,
@@ -204,9 +211,9 @@ class BatchCollecteInformationProjetController extends AbstractController
     /**
      * [Description for batchInformationVersion]
      *
-     * @param string $mavenKey
+     * @param string $maven_key
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 09/12/2022, 17:13:32 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -246,9 +253,8 @@ class BatchCollecteInformationProjetController extends AbstractController
      *
      * @param string $maven_key
      * @param string $mode_collecte
-     * @param string $Utilisateur_collecte
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 09/12/2022, 16:42:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -343,7 +349,7 @@ class BatchCollecteInformationProjetController extends AbstractController
         if (!isset($explode[1]) || empty($explode[1])) {
             $explode[1] = 'N.C';
         }
-        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
 
         $map = [
                 'maven_key' => $maven_key,

@@ -25,13 +25,13 @@ use App\Service\{ExtractName, DateTools, ClientService, UrlBuilderService};
 class BatchCollecteAnomalieController extends AbstractController
 {
     /** Définition des constantes */
-    private static $sonarUrl = "sonar.url";
-    private static $europeParis = "Europe/Paris";
-    private static $statuses = "OPEN,REOPENED";
+    private static string $sonarUrl = "sonar.url";
+    private static string $europeParis = "Europe/Paris";
+    private static string $statuses = "OPEN,REOPENED";
     //'private static $statusesMin = "OPEN,CONFIRMED,REOPENED,RESOLVED";
     //'private static $statusesAll = "OPEN, CONFIRMED, REOPENED, RESOLVED, CLOSED";
-    private static $beginRegEx = '/\b(?:';
-    private static $endRegEx = ')\b/i';
+    private static string $beginRegEx = '/\b(?:';
+    private static string $endRegEx = ')\b/i';
 
     /**
      * [Description for __construct]
@@ -54,16 +54,16 @@ class BatchCollecteAnomalieController extends AbstractController
      * [Description for batchAnalyseAnomalie]
      * Calcule la répartition des anomalies par module
      *
-     * @param mixed $facet
-     * @param mixed $maven_key
+     * @param string $maven_key
+     * @param array $facet
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 28/07/2025 15:45:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function batchAnalyseAnomalie($facet, $maven_key): array
+    private function batchAnalyseAnomalie(array $facet, string $maven_key, ?int $anomalieTotal = null): array
     {
         /** On récupère le nombre total d'anomalie par chemin,donc il suffit d'identifier la nature du chemin pour connaître le nombre d'anomalie par module. */
 
@@ -85,9 +85,9 @@ class BatchCollecteAnomalieController extends AbstractController
 
         // On prépare les regex pour une vérification rapide
         // Utilisation de preg_quote pour échapper d'éventuels caractères spéciaux dans les mots-clés
-        $regexFrontend = static::$beginRegEx . implode('|', array_map('preg_quote', $frontendKeywords)) . static::$endRegEx;
-        $regexBackend  = static::$beginRegEx . implode('|', array_map('preg_quote', $backendKeywords)) . static::$endRegEx;
-        $regexAutre  = static::$beginRegEx . implode('|', array_map('preg_quote', $autreKeywords)) . static::$endRegEx;
+        $regexFrontend = self::$beginRegEx . implode('|', array_map('preg_quote', $frontendKeywords)) . self::$endRegEx;
+        $regexBackend  = self::$beginRegEx . implode('|', array_map('preg_quote', $backendKeywords)) . self::$endRegEx;
+        $regexAutre  = self::$beginRegEx . implode('|', array_map('preg_quote', $autreKeywords)) . self::$endRegEx;
 
         try {
             foreach ($facet['values'] as $directory) {
@@ -120,6 +120,25 @@ class BatchCollecteAnomalieController extends AbstractController
             ];
         }
 
+        /**
+         * Réconciliation avec paging.total : certaines issues SonarQube n'ont pas
+         * de directory (issue package-level). La somme du facet directories peut
+         * donc être < paging.total. On reverse l'écart vers "inconnu" pour que
+         * frontend+backend+autre+inconnu == anomalieTotal.
+         */
+        if ($anomalieTotal !== null) {
+            $sumFacet = $scoreFrontend + $scoreBackend + $scoreAutre + $scoreInconnu;
+            $orphans = $anomalieTotal - $sumFacet;
+            if ($orphans > 0) {
+                $scoreInconnu += $orphans;
+                $this->logger->info('[Batch Anomalie] ℹ️ Issues sans directory réaffectées vers inconnu.', [
+                    'orphans' => $orphans,
+                    'sum_facet' => $sumFacet,
+                    'paging_total' => $anomalieTotal
+                ]);
+            }
+        }
+
         $this->logger->info('[Batch Anomalie] ℹ️ Analyse du chemin.', [
             'frontend' => $scoreFrontend,
             'backend' => $scoreBackend,
@@ -140,10 +159,9 @@ class BatchCollecteAnomalieController extends AbstractController
      * [Description for makeRequest]
      * Fonction générique pour executer une requête et retourner le résultat dans un tableau
      *
-     * @param array $queryParams
-     * @param string $tempoUrl
+     * @param array<int|string, mixed> $queryParams
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 09/08/2024 07:52:30 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -153,7 +171,7 @@ class BatchCollecteAnomalieController extends AbstractController
         {
             /** Sécurisation de l'URL */
             $url = $this->urlBuilder->build(
-                $this->getParameter(static::$sonarUrl),
+                $this->getParameter(self::$sonarUrl),
                 '/api/issues/search',
                 $queryParams
             );
@@ -180,11 +198,10 @@ class BatchCollecteAnomalieController extends AbstractController
     /**
      * [Description for BatchCollecteAnomalie]
      *
-     * @param string $mavenKey
      * @param string $mode_collecte
      * @param string $utilisateur_collecte
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 21/05/2024 23:48:05 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -202,7 +219,7 @@ class BatchCollecteAnomalieController extends AbstractController
         ]);
 
         /** On créé un objet date. */
-        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
 
         /** On récupère le nom du projet */
         $app = $this->serviceExtractName->extractNameFromMavenKey($maven_key);
@@ -210,7 +227,7 @@ class BatchCollecteAnomalieController extends AbstractController
         /* Tableau des paramètres pour les requêtes HTTP */
         $queryParamsList = [
             'general' => [ 'componentKeys' => $maven_key, 'facets' => 'directories,types,severities',
-                'p' => 1, 'ps' => 1, 'statuses' => static::$statuses ],
+                'p' => 1, 'ps' => 1, 'statuses' => self::$statuses ],
             'BUG' => [ 'componentKeys' => $maven_key, 'types' => 'BUG', 'p' => 1, 'ps' => 1 ],
             'VULNERABILITY' => [ 'componentKeys' => $maven_key, 'types' => 'VULNERABILITY',
                 'p' => 1, 'ps' => 1 ],
@@ -295,7 +312,7 @@ class BatchCollecteAnomalieController extends AbstractController
                         }
                         break;
                     case 'directories':
-                        $analyse = $this->batchAnalyseAnomalie($facet, $maven_key);
+                        $analyse = $this->batchAnalyseAnomalie($facet, $maven_key, $anomalieTotal);
                         break;
                     default:
                         $this->logger->critical("[Batch Anomalie] 🔴 On ne devrait pas arriver dans le default du switch.");

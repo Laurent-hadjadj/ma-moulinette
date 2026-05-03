@@ -1,18 +1,19 @@
 <?php
 
 /**
-*  Ma-Moulinette
-*  --------------
-*  Copyright (c) 2021-2026.
-*  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common CC-BY-NC-SA 4.0.
-*  ---
-*  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
-*/
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
 
 namespace App\Controller\Batch;
 
+use App\Controller\Traits\AppUserAware;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -30,13 +31,15 @@ use App\Service\ListeProjetPortefeuilleService;
  */
 class BatchManuelController extends AbstractController
 {
-    private static $erreur400 = "La requête est incorrecte (Erreur 400).";
-    private static $noMessage = 'Aucun message remonté.';
-    private static $noError = 'Aucune erreur remontée.';
-    private static $europeParis = 'Europe/Paris';
-    private static $dateFormat = "Y-m-d H:i:s";
-    private static $traitementManuel = 'TRAITEMENT MANUEL';
-    private static $loggerUpdateBatchTraitement = '[Traitement-Manuel] ❌ Échec de la requête updateBatchTraitement';
+    use AppUserAware;
+
+    private static string $erreur400 = "La requête est incorrecte (Erreur 400).";
+    private static string $noMessage = 'Aucun message remonté.';
+    private static string $noError = 'Aucune erreur remontée.';
+    private static string $europeParis = 'Europe/Paris';
+    private static string $dateFormat = "Y-m-d H:i:s";
+    private static string $traitementManuel = 'TRAITEMENT MANUEL';
+    private static string $loggerUpdateBatchTraitement = '[Traitement-Manuel] ❌ Échec de la requête updateBatchTraitement';
 
     public function __construct(
         private CollecteController $collecte,
@@ -44,7 +47,6 @@ class BatchManuelController extends AbstractController
         private LoggerInterface $logger,
         #[Autowire(service: 'monolog.logger.profiling')]
         private LoggerInterface $profilerLogger,
-        private Security $security,
         private ListeProjetPortefeuilleService $listeProjetService
     ) {}
 
@@ -120,7 +122,7 @@ class BatchManuelController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'error',
-                'message' => static::$erreur400
+                'message' => self::$erreur400
             ], Response::HTTP_OK);
         }
 
@@ -131,10 +133,10 @@ class BatchManuelController extends AbstractController
 
         $add_pending = $batchTraitementRepos->updateBatchTraitementPending($map);
 
-        if ($add_pending !== 200) {
+        if ($add_pending['code'] !== 200) {
             $this->logger->error("[Traitement-Manuel] ❌ Échec de la requête updateBatchTraitementPending.", [
                 'code' => $add_pending['code'],
-                'message' => $add_pending['erreur'] ?? null
+                'message' => $add_pending['erreur'] ?? self::$noError
             ]);
 
             return new JsonResponse([
@@ -179,7 +181,7 @@ class BatchManuelController extends AbstractController
         // =========================
 
         $batchTraitementRepos = $this->em->getRepository(BatchTraitement::class);
-        $user = $this->security->getUser();
+        $user = $this->appUser();
 
         $this->denyAccessUnlessGranted(
             "ROLE_BATCH",
@@ -204,7 +206,7 @@ class BatchManuelController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'error',
-                'message' => static::$erreur400
+                'message' => self::$erreur400
             ], Response::HTTP_OK);
         }
 
@@ -223,7 +225,7 @@ class BatchManuelController extends AbstractController
             if ($add_pending['code'] !== 200) {
                 $this->logger->error("[Traitement-Manuel] ❌ Échec de la requête updateBatchTraitementPending.", [
                     'code' => $add_pending,
-                    'message' => $add_pending['erreur'] ?? null
+                    'message' => $add_pending['erreur'] ?? self::$noError
                 ]);
 
                 return new JsonResponse([
@@ -247,7 +249,7 @@ class BatchManuelController extends AbstractController
         if ($les_projets['code'] === 404) {
             $this->logger->warning("[Traitement-Manuel] ❌ La liste est vide ou n'existe plus.", [
                 'code' => $les_projets,
-                'message' => $les_projets['erreur'] ?? null
+                'message' => $les_projets['erreur'] ?? self::$noError
             ]);
 
             return new JsonResponse([
@@ -259,7 +261,7 @@ class BatchManuelController extends AbstractController
         }
 
         /** On contrôle le mode d'utilisation */
-        $utilisateur_collecte = $this->security->getUser()->getCourriel();
+        $utilisateur_collecte = $this->appUser()->getCourriel();
 
         // Création du job principal
         $execution_id = new Ulid();
@@ -269,16 +271,16 @@ class BatchManuelController extends AbstractController
             $execution_id,
             Ulid::fromString($data->traitement_id),
             $utilisateur_collecte,
-            static::$traitementManuel
+            self::$traitementManuel
         );
 
         $this->em->persist($batchExecution);
 
-        $debut_traitement = new \DateTime('now', new \DateTimeZone(static::$europeParis));
+        $debut_traitement = new \DateTime('now', new \DateTimeZone(self::$europeParis));
 
         /** On met à jour la table des traitements */
         $map = [
-            'debut_traitement' => $debut_traitement->format(static::$dateFormat),
+            'debut_traitement' => $debut_traitement->format(self::$dateFormat),
             'fin_traitement' => null,
             'success' => null,
             'in_progress' => true,
@@ -289,10 +291,10 @@ class BatchManuelController extends AbstractController
         $update = $batchTraitementRepos->updateBatchTraitement($map);
 
         if ($update['code'] !== 200) {
-            $this->logger->error(static::$loggerUpdateBatchTraitement, [
+            $this->logger->error(self::$loggerUpdateBatchTraitement, [
                 'code' => $update['code'],
-                'message' => $update['message'] ?? static::$noMessage,
-                'erreur' => $update['erreur'] ?? static::$noError,
+                'message' => $update['message'] ?? self::$noMessage,
+                'erreur' => $update['erreur'] ?? self::$noError,
                 'id' => $data->projet_id ?? 'inconnu',
                 'wip' => 'in_progress = true'
             ]);
@@ -301,7 +303,7 @@ class BatchManuelController extends AbstractController
                 'code' => $update['code'],
                 'type' => 'error',
                 'message' => "Il n'est pas possible de mettre à jour le traitement (Erreur {$update['code']}).",
-                'erreur' =>  $update['erreur'] ?? null
+                'erreur' =>  $update['erreur'] ?? self::$noError
             ], Response::HTTP_OK);
         }
 
@@ -313,17 +315,17 @@ class BatchManuelController extends AbstractController
             $execution_id,
             Ulid::fromString($data->traitement_id),
             $utilisateur_collecte,
-            static::$traitementManuel
+            self::$traitementManuel
         );
 
         // On enregistre le job immédiatement pour obtenir sa PK (id int)
         $this->em->persist($batchExecution);
 
-        $debut_traitement = new \DateTime('now', new \DateTimeZone(static::$europeParis));
+        $debut_traitement = new \DateTime('now', new \DateTimeZone(self::$europeParis));
 
         /** Mise à jour de la table des traitements */
         $map = [
-            'debut_traitement' => $debut_traitement->format(static::$dateFormat),
+            'debut_traitement' => $debut_traitement->format(self::$dateFormat),
             'fin_traitement' => null,
             'success' => null,
             'in_progress' => true,
@@ -334,17 +336,17 @@ class BatchManuelController extends AbstractController
         $update = $batchTraitementRepos->updateBatchTraitement($map);
 
         if ($update['code'] !== 200) {
-            $this->logger->error(static::$loggerUpdateBatchTraitement, [
+            $this->logger->error(self::$loggerUpdateBatchTraitement, [
                 'code' => $update['code'],
-                'message' => $update['message'] ?? static::$noMessage,
-                'erreur' => $update['erreur'] ?? static::$noError,
+                'message' => $update['message'] ?? self::$noMessage,
+                'erreur' => $update['erreur'] ?? self::$noError,
             ]);
 
             return new JsonResponse([
                 'code' => $update['code'],
                 'type' => 'error',
                 'message' => "Impossible de mettre à jour le traitement (Erreur {$update['code']}).",
-                'erreur' => $update['erreur'] ?? null,
+                'erreur' => $update['erreur'] ?? self::$noError,
             ], Response::HTTP_OK);
         }
 
@@ -370,7 +372,7 @@ class BatchManuelController extends AbstractController
             $result = $this->collecte->collecte(
                 $data->portefeuille,
                 $le_projet,
-                static::$traitementManuel,
+                self::$traitementManuel,
                 $utilisateur_collecte
             );
 
@@ -390,7 +392,14 @@ class BatchManuelController extends AbstractController
             $explose_le_projet = explode(':', $le_projet, 2);
             $nom_projet = (count($explose_le_projet) === 2) ? $explose_le_projet[1] : $le_projet;
 
-            $journal = new BatchExecutionJournal($result['code'], $data->portefeuille, $nom_projet, $result['compte_rendu'], new \DateTimeImmutable());
+            $journal = new BatchExecutionJournal(
+                $nom_projet,
+                $data->portefeuille,
+                $result['compte_rendu'],
+                $batchExecution,
+                new \DateTimeImmutable(),
+                $result['code']
+            );
 
             $batchExecution->addJournal($journal);
             $this->em->persist($journal);
@@ -404,11 +413,11 @@ class BatchManuelController extends AbstractController
                 ));
 
                 $batchTraitementRepos->updateBatchTraitement([
-                    'debut_traitement' => $debut_traitement->format(static::$dateFormat),
+                    'debut_traitement' => $debut_traitement->format(self::$dateFormat),
                     'success' => false,
                     'in_progress' => false,
                     'pending' => false,
-                    'fin_traitement' => (new \DateTime('now', new \DateTimeZone(static::$europeParis)))->format(static::$dateFormat),
+                    'fin_traitement' => (new \DateTime('now', new \DateTimeZone(self::$europeParis)))->format(self::$dateFormat),
                     'traitement_id' => $data->traitement_id,
                 ]);
 
@@ -464,7 +473,7 @@ class BatchManuelController extends AbstractController
         }
         $this->profilerLogger->info('[PROFILING] =======================');
 
-        $fin_traitement = new \DateTime('now', new \DateTimeZone(static::$europeParis));
+        $fin_traitement = new \DateTime('now', new \DateTimeZone(self::$europeParis));
         $interval = $debut_traitement->diff($fin_traitement);
         $temps_traitement = $interval->format('%H:%i:%s.%f');
 
@@ -495,8 +504,8 @@ class BatchManuelController extends AbstractController
 
         /** On met à jour la table des traitements */
         $map = [
-            'debut_traitement' => $debut_traitement->format(static::$dateFormat),
-            'fin_traitement' => $fin_traitement->format(static::$dateFormat),
+            'debut_traitement' => $debut_traitement->format(self::$dateFormat),
+            'fin_traitement' => $fin_traitement->format(self::$dateFormat),
             'success' => true,
             'in_progress' => false,
             'pending' => false,
@@ -505,10 +514,10 @@ class BatchManuelController extends AbstractController
 
         $update = $batchTraitementRepos->updateBatchTraitement($map);
         if ($update['code'] !== 200) {
-            $this->logger->error(static::$loggerUpdateBatchTraitement, [
+            $this->logger->error(self::$loggerUpdateBatchTraitement, [
                 'code' => $update['code'],
-                'message' => $update['message'] ?? static::$noMessage,
-                'erreur' => $update['erreur'] ?? static::$noError,
+                'message' => $update['message'] ?? self::$noMessage,
+                'erreur' => $update['erreur'] ?? self::$noError,
                 'id' => $data->projet_id ?? 'inconnu',
                 'wip' => 'in_progress = false'
             ]);
@@ -517,7 +526,7 @@ class BatchManuelController extends AbstractController
                 'code' => $update['code'],
                 'type' => 'error',
                 'message' => "Il n'est pas possible de mettre à jour le traitement (Erreur {$update['code']}).",
-                'erreur' =>  $update['erreur'] ?? null
+                'erreur' =>  $update['erreur'] ?? self::$noError
             ], Response::HTTP_OK);
         }
 

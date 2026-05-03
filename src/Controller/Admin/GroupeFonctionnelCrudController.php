@@ -21,7 +21,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\GroupeFonctionnel;
 
 /**
- * [Description GroupeFonctionnelCrudController]
+ * @extends AbstractCrudController<GroupeFonctionnel>
  */
 class GroupeFonctionnelCrudController extends AbstractCrudController
 {
@@ -34,11 +34,8 @@ class GroupeFonctionnelCrudController extends AbstractCrudController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function __construct(
-        private EntityManagerInterface $emm,
-        private RequestStack $requestStack,
+        private EntityManagerInterface $emm
     ) {
-        $this->emm = $emm;
-        $this->requestStack = $requestStack;
     }
 
     /**
@@ -153,7 +150,7 @@ class GroupeFonctionnelCrudController extends AbstractCrudController
     /**
      * [Description for listeTags]
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 07/04/2026 10:49:39 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -177,7 +174,7 @@ class GroupeFonctionnelCrudController extends AbstractCrudController
             $results = $result->fetchAllAssociative();
 
             // Extraire les tags des résultats
-            return array_map(fn($result) => $result['tag'], $results) ?? [];
+            return array_map(fn($result) => $result['tag'], $results);
     }
 
     /**
@@ -244,7 +241,6 @@ class GroupeFonctionnelCrudController extends AbstractCrudController
      * [Description for persistEntity]
      *
      * @param EntityManagerInterface $em
-     * @param mixed $entityInstance
      *
      * @return void
      *

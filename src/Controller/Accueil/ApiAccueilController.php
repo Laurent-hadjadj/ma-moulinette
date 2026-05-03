@@ -28,14 +28,12 @@ use App\Service\{ClientService, UrlBuilderService};
 class ApiAccueilController extends AbstractController
 {
     /** Définition des constantes */
-    private static $sonarUrl = "sonar.url";
-    private static $europeParis = "Europe/Paris";
-    private static $erreur404 = "Je n'ai pas trouvé de projets sur le serveur SonarQube (Erreur 404).";
+    private static string $sonarUrl = "sonar.url";
+    private static string $europeParis = "Europe/Paris";
+    private static string $erreur404 = "Je n'ai pas trouvé de projets sur le serveur SonarQube (Erreur 404).";
 
     /**
      * [Description for __construct]
-     *
-     * @param mixed
      *
      * Created at: 15/12/2022, 21:12:55 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
@@ -53,7 +51,7 @@ class ApiAccueilController extends AbstractController
      * Vérifie si le serveur SonarQube est UP
      * http://{url}}/api/status
      *
-     * @return response
+     * @return JsonResponse
      *
      * Created at: 15/12/2022, 21:13:23 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
@@ -66,7 +64,7 @@ class ApiAccueilController extends AbstractController
 
         /** Sécurisation de l'URL */
         $url = $this->urlBuilder->build(
-            $this->getParameter(static::$sonarUrl),
+            $this->getParameter(self::$sonarUrl),
             '/api/system/status'
         );
 
@@ -118,7 +116,7 @@ class ApiAccueilController extends AbstractController
 
         /** Sécurisation de l'URL */
         $url = $this->urlBuilder->build(
-            $this->getParameter(static::$sonarUrl),
+            $this->getParameter(self::$sonarUrl),
             '/api/components/search_projects',
             ['ps' => 500]
         );
@@ -143,7 +141,7 @@ class ApiAccueilController extends AbstractController
         }
 
         /** On créé un objet DateTimeImmutable */
-        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
 
         /** On, initialiser les variables  */
         $public = $private = $emptyTags = $nombre = 0;
@@ -156,7 +154,7 @@ class ApiAccueilController extends AbstractController
                 'code' => 404,
                 'type' => 'warning',
                 'message' => "Aucun projet sonar trouvé (Erreur 404).",
-                'trace' => static::$erreur404
+                'trace' => self::$erreur404
             ], Response::HTTP_OK);
         }
 
@@ -221,7 +219,7 @@ class ApiAccueilController extends AbstractController
         if ($r['code'] !== 200) {
             $this->logger->error('[Accueil-projet] ❌ Échec de la requête updatePropertiesProjet.', [
                 'code' => $r['code'],
-                'map' => $map ?? null,
+                'map' => $map,
                 'erreur' => $r['erreur'] ?? null
             ]);
 

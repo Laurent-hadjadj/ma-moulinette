@@ -27,17 +27,17 @@ use App\Service\UserAgentTrackingFacade;
  */
 class LoginController extends AbstractController
 {
-    private $logoEntreprise;
-    private $marqueEntrepriseShort;
-    private $marqueEntrepriseLong;
-    private $environnement;
-    private $version;
-    private $dateCopyright;
-    private $rgaa;
+    private string $logoEntreprise;
+    private string $marqueEntrepriseShort;
+    private string $marqueEntrepriseLong;
+    private string $environnement;
+    private string $version;
+    private string $dateCopyright;
+    private string $rgaa;
 
     public function __construct(
         private UrlGeneratorInterface $router,
-        private ParameterBagInterface $params,
+        ParameterBagInterface $params,
         private LoggerInterface $logger,
         private AuthenticationUtils $authenticationUtils,
         private UserAgentTrackingFacade $tracking
@@ -56,7 +56,7 @@ class LoginController extends AbstractController
     /**
      * [Description for genericRender]
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 29/10/2024 20:14:02 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -94,24 +94,24 @@ class LoginController extends AbstractController
 
         /**
          * Si on est déjà connecté
-         * On affiche la page /accueil, Si on la page /login
+         * On affiche la page /accueil, Sinon la page /login.
          */
-        if ($this->getUser()->getUserIdentifier()) {
-            $this->logger->info('[Auth] ℹ️ Utilisateur déjà authentifié - redirection vers le_prompt');
+        if ($this->getUser() !== null) {
+            $this->logger->info('[Auth] ℹ️ Utilisateur déjà authentifié - redirection vers accueil.');
             return $this->redirectToRoute('accueil');
-        } else {
-            $error = $this->authenticationUtils->getLastAuthenticationError();
-            if ($error) {
-                $this->logger->warning("[Auth] ⚠️ Échec d'authentification détecté : " . ['erreur' => $error->getMessage()]);
-            } else {
-                $this->logger->info('[Auth] ℹ️ Affichage du formulaire de connexion.');
-            }
-
-            $render = static::genericRender();
-            $render['error'] = $this->authenticationUtils->getLastAuthenticationError();
-            $render['type_footer'] = 'complet';
-            return $this->render('auth/login.html.twig', $render);
         }
+
+        $error = $this->authenticationUtils->getLastAuthenticationError();
+        if ($error) {
+            $this->logger->warning("[Auth] ⚠️ Échec d'authentification détecté.", ['erreur' => $error->getMessage()]);
+        } else {
+            $this->logger->info('[Auth] ℹ️ Affichage du formulaire de connexion.');
+        }
+
+        $render = $this->genericRender();
+        $render['error'] = $error;
+        $render['type_footer'] = 'complet';
+        return $this->render('auth/login.html.twig', $render);
     }
 
     /**
@@ -128,10 +128,9 @@ class LoginController extends AbstractController
     #[Route('/login', name: 'login')]
     public function login(): Response
     {
-        $this->tracking->track('LOGIN');
-
-        /** Si on est déjà connecté on redirige l'utilisateur sur la page prompt */
-        if (!is_Null($this->getUser())) {
+    	$this->tracking->track('LOGIN');
+        /** Si on est déjà connecté on redirige l'utilisateur sur la page accueil. */
+        if ($this->getUser() !== null) {
             $this->logger->info('[Auth] ℹ️ Utilisateur connecté - redirection directe vers la page accueil.');
             return $this->redirectToRoute('accueil');
         }
@@ -143,7 +142,7 @@ class LoginController extends AbstractController
             $this->logger->info('[Auth] ℹ️ Affichage de la page de connexion (login).');
         }
 
-        $render = static::genericRender();
+        $render = $this->genericRender();
         $render['error'] = $error;
         $render['type_footer'] = 'complet';
 
@@ -153,7 +152,6 @@ class LoginController extends AbstractController
     /**
      * [Description for logout]
      *
-     * @return [type]
      *
      * Created at: 02/01/2023, 18:20:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

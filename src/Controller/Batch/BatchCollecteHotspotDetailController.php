@@ -25,8 +25,8 @@ use App\Service\{ClientService, UrlBuilderService};
 class BatchCollecteHotspotDetailController extends AbstractController
 {
     /** Définition des constantes */
-    public static $sonarUrl = 'sonar.url';
-    public static $europeParis = 'Europe/Paris';
+    private static string $sonarUrl = 'sonar.url';
+    private static string $europeParis = 'Europe/Paris';
 
     /**
      * [Description for __construct]
@@ -69,15 +69,14 @@ class BatchCollecteHotspotDetailController extends AbstractController
     /**
      * [Description for vulnerabilityProbabilityListe]
      *
-     * @param mixed $niveaux
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 24/10/2025 15:23:52 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function vulnerabilityProbabilityListe($niveaux): array
+    private function vulnerabilityProbabilityListe(array $niveaux): array
     {
         $total = $high = $medium = $low = 0;
 
@@ -105,7 +104,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
     /**
      * [Description for hotspotDetail]
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 31/05/2024 15:02:51 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -117,7 +116,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
          /** Sécurisation de l'URL */
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
         $url = $this->urlBuilder->build(
-            $this->getParameter(static::$sonarUrl),
+            $this->getParameter(self::$sonarUrl),
             '/api/hotspots/show',
             [ 'hotspot' => $hotspotKey ]
         );
@@ -172,9 +171,10 @@ class BatchCollecteHotspotDetailController extends AbstractController
         /**************** Components ***************/
         /** On calcule la répartition pour les application java et ?Php */
         $score_frontend = $score_backend = $score_autre = $score_inconnu = 0;
-        if (array_key_exists('json', $result) && array_key_exists('path', $result['json']['component'])) {
+        $path = '';
+        if (array_key_exists('path', $result['json']['component'])) {
             $path = $result['json']['component']['path'];
-        } elseif (array_key_exists('json', $result) && array_key_exists('component', $result['json'])) {
+        } elseif (array_key_exists('component', $result['json'])) {
             /** "key" => "fr.ma-petite-entreprise:ma-moulinette:assets/js/app-password.js" */
             $path = str_replace($maven_key . ':', '', $result['json']['component']['key']);
         }
@@ -242,7 +242,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
      * @param string $mode_collecte
      * @param string $utilisateur_collecte
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 31/05/2024 14:52:44 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -288,10 +288,10 @@ class BatchCollecteHotspotDetailController extends AbstractController
         }
 
         /** On reconstruit la date de version au format dateTime */
-        $dateVersion = new \DateTimeImmutable($information['info'][0]['date'], new \DateTimeZone(static::$europeParis));
+        $dateVersion = new \DateTimeImmutable($information['info'][0]['date'], new \DateTimeZone(self::$europeParis));
 
         /** Création de la date du jour */
-        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
 
         /** On récupère la liste des hotspots au status TO_REVIEW */
         $map = [ 'maven_key' => $mavenKey ];
@@ -403,7 +403,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
         if ($getToReview['code'] !== 200) {
             return [
                 'code' => $getToReview['code'],
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => "La récupération des données a échouée pour selectHotspotsByNiveau avec TO_REVIEW (Erreur {$getToReview['code']}).",
                 'trace' => $getToReview['erreur'],
                 'test' => 'TO_REVIEW'
@@ -417,20 +417,15 @@ class BatchCollecteHotspotDetailController extends AbstractController
 
             return [
                 'code' => $getReviewed['code'],
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => "La récupération des données a échouée pour selectHotspotsByNiveau avec REVIEWED (Erreur {$getReviewed['code']}).",
                 'trace' => $getReviewed['erreur'],
                 'test' => 'REVIEWED'
                 ];
         }
 
-        $toReview = $reviewed = [];
-        if ($getToReview){
-            $toReview = static::vulnerabilityProbabilityListe($getToReview['liste']);
-        }
-        if ($getReviewed){
-            $reviewed = static::vulnerabilityProbabilityListe($getReviewed['liste']);
-        }
+        $toReview = $this->vulnerabilityProbabilityListe($getToReview['liste']);
+        $reviewed = $this->vulnerabilityProbabilityListe($getReviewed['liste']);
 
         $historique = [
             'menace_potentielle_totale' => $toReview['total'] ?? 0,

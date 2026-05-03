@@ -26,7 +26,8 @@ use App\Entity\{Owasp, HotspotOwasp, HotspotDetails};
 class ApiOwaspPeintureController extends AbstractController
 {
     /** Définition des constantes */
-    private static $erreur400 = "La requête est incorrecte (Erreur 400).";
+    private static string $erreur400 = "La requête est incorrecte (Erreur 400).";
+    private static string $noData = 'Pas de données';
 
     public function __construct(
         private EntityManagerInterface $em,
@@ -36,7 +37,7 @@ class ApiOwaspPeintureController extends AbstractController
     /**
      * [Description for total]
      *
-     * @param array $liste
+     * @param array<int|string, mixed> $liste
      * @param string $severity
      *
      * @return int
@@ -45,11 +46,10 @@ class ApiOwaspPeintureController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function somme(array $liste, string|null $severity): int
+    private static function somme(array $liste, string|null $severity): int
     {
-        $i = 1;
         $total = 0;
-        for ($i; $i < 11; $i++) {
+        for ($i = 1; $i < 11; $i++) {
             if ($severity !== null) {
                 $total += $liste["a{$i}{$severity}"];
             } else {
@@ -84,18 +84,18 @@ class ApiOwaspPeintureController extends AbstractController
 
         /** On teste si la clé est valide */
         if (
-            $data === null || !property_exists($data, 'maven_key')
+            $data === null
+            || !property_exists($data, 'maven_key') || !is_string($data->maven_key)
             || !property_exists($data, 'referential_owasp')
         ) {
             $this->logger->error("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key', 'referential_owasp' manquante ou JSON mal formé.", [
-                'payload' => $data
+                'payload' => $data ?? self::$noData
             ]);
 
             return new JsonResponse([
                 'code' => 400,
-                'type' => 'alert',
-                'message' => static::$erreur400,
-                'trace' => null
+                'type' => 'error',
+                'message' => self::$erreur400
             ], Response::HTTP_OK);
         }
 
@@ -104,109 +104,66 @@ class ApiOwaspPeintureController extends AbstractController
             'maven_key' => $data->maven_key,
             'referential_owasp' => $data->referential_owasp
         ];
-        $request = $owaspRepos->selectOwaspOrderByDateEnregistrement($map);
-        if ($request['code'] !== 200) {
+        $result = $owaspRepos->selectOwaspOrderByDateEnregistrement($map);
+        if ($result['code'] !== 200) {
             $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête selectOwaspOrderByDateEnregistrement.', [
-                'code' => $request['code'],
-                'erreur' => $request['erreur'] ?? null,
+                'code' => $result['code'],
+                'erreur' => $result['erreur'] ?? self::$noData,
                 'maven_key' => $data->maven_key,
                 'referential_owasp' => $data->referential_owasp
             ]);
 
             return new JsonResponse([
-                'code' => $request['code'],
-                'type' => 'alert',
-                'message' => "Une Erreur est survenue lors de la récupération des données ({$request['code']}).",
-                'trace' => $request['erreur'] ?? null
+                'code' => $result['code'],
+                'type' => 'error',
+                'message' => "Une Erreur est survenue lors de la récupération des données ({$result['code']}).",
+                'trace' => $result['erreur'] ?? self::$noData
             ], Response::HTTP_OK);
         }
 
         /** si on ne trouve pas la liste on retourne une erreur HTTP 406 */
-        if (empty($request['liste'])) {
+        if (empty($result['liste'])) {
             $this->logger->warning("[Owasp-Peinture] ⚠️ La liste des signalements OWASP est vide.");
 
             return new JsonResponse([
                 'code' => 406,
-                'liste' => $request['liste']
+                'liste' => $result['liste']
             ], Response::HTTP_OK);
         }
 
         /** Informations */
-        $referential_owasp = $request['liste'][0]['referential_owasp'];
-        $liste = $request['liste'][0];
+        $ligne = $result['liste'][0];
+        $referential_owasp = $ligne['referential_owasp'];
 
-        $total = self::somme($liste, null);
-        $bloquant = self::somme($liste, '_blocker');
-        $critique = self::somme($liste, '_critical');
-        $majeur = self::somme($liste, '_major');
-        $mineur = self::somme($liste, '_minor');
+        $total = self::somme($ligne, null);
+        $bloquant = self::somme($ligne, '_blocker');
+        $critique = self::somme($ligne, '_critical');
+        $majeur = self::somme($ligne, '_major');
+        $mineur = self::somme($ligne, '_minor');
 
-        $data = [
+        /** On factorise les dictionnaires a1..a10 par sévérité */
+        $payload = [
             'code' => 200,
             'referential_owasp' => $referential_owasp,
             'total' => $total,
-            'version' => $request['liste'][0]['version'],
-            'date_version' => $request['liste'][0]['date_version'],
+            'version' => $ligne['version'],
+            'date_version' => $ligne['date_version'],
             'bloquant' => $bloquant,
             'critique' => $critique,
             'majeur' => $majeur,
             'mineur' => $mineur,
-            'a1' => $request['liste'][0]['a1'],
-            'a2' => $request['liste'][0]['a2'],
-            'a3' => $request['liste'][0]['a3'],
-            'a4' => $request['liste'][0]['a4'],
-            'a5' => $request['liste'][0]['a5'],
-            'a6' => $request['liste'][0]['a6'],
-            'a7' => $request['liste'][0]['a7'],
-            'a8' => $request['liste'][0]['a8'],
-            'a9' => $request['liste'][0]['a9'],
-            'a10' => $request['liste'][0]['a10'],
-            'a1Blocker' => $request['liste'][0]['a1_blocker'],
-            'a2Blocker' => $request['liste'][0]['a2_blocker'],
-            'a3Blocker' => $request['liste'][0]['a3_blocker'],
-            'a4Blocker' => $request['liste'][0]['a4_blocker'],
-            'a5Blocker' => $request['liste'][0]['a5_blocker'],
-            'a6Blocker' => $request['liste'][0]['a6_blocker'],
-            'a7Blocker' => $request['liste'][0]['a7_blocker'],
-            'a8Blocker' => $request['liste'][0]['a8_blocker'],
-            'a9Blocker' => $request['liste'][0]['a9_blocker'],
-            'a10Blocker' => $request['liste'][0]['a10_blocker'],
-            'a1Critical' => $request['liste'][0]['a1_critical'],
-            'a2Critical' => $request['liste'][0]['a2_critical'],
-            'a3Critical' => $request['liste'][0]['a3_critical'],
-            'a4Critical' => $request['liste'][0]['a4_critical'],
-            'a5Critical' => $request['liste'][0]['a5_critical'],
-            'a6Critical' => $request['liste'][0]['a6_critical'],
-            'a7Critical' => $request['liste'][0]['a7_critical'],
-            'a8Critical' => $request['liste'][0]['a8_critical'],
-            'a9Critical' => $request['liste'][0]['a9_critical'],
-            'a10Critical' => $request['liste'][0]['a10_critical'],
-            'a1Major' => $request['liste'][0]['a1_major'],
-            'a2Major' => $request['liste'][0]['a2_major'],
-            'a3Major' => $request['liste'][0]['a3_major'],
-            'a4Major' => $request['liste'][0]['a4_major'],
-            'a5Major' => $request['liste'][0]['a5_major'],
-            'a6Major' => $request['liste'][0]['a6_major'],
-            'a7Major' => $request['liste'][0]['a7_major'],
-            'a8Major' => $request['liste'][0]['a8_major'],
-            'a9Major' => $request['liste'][0]['a9_major'],
-            'a10Major' => $request['liste'][0]['a10_major'],
-            'a1Minor' => $request['liste'][0]['a1_minor'],
-            'a2Minor' => $request['liste'][0]['a2_minor'],
-            'a3Minor' => $request['liste'][0]['a3_minor'],
-            'a4Minor' => $request['liste'][0]['a4_minor'],
-            'a5Minor' => $request['liste'][0]['a5_minor'],
-            'a6Minor' => $request['liste'][0]['a6_minor'],
-            'a7Minor' => $request['liste'][0]['a7_minor'],
-            'a8Minor' => $request['liste'][0]['a8_minor'],
-            'a9Minor' => $request['liste'][0]['a9_minor'],
-            'a10Minor' => $request['liste'][0]['a10_minor']
         ];
+        $severities = ['' => '', 'Blocker' => '_blocker', 'Critical' => '_critical', 'Major' => '_major', 'Minor' => '_minor'];
+        for ($i = 1; $i <= 10; $i++) {
+            foreach ($severities as $suffix => $colSuffix) {
+                $payload["a{$i}{$suffix}"] = $ligne["a{$i}{$colSuffix}"];
+            }
+        }
 
         $this->logger->debug('[OWASP-Peinture] 🛠️ Liste des menaces OWASP.', [
-            'data' => $data
+            'data' => $payload
         ]);
-        return new JsonResponse($data, Response::HTTP_OK);
+        return new JsonResponse($payload, Response::HTTP_OK);
     }
 
     /**
@@ -233,15 +190,15 @@ class ApiOwaspPeintureController extends AbstractController
         $data = json_decode($request->getContent());
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'maven_key')) {
-            $this->logger->error("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé..", [
-                'payload' => $data
+        if ($data === null || !property_exists($data, 'maven_key') || !is_string($data->maven_key)) {
+            $this->logger->error("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé.", [
+                'payload' => $data ?? self::$noData
             ]);
 
             return new JsonResponse([
                 'code' => 400,
-                'type' => 'alert',
-                'message' => static::$erreur400
+                'type' => 'error',
+                'message' => self::$erreur400
             ], Response::HTTP_OK);
         }
 
@@ -254,16 +211,16 @@ class ApiOwaspPeintureController extends AbstractController
         if ($reviewed['code'] !== 200) {
             $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête countHotspotOwaspStatus.', [
                 'code' => $reviewed['code'],
-                'erreur' => $reviewed['erreur'] ?? null,
+                'erreur' => $reviewed['erreur'] ?? self::$noData,
                 'maven_key' => $data->maven_key,
                 'status' => 'REVIEWED'
             ]);
 
             return new JsonResponse([
                 'code' => $reviewed['code'],
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => "Une Erreur est survenue lors de la récupération des données pour les menaces au statut 'REVIEW' ({$reviewed['code']}).",
-                'trace' => $reviewed['erreur'] ?? null
+                'trace' => $reviewed['erreur'] ?? self::$noData
             ], Response::HTTP_OK);
         }
 
@@ -277,16 +234,16 @@ class ApiOwaspPeintureController extends AbstractController
         if ($toReview['code'] !== 200) {
             $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête countHotspotOwaspStatus.', [
                 'code' => $toReview['code'],
-                'erreur' => $toReview['erreur'] ?? null,
+                'erreur' => $toReview['erreur'] ?? self::$noData,
                 'maven_key' => $data->maven_key,
                 'status' => 'TO_REVIEW'
             ]);
 
             return new JsonResponse([
                 'code' => $toReview['code'],
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => "Une Erreur est survenue lors de la récupération des données pour les menaces au statut 'TO_REVIEW' ({$toReview['code']}).",
-                'trace' => $toReview['erreur'] ?? null
+                'trace' => $toReview['erreur'] ?? self::$noData
             ], Response::HTTP_OK);
         }
 
@@ -297,15 +254,15 @@ class ApiOwaspPeintureController extends AbstractController
         if ($probability['code'] !== 200) {
             $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête countHotspotOwaspProbability.', [
                 'code' => $probability['code'],
-                'erreur' => $probability['erreur'] ?? null,
+                'erreur' => $probability['erreur'] ?? self::$noData,
                 'maven_key' => $data->maven_key,
             ]);
 
             return new JsonResponse([
                 'code' => $probability['code'],
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => "Une Erreur est survenue lors de la récupération des probabilité ({$probability['code']}).",
-                'trace' => $probability['erreur'] ?? null
+                'trace' => $probability['erreur'] ?? self::$noData
             ], Response::HTTP_OK);
         }
 
@@ -357,15 +314,15 @@ class ApiOwaspPeintureController extends AbstractController
         $data = json_decode($request->getContent());
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'maven_key')) {
+        if ($data === null || !property_exists($data, 'maven_key') || !is_string($data->maven_key)) {
             $this->logger->error("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé.", [
                 'payload' => $data
             ]);
 
             return new JsonResponse([
                 'code' => 400,
-                'type' => 'alert',
-                'message' => static::$erreur400
+                'type' => 'error',
+                'message' => self::$erreur400
             ], Response::HTTP_OK);
         }
 
@@ -374,67 +331,33 @@ class ApiOwaspPeintureController extends AbstractController
         $menaces = $hotspotOwaspRepos->countHotspotOwaspMenaces($map);
 
         if ($menaces['code'] !== 200) {
-            $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête countHotspotOwaspProbability.', [
+            $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête countHotspotOwaspMenaces.', [
                 'code' => $menaces['code'],
-                'erreur' => $menaces['erreur'] ?? null,
+                'erreur' => $menaces['erreur'] ?? self::$noData,
                 'maven_key' => $data->maven_key,
             ]);
 
             return new JsonResponse([
                 'code' => $menaces['code'],
+                'type' => 'error',
                 'message' => "Une Erreur est survenue lors de la récupération des données pour les menaces potentielles au statut 'TO_REVIEWED' ({$menaces['code']}).",
-                'erreur' => $menaces['erreur'] ?? null
+                'trace' => $menaces['erreur'] ?? self::$noData
             ], Response::HTTP_OK);
         }
 
-        $menaceA1 = $menaceA2 = $menaceA3 = $menaceA4 = $menaceA5 = $menaceA6 = $menaceA7 = $menaceA8 = $menaceA9 = $menaceA10 = 0;
-
+        /** On factorise la projection des totaux par menace a1..a10 */
+        $payload = ['code' => 200];
+        for ($i = 1; $i <= 10; $i++) {
+            $payload["menaceA{$i}"] = 0;
+        }
         foreach ($menaces['menaces'] as $elt) {
-            if ($elt['menace'] === "a1") {
-                $menaceA1 = $elt['total'];
-            }
-            if ($elt['menace'] === "a2") {
-                $menaceA2 = $elt['total'];
-            }
-            if ($elt['menace'] === "a3") {
-                $menaceA3 = $elt['total'];
-            }
-            if ($elt['menace'] === "a4") {
-                $menaceA4 = $elt['total'];
-            }
-            if ($elt['menace'] === "a5") {
-                $menaceA5 = $elt['total'];
-            }
-            if ($elt['menace'] === "a6") {
-                $menaceA6 = $elt['total'];
-            }
-            if ($elt['menace'] === "a7") {
-                $menaceA7 = $elt['total'];
-            }
-            if ($elt['menace'] === "a8") {
-                $menaceA8 = $elt['total'];
-            }
-            if ($elt['menace'] === "a9") {
-                $menaceA9 = $elt['total'];
-            }
-            if ($elt['menace'] === "a10") {
-                $menaceA10 = $elt['total'];
+            $key = 'menaceA' . substr((string) $elt['menace'], 1);
+            if (array_key_exists($key, $payload)) {
+                $payload[$key] = $elt['total'];
             }
         }
 
-        return new JsonResponse([
-            'code' => 200,
-            'menaceA1' => $menaceA1,
-            'menaceA2' => $menaceA2,
-            'menaceA3' => $menaceA3,
-            'menaceA4' => $menaceA4,
-            'menaceA5' => $menaceA5,
-            'menaceA6' => $menaceA6,
-            'menaceA7' => $menaceA7,
-            'menaceA8' => $menaceA8,
-            'menaceA9' => $menaceA9,
-            'menaceA10' => $menaceA10
-        ], Response::HTTP_OK);
+        return new JsonResponse($payload, Response::HTTP_OK);
     }
 
     /**
@@ -461,15 +384,15 @@ class ApiOwaspPeintureController extends AbstractController
         $data = json_decode($request->getContent());
 
         /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'maven_key')) {
+        if ($data === null || !property_exists($data, 'maven_key') || !is_string($data->maven_key)) {
             $this->logger->error("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé.", [
-                'payload' => $data
+                'payload' => $data ?? self::$noData
             ]);
 
             return new JsonResponse([
                 'code' => 400,
-                'type' => 'alert',
-                'message' => static::$erreur400
+                'type' => 'error',
+                'message' => self::$erreur400
             ], Response::HTTP_OK);
         }
 
@@ -480,15 +403,15 @@ class ApiOwaspPeintureController extends AbstractController
         if ($details['code'] !== 200) {
             $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête selectHotspotDetailsByStatus.', [
                 'code' => $details['code'],
-                'erreur' => $details['erreur'] ?? null,
+                'erreur' => $details['erreur'] ?? self::$noData,
                 'maven_key' => $data->maven_key,
             ]);
 
             return new JsonResponse([
                 'code' => $details['code'],
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => "Une Erreur est survenue lors de la récupération du détail des menaces ({$details['code']}).",
-                'trace' => $details['erreur'] ?? null
+                'trace' => $details['erreur'] ?? self::$noData
             ], Response::HTTP_OK);
         }
 
@@ -523,18 +446,18 @@ class ApiOwaspPeintureController extends AbstractController
 
         /** On teste si le body est correcte */
         if (
-            $data === null ||
-            !property_exists($data, 'maven_key') ||
-            !property_exists($data, 'menace')
+            $data === null
+            || !property_exists($data, 'maven_key') || !is_string($data->maven_key)
+            || !property_exists($data, 'menace') || !is_string($data->menace)
         ) {
             $this->logger->error("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key', 'menace' manquante ou JSON mal formé.", [
-                'payload' => $data
+                'payload' => $data ?? self::$noData
             ]);
 
             return new JsonResponse([
                 'code' => 400,
-                'type' => 'alert',
-                'message' => static::$erreur400
+                'type' => 'error',
+                'message' => self::$erreur400
             ], Response::HTTP_OK);
         }
 
@@ -549,7 +472,7 @@ class ApiOwaspPeintureController extends AbstractController
         if ($high['code'] !== 200) {
             $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête countHotspotOwaspMenaceByStatus.', [
                 'code' => $high['code'],
-                'erreur' => $high['erreur'] ?? null,
+                'erreur' => $high['erreur'] ?? self::$noData,
                 'maven_key' => $data->maven_key,
                 'probability' => 'HIGH',
                 'menace' => $data->menace
@@ -557,9 +480,9 @@ class ApiOwaspPeintureController extends AbstractController
 
             return new JsonResponse([
                 'code' => $high['code'],
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => "Une Erreur est survenue lors de la récupération des données des menaces potentielles de probabilité <strong>High</strong> ({$high['code']}).",
-                'trace' => $high['erreur'] ?? null
+                'trace' => $high['erreur'] ?? self::$noData
             ], Response::HTTP_OK);
         }
 
@@ -574,17 +497,17 @@ class ApiOwaspPeintureController extends AbstractController
         if ($medium['code'] !== 200) {
             $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête countHotspotOwaspMenaceByStatus.', [
                 'code' => $medium['code'],
-                'erreur' => $medium['erreur'] ?? null,
+                'erreur' => $medium['erreur'] ?? self::$noData,
                 'maven_key' => $data->maven_key,
                 'probability' => 'MEDIUM',
                 'menace' => $data->menace
             ]);
 
             return new JsonResponse([
-                'maven_key' => $data->maven_key,
                 'code' => $medium['code'],
+                'type' => 'error',
                 'message' => "Une Erreur est survenue lors de la récupération des données des menaces potentielles de probabilité <strong>Medium</strong> ({$medium['code']}).",
-                'trace' => $medium['erreur'] ?? null
+                'trace' => $medium['erreur'] ?? self::$noData
             ], Response::HTTP_OK);
         }
 
@@ -597,21 +520,29 @@ class ApiOwaspPeintureController extends AbstractController
         $low = $hotspotOwaspRepos->countHotspotOwaspMenaceByStatus($map);
 
         if ($low['code'] !== 200) {
-            return new JsonResponse([
-                'maven_key' => $data->maven_key,
+            $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête countHotspotOwaspMenaceByStatus.', [
                 'code' => $low['code'],
-                "Une Erreur est survenue lors de la récupération des données des menaces potentielles de probabilité <strong>Low</strong> ({$low['code']}).",
-                'trace' => $low['erreur'] ?? null
+                'erreur' => $low['erreur'] ?? self::$noData,
+                'maven_key' => $data->maven_key,
+                'probability' => 'LOW',
+                'menace' => $data->menace
+            ]);
+
+            return new JsonResponse([
+                'code' => $low['code'],
+                'type' => 'error',
+                'message' => "Une Erreur est survenue lors de la récupération des données des menaces potentielles de probabilité <strong>Low</strong> ({$low['code']}).",
+                'trace' => $low['erreur'] ?? self::$noData
             ], Response::HTTP_OK);
         }
 
         /**
-         * On vérifie la valeur des vulnérabilité de type HIGH, MEDIUMet LOW
-         * Si la valeur est null alors on initialise à 0
+         * On vérifie la valeur des vulnérabilité de type HIGH, MEDIUM et LOW.
+         * Si la valeur est null alors on initialise à 0.
          */
-        $x_high = empty($high) ? 0 : $high['nombre']['total'];
-        $x_medium = empty($medium) ? 0 : $medium['nombre']['total'];
-        $x_low = empty($low) ? 0 : $low['nombre']['total'];
+        $x_high = $high['nombre']['total'] ?? 0;
+        $x_medium = $medium['nombre']['total'] ?? 0;
+        $x_low = $low['nombre']['total'] ?? 0;
 
         return new JsonResponse([
             'code' => 200,

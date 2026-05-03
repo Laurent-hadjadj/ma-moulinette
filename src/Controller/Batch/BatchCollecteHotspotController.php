@@ -25,8 +25,8 @@ use App\Service\{ClientService, UrlBuilderService};
 class BatchCollecteHotspotController extends AbstractController
 {
     /** Définition des constantes */
-    public static $sonarUrl = "sonar.url";
-    public static $europeParis = "Europe/Paris";
+    private static string $sonarUrl = "sonar.url";
+    private static string $europeParis = "Europe/Paris";
 
     /**
      * [Description for __construct]
@@ -73,7 +73,7 @@ class BatchCollecteHotspotController extends AbstractController
      * @param string $mode_collecte
      * @param string $utilisateur_collecte
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      *
      * Created at: 21/05/2024 22:25:12 (Europe/Paris)
@@ -120,11 +120,11 @@ class BatchCollecteHotspotController extends AbstractController
         }
 
         /** On reconstruit la date de version au format dateTime */
-        $dateVersion = new \DateTimeImmutable($select['info'][0]['date'], new \DateTimeZone(static::$europeParis));
+        $dateVersion = new \DateTimeImmutable($select['info'][0]['date'], new \DateTimeZone(self::$europeParis));
 
         /** Sécurisation de l'URL */
         $url = $this->urlBuilder->build(
-            $this->getParameter(static::$sonarUrl),
+            $this->getParameter(self::$sonarUrl),
             '/api/hotspots/search',
             [ 'projectKey' => $maven_key, 'ps' => 500, 'p' => 1 ]
         );
@@ -146,7 +146,7 @@ class BatchCollecteHotspotController extends AbstractController
         }
 
        /** Création de la date du jour */
-        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
 
         /** On supprime les résultats pour la maven_key. */
         $map = [ 'maven_key' => $maven_key ];

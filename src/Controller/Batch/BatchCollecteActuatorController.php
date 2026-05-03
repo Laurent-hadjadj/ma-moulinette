@@ -42,9 +42,8 @@ class BatchCollecteActuatorController extends AbstractController
     /**
      * [Description for BatchCollecteActuatorInfo]
      *
-     * @param string $mavenKey
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 25/06/2024 14:50:16 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -102,7 +101,7 @@ class BatchCollecteActuatorController extends AbstractController
 
             return [
                 'code' => 500,
-                'type' => 'alert',
+                'type' => 'error',
                 'erreur' => ['Exception lors de l’appel HTTP : ' . $e->getMessage()]
             ];
         }

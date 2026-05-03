@@ -25,18 +25,17 @@ use App\Service\UserAgentTrackingFacade;
 class FooterController extends AbstractController
 {
 
-    private $logoEntreprise;
-    private $marqueEntrepriseShort;
-    private $marqueEntrepriseLong;
-    private $environnement;
-    private $version;
-    private $dateCopyright;
+    private string $logoEntreprise;
+    private string $marqueEntrepriseShort;
+    private string $marqueEntrepriseLong;
+    private string $environnement;
+    private string $version;
+    private string $dateCopyright;
 
     public function __construct(
-        private ParameterBagInterface $params,
+        ParameterBagInterface $params,
         private UserAgentTrackingFacade $tracking
     ) {
-        $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
@@ -48,7 +47,7 @@ class FooterController extends AbstractController
     /**
      * [Description for genericRender]
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 21/12/2024 23:25:49 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -63,7 +62,8 @@ class FooterController extends AbstractController
             'marque_entreprise_long' => $this->marqueEntrepriseLong,
             'env' => $this->environnement,
             'version' => $this->version,
-            'date_copyright' => $this->dateCopyright];
+            'date_copyright' => $this->dateCopyright
+        ];
     }
 
     /**
@@ -79,7 +79,7 @@ class FooterController extends AbstractController
     public function planDuSite(): Response
     {
         $this->tracking->track('PLAN_DU_SITE');
-        $render=static::genericRender();
+        $render = $this->genericRender();
         return $this->render('footer/plan-du-site.html.twig', $render);
     }
 
@@ -96,7 +96,7 @@ class FooterController extends AbstractController
     public function mentionLegal(): Response
     {
         $this->tracking->track('MENTION_LEGALE');
-        $render=static::genericRender();
+        $render = $this->genericRender();
         $render['editeur'] = $this->getParameter('cgu.editeur');
         $render['siret'] = $this->getParameter('cgu.siret');
         $render['siren'] = $this->getParameter('cgu.siren');
@@ -119,9 +119,8 @@ class FooterController extends AbstractController
     public function donneesPersonnelles(): Response
     {
         $this->tracking->track('CGU');
-        $render=static::genericRender();
+        $render = $this->genericRender();
         $render['urlSite'] = $this->getParameter('cgu.url.site');
         return $this->render('footer/donnees-personnelles.html.twig', $render);
     }
-
 }

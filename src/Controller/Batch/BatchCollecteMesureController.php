@@ -25,7 +25,7 @@ use App\Service\CommandRebuildHistorique\BuildMapHistoryService;
 class BatchCollecteMesureController extends AbstractController
 {
     /** Définition des constantes */
-    private static $sonarUrl = "sonar.url";
+    private static string $sonarUrl = "sonar.url";
 
     /**
      * [Description for __construct]
@@ -50,7 +50,7 @@ class BatchCollecteMesureController extends AbstractController
      * @param string $mode_collecte
      * @param string $utilisateur_collecte
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 21/05/2024 23:48:05 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -69,7 +69,7 @@ class BatchCollecteMesureController extends AbstractController
 
         // [1] Récupération du projet de base pour vérifier son existence
         $url = $this->urlBuilder->build(
-            $this->getParameter(static::$sonarUrl),
+            $this->getParameter(self::$sonarUrl),
             '/api/components/app',
             ['component' => $maven_key]
         );
@@ -126,6 +126,7 @@ class BatchCollecteMesureController extends AbstractController
         $measures = $results['json']['component']['measures'] ?? [];
 
         // On construit un tableau clé-valeur à partir des mesures récupérées
+        $result = [];
         foreach ($measures as $measure) {
             $result[$measure['metric']] = $measure['value'] ?? 0;
         }

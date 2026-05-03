@@ -25,9 +25,9 @@ use App\Service\{ClientService, UrlBuilderService};
 class BatchCollecteOwaspController extends AbstractController
 {
     /** Définition des constantes */
-    private static $sonarUrl = "sonar.url";
-    private static $europeParis = "Europe/Paris";
-    private static $erreur404 = "Je n'ai pas trouvé le projet dans l'application (Erreur 404).";
+    private static string $sonarUrl = "sonar.url";
+    private static string $europeParis = "Europe/Paris";
+    private static string $erreur404 = "Je n'ai pas trouvé le projet dans l'application (Erreur 404).";
 
     /**
      * [Description for __construct]
@@ -48,10 +48,8 @@ class BatchCollecteOwaspController extends AbstractController
      * [Description for BatchCollecteOwasp]
      *
      * @param string $maven_key
-     * @param string $mode_collecteur
-     * @param string $utilisateur_collecteur
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 21/05/2024 23:48:05 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -78,7 +76,7 @@ class BatchCollecteOwaspController extends AbstractController
 
         /** Sécurisation de l'URL */
         $url = $this->urlBuilder->build(
-            $this->getParameter(static::$sonarUrl),
+            $this->getParameter(self::$sonarUrl),
             '/api/issues/search',
             $queryParamsList['owasp2017']
         );
@@ -100,7 +98,7 @@ class BatchCollecteOwaspController extends AbstractController
         $owasp2021 = ['NC'];
         if ((int) $sonar_version > 8){
             $url = $this->urlBuilder->build(
-            $this->getParameter(static::$sonarUrl),
+            $this->getParameter(self::$sonarUrl),
             '/api/issues/search',
             $queryParamsList['owasp2021']
             );
@@ -131,13 +129,13 @@ class BatchCollecteOwaspController extends AbstractController
             $this->logger->warning("[Batch OWASP] ⚠️ Aucun projet trouvé pour {$maven_key}");
             return [
                 'code' => 404,
-                'erreur' => static::$erreur404 // 'message' ?
+                'erreur' => self::$erreur404 // 'message' ?
             ];
         }
 
         /** On reconstruit les dates au format dateTime */
-        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
-        $date_version = new \DateTimeImmutable($select_information['info'][0]['date'], new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
+        $date_version = new \DateTimeImmutable($select_information['info'][0]['date'], new \DateTimeZone(self::$europeParis));
 
         $prepareOwaspData = function($referential) use ($maven_key, $date_version, $date, $select_information, $mode_collecte, $utilisateur_collecte) {
             /** On initialise un tableau avec comme valeur 0 */
@@ -201,19 +199,22 @@ class BatchCollecteOwaspController extends AbstractController
         };
 
         $owaspDataList = [];
+        $total_2017 = 'NC';
         /* pour chaque référentiel 2017/2021 */
         if (array_key_exists('total', $owasp2017['json'])) {
-            $owaspDataList[] = $prepareOwaspData($owasp2017['json']);
-            $owaspDataList[0]['referential_owasp'] = 2017;
-            $total_2017 = $owaspDataList[0]['total'];
+            $row = $prepareOwaspData($owasp2017['json']);
+            $row['referential_owasp'] = 2017;
+            $owaspDataList[] = $row;
+            $total_2017 = $row['total'];
         }
 
         $total_2021 = 'NC';
         /** $owasp2021 = ['NC'] on a pas de données pour le référentiel 2021 */
-        if (array_key_exists('total', $owasp2021)) {
-            $owaspDataList[] = $prepareOwaspData($owasp2021);
-            $owaspDataList[0]['referential_owasp'] = 2021;
-            $total_2021=$owaspDataList[0]['total'];
+        if (is_array($owasp2021) && isset($owasp2021['json']) && array_key_exists('total', $owasp2021['json'])) {
+            $row = $prepareOwaspData($owasp2021['json']);
+            $row['referential_owasp'] = 2021;
+            $owaspDataList[] = $row;
+            $total_2021 = $row['total'];
         }
 
         /** On supprime les informations sur le projet pour la dernière analyse. */

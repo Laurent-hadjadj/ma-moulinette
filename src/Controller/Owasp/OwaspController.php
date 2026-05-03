@@ -17,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Response;
+use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\OwaspTop10;
@@ -28,14 +29,16 @@ use App\Service\UserAgentTrackingFacade;
 class OwaspController extends AbstractController
 {
 
-    private static $page = "owasp/index.html.twig";
+    private static string $page = "owasp/index.html.twig";
+    private static string $erreur404 = "⚠️ Les informations concernant les référentiels OWASP n'ont pas été trouvés.";
+    private static string $noData = 'Pas de données';
 
-    private $logoEntreprise;
-    private $marqueEntrepriseShort;
-    private $marqueEntrepriseLong;
-    private $environnement;
-    private $version;
-    private $dateCopyright;
+    private string $logoEntreprise;
+    private string $marqueEntrepriseShort;
+    private string $marqueEntrepriseLong;
+    private string $environnement;
+    private string $version;
+    private string $dateCopyright;
 
         /**
      * [Description for __construct]
@@ -45,11 +48,11 @@ class OwaspController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function __construct(
-        private ParameterBagInterface $params,
+        ParameterBagInterface $params,
         private EntityManagerInterface $em,
+        private LoggerInterface $logger,
         private UserAgentTrackingFacade $tracking)
     {
-        $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
@@ -61,7 +64,7 @@ class OwaspController extends AbstractController
     /**
      * [Description for genericRender]
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 30/10/2024 08:21:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -96,7 +99,7 @@ class OwaspController extends AbstractController
         $this->tracking->track('OWASP');
 
         /** On charge le template du render */
-        $render = static::genericRender();
+        $render = $this->genericRender();
 
         /** On instancie l'entityRepos */
         $owaspTop10Repos = $this->em->getRepository(OwaspTop10::class);
@@ -106,31 +109,37 @@ class OwaspController extends AbstractController
         $owasp_2017 = $owaspTop10Repos->selectOwaspTop10Referential($map);
 
         if ($owasp_2017['code'] != 200) {
-            $message = '❌' . $owasp_2017['erreur'];
-            $this->addFlash('notice', [
-                'type' => 'alert',
-                'message' => $message
+            $this->logger->error('[Owasp] ❌ Échec selectOwaspTop10Referential 2017.', [
+                'code' => $owasp_2017['code'],
+                'erreur' => $owasp_2017['erreur'] ?? self::$noData
             ]);
-            return $this->render(static::$page, $render);
+            $this->addFlash('notice', [
+                'type' => 'error',
+                'message' => '❌' . ($owasp_2017['erreur'] ?? self::$noData)
+            ]);
+            return $this->render(self::$page, $render);
         }
 
         $map = ['referential_version' => 2021];
-        $owasp_2021=$owaspTop10Repos->selectOwaspTop10Referential($map);
+        $owasp_2021 = $owaspTop10Repos->selectOwaspTop10Referential($map);
 
         if ($owasp_2021['code'] != 200) {
-            $message = '❌' . $owasp_2021['erreur'];
-            $this->addFlash('notice', [
-                'type'=>'alert',
-                'message'=>$message
+            $this->logger->error('[Owasp] ❌ Échec selectOwaspTop10Referential 2021.', [
+                'code' => $owasp_2021['code'],
+                'erreur' => $owasp_2021['erreur'] ?? self::$noData
             ]);
-            return $this->render(static::$page, $render);
+            $this->addFlash('notice', [
+                'type' => 'error',
+                'message' => '❌' . ($owasp_2021['erreur'] ?? self::$noData)
+            ]);
+            return $this->render(self::$page, $render);
         }
 
-        if (count($owasp_2017['liste']) === 0 && count($owasp_2021['liste']) === 0){
-            $message = "⚠️ Les informations concernant les référentiels OWASP n'ont pas été trouvés.";
+        if (count($owasp_2017['liste']) === 0 && count($owasp_2021['liste']) === 0) {
+            $this->logger->warning('[Owasp] ⚠️ Référentiels OWASP 2017 et 2021 vides.');
             $this->addFlash('notice', [
                 'type' => 'warning',
-                'message' => $message
+                'message' => self::$erreur404
             ]);
         }
 
@@ -138,7 +147,7 @@ class OwaspController extends AbstractController
         $render['serveur'] = $this->getParameter('sonar.url');
         $render['owasp_2017'] = $owasp_2017;
         $render['owasp_2021'] = $owasp_2021;
-        return $this->render(static::$page, $render);
+        return $this->render(self::$page, $render);
     }
 
     /**
@@ -156,21 +165,25 @@ class OwaspController extends AbstractController
     public function details(int $id): Response
     {
         /** On charge le template du render */
-        $render = static::genericRender();
+        $render = $this->genericRender();
 
         /** On instancie l'entityRepository */
         $owaspTop10Repos = $this->em->getRepository(OwaspTop10::class);
 
         /** On récupère les informations du projet de la table historique */
-        $map = [ 'menace' => $id ];
+        $map = ['menace' => $id];
         $liste = $owaspTop10Repos->selectOwaspTop10Details($map);
         if ($liste['code'] != 200) {
-            $message = '❌' . $liste['erreur'];
-            $this->addFlash('notice', [
-                'type' => 'alert',
-                'message' => $message
+            $this->logger->error('[Owasp] ❌ Échec selectOwaspTop10Details.', [
+                'code' => $liste['code'],
+                'erreur' => $liste['erreur'] ?? self::$noData,
+                'menace' => $id
             ]);
-            return $this->render(static::$page, $render);
+            $this->addFlash('notice', [
+                'type' => 'error',
+                'message' => '❌' . ($liste['erreur'] ?? self::$noData)
+            ]);
+            return $this->render(self::$page, $render);
         }
         $render['menace'] = $id;
         $render['owasp'] = $liste['details'][0];

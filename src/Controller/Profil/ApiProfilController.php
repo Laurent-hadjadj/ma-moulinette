@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Properties, Profiles, ProfilesHistorique};
@@ -29,20 +29,21 @@ use App\Service\{ClientService, UrlBuilderService};
 class ApiProfilController extends AbstractController
 {
     /** Définition des constantes */
-    private static $europeParis = "Europe/Paris";
-    private static $dateFormatShort = "Y-m-d";
-    private static $sonarUrl = "sonar.url";
-    private static $page = "profil/details.html.twig";
-    private static $erreur400 = "La requête est incorrecte (Erreur 400).";
-    private static $erreur403 = "Vous devez avoir le rôle GESTIONNAIRE pour réaliser cette action (Erreur 403).";
-    public static $erreur404 = "Vous devez au moins avoir un profil déclaré sur le serveur SonarQube (Erreur 404).";
+    private static string $europeParis = "Europe/Paris";
+    private static string $dateFormatShort = "Y-m-d";
+    private static string $sonarUrl = "sonar.url";
+    private static string $page = "profil/details.html.twig";
+    private static string $erreur400 = "La requête est incorrecte (Erreur 400).";
+    private static string $erreur403 = "Vous devez avoir le rôle GESTIONNAIRE pour réaliser cette action (Erreur 403).";
+    private static string $erreur404 = "Vous devez au moins avoir un profil déclaré sur le serveur SonarQube (Erreur 404).";
+    private static string $noData = 'Pas de données';
 
-    private $logoEntreprise;
-    private $marqueEntrepriseShort;
-    private $marqueEntrepriseLong;
-    private $environnement;
-    private $version;
-    private $dateCopyright;
+    private string $logoEntreprise;
+    private string $marqueEntrepriseShort;
+    private string $marqueEntrepriseLong;
+    private string $environnement;
+    private string $version;
+    private string $dateCopyright;
 
     /**
      * [Description for __construct]
@@ -56,11 +57,10 @@ class ApiProfilController extends AbstractController
         private EntityManagerInterface $em,
         private ClientService $client,
         private Security $security,
-        private ParameterBagInterface $params,
+        ParameterBagInterface $params,
         private LoggerInterface $logger,
         private UrlBuilderService $urlBuilder,
     ) {
-        $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
@@ -72,7 +72,6 @@ class ApiProfilController extends AbstractController
     /**
      * [Description for getCount]
      *
-     * @param mixed $repo
      * @param string $language
      * @param string $action
      *
@@ -95,7 +94,6 @@ class ApiProfilController extends AbstractController
     /**
      * [Description for getDateTri]
      *
-     * @param mixed $repo
      * @param string $language
      * @param string $tri
      *
@@ -118,7 +116,7 @@ class ApiProfilController extends AbstractController
     /**
      * [Description for genericDetailsRender]
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 19/10/2025 10:49:30 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -145,7 +143,7 @@ class ApiProfilController extends AbstractController
     /**
      * [Description for genericRender]
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 30/10/2024 08:21:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -190,19 +188,19 @@ class ApiProfilController extends AbstractController
 
             return new JsonResponse([
                 'code' => 403,
-                'alert' => 'warning',
-                'message' => static::$erreur403
+                'type' => 'warning',
+                'message' => self::$erreur403
             ], Response::HTTP_OK);
         }
 
         /** Sécurisation de l'URL */
         $url = $this->urlBuilder->build(
-            $this->getParameter(static::$sonarUrl),
+            $this->getParameter(self::$sonarUrl),
             '/api/qualityprofiles/search'
         );
 
         /** On définit l'URL et on ajoute le nom des profils SonarQube*/
-        $this->logger->info('[Profil] ℹ️ Appel à SonarQube pour récupérer les profils qualité',[
+        $this->logger->info('[Profil] ℹ️ Appel à SonarQube pour récupérer les profils qualité', [
             'url' => $url
         ]);
 
@@ -211,13 +209,14 @@ class ApiProfilController extends AbstractController
         if (in_array($result['code'] ?? -1, [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
             $this->logger->error('[Profil] ❌ Erreur retour API SonarQube', [
             'code' => $result['code'],
-            'erreur' => $result['erreur'] ?? null,
+                'erreur' => $result['erreur'] ?? self::$noData,
             ]);
 
             return new JsonResponse([
                 'code' => $result['code'],
-                'alert' => 'alert',
-                'message' => $result['erreur'] ?? 'Erreur SonarQube'
+                'type' => 'error',
+                'message' => $result['erreur'] ?? 'Erreur SonarQube',
+                'trace' => $result['erreur'] ?? self::$noData
             ], Response::HTTP_OK);
         }
 
@@ -227,33 +226,34 @@ class ApiProfilController extends AbstractController
             return new JsonResponse([
                 'code' => 404,
                 'type' => 'warning',
-                'message' => static::$erreur404
+                'message' => self::$erreur404
             ], Response::HTTP_OK);
         }
 
         /*** Super on a récupéré la liste des profils par langage */
-        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
         $profilsCount = count($result['json']['profiles']);
 
         $this->logger->info('[Profil] ℹ️ Nombre de profils qualité SonarQube récupérés', [
             'total' => $profilsCount,
-            'date' => $date->format('Y-m-d H:i')]);
+            'date' => $date->format('Y-m-d H:i')
+        ]);
 
         /** On supprime les données de la table avant d'importer les données;*/
         $r1 = $profilesRepos->deleteProfiles();
         if ($r1['code'] !== 200) {
             $this->logger->error('[Profil] ❌ Échec de la requête deleteProfiles.', [
             'code' => $r1['code'],
-            'total' => $profilsCount ?? 'inconnu',
-            'erreur' => $r1['erreur'] ?? null
+                'total' => $profilsCount,
+                'erreur' => $r1['erreur'] ?? self::$noData
         ]);
 
             $message = "Une erreur s'est produite lors de la suppression des données (Erreur {$r1['code']}).";
             return new JsonResponse([
                 'code' => $r1['code'],
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => $message,
-                'trace' => $r1['erreur'] ?? null
+                'trace' => $r1['erreur'] ?? self::$noData
             ], Response::HTTP_OK);
         }
 
@@ -267,16 +267,15 @@ class ApiProfilController extends AbstractController
         if ($r2['code'] !== 200) {
             $this->logger->error('[Profil] ❌ Échec de la requête insertProfiles.', [
                 'code' => $r2['code'],
-                'profiles' => $result['json']['profiles'] ?? 'inconnu',
-                'erreur' => $r2['erreur'] ?? null
+                'erreur' => $r2['erreur'] ?? self::$noData
             ]);
 
             $message = "Une erreur s'est produite lors de l'enregistrement des profils (Erreur {$r2['code']}).";
             return new JsonResponse([
                 'code' => $r2['code'],
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => $message,
-                'trace' => $r2['erreur'] ?? null
+                'trace' => $r2['erreur'] ?? self::$noData
             ], Response::HTTP_OK);
         }
 
@@ -285,21 +284,22 @@ class ApiProfilController extends AbstractController
         if ($r3['code'] !== 200) {
             $this->logger->error('[Profil] ❌ Échec de la requête selectProfiles.', [
                 'code' => $r3['code'],
-                'erreur' => $r3['erreur'] ?? null]);
+                'erreur' => $r3['erreur'] ?? self::$noData
+            ]);
 
             $message = "Une erreur s'est produite lors de la recherche des informations (Erreur 500).";
             return new JsonResponse([
                 'code' => $r3['code'],
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => $message,
-                'trace' => $r3['erreur'] ?? null
+                'trace' => $r3['erreur'] ?? self::$noData
             ], Response::HTTP_OK);
         }
 
         /** On met à jour la table propriétés */
         $map = [
                 'profil_bd' => $r2['nombre'],
-                'profil_sonar'=> $r2['nombre'],
+            'profil_sonar' => $r2['nombre'],
                 'date_modification_profil' => $date
         ];
 
@@ -307,15 +307,16 @@ class ApiProfilController extends AbstractController
         if ($r4['code'] !== 200) {
             $this->logger->error('[Profil] ❌ Échec de la requête updatePropertiesProfiles', [
             'code' => $r4['code'],
-            'data' => $map ?? 'inconnu',
-            'erreur' => $r4['erreur'] ?? null]);
+                'data' => $map,
+                'erreur' => $r4['erreur'] ?? self::$noData
+            ]);
 
             $message = "Une erreur s'est produite lors de la mise à jour des données (Erreur 500).";
             return new JsonResponse([
                 'code' => $r4['code'],
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => $message,
-                'trace' => $r4['erreur'] ?? null
+                'trace' => $r4['erreur'] ?? self::$noData
             ], Response::HTTP_OK);
         }
 
@@ -357,15 +358,15 @@ class ApiProfilController extends AbstractController
         if ($r1['code'] !== 200) {
             $this->logger->error('[Profil] ❌ Échec de la requête selectProfilesLanguage.', [
                 'code' => $r1['code'],
-                'erreur' => $r1['erreur'] ?? null
+                'erreur' => $r1['erreur'] ?? self::$noData
             ]);
 
             $message = "Une erreur s'est produite lors du chargement des données concernant les langages (Erreur {$r1['code']}).";
             return new JsonResponse([
                 'code' => $r1['code'],
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => $message,
-                'trace' => $r1['erreur'] ?? null
+                'trace' => $r1['erreur'] ?? self::$noData
             ], Response::HTTP_OK);
         }
 
@@ -384,13 +385,14 @@ class ApiProfilController extends AbstractController
         if ($r2['code'] !== 200 || empty($r2['data-set'])) {
             $this->logger->error('[Profil] ❌ Échec de la requête selectProfilesRuleCount.', [
                 'code' => $r2['code'],
-                'erreur' => $r2['erreur'] ?? null]);
+                'erreur' => $r2['erreur'] ?? self::$noData
+            ]);
 
             return new JsonResponse([
-                'code' => $r2['code'] ?? 500,
-                'type' => 'alert',
+                'code' => $r2['code'],
+                'type' => 'error',
                 'message' => "Une erreur s'est produite lors de la récupération des données (Erreur {$r2['code']}).",
-                'trace' => $r2['erreur'] ?? null,
+                'trace' => $r2['erreur'] ?? self::$noData,
             ], Response::HTTP_OK);
         }
 
@@ -400,10 +402,11 @@ class ApiProfilController extends AbstractController
 
         $this->logger->info('[Profil] ℹ️ Dataset des règles construit', [
             'total' => count($listeDataset),
-            'dataset' => $listeDataset]);
+            'dataset' => $listeDataset
+        ]);
 
         return new JsonResponse([
-            'code' => '200',
+            'code' => 200,
             'label' => $listeLabel,
             'dataset' => $listeDataset
         ], Response::HTTP_OK);
@@ -426,12 +429,12 @@ class ApiProfilController extends AbstractController
     {
         $this->logger->info("[API] 📥 Requête reçue sur /profil/details");
 
-        $profilesHistoriqueRepository = $this->em->getRepository(ProfilesHistorique::class);
+        $profilesHistoriqueRepos = $this->em->getRepository(ProfilesHistorique::class);
 
-        $token = $request->get('token');
+        $token = $request->query->get('token');
         if (empty($token)) {
             $this->logger->warning('[Profil-Détail] ⚠️ Token vide ou manquant');
-            return $this->render(static::$page, ['profil' => 'NC']);
+            return $this->render(self::$page, ['profil' => 'NC']);
         }
 
         try {
@@ -451,9 +454,18 @@ class ApiProfilController extends AbstractController
         );
 
         $render += [
-            'profil' => 'NC', 'langage' => 'aucun', 'opened' => 0, 'closed' => 0,
-            'updated' => 0, 'total_rule' => null, 'premier' => null, 'dernier' => null,
-            'date_groupe' => null, 'nombre_groupe' => null, 'liste' => null, 'badge' => null
+            'profil' => 'NC',
+            'langage' => 'aucun',
+            'opened' => 0,
+            'closed' => 0,
+            'updated' => 0,
+            'total_rule' => null,
+            'premier' => null,
+            'dernier' => null,
+            'date_groupe' => null,
+            'nombre_groupe' => null,
+            'liste' => null,
+            'badge' => null
         ];
 
         if (count($explode) !== 3) {
@@ -461,9 +473,10 @@ class ApiProfilController extends AbstractController
                 'token' => $token
             ]);
             $this->addFlash('notice', [
-                'type' => 'alert',
-                'message' => "⚠️ Le token fourni est invalide ou mal formé (Erreur 422)."]);
-            return $this->render(static::$page, $render);
+                'type' => 'error',
+                'message' => "⚠️ Le token fourni est invalide ou mal formé (Erreur 422)."
+            ]);
+            return $this->render(self::$page, $render);
         }
 
         [$salt, $language, $profil] = $explode;
@@ -485,7 +498,7 @@ class ApiProfilController extends AbstractController
                 'type' => 'warning',
                 'message' => "⚠️ Le langage sélectionné n'est pas supporté (Erreur 404)."
             ]);
-            return $this->render(static::$page, $render);
+            return $this->render(self::$page, $render);
         }
 
         $language = match ($language) {
@@ -500,9 +513,10 @@ class ApiProfilController extends AbstractController
 
         /* On récupère que les 500 premiers */
         $url = $this->urlBuilder->build(
-        $this->getParameter(static::$sonarUrl),
+            $this->getParameter(self::$sonarUrl),
         '/api/qualityprofiles/changelog',
-        ['language' => $language, 'qualityProfile' => $profil, 'ps' => 500, 'p' => 1]);
+            ['language' => $language, 'qualityProfile' => $profil, 'ps' => 500, 'p' => 1]
+        );
 
         $this->logger->info('[Profil-Détail] ℹ️ Appel API SonarQube', ['url' => $url]);
 
@@ -515,22 +529,22 @@ class ApiProfilController extends AbstractController
             ]);
 
             $this->addFlash('notice', [
-                'type' => 'alert',
-                'message' => '❌' . $result['erreur']
+                'type' => 'error',
+                'message' => '❌' . ($result['erreur'] ?? self::$noData)
             ]);
-            return $this->render(static::$page, $render);
+            return $this->render(self::$page, $render);
         }
 
-        $date = new \DateTime('now', new \DateTimeZone(static::$europeParis));
+        $date = new \DateTime('now', new \DateTimeZone(self::$europeParis));
         $events = $result['json']['events'] ?? [];
         $total = $result['json']['total'] ?? null;
 
         /** On met à jour la table contenant l'historique des changements. */
         foreach ($events as $event) {
             try {
-                $dc = new \DateTime($event['date'], new \DateTimeZone(static::$europeParis));
+                $dc = new \DateTime($event['date'], new \DateTimeZone(self::$europeParis));
                 $map = [
-                    'date_courte' => $dc->format(static::$dateFormatShort),
+                    'date_courte' => $dc->format(self::$dateFormatShort),
                     'language' => $language,
                     'date' => $event['date'],
                     'action' => $event['action'],
@@ -540,7 +554,7 @@ class ApiProfilController extends AbstractController
                     'detail' => json_encode($event['params']),
                     'date_enregistrement' => $date
                 ];
-                $profilesHistoriqueRepository->insertProfilesHistorique($map);
+                $profilesHistoriqueRepos->insertProfilesHistorique($map);
             } catch (\Throwable $e) {
                 $this->logger->error("[Profil-Détail] ❌ Insertion de la requête insertProfilesHistorique.", [
                     'map' => $map ?? 'inconnu',
@@ -553,14 +567,14 @@ class ApiProfilController extends AbstractController
 
         $render['profil'] = $profil;
         $render['langage'] = $language;
-        $render['opened'] = $this->getCount($profilesHistoriqueRepository, $language, 'ACTIVATED');
-        $render['closed'] = $this->getCount($profilesHistoriqueRepository, $language, 'DEACTIVATE');
-        $render['updated'] = $this->getCount($profilesHistoriqueRepository, $language, 'UPDATED');
+        $render['opened'] = $this->getCount($profilesHistoriqueRepos, $language, 'ACTIVATED');
+        $render['closed'] = $this->getCount($profilesHistoriqueRepos, $language, 'DEACTIVATE');
+        $render['updated'] = $this->getCount($profilesHistoriqueRepos, $language, 'UPDATED');
         $render['total_rule'] = $total;
-        $render['premier'] = $this->getDateTri($profilesHistoriqueRepository, $language, 'ASC');
-        $render['dernier'] = $this->getDateTri($profilesHistoriqueRepository, $language, 'DESC');
+        $render['premier'] = $this->getDateTri($profilesHistoriqueRepos, $language, 'ASC');
+        $render['dernier'] = $this->getDateTri($profilesHistoriqueRepos, $language, 'DESC');
 
-        $groupes = $profilesHistoriqueRepository->selectProfilesHistoriqueDateCourteGroupeBy(['language' => $language]);
+        $groupes = $profilesHistoriqueRepos->selectProfilesHistoriqueDateCourteGroupeBy(['language' => $language]);
         $render['nombre_groupe'] = count($groupes['liste']);
 
         $liste = [];
@@ -570,7 +584,7 @@ class ApiProfilController extends AbstractController
 
         foreach ($groupes['liste'] as $groupe) {
             $date = $groupe['date_courte'];
-            $modif = $profilesHistoriqueRepository->selectProfilesHistoriqueLangageDateCourte([
+            $modif = $profilesHistoriqueRepos->selectProfilesHistoriqueLangageDateCourte([
                 'language' => $language,
                 'date_courte' => $date
             ]);
@@ -618,7 +632,7 @@ class ApiProfilController extends AbstractController
             'langage' => $language
         ]);
 
-        return $this->render(static::$page, $render);
+        return $this->render(self::$page, $render);
     }
 
     /**
@@ -644,13 +658,15 @@ class ApiProfilController extends AbstractController
         $data = json_decode($request->getContent());
 
       /** On teste si la clé est valide */
-        if ($data === null || !property_exists($data, 'langage')) {
-            $this->logger->error("[Profil] ❌ Requête invalide : 'langage' manquant ou malformé", ['data' => $data]);
+        if ($data === null || !property_exists($data, 'langage') || !is_string($data->langage)) {
+            $this->logger->error("[Profil] ❌ Requête invalide : 'langage' manquant ou malformé", [
+                'payload' => $data ?? self::$noData
+            ]);
 
             return new JsonResponse([
                     'code' => 400,
-                    'type' => 'alert',
-                    'message' => static::$erreur400
+                'type' => 'error',
+                'message' => self::$erreur400
                 ], Response::HTTP_OK);
         }
 
@@ -671,7 +687,6 @@ class ApiProfilController extends AbstractController
                     'code' => 200,
                     'listeProfil' => $liste['liste'],
                     'countProfil' => $count,
-                    //'autreVersion' => count($liste['liste']) ?? 0
                 ], Response::HTTP_OK);
         } catch (\Throwable $e) {
             $this->logger->error('[Profil] 🔴 Erreur lors de la récupération des profils non actifs', [
@@ -681,7 +696,7 @@ class ApiProfilController extends AbstractController
 
             return new JsonResponse([
                 'code' => 500,
-                'type' => 'alert',
+                'type' => 'critical',
                 'message' => 'Une erreur est survenue lors du traitement des profils',
                 'trace' => $e->getMessage()
             ], Response::HTTP_OK);

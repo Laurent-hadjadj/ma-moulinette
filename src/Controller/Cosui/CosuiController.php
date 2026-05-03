@@ -25,9 +25,9 @@ use App\Service\{ProjetCosuiService, UserAgentTrackingFacade};
 class CosuiController extends AbstractController
 {
 
-    private static $erreur400 = '❌ La requête est incorrecte (Erreur 400).';
-    private static $erreur403 = '⚠️ Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).';
-    private static $page = 'projet/cosui.html.twig';
+    private static string $erreur400 = '❌ La requête est incorrecte (Erreur 400).';
+    private static string $page = 'projet/cosui.html.twig';
+    private static string $titreFlash = '[COSUI]';
 
     /**
      * [Description for __construct]
@@ -40,9 +40,7 @@ class CosuiController extends AbstractController
         private LoggerInterface $logger,
         private ProjetCosuiService $cosuiService,
         private UserAgentTrackingFacade $tracking)
-    {
-        $this->cosuiService = $cosuiService;
-    }
+    {}
 
     /**
      * [Description for addFlashAndRender]
@@ -51,8 +49,7 @@ class CosuiController extends AbstractController
      *
      * @param string $type    Type du message flash (ex. : success, error, warning).
      * @param string $message Message principal à afficher à l'utilisateur.
-     * @param string $debug   Message de débogage (visible uniquement en DEV).
-     * @param array  $render  Données à passer au template.
+     * @param array<int|string, mixed>  $render  Données à passer au template.
      *
      * @return Response
      *
@@ -62,11 +59,7 @@ class CosuiController extends AbstractController
      */
     private function addFlashAndRender(string $type, string $message, string|null $trace, array $render): Response
     {
-        if (!isset(static::$page)) {
-            $this->logger->error("[COSUI] ❌ Paramètre statique 'page' non défini dans addFlashAndRender().");
-        }
-
-        $this->logger->info("[COSUI] ℹ️ Ajout d’un message flash de type '{$type}' avec le titre : " . (static::$titreFlash ?? '[non défini]'));
+        $this->logger->info("[COSUI] ℹ️ Ajout d’un message flash de type '{$type}' avec le titre : " . self::$titreFlash);
         $this->logger->debug("Contenu du message flash", [
             'message' => $message,
             'trace' => $trace ?? 'Pas de traces',
@@ -79,7 +72,7 @@ class CosuiController extends AbstractController
             'trace' => $trace ?? null,
         ]);
 
-        return $this->render(static::$page, $render);
+        return $this->render(self::$page, $render);
     }
 
     /**
@@ -143,16 +136,16 @@ class CosuiController extends AbstractController
 
         $render = $this->cosuiService->initialRender();
 
-        $token = $request->get('token');
+        $token = $request->query->get('token');
         if (empty($token)) {
             $this->logger->warning('[COSUI] ⚠️ Token manquant dans la requête');
-            return $this->addFlashAndRender('alert', static::$erreur400, 'token', $render);
+            return $this->addFlashAndRender('alert', self::$erreur400, 'token', $render);
         }
 
         $maven_key = $this->decodeToken($token);
         if (null === $maven_key) {
             $this->logger->error('[COSUI] ❌ Échec du décodage du token.');
-            return $this->addFlashAndRender('alert', static::$erreur400, 'Problème de décodage du token.', $render);
+            return $this->addFlashAndRender('alert', self::$erreur400, 'Problème de décodage du token.', $render);
         }
 
         $this->logger->info('[COSUI] ℹ️ Token décodé, maven_key reçu', ['maven_key' => $maven_key]);
@@ -176,6 +169,6 @@ class CosuiController extends AbstractController
             return $this->addFlashAndRender('alert', '🔴 Erreur lors de la génération COSUI.', $e->getMessage(), $render);
         }
 
-        return $this->render(static::$page, $result);
+        return $this->render(self::$page, $result);
     }
 }

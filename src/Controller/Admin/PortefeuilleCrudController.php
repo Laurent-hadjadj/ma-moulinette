@@ -22,11 +22,11 @@ use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Portefeuille, Batch, BatchTraitement};
 
 /**
- * [Description PortefeuilleCrudController]
+ * @extends AbstractCrudController<Portefeuille>
  */
 class PortefeuilleCrudController extends AbstractCrudController
 {
-    private static $europeParis = 'Europe/Paris';
+    private static string $europeParis = 'Europe/Paris';
 
     /**
      * [Description for __construct]
@@ -37,7 +37,6 @@ class PortefeuilleCrudController extends AbstractCrudController
      */
     public function __construct(private EntityManagerInterface $emm)
     {
-        $this->emm = $emm;
     }
 
     /**
@@ -225,11 +224,11 @@ class PortefeuilleCrudController extends AbstractCrudController
             ->setHelp(sprintf('Liste des projets du portefeuille — %d projet(s) trouvés. Tape pour filtrer.', $count));
 
         yield DateTimeField::new('dateModification')
-            ->setTimezone(static::$europeParis)
+            ->setTimezone(self::$europeParis)
             ->hideOnForm();
 
         yield DateTimeField::new('dateEnregistrement')
-            ->setTimezone(static::$europeParis)
+            ->setTimezone(self::$europeParis)
             ->hideOnForm();
     }
 
@@ -238,7 +237,6 @@ class PortefeuilleCrudController extends AbstractCrudController
      * On enregistre les données lors de la création
      *
      * @param EntityManagerInterface $em
-     * @param mixed $entityInstance
      *
      * @return void
      *
@@ -251,6 +249,7 @@ class PortefeuilleCrudController extends AbstractCrudController
         if (!$entityInstance instanceof Portefeuille) {
             return;
         }
+
         /** On récupère le nom du portefeuille */
         $nom_portefeuille = $entityInstance->getPortefeuille();
 
@@ -271,7 +270,6 @@ class PortefeuilleCrudController extends AbstractCrudController
      * [Description for updateEntity]
      * Mise à jour des données du formulaire
      * @param EntityManagerInterface $em
-     * @param mixed $entityInstance
      *
      * @return void
      *
@@ -290,7 +288,7 @@ class PortefeuilleCrudController extends AbstractCrudController
         /** On récupère le nom du portefeuille */
         $nom_portefeuille = $entityInstance->getPortefeuille();
         /** On ajoute la date de modification  */
-        $entityInstance->setDateModification(new \DateTime('now', new \DateTimeZone(static::$europeParis)));
+        $entityInstance->setDateModification(new \DateTime('now', new \DateTimeZone(self::$europeParis)));
 
         try {
             parent::persistEntity($em, $entityInstance);

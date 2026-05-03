@@ -29,18 +29,19 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
  */
 class BatchController extends AbstractController
 {
-    private static $timeFormat = "%H:%I:%S";
-    private static $europeParis = "Europe/Paris";
-    private static $page = 'batch/index.html.twig';
-    private static $erreur403 = "⚠️ Vous devez avoir le rôle 'BATCH' pour gérer les traitements (Erreur 403).";
-    private static $erreur400 = "La requête est incorrecte (Erreur 400).";
+    private static string $timeFormat = "%H:%I:%S";
+    private static string $europeParis = "Europe/Paris";
+    private static string $page = 'batch/index.html.twig';
+    private static string $erreur403 = "⚠️ Vous devez avoir le rôle 'BATCH' pour gérer les traitements (Erreur 403).";
+    private static string $erreur400 = "La requête est incorrecte (Erreur 400).";
+    private static string $noData = 'Pas de données';
 
-    private $logoEntreprise;
-    private $marqueEntrepriseShort;
-    private $marqueEntrepriseLong;
-    private $environnement;
-    private $version;
-    private $dateCopyright;
+    private string $logoEntreprise;
+    private string $marqueEntrepriseShort;
+    private string $marqueEntrepriseLong;
+    private string $environnement;
+    private string $version;
+    private string $dateCopyright;
 
     /**
      * [Description for __construct]
@@ -52,13 +53,12 @@ class BatchController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        private ParameterBagInterface $params,
+        ParameterBagInterface $params,
         private LoggerInterface $logger,
         private Security $security,
         private PdfExportService $pdfExportService,
         private UserAgentTrackingFacade $tracking
     ) {
-        $this->params = $params;
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
@@ -91,7 +91,7 @@ class BatchController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/secure/traitement/information', name: 'traitement_information', methods: ['POST'])]
+    #[Route('/api/secure/traitement/information', name: 'traitement_information', methods: 'POST')]
     public function traitementInformation(Request $request): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/secure/traitement/information");
@@ -126,7 +126,7 @@ class BatchController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'error',
-                'message' => static::$erreur400
+                'message' => self::$erreur400
             ], Response::HTTP_OK);
         }
 
@@ -136,7 +136,7 @@ class BatchController extends AbstractController
         if ($traitement_info['code'] !== 200) {
             $this->logger->error("[Information-Traitement] ❌ Échec de la requête selectBatchTraitementByTraitementId", [
                 'code' => $traitement_info['code'],
-                'message' => $traitement_info['erreur'] ?? null
+                'message' => $traitement_info['erreur'] ?? self::$noData
             ]);
 
             return new JsonResponse([
@@ -155,7 +155,7 @@ class BatchController extends AbstractController
         if ($find_job_id['code'] !== 200) {
             $this->logger->error("[Information-Traitement] ❌ Échec de la requête selectBatchExecutionLastTraitementId", [
                 'code' => $find_job_id['code'],
-                'message' => $find_job_id['erreur'] ?? null
+                'message' => $find_job_id['erreur'] ?? self::$noData
             ]);
 
             return new JsonResponse([
@@ -172,7 +172,7 @@ class BatchController extends AbstractController
         if ($count_traitement_journal['code'] !== 200) {
             $this->logger->error("[Information-Traitement] ❌ Échec de la requête countBatchExecutionJournalCode.", [
                 'code' => $count_traitement_journal['code'],
-                'message' => $count_traitement_journal['erreur'] ?? null
+                'message' => $count_traitement_journal['erreur'] ?? self::$noData
             ]);
 
             return new JsonResponse([
@@ -190,7 +190,7 @@ class BatchController extends AbstractController
         if ($projets['code'] !== 200) {
             $this->logger->error("[Information-Traitement] ❌ Échec de la requête selectBatchExecutionJournalNomProjetAndStatus.", [
                 'code' => $projets['code'],
-                'message' => $projets['erreur'] ?? null
+                'message' => $projets['erreur'] ?? self::$noData
             ]);
 
             return new JsonResponse([
@@ -277,7 +277,7 @@ class BatchController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'error',
-                'message' => static::$erreur400
+                'message' => self::$erreur400
             ], Response::HTTP_OK);
         }
 
@@ -292,7 +292,7 @@ class BatchController extends AbstractController
         if ($get_journal['code'] !== 200) {
             $this->logger->error("[Information-Traitement] ❌ Échec de la requête selectBatchExecutionJournalByJob.", [
                 'code' => $get_journal['code'],
-                'message' => $get_journal['erreur'] ?? null
+                'message' => $get_journal['erreur'] ?? self::$noData
             ]);
 
             return new JsonResponse([
@@ -347,6 +347,8 @@ class BatchController extends AbstractController
                     'message' => "Erreur lors de la décompression GZIP du journal (flux corrompu ?) pour le  projet {$data->nom_projet} (Erreur 500).",
                 ], Response::HTTP_OK);
             }
+        } else {
+            $html = $binary;
         }
 
         // 🧼 Nettoyage : conversion UTF-8 forcée
@@ -398,10 +400,10 @@ class BatchController extends AbstractController
 
             $this->addFlash('notice', [
                 'type' => 'warning',
-                'message' => static::$erreur403
+                'message' => self::$erreur403
             ]);
 
-            return $this->render(static::$page, $render);
+            return $this->render(self::$page, $render);
         }
 
         // Obtenir la date du dernier traitement automatique ou programmé
@@ -409,7 +411,7 @@ class BatchController extends AbstractController
 
         if ($r['code'] !== 200) {
             $this->logger->error("[Traitement-Suivi] Échec de la requête selectBatchTraitementActivated().", [
-                'code' => $r['code'] ?? null,
+                'code' => $r['code'] ?? self::$noData,
                 'erreur' => $r['erreur']
             ]);
 
@@ -417,10 +419,10 @@ class BatchController extends AbstractController
             $this->addFlash('notice', [
                 'type' => 'error',
                 'message' => $message,
-                'debug' => $r['erreur'] ?? null
+                'debug' => $r['erreur'] ?? self::$noData
             ]);
 
-            return $this->render(static::$page, $render);
+            return $this->render(self::$page, $render);
         }
 
         // Si aucun traitement n'a été trouvé
@@ -433,7 +435,7 @@ class BatchController extends AbstractController
                 'message' => $message
             ]);
 
-            return $this->render(static::$page, $render);
+            return $this->render(self::$page, $render);
         }
 
         // Génère les données pour le tableau de suivi
@@ -444,10 +446,10 @@ class BatchController extends AbstractController
                 $message = ($traitement['success'] == 0) ? "Erreur" : "Succès";
                 $css = ($traitement['success'] == 0) ? "ko" : "ok";
 
-                $debut = new \DateTime($traitement['debut'], new \DateTimeZone(static::$europeParis));
-                $fin = new \DateTime($traitement['fin'], new \DateTimeZone(static::$europeParis));
+                $debut = new \DateTime($traitement['debut'], new \DateTimeZone(self::$europeParis));
+                $fin = new \DateTime($traitement['fin'], new \DateTimeZone(self::$europeParis));
                 $interval = $debut->diff($fin);
-                $execution = $interval->format(static::$timeFormat);
+                $execution = $interval->format(self::$timeFormat);
             } else {
                 $message = "---";
                 $css = "oko";
@@ -482,9 +484,9 @@ class BatchController extends AbstractController
                 'execution' =>  $execution
             ];
         }
-        $render['date'] = new \DateTime('now', new \DateTimeZone(static::$europeParis));
+        $render['date'] = new \DateTime('now', new \DateTimeZone(self::$europeParis));
         $render['traitements'] = $traitements;
-        return $this->render(static::$page, $render);
+        return $this->render(self::$page, $render);
     }
 
     #[Route('/rapports', name: 'rapport_index')]
@@ -500,9 +502,15 @@ class BatchController extends AbstractController
 
         foreach ($traitements as $traitement) {
             $codes = array_map(fn($j) => $j->getCode(), $traitement->getCollectes()->toArray());
-            $nombre_success = (in_array(200, $codes)) ? $nombre_success++ : $nombre_success;
-            $nombre_bypass = (in_array(202, $codes)) ? $nombre_bypass++ : $nombre_bypass;
-            $nombre_erreur = (in_array([400, 404, 422, 500, 503], $codes)) ? $nombre_erreur++ : $nombre_erreur;
+            if (in_array(200, $codes, true)) {
+                $nombre_success++;
+            }
+            if (in_array(202, $codes, true)) {
+                $nombre_bypass++;
+            }
+            if (array_intersect([400, 404, 422, 500, 503], $codes) !== []) {
+                $nombre_erreur++;
+            }
         }
 
         // Récupération des utilisateurs distincts
@@ -526,8 +534,6 @@ class BatchController extends AbstractController
     /**
      * [Description for exportPdf]
      *
-     * @param BatchExecution $batch
-     * @param PdfExportService $pdfExportService
      *
      * @return Response
      *

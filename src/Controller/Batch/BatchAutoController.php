@@ -1,15 +1,15 @@
 <?php
 
 /**
-*  Ma-Moulinette
-*  --------------
-*  Copyright (c) 2021-2026.
-*  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common CC-BY-NC-SA 4.0.
-*  ---
-*  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
-*/
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
 
 namespace App\Controller\Batch;
 
@@ -31,14 +31,15 @@ use App\Service\ListeProjetPortefeuilleService;
  */
 class BatchAutoController extends AbstractController
 {
-    private static $erreur400 = "❌ La requête est incorrecte (Erreur 400).";
-    private static $erreur403 = "🚫 Vous n'êtes pas autorisé à acceder à ce service. (Erreur 403).";
-    private static $noMessage = 'Aucun message remonté.';
-    private static $noError = 'Aucune erreur remontée.';
-    private static $europeParis = 'Europe/Paris';
-    private static $dateFormat = "Y-m-d H:i:s";
-    private static $traitementAutomatique = 'TRAITEMENT AUTOMATIQUE';
-    private static $loggerUpdateBatchTraitement = '[Traitement-Automatique] ❌ Échec de la requête updateBatchTraitement';
+    private static string $erreur400 = "❌ La requête est incorrecte (Erreur 400).";
+    private static string $erreur403 = "🚫 Vous n'êtes pas autorisé à acceder à ce service. (Erreur 403).";
+    private static string $noMessage = 'Aucun message remonté.';
+    private static string $noError = 'Aucune erreur remontée.';
+    private static string $noData = 'Pas de données';
+    private static string $europeParis = 'Europe/Paris';
+    private static string $dateFormat = "Y-m-d H:i:s";
+    private static string $traitementAutomatique = 'TRAITEMENT AUTOMATIQUE';
+    private static string $loggerUpdateBatchTraitement = '[Traitement-Automatique] ❌ Échec de la requête updateBatchTraitement';
 
     public function __construct(
         private CollecteController $collecte,
@@ -79,7 +80,7 @@ class BatchAutoController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'error',
-                'message' => static::$erreur400
+                'message' => self::$erreur400
             ], Response::HTTP_OK);
         }
 
@@ -91,7 +92,7 @@ class BatchAutoController extends AbstractController
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'error',
-                'message' => static::$erreur403
+                'message' => self::$erreur403
             ], Response::HTTP_FORBIDDEN);
         }
 
@@ -101,7 +102,7 @@ class BatchAutoController extends AbstractController
         if ($get_liste['code'] !== 200) {
             $this->logger->error("[Traitement-Automatique] ❌ Échec de la requête selectBatchTraitementAutomatiqueListe.", [
                 'code' => $get_liste,
-                'message' => $get_liste['erreur'] ?? null
+                'message' => $get_liste['erreur'] ?? self::$noError
             ]);
 
             return new JsonResponse([
@@ -115,7 +116,7 @@ class BatchAutoController extends AbstractController
         return new JsonResponse([
             'code' => 200,
             'message' => 'Liste des projets pour les traitements automatique récupérée.',
-            'liste_traitement' => $get_liste['liste'] ?? null
+            'liste_traitement' => $get_liste['liste'] ?? self::$noData
         ], Response::HTTP_OK);
     }
 
@@ -126,7 +127,7 @@ class BatchAutoController extends AbstractController
      * @param Client $client
      * @param Request $request
      *
-     * @return [type]
+     * @return JsonResponse
      *
      * Created at: 10/04/2024 07:48:37 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -157,7 +158,7 @@ class BatchAutoController extends AbstractController
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'error',
-                'message' => static::$erreur400
+                'message' => self::$erreur400
             ], Response::HTTP_OK);
         }
 
@@ -172,7 +173,7 @@ class BatchAutoController extends AbstractController
             return new JsonResponse([
                 'code' => 403,
                 'type' => 'error',
-                'message' => static::$erreur403
+                'message' => self::$erreur403
             ], Response::HTTP_FORBIDDEN);
         }
 
@@ -182,7 +183,7 @@ class BatchAutoController extends AbstractController
         if ($les_projets['code'] === 404) {
             $this->logger->warning("[Traitement-Automatique] ❌ La liste est vide ou n'existe plus.", [
                 'code' => $les_projets,
-                'message' => $les_projets['erreur'] ?? null
+                'message' => $les_projets['erreur'] ?? self::$noError
             ]);
 
             return new JsonResponse([
@@ -204,16 +205,16 @@ class BatchAutoController extends AbstractController
             $execution_id,
             Ulid::fromString($data->traitement_id),
             $utilisateur_collecte,
-            static::$traitementAutomatique
+            self::$traitementAutomatique
         );
 
         $this->em->persist($batchExecution);
 
-        $debut_traitement = new \DateTime('now', new \DateTimeZone(static::$europeParis));
+        $debut_traitement = new \DateTime('now', new \DateTimeZone(self::$europeParis));
 
         /** On met à jour la table des traitements */
         $map = [
-            'debut_traitement' => $debut_traitement->format(static::$dateFormat),
+            'debut_traitement' => $debut_traitement->format(self::$dateFormat),
             'fin_traitement' => null,
             'success' => null,
             'in_progress' => true,
@@ -224,10 +225,10 @@ class BatchAutoController extends AbstractController
         $update = $batchTraitementRepos->updateBatchTraitement($map);
 
         if ($update['code'] !== 200) {
-            $this->logger->error(static::$loggerUpdateBatchTraitement, [
+            $this->logger->error(self::$loggerUpdateBatchTraitement, [
                 'code' => $update['code'],
-                'message' => $update['message'] ?? static::$noMessage,
-                'erreur' => $update['erreur'] ?? static::$noError,
+                'message' => $update['message'] ?? self::$noMessage,
+                'erreur' => $update['erreur'] ?? self::$noError,
                 'traitement_id' => $data->traitement_id,
                 'wip' => 'in_progress = true'
             ]);
@@ -236,7 +237,7 @@ class BatchAutoController extends AbstractController
                 'code' => $update['code'],
                 'type' => 'error',
                 'message' => "Il n'est pas possible de mettre à jour le traitement (Erreur {$update['code']}).",
-                'erreur' =>  $update['erreur'] ?? null
+                'erreur' =>  $update['erreur'] ?? self::$noError
             ], Response::HTTP_OK);
         }
 
@@ -261,7 +262,7 @@ class BatchAutoController extends AbstractController
             $result = $this->collecte->collecte(
                 $data->portefeuille,
                 $le_projet,
-                static::$traitementAutomatique,
+                self::$traitementAutomatique,
                 $utilisateur_collecte
             );
 
@@ -282,7 +283,14 @@ class BatchAutoController extends AbstractController
             $nom_projet = (count($explose_le_projet) === 2) ? $explose_le_projet[1] : $le_projet;
 
             /* On utilise le constructeur de l'entité pour créer une nouvelle instance avec les données du résultat de la collecte */
-            $journal = new BatchExecutionJournal($result['code'], $data->portefeuille, $nom_projet, $result['compte_rendu'], new \DateTimeImmutable());
+            $journal = new BatchExecutionJournal(
+                $nom_projet,
+                $data->portefeuille,
+                $result['compte_rendu'],
+                $batchExecution,
+                new \DateTimeImmutable(),
+                $result['code']
+            );
 
             $batchExecution->addJournal($journal);
             $this->em->persist($journal);
@@ -297,11 +305,11 @@ class BatchAutoController extends AbstractController
                 ));
 
                 $map = [
-                    'debut_traitement' => $debut_traitement->format(static::$dateFormat),
+                    'debut_traitement' => $debut_traitement->format(self::$dateFormat),
                     'success' => false,
                     'in_progress' => false,
                     'pending' => false,
-                    'fin_traitement' => (new \DateTime('now', new \DateTimeZone(static::$europeParis)))->format(static::$dateFormat),
+                    'fin_traitement' => (new \DateTime('now', new \DateTimeZone(self::$europeParis)))->format(self::$dateFormat),
                     'traitement_id' => $data->traitement_id,
                 ];
 
@@ -359,7 +367,7 @@ class BatchAutoController extends AbstractController
         }
         $this->profilerLogger->info('[PROFILING] =======================');
 
-        $fin_traitement = new \DateTime('now', new \DateTimeZone(static::$europeParis));
+        $fin_traitement = new \DateTime('now', new \DateTimeZone(self::$europeParis));
 
         // On récupère les stats issues du profiling
         $nb_projets = count($les_projets['liste']);
@@ -383,13 +391,13 @@ class BatchAutoController extends AbstractController
         $this->em->persist($profiling);
         $this->logger->debug('peak before flush: ' . memory_get_peak_usage(true) / 1024 / 1024 . ' MB');
         $this->em->flush();
-        $this->logger->debug('peak after flush: ' . memory_get_peak_usage(true)/1024/1024 . ' MB');
+        $this->logger->debug('peak after flush: ' . memory_get_peak_usage(true) / 1024 / 1024 . ' MB');
         $this->em->clear();
 
         /** On met à jour la table des traitements */
         $map = [
-            'debut_traitement' => $debut_traitement->format(static::$dateFormat),
-            'fin_traitement' => $fin_traitement->format(static::$dateFormat),
+            'debut_traitement' => $debut_traitement->format(self::$dateFormat),
+            'fin_traitement' => $fin_traitement->format(self::$dateFormat),
             'success' => true,
             'in_progress' => false,
             'pending' => false,
@@ -398,17 +406,17 @@ class BatchAutoController extends AbstractController
 
         $update = $batchTraitementRepos->updateBatchTraitement($map);
         if ($update['code'] !== 200) {
-            $this->logger->error(static::$loggerUpdateBatchTraitement, [
+            $this->logger->error(self::$loggerUpdateBatchTraitement, [
                 'code' => $update['code'],
-                'message' => $update['message'] ?? static::$noMessage,
-                'erreur' => $update['erreur'] ?? static::$noError,
+                'message' => $update['message'] ?? self::$noMessage,
+                'erreur' => $update['erreur'] ?? self::$noError,
                 'wip' => 'in_progress = false'
             ]);
 
             return new JsonResponse([
                 'code' => $update['code'],
                 'message' => "❌ Il n'est pas possible de mettre à jour le traitement (Erreur {$update['code']}).",
-                'erreur' =>  $update['erreur'] ?? null
+                'erreur' =>  $update['erreur'] ?? self::$noError
             ], Response::HTTP_OK);
         }
 

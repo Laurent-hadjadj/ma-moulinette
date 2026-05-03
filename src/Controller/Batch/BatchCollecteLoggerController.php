@@ -25,8 +25,8 @@ use App\Service\{ClientService, UrlBuilderService};
 class BatchCollecteLoggerController extends AbstractController
 {
     /** Définition des constantes */
-    private static $sonarUrl = "sonar.url";
-    private static $trackLoggerMethod = 'track-logger-method:';
+    private static string $sonarUrl = "sonar.url";
+    private static string $trackLoggerMethod = 'track-logger-method:';
 
     /**
      * [Description for __construct]
@@ -47,9 +47,9 @@ class BatchCollecteLoggerController extends AbstractController
      * [Description for makeRequest]
      * Fonction générique pour executer une requête et retourner le résultat dans un tableau
      *
-     * @param array $queryParams
+     * @param array<int|string, mixed> $queryParams
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 12/08/2024 11:24:17 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -59,7 +59,7 @@ class BatchCollecteLoggerController extends AbstractController
     {
          /** Sécurisation de l'URL */
         $url = $this->urlBuilder->build(
-            $this->getParameter(static::$sonarUrl),
+            $this->getParameter(self::$sonarUrl),
             '/api/project_analyses/search',
             $queryParams
         );
@@ -80,7 +80,7 @@ class BatchCollecteLoggerController extends AbstractController
             ];
         }
 
-        return ['total' => $result['total']] ?? ['total' => -1];
+        return ['total' => $result['json']['paging']['total'] ?? -1];
     }
 
     /**
@@ -90,7 +90,7 @@ class BatchCollecteLoggerController extends AbstractController
      * @param string $mode_collecte
      * @param string $utilisateur_collecte
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 10/07/2024 22:48:05 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -109,7 +109,7 @@ class BatchCollecteLoggerController extends AbstractController
 
         /** On regarde si le plugin Track-Logger-Method est activé */
         $loggerPlugin = $this->getParameter('track.logger.method');
-        if ((boolean)$loggerPlugin === false || $loggerPlugin === 'false' || $loggerPlugin === 'False'){
+        if ((bool)$loggerPlugin === false || $loggerPlugin === 'false' || $loggerPlugin === 'False'){
             $this->logger->info("[Batch Logger] ⚠️ Collecte non lancée : plugin désactivé (TRACK_LOGGER_METHOD=false)", [
                 'maven_key' => $maven_key
             ]);
@@ -135,13 +135,13 @@ class BatchCollecteLoggerController extends AbstractController
                 ];
         $queryParams = [
             $method[0] => [ 'componentKeys' => $maven_key,
-            'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => static::$trackLoggerMethod.$method[0], 'ps' => 500],
+            'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => self::$trackLoggerMethod.$method[0], 'ps' => 500],
             $method[1] => [ 'componentKeys' => $maven_key,
-            'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => static::$trackLoggerMethod.$method[1], 'ps' => 500],
+            'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => self::$trackLoggerMethod.$method[1], 'ps' => 500],
             $method[2] => [ 'componentKeys' => $maven_key,
-            'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => static::$trackLoggerMethod.$method[2], 'ps' => 500],
+            'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => self::$trackLoggerMethod.$method[2], 'ps' => 500],
             $method[3] => [ 'componentKeys' => $maven_key,
-            'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => static::$trackLoggerMethod.$method[3], 'ps' => 500]
+            'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => self::$trackLoggerMethod.$method[3], 'ps' => 500]
         ];
 
         /** Appels API et vérification des retours */

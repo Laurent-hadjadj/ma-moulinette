@@ -16,14 +16,13 @@ namespace App\Controller\Admin;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\{Action, Actions, Crud, Filters};
 use EasyCorp\Bundle\EasyAdminBundle\Field\{FormField, TextField, DateTimeField};
-use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Uid\{Ulid};
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\GroupeUtilisateur;
 
 /**
- * [Description GroupeUtilisateurCrudController]
+ * @extends AbstractCrudController<GroupeUtilisateur>
  */
 class GroupeUtilisateurCrudController extends AbstractCrudController
 {
@@ -36,11 +35,7 @@ class GroupeUtilisateurCrudController extends AbstractCrudController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function __construct(
-        private EntityManagerInterface $emm,
-        private RequestStack $requestStack,
     ) {
-        $this->emm = $emm;
-        $this->requestStack = $requestStack;
     }
 
     /**
@@ -161,8 +156,7 @@ class GroupeUtilisateurCrudController extends AbstractCrudController
         yield TextField::new('groupeId')
             ->setLabel('Identifiant du groupe')
             ->setHelp("Identifiant unique du groupe d'utilisateur.")
-            ->setFormTypeOption('disabled', true)
-            ->hideOnForm(false);
+            ->setFormTypeOption('disabled', true);
 
         yield DateTimeField::new('dateModification')
             ->setTimezone('Europe/Paris')
@@ -177,7 +171,6 @@ class GroupeUtilisateurCrudController extends AbstractCrudController
      * [Description for persistEntity]
      *
      * @param EntityManagerInterface $em
-     * @param mixed $entityInstance
      *
      * @return void
      *

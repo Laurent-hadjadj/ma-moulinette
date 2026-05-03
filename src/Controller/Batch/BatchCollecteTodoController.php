@@ -25,9 +25,9 @@ use App\Service\{ClientService, UrlBuilderService};
 class BatchCollecteTodoController extends AbstractController
 {
     /** Définition des constantes */
-    private static $sonarUrl = "sonar.url";
-    private static $europeParis = "Europe/Paris";
-    private static $erreurSonarInconnue = 'Erreur SonarQube inconnue.';
+    private static string $sonarUrl = "sonar.url";
+    private static string $europeParis = "Europe/Paris";
+    private static string $erreurSonarInconnue = 'Erreur SonarQube inconnue.';
 
     /**
      * [Description for __construct]
@@ -47,23 +47,22 @@ class BatchCollecteTodoController extends AbstractController
     /**
      * [Description for batchCollecte]
      *
-     * @param mixed $maven_key
-     * @param mixed $index
-     * @param mixed $batchSize
+     * @param int $index
+     * @param int $batchSize
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 22/07/2025 18:51:29 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function batchCollecte($maven_key, $index, $batchSize) :array
+    private function batchCollecte(string $maven_key, int $index, int $batchSize) :array
     {
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
 
        /** Sécurisation de l'URL */
         $url = $this->urlBuilder->build(
-            $this->getParameter(static::$sonarUrl),
+            $this->getParameter(self::$sonarUrl),
             '/api/issues/search',
             [
                 'projects' => $maven_key,
@@ -81,11 +80,11 @@ class BatchCollecteTodoController extends AbstractController
             $this->logger->error('[Batch Todo] ❌ Erreur SonarQube', [
                 'url' => $url,
                 'code' => $result['code'],
-                'erreur' => $result['erreur'] ?? static::$erreurSonarInconnue
+                'erreur' => $result['erreur'] ?? self::$erreurSonarInconnue
             ]);
             return [
                 'code' => $result['code'],
-                'erreur' => $result['erreur'] ?? static::$erreurSonarInconnue
+                'erreur' => $result['erreur'] ?? self::$erreurSonarInconnue
             ];
         }
 
@@ -104,7 +103,7 @@ class BatchCollecteTodoController extends AbstractController
      * @param string $mode_collecte
      * @param string $utilisateur_collecte
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 31/05/2024 20:28:47 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -114,7 +113,7 @@ class BatchCollecteTodoController extends AbstractController
     {
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
         $todoRepository = $this->em->getRepository(Todo::class);
-        $date = new \DateTimeImmutable('now', new \DateTimeZone(static::$europeParis));
+        $date = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
 
         $this->logger->info('[Batch Todo] ℹ️ Début de collecte des todo pour le projet', [
             'maven_key' => $maven_key,
@@ -124,6 +123,15 @@ class BatchCollecteTodoController extends AbstractController
 
         /** Récupération de la première page */
         $result = $this->batchCollecte($maven_key, 1, 1);
+
+        // Si batchCollecte a renvoyé une erreur HTTP, on propage sans toucher à la DB.
+        if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
+            return [
+                'code' => $result['code'],
+                'erreur' => $result['erreur'] ?? self::$erreurSonarInconnue
+            ];
+        }
+
         $batchSize = 500;
         $maxPages = 20;
 
@@ -145,7 +153,7 @@ class BatchCollecteTodoController extends AbstractController
             ];
         }
 
-        /** Si pas d'issues, on arrête */
+        /** Si pas d'issues, on arrête (après avoir nettoyé) */
         if (empty($result['issues']) || $result['paging']['total'] === 0) {
             $this->logger->info('[Batch Todo] ℹ️ Aucun TODO trouvé pour ce projet.', [
                 'maven_key' => $maven_key
@@ -154,7 +162,7 @@ class BatchCollecteTodoController extends AbstractController
             return [
                     'code' => 200,
                     'nombre' => 0,
-                    ];
+            ];
         }
 
         /** Si on a trouvé des to.do dans le code alors on les dénombre */
@@ -228,9 +236,9 @@ class BatchCollecteTodoController extends AbstractController
 
                 return [
                     'code' => $batchInsert['code'],
-                    'type' => 'alert',
+                    'type' => 'error',
                     'message' => "Une erreur est survenue lors de la mise à jour de la table ({$batchInsert['code']}).",
-                    'trace' => $batchInsert['erreur']
+                    'erreur' => $batchInsert['erreur']
                 ];
             }
 
@@ -249,11 +257,11 @@ class BatchCollecteTodoController extends AbstractController
                 'java_todo' => $java_todo,
                 'python_todo' => $python_todo,
                 'php_todo' => $php_todo,
-                'xml_todo' => $php_todo,
-                'web_todo' => $php_todo,
-                'javascript_todo' => $php_todo,
-                'typescript_todo' => $php_todo,
-                'ruby_todo' => $php_todo,
+                'xml_todo' => $xml_todo,
+                'web_todo' => $web_todo,
+                'javascript_todo' => $javascript_todo,
+                'typescript_todo' => $typescript_todo,
+                'ruby_todo' => $ruby_todo,
                 'total_todo' => $nombre,
             ];
 

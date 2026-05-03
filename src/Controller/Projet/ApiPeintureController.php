@@ -13,6 +13,7 @@
 
 namespace App\Controller\Projet;
 
+use App\Controller\Traits\AppUserAware;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\{JsonResponse, Response, Request};
@@ -27,10 +28,10 @@ use App\Service\IsValideMavenKey;
  */
 class ApiPeintureController extends AbstractController
 {
+    use AppUserAware;
+
     /**
      * [Description for __construct]
-     *
-     * @param mixed
      *
      * Created at: 11/10/2023 13:38:04 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
@@ -43,10 +44,10 @@ class ApiPeintureController extends AbstractController
     ) {}
 
     /** Définition des constantes */
-    private static $erreur400 = "La requête est incorrecte (Erreur 400).";
-    private static $erreur404 = "Je n'ai pas trouvé les données. Vous devez lancer une collecte (Erreur 404).";
-    private static $loggerE400 = "[Collecte-Peinture] ❌ Requête mal formée : maven_key manquant ou invalide.";
-    private static $loggerE404 = "[Collecte-Peinture] ⚠️ Le projet n'a pas été trouvé ou la clé n'est pas correcte.";
+    private static string $erreur400 = "La requête est incorrecte (Erreur 400).";
+    private static string $erreur404 = "Je n'ai pas trouvé les données. Vous devez lancer une collecte (Erreur 404).";
+    private static string $loggerE400 = "[Collecte-Peinture] ❌ Requête mal formée : maven_key manquant ou invalide.";
+    private static string $loggerE404 = "[Collecte-Peinture] ⚠️ Le projet n'a pas été trouvé ou la clé n'est pas correcte.";
 
     /**
      * [Description for calculNoteHotspot]
@@ -63,37 +64,31 @@ class ApiPeintureController extends AbstractController
      */
     private function calculNoteHotspot($toReview, $reviewed): string
     {
-        $ratio = intval($reviewed) * 100 / intval($toReview) + intval($reviewed);
-        if ($ratio >= 80) {
-            $note = "A";
+        $nbToReview = (int) $toReview;
+        $nbReviewed = (int) $reviewed;
+        $total = $nbToReview + $nbReviewed;
+        if ($total === 0) {
+            return 'A';
         }
-        if ($ratio >= 70 && $ratio < 80) {
-            $note = "B";
-        }
-        if ($ratio >= 50 && $ratio < 70) {
-            $note = "C";
-        }
-        if ($ratio >= 30 && $ratio < 50) {
-            $note = "D";
-        }
-        if ($ratio < 30) {
-            $note = "E";
-        }
-        return $note;
+        $ratio = ($nbReviewed / $total) * 100;
+        if ($ratio >= 80) { return 'A'; }
+        if ($ratio >= 70) { return 'B'; }
+        if ($ratio >= 50) { return 'C'; }
+        if ($ratio >= 30) { return 'D'; }
+        return 'E';
     }
 
     /**
      * [Description for vulnerabilityProbability]
      *
-     * @param mixed $niveaux
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 05/02/2025 08:09:44 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function vulnerabilityProbability($niveaux): array
+    private function vulnerabilityProbability(array $niveaux): array
     {
         $total = $high = $medium = $low = 0;
 
@@ -146,14 +141,14 @@ class ApiPeintureController extends AbstractController
         if ($data === null) {
             $this->logger->error(
                 "[Collecte] ❌ Requête invalide : clé 'data', manquante ou JSON mal formé.",
-                ['payload' => $data ?? null]
+                ['payload' => null]
             );
 
             return new JsonResponse([
                 'data' => $data,
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$erreur400
+                'message' => self::$erreur400
             ], Response::HTTP_OK);
         }
 
@@ -185,13 +180,13 @@ class ApiPeintureController extends AbstractController
             return new JsonResponse([
                 'code' => 406,
                 'type' => 'primary',
-                'message' => static::$erreur404,
+                'message' => self::$erreur404,
                 'trace' => null
             ], Response::HTTP_OK);
         }
 
         /** On récupère l'objet User du contexte de sécurité */
-        $preference = $security->getUser()->getPreference();
+        $preference = $this->appUser()->getPreference();
 
         /**
          * Pour chaque projet de la liste de préférence,
@@ -249,14 +244,14 @@ class ApiPeintureController extends AbstractController
 
         // Vérification de la validité du corps de la requête
         if ($data === null || !property_exists($data, 'maven_key')) {
-            $this->logger->error(static::$loggerE400, [
+            $this->logger->error(self::$loggerE400, [
                 'payload' => $data ?? null
             ]);
 
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$erreur400,
+                'message' => self::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -267,14 +262,14 @@ class ApiPeintureController extends AbstractController
         /** On regarde si le projet existe */
         $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
-            $this->logger->warning(static::$loggerE404, [
-                'maven_key' => $maven_key ?? null
+            $this->logger->warning(self::$loggerE404, [
+                'maven_key' => $maven_key
             ]);
 
             return new JsonResponse([
                 'code' => 404,
                 'type' => 'warning',
-                'message' => static::$erreur404,
+                'message' => self::$erreur404,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -348,14 +343,14 @@ class ApiPeintureController extends AbstractController
 
         // Vérification de la validité du corps de la requête
         if ($data === null || !property_exists($data, 'maven_key')) {
-            $this->logger->error(static::$loggerE400, [
+            $this->logger->error(self::$loggerE400, [
                 'payload' => $data
             ]);
 
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$erreur400,
+                'message' => self::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -366,14 +361,14 @@ class ApiPeintureController extends AbstractController
         /** On regarde si le projet existe */
         $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
-            $this->logger->warning(static::$loggerE404, [
-                'maven_key' => $maven_key ?? null
+            $this->logger->warning(self::$loggerE404, [
+                'maven_key' => $maven_key
             ]);
 
             return new JsonResponse([
                 'code' => 404,
                 'type' => 'warning',
-                'message' => static::$erreur404,
+                'message' => self::$erreur404,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -390,8 +385,12 @@ class ApiPeintureController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        /** On récupère le tableau des languages de programmation. */
-        $languageDistribution = json_decode($request['mesures']['ncloc_language_distribution'], true);
+        /**
+         * On récupère le tableau des languages de programmation.
+         * SonarQube 2026 renvoie un string "java=12;ruby=3;xml=4" (ancien format
+         * historique : un objet JSON). On parse les 2 formats pour robustesse.
+         */
+        $languageDistribution = $this->parseLanguageDistribution($request['mesures']['ncloc_language_distribution'] ?? null);
 
         return new JsonResponse([
             'code' => 200,
@@ -506,13 +505,13 @@ class ApiPeintureController extends AbstractController
 
         // Vérification de la validité du corps de la requête
         if ($data === null || !property_exists($data, 'maven_key')) {
-            $this->logger->error(static::$loggerE400, [
+            $this->logger->error(self::$loggerE400, [
                 'payload' => $data ?? null
             ]);
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$erreur400,
+                'message' => self::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -523,14 +522,14 @@ class ApiPeintureController extends AbstractController
         /** On regarde si le projet existe */
         $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
-            $this->logger->warning(static::$loggerE404, [
-                'maven_key' => $maven_key ?? null
+            $this->logger->warning(self::$loggerE404, [
+                'maven_key' => $maven_key
             ]);
 
             return new JsonResponse([
                 'code' => 404,
                 'type' => 'warning',
-                'message' => static::$erreur404,
+                'message' => self::$erreur404,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -566,6 +565,24 @@ class ApiPeintureController extends AbstractController
         $typeVulnerability = $anomalie['liste'][0]['vulnerability'];
         $typeCodeSmell = $anomalie['liste'][0]['code_smell'];
 
+        /**
+         * Le plugin tracker-logger remonte les Logger.* en type=BUG severity=INFO.
+         * On déduit le compte du bug réel (sans logger) en lisant la table logger.
+         * Si le plugin est désactivé ou non collecté, selectLogger renvoie une liste
+         * vide → bugLogger=0 → bugReal=typeBug (pas de soustraction).
+         */
+        $loggerRepos = $this->em->getRepository(Logger::class);
+        $loggerData = $loggerRepos->selectLogger(['maven_key' => $maven_key]);
+        $bugLogger = 0;
+        if ($loggerData['code'] === 200 && !empty($loggerData['liste'])) {
+            $row = $loggerData['liste'];
+            $bugLogger = (int) ($row['logger_info'] ?? 0)
+                       + (int) ($row['logger_warn'] ?? 0)
+                       + (int) ($row['logger_error'] ?? 0)
+                       + (int) ($row['logger_debug'] ?? 0);
+        }
+        $bugReal = max(0, (int) $typeBug - $bugLogger);
+
         /** Severity */
         $severityBlocker = $anomalie['liste'][0]['blocker'];
         $severityCritical = $anomalie['liste'][0]['critical'];
@@ -589,7 +606,9 @@ class ApiPeintureController extends AbstractController
             'detteReliabilityMinute' => $detteReliabilityMinute,
             'detteVulnerabilityMinute' => $detteVulnerabilityMinute,
             'detteCodeSmellMinute' => $detteCodeSmellMinute,
-            'bug' => $typeBug,
+            'bug' => $bugReal,
+            'bug_total' => $typeBug,
+            'bug_logger' => $bugLogger,
             'vulnerability' => $typeVulnerability,
             'codeSmell' => $typeCodeSmell,
             'blocker' => $severityBlocker,
@@ -617,7 +636,7 @@ class ApiPeintureController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/secure/peinture/projet/anomalie/details', name: 'peinture_projet_anomalie_details', methods: ['POST'])]
-    public function peintureProjetAnomalieDetails(Request $request): response
+    public function peintureProjetAnomalieDetails(Request $request): Response
     {
 
         $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/anomalie/details");
@@ -630,14 +649,14 @@ class ApiPeintureController extends AbstractController
 
         // Vérification de la validité du corps de la requête
         if ($data === null || !property_exists($data, 'maven_key')) {
-            $this->logger->error(static::$loggerE400, [
+            $this->logger->error(self::$loggerE400, [
                 'payload' => $data ?? null
             ]);
 
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$erreur400,
+                'message' => self::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -648,14 +667,14 @@ class ApiPeintureController extends AbstractController
         /** On regarde si le projet existe */
         $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
-            $this->logger->warning(static::$loggerE404, [
-                'maven_key' => $maven_key ?? null
+            $this->logger->warning(self::$loggerE404, [
+                'maven_key' => $maven_key
             ]);
 
             return new JsonResponse([
                 'code' => 404,
                 'type' => 'warning',
-                'message' => static::$erreur404,
+                'message' => self::$erreur404,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -734,14 +753,14 @@ class ApiPeintureController extends AbstractController
 
         // Vérification de la validité du corps de la requête
         if ($data === null || !property_exists($data, 'maven_key')) {
-            $this->logger->error(static::$loggerE400, [
+            $this->logger->error(self::$loggerE400, [
                 'payload' => $data ?? null
             ]);
 
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$erreur400,
+                'message' => self::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -752,14 +771,14 @@ class ApiPeintureController extends AbstractController
         /** On regarde si le projet existe */
         $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
-            $this->logger->warning(static::$loggerE404, [
-                'maven_key' => $maven_key ?? null
+            $this->logger->warning(self::$loggerE404, [
+                'maven_key' => $maven_key
             ]);
 
             return new JsonResponse([
                 'code' => 404,
                 'type' => 'warning',
-                'message' => static::$erreur404,
+                'message' => self::$erreur404,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -790,12 +809,14 @@ class ApiPeintureController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        /** On calcul la note sonar */
-        if (empty($toReview['nombre'][0]['to_review']) || $toReview['nombre'][0]['to_review'] === 0) {
-            $note = 'A';
-        } else {
-            $note = static::calculNoteHotspot($toReview['nombre'][0]['to_review'], $reviewed['nombre'][0]['reviewed']);
-        }
+        /** On calcul la note sonar
+         *  La requête countHotspotsStatus retourne le COUNT(*) sous l'alias 'nombre'.
+         *  La note suit la convention SonarQube security_review_rating :
+         *  ratio reviewed / (reviewed + toReview) * 100 -> A:>=80 B:>=70 C:>=50 D:>=30 E:<30.
+         */
+        $nbToReview = (int) ($toReview['nombre'][0]['nombre'] ?? 0);
+        $nbReviewed = (int) ($reviewed['nombre'][0]['nombre'] ?? 0);
+        $note = static::calculNoteHotspot($nbToReview, $nbReviewed);
 
         return new JsonResponse([
             'code' => 200,
@@ -828,14 +849,14 @@ class ApiPeintureController extends AbstractController
 
         // Vérification de la validité du corps de la requête
         if ($data === null || !property_exists($data, 'maven_key')) {
-            $this->logger->error(static::$loggerE400, [
+            $this->logger->error(self::$loggerE400, [
                 'data' => $request->getContent()
             ]);
 
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$erreur400,
+                'message' => self::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -846,14 +867,14 @@ class ApiPeintureController extends AbstractController
         /** On regarde si le projet existe */
         $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
-            $this->logger->warning(static::$loggerE404, [
-                'maven_key' => $maven_key ?? null
+            $this->logger->warning(self::$loggerE404, [
+                'maven_key' => $maven_key
             ]);
 
             return new JsonResponse([
                 'code' => 404,
                 'type' => 'warning',
-                'message' => static::$erreur404,
+                'message' => self::$erreur404,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -883,13 +904,8 @@ class ApiPeintureController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        $toReview = $reviewed = [];
-        if ($getToReview) {
-            $toReview = static::vulnerabilityProbability($getToReview['liste']);
-        }
-        if ($getReviewed) {
-            $reviewed = static::vulnerabilityProbability($getReviewed['liste']);
-        }
+        $toReview = $this->vulnerabilityProbability($getToReview['liste']);
+        $reviewed = $this->vulnerabilityProbability($getReviewed['liste']);
 
         return new JsonResponse(
             [
@@ -932,14 +948,14 @@ class ApiPeintureController extends AbstractController
 
         // Vérification de la validité du corps de la requête
         if ($data === null || !property_exists($data, 'maven_key')) {
-            $this->logger->error(static::$loggerE400, [
+            $this->logger->error(self::$loggerE400, [
                 'data' => $request->getContent()
             ]);
 
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$erreur400,
+                'message' => self::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -950,14 +966,14 @@ class ApiPeintureController extends AbstractController
         /** On regarde si le projet existe */
         $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
-            $this->logger->warning(static::$loggerE404, [
-                'maven_key' => $maven_key ?? null
+            $this->logger->warning(self::$loggerE404, [
+                'maven_key' => $maven_key
             ]);
 
             return new JsonResponse([
                 'code' => 404,
                 'type' => 'warning',
-                'message' => static::$erreur404,
+                'message' => self::$erreur404,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -976,25 +992,48 @@ class ApiPeintureController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        $sonar1309 = $nosonar = $total = 0;
+        $suppressWarning = $noPmd = $checkStyle = 0;
+        $javaNoSonar = $pythonNoSonar = $phpNoSonar = 0;
         if (!empty($rules)) {
             foreach ($rules['liste'] as $rule) {
-                if ($rule['rule'] == 'java:S1309') {
-                    $sonar1309 = $rule['total'];
-                }
-                if ($rule['rule'] == 'java:NoSonar') {
-                    $nosonar = $rule['total'];
+                switch ($rule['rule']) {
+                    case 'java:S1309':
+                        $suppressWarning = (int) $rule['total'];
+                        break;
+                    case 'java:S1310':
+                        $noPmd = (int) $rule['total'];
+                        break;
+                    case 'java:S1315':
+                        $checkStyle = (int) $rule['total'];
+                        break;
+                    case 'java:NoSonar':
+                        $javaNoSonar = (int) $rule['total'];
+                        break;
+                    case 'python:NoSonar':
+                        $pythonNoSonar = (int) $rule['total'];
+                        break;
+                    case 'php:NoSonar':
+                        $phpNoSonar = (int) $rule['total'];
+                        break;
                 }
             }
-            $total = intval($sonar1309, 10) + intval($nosonar, 10);
         }
+        $totalNoSonar = $javaNoSonar + $pythonNoSonar + $phpNoSonar;
+        $total = $suppressWarning + $noPmd + $checkStyle + $totalNoSonar;
 
         return new JsonResponse(
             [
                 'code' => 200,
                 'total' => $total,
-                's1309' => $sonar1309,
-                'nosonar' => $nosonar
+                's1309' => $suppressWarning,
+                'nosonar' => $javaNoSonar,
+                'suppress_warning' => $suppressWarning,
+                'no_pmd' => $noPmd,
+                'check_style' => $checkStyle,
+                'java_no_sonar' => $javaNoSonar,
+                'python_no_sonar' => $pythonNoSonar,
+                'php_no_sonar' => $phpNoSonar,
+                'total_no_sonar' => $totalNoSonar
             ],
             Response::HTTP_OK
         );
@@ -1025,14 +1064,14 @@ class ApiPeintureController extends AbstractController
 
         // Vérification de la validité du corps de la requête
         if ($data === null || !property_exists($data, 'maven_key')) {
-            $this->logger->error(static::$loggerE400, [
+            $this->logger->error(self::$loggerE400, [
                 'data' => $request->getContent()
             ]);
 
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$erreur400,
+                'message' => self::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -1043,12 +1082,12 @@ class ApiPeintureController extends AbstractController
         /** On regarde si le projet existe */
         $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
-            $this->logger->warning(static::$loggerE404, ['maven_key' => $maven_key ?? null]);
+            $this->logger->warning(self::$loggerE404, ['maven_key' => $maven_key]);
 
             return new JsonResponse([
                 'code' => 404,
                 'type' => 'warning',
-                'message' => static::$erreur404,
+                'message' => self::$erreur404,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -1140,14 +1179,14 @@ class ApiPeintureController extends AbstractController
 
         // Vérification de la validité du corps de la requête
         if ($data === null || !property_exists($data, 'maven_key')) {
-            $this->logger->error(static::$loggerE400, [
+            $this->logger->error(self::$loggerE400, [
                 'data' => $request->getContent()
             ]);
 
             return new JsonResponse([
                 'code' => 400,
                 'type' => 'alert',
-                'message' => static::$erreur400,
+                'message' => self::$erreur400,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -1158,12 +1197,12 @@ class ApiPeintureController extends AbstractController
         /** On regarde si le projet existe */
         $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
         if ($isValide['code'] === 404) {
-            $this->logger->warning(static::$loggerE404, ['maven_key' => $maven_key ?? null]);
+            $this->logger->warning(self::$loggerE404, ['maven_key' => $maven_key]);
 
             return new JsonResponse([
                 'code' => 404,
                 'type' => 'warning',
-                'message' => static::$erreur404,
+                'message' => self::$erreur404,
                 'trace' => null
             ], Response::HTTP_OK);
         }
@@ -1201,5 +1240,40 @@ class ApiPeintureController extends AbstractController
             'logger_error' => $loggerError,
             'logger_debug' => $loggerDebug
         ], Response::HTTP_OK);
+    }
+
+    /**
+     * Parse la valeur de ncloc_language_distribution de SonarQube.
+     * Formats acceptes :
+     *   - SonarQube 2026 :  "java=1234;ruby=56;xml=12"  (equal + semicolon)
+     *   - Variante          :  "java:1234,ruby:56"       (colon + comma)
+     *   - Ancien JSON       :  {"java":1234,"ruby":56}
+     *   - null / vide       :  []
+     *
+     * @return array<string,int>  ex: ['java' => 1234, 'ruby' => 56]
+     */
+    private function parseLanguageDistribution(?string $raw): array
+    {
+        if ($raw === null || trim($raw) === '') {
+            return [];
+        }
+
+        // Tentative 1 : JSON (ancien format)
+        $decoded = json_decode($raw, true);
+        if (is_array($decoded)) {
+            return array_map('intval', $decoded);
+        }
+
+        // Tentative 2 : format texte "lang<SEP>value<SEP>..."
+        // Separateurs entre paires : ; ou ,
+        // Separateurs clef/valeur : = ou :
+        $pairs = preg_split('/[;,]/', $raw, -1, PREG_SPLIT_NO_EMPTY);
+        $result = [];
+        foreach ($pairs as $pair) {
+            if (preg_match('/^\s*([^=:]+)\s*[=:]\s*(\d+)\s*$/', $pair, $m)) {
+                $result[trim($m[1])] = (int) $m[2];
+            }
+        }
+        return $result;
     }
 }
