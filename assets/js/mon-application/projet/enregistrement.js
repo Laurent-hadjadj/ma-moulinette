@@ -210,28 +210,32 @@ export const enregistrement = async function(maven_key) {
   const codeSmellMinor=t41.dataset.vulnerabilityMinor;
   const codeSmellInfo=t42.dataset.vulnerabilityInfo;
 
+  /** Payload aligné sur les clés SonarQube (= colonnes DB historique).
+   *  Les variables JS conservent leurs noms locaux mais sont assignées
+   *  aux clés SonarQube dans le payload PUT. */
   const data =
   {
-    maven_key, 'nom_projet': nomProjet, 'analyse_key': analyseKey,
+    maven_key, 'project_name': nomProjet, 'analyse_key': analyseKey,
     'version_release': versionRelease, 'version_snapshot': versionSnapshot,
     'version_autre': versionAutre, version, 'date_version': dateVersion,
     'suppress_warning': suppressWarning, 'no_sonar': noSonar, todo,
     'logger_info': loggerInfo, 'logger_warn': loggerWarn, 'logger_error': loggerError,
     'logger_debug': loggerDebug,
-    'nombre_ligne_code': nombreLigneDeCode, 'nombre_ligne': nombreLigne,
-    'nombre_files': nombreFichier, 'nombre_classes': nombreClasse, 'nombre_functions': nombreFonction,
+    'ncloc': nombreLigneDeCode, 'lines': nombreLigne,
+    'files': nombreFichier, 'classes': nombreClasse, 'functions': nombreFonction,
     coverage, duplicated_lines_density,
     'sqale_debt_ratio': sqaleDebtRatio, 'tests': tests,
-    'violations': violations, dette,
-    'nombre_bug': nombreBug, 'nombre_vulnerability':nombreVulnerability,
-    'nombre_code_smell': nombreCodeSmell,
-    frontend,backend, autre, inconnu,
-    'nombre_anomalie_bloquant': nombreAnomalieBloquant, 'nombre_anomalie_critique': nombreAnomalieCritique,
-    'nombre_anomalie_info': nombreAnomalieInfo,
-    'nombre_anomalie_majeur': nombreAnomalieMajeur,
-    'nombre_anomalie_mineur': nombreAnomalieMineur,
-    'note_reliability': noteReliability, 'note_security':  noteSecurity,
-    'note_sqale': noteSqale, 'note_hotspot': noteHotspot,
+    'violations': violations, 'sqale_index': dette,
+    'bugs': nombreBug, 'vulnerabilities': nombreVulnerability,
+    'code_smells': nombreCodeSmell,
+    'repartition_frontend': frontend, 'repartition_backend': backend,
+    'repartition_autre': autre, 'repartition_inconnu': inconnu,
+    'blocker_violations': nombreAnomalieBloquant, 'critical_violations': nombreAnomalieCritique,
+    'info_violations': nombreAnomalieInfo,
+    'major_violations': nombreAnomalieMajeur,
+    'minor_violations': nombreAnomalieMineur,
+    'reliability_rating': noteReliability, 'security_rating':  noteSecurity,
+    'sqale_rating': noteSqale, 'security_review_rating': noteHotspot,
     'menace_potentielle_to_review_high':  menacePotentielleToReviewHigh,
     'menace_potentielle_to_review_medium': menacePotentielleToReviewMedium,
     'menace_potentielle_to_review_low': menacePotentielleToReviewLow,
