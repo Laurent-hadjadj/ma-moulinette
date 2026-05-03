@@ -1,0 +1,414 @@
+{% set title = 'Rapport OWASP — ' ~ rapport.project_name %}
+{#
+.__  __             __  __             _ _            _   _
+|  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+| |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+| |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+|_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+
+Laurent HADJADJ
+https://github.com/Laurent-hadjadj/ma-moulinette
+© 2024 - CC BY-SA-NC 4.0
+#}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ title }}</title>
+  <style>
+    body {
+      font-family: 'DejaVu Sans', Arial, sans-serif;
+      font-size: 11px;
+      margin: 20px;
+      color: #00445b;
+    }
+    @page { margin-bottom: 50px; }
+    h1 { font-size: 18px; margin: 0 0 6px 0; }
+    h2 {
+      font-size: 14px;
+      margin: 18px 0 8px 0;
+      padding-bottom: 4px;
+      border-bottom: 2px solid #00445b;
+    }
+    h3 { font-size: 12px; margin: 12px 0 6px 0; }
+
+    /* En-tête */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #00445b;
+      padding-bottom: 10px;
+    }
+    .logo { max-height: 40px; }
+    .header-title { text-align: right; }
+    .header-title h1 { font-size: 16px; margin: 0; }
+    .header-title .subtitle { font-size: 11px; color: #666; }
+
+    /* Bloc info */
+    .info-grid {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 12px;
+    }
+    .info-grid td {
+      padding: 4px 8px;
+      border: 1px solid #ddd;
+      vertical-align: top;
+    }
+    .info-grid td.label {
+      background: #f0f4f7;
+      font-weight: bold;
+      width: 30%;
+    }
+
+    /* Bloc synthèse */
+    .synthese {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    .synthese td, .synthese th {
+      padding: 6px 8px;
+      border: 1px solid #ddd;
+    }
+    .synthese th {
+      background: #00445b;
+      color: #fff;
+      text-align: left;
+      font-size: 11px;
+    }
+    .synthese .stat-value {
+      text-align: right;
+      font-weight: bold;
+      width: 80px;
+    }
+    .synthese .sub td.label { padding-left: 24px; color: #555; font-weight: normal; }
+
+    /* Note A-E neutre (l'utilisateur ajoutera ses couleurs) */
+    .note {
+      display: inline-block;
+      width: 22px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 10px;
+    }
+
+    /* Tableau A1..A10 */
+    .owasp-categories {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+    }
+    .owasp-categories th, .owasp-categories td {
+      padding: 5px 8px;
+      border: 1px solid #ddd;
+    }
+    .owasp-categories th {
+      background: #00445b;
+      color: #fff;
+      text-align: left;
+      font-size: 11px;
+    }
+    .owasp-categories td.num { text-align: center; font-weight: bold; width: 60px; }
+
+    /* Liste détaillée vulnérabilités */
+    .menaces-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      font-size: 10px;
+      table-layout: fixed;
+    }
+    .menaces-table th, .menaces-table td {
+      padding: 4px 6px;
+      border: 1px solid #ddd;
+      vertical-align: top;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+    .menaces-table th {
+      background: #e0e0e0;
+      text-align: left;
+    }
+    .menaces-table tr:nth-child(even) { background: #f9f9f9; }
+    .menaces-table .col-n { width: 25px; text-align: center; }
+    .menaces-table .col-sev { width: 50px; text-align: center; }
+    .menaces-table .col-status { width: 70px; text-align: center; }
+    .menaces-table .col-line { width: 35px; text-align: center; }
+    .menaces-table .col-rule { width: 130px; }
+    .menaces-table .col-component { width: 140px; font-family: monospace; font-size: 9px; }
+
+    /* Histogramme vertical (X = A1..A10, Y = nombre de vulnérabilités).
+     * dompdf ne sait pas dessiner du SVG complexe — on simule l'histogramme
+     * avec un tableau dont chaque cellule contient une barre + un libellé sous
+     * la barre. La hauteur de la barre est proportionnelle au max des values. */
+    .histogram {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 8px;
+      table-layout: fixed;
+    }
+    .histogram .bar-cell {
+      vertical-align: bottom;
+      text-align: center;
+      height: 160px;
+      padding: 0 2px;
+      border-bottom: 1px solid #00445b;
+    }
+    .histogram .bar {
+      display: block;
+      background: #00445b;
+      margin: 0 auto;
+      width: 60%;
+      min-height: 1px;
+    }
+    .histogram .bar-value {
+      display: block;
+      font-size: 9px;
+      font-weight: bold;
+      margin-bottom: 2px;
+    }
+    .histogram .bar-label {
+      text-align: center;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 4px 0;
+    }
+
+    /* Page breaks dompdf */
+    .page-break-before { page-break-before: always; }
+
+    /* Vide */
+    .empty {
+      text-align: center;
+      color: #888;
+      padding: 12px;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+
+  {# --- En-tête : logo + titre + version OWASP en évidence --- #}
+  <header class="header">
+    <div>
+      <img src="data:image/png;base64,{{ logoBase64 }}" alt="Logo Ma-Moulinette" class="logo">
+    </div>
+    <div class="header-title">
+      <h1>Rapport OWASP</h1>
+      <div class="subtitle">Référentiel : <strong>OWASP Top 10 — {{ rapport.referential_owasp }}</strong></div>
+    </div>
+  </header>
+
+  {# --- Bloc Information projet --- #}
+  <h2>Information projet</h2>
+  <table class="info-grid">
+    <tr>
+      <td class="label">Clé Maven</td>
+      <td>{{ rapport.maven_key }}</td>
+    </tr>
+    <tr>
+      <td class="label">Nom du projet</td>
+      <td>{{ rapport.project_name }}</td>
+    </tr>
+    <tr>
+      <td class="label">Version analysée</td>
+      <td>{{ rapport.version|default('—') }}</td>
+    </tr>
+    <tr>
+      <td class="label">Date d'analyse</td>
+      <td>
+        {%- if rapport.date_version is not empty -%}
+          {{ rapport.date_version|date('d/m/Y H:i') }}
+        {%- else -%}—{%- endif -%}
+      </td>
+    </tr>
+  </table>
+
+  {# --- Bloc Synthèse vulnérabilités + hotspots + répartition module --- #}
+  <h2>Synthèse</h2>
+  <table class="synthese">
+    <tr>
+      <th colspan="2">Vulnérabilités OWASP</th>
+    </tr>
+    <tr>
+      <td class="label">Total</td>
+      <td class="stat-value">{{ rapport.vulnerabilities.total|default(0) }}</td>
+    </tr>
+    <tr class="sub">
+      <td class="label">Bloquante</td>
+      <td class="stat-value">{{ rapport.vulnerabilities.blocker|default(0) }}</td>
+    </tr>
+    <tr class="sub">
+      <td class="label">Critique</td>
+      <td class="stat-value">{{ rapport.vulnerabilities.critical|default(0) }}</td>
+    </tr>
+    <tr class="sub">
+      <td class="label">Majeure</td>
+      <td class="stat-value">{{ rapport.vulnerabilities.major|default(0) }}</td>
+    </tr>
+    <tr class="sub">
+      <td class="label">Mineure</td>
+      <td class="stat-value">{{ rapport.vulnerabilities.minor|default(0) }}</td>
+    </tr>
+
+    <tr>
+      <th colspan="2">Hotspots SonarQube</th>
+    </tr>
+    <tr>
+      <td class="label">Total</td>
+      <td class="stat-value">{{ rapport.hotspots.total|default(0) }}</td>
+    </tr>
+    <tr class="sub">
+      <td class="label">Probabilité HIGH</td>
+      <td class="stat-value">{{ rapport.hotspots.high|default(0) }}</td>
+    </tr>
+    <tr class="sub">
+      <td class="label">Probabilité MEDIUM</td>
+      <td class="stat-value">{{ rapport.hotspots.medium|default(0) }}</td>
+    </tr>
+    <tr class="sub">
+      <td class="label">Probabilité LOW</td>
+      <td class="stat-value">{{ rapport.hotspots.low|default(0) }}</td>
+    </tr>
+    <tr class="sub">
+      <td class="label">Examiné</td>
+      <td class="stat-value">{{ rapport.hotspots.reviewed|default(0) }}</td>
+    </tr>
+    <tr class="sub">
+      <td class="label">À vérifier</td>
+      <td class="stat-value">{{ rapport.hotspots.to_review|default(0) }}</td>
+    </tr>
+    <tr class="sub">
+      <td class="label">% examiné</td>
+      <td class="stat-value">{{ ((rapport.hotspots.taux|default(0)) * 100)|round }} %</td>
+    </tr>
+    <tr class="sub">
+      <td class="label">Note</td>
+      <td class="stat-value">{{ rapport.hotspots.note|default('--') }}</td>
+    </tr>
+
+    <tr>
+      <th colspan="2">Répartition par module</th>
+    </tr>
+    <tr class="sub">
+      <td class="label">Frontend</td>
+      <td class="stat-value">{{ rapport.repartition.frontend|default(0) }}</td>
+    </tr>
+    <tr class="sub">
+      <td class="label">Backend</td>
+      <td class="stat-value">{{ rapport.repartition.backend|default(0) }}</td>
+    </tr>
+    <tr class="sub">
+      <td class="label">Autres</td>
+      <td class="stat-value">{{ rapport.repartition.autre|default(0) }}</td>
+    </tr>
+  </table>
+
+  {# --- Page break avant les détails OWASP (synthèse tient sur 1 page) --- #}
+  <div class="page-break-before"></div>
+
+  {# --- Tableau OWASP A1..A10 (vulnérabilité + hotspot, avec ratings A-E) --- #}
+  <h2>Catégories OWASP (vulnérabilités + hotspots)</h2>
+  {% if rapport.categories|default([])|length > 0 %}
+    <table class="owasp-categories">
+      <thead>
+        <tr>
+          <th class="num">N°</th>
+          <th>Catégorie</th>
+          <th class="num">Vulnérabilité</th>
+          <th class="num">Note</th>
+          <th class="num">Hotspot</th>
+          <th class="num">Taux</th>
+          <th class="num">Note</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for cat in rapport.categories %}
+          <tr>
+            <td class="num">A{{ cat.id }}</td>
+            <td>{{ cat.label }}</td>
+            <td class="num">{{ cat.faille|default(0) }}</td>
+            <td class="num">{{ cat.faille_rating|default('—') }}</td>
+            <td class="num">{{ cat.hotspot|default(0) }}</td>
+            <td class="num">{{ ((cat.hotspot_taux|default(1)) * 100)|round }} %</td>
+            <td class="num">{{ cat.hotspot_rating|default('—') }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="empty">Aucune catégorie OWASP détectée.</p>
+  {% endif %}
+
+  {# --- Histogramme vertical répartition (X = A1..A10, Y = nb vulnérabilités) --- #}
+  <h2>Répartition des failles OWASP</h2>
+  {% if rapport.categories|default([])|length > 0 %}
+    {% set maxFaille = 0 %}
+    {% for cat in rapport.categories %}
+      {% if (cat.faille|default(0)) > maxFaille %}
+        {% set maxFaille = cat.faille %}
+      {% endif %}
+    {% endfor %}
+    <table class="histogram">
+      <tr>
+        {% for cat in rapport.categories %}
+          {% set value = cat.faille|default(0) %}
+          {# Hauteur en px proportionnelle ; 140px max pour laisser place au libellé.
+             On garantit min 1px pour qu'une barre 0 reste visible. #}
+          {% set heightPx = (maxFaille > 0 and value > 0) ? ((value / maxFaille) * 140)|round : 0 %}
+          <td class="bar-cell">
+            <span class="bar-value">{{ value }}</span>
+            <span class="bar" style="height: {{ heightPx }}px;"></span>
+          </td>
+        {% endfor %}
+      </tr>
+      <tr>
+        {% for cat in rapport.categories %}
+          <td class="bar-label">A{{ cat.id }}</td>
+        {% endfor %}
+      </tr>
+    </table>
+  {% else %}
+    <p class="empty">Pas de données pour le graphique.</p>
+  {% endif %}
+
+  {# --- Page break avant la liste détaillée (souvent volumineuse) --- #}
+  <div class="page-break-before"></div>
+
+  {# --- Liste détaillée des vulnérabilités --- #}
+  <h2>Liste détaillée des vulnérabilités</h2>
+  {% if rapport.menaces|default([])|length > 0 %}
+    <table class="menaces-table">
+      <thead>
+        <tr>
+          <th class="col-n">N°</th>
+          <th class="col-rule">Règle</th>
+          <th class="col-sev">Sévérité</th>
+          <th class="col-component">Component</th>
+          <th class="col-line">Ligne</th>
+          <th>Message</th>
+          <th class="col-status">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for menace in rapport.menaces %}
+          <tr>
+            <td class="col-n">{{ loop.index }}</td>
+            <td>{{ menace.rule|default('—') }}</td>
+            <td class="col-sev">{{ menace.severity|default('—')|upper }}</td>
+            <td class="col-component">{{ menace.component|default('—') }}</td>
+            <td class="col-line">{{ menace.ligne|default('—') }}</td>
+            <td>{{ menace.message|default('—') }}</td>
+            <td class="col-status">{{ menace.status|default('—')|upper }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="empty">Aucune vulnérabilité détaillée à afficher.</p>
+  {% endif %}
+
+</body>
+</html>

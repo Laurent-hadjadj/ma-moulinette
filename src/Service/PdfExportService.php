@@ -129,4 +129,73 @@ class PdfExportService
         // --- Générer le PDF ---
         return $dompdf->output();
     }
+
+    /**
+     * [Description for generateOwaspPdf]
+     * Génère un rapport PDF de la page OWASP (information projet + synthèse
+     * vulnérabilités/hotspots + liste détaillée des menaces + graphique de
+     * répartition par catégorie A1..A10). Réutilise le pattern dompdf +
+     * page_script footer de generateRapportPdf.
+     *
+     * @param array<string, mixed> $data Données agrégées par le controller :
+     *   - maven_key, project_name, version, date_version, referential_owasp
+     *   - vulnerabilities : { total, blocker, critical, major, minor }
+     *   - hotspots : { total, high, medium, low, reviewed, to_review, note }
+     *   - repartition : { frontend, backend, autre, inconnu }
+     *   - categories : [{ id, label, faille, hotspot }] pour A1..A10
+     *   - menaces : [{ rule, severity, component, ligne, message, status, frontend, backend, autre }]
+     * @param string|null $document_type Mention "Document confidentiel" en footer
+     *
+     * Created at: 2026-05-03 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function generateOwaspPdf(array $data, ?string $document_type = null): string
+    {
+        $options = new Options();
+        $options->set('defaultFont', 'DejaVu Sans');
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+
+        $dompdf = new Dompdf($options);
+
+        $html = $this->twig->render('/rapport/rapport-owasp.html.twig', [
+            'rapport' => $data,
+            'logoBase64' => base64_encode(file_get_contents($this->params->get('kernel.project_dir').'/assets/images/marque-mm-400x128.png')),
+            'document_type' => $document_type ?? 'Document confidentiel',
+        ]);
+
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        // --- Footer commun (date + mention + n° page) ---
+        $canvas = $dompdf->getCanvas();
+        $pageWidth = $canvas->get_width();
+        $pageHeight = $canvas->get_height();
+        $fontSize = 9;
+        $font = $dompdf->getFontMetrics()->getFont('DejaVu Sans');
+        $y = $pageHeight - 30;
+        $colorLine = [0/255, 68/255, 91/255];
+        $colorText = [0/255, 68/255, 91/255];
+
+        $canvas->page_script(function($pageNumber, $pageCount, $canvas, $fontMetrics) use ($pageWidth, $y, $document_type, $colorLine, $colorText, $font, $fontSize) {
+            $canvas->line(40, $y - 5, $pageWidth - 40, $y - 5, $colorLine, 0.5);
+
+            $dateText = 'Généré le ' . (new \DateTimeImmutable())->format('d/m/Y');
+            $canvas->text(40, $y, $dateText, $font, $fontSize, $colorText);
+
+            $mention = $document_type ?? 'Document public';
+            $textWidth = $fontMetrics->getTextWidth($mention, $font, $fontSize);
+            $xCenter = ($pageWidth - $textWidth) / 2;
+            $canvas->text($xCenter, $y, $mention, $font, $fontSize, $colorText);
+
+            $pageText = sprintf('Page %d / %d', $pageNumber, $pageCount);
+            $textWidthRight = $fontMetrics->getTextWidth($pageText, $font, $fontSize);
+            $xRight = $pageWidth - 40 - $textWidthRight;
+            $canvas->text($xRight, $y, $pageText, $font, $fontSize, $colorText);
+        });
+
+        return $dompdf->output();
+    }
 }
