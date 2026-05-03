@@ -257,13 +257,15 @@ class BuildMapHistoryService
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private function getCommentDensityRating(float $ratio): string {
+        // Courbe en cloche : densité idéale 15-25%. Avant : trou (5, 15) qui
+        // retournait '--' (fix 2026-05-03). Symétrie avec [35, 40) → D.
         if ($ratio <= 5) { return 'E'; }
-        if ($ratio >= 15 && $ratio < 25) { return 'A'; }
-        if ($ratio >= 25 && $ratio < 30) { return 'B'; }
-        if ($ratio >= 30 && $ratio < 35) { return 'C'; }
-        if ($ratio >= 35 && $ratio < 40) { return 'D'; }
-        if ($ratio >= 40) { return 'E'; }
-        return '--';
+        if ($ratio < 15) { return 'D'; }   // (5, 15) — documentation pauvre mais existante
+        if ($ratio < 25) { return 'A'; }   // [15, 25) — idéal
+        if ($ratio < 30) { return 'B'; }   // [25, 30)
+        if ($ratio < 35) { return 'C'; }   // [30, 35)
+        if ($ratio < 40) { return 'D'; }   // [35, 40)
+        return 'E';                        // ≥ 40 — verbiage excessif
     }
 
     /**
