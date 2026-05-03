@@ -16,6 +16,7 @@ services:
       - "TZ=${LOCAL_TZ}"
       - "LANG=${LOCAL_LANG}"
       - "POSTGRES_PASSWORD=${postgresql_password}"
+      - "DB_USER_PASSWORD=${db_user_password}"
       - "SQL_DIR=/data/sql/update"
       - "INIT_SQL_DIR=/docker-entrypoint-initdb.d"
     volumes:
