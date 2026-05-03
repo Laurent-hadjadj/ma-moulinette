@@ -80,7 +80,6 @@ class UtilisateurRepositoryTest extends KernelTestCase
         $preference['suivi_projet'] = [];
         $preference['favori_projet'] = [];
         $preference['favori_version'] =  [];
-        $preference['bookmark'] = 'mon projet en bookmark';
 
         // Nouveau projet à ajouter en favori
         $map = [
@@ -127,7 +126,6 @@ class UtilisateurRepositoryTest extends KernelTestCase
         $preference['statut'] = [];
         $preference['suivi_projet'] = [];
         $preference['favori_projet'] = [];
-        $preference['bookmark'] = [];
         $preference['favori_version'] = [
             [
                 static::$mavenKey => ['1.0.1-RELEASE']
@@ -174,7 +172,6 @@ class UtilisateurRepositoryTest extends KernelTestCase
         $preference['statut'] = [];
         $preference['suivi_projet'] = [];
         $preference['favori_projet'] = [];
-        $preference['bookmark'] = [];
         $preference['favori_version'] = [
             [
                 static::$mavenKey => [
@@ -231,11 +228,10 @@ class UtilisateurRepositoryTest extends KernelTestCase
         $preference = $utilisateur->getPreference();
 
         $map = [ 'maven_key' => static::$mavenKey, 'courriel' => static::$courriel ];
-        $preference['statut'] = [];
+        $preference['statut'] = 'invalid'; // structure invalide → erreur 400 (statut doit être un array)
         $preference['suivi_projet'] = [];
         $preference['favori_projet'] = [static::$mavenKey];
         $preference['favori_version'] = [];
-        $preference['bookmark'] = ''; // erreur 400
 
         // Appel de la méthode à tester
         $response = $utilisateurRepository->updateUtilisateurFavoriProjet($preference, $map);
@@ -260,7 +256,6 @@ class UtilisateurRepositoryTest extends KernelTestCase
         $preference['suivi_projet'] = [];
         $preference['favori_projet'] = [];
         $preference['favori_version'] = [];
-        $preference['bookmark'] = [];
 
         // Appel de la méthode à tester
         $response = $utilisateurRepository->updateUtilisateurFavoriProjet($preference, $map);

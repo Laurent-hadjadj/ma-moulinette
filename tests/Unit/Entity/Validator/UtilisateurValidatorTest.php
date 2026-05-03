@@ -38,8 +38,8 @@ class UtilisateurValidatorTest extends KernelTestCase
     public static $groupeId = '01HK7XMKQGM3F5XZJ4S6T7VWE2';
     public static $listeGroupeFonctionnel = [];
     public static $preference = ['{
-        "statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
-        "projet":[],"favori":[],"version":[],"bookmark":[]}'];
+        "statut":{"projet":false,"favori":false,"version":false},
+        "projet":[],"favori":[],"version":[]}'];
     public static $dateModification = '1981-01-01 00:00:00';
     public static $dateEnregistrement = '1980-01-01 00:00:00';
 

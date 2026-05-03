@@ -35,8 +35,8 @@ class UtilisateurCaseTest extends TestCase
   public static $groupeId = 'gest-001';
   public static $listeGroupeFonctionnel = ['fr.ma-petite-entreprise:ma-moulinette'];
   public static $preference = ['{
-    "statut":{"projet":false,"favori":false,"version":false,"bookmark":false},
-    "projet":[],"favori":[],"version":[],"bookmark":[]}'];
+    "statut":{"projet":false,"favori":false,"version":false},
+    "projet":[],"favori":[],"version":[]}'];
   public static $lastActivityAt = '2024-12-15 09:42:00';
   public static $dateModification = '1981-01-01 00:00:00';
   public static $dateEnregistrement = '1980-01-01 00:00:00';

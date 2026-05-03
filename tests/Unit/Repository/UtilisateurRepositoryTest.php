@@ -376,7 +376,6 @@ class UtilisateurRepositoryTest extends TestCase
             'suivi_projet' => [],
             'favori_projet' => [],
             'favori_version' => [],
-            'bookmark' => [],
         ];
     }
 }
