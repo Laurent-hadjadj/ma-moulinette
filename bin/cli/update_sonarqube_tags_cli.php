@@ -35,6 +35,7 @@
 // === PARAMÈTRES CLI ===
 $options = getopt("", ["url:", "token:", "login::", "password::", "dry-run", "debug"]);
 if (!isset($options['url'])) {
+    //NOSONAR
     die("❌ Utilisation : php update_sonarqube_tags_cli.php --url=\"https://sonar.exemple.com\" --token=\"XXXXX\" [--login=USER --password=PASS] [--dry-run]\n");
 }
 
@@ -57,18 +58,20 @@ if ($TOKEN) {
 
 // -----------------------------------------------------
 // === CONFIG SSL / TLS ===
+// (surchargeable via variables d'environnement)
 // -----------------------------------------------------
-$VERIFY_PEER = 0;                   // 0 = ne vérifie pas le certificat
-$VERIFY_HOST = 0;                   // 0 = ne vérifie pas le nom d’hôte SSL
-$CIPHERS = "DEFAULT:!DH";           // TLS 1.3 compatible
+$VERIFY_PEER = (int) ($_ENV['SONAR_CLI_VERIFY_PEER'] ?: 0);
+$VERIFY_HOST = (int) ($_ENV['SONAR_CLI_VERIFY_HOST'] ?: 0);
+$CIPHERS = $_ENV['SONAR_CLI_CIPHERS'] ?: "DEFAULT:!DH";
 
-// 🌐 Configuration PROXY (laisser vide si non utilisé)
-$USE_PROXY = 0;  // 0 = désactiver le proxy
-$PROXY_URL = "";
-$PROXY_USERPWD = "";
-// 🚫 Liste des domaines à ignorer pour le proxy (optionnel)
-// si authentification requise : "user:password"
-$NO_PROXY = ["localhost", "127.0.0.1"];
+// 🌐 Configuration PROXY (surchargeable via env)
+$USE_PROXY = (int) ($_ENV['SONAR_CLI_USE_PROXY'] ?: 0);
+$PROXY_URL = $_ENV['SONAR_CLI_PROXY_URL'] ?: "";
+$PROXY_USERPWD = $_ENV['SONAR_CLI_PROXY_USERPWD'] ?: "";
+$noProxyEnv = $_ENV['SONAR_CLI_NO_PROXY'];
+$NO_PROXY = $noProxyEnv === false
+    ? ["localhost", "127.0.0.1"]
+    : array_values(array_filter(array_map('trim', explode(',', $noProxyEnv))));
 
 // -----------------------------------------------------
 // === FONCTIONS UTILITAIRES ===
@@ -113,11 +116,11 @@ function logMessage(string $message, string $level = 'INFO'): void {
 /**
  * [Description for callApi]
  *
- * @param mixed $endpoint
- * @param array $params
+ * @param string $endpoint
+ * @param array<int|string, mixed> $params
  * @param string $method
  *
- * @return json
+ * @return array<int|string, mixed>
  *
  * Created at: 05/11/2025 10:22:52 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -227,7 +230,7 @@ function sanitizeTag(string $tag) {
 /**
  * [Description for getAllProjects]
  *
- * @return array
+ * @return array<int|string, mixed>
  *
  * Created at: 05/11/2025 10:22:47 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>

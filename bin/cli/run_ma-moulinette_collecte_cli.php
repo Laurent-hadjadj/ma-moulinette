@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2025.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common  CC-BY-NC-SA 4.0.
 *  ---
@@ -82,18 +82,24 @@ $DEBUG = isset($options['debug']);
 
 // -----------------------------------------------------
 // === CONFIG SSL / TLS et PROXY ===
+// (surchargeable via variables d'environnement)
 // -----------------------------------------------------
-$VERIFY_PEER = false;     // false = ne vérifie pas le certificat
-$VERIFY_HOST = 0;         // 0 = ne vérifie pas le nom d’hôte SSL
-$CIPHERS = "DEFAULT:!DH"; // TLS 1.3 compatible
+$VERIFY_PEER = (bool) ($_ENV['MAMOUL_CLI_VERIFY_PEER'] ?: false);
+$VERIFY_HOST = (int) ($_ENV['MAMOUL_CLI_VERIFY_HOST'] ?: 0);
+$CIPHERS = $_ENV['MAMOUL_CLI_CIPHERS'] ?: "DEFAULT:!DH";
 
-// 🌐 Configuration PROXY (laisser vide si non utilisé)
-$USE_PROXY = false; // false = désactiver le proxy
-$PROXY_URL = "http://proxy.ma-moulinette.fr:8080";
-$PROXY_USER_PWD = "";
+// 🌐 Configuration PROXY (surchargeable via env)
+$USE_PROXY = (bool) ($_ENV['MAMOUL_CLI_USE_PROXY'] ?: false);
+$PROXY_URL = $_ENV['MAMOUL_CLI_PROXY_URL'] === false
+    ? "http://proxy.ma-moulinette.fr:8080"
+    : (string) $_ENV['MAMOUL_CLI_PROXY_URL'];
+$PROXY_USER_PWD = $_ENV['MAMOUL_CLI_PROXY_USER_PWD'] ?: "";
 
 // 🚫 Liste des domaines à ignorer pour le proxy
-$NO_PROXY = ["localhost", "127.0.0.1"];
+$noProxyEnv = $_ENV['MAMOUL_CLI_NO_PROXY'];
+$NO_PROXY = $noProxyEnv === false
+    ? ["localhost", "127.0.0.1"]
+    : array_values(array_filter(array_map('trim', explode(',', $noProxyEnv))));
 
 // -----------------------------------------------------
 // === LOGGING ===
@@ -192,11 +198,12 @@ if (!empty($NO_PROXY)) { logMessage(" 🚫 Pas de proxy pour : " . implode(", ",
 /**
  * [Description for callApi]
  *
- * @param mixed $endpoint
- * @param array $params
+ * @param string $endpoint
+ * @param array<int|string, mixed> $params
  * @param string $method
+ * @param int $timeout
  *
- * @return json
+ * @return array<int|string, mixed>
  *
  * Created at: 05/11/2025 10:22:52 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -274,7 +281,7 @@ function callApi($endpoint, $params = [], $method = 'GET', $timeout = 600) {
  * [Description for getTraitementAutomatique]
  * Récupère la liste des traitements automatiques non démarrés
  *
- * @return array
+ * @return array<int|string, mixed>
  *
  * Created at: 07/11/2025 09:13:01 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -303,13 +310,14 @@ function getTraitementAutomatique():array {
  * [Description for startTraitement]
  *
  * Lance un traitement automatique
- * @param array $traitement
+ * @param array<int|string, mixed> $traitement
  *
- * @return json
+ * @return array<int|string, mixed>
  *
  * Created at: 07/11/2025 09:24:05 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ * @param array<int|string, mixed> $traitement
  */
 function startTraitement(array $traitement) {
     global $TOKEN, $DRY_RUN;
@@ -353,6 +361,7 @@ if ($FLUSH > 0 && count($traitements) > $FLUSH) {
 
 // Suivi du statut global
 $hasError = false;
+$start = microtime(true);
 
 foreach ($traitements as $traitement) {
     $nom = $traitement['nom_traitement'];
