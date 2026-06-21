@@ -91,11 +91,12 @@
     transform: scale(1.2);
 }
 
-.card-users::before { background: #2563eb; }
-.card-groups::before { background: #7c3aed; }
+.card-internal::before { background: #000; }
+.card-users::before { background: #047aa2; }
+.card-groups::before { background: #047aa2; }
 .card-wallet::before { background: #059669; }
-.card-batch::before { background: #ea580c; }
-.card-stats::before { background: #dc2626; }
+.card-batch::before { background: #059669; }
+.card-stats::before { background: #d70808; }
 
 /*========== Page statistique  ============*/
 .card-font-size { font-size: 1.2rem; }
