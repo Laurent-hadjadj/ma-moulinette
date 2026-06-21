@@ -1,0 +1,108 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+/* Media Small */
+@media (width <= 20em) { /** */
+}
+
+/* Media Small */
+@media (20.025em <= width <= 22em){ /** */
+}
+
+/* Media Small */
+@media (22.025em <= width <= 30em) { /** */
+}
+
+/* Media Small */
+@media (30.025em <= width <= 40em) { /** */
+}
+
+/* Media Medium */
+@media (40.025em <= width <= 64em) { /** */
+}
+
+/* Media Large */
+@media (64.025em <= width <= 90em) { /** */
+}
+
+/* Media Large */
+@media (90.025em <= width <= 120em) { /** */
+}
+
+/* Media Extra-Large */
+@media (120.025em <= width <= 160em) { /** */
+}
+
+/*************************          Global     *********************************/
+/*
+ * Ma-Moulinette — Admin Metrics pages (dashboard & stats)
+ * Partagé entre admin-dashboard.js et admin-stats.js
+ */
+
+/* Carte métrique : grande valeur numérique centrée */
+.metric-card .metric-value {
+    font-size: 2.2rem;
+    font-weight: 600;
+    color: #00445b;
+    margin: 0.4rem 0 0;
+    line-height: 1;
+}
+
+.metric-card .metric-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #6b7280;
+    margin-bottom: 0;
+}
+
+/* Accentuation colorée sur le dessus de la card */
+.metric-card.accent-system  { border-top: 4px solid #00445b; }
+.metric-card.accent-app     { border-top: 4px solid #047aa2; }
+.metric-card.accent-pg      { border-top: 4px solid #059669; }
+.metric-card.accent-sonar   { border-top: 4px solid #1779ba; }
+.metric-card.accent-anomaly { border-top: 4px solid #cc4b37; }
+
+/* Callout section title */
+.section-title {
+    font-family: 'Open Sans', sans-serif;
+    color: #00445b;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 0.4rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Retour admin link */
+.back-admin {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    color: #00445b;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+    text-decoration: none;
+}
+.back-admin:hover { text-decoration: underline; }
+
+/* Table code source */
+.table-code caption {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
+.table-code tfoot tr.table-total th,
+.table-code tfoot tr.table-total td {
+    border-top: 2px solid #00445b;
+    font-weight: 600;
+    background-color: #f0f4f6;
+}
