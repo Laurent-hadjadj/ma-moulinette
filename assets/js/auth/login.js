@@ -33,7 +33,7 @@ const configurationOptions = {
   required: { i: 11, e: -3, c: -3, f: -3, o: -3, s: -3 },
   insecure: true,
   unsupported: true,
-  api: 2025.7,
+  api: 2026.6,
   reminder: 24 };
 
 /* Chargement de browser update */
