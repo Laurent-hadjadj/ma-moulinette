@@ -1,0 +1,78 @@
+---
+# MODIF 2026-05-12 : paramètres du
+# calcul JH par dépendance a upgrader (utilisés par DcExecutiveAnalyticsService
+# pour computeRemediationPlan et computeDepJh). Modifiables sans recompilation
+# php, juste un `bin/console cache:clear` après édition.
+#
+# Formule :
+#   JH_dep = (test_effort_by_family[famille] + upgrade_overhead) * safety_margin
+#          + severity_bonus[sev_max]
+#   arrondi au demi-jour
+#
+# Exemples (avec valeurs ci-dessous) :
+#   log4j-core CRITICAL    -> (0.5 + 0.2) * 1.2 + 0.5 = 1.34 -> 1.5
+#   cxf-core CRITICAL      -> (1.5 + 0.2) * 1.2 + 0.5 = 2.54 -> 2.5
+#   spring-core CRITICAL   -> (2.0 + 0.2) * 1.2 + 0.5 = 3.14 -> 3.0
+#   jackson MEDIUM         -> (1.0 + 0.2) * 1.2 + 0.1 = 1.54 -> 1.5
+#   commons-text LOW       -> (0.5 + 0.2) * 1.2 + 0.0 = 0.84 -> 1.0
+parameters:
+
+    # Effort fixe de mise a jour technique (bump version + recompile + release).
+    # Constant peu importe la dep.
+    dc.remediation.upgrade_overhead: 0.2
+
+    # Coefficient multiplicateur appliqué a (effort_tests + overhead).
+    # +20 % de marge sécurité pour aléas non prévus.
+    dc.remediation.safety_margin: 1.2
+
+    # Bonus JH selon la sévérité max de la dep. Reflété l'effort supplémentaire
+    # de validation sécurité avant prod.
+    dc.remediation.severity_bonus:
+        CRITICAL: 0.5
+        HIGH: 0.3
+        MEDIUM: 0.1
+        LOW: 0.0
+        INFO: 0.0
+
+    # Effort de tests de non-regression par famille technologique (en JH).
+    # Liée à la heuristique DcExecutiveAnalyticsService::guessFamily. La clé doit correspondre à une famille reconnue, sinon le fallback 'Autres' est utilisé.
+    # 'Autres' sert de fallback pour les familles non reconnues.
+    dc.remediation.test_effort_by_family:
+        Log4j: 0.5
+        'Apache Commons': 0.5
+        'XML / Woodstox': 0.5
+        Jackson: 1.0
+        AMQP: 1.0
+        'Apache (autre)': 1.0
+        Autres: 1.0
+        'Apache CXF': 1.5
+        'Spring Framework': 2.0
+
+    # MODIF 2026-05-14 : paramètres
+    # du score sécurité par application (utilise par dc_kpi et dc_comparer).
+    # Formule :
+    #   Score = 100 - sum( weight[sev] * min(nb_cve[sev], cap[sev]) )
+    #   Score = max(0, Score)
+    # Sens : un score 100 = app saine. Plus le score baisse, plus l'app
+    # présente de CVE. Le plafond par sévérité evite qu'un nombre énorme
+    # de LOW noie le signal des CRITICAL et inversement, et garantit qu'aucune
+    # sévérité seule ne fait tomber le score a 0 (sauf CRITICAL si cap atteint
+    # combine avec d'autres sévérités).
+    #
+    # Pénalité max totale (= si toutes les sévérités atteignent leur cap) :
+    #   10*5 + 3*10 + 1*20 + 0.5*20 = 50 + 30 + 20 + 10 = 110
+    #   -> capée a 100, donc score plancher 0.
+    #
+    # Modifier ces valeurs décale la sensibilité du score :
+    #   - poids plus fort sur CRITICAL = pénaliser plus durement les CVE graves
+    #   - cap plus élevé = étaler la sanction sur plus de CVE avant plafond
+    dc.score_secu.weights:
+        CRITICAL: 10.0
+        HIGH: 3.0
+        MEDIUM: 1.0
+        LOW: 0.5
+    dc.score_secu.caps:
+        CRITICAL: 5
+        HIGH: 10
+        MEDIUM: 20
+        LOW: 20
