@@ -1,7 +1,7 @@
 /**
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -29,9 +29,9 @@ import 'motion-ui';
 import '../../common/foundation.js';
 import '../../auth/details.js';
 
-/** On charge la version html2pdf depuis les assets */
-import { jsPDF } from 'jspdf';
-import html2canvas from 'html2canvas';
+/* MODIF 2026-05-06 : retrait des imports jsPDF / html2canvas
+ * et du listener .lien-imprimer-pdf (génère maintenant cote serveur via Dompdf
+ * sur la route /suivi/rapport/pdf). Le bouton est devenu un <a> dans _menu_outils.html.twig. */
 
 /** On importe les paramètres serveur */
 import {serveur} from '../../common/properties.js';
@@ -50,6 +50,7 @@ Chart.register(ChartDataLabels);
 
 /** On importe les constantes */
 import { http_200, http_201, http_400, http_401, http_403, http_404, http_500, http_503, http_504, chartColors, zero, un, deux, soixante, cent, dateOptions, content_type } from '../../common/constante.js';
+import { modalSafe } from '../../common/safeModal';
 
 /**
  * [Description for dessineMoiUnMouton]
@@ -172,7 +173,7 @@ const dessineMoiUnMouton= function( labels, data1, data2, data3) {
   const ctx = document.getElementById('graphique-anomalie').getContext('2d');
   const charts = new Chart(ctx, { type: 'line', data, options });
   if (charts === null) {
-    sessionStorage.set('ma_moulinette_info', 'chartJs is null');
+    sessionStorage.setItem('ma_moulinette_info', 'chartJs is null');
   }
 };
 
@@ -193,10 +194,56 @@ dessineMoiUnMouton(
   Object.values(JSON.parse(_data3))
 );
 
+/* MODIF 2026-05-06 : bar chart empile pour
+ * la distribution langage par version. Datasets prepares cote serveur par
+ * LanguageDistributionService::buildDistributionMatrix (1 dataset par langage,
+ * une valeur par version). */
+const langueLabelsEl = document.getElementById('graphique-langage-labels');
+const langueDatasetsEl = document.getElementById('graphique-langage-datasets');
+const langueCanvas = document.getElementById('graphique-langage');
+
+if (langueLabelsEl && langueDatasetsEl && langueCanvas) {
+  try {
+    const langueLabels = JSON.parse(langueLabelsEl.dataset.labels);
+    const langueDatasets = JSON.parse(langueDatasetsEl.dataset.datasets);
+
+    if (Array.isArray(langueDatasets) && langueDatasets.length > 0) {
+      const ctx = langueCanvas.getContext('2d');
+      const previous = Chart.getChart('graphique-langage');
+      if (previous !== undefined) {
+        previous.destroy();
+      }
+      // eslint-disable-next-line no-new
+      new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: langueLabels,
+          datasets: langueDatasets
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            x: { stacked: true, title: { display: true, text: 'Version', color: '#00445b' } },
+            y: { stacked: true, title: { display: true, text: 'Lignes de code', color: '#00445b' }, beginAtZero: true }
+          },
+          plugins: {
+            legend: { position: 'bottom' },
+            datalabels: { display: false },
+            tooltip: { enabled: true }
+          }
+        }
+      });
+    }
+  } catch (e) {
+    sessionStorage.setItem('ma_moulinette_info', 'graphique-langage parse error: ' + e.message);
+  }
+}
+
 /**
- * Drapeau de validite des donnees chargees pour la modale "ajouter une analyse".
+ * Drapeau de validité des donnees chargées pour la modale "ajouter une analyse".
  * Mis a true uniquement si getVersion a abouti (code 200 + data).
- * Empeche l'enregistrement si l'utilisateur n'a pas selectionne / si la version est invalide.
+ * Empêche l'enregistrement si l'utilisateur n'a pas sélectionné / si la version est invalide.
  */
 let donneesAjoutValides = false;
 
@@ -210,7 +257,7 @@ let dernieresMetriques = {};
 
 /**
  * [Description for versionSonarQubeListe]
- * Charge la liste des versions disponibles depuis SonarQube pour la cle maven donnee.
+ * Charge la liste des versions disponibles depuis SonarQube pour la clé maven donnee.
  * POST /api/secure/liste/v2.0/version
  *
  * @param string maven_key
@@ -223,7 +270,7 @@ const versionSonarQubeListe = async function (maven_key) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    content_type,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -259,13 +306,13 @@ const versionSonarQubeListe = async function (maven_key) {
 $('.js-ajouter-analyse').on('click', async function () {
   const mavenKey = $('#titre-js-nom').data('maven');
 
-  /** Si la cle mavenKey n'est pas definie on n'ouvre pas la fenetre modale */
+  /** Si la clé mavenKey n'est pas definie on n'ouvre pas la fenêtre modale */
   if (mavenKey === undefined || mavenKey === null || mavenKey === '') {
-    showMessage('warning', "La cle maven n'est pas valide !", null);
+    showMessage('warning', "La clé maven n'est pas valide !", null);
     return;
   }
 
-  /** On reinitialise le drapeau a chaque ouverture */
+  /** On réinitialise le drapeau a chaque ouverture */
   donneesAjoutValides = false;
 
   /* On charge la liste du formulaire d'ajout */
@@ -283,7 +330,11 @@ $('.js-ajouter-analyse').on('click', async function () {
   $('.analyse').removeClass('hide');
 
   /* On ouvre la fenetre modale */
-  $('#modal-ajouter-analyse').foundation('open');
+  modalSafe.open('#modal-ajouter-analyse');
+});
+/** On ferme proprement la modale */
+$('#bouton-fermer-ajouter-analyse').on('click', function() {
+  modalSafe.close('#modal-ajouter-analyse');
 });
 
 /* On recharge la page pour mettre à jour la vue */
@@ -293,7 +344,7 @@ $('#fermer-modifier-analyse').on('click', ()=>{
 
 /**
  * [Description for versionDataGet]
- * Recupere les metriques d'une version pour la cle maven et la date donnees.
+ * Récupère les métriques d'une version pour la clé maven et la date donnees.
  * POST /api/secure/get/version
  *
  * @param string maven_key
@@ -384,8 +435,8 @@ const displayRating = function (value) {
 
 /**
  * [Description for populerMetriques]
- * Affiche les metriques recuperees dans la modale "ajouter une analyse".
- * Stocke aussi les valeurs en data-* pour les recuperer a l'enregistrement.
+ * Affiche les métriques récupérées dans la modale "ajouter une analyse".
+ * Stocke aussi les valeurs en data-* pour les récupérer a l'enregistrement.
  *
  * @param object data
  */
@@ -520,7 +571,7 @@ $('select[name="version"]').on('change', async function () {
   /** A chaque changement de selection, on invalide les donnees jusqu'a confirmation */
   donneesAjoutValides = false;
 
-  /* On affiche la cle */
+  /* On affiche la clé */
   const mavenKey = $('#titre-js-nom').data('maven').trim();
   $('#key-maven').html(mavenKey);
 
@@ -583,7 +634,7 @@ const historiqueAjouter = async function (data) {
     type: 'PUT',
     dataType: 'json',
     data: JSON.stringify(data),
-    content_type,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -676,99 +727,10 @@ $('.js-enregistrer-analyse').on('click', async () => {
   showMessage(t.type ?? 'error', t.message ?? `Erreur lors de la mise a jour (${t.code}).`, trace);
 });
 
-/**
- * description
- * Génère une edition PDF
-*/
-$('.lien-imprimer-pdf').on('click', async () => {
-  const doc = new jsPDF({
-      orientation: "portrait", // Mode paysage
-      unit: "mm",
-      format: "a4"
-  });
-
-  const pageWidth = 210;  // Largeur pour A4 en paysage
-  const pageHeight = 297; // Hauteur pour A4 en paysage
-  const margin = 10;      // Marge autour du contenu
-
-  // En-tête
-  function addHeader(pageNumber) {
-      doc.setFontSize(16);
-      doc.setTextColor(40);
-      doc.text("Rapport de suivi des indicateurs SonarQube", margin, 20);
-      doc.setFontSize(10);
-      doc.setTextColor(100);
-      doc.text(`Date : ${new Date().toLocaleDateString('fr-FR')}`, margin, 28);
-  }
-
-  // Pied de page
-  function addFooter(pageNumber, pageCount) {
-      doc.setFontSize(10);
-      doc.setTextColor(100);
-      doc.text(`Page ${pageNumber} / ${pageCount}`, pageWidth / 2, pageHeight - 10, { align: "center" });
-  }
-
-  // Fonction pour capturer et ajouter chaque élément
-  async function captureAndAddElement(elementId, positionY) {
-      const element = document.getElementById(elementId);
-      if (!element) {
-          sessionStorage.setItem('ma_moulinette_error', `L'élément ${elementId} n'a pas été trouvé !!!`);
-          return 0; // Empêche l'appel à html2canvas si l'élément est absent
-      }
-
-      // Capture de l'élément avec html2canvas
-      const canvas = await html2canvas(element);
-      const imgData = canvas.toDataURL("image/png");
-      const imgWidth = 195; // Largeur de la page A4 en mm
-      const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-      // Vérifier si l'image dépasse la page
-      if (positionY + imgHeight > pageHeight - margin) {
-          doc.addPage(); // Ajouter une nouvelle page si nécessaire
-          positionY = 20; // Réinitialiser la position Y pour la nouvelle page
-      }
-
-      // Ajout de l'image capturée au PDF
-      doc.addImage(imgData, "PNG", 10, positionY, imgWidth, imgHeight);
-      return imgHeight;
-  }
-
-
-  // Séquence asynchrone pour capturer les éléments et les ajouter au PDF
-  let positionY = 40; // Position de départ après l'en-tête
-  addHeader(1);
-
-  // Capture et ajout des éléments
-  positionY += await captureAndAddElement('element1-to-print', positionY);
-  positionY += await captureAndAddElement('element2-to-print', positionY + 10);
-  positionY += await captureAndAddElement('element3-to-print', positionY + 10);
-  positionY += await captureAndAddElement('element4-to-print', positionY + 10);
-
-  // Nouvelle page pour `element5` et `element6`
-  doc.addPage();
-  positionY = 40; // Réinitialiser positionY pour démarrer en haut de la nouvelle page
-  addHeader(2);
-  positionY += await captureAndAddElement('element5-to-print', positionY);
-  positionY += await captureAndAddElement('element6-to-print', positionY + 10);
-
-  // Ajouter un texte de fin
-  doc.setFontSize(14);
-  doc.text("* * * *", pageWidth / 2, 280, { align: "center" });
-
-  // Ajout de la numérotation des pages en bas de chaque page
-  const pageCount = doc.getNumberOfPages();
-  for (let i = 1; i <= pageCount; i++) {
-      doc.setPage(i);
-      addFooter(i, pageCount);
-  }
-
-  // Récupération du nom
-  const n = $('#titre-js-nom').data('maven').trim();
-  const name = n.split(':');
-
-  // Enregistrer le PDF
-  doc.save(`rapport_suivi_indicateurs_${name[1]}.pdf`);
-});
+/* MODIF 2026-05-06 : ancien générateur jsPDF + html2canvas
+ * supprime. Le rapport PDF est maintenant cote serveur (Dompdf) via la route
+ * /suivi/rapport/pdf, declenchee par <a class="js-imprimer-analyse"> dans
+ * _menu_outils.html.twig (target="_blank"). */
 
 /**
  * [Description for versionListe]
@@ -795,7 +757,7 @@ const versionListe = async function(){
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    content_type,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -827,7 +789,10 @@ const versionListe = async function(){
   setTimeout(() => { hideMessage(); }, 3000);
 
   /* On boucle pour construire le tableau */
-  let ligne = 0 , html = '', switchFavori = '', switchReference = '';
+  // MODIF 2026-06-11 [suivi-version-selection] : compteur suivi courant
+  let ligne = 0 , html = '', switchFavori = '', switchReference = '', switchSuivi = '';
+  let compteurSuivi = t.suivi_version_count ?? zero;
+  $('#compteur-suivi').text(`(${compteurSuivi}/15)`);
 
   $('#tableau-liste-version').html(html);
 
@@ -847,6 +812,13 @@ const versionListe = async function(){
     switchReference += '<span class="show-for-sr">Projet de référence</span>';
     switchReference += '</label></div>';
 
+    /* MODIF 2026-06-11 : switch Suivi */
+    switchSuivi = '<div class="switch custom-switch-suivi js-switch-suivi">';
+    switchSuivi += `<input class="switch-input" id="switch-suivi-${ligne}" type="checkbox" name="switch-suivi-${ligne}">`;
+    switchSuivi += `<label class="switch-paddle" for="switch-suivi-${ligne}">`;
+    switchSuivi += '<span class="show-for-sr">Version à suivre</span>';
+    switchSuivi += '</label></div>';
+
     /*  On construit le tableau */
     const date_version=new Intl.DateTimeFormat('default', dateOptions).format(new Date(version.date));
 
@@ -856,6 +828,7 @@ const versionListe = async function(){
     html += `<td id="version-${ligne}" headers="modifier-preference version" class="text-left">${version.version}</td>`;
     html += `<td id="favori-${ligne}" headers="modifier-preference favori" class="text-left">${switchFavori}</td>`;
     html += `<td id="reference-${ligne}" headers="modifier-preference reference" class="text-left">${switchReference}</td>`;
+    html += `<td id="suivi-${ligne}" headers="modifier-preference suivi" class="text-left">${switchSuivi}</td>`;
     html += '</tr>';
 
     /* On ajoute la ligne */
@@ -872,6 +845,11 @@ const versionListe = async function(){
     if (version.initial===true) {
       $(`#switch-reference-${ligne}`).trigger('click');
     }
+
+    /* MODIF 2026-06-11 : pré-cocher si la version est en suivi */
+    if (version.suivi === true) {
+      $(`#switch-suivi-${ligne}`).prop('checked', true);
+    }
   });
 
   return t;
@@ -886,10 +864,10 @@ const versionFavoriUpdate = async function (maven_key, favori, version, date_ver
   const data = { maven_key, favori, version, date_version };
   const options = {
     url: `${serveur()}/api/secure/suivi/version/favori`,
-    type: 'PUT',
+    type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    content_type,
+    contentType,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -930,7 +908,7 @@ const versionReferenceUpdate = async function (maven_key, initial, version, date
     type: 'PUT',
     dataType: 'json',
     data: JSON.stringify(data),
-    content_type,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -971,7 +949,7 @@ const versionPoubelleDelete = async function (maven_key, version, date_version) 
     type: 'PUT',
     dataType: 'json',
     data: JSON.stringify(data),
-    content_type,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -1001,6 +979,48 @@ const versionPoubelleDelete = async function (maven_key, version, date_version) 
 };
 
 /**
+ * [Description for versionSuiviUpdate]
+ * Ajoute ou supprime une version de la liste de suivi personnalisée.
+ * POST /api/secure/suivi/version/suivi
+ * MODIF 2026-06-11 [suivi-version-selection]
+ */
+const versionSuiviUpdate = async function (maven_key, version, suivi) {
+  const data = { maven_key, version, suivi };
+  const options = {
+    url: `${serveur()}/api/secure/suivi/version/suivi`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    }
+  };
+
+  let t;
+  try {
+    t = await $.ajax(options);
+
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+    if (errorCodes.includes(t.code)) {
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      return null;
+    }
+  } catch (error) {
+    const trace = prepareTechnicalDetails(error);
+    const message = "Une erreur inattendue s'est produite lors de la mise a jour du suivi (Erreur 500).";
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_critical', trace);
+    return null;
+  }
+
+  return t;
+};
+
+/**
  * description
  * On charge la liste des versions, puis on bind les sous-events sur les
  * elements construits par versionListe (favori, reference, poubelle).
@@ -1013,7 +1033,7 @@ $('.js-modifier-analyse').on('click', async function () {
   }
   const preferenceFavori = !!result.preference_favori;
 
-  /** On gere le changement de favori pour la version du projet */
+  /** On gère le changement de favori pour la version du projet */
   $('[id^=switch-favori-]').on('click', async function (e) {
     if (preferenceFavori === false) {
       const message = "Vous n'avez pas active les favoris dans vos preferences.";
@@ -1021,7 +1041,7 @@ $('.js-modifier-analyse').on('click', async function () {
       return;
     }
 
-    /** on recupere la version et la date */
+    /** on récupéré la version et la date */
     const id = $(e.currentTarget).attr('id');
     const l = id.split('-');
     const version = $(`#version-${l[deux]}`).text().trim();
@@ -1033,7 +1053,7 @@ $('.js-modifier-analyse').on('click', async function () {
 
     const maven_key = $('#titre-js-nom').data('maven');
     if (maven_key === undefined) {
-      showMessage('warning', "La cle maven n'est pas valide !", null);
+      showMessage('warning', "La clé maven n'est pas valide !", null);
       return;
     }
 
@@ -1048,48 +1068,108 @@ $('.js-modifier-analyse').on('click', async function () {
     }
   });
 
-  /** On gere le changement de version de reference */
+  /** On gère le changement de version de reference */
   $('[id^=switch-reference-]').on('click', async function (e) {
-    /** on recupere la version et la date */
+    /** on récupère la version et la date */
     const id = $(e.currentTarget).attr('id');
     const l = id.split('-');
     const version = $(`#version-${l[deux]}`).text().trim();
-    /** On lit la date brute (TIMESTAMPTZ PG) depuis data-date pour eviter les pieges de format/locale */
+
+    /** On lit la date brute (TIMESTAMPTZ PG) depuis data-date pour éviter les pièges de format/locale */
     const formatted_date = $(`#date-${l[deux]}`).data('date');
 
     const maven_key = $('#titre-js-nom').data('maven');
     if (maven_key === undefined) {
-      showMessage('warning', "La cle maven n'est pas valide !", null);
+      showMessage('warning', "La clé maven n'est pas valide !", null);
       return;
     }
 
     /** 0 (false) and 1 (true). */
     const initial = $(`#${id}:checked`).length === un ? un : zero;
 
+    // MODIF 2026-06-02 : mémoriser l'ancienne
+    // référence AVANT la mutation UI pour pouvoir la restaurer en cas d'erreur.
+    const previousRef = $('[id^=switch-reference-]:checked').not(`#${id}`).attr('id') ?? null;
+
     /** Exclusion mutuelle UI : une seule version peut être référence. Si on en
-     *  coche une, on décoche visuellement toutes les autres (le serveur fait
-     *  déjà UPDATE initial=false WHERE maven_key=...). */
+       *  coche une, on décoche visuellement toutes les autres (le serveur fait
+       *  déjà UPDATE initial=false WHERE maven_key=...). */
     if (initial === un) {
       $('[id^=switch-reference-]').not(`#${id}`).prop('checked', false);
     }
 
     const t = await versionReferenceUpdate(maven_key, initial, version, formatted_date);
-    if (!t) return;
 
-    const type = t.type ?? 'info';
-    showMessage(type, t.message ?? 'Mise a jour de la version de reference.', null);
-    if (type === 'info' || type === 'success') {
+    // MODIF 2026-06-02 : rollback UI si le
+    // serveur a refusé (null = erreur déjà affichée par versionReferenceUpdate).
+    if (!t) {
+      $(`#${id}`).prop('checked', initial === zero);
+      if (previousRef) {
+        $(`#${previousRef}`).prop('checked', true);
+      }
+      return;
+    }
+
+    if (t.code === http_200) {
+      showMessage('info', "Mise a jour de la version de reference effectuée.", null);
       setTimeout(() => { hideMessage(); }, 3000);
+      return;
+    }
+
+    showMessage(t.type ?? 'error', t.message ?? "Le changement de version de référence a échoué !", null);
+  });
+
+  /** MODIF 2026-06-11 : toggle suivi d'une version */
+  $('[id^=switch-suivi-]').on('click', async function (e) {
+    const id = $(e.currentTarget).attr('id');
+    const l = id.split('-');
+    const version = $(`#version-${l[deux]}`).text().trim();
+    const maven_key = $('#titre-js-nom').data('maven');
+
+    if (maven_key === undefined) {
+      showMessage('warning', "La clé maven n'est pas valide !", null);
+      return;
+    }
+
+    const suivi = $(`#${id}:checked`).length === un ? un : zero;
+
+    // Bloquer l'ajout si on dépasse 15
+    if (suivi === un) {
+      const compteurTexte = $('#compteur-suivi').text(); // "(N/15)"
+      const match = compteurTexte.match(/\((\d+)\/15\)/);
+      const current = match ? parseInt(match[1], 10) : zero;
+      if (current >= 15) {
+        showMessage('warning', "La limite de 15 versions pour le suivi est atteinte.", null);
+        $(`#${id}`).prop('checked', false);
+        return;
+      }
+    }
+
+    const t = await versionSuiviUpdate(maven_key, version, suivi);
+    if (!t) {
+      // erreur : annuler le toggle visuel
+      $(`#${id}`).prop('checked', suivi === zero);
+      return;
+    }
+
+    if (t.code === http_200) {
+      // Mettre à jour le compteur
+      $('#compteur-suivi').text(`(${t.suivi_version_count ?? zero}/15)`);
+      showMessage('info', "Mise a jour du suivi effectuée.", null);
+      setTimeout(() => { hideMessage(); }, 3000);
+    } else {
+      showMessage(t.type ?? 'error', t.message ?? "Le changement de suivi a échoué !", null);
+      $(`#${id}`).prop('checked', suivi === zero);
     }
   });
 
   /** On supprime la version du projet en table et on masque la ligne */
   $('[id^=poubelle-]').on('click', async function (e) {
-    /** On recupere la version et la date */
+    /** On récupère la version et la date */
     const id = $(e.currentTarget).attr('id');
     const l = id.split('-');
     const version = $(`#version-${l[un]}`).text().trim();
-    /** On lit la date brute (TIMESTAMPTZ PG) depuis data-date pour eviter les pieges de format/locale */
+    /** On lit la date brute (TIMESTAMPTZ PG) depuis data-date pour éviter les pièges de format/locale */
     const formatted_date = $(`#date-${l[un]}`).data('date');
 
     let maven_key = $('#titre-js-nom').data('maven');
@@ -1102,15 +1182,25 @@ $('.js-modifier-analyse').on('click', async function () {
 
     if (t.code === http_200) {
       const tail = t.message ? ` ${t.message}` : '';
-      showMessage('info', `Le projet a ete correctement supprime.${tail}`, null);
+      showMessage('info', `Le projet a été correctement supprimé. ${tail}`, null);
       setTimeout(() => { hideMessage(); }, 3000);
       $(`#ligne-${l[un]}`).hide();
+      return;
+    }
+
+    if (t.code === http_403) {
+      showMessage('warning', t.message ?? "Le projet n'a pas été supprimé !", null);
     } else {
       const trace = t.erreur ? prepareTechnicalDetails(t.erreur) : null;
-      showMessage(t.type ?? 'warning', t.message ?? "Le projet n'a pas ete supprime !", trace);
+      showMessage(t.type ?? 'error', t.message ?? "Le projet n'a pas été supprimé !", trace);
     }
   });
 
-  /** fin de la methode on ouvre la fenetre */
-  $('#modal-modifier-analyse').foundation('open');
+  /** fin de la méthode on ouvre la fenêtre */
+  modalSafe.open('#modal-modifier-analyse');
+});
+
+/** on ferme proprement la modale */
+$('#bouton-fermer-modifier-analyse').on('click', function() {
+  modalSafe.close('#modal-modifier-analyse');
 });
