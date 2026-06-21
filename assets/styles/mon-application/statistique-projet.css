@@ -1,0 +1,93 @@
+
+      /**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+/**
+  * Propriétés pour les class en fonction des medias type
+  *
+  */
+
+/* Media Small */
+@media (width <= 20em) { /** */
+}
+
+/* Media Small */
+@media (20.025em <= width <= 22em){ /** */
+}
+
+/* Media Small */
+@media (22.025em <= width <= 30em) { /** */
+}
+
+/* Media Small */
+@media (30.025em <= width <= 40em) { /** */
+}
+
+/* Media Medium */
+@media (40.025em <= width <= 64em) {
+ /** */
+}
+
+/* Media Large */
+@media (64.025em <= width <= 90em) {
+ /** */
+}
+
+/* Media Large */
+@media (90.025em <= width <= 120em) {
+ /** */
+}
+
+/* Media Extra-Large */
+@media (120.025em <= width <= 160em) {
+ /** */
+}
+
+/*************************          Global     *********************************/
+
+.note-badge {
+  display: inline-block;
+  min-width: 1.6rem;
+  padding: .1rem .35rem;
+  border-radius: 3px;
+  font-weight: 700;
+  font-size: .8rem;
+  text-align: center;
+  color: #fff;
+}
+
+.note-A { background: #3adb76; color: #0a0a0a; }
+.note-B { background: #88c057; color: #0a0a0a; }
+.note-C { background: #ffae00; color: #0a0a0a; }
+.note-D { background: #ec5840; }
+.note-E { background: #cc4b37; }
+.note-na { background: #cacaca; color: #0a0a0a; }
+
+.qg-ok  { background: #3adb76; color: #0a0a0a; border-radius:3px; padding:.1rem .4rem; font-weight:700; font-size:.8rem; }
+.qg-ko  { background: #cc4b37; color:#fff; border-radius:3px; padding:.1rem .4rem; font-weight:700; font-size:.8rem; }
+.qg-na  { background: #cacaca; color: #0a0a0a; border-radius:3px; padding:.1rem .4rem; font-weight:700; font-size:.8rem; }
+
+.tbl-projets { font-size: .8rem; }
+.tbl-projets thead th {
+  background: #e0e0e0;
+  white-space: nowrap;
+  padding: .4rem .5rem;
+  border-bottom: 2px solid #aaa;
+}
+
+.tbl-projets td { padding: .3rem .5rem; vertical-align: middle; white-space: nowrap; }
+.tbl-projets tr:hover td { background: #f0f4ff; }
+.col-projet { min-width: 13rem; white-space: normal; }
+.projet-nom { font-weight: 600; }
+.projet-key { font-size: .72rem; color: #666; }
+.num-warn { color: #cc4b37; font-weight: 700; }
+.section-sep th { background: #c8d0e0 !important; font-size: .72rem; letter-spacing: .04em; text-transform: uppercase; }
