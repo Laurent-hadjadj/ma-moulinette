@@ -1,0 +1,321 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+/* stylelint-disable-next-line selector-class-pattern */
+
+ /* Mobile */
+@media (width <= 20em) {  }
+
+/* Mobile */
+@media (20.025em <= width <= 22em) {
+      .badge-level {
+                  min-width: 5rem;
+                  font-size: 0.8rem;
+                }
+      .severity-cell .severity-count { font-size: 1.3rem; }
+}
+
+/* Mobile */
+@media (22.025em <= width <= 30em) {
+  .badge-level {
+                  min-width: 5rem;
+                  font-size: 0.8rem;
+                }
+  .severity-cell .severity-count { font-size: 1.3rem; }
+}
+
+/* Mobile */
+@media (30.025em <= width <= 40em) {
+  .badge-level {
+                  min-width: 5rem;
+                  font-size: 0.8rem;
+                }
+  .severity-cell .severity-count { font-size: 1.3rem; }
+
+}
+
+/* tablette */
+@media (40.025em <= width <= 64em) {
+  .badge-level {
+                  min-width: 5rem;
+                  font-size: 0.8rem;
+                }
+  .severity-cell .severity-count { font-size: 1.6rem; }
+}
+
+/* desktop */
+@media (64.025em <= width <= 90em) {
+  .badge-level {
+                  min-width: 7rem;
+                  font-size: 0.85rem;
+                }
+  .severity-cell .severity-count { font-size: 1.8rem; }
+
+}
+
+/* desktop */
+@media (90.025em <= width <= 120em) {
+    .badge-level {
+                  min-width: 7rem;
+                  font-size: 0.85rem;
+                }
+  .severity-cell .severity-count { font-size: 2rem; }
+}
+
+/* desktop */
+@media (120.025em <= width <= 160em) {
+  .badge-level {
+                  min-width: 7rem;
+                  font-size: 0.85rem;
+                }
+  .severity-cell .severity-count { font-size: 2rem; }
+}
+
+/*************************          Global     *********************************/
+
+/* bouton  d'action effacer la selection */
+.flex-container-effacer {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+#bouton-ouvrir-rapport-dependency-check,
+#bouton-ouvrir-vue-executive,
+#bouton-ouvrir-rapport-PDF,
+#bouton-ouvrir-methodology-jh,
+#bouton-fermer-methodology-jh,
+#bouton-retour-dashboard,
+#bouton-voir-tous-mutualisables,
+#bouton-ouvrir-dc-dashboard,
+#bouton-ouvrir-dc-mutualisables,
+#bouton-ouvrir-dc-kpi,
+#bouton-ouvrir-dc-comparer,
+#bouton-comparer,
+#bouton-ouvrir-owasp,
+.bouton-fermer-dc-new-cve {
+  min-width: 9rem;
+  font-size: 0.95rem;
+  border-radius: 0.375rem;
+  margin: 0 0.25rem 0.5rem 0.25rem;
+  padding: 0.8rem 0.6rem;
+  color: #fff;
+  text-align: center;
+  background-color: #00445b;
+}
+
+#bouton-vue-prod,
+#bouton-vue-dev {
+  min-width: 7rem;
+  font-size: 0.8rem;
+  border-radius: 0.375rem;
+  margin: 0 0.25rem 0.5rem 0.25rem;
+  padding: 0.5rem 0.4rem;
+  color: #fff;
+  text-align: center;
+  background-color: #2E4053;
+}
+
+#bouton-vue-prod:hover,
+#bouton-vue-dev:hover { background-color: #96ADC5; }
+
+#bouton-ouvrir-rapport-dependency-check:hover,
+#bouton-ouvrir-vue-executive:hover,
+#bouton-ouvrir-rapport-PDF:hover,
+#bouton-ouvrir-methodology-jh:hover,
+#bouton-fermer-methodology-jh:hover,
+#bouton-retour-dashboard:hover,
+#bouton-voir-tous-mutualisables:hover,
+#bouton-ouvrir-dc-dashboard:hover,
+#bouton-ouvrir-dc-mutualisables:hover,
+#bouton-ouvrir-dc-kpi:hover,
+#bouton-ouvrir-dc-comparer:hover,
+#bouton-comparer:hover,
+#bouton-ouvrir-owasp:hover,
+#bouton-vue-prod:hover,
+#bouton-vue-dev:hover,
+.bouton-fermer-dc-new-cve:hover { background-color: #006182; }
+
+/* ==== Graphique de répartition par severity : badge rectangulaire avec couleurs sémantiques
+ * par niveau de sévérité. Utilisé dans dashboard.html.twig (section "Répartition
+ * par severity") et dans project.html.twig (tableau findings). */
+
+ /* dc-dash-timeseries et dc-dash-scatter ont besoin de la même hauteur pour assurer une cohérence visuelle entre les deux graphiques du dashboard. */
+.graph-280 {
+  position: relative;
+  height: 280px;
+}
+
+/* dc-dash-stacked et dc-dash-donut ont besoin de la même hauteur pour assurer une cohérence visuelle entre les deux graphiques du dashboard. */
+.graph-320 {
+  position: relative;
+  height: 320px;
+}
+
+/* ==== MODIF 2026-05-10 : badge rectangulaire pour les labels
+ * de severity (CRITICAL, HIGH, MEDIUM, LOW, INFO).  */
+.badge-level
+{
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  font-weight: 600;
+  border-radius: 0.375rem;
+  text-align: center;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.4;
+}
+
+.badge-level.critical { background-color: #cc4b37; }
+.badge-level.high     { background-color: #f08a24; }
+.badge-level.medium   { background-color: #ffd200; color: #333; } /* contraste sur jaune */
+.badge-level.low      { background-color: #1779ba; }
+.badge-level.info     { background-color: #9aa3ad; }
+.badge-level.unknown  { background-color: #6c757d; }
+/* MODIF 2026-05-12 : couleur distinctive pour le badge
+  "CONVERGENCE" du Fragment D mutualisations. Turquoise pour ne pas se confondre
+  avec les sévérités (rouge/orange/jaune/bleu) ni avec le gris d'archétype.
+   Signale "opportunité d'action à exploiter". */
+.badge-level.convergence { background-color: #17a2b8; }
+
+/* ==== Appliction dans mutualisables.html.twig :
+        badge rectangulaire pour les projets utilisant une dépendance mutualisable.
+        Couleur neutre (gris) pour ne pas prêter à confusion
+        avec les couleurs sémantiques de sévérité. */
+
+.app-authorized {
+    display: inline-block;
+    font-size: 0.7rem;
+    color: #00445b;
+    text-decoration:none;
+  }
+
+  .app-authorized:hover, .app-unauthorized:hover {
+    color: #006182;
+    text-decoration: none;
+  }
+
+  .app-unauthorized {
+    display: inline-block;
+    font-size: 0.7rem;
+    color: #888;
+    cursor: not-allowed;
+  }
+
+/* ==== MODIF 2026-05-10 : layout d'une cellule de la
+ * grille "Répartition par severity". Badge à gauche, valeur (compteur) à
+ * droite, alignement vertical centre. Le breakpoint responsive est gère
+ * par les classes Foundation (small-12 / medium-auto / large-auto) sur le
+ * cell parent. */
+.severity-cell
+{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0rem 0.5rem;
+}
+
+.severity-cell .severity-count { color: #333}
+
+/* MODIF 2026-05-10 : badge rectangulaire pour codes CWE/CVE
+ * (CWE-400, NVD-CWE-noinfo, CVE-2023-46120). Comme `.badge-level` mais
+ * sans min-width fixe (la longueur est variable, on laisse l'inline-block
+ * s'adapter au contenu) et avec un fond neutre (gris clair) au lieu des
+ * couleurs sémantiques de sévérité. white-space: nowrap pour empêcher la
+ * cassure d'un code sur plusieurs lignes. margin pour aérer quand
+ * plusieurs badges-cve cohabitent dans une meme cellule (cas findings). */
+.badge-cve
+{
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  background-color: #e8eaed;
+  color: #333;
+  white-space: nowrap;
+  margin: 0.1rem 0.15rem 0.1rem 0;
+  line-height: 1.4;
+}
+
+/* MODIF 2026-05-10 : badge compteur (pilule) avec
+ * couleurs sémantiques par sévérité. Reprend les couleurs de .badge-level
+ * mais reste compact (pas de min-width text long, pas d'uppercase) car le
+ * contenu est juste un nombre. Utilise dans projet.html.twig pour le total
+ * findings par section CRITICAL/HIGH/MEDIUM/LOW/INFO/UNKNOWN. */
+.badge-count
+{
+  display: inline-block;
+  min-width: 1.6rem;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 999px;
+  text-align: center;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.badge-count.critical { background-color: #cc4b37; }
+.badge-count.high     { background-color: #f08a24; }
+.badge-count.medium   { background-color: #ffd200; color: #333; } /* contraste sur jaune */
+.badge-count.low      { background-color: #1779ba; }
+.badge-count.info     { background-color: #9aa3ad; }
+.badge-count.unknown  { background-color: #6c757d; }
+
+/* MODIF 2026-05-10 : utility class pour remplacer les
+ * style="vertical-align: middle" inline dans les tableaux DC. S'applique a table/tr/td/th. */
+.v-middle { vertical-align: middle; }
+
+/* MODIF 2026-05-10 : badge "périmètre" pour le
+ * dashboard DC. Indique a l'utilisateur si les chiffres affiches couvrent
+ * tout le parc (.global, vert) ou son périmètre groupe_fonctionnel
+ * (.filtered, gris bleu). Pattern aligne avec .badge-level (rectangulaire,
+ * radius arrondi) mais sans uppercase et avec un peu plus de padding pour
+ * accueillir des libelles plus longs ("Périmètre : lot-1-2021, lot-5-2021"). */
+.badge-scope
+{
+  display: inline-block;
+  padding: 0.5rem 0.6rem;
+  font-weight: 600;
+  font-size: 0.8rem;
+  color: #00445b;
+  line-height: 1.4;
+  letter-spacing: 0.3px;
+}
+
+.badge-scope.global   { border: 2px solid #1f7a3a; } /* vert "vision étendue" */
+.badge-scope.filtered { border: 2px solid #5a6c7d; } /* gris bleu "périmètre cadre" */
+
+/* MODIF 2026-05-10 : badge rectangulaire pour la
+ * décision de traitement d'une CVE (Upgrade / Mitigation / Surveillance).
+ * Pattern aligne avec .badge-level mais sans uppercase et avec une
+ * sémantique d'action (pas de sévérité). Utilise dans executive.html.twig
+ * (table CVE -> Decision + section méthodologie). */
+.badge-decision
+{
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border-radius: 0.375rem;
+  text-align: center;
+  color: #fff;
+  letter-spacing: 0.3px;
+  line-height: 1.4;
+}
+
+.badge-decision.upgrade      { background-color: #1f7a3a; } /* vert : action prioritaire */
+.badge-decision.mitigation   { background-color: #d68910; } /* orange-jaune : workaround */
+.badge-decision.surveillance { background-color: #6c757d; } /* gris : monitoring passif */
