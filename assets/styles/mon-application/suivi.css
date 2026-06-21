@@ -1,7 +1,7 @@
 /**
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -118,9 +118,19 @@
 .imprimer-pdf-svg { fill: #971c09; }
 
 /* bouton */
+.enregistrer-analyse {
+  padding: 1rem 3rem 0.5rem 3rem;
+  display: flex;
+  align-items: center;
+}
+
+.enregistrer-analyse {
+  color: #fff;
+  background-color: #00445b;
+}
+
 #bouton-fermer-ajouter-analyse,
-#bouton-fermer-modifier-analyse,
-#bouton-enregistrer-analyse
+#bouton-fermer-modifier-analyse
 {
   min-width: 9rem;
   font-size: 0.95rem;
@@ -134,8 +144,7 @@
 
 .enregistrer-analyse:hover,
 #bouton-fermer-modifier-analyse:hover,
-#bouton-fermer-ajouter-analyse:hover,
-#bouton-enregistrer-analyse:hover { background-color: #006182; }
+#bouton-fermer-ajouter-analyse:hover { background-color: #006182; }
 
 .lien-ajouter,
 .lien-modifier,
