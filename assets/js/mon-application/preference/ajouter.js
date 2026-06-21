@@ -44,7 +44,8 @@ import {serveur} from '../../common/properties.js';
  * @author     Laurent HADJADJ <laurent_h@me.com>
  */
 const match=function(params, data) {
-  if ($.trim(params.term) === '') {
+  /* MODIF 2026-05-17 : $.trim supprimé en jQuery 4. */
+  if ((params.term || '').trim() === '') {
     return data;
   }
   if (typeof data.text === 'undefined') {
@@ -195,8 +196,8 @@ $('.js-preference-effacer').on('click', ()=> {
 $('.js-preference-valider').on('click', ()=> {
   /** On récupère le liste de favoris */
   const liste=$('.js-projet').select2('data');
-  console.log(liste[0].text);
+  //console.log(liste[0].text);
   /** On récupère le nom de la liste de favoris */
   const nom=$('#nom-liste').val();
-  console.log(nom);
+  //console.log(nom);
 });
