@@ -1,15 +1,26 @@
 ---
-# Overrides pour l'environnement de test uniquement.
-# Charge automatiquement apres services.yaml quand APP_ENV=test.
+# config/services_test.yaml
+#
+# MODIF 2026-05-07 : creation pour wirer le double de test
+# `SonarFixtureClientService` sur l'alias `App\Service\ClientService` dans l'env test.
+# Sans ce wiring, `static::getContainer()->get(ClientService::class)` retourne le vrai
+# ClientService et toutes les requêtes SonarQube échouent en 503 (serveur absent).
+#
+# Pre-requis : autoload-dev `App\Tests\\` => tests/ (composer.json), ce qui rend
+# la classe `App\Tests\Support\SonarFixtureClientService` visible cote container.
+
 services:
-    # Enregistre le double de test explicitement, avec autowire pour hériter
-    # des arguments du constructeur de ClientService (HttpClient, ParameterBag, Logger).
-    App\Tests\Support\SonarFixtureClientService:
+    _defaults:
         autowire: true
+        autoconfigure: true
+
+    # Enregistrement explicite du double (les classes de tests/ ne sont pas
+    # incluses dans le glob `App\:` de services.yaml).
+    App\Tests\Support\SonarFixtureClientService:
         public: true
 
-    # Alias : toute injection de ClientService utilise en fait le double
-    # en env test. Ecrase l'auto-registration issue du glob `App\:` de services.yaml.
+    # Substitution : tout consommateur qui demande ClientService reçoit le double.
+    # Le test `testContainerResolvesClientServiceToTestDouble` valide ce wiring.
     App\Service\ClientService:
         alias: App\Tests\Support\SonarFixtureClientService
         public: true
