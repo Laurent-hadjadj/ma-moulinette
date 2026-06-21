@@ -9,7 +9,7 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
-export const ModalSafe = (() => {
+export const modalSafe = (() => {
 
     let lastTrigger = null;
 
