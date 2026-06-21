@@ -20,6 +20,7 @@ export const http_404=Number(404);
 export const http_406=Number(406);
 export const http_422=Number(422);
 export const http_500=Number(500);
+export const http_502=Number(502);
 export const http_503=Number(503);
 export const http_504=Number(504);
 
@@ -105,3 +106,7 @@ export const listeOwasp2017 = [
 /** Liste des menaces OWASP 2021 */
 export const listeOwasp2021 =[
   '','A1 - Contrôle d\'accès défaillant','A2 - Défaillances cryptographiques','A3 - Injection','A4 - Conception non sécurisée','A5 - Mauvaise configuration de sécurité','A6 - Composants vulnérables et obsolètes','A7 - Identification et authentification de mauvaise qualité','A8 - Manque d\'intégrité des données et du logiciel','A9 - Carence des systèmes de contrôle et de journalisation','A10 - Falsification de requête côté serveur (SSRF)'];
+
+  /** Liste des menaces OWASP 2025 */
+  export const listeOwasp2025 =[
+  '','A01 : Contrôle d\'accès insuffisant','A02 : Erreur de configuration de sécurité','A03 : Défaillances de la chaîne d\'approvisionnement logicielle','A04 : Défaillances cryptographiques','A05 : Injection','A06 : Conception non sécurisée','A07 : Échecs d\'authentification','A08 : Défaillances d\'intégrité des logiciels ou des données','A09 : Échecs de journalisation et d\'alerte de sécurité','A10 : Mauvaise gestion des conditions exceptionnelles'];
