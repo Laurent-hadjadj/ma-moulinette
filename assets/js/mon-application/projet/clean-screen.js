@@ -14,7 +14,6 @@
   import $ from 'jquery';
 
   import {dateOptions} from '../../common/constante.js';
-  import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 
   /**
    * [Description for log]
@@ -46,7 +45,6 @@
   * @author     Laurent HADJADJ <laurent_h@me.com>
   */
   export const clean_screen = function(type) {
-    console.log('type', type);
   $('#nom-projet').text('').removeAttr('data-nom-projet');
   $('#key-analyse').text('').removeAttr('data-analyse-key');
   $('#clef-projet').text('').removeAttr('data-clef-projet');
