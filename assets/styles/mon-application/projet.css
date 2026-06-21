@@ -1,7 +1,7 @@
 /**
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -11,6 +11,170 @@
  */
 
 /* stylelint-disable selector-class-pattern */
+/**
+  * Propriétés pour les class en fonction des medias type
+  *
+  */
+
+/* Media Small */
+@media (width <= 20em) {
+  .label-langage { font-size: 0.8rem; }
+  .log { font-size: 0.8rem; }
+  .callout-information { width: 18rem; }
+  .stat-dette { font-size: 1.3rem; }
+  .stat-projet { font-size: 1.3rem; }
+  .stat-note { font-size: 1rem; }
+  .container-ligne { height: 1.3rem; }
+  .todo-svg,
+  .logger-svg,
+  .details-svg,
+  .projet-graphique-svg { max-width: 24px; }
+  .separate-ligne { margin-bottom: 0.6rem; }
+}
+
+/* Media Small */
+@media (20.025em <= width <= 22em) {
+  .label-langage { font-size: 1rem; }
+  .log { font-size: 0.8rem; }
+  .callout-information { width: 21rem; }
+  .stat-dette { font-size: 1.3rem; }
+  .stat-projet { font-size: 1.3rem; }
+  .stat-note { font-size: 1rem; }
+  .container-ligne { height: 1.3rem; }
+  .todo-svg,
+  .logger-svg,
+  .details-svg,
+  .projet-graphique-svg { max-width: 24px; }
+  .separate-ligne { margin-bottom: 0.6rem; }
+}
+
+/* Media Small */
+@media (22.025em <= width <= 30em) {
+  .label-langage { font-size: 1rem; }
+  .log { font-size: 0.8rem; }
+  .callout-information { width: 27rem; }
+  .stat-dette { font-size: 1.3rem; }
+  .stat-projet { font-size: 1.3rem; }
+  .stat-note { font-size: 1rem; }
+  .container-ligne { height: 1.3rem; }
+  .todo-svg,
+  .logger-svg,
+  .details-svg,
+  .projet-graphique-svg { max-width: 24px; }
+  .separate-ligne { margin-bottom: 0.6rem; }
+}
+
+/* Media Small */
+@media (30.025em <= width <= 40em) {
+  .label-langage { font-size: 1rem; }
+  .log { font-size: 0.9rem; }
+  .callout-information { width: 37rem; }
+  .stat-dette { font-size: 1.4rem; }
+  .stat-projet { font-size: 1.4rem; }
+  .stat-note { font-size: 1.2rem; }
+  .container-ligne { height: 1.3rem; }
+  .todo-svg,
+  .logger-svg,
+  .details-svg,
+  .projet-graphique-svg { max-width: 24px; }
+  .separate-ligne { margin-bottom: 0.6rem; }
+}
+
+/* MODIF 2026-05-17 : empilement vertical scoped au seul
+ * bloc information-générale (valeurs longues : UUID, nom de projet, clé Maven).
+ * Les autres blocs gardent flex-direction:row en small (label gauche, valeur droite).
+ * Spécificité supérieure (.callout-information-general .container-ligne) → pas de
+ * problème de cascade même si la règle vient avant les breakpoints medium+. */
+@media (width <= 40em) {
+  .callout-information-general .container-ligne {
+    flex-direction: column;
+    align-items: flex-start;
+    height: auto;
+    min-height: 2rem;
+  }
+  .callout-information-general .ligne-valeur {
+    align-self: flex-end;
+  }
+}
+
+/* Media Medium */
+@media (40.025em <= width <= 64em) {
+  .label-langage { font-size: 1.1rem; }
+  .log { font-size: 1rem; }
+  .callout-information { width: 30rem; }
+  .stat-dette { font-size: 1.6rem; }
+  .stat-projet { font-size: 1.6rem; }
+  .stat-note { font-size: 1.2rem; }
+  .container-ligne { flex-direction: row; align-items: baseline; height: 1.6rem; }
+  .todo-svg,
+  .logger-svg,
+  .details-svg,
+  .projet-graphique-svg { max-width: 28px; }
+  .separate-ligne { margin-bottom: 0.8rem; }
+}
+
+/* Media Large */
+@media (64.025em <= width <= 90em) {
+  .label-langage { font-size: 1.2rem; }
+  .log { font-size: 1rem; }
+  .callout-information { width: 24rem; }
+  .stat-dette { font-size: 1.5rem; }
+  .stat-projet { font-size: 1.8rem; }
+  .stat-note { font-size: 1.4rem; }
+  .container-ligne { flex-direction: row; align-items: baseline; height: 1.8rem; }
+  .todo-svg,
+  .logger-svg,
+  .details-svg,
+  .projet-graphique-svg { max-width: 32px; }
+  .separate-ligne { margin-bottom: 1rem; }
+}
+
+/* Media Large */
+@media (90.025em <= width <= 120em) {
+  .label-langage { font-size: 1.2rem; }
+  .log { font-size: 1rem; }
+  .callout-information { width: 29rem; }
+  .stat-dette { font-size: 1.6rem; }
+  .stat-projet { font-size: 1.8rem; }
+  .stat-note { font-size: 1.5rem; }
+  .container-ligne { flex-direction: row; align-items: baseline; height: 1.8rem; }
+  .todo-svg,
+  .logger-svg,
+  .details-svg,
+  .projet-graphique-svg { max-width: 32px; }
+  .separate-ligne { margin-bottom: 1rem; }
+}
+
+/* Media Extra-Large */
+@media (120.025em <= width <= 160em) {
+  .label-langage { font-size: 1.2rem; }
+  .log { font-size: 1.1rem; }
+  .callout-information { width: 30rem; }
+  .stat-dette { font-size: 1.6rem; }
+  .stat-projet { font-size: 2rem; }
+  .stat-note { font-size: 1.5rem; }
+  .container-ligne { flex-direction: row; align-items: baseline; height: 2rem; }
+  .todo-svg,
+  .logger-svg,
+  .details-svg,
+  .projet-graphique-svg { max-width: 32px; }
+  .separate-ligne { margin-bottom: 1rem; }
+}
+
+@media (width >= 160.025em) {
+  .label-langage { font-size: 1.2rem; }
+  .log { font-size: 1.1rem; }
+  .callout-information { width: 30rem; }
+  .stat-dette { font-size: 1.6rem; }
+  .stat-projet { font-size: 2rem; }
+  .stat-note { font-size: 1.5rem; }
+  .container-ligne { flex-direction: row; align-items: baseline; height: 2rem; }
+  .todo-svg,
+  .logger-svg,
+  .details-svg,
+  .projet-graphique-svg { max-width: 32px; }
+  .separate-ligne { margin-bottom: 1rem; }
+}
 
 /*************************          Global     *********************************/
 
@@ -24,10 +188,7 @@
 }
 
 /* Ligne de log */
-.log {
-  font-size: 1rem;
-  color: #000;
-}
+.log { color: #000; }
 
 /* Changement de la couleur WCAG */
 textarea[readonly] {
@@ -51,10 +212,63 @@ textarea[readonly] {
 .container-owasp,
 .container-repartition-module,
 .container-cosui,
-.container-tableau-de-bord {
+.container-tableau-de-bord,
+.container-dependency-check,
+.container-clean-code {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.container-ligne {
+  display: flex;
+  /* flex-direction et align-items sont gérés par les media queries :
+   * - small  → column (empilé) via les @media ≤ 40em ci-dessus
+   * - medium+ → row   (côte à côte) via les @media 40+em ci-dessus
+   * Ne PAS les déclarer ici : la base viendrait après les @media dans le fichier
+   * et écraserait les overrides small (cascade CSS, à spécificité égale = dernier gagne). */
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* Label textuel dans container-ligne (ex : "Nom :", "Analyse :") */
+.ligne-label {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+/* Groupe label + bouton sur la gauche d'un container-ligne */
+.ligne-gauche {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.ligne-droite {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.4rem;
+  flex-shrink: 0;
+}
+
+/* Valeur textuelle dans container-ligne (texte long, UUID, nom de projet…) */
+.ligne-valeur {
+  text-align: right;
+  overflow-wrap: break-word;
+  word-break: break-all;   /* UUID et clés Maven sans espace peuvent déborder */
+}
+
+/* On définit la taille de la note */
+.stat-note {
+    display: flex;
+    justify-content: space-around;
+}
+.stat-note-width { width: 3.5rem; }
+.stat-note-qg { width: 5rem; }
+
+.container-bloc {
+  display: flex;
+  justify-content: center;
 }
 
 /* =====  Boutons ===== */
@@ -73,7 +287,8 @@ textarea[readonly] {
 .tableau-de-bord-svg,
 .switch-svg,
 .cosui-svg,
-.owasp-svg { cursor: pointer; }
+.owasp-svg,
+.code-clean-svg { cursor: pointer; }
 
 .danger-svg,
 .gestion-de-projet-svg,
@@ -83,16 +298,22 @@ textarea[readonly] {
 .logger-svg,
 .favori-liste-svg { cursor: none; }
 
+/* Images SVG dynamiques Bleu */
+.todo-svg,
+.logger-svg,
+.details-svg,
+.projet-graphique-svg {
+    width: 100%;
+    height: auto;
+    fill: #00445b;
+}
+
 /* Images SVG 32px Bleu */
 .favori-svg,
-.projet-graphique-svg,
 .danger-svg,
 .gestion-de-projet-svg,
 .checklist-svg,
 .information-svg,
-.todo-svg,
-.logger-svg,
-.details-svg,
 .gomme-svg {
   width: 100%;
   height: auto;
@@ -132,7 +353,8 @@ textarea[readonly] {
 .enregistrement-svg,
 .tableau-de-bord-svg,
 .switch-svg,
-.cosui-svg {
+.cosui-svg,
+.code-clean-svg {
   fill: #fff;
   width: 100%;
   height: auto;
@@ -155,21 +377,20 @@ textarea[readonly] {
 #bouton-repartition-module,
 #bouton-tableau-de-bord,
 #bouton-cosui,
-#bouton-analyse-owasp {
+#bouton-analyse-owasp,
+#bouton-dependency-check,
+#bouton-ouvrir-clean-code {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-
   height: 3.5rem;
   padding: 0.8rem 1.2rem;
   border-radius: 0.375rem;
   font-size: 1rem;
-
   background-color: #00445b;
   color: #ffffff;
   text-decoration: none;
-
   transition: background-color 0.2s ease-in-out;
 }
 
@@ -179,7 +400,11 @@ textarea[readonly] {
 #bouton-fermer-dette-technique,
 #bouton-fermer-menace-potentielle,
 #bouton-fermer-liste-severity,
-#bouton-fermer-liste-projet {
+#bouton-fermer-liste-violations,
+#bouton-fermer-liste-projet,
+#bouton-fermer-liste-nosonar,
+#bouton-fermer-logger-detail,
+#bouton-fermer-logger-graphique {
   min-width: 9rem;
   font-size: 0.95rem;
   border-radius: 0.375rem;
@@ -198,13 +423,19 @@ textarea[readonly] {
 #bouton-tableau-de-bord:hover,
 #bouton-cosui:hover,
 #bouton-analyse-owasp:hover,
+#bouton-dependency-check:hover,
 #bouton-fermer-liste-todo:hover,
 #bouton-fermer-liste-logger:hover,
+#bouton-fermer-liste-violations:hover,
 #bouton-fermer-autre-version-graphique:hover,
 #bouton-fermer-dette-technique:hover,
 #bouton-fermer-menace-potentielle:hover,
 #bouton-fermer-liste-severity:hover,
-#bouton-fermer-liste-projet:hover { background-color: #006182; }
+#bouton-fermer-liste-projet:hover
+#bouton-fermer-liste-nosonar:hover,
+#bouton-ouvrir-clean-code:hover,
+#bouton-fermer-logger-detail:hover,
+#bouton-fermer-logger-graphique:hover { background-color: #006182; }
 
 /* select2 custom
  *  placeholder
@@ -327,23 +558,7 @@ textarea[readonly] {
   word-break: break-all; /* Coupe les mots qui dépassent */
 }
 
-/* Propriété de la ligne */
-.ligne {
-  margin: 0.1rem;
-  display: flex;
-  align-items: center;
-}
-
 .ligne-projet { margin: 0.1rem; }
-
-/* Taille pour les stats */
-.stat {
-  line-height: 0.9;
-  font-size: 2rem;
-}
-
-/* Taille pour les notes */
-.stat-note { font-size: 1.5rem; }
 
 /* Couleur pour la note A */
 .note-vert1 {
@@ -351,8 +566,6 @@ textarea[readonly] {
   color: #fff;
   border: solid 2px #00445b;
   border-radius: 0.2rem;
-  padding-left: 18px;
-  padding-right: 20px;
 }
 
 /* Couleur pour la note B */
@@ -361,8 +574,6 @@ textarea[readonly] {
   color: #fff;
   border: solid 1px #00445b;
   border-radius: 0.2rem;
-  padding-left: 20px;
-  padding-right: 20px;
 }
 
 /* Couleur pour la note C */
@@ -371,8 +582,6 @@ textarea[readonly] {
   color: #fff;
   border: solid 1px #00445b;
   border-radius: 0.2rem;
-  padding-left: 19px;
-  padding-right: 20px;
 }
 
 /* Couleur pour la note D */
@@ -381,8 +590,6 @@ textarea[readonly] {
   color: #fff;
   border: solid 1px #00445b;
   border-radius: 0.2rem;
-  padding-left: 19px;
-  padding-right: 19px;
 }
 
 /* Couleur pour la note E */
@@ -391,8 +598,6 @@ textarea[readonly] {
   color: #fff;
   border: solid 1px #00445b;
   border-radius: 0.2rem;
-  padding-left: 21px;
-  padding-right: 22px;
 }
 
 /* bouton actions pour la liste des projets */
@@ -552,64 +757,4 @@ canvas {
   content: "📉 ";
   font-size: 1.5rem;
   display: block;
-}
-
-/**
-  * Propriétés pour les class en fonction des medias type
-  *
-  */
-
-/* Media Small */
-@media (width <= 20em) {
-  .label-langage { font-size: 1rem; }
-  .log { font-size: 0.75rem; }
-  .callout-information { width: 21rem; }
-}
-
-/* Media Small */
-@media (20.025em <= width <= 22em) {
-  .label-langage { font-size: 1rem; }
-  .log { font-size: 0.8rem; }
-  .callout-information { width: 21rem; }
-}
-
-/* Media Small */
-@media (22.025em <= width <= 30em) {
-  .label-langage { font-size: 1rem; }
-  .callout-information { width: 27rem; }
-}
-
-/* Media Small */
-@media (30.025em <= width <= 40em) {
-  .label-langage { font-size: 1rem; }
-  .callout-information { width: 37rem; }
-}
-
-/* Media Medium */
-@media (40.025em <= width <= 64em) {
-  .label-langage { font-size: 1.1rem; }
-  .callout-information { width: 26rem; }
-}
-
-/* Media Large */
-@media (64.025em <= width <= 90em) {
-  .label-langage { font-size: 1.2rem; }
-  .callout-information { width: 26rem; }
-}
-
-/* Media Large */
-@media (90.025em <= width <= 120em) {
-  .label-langage { font-size: 1.2rem; }
-  .callout-information { width: 24rem; }
-}
-
-/* Media Extra-Large */
-@media (120.025em <= width <= 160em) {
-  .label-langage { font-size: 1.2rem; }
-  .callout-information { width: 24rem; }
-}
-
-@media (width >= 160.025em) {
-  .label-langage { font-size: 1.2rem; }
-  .callout-information { width: 24rem; }
 }
