@@ -1,7 +1,7 @@
 /**
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *
@@ -189,10 +189,10 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
 
   const r = await $.ajax(options);
   if (r.code !== http_200) {
-    showMessage('primary', `Les données ont été trouvées.`);
+    showMessage('info', `Les données ont été trouvées.`);
   }
   if (r.code === http_400) {
-    showMessage('alert', `La requête n'est pas conforme (Erreur 400).`);
+    showMessage('error', `La requête n'est pas conforme (Erreur 400).`);
     videLeTableau();
     return;
   }
@@ -204,7 +204,7 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
 
   /** On affiche la version et la date du projet dans SonarQube */
   const date_version = new Intl.DateTimeFormat('default', dateOptions).format(new Date(r.date_version));
-  $('#js-application-version').html(`<span class="color-noire open-sans">V${r.version}, (${date_version})</span>`);
+  $('#js-application-version').html(`V${r.version}, (${date_version})`);
 
   /** On affiche la version du référentiel */
   $('#owasp-version').html(`Référentiel OWASP Actuel : <span class="lead color-noir">${r.referential_owasp}</span>`);
@@ -497,8 +497,8 @@ const remplissageHotspotInfo = async function(maven_key, referential_owasp) {
 
   const r = await $.ajax(options);
   if (r.code===http_400) {
-    const message=`La requête n'est pas conforme (Erreur 400).`;
-    showMessage('alert', message);
+    const message = `La requête n'est pas conforme (Erreur 400).`;
+    showMessage('error', message);
     videLeTableau();
     return;
   }
@@ -584,8 +584,8 @@ const remplissageHotspotListe = async function(maven_key, referential_owasp) {
 
     const r = await $.ajax(options);
     if (r.code===http_400) {
-      const message=`La requête n'est pas conforme (Erreur 400).`;
-      showMessage('alert', message);
+      const message = `La requête n'est pas conforme (Erreur 400).`;
+      showMessage('error', message);
       videLeTableau();
       return;
     }
@@ -799,7 +799,7 @@ const remplissageHotspotDetails = async function(maven_key, referential_owasp) {
   const r =await  $.ajax(options)
   if (r.code === http_400) {
     const message = `La requête n'est pas conforme (Erreur 400).`;
-    showMessage('alert', message);
+    showMessage('error', message);
     videLeTableau();
     return;
   }
@@ -964,7 +964,7 @@ const remplissageDetailsHotspotOwasp = async function(maven_key, menace, titre) 
   const r = await $.ajax(options);
   if (r.code===http_400) {
     const message=`[Severity] La requête n'est pas conforme (Erreur 400) !`;
-    showMessage('alert', message);
+    showMessage('error', message);
     return;
   }
 
@@ -974,50 +974,18 @@ const remplissageDetailsHotspotOwasp = async function(maven_key, menace, titre) 
 
     if (x === 2017) {
       $('.details-titre').html(listeOwasp2017[titre]);
-    } else {
+    }
+    if (x === 2021) {
       $('.details-titre').html(listeOwasp2021[titre]);
+    }
+    if (x === 2025) {
+      $('.details-titre').html(listeOwasp2025[titre]);
     }
 
     $('#detail-haut').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.high));
     $('#detail-moyen').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.medium));
     $('#detail-faible').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.low));
 };
-
-$('.js-details').on('click', function () {
-  const id = $(this).attr('id').split('-');
-  const k_key=sessionStorage.getItem('ma_moulinette_projet');
-  if (id[1] === 'a1') {
-    remplissageDetailsHotspotOwasp(k_key, 'a1', un);
-  }
-  if (id[1] === 'a2') {
-    remplissageDetailsHotspotOwasp(k_key, 'a2', deux);
-  }
-  if (id[1] === 'a3') {
-    remplissageDetailsHotspotOwasp(k_key, 'a3', trois);
-  }
-  if (id[1] === 'a4') {
-    remplissageDetailsHotspotOwasp(k_key, 'a4', quatre);
-  }
-  if (id[1] === 'a5') {
-    remplissageDetailsHotspotOwasp(k_key, 'a5', cinq);
-  }
-  if (id[1] === 'a6') {
-    remplissageDetailsHotspotOwasp(k_key, 'a6', six);
-  }
-  if (id[1] === 'a7') {
-    remplissageDetailsHotspotOwasp(k_key, 'a7', sept);
-  }
-  if (id[1] === 'a8') {
-    remplissageDetailsHotspotOwasp(k_key, 'a8',huit);
-  }
-  if (id[1] === 'a9') {
-    remplissageDetailsHotspotOwasp(k_key, 'a9', neuf);
-  }
-  if (id[1] === 'a10') {
-    remplissageDetailsHotspotOwasp(k_key, 'a10', dix);
-  }
-  $('#details').foundation('open');
-});
 
   /**
    * [Description for selectAnalyseVersion]
@@ -1029,7 +997,7 @@ $('.js-details').on('click', function () {
    * @author     Laurent HADJADJ <laurent_h@me.com>
    * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
    */
-  const selectAnalyseVersion = function (referential_owasp) {
+  const selectAnalyseVersion = function (key, referential_owasp) {
     /** Affiche les vulnérabilités par criticité */
     remplissageOwaspInfo(key, referential_owasp);
     /** Affiche les hotspot par criticité */
@@ -1051,70 +1019,26 @@ $('.js-details').on('click', function () {
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
 const selectReferentialOwasp = function(version){
-  if (version === '2017') {
-    $('#owasp-2017').removeClass('hide');
-    $('#owasp-2021').addClass('hide');
-  } else if (version === '2021') {
-    $('#owasp-2017').addClass('hide');
-    $('#owasp-2021').removeClass('hide');
+  const $version_2017 = $('#owasp-2017');
+  const $version_2021 = $('#owasp-2021');
+  const $version_2025 = $('#owasp-2025');
+
+  if (version === "2017") {
+    if (!$version_2021.hasClass('display-off') === false) { $version_2021.addClass('display-off')}
+    if (!$version_2025.hasClass('display-off') === false) { $version_2025.addClass('display-off')}
+    $version_2017.removeClass('display-off');
+  }
+  if (version === "2021") {
+    if ($version_2017.hasClass('display-off') === false) { $version_2017.addClass('display-off')}
+    if ($version_2025.hasClass('display-off') === false) { $version_2025.addClass('display-off')}
+    $version_2021.removeClass('display-off');
+  }
+  if (version === "2025") {
+    if (!$version_2017.hasClass('display-off') === false) { $version_2017.addClass('display-off')}
+    if (!$version_2021.hasClass('display-off') === false) { $version_2021.addClass('display-off')}
+    $version_2025.removeClass('display-off');
   }
 }
-
-/*************** Main du programme **************/
-/** On récupère la clé du projet */
-const key = sessionStorage.getItem('ma_moulinette_projet');
-const projet = key.split(':');
-
-/** On met à jour la page */
-$('#js-application').html(projet[1]);
-
-/** On affiche le référentiel owasp le plus récent */
-$('#js-owasp-select').val('2021');
-$('#js-owasp-select').trigger('change');
-selectReferentialOwasp('2021');
-
-/** On appel les fonctions de remplissage pour la version OWASP.
- *  Fix 2026-05-03 : ligne `setItem(..., 2021)` parasite supprimée — elle
- *  écrasait la valeur 2017 juste après l'avoir posée → l'export PDF lisait
- *  systématiquement 2021 dans sessionStorage quel que soit le bouton cliqué. */
-$('#version-2017').on('click', ()=>{
-  sessionStorage.setItem('ma_moulinette_referential_owasp', 2017);
-  $('#version-2017').addClass('active');
-  $('#version-2021').removeClass('active');
-  if ($('#version-2017').hasClass('disable') === false){
-    selectAnalyseVersion('2017');
-  }
-});
-
-/** On gère les boutons d'affichage des résultats */
-$('#version-2021').on('click', ()=>{
-  if ($('#version-2021').hasClass('disable') === false){
-    $('#version-2017').removeClass('active');
-    $('#version-2021').addClass('active');
-    sessionStorage.setItem('ma_moulinette_referential_owasp', 2021);
-    selectAnalyseVersion('2021');
-  }
-});
-
-/** on gère le changement de référentiel */
-$('select[name="owasp"]').on('change', function () {
-  const version=$('select[name="owasp"]').val();
-  selectReferentialOwasp(version);
-});
-
-/** Export PDF : ouvre /owasp/rapport/pdf?maven_key=...&referential_owasp=...
- *  dans un nouvel onglet (rendu inline). Le serveur agrège les données via
- *  les repos Owasp / HotspotOwasp / HotspotDetails. */
-$('#js-export-owasp-pdf').on('click', () => {
-  const mavenKey = sessionStorage.getItem('ma_moulinette_projet');
-  const referential = sessionStorage.getItem('ma_moulinette_referential_owasp') || '2021';
-  if (!mavenKey) {
-    showMessage('warning', "Aucun projet sélectionné — impossible d'exporter le rapport.", null);
-    return;
-  }
-  const params = new URLSearchParams({ maven_key: mavenKey, referential_owasp: referential });
-  window.open(`${serveur()}/owasp/rapport/pdf?${params.toString()}`, '_blank');
-});
 
 /**
  * [Description for dessineMoiUneBarre]
@@ -1200,3 +1124,104 @@ const dessineMoiUneBarre = function (referential, data){
   });
 
 }
+
+/*************** Main du programme **************/
+/** On récupère la clé du projet */
+const maven_key = sessionStorage.getItem('ma_moulinette_projet');
+const projet = maven_key.split(':');
+
+/** On met à jour la page */
+$('#js-application').html(projet[1]);
+
+/** On appel les fonctions de remplissage pour la version OWASP.
+ *  Fix 2026-05-03 : ligne `setItem(..., 2021)` parasite supprimée — elle
+ *  écrasait la valeur 2017 juste après l'avoir posée → l'export PDF lisait
+ *  systématiquement 2021 dans sessionStorage quel que soit le bouton cliqué. */
+const $owasp_2017 = $('#bouton-choisir-owasp-2017');
+const $owasp_2021 = $('#bouton-choisir-owasp-2021');
+const $owasp_2025 = $('#bouton-choisir-owasp-2025');
+
+$owasp_2017.on('click', ()=>{
+  sessionStorage.setItem('ma_moulinette_referential_owasp', 2017);
+  $owasp_2017.addClass('active');
+  $owasp_2021.removeClass('active');
+  $owasp_2025.removeClass('active');
+  if ($owasp_2017.hasClass('disable') === false){
+    selectAnalyseVersion(maven_key, '2017');
+  }
+});
+
+$owasp_2021.on('click', ()=>{
+  sessionStorage.setItem('ma_moulinette_referential_owasp', 2021);
+  if ($owasp_2021.hasClass('disable') === false){
+    $owasp_2017.removeClass('active');
+    $owasp_2025.removeClass('active');
+    $owasp_2021.addClass('active');
+    selectAnalyseVersion(maven_key, '2021');
+  }
+});
+
+$owasp_2025.on('click', ()=>{
+  sessionStorage.setItem('ma_moulinette_referential_owasp', 2025);
+  if ($owasp_2025.hasClass('disable') === false){
+    $owasp_2017.removeClass('active');
+    $owasp_2021.removeClass('active');
+    $owasp_2025.addClass('active');
+    selectAnalyseVersion(maven_key, '2025');
+  }
+});
+
+$('select[name="owasp"]').on('change', function () {
+  const version = $('select[name="owasp"]').val();
+  selectReferentialOwasp(version);
+});
+
+/** Export PDF : ouvre /owasp/rapport/pdf?maven_key=...&referential_owasp=...
+ *  dans un nouvel onglet (rendu inline). Le serveur agrège les données via
+ *  les repos Owasp / HotspotOwasp / HotspotDetails. */
+$('#bouton-ouvrir-rapport-owasp').on('click', () => {
+  const mavenKey = sessionStorage.getItem('ma_moulinette_projet');
+  const referential = sessionStorage.getItem('ma_moulinette_referential_owasp') || '2025' ;
+  if (!mavenKey) {
+    showMessage('warning', "Aucun projet sélectionné — impossible d'exporter le rapport.", null);
+    return;
+  }
+  const params = new URLSearchParams({ maven_key: mavenKey, referential_owasp: referential });
+  window.open(`${serveur()}/owasp/rapport/pdf?${params.toString()}`, '_blank');
+});
+
+$('.js-details').on('click', function () {
+  const id = $(this).attr('id').split('-');
+  const k_key=sessionStorage.getItem('ma_moulinette_projet');
+  if (id[1] === 'a1') {
+    remplissageDetailsHotspotOwasp(k_key, 'a1', un);
+  }
+  if (id[1] === 'a2') {
+    remplissageDetailsHotspotOwasp(k_key, 'a2', deux);
+  }
+  if (id[1] === 'a3') {
+    remplissageDetailsHotspotOwasp(k_key, 'a3', trois);
+  }
+  if (id[1] === 'a4') {
+    remplissageDetailsHotspotOwasp(k_key, 'a4', quatre);
+  }
+  if (id[1] === 'a5') {
+    remplissageDetailsHotspotOwasp(k_key, 'a5', cinq);
+  }
+  if (id[1] === 'a6') {
+    remplissageDetailsHotspotOwasp(k_key, 'a6', six);
+  }
+  if (id[1] === 'a7') {
+    remplissageDetailsHotspotOwasp(k_key, 'a7', sept);
+  }
+  if (id[1] === 'a8') {
+    remplissageDetailsHotspotOwasp(k_key, 'a8',huit);
+  }
+  if (id[1] === 'a9') {
+    remplissageDetailsHotspotOwasp(k_key, 'a9', neuf);
+  }
+  if (id[1] === 'a10') {
+    remplissageDetailsHotspotOwasp(k_key, 'a10', dix);
+  }
+  $('#details').foundation('open');
+});
