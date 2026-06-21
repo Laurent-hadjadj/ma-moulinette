@@ -31,7 +31,7 @@ import '../../auth/details.js';
 
 /* On importe les paramètres serveur. */
 import {serveur} from '../../common/properties.js';
-import { showMessage, hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
+import { showMessage, hideMessage, prepareTechnicalDetails, escapeHtml } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
 import { content_type, dateOptionsShort, http_200 } from '../../common/constante.js';
@@ -321,8 +321,8 @@ const fillActivityTable = function(tableId, rows) {
   rows.forEach(row => {
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td>${row.portefeuille}</td>
-      <td>${row.utilisateur}</td>
+      <td>${escapeHtml(row.portefeuille)}</td>
+      <td>${escapeHtml(row.utilisateur)}</td>
       <td class="text-center">${row.nbProjets}</td>
       <td class="text-center">${row.tempsMoyen.toFixed(2)}</td>
       <td class="text-center">${row.memoireMoyenne.toFixed(2)}</td>
