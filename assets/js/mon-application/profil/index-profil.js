@@ -30,7 +30,7 @@ import '../../auth/details.js';
 import {serveur} from '../../common/properties.js';
 
 /** La gestion des messagesJS */
-import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
+import { showMessage,  hideMessage, prepareTechnicalDetails, escapeHtml } from '../../common/messageHelper.js';
 
 /** On importe les constantes */
 import { http_200, http_400, http_401, http_403, http_404, http_500, content_type, paletteCouleur, matrice, dateOptions, dateOptionsShort } from '../../common/constante.js';
@@ -260,7 +260,8 @@ const autreProfil = async function(langage) {
   const sousTitre = document.getElementById('js-nombre-profil');
   const tableBody = document.getElementById('js-contenu-autre-profil');
 
-  titre.innerHTML = `<span aria-hidden="true">🧑‍💻</span>Profils ${langage}`;
+  const safeLangage = escapeHtml(langage);
+  titre.innerHTML = `<span aria-hidden="true">🧑‍💻</span>Profils ${safeLangage}`;
   sousTitre.innerHTML = nombreProfils === 1
     ? `<span aria-hidden="true">📋</span>Il y a 1 profil disponible dans SonarQube`
     : `<span aria-hidden="true">📋</span>Il y a ${nombreProfils} profils disponibles dans SonarQube`;
@@ -271,7 +272,7 @@ const autreProfil = async function(langage) {
     str += `
       <tr class="open-sans">
         <td></td>
-        <td class="text-left">${profil.profil}</td>
+        <td class="text-left">${escapeHtml(profil.profil)}</td>
         <td class="text-center">${new Intl.NumberFormat('fr-FR').format(profil.rule)}</td>
         <td class="text-center">
           <span class="show-for-small-only">${new Intl.DateTimeFormat('fr-FR', dateOptionsShort).format(new Date(profil.date))}</span>
