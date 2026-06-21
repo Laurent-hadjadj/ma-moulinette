@@ -17,13 +17,13 @@ window.$ = $;
 import { http_200, http_400, http_500, un, content_type } from '../common/constante.js';
 
 /* On importe les paramètres serveur. */
-import {serveur} from '../common/properties.js';
+import { serveur } from '../common/properties.js';
 
 /** La gestion des messagesJS */
 import { showMessage, prepareTechnicalDetails } from '../common/messageHelper.js';
 
-/** Gestion des modales zurb fundation compatible WCAG  */
-import { ModalSafe } from '../common/safeModal.js';
+/** Gestion des modales zurb foundation compatible WCAG  */
+import { modalSafe } from '../common/safeModal.js';
 
 // Initialisation de l'état du switch à l'ouverture
 const mon_switch_password = $('#js-reset-password');
@@ -45,7 +45,7 @@ $('#js-reset-password').on('click', function () {
   let data = {}, reset_password = 0;
 
   /** On efface les messages */
-  $('#reset-password-message').html('');
+  $('#mise-a-jour-message').html('');
 
   const oui_non = $('#js-reset-password').is(':checked');
 
@@ -61,7 +61,7 @@ $('#js-reset-password').on('click', function () {
 
   /** On prépare les paramètres pour l'appel de l'API */
   const options = {
-      url:  serveur()+`/api/secure/mot-de-passe/mise-a-jour`,
+      url:  serveur() + `/api/secure/mot-de-passe/mise-a-jour`,
       method: 'POST',
       dataType: 'json',
       data: JSON.stringify(data),
@@ -73,9 +73,9 @@ $('#js-reset-password').on('click', function () {
   };
 
   try {
-      const t = $.ajax(options);
-      if (Number(t.code) === http_400 || Number(t.code) === http_500){
-        $('#reset-password-message').html(t.message)
+    const t = $.ajax(options);
+    if (Number(t.code) === http_400 || Number(t.code) === http_500){
+        $('#mise-a-jour-message').html(t.message)
         return;
       }
       const r = document.getElementById('js-reset-password');
@@ -83,9 +83,9 @@ $('#js-reset-password').on('click', function () {
 
       const message = '<span class="open-sans color-rouge">📌Vous devez vous reconnecter pour changer votre mot de passe.</span>';
       if (reset_password===1) {
-        $('#reset-password-message').html(message);
+        $('#mise-a-jour-message').html(message);
       } else {
-        $('#reset-password-message').html('');
+        $('#mise-a-jour-message').html('');
       }
     } catch(error) {
     const trace = prepareTechnicalDetails(error);
@@ -106,83 +106,75 @@ $('#js-reset-password').on('click', function () {
 const changeMe = async function(avatar){
   const data = { avatar };
   const options = {
-      url:  serveur()+`/api/secure/utilisateur/change-me`,
-      method: 'POST',
-      dataType: 'json',
-      data: JSON.stringify(data),
-      contentType,
-      headers: {
-        'X-API-Custom-403': 'true',
-        'X-Internal-Front': 'front-app'
-      },
+    url: serveur() + `/api/secure/utilisateur/change-me`,
+    method: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
   };
 
   try {
-        const t = await $.ajax(options);
+    const t = $.ajax(options);
 
-        if (t.code !== http_200){
-            const hasTrace = !!t.trace;
-            const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
-            showMessage(t.type, t.message, trace);
-            ModalSafe.close('#mes-avatars');
-            ModalSafe.open('#modal-information-utilisateur');
-            return;
-        }
-        showMessage('info', t.message, null);
-        ModalSafe.close('#mes-avatars');
-        ModalSafe.open('#modal-information-utilisateur');
-  } catch (erreur) {
-        if (typeof error === 'object') {
-                  sessionStorage.setItem('ma_moulinette_error', `Erreur inattendue : ${JSON.stringify(erreur, null, 2)}`);
-          } else {
-                  sessionStorage.setItem('ma_moulinette_error', `Erreur inattendue : ${erreur}`);
-          }
+    if (t.code !== http_200){
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      modalSafe.close('#mes-avatars');
+      modalSafe.open('#modal-information-utilisateur');
+      return;
+    }
+    showMessage('info', t.message, null);
+    modalSafe.close('#mes-avatars');
+    modalSafe.open('#modal-information-utilisateur');
+  } catch (error) {
+    if (typeof error === 'object') {
+      sessionStorage.setItem('ma_moulinette_error', `Erreur inattendue : ${JSON.stringify(error, null, 2)}`);
+    } else {
+      sessionStorage.setItem('ma_moulinette_error', `Erreur inattendue : ${error}`);
+    }
 
-        // Gestion d'erreurs génériques
-        const message = `Une erreur inattendue est survenue (Erreur 500).`;
-        showMessage(t.type, t.message, trace);
-            ModalSafe.close('#mes-avatars');
-            ModalSafe.open('#modal-information-utilisateur');
+    // Gestion d'erreurs génériques
+    const message = `Une erreur inattendue est survenue (Erreur 500).`;
+    showMessage(t.type, t.message, trace);
+    modalSafe.close('#mes-avatars');
+    modalSafe.open('#modal-information-utilisateur');
 
-        const trace = prepareTechnicalDetails(erreur);
-        showMessage('critical', message, trace);
-        ModalSafe.close('#mes-avatars');
-        ModalSafe.open('#modal-information-utilisateur');
-        return;
+    const trace = prepareTechnicalDetails(erreur);
+    showMessage('critical', message, trace);
+    modalSafe.close('#mes-avatars');
+    modalSafe.open('#modal-information-utilisateur');
+    return;
   }
 }
 
-/** On efface les messages */
-$('#mise-a-jour-message').html('');
-
-/** On ouvre la modale utilisateur */
-$('#container-information-user').on('click', function () {
-    ModalSafe.open('#modal-information-utilisateur');
-});
-
 /** On ouvre la modale utilisateur */
 $('#bouton-changer-avatar').on('click', function () {
-    ModalSafe.open('#mes-avatars');
+  modalSafe.open('#mes-avatars');
 });
 
 /** On ferme proprement la modale */
 $('#bouton-fermer-information-utilisateur').on('click', function () {
-    ModalSafe.close('#modal-information-utilisateur');
+  modalSafe.close('#modal-information-utilisateur');
 });
 
 /** Validation du choix de l'avatar */
 $('.thumbnail').on('click', function(){
-    const id = $(this).attr('id');
-    const theme = $(`#${id}`).data('theme');
-    const image = $(`#${id}`).data('image');
-    const src = $(`#${id}`).attr('src');
-    const assets = `${theme}/${image}`;
+  const id = $(this).attr('id');
+  const theme = $(`#${id}`).data('theme');
+  const image = $(`#${id}`).data('image');
+  const src = $(`#${id}`).attr('src');
+  const assets = `${theme}/${image}`;
 
-    $('#ajouter-mon-avatar').prop('src', src);
-    const data = document.getElementById('ajouter-mon-avatar');
-    data.dataset.theme = theme;
-    data.dataset.image = image;
-    $('#registration_form_avatar').val(assets);
+  $('#ajouter-mon-avatar').prop('src', src);
+  const data = document.getElementById('ajouter-mon-avatar');
+  data.dataset.theme = theme;
+  data.dataset.image = image;
+  $('#registration_form_avatar').val(assets);
 
-    const t = changeMe(assets);
-  });
+  const t = changeMe(assets);
+});
