@@ -15,13 +15,13 @@
  *
  * @param string str
  *
- * @return [type]
+ * @return string
  *
  * Created at: 23/02/2024 14:47:06 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-export const encode=function(str) {
+export const encode = function(str) {
   return str.replace(/[A-Za-z]/g, (char) => {
     const code = char.charCodeAt(0);
     const base = char >= 'a' ? 'a'.charCodeAt(0) : 'A'.charCodeAt(0);
