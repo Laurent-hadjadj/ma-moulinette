@@ -1,7 +1,7 @@
 /**
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -10,33 +10,13 @@
  *
  */
 
-@media (width <= 20em) {
-  .fermer-comparaison-owasp {
-    position: fixed;
-    bottom: 1rem;
-  }
-}
+@media (width <= 20em) { /* vide */ }
 
-@media (20.025em <= width <= 22em) {
-  .fermer-comparaison-owasp {
-    position: fixed;
-    bottom: 1rem;
-  }
-}
+@media (20.025em <= width <= 22em) { /* vide */ }
 
-@media (22.025em <= width <= 30em) {
-  .fermer-comparaison-owasp {
-    position: fixed;
-    bottom: 1rem;
-  }
-}
+@media (22.025em <= width <= 30em) { /* vide */ }
 
-@media (30.025em <= width <= 40em) {
-  .fermer-comparaison-owasp {
-    position: fixed;
-    bottom: 1rem;
-  }
-}
+@media (30.025em <= width <= 40em) { /* vide */ }
 
 @media (40.025em <= width <= 64em) { /* vide */ }
 
@@ -115,17 +95,6 @@
   font-weight: normal;
 }
 
-/* comparaison des référentiel OWASP */
-.button-comparaison,
-.fermer-comparaison-owasp {
-  color:#fff;
-  background-color: #00445b;
-  border-radius: 0.2rem;
-}
-
-.button-comparaison:hover,
-.fermer-comparaison-owasp:hover { background-color: #f34d4d; }
-
 /* Styles pour le diagramme circulaire */
 #owasp-pie-chart-container {
   width: 100%;
@@ -147,48 +116,6 @@
 
 /* a supprimer dans la prochaine version */
 .badge-rouge { margin-bottom: -10px; }
-
-/* masque le référentiel OWASP */
-
-.hide { display: none; }
-
-.accordion-menu .is-accordion-submenu-parent:not(.has-submenu-toggle) > a::after {
-  border-color: #00445b;
-}
-
-/* menu référentiel-owasp */
-.referential-owasp-menu {
-  background-color: white;
-  border-radius: 5px;
-  margin-top: 0.5rem;
-}
-
-.referential-owasp-titre {
-  color: #000;
-  font-weight: 700;
-}
-
-.referential-owasp-titre:hover {
-  color: #c45d4e;
-  font-weight: 800;
-}
-
-.referential-owasp-titre:focus {
-  color: #c45d4e;
-  font-weight: 800;
-}
-
-.bouton-affiche-details {
-  margin-left: 2rem;
-  margin-right: 2rem;
-  cursor: pointer;
-  border: none;
-  background-color: #00445b;
-  color: white;
-  border-radius: 5px;
-}
-
-.bouton-affiche-details:hover { background-color: #f34d4d; }
 
 /* Liste des hotspot */
 .component { word-break: break-all; }
@@ -240,25 +167,75 @@
   padding-right: 30px;
 }
 
-/* Gestion de du bouton de version Owasp */
-.version-button {
-  padding: 10px 20px;
-  margin: 5px;
-  cursor: pointer;
-  border: none;
+/* ========= gestion des bouton ============ */
+#bouton-choisir-owasp-2017,
+#bouton-choisir-owasp-2021,
+#bouton-choisir-owasp-2025,
+#bouton-ouvrir-rapport-owasp,
+#bouton-ouvrir-comparaison-owasp,
+#bouton-fermer-comparaison-owasp,
+#bouton-ouvrir-details,
+#bouton-ouvrir-rapport-dependency-check,
+#bouton-retour-precedent {
+  min-width: 9rem;
+  font-size: 0.95rem;
+  border-radius: 0.375rem;
+  margin: 0 0.25rem 0.5rem 0.25rem;
+  padding: 0.8rem 0.6rem;
+  color: #fff;
+  text-align: center;
   background-color: #00445b;
-  color: white;
-  border-radius: 5px;
+  cursor: pointer;
 }
 
-.version-button.active { background-color: #0056b3; }
-.version-button.disable {
+#bouton-choisir-owasp-2017.disable,
+#bouton-choisir-owasp-2021.disable,
+#bouton-choisir-owasp-2025.disable {
   background-color: #333;
   cursor: not-allowed;
 }
 
-.version-button.disable:hover { background-color: #333!important; }
-.version-button:hover { background-color: #c45d4e; }
+#bouton-choisir-owasp-2017:hover,
+#bouton-choisir-owasp-2021:hover,
+#bouton-choisir-owasp-2025:hover,
+#bouton-ouvrir-rapport-owasp:hover,
+#bouton-ouvrir-comparaison-owasp:hover,
+#bouton-fermer-comparaison-owasp:hover,
+#bouton-ouvrir-details:hover,
+#bouton-ouvrir-rapport-dependency-check:hover,
+#bouton-retour-precedent:hover { background-color: #006182; }
+
+#bouton-choisir-owasp-2017.disable:hover,
+#bouton-choisir-owasp-2021.disable:hover,
+#bouton-choisir-owasp-2025.disable:hover { background-color: #333!important; }
+
+/* ================ Documentation OWASP ================ */
+.accordion-menu .is-accordion-submenu-parent:not(.has-submenu-toggle) > a::after {
+  border-color: #00445b;
+}
+
+/* menu référentiel-owasp */
+.referential-owasp-menu {
+  background-color: white;
+  border-radius: 5px;
+  margin-top: 0.5rem;
+}
+
+.referential-owasp-titre {
+  color: #000;
+  font-weight: 700;
+}
+
+.referential-owasp-titre:hover {
+  color: #c45d4e;
+  font-weight: 800;
+}
+
+.referential-owasp-titre:focus {
+  color: #c45d4e;
+  font-weight: 800;
+}
+.display-off { display: none }
 
 .container-detail-titre {
   display: flex;
