@@ -1,7 +1,7 @@
 /**
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -60,7 +60,7 @@ const sonarIsUp = async function() {
   if ($('#bouton-mise-a-jour-referential').hasClass('bouton-disabled')){
     return { code: http_401 };
   }
-  console.log(token);
+
   const options = {
     url: `${serveur()}/api/secure/status`,
     type: 'POST',
@@ -249,6 +249,11 @@ $('.tableau-de-board-svg').on('click', function(e) {
   if (mavenKey !== ''){
     window.location.href = `/suivi/set?maven_key=${mavenKey}`;
     } else {
-      sessionStorage.set('ma_moulinette_accueil_error', "La clé maven n'est pas correcte !! !");
+      sessionStorage.setItem('ma_moulinette_accueil_error', "La clé maven n'est pas correcte !! !");
   }
 });
+
+/** On ajoute la version du serveur SonarQube dans la sessionStorage pour être utilisé par le JS */
+const element = document.getElementById("version-sonar");
+const version_sonar = element.dataset.versionSonar ?? "8";
+sessionStorage.setItem('ma_moulinette_version_sonar', version_sonar);
