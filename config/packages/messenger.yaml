@@ -1,4 +1,6 @@
 ---
+# MODIF 2026-05-24 : suppression de activity_queue et du routing
+# ProcessTaskMessage — la collecte Activity est migrée vers ActivityCollecteCommand.
 framework:
     messenger:
         failure_transport: failed
@@ -6,11 +8,7 @@ framework:
             async: '%env(MESSENGER_TRANSPORT_DSN)%'
             failed: 'doctrine://default?queue_name=failed'
             sync: 'sync://'
-            activity_queue:
-                dsn: 'doctrine://default?queue_name=activity_queue'
-                options: {}
-        routing:
-            'App\Message\ProcessTaskMessage': activity_queue
+        routing: {}
 
 when@test:
     framework:
