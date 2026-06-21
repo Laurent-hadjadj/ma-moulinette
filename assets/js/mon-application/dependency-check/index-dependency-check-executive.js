@@ -32,6 +32,7 @@ import 'foundation-sites';
 import 'motion-ui';
 
 import '../../common/foundation.js';
+import '../../common/messageHelper';
 
 /** Chart.js + plugin datalabels (alignement avec les autres pages chart) */
 import { Chart, registerables } from 'chart.js';
@@ -53,11 +54,15 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!dataNode) {
     return;
   }
+
   let data;
   try {
     data = JSON.parse(dataNode.textContent || '{}');
-  } catch (err) {
-    console.error('[DC executive] dataset JSON parse error', err);
+  } catch (error) {
+    const trace = prepareTechnicalDetails(error);
+    const message = '[DC executive] dataset JSON parse error';
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_error', message);
     return;
   }
 

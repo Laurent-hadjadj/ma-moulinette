@@ -54,8 +54,9 @@ $(function () {
     data = JSON.parse(dataElement.textContent);
   } catch (error) {
     const trace = prepareTechnicalDetails(error);
-    showMessage('critical', '[DC KPI] JSON parse error', trace);
-    sessionStorage.setItem('ma_moulinette_error', '[DC KPI] JSON parse error...');
+    const message = '[DC KPI] JSON parse error';
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_error', message);
     return;
   }
 

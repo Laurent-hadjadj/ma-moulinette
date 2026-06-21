@@ -31,6 +31,7 @@ import 'foundation-sites';
 import 'motion-ui';
 
 import '../../common/foundation.js';
+import '../../common/messageHelper';
 
 import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
@@ -51,8 +52,11 @@ $(function () {
   let data;
   try {
     data = JSON.parse(dataElement.textContent);
-  } catch (e) {
-    console.error('[DC History] JSON parse error', e);
+  } catch (error) {
+    const trace = prepareTechnicalDetails(error);
+    const message = '[DC History] JSON parse error';
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_error', message);
     return;
   }
 

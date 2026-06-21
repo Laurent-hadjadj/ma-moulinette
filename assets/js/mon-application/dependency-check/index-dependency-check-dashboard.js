@@ -36,6 +36,7 @@ import 'foundation-sites';
 import 'motion-ui';
 
 import '../../common/foundation.js';
+import '../../common/messageHelper';
 
 /** MODIF 2026-05-16 : DataTables pour la cartographie projets. */
 import DataTable from 'datatables.net-zf'; //NOSONAR
@@ -139,8 +140,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let data;
   try {
     data = JSON.parse(dataNode.textContent || '{}');
-  } catch (err) {
-    console.error('[DC dashboard] dataset JSON parse error', err);
+  } catch (error) {
+    const trace = prepareTechnicalDetails(error);
+    const message = '[DC dashboard] dataset JSON parse error';
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_error', message);
     return;
   }
 
