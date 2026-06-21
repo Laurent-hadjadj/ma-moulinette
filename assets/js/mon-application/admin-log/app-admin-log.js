@@ -1,7 +1,7 @@
 /**
  *  Ma-Moulinette
  *  --------------
- *  Copyright © 2015-2025.
+ *  Copyright © 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -144,6 +144,8 @@ import { showMessage, hideMessage, prepareTechnicalDetails } from '../../common/
             const tbody = $('#logs-table tbody');
             tbody.empty();
 
+            $('#logs-loading').addClass('hide');
+
             if (!t.count) {
                 tbody.append(`
                     <tr>
@@ -179,9 +181,8 @@ import { showMessage, hideMessage, prepareTechnicalDetails } from '../../common/
             $('#logs-loading').addClass('hide');
             // Gestion d'erreurs génériques
             const trace = prepareTechnicalDetails(error);
-            const message = `Une erreur inattendue a interrompu l'affichage des journaux (Erreur 500).`
+            const message = `Une erreur inattendue a interrompu l'affichage des journaux (Erreur 500).`;
             showMessage('critical', message, trace);
-            $('#logs-loading').addClass('hide');
         }
     }
 
