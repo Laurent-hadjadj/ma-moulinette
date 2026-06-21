@@ -1,6 +1,13 @@
 ---
+# MODIF 2026-05-12 : timezone
+# par défaut des filtres date|date(...) alignée sur Europe/Paris pour
+# coherence avec la timezone Postgres (Paris) et la convention projet.
+# Avant : Twig rendait les dates en UTC (décalage 1h ou 2h selon saison
+# avec les snapshots SQL et la lecture humaine du rapport CI).
 twig:
     default_path: '%kernel.project_dir%/templates'
+    date:
+        timezone: Europe/Paris
 
 when@test:
     twig:
