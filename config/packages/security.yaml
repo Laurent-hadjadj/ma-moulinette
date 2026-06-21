@@ -11,6 +11,11 @@ security:
         ROLE_SUIVI: ['ROLE_UTILISATEUR']
         ROLE_BATCH: ['ROLE_UTILISATEUR']
         ROLE_ACTUATOR: ['ROLE_UTILISATEUR']
+        ROLE_SECURITY: ['ROLE_UTILISATEUR']
+        # MODIF 2026-05-11 : ROLE_SECURITY_ANALYTICS
+        # débloque la vue org-wide du dashboard DC pour les profils transverses
+        # (RSSI, équipe sécu, chef de projet, top management).
+        ROLE_SECURITY_ANALYTICS: ['ROLE_SECURITY']
         ROLE_GESTIONNAIRE: ['ROLE_UTILISATEUR']
         ROLE_INTERNAL: ['ROLE_GESTIONNAIRE']
 
@@ -77,6 +82,10 @@ security:
     access_control:
         # API
         - { path: ^/api/public/, roles: PUBLIC_ACCESS }
+        # MODIF 2026-05-08 : endpoints OWASP DependencyCheck appelés par
+        # la CI GitLab (machine-to-machine). Pas de session utilisateur, l'auth se fait
+        # via DependencyCheckTokenSubscriber avec un bearer token dédié.
+        - { path: ^/api/secure/dependency-check/, roles: PUBLIC_ACCESS }
         - { path: ^/api/secure/, roles: ROLE_UTILISATEUR }
 
         # Web (public)
@@ -88,8 +97,7 @@ security:
         - { path: ^/donnees-personnelles, roles: PUBLIC_ACCESS }
 
         # Web (privé)
-        - { path: ^/admin/logs, roles: ROLE_INTERNAL }
-        - { path: ^/admin, roles: ROLE_GESTIONNAIRE }
+        - { path: ^/admin, roles: ROLE_UTILISATEUR }
         - { path: ^/, roles: ROLE_UTILISATEUR }
 
 when@test:
