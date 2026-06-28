@@ -1,8 +1,8 @@
 /*
 ####################################################
 ##                                                ##
-##           Create TABLES                        ##
-##           V2.2.0 - 26/04/2026                  ##
+##           Create INDEXES                       ##
+##           V2.6.0 - 09/06/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -15,12 +15,15 @@
 --- 2026-04-26 : Correction de la colonne date en date_analyse de la table information_projet
 --- 2026-04-26 : Suppression des indexes de la tables notes
 --- 2026-04-26 : Ajout des indexes pour user_role_log
-
-
-
+--- 2026-05-03 : Correction du titre d'en-tête (était "Create TABLES").
+--- 2026-05-05 : Suppression des index pour user_analysis et user_event (user_agent)
+--- 2026-05-08 : Ajout des commentaires (partielles) pour les tables dc_cve, dc_dependency, dc_finding, dc_processing_queue, dc_scan
+--- 2026-05-14 : Ajout des indexes pour dc_scan (projet, récents, latest_overall/release)
+--- 2026-05-17 : Ajout des indexes pour clean_code
+--- 2026-06-09 : Réintégration des indexes user_agent_event et user_agent_analysis (schéma ma_moulinette)
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
-\c ma_moulinette db_user
+\c ma_moulinette postgres;
 
 -- activity_batch_report
 CREATE INDEX IF NOT EXISTS idx_activity_batch_report_date_enr ON ma_moulinette.activity_batch_report (date_enregistrement ASC NULLS LAST);
@@ -82,6 +85,10 @@ CREATE INDEX IF NOT EXISTS idx_batch_traitement_id ON ma_moulinette.batch(traite
 CREATE INDEX IF NOT EXISTS idx_batch_date_enregistrement ON ma_moulinette.batch(date_enregistrement);
 CREATE INDEX IF NOT EXISTS idx_batch_activated ON ma_moulinette.batch(activated);
 
+-- clean_code — MODIF 2026-05-17
+CREATE INDEX IF NOT EXISTS idx_clean_code_maven_key ON ma_moulinette.clean_code (maven_key);
+CREATE INDEX IF NOT EXISTS idx_clean_code_date ON ma_moulinette.clean_code (date_enregistrement);
+
 -- groupe utilisateur
 CREATE INDEX IF NOT EXISTS idx_groupe_groupe_utilisateur ON ma_moulinette.groupe_utilisateur (groupe_utilisateur);
 CREATE INDEX IF NOT EXISTS idx_groupe_id ON ma_moulinette.groupe_utilisateur (groupe_id);
@@ -126,6 +133,12 @@ CREATE INDEX IF NOT EXISTS idx_liste_projet_date ON ma_moulinette.liste_projet (
 -- logger
 CREATE INDEX IF NOT EXISTS idx_logger_maven_key ON ma_moulinette.logger (maven_key);
 CREATE INDEX IF NOT EXISTS idx_logger_date ON ma_moulinette.logger (date_enregistrement);
+
+-- logger_detail
+
+CREATE INDEX IF NOT EXISTS idx_logger_details_maven_key  ON ma_moulinette.logger_details (maven_key);
+CREATE INDEX IF NOT EXISTS idx_logger_details_level      ON ma_moulinette.logger_details (level);
+CREATE INDEX IF NOT EXISTS idx_logger_details_framework  ON ma_moulinette.logger_details (framework);
 
 -- ma_moulinette
 CREATE INDEX IF NOT EXISTS idx_ma_moulinette_version ON ma_moulinette.ma_moulinette (version);
@@ -196,26 +209,64 @@ CREATE INDEX IF NOT EXISTS idx_user_role_log_user_email ON ma_moulinette.user_ro
 CREATE INDEX IF NOT EXISTS idx_user_role_log_editor_email ON ma_moulinette.user_role_log (editor_email);
 CREATE INDEX IF NOT EXISTS idx_user_role_log_created_at ON ma_moulinette.user_role_log (created_at);
 
+-- MODIF 2026-06-09 : indexes user_agent_event et user_agent_analysis
+-- user_agent_event
+CREATE INDEX IF NOT EXISTS idx_event_processing_status ON ma_moulinette.user_agent_event (processing_status);
+CREATE INDEX IF NOT EXISTS idx_event_type              ON ma_moulinette.user_agent_event (event_type);
+CREATE INDEX IF NOT EXISTS idx_event_created_at        ON ma_moulinette.user_agent_event (created_at);
+CREATE INDEX IF NOT EXISTS idx_event_user_id           ON ma_moulinette.user_agent_event (user_id);
+CREATE INDEX IF NOT EXISTS idx_event_session_id        ON ma_moulinette.user_agent_event (session_id);
+CREATE INDEX IF NOT EXISTS idx_event_visitor_id        ON ma_moulinette.user_agent_event (visitor_id);
+
 -- user_agent_analysis
+CREATE INDEX IF NOT EXISTS idx_analysis_device_type  ON ma_moulinette.user_agent_analysis (device_type);
+CREATE INDEX IF NOT EXISTS idx_analysis_os_name      ON ma_moulinette.user_agent_analysis (os_name);
+CREATE INDEX IF NOT EXISTS idx_analysis_browser_name ON ma_moulinette.user_agent_analysis (browser_name);
+CREATE INDEX IF NOT EXISTS idx_analysis_is_bot       ON ma_moulinette.user_agent_analysis (is_bot);
+CREATE INDEX IF NOT EXISTS idx_analysis_created_at   ON ma_moulinette.user_agent_analysis (created_at);
+CREATE INDEX IF NOT EXISTS idx_analysis_event_type   ON ma_moulinette.user_agent_analysis (event_type);
+CREATE INDEX IF NOT EXISTS idx_analysis_session_id   ON ma_moulinette.user_agent_analysis (session_id);
+CREATE INDEX IF NOT EXISTS idx_analysis_visitor_id   ON ma_moulinette.user_agent_analysis (visitor_id);
+CREATE INDEX IF NOT EXISTS idx_analysis_user_id      ON ma_moulinette.user_agent_analysis (user_id);
 
-CREATE INDEX IF NOT EXISTS idx_analysis_device_type ON ma_moulinette.user_agent_analysis(device_type);
-CREATE INDEX IF NOT EXISTS idx_analysis_os_name ON ma_moulinette.user_agent_analysis(os_name);
-CREATE INDEX IF NOT EXISTS idx_analysis_browser_name ON ma_moulinette.user_agent_analysis(browser_name);
-CREATE INDEX IF NOT EXISTS idx_analysis_is_bot ON ma_moulinette.user_agent_analysis(is_bot);
-CREATE INDEX IF NOT EXISTS idx_analysis_created_at ON ma_moulinette.user_agent_analysis(created_at);
-CREATE INDEX IF NOT EXISTS idx_analysis_event_type ON ma_moulinette.user_agent_analysis(event_type);
-CREATE INDEX IF NOT EXISTS idx_analysis_session_id ON ma_moulinette.user_agent_analysis(session_id);
-CREATE INDEX IF NOT EXISTS idx_analysis_visitor_id ON ma_moulinette.user_agent_analysis(visitor_id);
-CREATE INDEX IF NOT EXISTS idx_analysis_user_id ON ma_moulinette.user_agent_analysis(user_id);
+-- dc_cve :
+-- Index pour vues agrégées par severity
+-- Index GIN sur cwes pour requêtes "contains 'CWE-400'"
+CREATE INDEX  IF NOT EXISTS idx_dc_cve_severity ON ma_moulinette.dc_cve(severity);
+CREATE INDEX  IF NOT EXISTS idx_dc_cve_cwes ON ma_moulinette.dc_cve USING GIN (cwes);
 
---- user_agent_event
+-- dc_dependency : Index pour les recherches usuelles
+CREATE INDEX IF NOT EXISTS idx_dc_dependency_pkg ON ma_moulinette.dc_dependency(pkg_coordinates);
+CREATE INDEX IF NOT EXISTS idx_dc_dependency_vendor_product ON ma_moulinette.dc_dependency(vendor, product);
+CREATE INDEX IF NOT EXISTS idx_dc_dependency_filename ON ma_moulinette.dc_dependency(file_name);
 
-CREATE INDEX IF NOT EXISTS idx_event_processing_status ON ma_moulinette.user_agent_event(processing_status);
-CREATE INDEX IF NOT EXISTS idx_event_type ON ma_moulinette.user_agent_event(event_type);
-CREATE INDEX IF NOT EXISTS idx_event_created_at_idx ON ma_moulinette.user_agent_event(created_at);
-CREATE INDEX IF NOT EXISTS idx_event_user_id ON ma_moulinette.user_agent_event(user_id);
-CREATE INDEX IF NOT EXISTS idx_event_session_id ON ma_moulinette.user_agent_event(session_id);
-CREATE INDEX IF NOT EXISTS idx_event_visitor_id ON ma_moulinette.user_agent_event(visitor_id);
+-- dc_finding : Index pour les vues croisées
+CREATE INDEX IF NOT EXISTS idx_dc_finding_scan ON ma_moulinette.dc_finding(scan_id);
+CREATE INDEX IF NOT EXISTS idx_dc_finding_cve ON ma_moulinette.dc_finding(cve_id);
+CREATE INDEX IF NOT EXISTS idx_dc_finding_dependency ON ma_moulinette.dc_finding(dependency_id);
+CREATE INDEX IF NOT EXISTS idx_dc_finding_severity ON ma_moulinette.dc_finding(severity_at_scan);
+
+-- dc_processing_queue :
+-- Index pour le claim FOR UPDATE SKIP LOCKED par le worker
+-- Index pour la recherche par projet
+-- Index pour la purge journalière
+
+CREATE INDEX IF NOT EXISTS idx_dc_queue_status_created ON ma_moulinette.dc_processing_queue(status, created_at)  WHERE status IN ('queued', 'processing');
+CREATE INDEX IF NOT EXISTS idx_dc_queue_project ON ma_moulinette.dc_processing_queue(project_group, project_artifact, project_version);
+CREATE INDEX IF NOT EXISTS idx_dc_queue_created ON ma_moulinette.dc_processing_queue(created_at);
+
+-- dc_scan :
+-- Index pour recherche par projet (vue projet)
+-- Index pour le dashboard (scans récents)
+CREATE INDEX IF NOT EXISTS idx_dc_scan_project ON ma_moulinette.dc_scan(project_group, project_artifact, project_version, scan_date DESC);
+CREATE INDEX IF NOT EXISTS idx_dc_scan_maven_key ON ma_moulinette.dc_scan(maven_key, scan_date DESC);
+CREATE INDEX IF NOT EXISTS idx_dc_scan_recent ON ma_moulinette.dc_scan(scan_date DESC);
+CREATE INDEX IF NOT EXISTS idx_dc_scan_latest_overall
+  ON ma_moulinette.dc_scan (is_latest_overall)
+  WHERE is_latest_overall = TRUE;
+CREATE INDEX IF NOT EXISTS idx_dc_scan_latest_release
+  ON ma_moulinette.dc_scan (is_latest_release)
+  WHERE is_latest_release = TRUE;
 
 -- ===============================================
 -- INDEXES: ma_moulinette.batch_profiling
