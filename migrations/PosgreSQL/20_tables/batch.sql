@@ -2,14 +2,15 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.0.0 - 30/11/2025                  ##
+##           V2.1. - 05/05/2026                  ##
 ##                                                ##
 ####################################################*/
 
 --- 2025-11-30 : Migration postGreSql 18
+--- 2026-05-05 : retrait du DROP TABLE et \c ma_moulinette dupliqués
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
-\c ma_moulinette db_user;
+\c ma_moulinette;
 
 DROP TABLE IF EXISTS ma_moulinette.batch;
 
