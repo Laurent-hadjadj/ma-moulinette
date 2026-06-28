@@ -19,54 +19,73 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PortefeuilleRepository::class)]
-#[ORM\Table(
-    name: "portefeuille",
-    schema: "ma_moulinette")]
+#[ORM\Table(name: "portefeuille", schema: "ma_moulinette")]
 class Portefeuille
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(
         name: 'id',
-        type: Types::INTEGER, nullable: false,
-        options: ['comment' => 'Identifiant unique pour chaque portefeuille'])]
-    private $id;
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Identifiant unique pour chaque portefeuille']
+    )]
+    private int $id;
 
     #[ORM\Column(
         name: 'portefeuille',
-        type: Types::STRING, length: 32, nullable: false, unique: true,
-        options: ['comment' => 'Nom unique du portefeuille'])]
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
+        unique: true,
+        options: ['comment' => 'Nom unique du portefeuille']
+    )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 32,
-        maxMessage: "Le nom du portefeuille ne peut pas dépasser 32 caractères.")]
-    private $portefeuille;
+    #[Assert\Length(
+        max: 32,
+        maxMessage: "Le nom du portefeuille ne peut pas dépasser 32 caractères."
+    )]
+    private string $portefeuille;
 
     #[ORM\Column(
         name: 'groupe_fonctionnel',
-        type: Types::STRING, length: 128, nullable: false,
-        options: ['comment' => 'Nom du groupe fonctionnel associé au portefeuille'])]
+        type: Types::STRING,
+        length: 128,
+        nullable: false,
+        options: ['comment' => 'Nom du groupe fonctionnel associé au portefeuille']
+    )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 128,
-        maxMessage: "Le nom du groupe fonctionnel ne peut pas dépasser 128 caractères.")]
-    private $groupeFonctionnel;
+    #[Assert\Length(
+        max: 128,
+        maxMessage: "Le nom du groupe fonctionnel ne peut pas dépasser 128 caractères."
+    )]
+    /* MODIF 2026-06-03  valeur par défaut pour éviter "must not be accessed before initialization" en PAGE_NEW EasyAdmin. */
+    private string $groupeFonctionnel = '';
 
+    /* MODIF 2026-05-05 : alignement entité ↔ DDL. */
     #[ORM\Column(
         name: 'liste',
         type: 'json',
-        options: ['comment' => 'Liste des éléments ou des activités du portefeuille'])]
-    private ?array $liste = [];
+        nullable: false,
+        options: ['comment' => 'Liste des éléments ou des activités du portefeuille']
+    )]
+    private array $liste = [];
 
     #[ORM\Column(
         name: 'date_modification',
-        type: Types::DATETIME_MUTABLE, nullable: true,
-        options: ['comment' => 'Date de la dernière modification du portefeuille'])]
-    private $dateModification;
+        type: Types::DATETIME_MUTABLE,
+        nullable: true,
+        options: ['comment' => 'Date de la dernière modification du portefeuille']
+    )]
+    private ?\DateTimeInterface $dateModification = null;
 
     #[ORM\Column(
         name: 'date_enregistrement',
-        type: Types::DATETIMETZ_IMMUTABLE,  nullable: false,
-        options: ['comment' => 'Date d’enregistrement du portefeuille'])]
-    private $dateEnregistrement;
+        type: Types::DATETIMETZ_IMMUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date d’enregistrement du portefeuille']
+    )]
+    private \DateTimeImmutable $dateEnregistrement;
 
     public function getId(): ?int
     {
@@ -137,5 +156,4 @@ class Portefeuille
 
         return $this;
     }
-
 }

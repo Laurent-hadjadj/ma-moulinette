@@ -19,10 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: HotspotsRepository::class)]
-#[ORM\Table(
-    name: 'hotspots',
-    schema: "ma_moulinette",
-    options: ['comment' => 'Table des menaces potentielles.'])]
+#[ORM\Table(name: "hotspots", schema: "ma_moulinette")]
 class Hotspots
 {
     #[ORM\Id]
@@ -30,19 +27,23 @@ class Hotspots
     #[ORM\Column(
         name: 'id',
         type: Types::INTEGER,
-        options: ['comment' => 'Identifiant unique pour la table hotspot'])]
-    private ?int $id = null;
+        nullable: false,
+        options: ['comment' => 'Identifiant unique pour la table hotspot']
+    )]
+    private int $id;
 
     #[ORM\Column(
         name: 'maven_key',
         type: Types::STRING,
         length: 255,
         nullable: false,
-        options: ['comment' => 'Clé Maven du projet'])]
+        options: ['comment' => 'Clé Maven du projet']
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères.")]
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
+    )]
     private string $mavenKey;
 
     #[ORM\Column(
@@ -50,18 +51,22 @@ class Hotspots
         type: Types::STRING,
         length: 32,
         nullable: false,
-        options: ['comment' => 'Version du hotspot'])]
+        options: ['comment' => 'Version du hotspot']
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 32,
-        maxMessage: "La version ne doit pas dépasser 32 caractères.")]
+        maxMessage: "La version ne doit pas dépasser 32 caractères."
+    )]
     private string $version;
 
     #[ORM\Column(
         name: 'date_version',
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date de la version du hotspot'])]
+        options: ['comment' => 'Date de la version du hotspot']
+    )]
+
     #[Assert\NotNull]
     private \DateTimeImmutable $dateVersion;
 
@@ -70,11 +75,13 @@ class Hotspots
         type: Types::STRING,
         length: 64,
         nullable: false,
-        options: ['comment' => 'Clé unique du hotspot (UUID SonarQube)'])]
+        options: ['comment' => 'Clé unique du hotspot']
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 64,
-        maxMessage: "La clé ne doit pas dépasser 64 caractères.")]
+        maxMessage: "La clé ne doit pas dépasser 64 caractères."
+    )]
     private string $hotspotKey;
 
     #[ORM\Column(
@@ -82,11 +89,13 @@ class Hotspots
         type: Types::STRING,
         length: 64,
         nullable: false,
-        options: ['comment' => 'Catégorie de sécurité du hotspot'])]
+        options: ['comment' => 'Défini la catégorie de sécurité du hotspot']
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 64,
-        maxMessage: "La catégorie de sécurité ne doit pas dépasser 64 caractères.")]
+        maxMessage: "La catégorie de sécurité ne doit pas dépasser 64 caractères."
+    )]
     private string $securityCategory;
 
     #[ORM\Column(
@@ -94,11 +103,13 @@ class Hotspots
         type: Types::STRING,
         length: 128,
         nullable: false,
-        options: ['comment' => 'Règle SonarQube associée'])]
+        options: ['comment' => 'Règle SonarQube']
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 128,
-        maxMessage: "La clé de la règle ne doit pas dépasser 128 caractères.")]
+        maxMessage: "La clé de la règle ne doit pas dépasser 128 caractères."
+    )]
     private string $ruleKey;
 
     #[ORM\Column(
@@ -106,11 +117,13 @@ class Hotspots
         type: Types::STRING,
         length: 8,
         nullable: false,
-        options: ['comment' => 'Probabilité de risque du hotspot'])]
+        options: ['comment' => 'Probabilité de risque du hotspot']
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 8,
-        maxMessage: "La probabilité ne doit pas dépasser 8 caractères.")]
+        maxMessage: "La probabilité ne doit pas dépasser 8 caractères."
+    )]
     private string $probability;
 
     #[ORM\Column(
@@ -118,11 +131,13 @@ class Hotspots
         type: Types::STRING,
         length: 16,
         nullable: false,
-        options: ['comment' => 'Statut du hotspot : TO_REVIEW, REVIEWED'])]
+        options: ['comment' => 'Statut du hotspot : TO_REVIEW, REVIEWED']
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 16,
-        maxMessage: "Le statut ne doit pas dépasser 16 caractères.")]
+        maxMessage: "Le statut ne doit pas dépasser 16 caractères."
+    )]
     private string $status;
 
     #[ORM\Column(
@@ -130,18 +145,21 @@ class Hotspots
         type: Types::STRING,
         length: 16,
         nullable: true,
-        options: ['comment' => 'État d’un hotspot REVIEWED : FIXED, SAFE, ACKNOWLEDGED'])]
+        options: ['comment' => 'Donne pour un hotspot au statut REVIEWED son état : FIXED, SAFE, ACKNOWLEDGED']
+    )]
     #[Assert\Length(
         max: 16,
-        maxMessage: "Le statut ne doit pas dépasser 16 caractères.")]
+        maxMessage: "Le statut ne doit pas dépasser 16 caractères."
+    )]
     private ?string $resolution = null;
 
     #[ORM\Column(
         name: 'niveau',
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Niveau de risque du hotspot'])]
-    #[Assert\NotNull]
+        options: ['comment' => 'Niveau de risque du hotspot']
+    )]
+
     #[Assert\PositiveOrZero]
     private int $niveau;
 
@@ -150,10 +168,12 @@ class Hotspots
         type: Types::STRING,
         length: 32,
         nullable: true,
-        options: ['comment' => 'Mode de collecte : COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE'])]
+        options: ['comment' => 'Mode de collecte : [COLLECTE] | [TRAITEMENT MANUEL] | [TRAITEMENT AUTOMATIQUE]']
+    )]
     #[Assert\Length(
         max: 32,
-        maxMessage: "Le mode de collecte ne peut pas dépasser 32 caractères.")]
+        maxMessage: "Le mode de collecte ne peut pas dépasser 32 caractères."
+    )]
     private ?string $modeCollecte = null;
 
     #[ORM\Column(
@@ -161,24 +181,23 @@ class Hotspots
         type: Types::STRING,
         length: 320,
         nullable: true,
-        options: ['comment' => "Compte de l'utilisateur qui a réalisé la collecte"])]
+        options: ['comment' => "Compte de l'utilisateur qui a réalisé la collecte."]
+    )]
     #[Assert\Length(
         max: 320,
-        maxMessage: "Le compte de l'utilisateur ne peut pas dépasser 320 caractères.")]
+        maxMessage: "Le compte de l'utilisateur ne peut pas dépasser 320 caractères."
+    )]
     private ?string $utilisateurCollecte = null;
 
     #[ORM\Column(
         name: 'date_enregistrement',
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date d’enregistrement du hotspot'])]
+        options: ['comment' => 'Date d’enregistrement du hotspot']
+    )]
+
     #[Assert\NotNull]
     private \DateTimeImmutable $dateEnregistrement;
-
-    public function __construct()
-    {
-        $this->dateEnregistrement = new \DateTimeImmutable();
-    }
 
     public function getId(): ?int
     {
@@ -195,7 +214,7 @@ class Hotspots
         return $this->mavenKey;
     }
 
-    public function setMavenKey(string $mavenKey): self
+    public function setMavenKey(string $mavenKey): static
     {
         $this->mavenKey = $mavenKey;
 
@@ -207,7 +226,7 @@ class Hotspots
         return $this->version;
     }
 
-    public function setVersion(string $version): self
+    public function setVersion(string $version): static
     {
         $this->version = $version;
 
@@ -219,7 +238,7 @@ class Hotspots
         return $this->dateVersion;
     }
 
-    public function setDateVersion(\DateTimeImmutable $dateVersion): self
+    public function setDateVersion(\DateTimeImmutable $dateVersion): static
     {
         $this->dateVersion = $dateVersion;
 
@@ -231,7 +250,7 @@ class Hotspots
         return $this->probability;
     }
 
-    public function setProbability(string $probability): self
+    public function setProbability(string $probability): static
     {
         $this->probability = $probability;
 
@@ -243,7 +262,7 @@ class Hotspots
         return $this->status;
     }
 
-    public function setStatus(string $status): self
+    public function setStatus(string $status): static
     {
         $this->status = $status;
 
@@ -255,7 +274,7 @@ class Hotspots
         return $this->niveau;
     }
 
-    public function setNiveau(int $niveau): self
+    public function setNiveau(int $niveau): static
     {
         $this->niveau = $niveau;
 
@@ -267,7 +286,7 @@ class Hotspots
         return $this->dateEnregistrement;
     }
 
-    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): self
+    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
     {
         $this->dateEnregistrement = $dateEnregistrement;
 
@@ -279,7 +298,7 @@ class Hotspots
         return $this->securityCategory;
     }
 
-    public function setSecurityCategory(string $securityCategory): self
+    public function setSecurityCategory(string $securityCategory): static
     {
         $this->securityCategory = $securityCategory;
 
@@ -291,7 +310,7 @@ class Hotspots
         return $this->ruleKey;
     }
 
-    public function setRuleKey(string $ruleKey): self
+    public function setRuleKey(string $ruleKey): static
     {
         $this->ruleKey = $ruleKey;
 
@@ -303,7 +322,7 @@ class Hotspots
         return $this->resolution;
     }
 
-    public function setResolution(?string $resolution): self
+    public function setResolution(?string $resolution): static
     {
         $this->resolution = $resolution;
 
@@ -315,7 +334,7 @@ class Hotspots
         return $this->hotspotKey;
     }
 
-    public function setHotspotKey(string $hotspotKey): self
+    public function setHotspotKey(string $hotspotKey): static
     {
         $this->hotspotKey = $hotspotKey;
 
@@ -327,7 +346,7 @@ class Hotspots
         return $this->modeCollecte;
     }
 
-    public function setModeCollecte(?string $modeCollecte): self
+    public function setModeCollecte(?string $modeCollecte): static
     {
         $this->modeCollecte = $modeCollecte;
 
@@ -339,11 +358,10 @@ class Hotspots
         return $this->utilisateurCollecte;
     }
 
-    public function setUtilisateurCollecte(?string $utilisateurCollecte): self
+    public function setUtilisateurCollecte(?string $utilisateurCollecte): static
     {
         $this->utilisateurCollecte = $utilisateurCollecte;
 
         return $this;
     }
-
 }

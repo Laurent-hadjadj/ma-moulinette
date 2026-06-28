@@ -23,29 +23,27 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 
 #[ORM\Entity(repositoryClass: RepartitionTempRepository::class)]
-#[ORM\Table(
-    name: 'repartition_temp',
-    schema: 'ma_moulinette',
-    options: ['comment' => "Table temporaire de répartition des anomalies."])]
+#[ORM\Table(name: 'repartition_temp', schema: 'ma_moulinette')]
 class RepartitionTemp
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(
         name: 'id',
-        type: Types::INTEGER,
-        options: ['comment' => "Identifiant unique pour la table repartition_temp"])]
-    private ?int $id = null;
+        type: Types::INTEGER
+    )]
+    private int $id;
 
     /**
      * Clé d'identification de la répartition
      */
     #[ORM\Column(
-        name:'maven_key',
+        name: 'maven_key',
         type: Types::STRING,
         length: 255,
         nullable: false,
-        options: ['comment' => "Clé identification du projet"])]
+        options: ['comment' => "Clé identification du projet"]
+    )]
     #[Assert\NotBlank(groups: ['default'])]
     private string $mavenKey;
 
@@ -55,14 +53,13 @@ class RepartitionTemp
     #[ORM\Column(
         name: 'component',
         type: Types::TEXT,
-        nullable: false,
-        options: ['comment' => "Nom du composant"])]
+        nullable: false
+    )]
     #[Assert\NotBlank(groups: ['default'])]
     private string $component;
 
     /**
      * Type de la répartition
-     * Valeurs possibles : BUG, VULNERABILITY, CODE_SMELL
      */
     #[ORM\Column(
         name: 'type',
@@ -88,9 +85,9 @@ class RepartitionTemp
     private string $severity;
 
     /**
-     * Timestamp en milliseconde unique pour chaque analyse
-     * (utilisé comme partie de la clé composite)
+     * Timestamp en milliseconde unique pour chaque analyse (utilisé comme partie de la clé composite)
      */
+    /* MODIF 2026-05-07 : ajout Assert\PositiveOrZero (rejette -1). */
     #[ORM\Column(
         name: 'setup',
         type: Types::BIGINT,
@@ -101,9 +98,9 @@ class RepartitionTemp
     #[Assert\PositiveOrZero]
     private int $setup;
 
-    // --- GETTERS ET SETTERS ---
+    // ----- Getters et Setters -----
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }

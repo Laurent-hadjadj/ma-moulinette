@@ -19,10 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: HotspotDetailsRepository::class)]
-#[ORM\Table(
-    name: 'hotspot_details',
-    schema: "ma_moulinette",
-    options: ['comment' => 'Table du détails des menaces potentielles.'])]
+#[ORM\Table(name: "hotspot_details", schema: "ma_moulinette")]
 class HotspotDetails
 {
     #[ORM\Id]
@@ -30,19 +27,23 @@ class HotspotDetails
     #[ORM\Column(
         name: 'id',
         type: Types::INTEGER,
-        options: ['comment' => 'Identifiant unique pour la table'])]
-    private ?int $id = null;
+        nullable: false,
+        options: ['comment' => 'Identifiant unique pour la table']
+    )]
+    private int $id;
 
     #[ORM\Column(
         name: 'maven_key',
         type: Types::STRING,
         length: 255,
         nullable: false,
-        options: ['comment' => 'Clé Maven du projet'])]
+        options: ['comment' => 'Clé Maven du projet']
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères.")]
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
+    )]
     private string $mavenKey;
 
     #[ORM\Column(
@@ -50,18 +51,22 @@ class HotspotDetails
         type: Types::STRING,
         length: 32,
         nullable: false,
-        options: ['comment' => 'Version du projet'])]
+        options: ['comment' => 'Version de du projet']
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 32,
-        maxMessage: "La version ne doit pas dépasser 32 caractères.")]
+        maxMessage: "La version ne doit pas dépasser 32 caractères."
+    )]
     private string $version;
 
     #[ORM\Column(
         name: 'date_version',
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date de publication du projet'])]
+        options: ['comment' => 'Date de publication du projet']
+    )]
+
     #[Assert\NotNull]
     private \DateTimeImmutable $dateVersion;
 
@@ -70,11 +75,13 @@ class HotspotDetails
         type: Types::STRING,
         length: 64,
         nullable: false,
-        options: ['comment' => 'Catégorie de sécurité du hotspot'])]
+        options: ['comment' => 'Défini la catégorie de sécurité du hotspot']
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 64,
-        maxMessage: "La catégorie de sécurité ne doit pas dépasser 64 caractères.")]
+        maxMessage: "La catégorie de sécurité ne doit pas dépasser 64 caractères."
+    )]
     private string $securityCategory;
 
     #[ORM\Column(
@@ -82,11 +89,13 @@ class HotspotDetails
         type: Types::STRING,
         length: 128,
         nullable: false,
-        options: ['comment' => 'Règle SonarQube'])]
+        options: ['comment' => 'Règle SonarQube']
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 128,
-        maxMessage: "La clé de la règle ne doit pas dépasser 128 caractères.")]
+        maxMessage: "La clé de la règle ne doit pas dépasser 128 caractères."
+    )]
     private string $ruleKey;
 
     #[ORM\Column(
@@ -94,11 +103,13 @@ class HotspotDetails
         type: Types::STRING,
         length: 255,
         nullable: false,
-        options: ['comment' => 'Nom de la règle SonarQube'])]
+        options: ['comment' => 'Nom de la règle SonarQube']
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 255,
-        maxMessage: "Le nom de la règle ne doit pas dépasser 255 caractères.")]
+        maxMessage: "Le nom de la règle ne doit pas dépasser 255 caractères."
+    )]
     private string $ruleName;
 
     #[ORM\Column(
@@ -106,9 +117,13 @@ class HotspotDetails
         type: Types::STRING,
         length: 8,
         nullable: false,
-        options: ['comment' => 'Sévérité du hotspot'])]
+        options: ['comment' => 'Sévérité du hotspot']
+    )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 8, maxMessage: "La sévérité ne doit pas dépasser 8 caractères.")]
+    #[Assert\Length(
+        max: 8,
+        maxMessage: "La sévérité ne doit pas dépasser 8 caractères."
+    )]
     private string $severity;
 
     #[ORM\Column(
@@ -116,11 +131,13 @@ class HotspotDetails
         type: Types::STRING,
         length: 16,
         nullable: false,
-        options: ['comment' => 'Statut du hotspot : TO_REVIEW, REVIEWED'])]
+        options: ['comment' => 'Statut du hotspot : TO_REVIEW, REVIEWED']
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 16,
-        maxMessage: "Le statut ne doit pas dépasser 16 caractères.")]
+        maxMessage: "Le statut ne doit pas dépasser 16 caractères."
+    )]
     private string $status;
 
     #[ORM\Column(
@@ -128,18 +145,21 @@ class HotspotDetails
         type: Types::STRING,
         length: 16,
         nullable: true,
-        options: ['comment' => 'État d’un hotspot REVIEWED : FIXED, SAFE, ACKNOWLEDGED'])]
+        options: ['comment' => 'Donne pour un hotspot au statut REVIEWED son état : FIXED, SAFE, ACKNOWLEDGED']
+    )]
     #[Assert\Length(
         max: 16,
-        maxMessage: "Le statut ne doit pas dépasser 16 caractères.")]
+        maxMessage: "Le statut ne doit pas dépasser 16 caractères."
+    )]
     private ?string $resolution = null;
 
     #[ORM\Column(
         name: 'niveau',
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Niveau de risque du hotspot'])]
-    #[Assert\NotNull]
+        options: ['comment' => 'Niveau de risque du hotspot']
+    )]
+
     #[Assert\PositiveOrZero]
     private int $niveau;
 
@@ -147,8 +167,9 @@ class HotspotDetails
         name: 'frontend',
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Anomalies présentes dans le module frontend'])]
-    #[Assert\NotNull]
+        options: ['comment' => 'Présent dans le module frontend']
+    )]
+
     #[Assert\PositiveOrZero]
     private int $frontend;
 
@@ -156,8 +177,9 @@ class HotspotDetails
         name: 'backend',
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Anomalies présentes dans le module backend'])]
-    #[Assert\NotNull]
+        options: ['comment' => 'Présent dans le module backend']
+    )]
+
     #[Assert\PositiveOrZero]
     private int $backend;
 
@@ -165,8 +187,9 @@ class HotspotDetails
         name: 'autre',
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Anomalies présentes dans les modules autres'])]
-    #[Assert\NotNull]
+        options: ['comment' => 'Présent dans les modules Autres']
+    )]
+
     #[Assert\PositiveOrZero]
     private int $autre;
 
@@ -175,11 +198,13 @@ class HotspotDetails
         type: Types::STRING,
         length: 128,
         nullable: false,
-        options: ['comment' => 'Fichier associé au hotspot'])]
+        options: ['comment' => 'Fichier associé au hotspot']
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 128,
-        maxMessage: "Le nom de fichier ne doit pas dépasser 128 caractères.")]
+        maxMessage: "Le nom de fichier ne doit pas dépasser 128 caractères."
+    )]
     private string $fileName;
 
     #[ORM\Column(
@@ -187,19 +212,22 @@ class HotspotDetails
         type: Types::STRING,
         length: 255,
         nullable: false,
-        options: ['comment' => 'Chemin complet du fichier associé au hotspot'])]
+        options: ['comment' => 'Fichier associé au hotspot']
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 255,
-        maxMessage: "Le chemin du fichier ne doit pas dépasser 255 caractères.")]
+        maxMessage: "Le nom de fichier ne doit pas dépasser 255 caractères."
+    )]
     private string $filePath;
 
     #[ORM\Column(
         name: 'line',
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Ligne du fichier où se situe le hotspot'])]
-    #[Assert\NotNull]
+        options: ['comment' => 'Ligne du fichier où se situe le hotspot']
+    )]
+
     #[Assert\PositiveOrZero]
     private int $line;
 
@@ -208,11 +236,13 @@ class HotspotDetails
         type: Types::STRING,
         length: 255,
         nullable: false,
-        options: ['comment' => 'Message descriptif du hotspot'])]
+        options: ['comment' => 'Message descriptif du hotspot']
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 255,
-        maxMessage: "Le message ne doit pas dépasser 255 caractères.")]
+        maxMessage: "Le message ne doit pas dépasser 255 caractères."
+    )]
     private string $message;
 
     #[ORM\Column(
@@ -220,11 +250,13 @@ class HotspotDetails
         type: Types::STRING,
         length: 64,
         nullable: false,
-        options: ['comment' => 'Clé unique du hotspot (UUID SonarQube)'])]
+        options: ['comment' => 'Clé unique du hotspot']
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 64,
-        maxMessage: "La clé ne doit pas dépasser 64 caractères.")]
+        maxMessage: "La clé ne doit pas dépasser 64 caractères."
+    )]
     private string $hotspotKey;
 
     #[ORM\Column(
@@ -232,10 +264,12 @@ class HotspotDetails
         type: Types::STRING,
         length: 32,
         nullable: true,
-        options: ['comment' => 'Mode de collecte : COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE'])]
+        options: ['comment' => 'Mode de collecte : [COLLECTE] | [TRAITEMENT MANUEL] | [TRAITEMENT AUTOMATIQUE]']
+    )]
     #[Assert\Length(
         max: 32,
-        maxMessage: "Le mode de collecte ne peut pas dépasser 32 caractères.")]
+        maxMessage: "Le mode de collecte ne peut pas dépasser 32 caractères."
+    )]
     private ?string $modeCollecte = null;
 
     #[ORM\Column(
@@ -243,24 +277,23 @@ class HotspotDetails
         type: Types::STRING,
         length: 320,
         nullable: true,
-        options: ['comment' => "Compte de l'utilisateur qui a réalisé la collecte."])]
+        options: ['comment' => "Compte de l'utilisateur qui a réalisé la collecte."]
+    )]
     #[Assert\Length(
         max: 320,
-        maxMessage: "Le nom de l'utilisateur ne peut pas dépasser 320 caractères.")]
+        maxMessage: "Le nom de l'utilisateur ne peut pas dépasser 128 caractères."
+    )]
     private ?string $utilisateurCollecte = null;
 
     #[ORM\Column(
         name: 'date_enregistrement',
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date d’enregistrement du détail de hotspot'])]
+        options: ['comment' => 'Date d’enregistrement du détail de hotspot']
+    )]
+
     #[Assert\NotNull]
     private \DateTimeImmutable $dateEnregistrement;
-
-    public function __construct()
-    {
-        $this->dateEnregistrement = new \DateTimeImmutable();
-    }
 
     public function getId(): ?int
     {
@@ -277,7 +310,7 @@ class HotspotDetails
         return $this->mavenKey;
     }
 
-    public function setMavenKey(string $mavenKey): self
+    public function setMavenKey(string $mavenKey): static
     {
         $this->mavenKey = $mavenKey;
 
@@ -289,7 +322,7 @@ class HotspotDetails
         return $this->version;
     }
 
-    public function setVersion(string $version): self
+    public function setVersion(string $version): static
     {
         $this->version = $version;
 
@@ -301,7 +334,7 @@ class HotspotDetails
         return $this->dateVersion;
     }
 
-    public function setDateVersion(\DateTimeImmutable $dateVersion): self
+    public function setDateVersion(\DateTimeImmutable $dateVersion): static
     {
         $this->dateVersion = $dateVersion;
 
@@ -313,7 +346,7 @@ class HotspotDetails
         return $this->severity;
     }
 
-    public function setSeverity(string $severity): self
+    public function setSeverity(string $severity): static
     {
         $this->severity = $severity;
 
@@ -325,7 +358,7 @@ class HotspotDetails
         return $this->niveau;
     }
 
-    public function setNiveau(int $niveau): self
+    public function setNiveau(int $niveau): static
     {
         $this->niveau = $niveau;
 
@@ -337,7 +370,7 @@ class HotspotDetails
         return $this->status;
     }
 
-    public function setStatus(string $status): self
+    public function setStatus(string $status): static
     {
         $this->status = $status;
 
@@ -349,7 +382,7 @@ class HotspotDetails
         return $this->frontend;
     }
 
-    public function setFrontend(int $frontend): self
+    public function setFrontend(int $frontend): static
     {
         $this->frontend = $frontend;
 
@@ -361,7 +394,7 @@ class HotspotDetails
         return $this->backend;
     }
 
-    public function setBackend(int $backend): self
+    public function setBackend(int $backend): static
     {
         $this->backend = $backend;
 
@@ -373,7 +406,7 @@ class HotspotDetails
         return $this->autre;
     }
 
-    public function setAutre(int $autre): self
+    public function setAutre(int $autre): static
     {
         $this->autre = $autre;
 
@@ -386,7 +419,7 @@ class HotspotDetails
         return $this->line;
     }
 
-    public function setLine(int $line): self
+    public function setLine(int $line): static
     {
         $this->line = $line;
 
@@ -399,7 +432,7 @@ class HotspotDetails
         return $this->message;
     }
 
-    public function setMessage(string $message): self
+    public function setMessage(string $message): static
     {
         $this->message = $message;
 
@@ -411,7 +444,7 @@ class HotspotDetails
         return $this->hotspotKey;
     }
 
-    public function setHotspotKey(string $hotspotKey): self
+    public function setHotspotKey(string $hotspotKey): static
     {
         $this->hotspotKey = $hotspotKey;
 
@@ -423,7 +456,7 @@ class HotspotDetails
         return $this->dateEnregistrement;
     }
 
-    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): self
+    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
     {
         $this->dateEnregistrement = $dateEnregistrement;
 
@@ -435,7 +468,7 @@ class HotspotDetails
         return $this->securityCategory;
     }
 
-    public function setSecurityCategory(string $securityCategory): self
+    public function setSecurityCategory(string $securityCategory): static
     {
         $this->securityCategory = $securityCategory;
 
@@ -447,7 +480,7 @@ class HotspotDetails
         return $this->resolution;
     }
 
-    public function setResolution(?string $resolution): self
+    public function setResolution(?string $resolution): static
     {
         $this->resolution = $resolution;
 
@@ -459,7 +492,7 @@ class HotspotDetails
         return $this->ruleKey;
     }
 
-    public function setRuleKey(string $ruleKey): self
+    public function setRuleKey(string $ruleKey): static
     {
         $this->ruleKey = $ruleKey;
 
@@ -471,7 +504,7 @@ class HotspotDetails
         return $this->ruleName;
     }
 
-    public function setRuleName(string $ruleName): self
+    public function setRuleName(string $ruleName): static
     {
         $this->ruleName = $ruleName;
 
@@ -483,7 +516,7 @@ class HotspotDetails
         return $this->fileName;
     }
 
-    public function setFileName(string $fileName): self
+    public function setFileName(string $fileName): static
     {
         $this->fileName = $fileName;
 
@@ -495,7 +528,7 @@ class HotspotDetails
         return $this->filePath;
     }
 
-    public function setFilePath(string $filePath): self
+    public function setFilePath(string $filePath): static
     {
         $this->filePath = $filePath;
 
@@ -507,7 +540,7 @@ class HotspotDetails
         return $this->modeCollecte;
     }
 
-    public function setModeCollecte(?string $modeCollecte): self
+    public function setModeCollecte(?string $modeCollecte): static
     {
         $this->modeCollecte = $modeCollecte;
 
@@ -519,11 +552,10 @@ class HotspotDetails
         return $this->utilisateurCollecte;
     }
 
-    public function setUtilisateurCollecte(?string $utilisateurCollecte): self
+    public function setUtilisateurCollecte(?string $utilisateurCollecte): static
     {
         $this->utilisateurCollecte = $utilisateurCollecte;
 
         return $this;
     }
-
 }

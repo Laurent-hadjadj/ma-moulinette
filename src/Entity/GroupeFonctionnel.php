@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -36,10 +36,13 @@ class GroupeFonctionnel
     )]
     private ?int $id = null;
 
+    /* MODIF alignement length 128 -> 32
+     * Attention la valeur dans SonarQube peut être supérieur a 32 caractères
+     * Cohérent avec Portefeuille.portefeuille qui est aussi en 32. */
     #[ORM\Column(
         name: 'groupe_fonctionnel',
         type: Types::STRING,
-        length: 128,
+        length: 32,
         unique: true,
         nullable: false,
         options: ['comment' => 'Nom du groupe fonctionnel, unique']
@@ -69,7 +72,7 @@ class GroupeFonctionnel
         name: 'date_modification',
         type: Types::DATETIME_MUTABLE,
         nullable: true,
-        options: ['comment' => 'Date de la dernière modification de l’équipe']
+        options: ['comment' => 'Date de la dernière modification du groupe fonctionnel']
     )]
     private ?\DateTimeInterface $dateModification = null;
 
@@ -77,7 +80,7 @@ class GroupeFonctionnel
         name: 'date_enregistrement',
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date d’enregistrement de l’équipe']
+        options: ['comment' => 'Date d’enregistrement du groupe fonctionnel']
     )]
     private \DateTimeImmutable $dateEnregistrement;
 
@@ -93,12 +96,6 @@ class GroupeFonctionnel
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function setId(int $id): self
-    {
-        $this->id = $id;
-        return $this;
     }
 
     public function getGroupeFonctionnel(): string

@@ -182,12 +182,12 @@ class Mesures
 
     #[ORM\Column(
         name: 'line_coverage',
-        type: Types::INTEGER,
+        type: Types::FLOAT,
         nullable: true,
-        options: ['comment' => 'Nombre total de ligne couverte']
+        options: ['comment' => 'Pourcentage de lignes exécutées par les tests']
     )]
     #[Assert\PositiveOrZero]
-    private ?int $lineCoverage = null;
+    private ?float $lineCoverage = null;
 
     #[ORM\Column(
         name: 'lines_to_cover',
@@ -215,6 +215,19 @@ class Mesures
     )]
     #[Assert\PositiveOrZero]
     private ?int $uncoveredConditions = null;
+
+    /* MODIF 2026-05-05 : ajout de coverage_rating
+     * (présent en DDL mesures.sql mais absent de l'entité, utilisé par MesuresRepository,
+     * ApiPeintureController, BuildMapHistoryService et le JS index-suivi). */
+    #[ORM\Column(
+        name: 'coverage_rating',
+        type: Types::STRING,
+        length: 4,
+        nullable: true,
+        options: ['comment' => 'Note de couverture des tests']
+    )]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
+    private ?string $coverageRating = null;
 
     // -------------------------
     // Tests
@@ -313,6 +326,18 @@ class Mesures
     )]
     #[Assert\Range(min: 0, max: 100)]
     private ?float $duplicatedLinesDensity = null;
+
+    /* MODIF 2026-05-05 : ajout de duplicated_lines_rating
+     * (présent en DDL mesures.sql:57 mais absent de l'entité). */
+    #[ORM\Column(
+        name: 'duplicated_lines_rating',
+        type: Types::STRING,
+        length: 4,
+        nullable: true,
+        options: ['comment' => 'Note de duplication des lignes']
+    )]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
+    private ?string $duplicatedLinesRating = null;
 
     // -------------------------
     // Complexity
@@ -548,59 +573,21 @@ class Mesures
     #[Assert\PositiveOrZero]
     private ?int $codeSmells = null;
 
-    #[ORM\Column(
-        name: 'code_smell_blocker',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => "Nombre de mauvaises pratiques bloquantes"]
-    )]
-    #[Assert\PositiveOrZero]
-    private ?int $codeSmellBlocker = null;
+    /* MODIF 2026-05-05 : suppression des 5 colonnes
+     * codeSmellBlocker/Critical/Major/Minor/Info — retirées du DDL le 2026-03-30
+     * (cf. mesures.sql:11) car non utilisées dans les traitements. */
 
-    #[ORM\Column(
-        name: 'code_smell_critical',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => 'Nombre de mauvaise pratique critiques']
-    )]
-    #[Assert\PositiveOrZero]
-    private ?int $codeSmellCritical = null;
-
-    #[ORM\Column(
-        name: 'code_smell_major',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => 'Nombre de mauvaise pratique majeurs']
-    )]
-    #[Assert\PositiveOrZero]
-    private ?int $codeSmellMajor = null;
-
-    #[ORM\Column(
-        name: 'code_smell_minor',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => 'Nombre de mauvaise pratique mineurs']
-    )]
-    #[Assert\PositiveOrZero]
-    private ?int $codeSmellMinor = null;
-
-    #[ORM\Column(
-        name: 'code_smell_info',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => "Nombre de mauvaise pratique d'information"]
-    )]
-    #[Assert\PositiveOrZero]
-    private ?int $codeSmellInfo = null;
-
+    /* MODIF 2026-05-05 : DDL stocke en VARCHAR(255)
+     * (chaîne d'indicateurs SonarQube 10, ex. "TOTAL=10;HIGH=2;..."). On aligne le type
+     * de Types::INTEGER vers Types::STRING(255). */
     #[ORM\Column(
         name: 'maintainability_issues',
-        type: Types::INTEGER,
+        type: Types::STRING,
+        length: 255,
         nullable: true,
-        options: ['comment' => "Liste des mauvaise pratique"]
+        options: ['comment' => "Liste des indicateurs de mauvaise pratique."]
     )]
-    #[Assert\PositiveOrZero]
-    private ?int $maintainabilityIssues = null;
+    private ?string $maintainabilityIssues = null;
 
     #[ORM\Column(
         name: 'sqale_index',
@@ -698,50 +685,8 @@ class Mesures
     #[Assert\PositiveOrZero]
     private ?int $bugs = null;
 
-    #[ORM\Column(
-        name: 'bug_blocker',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => 'Nombre de bugs bloquants']
-    )]
-    #[Assert\PositiveOrZero]
-    private ?int $bugBlocker = null;
-
-    #[ORM\Column(
-        name: 'bug_critical',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => 'Nombre de bugs critiques']
-    )]
-    #[Assert\PositiveOrZero]
-    private ?int $bugCritical = null;
-
-    #[ORM\Column(
-        name: 'bug_major',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => 'Nombre de bugs majeurs']
-    )]
-    #[Assert\PositiveOrZero]
-    private ?int $bugMajor = null;
-
-    #[ORM\Column(
-        name: 'bug_minor',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => 'Nombre de bugs mineurs']
-    )]
-    #[Assert\PositiveOrZero]
-    private ?int $bugMinor = null;
-
-    #[ORM\Column(
-        name: 'bug_info',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => "Nombre de bugs d'information"]
-    )]
-    #[Assert\PositiveOrZero]
-    private ?int $bugInfo = null;
+    /* MODIF 2026-05-05 : suppression des 5 colonnes
+     * bugBlocker/Critical/Major/Minor/Info — retirées du DDL le 2026-03-30. */
 
     #[ORM\Column(
         name: 'reliability_issues',
@@ -812,51 +757,8 @@ class Mesures
     #[Assert\PositiveOrZero]
     private ?int $vulnerabilities = null;
 
-    #[ORM\Column(
-        name: 'vulnerability_blocker',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => 'Nombre de vulnérabilités bloquantes']
-    )]
-    #[Assert\PositiveOrZero]
-    private ?int $vulnerabilityBlocker = null;
-
-    #[ORM\Column(
-        name: 'vulnerability_critical',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => 'Nombre de vulnérabilités critiques']
-    )]
-    #[Assert\PositiveOrZero]
-    private ?int $vulnerabilityCritical = null;
-
-    #[ORM\Column(
-        name: 'vulnerability_major',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => 'Nombre de vulnérabilités majeures']
-    )]
-    #[Assert\PositiveOrZero]
-    private ?int $vulnerabilityMajor = null;
-
-    #[ORM\Column(
-        name: 'vulnerability_minor',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => 'Nombre de vulnérabilités mineures']
-    )]
-    #[Assert\PositiveOrZero]
-    private ?int $vulnerabilityMinor = null;
-
-    #[ORM\Column(
-        name: 'vulnerability_info',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => "Nombre de vulnérabilités d'information"]
-    )]
-    #[Assert\PositiveOrZero]
-    private ?int $vulnerabilityInfo = null;
-
+    /* MODIF 2026-05-05 : suppression des 5 colonnes
+     * vulnerabilityBlocker/Critical/Major/Minor/Info — retirées du DDL le 2026-03-30. */
     #[ORM\Column(
         name: 'security_issues',
         type: Types::STRING,
@@ -944,68 +846,9 @@ class Mesures
     #[Assert\PositiveOrZero]
     private ?float $securityHotspotsReviewed = null;
 
-    #[ORM\Column(
-        name: 'menace_potentielle_to_review_high',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau élevé à vérifier']
-    )]
-    #[Assert\PositiveOrZero]
-    private ?int $menacePotentielleToReviewHigh = null;
-
-    #[ORM\Column(
-        name: 'menace_potentielle_to_review_medium',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau moyen à vérifier']
-    )]
-    #[Assert\PositiveOrZero]
-    private ?int $menacePotentielleToReviewMedium = null;
-
-    #[ORM\Column(
-        name: 'menace_potentielle_to_review_low',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau faible à vérifier']
-    )]
-    #[Assert\PositiveOrZero]
-    private ?int $menacePotentielleToReviewLow = null;
-
-    #[ORM\Column(
-        name: 'menace_potentielle_reviewed_high',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau élevé vérifié']
-    )]
-    #[Assert\PositiveOrZero]
-    private ?int $menacePotentielleReviewedHigh = null;
-
-    #[ORM\Column(
-        name: 'menace_potentielle_reviewed_medium',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau moyen vérifié']
-    )]
-    #[Assert\PositiveOrZero]
-    private ?int $menacePotentielleReviewedMedium = null;
-
-    #[ORM\Column(
-        name: 'menace_potentielle_reviewed_low',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => 'Nombre de menaces potentielles de sécurité de niveau faible vérifié']
-    )]
-    #[Assert\PositiveOrZero]
-    private ?int $menacePotentielleReviewedLow = null;
-
-    #[ORM\Column(
-        name: 'menace_potentielle_totale',
-        type: Types::INTEGER,
-        nullable: true,
-        options: ['comment' => 'Nombre total de menaces potentielles de sécurité']
-    )]
-    #[Assert\PositiveOrZero]
-    private ?int $menacePotentielleTotale = null;
+    /* MODIF 2026-05-05  : suppression des 7 colonnes
+     * menacePotentielleToReview{High/Medium/Low} + Reviewed{High/Medium/Low} + Totale —
+     * absentes du DDL mesures.sql et non utilisées dans le code. */
 
     #[ORM\Column(
         name: 'mode_collecte',
@@ -1219,12 +1062,12 @@ class Mesures
         return $this;
     }
 
-    public function getLineCoverage(): ?int
+    public function getLineCoverage(): ?float
     {
         return $this->lineCoverage;
     }
 
-    public function setLineCoverage(?int $lineCoverage): self
+    public function setLineCoverage(?float $lineCoverage): self
     {
         $this->lineCoverage = $lineCoverage;
         return $this;
@@ -1260,6 +1103,18 @@ class Mesures
     public function setUncoveredConditions(?int $uncoveredConditions): self
     {
         $this->uncoveredConditions = $uncoveredConditions;
+        return $this;
+    }
+
+    /* MODIF 2026-05-05 : getter/setter coverage_rating. */
+    public function getCoverageRating(): ?string
+    {
+        return $this->coverageRating;
+    }
+
+    public function setCoverageRating(?string $coverageRating): self
+    {
+        $this->coverageRating = $coverageRating;
         return $this;
     }
 
@@ -1370,6 +1225,18 @@ class Mesures
     public function setDuplicatedLinesDensity(?float $duplicatedLinesDensity): self
     {
         $this->duplicatedLinesDensity = $duplicatedLinesDensity;
+        return $this;
+    }
+
+    /* MODIF 2026-05-05 : getter/setter duplicated_lines_rating. */
+    public function getDuplicatedLinesRating(): ?string
+    {
+        return $this->duplicatedLinesRating;
+    }
+
+    public function setDuplicatedLinesRating(?string $duplicatedLinesRating): self
+    {
+        $this->duplicatedLinesRating = $duplicatedLinesRating;
         return $this;
     }
 
@@ -1637,67 +1504,16 @@ class Mesures
         return $this;
     }
 
-    public function getCodeSmellBlocker(): ?int
-    {
-        return $this->codeSmellBlocker;
-    }
+    /* MODIF 2026-05-05  : retrait des getters/setters
+     * codeSmellBlocker/Critical/Major/Minor/Info (5 paires) — colonnes supprimées du DDL. */
 
-    public function setCodeSmellBlocker(?int $v): self
-    {
-        $this->codeSmellBlocker = $v;
-        return $this;
-    }
-
-    public function getCodeSmellCritical(): ?int
-    {
-        return $this->codeSmellCritical;
-    }
-
-    public function setCodeSmellCritical(?int $v): self
-    {
-        $this->codeSmellCritical = $v;
-        return $this;
-    }
-
-    public function getCodeSmellMajor(): ?int
-    {
-        return $this->codeSmellMajor;
-    }
-
-    public function setCodeSmellMajor(?int $v): self
-    {
-        $this->codeSmellMajor = $v;
-        return $this;
-    }
-
-    public function getCodeSmellMinor(): ?int
-    {
-        return $this->codeSmellMinor;
-    }
-
-    public function setCodeSmellMinor(?int $v): self
-    {
-        $this->codeSmellMinor = $v;
-        return $this;
-    }
-
-    public function getCodeSmellInfo(): ?int
-    {
-        return $this->codeSmellInfo;
-    }
-
-    public function setCodeSmellInfo(?int $v): self
-    {
-        $this->codeSmellInfo = $v;
-        return $this;
-    }
-
-    public function getMaintainabilityIssues(): ?int
+    /* MODIF 2026-05-05 : type aligné sur DDL VARCHAR(255). */
+    public function getMaintainabilityIssues(): ?string
     {
         return $this->maintainabilityIssues;
     }
 
-    public function setMaintainabilityIssues(?int $v): self
+    public function setMaintainabilityIssues(?string $v): self
     {
         $this->maintainabilityIssues = $v;
         return $this;
@@ -1813,60 +1629,8 @@ class Mesures
         return $this;
     }
 
-    public function getBugBlocker(): ?int
-    {
-        return $this->bugBlocker;
-    }
-
-    public function setBugBlocker(?int $v): self
-    {
-        $this->bugBlocker = $v;
-        return $this;
-    }
-
-    public function getBugCritical(): ?int
-    {
-        return $this->bugCritical;
-    }
-
-    public function setBugCritical(?int $v): self
-    {
-        $this->bugCritical = $v;
-        return $this;
-    }
-
-    public function getBugMajor(): ?int
-    {
-        return $this->bugMajor;
-    }
-
-    public function setBugMajor(?int $v): self
-    {
-        $this->bugMajor = $v;
-        return $this;
-    }
-
-    public function getBugMinor(): ?int
-    {
-        return $this->bugMinor;
-    }
-
-    public function setBugMinor(?int $v): self
-    {
-        $this->bugMinor = $v;
-        return $this;
-    }
-
-    public function getBugInfo(): ?int
-    {
-        return $this->bugInfo;
-    }
-
-    public function setBugInfo(?int $v): self
-    {
-        $this->bugInfo = $v;
-        return $this;
-    }
+    /* MODIF 2026-05-05  : retrait getters/setters
+     * bugBlocker/Critical/Major/Minor/Info (5 paires). */
 
     public function getReliabilityIssues(): ?string
     {
@@ -1945,60 +1709,8 @@ class Mesures
         return $this;
     }
 
-    public function getVulnerabilityBlocker(): ?int
-    {
-        return $this->vulnerabilityBlocker;
-    }
-
-    public function setVulnerabilityBlocker(?int $v): self
-    {
-        $this->vulnerabilityBlocker = $v;
-        return $this;
-    }
-
-    public function getVulnerabilityCritical(): ?int
-    {
-        return $this->vulnerabilityCritical;
-    }
-
-    public function setVulnerabilityCritical(?int $v): self
-    {
-        $this->vulnerabilityCritical = $v;
-        return $this;
-    }
-
-    public function getVulnerabilityMajor(): ?int
-    {
-        return $this->vulnerabilityMajor;
-    }
-
-    public function setVulnerabilityMajor(?int $v): self
-    {
-        $this->vulnerabilityMajor = $v;
-        return $this;
-    }
-
-    public function getVulnerabilityMinor(): ?int
-    {
-        return $this->vulnerabilityMinor;
-    }
-
-    public function setVulnerabilityMinor(?int $v): self
-    {
-        $this->vulnerabilityMinor = $v;
-        return $this;
-    }
-
-    public function getVulnerabilityInfo(): ?int
-    {
-        return $this->vulnerabilityInfo;
-    }
-
-    public function setVulnerabilityInfo(?int $v): self
-    {
-        $this->vulnerabilityInfo = $v;
-        return $this;
-    }
+    /* MODIF 2026-05-05  : retrait getters/setters
+     * vulnerabilityBlocker/Critical/Major/Minor/Info (5 paires). */
 
     public function getSecurityIssues(): ?string
     {
@@ -2103,83 +1815,9 @@ class Mesures
         return $this;
     }
 
-    public function getMenacePotentielleToReviewHigh(): ?int
-    {
-        return $this->menacePotentielleToReviewHigh;
-    }
-
-    public function setMenacePotentielleToReviewHigh(?int $menacePotentielleToReviewHigh): self
-    {
-        $this->menacePotentielleToReviewHigh = $menacePotentielleToReviewHigh;
-        return $this;
-    }
-
-    public function getMenacePotentielleToReviewMedium(): ?int
-    {
-        return $this->menacePotentielleToReviewMedium;
-    }
-
-    public function setMenacePotentielleToReviewMedium(?int $menacePotentielleToReviewMedium): self
-    {
-        $this->menacePotentielleToReviewMedium = $menacePotentielleToReviewMedium;
-        return $this;
-    }
-
-    public function getMenacePotentielleToReviewLow(): ?int
-    {
-        return $this->menacePotentielleToReviewLow;
-    }
-
-    public function setMenacePotentielleToReviewLow(?int $menacePotentielleToReviewLow): self
-    {
-        $this->menacePotentielleToReviewLow = $menacePotentielleToReviewLow;
-        return $this;
-    }
-
-    public function getMenacePotentielleReviewedHigh(): ?int
-    {
-        return $this->menacePotentielleReviewedHigh;
-    }
-
-    public function setMenacePotentielleReviewedHigh(?int $menacePotentielleReviewedHigh): self
-    {
-        $this->menacePotentielleReviewedHigh = $menacePotentielleReviewedHigh;
-        return $this;
-    }
-
-    public function getMenacePotentielleReviewedMedium(): ?int
-    {
-        return $this->menacePotentielleReviewedMedium;
-    }
-
-    public function setMenacePotentielleReviewedMedium(?int $menacePotentielleReviewedMedium): self
-    {
-        $this->menacePotentielleReviewedMedium = $menacePotentielleReviewedMedium;
-        return $this;
-    }
-
-    public function getMenacePotentielleReviewedLow(): ?int
-    {
-        return $this->menacePotentielleReviewedLow;
-    }
-
-    public function setMenacePotentielleReviewedLow(?int $menacePotentielleReviewedLow): self
-    {
-        $this->menacePotentielleReviewedLow = $menacePotentielleReviewedLow;
-        return $this;
-    }
-
-    public function getMenacePotentielleTotale(): ?int
-    {
-        return $this->menacePotentielleTotale;
-    }
-
-    public function setMenacePotentielleTotale(?int $menacePotentielleTotale): self
-    {
-        $this->menacePotentielleTotale = $menacePotentielleTotale;
-        return $this;
-    }
-
+    /* MODIF 2026-05-05  : retrait getters/setters
+     * menacePotentielleToReview{High/Medium/Low} + Reviewed{High/Medium/Low} + Totale
+     * (7 paires) — colonnes absentes du DDL et non utilisées dans le code. */
 
     public function getModeCollecte(): ?string
     {

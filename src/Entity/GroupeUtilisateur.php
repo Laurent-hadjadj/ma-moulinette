@@ -30,8 +30,9 @@ class GroupeUtilisateur
         name: 'id',
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Identifiant unique pour la table équipe'])]
-    private $id;
+        options: ['comment' => 'Identifiant unique pour la table équipe']
+    )]
+    private int $id;
 
     #[ORM\Column(
         name: 'groupe_utilisateur',
@@ -39,10 +40,9 @@ class GroupeUtilisateur
         length: 64,
         nullable: false,
         unique: true,
-        options: ['comment' => 'Nom du groupe utilisateur.'])]
-    #[Assert\Length(
-        max: 64,
-        maxMessage: "Le nom du groupe utilisateur ne doit pas dépasser 64 caractères.")]
+        options: ['comment' => 'Nom du groupe utilisateur.']
+    )]
+    #[Assert\Length(max: 64, maxMessage: "Le nom du groupe utilisateur ne doit pas dépasser 64 caractères.")]
     private string $groupeUtilisateur;
 
     #[ORM\Column(
@@ -51,10 +51,9 @@ class GroupeUtilisateur
         length: 26,
         unique: true,
         nullable: false,
-        options: ['comment' => 'Identifiant du groupe utilisateur'])]
-    #[Assert\Length(
-        max: 26,
-        maxMessage: "L'identifiant du groupe utilisateur ne doit pas dépasser 26 caractères.")]
+        options: ['comment' => 'Identifiant du groupe utilisateur']
+    )]
+    #[Assert\Length(max: 26, maxMessage: "L'identifiant du groupe utilisateur ne doit pas dépasser 26 caractères.")]
     private string $groupeId;
 
     #[ORM\Column(
@@ -62,26 +61,28 @@ class GroupeUtilisateur
         type: Types::STRING,
         length: 255,
         nullable: false,
-        options: ['comment' => 'Description courte du groupe utilisateur.'])
-    ]
+        options: ['comment' => 'Description courte du groupe utilisateur.']
+    )]
     #[Assert\NotBlank]
-    #[Assert\Length(
-        max: 255,
-        maxMessage: "La description du groupe utilisateur ne doit pas dépasser 255 caractères.")]
-    private string $description = '';
+    #[Assert\Length(max: 255, maxMessage: "La description du groupe utilisateur ne doit pas dépasser 255 caractères.")]
+    private ?string $description = null;
 
     #[ORM\Column(
         name: 'date_modification',
-        type: Types::DATETIME_MUTABLE, nullable: true,
-        options: ['comment' => 'Date de la dernière modification de l’équipe'])]
-    private $dateModification;
+        type: Types::DATETIME_MUTABLE,
+        nullable: true,
+        options: ['comment' => 'Date de la dernière modification de l’équipe']
+    )]
+    private ?\DateTimeInterface $dateModification = null;
 
     #[ORM\Column(
         name: 'date_enregistrement',
-        type: Types::DATETIMETZ_IMMUTABLE, nullable: false,
-        options: ['comment' => 'Date d’enregistrement de l’équipe'])]
+        type: Types::DATETIMETZ_IMMUTABLE,
+        nullable: false,
+        options: ['comment' => 'Date d’enregistrement de l’équipe']
+    )]
     ## on ne peut pas ajouter la contrainte  notBlank ici
-    private $dateEnregistrement;
+    private \DateTimeImmutable $dateEnregistrement;
 
     public function __construct()
     {
@@ -157,5 +158,4 @@ class GroupeUtilisateur
 
         return $this;
     }
-
 }

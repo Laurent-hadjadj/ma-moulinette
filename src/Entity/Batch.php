@@ -20,11 +20,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Uid\Ulid;
 
 #[ORM\Entity(repositoryClass: BatchRepository::class)]
-#[ORM\Table(
-    name: 'batch',
-    schema: 'ma_moulinette',
-    options: ['comment' => 'Configuration et métadonnées des batchs']
-)]
+#[ORM\Table(name: "batch", schema: "ma_moulinette")]
 class Batch
 {
     #[ORM\Id]
@@ -32,24 +28,29 @@ class Batch
     #[ORM\Column(
         name: 'id',
         type: Types::INTEGER,
-        options: ['comment' => 'Identifiant unique de la table batch']
+        nullable: false,
+        options: ['comment' => 'Identifiant unique de la table batch.']
     )]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\Column(
         name: 'activated',
         type: Types::BOOLEAN,
-        options: ['comment' => 'Le traitement est activé ou pas']
+        nullable: false,
+        options: ['comment' => 'Le traitement est activé ou pas.']
     )]
     #[Assert\NotNull]
+    #[Assert\Type(type: 'bool')]
     private bool $activated = false;
 
     #[ORM\Column(
         name: 'automatique',
         type: Types::BOOLEAN,
-        options: ['comment' => 'Le traitement est automatique ou manuel']
+        nullable: false,
+        options: ['comment' => 'Le traitement est automatique ou manuel.']
     )]
     #[Assert\NotNull]
+    #[Assert\Type(type: 'bool')]
     private bool $automatique = false;
 
     #[ORM\Column(
@@ -57,10 +58,14 @@ class Batch
         type: Types::STRING,
         length: 32,
         unique: true,
+        nullable: false,
         options: ['comment' => 'Titre du batch, unique']
     )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 32)]
+    #[Assert\Length(
+        max: 32,
+        maxMessage: "Le titre ne doit pas dépasser 32 caractères."
+    )]
     private string $titre;
 
     #[ORM\Column(
@@ -71,9 +76,13 @@ class Batch
         options: ['comment' => 'Description du batch']
     )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 128)]
+    #[Assert\Length(
+        max: 128,
+        maxMessage: "La description ne doit pas dépasser 128 caractères."
+    )]
     private string $description;
 
+    /* MODIF 2026-05-07 : ajout Assert\NotBlank manquant. */
     #[ORM\Column(
         name: 'responsable',
         type: Types::STRING,
@@ -82,7 +91,10 @@ class Batch
         options: ['comment' => 'Identifiant complet de l’utilisateur responsable']
     )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 128)]
+    #[Assert\Length(
+        max: 128,
+        maxMessage: "Le nom de l'utilisateur ne doit pas dépasser 128 caractères."
+    )]
     private string $responsable;
 
     #[ORM\Column(
@@ -93,7 +105,10 @@ class Batch
         options: ['comment' => 'Identifiant court de l’utilisateur responsable']
     )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 64)]
+    #[Assert\Length(
+        max: 64,
+        maxMessage: "Le nom de l'utilisateur ne doit pas dépasser 64 caractères."
+    )]
     private string $responsableShort;
 
     #[ORM\Column(
@@ -101,21 +116,26 @@ class Batch
         type: Types::STRING,
         length: 32,
         unique: true,
+        nullable: false,
         options: ['comment' => 'Portefeuille de projet, unique']
     )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 32)]
+    #[Assert\Length(
+        max: 32,
+        maxMessage: "Le portefeuille ne doit pas dépasser 32 caractères."
+    )]
     private string $portefeuille;
 
+    /* MODIF 2026-05-07 : ajout Assert\PositiveOrZero (rejette -1). */
     #[ORM\Column(
         name: 'nombre_projet',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de projets dans le batch']
     )]
-    #[Assert\NotNull]
+    #[Assert\Type(type: 'integer')]
     #[Assert\PositiveOrZero]
-    private int $nombreProjet = 0;
+    private ?int $nombreProjet = 0;
 
     #[ORM\Column(
         name: 'execution',
@@ -130,7 +150,8 @@ class Batch
         name: 'traitement_id',
         type: 'ulid',
         unique: true,
-        options: ['comment' => 'Identifiant unique pour lier un traitement à son batch (ULID)']
+        nullable: false,
+        options: ['comment' => 'Identifiant unique pour lier un traitement à son batch (ULID sous forme de texte).']
     )]
     private Ulid $traitementId;
 
@@ -145,14 +166,19 @@ class Batch
     #[ORM\Column(
         name: 'date_enregistrement',
         type: Types::DATETIMETZ_IMMUTABLE,
+        nullable: false,
         options: ['comment' => 'Date d’enregistrement du batch']
     )]
     private \DateTimeImmutable $dateEnregistrement;
 
+    /* MODIF 2026-05-07 : init traitementId + dateEnregistrement (sinon must not be accessed before initialization). */
     public function __construct()
     {
+        $this->activated = false;
+        $this->responsable = 'John Doe';
+        $this->responsableShort = 'JD';
         $this->traitementId = new Ulid();
-        $this->dateEnregistrement = new \DateTimeImmutable();
+        $this->dateEnregistrement = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
     }
 
     public function getId(): ?int
@@ -170,7 +196,7 @@ class Batch
         return $this->automatique;
     }
 
-    public function setAutomatique(bool $automatique): self
+    public function setAutomatique(bool $automatique): static
     {
         $this->automatique = $automatique;
 
@@ -182,7 +208,7 @@ class Batch
         return $this->activated;
     }
 
-    public function setActivated(bool $activated): self
+    public function setActivated(bool $activated): static
     {
         $this->activated = $activated;
 
@@ -194,7 +220,7 @@ class Batch
         return $this->titre;
     }
 
-    public function setTitre(string $titre): self
+    public function setTitre(string $titre): static
     {
         $this->titre = $titre;
 
@@ -206,7 +232,7 @@ class Batch
         return $this->description;
     }
 
-    public function setDescription(string $description): self
+    public function setDescription(string $description): static
     {
         $this->description = $description;
 
@@ -218,7 +244,7 @@ class Batch
         return $this->responsable;
     }
 
-    public function setResponsable(string $responsable): self
+    public function setResponsable(string $responsable): static
     {
         $this->responsable = $responsable;
 
@@ -230,7 +256,7 @@ class Batch
         return $this->responsableShort;
     }
 
-    public function setResponsableShort(string $responsableShort): self
+    public function setResponsableShort(string $responsableShort): static
     {
         $this->responsableShort = $responsableShort;
 
@@ -242,7 +268,7 @@ class Batch
         return $this->portefeuille;
     }
 
-    public function setPortefeuille(string $portefeuille): self
+    public function setPortefeuille(string $portefeuille): static
     {
         $this->portefeuille = $portefeuille;
 
@@ -254,7 +280,7 @@ class Batch
         return $this->nombreProjet;
     }
 
-    public function setNombreProjet(int $nombreProjet): self
+    public function setNombreProjet(int $nombreProjet): static
     {
         $this->nombreProjet = $nombreProjet;
 
@@ -266,7 +292,7 @@ class Batch
         return $this->execution;
     }
 
-    public function setExecution(?string $execution): self
+    public function setExecution(?string $execution): static
     {
         $this->execution = $execution;
 
@@ -278,7 +304,7 @@ class Batch
         return $this->traitementId;
     }
 
-    public function setTraitementId(Ulid $traitementId): self
+    public function setTraitementId(Ulid $traitementId): static
     {
         $this->traitementId = $traitementId;
 
@@ -290,7 +316,7 @@ class Batch
         return $this->dateModification;
     }
 
-    public function setDateModification(?\DateTimeInterface $dateModification): self
+    public function setDateModification(?\DateTimeInterface $dateModification): static
     {
         $this->dateModification = $dateModification;
 
@@ -302,11 +328,10 @@ class Batch
         return $this->dateEnregistrement;
     }
 
-    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): self
+    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
     {
         $this->dateEnregistrement = $dateEnregistrement;
 
         return $this;
     }
-
 }

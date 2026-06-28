@@ -10,22 +10,22 @@
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
+
 namespace App\Entity;
 
 use App\Repository\BatchTraitementRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Uid\{Ulid};
+use Symfony\Component\Uid\Ulid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: BatchTraitementRepository::class)]
-#[ORM\Table(
-    name: "batch_traitement",
-    schema: "ma_moulinette",
-    options: ['comment' => 'Gestion des traitements batch']
-)]
+#[ORM\Table(name: "batch_traitement", schema: "ma_moulinette")]
 class BatchTraitement
 {
+    // MODIF 2026-05-26 : extraction des string literals dupliqués (S1192).
+    public const MODE_MANUEL = 'TRAITEMENT MANUEL';
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(
@@ -34,7 +34,7 @@ class BatchTraitement
         nullable: false,
         options: ['comment' => 'Identifiant unique pour la table Batch Traitement']
     )]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\Column(
         name: 'mode_collecte',
@@ -43,12 +43,12 @@ class BatchTraitement
         nullable: false,
         options: ['comment' => 'Mode de collecte du traitement']
     )]
-    #[Assert\NotBlank]
     #[Assert\Choice(
-        choices: ['COLLECTE', 'TRAITEMENT MANUEL', 'TRAITEMENT AUTOMATIQUE'],
-        message: "Le démarrage doit être COLLECTE, TRAITEMENT MANUEL ou TRAITEMENT AUTOMATIQUE"
+        choices: ['COLLECTE', self::MODE_MANUEL, 'TRAITEMENT AUTOMATIQUE'],
+        message: "Le démarrage doit être Collecte, TRAITEMENT MANUEL ou TRAITEMENT AUTOMATIQUE"
     )]
-    private string $modeCollecte = "TRAITEMENT MANUEL";
+    #[Assert\NotBlank]
+    private string $modeCollecte = self::MODE_MANUEL;
 
     #[ORM\Column(
         name: 'activated',
@@ -56,35 +56,42 @@ class BatchTraitement
         nullable: false,
         options: ['comment' => 'Indique si le traitement est activé ou non']
     )]
+    #[Assert\Type(type: 'bool', message: " Le résultat doit être un booléen.")]
     #[Assert\NotNull]
-    #[Assert\Type('bool')]
     private bool $activated = false;
 
+    /* MODIF 2026-05-07 : retrait Assert\NotNull (incohérent avec nullable=true en BDD). */
     #[ORM\Column(
         name: 'success',
         type: Types::BOOLEAN,
         nullable: true,
         options: ['comment' => 'Indique si le traitement a réussi ou échoué']
     )]
-    #[Assert\Type('bool')]
+    #[Assert\Type(type: 'bool', message: " Le résultat doit être un booléen.")]
     private ?bool $success = null;
 
     #[ORM\Column(
         name: 'pending',
         type: Types::BOOLEAN,
         nullable: true,
-        options: ['comment' => "Indique si le traitement est en attente d'exécution"]
+        options: ['comment' => "Indique si le traitement est en attente d'execution"]
     )]
-    #[Assert\Type('bool')]
+    #[Assert\Type(
+        type: 'bool',
+        message: "Le résultat doit être un booléen."
+    )]
     private ?bool $pending = null;
 
     #[ORM\Column(
         name: 'in_progress',
         type: Types::BOOLEAN,
         nullable: false,
-        options: ['comment' => "Indique si le traitement est en cours d'exécution"]
+        options: ['comment' => "Indique si le traitement est en cours d'execution"]
     )]
-    #[Assert\Type('bool')]
+    #[Assert\Type(
+        type: 'bool',
+        message: "Le résultat doit être un booléen."
+    )]
     private bool $inProgress = false;
 
     #[ORM\Column(
@@ -95,7 +102,10 @@ class BatchTraitement
         options: ['comment' => 'Titre du traitement']
     )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 32)]
+    #[Assert\Length(
+        max: 32,
+        maxMessage: "Le titre ne doit pas dépasser 32 caractères."
+    )]
     private string $titre;
 
     #[ORM\Column(
@@ -106,7 +116,10 @@ class BatchTraitement
         options: ['comment' => 'Nom du portefeuille de projets associé']
     )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 32)]
+    #[Assert\Length(
+        max: 32,
+        maxMessage: "Le nom du portefeuille ne doit pas dépasser 32 caractères."
+    )]
     private string $portefeuille = "Aucun";
 
     #[ORM\Column(
@@ -116,7 +129,10 @@ class BatchTraitement
         options: ['comment' => 'Nombre de projets traités']
     )]
     #[Assert\NotNull]
-    #[Assert\Type('integer')]
+    #[Assert\Type(
+        type: 'integer',
+        message: "Le nombre de projets doit être un entier."
+    )]
     private int $nombreProjet = 0;
 
     #[ORM\Column(
@@ -127,9 +143,13 @@ class BatchTraitement
         options: ['comment' => 'Responsable du traitement']
     )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 128)]
+    #[Assert\Length(
+        max: 128,
+        maxMessage: "Le nom du responsable ne doit pas dépasser 128 caractères."
+    )]
     private string $responsable;
 
+    /* MODIF 2026-05-07 : ajout Assert\NotBlank manquant. */
     #[ORM\Column(
         name: 'responsable_short',
         type: Types::STRING,
@@ -138,11 +158,15 @@ class BatchTraitement
         options: ['comment' => 'Identifiant court de l’utilisateur responsable']
     )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 64)]
+    #[Assert\Length(
+        max: 64,
+        maxMessage: "Le nom de l'utilisateur ne doit pas dépasser 64 caractères."
+    )]
     private string $responsableShort;
 
+    /* MODIF 2026-05-07 : retrait Assert\NotNull (incohérent avec nullable=true en BDD). */
     #[ORM\Column(
-        name: 'debut_traitement',
+        name: 'date_traitement',
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: true,
         options: ['comment' => 'Date et heure de début du traitement']
@@ -158,14 +182,13 @@ class BatchTraitement
     private ?\DateTimeImmutable $finTraitement = null;
 
     #[ORM\Column(
-        name: 'traitement_id',
-        type: Types::STRING,
-        length: 36,
+        name: '',
+        type: 'ulid',
         unique: true,
         nullable: false,
-        options: ['comment' => 'Identifiant unique pour lier un traitement (ULID sous forme de texte)']
+        options: ['comment' => 'Identifiant unique pour lier un traitement (ULID sous forme de texte).']
     )]
-    private string $traitementId;
+    private Ulid $traitementId;
 
     #[ORM\Column(
         name: 'date_enregistrement',
@@ -173,14 +196,16 @@ class BatchTraitement
         nullable: false,
         options: ['comment' => 'Date d’enregistrement du traitement dans le système']
     )]
+    #[Assert\NotNull]
     private \DateTimeImmutable $dateEnregistrement;
 
+    /* MODIF 2026-05-07 : ajout constructeur (4 args positionnels + 2 optionnels nommés). */
     public function __construct(
         string $titre,
         string $portefeuille,
         string $responsable,
         string $responsableShort,
-        string $modeCollecte = "TRAITEMENT MANUEL",
+        string $modeCollecte = self::MODE_MANUEL,
         int $nombreProjet = 0
     ) {
         $this->titre = $titre;
@@ -208,7 +233,7 @@ class BatchTraitement
         return $this->modeCollecte;
     }
 
-    public function setModeCollecte(string $modeCollecte): self
+    public function setModeCollecte(string $modeCollecte): static
     {
         $this->modeCollecte = $modeCollecte;
 
@@ -220,7 +245,7 @@ class BatchTraitement
         return $this->activated;
     }
 
-    public function setActivated(bool $activated): self
+    public function setActivated(bool $activated): static
     {
         $this->activated = $activated;
 
@@ -232,7 +257,7 @@ class BatchTraitement
         return $this->success;
     }
 
-    public function setSuccess(bool $success): self
+    public function setSuccess(bool $success): static
     {
         $this->success = $success;
 
@@ -244,7 +269,7 @@ class BatchTraitement
         return $this->pending;
     }
 
-    public function setPending(bool $pending): self
+    public function setPending(bool $pending): static
     {
         $this->pending = $pending;
 
@@ -256,7 +281,7 @@ class BatchTraitement
         return $this->inProgress;
     }
 
-    public function setInProgress(bool $inProgress): self
+    public function setInProgress(bool $inProgress): static
     {
         $this->inProgress = $inProgress;
 
@@ -268,7 +293,7 @@ class BatchTraitement
         return $this->titre;
     }
 
-    public function setTitre(string $titre): self
+    public function setTitre(string $titre): static
     {
         $this->titre = $titre;
 
@@ -280,7 +305,7 @@ class BatchTraitement
         return $this->portefeuille;
     }
 
-    public function setPortefeuille(string $portefeuille): self
+    public function setPortefeuille(string $portefeuille): static
     {
         $this->portefeuille = $portefeuille;
 
@@ -292,7 +317,7 @@ class BatchTraitement
         return $this->nombreProjet;
     }
 
-    public function setNombreProjet(int $nombreProjet): self
+    public function setNombreProjet(int $nombreProjet): static
     {
         $this->nombreProjet = $nombreProjet;
 
@@ -304,19 +329,19 @@ class BatchTraitement
         return $this->responsable;
     }
 
-    public function setResponsable(string $responsable): self
+    public function setResponsable(string $responsable): static
     {
         $this->responsable = $responsable;
 
         return $this;
     }
 
-        public function getResponsableShort(): ?string
+    public function getResponsableShort(): ?string
     {
         return $this->responsableShort;
     }
 
-    public function setResponsableShort(string $responsableShort): self
+    public function setResponsableShort(string $responsableShort): static
     {
         $this->responsableShort = $responsableShort;
 
@@ -328,7 +353,7 @@ class BatchTraitement
         return $this->debutTraitement;
     }
 
-    public function setDebutTraitement(?\DateTimeImmutable $debutTraitement): self
+    public function setDebutTraitement(?\DateTimeImmutable $debutTraitement): static
     {
         $this->debutTraitement = $debutTraitement;
 
@@ -340,19 +365,19 @@ class BatchTraitement
         return $this->finTraitement;
     }
 
-    public function setFinTraitement(?\DateTimeImmutable $finTraitement): self
+    public function setFinTraitement(?\DateTimeImmutable $finTraitement): static
     {
         $this->finTraitement = $finTraitement;
 
         return $this;
     }
 
-    public function getTraitementId(): string
+    public function getTraitementId(): ?Ulid
     {
         return $this->traitementId;
     }
 
-    public function setTraitementId(string $traitementId): self
+    public function setTraitementId(Ulid $traitementId): static
     {
         $this->traitementId = $traitementId;
 
@@ -364,11 +389,10 @@ class BatchTraitement
         return $this->dateEnregistrement;
     }
 
-    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): self
+    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
     {
         $this->dateEnregistrement = $dateEnregistrement;
 
         return $this;
     }
-
 }

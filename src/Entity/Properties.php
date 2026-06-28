@@ -19,10 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PropertiesRepository::class)]
-#[ORM\Table(
-    name: 'properties',
-    schema: "ma_moulinette",
-    options: ['comment' => "table des propriétés de l'application"])]
+#[ORM\Table(name: "properties", schema: "ma_moulinette")]
 class Properties
 {
     #[ORM\Id]
@@ -30,15 +27,18 @@ class Properties
     #[ORM\Column(
         name: 'id',
         type: Types::INTEGER,
-        options: ['comment' => 'Identifiant unique pour la table propriété'])]
-    private ?int $id = null;
+        nullable: false,
+        options: ['comment' => 'Identifiant unique pour la table propriété']
+    )]
+    private int $id;
 
     #[ORM\Column(
         name: 'type',
         type: Types::STRING,
         length: 255,
         nullable: false,
-        options: ['comment' => 'Type de propriété'])]
+        options: ['comment' => 'Type de propriété']
+    )]
     #[Assert\NotBlank]
     private string $type;
 
@@ -46,8 +46,8 @@ class Properties
         name: 'projet_bd',
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Identifiant du projet dans la base de données'])]
-    #[Assert\NotNull]
+        options: ['comment' => 'Identifiant du projet dans la base de données']
+    )]
     #[Assert\PositiveOrZero]
     private int $projetBd;
 
@@ -55,26 +55,26 @@ class Properties
         name: 'projet_sonar',
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Identifiant du projet dans Sonar'])]
-    #[Assert\NotNull]
+        options: ['comment' => 'Identifiant du projet dans Sonar']
+    )]
     #[Assert\PositiveOrZero]
     private int $projetSonar;
 
     #[ORM\Column(
-        name: 'profil_bd',
+        name: 'projet_bd',
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Identifiant du profil dans la base de données'])]
-    #[Assert\NotNull]
+        options: ['comment' => 'Identifiant du profil dans la base de données']
+    )]
     #[Assert\PositiveOrZero]
     private int $profilBd;
 
     #[ORM\Column(
-        name: 'profil_sonar',
+        name: 'projet_sonar',
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Identifiant du profil dans Sonar'])]
-    #[Assert\NotNull]
+        options: ['comment' => 'Identifiant du profil dans Sonar']
+    )]
     #[Assert\PositiveOrZero]
     private int $profilSonar;
 
@@ -82,28 +82,28 @@ class Properties
         name: 'date_creation',
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date de création de la propriété'])]
-    #[Assert\NotNull]
+        options: ['comment' => 'Date de création de la propriété']
+    )]
+    #[Assert\NotBlank]
     private \DateTimeImmutable $dateCreation;
 
     #[ORM\Column(
         name: 'date_modification_projet',
         type: Types::DATETIME_MUTABLE,
         nullable: true,
-        options: ['comment' => 'Date de la dernière modification du projet'])]
+        options: ['comment' => 'Date de la dernière modification du projet']
+    )]
+    #[Assert\NotNull]
     private ?\DateTimeInterface $dateModificationProjet = null;
 
     #[ORM\Column(
         name: 'date_modification_profil',
         type: Types::DATETIME_MUTABLE,
         nullable: true,
-        options: ['comment' => 'Date de la dernière modification du profil'])]
+        options: ['comment' => 'Date de la dernière modification du profil']
+    )]
+    #[Assert\NotNull]
     private ?\DateTimeInterface $dateModificationProfil = null;
-
-    public function __construct()
-    {
-        $this->dateCreation = new \DateTimeImmutable();
-    }
 
     public function getId(): ?int
     {
@@ -120,7 +120,7 @@ class Properties
         return $this->type;
     }
 
-    public function setType(string $type): self
+    public function setType(string $type): static
     {
         $this->type = $type;
 
@@ -132,7 +132,7 @@ class Properties
         return $this->projetBd;
     }
 
-    public function setProjetBd(int $projetBd): self
+    public function setProjetBd(int $projetBd): static
     {
         $this->projetBd = $projetBd;
 
@@ -144,7 +144,7 @@ class Properties
         return $this->projetSonar;
     }
 
-    public function setProjetSonar(int $projetSonar): self
+    public function setProjetSonar(int $projetSonar): static
     {
         $this->projetSonar = $projetSonar;
 
@@ -156,7 +156,7 @@ class Properties
         return $this->profilBd;
     }
 
-    public function setProfilBd(int $profilBd): self
+    public function setProfilBd(int $profilBd): static
     {
         $this->profilBd = $profilBd;
 
@@ -168,7 +168,7 @@ class Properties
         return $this->profilSonar;
     }
 
-    public function setProfilSonar(int $profilSonar): self
+    public function setProfilSonar(int $profilSonar): static
     {
         $this->profilSonar = $profilSonar;
 
@@ -180,7 +180,7 @@ class Properties
         return $this->dateCreation;
     }
 
-    public function setDateCreation(\DateTimeImmutable $dateCreation): self
+    public function setDateCreation(\DateTimeImmutable $dateCreation): static
     {
         $this->dateCreation = $dateCreation;
 
@@ -192,7 +192,7 @@ class Properties
         return $this->dateModificationProjet;
     }
 
-    public function setDateModificationProjet(?\DateTimeInterface $dateModificationProjet): self
+    public function setDateModificationProjet(?\DateTimeInterface $dateModificationProjet): static
     {
         $this->dateModificationProjet = $dateModificationProjet;
 
@@ -204,11 +204,10 @@ class Properties
         return $this->dateModificationProfil;
     }
 
-    public function setDateModificationProfil(?\DateTimeInterface $dateModificationProfil): self
+    public function setDateModificationProfil(?\DateTimeInterface $dateModificationProfil): static
     {
         $this->dateModificationProfil = $dateModificationProfil;
 
         return $this;
     }
-
 }

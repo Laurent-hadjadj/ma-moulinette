@@ -1,4 +1,5 @@
 <?php
+
 /*
  *  Ma-Moulinette
  *  --------------
@@ -20,11 +21,7 @@ use App\Repository\BatchExecutionJournalRepository;
  * [Description BatchExecutionJournal]
  */
 #[ORM\Entity(repositoryClass: BatchExecutionJournalRepository::class)]
-#[ORM\Table(
-    name: 'batch_execution_journal',
-    schema: 'ma_moulinette',
-    options: ['comment' => 'Journal des exécutions de batch, ligne par projet']
-)]
+#[ORM\Table(name: "batch_execution_journal", schema: "ma_moulinette")]
 class BatchExecutionJournal
 {
     #[ORM\Id]
@@ -32,9 +29,10 @@ class BatchExecutionJournal
     #[ORM\Column(
         name: 'id',
         type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Identifiant unique de la table batch_execution_journal']
     )]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\Column(
         name: 'code',
@@ -44,9 +42,11 @@ class BatchExecutionJournal
     )]
     private int $code = 500;
 
+    /* MODIF 2026-05-05 : ajout de `length: 128`*/
     #[ORM\Column(
         name: 'nom_projet',
         type: Types::STRING,
+        length: 128,
         nullable: false,
         options: ['comment' => 'Nom du projet']
     )]
@@ -61,61 +61,41 @@ class BatchExecutionJournal
     )]
     private string $portefeuille = '';
 
+    /** @var string|resource|null La colonne BINARY peut être renvoyée comme stream selon le driver. */
     #[ORM\Column(
         name: 'compte_rendu',
-        type: Types::BLOB,
+        type: Types::BINARY,
         nullable: false,
-        options: ['comment' => 'Compte rendu HTML compressé du traitement']
+        options: ['comment' => 'Compte rendu HTML compressé du traitement.']
     )]
-    private string $compteRendu = '';
+    private $compteRendu = null;
 
     #[ORM\Column(
         name: 'date_execution',
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => "Date d'exécution de la collecte"]
+        options: ['comment' => "Date d'exécution de la collecte."]
     )]
     private \DateTimeImmutable $dateExecution;
 
-    #[ORM\ManyToOne(
-        targetEntity: BatchExecution::class,
-        inversedBy: 'collectes'
-    )]
-    #[ORM\JoinColumn(
-        name: 'batch_execution_id',
-        referencedColumnName: 'id',
-        nullable: false,
-        onDelete: 'CASCADE'
-    )]
-    private ?BatchExecution $batchExecution = null;
+    #[ORM\ManyToOne(targetEntity: BatchExecution::class, inversedBy: 'collectes')]
+    #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    private ?BatchExecution $job = null;
 
-    /**
-     * [Description for __construct]
-     *
-     * @param string $nomProjet
-     * @param string $portefeuille
-     * @param string $compteRendu
-     * @param BatchExecution $batchExecution
-     * @param \DateTimeImmutable $dateExecution
-     * @param int $code
-     *
-     * Created at: 29/03/2026 09:13:20 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
+    /* MODIF 2026-05-07 : ajout constructeur (paramètres nommés). */
     public function __construct(
-        string $nomProjet,
-        string $portefeuille,
-        string $compteRendu,
-        BatchExecution $batchExecution,
-        \DateTimeImmutable $dateExecution,
+        string $nomProjet = '',
+        string $portefeuille = '',
+        string $compteRendu = '',
+        ?BatchExecution $batchExecution = null,
+        ?\DateTimeImmutable $dateExecution = null,
         int $code = 500
     ) {
         $this->nomProjet = $nomProjet;
         $this->portefeuille = $portefeuille;
-        $this->compteRendu = $compteRendu;
-        $this->dateExecution = $dateExecution;
-        $this->batchExecution = $batchExecution;
+        $this->setCompteRendu($compteRendu);
+        $this->job = $batchExecution;
+        $this->dateExecution = $dateExecution ?? new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
         $this->code = $code;
     }
 
@@ -124,19 +104,16 @@ class BatchExecutionJournal
         return $this->id;
     }
 
-    public function setId(int $id): self
-    {
-        $this->id = $id;
-        return $this;
-    }
-
     public function setCompteRendu(string $html): void
     {
         // 9 = niveau de compression le plus haut (0–9)
         $this->compteRendu = gzencode($html, 9);
     }
 
-    public function getCompteRenduBrut(): ?string
+    /**
+     * @return string|resource|null
+     */
+    public function getCompteRenduBrut()
     {
         return $this->compteRendu; // retourne la propriété privée telle quelle
     }
@@ -203,15 +180,14 @@ class BatchExecutionJournal
         return $this->dateExecution;
     }
 
-    public function getBatchExecution(): ?BatchExecution
+    public function setJob(?BatchExecution $job): void
     {
-        return $this->batchExecution;
+        $this->job = $job;
     }
 
-    public function setBatchExecution(?BatchExecution $batchExecution): self
+    public function getJob(): ?BatchExecution
     {
-        $this->batchExecution = $batchExecution;
-        return $this;
+        return $this->job;
     }
 
     // ----------------------------------------------------

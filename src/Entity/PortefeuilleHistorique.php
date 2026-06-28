@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -11,16 +11,22 @@
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
 
+/* MODIF 2026-05-05 : entité créée pour aligner sur le
+ * DDL portefeuille_historique.sql et les indexes idx_portefeuille_historique_action / _date.
+ * Schéma identique à ProfilesHistorique (mêmes colonnes, sémantique côté portefeuille). */
+
 namespace App\Entity;
 
-use App\Repository\ProfilesHistoriqueRepository;
+use App\Repository\PortefeuilleHistoriqueRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: ProfilesHistoriqueRepository::class)]
-#[ORM\Table(name: "profiles_historique", schema: "ma_moulinette")]
-class ProfilesHistorique
+#[ORM\Entity(repositoryClass: PortefeuilleHistoriqueRepository::class)]
+#[ORM\Table(name: "portefeuille_historique", schema: "ma_moulinette")]
+#[ORM\Index(name: 'idx_portefeuille_historique_action', columns: ['action'])]
+#[ORM\Index(name: 'idx_portefeuille_historique_date', columns: ['date'])]
+class PortefeuilleHistorique
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -28,7 +34,7 @@ class ProfilesHistorique
         name: 'id',
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Identifiant unique pour chaque historique de profil']
+        options: ['comment' => 'Identifiant unique pour chaque historique de portefeuille']
     )]
     private int $id;
 
@@ -46,7 +52,7 @@ class ProfilesHistorique
         type: Types::STRING,
         length: 16,
         nullable: false,
-        options: ['comment' => 'language de programmation associé']
+        options: ['comment' => 'Langage de programmation associé']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
@@ -99,7 +105,7 @@ class ProfilesHistorique
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 128,
-        maxMessage: "La règle ne peut pas dépasser 32 caractères."
+        maxMessage: "La règle ne peut pas dépasser 128 caractères."
     )]
     private string $rule;
 
@@ -118,13 +124,8 @@ class ProfilesHistorique
         nullable: false,
         options: ['comment' => 'Détails supplémentaires ou données binaires associées à l’événement']
     )]
-    /* MODIF 2026-05-07 : retrait du type `string` sur $detail.
-     * La colonne SQL est `bytea` (Types::BLOB) — Doctrine retourne une `resource` a la
-     * lecture. Avec un type `string`, l'hydratation jetait une TypeError. Sans type,
-     * la propriété accepte `string` (écriture) ou `resource` (lecture).
-     */
     #[Assert\NotNull]
-    private $detail;
+    private string $detail;
 
     #[ORM\Column(
         name: 'date_enregistrement',
@@ -139,6 +140,7 @@ class ProfilesHistorique
     {
         return $this->id;
     }
+
     public function setId(int $id): self
     {
         $this->id = $id;
@@ -153,7 +155,6 @@ class ProfilesHistorique
     public function setDateCourte(\DateTimeImmutable $dateCourte): static
     {
         $this->dateCourte = $dateCourte;
-
         return $this;
     }
 
@@ -165,7 +166,6 @@ class ProfilesHistorique
     public function setLanguage(string $language): static
     {
         $this->language = $language;
-
         return $this;
     }
 
@@ -177,7 +177,6 @@ class ProfilesHistorique
     public function setDate(\DateTimeImmutable $date): static
     {
         $this->date = $date;
-
         return $this;
     }
 
@@ -189,7 +188,6 @@ class ProfilesHistorique
     public function setAction(string $action): static
     {
         $this->action = $action;
-
         return $this;
     }
 
@@ -201,7 +199,6 @@ class ProfilesHistorique
     public function setAuteur(string $auteur): static
     {
         $this->auteur = $auteur;
-
         return $this;
     }
 
@@ -213,7 +210,6 @@ class ProfilesHistorique
     public function setRule(string $rule): static
     {
         $this->rule = $rule;
-
         return $this;
     }
 
@@ -225,7 +221,6 @@ class ProfilesHistorique
     public function setDescription(string $description): static
     {
         $this->description = $description;
-
         return $this;
     }
 
@@ -237,7 +232,6 @@ class ProfilesHistorique
     public function setDetail($detail): static
     {
         $this->detail = $detail;
-
         return $this;
     }
 
@@ -249,7 +243,6 @@ class ProfilesHistorique
     public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
     {
         $this->dateEnregistrement = $dateEnregistrement;
-
         return $this;
     }
 }

@@ -19,10 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: InformationProjetRepository::class)]
-#[ORM\Table(
-    name: 'information_projet',
-    schema: "ma_moulinette",
-    options: ['comment' => 'Table des informations du projet.'])]
+#[ORM\Table(name: "information_projet", schema: "ma_moulinette")]
 class InformationProjet
 {
     #[ORM\Id]
@@ -30,19 +27,23 @@ class InformationProjet
     #[ORM\Column(
         name: 'id',
         type: Types::INTEGER,
-        options: ['comment' => 'Identifiant unique pour chaque instance de InformationProjet'])]
-    private ?int $id = null;
+        nullable: false,
+        options: ['comment' => 'Identifiant unique pour chaque instance de InformationProjet']
+    )]
+    private int $id;
 
     #[ORM\Column(
         name: 'maven_key',
         type: Types::STRING,
         length: 255,
         nullable: false,
-        options: ['comment' => 'Clé Maven du projet'])]
+        options: ['comment' => 'Clé Maven du projet']
+    )]
     #[Assert\NotBlank(message: "La clé Maven ne peut pas être vide.")]
     #[Assert\Length(
         max: 255,
-        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères.")]
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
+    )]
     private string $mavenKey;
 
     #[ORM\Column(
@@ -50,31 +51,40 @@ class InformationProjet
         type: Types::STRING,
         length: 64,
         nullable: false,
-        options: ['comment' => 'Clé d’analyse du projet (UUID SonarQube 36 chars, marge à 64)'])]
+        options: ['comment' => 'Clé d’analyse du projet']
+    )]
     #[Assert\NotBlank(message: "La clé d'analyse ne peut pas être vide.")]
     #[Assert\Length(
         max: 64,
-        maxMessage: "La clé d'analyse ne doit pas dépasser 64 caractères.")]
+        maxMessage: "La clé d'analyse ne doit pas dépasser 64 caractères."
+    )]
     private string $analyseKey;
 
+    /* MODIF 2026-05-04 : alignement entité avec la DB.
+     * Colonnes `date` et `type` renommées en `date_analyse` et `type_analyse`
+     * côté DB le 2026-04-26 (cf. comments.sql:17, indexes.sql:15).
+     * Renommage propriétés : $date → $dateAnalyse, $type → $typeAnalyse + name: explicite. */
     #[ORM\Column(
         name: 'date_analyse',
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date de l’analyse du projet'])]
+        options: ['comment' => 'Date de l’analyse du projet']
+    )]
     #[Assert\NotNull(message: "La date de l'analyse ne peut pas être nulle.")]
-    private \DateTimeImmutable $date;
+    private \DateTimeImmutable $dateAnalyse;
 
     #[ORM\Column(
         name: 'project_version',
         type: Types::STRING,
         length: 32,
         nullable: false,
-        options: ['comment' => 'Version du projet lors de l’analyse'])]
+        options: ['comment' => 'Version du projet lors de l’analyse']
+    )]
     #[Assert\NotBlank(message: "La version du projet ne peut pas être vide.")]
     #[Assert\Length(
         max: 32,
-        maxMessage: "La version du projet ne doit pas dépasser 32 caractères.")]
+        maxMessage: "La version du projet ne doit pas dépasser 32 caractères."
+    )]
     private string $projectVersion;
 
     #[ORM\Column(
@@ -82,51 +92,45 @@ class InformationProjet
         type: Types::STRING,
         length: 32,
         nullable: false,
-        options: ['comment' => 'Type d’analyse effectuée'])]
+        options: ['comment' => 'Type d’analyse effectuée']
+    )]
     #[Assert\NotBlank(message: "Le type d'analyse ne peut pas être vide.")]
     #[Assert\Length(
         max: 32,
-        maxMessage: "Le type d'analyse ne doit pas dépasser 32 caractères.")]
-    private string $type;
+        maxMessage: "Le type d'analyse ne doit pas dépasser 32 caractères."
+    )]
+    private string $typeAnalyse;
 
     #[ORM\Column(
         name: 'version_sonar',
         type: Types::INTEGER,
         nullable: false,
-        options: [
-            'default' => 0,
-            'comment' => 'Nombre total de version sur le serveur SonarQube.'])]
-    #[Assert\PositiveOrZero]
+        options: ['default' => 0, 'comment' => 'Nombre total de version sur le serveur SonarQube.']
+    )]
     private int $versionSonar = 0;
 
     #[ORM\Column(
         name: 'version_release_sonar',
         type: Types::INTEGER,
         nullable: false,
-        options: [
-            'default' => 0,
-            'comment' => 'Nombre de version Release sur le serveur SonarQube.'])]
-    #[Assert\PositiveOrZero]
+        options: ['default' => 0, 'comment' => 'Nombre de version Release sur le serveur SonarQube.']
+    )]
     private int $versionReleaseSonar = 0;
 
     #[ORM\Column(
         name: 'version_snapshot_sonar',
         type: Types::INTEGER,
         nullable: false,
-        options: [
-            'default' => 0,
-            'comment' => 'Nombre de version Snapshot sur le serveur SonarQube.'])]
-    #[Assert\PositiveOrZero]
+        options: ['default' => 0, 'comment' => 'Nombre de version Snapshot sur le serveur SonarQube.']
+    )]
     private int $versionSnapshotSonar = 0;
 
     #[ORM\Column(
         name: 'version_autre_sonar',
         type: Types::INTEGER,
         nullable: false,
-        options: [
-            'default' => 0,
-            'comment' => 'Nombre de version Autre sur le serveur SonarQube.'])]
-    #[Assert\PositiveOrZero]
+        options: ['default' => 0, 'comment' => 'Nombre de version Autre sur le serveur SonarQube.']
+    )]
     private int $versionAutreSonar = 0;
 
     #[ORM\Column(
@@ -134,10 +138,12 @@ class InformationProjet
         type: Types::STRING,
         length: 32,
         nullable: true,
-        options: ['comment' => 'Mode de collecte : [COLLECTE] | [TRAITEMENT MANUEL] | [TRAITEMENT AUTOMATIQUE]'])]
+        options: ['comment' => 'Mode de collecte : [COLLECTE] | [TRAITEMENT MANUEL] | [TRAITEMENT AUTOMATIQUE]']
+    )]
     #[Assert\Length(
         max: 32,
-        maxMessage: "Le mode de collecte ne peut pas dépasser 32 caractères.")]
+        maxMessage: "Le mode de collecte ne peut pas dépasser 32 caractères."
+    )]
     private ?string $modeCollecte = null;
 
     #[ORM\Column(
@@ -145,30 +151,27 @@ class InformationProjet
         type: Types::STRING,
         length: 320,
         nullable: true,
-        options: ['comment' => "Compte de l'utilisateur qui a réalisé la collecte."])]
+        options: ['comment' => "Compte de l'utilisateur qui a réalisé la collecte."]
+    )]
     #[Assert\Length(
         max: 320,
-        maxMessage: "Le compte de l’utilisateur ne peut pas dépasser 320 caractères.")]
+        maxMessage: "Le compte de l’utilisateur ne peut pas dépasser 320 caractères."
+    )]
     private ?string $utilisateurCollecte = null;
 
     #[ORM\Column(
         name: 'date_enregistrement',
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date d’enregistrement de l’information du projet'])]
+        options: ['comment' => 'Date d’enregistrement de l’information du projet']
+    )]
     #[Assert\NotNull(message: "La date d'enregistrement ne peut pas être nulle.")]
     private \DateTimeImmutable $dateEnregistrement;
-
-    public function __construct()
-    {
-        $this->dateEnregistrement = new \DateTimeImmutable();
-    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
-
     public function setId(int $id): self
     {
         $this->id = $id;
@@ -180,7 +183,7 @@ class InformationProjet
         return $this->mavenKey;
     }
 
-    public function setMavenKey(string $mavenKey): self
+    public function setMavenKey(string $mavenKey): static
     {
         $this->mavenKey = $mavenKey;
 
@@ -192,21 +195,21 @@ class InformationProjet
         return $this->analyseKey;
     }
 
-    public function setAnalyseKey(string $analyseKey): self
+    public function setAnalyseKey(string $analyseKey): static
     {
         $this->analyseKey = $analyseKey;
 
         return $this;
     }
 
-    public function getDate(): ?\DateTimeImmutable
+    public function getDateAnalyse(): ?\DateTimeImmutable
     {
-        return $this->date;
+        return $this->dateAnalyse;
     }
 
-    public function setDate(\DateTimeImmutable $date): self
+    public function setDateAnalyse(\DateTimeImmutable $dateAnalyse): static
     {
-        $this->date = $date;
+        $this->dateAnalyse = $dateAnalyse;
 
         return $this;
     }
@@ -216,21 +219,21 @@ class InformationProjet
         return $this->projectVersion;
     }
 
-    public function setProjectVersion(string $projectVersion): self
+    public function setProjectVersion(string $projectVersion): static
     {
         $this->projectVersion = $projectVersion;
 
         return $this;
     }
 
-    public function getType(): ?string
+    public function getTypeAnalyse(): ?string
     {
-        return $this->type;
+        return $this->typeAnalyse;
     }
 
-    public function setType(string $type): self
+    public function setTypeAnalyse(string $typeAnalyse): static
     {
-        $this->type = $type;
+        $this->typeAnalyse = $typeAnalyse;
 
         return $this;
     }
@@ -285,7 +288,7 @@ class InformationProjet
         return $this->modeCollecte;
     }
 
-    public function setModeCollecte(?string $modeCollecte): self
+    public function setModeCollecte(?string $modeCollecte): static
     {
         $this->modeCollecte = $modeCollecte;
 
@@ -297,7 +300,7 @@ class InformationProjet
         return $this->utilisateurCollecte;
     }
 
-    public function setUtilisateurCollecte(?string $utilisateurCollecte): self
+    public function setUtilisateurCollecte(?string $utilisateurCollecte): static
     {
         $this->utilisateurCollecte = $utilisateurCollecte;
 
@@ -309,11 +312,10 @@ class InformationProjet
         return $this->dateEnregistrement;
     }
 
-    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): self
+    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
     {
         $this->dateEnregistrement = $dateEnregistrement;
 
         return $this;
     }
-
 }

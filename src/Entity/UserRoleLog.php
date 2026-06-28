@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types=1);
-
 /*
  *  Ma-Moulinette
  *  --------------
@@ -19,9 +17,6 @@ use App\Repository\UserRoleLogRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * [Description UserRoleLog]
- */
 #[ORM\Entity(repositoryClass: UserRoleLogRepository::class)]
 #[ORM\Table(name: "user_role_log", schema: "ma_moulinette")]
 class UserRoleLog
@@ -33,7 +28,7 @@ class UserRoleLog
         type: Types::INTEGER,
         nullable: false,
             options: ['comment' => 'ID unique pour la table user_role_log'])]
-        private ?int $id = null;
+    private int $id;
 
     #[ORM\Column(
         name: "user_email",
@@ -53,13 +48,13 @@ class UserRoleLog
 
     #[ORM\Column(
         name: "old_roles",
-        type: Types::JSON,
+        type: 'json',
         options: ['comment' => "Rôles anciens de l'utilisateur"])]
     private array $oldRoles = [];
 
     #[ORM\Column(
         name: "new_roles",
-        type: Types::JSON,
+        type: 'json',
         options: ['comment' => "Nouveaux rôles de l'utilisateur"])]
     private array $newRoles = [];
 
@@ -77,7 +72,7 @@ class UserRoleLog
 
     #[ORM\Column(
         name: "alerts",
-        type: Types::JSON,
+        type: 'json',
         nullable: true,
         options: ['comment' => "Alertes associées au log"])]
     private array $alerts = [];
@@ -87,8 +82,13 @@ class UserRoleLog
         type: Types::DATETIME_IMMUTABLE,
         options: ['comment' => "Date de création du log"])]
     private \DateTimeImmutable $createdAt;
+/**
+ * @param array<int|string, mixed> $oldRoles
+ * @param array<int|string, mixed> $newRoles
+ * @param array<int|string, mixed> $alerts
+ */
 
-    public function __construct(string $userEmail, string $editorEmail, array $oldRoles, array $newRoles, bool $oldActive, bool $newActive, array $alerts = [])
+    public function __construct(string $userEmail, string $editorEmail, array $oldRoles, array $newRoles, bool $oldActive, bool $newActive, array $alerts)
     {
         $this->userEmail = $userEmail;
         $this->editorEmail = $editorEmail;
@@ -103,6 +103,10 @@ class UserRoleLog
     public function getId(): ?int
     {
         return $this->id;
+    }
+    public function setId(int $id): void
+    {
+        $this->id = $id;
     }
 
     public function getUserEmail(): string

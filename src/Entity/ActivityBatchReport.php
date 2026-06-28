@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -20,85 +20,35 @@ use Doctrine\DBAL\Types\Types;
  * [Description ActivityBatchReport]
  */
 #[ORM\Entity]
-#[ORM\Table(name: 'activity_batch_report', schema: 'ma_moulinette',
-    options: ['comment' => 'Rapport d’exécution des traitements batch']
-)]
 #[ORM\Index(name: 'idx_date_enregistrement', columns: ['date_enregistrement'])]
 #[ORM\Index(name: 'idx_task_status', columns: ['task_count', 'task_done', 'page'])]
+#[ORM\Table(name: 'activity_batch_report', schema: "ma_moulinette")]
 class ActivityBatchReport
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(
-        name: 'id',
-        type: Types::INTEGER,
-        options: ['comment' => 'Identifiant unique du rapport batch']
-    )]
+    #[ORM\Column(name: 'id', type: Types::INTEGER)]
     private ?int $id = null;
 
-    #[ORM\Column(
-        name: 'date_start',
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date et heure de début du traitement batch']
-    )]
+    #[ORM\Column(name: 'data_start', type: Types::DATETIMETZ_IMMUTABLE, nullable: false)]
     private \DateTimeImmutable $dateStart;
 
-    #[ORM\Column(
-        name: 'date_end',
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date et heure de fin du traitement batch']
-    )]
+    #[ORM\Column(name: 'data_end', type: Types::DATETIMETZ_IMMUTABLE, nullable: false)]
     private \DateTimeImmutable $dateEnd;
 
-    #[ORM\Column(
-        name: 'task_count',
-        type: Types::INTEGER,
-        nullable: false,
-        options: [
-            'default' => 0,
-            'comment' => 'Nombre total de tâches à traiter'
-        ]
-    )]
+    #[ORM\Column(name: 'task_count', type: Types::INTEGER, nullable: false, options: ['default' => 0])]
     private int $taskCount = 0;
 
-    #[ORM\Column(
-        name: 'task_done',
-        type: Types::INTEGER,
-        nullable: false,
-        options: [
-            'default' => 0,
-            'comment' => 'Nombre de tâches traitées avec succès'
-        ]
-    )]
+    #[ORM\Column(name: 'task_done', type: Types::INTEGER, nullable: false, options: ['default' => 0])]
     private int $taskDone = 0;
 
-    #[ORM\Column(
-        name: 'page',
-        type: Types::INTEGER,
-        nullable: false,
-        options: [
-            'default' => 0,
-            'comment' => 'Numéro de page ou lot traité'
-        ]
-    )]
+    #[ORM\Column(name: 'page', type: Types::INTEGER, nullable: false, options: ['default' => 0])]
     private int $page = 0;
 
-    #[ORM\Column(
-        name: 'last_error',
-        type: Types::JSON,
-        nullable: true,
-        options: ['comment' => 'Liste des erreurs rencontrées lors du traitement batch']
-    )]
-    private ?array $lastError = null;
+    #[ORM\Column(name: 'last_error', type: Types::JSON, nullable: true, options: ['comment' => "Liste des erreurs du traitement."])]
+    private array $lastError = [];
 
-    #[ORM\Column(
-        name: 'date_enregistrement',
-        type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date et heure d’enregistrement du rapport']
-    )]
+    #[ORM\Column(name: 'date_enregistrement',  type: Types::DATETIMETZ_IMMUTABLE, nullable: false)]
     private \DateTimeImmutable $dateEnregistrement;
 
     public function __construct()
@@ -107,6 +57,7 @@ class ActivityBatchReport
     }
 
     // Getters et setters pour chaque propriété
+
     public function getId(): ?int
     {
         return $this->id;
@@ -173,12 +124,12 @@ class ActivityBatchReport
         return $this;
     }
 
-    public function getLastError(): ?array
+    public function getLastError(): array
     {
         return $this->lastError;
     }
 
-    public function setLastError(?array $lastError): self
+    public function setLastError(array $lastError): self
     {
         $this->lastError = $lastError;
         return $this;
@@ -191,8 +142,8 @@ class ActivityBatchReport
 
     public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): self
     {
-    $this->dateEnregistrement = $dateEnregistrement;
+        $this->dateEnregistrement = $dateEnregistrement;
 
-    return $this;
+        return $this;
     }
 }

@@ -1,124 +1,127 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2015-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\Utilisateur;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-/**
- * [Description UtilisateurFixtures]
+/* MODIF 2026-05-08 : création UtilisateurFixtures.
+ * Contrat : 5 utilisateurs (admin actif + 4 personnes inactives). Aurélie porte les
+ * clés de préférence statut/suivi_projet/favori_projet/favori_version exigées par
+ * UtilisateurRepositoryTest.
  */
 class UtilisateurFixtures extends Fixture
 {
-    public static $preferenceVide = ['{
-        "statut":{"projet":false,"favori":false,"version":false},
-        "projet":[],"favori":[],"version":[]}'];
-
-    public static array $preference = [
-        'statut' => [
-            'suivi_projet' => false,
-            'favori_projet' => true,
-            'favori_version' => true,
-        ],
-        'suivi_projet' => [],
-        'favori_projet' => ['fr.ma-petite-entreprise:ma-moulinette'],
-        'favori_version' => [
-            [
-                'fr.ma-petite-entreprise:ma-moulinette' => [
-                    '1.2.0-RELEASE',
-                    '1.2.3-RELEASE'
-                ]
-            ]
-        ]
-    ];
-
-    public static string $dateEnregistrement = '1980-01-01 00:00:00+01';
+    /** Hash bcrypt cost 13 partagé pour tous les utilisateurs de test (mot de passe « test »). */
+    private const PASSWORD_HASH = '$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K';
 
     public function load(ObjectManager $manager): void
     {
+        $now = new \DateTimeImmutable('2026-01-01 00:00:00');
 
-        /** création de l'utilisateur  ADMIN */
-        $admin=(new Utilisateur())
-        ->setResetPassword(false)
-        ->setResetPasswordCount(1)
-        ->setAvatar('chiffre/01.png')
-        ->setPrenom('admin')
-        ->setNom('@ma-moulinette')
-        ->setCourriel('admin@ma-moulinette.fr')
-        ->setPassword('$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K')
-        ->setActif(true)
-        ->setRoles(["ROLE_GESTIONNAIRE"])
-        ->setListeGroupeFonctionnel([])
-        ->setPreference(self::$preference)
-        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
+        $admin = (new Utilisateur())
+            ->setPrenom('admin')
+            ->setNom('@ma-moulinette')
+            ->setAvatar('chiffre/00.png')
+            ->setCourriel('admin@ma-moulinette.fr')
+            ->setPassword(self::PASSWORD_HASH)
+            ->setRoles(['ROLE_ADMIN'])
+            ->setGroupeId('01HZZZZZZZZZZZZZZZZZZZZZZZ')
+            ->setListeGroupeFonctionnel([])
+            ->setActif(true)
+            ->setPreference($this->defaultPreference())
+            ->setResetPassword(false)
+            ->setResetPasswordCount(0)
+            ->setDateEnregistrement($now);
         $manager->persist($admin);
 
-        /** Création de l'utilisateur AURELIE */
-        $aurelie=(new Utilisateur())
-        ->setResetPassword(true)
-        ->setResetPasswordCount(1)
-        ->setAvatar('fille-1/05.png')
-        ->setPrenom('Aurélie')
-        ->setNom('PETIT COEUR')
-        ->setCourriel('aurelie.petit-coeur@ma-moulinette.fr')
-        ->setPassword('$2y$13$HMk1rgFp5OiveduUd.dNXeaxq1y/HiActAv3hiMpAFCNsCjNHIFya')
-        ->setActif(false)
-        ->setRoles(["ROLE_GESTIONNAIRE"])
-        ->setListeGroupeFonctionnel([])
-        ->setPreference(self::$preference)
-        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
+        $aurelie = (new Utilisateur())
+            ->setPrenom('Aurélie')
+            ->setNom('Petit-Coeur')
+            ->setAvatar('chiffre/01.png')
+            ->setCourriel('aurelie.petit-coeur@ma-moulinette.fr')
+            ->setPassword(self::PASSWORD_HASH)
+            ->setRoles(['ROLE_GESTIONNAIRE'])
+            ->setGroupeId('01HZZZZZZZZZZZZZZZZZZZZZA1')
+            ->setListeGroupeFonctionnel([])
+            ->setActif(false)
+            ->setPreference($this->defaultPreference())
+            ->setResetPassword(true)
+            ->setResetPasswordCount(1)
+            ->setDateEnregistrement($now);
         $manager->persist($aurelie);
 
-        /** Création de l'utilisateur EMMA */
-        $emma=(new Utilisateur())
-        ->setResetPassword(false)
-        ->setResetPasswordCount(1)
-        ->setAvatar('fille-2/03.png')
-        ->setPrenom('Emma')
-        ->setNom('VAN DE BERG')
-        ->setCourriel('emma.van-de-berg@ma-moulinette.fr')
-        ->setPassword('$2y$13$BrmmLZ3WiFwZcOllwh9zNOrjBRH9RSLEdLCW2y8by5CFX5zS.b1MG')
-        ->setActif(false)
-        ->setRoles(["ROLE_BATCH"])
-        ->setListeGroupeFonctionnel([])
-        ->setPreference(self::$preference)
-        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
+        $emma = (new Utilisateur())
+            ->setPrenom('Emma')
+            ->setNom('Durand')
+            ->setAvatar('chiffre/02.png')
+            ->setCourriel('emma.durand@ma-moulinette.fr')
+            ->setPassword(self::PASSWORD_HASH)
+            ->setRoles(['ROLE_UTILISATEUR'])
+            ->setGroupeId('01HZZZZZZZZZZZZZZZZZZZZZE2')
+            ->setListeGroupeFonctionnel([])
+            ->setActif(false)
+            ->setPreference($this->defaultPreference())
+            ->setDateEnregistrement($now);
         $manager->persist($emma);
 
-        /** Création de l'utilisateur NATHAN */
-        $nathan=(new Utilisateur())
-        ->setResetPassword(false)
-        ->setResetPasswordCount(1)
-        ->setAvatar('garcon-1/05.png')
-        ->setPrenom('Nathan')
-        ->setNom('JONES')
-        ->setCourriel('nathan.jones@ma-moulinette.fr')
-        ->setPassword('$2y$13$hwX0QJOw8fSgjiBq1CL/FuJsf4miOeLJRBw8jzt1WrsV/qLR.DxN.')
-        ->setActif(0)
-        ->setRoles(["ROLE_COLLECTE"])
-        ->setListeGroupeFonctionnel([])
-        ->setPreference(self::$preference)
-        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
-        $manager->persist($nathan);
-
-        /** Création de l'utilisateur JOSH */
-        $josh=(new Utilisateur())
-        ->setResetPassword(false)
-        ->setResetPasswordCount(1)
-        ->setAvatar('garcon-1/10.png')
-        ->setPrenom('Josh')
-        ->setNom('LIBERMAN')
-        ->setCourriel('josh.liberman@ma-moulinette.fr')
-        ->setPassword('$2y$13$ON.wYv3nmwkB9N3eOSubt.HFA46NjBHgyvOo6PBs3PVcCPtRb5MSa')
-        ->setActif(false)
-        ->setRoles(["ROLE_UTILISATEUR"])
-        ->setListeGroupeFonctionnel([])
-        ->setPreference(self::$preference)
-        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
+        $josh = (new Utilisateur())
+            ->setPrenom('Josh')
+            ->setNom('Martin')
+            ->setAvatar('chiffre/03.png')
+            ->setCourriel('josh.martin@ma-moulinette.fr')
+            ->setPassword(self::PASSWORD_HASH)
+            ->setRoles(['ROLE_UTILISATEUR'])
+            ->setGroupeId('01HZZZZZZZZZZZZZZZZZZZZZJ3')
+            ->setListeGroupeFonctionnel([])
+            ->setActif(false)
+            ->setPreference($this->defaultPreference())
+            ->setDateEnregistrement($now);
         $manager->persist($josh);
 
-        /** Enregistrement des données dans la base de tests */
+        $nathan = (new Utilisateur())
+            ->setPrenom('Nathan')
+            ->setNom('Lefevre')
+            ->setAvatar('chiffre/04.png')
+            ->setCourriel('nathan.lefevre@ma-moulinette.fr')
+            ->setPassword(self::PASSWORD_HASH)
+            ->setRoles(['ROLE_COLLECTE'])
+            ->setGroupeId('01HZZZZZZZZZZZZZZZZZZZZZN4')
+            ->setListeGroupeFonctionnel([])
+            ->setActif(false)
+            ->setPreference($this->defaultPreference())
+            ->setDateEnregistrement($now);
+        $manager->persist($nathan);
+
         $manager->flush();
     }
-  }
+
+    /**
+     * Structure de préférence vide mais avec toutes les clés attendues par les tests.
+     *
+     * @return array<string, mixed>
+     */
+    private function defaultPreference(): array
+    {
+        return [
+            'statut'         => [],
+            'suivi_projet'   => [],
+            'favori_projet'  => [],
+            'favori_version' => [],
+        ];
+    }
+}

@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -18,13 +18,9 @@ use Doctrine\ORM\Mapping as ORM;
 use App\Repository\ActuatorInfoRepository;
 use Symfony\Component\Validator\Constraints as Assert;
 
+
 #[ORM\Entity(repositoryClass: ActuatorInfoRepository::class)]
-#[ORM\Table(
-    name: 'actuator_info',
-    schema: 'ma_moulinette',
-    options: ['comment' => 'Informations complémentaires associées à un actuator']
-)]
-#[ORM\Index(name: 'idx_actuator_key', columns: ['actuator_id', 'description'])]
+#[ORM\Table(name: "actuator_info", schema: "ma_moulinette")]
 class ActuatorInfo
 {
     #[ORM\Id]
@@ -32,89 +28,78 @@ class ActuatorInfo
     #[ORM\Column(
         name: 'id',
         type: Types::INTEGER,
-        options: ['comment' => 'Identifiant unique de la table actuator_info']
+        nullable: false,
+        options: ['comment' => 'Identifiant unique de la table']
     )]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\Column(
-        name: 'description',
+        name: 'actuator_info_description',
         type: Types::STRING,
         length: 255,
-        nullable: false,
-        options: ['comment' => 'Description courte de la clé actuator']
+        nullable: true,
+        options: ['comment' => "Description courte."]
     )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 255)]
-    private string $actuatorInfoDescription;
+    private ?string $actuatorInfoDescription = null;
 
     #[ORM\Column(
-        name: 'value',
+        name: 'actuator_info_value',
         type: Types::STRING,
         length: 128,
-        nullable: false,
-        options: ['comment' => 'Valeur associée à la clé actuator']
+        nullable: true,
+        options: ['comment' => "Valeur de la clé actuator."]
     )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 128)]
-    private string $actuatorInfoValue;
+    private ?string $actuatorInfoValue = null;
 
-    #[ORM\ManyToOne(
-        targetEntity: Actuator::class,
-        inversedBy: 'actuatorInfo'
-    )]
-    #[ORM\JoinColumn(
-        name: 'actuator_id',
-        referencedColumnName: 'id',
-        nullable: false,
-        onDelete: 'CASCADE'
-    )]
-    private Actuator $actuator;
+    #[ORM\ManyToOne(targetEntity: Actuator::class, inversedBy: "actuatorInfo")]
+    #[ORM\JoinColumn(name: "actuator_id", referencedColumnName: "id", nullable: false)]
+    private ?Actuator $actuator = null;
 
-    // ===============================
-    // Getters / setters
-    // ===============================
+    public function getActuator(): ?Actuator
+    {
+        return $this->actuator;
+    }
+
+    public function setActuator(?Actuator $actuator): self
+    {
+        $this->actuator = $actuator;
+
+        return $this;
+    }
 
     public function getId(): ?int
     {
         return $this->id;
     }
-
     public function setId(int $id): self
     {
         $this->id = $id;
         return $this;
     }
 
-    public function getActuatorInfoDescription(): string
+    public function getActuatorInfoDescription(): ?string
     {
         return $this->actuatorInfoDescription;
     }
 
-    public function setActuatorInfoDescription(string $description): self
+    public function setActuatorInfoDescription(?string $actuatorInfoDescription): static
     {
-        $this->actuatorInfoDescription = $description;
+        $this->actuatorInfoDescription = $actuatorInfoDescription;
+
         return $this;
     }
 
-    public function getActuatorInfoValue(): string
+    public function getActuatorInfoValue(): ?string
     {
         return $this->actuatorInfoValue;
     }
 
-    public function setActuatorInfoValue(string $value): self
+    public function setActuatorInfoValue(?string $actuatorInfoValue): static
     {
-        $this->actuatorInfoValue = $value;
-        return $this;
-    }
+        $this->actuatorInfoValue = $actuatorInfoValue;
 
-    public function getActuator(): Actuator
-    {
-        return $this->actuator;
-    }
-
-    public function setActuator(Actuator $actuator): self
-    {
-        $this->actuator = $actuator;
         return $this;
     }
 }

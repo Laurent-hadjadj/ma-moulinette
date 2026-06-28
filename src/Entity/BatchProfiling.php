@@ -22,11 +22,7 @@ use App\Repository\BatchProfilingRepository;
  * [Description BatchProfiling]
  */
 #[ORM\Entity(repositoryClass: BatchProfilingRepository::class)]
-#[ORM\Table(
-    name: 'batch_profiling',
-    schema: 'ma_moulinette',
-    options: ['comment' => 'Profiling des batchs exécutés : temps et mémoire']
-)]
+#[ORM\Table(name: "batch_profiling", schema: "ma_moulinette")]
 class BatchProfiling
 {
     #[ORM\Id]
@@ -34,16 +30,21 @@ class BatchProfiling
     #[ORM\Column(
         name: 'id',
         type: Types::INTEGER,
-        options: ['comment' => 'Identifiant unique de la table batch_profiling']
+        nullable: false,
+        options: [
+            'comment' => 'Identifiant unique de la table batch_profiling'
+        ]
     )]
     private ?int $id = null;
 
+    /* MODIF 2026-05-07 : ajout contraintes Assert NotBlank + Length(64). */
     #[ORM\Column(
         name: 'portefeuille',
         type: Types::STRING,
         length: 64,
-        nullable: false,
-        options: ['comment' => 'Nom du portefeuille concerné par le traitement']
+        options: [
+            'comment' => 'Nom du portefeuille concerné par le traitement'
+        ]
     )]
     #[Assert\NotBlank]
     #[Assert\Length(max: 64)]
@@ -54,15 +55,19 @@ class BatchProfiling
         type: Types::STRING,
         length: 255,
         nullable: true,
-        options: ['comment' => 'Référence unique d’exécution du traitement (token ou UUID)']
+        options: [
+            'comment' => 'Référence unique d’exécution du traitement (token ou UUID)'
+        ]
     )]
     private ?string $executionReference = null;
 
+    /* MODIF 2026-05-07 : ajout contraintes Assert PositiveOrZero. */
     #[ORM\Column(
         name: 'nb_projets',
         type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Nombre total de projets traités dans le batch']
+        options: [
+            'comment' => 'Nombre total de projets traités dans le batch'
+        ]
     )]
     #[Assert\PositiveOrZero]
     private int $nbProjets;
@@ -70,8 +75,9 @@ class BatchProfiling
     #[ORM\Column(
         name: 'temps_total',
         type: Types::FLOAT,
-        nullable: false,
-        options: ['comment' => 'Durée totale d’exécution en secondes']
+        options: [
+            'comment' => 'Durée totale d’exécution en secondes'
+        ]
     )]
     #[Assert\PositiveOrZero]
     private float $tempsTotal;
@@ -79,8 +85,9 @@ class BatchProfiling
     #[ORM\Column(
         name: 'temps_moyen',
         type: Types::FLOAT,
-        nullable: false,
-        options: ['comment' => 'Durée moyenne d’exécution par projet (en secondes)']
+        options: [
+            'comment' => 'Durée moyenne d’exécution par projet (en secondes)'
+        ]
     )]
     #[Assert\PositiveOrZero]
     private float $tempsMoyen;
@@ -88,8 +95,9 @@ class BatchProfiling
     #[ORM\Column(
         name: 'memoire_peak',
         type: Types::FLOAT,
-        nullable: false,
-        options: ['comment' => 'Consommation mémoire maximale observée (en Mo)']
+        options: [
+            'comment' => 'Consommation mémoire maximale observée (en Mo)'
+        ]
     )]
     #[Assert\PositiveOrZero]
     private float $memoirePeak;
@@ -97,18 +105,21 @@ class BatchProfiling
     #[ORM\Column(
         name: 'memoire_moyenne',
         type: Types::FLOAT,
-        nullable: false,
-        options: ['comment' => 'Consommation mémoire moyenne observée (en Mo)']
+        options: [
+            'comment' => 'Consommation mémoire moyenne observée (en Mo)'
+        ]
     )]
     #[Assert\PositiveOrZero]
     private float $memoireMoyenne;
 
+    /* MODIF 2026-05-07 : ajout contraintes Assert NotBlank + Length(128). */
     #[ORM\Column(
         name: 'utilisateur',
         type: Types::STRING,
         length: 128,
-        nullable: false,
-        options: ['comment' => 'Identifiant ou adresse e-mail de l’utilisateur exécutant le batch']
+        options: [
+            'comment' => 'Identifiant ou adresse e-mail de l’utilisateur exécutant le batch'
+        ]
     )]
     #[Assert\NotBlank]
     #[Assert\Length(max: 128)]
@@ -118,7 +129,10 @@ class BatchProfiling
         name: 'date_execution',
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => "Horodatage de l’exécution du batch (timezone Europe/Paris)"]
+        options: [
+            'default' => 'CURRENT_TIMESTAMP',
+            'comment' => "Horodatage de l’exécution du batch (timezone Europe/Paris)"
+        ]
     )]
     private \DateTimeImmutable $dateExecution;
 
@@ -143,61 +157,44 @@ class BatchProfiling
         $this->dateExecution = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
     }
 
-    // -------------------------
-    // Getters
-    // -------------------------
+    // --- Getters ---
 
     public function getId(): ?int
     {
         return $this->id;
     }
-
-    public function setId(int $id): self
-    {
-        $this->id = $id;
-        return $this;
-    }
-
     public function getPortefeuille(): string
     {
         return $this->portefeuille;
     }
-
     public function getExecutionReference(): ?string
     {
         return $this->executionReference;
     }
-
     public function getNbProjets(): int
     {
         return $this->nbProjets;
     }
-
     public function getTempsTotal(): float
     {
         return $this->tempsTotal;
     }
-
     public function getTempsMoyen(): float
     {
         return $this->tempsMoyen;
     }
-
     public function getMemoirePeak(): float
     {
         return $this->memoirePeak;
     }
-
     public function getMemoireMoyenne(): float
     {
         return $this->memoireMoyenne;
     }
-
     public function getUtilisateur(): string
     {
         return $this->utilisateur;
     }
-
     public function getDateExecution(): \DateTimeImmutable
     {
         return $this->dateExecution;

@@ -15,73 +15,66 @@ namespace App\Entity;
 
 use App\Repository\OwaspTop10Repository;
 use Doctrine\DBAL\Types\Types;
-use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * [Description OwaspTop10]
+ *
+ * MODIF 2026-05-07 : ajout Assert NotBlank/Length/PositiveOrZero.
  */
 #[ORM\Entity(repositoryClass: OwaspTop10Repository::class)]
-#[ORM\Table(
-    name: 'owasp_top10',
-    schema: 'ma_moulinette',
-    options: ['comment' => 'Table de description des menaces OWASP'])]
+#[ORM\Table(name: 'owasp_top10', schema: 'ma_moulinette')]
 class OwaspTop10
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(
+        name: 'id',
         type: Types::INTEGER,
-        options: ['comment' => 'clé unique pour la table OwaspTop10'])]
+        nullable: false,
+        options: ['comment' => 'clé unique pour la table OwaspTop10']
+    )]
     private ?int $id = null;
 
     #[ORM\Column(
         name: 'year',
-        type: Types::INTEGER,
-        nullable: false,
-        options: ['comment' => 'Date du Référentiel OWASP'])]
-    #[Assert\NotNull]
+        type: Types::INTEGER
+    )]
     #[Assert\PositiveOrZero]
     private int $year;
 
     #[ORM\Column(
         name: 'category',
         type: Types::STRING,
-        length: 255,
-        options: ['comment' => 'Catégorie de la menace OWASP']
-        )]
+        length: 255
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(max: 255)]
     private string $category;
 
     #[ORM\Column(
         name: 'description',
-        type: Types::TEXT,
-        options: ['comment' => 'Description de la menace OWASP'])]
+        type: Types::TEXT
+    )]
     #[Assert\NotBlank]
     private string $description;
 
     #[ORM\Column(
         name: 'lien',
         type: Types::STRING,
-        length: 128,
-        options: ['comment' => 'Lien vers la menace OWASP'])]
+        length: 128
+    )]
     #[Assert\NotBlank]
     #[Assert\Length(max: 128)]
     private string $lien;
 
     #[ORM\Column(
-        name: 'date_enregistrement',
+        name: 'date_renregsitrement',
         type: Types::DATETIMETZ_IMMUTABLE,
-        nullable: false,
-        options: ['comment' => 'Date d’enregistrement des données'])]
-    #[Assert\NotNull]
+        options: ['default' => 'CURRENT_TIMESTAMP']
+    )]
     private \DateTimeImmutable $dateEnregistrement;
-
-    public function __construct()
-    {
-        $this->dateEnregistrement = new \DateTimeImmutable();
-    }
 
     // Getters and Setters
 

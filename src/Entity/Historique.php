@@ -266,6 +266,18 @@ class Historique
     #[Assert\PositiveOrZero]
     private ?int $xmlTodo = null;
 
+    /* MODIF 2026-05-06 :
+     * SonarQube remonte aussi des Web:S1135 (HTML/JSP/templates).
+     * Avant : compte agrège les "web_to.do" côté batch mais pas de persistance. */
+    #[ORM\Column(
+        name: 'web_todo',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Compteur de l’utilisation de Todo pour Web (HTML/JSP/templates)']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $webTodo = null;
+
     #[ORM\Column(
         name: 'javascript_todo',
         type: Types::INTEGER,
@@ -327,6 +339,16 @@ class Historique
     )]
     #[Assert\PositiveOrZero]
     private ?int $ncloc = null;
+
+    /* MODIF 2026-05-05 : ajout de ncloc_language_distribution
+     * (présent en DDL historique.sql:62 mais absent de l'entité). */
+    #[ORM\Column(
+        name: 'ncloc_language_distribution',
+        type: Types::TEXT,
+        nullable: true,
+        options: ['comment' => 'Distribution du code par langage']
+    )]
+    private ?string $nclocLanguageDistribution = null;
 
     #[ORM\Column(
         name: 'files',
@@ -408,14 +430,38 @@ class Historique
     )]
     private ?float $branchCoverage = null;
 
+    /* MODIF 2026-05-16 : ajout propriété
+     * coverageRating, oubliée dans l’entité alors qu'elle existe dans le DDL
+     * (migrations/initialisation/20_tables/historique.sql) et qu'elle
+     * est référencée dans HistoriqueRepository::insertHistoriqueAjoutProjet
+     * (whitelist + $historiqueRatingColumns).
+     * Consequence du drift : doctrine:schema:update ne creait pas la colonne
+     * en DB test, et l'INSERT plantait avec SQLSTATE[42703] "colonne
+     * coverage_rating n'existe pas". */
+    #[ORM\Column(
+        name: 'coverage_rating',
+        type: Types::STRING,
+        length: 4,
+        nullable: true,
+        options: ['comment' => 'Rating de la couverture de code']
+    )]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
+    private ?string $coverageRating = null;
+
+    /* MODIF 2026-05-06 :
+     * SonarQube renvoie line_coverage en pourcentage (ex: 18.2), pas en nombre de
+     * lignes. Bug historique : type INT + commentaire "Nombre total de ligne couverte"
+     * incohérents. Bascule en FLOAT/DOUBLE PRECISION pour aligner avec coverage et
+     * branch_coverage (qui sont aussi des pourcentages). Bug remonte le 2026-05-06
+     * via SQLSTATE[22P02] sur la valeur '18.2'. */
     #[ORM\Column(
         name: 'line_coverage',
-        type: Types::INTEGER,
+        type: Types::FLOAT,
         nullable: true,
-        options: ['comment' => 'Nombre total de ligne couverte']
+        options: ['comment' => 'Pourcentage de lignes exécutées par les tests']
     )]
     #[Assert\PositiveOrZero]
-    private ?int $lineCoverage = null;
+    private ?float $lineCoverage = null;
 
     #[ORM\Column(
         name: 'lines_to_cover',
@@ -541,6 +587,21 @@ class Historique
     )]
     #[Assert\Range(min: 0, max: 100)]
     private ?float $duplicatedLinesDensity = null;
+
+    /* MODIF 2026-05-16 [bug-historique-duplicated-lines-rating] : ajout
+     * propriete duplicatedLinesRating, meme bug que coverageRating
+     * (cf commentaire). Colonne presente dans le DDL (historique.sql l.93)
+     * et utilisee dans HistoriqueRepository whitelist + ratingColumns, mais
+     * absente de l'entite. */
+    #[ORM\Column(
+        name: 'duplicated_lines_rating',
+        type: Types::STRING,
+        length: 4,
+        nullable: true,
+        options: ['comment' => 'Rating de duplication']
+    )]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
+    private ?string $duplicatedLinesRating = null;
 
     // -------------------------
     // Complexity
@@ -821,14 +882,17 @@ class Historique
     #[Assert\PositiveOrZero]
     private ?int $codeSmellInfo = null;
 
+    /* MODIF 2026-05-05 : DDL stocke en VARCHAR(255)
+     * (chaîne d'indicateurs SonarQube 10). Aligné depuis Types::INTEGER vers Types::STRING(255).
+     * Cohérent avec les autres *_issues de l'entité Historique qui sont déjà en STRING(255). */
     #[ORM\Column(
         name: 'maintainability_issues',
-        type: Types::INTEGER,
+        type: Types::STRING,
+        length: 255,
         nullable: true,
-        options: ['comment' => "Liste des mauvaise pratique"]
+        options: ['comment' => "Liste des indicateurs de mauvaise pratique."]
     )]
-    #[Assert\PositiveOrZero]
-    private ?int $maintainabilityIssues = null;
+    private ?string $maintainabilityIssues = null;
 
     #[ORM\Column(
         name: 'sqale_index',
@@ -1247,6 +1311,19 @@ class Historique
     private ?array $actuatorInfo = null;
 
     // -------------------------
+    // Logger breakdown (level × framework) — 2026-05-15
+    // Format : {info: {SLF4J: N, "Commons Logging": M, "—": K}, warn: {...}, error: {...}, debug: {...}}.
+    // Null si plugin track-logger-method désactivé ou non collecté.
+    // -------------------------
+    #[ORM\Column(
+        name: 'logger_breakdown',
+        type: Types::JSON,
+        nullable: true,
+        options: ['comment' => 'Breakdown loggers par level × framework au moment de la version (JSONB).']
+    )]
+    private ?array $loggerBreakdown = null;
+
+    // -------------------------
     // Logger Java
     // -------------------------
     #[ORM\Column(
@@ -1281,6 +1358,55 @@ class Historique
     )]
     private ?int $loggerDebug = null;
 
+    // -----------------------------------------------
+    // MODIF 2026-05-17
+    // Indicateurs SonarQube 10+ (clean code taxonomy)
+    // -----------------------------------------------
+    #[ORM\Column(name: 'cc_consistent', type: Types::INTEGER, nullable: true)]
+    private ?int $ccConsistent = null;
+
+    #[ORM\Column(name: 'cc_intentional', type: Types::INTEGER, nullable: true)]
+    private ?int $ccIntentional = null;
+
+    #[ORM\Column(name: 'cc_adaptable', type: Types::INTEGER, nullable: true)]
+    private ?int $ccAdaptable = null;
+
+    #[ORM\Column(name: 'cc_responsible', type: Types::INTEGER, nullable: true)]
+    private ?int $ccResponsible = null;
+
+    #[ORM\Column(name: 'quality_maintainability', type: Types::INTEGER, nullable: true)]
+    private ?int $qualityMaintainability = null;
+
+    #[ORM\Column(name: 'quality_reliability', type: Types::INTEGER, nullable: true)]
+    private ?int $qualityReliability = null;
+
+    #[ORM\Column(name: 'quality_security', type: Types::INTEGER, nullable: true)]
+    private ?int $qualitySecurity = null;
+
+    #[ORM\Column(name: 'impact_blocker', type: Types::INTEGER, nullable: true)]
+    private ?int $impactBlocker = null;
+
+    #[ORM\Column(name: 'impact_high', type: Types::INTEGER, nullable: true)]
+    private ?int $impactHigh = null;
+
+    #[ORM\Column(name: 'impact_medium', type: Types::INTEGER, nullable: true)]
+    private ?int $impactMedium = null;
+
+    #[ORM\Column(name: 'impact_low', type: Types::INTEGER, nullable: true)]
+    private ?int $impactLow = null;
+
+    #[ORM\Column(name: 'impact_info', type: Types::INTEGER, nullable: true)]
+    private ?int $impactInfo = null;
+
+    #[ORM\Column(name: 'owasp_top10', type: Types::INTEGER, nullable: true)]
+    private ?int $owaspTop10 = null;
+
+    #[ORM\Column(name: 'sans_top25', type: Types::INTEGER, nullable: true)]
+    private ?int $sansTop25 = null;
+
+    #[ORM\Column(name: 'cwe', type: Types::INTEGER, nullable: true)]
+    private ?int $cwe = null;
+
     // -------------------------
     // Initialisation du projet
     // -------------------------
@@ -1296,12 +1422,16 @@ class Historique
     // -------------------------
     // Mode de collecte et utilisateur
     // -------------------------
+    /* MODIF 2026-05-06 : ajout de REBUILD a la liste
+     * des modes de collecte possibles. REBUILD = version reconstituee depuis l'API
+     * SonarQube search_history (indicateurs partiels) ; COLLECTE = collecte a chaud
+     * (indicateurs complets) ; TRAITEMENT MANUEL/AUTOMATIQUE = batch (indicateurs complets). */
     #[ORM\Column(
         name: 'mode_collecte',
         type: Types::STRING,
         length: 32,
         nullable: true,
-        options: ['comment' => 'Mode de collecte : COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE']
+        options: ['comment' => 'Mode de collecte : REBUILD | COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE']
     )]
     #[Assert\Length(
         max: 32,
@@ -1333,6 +1463,38 @@ class Historique
     )]
     #[Assert\NotNull]
     private \DateTimeImmutable $dateEnregistrement;
+
+    /* MODIF 2026-05-17 : getters/setters clean code */
+    public function getCcConsistent(): ?int { return $this->ccConsistent; }
+    public function setCcConsistent(?int $v): static { $this->ccConsistent = $v; return $this; }
+    public function getCcIntentional(): ?int { return $this->ccIntentional; }
+    public function setCcIntentional(?int $v): static { $this->ccIntentional = $v; return $this; }
+    public function getCcAdaptable(): ?int { return $this->ccAdaptable; }
+    public function setCcAdaptable(?int $v): static { $this->ccAdaptable = $v; return $this; }
+    public function getCcResponsible(): ?int { return $this->ccResponsible; }
+    public function setCcResponsible(?int $v): static { $this->ccResponsible = $v; return $this; }
+    public function getQualityMaintainability(): ?int { return $this->qualityMaintainability; }
+    public function setQualityMaintainability(?int $v): static { $this->qualityMaintainability = $v; return $this; }
+    public function getQualityReliability(): ?int { return $this->qualityReliability; }
+    public function setQualityReliability(?int $v): static { $this->qualityReliability = $v; return $this; }
+    public function getQualitySecurity(): ?int { return $this->qualitySecurity; }
+    public function setQualitySecurity(?int $v): static { $this->qualitySecurity = $v; return $this; }
+    public function getImpactBlocker(): ?int { return $this->impactBlocker; }
+    public function setImpactBlocker(?int $v): static { $this->impactBlocker = $v; return $this; }
+    public function getImpactHigh(): ?int { return $this->impactHigh; }
+    public function setImpactHigh(?int $v): static { $this->impactHigh = $v; return $this; }
+    public function getImpactMedium(): ?int { return $this->impactMedium; }
+    public function setImpactMedium(?int $v): static { $this->impactMedium = $v; return $this; }
+    public function getImpactLow(): ?int { return $this->impactLow; }
+    public function setImpactLow(?int $v): static { $this->impactLow = $v; return $this; }
+    public function getImpactInfo(): ?int { return $this->impactInfo; }
+    public function setImpactInfo(?int $v): static { $this->impactInfo = $v; return $this; }
+    public function getOwaspTop10(): ?int { return $this->owaspTop10; }
+    public function setOwaspTop10(?int $v): static { $this->owaspTop10 = $v; return $this; }
+    public function getSansTop25(): ?int { return $this->sansTop25; }
+    public function setSansTop25(?int $v): static { $this->sansTop25 = $v; return $this; }
+    public function getCwe(): ?int { return $this->cwe; }
+    public function setCwe(?int $v): static { $this->cwe = $v; return $this; }
 
     public function __construct()
     {
@@ -1681,6 +1843,17 @@ class Historique
         return $this;
     }
 
+    public function getWebTodo(): ?int
+    {
+        return $this->webTodo;
+    }
+
+    public function setWebTodo(?int $webTodo): self
+    {
+        $this->webTodo = $webTodo;
+        return $this;
+    }
+
     public function getJavascriptTodo(): ?int
     {
         return $this->javascriptTodo;
@@ -1744,6 +1917,18 @@ class Historique
     public function setNcloc(?int $ncloc): self
     {
         $this->ncloc = $ncloc;
+        return $this;
+    }
+
+    /* MODIF 2026-05-05 : getter/setter ncloc_language_distribution. */
+    public function getNclocLanguageDistribution(): ?string
+    {
+        return $this->nclocLanguageDistribution;
+    }
+
+    public function setNclocLanguageDistribution(?string $nclocLanguageDistribution): self
+    {
+        $this->nclocLanguageDistribution = $nclocLanguageDistribution;
         return $this;
     }
 
@@ -1846,12 +2031,25 @@ class Historique
         return $this;
     }
 
-    public function getLineCoverage(): ?int
+    // MODIF 2026-05-16 [bug-historique-coverage-rating] : getter/setter pour
+    // la propriete coverageRating ajoutee (cf. commentaire en-tete de la propriete).
+    public function getCoverageRating(): ?string
+    {
+        return $this->coverageRating;
+    }
+
+    public function setCoverageRating(?string $coverageRating): self
+    {
+        $this->coverageRating = $coverageRating;
+        return $this;
+    }
+
+    public function getLineCoverage(): ?float
     {
         return $this->lineCoverage;
     }
 
-    public function setLineCoverage(?int $lineCoverage): self
+    public function setLineCoverage(?float $lineCoverage): self
     {
         $this->lineCoverage = $lineCoverage;
         return $this;
@@ -1997,6 +2195,18 @@ class Historique
     public function setDuplicatedLinesDensity(?float $duplicatedLinesDensity): self
     {
         $this->duplicatedLinesDensity = $duplicatedLinesDensity;
+        return $this;
+    }
+
+    // MODIF 2026-05-16 [bug-historique-duplicated-lines-rating]
+    public function getDuplicatedLinesRating(): ?string
+    {
+        return $this->duplicatedLinesRating;
+    }
+
+    public function setDuplicatedLinesRating(?string $duplicatedLinesRating): self
+    {
+        $this->duplicatedLinesRating = $duplicatedLinesRating;
         return $this;
     }
 
@@ -2319,12 +2529,13 @@ class Historique
         return $this;
     }
 
-    public function getMaintainabilityIssues(): ?int
+    /* MODIF 2026-05-05 : type aligné sur DDL VARCHAR(255). */
+    public function getMaintainabilityIssues(): ?string
     {
         return $this->maintainabilityIssues;
     }
 
-    public function setMaintainabilityIssues(?int $v): self
+    public function setMaintainabilityIssues(?string $v): self
     {
         $this->maintainabilityIssues = $v;
         return $this;
@@ -2818,6 +3029,20 @@ class Historique
     public function setActuatorInfo(?array $actuatorInfo): self
     {
         $this->actuatorInfo = $actuatorInfo;
+        return $this;
+    }
+
+    // -------------------------
+    // Logger breakdown (level × framework) — 2026-05-15 [logger-details]
+    // -------------------------
+    public function getLoggerBreakdown(): ?array
+    {
+        return $this->loggerBreakdown;
+    }
+
+    public function setLoggerBreakdown(?array $loggerBreakdown): self
+    {
+        $this->loggerBreakdown = $loggerBreakdown;
         return $this;
     }
 

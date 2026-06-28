@@ -19,10 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: MaMoulinetteRepository::class)]
-#[ORM\Table(
-    name: 'ma_moulinette',
-    schema: "ma_moulinette",
-    options: ['comment' => "Table des version de l'application ma_moulinette"])]
+#[ORM\Table(name: "ma_moulinette", schema: "ma_moulinette")]
 class MaMoulinette
 {
     #[ORM\Id]
@@ -30,86 +27,94 @@ class MaMoulinette
     #[ORM\Column(
         name: 'id',
         type: Types::INTEGER,
-        options: ['comment' => 'Clé unique'])]
-    private ?int $id = null;
+        nullable: false,
+        options: ['comment' => 'Clé unique']
+    )]
+    private int $id;
 
     #[ORM\Column(
         name: 'version',
         type: Types::STRING,
         length: 16,
         nullable: false,
-        options: ['comment' => "Numéro de la version de l'application MaMoulinette"])]
-    #[Assert\NotBlank(message: "La version ne peut pas être vide.")]
+        options: ['comment' => "Numéro de la version de l'application MaMoulinette"]
+    )]
+    #[Assert\NotBlank]
     #[Assert\Length(
         max: 16,
-        maxMessage: "La version ne doit pas dépasser 16 caractères.")]
+        maxMessage: "La version ne doit pas dépasser 16 caractères."
+    )]
     private string $version;
 
     #[ORM\Column(
         name: 'date_version',
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date de création'])]
-    #[Assert\NotNull(message: "La date de création ne peut pas être nulle.")]
+        options: ['comment' => 'Date de création']
+    )]
+    #[Assert\NotNull]
     private \DateTimeImmutable $dateVersion;
 
     #[ORM\Column(
         name: 'date_enregistrement',
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => "Date d'enregistrement"])]
-    #[Assert\NotNull(message: "La date d'enregistrement ne peut pas être nulle.")]
+        options: ['comment' => "Date d'enregistrement"]
+    )]
+    #[Assert\NotNull]
     private \DateTimeImmutable $dateEnregistrement;
 
-    public function __construct(string $version)
+    /* MODIF 2026-05-07 : ajout constructeur (version requis). */
+    public function __construct(string $version = '')
     {
         $this->version = $version;
         $this->dateVersion = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
         $this->dateEnregistrement = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
     }
 
-    // Getters et setters
     public function getId(): ?int
     {
         return $this->id;
     }
-
     public function setId(int $id): self
     {
         $this->id = $id;
         return $this;
     }
 
-    public function getVersion(): string
+    public function getVersion(): ?string
     {
         return $this->version;
     }
 
-    public function setVersion(string $version): self
+    public function setVersion(string $version): static
     {
         $this->version = $version;
+
         return $this;
     }
 
-    public function getDateVersion(): \DateTimeImmutable
+    public function getDateVersion(): ?\DateTimeImmutable
     {
         return $this->dateVersion;
     }
 
-    public function setDateVersion(\DateTimeImmutable $dateVersion): self
+    public function setDateVersion(\DateTimeImmutable $dateVersion): static
     {
         $this->dateVersion = $dateVersion;
+
         return $this;
     }
 
-    public function getDateEnregistrement(): \DateTimeImmutable
+    public function getDateEnregistrement(): ?\DateTimeImmutable
     {
         return $this->dateEnregistrement;
     }
 
-    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): self
+    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
     {
         $this->dateEnregistrement = $dateEnregistrement;
+
         return $this;
     }
 }

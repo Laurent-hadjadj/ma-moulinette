@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -19,11 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: AnomalieRepository::class)]
-#[ORM\Table(
-    name: 'anomalie',
-    schema: 'ma_moulinette',
-    options: ['comment' => 'Statistiques des anomalies et dettes techniques par projet']
-)]
+#[ORM\Table(name: "anomalie", schema: "ma_moulinette")]
 class Anomalie
 {
     #[ORM\Id]
@@ -31,9 +27,10 @@ class Anomalie
     #[ORM\Column(
         name: 'id',
         type: Types::INTEGER,
+        nullable: false,
         options: ['comment' => 'Identifiant unique de l’anomalie']
     )]
-    private ?int $id = null;
+    private int $id;
 
     #[ORM\Column(
         name: 'maven_key',
@@ -43,7 +40,10 @@ class Anomalie
         options: ['comment' => 'Clé Maven du projet']
     )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 255)]
+    #[Assert\Length(
+        max: 255,
+        maxMessage: "La clé Maven ne doit pas dépasser 255 caractères."
+    )]
     private string $mavenKey;
 
     #[ORM\Column(
@@ -54,7 +54,10 @@ class Anomalie
         options: ['comment' => 'Nom du projet associé à l’anomalie']
     )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 128)]
+    #[Assert\Length(
+        max: 128,
+        maxMessage: "Le nom du projet ne doit pas dépasser 128 caractères."
+    )]
     private string $projectName;
 
     #[ORM\Column(
@@ -63,7 +66,6 @@ class Anomalie
         nullable: false,
         options: ['comment' => 'Nombre total d’anomalies']
     )]
-    #[Assert\NotNull]
     #[Assert\PositiveOrZero]
     private int $anomalieTotal;
 
@@ -73,7 +75,6 @@ class Anomalie
         nullable: false,
         options: ['comment' => 'Minutes totales de la dette technique']
     )]
-    #[Assert\NotNull]
     #[Assert\PositiveOrZero]
     private int $detteMinute;
 
@@ -83,7 +84,6 @@ class Anomalie
         nullable: false,
         options: ['comment' => 'Minutes de la dette de fiabilité']
     )]
-    #[Assert\NotNull]
     #[Assert\PositiveOrZero]
     private int $detteReliabilityMinute;
 
@@ -93,7 +93,6 @@ class Anomalie
         nullable: false,
         options: ['comment' => 'Minutes de la dette de vulnérabilité']
     )]
-    #[Assert\NotNull]
     #[Assert\PositiveOrZero]
     private int $detteVulnerabilityMinute;
 
@@ -103,7 +102,6 @@ class Anomalie
         nullable: false,
         options: ['comment' => 'Minutes de la dette de mauvaises pratiques']
     )]
-    #[Assert\NotNull]
     #[Assert\PositiveOrZero]
     private int $detteCodeSmellMinute;
 
@@ -115,17 +113,16 @@ class Anomalie
         options: ['comment' => 'Dette de fiabilité']
     )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 32)]
     private string $detteReliability;
 
     #[ORM\Column(
         name: 'dette_vulnerability',
         type: Types::STRING,
         length: 32,
+        nullable: false,
         options: ['comment' => 'Dette de vulnérabilité']
     )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 32)]
     private string $detteVulnerability;
 
     #[ORM\Column(
@@ -136,7 +133,6 @@ class Anomalie
         options: ['comment' => 'Dette générale']
     )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 32)]
     private string $dette;
 
     #[ORM\Column(
@@ -147,7 +143,6 @@ class Anomalie
         options: ['comment' => 'Dette des mauvaises pratiques']
     )]
     #[Assert\NotBlank]
-    #[Assert\Length(max: 32)]
     private string $detteCodeSmell;
 
     #[ORM\Column(
@@ -156,7 +151,6 @@ class Anomalie
         nullable: false,
         options: ['comment' => 'Problèmes liés au frontend']
     )]
-    #[Assert\NotNull]
     #[Assert\PositiveOrZero]
     private int $frontend;
 
@@ -166,7 +160,6 @@ class Anomalie
         nullable: false,
         options: ['comment' => 'Problèmes liés au backend']
     )]
-    #[Assert\NotNull]
     #[Assert\PositiveOrZero]
     private int $backend;
 
@@ -176,7 +169,6 @@ class Anomalie
         nullable: false,
         options: ['comment' => 'Autres problèmes techniques']
     )]
-    #[Assert\NotNull]
     #[Assert\PositiveOrZero]
     private int $autre;
 
@@ -186,7 +178,6 @@ class Anomalie
         nullable: false,
         options: ['comment' => 'Problèmes inconnus']
     )]
-    #[Assert\NotNull]
     #[Assert\PositiveOrZero]
     private int $inconnu;
 
@@ -196,7 +187,6 @@ class Anomalie
         nullable: false,
         options: ['comment' => 'Problèmes bloquants']
     )]
-    #[Assert\NotNull]
     #[Assert\PositiveOrZero]
     private int $blocker;
 
@@ -206,7 +196,6 @@ class Anomalie
         nullable: false,
         options: ['comment' => 'Problèmes critiques']
     )]
-    #[Assert\NotNull]
     #[Assert\PositiveOrZero]
     private int $critical;
 
@@ -216,7 +205,6 @@ class Anomalie
         nullable: false,
         options: ['comment' => 'Problèmes majeurs']
     )]
-    #[Assert\NotNull]
     #[Assert\PositiveOrZero]
     private int $major;
 
@@ -226,7 +214,6 @@ class Anomalie
         nullable: false,
         options: ['comment' => 'Informations sur les problèmes mineurs']
     )]
-    #[Assert\NotNull]
     #[Assert\PositiveOrZero]
     private int $info;
 
@@ -236,7 +223,6 @@ class Anomalie
         nullable: false,
         options: ['comment' => 'Problèmes mineurs']
     )]
-    #[Assert\NotNull]
     #[Assert\PositiveOrZero]
     private int $minor;
 
@@ -246,7 +232,6 @@ class Anomalie
         nullable: false,
         options: ['comment' => 'Nombre total de bugs']
     )]
-    #[Assert\NotNull]
     #[Assert\PositiveOrZero]
     private int $bug;
 
@@ -256,7 +241,6 @@ class Anomalie
         nullable: false,
         options: ['comment' => 'Nombre total de vulnérabilités']
     )]
-    #[Assert\NotNull]
     #[Assert\PositiveOrZero]
     private int $vulnerability;
 
@@ -264,9 +248,8 @@ class Anomalie
         name: 'code_smell',
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Nombre total de mauvaises pratiques']
+        options: ['comment' => 'Nombre total d’mauvaises pratiques']
     )]
-    #[Assert\NotNull]
     #[Assert\PositiveOrZero]
     private int $codeSmell;
 
@@ -275,11 +258,12 @@ class Anomalie
         type: Types::STRING,
         length: 32,
         nullable: true,
-        options: [
-            'comment' => 'Mode de collecte : COLLECTE / TRAITEMENT_MANUEL / TRAITEMENT_AUTOMATIQUE'
-        ]
+        options: ['comment' => 'Mode de collecte : [COLLECTE], [TRAITEMENT MANUEL], [TRAITEMENT AUTOMATIQUE]']
     )]
-    #[Assert\Length(max: 32)]
+    #[Assert\Length(
+        max: 32,
+        maxMessage: "Le mode de collecte ne peut pas dépasser 32 caractères."
+    )]
     private ?string $modeCollecte = null;
 
     #[ORM\Column(
@@ -287,24 +271,22 @@ class Anomalie
         type: Types::STRING,
         length: 320,
         nullable: true,
-        options: ['comment' => 'Compte utilisateur ayant réalisé la collecte']
+        options: ['comment' => "Compte utilisateur qui a réalisé la collecte."]
     )]
-    #[Assert\Length(max: 320)]
+    #[Assert\Length(
+        max: 320,
+        maxMessage: "Le compte utilisateur ne peut pas dépasser 320 caractères."
+    )]
     private ?string $utilisateurCollecte = null;
 
     #[ORM\Column(
         name: 'date_enregistrement',
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date et heure d’enregistrement de l’anomalie']
+        options: ['comment' => 'Date d’enregistrement de l’anomalie']
     )]
     #[Assert\NotNull]
     private \DateTimeImmutable $dateEnregistrement;
-
-    public function __construct()
-    {
-        $this->dateEnregistrement = new \DateTimeImmutable();
-    }
 
     public function getId(): ?int
     {
@@ -321,7 +303,7 @@ class Anomalie
         return $this->mavenKey;
     }
 
-    public function setMavenKey(string $mavenKey): self
+    public function setMavenKey(string $mavenKey): static
     {
         $this->mavenKey = $mavenKey;
 
@@ -333,7 +315,7 @@ class Anomalie
         return $this->projectName;
     }
 
-    public function setProjectName(string $projectName): self
+    public function setProjectName(string $projectName): static
     {
         $this->projectName = $projectName;
 
@@ -345,7 +327,7 @@ class Anomalie
         return $this->anomalieTotal;
     }
 
-    public function setAnomalieTotal(int $anomalieTotal): self
+    public function setAnomalieTotal(int $anomalieTotal): static
     {
         $this->anomalieTotal = $anomalieTotal;
 
@@ -357,7 +339,7 @@ class Anomalie
         return $this->detteMinute;
     }
 
-    public function setDetteMinute(int $detteMinute): self
+    public function setDetteMinute(int $detteMinute): static
     {
         $this->detteMinute = $detteMinute;
 
@@ -369,7 +351,7 @@ class Anomalie
         return $this->detteReliabilityMinute;
     }
 
-    public function setDetteReliabilityMinute(int $detteReliabilityMinute): self
+    public function setDetteReliabilityMinute(int $detteReliabilityMinute): static
     {
         $this->detteReliabilityMinute = $detteReliabilityMinute;
 
@@ -381,7 +363,7 @@ class Anomalie
         return $this->detteVulnerabilityMinute;
     }
 
-    public function setDetteVulnerabilityMinute(int $detteVulnerabilityMinute): self
+    public function setDetteVulnerabilityMinute(int $detteVulnerabilityMinute): static
     {
         $this->detteVulnerabilityMinute = $detteVulnerabilityMinute;
 
@@ -393,7 +375,7 @@ class Anomalie
         return $this->detteCodeSmellMinute;
     }
 
-    public function setDetteCodeSmellMinute(int $detteCodeSmellMinute): self
+    public function setDetteCodeSmellMinute(int $detteCodeSmellMinute): static
     {
         $this->detteCodeSmellMinute = $detteCodeSmellMinute;
 
@@ -405,7 +387,7 @@ class Anomalie
         return $this->detteReliability;
     }
 
-    public function setDetteReliability(string $detteReliability): self
+    public function setDetteReliability(string $detteReliability): static
     {
         $this->detteReliability = $detteReliability;
 
@@ -417,7 +399,7 @@ class Anomalie
         return $this->detteVulnerability;
     }
 
-    public function setDetteVulnerability(string $detteVulnerability): self
+    public function setDetteVulnerability(string $detteVulnerability): static
     {
         $this->detteVulnerability = $detteVulnerability;
 
@@ -429,7 +411,7 @@ class Anomalie
         return $this->dette;
     }
 
-    public function setDette(string $dette): self
+    public function setDette(string $dette): static
     {
         $this->dette = $dette;
 
@@ -441,7 +423,7 @@ class Anomalie
         return $this->detteCodeSmell;
     }
 
-    public function setDetteCodeSmell(string $detteCodeSmell): self
+    public function setDetteCodeSmell(string $detteCodeSmell): static
     {
         $this->detteCodeSmell = $detteCodeSmell;
 
@@ -453,7 +435,7 @@ class Anomalie
         return $this->frontend;
     }
 
-    public function setFrontend(int $frontend): self
+    public function setFrontend(int $frontend): static
     {
         $this->frontend = $frontend;
 
@@ -465,7 +447,7 @@ class Anomalie
         return $this->backend;
     }
 
-    public function setBackend(int $backend): self
+    public function setBackend(int $backend): static
     {
         $this->backend = $backend;
 
@@ -477,7 +459,7 @@ class Anomalie
         return $this->autre;
     }
 
-    public function setAutre(int $autre): self
+    public function setAutre(int $autre): static
     {
         $this->autre = $autre;
 
@@ -489,7 +471,7 @@ class Anomalie
         return $this->inconnu;
     }
 
-    public function setInconnu(int $inconnu): self
+    public function setInconnu(int $inconnu): static
     {
         $this->inconnu = $inconnu;
 
@@ -501,7 +483,7 @@ class Anomalie
         return $this->blocker;
     }
 
-    public function setBlocker(int $blocker): self
+    public function setBlocker(int $blocker): static
     {
         $this->blocker = $blocker;
 
@@ -513,7 +495,7 @@ class Anomalie
         return $this->critical;
     }
 
-    public function setCritical(int $critical): self
+    public function setCritical(int $critical): static
     {
         $this->critical = $critical;
 
@@ -525,7 +507,7 @@ class Anomalie
         return $this->major;
     }
 
-    public function setMajor(int $major): self
+    public function setMajor(int $major): static
     {
         $this->major = $major;
 
@@ -537,7 +519,7 @@ class Anomalie
         return $this->info;
     }
 
-    public function setInfo(int $info): self
+    public function setInfo(int $info): static
     {
         $this->info = $info;
 
@@ -549,7 +531,7 @@ class Anomalie
         return $this->minor;
     }
 
-    public function setMinor(int $minor): self
+    public function setMinor(int $minor): static
     {
         $this->minor = $minor;
 
@@ -561,7 +543,7 @@ class Anomalie
         return $this->bug;
     }
 
-    public function setBug(int $bug): self
+    public function setBug(int $bug): static
     {
         $this->bug = $bug;
 
@@ -573,7 +555,7 @@ class Anomalie
         return $this->vulnerability;
     }
 
-    public function setVulnerability(int $vulnerability): self
+    public function setVulnerability(int $vulnerability): static
     {
         $this->vulnerability = $vulnerability;
 
@@ -585,7 +567,7 @@ class Anomalie
         return $this->codeSmell;
     }
 
-    public function setCodeSmell(int $codeSmell): self
+    public function setCodeSmell(int $codeSmell): static
     {
         $this->codeSmell = $codeSmell;
 
@@ -597,7 +579,7 @@ class Anomalie
         return $this->dateEnregistrement;
     }
 
-    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): self
+    public function setDateEnregistrement(\DateTimeImmutable $dateEnregistrement): static
     {
         $this->dateEnregistrement = $dateEnregistrement;
 
@@ -609,7 +591,7 @@ class Anomalie
         return $this->modeCollecte;
     }
 
-    public function setModeCollecte(?string $modeCollecte): self
+    public function setModeCollecte(?string $modeCollecte): static
     {
         $this->modeCollecte = $modeCollecte;
 
@@ -621,11 +603,10 @@ class Anomalie
         return $this->utilisateurCollecte;
     }
 
-    public function setUtilisateurCollecte(?string $utilisateurCollecte): self
+    public function setUtilisateurCollecte(?string $utilisateurCollecte): static
     {
         $this->utilisateurCollecte = $utilisateurCollecte;
 
         return $this;
     }
-
 }

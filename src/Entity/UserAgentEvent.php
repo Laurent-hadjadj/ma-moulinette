@@ -16,7 +16,6 @@ namespace App\Entity;
 use App\Repository\UserAgentEventRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\DBAL\Types\Types;
-use Symfony\Component\Uid\Ulid;
 
 /**
  * [Description UserAgentEvent]
@@ -149,14 +148,18 @@ class UserAgentEvent {
      * - avant login
      * - après login
      * - malgré rotation de session
+     *
+     * Stocké comme UUID string (VARCHAR 36) généré par PostgreSQL gen_random_uuid().
      */
+    // MODIF 2026-06-09 : ulid→string (DB stocke UUID VARCHAR(36), pas ULID 26 chars)
     #[ORM\Column(
         name: "visitor_id",
-        type: 'ulid',
+        type: Types::STRING,
+        length: 36,
         nullable: false,
         options: ['comment' => 'Identifiant visiteur analytics long terme']
     )]
-    private ?Ulid $visitorId = null;
+    private ?string $visitorId = null;
 
     /**
      * État d'authentification au moment de l'événement.
@@ -302,12 +305,12 @@ class UserAgentEvent {
         return $this;
     }
 
-    public function getVisitorId(): ?Ulid
+    public function getVisitorId(): ?string
     {
         return $this->visitorId;
     }
 
-    public function setVisitorId(?Ulid $visitorId): self
+    public function setVisitorId(?string $visitorId): self
     {
         $this->visitorId = $visitorId;
         return $this;
