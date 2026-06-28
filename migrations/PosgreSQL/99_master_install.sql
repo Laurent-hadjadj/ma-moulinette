@@ -6,7 +6,7 @@
 -- ##         (depuis le repertoire migrations/PosgreSQL/)
 -- ##
 -- ## Note : \ir = include relative (relatif au fichier courant).
--- ##        Necessite PostgreSQL >= 9.6.
+-- ##        Nécessite PostgreSQL >= 9.6.
 -- ##
 -- ## Ordre d'execution :
 -- ##   1. Drop DB + drop role                  (00_init/00)
@@ -57,6 +57,12 @@
 \ir 20_tables/batch_execution_journal.sql
 \ir 20_tables/batch_profiling.sql
 \ir 20_tables/batch_traitement.sql
+\ir 20_tables/clean_code.sql
+\ir 20_tables/dc_cve.sql
+\ir 20_tables/dc_dependency.sql
+\ir 20_tables/dc_finding.sql
+\ir 20_tables/dc_processing_queue.sql
+\ir 20_tables/dc_scan.sql
 \ir 20_tables/groupe_fonctionnel.sql
 \ir 20_tables/groupe_utilisateur.sql
 \ir 20_tables/historique.sql
@@ -66,6 +72,7 @@
 \ir 20_tables/information_projet.sql
 \ir 20_tables/liste_projet.sql
 \ir 20_tables/logger.sql
+\ir 20_tables/logger_detail.sql
 \ir 20_tables/ma_moulinette.sql
 \ir 20_tables/mesures.sql
 \ir 20_tables/no_sonar.sql
@@ -79,6 +86,7 @@
 \ir 20_tables/repartition.sql
 \ir 20_tables/repartition_temp.sql
 \ir 20_tables/todo.sql
+-- MODIF 2026-06-09 : activation tables user_agent (schéma ma_moulinette)
 \ir 20_tables/user_agent_analysis.sql
 \ir 20_tables/user_agent_event.sql
 \ir 20_tables/user_role_log.sql
