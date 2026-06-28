@@ -10,7 +10,7 @@
 --- 2026-04-07 : Renommage titre et groupe en portefeuille et groupe_fonctionnel et modification de la longueur du champ groupe_fonctionnel
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
-\c ma_moulinette db_user;
+\c ma_moulinette;
 
 DROP TABLE IF EXISTS ma_moulinette.portefeuille;
 
