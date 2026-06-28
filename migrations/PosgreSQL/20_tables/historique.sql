@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.6.0 - 26/04/2026                  ##
+##           V2.7.0 - 15/05/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -15,9 +15,10 @@
 --- 2026-03-30 : Ajout de coverage_rating.
 --- 2026-03-30 : Ajout des attributs duplicated_lines_rating.
 --- 2026-04-26 : Ajustement de la taille de analyse_key
+-- 2026-05-15 : breakdown level × framework (cf logger_details)
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
-\c ma_moulinette db_user;
+\c ma_moulinette;
 
 DROP TABLE IF EXISTS ma_moulinette.historique;
 
@@ -72,7 +73,8 @@ CREATE TABLE ma_moulinette.historique
     coverage DOUBLE PRECISION,
     branch_coverage DOUBLE PRECISION,
     coverage_rating VARCHAR(4),
-    line_coverage INT,
+    -- MODIF 2026-05-06 : INT -> DOUBLE PRECISION (pourcentage)
+    line_coverage DOUBLE PRECISION,
     lines_to_cover INT,
     conditions_to_cover INT,
     uncovered_conditions INT,
@@ -179,11 +181,29 @@ CREATE TABLE ma_moulinette.historique
     menace_potentielle_totale INT,
 
     actuator_info JSON,
+    logger_breakdown JSONB,
 
     logger_info INT,
     logger_warn INT,
     logger_error INT,
     logger_debug INT,
+
+    /* MODIF 2026-05-17 : indicateurs SonarQube 10+ */
+    cc_consistent INT,
+    cc_intentional INT,
+    cc_adaptable INT,
+    cc_responsible INT,
+    quality_maintainability INT,
+    quality_reliability INT,
+    quality_security INT,
+    impact_blocker INT,
+    impact_high INT,
+    impact_medium INT,
+    impact_low INT,
+    impact_info INT,
+    owasp_top10 INT,
+    sans_top25 INT,
+    cwe INT,
 
     initial BOOLEAN NOT NULL,
 
