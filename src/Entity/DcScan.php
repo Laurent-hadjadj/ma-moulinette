@@ -429,7 +429,7 @@ class DcScan
         return $this;
     }
 
-    /* MODIF 2026-05-14 [dc-latest-version-filter] : getters/setters flags latest. */
+    /* MODIF 2026-05-14 : getters/setters flags latest. */
     public function isLatestOverall(): bool
     {
         return $this->isLatestOverall;
