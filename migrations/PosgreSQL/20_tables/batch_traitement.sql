@@ -2,14 +2,16 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.0.0 - 30/11/2025                  ##
+##           V2.0.1 - 05/05/2026                  ##
 ##                                                ##
 ####################################################*/
 
 --- 2025-11-30 : Migration postGreSql 18
+--- 2026-05-05 : Ajout de UNIQUE NOT NULL sur traitement_id pour
+---              s'aligner sur l'entité BatchTraitement (unique: true, nullable: false).
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
-\c ma_moulinette db_user;
+\c ma_moulinette;
 
 DROP TABLE IF EXISTS ma_moulinette.batch_traitement;
 
@@ -28,6 +30,6 @@ CREATE TABLE ma_moulinette.batch_traitement
     responsable_short VARCHAR(64) NOT NULL,
     debut_traitement TIMESTAMPTZ,
     fin_traitement TIMESTAMPTZ,
-    traitement_id VARCHAR(36),
+    traitement_id VARCHAR(36) NOT NULL UNIQUE,
     date_enregistrement TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
