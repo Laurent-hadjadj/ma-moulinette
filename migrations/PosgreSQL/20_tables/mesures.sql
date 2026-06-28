@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.2.0 - 29/03/2026                  ##
+##           V2.3.0 - 30/03/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -11,7 +11,7 @@
 --- 2026-03-30 : Ajout de coverage_rating et duplicated_lines_rating. Suppression des attributs de code_smells, bug et vulnerability (blocker, critical, major, minor, info) qui ne sont pas utilisés dans les traitements.
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
-\c ma_moulinette db_user;
+\c ma_moulinette;
 
 DROP TABLE IF EXISTS ma_moulinette.mesures;
 
@@ -37,7 +37,8 @@ CREATE TABLE ma_moulinette.mesures
 
   coverage DOUBLE PRECISION,
   branch_coverage DOUBLE PRECISION,
-  line_coverage INT,
+  -- MODIF 2026-05-06 : INT -> DOUBLE PRECISION (pourcentage)
+  line_coverage DOUBLE PRECISION,
   lines_to_cover INT,
   conditions_to_cover INT,
   uncovered_conditions INT,
