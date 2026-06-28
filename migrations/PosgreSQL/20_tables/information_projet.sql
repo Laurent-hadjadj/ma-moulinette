@@ -2,16 +2,16 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.1.0 - 26/04/2026                  ##
+##           V2.1.0 - 04/05/2026                  ##
 ##                                                ##
 ####################################################*/
 
 --- 2025-11-30 : Migration postGreSql 18
---- 2026-04-26 : Augmentation de la taille de analyse_key
---- 2026-04-26 : renommage de date en date_analyse et type en type_analyse
+--- 2026-05-04 : colonnes `date`/`type` renommées en `date_analyse`/`type_analyse`
+---              pour cohérence avec comments.sql, indexes.sql et l'entité Doctrine.
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
-\c ma_moulinette db_user;
+\c ma_moulinette;
 
 DROP TABLE IF EXISTS ma_moulinette.information_projet;
 
