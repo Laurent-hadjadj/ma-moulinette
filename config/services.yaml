@@ -17,6 +17,10 @@ parameters:
     app.allowed_origins: '%env(csv:APP_ALLOWED_ORIGINS)%'
     api.client_token: '%env(API_CLIENT_TOKEN)%'
 
+    # MODIF 2026-05-08 : token bearer pour /api/secure/dependency-check/*
+    # Lu depuis .env / .env.local (DC_INGEST_TOKEN). Si "changeme" ou vide,
+    # le subscriber renvoie 503 et l'endpoint est désactive (sécurité par défaut).
+    dc.ingest.token: '%env(DC_INGEST_TOKEN)%'
 
     # Configuration SonarQube
     sonar.url: '%env(SONAR_URL)%'
@@ -36,6 +40,16 @@ parameters:
     verify.peer: '%env(VERIFY_PEER)%'
     proxy: '%env(PROXY)%'
 
+    # Paramètres MAMOUL_
+    # MODIF 2026-06-03 : unification sur MAMOUL_CLI_* (les deux commandes)
+    env(MAMOUL_CLI_VERIFY_PEER): '0'
+    env(MAMOUL_CLI_VERIFY_HOST): '0'
+    env(MAMOUL_CLI_CIPHERS): 'DEFAULT:!DH'
+    env(MAMOUL_CLI_USE_PROXY): '0'
+    env(MAMOUL_CLI_PROXY_URL): 'https://proxy.example.com:8080'
+    env(MAMOUL_CLI_PROXY_USER_PWD): 'utilisateur:motdepasse'
+    env(MAMOUL_CLI_NO_PROXY): 'localhost,127.0.0.1'
+
     # Gestion des projets et profils
     maj.projet: '%env(MAJ_PROJET)%'
     maj.profil: '%env(MAJ_PROFIL)%'
@@ -44,6 +58,13 @@ parameters:
     track.logger.method: '%env(TRACK_LOGGER_METHOD)%'
     path.audit: '%env(PATH_AUDIT)%'
     environnement: '%env(ENVIRONNEMENT)%'
+
+    # MODIF 2026-05-06
+    # Mode du filigrane sur les rapports PDF :
+    #   - always       : tous les documents
+    #   - confidential : uniquement si document_type contient "confidentiel" (default)
+    #   - never        : désactivé
+    rapport.pdf.watermark.mode: '%env(RAPPORT_PDF_WATERMARK_MODE)%'
 
     # Gestion des modules
     module.frontend: '%env(MODULE_FRONTEND)%'
@@ -113,15 +134,19 @@ services:
         tags:
             - { name: monolog.processor, channel: request }
 
-    # Collecte userAgent  définition du salt.
-    App\Service\UserAgentTrackerService:
+    # MODIF 2026-05-08 : auth token bearer pour les endpoints DC.
+    App\EventSubscriber\DependencyCheckTokenSubscriber:
         arguments:
-            $appSalt: '%env(APP_USER_AGENT_SALT)%'
-
+            $expectedToken: '%dc.ingest.token%'
     # Téléchargement des logs
-    App\Service\LogArchiveService:
+    App\Service\LogArchive\LogArchiveService:
         arguments:
             $logDir: '%kernel.logs_dir%'
+
+    # MODIF 2026-06-09 : sel pour le hash IP (réutilise APP_SECRET)
+    App\Service\UserAgent\UserAgentTrackerService:
+        arguments:
+            $appSalt: '%kernel.secret%'
 
     # Gestion LDAP
     Symfony\Component\Ldap\Ldap:
@@ -137,4 +162,25 @@ services:
                     referrals: false
                     network_timeout: 3
                     x_tls_require_cert: '%env(LDAP_X_TLS_REQUIRE_CERT)%'
+
+    # MODIF 2026-06-03 : unification MAMOUL_CLI_* + injection RunMoulinetteCollecteCommand.
+    App\Command\Prod\UpdateSonarqubeTagsCommand:
+        arguments:
+            $mamoulCliVerifyPeer: '%env(int:MAMOUL_CLI_VERIFY_PEER)%'
+            $mamoulCliVerifyHost: '%env(int:MAMOUL_CLI_VERIFY_HOST)%'
+            $mamoulCliCiphers: '%env(MAMOUL_CLI_CIPHERS)%'
+            $mamoulCliUseProxy: '%env(int:MAMOUL_CLI_USE_PROXY)%'
+            $mamoulCliProxyUrl: '%env(MAMOUL_CLI_PROXY_URL)%'
+            $mamoulCliProxyUserPwd: '%env(MAMOUL_CLI_PROXY_USER_PWD)%'
+            $mamoulCliNoProxy: '%env(MAMOUL_CLI_NO_PROXY)%'
+
+    App\Command\Prod\RunMoulinetteCollecteCommand:
+        arguments:
+            $mamoulCliVerifyPeer: '%env(int:MAMOUL_CLI_VERIFY_PEER)%'
+            $mamoulCliVerifyHost: '%env(int:MAMOUL_CLI_VERIFY_HOST)%'
+            $mamoulCliCiphers: '%env(MAMOUL_CLI_CIPHERS)%'
+            $mamoulCliUseProxy: '%env(int:MAMOUL_CLI_USE_PROXY)%'
+            $mamoulCliProxyUrl: '%env(MAMOUL_CLI_PROXY_URL)%'
+            $mamoulCliProxyUserPwd: '%env(MAMOUL_CLI_PROXY_USER_PWD)%'
+            $mamoulCliNoProxy: '%env(MAMOUL_CLI_NO_PROXY)%'
 ...
