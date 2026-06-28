@@ -7,10 +7,10 @@
 ####################################################*/
 
 --- 2025-11-30 : Migration postGreSql 18
---- 2026-03-08 : ajout de la colonne last_activity_at
+--- 2026-04-04 : Ajout de groupe_id, last_activity_at.
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
-\c ma_moulinette db_user;
+\c ma_moulinette;
 
 DROP TABLE IF EXISTS ma_moulinette.utilisateur;
 
@@ -21,7 +21,7 @@ CREATE TABLE ma_moulinette.utilisateur
   nom VARCHAR(64) NOT NULL,
   avatar VARCHAR(128) DEFAULT NULL::VARCHAR,
   courriel VARCHAR(320) NOT NULL,
-  password VARCHAR(64) NOT NULL,
+  password VARCHAR(255) NOT NULL,
   reset_password BOOLEAN DEFAULT TRUE NOT NULL,
   reset_password_count SMALLINT DEFAULT 1 NOT NULL,
   roles json,
