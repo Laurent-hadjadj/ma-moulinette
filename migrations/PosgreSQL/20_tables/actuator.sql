@@ -2,14 +2,17 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.0.0 - 30/11/2025                  ##
+##           V2.0.1 - 28/06/2026                  ##
 ##                                                ##
 ####################################################*/
 
 --- 2025-11-30 : Migration postGreSql 18
+--- 2026-06-28 : On passe le script en automatique avec l'utilisateur postgres, puis on applique le script grants.sql.
+--- On supprime l'utilisateur db_user pour éviter de passer le mot de passe une seconde fois.
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
-\c ma_moulinette db_user;
+
+\c ma_moulinette;
 
 DROP TABLE IF EXISTS ma_moulinette.actuator;
 
@@ -20,7 +23,7 @@ CREATE TABLE ma_moulinette.actuator
     nom_application VARCHAR(128) NOT NULL,
     url VARCHAR(255) NOT NULL,
     actuator_user VARCHAR(128),
-    actuator_password VARCHAR(200),
+    actuator_password VARCHAR(128),
     personne VARCHAR(128) NOT NULL,
     date_modification TIMESTAMP,
     date_enregistrement TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
