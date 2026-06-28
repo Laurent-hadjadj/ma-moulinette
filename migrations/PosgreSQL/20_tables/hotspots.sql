@@ -2,15 +2,16 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.1.0 - 26/04/2026                  ##
+##           V2.0.1 - 28/06/2026                  ##
 ##                                                ##
 ####################################################*/
 
 --- 2025-11-30 : Migration postGreSql 18
---- 2026-04-26 : Augmentation de la taille de hotspot_key
+--- 2026-06-28 : On passe le script en automatique avec l'utilisateur postgres, puis on applique le script grants.sql.
+---              On supprime l'utilisateur db_user pour éviter de passer le mot de passe une seconde fois.
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
-\c ma_moulinette db_user;
+\c ma_moulinette;
 
 DROP TABLE IF EXISTS ma_moulinette.hotspots;
 
