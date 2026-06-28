@@ -1,8 +1,8 @@
 /*
 ####################################################
 ##                                                ##
-##           Create TABLES                        ##
-##           V2.6.0 - 26/04/2026                  ##
+##           Create COMMENTS                      ##
+##           V3.0.0 - 28/06/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -16,18 +16,27 @@
 --- 2026-04-07 : Ajout des commentaires sur les colonnes de la table portefeuille
 --- 2026-04-26 : Correction des commentaires date et type de la table information_projet en date_analyse et type_analyse
 --- 2026-04-26 : Ajout des commentaires sur les colonnes de la table user_role_log
+--- 2026-05-03 : Correction du titre d'en-tête (était "Create TABLES").
+--- 2026-05-05 : Suppression des index pour user_analysis et user_agent
+--- 2026-05-08 : Ajout des commentaires (partielles) pour les tables dc_cve, dc_dependency, dc_finding, dc_processing_queue, dc_scan
+--- 2026-05-14 : Ajout des commentaires pour logger_breakdown de la table historique et les attributs de la table logger_detail.
+--- 2026-05-17 : Ajout des commentaires pour la table clean_code et les 15 colonnes SonarQube 10+ de la table historique.
+--- 2026-06-09 : Ajout des commentaires pour user_agent_event et user_agent_analysis (intégration schéma ma_moulinette).
+-- 2026-06-28 : Ajout des commentaires manquant sur les tables
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
-\c ma_moulinette db_user
+\c ma_moulinette postgres;
 
 -- ============================================
 -- SCHEMA ma_moulinette
 -- ============================================
-COMMENT ON SCHEMA ma_moulinette IS 'Schéma de la base de données Ma-moulinette';
+COMMENT ON SCHEMA ma_moulinette IS 'Schéma de la base de données ma_oulinette';
 
 -- ============================================
 -- TABLE activity
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.activity IS 'Journal d''activité d''imports SonarQube, ';
 COMMENT ON COLUMN ma_moulinette.activity.id IS 'Identifiant unique de la table activité';
 COMMENT ON COLUMN ma_moulinette.activity.maven_key IS 'Clé Maven du projet';
 COMMENT ON COLUMN ma_moulinette.activity.project_name IS 'Nom du projet associé à la clé maven';
@@ -42,6 +51,8 @@ COMMENT ON COLUMN ma_moulinette.activity.execution_time IS 'Temps d’execution 
 -- ============================================
 -- TABLE activity_historique
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.activity IS 'Journal agrégé de l''activité d''imports SonarQube.';
 COMMENT ON COLUMN ma_moulinette.activity_historique.id IS 'Identifiant unique de la table.';
 COMMENT ON COLUMN ma_moulinette.activity_historique.year IS 'Année.';
 COMMENT ON COLUMN ma_moulinette.activity_historique.day IS 'Nombre jour d’activité.';
@@ -56,6 +67,8 @@ COMMENT ON COLUMN ma_moulinette.activity_historique.date_enregistrement IS 'Date
 -- ============================================
 -- TABLE activity_batch_report
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.activity_batch_report IS 'Table des traitements d''ingestion des tâches SonarQube.';
 COMMENT ON COLUMN ma_moulinette.activity_batch_report.id IS 'Identifiant unique de la table.';
 COMMENT ON COLUMN ma_moulinette.activity_batch_report.date_start IS 'Date de début de l’intervalle pour l’extraction des tâches.';
 COMMENT ON COLUMN ma_moulinette.activity_batch_report.date_end IS 'Date de fin de l’intervalle pour l’extraction des tâches.';
@@ -68,6 +81,8 @@ COMMENT ON COLUMN ma_moulinette.activity_batch_report.date_enregistrement IS 'Da
 -- ============================================
 -- TABLE actuator
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.actuator IS 'Table de configuration des points d''accès actuator';
 COMMENT ON COLUMN ma_moulinette.actuator.id IS 'Identifiant unique de la table';
 COMMENT ON COLUMN ma_moulinette.actuator.maven_key IS 'Clé Maven du projet';
 COMMENT ON COLUMN ma_moulinette.actuator.nom_application IS 'Nom de l’application.';
@@ -81,6 +96,8 @@ COMMENT ON COLUMN ma_moulinette.actuator.date_enregistrement IS 'Date d’enregi
 -- ============================================
 -- TABLE actuator_info
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.actuator_info IS 'Table des clé Actuator à parser.';
 COMMENT ON COLUMN ma_moulinette.actuator_info.id IS 'Identifiant unique de la table';
 COMMENT ON COLUMN ma_moulinette.actuator_info.actuator_info_description IS 'Description courte.';
 COMMENT ON COLUMN ma_moulinette.actuator_info.actuator_info_value IS 'Valeur de la clé actuator.';
@@ -88,6 +105,8 @@ COMMENT ON COLUMN ma_moulinette.actuator_info.actuator_info_value IS 'Valeur de 
 -- ============================================
 -- TABLE anomalie
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.anomalie IS 'Table de collecte des anomalies';
 COMMENT ON COLUMN ma_moulinette.anomalie.id IS 'Identifiant unique de l’anomalie';
 COMMENT ON COLUMN ma_moulinette.anomalie.maven_key IS 'Clé Maven du projet';
 COMMENT ON COLUMN ma_moulinette.anomalie.project_name IS 'Nom du projet';
@@ -119,6 +138,8 @@ COMMENT ON COLUMN ma_moulinette.anomalie.date_enregistrement IS 'Date d’enregi
 -- ============================================
 -- TABLE anomalie_details
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.anomalie_details IS 'Table de collecte du détails de chaque anomalie identifiée.';
 COMMENT ON COLUMN ma_moulinette.anomalie_details.id IS 'Identifiant unique pour les détails de l’anomalie';
 COMMENT ON COLUMN ma_moulinette.anomalie_details.maven_key IS 'Clé Maven du projet';
 COMMENT ON COLUMN ma_moulinette.anomalie_details.name IS 'Nom de l’anomalie';
@@ -144,9 +165,11 @@ COMMENT ON COLUMN ma_moulinette.anomalie_details.date_enregistrement IS 'Date d�
 -- ============================================
 -- TABLE batch
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.batch IS 'Journal des traitements';
 COMMENT ON COLUMN ma_moulinette.batch.id IS 'Identifiant unique du traitement';
 COMMENT ON COLUMN ma_moulinette.batch.activated IS 'Statut d’activité du traitement';
-COMMENT ON COLUMN ma_moulinette.batch.automatique IS 'Mode manuel ou automatqiue';
+COMMENT ON COLUMN ma_moulinette.batch.automatique IS 'Mode manuel ou automatique';
 COMMENT ON COLUMN ma_moulinette.batch.titre IS 'Titre du batch, unique';
 COMMENT ON COLUMN ma_moulinette.batch.description IS 'Description du traitement';
 COMMENT ON COLUMN ma_moulinette.batch.responsable IS 'Identifiant de l’utilisateur responsable';
@@ -161,6 +184,8 @@ COMMENT ON COLUMN ma_moulinette.batch.date_enregistrement IS 'Date d’enregistr
 -- ============================================
 -- TABLE batch_traitement
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.batch_traitement IS 'table de Résultats des traitements';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.id IS 'Identifiant unique du traitement';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.mode_collecte IS 'Mode de collecte du traitement';
 COMMENT ON COLUMN ma_moulinette.batch_traitement.activated IS 'Indique si le traitement est activé ou non';
@@ -180,7 +205,8 @@ COMMENT ON COLUMN ma_moulinette.batch_traitement.date_enregistrement IS 'Date d�
 -- ============================================
 -- TABLE batch_execution
 -- ============================================
-COMMENT ON TABLE ma_moulinette.batch_execution IS 'Journal des exécutions de traitements.';
+
+COMMENT ON TABLE ma_moulinette.batch_execution IS 'Journal d''exécutions de traitement.';
 COMMENT ON COLUMN ma_moulinette.batch_execution.id IS 'Identifiant unique de la table batch_execution.';
 COMMENT ON COLUMN ma_moulinette.batch_execution.nom_traitement IS 'Nom du batch exécuté.';
 COMMENT ON COLUMN ma_moulinette.batch_execution.execution_id IS 'Référence unique du journal.';
@@ -192,6 +218,7 @@ COMMENT ON COLUMN ma_moulinette.batch_execution.date_enregistrement IS 'Date d�
 -- ============================================
 -- TABLE batch_execution_journal
 -- ============================================
+
 COMMENT ON TABLE ma_moulinette.batch_execution_journal IS 'Journal détaillé des collectes/exécutions associées à un batch.';
 COMMENT ON COLUMN ma_moulinette.batch_execution_journal.nom_projet IS 'Nom du projet traité';
 COMMENT ON COLUMN ma_moulinette.batch_execution_journal.portefeuille IS 'Nom du portefeuille de projets associé';
@@ -204,6 +231,7 @@ COMMENT ON COLUMN ma_moulinette.batch_execution_journal.job_id IS 'Clé étrang�
 -- ============================================
 -- TABLE batch_profiling
 -- ============================================
+
 COMMENT ON TABLE ma_moulinette.batch_profiling IS 'Table des statistiques de performances pour les traitements manuels ou automatiques.';
 COMMENT ON COLUMN ma_moulinette.batch_profiling.id IS 'Clé primaire auto-incrémentée.';
 COMMENT ON COLUMN ma_moulinette.batch_profiling.portefeuille IS 'Nom du portefeuille traité (ex: LOT-3, JAVA, etc.).';
@@ -217,8 +245,37 @@ COMMENT ON COLUMN ma_moulinette.batch_profiling.utilisateur IS 'Utilisateur ayan
 COMMENT ON COLUMN ma_moulinette.batch_profiling.date_execution IS 'Horodatage de fin d’exécution du traitement';
 
 -- ============================================
+-- TABLE clean_code  — MODIF 2026-05-17
+-- ============================================
+
+COMMENT ON TABLE ma_moulinette.clean_code IS 'Indicateurs SonarQube 10+ par projet : clean code taxonomy, impact qualités/sévérités, conformité OWASP/SANS/CWE. Un enregistrement par projet (dernière collecte).';
+COMMENT ON COLUMN ma_moulinette.clean_code.id IS 'Identifiant unique auto-incrémenté.';
+COMMENT ON COLUMN ma_moulinette.clean_code.maven_key IS '[CORE] Clé unique du projet SonarQube.';
+COMMENT ON COLUMN ma_moulinette.clean_code.project_name IS '[CORE] Nom court du projet extrait de la maven_key.';
+COMMENT ON COLUMN ma_moulinette.clean_code.issue_total IS '[SQ10+] Nombre total d''issues ouvertes au moment de la collecte.';
+COMMENT ON COLUMN ma_moulinette.clean_code.cc_consistent IS '[SQ10+] Issues catégorie CONSISTENT : conventions, formatage, nommage.';
+COMMENT ON COLUMN ma_moulinette.clean_code.cc_intentional IS '[SQ10+] Issues catégorie INTENTIONAL : logique claire, code complet et efficace.';
+COMMENT ON COLUMN ma_moulinette.clean_code.cc_adaptable IS '[SQ10+] Issues catégorie ADAPTABLE : code modulaire, focalisé, testable.';
+COMMENT ON COLUMN ma_moulinette.clean_code.cc_responsible IS '[SQ10+] Issues catégorie RESPONSIBLE : code fiable, légal, éthique — indicateur critique gouvernance.';
+COMMENT ON COLUMN ma_moulinette.clean_code.quality_maintainability IS '[SQ10+] Issues impactant la qualité MAINTAINABILITY.';
+COMMENT ON COLUMN ma_moulinette.clean_code.quality_reliability IS '[SQ10+] Issues impactant la qualité RELIABILITY (bugs).';
+COMMENT ON COLUMN ma_moulinette.clean_code.quality_security IS '[SQ10+] Issues impactant la qualité SECURITY.';
+COMMENT ON COLUMN ma_moulinette.clean_code.impact_blocker IS '[SQ10+] Issues de sévérité impact BLOCKER.';
+COMMENT ON COLUMN ma_moulinette.clean_code.impact_high IS '[SQ10+] Issues de sévérité impact HIGH.';
+COMMENT ON COLUMN ma_moulinette.clean_code.impact_medium IS '[SQ10+] Issues de sévérité impact MEDIUM.';
+COMMENT ON COLUMN ma_moulinette.clean_code.impact_low IS '[SQ10+] Issues de sévérité impact LOW.';
+COMMENT ON COLUMN ma_moulinette.clean_code.impact_info IS '[SQ10+] Issues de sévérité impact INFO.';
+COMMENT ON COLUMN ma_moulinette.clean_code.owasp_top10 IS '[COMPLIANCE] Issues taggées OWASP Top 10 2021 (A1–A10).';
+COMMENT ON COLUMN ma_moulinette.clean_code.sans_top25 IS '[COMPLIANCE] Issues taggées SANS/CWE Top 25 (insecure-interaction, risky-resource, porous-defenses).';
+COMMENT ON COLUMN ma_moulinette.clean_code.cwe IS '[COMPLIANCE] Total des occurrences CWE (approximation : peut cumuler plusieurs tags par issue).';
+COMMENT ON COLUMN ma_moulinette.clean_code.mode_collecte IS '[MA-MOULINETTE] Type de collecte : COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE.';
+COMMENT ON COLUMN ma_moulinette.clean_code.utilisateur_collecte IS '[MA-MOULINETTE] Auteur de la collecte.';
+COMMENT ON COLUMN ma_moulinette.clean_code.date_enregistrement IS '[MA-MOULINETTE] Date de la collecte.';
+
+-- ============================================
 -- TABLE groupe utilisateur
 -- ============================================
+
 COMMENT ON TABLE ma_moulinette.groupe_utilisateur IS 'Table des groupes utilisateurs.';
 COMMENT ON COLUMN ma_moulinette.groupe_utilisateur.id IS 'Identifiant unique de la table groupe_utilisateur.';
 COMMENT ON COLUMN ma_moulinette.groupe_utilisateur.groupe_utilisateur IS 'Groupe des utilisateurs.';
@@ -229,6 +286,7 @@ COMMENT ON COLUMN ma_moulinette.groupe_utilisateur.date_enregistrement IS 'Date 
 -- ============================================
 -- TABLE groupe fonctionnel
 -- ============================================
+
 COMMENT ON TABLE ma_moulinette.groupe_fonctionnel IS 'Table des groupes fonctionnels.';
 COMMENT ON COLUMN ma_moulinette.groupe_fonctionnel.id IS 'Identifiant unique de la table groupe_fonctionnel.';
 COMMENT ON COLUMN ma_moulinette.groupe_fonctionnel.groupe_fonctionnel IS 'Nom du groupe fonctionnel correspondant à un tag SonarQube.';
@@ -239,6 +297,8 @@ COMMENT ON COLUMN ma_moulinette.groupe_fonctionnel.date_enregistrement IS 'Date 
 -- ============================================
 -- TABLE historique
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.historique IS ' Table de <fées> pour les indicateurs agrégées collectés.';
 COMMENT ON COLUMN ma_moulinette.historique.maven_key IS '[CORE] Clé unique du projet, souvent project_key
 (fr.monapplication:ma-moulinette).';
 COMMENT ON COLUMN ma_moulinette.historique.version IS '[CORE] Version du projet lors de l''analyse. Permet de suivre l''évolution du projet dans le temps.';
@@ -372,6 +432,23 @@ COMMENT ON COLUMN ma_moulinette.historique.logger_info IS '[MA-MOULINETTE] Nombr
 COMMENT ON COLUMN ma_moulinette.historique.logger_warn IS '[MA-MOULINETTE] Nombre de logger de type WARN.';
 COMMENT ON COLUMN ma_moulinette.historique.logger_error IS '[MA-MOULINETTE] Nombre de logger de type ERROR.';
 COMMENT ON COLUMN ma_moulinette.historique.logger_debug IS '[MA-MOULINETTE] Nombre de logger de type DEBUG.';
+-- MODIF 2026-05-17 : indicateurs SonarQube 10+
+COMMENT ON COLUMN ma_moulinette.historique.cc_consistent IS '[SQ10+] Issues catégorie CONSISTENT : conventions, formatage, nommage. Null si collecte clean code non réalisée.';
+COMMENT ON COLUMN ma_moulinette.historique.cc_intentional IS '[SQ10+] Issues catégorie INTENTIONAL : logique claire, code complet et efficace. Null si collecte clean code non réalisée.';
+COMMENT ON COLUMN ma_moulinette.historique.cc_adaptable IS '[SQ10+] Issues catégorie ADAPTABLE : code modulaire, focalisé, testable. Null si collecte clean code non réalisée.';
+COMMENT ON COLUMN ma_moulinette.historique.cc_responsible IS '[SQ10+] Issues catégorie RESPONSIBLE : code fiable, légal, éthique — indicateur critique gouvernance. Null si collecte clean code non réalisée.';
+COMMENT ON COLUMN ma_moulinette.historique.quality_maintainability IS '[SQ10+] Issues impactant la qualité MAINTAINABILITY. Null si collecte clean code non réalisée.';
+COMMENT ON COLUMN ma_moulinette.historique.quality_reliability IS '[SQ10+] Issues impactant la qualité RELIABILITY (bugs). Null si collecte clean code non réalisée.';
+COMMENT ON COLUMN ma_moulinette.historique.quality_security IS '[SQ10+] Issues impactant la qualité SECURITY. Null si collecte clean code non réalisée.';
+COMMENT ON COLUMN ma_moulinette.historique.impact_blocker IS '[SQ10+] Issues de sévérité impact BLOCKER. Null si collecte clean code non réalisée.';
+COMMENT ON COLUMN ma_moulinette.historique.impact_high IS '[SQ10+] Issues de sévérité impact HIGH. Null si collecte clean code non réalisée.';
+COMMENT ON COLUMN ma_moulinette.historique.impact_medium IS '[SQ10+] Issues de sévérité impact MEDIUM. Null si collecte clean code non réalisée.';
+COMMENT ON COLUMN ma_moulinette.historique.impact_low IS '[SQ10+] Issues de sévérité impact LOW. Null si collecte clean code non réalisée.';
+COMMENT ON COLUMN ma_moulinette.historique.impact_info IS '[SQ10+] Issues de sévérité impact INFO. Null si collecte clean code non réalisée.';
+COMMENT ON COLUMN ma_moulinette.historique.owasp_top10 IS '[COMPLIANCE] Issues taggées OWASP Top 10 2021 (A1–A10). Null si collecte clean code non réalisée.';
+COMMENT ON COLUMN ma_moulinette.historique.sans_top25 IS '[COMPLIANCE] Issues taggées SANS/CWE Top 25. Null si collecte clean code non réalisée.';
+COMMENT ON COLUMN ma_moulinette.historique.cwe IS '[COMPLIANCE] Total occurrences CWE (approximation). Null si collecte clean code non réalisée.';
+COMMENT ON COLUMN ma_moulinette.historique.logger_breakdown IS '[MA-MOULINETTE] Breakdown loggers par level × framework au moment de la version. Format JSONB : {info: {SLF4J: N, "Commons Logging": M, "—": K}, warn: {...}, error: {...}, debug: {...}}. Null si plugin track-logger-method désactivé ou non collecté.';
 COMMENT ON COLUMN ma_moulinette.historique.initial IS '[MA-MOULINETTE] Indique si c’est la version de référence. Permet de suivre l’évolution du projet à partir d’un point de départ.';
 COMMENT ON COLUMN ma_moulinette.historique.mode_collecte IS '[MA-MOULINETTE] Type de collecte : REBUILD | COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE.';
 COMMENT ON COLUMN ma_moulinette.historique.utilisateur_collecte IS '[MA-MOULINETTE] Auteur de la collecte de données.';
@@ -380,6 +457,8 @@ COMMENT ON COLUMN ma_moulinette.historique.date_enregistrement IS '[MA-MOULINETT
 -- ============================================
 -- TABLE hotspot_details
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.hotspot_details IS 'Table de collecte du détails de chaque menace potentielle collectée.';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.id IS 'Identifiant unique pour la table hotspot owasp details';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.maven_key IS 'Clé Maven du projet';
 COMMENT ON COLUMN ma_moulinette.hotspot_details.version IS 'Version du projet';
@@ -406,6 +485,8 @@ COMMENT ON COLUMN ma_moulinette.hotspot_details.date_enregistrement IS 'Date d�
 -- ============================================
 -- TABLE hotspot_owasp
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.hotspot_owasp IS 'Table de collecte des failles OWASP identifiées.';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.id IS 'Identifiant unique pour chaque hotspot OWASP';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.referential_owasp IS 'Référentiel OWASP 2017, 2021';
 COMMENT ON COLUMN ma_moulinette.hotspot_owasp.maven_key IS 'Clé Maven du projet';
@@ -425,6 +506,8 @@ COMMENT ON COLUMN ma_moulinette.hotspot_owasp.date_enregistrement IS 'Date d’e
 -- ============================================
 -- TABLE hotspots
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.hotspots IS 'Table de collecte des menaces potentielles identifiées.';
 COMMENT ON COLUMN ma_moulinette.hotspots.id IS 'Identifiant unique pour chaque hotspot';
 COMMENT ON COLUMN ma_moulinette.hotspots.maven_key IS 'Clé Maven du projet';
 COMMENT ON COLUMN ma_moulinette.hotspots.version IS 'Version du hotspot';
@@ -443,6 +526,8 @@ COMMENT ON COLUMN ma_moulinette.hotspots.date_enregistrement IS 'Date d’enregi
 -- ============================================
 -- TABLE information_projet
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.information_projet IS 'Table de collecte des informations générales du projet.';
 COMMENT ON COLUMN ma_moulinette.information_projet.id IS 'Identifiant unique pour chaque instance de InformationProjet';
 COMMENT ON COLUMN ma_moulinette.information_projet.maven_key IS 'Clé Maven du projet';
 COMMENT ON COLUMN ma_moulinette.information_projet.analyse_key IS 'Clé d’analyse du projet';
@@ -460,6 +545,8 @@ COMMENT ON COLUMN ma_moulinette.information_projet.date_enregistrement IS 'Date 
 -- ============================================
 -- TABLE liste_projet
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.liste_projet IS 'Table de projets disponible sur le serveur SonarQube';
 COMMENT ON COLUMN ma_moulinette.liste_projet.id IS 'Identifiant unique pour chaque instance de ListeProjet';
 COMMENT ON COLUMN ma_moulinette.liste_projet.maven_key IS 'Clé Maven du projet';
 COMMENT ON COLUMN ma_moulinette.liste_projet.name IS 'Nom du projet';
@@ -470,6 +557,8 @@ COMMENT ON COLUMN ma_moulinette.liste_projet.date_enregistrement IS 'Date d’en
 -- ============================================
 -- TABLE logger
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.logger IS 'Table de collecte des type de loggers JAVA.';
 COMMENT ON COLUMN ma_moulinette.logger.id IS 'Identifiant unique pour chaque instance de ListeProjet';
 COMMENT ON COLUMN ma_moulinette.logger.maven_key IS 'Clé Maven du projet';
 COMMENT ON COLUMN ma_moulinette.logger.logger_info IS 'Nombre d’appels de log niveau INFO';
@@ -480,9 +569,32 @@ COMMENT ON COLUMN ma_moulinette.logger.mode_collecte IS 'Mode de collecte : coll
 COMMENT ON COLUMN ma_moulinette.logger.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.logger.date_enregistrement IS 'Date d’enregistrement du projet';
 
+
+-- ============================================
+-- TABLE logger_detail
+-- ============================================
+
+COMMENT ON TABLE ma_moulinette.logger_details IS 'Table de collecte du détails de chaque logger.';
+COMMENT ON TABLE  ma_moulinette.logger_details                       IS 'Détail des loggers détectés par le plugin track-logger-method v2+ (1 ligne par occurrence). Table dropped/refilled a chaque collecte par maven_key.';
+COMMENT ON COLUMN ma_moulinette.logger_details.id                    IS 'Identifiant unique pour chaque ligne de logger_details (BIGSERIAL).';
+COMMENT ON COLUMN ma_moulinette.logger_details.maven_key             IS 'Clé Maven du projet.';
+COMMENT ON COLUMN ma_moulinette.logger_details.project_version       IS 'Version du projet au moment de la collecte (récupérée depuis information_projet).';
+COMMENT ON COLUMN ma_moulinette.logger_details.level                 IS 'Niveau du logger : info / warn / error / debug';
+COMMENT ON COLUMN ma_moulinette.logger_details.framework             IS 'Framework de logging : SLF4J, Commons Logging, java.util.logging, Log4j... Null si plugin v1.x.';
+COMMENT ON COLUMN ma_moulinette.logger_details.file_path             IS 'Chemin relatif du fichier source. Extrait du champ component Sonar apres les 2 premiers segments group:artifact:';
+COMMENT ON COLUMN ma_moulinette.logger_details.file_name             IS 'Basename du fichier (ex: ApplicationExceptionHandler.java).';
+COMMENT ON COLUMN ma_moulinette.logger_details.class_name            IS 'Nom de la classe (file_name sans extension).';
+COMMENT ON COLUMN ma_moulinette.logger_details.line_number           IS 'Numéro de ligne dans le fichier. Null si plugin v1.x ou champ Sonar absent.';
+COMMENT ON COLUMN ma_moulinette.logger_details.sonar_issue_key       IS 'UUID issue cote SonarQube. Garde pour audit/traçabilité (lien direct possible vers Sonar).';
+COMMENT ON COLUMN ma_moulinette.logger_details.mode_collecte         IS 'Mode de collecte : collecte, traitement manuel ou traitement automatique';
+COMMENT ON COLUMN ma_moulinette.logger_details.utilisateur_collecte  IS 'Compte de l''utilisateur qui a réalisé la collecte.';
+COMMENT ON COLUMN ma_moulinette.logger_details.date_enregistrement   IS 'Date d''enregistrement de la collecte (TIMESTAMPTZ).';
+
 -- ============================================
 -- TABLE ma_moulinette
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.ma_moulinette IS 'Table des versions de l''application.';
 COMMENT ON COLUMN ma_moulinette.ma_moulinette.id IS 'Unique identifier for each MaMoulinette instance';
 COMMENT ON COLUMN ma_moulinette.ma_moulinette.version IS 'Numéro de version de Ma-Moulinette';
 COMMENT ON COLUMN ma_moulinette.ma_moulinette.date_version IS 'Date de publication de la version';
@@ -491,6 +603,8 @@ COMMENT ON COLUMN ma_moulinette.ma_moulinette.date_enregistrement IS 'Date d’e
 -- ============================================
 -- TABLE mesures
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.mesures IS 'Table de collecte des mesures.';
 COMMENT ON COLUMN ma_moulinette.mesures.id IS 'Identifiant unique pour chaque mesure';
 COMMENT ON COLUMN ma_moulinette.mesures.maven_key IS '[CORE] Clé unique du projet, souvent project_key (fr.monapplication:ma-moulinette).';
 COMMENT ON COLUMN ma_moulinette.mesures.project_name IS '[CORE] Nom du projet i.e. extrait de la maven_key.';
@@ -594,6 +708,8 @@ COMMENT ON COLUMN ma_moulinette.mesures.date_enregistrement IS '[MA-MOULINETTE] 
 -- ============================================
 -- TABLE no_sonar
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.no_sonar IS 'Table de collecte des no_sonar, suppress_warning, check_style:off et pmd';
 COMMENT ON COLUMN ma_moulinette.no_sonar.id IS 'Identifiant unique pour chaque entrée NoSonar';
 COMMENT ON COLUMN ma_moulinette.no_sonar.maven_key IS 'Clé Maven du projet';
 COMMENT ON COLUMN ma_moulinette.no_sonar.rule IS 'Règle appliquée';
@@ -606,6 +722,8 @@ COMMENT ON COLUMN ma_moulinette.no_sonar.date_enregistrement IS 'Date d’enregi
 -- ============================================
 -- TABLE owasp
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.owasp IS 'Table de collecte des violations OWASP TOP 10.';
 COMMENT ON COLUMN ma_moulinette.owasp.id IS 'Clé unique pour les enregistrements de la table';
 COMMENT ON COLUMN ma_moulinette.owasp.maven_key IS 'Clé unique du projet';
 COMMENT ON COLUMN ma_moulinette.owasp.version IS 'Version du projet';
@@ -678,6 +796,8 @@ COMMENT ON COLUMN ma_moulinette.owasp.date_enregistrement IS 'Date d’enregistr
 -- ============================================
 -- TABLE portefeuille
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.portefeuille IS 'Table des portefeuilles de projets. ';
 COMMENT ON COLUMN ma_moulinette.portefeuille.id IS 'Identifiant unique pour chaque portefeuille';
 COMMENT ON COLUMN ma_moulinette.portefeuille.portefeuille IS 'Nom unique du portefeuille';
 COMMENT ON COLUMN ma_moulinette.portefeuille.groupe_fonctionnel IS 'Nom du groupe fonctionnel associé au portefeuille';
@@ -688,6 +808,8 @@ COMMENT ON COLUMN ma_moulinette.portefeuille.date_enregistrement IS 'Date d’en
 -- ============================================
 -- TABLE properties
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.properties IS 'Table des propriétés de l''application.';
 COMMENT ON COLUMN ma_moulinette.properties.id IS 'Identifiant unique pour la table de propriétés';
 COMMENT ON COLUMN ma_moulinette.properties.type IS 'Type de propriété, par défaut properties';
 COMMENT ON COLUMN ma_moulinette.properties.projet_bd IS 'Identifiant du projet dans la base de données';
@@ -701,6 +823,8 @@ COMMENT ON COLUMN ma_moulinette.properties.date_modification_profil IS 'Date de 
 -- ============================================
 -- TABLE repartition_temp
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.repartition_temp IS 'Table temporaire des violations par applications';
 COMMENT ON COLUMN ma_moulinette.repartition_temp.id IS 'Identifiant unique pour chaque propriété';
 COMMENT ON COLUMN ma_moulinette.repartition_temp.maven_key IS 'Clé identification du projet';
 COMMENT ON COLUMN ma_moulinette.repartition_temp.type IS 'Catégorie : BUG, VULNERABILITY ou CODE_SMELL';
@@ -710,6 +834,8 @@ COMMENT ON COLUMN ma_moulinette.repartition_temp.setup IS 'Timestamp en millisec
 -- ============================================
 -- TABLE repartition
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.repartition IS 'Table des données calculées par application.';
 COMMENT ON COLUMN ma_moulinette.repartition.id IS 'ID unique pour chaque répartition';
 COMMENT ON COLUMN ma_moulinette.repartition.maven_key IS 'Clé identification du projet';
 COMMENT ON COLUMN ma_moulinette.repartition.name IS 'Nom de l’application';
@@ -801,6 +927,8 @@ COMMENT ON COLUMN ma_moulinette.repartition.date_enregistrement IS 'Date d’enr
 -- ============================================
 -- TABLE todo
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.todo IS 'Table de collecte des todos.';
 COMMENT ON COLUMN ma_moulinette.todo.id IS 'ID unique pour chaque Todo';
 COMMENT ON COLUMN ma_moulinette.todo.maven_key IS 'Clé Maven du projet';
 COMMENT ON COLUMN ma_moulinette.todo.rule IS 'Règle appliquée au Todo';
@@ -813,6 +941,8 @@ COMMENT ON COLUMN ma_moulinette.todo.date_enregistrement IS 'Date d’enregistre
 -- ============================================
 -- TABLE utilisateur
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.utilisateur IS 'Table des utilisateurs.';
 COMMENT ON COLUMN ma_moulinette.utilisateur.id IS 'Clé unique de la table';
 COMMENT ON COLUMN ma_moulinette.utilisateur.prenom IS 'Prénom de l’utilisateur';
 COMMENT ON COLUMN ma_moulinette.utilisateur.nom IS 'Nom de l’utilisateur';
@@ -834,6 +964,8 @@ COMMENT ON COLUMN ma_moulinette.utilisateur.date_enregistrement IS 'Date de cré
 -- ============================================
 -- TABLE user_role_log
 -- ============================================
+
+COMMENT ON TABLE ma_moulinette.user_role_log IS 'Journal d''activité des changements sur les rôles sensibles.';
 COMMENT ON COLUMN ma_moulinette.user_role_log.old_roles IS 'Rôles anciens de l’utilisateur';
 COMMENT ON COLUMN ma_moulinette.user_role_log.new_roles IS 'Nouveaux rôles de l’utilisateur';
 COMMENT ON COLUMN ma_moulinette.user_role_log.old_active IS 'Ancien statut actif de l’utilisateur';
@@ -841,45 +973,52 @@ COMMENT ON COLUMN ma_moulinette.user_role_log.new_active IS 'Nouveau statut acti
 COMMENT ON COLUMN ma_moulinette.user_role_log.alerts IS 'Alertes associées au log';
 COMMENT ON COLUMN ma_moulinette.user_role_log.created_at IS 'Date de création du log';
 
--- ============================================
--- TABLE user_agent_analysis
--- ============================================
-COMMENT ON TABLE ma_moulinette.user_agent_analysis IS 'Table persistante contenant les résultats consolidés de l’analyse des User-Agent pour les statistiques.';
-COMMENT ON COLUMN ma_moulinette.user_agent_analysis.id IS 'Identifiant unique de l’analyse User-Agent';
-COMMENT ON COLUMN ma_moulinette.user_agent_analysis.device_type IS 'Type d’appareil détecté (desktop, mobile, tablet…)';
-COMMENT ON COLUMN ma_moulinette.user_agent_analysis.os_name IS 'Nom du système d’exploitation';
-COMMENT ON COLUMN ma_moulinette.user_agent_analysis.os_version IS 'Version du système d’exploitation';
-COMMENT ON COLUMN ma_moulinette.user_agent_analysis.browser_name IS 'Nom du navigateur';
-COMMENT ON COLUMN ma_moulinette.user_agent_analysis.browser_version IS 'Version du navigateur';
-COMMENT ON COLUMN ma_moulinette.user_agent_analysis.is_bot IS 'Indique si le client est identifié comme bot';
-COMMENT ON COLUMN ma_moulinette.user_agent_analysis.detector_version IS 'Version du moteur Matomo DeviceDetector';
-COMMENT ON COLUMN ma_moulinette.user_agent_analysis.event_type IS 'Type fonctionnel de l’événement déclencheur (PROMPT, STATS, LOGOUT, etc.)';
-COMMENT ON COLUMN ma_moulinette.user_agent_analysis.url IS 'URL ou chemin déclencheur de l’événement';
-COMMENT ON COLUMN ma_moulinette.user_agent_analysis.session_id IS 'Identifiant de session PHP associé à l’événement';
-COMMENT ON COLUMN ma_moulinette.user_agent_analysis.created_at IS 'Date de création de l’analyse';
-COMMENT ON COLUMN ma_moulinette.user_agent_analysis.visitor_id IS 'Identifiant visiteur analytics';
-COMMENT ON COLUMN ma_moulinette.user_agent_analysis.user_id IS 'Identifiant de l’utilisateur authentifié';
+-- ===============================================
+-- Table dc_cve
+-- ===============================================
+COMMENT ON TABLE  ma_moulinette.dc_cve IS 'Référentiel global des CVE détectées - 1 row par CVE unique.';
+COMMENT ON COLUMN ma_moulinette.dc_cve.cve_id IS 'Identifiant CVE (CVE-YYYY-NNNNN ou autre format).';
+COMMENT ON COLUMN ma_moulinette.dc_cve.cwes IS 'Array JSON des CWE (ex: ["CWE-400", "CWE-770"]).';
+COMMENT ON COLUMN ma_moulinette.dc_cve.last_seen_at IS 'Mis a jour a chaque nouveau scan ou cette CVE apparaît.';
 
--- ============================================
--- TABLE user_agent_event
--- ============================================
-COMMENT ON TABLE ma_moulinette.user_agent_event IS 'Table de collecte des User-Agent.';
-COMMENT ON COLUMN ma_moulinette.user_agent_event.id IS 'Identifiant unique de l’événement User-Agent';
-COMMENT ON COLUMN ma_moulinette.user_agent_event.event_type IS 'Type fonctionnel de l’événement déclencheur';
-COMMENT ON COLUMN ma_moulinette.user_agent_event.url IS 'URL ou path déclencheur de l’événement';
-COMMENT ON COLUMN ma_moulinette.user_agent_event.user_agent IS 'User-Agent HTTP brut fourni par le client';
-COMMENT ON COLUMN ma_moulinette.user_agent_event.session_id IS 'Identifiant de session PHP si existant';
-COMMENT ON COLUMN ma_moulinette.user_agent_event.user_id IS 'Identifiant de l’utilisateur authentifié';
-COMMENT ON COLUMN ma_moulinette.user_agent_event.visitor_id IS 'Identifiant visiteur analytics long terme';
-COMMENT ON COLUMN ma_moulinette.user_agent_event.auth_state IS 'État d’authentification lors de l’événement';
-COMMENT ON COLUMN ma_moulinette.user_agent_event.processing_status IS 'Statut de traitement par le batch d’analyse';
-COMMENT ON COLUMN ma_moulinette.user_agent_event.ip_hash IS 'Hash SHA-256 de l’adresse IP client';
-COMMENT ON COLUMN ma_moulinette.user_agent_event.created_at IS 'Date de création de l’événement';
-COMMENT ON COLUMN ma_moulinette.user_agent_event.processed_at IS 'Date de traitement de l’événement';
+COMMENT ON TABLE  ma_moulinette.dc_dependency IS 'Référentiel global des dépendances scannées - 1 row par version unique d''artefact (sha1).';
+COMMENT ON COLUMN ma_moulinette.dc_dependency.sha1 IS 'Cle naturelle (sha1 du fichier). Le meme .jar partage le meme sha1 entre projets.';
+COMMENT ON COLUMN ma_moulinette.dc_dependency.pkg_coordinates IS 'Coordonnées Package URL (purl) extraites de packages[].id.';
+
+-- ===============================================
+-- Table dc_finding
+-- ===============================================
+
+COMMENT ON TABLE  ma_moulinette.dc_finding IS 'Jointure ternaire scan x dependency x cve. Snapshot severity/cvss au moment du scan.';
+COMMENT ON COLUMN ma_moulinette.dc_finding.severity_at_scan IS 'Snapshot - permet de tracer si NVD requalifie une CVE plus tard.';
+
+-- ===============================================
+-- Table dc_processing_queue
+-- ===============================================
+
+COMMENT ON TABLE ma_moulinette.dc_processing_queue IS 'Queue d''ingestion des rapports OWASP DependencyCheck postes par les CI GitLab.';
+COMMENT ON COLUMN ma_moulinette.dc_processing_queue.ulid IS 'Identifiant public renvoyé au client (ULID Crockford base32).';
+COMMENT ON COLUMN ma_moulinette.dc_processing_queue.payload_gz IS 'JSON DependencyCheck compresse (gzip niveau 6) - TOAST gere par PG.';
+COMMENT ON COLUMN ma_moulinette.dc_processing_queue.payload_sha256 IS 'sha256 du JSON décompressé - cle d''idempotence.';
+COMMENT ON COLUMN ma_moulinette.dc_processing_queue.status IS 'queued | processing | done | failed';
+
+
+-- ===============================================
+-- Table dc_scan
+-- ===============================================
+
+COMMENT ON TABLE  ma_moulinette.dc_scan IS '1 scan = 1 rapport DC pour (projet, version, date). Compteurs pre-calcules.';
+COMMENT ON COLUMN ma_moulinette.dc_scan.maven_key IS 'group:artifact (compose), pour alignement avec autres tables Owasp.';
+COMMENT ON COLUMN ma_moulinette.dc_scan.queue_id IS 'Lien vers la row source dans dc_processing_queue (audit/retraitement).';
+COMMENT ON COLUMN ma_moulinette.dc_scan.is_latest_overall
+  IS 'TRUE si ce scan est la dernière version (toute) pour (project_group, project_artifact). Maintenu par DcLatestVersionUpdater. Vue dev.';
+COMMENT ON COLUMN ma_moulinette.dc_scan.is_latest_release
+  IS 'TRUE si ce scan est la dernière version release stable (sans -SNAPSHOT/-RC*/-ALPHA*/-BETA*/-M*) pour (project_group, project_artifact). Maintenu par DcLatestVersionUpdater. Vue prod.';
 
 -- ============================================
 -- VIEW vw_batch_profiling_stats
 -- ============================================
+
 COMMENT ON VIEW ma_moulinette.vw_batch_profiling_stats IS
 'Vue d’analyse consolidée des statistiques de performance des traitements.';
 COMMENT ON COLUMN ma_moulinette.vw_batch_profiling_stats.portefeuille IS 'Nom du portefeuille.';
@@ -896,6 +1035,7 @@ COMMENT ON COLUMN ma_moulinette.vw_batch_profiling_stats.derniere_execution IS '
 -- ============================================
 -- VIEW vw_batch_profiling_weekly
 -- ============================================
+
 COMMENT ON VIEW ma_moulinette.vw_batch_profiling_weekly IS 'Vue de synthèse hebdomadaire des performances des batchs (temps moyen, mémoire, nombre d’exécutions).';
 COMMENT ON COLUMN ma_moulinette.vw_batch_profiling_weekly.portefeuille IS 'Nom du portefeuille traité.';
 COMMENT ON COLUMN ma_moulinette.vw_batch_profiling_weekly.utilisateur IS 'Utilisateur à l’origine des traitements.';
@@ -911,6 +1051,7 @@ COMMENT ON COLUMN ma_moulinette.vw_batch_profiling_weekly.memoire_peak_max_mo IS
 -- ============================================
 -- VIEW vw_batch_profiling_monthly
 -- ============================================
+
 COMMENT ON VIEW ma_moulinette.vw_batch_profiling_monthly IS 'Vue mensuelle consolidée des performances des batchs (temps moyen, mémoire, nombre d’exécutions).';
 COMMENT ON COLUMN ma_moulinette.vw_batch_profiling_monthly.portefeuille IS 'Nom du portefeuille traité.';
 COMMENT ON COLUMN ma_moulinette.vw_batch_profiling_monthly.utilisateur IS 'Utilisateur ayant déclenché les traitements.';
@@ -927,6 +1068,7 @@ COMMENT ON COLUMN ma_moulinette.vw_batch_profiling_monthly.derniere_execution IS
 -- ============================================
 -- VIEW vw_batch_profiling_global
 -- ============================================
+
 COMMENT ON VIEW ma_moulinette.vw_batch_profiling_global IS 'Vue de synthèse globale des performances (moyennes, pics mémoire, historique complet).';
 COMMENT ON COLUMN ma_moulinette.vw_batch_profiling_global.portefeuille IS 'Nom du portefeuille traité.';
 COMMENT ON COLUMN ma_moulinette.vw_batch_profiling_global.utilisateur IS 'Utilisateur à l’origine des traitements.';
@@ -943,6 +1085,7 @@ COMMENT ON COLUMN ma_moulinette.vw_batch_profiling_global.derniere_execution IS 
 -- ============================================
 -- VIEW vw_batch_profiling_summary
 -- ============================================
+
 COMMENT ON VIEW ma_moulinette.vw_batch_profiling_summary IS 'Vue unifiée regroupant les statistiques hebdomadaires, mensuelles et globales des batchs.';
 COMMENT ON COLUMN ma_moulinette.vw_batch_profiling_summary.granularite IS 'Type d’agrégation : Hebdomadaire | Mensuel | Global.';
 COMMENT ON COLUMN ma_moulinette.vw_batch_profiling_summary.portefeuille IS 'Nom du portefeuille analysé.';
@@ -961,6 +1104,7 @@ COMMENT ON COLUMN ma_moulinette.vw_batch_profiling_summary.derniere_execution IS
 -- ===============================================
 -- COMMENTAIRES DES INDEX
 -- ===============================================
+
 COMMENT ON INDEX ma_moulinette.idx_batch_profiling_date_execution IS 'Index sur la colonne date_execution pour optimiser les regroupements temporels (weekly, monthly, global).';
 COMMENT ON INDEX ma_moulinette.idx_batch_profiling_portefeuille_user IS 'Index composite portefeuille + utilisateur, essentiel pour les vues de statistiques filtrées.';
 COMMENT ON INDEX ma_moulinette.idx_batch_profiling_portefeuille IS 'Index sur portefeuille utilisé pour les agrégations globales par zone fonctionnelle.';
@@ -970,5 +1114,45 @@ COMMENT ON INDEX ma_moulinette.idx_batch_profiling_execution_ref IS 'Index sur l
 -- ===============================================
 -- FUNCTION: ma_moulinette.purge_batch_profiling
 -- ===============================================
+
 COMMENT ON FUNCTION ma_moulinette.purge_batch_profiling IS
 'Supprime les entrées de profiling plus anciennes que X jours et retourne le nombre de lignes supprimées.';
+
+-- MODIF 2026-06-09 : commentaires tables user_agent_event et user_agent_analysis
+-- ============================================
+-- TABLE user_agent_event
+-- ============================================
+
+COMMENT ON TABLE  ma_moulinette.user_agent_event IS 'Table de collecte brute des User-Agent. Source de vérité : user-agent brut, aucune analyse ici, seul le statut de traitement évolue.';
+COMMENT ON COLUMN ma_moulinette.user_agent_event.id                IS 'Identifiant unique de l''événement User-Agent.';
+COMMENT ON COLUMN ma_moulinette.user_agent_event.event_type        IS 'Type fonctionnel de l''événement déclencheur (LOGIN_PAGE_VIEW, LOGGED, LOGOUT, …).';
+COMMENT ON COLUMN ma_moulinette.user_agent_event.url               IS 'URL ou path déclencheur de l''événement. Informatif uniquement.';
+COMMENT ON COLUMN ma_moulinette.user_agent_event.user_agent        IS 'User-Agent HTTP brut fourni par le client. Donnée non fiable, ne pas interpréter directement.';
+COMMENT ON COLUMN ma_moulinette.user_agent_event.session_id        IS 'Identifiant de session PHP. NULL pour les utilisateurs anonymes.';
+COMMENT ON COLUMN ma_moulinette.user_agent_event.user_id           IS 'Identifiant de l''utilisateur authentifié. NULL si anonyme.';
+COMMENT ON COLUMN ma_moulinette.user_agent_event.visitor_id        IS 'Identifiant visiteur analytics long terme (stable avant/après login malgré rotation de session).';
+COMMENT ON COLUMN ma_moulinette.user_agent_event.auth_state        IS 'État d''authentification lors de l''événement : ANONYMOUS ou AUTHENTICATED.';
+COMMENT ON COLUMN ma_moulinette.user_agent_event.processing_status IS 'Statut de traitement par le service d''analyse : PENDING, PROCESSING, DONE, ERROR.';
+COMMENT ON COLUMN ma_moulinette.user_agent_event.ip_hash           IS 'Hash SHA-256 de l''adresse IP client. L''IP en clair ne doit jamais être stockée.';
+COMMENT ON COLUMN ma_moulinette.user_agent_event.created_at        IS 'Date de création de l''événement.';
+COMMENT ON COLUMN ma_moulinette.user_agent_event.processed_at      IS 'Date de fin de traitement par le service d''analyse.';
+
+-- ============================================
+-- TABLE user_agent_analysis
+-- ============================================
+
+COMMENT ON TABLE  ma_moulinette.user_agent_analysis IS 'Résultats d''analyse User-Agent via Matomo DeviceDetector. Données dénormalisées orientées statistiques et reporting.';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.id               IS 'Identifiant unique de l''analyse User-Agent.';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.device_type      IS 'Type d''appareil détecté : desktop, smartphone, tablet, tv, console, unknown.';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.os_name          IS 'Nom du système d''exploitation (Windows, macOS, Linux, Android, iOS…).';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.os_version       IS 'Version du système d''exploitation.';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.browser_name     IS 'Nom du navigateur (Chrome, Firefox, Safari, Edge…).';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.browser_version  IS 'Version du navigateur.';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.is_bot           IS 'Vrai si le client est identifié comme bot par DeviceDetector.';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.detector_version IS 'Version du moteur Matomo DeviceDetector utilisé. Permet de rejouer ou comparer les analyses.';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.event_type       IS 'Type fonctionnel de l''événement déclencheur (dénormalisé depuis user_agent_event).';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.url              IS 'URL ou chemin déclencheur (dénormalisé depuis user_agent_event).';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.session_id       IS 'Identifiant de session PHP associé à l''événement.';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.visitor_id       IS 'Identifiant visiteur analytics long terme.';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.user_id          IS 'Identifiant de l''utilisateur authentifié. NULL si anonyme.';
+COMMENT ON COLUMN ma_moulinette.user_agent_analysis.created_at       IS 'Date de création de l''analyse.';
