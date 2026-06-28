@@ -2,14 +2,18 @@
 ####################################################
 ##                                                ##
 ##           Create VIEWS                         ##
-##           V2.0.0 - 30/11/2025                  ##
+##           V2.0.1 - 28/06/2026                  ##
 ##                                                ##
 ####################################################*/
 
 --- 2025-11-30 : Migration postGreSql 18
+--- 2026-06-28 : On passe le script en automatique avec l'utilisateur postgres, puis on applique le script grants.sql.
+---              On supprime l'utilisateur db_user pour éviter de passer le mot de passe une seconde fois.
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
-\c ma_moulinette db_user
+-- Attention vw_batch_profiling_weekly.sql doit être passer avant ce script
+
+\c ma_moulinette;
 
 DROP VIEW IF EXISTS ma_moulinette.vw_batch_profiling_summary;
 
