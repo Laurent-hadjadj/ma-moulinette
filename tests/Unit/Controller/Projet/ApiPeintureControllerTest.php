@@ -1,38 +1,33 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Projet;
 
 use App\Controller\Projet\ApiPeintureController;
-use App\Entity\Anomalie;
-use App\Entity\AnomalieDetails;
-use App\Entity\Hotspots;
-use App\Entity\InformationProjet;
+use App\Entity\{Anomalie, AnomalieDetails, Hotspots, InformationProjet, LoggerDetail, Mesures, NoSonar, Todo, Utilisateur};
 use App\Entity\Logger as LoggerEntity;
-use App\Entity\Mesures;
-use App\Entity\NoSonar;
-use App\Entity\Todo;
-use App\Entity\Utilisateur;
-use App\Repository\AnomalieDetailsRepository;
-use App\Repository\AnomalieRepository;
-use App\Repository\HotspotsRepository;
-use App\Repository\InformationProjetRepository;
-use App\Repository\LoggerRepository;
-use App\Repository\MesuresRepository;
-use App\Repository\NoSonarRepository;
-use App\Repository\TodoRepository;
+use App\Repository\{AnomalieDetailsRepository, AnomalieRepository, HotspotsRepository, InformationProjetRepository, LoggerDetailRepository, LoggerRepository, MesuresRepository, NoSonarRepository, TodoRepository};
 use App\Service\IsValideMavenKey;
 use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
-use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\{AllowMockObjectsWithoutExpectations, DataProvider};
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\{JsonResponse, Request};
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
@@ -58,6 +53,7 @@ class ApiPeintureControllerTest extends TestCase
     /** @var NoSonarRepository&MockObject */         private MockObject $noSonarRepo;
     /** @var TodoRepository&MockObject */            private MockObject $todoRepo;
     /** @var LoggerRepository&MockObject */          private MockObject $loggerRepo;
+    /** @var LoggerDetailRepository&MockObject */    private MockObject $loggerDetailRepo;
 
     private ApiPeintureController $controller;
 
@@ -75,6 +71,7 @@ class ApiPeintureControllerTest extends TestCase
         $this->noSonarRepo = $this->createMock(NoSonarRepository::class);
         $this->todoRepo = $this->createMock(TodoRepository::class);
         $this->loggerRepo = $this->createMock(LoggerRepository::class);
+        $this->loggerDetailRepo = $this->createMock(LoggerDetailRepository::class);
 
         $this->em->method('getRepository')->willReturnMap([
             [Anomalie::class, $this->anomalieRepo],
@@ -85,6 +82,7 @@ class ApiPeintureControllerTest extends TestCase
             [NoSonar::class, $this->noSonarRepo],
             [Todo::class, $this->todoRepo],
             [LoggerEntity::class, $this->loggerRepo],
+            [LoggerDetail::class, $this->loggerDetailRepo],
         ]);
 
         // appUser() (trait AppUserAware) appelle AbstractController::getUser() qui interroge security.token_storage
@@ -115,7 +113,7 @@ class ApiPeintureControllerTest extends TestCase
             $security
         );
 
-        $this->assertJsonStatus($response, 400, 'alert');
+        $this->assertJsonStatus($response, 400, 'error');
     }
 
     public function testProjetMesApplicationsListeReturns406WhenEmpty(): void
@@ -175,7 +173,7 @@ class ApiPeintureControllerTest extends TestCase
     {
         $response = $this->controller->peintureProjetVersion($this->jsonRequest([]));
 
-        $this->assertJsonStatus($response, 400, 'alert');
+        $this->assertJsonStatus($response, 400, 'error');
     }
 
     public function testPeintureProjetVersionReturns404WhenProjectIsInvalid(): void
@@ -194,14 +192,14 @@ class ApiPeintureControllerTest extends TestCase
         $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
         $this->infoRepo->expects($this->once())
             ->method('selectInformationProjetVersion')
-            ->willReturn(['code' => 200, 'info' => [[
+            ->willReturn(['code' => 200, 'info' => [
                 'version_release_sonar' => 3,
                 'version_snapshot_sonar' => 1,
                 'version_autre_sonar' => 0,
                 'version' => '1.0.0',
                 'date' => '2026-04-22',
                 'analyse_key' => 'AY1',
-            ]]]);
+            ]]);
 
         $payload = $this->decode($this->controller->peintureProjetVersion($this->jsonRequest([
             'maven_key' => self::MAVEN_KEY,
@@ -219,7 +217,7 @@ class ApiPeintureControllerTest extends TestCase
     {
         $response = $this->controller->peintureProjetMesures($this->jsonRequest([]));
 
-        $this->assertJsonStatus($response, 400, 'alert');
+        $this->assertJsonStatus($response, 400, 'error');
     }
 
     public function testPeintureProjetMesuresReturns404WhenProjectInvalid(): void
@@ -286,10 +284,6 @@ class ApiPeintureControllerTest extends TestCase
                 'blocker' => 1, 'critical' => 2, 'major' => 3, 'info' => 1, 'minor' => 3,
                 'frontend' => 4, 'backend' => 3, 'autre' => 2, 'inconnu' => 1,
             ]]]);
-        // Plugin tracker-logger absent : selectLogger renvoie liste vide → pas de soustraction
-        $this->loggerRepo->expects($this->once())
-            ->method('selectLogger')
-            ->willReturn(['code' => 200, 'liste' => false]);
 
         $payload = $this->decode($this->controller->peintureProjetAnomalie($this->jsonRequest([
             'maven_key' => self::MAVEN_KEY,
@@ -297,13 +291,11 @@ class ApiPeintureControllerTest extends TestCase
 
         $this->assertSame(200, $payload['code']);
         $this->assertSame('1h', $payload['dette']);
-        $this->assertSame(2, $payload['bug']);
         $this->assertSame(2, $payload['bug_total']);
-        $this->assertSame(0, $payload['bug_logger']);
         $this->assertSame(4, $payload['frontend']);
     }
 
-    public function testPeintureProjetAnomalieSubtractsLoggerHitsFromBugCount(): void
+    public function testPeintureProjetAnomalieReturnsLargeBugCount(): void
     {
         $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
         $this->anomalieRepo->expects($this->once())
@@ -317,29 +309,17 @@ class ApiPeintureControllerTest extends TestCase
                 'blocker' => 1, 'critical' => 2, 'major' => 3, 'info' => 1, 'minor' => 27,
                 'frontend' => 4, 'backend' => 3, 'autre' => 2, 'inconnu' => 1,
             ]]]);
-        // Plugin tracker-logger actif : 27 hits → bug réel = 30 - 27 = 3
-        $this->loggerRepo->expects($this->once())
-            ->method('selectLogger')
-            ->willReturn(['code' => 200, 'liste' => [
-                'logger_info' => 20,
-                'logger_warn' => 5,
-                'logger_error' => 2,
-                'logger_debug' => 0,
-            ]]);
 
         $payload = $this->decode($this->controller->peintureProjetAnomalie($this->jsonRequest([
             'maven_key' => self::MAVEN_KEY,
         ])));
 
         $this->assertSame(200, $payload['code']);
-        $this->assertSame(3, $payload['bug']);          // bug réel
-        $this->assertSame(30, $payload['bug_total']);   // raw sonar
-        $this->assertSame(27, $payload['bug_logger']);  // logger hits
+        $this->assertSame(30, $payload['bug_total']);
     }
 
-    public function testPeintureProjetAnomalieClampsBugRealToZero(): void
+    public function testPeintureProjetAnomalieReturnsZeroDebtWhenAllValuesAreZero(): void
     {
-        // Edge case : si logger > bug (ne devrait pas arriver mais on protège), bug = 0
         $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
         $this->anomalieRepo->method('selectAnomalie')->willReturn(['code' => 200, 'liste' => [[
             'dette' => '0', 'dette_minute' => 0,
@@ -350,17 +330,13 @@ class ApiPeintureControllerTest extends TestCase
             'blocker' => 0, 'critical' => 0, 'major' => 0, 'info' => 0, 'minor' => 0,
             'frontend' => 0, 'backend' => 0, 'autre' => 0, 'inconnu' => 0,
         ]]]);
-        $this->loggerRepo->method('selectLogger')->willReturn(['code' => 200, 'liste' => [
-            'logger_info' => 100, 'logger_warn' => 0, 'logger_error' => 0, 'logger_debug' => 0,
-        ]]);
 
         $payload = $this->decode($this->controller->peintureProjetAnomalie($this->jsonRequest([
             'maven_key' => self::MAVEN_KEY,
         ])));
 
-        $this->assertSame(0, $payload['bug']);
         $this->assertSame(5, $payload['bug_total']);
-        $this->assertSame(100, $payload['bug_logger']);
+        $this->assertSame(0, $payload['detteMinute']);
     }
 
     public function testPeintureProjetAnomaliePropagatesRepositoryError(): void
@@ -370,10 +346,11 @@ class ApiPeintureControllerTest extends TestCase
             ->method('selectAnomalie')
             ->willReturn(['code' => 500, 'erreur' => 'db']);
 
+        /* MODIF 2026-05-24 [callout-alert-to-error] : migration terminée, type = 'error'. */
         $this->assertJsonStatus(
             $this->controller->peintureProjetAnomalie($this->jsonRequest(['maven_key' => self::MAVEN_KEY])),
             500,
-            'alert'
+            'error'
         );
     }
 
@@ -401,6 +378,40 @@ class ApiPeintureControllerTest extends TestCase
         $this->assertSame(200, $payload['code']);
         $this->assertSame(1, $payload['bugBlocker']);
         $this->assertSame(1, $payload['codeSmellInfo']);
+    }
+
+    public function testPeintureProjetAnomalieDetailsReturnsNullsWhenListIsEmpty(): void
+    {
+        $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
+
+        $this->anomalieDetailsRepo->expects($this->once())
+            ->method('selectAnomalieDetailsMavenKey')
+            ->willReturn(['code' => 200, 'liste' => []]);
+
+        $payload = $this->decode($this->controller->peintureProjetAnomalieDetails($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+        ])));
+
+        $this->assertSame(200, $payload['code']);
+        $this->assertNull($payload['bugBlocker']);
+        $this->assertNull($payload['vulnerabilityBlocker']);
+        $this->assertNull($payload['codeSmellBlocker']);
+        $this->assertSame(0, $payload['CodeSmellRealTotal']);
+    }
+
+    public function testPeintureProjetAnomalieDetailsPropagatesRepositoryError(): void
+    {
+        $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
+
+        $this->anomalieDetailsRepo->expects($this->once())
+            ->method('selectAnomalieDetailsMavenKey')
+            ->willReturn(['code' => 500, 'erreur' => 'db error']);
+
+        $this->assertJsonStatus(
+            $this->controller->peintureProjetAnomalieDetails($this->jsonRequest(['maven_key' => self::MAVEN_KEY])),
+            500,
+            'error'
+        );
     }
 
     // ═══════════════════════ peintureProjetHotspots ════════════════════════
@@ -488,6 +499,11 @@ class ApiPeintureControllerTest extends TestCase
                 ['rule' => 'python:NoSonar', 'total' => 7],
                 ['rule' => 'php:NoSonar', 'total' => 1],
             ]]);
+        /* MODIF 2026-05-07 [tests-validators] : mock selectNoSonarComponentOrderByRule
+         * (ajouté côté controller le 2026-05-06 pour alimenter le tableau modale). */
+        $this->noSonarRepo->expects($this->once())
+            ->method('selectNoSonarComponentOrderByRule')
+            ->willReturn(['code' => 200, 'liste' => []]);
 
         $payload = $this->decode($this->controller->peintureProjetNoSonar($this->jsonRequest([
             'maven_key' => self::MAVEN_KEY,
@@ -555,6 +571,118 @@ class ApiPeintureControllerTest extends TestCase
         $this->assertSame(200, $payload['code']);
         $this->assertSame(20, $payload['total']);
         $this->assertSame(10, $payload['logger_info']);
+    }
+
+    // ═══════════════════════ peintureProjetLoggerDetails ═══════════════════
+    // MODIF 2026-05-15 : nouveau endpoint logger-details.
+
+    public function testPeintureProjetLoggerDetailsReturns400WhenMavenKeyMissing(): void
+    {
+        $response = $this->controller->peintureProjetLoggerDetails($this->jsonRequest([]));
+
+        $this->assertJsonStatus($response, 400, 'error');
+    }
+
+    public function testPeintureProjetLoggerDetailsReturns404WhenProjectInvalid(): void
+    {
+        $this->isValide->method('isValideInformation')->willReturn(['code' => 404]);
+
+        $response = $this->controller->peintureProjetLoggerDetails($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+        ]));
+
+        $this->assertJsonStatus($response, 404, 'warning');
+    }
+
+    public function testPeintureProjetLoggerDetailsReturnsFourDatasetsOnHappyPath(): void
+    {
+        $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
+
+        $byLevel = [['level' => 'info', 'nb' => 5], ['level' => 'warn', 'nb' => 2]];
+        $byFw    = [['framework' => 'SLF4J', 'nb' => 6], ['framework' => null, 'nb' => 1]];
+        $byMx    = [
+            ['level' => 'info', 'framework' => 'SLF4J', 'nb' => 4],
+            ['level' => 'info', 'framework' => null,    'nb' => 1],
+            ['level' => 'warn', 'framework' => 'SLF4J', 'nb' => 2],
+        ];
+        $details = [
+            ['id' => 1, 'file_path' => 'a/b/Foo.java', 'line_number' => 12, 'level' => 'info', 'framework' => 'SLF4J'],
+            ['id' => 2, 'file_path' => 'a/b/Bar.java', 'line_number' => 34, 'level' => 'warn', 'framework' => 'SLF4J'],
+        ];
+
+        $this->loggerDetailRepo->expects($this->once())
+            ->method('countByMavenKeyGroupedByLevel')
+            ->with(self::MAVEN_KEY)
+            ->willReturn(['code' => 200, 'liste' => $byLevel]);
+        $this->loggerDetailRepo->expects($this->once())
+            ->method('countByMavenKeyGroupedByFramework')
+            ->willReturn(['code' => 200, 'liste' => $byFw]);
+        $this->loggerDetailRepo->expects($this->once())
+            ->method('countByMavenKeyGroupedByLevelAndFramework')
+            ->willReturn(['code' => 200, 'liste' => $byMx]);
+        $this->loggerDetailRepo->expects($this->once())
+            ->method('selectByMavenKey')
+            ->willReturn(['code' => 200, 'liste' => $details]);
+
+        $payload = $this->decode($this->controller->peintureProjetLoggerDetails($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+        ])));
+
+        $this->assertSame(200, $payload['code']);
+        $this->assertSame(self::MAVEN_KEY, $payload['maven_key']);
+        $this->assertSame($byLevel, $payload['breakdown_level']);
+        $this->assertSame($byFw,    $payload['breakdown_framework']);
+        $this->assertSame($byMx,    $payload['breakdown_matrix']);
+        $this->assertSame($details, $payload['details']);
+    }
+
+    public function testPeintureProjetLoggerDetailsReturnsEmptyArraysWhenNoData(): void
+    {
+        $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
+        $empty = ['code' => 200, 'liste' => []];
+        $this->loggerDetailRepo->method('countByMavenKeyGroupedByLevel')->willReturn($empty);
+        $this->loggerDetailRepo->method('countByMavenKeyGroupedByFramework')->willReturn($empty);
+        $this->loggerDetailRepo->method('countByMavenKeyGroupedByLevelAndFramework')->willReturn($empty);
+        $this->loggerDetailRepo->method('selectByMavenKey')->willReturn($empty);
+
+        $payload = $this->decode($this->controller->peintureProjetLoggerDetails($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+        ])));
+
+        $this->assertSame(200, $payload['code']);
+        $this->assertSame([], $payload['breakdown_level']);
+        $this->assertSame([], $payload['breakdown_framework']);
+        $this->assertSame([], $payload['breakdown_matrix']);
+        $this->assertSame([], $payload['details']);
+    }
+
+    public function testPeintureProjetLoggerDetailsLogsAndDegradesGracefullyOnPartialRepoError(): void
+    {
+        $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
+
+        /* 2 sur 4 queries en erreur — le controller doit logger mais retourner 200 avec
+         * listes vides pour les queries en échec (page projet reste affichable). */
+        $this->loggerDetailRepo->method('countByMavenKeyGroupedByLevel')
+            ->willReturn(['code' => 200, 'liste' => [['level' => 'info', 'nb' => 1]]]);
+        $this->loggerDetailRepo->method('countByMavenKeyGroupedByFramework')
+            ->willReturn(['code' => 500, 'erreur' => 'sql boom']);
+        $this->loggerDetailRepo->method('countByMavenKeyGroupedByLevelAndFramework')
+            ->willReturn(['code' => 200, 'liste' => []]);
+        $this->loggerDetailRepo->method('selectByMavenKey')
+            ->willReturn(['code' => 500, 'erreur' => 'sql boom']);
+
+        $this->logger->expects($this->atLeast(2))
+            ->method('error')
+            ->with($this->stringContains('Échec lecture logger_details'), $this->anything());
+
+        $payload = $this->decode($this->controller->peintureProjetLoggerDetails($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+        ])));
+
+        $this->assertSame(200, $payload['code']);
+        $this->assertSame([['level' => 'info', 'nb' => 1]], $payload['breakdown_level']);
+        $this->assertSame([], $payload['breakdown_framework']);
+        $this->assertSame([], $payload['details']);
     }
 
     // ═══════════════════ Repo error propagation ════════════════════════════
@@ -659,30 +787,35 @@ class ApiPeintureControllerTest extends TestCase
 
     // ═══════════════════ 400 / 404 bulk coverage ═══════════════════════════
 
+    /* MODIF 2026-05-24 [callout-alert-to-error] : migration terminée — toutes les méthodes
+     * retournent désormais 'error' (plus de 'alert'). Colonne expectedType400 unifiée.
+     */
     public static function methodsWithValidation(): array
     {
         return [
-            'anomalie' => ['peintureProjetAnomalie'],
-            'anomalie_details' => ['peintureProjetAnomalieDetails'],
-            'hotspots' => ['peintureProjetHotspots'],
-            'hotspots_details' => ['peintureProjetHotspotsDetails'],
-            'no_sonar' => ['peintureProjetNoSonar'],
-            'todo' => ['peintureProjetTodo'],
-            'logger' => ['peintureProjetLogger'],
+            'anomalie'         => ['peintureProjetAnomalie',        'error'],
+            'anomalie_details' => ['peintureProjetAnomalieDetails', 'error'],
+            'hotspots'         => ['peintureProjetHotspots',        'error'],
+            'hotspots_details' => ['peintureProjetHotspotsDetails', 'error'],
+            'no_sonar'         => ['peintureProjetNoSonar',         'error'],
+            'todo'             => ['peintureProjetTodo',            'error'],
+            'logger'           => ['peintureProjetLogger',          'error'],
         ];
     }
 
     #[DataProvider('methodsWithValidation')]
-    public function testEachMethodReturns400WhenMavenKeyMissing(string $methodName): void
+    public function testEachMethodReturns400WhenMavenKeyMissing(string $methodName, string $expectedType): void
     {
         $response = $this->controller->$methodName($this->jsonRequest([]));
 
-        $this->assertJsonStatus($response, 400, 'alert');
+        $this->assertJsonStatus($response, 400, $expectedType);
     }
 
     #[DataProvider('methodsWithValidation')]
-    public function testEachMethodReturns404WhenProjectInvalid(string $methodName): void
+    public function testEachMethodReturns404WhenProjectInvalid(string $methodName, string $expectedType): void
     {
+        // expectedType non utilise ici (404 = 'warning' partout), mais requis par le dataProvider partage.
+        unset($expectedType);
         $this->isValide->method('isValideInformation')->willReturn(['code' => 404]);
 
         $response = $this->controller->$methodName($this->jsonRequest([
@@ -692,7 +825,10 @@ class ApiPeintureControllerTest extends TestCase
         $this->assertJsonStatus($response, 404, 'warning');
     }
 
-    public function testPeintureProjetLoggerReturnsMinusOneWhenEmpty(): void
+    /* MODIF 2026-05-07 : sentinel -1 → null (cf MODIF 2026-05-04 côté controller).
+     * `null` signifie "plugin logger non collecté" — frontend (displayHelper.displayNumber) affiche '-' pour null,
+     * différencie du cas `0` qui signifie "0 logger collecté". */
+    public function testPeintureProjetLoggerReturnsNullWhenEmpty(): void
     {
         $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
         $this->loggerRepo->expects($this->once())
@@ -704,9 +840,8 @@ class ApiPeintureControllerTest extends TestCase
         ])));
 
         $this->assertSame(200, $payload['code']);
-        // Défaut -1 quand liste vide (indique "non collecté")
-        $this->assertSame(-1, $payload['total']);
-        $this->assertSame(-1, $payload['logger_info']);
+        $this->assertNull($payload['total']);
+        $this->assertNull($payload['logger_info']);
     }
 
     // ═══════════════════════ helpers ═══════════════════════════════════════

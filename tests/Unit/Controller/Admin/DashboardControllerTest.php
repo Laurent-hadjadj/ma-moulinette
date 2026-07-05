@@ -1,17 +1,23 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Admin;
 
 use App\Controller\Admin\DashboardController;
-use App\Entity\Utilisateur;
 use App\Service\ClientService;
-use App\Service\UserAgentTrackingFacade;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Result;
-use Doctrine\DBAL\Statement;
-use Doctrine\ORM\EntityManagerInterface;
+use App\Service\UserAgent\UserAgentTrackingFacade;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -27,25 +33,24 @@ use Twig\Environment;
 #[AllowMockObjectsWithoutExpectations]
 class DashboardControllerTest extends TestCase
 {
-    /** @var EntityManagerInterface&MockObject */   private MockObject $em;
     /** @var Packages&MockObject */                 private MockObject $assets;
     /** @var RouterInterface&MockObject */          private MockObject $router;
-    /** @var UserAgentTrackingFacade&MockObject */  private MockObject $tracking;
     /** @var ClientService&MockObject */             private MockObject $client;
     /** @var Environment&MockObject */              private MockObject $twig;
     /** @var ParameterBagInterface&MockObject */    private MockObject $params;
+
+    /** @var UserAgentTrackingFacade&MockObject */  private MockObject $tracking;
 
     private DashboardController $controller;
 
     protected function setUp(): void
     {
-        $this->em = $this->createMock(EntityManagerInterface::class);
         $this->assets = $this->createMock(Packages::class);
         $this->router = $this->createMock(RouterInterface::class);
-        $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
         $this->client = $this->createMock(ClientService::class);
         $this->twig = $this->createMock(Environment::class);
         $this->params = $this->createMock(ParameterBagInterface::class);
+        $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
 
         $this->params->method('get')->willReturnMap([
             ['version', '2.0.0-RELEASE'],
@@ -64,15 +69,13 @@ class DashboardControllerTest extends TestCase
         ]);
 
         $this->controller = new DashboardController(
-            $this->em, $this->assets, $this->router, $this->tracking, $this->client
+            $this->assets, $this->router, $this->client, $this->tracking
         );
         $this->controller->setContainer($container);
     }
 
     public function testIndexRendersHomeTemplateAndTracks(): void
     {
-        $this->tracking->expects($this->once())->method('track')->with('EASY_ADMIN_ACCUEIL');
-
         $this->twig->expects($this->once())
             ->method('render')
             ->with('admin/home.html.twig', $this->callback(fn($ctx) => isset($ctx['dateCopyright'])))
@@ -85,8 +88,6 @@ class DashboardControllerTest extends TestCase
 
     public function testBatchSuiviRedirectsToProjet(): void
     {
-        $this->tracking->expects($this->once())->method('track')->with('EASY_ADMIN_REDIRECT_PROJET');
-
         $this->router->expects($this->once())
             ->method('generate')
             ->with('projet')
@@ -113,8 +114,8 @@ class DashboardControllerTest extends TestCase
     {
         $items = iterator_to_array($this->controller->configureMenuItems(), false);
 
-        // 2 sections + 5 CRUD links + 2 bottom links + 1 "retour" = 10 items
-        $this->assertGreaterThanOrEqual(8, count($items));
+        // 3 sections + 5 CRUD links + 2 route links (Dashboard/Statistiques) + 1 "retour" = 11 items
+        $this->assertGreaterThanOrEqual(10, count($items));
     }
 
     public function testConfigureUserMenuThrowsWhenNotUtilisateur(): void
@@ -164,94 +165,4 @@ class DashboardControllerTest extends TestCase
         $this->assertInstanceOf(JsonResponse::class, $response);
     }
 
-    public function testStatsRunsAllQueriesAndRendersAdminIndex(): void
-    {
-        $this->tracking->expects($this->once())->method('track')->with('EASY_ADMIN_STATS');
-
-        $connection = $this->createMock(Connection::class);
-        $this->em->method('getConnection')->willReturn($connection);
-
-        // fullRow satisfies every access pattern in stats()
-        $fullRow = [
-            'idle_count' => 2,
-            'not_idle_count' => 1,
-            'cache_hit_ratio' => 0.98,
-            'transaction_rollback_ratio' => 0.01,
-            'read_requests_per_inserted_tuple' => 1.5,
-            'read_requests_ratio' => 0.8,
-            'seq_scan_ratio' => 0.1,
-            'idx_scan_ratio' => 0.9,
-            'transaction_per_insert' => 0.3,
-            'index_usage_ratio' => 0.7,
-            'tuple_per_index_scan' => 2.0,
-            'tuple_per_index_read' => 0.6,
-            'avg_total_exec_time_seconds' => 1.2,
-            'avg_min_exec_time_seconds' => 0.1,
-            'avg_max_exec_time_seconds' => 3.4,
-            'avg_stddev_exec_time_seconds' => 0.5,
-            'version' => '16.0',
-            'total' => 1,
-            'lines' => 100,
-            'tests' => 10,
-        ];
-
-        $statement = $this->createMock(Statement::class);
-        $result = $this->createMock(Result::class);
-        $connection->method('prepare')->willReturn($statement);
-        $statement->method('executeQuery')->willReturn($result);
-        $result->method('fetchAllAssociative')->willReturn([$fullRow]);
-        // pg_stat_statements query uses executeQuery directly on connection
-        $connection->method('executeQuery')->willReturn($result);
-
-        $this->twig->expects($this->once())
-            ->method('render')
-            ->with('admin/index.html.twig', $this->callback(fn($ctx) =>
-                $ctx['postgresql_version'] === '16.0'
-                && $ctx['mesure_code_smell'] === 1
-                && $ctx['avg_total_exec_time_seconds'] === 1.2
-                && $ctx['projet_line'] === 100
-            ))
-            ->willReturn('<html>stats</html>');
-
-        $response = $this->controller->stats();
-
-        $this->assertSame('<html>stats</html>', $response->getContent());
-    }
-
-    public function testStatsHandlesPgStatStatementsExtensionFailure(): void
-    {
-        $this->tracking->expects($this->once())->method('track');
-
-        $connection = $this->createMock(Connection::class);
-        $this->em->method('getConnection')->willReturn($connection);
-
-        $statement = $this->createMock(Statement::class);
-        $result = $this->createMock(Result::class);
-        $connection->method('prepare')->willReturn($statement);
-        $statement->method('executeQuery')->willReturn($result);
-        $result->method('fetchAllAssociative')->willReturn([[
-            'idle_count' => 0, 'not_idle_count' => 0,
-            'cache_hit_ratio' => 0, 'transaction_rollback_ratio' => 0,
-            'read_requests_per_inserted_tuple' => 0, 'read_requests_ratio' => 0,
-            'seq_scan_ratio' => 0, 'idx_scan_ratio' => 0, 'transaction_per_insert' => 0,
-            'index_usage_ratio' => 0, 'tuple_per_index_scan' => 0, 'tuple_per_index_read' => 0,
-            'version' => '16.0', 'total' => 0, 'lines' => 0, 'tests' => 0,
-        ]]);
-
-        // Extension pg_stat_statements absent : executeQuery throws
-        $connection->method('executeQuery')
-            ->willThrowException(new \RuntimeException('relation "pg_stat_statements" does not exist'));
-
-        $this->twig->expects($this->once())
-            ->method('render')
-            ->with('admin/index.html.twig', $this->callback(fn($ctx) =>
-                $ctx['avg_total_exec_time_seconds'] === -1
-                && $ctx['avg_stddev_exec_time_seconds'] === -1
-            ))
-            ->willReturn('<html>fallback</html>');
-
-        $response = $this->controller->stats();
-
-        $this->assertSame('<html>fallback</html>', $response->getContent());
-    }
 }

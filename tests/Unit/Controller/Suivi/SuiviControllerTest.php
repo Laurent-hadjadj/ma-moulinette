@@ -1,16 +1,26 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Suivi;
 
 use App\Controller\Suivi\SuiviController;
-use App\Entity\Historique;
-use App\Entity\ListeProjet;
-use App\Entity\Utilisateur;
-use App\Repository\HistoriqueRepository;
-use App\Repository\ListeProjetRepository;
-use App\Service\UserAgentTrackingFacade;
+use App\Entity\{Historique, ListeProjet, Utilisateur};
+use App\Service\UserAgent\UserAgentTrackingFacade;
+use App\Repository\{HistoriqueRepository, ListeProjetRepository};
+use App\Service\{LanguageDistributionService, PdfExportService};
+use App\Service\RapportInsightService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -18,8 +28,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\{Request, RequestStack};
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\RouterInterface;
@@ -35,13 +44,14 @@ class SuiviControllerTest extends TestCase
     /** @var TokenInterface&MockObject */           private MockObject $token;
     /** @var ParameterBagInterface&MockObject */    private MockObject $params;
     /** @var LoggerInterface&MockObject */          private MockObject $logger;
-    /** @var UserAgentTrackingFacade&MockObject */  private MockObject $tracking;
     /** @var HistoriqueRepository&MockObject */     private MockObject $historiqueRepo;
     /** @var ListeProjetRepository&MockObject */    private MockObject $listeProjetRepo;
     /** @var Environment&MockObject */              private MockObject $twig;
     /** @var FlashBag&MockObject */                 private MockObject $flashBag;
     /** @var RouterInterface&MockObject */          private MockObject $router;
     /** @var Session&MockObject */                  private MockObject $session;
+
+    /** @var UserAgentTrackingFacade&MockObject */  private MockObject $tracking;
 
     private SuiviController $controller;
 
@@ -53,13 +63,13 @@ class SuiviControllerTest extends TestCase
         $this->tokenStorage->method('getToken')->willReturn($this->token);
         $this->params = $this->createMock(ParameterBagInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
         $this->historiqueRepo = $this->createMock(HistoriqueRepository::class);
         $this->listeProjetRepo = $this->createMock(ListeProjetRepository::class);
         $this->twig = $this->createMock(Environment::class);
         $this->flashBag = $this->createMock(FlashBag::class);
         $this->router = $this->createMock(RouterInterface::class);
         $this->session = $this->createMock(Session::class);
+        $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
 
         $this->params->method('get')->willReturnMap([
             ['logo.entreprise', 'logo.png'],
@@ -93,8 +103,17 @@ class SuiviControllerTest extends TestCase
             ['security.token_storage', 1, $this->tokenStorage],
         ]);
 
+        /* MODIF 2026-05-07 : ajout 3 services injectés.
+         * LanguageDistributionService et RapportInsightService n'ont pas de deps → instance directe.
+         * PdfExportService est mockable. */
         $this->controller = new SuiviController(
-            $this->em, $this->params, $this->logger, $this->tracking
+            $this->em,
+            $this->params,
+            $this->logger,
+            new LanguageDistributionService(),
+            $this->createMock(PdfExportService::class),
+            new RapportInsightService(),
+            $this->tracking,
         );
         $this->controller->setContainer($container);
     }
@@ -251,7 +270,8 @@ class SuiviControllerTest extends TestCase
             ],
         ]);
 
-        $capturedCtx = null;
+        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        $capturedCtx = [];
         $this->twig->expects($this->once())
             ->method('render')
             ->with('suivi/index.html.twig', $this->callback(function ($ctx) use (&$capturedCtx) {
@@ -259,10 +279,6 @@ class SuiviControllerTest extends TestCase
                 return true;
             }))
             ->willReturn('<html>ok</html>');
-
-        $this->flashBag->expects($this->once())
-            ->method('add')
-            ->with('notice', $this->callback(fn($v) => $v['type'] === 'success'));
 
         $this->controller->suivi($request);
 

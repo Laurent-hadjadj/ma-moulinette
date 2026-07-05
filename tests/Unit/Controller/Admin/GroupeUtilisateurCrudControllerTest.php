@@ -1,5 +1,16 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Admin;
@@ -8,9 +19,7 @@ use App\Controller\Admin\GroupeUtilisateurCrudController;
 use App\Entity\GroupeUtilisateur;
 use App\Repository\GroupeUtilisateurRepository;
 use Doctrine\ORM\EntityManagerInterface;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Config\{Actions, Crud, Filters};
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -22,7 +31,6 @@ use Symfony\Component\HttpFoundation\Session\Session;
 class GroupeUtilisateurCrudControllerTest extends TestCase
 {
     /** @var EntityManagerInterface&MockObject */        private MockObject $em;
-    /** @var RequestStack&MockObject */                  private MockObject $requestStack;
     /** @var GroupeUtilisateurRepository&MockObject */   private MockObject $repo;
     /** @var FlashBag&MockObject */                      private MockObject $flashBag;
 
@@ -31,7 +39,6 @@ class GroupeUtilisateurCrudControllerTest extends TestCase
     protected function setUp(): void
     {
         $this->em = $this->createMock(EntityManagerInterface::class);
-        $this->requestStack = $this->createMock(RequestStack::class);
         $this->repo = $this->createMock(GroupeUtilisateurRepository::class);
         $this->flashBag = $this->createMock(FlashBag::class);
 
@@ -140,5 +147,33 @@ class GroupeUtilisateurCrudControllerTest extends TestCase
         $this->assertStringNotContainsString('!', $groupe->getGroupeUtilisateur());
         // ULID généré (26 chars)
         $this->assertSame(26, strlen($groupe->getGroupeId()));
+    }
+
+    public function testPersistEntitySetsDateEnregistrement(): void
+    {
+        $groupe = new GroupeUtilisateur();
+        $groupe->setGroupeUtilisateur('backend');
+        $groupe->setDescription('desc');
+        $this->repo->method('findOneBy')->willReturn(null);
+
+        $before = new \DateTimeImmutable();
+        $this->controller->persistEntity($this->em, $groupe);
+
+        $this->assertInstanceOf(\DateTimeImmutable::class, $groupe->getDateEnregistrement());
+        $this->assertGreaterThanOrEqual($before, $groupe->getDateEnregistrement());
+    }
+
+    public function testPersistEntityGeneratesUlidWhenGroupeIdIsEmpty(): void
+    {
+        $groupe = new GroupeUtilisateur();
+        $groupe->setGroupeId(''); // force vide → doit générer un nouveau ULID
+        $groupe->setGroupeUtilisateur('backend');
+        $groupe->setDescription('desc');
+        $this->repo->method('findOneBy')->willReturn(null);
+
+        $this->controller->persistEntity($this->em, $groupe);
+
+        $this->assertSame(26, strlen($groupe->getGroupeId()));
+        $this->assertNotSame('', $groupe->getGroupeId());
     }
 }

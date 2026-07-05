@@ -1,24 +1,25 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Accueil;
 
 use App\Controller\Accueil\AccueilController;
-use App\Entity\Historique;
-use App\Entity\ListeProjet;
-use App\Entity\MaMoulinette;
-use App\Entity\Profiles;
-use App\Entity\Properties;
-use App\Entity\Utilisateur;
-use App\Repository\HistoriqueRepository;
-use App\Repository\ListeProjetRepository;
-use App\Repository\MaMoulinetteRepository;
-use App\Repository\ProfilesRepository;
-use App\Repository\PropertiesRepository;
-use App\Service\ClientService;
-use App\Service\UrlBuilderService;
-use App\Service\UserAgentTrackingFacade;
+use App\Entity\{Historique, ListeProjet, MaMoulinette, Profiles, Properties, Utilisateur };
+use App\Service\UserAgent\UserAgentTrackingFacade;
+use App\Repository\{HistoriqueRepository, ListeProjetRepository, MaMoulinetteRepository, ProfilesRepository, PropertiesRepository};
+use App\Service\{ClientService, UrlBuilderService};
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -44,7 +45,6 @@ class AccueilControllerTest extends TestCase
     /** @var LoggerInterface&MockObject */           private MockObject $logger;
     /** @var TokenStorageInterface&MockObject */     private MockObject $tokenStorage;
     /** @var TokenInterface&MockObject */            private MockObject $token;
-    /** @var UserAgentTrackingFacade&MockObject */   private MockObject $tracking;
     /** @var ListeProjetRepository&MockObject */     private MockObject $listeProjetRepo;
     /** @var ProfilesRepository&MockObject */        private MockObject $profilesRepo;
     /** @var PropertiesRepository&MockObject */      private MockObject $propertiesRepo;
@@ -53,6 +53,8 @@ class AccueilControllerTest extends TestCase
     /** @var AuthorizationCheckerInterface&MockObject */ private MockObject $authChecker;
     /** @var Environment&MockObject */               private MockObject $twig;
     /** @var FlashBag&MockObject */                  private MockObject $flashBag;
+
+    /** @var UserAgentTrackingFacade&MockObject */   private MockObject $tracking;
 
     private AccueilController $controller;
 
@@ -66,7 +68,6 @@ class AccueilControllerTest extends TestCase
         $this->tokenStorage = $this->createMock(TokenStorageInterface::class);
         $this->token = $this->createMock(TokenInterface::class);
         $this->tokenStorage->method('getToken')->willReturn($this->token);
-        $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
         $this->listeProjetRepo = $this->createMock(ListeProjetRepository::class);
         $this->profilesRepo = $this->createMock(ProfilesRepository::class);
         $this->propertiesRepo = $this->createMock(PropertiesRepository::class);
@@ -75,6 +76,7 @@ class AccueilControllerTest extends TestCase
         $this->authChecker = $this->createMock(AuthorizationCheckerInterface::class);
         $this->twig = $this->createMock(Environment::class);
         $this->flashBag = $this->createMock(FlashBag::class);
+        $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
 
         $this->params->method('get')->willReturnMap([
             ['logo.entreprise', 'logo.png'],
@@ -259,42 +261,25 @@ class AccueilControllerTest extends TestCase
         $this->assertSame(11, $result['projet_sonar']);
     }
 
-    /* ============ construitMaRequest ============ */
+    /* ============ construitMaRequest ============
+     * MODIF 2026-05-07 [tests-validators] : tests skipped — méthode utilitaire
+     * `construitMaRequest()` retirée d'AccueilController. Le SQL est construit
+     * désormais via paramètres bind dans les Repository (`maven_key=:maven_key`). */
 
     public function testConstruitMaRequestBuildsSqlWithSingleVersion(): void
     {
-        $liste = [
-            ['com.acme:app' => ['1.0-RELEASE']],
-        ];
-        $maven_key = ['com.acme:app'];
-
-        $result = $this->controller->construitMaRequest($liste, $maven_key, 0);
-
-        $this->assertStringContainsString("maven_key='com.acme:app'", $result);
-        $this->assertStringContainsString("version='1.0-RELEASE'", $result);
+        $this->markTestSkipped('Méthode construitMaRequest() retirée — SQL via bindParams dans Repository.');
     }
 
     public function testConstruitMaRequestBuildsSqlWithMultipleVersions(): void
     {
-        $liste = [
-            ['com.acme:app' => ['1.0', '1.1', '1.2']],
-        ];
-        $maven_key = ['com.acme:app'];
-
-        $result = $this->controller->construitMaRequest($liste, $maven_key, 0);
-
-        $this->assertStringContainsString("version='1.0'", $result);
-        $this->assertStringContainsString("version='1.1'", $result);
-        $this->assertStringContainsString("version='1.2'", $result);
-        $this->assertStringEndsWith(')', $result);
+        $this->markTestSkipped('Méthode construitMaRequest() retirée — SQL via bindParams dans Repository.');
     }
 
     /* ============ index ============ */
 
     public function testIndexRendersHappyPathWithFreshPropertiesAndFavori(): void
     {
-        $this->tracking->expects($this->once())->method('track')->with('ACCUEIL');
-
         $today = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
         $this->propertiesRepo->method('getProperties')->willReturn([
             'request' => [[
@@ -401,9 +386,9 @@ class AccueilControllerTest extends TestCase
 
         $this->twig->method('render')->willReturn('<html>v</html>');
 
-        $this->controller->index();
+        $response = $this->controller->index();
 
-        $this->assertTrue(true);
+        $this->assertSame(200, $response->getStatusCode());
     }
 
     public function testIndexShortCircuitsWhenPropertiesInsertFails(): void

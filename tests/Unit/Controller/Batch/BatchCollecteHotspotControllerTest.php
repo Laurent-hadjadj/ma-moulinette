@@ -1,16 +1,24 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Batch;
 
 use App\Controller\Batch\BatchCollecteHotspotController;
-use App\Entity\Hotspots;
-use App\Entity\InformationProjet;
-use App\Repository\HotspotsRepository;
-use App\Repository\InformationProjetRepository;
-use App\Service\ClientService;
-use App\Service\UrlBuilderService;
+use App\Entity\{Hotspots, InformationProjet};
+use App\Repository\{HotspotsRepository, InformationProjetRepository};
+use App\Service\{ClientService, UrlBuilderService};
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -89,7 +97,8 @@ class BatchCollecteHotspotControllerTest extends TestCase
     public function testReturnsErrorWhenSonarCallFails(): void
     {
         $this->infoRepo->method('selectInformationProjetVersion')
-            ->willReturn(['code' => 200, 'info' => [['version' => '1.0', 'date' => '2026-04-22']]]);
+            // MODIF 2026-06-07 : flat (controller: $select['info']['date'])
+            ->willReturn(['code' => 200, 'info' => ['version' => '1.0', 'date' => '2026-04-22']]);
 
         $this->client->expects($this->once())
             ->method('httpSonarQube')
@@ -105,7 +114,8 @@ class BatchCollecteHotspotControllerTest extends TestCase
     public function testCountsHotspotsByProbabilityLevel(): void
     {
         $this->infoRepo->method('selectInformationProjetVersion')
-            ->willReturn(['code' => 200, 'info' => [['version' => '1.0', 'date' => '2026-04-22']]]);
+            // MODIF 2026-06-07 : flat (controller: $select['info']['date'])
+            ->willReturn(['code' => 200, 'info' => ['version' => '1.0', 'date' => '2026-04-22']]);
 
         $hotspots = [
             ['key' => 'h1', 'vulnerabilityProbability' => 'HIGH',   'securityCategory' => 'sc', 'ruleKey' => 'r', 'status' => 'TO_REVIEW'],
@@ -139,7 +149,8 @@ class BatchCollecteHotspotControllerTest extends TestCase
     public function testInsertsSentinelRowWhenNoHotspotsFound(): void
     {
         $this->infoRepo->method('selectInformationProjetVersion')
-            ->willReturn(['code' => 200, 'info' => [['version' => '1.0', 'date' => '2026-04-22']]]);
+            // MODIF 2026-06-07 : flat (controller: $select['info']['date'])
+            ->willReturn(['code' => 200, 'info' => ['version' => '1.0', 'date' => '2026-04-22']]);
 
         $this->client->method('httpSonarQube')->willReturn([
             'code' => 200,

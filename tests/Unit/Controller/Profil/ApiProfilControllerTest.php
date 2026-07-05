@@ -1,18 +1,25 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Profil;
 
 use App\Controller\Profil\ApiProfilController;
-use App\Entity\Profiles;
-use App\Entity\ProfilesHistorique;
-use App\Entity\Properties;
-use App\Repository\ProfilesHistoriqueRepository;
-use App\Repository\ProfilesRepository;
-use App\Repository\PropertiesRepository;
-use App\Service\ClientService;
-use App\Service\UrlBuilderService;
+use App\Entity\{Profiles, ProfilesHistorique, Properties};
+use App\Service\UserAgent\UserAgentTrackingFacade;
+use App\Repository\{ProfilesHistoriqueRepository, ProfilesRepository, PropertiesRepository};
+use App\Service\{ClientService, UrlBuilderService};
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -21,8 +28,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\{Request, RequestStack};
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 
@@ -39,6 +45,8 @@ class ApiProfilControllerTest extends TestCase
     /** @var PropertiesRepository&MockObject */            private MockObject $propertiesRepo;
     /** @var ProfilesHistoriqueRepository&MockObject */    private MockObject $historiqueRepo;
 
+    /** @var UserAgentTrackingFacade&MockObject */         private MockObject $tracking;
+
     private ApiProfilController $controller;
 
     protected function setUp(): void
@@ -49,6 +57,7 @@ class ApiProfilControllerTest extends TestCase
         $this->params = $this->createMock(ParameterBagInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->urlBuilder = $this->createMock(UrlBuilderService::class);
+        $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
         $this->profilesRepo = $this->createMock(ProfilesRepository::class);
         $this->propertiesRepo = $this->createMock(PropertiesRepository::class);
         $this->historiqueRepo = $this->createMock(ProfilesHistoriqueRepository::class);
@@ -80,7 +89,8 @@ class ApiProfilControllerTest extends TestCase
             $this->security,
             $this->params,
             $this->logger,
-            $this->urlBuilder
+            $this->urlBuilder,
+            $this->tracking
         );
         $this->controller->setContainer($container);
     }
@@ -344,9 +354,9 @@ class ApiProfilControllerTest extends TestCase
             'json' => [
                 'events' => [
                     ['date' => '2026-04-20T10:00:00+0200', 'action' => 'ACTIVATED',
-                     'authorName' => 'alice', 'ruleKey' => 'R1', 'ruleName' => 'Rule 1', 'params' => []],
+                    'authorName' => 'alice', 'ruleKey' => 'R1', 'ruleName' => 'Rule 1', 'params' => []],
                     ['date' => '2026-04-21T10:00:00+0200', 'action' => 'UPDATED',
-                     'ruleKey' => 'R2', 'ruleName' => 'Rule 2', 'params' => []],
+                    'ruleKey' => 'R2', 'ruleName' => 'Rule 2', 'params' => []],
                 ],
                 'total' => 2,
             ],
@@ -360,9 +370,9 @@ class ApiProfilControllerTest extends TestCase
         $this->historiqueRepo->method('selectProfilesHistoriqueLangageDateCourte')
             ->willReturn(['liste' => [
                 ['date' => '2026-04-21T10:00:00+0200', 'action' => 'UPDATED',
-                 'auteur' => 'alice', 'rule' => 'R2', 'description' => 'Rule 2', 'detail' => '{}'],
+                'auteur' => 'alice', 'rule' => 'R2', 'description' => 'Rule 2', 'detail' => '{}'],
                 ['date' => '2026-04-21T11:00:00+0200', 'action' => 'ACTIVATED',
-                 'auteur' => 'bob', 'rule' => 'R3', 'description' => 'Rule 3', 'detail' => '{}'],
+                'auteur' => 'bob', 'rule' => 'R3', 'description' => 'Rule 3', 'detail' => '{}'],
             ]]);
 
         $twig = $this->createMock(\Twig\Environment::class);

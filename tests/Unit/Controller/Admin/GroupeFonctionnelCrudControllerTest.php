@@ -1,4 +1,14 @@
 <?php
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
 
 declare(strict_types=1);
 
@@ -7,14 +17,9 @@ namespace App\Tests\Unit\Controller\Admin;
 use App\Controller\Admin\GroupeFonctionnelCrudController;
 use App\Entity\GroupeFonctionnel;
 use App\Repository\GroupeFonctionnelRepository;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Result;
-use Doctrine\DBAL\Statement;
+use Doctrine\DBAL\{Connection, Result,  Statement};
 use Doctrine\ORM\EntityManagerInterface;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Config\{Actions, Assets, Crud, Filters};
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -27,7 +32,6 @@ use Symfony\Component\HttpFoundation\Session\Session;
 class GroupeFonctionnelCrudControllerTest extends TestCase
 {
     /** @var EntityManagerInterface&MockObject */     private MockObject $em;
-    /** @var RequestStack&MockObject */               private MockObject $requestStack;
     /** @var GroupeFonctionnelRepository&MockObject */private MockObject $repo;
     /** @var Connection&MockObject */                 private MockObject $connection;
     /** @var FlashBag&MockObject */                   private MockObject $flashBag;
@@ -37,7 +41,6 @@ class GroupeFonctionnelCrudControllerTest extends TestCase
     protected function setUp(): void
     {
         $this->em = $this->createMock(EntityManagerInterface::class);
-        $this->requestStack = $this->createMock(RequestStack::class);
         $this->repo = $this->createMock(GroupeFonctionnelRepository::class);
         $this->connection = $this->createMock(Connection::class);
         $this->flashBag = $this->createMock(FlashBag::class);
@@ -143,5 +146,55 @@ class GroupeFonctionnelCrudControllerTest extends TestCase
         $this->controller->persistEntity($this->em, $groupe);
 
         $this->assertStringNotContainsString('!', $groupe->getGroupeFonctionnel());
+    }
+
+    public function testPersistEntitySetsDateEnregistrement(): void
+    {
+        $groupe = new GroupeFonctionnel();
+        $groupe->setGroupeFonctionnel('backend');
+        $groupe->setDescription('desc');
+        $this->repo->method('findOneBy')->willReturn(null);
+
+        $before = new \DateTimeImmutable();
+        $this->controller->persistEntity($this->em, $groupe);
+
+        $this->assertInstanceOf(\DateTimeImmutable::class, $groupe->getDateEnregistrement());
+        $this->assertGreaterThanOrEqual($before, $groupe->getDateEnregistrement());
+    }
+
+    public function testNormalizeConvertsToLowercase(): void
+    {
+        $groupe = new GroupeFonctionnel();
+        $groupe->setGroupeFonctionnel('JAVA-BACKEND');
+        $groupe->setDescription('desc');
+        $this->repo->method('findOneBy')->willReturn(null);
+
+        $this->controller->persistEntity($this->em, $groupe);
+
+        $this->assertSame('java-backend', $groupe->getGroupeFonctionnel());
+    }
+
+    public function testNormalizeReplacesSpacesWithUnderscore(): void
+    {
+        $groupe = new GroupeFonctionnel();
+        $groupe->setGroupeFonctionnel('my group');
+        $groupe->setDescription('desc');
+        $this->repo->method('findOneBy')->willReturn(null);
+
+        $this->controller->persistEntity($this->em, $groupe);
+
+        $this->assertSame('my_group', $groupe->getGroupeFonctionnel());
+    }
+
+    public function testNormalizeTrimsDashesAndUnderscores(): void
+    {
+        $groupe = new GroupeFonctionnel();
+        $groupe->setGroupeFonctionnel('---java---');
+        $groupe->setDescription('desc');
+        $this->repo->method('findOneBy')->willReturn(null);
+
+        $this->controller->persistEntity($this->em, $groupe);
+
+        $this->assertSame('java', $groupe->getGroupeFonctionnel());
     }
 }

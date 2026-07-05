@@ -1,24 +1,26 @@
 <?php
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
 
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Admin;
 
 use App\Controller\Admin\BatchCrudController;
-use App\Entity\Batch;
-use App\Entity\BatchExecution;
-use App\Entity\BatchTraitement;
-use App\Entity\Utilisateur;
+use App\Entity\{Batch, BatchExecution, BatchTraitement, Utilisateur};
 use App\Exception\SqlRequestException;
-use App\Repository\BatchExecutionRepository;
-use App\Repository\BatchTraitementRepository;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Result;
-use Doctrine\DBAL\Statement;
+use App\Repository\{BatchExecutionRepository, BatchTraitementRepository};
+use Doctrine\DBAL\{Connection, Result, Statement};
 use Doctrine\ORM\EntityManagerInterface;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Filters;
+use EasyCorp\Bundle\EasyAdminBundle\Config\{Actions, Crud, Filters};
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -88,9 +90,10 @@ class BatchCrudControllerTest extends TestCase
         $result = $this->createMock(Result::class);
         $this->connection->method('prepare')->willReturn($statement);
         $statement->method('executeQuery')->willReturn($result);
+        // MODIF 2026-06-07 : clé groupe_fonctionnel (controller lit $value['groupe_fonctionnel'])
         $result->method('fetchAllAssociative')->willReturn([
-            ['titre' => 'P1'],
-            ['titre' => 'P2'],
+            ['groupe_fonctionnel' => 'P1'],
+            ['groupe_fonctionnel' => 'P2'],
         ]);
 
         $fields = iterator_to_array($this->controller->configureFields(Crud::PAGE_NEW), false);

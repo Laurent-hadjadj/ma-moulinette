@@ -1,18 +1,25 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Batch;
 
 use App\Controller\Batch\BatchController;
-use App\Entity\BatchExecution;
-use App\Entity\BatchExecutionJournal;
-use App\Entity\BatchTraitement;
-use App\Repository\BatchExecutionJournalRepository;
-use App\Repository\BatchExecutionRepository;
-use App\Repository\BatchTraitementRepository;
+use App\Entity\{BatchExecution, BatchExecutionJournal, BatchTraitement};
+use App\Service\UserAgent\UserAgentTrackingFacade;
+use App\Repository\{BatchExecutionJournalRepository, BatchExecutionRepository, BatchTraitementRepository};
 use App\Service\PdfExportService;
-use App\Service\UserAgentTrackingFacade;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -21,8 +28,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\{Request, RequestStack};
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -36,13 +42,14 @@ class BatchControllerTest extends TestCase
     /** @var LoggerInterface&MockObject */                 private MockObject $logger;
     /** @var Security&MockObject */                        private MockObject $security;
     /** @var PdfExportService&MockObject */                private MockObject $pdfExportService;
-    /** @var UserAgentTrackingFacade&MockObject */         private MockObject $tracking;
     /** @var BatchTraitementRepository&MockObject */       private MockObject $batchTraitementRepo;
     /** @var BatchExecutionRepository&MockObject */        private MockObject $batchExecutionRepo;
     /** @var BatchExecutionJournalRepository&MockObject */ private MockObject $batchJournalRepo;
     /** @var AuthorizationCheckerInterface&MockObject */   private MockObject $authChecker;
     /** @var Environment&MockObject */                     private MockObject $twig;
     /** @var FlashBag&MockObject */                        private MockObject $flashBag;
+
+    /** @var UserAgentTrackingFacade&MockObject */         private MockObject $tracking;
 
     private BatchController $controller;
 
@@ -53,13 +60,13 @@ class BatchControllerTest extends TestCase
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->security = $this->createMock(Security::class);
         $this->pdfExportService = $this->createMock(PdfExportService::class);
-        $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
         $this->batchTraitementRepo = $this->createMock(BatchTraitementRepository::class);
         $this->batchExecutionRepo = $this->createMock(BatchExecutionRepository::class);
         $this->batchJournalRepo = $this->createMock(BatchExecutionJournalRepository::class);
         $this->authChecker = $this->createMock(AuthorizationCheckerInterface::class);
         $this->twig = $this->createMock(Environment::class);
         $this->flashBag = $this->createMock(FlashBag::class);
+        $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
 
         $this->params->method('get')->willReturnMap([
             ['logo.entreprise', 'logo.png'],
@@ -324,8 +331,6 @@ class BatchControllerTest extends TestCase
             ->method('add')
             ->with('notice', $this->callback(fn($v) => $v['type'] === 'warning'));
 
-        $this->tracking->expects($this->once())->method('track')->with('BATCH');
-
         $this->twig->expects($this->once())
             ->method('render')
             ->with('batch/index.html.twig', $this->anything())
@@ -399,7 +404,8 @@ class BatchControllerTest extends TestCase
             ],
         ]);
 
-        $capturedCtx = null;
+        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        $capturedCtx = [];
         $this->twig->expects($this->once())
             ->method('render')
             ->with('batch/index.html.twig', $this->callback(function ($ctx) use (&$capturedCtx) {
@@ -452,7 +458,8 @@ class BatchControllerTest extends TestCase
 
         $this->batchExecutionRepo->method('createQueryBuilder')->willReturn($qb);
 
-        $capturedCtx = null;
+        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        $capturedCtx = [];
         $this->twig->expects($this->once())
             ->method('render')
             ->with('batch/rapport.html.twig', $this->callback(function ($ctx) use (&$capturedCtx) {

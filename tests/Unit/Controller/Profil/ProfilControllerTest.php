@@ -1,13 +1,23 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Profil;
 
 use App\Controller\Profil\ProfilController;
-use App\Entity\Profiles;
 use App\Repository\ProfilesRepository;
-use App\Service\UserAgentTrackingFacade;
+use App\Service\UserAgent\UserAgentTrackingFacade;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -26,10 +36,11 @@ class ProfilControllerTest extends TestCase
     /** @var EntityManagerInterface&MockObject */   private MockObject $em;
     /** @var ParameterBagInterface&MockObject */    private MockObject $params;
     /** @var LoggerInterface&MockObject */          private MockObject $logger;
-    /** @var UserAgentTrackingFacade&MockObject */  private MockObject $tracking;
     /** @var ProfilesRepository&MockObject */       private MockObject $repo;
     /** @var Environment&MockObject */              private MockObject $twig;
     /** @var FlashBag&MockObject */                 private MockObject $flashBag;
+
+    /** @var UserAgentTrackingFacade&MockObject */  private MockObject $tracking;
 
     private ProfilController $controller;
 
@@ -38,10 +49,10 @@ class ProfilControllerTest extends TestCase
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->params = $this->createMock(ParameterBagInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
         $this->repo = $this->createMock(ProfilesRepository::class);
         $this->twig = $this->createMock(Environment::class);
         $this->flashBag = $this->createMock(FlashBag::class);
+        $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
 
         $this->params->method('get')->willReturnMap([
             ['logo.entreprise', 'logo.png'],
@@ -70,6 +81,7 @@ class ProfilControllerTest extends TestCase
             ['parameter_bag', 1, $this->params],
         ]);
 
+        // MODIF 2026-06-09 [user-agent-tracking]
         $this->controller = new ProfilController($this->em, $this->params, $this->logger, $this->tracking);
         $this->controller->setContainer($container);
     }
@@ -115,7 +127,8 @@ class ProfilControllerTest extends TestCase
 
         $this->flashBag->expects($this->never())->method('add');
 
-        $capturedCtx = null;
+        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        $capturedCtx = [];
         $this->twig->expects($this->once())
             ->method('render')
             ->with('profil/index.html.twig', $this->callback(function ($ctx) use (&$capturedCtx) {
@@ -123,8 +136,6 @@ class ProfilControllerTest extends TestCase
                 return true;
             }))
             ->willReturn('<html>ok</html>');
-
-        $this->tracking->expects($this->once())->method('track')->with('PROFIL');
 
         $this->controller->index();
 

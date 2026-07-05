@@ -1,22 +1,21 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Batch;
 
-use App\Controller\Batch\BatchCollecteActuatorController;
-use App\Controller\Batch\BatchCollecteAnomalieController;
-use App\Controller\Batch\BatchCollecteAnomalieDetailController;
-use App\Controller\Batch\BatchCollecteHotspotController;
-use App\Controller\Batch\BatchCollecteHotspotDetailController;
-use App\Controller\Batch\BatchCollecteHotspotOwaspController;
-use App\Controller\Batch\BatchCollecteInformationProjetController;
-use App\Controller\Batch\BatchCollecteLoggerController;
-use App\Controller\Batch\BatchCollecteMesureController;
-use App\Controller\Batch\BatchCollecteNoSonarController;
-use App\Controller\Batch\BatchCollecteOwaspController;
-use App\Controller\Batch\BatchCollecteTodoController;
-use App\Controller\Batch\CollecteController;
+use App\Controller\Batch\{BatchCollecteActuatorController, BatchCollecteAnomalieController,BatchCollecteAnomalieDetailController, BatchCollecteHotspotController, BatchCollecteHotspotDetailController, BatchCollecteHotspotOwaspController, BatchCollecteInformationProjetController, BatchCollecteLoggerController,BatchCollecteMesureController, BatchCollecteNoSonarController, BatchCollecteOwaspController, BatchCollecteTodoController, CollecteController};
 use App\Entity\Historique;
 use App\Repository\HistoriqueRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -214,7 +213,7 @@ class CollecteControllerTest extends TestCase
         $this->batchInfo->method('batchCollecteInformation')->willReturn($this->stubInfoHappy());
         $this->batchMesure->method('batchCollecteMesure')->willReturn($this->stubMesureHappy());
         $this->batchAnomalie->method('batchCollecteAnomalie')
-            ->willReturn(['code' => 500, 'type' => 'alert', 'message' => 'anomalie fail', 'erreur' => 'e']);
+            ->willReturn(['code' => 500, 'type' => 'error', 'message' => 'anomalie fail', 'erreur' => 'e']);
 
         $this->batchAnomalieDetail->expects($this->never())->method('BatchCollecteAnomalieDetail');
 
@@ -232,7 +231,7 @@ class CollecteControllerTest extends TestCase
             ->method('batchCollecteHotspotOwasp')
             ->willReturn([
                 'code' => 500,
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => 'hotspot owasp fail',
                 'erreur' => 'err',
             ]);
@@ -266,7 +265,7 @@ class CollecteControllerTest extends TestCase
         $this->batchMesure->method('batchCollecteMesure')->willReturn($this->stubMesureHappy());
         $this->batchAnomalie->method('batchCollecteAnomalie')->willReturn($this->stubAnomalieHappy());
         $this->batchAnomalieDetail->method('BatchCollecteAnomalieDetail')
-            ->willReturn(['code' => 500, 'type' => 'alert', 'message' => 'anomalie detail fail', 'erreur' => 'e']);
+            ->willReturn(['code' => 500, 'type' => 'error', 'message' => 'anomalie detail fail', 'erreur' => 'e']);
 
         $this->batchHotspot->expects($this->never())->method('batchCollecteHotspot');
 
@@ -446,17 +445,27 @@ class CollecteControllerTest extends TestCase
             'data' => [], // empty → html non généré
             'info' => 'mode', 'owasp_2017' => 0, 'owasp_2021' => 0,
         ]);
+        // MODIF 2026-06-07 : clés no_sonar par langage (CollecteController:762-768)
         $this->batchNoSonar->method('batchCollecteNoSonar')->willReturn([
             'code' => 200, 'message' => 'nosonar ok',
-            'historique' => ['no_sonar' => 1, 'suppress_warning' => 2],
+            'historique' => [
+                'java_no_sonar' => 1, 'python_no_sonar' => 0, 'php_no_sonar' => 0,
+                'check_style' => 0, 'no_pmd' => 0, 'suppress_warning' => 2,
+                'total_no_sonar' => 1,
+            ],
         ]);
+        // MODIF 2026-06-07 : clés to do par langage (CollecteController:813-821)
         $this->batchTodo->method('batchCollecteTodo')->willReturn([
             'code' => 200, 'message' => 'todo ok',
-            'historique' => ['todo' => 7],
+            'historique' => [
+                'java_todo' => 5, 'python_todo' => 0, 'php_todo' => 1,
+                'xml_todo' => 0, 'web_todo' => 0, 'javascript_todo' => 1,
+                'typescript_todo' => 0, 'ruby_todo' => 0, 'total_todo' => 7,
+            ],
         ]);
         $this->batchActuator->method('BatchCollecteActuatorInfo')->willReturn([
             'code' => 200, 'message' => 'actuator ok',
-            'dataJson' => ['json' => ['build' => []]],
+            'dataJson' => ['json' => json_encode(['build' => []])],
         ]);
         $this->batchLogger->method('BatchCollecteLogger')->willReturn([
             'code' => 200, 'message' => 'logger ok',
@@ -497,17 +506,61 @@ class CollecteControllerTest extends TestCase
         ];
     }
 
+    // MODIF 2026-06-07 : historique complété (~80 clés lues par CollecteController:305-385)
     private function stubMesureHappy(): array
     {
         return [
             'code' => 200, 'message' => 'mesure ok',
             'data' => ['maven_key' => self::MAVEN_KEY],
             'historique' => [
-                'nom_projet' => 'App', 'nombre_ligne' => 1000, 'nombre_ligne_code' => 800,
-                'nombre_classes' => 50, 'nombre_functions' => 200, 'nombre_files' => 30,
-                'language_distribution' => ['java' => 100],
-                'sqale_debt_ratio' => 1.5, 'coverage' => 80.0,
-                'duplicated_lines_density' => 2.0, 'tests' => 150, 'issues' => 10,
+                // volume
+                'lines' => 1000, 'ncloc' => 800, 'ncloc_language_distribution' => 'java=800',
+                'files' => 30, 'classes' => 50, 'functions' => 200,
+                // commentaires
+                'comment_lines' => 100, 'comment_lines_density' => 12.5, 'comment_lines_rating' => 'A',
+                // couverture
+                'coverage' => 80.0, 'branch_coverage' => 75.0, 'line_coverage' => 82.0,
+                'lines_to_cover' => 600, 'conditions_to_cover' => 200, 'uncovered_conditions' => 50,
+                'coverage_rating' => 'B',
+                // tests
+                'tests' => 150, 'test_execution_time' => 3200, 'test_errors' => 0,
+                'test_failures' => 0, 'skipped_tests' => 2, 'test_success_density' => 98.7,
+                // duplication
+                'duplicated_blocks' => 3, 'duplicated_files' => 2, 'duplicated_lines' => 40,
+                'duplicated_lines_density' => 2.0, 'duplicated_lines_rating' => 'A',
+                // issues
+                'open_issues' => 10, 'reopened_issues' => 1, 'confirmed_issues' => 2,
+                'false_positive_issues' => 0, 'high_impact_accepted_issues' => 0, 'accepted_issues' => 0,
+                'violations' => 10, 'blocker_violations' => 0, 'critical_violations' => 1,
+                'major_violations' => 5, 'minor_violations' => 3, 'info_violations' => 1,
+                'software_quality_blocker_issues' => 0, 'software_quality_high_issues' => 1,
+                'software_quality_info_issues' => 0, 'software_quality_low_issues' => 2,
+                'software_quality_medium_issues' => 3,
+                // complexité
+                'complexity' => 42, 'cognitive_complexity' => 38, 'complexity_ratio' => 5.2,
+                'cognitive_complexity_ratio' => 4.7, 'complexity_rating' => 'A', 'cognitive_complexity_rating' => 'A',
+                // maintenabilité
+                'code_smells' => 5, 'sqale_index' => 120, 'sqale_rating' => 'A', 'sqale_debt_ratio' => 1.5,
+                'maintainability_issues' => 5, 'software_quality_maintainability_rating' => 'A',
+                'software_quality_maintainability_debt_ratio' => 1.2,
+                'effort_to_reach_maintainability_rating_a' => 0,
+                'software_quality_maintainability_remediation_effort' => 60,
+                'software_quality_maintainability_issues' => 4,
+                'effort_to_reach_software_quality_maintainability_rating_a' => 0,
+                // fiabilité
+                'bugs' => 2, 'reliability_rating' => 'B', 'reliability_remediation_effort' => 30,
+                'reliability_issues' => 2, 'software_quality_reliability_rating' => 'B',
+                'software_quality_reliability_remediation_effort' => 30,
+                'software_quality_reliability_issues' => 2,
+                // sécurité
+                'vulnerabilities' => 1, 'security_rating' => 'A', 'security_remediation_effort' => 10,
+                'software_quality_security_rating' => 'A',
+                'software_quality_security_remediation_effort' => 10,
+                'software_quality_security_issues' => 1,
+                'security_hotspots' => 0, 'security_hotspots_reviewed' => 0, 'security_review_rating' => 'A',
+                // identité
+                'maven_key' => self::MAVEN_KEY, 'project_name' => 'App',
+                'mode_collecte' => 'collecte', 'utilisateur_collecte' => 'u',
             ],
         ];
     }
@@ -554,6 +607,7 @@ class CollecteControllerTest extends TestCase
         ];
     }
 
+    // MODIF 2026-06-07 : renommage review_→to_review_ (CollecteController:604-608)
     private function stubHotspotDetailHappy(): array
     {
         return [
@@ -561,9 +615,9 @@ class CollecteControllerTest extends TestCase
             'nombre' => 6,
             'historique' => [
                 'menace_potentielle_totale' => 6,
-                'menace_potentielle_review_high' => 1,
-                'menace_potentielle_review_medium' => 1,
-                'menace_potentielle_review_low' => 1,
+                'menace_potentielle_to_review_high' => 1,
+                'menace_potentielle_to_review_medium' => 1,
+                'menace_potentielle_to_review_low' => 1,
                 'menace_potentielle_reviewed_high' => 1,
                 'menace_potentielle_reviewed_medium' => 1,
                 'menace_potentielle_reviewed_low' => 1,

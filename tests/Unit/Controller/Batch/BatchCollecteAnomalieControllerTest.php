@@ -1,5 +1,16 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Batch;
@@ -114,7 +125,8 @@ class BatchCollecteAnomalieControllerTest extends TestCase
 
         $this->repo->expects($this->never())->method('deleteAnomalieMavenKey');
 
-        $capturedMap = null;
+        /* MODIF 2026-05-07 [tests-validators] : init [] au lieu de null — intelephense ne suit pas l'assignment by-reference dans le callback. */
+        $capturedMap = [];
         $this->repo->expects($this->once())
             ->method('insertAnomalie')
             ->with($this->callback(function (array $map) use (&$capturedMap) {
@@ -201,7 +213,8 @@ class BatchCollecteAnomalieControllerTest extends TestCase
 
         $this->repo->method('deleteAnomalieMavenKey')->willReturn(['code' => 200]);
 
-        $capturedMap = null;
+        /* MODIF 2026-05-07 [tests-validators] : init [] au lieu de null — intelephense ne suit pas l'assignment by-reference dans le callback. */
+        $capturedMap = [];
         $this->repo->expects($this->once())
             ->method('insertAnomalie')
             ->with($this->callback(function (array $map) use (&$capturedMap) {
@@ -284,7 +297,8 @@ class BatchCollecteAnomalieControllerTest extends TestCase
 
         $this->repo->method('deleteAnomalieMavenKey')->willReturn(['code' => 200]);
 
-        $capturedMap = null;
+        /* MODIF 2026-05-07 [tests-validators] : init [] au lieu de null — intelephense ne suit pas l'assignment by-reference dans le callback. */
+        $capturedMap = [];
         $this->repo->expects($this->once())
             ->method('insertAnomalie')
             ->with($this->callback(function (array $map) use (&$capturedMap) {

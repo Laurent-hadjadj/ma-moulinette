@@ -1,15 +1,22 @@
 <?php
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
 
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Batch;
 
 use App\Controller\Batch\BatchCollecteInformationProjetController;
-use App\Entity\InformationProjet;
 use App\Repository\InformationProjetRepository;
-use App\Service\ClientService;
-use App\Service\IsValideMavenKey;
-use App\Service\UrlBuilderService;
+use App\Service\{ClientService, IsValideMavenKey, UrlBuilderService};
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -183,14 +190,14 @@ public function testCalculRepartitionCountsReleaseSnapshotAndAutre(): void
             ->method('selectInformationProjetVersion')
             ->willReturn([
                 'code' => 200,
-                'info' => [[
+                'info' => [
                     'analyse_key' => 'K1',
                     'version_release_sonar' => 3,
                     'version_snapshot_sonar' => 2,
                     'version_autre_sonar' => 1,
                     'version' => '1.0.0',
                     'date' => '2026-04-01 10:00:00',
-                ]]
+                ]
             ]);
 
         $r = $this->controller->batchInformationVersion(self::MAVEN_KEY);
@@ -327,7 +334,8 @@ public function testCalculRepartitionCountsReleaseSnapshotAndAutre(): void
 
         $this->repo->method('deleteInformationProjetMavenKey')->willReturn(['code' => 200]);
 
-        $capturedInsert = null;
+        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        $capturedInsert = [];
         $this->repo->expects($this->once())
             ->method('insertInformationProjet')
             ->with($this->callback(function (array $map) use (&$capturedInsert) {
@@ -338,14 +346,14 @@ public function testCalculRepartitionCountsReleaseSnapshotAndAutre(): void
 
         $this->repo->method('selectInformationProjetVersion')->willReturn([
             'code' => 200,
-            'info' => [[
+            'info' => [
                 'analyse_key' => 'A1',
                 'version_release_sonar' => 1,
                 'version_snapshot_sonar' => 1,
                 'version_autre_sonar' => 1,
                 'version' => '1.0-RELEASE',
                 'date' => '2026-04-10',
-            ]],
+            ],
         ]);
 
         $r = $this->controller->batchCollecteInformation(self::MAVEN_KEY, 'auto', 'u');
@@ -380,7 +388,8 @@ public function testCalculRepartitionCountsReleaseSnapshotAndAutre(): void
 
         $this->repo->method('deleteInformationProjetMavenKey')->willReturn(['code' => 200]);
 
-        $capturedInsert = null;
+        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        $capturedInsert = [];
         $this->repo->expects($this->once())
             ->method('insertInformationProjet')
             ->with($this->callback(function (array $map) use (&$capturedInsert) {

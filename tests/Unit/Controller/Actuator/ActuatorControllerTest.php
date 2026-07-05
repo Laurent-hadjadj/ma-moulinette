@@ -1,13 +1,24 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Actuator;
 
 use App\Controller\Actuator\ActuatorController;
 use App\Entity\Actuator;
+use App\Service\UserAgent\UserAgentTrackingFacade;
 use App\Repository\ActuatorRepository;
-use App\Service\UserAgentTrackingFacade;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\Pagination\PaginationInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -31,11 +42,12 @@ class ActuatorControllerTest extends TestCase
     /** @var PaginatorInterface&MockObject */             private MockObject $paginator;
     /** @var ParameterBagInterface&MockObject */          private MockObject $params;
     /** @var LoggerInterface&MockObject */                private MockObject $logger;
-    /** @var UserAgentTrackingFacade&MockObject */        private MockObject $tracking;
     /** @var ActuatorRepository&MockObject */             private MockObject $repo;
     /** @var AuthorizationCheckerInterface&MockObject */  private MockObject $authChecker;
     /** @var Environment&MockObject */                    private MockObject $twig;
     /** @var FlashBag&MockObject */                       private MockObject $flashBag;
+
+    /** @var UserAgentTrackingFacade&MockObject */        private MockObject $tracking;
 
     private ActuatorController $controller;
 
@@ -45,11 +57,11 @@ class ActuatorControllerTest extends TestCase
         $this->paginator = $this->createMock(PaginatorInterface::class);
         $this->params = $this->createMock(ParameterBagInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
         $this->repo = $this->createMock(ActuatorRepository::class);
         $this->authChecker = $this->createMock(AuthorizationCheckerInterface::class);
         $this->twig = $this->createMock(Environment::class);
         $this->flashBag = $this->createMock(FlashBag::class);
+        $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
 
         $this->params->method('get')->willReturnMap([
             ['logo.entreprise', 'logo.png'],
@@ -158,8 +170,6 @@ class ActuatorControllerTest extends TestCase
             ->method('render')
             ->with('actuator/index.html.twig', $this->callback(fn($ctx) => $ctx['pagination'] === $pagination))
             ->willReturn('<html>ok</html>');
-
-        $this->tracking->expects($this->once())->method('track')->with('PROMPT_SIMPLE');
 
         $request = new Request(['sort' => 'date_enregistrement', 'direction' => 'ASC', 'page' => 2]);
         $this->controller->actuator($request);

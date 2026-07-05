@@ -1,5 +1,16 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\HealthCheck;
@@ -18,6 +29,10 @@ use Symfony\Component\RateLimiter\RateLimiterFactoryInterface;
 
 class HealthCheckControllerTest extends TestCase
 {
+    // Ip de Tests, faux positifs (sonarqube(php:S1313).
+    private const TEST_IP_ERROR = '10.0.0.1';
+    private const TEST_IP_DNS = '8.8.8.8';
+
     /** @var RateLimiterFactoryInterface&MockObject */
     private MockObject $limiterFactory;
 
@@ -79,7 +94,7 @@ class HealthCheckControllerTest extends TestCase
 
     public function testStatusReturns503AndCodeRetourKoWhenHealthCheckReportsErrors(): void
     {
-        $this->expectRateLimiterAccepts('10.0.0.1');
+        $this->expectRateLimiterAccepts(self::TEST_IP_ERROR);
 
         $errors = ['[HealthCheck] ❌ La base de données est indisponible'];
         $this->healthCheckService->expects($this->once())
@@ -88,7 +103,7 @@ class HealthCheckControllerTest extends TestCase
 
         $this->logger->expects($this->never())->method('warning');
 
-        $response = $this->controller->status($this->buildRequest('10.0.0.1'));
+        $response = $this->controller->status($this->buildRequest(self::TEST_IP_ERROR));
 
         $this->assertSame(503, $response->getStatusCode());
         $this->assertSame(
@@ -99,7 +114,7 @@ class HealthCheckControllerTest extends TestCase
 
     public function testStatusReturns429WhenRateLimiterRejects(): void
     {
-        $this->expectRateLimiterRejects('8.8.8.8');
+        $this->expectRateLimiterRejects(self::TEST_IP_DNS);
 
         // Si on dépasse le rate limit on NE doit PAS exécuter le healthcheck métier
         $this->healthCheckService->expects($this->never())->method('check');
@@ -108,10 +123,10 @@ class HealthCheckControllerTest extends TestCase
             ->method('warning')
             ->with(
                 '[HealthCheck] ⚠️ nombre de tentatives dépassé',
-                ['client_ip' => '8.8.8.8']
+                ['client_ip' => self::TEST_IP_DNS]
             );
 
-        $response = $this->controller->status($this->buildRequest('8.8.8.8'));
+        $response = $this->controller->status($this->buildRequest(self::TEST_IP_DNS));
 
         $this->assertSame(429, $response->getStatusCode());
         $payload = json_decode($response->getContent(), true);

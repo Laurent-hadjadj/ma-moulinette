@@ -7,9 +7,8 @@ namespace App\Tests\Unit\Controller\Batch;
 use App\Controller\Batch\BatchCollecteMesureController;
 use App\Entity\Mesures;
 use App\Repository\MesuresRepository;
-use App\Service\ClientService;
+use App\Service\{ClientService, UrlBuilderService};
 use App\Service\CommandRebuildHistorique\BuildMapHistoryService;
-use App\Service\UrlBuilderService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -148,14 +147,16 @@ class BatchCollecteMesureControllerTest extends TestCase
         $this->repo->method('deleteMesuresMavenKey')->willReturn(['code' => 200]);
 
         // On capture la map passée à metricsRebuild pour vérifier la parsing
-        $capturedMetrics = null;
+        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        $capturedMetrics = [];
         $this->buildMap->method('metricsRebuild')
             ->willReturnCallback(function (array $measures) use (&$capturedMetrics) {
                 $capturedMetrics = $measures;
                 return ['rebuilt' => true];
             });
 
-        $capturedInsert = null;
+        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        $capturedInsert = [];
         $this->repo->expects($this->once())
             ->method('insertMesures')
             ->with($this->callback(function (array $data) use (&$capturedInsert) {
@@ -195,7 +196,8 @@ class BatchCollecteMesureControllerTest extends TestCase
 
         $this->repo->method('deleteMesuresMavenKey')->willReturn(['code' => 200]);
 
-        $captured = null;
+        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        $captured = [];
         $this->repo->expects($this->once())
             ->method('insertMesures')
             ->with($this->callback(function (array $data) use (&$captured) {

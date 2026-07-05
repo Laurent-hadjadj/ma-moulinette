@@ -1,11 +1,22 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller;
 
 use App\Controller\FooterController;
-use App\Service\UserAgentTrackingFacade;
+use App\Service\UserAgent\UserAgentTrackingFacade;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -20,19 +31,19 @@ class FooterControllerTest extends TestCase
     /** @var ParameterBagInterface&MockObject */
     private MockObject $params;
 
-    /** @var UserAgentTrackingFacade&MockObject */
-    private MockObject $tracking;
-
     /** @var Environment&MockObject */
     private MockObject $twig;
+
+    /** @var UserAgentTrackingFacade&MockObject */
+    private MockObject $tracking;
 
     private FooterController $controller;
 
     protected function setUp(): void
     {
         $this->params = $this->createMock(ParameterBagInterface::class);
-        $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
         $this->twig = $this->createMock(Environment::class);
+        $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
 
         // Params injectés dans le constructeur + getParameter()
         $this->params->method('get')->willReturnMap([
@@ -65,15 +76,10 @@ class FooterControllerTest extends TestCase
     }
 
     #[DataProvider('routeProvider')]
-    public function testEachFooterRouteTracksAndRendersExpectedTemplate(
+    public function testEachFooterRouteRendersExpectedTemplate(
         string $method,
-        string $eventName,
         string $template
     ): void {
-        $this->tracking->expects($this->once())
-            ->method('track')
-            ->with($eventName);
-
         $this->twig->expects($this->once())
             ->method('render')
             ->with(
@@ -97,15 +103,16 @@ class FooterControllerTest extends TestCase
     public static function routeProvider(): array
     {
         return [
-            'plan du site'        => ['planDuSite',       'PLAN_DU_SITE',  'footer/plan-du-site.html.twig'],
-            'mention legal'       => ['mentionLegal',     'MENTION_LEGALE', 'footer/mention-legal.html.twig'],
-            'donnees personnelles' => ['donneesPersonnelles', 'CGU',         'footer/donnees-personnelles.html.twig'],
+            'plan du site'        => ['planDuSite',       'footer/plan-du-site.html.twig'],
+            'mention legal'       => ['mentionLegal',     'footer/mention-legal.html.twig'],
+            'donnees personnelles' => ['donneesPersonnelles', 'footer/donnees-personnelles.html.twig'],
         ];
     }
 
     public function testMentionLegalEnrichesRenderWithCguParameters(): void
     {
-        $capturedCtx = null;
+        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        $capturedCtx = [];
         $this->twig->expects($this->once())
             ->method('render')
             ->with(
@@ -129,7 +136,8 @@ class FooterControllerTest extends TestCase
 
     public function testDonneesPersonnellesIncludesUrlSiteInContext(): void
     {
-        $capturedCtx = null;
+        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        $capturedCtx = [];
         $this->twig->expects($this->once())
             ->method('render')
             ->with(

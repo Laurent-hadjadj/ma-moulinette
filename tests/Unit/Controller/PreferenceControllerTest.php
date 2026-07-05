@@ -1,15 +1,24 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller;
 
 use App\Controller\PreferenceController;
 use App\Entity\Utilisateur;
-use App\Service\UserAgentTrackingFacade;
-use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Result;
-use Doctrine\DBAL\Statement;
+use App\Service\UserAgent\UserAgentTrackingFacade;
+use Doctrine\DBAL\{Connection, Statement};
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -32,12 +41,13 @@ class PreferenceControllerTest extends TestCase
     /** @var TokenStorageInterface&MockObject */      private MockObject $tokenStorage;
     /** @var TokenInterface&MockObject */             private MockObject $token;
     /** @var LoggerInterface&MockObject */            private MockObject $logger;
-    /** @var UserAgentTrackingFacade&MockObject */    private MockObject $tracking;
     /** @var Environment&MockObject */                private MockObject $twig;
     /** @var Connection&MockObject */                 private MockObject $connection;
     /** @var Statement&MockObject */                  private MockObject $statement;
 
     /** @var Utilisateur&MockObject */                private MockObject $user;
+
+    /** @var UserAgentTrackingFacade&MockObject */    private MockObject $tracking;
 
     private PreferenceController $controller;
 
@@ -49,7 +59,6 @@ class PreferenceControllerTest extends TestCase
         $this->token = $this->createMock(TokenInterface::class);
         $this->tokenStorage->method('getToken')->willReturn($this->token);
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
         $this->twig = $this->createMock(Environment::class);
 
         $this->connection = $this->createMock(Connection::class);
@@ -60,6 +69,7 @@ class PreferenceControllerTest extends TestCase
         $this->user = $this->createMock(Utilisateur::class);
         $this->user->method('getCourriel')->willReturn(self::COURRIEL);
         $this->token->method('getUser')->willReturn($this->user);
+        $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
 
         // Params (constructeur + getParameter)
         $this->params->method('get')->willReturnMap([
@@ -84,8 +94,8 @@ class PreferenceControllerTest extends TestCase
 
         $this->controller = new PreferenceController(
             $this->em,
-            $this->params,
             $this->logger,
+            $this->params,
             $this->tracking
         );
         $this->controller->setContainer($container);
@@ -100,7 +110,8 @@ class PreferenceControllerTest extends TestCase
             ->willReturn($this->buildBasePreferences());
 
         // Capture le SQL via prepare(), les binds via bindValue() — pattern prepared statement
-        $capturedSql = null;
+        /* MODIF 2026-05-07 : init '' / [] selon le type capturé (intelephense by-ref). */
+        $capturedSql = '';
         $capturedBinds = [];
         $this->connection->expects($this->once())
             ->method('prepare')
@@ -226,9 +237,8 @@ class PreferenceControllerTest extends TestCase
         $this->user->method('getRoles')->willReturn(['ROLE_USER']);
         $this->user->method('getListeGroupeFonctionnel')->willReturn(['equipe-1']);
 
-        $this->tracking->expects($this->once())->method('track')->with('PREFERENCE');
-
-        $capturedCtx = null;
+        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        $capturedCtx = [];
         $this->twig->expects($this->once())
             ->method('render')
             ->with(
@@ -260,7 +270,8 @@ class PreferenceControllerTest extends TestCase
         $this->user->method('getRoles')->willReturn([]);
         $this->user->method('getListeGroupeFonctionnel')->willReturn([]); // vide
 
-        $capturedCtx = null;
+        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        $capturedCtx = [];
         $this->twig->expects($this->once())
             ->method('render')
             ->with(

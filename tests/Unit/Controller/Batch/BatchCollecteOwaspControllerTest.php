@@ -1,19 +1,26 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Batch;
 
 use App\Controller\Batch\BatchCollecteOwaspController;
-use App\Entity\InformationProjet;
-use App\Entity\Owasp;
-use App\Repository\InformationProjetRepository;
-use App\Repository\OwaspRepository;
-use App\Service\ClientService;
-use App\Service\UrlBuilderService;
+use App\Entity\{InformationProjet, Owasp};
+use App\Repository\{InformationProjetRepository, OwaspRepository};
+use App\Service\{ClientService, UrlBuilderService};
 use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
-use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\{AllowMockObjectsWithoutExpectations, DataProvider};
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -139,10 +146,10 @@ class BatchCollecteOwaspControllerTest extends TestCase
 
         $this->infoRepo->expects($this->once())
             ->method('selectInformationProjetVersion')
-            ->willReturn(['code' => 200, 'info' => [[
+            ->willReturn(['code' => 200, 'info' => [
                 'date' => '2026-04-22',
-                'project_version' => '1.0.0',
-            ]]]);
+                'version' => '1.0.0',
+            ]]);
 
         $this->owaspRepo->expects($this->once())->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
         $this->owaspRepo->expects($this->once())
@@ -286,10 +293,10 @@ class BatchCollecteOwaspControllerTest extends TestCase
 
         $this->infoRepo->expects($this->once())
             ->method('selectInformationProjetVersion')
-            ->willReturn(['code' => 200, 'info' => [[
+            ->willReturn(['code' => 200, 'info' => [
                 'date' => '2026-04-22',
-                'project_version' => '2.0.0',
-            ]]]);
+                'version' => '2.0.0',
+            ]]);
 
         $this->owaspRepo->expects($this->once())->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
 
@@ -337,11 +344,12 @@ class BatchCollecteOwaspControllerTest extends TestCase
             ->willReturn(['code' => 200, 'json' => $payload]);
 
         $this->infoRepo->method('selectInformationProjetVersion')
-            ->willReturn(['code' => 200, 'info' => [[
-                'date' => '2026-04-22', 'project_version' => '1.0',
-            ]]]);
+            ->willReturn(['code' => 200, 'info' => [
+                'date' => '2026-04-22', 'version' => '1.0',
+            ]]);
 
-        $capturedMap = null;
+        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        $capturedMap = [];
         $this->owaspRepo->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
         $this->owaspRepo->expects($this->once())
             ->method('insertOwasp')
@@ -404,9 +412,9 @@ class BatchCollecteOwaspControllerTest extends TestCase
             ->willReturn(['code' => 200, 'json' => $this->buildOwaspPayload(1)]);
 
         $this->infoRepo->method('selectInformationProjetVersion')
-            ->willReturn(['code' => 200, 'info' => [[
+            ->willReturn(['code' => 200, 'info' => [
                 'date' => '2026-04-22',
-                'project_version' => '1.0',
-            ]]]);
+                'version' => '1.0',
+            ]]);
     }
 }

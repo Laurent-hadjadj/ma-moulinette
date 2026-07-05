@@ -1,16 +1,25 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Activity;
 
 use App\Controller\Activity\ActivityController;
-use App\Entity\Activity;
-use App\Entity\ActivityHistorique;
-use App\Repository\ActivityHistoriqueRepository;
-use App\Repository\ActivityRepository;
+use App\Entity\{Activity, ActivityHistorique};
+use App\Service\UserAgent\UserAgentTrackingFacade;
+use App\Repository\{ActivityHistoriqueRepository, ActivityRepository};
 use App\Service\ClientService;
-use App\Service\UserAgentTrackingFacade;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -30,11 +39,12 @@ class ActivityControllerTest extends TestCase
     /** @var ClientService&MockObject */                  private MockObject $client;
     /** @var ParameterBagInterface&MockObject */          private MockObject $params;
     /** @var LoggerInterface&MockObject */                private MockObject $logger;
-    /** @var UserAgentTrackingFacade&MockObject */        private MockObject $tracking;
     /** @var ActivityRepository&MockObject */             private MockObject $activityRepo;
     /** @var ActivityHistoriqueRepository&MockObject */   private MockObject $historiqueRepo;
     /** @var Environment&MockObject */                    private MockObject $twig;
     /** @var FlashBag&MockObject */                       private MockObject $flashBag;
+
+    /** @var UserAgentTrackingFacade&MockObject */        private MockObject $tracking;
 
     private ActivityController $controller;
 
@@ -44,11 +54,11 @@ class ActivityControllerTest extends TestCase
         $this->client = $this->createMock(ClientService::class);
         $this->params = $this->createMock(ParameterBagInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
         $this->activityRepo = $this->createMock(ActivityRepository::class);
         $this->historiqueRepo = $this->createMock(ActivityHistoriqueRepository::class);
         $this->twig = $this->createMock(Environment::class);
         $this->flashBag = $this->createMock(FlashBag::class);
+        $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
 
         $this->params->method('get')->willReturnMap([
             ['logo.entreprise', 'logo.png'],

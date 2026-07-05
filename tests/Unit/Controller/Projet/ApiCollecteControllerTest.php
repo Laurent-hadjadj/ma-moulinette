@@ -1,32 +1,30 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Projet;
 
-use App\Controller\Batch\BatchCollecteActuatorController;
-use App\Controller\Batch\BatchCollecteAnomalieController;
-use App\Controller\Batch\BatchCollecteAnomalieDetailController;
-use App\Controller\Batch\BatchCollecteHotspotController;
-use App\Controller\Batch\BatchCollecteHotspotDetailController;
-use App\Controller\Batch\BatchCollecteHotspotOwaspController;
-use App\Controller\Batch\BatchCollecteInformationProjetController;
-use App\Controller\Batch\BatchCollecteLoggerController;
-use App\Controller\Batch\BatchCollecteMesureController;
-use App\Controller\Batch\BatchCollecteNoSonarController;
-use App\Controller\Batch\BatchCollecteOwaspController;
-use App\Controller\Batch\BatchCollecteTodoController;
+use App\Controller\Batch\{BatchCollecteActuatorController, BatchCollecteAnomalieController, BatchCollecteAnomalieDetailController, BatchCollecteHotspotController, BatchCollecteHotspotDetailController,BatchCollecteHotspotOwaspController, BatchCollecteInformationProjetController, BatchCollecteLoggerController,BatchCollecteMesureController, BatchCollecteNoSonarController, BatchCollecteOwaspController, BatchCollecteTodoController, BatchCollecteCleanCodeController};
 use App\Controller\Projet\ApiCollecteController;
 use App\Entity\Utilisateur;
-use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
-use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\{AllowMockObjectsWithoutExpectations, DataProvider};
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\{JsonResponse, Request};
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -49,6 +47,7 @@ class ApiCollecteControllerTest extends TestCase
     /** @var BatchCollecteTodoController&MockObject */               private MockObject $batchTodo;
     /** @var BatchCollecteActuatorController&MockObject */           private MockObject $batchActuator;
     /** @var BatchCollecteLoggerController&MockObject */             private MockObject $batchLogger;
+    /** @var BatchCollecteCleanCodeController&MockObject */          private MockObject $batchCleanCode;
 
     /** @var Security&MockObject */                                  private MockObject $security;
     /** @var LoggerInterface&MockObject */                           private MockObject $logger;
@@ -71,6 +70,10 @@ class ApiCollecteControllerTest extends TestCase
         $this->batchTodo = $this->createMock(BatchCollecteTodoController::class);
         $this->batchActuator = $this->createMock(BatchCollecteActuatorController::class);
         $this->batchLogger = $this->createMock(BatchCollecteLoggerController::class);
+        /* MODIF 2026-05-17 : retour silencieux par défaut (SQ < 10). */
+        $this->batchCleanCode = $this->createMock(BatchCollecteCleanCodeController::class);
+        $this->batchCleanCode->method('BatchCollecteCleanCode')
+            ->willReturn(['code' => 200, 'skipped' => true]);
 
         $this->security = $this->createMock(Security::class);
         $user = $this->createMock(Utilisateur::class);
@@ -116,6 +119,7 @@ class ApiCollecteControllerTest extends TestCase
             $this->batchTodo,
             $this->batchActuator,
             $this->batchLogger,
+            $this->batchCleanCode,
             $this->security,
             $this->logger,
         );
@@ -129,7 +133,7 @@ class ApiCollecteControllerTest extends TestCase
     {
         $response = $this->controller->{$method}($this->jsonRequest([]));
 
-        $this->assertJsonStatus($response, 400, 'alert');
+        $this->assertJsonStatus($response, 400, 'error');
     }
 
     #[DataProvider('endpointsProvider')]
@@ -307,7 +311,7 @@ class ApiCollecteControllerTest extends TestCase
             $this->jsonRequest(['maven_key' => self::MAVEN_KEY])
         );
 
-        $this->assertJsonStatus($response, 400, 'alert');
+        $this->assertJsonStatus($response, 400, 'error');
     }
 
     public function testApiCollecteHotspotOwaspReturnsOwaspCountsOnSuccess(): void
@@ -365,9 +369,13 @@ class ApiCollecteControllerTest extends TestCase
 
     public function testApiCollecteTodoReturnsNombreOnSuccess(): void
     {
+        /* MODIF 2026-05-08 : ajout de la cle 'historique'.
+         * Why: apiCollecteTodo lit $todo['historique'] sans coalesce.
+         * Sans cette cle, warning "Undefined array key 'historique'".
+         */
         $this->batchTodo->expects($this->once())
             ->method('BatchCollecteTodo')
-            ->willReturn(['code' => 200, 'nombre' => 17]);
+            ->willReturn(['code' => 200, 'nombre' => 17, 'historique' => []]);
 
         $payload = $this->decode($this->controller->apiCollecteTodo(
             $this->jsonRequest(['maven_key' => self::MAVEN_KEY])
@@ -393,12 +401,15 @@ class ApiCollecteControllerTest extends TestCase
 
     public function testApiCollecteLoggerReturnsCountsOnSuccess(): void
     {
+        /* MODIF 2026-05-08 : ajout de la cle 'data'.
+         * Why: apiCollecteLogger lit $logger['data'] sans coalesce.
+         */
         $this->batchLogger->expects($this->once())
             ->method('BatchCollecteLogger')
             ->willReturn(['code' => 200, 'historique' => [
                 'logger_info' => 10, 'logger_warn' => 5,
                 'logger_error' => 2, 'logger_debug' => 20,
-            ]]);
+            ], 'data' => []]);
 
         $payload = $this->decode($this->controller->apiCollecteLogger(
             $this->jsonRequest(['maven_key' => self::MAVEN_KEY])
@@ -435,7 +446,7 @@ class ApiCollecteControllerTest extends TestCase
         ));
 
         $this->assertSame(500, $payload['code']);
-        $this->assertSame('alert', $payload['type']);
+        $this->assertSame('error', $payload['type']);
     }
 
     public function testApiCollecteMesurePropagatesBatchError(): void

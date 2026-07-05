@@ -1,20 +1,25 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Suivi;
 
 use App\Controller\Suivi\ApiSuiviController;
-use App\Entity\Historique;
-use App\Entity\InformationProjet;
-use App\Entity\Utilisateur;
-use App\Repository\HistoriqueRepository;
-use App\Repository\InformationProjetRepository;
-use App\Repository\UtilisateurRepository;
-use App\Service\ClientService;
-use App\Service\CommandRebuildHistorique\BuildMapHistoryService;
-use App\Service\CommandRebuildHistorique\SonarAnalysisFetcherService;
-use App\Service\ExtractName;
+use App\Entity\{Historique, InformationProjet, Utilisateur};
+use App\Repository\{HistoriqueRepository, InformationProjetRepository, UtilisateurRepository};
+use App\Service\{ClientService, ExtractName};
+use App\Service\CommandRebuildHistorique\{BuildMapHistoryService, SonarAnalysisFetcherService};
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -25,8 +30,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Core\Authentication\Token\{TokenInterface, UsernamePasswordToken};
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 
 #[AllowMockObjectsWithoutExpectations]
@@ -44,6 +48,10 @@ class ApiSuiviControllerTest extends TestCase
     /** @var ParameterBagInterface&MockObject */             private MockObject $params;
     /** @var AuthorizationCheckerInterface&MockObject */     private MockObject $authChecker;
     /** @var TokenStorageInterface&MockObject */             private MockObject $tokenStorage;
+    /* MODIF 2026-05-15 : user partagé entre setUp et tests
+        pour pouvoir modifier la preference au cas par cas (le mock TokenStorage ne
+       supporte pas le double override de getToken via stubTokenStorageUser). */
+    private Utilisateur $defaultUser;
 
     private ApiSuiviController $controller;
 
@@ -88,14 +96,16 @@ class ApiSuiviControllerTest extends TestCase
         ]);
 
         // appUser() trait → getUser() → tokenStorage->getToken()->getUser()
-        $defaultUser = new Utilisateur();
-        $defaultUser->setCourriel('test@example.com');
-        $defaultUser->setPreference([
+        $this->defaultUser = new Utilisateur();
+        $this->defaultUser->setCourriel('test@example.com');
+        $this->defaultUser->setPreference([
             'statut' => ['favori_projet' => false, 'favori_version' => false],
             'favori_projet' => [], 'favori_version' => [],
         ]);
         $token = $this->createMock(TokenInterface::class);
-        $token->method('getUser')->willReturn($defaultUser);
+        /* willReturnCallback re-évalue $this->defaultUser à chaque appel,
+           ce qui permet aux tests de muter la preference après setUp. */
+        $token->method('getUser')->willReturnCallback(fn () => $this->defaultUser);
         $this->tokenStorage->method('getToken')->willReturn($token);
 
         $this->controller = new ApiSuiviController($this->em, $this->client, $this->security, $this->logger, $this->buildMap, $this->analysisFetcher);
@@ -523,6 +533,336 @@ class ApiSuiviControllerTest extends TestCase
         // coverage absent → null (helper JS affiche '-'), tests présent → 42
         $this->assertNull($data['data']['coverage']);
         $this->assertSame(42, $data['data']['tests']);
+    }
+
+    /* ════════ MODIF 2026-05-15 [coverage-vague4-apisuivi] : tests branches ════════ */
+
+    public function testListeVersionV2UsesDateAsTiebreakerWhenVersionsAreEqual(): void
+    {
+        /* 2 analyses avec la même version → usort tombe sur strnatcmp = 0
+           et utilise strcmp date desc → ligne 185 couverte. */
+        $this->client->method('httpSonarQube')->willReturn([
+            'code' => 200,
+            'json' => [
+                'analyses' => [
+                    ['projectVersion' => '1.0', 'date' => '2026-04-10 10:00:00', 'key' => 'k1'],
+                    ['projectVersion' => '1.0', 'date' => '2026-04-11 10:00:00', 'key' => 'k2'],
+                ],
+            ],
+        ]);
+
+        $response = $this->controller->listeVersionV2($this->jsonRequest(['maven_key' => 'k']));
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertSame(200, $data['code']);
+        $this->assertCount(2, $data['liste']);
+        /* La plus récente (k2 = 2026-04-11) doit être en premier après tri DESC sur date. */
+        $this->assertSame('k2', $data['liste'][0]['analyse_key']);
+        $this->assertSame('k1', $data['liste'][1]['analyse_key']);
+    }
+
+    public function testGetVersionReturnsErrorWhenSonarApiFails(): void
+    {
+        $this->client->method('httpSonarQube')->willReturn([
+            'code' => 503,
+            'erreur' => 'sonar down',
+        ]);
+
+        $response = $this->controller->getVersion($this->jsonRequest([
+            'maven_key' => 'acme:app',
+            'date' => '28-06-2024 20:48:20',
+        ]));
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertSame(503, $data['code']);
+        $this->assertSame('error', $data['type']);
+        $this->assertSame('sonar down', $data['trace']);
+    }
+
+    public function testSuiviMiseAJourNormalizesNullAndStringNullValuesInMap(): void
+    {
+        $captured = [];
+        $this->historiqueRepo->expects($this->once())
+            ->method('insertHistoriqueAjoutProjet')
+            ->with($this->callback(function (array $map) use (&$captured) {
+                $captured = $map;
+                return true;
+            }))
+            ->willReturn(['code' => 200]);
+
+        $payload = $this->buildSuiviPayload();
+        /* Valeurs à normaliser : null, '', 'null' (literal) sur clés non-string */
+        $payload['coverage'] = null;
+        $payload['tests']    = '';
+        $payload['bugs']     = 'null';
+
+        $response = $this->controller->suiviMiseAJour($this->jsonRequest($payload));
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertSame(200, $data['code']);
+        $this->assertNull($captured['coverage']);
+        $this->assertNull($captured['tests']);
+        $this->assertNull($captured['bugs']);
+    }
+
+    public function testSuiviMiseAJourReturns23505OnUniqueConstraintViolation(): void
+    {
+        $this->historiqueRepo->expects($this->once())
+            ->method('insertHistoriqueAjoutProjet')
+            ->willReturn(['code' => 23505, 'erreur' => 'dup']);
+
+        $response = $this->controller->suiviMiseAJour($this->jsonRequest($this->buildSuiviPayload()));
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertSame(23505, $data['code']);
+        $this->assertSame('warning', $data['type']);
+        $this->assertStringContainsString('déjà présente', $data['message']);
+    }
+
+    public function testSuiviVersionListeMarksVersionAsFavoriWhenMatchingPreference(): void
+    {
+        /* Format attendu par getFavoriVersions : [[ maven_key => [ versions ] ], ...] */
+        $this->defaultUser->setPreference([
+            'favori_version' => [['k' => ['1.0']]],
+        ]);
+
+        $this->historiqueRepo->method('selectHistoriqueProjetByDate')->willReturn([
+            'code' => 200,
+            'version' => [
+                ['maven_key' => 'k', 'version' => '1.0'],
+                ['maven_key' => 'k', 'version' => '1.1'],
+            ],
+        ]);
+
+        $response = $this->controller->suiviVersionListe($this->jsonRequest(['maven_key' => 'k']));
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertSame(200, $data['code']);
+        $this->assertTrue($data['versions'][0]['favori']);
+        $this->assertFalse($data['versions'][1]['favori']);
+    }
+
+    public function testSuiviVersionFavoriPropagatesUpdateError(): void
+    {
+        $user = new Utilisateur();
+        $user->setCourriel('u@x');
+        $user->setPreference(['favori_version' => []]);
+        $this->stubTokenStorageUser($user);
+
+        $this->utilisateurRepo->expects($this->once())
+            ->method('updateUtilisateurFavoriVersion')
+            ->willReturn(['code' => 500, 'erreur' => 'fail update']);
+
+        $response = $this->controller->suiviVersionFavori($this->jsonRequest([
+            'favori' => true,
+            'maven_key' => 'k',
+            'version' => '1.0',
+            'date_version' => '2026-04-10',
+        ]));
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertSame(500, $data['code']);
+        $this->assertSame('fail update', $data['trace']);
+    }
+
+    public function testSuiviVersionPoubellePropagatesDeleteError(): void
+    {
+        /* MODIF 2026-05-16 [phpunit-14-with-expects] : expects($this->any()) ajoute pour PHPUnit 14. */
+        $this->security->expects($this->once())->method('isGranted')->with('ROLE_SUIVI')->willReturn(true);
+
+        $this->historiqueRepo->expects($this->once())
+            ->method('deleteHistoriqueProjet')
+            ->willReturn(['code' => 500, 'erreur' => 'delete fail']);
+
+        $response = $this->controller->suiviVersionPoubelle($this->jsonRequest([
+            'maven_key' => 'k',
+            'version' => '1.0',
+            'date_version' => '2026-04-10',
+        ]));
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertSame(500, $data['code']);
+        $this->assertSame('delete fail', $data['trace']);
+    }
+
+    public function testSuiviVersionPoubelleAlsoRemovesFromFavoritesWhenPresent(): void
+    {
+        /* Le projet maven_key 'k' est dans les favoris → on doit également
+           appeler updateUtilisateurFavoriVersion. */
+        $this->defaultUser->setPreference([
+            'favori_version' => [['k' => ['1.0']]],
+        ]);
+        /* MODIF 2026-05-16 [phpunit-14-with-expects] : expects($this->any()) ajoute pour PHPUnit 14. */
+        $this->security->expects($this->once())->method('isGranted')->with('ROLE_SUIVI')->willReturn(true);
+
+        $this->historiqueRepo->method('deleteHistoriqueProjet')->willReturn(['code' => 200]);
+        $this->utilisateurRepo->expects($this->once())
+            ->method('updateUtilisateurFavoriVersion')
+            ->willReturn(['code' => 200]);
+
+        $response = $this->controller->suiviVersionPoubelle($this->jsonRequest([
+            'maven_key' => 'k',
+            'version' => '1.0',
+            'date_version' => '2026-04-10',
+        ]));
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertSame(200, $data['code']);
+        $this->assertSame('success', $data['type']);
+        $this->assertStringContainsString('préférences', $data['message']);
+    }
+
+    public function testSuiviVersionPoubellePropagatesFavoriUpdateError(): void
+    {
+        $this->defaultUser->setPreference([
+            'favori_version' => [['k' => ['1.0']]],
+        ]);
+        /* MODIF 2026-05-16 [phpunit-14-with-expects] : expects($this->any()) ajoute pour PHPUnit 14. */
+        $this->security->expects($this->once())->method('isGranted')->with('ROLE_SUIVI')->willReturn(true);
+
+        $this->historiqueRepo->method('deleteHistoriqueProjet')->willReturn(['code' => 200]);
+        $this->utilisateurRepo->expects($this->once())
+            ->method('updateUtilisateurFavoriVersion')
+            ->willReturn(['code' => 500, 'erreur' => 'favori update fail']);
+
+        $response = $this->controller->suiviVersionPoubelle($this->jsonRequest([
+            'maven_key' => 'k',
+            'version' => '1.0',
+            'date_version' => '2026-04-10',
+        ]));
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertSame(500, $data['code']);
+        $this->assertSame('favori update fail', $data['trace']);
+    }
+
+    /* ============ suiviVersionSuivi — MODIF 2026-06-11 ============ */
+
+    public function testSuiviVersionSuiviReturns400OnMissingFields(): void
+    {
+        // payload sans 'version' ni 'suivi'
+        $response = $this->controller->suiviVersionSuivi($this->jsonRequest(['maven_key' => 'k']));
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertSame(400, $data['code']);
+    }
+
+    public function testSuiviVersionSuiviReturns400OnMissingMavenKey(): void
+    {
+        $response = $this->controller->suiviVersionSuivi($this->jsonRequest([]));
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertSame(400, $data['code']);
+    }
+
+    public function testSuiviVersionSuiviHappyPath(): void
+    {
+        $this->utilisateurRepo->expects($this->once())
+            ->method('updateUtilisateurSuiviVersion')
+            ->willReturn(['code' => 200, 'erreur' => '', 'suivi_version' => ['k' => ['1.0']]]);
+
+        $response = $this->controller->suiviVersionSuivi($this->jsonRequest([
+            'maven_key' => 'k',
+            'version'   => '1.0',
+            'suivi'     => 1,
+        ]));
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertSame(200, $data['code']);
+        $this->assertSame('success', $data['type']);
+        $this->assertSame(1, $data['suivi_version_count']);
+    }
+
+    public function testSuiviVersionSuiviPropagatesRepoError(): void
+    {
+        $this->utilisateurRepo->expects($this->once())
+            ->method('updateUtilisateurSuiviVersion')
+            ->willReturn(['code' => 400, 'erreur' => 'La limite de 15 versions pour le suivi est atteinte.']);
+
+        $response = $this->controller->suiviVersionSuivi($this->jsonRequest([
+            'maven_key' => 'k',
+            'version'   => '99.0',
+            'suivi'     => 1,
+        ]));
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertSame(400, $data['code']);
+        $this->assertSame('error', $data['type']);
+        $this->assertStringContainsString('limite', $data['message']);
+    }
+
+    /* ============ suiviVersionListe avec flag suivi ============ */
+
+    public function testSuiviVersionListeMarksVersionAsSuiviWhenMatchingPreference(): void
+    {
+        /* Format suivi_version : { maven_key : [versions] } */
+        $this->defaultUser->setPreference([
+            'favori_version' => [],
+            'suivi_version'  => ['k' => ['1.0']],
+        ]);
+
+        $this->historiqueRepo->method('selectHistoriqueProjetByDate')->willReturn([
+            'code' => 200,
+            'version' => [
+                ['maven_key' => 'k', 'version' => '1.0'],
+                ['maven_key' => 'k', 'version' => '1.1'],
+            ],
+        ]);
+
+        $response = $this->controller->suiviVersionListe($this->jsonRequest(['maven_key' => 'k']));
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertSame(200, $data['code']);
+        $this->assertTrue($data['versions'][0]['suivi'],  '1.0 doit être marquée suivi');
+        $this->assertFalse($data['versions'][1]['suivi'], '1.1 ne doit pas être marquée suivi');
+        $this->assertSame(1, $data['suivi_version_count']);
+    }
+
+    public function testSuiviVersionListeReturnsZeroSuiviCountWhenNoSelection(): void
+    {
+        /* Aucune clé suivi_version dans la préférence */
+        $this->defaultUser->setPreference(['favori_version' => []]);
+
+        $this->historiqueRepo->method('selectHistoriqueProjetByDate')->willReturn([
+            'code'    => 200,
+            'version' => [['maven_key' => 'k', 'version' => '1.0']],
+        ]);
+
+        $response = $this->controller->suiviVersionListe($this->jsonRequest(['maven_key' => 'k']));
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertSame(200, $data['code']);
+        $this->assertFalse($data['versions'][0]['suivi']);
+        $this->assertSame(0, $data['suivi_version_count']);
+    }
+
+    /* ============ suiviVersionPoubelle — nettoyage suivi_version ============ */
+
+    public function testSuiviVersionPoubelleAlsoRemovesFromSuiviWhenPresent(): void
+    {
+        /* Version 1.0 présente dans suivi_version mais PAS dans favori_version.
+           On vérifie que updateUtilisateurSuiviVersion est appelé (et pas updateUtilisateurFavoriVersion). */
+        $this->defaultUser->setPreference([
+            'favori_version' => [],
+            'suivi_version'  => ['k' => ['1.0']],
+        ]);
+
+        $this->security->expects($this->once())->method('isGranted')->with('ROLE_SUIVI')->willReturn(true);
+        $this->historiqueRepo->method('deleteHistoriqueProjet')->willReturn(['code' => 200]);
+        $this->utilisateurRepo->expects($this->never())->method('updateUtilisateurFavoriVersion');
+        $this->utilisateurRepo->expects($this->once())
+            ->method('updateUtilisateurSuiviVersion')
+            ->willReturn(['code' => 200, 'erreur' => '', 'suivi_version' => []]);
+
+        $response = $this->controller->suiviVersionPoubelle($this->jsonRequest([
+            'maven_key'    => 'k',
+            'version'      => '1.0',
+            'date_version' => '2026-04-10',
+        ]));
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertSame(200, $data['code']);
+        $this->assertSame('success', $data['type']);
     }
 
     /* ============ helpers ============ */

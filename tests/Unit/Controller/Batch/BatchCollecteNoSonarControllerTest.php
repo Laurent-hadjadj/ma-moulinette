@@ -7,8 +7,7 @@ namespace App\Tests\Unit\Controller\Batch;
 use App\Controller\Batch\BatchCollecteNoSonarController;
 use App\Entity\NoSonar;
 use App\Repository\NoSonarRepository;
-use App\Service\ClientService;
-use App\Service\UrlBuilderService;
+use App\Service\{ClientService, UrlBuilderService};
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -145,7 +144,8 @@ class BatchCollecteNoSonarControllerTest extends TestCase
         ]);
         $this->repo->method('deleteNoSonarMavenKey')->willReturn(['code' => 200]);
 
-        $capturedInsert = null;
+        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        $capturedInsert = [];
         $this->repo->expects($this->once())
             ->method('insertNoSonar')
             ->with($this->callback(function (array $data) use (&$capturedInsert) {

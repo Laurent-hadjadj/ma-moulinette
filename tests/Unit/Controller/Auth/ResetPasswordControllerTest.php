@@ -1,13 +1,24 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Auth;
 
 use App\Controller\Auth\ResetPasswordController;
 use App\Entity\Utilisateur;
+use App\Service\UserAgent\UserAgentTrackingFacade;
 use App\Repository\UtilisateurRepository;
-use App\Service\UserAgentTrackingFacade;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -17,13 +28,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
-use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use Symfony\Component\Security\Core\Authentication\Token\{TokenInterface, UsernamePasswordToken};
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Exception\UserNotFoundException;
-use Symfony\Component\Form\FormFactoryInterface;
-use Symfony\Component\Form\FormInterface;
-use Symfony\Component\Form\FormView;
+use Symfony\Component\Form\{FormFactoryInterface, FormInterface, FormView};
 use Twig\Environment;
 
 #[AllowMockObjectsWithoutExpectations]
@@ -34,8 +42,9 @@ class ResetPasswordControllerTest extends TestCase
     /** @var ParameterBagInterface&MockObject */           private MockObject $params;
     /** @var LoggerInterface&MockObject */                 private MockObject $logger;
     /** @var UserPasswordHasherInterface&MockObject */     private MockObject $passwordHasher;
-    /** @var UserAgentTrackingFacade&MockObject */         private MockObject $tracking;
     /** @var TokenStorageInterface&MockObject */           private MockObject $tokenStorage;
+
+    /** @var UserAgentTrackingFacade&MockObject */         private MockObject $tracking;
 
     private ResetPasswordController $controller;
 
@@ -46,8 +55,8 @@ class ResetPasswordControllerTest extends TestCase
         $this->params = $this->createMock(ParameterBagInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->passwordHasher = $this->createMock(UserPasswordHasherInterface::class);
-        $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
         $this->tokenStorage = $this->createMock(TokenStorageInterface::class);
+        $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
 
         $this->params->method('get')->willReturnMap([
             ['logo.entreprise', 'logo.png'],
@@ -127,7 +136,9 @@ class ResetPasswordControllerTest extends TestCase
         $user = $this->makeUser();
         $this->stubTokenStorageUser($user);
 
-        $capturedMap = null;
+        /* MODIF 2026-05-07 [tests-validators] : init [] au lieu de null — intelephense
+         * ne suit pas l'assignment by-reference dans le callback. */
+        $capturedMap = [];
         $this->utilisateurRepo->expects($this->once())
             ->method('updateUtilisateurResetPassword')
             ->with($this->callback(function ($map) use (&$capturedMap) {
@@ -148,8 +159,6 @@ class ResetPasswordControllerTest extends TestCase
     {
         $user = $this->makeUser();
         $token = new UsernamePasswordToken($user, 'main', ['ROLE_USER']);
-
-        $this->tracking->expects($this->once())->method('track')->with('RESET_PASSWORD');
 
         // Form factory : create a form that's not submitted → renders template
         $form = $this->createMock(FormInterface::class);

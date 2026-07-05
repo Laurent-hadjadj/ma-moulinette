@@ -5,14 +5,9 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Controller\Batch;
 
 use App\Controller\Batch\BatchCollecteHotspotDetailController;
-use App\Entity\HotspotDetails;
-use App\Entity\Hotspots;
-use App\Entity\InformationProjet;
-use App\Repository\HotspotDetailsRepository;
-use App\Repository\HotspotsRepository;
-use App\Repository\InformationProjetRepository;
-use App\Service\ClientService;
-use App\Service\UrlBuilderService;
+use App\Entity\{HotspotDetails, Hotspots, InformationProjet};
+use App\Repository\{HotspotDetailsRepository, HotspotsRepository, InformationProjetRepository};
+use App\Service\{ClientService, UrlBuilderService};
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -202,7 +197,8 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
     {
         $this->informationRepo->method('selectInformationProjetVersion')->willReturn([
             'code' => 200,
-            'info' => [['date' => '2026-04-10 10:00:00', 'version' => '1.0']],
+            // MODIF 2026-06-07 : flat (controller: $information['info']['date'])
+            'info' => ['date' => '2026-04-10 10:00:00', 'version' => '1.0'],
         ]);
         $this->hotspotsRepo->expects($this->once())
             ->method('selectHotspotsToReview')
@@ -217,7 +213,8 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
     {
         $this->informationRepo->method('selectInformationProjetVersion')->willReturn([
             'code' => 200,
-            'info' => [['date' => '2026-04-10 10:00:00', 'version' => '1.0']],
+            // MODIF 2026-06-07 : flat (controller: $information['info']['date'])
+            'info' => ['date' => '2026-04-10 10:00:00', 'version' => '1.0'],
         ]);
         $this->hotspotsRepo->method('selectHotspotsToReview')->willReturn([
             'code' => 200,
@@ -237,7 +234,8 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
     {
         $this->informationRepo->method('selectInformationProjetVersion')->willReturn([
             'code' => 200,
-            'info' => [['date' => '2026-04-10 10:00:00', 'version' => '1.0']],
+            // MODIF 2026-06-07 : flat (controller: $information['info']['date'])
+            'info' => ['date' => '2026-04-10 10:00:00', 'version' => '1.0'],
         ]);
         $this->hotspotsRepo->method('selectHotspotsToReview')->willReturn([
             'code' => 200, 'liste' => [],
@@ -257,7 +255,8 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
     {
         $this->informationRepo->method('selectInformationProjetVersion')->willReturn([
             'code' => 200,
-            'info' => [['date' => '2026-04-10 10:00:00', 'version' => '2.0']],
+            // MODIF 2026-06-07 : flat (controller: $information['info']['date'])
+            'info' => ['date' => '2026-04-10 10:00:00', 'version' => '2.0'],
         ]);
         $this->hotspotsRepo->method('selectHotspotsToReview')->willReturn([
             'code' => 200,
@@ -282,7 +281,8 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
         ];
         $this->client->method('httpSonarQube')->willReturn($hsJson);
 
-        $capturedInsert = null;
+        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        $capturedInsert = [];
         $this->hotspotDetailsRepo->expects($this->once())
             ->method('insertHotspotDetails')
             ->with($this->callback(function (array $maps) use (&$capturedInsert) {
@@ -323,7 +323,8 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
     {
         $this->informationRepo->method('selectInformationProjetVersion')->willReturn([
             'code' => 200,
-            'info' => [['date' => '2026-04-10 10:00:00', 'version' => '2.0']],
+            // MODIF 2026-06-07 : flat (controller: $information['info']['date'])
+            'info' => ['date' => '2026-04-10 10:00:00', 'version' => '2.0'],
         ]);
         $this->hotspotsRepo->method('selectHotspotsToReview')->willReturn([
             'code' => 200, 'liste' => [['hotspot_key' => 'HS1']],
@@ -352,7 +353,8 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
     public function testBatchCollecteReturnsErrorWhenInsertFails(): void
     {
         $this->informationRepo->method('selectInformationProjetVersion')->willReturn([
-            'code' => 200, 'info' => [['date' => '2026-04-10 10:00:00', 'version' => '1.0']],
+            // MODIF 2026-06-07 : flat (controller: $information['info']['date'])
+            'code' => 200, 'info' => ['date' => '2026-04-10 10:00:00', 'version' => '1.0'],
         ]);
         $this->hotspotsRepo->method('selectHotspotsToReview')->willReturn([
             'code' => 200, 'liste' => [['hotspot_key' => 'HS1']],

@@ -1,11 +1,21 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Projet;
 
 use App\Controller\Projet\ApiEnregistrementController;
-use App\Entity\Historique;
 use App\Entity\Utilisateur;
 use App\Repository\HistoriqueRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -162,7 +172,8 @@ class ApiEnregistrementControllerTest extends TestCase
         $payload['files'] = 'null';                // ← string 'null' sur un autre champ
         // Champs string : on n'y touche pas (maven_key etc.)
 
-        $capturedMap = null;
+        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        $capturedMap = [];
         $this->historiqueRepo->expects($this->once())
             ->method('insertHistoriqueAjoutProjet')
             ->with($this->callback(function (array $map) use (&$capturedMap) {

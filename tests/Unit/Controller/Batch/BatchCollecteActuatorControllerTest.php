@@ -1,5 +1,16 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Batch;
@@ -112,9 +123,14 @@ class BatchCollecteActuatorControllerTest extends TestCase
 
     public function testBatchCollecteActuatorInfoReturnsDataJsonOnSuccess(): void
     {
+        /* MODIF 2026-05-08 : ajout de la cle 'code' (happy path).
+         * Why: BatchCollecteActuatorInfo:74 fait `$actuatorEndpoint['code'] === 404` sans coalesce.
+         * Sans cette cle, warning "Undefined array key 'code'".
+         */
         $this->repository->expects($this->once())
             ->method('findActuatorMavenKey')
             ->willReturn([
+                'code' => 200,
                 'user' => 'actuator-user',
                 'password' => 'actuator-pass',
                 'url' => 'http://app.example.com',
@@ -148,7 +164,7 @@ class BatchCollecteActuatorControllerTest extends TestCase
         $this->repository->expects($this->once())
             ->method('findActuatorMavenKey')
             ->willReturn([
-                'user' => 'u', 'password' => 'p', 'url' => 'http://app.example.com',
+                'code' => 200, 'user' => 'u', 'password' => 'p', 'url' => 'http://app.example.com',
             ]);
 
         $this->urlBuilder->method('build')->willReturn(self::BUILT_URL);
@@ -183,7 +199,7 @@ class BatchCollecteActuatorControllerTest extends TestCase
         $this->repository->expects($this->once())
             ->method('findActuatorMavenKey')
             ->willReturn([
-                'user' => 'u', 'password' => 'p', 'url' => 'http://app.example.com',
+                'code' => 200, 'user' => 'u', 'password' => 'p', 'url' => 'http://app.example.com',
             ]);
 
         $this->urlBuilder->method('build')->willReturn(self::BUILT_URL);

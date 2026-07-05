@@ -1,14 +1,23 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Batch;
 
 use App\Controller\Batch\BatchCollecteHotspotOwaspController;
-use App\Entity\HotspotOwasp;
-use App\Entity\InformationProjet;
-use App\Repository\HotspotOwaspRepository;
-use App\Repository\InformationProjetRepository;
+use App\Entity\{HotspotOwasp, InformationProjet};
+use App\Repository\{HotspotOwaspRepository, InformationProjetRepository};
 use App\Service\ClientService;
 use App\Service\UrlBuilderService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -154,7 +163,8 @@ class BatchCollecteHotspotOwaspControllerTest extends TestCase
         ]);
 
         $this->infoRepo->method('selectInformationProjetVersion')
-            ->willReturn(['code' => 200, 'info' => [['version' => '1.0', 'date' => '2026-04-22']]]);
+            // MODIF 2026-06-07 : flat (controller: $select_information['info']['date'])
+            ->willReturn(['code' => 200, 'info' => ['version' => '1.0', 'date' => '2026-04-22']]);
 
         $this->client->expects($this->exactly(2))
             ->method('httpSonarQube')
@@ -176,7 +186,8 @@ class BatchCollecteHotspotOwaspControllerTest extends TestCase
                 ]],
             );
 
-        $capturedInsert = null;
+        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        $capturedInsert = [];
         $this->hotspotRepo->expects($this->once())
             ->method('insertHotspotOwasp')
             ->with($this->callback(function (array $list) use (&$capturedInsert) {
@@ -204,7 +215,8 @@ class BatchCollecteHotspotOwaspControllerTest extends TestCase
         ]);
 
         $this->infoRepo->method('selectInformationProjetVersion')
-            ->willReturn(['code' => 200, 'info' => [['version' => '1.0', 'date' => '2026-04-22']]]);
+            // MODIF 2026-06-07 : flat (controller: $select_information['info']['date'])
+            ->willReturn(['code' => 200, 'info' => ['version' => '1.0', 'date' => '2026-04-22']]);
 
         // Un seul appel Sonar (2017 uniquement)
         $this->client->expects($this->once())
@@ -227,7 +239,8 @@ class BatchCollecteHotspotOwaspControllerTest extends TestCase
         ]);
 
         $this->infoRepo->method('selectInformationProjetVersion')
-            ->willReturn(['code' => 200, 'info' => [['version' => '1.0', 'date' => '2026-04-22']]]);
+            // MODIF 2026-06-07 : flat (controller: $select_information['info']['date'])
+            ->willReturn(['code' => 200, 'info' => ['version' => '1.0', 'date' => '2026-04-22']]);
 
         $this->client->expects($this->once())
             ->method('httpSonarQube')

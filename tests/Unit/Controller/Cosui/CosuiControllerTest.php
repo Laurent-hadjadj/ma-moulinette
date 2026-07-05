@@ -1,4 +1,14 @@
 <?php
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
 
 declare(strict_types=1);
 
@@ -6,19 +16,21 @@ namespace App\Tests\Unit\Controller\Cosui;
 
 use App\Controller\Cosui\CosuiController;
 use App\Service\ProjetCosuiService;
-use App\Service\UserAgentTrackingFacade;
+use App\Service\UserAgent\UserAgentTrackingFacade;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\{Request, RequestStack};
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Twig\Environment;
 
 #[AllowMockObjectsWithoutExpectations]
+/* MODIF 2026-05-05 : retrait des mocks
+ * pointant vers UserAgentTrackingFacade / UserAgentReportingService /
+ * LogArchiveService (classes supprimées de src/). */
 class CosuiControllerTest extends TestCase
 {
     // Valid token: encoding "1234567890|com.acme:app" with ROT13+base64
@@ -26,9 +38,10 @@ class CosuiControllerTest extends TestCase
 
     /** @var LoggerInterface&MockObject */          private MockObject $logger;
     /** @var ProjetCosuiService&MockObject */       private MockObject $cosuiService;
-    /** @var UserAgentTrackingFacade&MockObject */  private MockObject $tracking;
     /** @var Environment&MockObject */              private MockObject $twig;
     /** @var FlashBag&MockObject */                 private MockObject $flashBag;
+
+    /** @var UserAgentTrackingFacade&MockObject */  private MockObject $tracking;
 
     private CosuiController $controller;
 
@@ -38,9 +51,9 @@ class CosuiControllerTest extends TestCase
 
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->cosuiService = $this->createMock(ProjetCosuiService::class);
-        $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
         $this->twig = $this->createMock(Environment::class);
         $this->flashBag = $this->createMock(FlashBag::class);
+        $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
 
         $session = $this->createMock(Session::class);
         $session->method('getFlashBag')->willReturn($this->flashBag);
@@ -60,7 +73,7 @@ class CosuiControllerTest extends TestCase
         $this->controller->setContainer($container);
     }
 
-    public function testProjetCosuiFlashesAlertWhenTokenEmpty(): void
+    public function testProjetCosuiFlashesErrorWhenTokenEmpty(): void
     {
         $this->cosuiService->expects($this->once())
             ->method('initialRender')
@@ -68,7 +81,7 @@ class CosuiControllerTest extends TestCase
 
         $this->flashBag->expects($this->once())
             ->method('add')
-            ->with('notice', $this->callback(fn($v) => $v['type'] === 'alert'));
+            ->with('notice', $this->callback(fn($v) => $v['type'] === 'error'));
 
         $this->twig->expects($this->once())
             ->method('render')
@@ -79,7 +92,7 @@ class CosuiControllerTest extends TestCase
         $this->assertSame('<html>no-token</html>', $response->getContent());
     }
 
-    public function testProjetCosuiFlashesAlertOnInvalidToken(): void
+    public function testProjetCosuiFlashesErrorOnInvalidToken(): void
     {
         $this->cosuiService->method('initialRender')->willReturn([]);
 
@@ -88,7 +101,7 @@ class CosuiControllerTest extends TestCase
 
         $this->flashBag->expects($this->once())
             ->method('add')
-            ->with('notice', $this->callback(fn($v) => $v['type'] === 'alert'));
+            ->with('notice', $this->callback(fn($v) => $v['type'] === 'error'));
 
         $this->twig->expects($this->once())->method('render')->willReturn('<html>bad</html>');
 
@@ -117,7 +130,7 @@ class CosuiControllerTest extends TestCase
         $this->controller->projetCosui(new Request(['token' => $this->validToken]));
     }
 
-    public function testProjetCosuiFlashesOnException(): void
+    public function testProjetCosuiFlashesCriticalOnException(): void
     {
         $this->cosuiService->method('initialRender')->willReturn([]);
         $this->cosuiService->method('generateRender')
@@ -125,7 +138,7 @@ class CosuiControllerTest extends TestCase
 
         $this->flashBag->expects($this->once())
             ->method('add')
-            ->with('notice', $this->callback(fn($v) => $v['type'] === 'alert' && $v['trace'] === 'boom'));
+            ->with('notice', $this->callback(fn($v) => $v['type'] === 'critical' && $v['trace'] === 'boom'));
 
         $this->twig->expects($this->once())->method('render')->willReturn('<html>exc</html>');
 
@@ -140,8 +153,6 @@ class CosuiControllerTest extends TestCase
             'data' => ['something'],
             'projet' => 'com.acme:app',
         ]);
-
-        $this->tracking->expects($this->once())->method('track')->with('COSUI');
 
         $this->flashBag->expects($this->never())->method('add');
 

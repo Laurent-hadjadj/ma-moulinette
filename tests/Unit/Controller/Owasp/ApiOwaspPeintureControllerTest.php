@@ -1,24 +1,30 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Owasp;
 
 use App\Controller\Owasp\ApiOwaspPeintureController;
-use App\Entity\HotspotDetails;
-use App\Entity\HotspotOwasp;
-use App\Entity\Owasp;
-use App\Repository\HotspotDetailsRepository;
-use App\Repository\HotspotOwaspRepository;
-use App\Repository\OwaspRepository;
+use App\Entity\{HotspotDetails, HotspotOwasp, Owasp};
+use App\Repository\{HotspotDetailsRepository, HotspotOwaspRepository, OwaspRepository};
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\{JsonResponse, Request};
 
 #[AllowMockObjectsWithoutExpectations]
 class ApiOwaspPeintureControllerTest extends TestCase
