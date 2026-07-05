@@ -1,5 +1,16 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Repository;
@@ -10,7 +21,6 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception\ConnectionException;
 use Doctrine\DBAL\Exception\NotNullConstraintViolationException;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use Doctrine\DBAL\Result;
 use Doctrine\DBAL\Statement;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
@@ -92,65 +102,9 @@ class UtilisateurRepositoryTest extends TestCase
         $this->assertSame('boom', $result['erreur']);
     }
 
-    /* ============ countUtilisateurDisponible / countUtilisateurActif ============ */
-
-    public function testCountUtilisateurDisponibleReturnsTotal(): void
-    {
-        $result = $this->createMock(Result::class);
-        $this->connection->method('prepare')->willReturn($this->statement);
-        $this->statement->method('executeQuery')->willReturn($result);
-        $result->method('fetchAssociative')->willReturn(['total' => 42]);
-
-        $response = $this->repo->countUtilisateurDisponible();
-
-        $this->assertSame(200, $response['code']);
-        $this->assertSame(42, $response['total']);
-    }
-
-    public function testCountUtilisateurDisponibleHandlesException(): void
-    {
-        $this->connection->method('prepare')->willThrowException(new \RuntimeException('db down'));
-
-        $response = $this->repo->countUtilisateurDisponible();
-
-        $this->assertSame(500, $response['code']);
-        $this->assertSame('db down', $response['erreur']);
-    }
-
-    public function testCountUtilisateurActifReturnsTotal(): void
-    {
-        $result = $this->createMock(Result::class);
-        $this->connection->method('prepare')->willReturn($this->statement);
-        $this->statement->method('executeQuery')->willReturn($result);
-        $result->method('fetchAssociative')->willReturn(['total' => 15]);
-
-        $response = $this->repo->countUtilisateurActif();
-
-        $this->assertSame(200, $response['code']);
-        $this->assertSame(15, $response['total']);
-    }
-
-    public function testCountUtilisateurActifFallsBackToZeroOnEmptyResult(): void
-    {
-        $result = $this->createMock(Result::class);
-        $this->connection->method('prepare')->willReturn($this->statement);
-        $this->statement->method('executeQuery')->willReturn($result);
-        $result->method('fetchAssociative')->willReturn([]);
-
-        $response = $this->repo->countUtilisateurActif();
-
-        $this->assertSame(200, $response['code']);
-        $this->assertSame(0, $response['total']);
-    }
-
-    public function testCountUtilisateurActifHandlesException(): void
-    {
-        $this->connection->method('prepare')->willThrowException(new \RuntimeException('db fail'));
-
-        $response = $this->repo->countUtilisateurActif();
-
-        $this->assertSame(500, $response['code']);
-    }
+    /* MODIF 2026-05-06 : suppression de 5 tests
+     * obsoletes (countUtilisateurDisponible, countUtilisateurActif n'existent ni dans
+     * UtilisateurRepository, ni utilises dans le code applicatif). */
 
     /* ============ updateUtilisateurResetPassword ============ */
 
