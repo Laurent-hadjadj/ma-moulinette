@@ -3,14 +3,13 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
-
 namespace App\Tests\Unit\Entity\Case;
 
 use App\Entity\BatchTraitement;
@@ -22,7 +21,7 @@ use Symfony\Component\Uid\{Ulid};
 */
 class BatchTraitementCaseTest extends TestCase
 {
-    private $batchTraitement;
+    private BatchTraitement $batchTraitement;
 
     private static string $modeCollecte = 'TRAITEMENT MANUEL';
     private static bool $activated = true;
@@ -53,7 +52,8 @@ class BatchTraitementCaseTest extends TestCase
         ->setInProgress(self::$inProgress)
         ->setDebutTraitement(new \DateTimeImmutable(self::$debutTraitement))
         ->setFinTraitement(new \DateTimeImmutable(self::$finTraitement))
-        ->setTraitementId((string) new Ulid())
+        /* MODIF 2026-05-05 : setTraitementId attend un objet Ulid (entite L275), pas une string. */
+        ->setTraitementId(new Ulid())
         ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
@@ -153,11 +153,12 @@ class BatchTraitementCaseTest extends TestCase
         $this->assertEquals($newFinTraitement, $this->batchTraitement->getFinTraitement());
     }
 
+    /* MODIF 2026-05-05 [fix-batchtraitement-test-ulid] : setTraitementId attend Ulid object. */
     public function testSettingAndGettingTraitementId(): void
     {
-        $newTraitementId = (string) new Ulid();
+        $newTraitementId = new Ulid();
         $this->batchTraitement->setTraitementId($newTraitementId);
-        $this->assertEquals($newTraitementId, $this->batchTraitement->getTraitementId());
+        $this->assertSame($newTraitementId, $this->batchTraitement->getTraitementId());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void

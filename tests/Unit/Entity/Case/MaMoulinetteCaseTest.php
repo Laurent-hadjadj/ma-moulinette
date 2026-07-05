@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -21,7 +21,7 @@ use PHPUnit\Framework\TestCase;
  */
 class MaMoulinetteCaseTest extends TestCase
 {
-    private $maMoulinette;
+    private MaMoulinette $maMoulinette;
 
     private static string $version = '2.0.0';
     private static string $dateVersion = '2024-04-12 16:23:11+01';

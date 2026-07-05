@@ -3,14 +3,13 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
-
 namespace App\Tests\Unit\Entity\Case;
 
 use App\Entity\Mesures;
@@ -21,6 +20,14 @@ use PHPUnit\Framework\TestCase;
  * [Description MesuresCaseTest]
  *
  * v2.0.0 : test compact via dataProvider couvrant les 106 attributs de l'entite Mesures.
+ *
+ * MODIF 2026-05-05  :
+ *   - Retrait des 22 attributs codeSmell{Blocker/Critical/Major/Minor/Info},
+ *     bug{Blocker/Critical/Major/Minor/Info}, vulnerability{Blocker/...} et
+ *     menacePotentielle{...} (colonnes retirees du DDL le 2026-03-30).
+ *   - maintainabilityIssues bascule int -> string(255) (alignement type DDL VARCHAR(255)).
+ *   - Ajout coverageRating et duplicatedLinesRating (presents en DDL, manquaient a l'entite).
+ *   - Total attributs : 106 -> 86.
  */
 class MesuresCaseTest extends TestCase
 {
@@ -50,10 +57,12 @@ class MesuresCaseTest extends TestCase
         yield 'commentLinesRating' => ['CommentLinesRating', 'A'];
         yield 'coverage' => ['Coverage', 10.3];
         yield 'branchCoverage' => ['BranchCoverage', 8.6];
-        yield 'lineCoverage' => ['LineCoverage', 5];
+        /* MODIF 2026-05-07 [tests-validators] : lineCoverage INT→FLOAT (cf MODIF 2026-05-06 [pourcentage-line-coverage]). */
+        yield 'lineCoverage' => ['LineCoverage', 5.0];
         yield 'linesToCover' => ['LinesToCover', 100];
         yield 'conditionsToCover' => ['ConditionsToCover', 50];
         yield 'uncoveredConditions' => ['UncoveredConditions', 12];
+        yield 'coverageRating' => ['CoverageRating', 'B'];
 
         // Tests
         yield 'tests' => ['Tests', 123];
@@ -68,6 +77,7 @@ class MesuresCaseTest extends TestCase
         yield 'duplicatedBlocks' => ['DuplicatedBlocks', 5];
         yield 'duplicatedLines' => ['DuplicatedLines', 250];
         yield 'duplicatedLinesDensity' => ['DuplicatedLinesDensity', 5.1];
+        yield 'duplicatedLinesRating' => ['DuplicatedLinesRating', 'C'];
 
         // Complexity
         yield 'complexity' => ['Complexity', 1500];
@@ -100,12 +110,9 @@ class MesuresCaseTest extends TestCase
 
         // Code smells
         yield 'codeSmells' => ['CodeSmells', 198];
-        yield 'codeSmellBlocker' => ['CodeSmellBlocker', 0];
-        yield 'codeSmellCritical' => ['CodeSmellCritical', 4];
-        yield 'codeSmellMajor' => ['CodeSmellMajor', 109];
-        yield 'codeSmellMinor' => ['CodeSmellMinor', 13];
-        yield 'codeSmellInfo' => ['CodeSmellInfo', 72];
-        yield 'maintainabilityIssues' => ['MaintainabilityIssues', 198];
+        // MODIF 2026-05-05 [fix-mesures-align-ddl] : codeSmell{Blocker/Critical/Major/Minor/Info} retires.
+        // MODIF 2026-05-05 [fix-mesures-maintainability-type] : maintainabilityIssues passe de int a string(255).
+        yield 'maintainabilityIssues' => ['MaintainabilityIssues', '198'];
         yield 'sqaleIndex' => ['SqaleIndex', 3054];
         yield 'sqaleDebtRatio' => ['SqaleDebtRatio', 26.0];
         yield 'sqaleRating' => ['SqaleRating', 'A'];
@@ -118,11 +125,7 @@ class MesuresCaseTest extends TestCase
 
         // Bug
         yield 'bugs' => ['Bugs', 88];
-        yield 'bugBlocker' => ['BugBlocker', 7];
-        yield 'bugCritical' => ['BugCritical', 0];
-        yield 'bugMajor' => ['BugMajor', 44];
-        yield 'bugMinor' => ['BugMinor', 0];
-        yield 'bugInfo' => ['BugInfo', 37];
+        // MODIF 2026-05-05 : bug{Blocker/Critical/Major/Minor/Info} retires.
         yield 'reliabilityIssues' => ['ReliabilityIssues', '88'];
         yield 'reliabilityRating' => ['ReliabilityRating', 'E'];
         yield 'reliabilityRemediationEffort' => ['ReliabilityRemediationEffort', 1500];
@@ -132,11 +135,7 @@ class MesuresCaseTest extends TestCase
 
         // Vulnerabilities
         yield 'vulnerabilities' => ['Vulnerabilities', 9];
-        yield 'vulnerabilityBlocker' => ['VulnerabilityBlocker', 0];
-        yield 'vulnerabilityCritical' => ['VulnerabilityCritical', 9];
-        yield 'vulnerabilityMajor' => ['VulnerabilityMajor', 0];
-        yield 'vulnerabilityMinor' => ['VulnerabilityMinor', 0];
-        yield 'vulnerabilityInfo' => ['VulnerabilityInfo', 0];
+        // MODIF 2026-05-05 [fix-mesures-align-ddl] : vulnerability{Blocker/Critical/Major/Minor/Info} retires.
         yield 'securityIssues' => ['SecurityIssues', '9'];
         yield 'securityRating' => ['SecurityRating', 'D'];
         yield 'securityRemediationEffort' => ['SecurityRemediationEffort', 540];
@@ -148,13 +147,8 @@ class MesuresCaseTest extends TestCase
         yield 'securityHotspot' => ['SecurityHotspot', 12];
         yield 'securityReviewRating' => ['SecurityReviewRating', 'A'];
         yield 'securityHotspotsReviewed' => ['SecurityHotspotsReviewed', 75.5];
-        yield 'menacePotentielleToReviewHigh' => ['MenacePotentielleToReviewHigh', 1];
-        yield 'menacePotentielleToReviewMedium' => ['MenacePotentielleToReviewMedium', 2];
-        yield 'menacePotentielleToReviewLow' => ['MenacePotentielleToReviewLow', 3];
-        yield 'menacePotentielleReviewedHigh' => ['MenacePotentielleReviewedHigh', 0];
-        yield 'menacePotentielleReviewedMedium' => ['MenacePotentielleReviewedMedium', 1];
-        yield 'menacePotentielleReviewedLow' => ['MenacePotentielleReviewedLow', 2];
-        yield 'menacePotentielleTotale' => ['MenacePotentielleTotale', 9];
+        // MODIF 2026-05-05 : menacePotentielle{ToReview*/Reviewed*/Totale}
+        // (7 attributs) retires car absents du DDL et non utilises dans le code.
 
         // Mode collecte / utilisateur
         yield 'modeCollecte' => ['ModeCollecte', 'TRAITEMENT MANUEL'];
@@ -186,10 +180,12 @@ class MesuresCaseTest extends TestCase
 
     /**
      * v2.0.0 : l'entite Mesures comporte 106 attributs (id + 105 colonnes).
+     * MODIF 2026-05-05 : 86 attributs (id + 85 colonnes) apres
+     * suppression de 22 colonnes orphelines + ajout de coverageRating et duplicatedLinesRating.
      */
     public function testCountAttribut(): void
     {
         $reflectionClass = new \ReflectionClass(new Mesures());
-        $this->assertEquals(106, count($reflectionClass->getProperties()));
+        $this->assertEquals(86, count($reflectionClass->getProperties()));
     }
 }

@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -25,9 +25,11 @@ class InformationProjetValidatorTest extends KernelTestCase
 
   private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
   private static string $analyseKey = 'AYVyxZcQo0TJpgSeq-ph';
-  private static string $date = '2024-04-12 16:23:11';
+  /* MODIF 2026-05-06 : alignement avec entity
+   * (setDate -> setDateAnalyse, setType -> setTypeAnalyse). */
+  private static string $dateAnalyse = '2024-04-12 16:23:11';
   private static string $projectVersion = '2.0.0-RELEASE';
-  private static string $type = 'RELEASE';
+  private static string $typeAnalyse = 'RELEASE';
   private static int $versionSonar = 59;
   private static int $versionReleaseSonar = 54;
   private static int $versionSnapshotSonar = 3;
@@ -41,9 +43,9 @@ class InformationProjetValidatorTest extends KernelTestCase
       return (new informationProjet())
         ->setMavenKey(self::$mavenKey)
         ->setAnalyseKey(self::$analyseKey)
-        ->setDate(new \DateTimeImmutable(self::$date))
+        ->setDateAnalyse(new \DateTimeImmutable(self::$dateAnalyse))
         ->setProjectVersion(self::$projectVersion)
-        ->setType(self::$type)
+        ->setTypeAnalyse(self::$typeAnalyse)
         ->setVersionSonar(self::$versionSonar)
         ->setVersionReleaseSonar(self::$versionReleaseSonar)
         ->setVersionSnapshotSonar(self::$versionSnapshotSonar)
@@ -76,7 +78,7 @@ class InformationProjetValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setMavenKey(''), 1);
     $this->assertHasErrors($this->getEntity()->setAnalyseKey(''), 1);
     $this->assertHasErrors($this->getEntity()->setProjectVersion(''), 1);
-    $this->assertHasErrors($this->getEntity()->setType(''), 1);
+    $this->assertHasErrors($this->getEntity()->setTypeAnalyse(''), 1);
     $this->assertHasErrors($this->getEntity()->setModeCollecte(''), 0);
     $this->assertHasErrors($this->getEntity()->setUtilisateurCollecte(''), 0);
 

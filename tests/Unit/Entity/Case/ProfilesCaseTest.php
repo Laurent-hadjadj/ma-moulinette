@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -21,7 +21,7 @@ use PHPUnit\Framework\TestCase;
  */
 class ProfilesCaseTest extends TestCase
 {
-    private $profiles;
+    private Profiles $profiles;
 
     private static string $key = 'AXyXMubJRtAGLwAs7Zcv';
     private static string $name = 'Ma-Petite-Entreprise v1.0.0 (2024)';

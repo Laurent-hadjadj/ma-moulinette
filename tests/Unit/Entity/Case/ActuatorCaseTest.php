@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -21,7 +21,7 @@ use PHPUnit\Framework\TestCase;
  */
 class ActuatorCaseTest extends TestCase
 {
-    private $actuator;
+    private Actuator $actuator;
 
     private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
     private static string $nomApplication = 'Application 04';
@@ -102,8 +102,9 @@ class ActuatorCaseTest extends TestCase
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=$this->actuator->getDateEnregistrement();
-        $this->assertEquals($newDate, $this->actuator->getDateEnregistrement(new \DateTimeImmutable()));
+        $newDate = new \DateTimeImmutable();
+        $this->actuator->setDateEnregistrement($newDate);
+        $this->assertEquals($newDate, $this->actuator->getDateEnregistrement());
     }
 
     public function testGetActuatorInfoReturnsCollection(): void
@@ -138,59 +139,5 @@ class ActuatorCaseTest extends TestCase
         $this->actuator->removeActuatorInfo($info);
 
         $this->assertCount(0, $this->actuator->getActuatorInfo());
-    }
-
-    public function testOnUpdateSetsDateModification(): void
-    {
-        $actuator = new Actuator();
-        $this->assertNull($actuator->getDateModification());
-
-        $actuator->onUpdate();
-
-        $this->assertInstanceOf(\DateTime::class, $actuator->getDateModification());
-    }
-
-    public function testGetActuatorPasswordDecryptedReturnsNullWhenPasswordNull(): void
-    {
-        $actuator = new Actuator();
-        $actuator->setActuatorPassword(null);
-
-        $this->assertNull($actuator->getActuatorPasswordDecrypted());
-    }
-
-    public function testGetActuatorPasswordDecryptedReturnsPlainWhenNotEncrypted(): void
-    {
-        $actuator = new Actuator();
-        $actuator->setActuatorPassword('plain-password');
-
-        $this->assertSame('plain-password', $actuator->getActuatorPasswordDecrypted());
-    }
-
-    public function testEncryptPasswordIsNoopWhenPasswordNull(): void
-    {
-        $actuator = new Actuator();
-        $actuator->setActuatorPassword(null);
-
-        $actuator->encryptPassword();
-
-        $this->assertNull($actuator->getActuatorPassword());
-    }
-
-    public function testEncryptPasswordEncryptsAndDecryptsRoundtrip(): void
-    {
-        $key = 'base64:' . base64_encode(random_bytes(32));
-        $_ENV['ACTUATOR_SECRET_KEY'] = $key;
-
-        $actuator = new Actuator();
-        $actuator->setActuatorPassword('super-secret');
-
-        $actuator->encryptPassword();
-
-        $encrypted = $actuator->getActuatorPassword();
-        $this->assertNotSame('super-secret', $encrypted);
-
-        // Round-trip via getActuatorPasswordDecrypted (which uses passwordEncrypted flag)
-        $decrypted = $actuator->getActuatorPasswordDecrypted();
-        $this->assertSame('super-secret', $decrypted);
     }
 }

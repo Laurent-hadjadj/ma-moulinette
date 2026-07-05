@@ -1,15 +1,15 @@
 <?php
 
 /*
-*  Ma-Moulinette
-*  --------------
-*  Copyright (c) 2021-2026.
-*  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
-*  ---
-*  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
-*/
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
 
 namespace App\Tests\Unit\Entity\Case;
 
@@ -21,7 +21,7 @@ use PHPUnit\Framework\TestCase;
  */
 class OwaspTop10CaseTest extends TestCase
 {
-    private $owaspTop10;
+    private OwaspTop10 $owaspTop10;
 
     private static int $year = 2017;
     private static string $category = "A1 - Attaques d'injection";

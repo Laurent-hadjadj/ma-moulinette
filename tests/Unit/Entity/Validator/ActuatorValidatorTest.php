@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -32,20 +32,6 @@ class ActuatorValidatorTest extends KernelTestCase
   private static string $dateModification = '2024-06-23 11:59:51.854783+02';
   private static string $actuatorInfoDescription = "Actuator INFO pour l'application 04";
   private static string $infoValue = '[SOCLE][ANGULAR]';
-
-  private function getEntityActuator(): Actuator
-  {
-    $actuator = new Actuator();
-    $actuator->setMavenKey(self::$mavenKey)
-                ->setNomApplication(self::$nomApplication)
-                ->setUrl(self::$url)
-                ->setActuatorUser(self::$actuatorUser)
-                ->setActuatorPassword(self::$actuatorPassword)
-                ->setPersonne(self::$personne)
-                ->setDateModification(new \DateTimeImmutable(self::$dateModification))
-                ->setDateEnregistrement(new \DateTimeImmutable());
-  return $actuator;
-}
 
 private function getEntity(): Actuator
 {
@@ -96,9 +82,10 @@ private function getEntity(): Actuator
 
   public function testCountAttribut(): void
   {
+      /* MODIF 2026-05-07 [tests-validators] : 11 → 10 (alignement Entity↔DDL session 2026-05-04). */
       $entity = $this->getEntity();
       $reflectionClass = new \ReflectionClass($entity);
       $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 11);
+      $this->assertEquals($nbAttributs, 10);
   }
 }

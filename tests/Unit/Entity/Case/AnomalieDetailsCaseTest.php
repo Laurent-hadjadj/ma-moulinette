@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -21,7 +21,7 @@ use PHPUnit\Framework\TestCase;
  */
 class AnomalieDetailsCaseTest extends TestCase
 {
-    private $anomalieDetails;
+    private AnomalieDetails $anomalieDetails;
 
     private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
     private static string $name = 'ma-moulinette';

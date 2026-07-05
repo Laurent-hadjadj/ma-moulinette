@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -91,5 +91,30 @@ class GroupeUtilisateurCaseTest extends TestCase
     {
         $reflectionClass = new \ReflectionClass(new GroupeUtilisateur());
         $this->assertEquals(6, count($reflectionClass->getProperties()));
+    }
+
+    /* MODIF 2026-05-05 : tests de regression.
+     * Les colonnes groupe_utilisateur et groupe_id portent `unique: true` cote Doctrine
+     * et doivent rester alignees avec la contrainte UNIQUE ajoutee dans constraints.sql. */
+    public function testGroupeUtilisateurMappingIsUnique(): void
+    {
+        $reflection = new \ReflectionProperty(GroupeUtilisateur::class, 'groupeUtilisateur');
+        $attributes = $reflection->getAttributes(\Doctrine\ORM\Mapping\Column::class);
+        $this->assertCount(1, $attributes);
+
+        $args = $attributes[0]->getArguments();
+        $this->assertTrue($args['unique'] ?? false,
+            'GroupeUtilisateur::$groupeUtilisateur doit avoir unique: true (alignement DDL).');
+    }
+
+    public function testGroupeIdMappingIsUnique(): void
+    {
+        $reflection = new \ReflectionProperty(GroupeUtilisateur::class, 'groupeId');
+        $attributes = $reflection->getAttributes(\Doctrine\ORM\Mapping\Column::class);
+        $this->assertCount(1, $attributes);
+
+        $args = $attributes[0]->getArguments();
+        $this->assertTrue($args['unique'] ?? false,
+            'GroupeUtilisateur::$groupeId doit avoir unique: true (alignement DDL).');
     }
 }

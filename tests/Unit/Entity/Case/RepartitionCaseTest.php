@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -20,13 +20,13 @@ use PHPUnit\Framework\TestCase;
 /**
  * [Description RepartitionCaseTest]
  *
- * v2.0.0 : test compact via dataProvider couvrant les 87 attributs de l'entite Repartition.
+ * v2.0.0 : test compact via dataProvider couvrant les 87 attributs de l’entité Repartition.
  */
 class RepartitionCaseTest extends TestCase
 {
     /**
-     * Genere les 15 setters severite x type (Bug/Vulnerability/CodeSmell x Blocker/Critical/Major/Minor/Info)
-     * eventuellement prefixe par un module (frontend, backend, autre, inconnu).
+     * Génère les 15 setters severity x type (Bug/Vulnerability/CodeSmell x Blocker/Critical/Major/Minor/Info)
+     * éventuellement prefix par un module (frontend, backend, autre, inconnu).
      *
      * @return string[] liste des suffixes (ex: 'BugBlocker', 'FrontendCodeSmellMajor')
      */
@@ -94,7 +94,7 @@ class RepartitionCaseTest extends TestCase
     }
 
     /**
-     * v2.0.0 : l'entite Repartition comporte 87 attributs.
+     * v2.0.0 : l’entité Repartition comporte 87 attributs.
      */
     public function testCountAttribut(): void
     {

@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -134,6 +134,12 @@ class UtilisateurCaseTest extends TestCase
     $this->assertEquals(new \DateTimeImmutable(self::$lastActivityAt), $entity->getLastActivityAt(), "Erreur LAST_ACTIVITY_AT");
     $this->assertEquals(new \DateTime(self::$dateModification), $entity->getDateModification(), "Erreur DATEModification");
     $this->assertEquals(new \DateTimeImmutable(self::$dateEnregistrement), $entity->getDateEnregistrement(), "Erreur DATEEnregistrement");
+  }
+
+  /* MODIF 2026-06-08 : getSalt() est imposé par UserInterface — retourne toujours null. */
+  public function testGetSaltReturnsNull(): void
+  {
+    $this->assertNull((new Utilisateur())->getSalt());
   }
 
   public function testCountAttribut(): void

@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -35,7 +35,11 @@ class UserRoleLogTest extends TestCase
             ['CHANGEMENT_MASSIF_ROLES']
         );
 
-        $this->assertNull($log->getId());
+        /* MODIF 2026-05-05 : getId() ne peut pas etre
+         * appele avant persist (typed property `int $id` non initialise). On verifie juste
+         * que setId fonctionne. */
+        $log->setId(42);
+        $this->assertSame(42, $log->getId());
         $this->assertSame('user@example.com', $log->getUserEmail());
         $this->assertSame('editor@example.com', $log->getEditorEmail());
         $this->assertSame(['ROLE_UTILISATEUR'], $log->getOldRoles());
@@ -46,16 +50,18 @@ class UserRoleLogTest extends TestCase
         $this->assertInstanceOf(\DateTimeImmutable::class, $log->getCreatedAt());
     }
 
+    /* MODIF 2026-05-05 : le constructor exige 7 args
+     * (entite L91), pas 6. L'argument $alerts est obligatoire (pas de defaut). */
     public function testConstructorAllowsEmptyAlerts(): void
     {
-        $log = new UserRoleLog('u@x', 'e@x', [], [], false, true);
+        $log = new UserRoleLog('u@x', 'e@x', [], [], false, true, []);
 
         $this->assertSame([], $log->getAlerts());
     }
 
     public function testSettersUpdateFields(): void
     {
-        $log = new UserRoleLog('u@x', 'e@x', [], [], true, true);
+        $log = new UserRoleLog('u@x', 'e@x', [], [], true, true, []);
 
         $log->setUserEmail('new@example.com');
         $log->setEditorEmail('admin@example.com');
@@ -81,7 +87,7 @@ class UserRoleLogTest extends TestCase
     public function testCreatedAtIsRecentWhenConstructed(): void
     {
         $before = new \DateTimeImmutable();
-        $log = new UserRoleLog('u@x', 'e@x', [], [], true, true);
+        $log = new UserRoleLog('u@x', 'e@x', [], [], true, true, []);
         $after = new \DateTimeImmutable();
 
         $this->assertGreaterThanOrEqual($before, $log->getCreatedAt());

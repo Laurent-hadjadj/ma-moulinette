@@ -3,14 +3,13 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
-
 namespace App\Tests\Unit\Entity\Case;
 
 use App\Entity\ActivityHistorique;
@@ -21,7 +20,7 @@ use PHPUnit\Framework\TestCase;
  */
 class ActivityHistoriqueCaseTest extends TestCase
 {
-    private $ActivityHistorique;
+    private ActivityHistorique $activityHistorique;
 
     private static int $year = 2024;
     private static int $day = 326;
@@ -50,60 +49,60 @@ class ActivityHistoriqueCaseTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->ActivityHistorique = $this->getEntity();
+        $this->activityHistorique = $this->getEntity();
     }
 
     public function testSettingAndGettingId(): void
     {
-        $this->ActivityHistorique->setId(1);
-        $this->assertEquals(1, $this->ActivityHistorique->getId());
+        $this->activityHistorique->setId(1);
+        $this->assertEquals(1, $this->activityHistorique->getId());
     }
 
     public function testSettingAndGettingYear(): void
     {
-        $this->ActivityHistorique->setYear(self::$year);
-        $this->assertEquals(self::$year, $this->ActivityHistorique->getYear());
+        $this->activityHistorique->setYear(self::$year);
+        $this->assertEquals(self::$year, $this->activityHistorique->getYear());
     }
     public function testSettingAndGettingDay(): void
     {
-        $this->ActivityHistorique->setDay(self::$day);
-        $this->assertEquals(self::$day, $this->ActivityHistorique->getDay());
+        $this->activityHistorique->setDay(self::$day);
+        $this->assertEquals(self::$day, $this->activityHistorique->getDay());
     }
     public function testSettingAndGettingAnalyse(): void
     {
-        $this->ActivityHistorique->setAnalyse(self::$analyse);
-        $this->assertEquals(self::$analyse, $this->ActivityHistorique->getAnalyse());
+        $this->activityHistorique->setAnalyse(self::$analyse);
+        $this->assertEquals(self::$analyse, $this->activityHistorique->getAnalyse());
     }
     public function testSettingAndGettingAnalyseAverage(): void
     {
-        $this->ActivityHistorique->setAnalyseAverage(self::$analyseAverage);
-        $this->assertEquals(self::$analyseAverage, $this->ActivityHistorique->getAnalyseAverage());
+        $this->activityHistorique->setAnalyseAverage(self::$analyseAverage);
+        $this->assertEquals(self::$analyseAverage, $this->activityHistorique->getAnalyseAverage());
     }
     public function testSettingAndGettingSuccess(): void
     {
-        $this->ActivityHistorique->setSuccess(self::$success);
-        $this->assertEquals(self::$success, $this->ActivityHistorique->getSuccess());
+        $this->activityHistorique->setSuccess(self::$success);
+        $this->assertEquals(self::$success, $this->activityHistorique->getSuccess());
     }
     public function testSettingAndGettingFailed(): void
     {
-        $this->ActivityHistorique->setFailed(self::$failed);
-        $this->assertEquals(self::$failed, $this->ActivityHistorique->getFailed());
+        $this->activityHistorique->setFailed(self::$failed);
+        $this->assertEquals(self::$failed, $this->activityHistorique->getFailed());
     }
     public function testSettingAndGettingSuccessRate(): void
     {
-        $this->ActivityHistorique->setSuccessRate(self::$successRate);
-        $this->assertEquals(self::$successRate, $this->ActivityHistorique->getSuccessRate());
+        $this->activityHistorique->setSuccessRate(self::$successRate);
+        $this->assertEquals(self::$successRate, $this->activityHistorique->getSuccessRate());
     }
     public function testSettingAndGettingMaxTime(): void
     {
-        $this->ActivityHistorique->setMaxTime(self::$maxTime);
-        $this->assertEquals(self::$maxTime, $this->ActivityHistorique->getMaxTime());
+        $this->activityHistorique->setMaxTime(self::$maxTime);
+        $this->assertEquals(self::$maxTime, $this->activityHistorique->getMaxTime());
     }
     public function testSettingAndGettingDateEnregistrement(): void
     {
         $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
-        $this->ActivityHistorique->setDateEnregistrement($newDate);
-        $this->assertEquals($newDate, $this->ActivityHistorique->getDateEnregistrement());
+        $this->activityHistorique->setDateEnregistrement($newDate);
+        $this->assertEquals($newDate, $this->activityHistorique->getDateEnregistrement());
     }
 
     public function testCountAttribut(): void

@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -20,8 +20,8 @@ use Symfony\Component\Validator\ConstraintViolation;
 /**
  * [Description ActivityBatchReportValidatorTest]
  *
- * v2.0.0 : l'entite ActivityBatchReport ne porte aucune contrainte Assert.
- * Le test verifie uniquement la validite par defaut + le nombre d'attributs.
+ * v2.0.0 : l’entité ActivityBatchReport ne porte aucune contrainte Assert.
+ * Le test verify uniquement la validité par default + le nombre d'attributs.
  */
 class ActivityBatchReportValidatorTest extends KernelTestCase
 {

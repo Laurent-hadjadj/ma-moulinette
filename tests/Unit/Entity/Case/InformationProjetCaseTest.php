@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -21,13 +21,15 @@ use PHPUnit\Framework\TestCase;
  */
 class InformationProjetCaseTest extends TestCase
 {
-    private $informationProjet;
+    private InformationProjet $informationProjet;
 
     private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
     private static string $analyseKey = 'AYVyxZcQo0TJpgSeq-ph';
-    private static string $date = '2024-04-12 16:23:11';
+    /* MODIF 2026-05-06 [fix-informationprojet-test-rename] : alignement avec entite
+     * (setDate -> setDateAnalyse, setType -> setTypeAnalyse). */
+    private static string $dateAnalyse = '2024-04-12 16:23:11';
     private static string $projectVersion = '2.0.0-RELEASE';
-    private static string $type = 'RELEASE';
+    private static string $typeAnalyse = 'RELEASE';
     private static int $versionSonar = 59;
     private static int $versionReleaseSonar = 54;
     private static int $versionSnapshotSonar = 3;
@@ -41,9 +43,9 @@ class InformationProjetCaseTest extends TestCase
         return (new informationProjet())
         ->setMavenKey(self::$mavenKey)
         ->setAnalyseKey(self::$analyseKey)
-        ->setDate(new \DateTimeImmutable(self::$date))
+        ->setDateAnalyse(new \DateTimeImmutable(self::$dateAnalyse))
         ->setProjectVersion(self::$projectVersion)
-        ->setType(self::$type)
+        ->setTypeAnalyse(self::$typeAnalyse)
         ->setVersionSonar(self::$versionSonar)
         ->setVersionReleaseSonar(self::$versionReleaseSonar)
         ->setVersionSnapshotSonar(self::$versionSnapshotSonar)
@@ -79,9 +81,9 @@ class InformationProjetCaseTest extends TestCase
 
     public function testSettingAndGettingDate(): void
     {
-        $newDate=new \DateTimeImmutable(self::$date);
-        $this->informationProjet->setDate($newDate);
-        $this->assertEquals($newDate, $this->informationProjet->getDate());
+        $newDate=new \DateTimeImmutable(self::$dateAnalyse);
+        $this->informationProjet->setDateAnalyse($newDate);
+        $this->assertEquals($newDate, $this->informationProjet->getDateAnalyse());
     }
 
     public function testSettingAndGettingProjectVersion(): void
@@ -92,8 +94,8 @@ class InformationProjetCaseTest extends TestCase
 
     public function testSettingAndGettingType(): void
     {
-        $this->informationProjet->setType(self::$type);
-        $this->assertEquals(self::$type, $this->informationProjet->getType());
+        $this->informationProjet->setTypeAnalyse(self::$typeAnalyse);
+        $this->assertEquals(self::$typeAnalyse, $this->informationProjet->getTypeAnalyse());
     }
 
     public function testSettingAndGettingVersionSonar(): void

@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -28,12 +28,12 @@ class OwaspValidatorTest extends KernelTestCase
   private static string $version = '1.2.0-RELEASE';
   private static string $dateVersion = '2024-07-10 15:26:07+02';
   private static int $effortTotal = 0;
-  private static $a = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  private static $aBlocker = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  private static $aCritical = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  private static $aMajor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  private static $aInfo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-  private static $aMinor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  private static array $a = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  private static array $aBlocker = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  private static array $aCritical = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  private static array $aMajor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  private static array $aInfo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+  private static array $aMinor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   private static string $modeCollecte = 'TRAITEMENT MANUEL';
   private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
   private static string $dateEnregistrement = '2024-03-26 14:46:38+02';

@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -29,11 +29,14 @@ class GroupeFonctionnelCaseTest extends TestCase
             ->setDateModification(new \DateTime('2024-04-12 10:00:00'));
     }
 
-    public function testSettingAndGettingId(): void
+    /* MODIF 2026-05-05 : pas de setId expose (ID auto-genere par Doctrine).
+     * On verifie juste l'absence du setter et que le getter retourne null avant persist. */
+    public function testIdHasNoSetter(): void
     {
         $entity = $this->getEntity();
-        $entity->setId(42);
-        $this->assertSame(42, $entity->getId());
+        $this->assertFalse(method_exists($entity, 'setId'),
+            'GroupeFonctionnel::setId() ne devrait pas exister (ID auto-genere).');
+        $this->assertNull($entity->getId());
     }
 
     public function testSettingAndGettingGroupeFonctionnel(): void
@@ -82,5 +85,55 @@ class GroupeFonctionnelCaseTest extends TestCase
     {
         $reflectionClass = new \ReflectionClass(new GroupeFonctionnel());
         $this->assertEquals(5, count($reflectionClass->getProperties()));
+    }
+
+    /* MODIF 2026-05-05 : test de regression.
+     * La colonne `description` doit avoir length: 128 dans le mapping Doctrine pour rester
+     * coherente avec le DDL groupe_fonctionnel.sql:20 (VARCHAR(128) apres alignement). */
+    public function testDescriptionMappingIsLength128(): void
+    {
+        $reflection = new \ReflectionProperty(GroupeFonctionnel::class, 'description');
+        $attributes = $reflection->getAttributes(\Doctrine\ORM\Mapping\Column::class);
+        $this->assertCount(1, $attributes,
+            'GroupeFonctionnel::$description doit avoir un attribut #[ORM\\Column].');
+
+        $args = $attributes[0]->getArguments();
+        $this->assertSame(128, $args['length'] ?? null,
+            'GroupeFonctionnel::$description doit avoir length: 128 (alignement DDL).');
+    }
+
+    /* MODIF 2026-05-05 : test de regression.
+     * La colonne `groupe_fonctionnel` doit avoir length: 32 dans le mapping Doctrine
+     * pour rester alignee avec le Validator Assert\Length(max: 32) et le DDL VARCHAR(32). */
+    public function testGroupeFonctionnelMappingIsLength32(): void
+    {
+        $reflection = new \ReflectionProperty(GroupeFonctionnel::class, 'groupeFonctionnel');
+        $attributes = $reflection->getAttributes(\Doctrine\ORM\Mapping\Column::class);
+        $this->assertCount(1, $attributes,
+            'GroupeFonctionnel::$groupeFonctionnel doit avoir un attribut #[ORM\\Column].');
+
+        $args = $attributes[0]->getArguments();
+        $this->assertSame(32, $args['length'] ?? null,
+            'GroupeFonctionnel::$groupeFonctionnel doit avoir length: 32 (alignement DDL+Validator).');
+        $this->assertTrue($args['unique'] ?? false,
+            'GroupeFonctionnel::$groupeFonctionnel doit avoir unique: true.');
+    }
+
+    /* MODIF 2026-05-05 : verifie la coherence interne
+     * entre le `length` Doctrine et le `max` du Validator (les deux doivent rester en phase). */
+    public function testGroupeFonctionnelDoctrineAndValidatorLengthsMatch(): void
+    {
+        $reflection = new \ReflectionProperty(GroupeFonctionnel::class, 'groupeFonctionnel');
+
+        $columnAttrs = $reflection->getAttributes(\Doctrine\ORM\Mapping\Column::class);
+        $doctrineLength = $columnAttrs[0]->getArguments()['length'] ?? null;
+
+        $validatorAttrs = $reflection->getAttributes(\Symfony\Component\Validator\Constraints\Length::class);
+        $this->assertCount(1, $validatorAttrs,
+            'GroupeFonctionnel::$groupeFonctionnel doit avoir un Assert\\Length.');
+        $validatorMax = $validatorAttrs[0]->getArguments()['max'] ?? null;
+
+        $this->assertSame($doctrineLength, $validatorMax,
+            'Doctrine length et Validator max doivent etre identiques (mismatch interne sinon).');
     }
 }

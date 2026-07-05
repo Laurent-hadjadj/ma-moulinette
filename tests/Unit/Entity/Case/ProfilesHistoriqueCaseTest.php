@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -21,7 +21,7 @@ use PHPUnit\Framework\TestCase;
  */
 class ProfilesHistoriqueCaseTest extends TestCase
 {
-    private $profilesHistorique;
+    private ProfilesHistorique $profilesHistorique;
 
     private static string $dateCourte = '2022-04-14';
     private static string $language = 'java';

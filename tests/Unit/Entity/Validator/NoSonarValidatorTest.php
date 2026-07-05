@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -25,7 +25,7 @@ class NoSonarValidatorTest extends KernelTestCase
 
   private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
   private static string $rule = 'java:S1309';
-  private static $component = 'fr.ma-petite-entreprise:mo-moulinette:
+  private static string $component = 'fr.ma-petite-entreprise:mo-moulinette:
   ma-moulinette-service/src/main/java/fr/ma-petite-entreprise/ma-moulinette/service/ClamAvService.java';
   private static int $line = 118;
   private static string $modeCollecte = 'TRAITEMENT MANUEL';

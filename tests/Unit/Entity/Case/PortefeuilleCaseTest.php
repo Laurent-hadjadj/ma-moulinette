@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -21,7 +21,7 @@ use PHPUnit\Framework\TestCase;
  */
 class PortefeuilleCaseTest extends TestCase
 {
-    private $portefeuille;
+    private Portefeuille $portefeuille;
 
     private static string $portefeuilles = 'MES PROJETS';
     private static string $groupeFonctionnel = 'MA PETITE ENTREPRISE';
@@ -81,6 +81,24 @@ class PortefeuilleCaseTest extends TestCase
         $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
         $this->portefeuille->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->portefeuille->getDateEnregistrement());
+    }
+
+    /* MODIF 2026-05-05 : test de regression.
+     * La propriété `liste` doit être typée `array` non-nullable et avoir un default `[]`
+     * (DDL portefeuille.sql:22 = `liste json NOT NULL`). */
+    public function testListeIsNonNullableArray(): void
+    {
+        $reflection = new \ReflectionProperty(Portefeuille::class, 'liste');
+        $type = $reflection->getType();
+
+        $this->assertInstanceOf(\ReflectionNamedType::class, $type);
+        $this->assertSame('array', $type->getName());
+        $this->assertFalse($type->allowsNull(),
+            'Portefeuille::$liste doit etre typee non-nullable (alignement DDL NOT NULL).');
+
+        $entity = new Portefeuille();
+        $this->assertSame([], $entity->getListe(),
+            'Portefeuille::$liste doit avoir un default array vide.');
     }
 
 }

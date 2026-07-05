@@ -25,6 +25,8 @@ use Symfony\Component\HttpClient\HttpClient;
  *
  * Le résultat du ping est mis en cache statique pour ne pas payer
  * le timeout sur chaque test de la suite.
+ *
+ * @phpstan-ignore trait.unused (trait de support planifié pour les futurs tests fonctionnels SonarQube)
  */
 trait SonarQubeReachableTrait
 {

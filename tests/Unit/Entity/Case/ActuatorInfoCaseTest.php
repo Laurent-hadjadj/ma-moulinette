@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -22,7 +22,7 @@ use PHPUnit\Framework\TestCase;
  */
 class ActuatorInfoCaseTest extends TestCase
 {
-    private $actuatorInfo;
+    private ActuatorInfo $actuatorInfo;
 
     private static int $actuatorId = 1;
     private static string $actuatorInfoDescription = '[SOCLE][ARCHETYPE]';

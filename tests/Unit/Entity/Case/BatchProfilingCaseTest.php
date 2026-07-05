@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -58,11 +58,12 @@ class BatchProfilingCaseTest extends TestCase
         $this->assertNull($entity->getExecutionReference());
     }
 
-    public function testSettingAndGettingId(): void
+    /* MODIF 2026-05-06 : pas de setId expose (ID auto-genere). */
+    public function testIdHasNoSetter(): void
     {
         $entity = $this->getEntity();
-        $entity->setId(42);
-        $this->assertSame(42, $entity->getId());
+        $this->assertFalse(method_exists($entity, 'setId'),
+            'BatchProfiling::setId() ne devrait pas exister (ID auto-genere).');
     }
 
     public function testGetDateExecutionFormatted(): void
@@ -79,6 +80,13 @@ class BatchProfilingCaseTest extends TestCase
         $this->assertStringContainsString('Equipe DEV', $str);
         $this->assertStringContainsString('admin@ma-moulinette.fr', $str);
         $this->assertStringContainsString('15 projets', $str);
+    }
+
+    /* MODIF 2026-06-08 : couvre getId (nullable, null avant persist). */
+    public function testGetIdReturnsNullByDefault(): void
+    {
+        $entity = $this->getEntity();
+        $this->assertNull($entity->getId());
     }
 
     public function testCountAttribut(): void

@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -21,7 +21,7 @@ use PHPUnit\Framework\TestCase;
  */
 class ActivityCaseTest extends TestCase
 {
-    private $activity;
+    private Activity $activity;
 
     private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
     private static string $projectName = 'ma-moulinette';
@@ -114,6 +114,27 @@ class ActivityCaseTest extends TestCase
     {
         $this->activity->setExecutionTime(self::$executionTime);
         $this->assertEquals(self::$executionTime, $this->activity->getExecutionTime());
+    }
+
+    /* MODIF 2026-05-05 [fix-activity-analyseid-nullable] : test de regression.
+     * La propriete `analyseId` doit etre typee `string` non-nullable et le getter doit
+     * retourner `string` (DDL activity.sql:20 = NOT NULL). */
+    public function testAnalyseIdIsNonNullable(): void
+    {
+        $reflection = new \ReflectionProperty(Activity::class, 'analyseId');
+        $type = $reflection->getType();
+
+        $this->assertInstanceOf(\ReflectionNamedType::class, $type);
+        $this->assertSame('string', $type->getName());
+        $this->assertFalse($type->allowsNull(),
+            'Activity::$analyseId doit etre typee non-nullable (alignement DDL NOT NULL).');
+
+        $getter = new \ReflectionMethod(Activity::class, 'getAnalyseId');
+        $returnType = $getter->getReturnType();
+        $this->assertInstanceOf(\ReflectionNamedType::class, $returnType);
+        $this->assertSame('string', $returnType->getName());
+        $this->assertFalse($returnType->allowsNull(),
+            'Activity::getAnalyseId() doit retourner string (pas ?string).');
     }
 
 }

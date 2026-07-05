@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -21,7 +21,7 @@ use PHPUnit\Framework\TestCase;
  */
 class BatchCaseTest extends TestCase
 {
-    private $batch;
+    private Batch $batch;
 
     private static bool $automatique = false;
     private static string $titre = 'mon-batch à moi';
@@ -99,6 +99,30 @@ class BatchCaseTest extends TestCase
     {
         $this->batch->setExecution(self::$execution);
         $this->assertEquals(self::$execution, $this->batch->getExecution());
+    }
+
+    /* MODIF 2026-06-08 : isActivated/setActivated non testés jusqu'ici. */
+    public function testSettingAndGettingActivated(): void
+    {
+        $this->batch->setActivated(true);
+        $this->assertTrue($this->batch->isActivated());
+        $this->batch->setActivated(false);
+        $this->assertFalse($this->batch->isActivated());
+    }
+
+    /* MODIF 2026-06-08 : getResponsableShort/setResponsableShort non testés. */
+    public function testSettingAndGettingResponsableShort(): void
+    {
+        $this->batch->setResponsableShort('JD');
+        $this->assertSame('JD', $this->batch->getResponsableShort());
+    }
+
+    /* MODIF 2026-06-08 : getTraitementId/setTraitementId non testés. */
+    public function testSettingAndGettingTraitementId(): void
+    {
+        $ulid = new \Symfony\Component\Uid\Ulid();
+        $this->batch->setTraitementId($ulid);
+        $this->assertSame($ulid, $this->batch->getTraitementId());
     }
 
     public function testSettingAndGettingDateModification(): void

@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -71,8 +71,8 @@ class OwaspCaseTest extends TestCase
     }
 
     /**
-     * setReferentialOwasp accepte une string mais ecrit dans une propriete int.
-     * PHP coerce automatiquement la chaine numerique vers int (sans strict_types).
+     * setReferentialOwasp accepte une string mais écrit dans une propriété int.
+     * PHP coerce automatiquement la chaîne numérique vers int (sans strict_types).
      * Le getter renvoie la valeur convertie en string par PHP.
      */
     public function testSettingAndGettingReferentialOwasp(): void
@@ -99,7 +99,7 @@ class OwaspCaseTest extends TestCase
     }
 
     /**
-     * v2.0.0 : l'entite Owasp comporte 69 attributs.
+     * v2.0.0 : l’entité Owasp comporte 69 attributs.
      */
     public function testCountAttribut(): void
     {

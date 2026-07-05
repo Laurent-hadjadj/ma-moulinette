@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -34,19 +34,21 @@ class BatchExecutionJournalCaseTest extends TestCase
         );
     }
 
+    /* MODIF 2026-05-05 : adaptation au remaniement de BatchExecutionJournal (constructor
+     * implicite, pas d'arguments nommes). Utilisation des setters. */
     private function getEntity(): BatchExecutionJournal
     {
-        return new BatchExecutionJournal(
-            nomProjet: 'ma-moulinette',
-            portefeuille: 'Equipe DEV',
-            compteRendu: '<p>OK</p>',
-            batchExecution: $this->getBatchExecution(),
-            dateExecution: new \DateTimeImmutable('2024-04-12 16:23:11'),
-            code: 200
-        );
+        $entity = new BatchExecutionJournal();
+        $entity->setNomProjet('ma-moulinette');
+        $entity->setPortefeuille('Equipe DEV');
+        $entity->setCompteRendu('<p>OK</p>');
+        $entity->setJob($this->getBatchExecution());
+        $entity->setDateExecution(new \DateTimeImmutable('2024-04-12 16:23:11'));
+        $entity->setCode(200);
+        return $entity;
     }
 
-    public function testConstructorAssignsValues(): void
+    public function testEntityValuesAreSet(): void
     {
         $entity = $this->getEntity();
         $this->assertSame('ma-moulinette', $entity->getNomProjet());
@@ -55,11 +57,12 @@ class BatchExecutionJournalCaseTest extends TestCase
         $this->assertEquals(new \DateTimeImmutable('2024-04-12 16:23:11'), $entity->getDateExecution());
     }
 
-    public function testSettingAndGettingId(): void
+    /* MODIF 2026-05-05 : pas de setId expose (ID auto-genere). */
+    public function testIdHasNoSetter(): void
     {
         $entity = $this->getEntity();
-        $entity->setId(42);
-        $this->assertSame(42, $entity->getId());
+        $this->assertFalse(method_exists($entity, 'setId'),
+            'BatchExecutionJournal::setId() ne devrait pas exister (ID auto-genere).');
     }
 
     public function testSettingAndGettingNomProjet(): void
@@ -91,12 +94,13 @@ class BatchExecutionJournalCaseTest extends TestCase
         $this->assertEquals($date, $entity->getDateExecution());
     }
 
-    public function testSettingAndGettingBatchExecution(): void
+    /* MODIF 2026-05-05 : la relation s'appelle desormais `job` (setJob/getJob). */
+    public function testSettingAndGettingJob(): void
     {
         $entity = $this->getEntity();
         $other = $this->getBatchExecution();
-        $entity->setBatchExecution($other);
-        $this->assertSame($other, $entity->getBatchExecution());
+        $entity->setJob($other);
+        $this->assertSame($other, $entity->getJob());
     }
 
     /**
@@ -128,5 +132,38 @@ class BatchExecutionJournalCaseTest extends TestCase
     {
         $reflectionClass = new \ReflectionClass($this->getEntity());
         $this->assertEquals(7, count($reflectionClass->getProperties()));
+    }
+
+    /* MODIF 2026-05-05 : test de regression.
+     * La colonne `nomProjet` doit avoir length: 128 dans le mapping Doctrine pour rester
+     * coherente avec le DDL batch_execution_journal.sql:18 (VARCHAR(128) NOT NULL).
+     * Sans length explicite, Doctrine genererait du VARCHAR(255) (divergence). */
+    /* MODIF 2026-06-08 : getId sur entité non-persistée → property int non initialisée → Error. */
+    public function testGetIdThrowsBeforePersist(): void
+    {
+        $entity = new BatchExecutionJournal();
+        $this->expectException(\Error::class);
+        $entity->getId();
+    }
+
+    /* MODIF 2026-06-08 [coverage-batch-entities] : getCompteRendu retourne '' quand compteRendu vaut null (via Reflection).
+     * setAccessible() supprimé : no-op depuis PHP 8.1, déprécié PHP 8.5. */
+    public function testGetCompteRenduReturnsEmptyStringWhenNull(): void
+    {
+        $entity = new BatchExecutionJournal();
+        $ref = new \ReflectionProperty($entity, 'compteRendu');
+        $ref->setValue($entity, null);
+        $this->assertSame('', $entity->getCompteRendu());
+    }
+
+    public function testNomProjetMappingIsLength128(): void
+    {
+        $reflection = new \ReflectionProperty(BatchExecutionJournal::class, 'nomProjet');
+        $attributes = $reflection->getAttributes(\Doctrine\ORM\Mapping\Column::class);
+        $this->assertCount(1, $attributes);
+
+        $args = $attributes[0]->getArguments();
+        $this->assertSame(128, $args['length'] ?? null,
+            'BatchExecutionJournal::$nomProjet doit avoir length: 128 (alignement DDL).');
     }
 }

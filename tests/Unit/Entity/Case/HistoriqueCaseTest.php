@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -58,7 +58,7 @@ class HistoriqueCaseTest extends TestCase
         yield 'noPmd' => ['NoPmd', 0];
         yield 'checkStyle' => ['CheckStyle', 0];
 
-        // Todo par langage
+        // To.do par langage
         yield 'javaTodo' => ['JavaTodo', 17];
         yield 'pythonTodo' => ['PythonTodo', 0];
         yield 'phpTodo' => ['PhpTodo', 0];
@@ -73,6 +73,8 @@ class HistoriqueCaseTest extends TestCase
         // Statistiques de code
         yield 'lines' => ['Lines', 17049];
         yield 'ncloc' => ['Ncloc', 8928];
+        // MODIF 2026-05-05 [fix-historique-add-ncloc-lang] : ajout ncloc_language_distribution.
+        yield 'nclocLanguageDistribution' => ['NclocLanguageDistribution', 'java=4278;ts=18690'];
         yield 'files' => ['Files', 226];
         yield 'classes' => ['Classes', 123];
         yield 'functions' => ['Functions', 457];
@@ -84,7 +86,8 @@ class HistoriqueCaseTest extends TestCase
         // Coverage
         yield 'coverage' => ['Coverage', 50.1];
         yield 'branchCoverage' => ['BranchCoverage', 40.2];
-        yield 'lineCoverage' => ['LineCoverage', 5];
+        /* MODIF 2026-05-07 [tests-validators] : lineCoverage INT→FLOAT (cf MODIF 2026-05-06 [pourcentage-line-coverage]). */
+        yield 'lineCoverage' => ['LineCoverage', 5.0];
         yield 'linesToCover' => ['LinesToCover', 100];
         yield 'conditionsToCover' => ['ConditionsToCover', 50];
         yield 'uncoveredConditions' => ['UncoveredConditions', 12];
@@ -139,7 +142,8 @@ class HistoriqueCaseTest extends TestCase
         yield 'codeSmellMajor' => ['CodeSmellMajor', 109];
         yield 'codeSmellMinor' => ['CodeSmellMinor', 13];
         yield 'codeSmellInfo' => ['CodeSmellInfo', 72];
-        yield 'maintainabilityIssues' => ['MaintainabilityIssues', 198];
+        // MODIF 2026-05-05 [fix-historique-maintainability-type] : passage int -> string(255) (DDL VARCHAR(255)).
+        yield 'maintainabilityIssues' => ['MaintainabilityIssues', '198'];
         yield 'sqaleIndex' => ['SqaleIndex', 3054];
         yield 'sqaleDebtRatio' => ['SqaleDebtRatio', 1.0];
         yield 'sqaleRating' => ['SqaleRating', 'A'];
@@ -230,11 +234,18 @@ class HistoriqueCaseTest extends TestCase
     }
 
     /**
-     * v2.0.0 : l'entite Historique comporte 133 attributs.
+     * MODIF 2026-05-05 : 134 attributs apres ajout
+     * de nclocLanguageDistribution (présente en DDL, manquait a l’entité).
+     * MODIF 2026-05-07 : 134 → 135 (ajout webTodo le 2026-05-06).
+     * MODIF 2026-05-15 : 135 → 136 (ajout loggerBreakdown JSONB).
+     * MODIF 2026-05-16 : 136 → 138 (ajout
+     * coverageRating + duplicatedLinesRating oubliées de l’entité).
+     * MODIF 2026-05-17 : 138 → 153 (+15 colonnes
+     * cc_*, quality_*, impact_*, owasp_top10, sans_top25, cwe).
      */
     public function testCountAttribut(): void
     {
         $reflectionClass = new \ReflectionClass(new Historique());
-        $this->assertEquals(133, count($reflectionClass->getProperties()));
+        $this->assertEquals(153, count($reflectionClass->getProperties()));
     }
 }

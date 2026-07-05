@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -25,7 +25,7 @@ class ListeProjetValidatorTest extends KernelTestCase
 
   private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
   private static string $name = 'Ma-Moulinette';
-  private static $tags = ['ma-moulinette', '2048'];
+  private static array $tags = ['ma-moulinette', '2048'];
   private static string $visibility = 'private';
   private static string $dateEnregistrement = '2024-04-12 16:23:11';
 

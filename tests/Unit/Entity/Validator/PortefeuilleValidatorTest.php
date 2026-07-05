@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -22,7 +22,7 @@ class PortefeuilleValidatorTest extends KernelTestCase
 
   private static string $portefeuille = 'MES PROJETS';
   private static string $groupeFonctionnel = 'MA PETITE ENTREPRISE';
-  private static $liste =  ['fr.ma-petite-entreprise:ma-moulinette'];
+  private static array $liste =  ['fr.ma-petite-entreprise:ma-moulinette'];
   private static string $dateModification = '2024-03-26 14:46:38+01';
   private static string $dateEnregistrement = '2024-03-25 12:26:58+01';
 
@@ -87,7 +87,7 @@ class PortefeuilleValidatorTest extends KernelTestCase
   {
     $portefeuille = new portefeuille();
     $portefeuille->setListe([]);
-    $this->assertNotNull($portefeuille->getListe());
+    $this->assertSame([], $portefeuille->getListe());
   }
 
   public function testCountAttribut(): void

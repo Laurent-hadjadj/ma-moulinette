@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -50,18 +50,29 @@ class BatchExecutionCaseTest extends TestCase
         $this->assertInstanceOf(\DateTimeImmutable::class, $entity->getDateEnregistrement());
     }
 
-    public function testConstructorGeneratesUlidsWhenNull(): void
+    /* MODIF 2026-05-05 [fix-ulid-nullable] : test de regression — le constructor exige
+     * desormais des Ulid non-nullables (alignement DDL NOT NULL). Passer null doit lever TypeError. */
+    public function testConstructorRejectsNullExecutionId(): void
     {
-        $entity = new BatchExecution('job', null, null, null, 'COLLECTE');
-        $this->assertInstanceOf(Ulid::class, $entity->getExecutionId());
-        $this->assertInstanceOf(Ulid::class, $entity->getTraitementId());
+        $this->expectException(\TypeError::class);
+        /** @phpstan-ignore-next-line on teste explicitement un appel invalide */
+        new BatchExecution('job', null, new Ulid(), null, 'COLLECTE');
     }
 
-    public function testSettingAndGettingId(): void
+    public function testConstructorRejectsNullTraitementId(): void
+    {
+        $this->expectException(\TypeError::class);
+        /** @phpstan-ignore-next-line on teste explicitement un appel invalide */
+        new BatchExecution('job', new Ulid(), null, null, 'COLLECTE');
+    }
+
+    /* L'id est genere par la base (typed property non initialisee avant persist).
+     * On verifie juste l'absence du setter setId : l'ID ne doit pas etre exposable. */
+    public function testIdHasNoSetter(): void
     {
         $entity = $this->getEntity();
-        $entity->setId(42);
-        $this->assertSame(42, $entity->getId());
+        $this->assertFalse(method_exists($entity, 'setId'),
+            'BatchExecution::setId() ne devrait pas exister (ID auto-genere).');
     }
 
     public function testSettingAndGettingExecutionId(): void
@@ -102,24 +113,44 @@ class BatchExecutionCaseTest extends TestCase
         $this->assertEquals($date, $entity->getDateEnregistrement());
     }
 
-    public function testAddAndRemoveJournal(): void
+    /* MODIF 2026-05-05 : adaptation au remaniement de BatchExecutionJournal (constructor
+     * implicite, pas d'arguments nommes). On utilise les setters au lieu d'un constructor. */
+    public function testAddJournal(): void
     {
         $entity = $this->getEntity();
-        $journal = new BatchExecutionJournal(
-            nomProjet: 'projet1',
-            portefeuille: 'Equipe DEV',
-            compteRendu: '<p>OK</p>',
-            batchExecution: $entity,
-            dateExecution: new \DateTimeImmutable(),
-            code: 200
-        );
+        $journal = new BatchExecutionJournal();
+        $journal->setNomProjet('projet1');
+        $journal->setPortefeuille('Equipe DEV');
+        $journal->setCompteRendu('<p>OK</p>');
+        $journal->setDateExecution(new \DateTimeImmutable());
+        $journal->setCode(200);
+
         $entity->addJournal($journal);
         $this->assertCount(1, $entity->getCollectes());
-        $this->assertSame($entity, $journal->getBatchExecution());
+        $this->assertSame($entity, $journal->getJob());
+    }
 
-        $entity->removeJournal($journal);
-        $this->assertCount(0, $entity->getCollectes());
-        $this->assertNull($journal->getBatchExecution());
+    /* MODIF 2026-06-08 : couvre addCollecte (distinct de addJournal : pas de check contains). */
+    public function testAddCollecteAddsJournalUnconditionally(): void
+    {
+        $entity = $this->getEntity();
+        $journal = new BatchExecutionJournal();
+        $journal->setNomProjet('project1');
+        $journal->setPortefeuille('P1');
+        $journal->setCompteRendu('<p>OK</p>');
+        $journal->setDateExecution(new \DateTimeImmutable());
+        $journal->setCode(200);
+
+        $entity->addCollecte($journal);
+        $this->assertCount(1, $entity->getCollectes());
+        $this->assertSame($entity, $journal->getJob());
+    }
+
+    /* MODIF 2026-06-08 : couvre getId (nullable, null avant persist). */
+    public function testGetIdReturnsNullByDefault(): void
+    {
+        $entity = $this->getEntity();
+        $this->assertNull($entity->getId());
     }
 
     public function testCountAttribut(): void

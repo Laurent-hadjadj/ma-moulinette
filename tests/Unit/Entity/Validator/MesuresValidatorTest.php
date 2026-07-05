@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -21,7 +21,7 @@ use Symfony\Component\Validator\ConstraintViolation;
 /**
  * [Description MesuresValidatorTest]
  *
- * v2.0.0 : tests de validation pour les contraintes de l'entite Mesures.
+ * v2.0.0 : tests de validation pour les contraintes de l’entité Mesures.
  */
 class MesuresValidatorTest extends KernelTestCase
 {
@@ -71,6 +71,10 @@ class MesuresValidatorTest extends KernelTestCase
         $this->assertHasErrors($this->getEntity()->setUtilisateurCollecte(str_repeat('a', 321)), 1);
     }
 
+    /* MODIF 2026-05-06 : alignement avec Mesures
+     * apres retrait des 22 colonnes orphelines (codeSmell{B/C/M/m/I}, bug{B/C/M/m/I},
+     * vulnerability{B/C/M/m/I}, menacePotentielle*) et passage de maintainabilityIssues
+     * de INT vers STRING (cf. session 2026-05-05). */
     /**
      * Liste des setters int contraints par PositiveOrZero (>= 0).
      */
@@ -88,20 +92,15 @@ class MesuresValidatorTest extends KernelTestCase
             'MinorViolations', 'InfoViolations',
             'SoftwareQualityBlockerIssues', 'SoftwareQualityHighIssues', 'SoftwareQualityMediumIssues',
             'SoftwareQualityLowIssues', 'SoftwareQualityInfoIssues',
-            'CodeSmells', 'CodeSmellBlocker', 'CodeSmellCritical', 'CodeSmellMajor',
-            'CodeSmellMinor', 'CodeSmellInfo',
-            'MaintainabilityIssues', 'SqaleIndex', 'EffortToReachMaintainabilityRatingA',
+            'CodeSmells',
+            'SqaleIndex', 'EffortToReachMaintainabilityRatingA',
             'SoftwareQualityMaintainabilityRemediationEffort',
             'EffortToReachSoftwareQualityMaintainabilityRatingA',
-            'Bugs', 'BugBlocker', 'BugCritical', 'BugMajor', 'BugMinor', 'BugInfo',
+            'Bugs',
             'ReliabilityRemediationEffort', 'SoftwareQualityReliabilityRemediationEffort',
-            'Vulnerabilities', 'VulnerabilityBlocker', 'VulnerabilityCritical', 'VulnerabilityMajor',
-            'VulnerabilityMinor', 'VulnerabilityInfo',
+            'Vulnerabilities',
             'SecurityRemediationEffort', 'SoftwareQualitySecurityRemediationEffort',
             'SecurityHotspot',
-            'MenacePotentielleToReviewHigh', 'MenacePotentielleToReviewMedium', 'MenacePotentielleToReviewLow',
-            'MenacePotentielleReviewedHigh', 'MenacePotentielleReviewedMedium', 'MenacePotentielleReviewedLow',
-            'MenacePotentielleTotale',
         ];
         foreach ($names as $n) {
             yield $n => [$n];
@@ -218,10 +217,11 @@ class MesuresValidatorTest extends KernelTestCase
 
     /**
      * v2.0.0 : l'entite Mesures comporte 106 attributs.
+     * MODIF 2026-05-05 : 86 attributs apres alignement avec le DDL.
      */
     public function testCountAttribut(): void
     {
         $reflectionClass = new \ReflectionClass(new Mesures());
-        $this->assertEquals(106, count($reflectionClass->getProperties()));
+        $this->assertEquals(86, count($reflectionClass->getProperties()));
     }
 }

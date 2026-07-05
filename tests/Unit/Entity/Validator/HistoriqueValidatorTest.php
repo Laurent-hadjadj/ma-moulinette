@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2026.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -21,7 +21,7 @@ use Symfony\Component\Validator\ConstraintViolation;
 /**
  * [Description HistoriqueValidatorTest]
  *
- * v2.0.0 : tests de validation pour les contraintes de l'entite Historique.
+ * v2.0.0 : tests de validation pour les contraintes de l’entité Historique.
  */
 class HistoriqueValidatorTest extends KernelTestCase
 {
@@ -56,7 +56,7 @@ class HistoriqueValidatorTest extends KernelTestCase
 
     public function testInvalidBlankEntity(): void
     {
-        // Cle composite + cles requises : NotBlank
+        // Cle composite + clés requises : NotBlank
         $this->assertHasErrors($this->getEntity()->setMavenKey(''), 1);
         $this->assertHasErrors($this->getEntity()->setVersion(''), 1);
         $this->assertHasErrors($this->getEntity()->setDateVersion(''), 1);
@@ -108,7 +108,8 @@ class HistoriqueValidatorTest extends KernelTestCase
             // Code smells / maintenabilite
             'CodeSmells', 'CodeSmellBlocker', 'CodeSmellCritical', 'CodeSmellMajor',
             'CodeSmellMinor', 'CodeSmellInfo',
-            'MaintainabilityIssues', 'SqaleIndex', 'EffortToReachMaintainabilityRatingA',
+            /* MODIF 2026-05-07 [tests-validators] : MaintainabilityIssues n'est plus int (DDL VARCHAR(255)). */
+            'SqaleIndex', 'EffortToReachMaintainabilityRatingA',
             'SoftwareQualityMaintainabilityRemediationEffort',
             'EffortToReachSoftwareQualityMaintainabilityRatingA',
             // Bugs / fiabilite
@@ -239,10 +240,19 @@ class HistoriqueValidatorTest extends KernelTestCase
 
     /**
      * v2.0.0 : l'entite Historique comporte 133 attributs.
+     * MODIF 2026-05-05 : 134 attributs apres ajout
+     * de nclocLanguageDistribution.
      */
     public function testCountAttribut(): void
     {
+        /* MODIF 2026-05-07 : 134 → 135 (ajout webTodo le 2026-05-06).
+         * MODIF 2026-05-15 [logger-details]   : 135 → 136 (ajout loggerBreakdown JSONB).
+         * MODIF 2026-05-16 [bug-historique-rating-columns] : 136 → 138 (ajout
+         * coverageRating + duplicatedLinesRating oubliées de l’entité, présentes
+         * dans DDL et HistoriqueRepository).
+         * MODIF 2026-05-17 : 138 → 153 (+15 colonnes
+         * cc_*, quality_*, impact_*, owasp_top10, sans_top25, cwe). */
         $reflectionClass = new \ReflectionClass(new Historique());
-        $this->assertEquals(133, count($reflectionClass->getProperties()));
+        $this->assertEquals(153, count($reflectionClass->getProperties()));
     }
 }
