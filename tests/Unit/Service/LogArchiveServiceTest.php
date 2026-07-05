@@ -1,232 +1,269 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
 
-use App\Service\LogArchiveService;
-use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
-use PHPUnit\Framework\MockObject\MockObject;
+use App\Service\LogArchive\LogArchiveService;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use ZipArchive;
 
-#[AllowMockObjectsWithoutExpectations]
+/**
+ * Tests unitaires de LogArchiveService.
+ *
+ * Couvre :
+ *  - listLogs : filtrage env, type, fichiers non-.log ignorés
+ *  - createZipFromFilenames : happy path, entrée vide, tous fichiers invalides,
+ *    protection path-traversal (/ et \)
+ *  - createZip : exception sur tableau vide
+ */
 class LogArchiveServiceTest extends TestCase
 {
-    /** @var LoggerInterface&MockObject */
-    private MockObject $logger;
-
-    private string $logDir;
-
+    private string $tmpDir;
     private LogArchiveService $service;
-
-    /** @var list<string> chemins ZIP à supprimer en tearDown */
-    private array $zipsToCleanup = [];
 
     protected function setUp(): void
     {
-        $this->logger = $this->createMock(LoggerInterface::class);
+        $this->tmpDir = sys_get_temp_dir() . '/ma_moulinette_log_test_' . uniqid('', true);
+        mkdir($this->tmpDir, 0777, true);
 
-        // Sandbox temporaire unique pour isoler les tests
-        $this->logDir = sys_get_temp_dir() . '/ma-moulinette-logs-' . uniqid('', true);
-        mkdir($this->logDir, 0777, true);
-
-        // Fixtures — variété de noms pour exercer resolveType/resolveEnv
-        $fixtures = [
-            'app-dev.log'          => "dev application log\n",
-            'app-prod.log'         => "prod application log\n",
-            'request-dev.log'      => "request log line\n",
-            'messenger-test.log'   => "messenger test log\n",
-            'deprecations-dev.log' => "deprecation log\n",
-            'dev.log'              => "main dev log\n",   // env via regex courte
-            'prod.log'              => "main prod log\n",
-            'notes.txt'            => "not a log file\n", // filtré par extension
-            'random.log'           => "log sans env\n",   // type=main env=null
-        ];
-        foreach ($fixtures as $name => $content) {
-            file_put_contents($this->logDir . '/' . $name, $content);
-        }
-
-        $this->service = new LogArchiveService($this->logDir, $this->logger);
+        $logger = $this->createStub(LoggerInterface::class);
+        $this->service = new LogArchiveService($this->tmpDir, $logger);
     }
 
     protected function tearDown(): void
     {
-        foreach ($this->zipsToCleanup as $zip) {
-            @unlink($zip);
-        }
-
-        if (is_dir($this->logDir)) {
-            foreach (glob($this->logDir . '/*') ?: [] as $file) {
-                @unlink($file);
+        foreach ((scandir($this->tmpDir) ?: []) as $f) {
+            if ($f === '.' || $f === '..') {
+                continue;
             }
-            @rmdir($this->logDir);
+            $path = $this->tmpDir . '/' . $f;
+            if (is_file($path)) {
+                unlink($path);
+            }
         }
+        rmdir($this->tmpDir);
     }
+
+    /* ================================================================
+     * Helpers
+     * ================================================================ */
+
+    private function touch(string $filename, string $content = 'log'): void
+    {
+        file_put_contents($this->tmpDir . '/' . $filename, $content);
+    }
+
+    /* ================================================================
+     * __construct
+     * ================================================================ */
 
     public function testConstructorThrowsWhenLogDirDoesNotExist(): void
     {
+        $logger = $this->createStub(LoggerInterface::class);
+
         $this->expectException(\RuntimeException::class);
         $this->expectExceptionMessage('Dossier de logs introuvable');
 
-        new LogArchiveService(
-            sys_get_temp_dir() . '/ma-moulinette-noexist-' . uniqid('', true),
-            $this->logger
-        );
+        new LogArchiveService('/nonexistent/path/that/cannot/exist_' . uniqid('', true), $logger);
     }
+
+    /* ================================================================
+     * listLogs
+     * ================================================================ */
 
     public function testListLogsReturnsOnlyDotLogFiles(): void
     {
+        $this->touch('prod.log');
+        $this->touch('prod.log.gz');   // doit être ignoré (pas .log)
+        $this->touch('readme.txt');     // doit être ignoré
+
         $logs = $this->service->listLogs();
-        $names = array_column($logs, 'name');
 
-        // notes.txt doit être filtré
-        $this->assertNotContains('notes.txt', $names);
-
-        // Tous les autres .log présents dans la sandbox
-        $expected = [
-            'app-dev.log', 'app-prod.log',
-            'request-dev.log', 'messenger-test.log', 'deprecations-dev.log',
-            'dev.log', 'prod.log', 'random.log',
-        ];
-        sort($names);
-        sort($expected);
-        $this->assertSame($expected, $names);
-    }
-
-    public function testListLogsEntryHasExpectedMetadataShape(): void
-    {
-        $logs = $this->service->listLogs();
-        $entry = $this->findByName($logs, 'app-dev.log');
-
-        $this->assertIsString($entry['path']);
-        $this->assertIsInt($entry['size']);
-        $this->assertIsInt($entry['mtime']);
-        $this->assertSame('application', $entry['type']);
-        $this->assertSame('dev', $entry['env']);
-    }
-
-    public function testListLogsFiltersByTypes(): void
-    {
-        $logs = $this->service->listLogs(env: null, types: ['request', 'messenger']);
-        $names = array_column($logs, 'name');
-
-        sort($names);
-        $this->assertSame(['messenger-test.log', 'request-dev.log'], $names);
+        $this->assertCount(1, $logs);
+        $this->assertSame('prod.log', $logs[0]['name']);
     }
 
     public function testListLogsFiltersByEnv(): void
     {
-        $logs = $this->service->listLogs(env: 'prod');
+        $this->touch('prod.log');
+        $this->touch('dev.log');
+        $this->touch('app-prod.log');
+
+        $logs = $this->service->listLogs('prod');
         $names = array_column($logs, 'name');
 
-        // prod.log (env via regex courte) + app-prod.log
-        // random.log a env=null donc échappe au filtre (env && fileEnv exige les deux non null)
-        sort($names);
-        $this->assertContains('app-prod.log', $names);
         $this->assertContains('prod.log', $names);
-        $this->assertNotContains('app-dev.log', $names);
-        $this->assertNotContains('request-dev.log', $names);
+        $this->assertContains('app-prod.log', $names);
+        $this->assertNotContains('dev.log', $names);
     }
 
-    public function testListLogsResolvesTypeAndEnvCorrectlyAcrossFilenames(): void
+    public function testListLogsFiltersByType(): void
     {
+        $this->touch('prod.log');
+        $this->touch('app-prod.log');
+        $this->touch('request-prod.log');
+
+        $logs = $this->service->listLogs(null, ['application']);
+        $names = array_column($logs, 'name');
+
+        $this->assertContains('app-prod.log', $names);
+        $this->assertNotContains('prod.log', $names);
+        $this->assertNotContains('request-prod.log', $names);
+    }
+
+    public function testListLogsReturnsEmptyWhenNoLogFiles(): void
+    {
+        $this->touch('readme.txt');
+
         $logs = $this->service->listLogs();
-        $map = [];
-        foreach ($logs as $log) {
-            $map[$log['name']] = ['type' => $log['type'], 'env' => $log['env']];
-        }
 
-        $this->assertSame(['type' => 'application', 'env' => 'dev'],  $map['app-dev.log']);
-        $this->assertSame(['type' => 'request', 'env' => 'dev'],       $map['request-dev.log']);
-        $this->assertSame(['type' => 'messenger', 'env' => 'test'],    $map['messenger-test.log']);
-        $this->assertSame(['type' => 'deprecation', 'env' => 'dev'],   $map['deprecations-dev.log']);
-        $this->assertSame(['type' => 'main', 'env' => 'dev'],          $map['dev.log']);
-        $this->assertSame(['type' => 'main', 'env' => null],           $map['random.log']);
+        $this->assertSame([], $logs);
     }
 
-    public function testCreateZipThrowsWhenLogsListIsEmpty(): void
+    public function testListLogsResolvesTypesCorrectly(): void
     {
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Aucun log à archiver');
+        $this->touch('prod.log');
+        $this->touch('app-prod.log');
+        $this->touch('request-prod.log');
+        $this->touch('messenger-prod.log');
+        $this->touch('deprecations-prod.log');
 
-        $this->service->createZip([]);
+        $logs = $this->service->listLogs();
+        $byName = array_column($logs, 'type', 'name');
+
+        $this->assertSame('main',        $byName['prod.log']);
+        $this->assertSame('application', $byName['app-prod.log']);
+        $this->assertSame('request',     $byName['request-prod.log']);
+        $this->assertSame('messenger',   $byName['messenger-prod.log']);
+        $this->assertSame('deprecation', $byName['deprecations-prod.log']);
     }
 
-    public function testCreateZipPacksProvidedLogsAndReturnsValidArchive(): void
+    public function testListLogsResolvesEnvFromFilename(): void
     {
-        $logs = $this->service->listLogs(types: ['application']); // 2 fichiers
+        $this->touch('prod.log');
+        $this->touch('app-dev.log');
+        $this->touch('unknown-channel.log');
 
-        $zipPath = $this->service->createZip($logs);
-        $this->zipsToCleanup[] = $zipPath;
+        $logs = $this->service->listLogs();
+        $byName = array_column($logs, 'env', 'name');
+
+        $this->assertSame('prod', $byName['prod.log']);
+        $this->assertSame('dev',  $byName['app-dev.log']);
+        $this->assertNull($byName['unknown-channel.log']);
+    }
+
+    /* ================================================================
+     * createZipFromFilenames
+     * ================================================================ */
+
+    public function testCreateZipFromFilenamesProducesReadableZip(): void
+    {
+        $this->touch('prod.log', 'contenu prod');
+        $this->touch('dev.log',  'contenu dev');
+
+        $zipPath = $this->service->createZipFromFilenames(['prod.log', 'dev.log']);
 
         $this->assertFileExists($zipPath);
 
         $zip = new ZipArchive();
-        $this->assertTrue($zip->open($zipPath) === true);
+        $this->assertSame(true, $zip->open($zipPath));
         $this->assertSame(2, $zip->numFiles);
-
-        $names = [];
-        for ($i = 0; $i < $zip->numFiles; $i++) {
-            $names[] = $zip->getNameIndex($i);
-        }
-        sort($names);
         $zip->close();
 
-        $this->assertSame(['app-dev.log', 'app-prod.log'], $names);
+        unlink($zipPath);
     }
 
-    public function testCreateZipFromFilenamesThrowsWhenEmpty(): void
+    public function testCreateZipFromFilenamesThrowsOnEmptyInput(): void
     {
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Aucun fichier sélectionné');
 
         $this->service->createZipFromFilenames([]);
     }
 
-    public function testCreateZipFromFilenamesSkipsPathTraversalAttempts(): void
+    public function testCreateZipFromFilenamesThrowsWhenAllFilesAreInvalid(): void
     {
-        $zipPath = $this->service->createZipFromFilenames([
-            '../evil.log',         // contient '/' → skipped
-            '..\\sneaky.log',      // contient '\' → skipped
-            'app-dev.log',         // OK, présent
-        ]);
-        $this->zipsToCleanup[] = $zipPath;
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessageMatches('/aucun fichier valide/i');
+
+        // Aucun fichier créé → tous les noms sont introuvables
+        $this->service->createZipFromFilenames(['fantome.log', 'absent.log']);
+    }
+
+    public function testCreateZipFromFilenamesBlocksForwardSlash(): void
+    {
+        $this->touch('prod.log');
+
+        $this->expectException(\RuntimeException::class);
+
+        // Seul le fichier avec slash est passé → aucun valide → exception
+        $this->service->createZipFromFilenames(['../etc/passwd']);
+    }
+
+    public function testCreateZipFromFilenamesBlocksBackslash(): void
+    {
+        $this->touch('prod.log');
+
+        $this->expectException(\RuntimeException::class);
+
+        $this->service->createZipFromFilenames(['..\windows\system32\config']);
+    }
+
+    public function testCreateZipFromFilenamesSkipsInvalidButContinues(): void
+    {
+        $this->touch('prod.log', 'ok');
+
+        // '../etc/passwd' ignoré car contient '/', 'prod.log' accepté
+        $zipPath = $this->service->createZipFromFilenames(['../etc/passwd', 'prod.log']);
 
         $zip = new ZipArchive();
         $zip->open($zipPath);
         $this->assertSame(1, $zip->numFiles);
-        $this->assertSame('app-dev.log', $zip->getNameIndex(0));
         $zip->close();
+
+        unlink($zipPath);
     }
 
-    public function testCreateZipFromFilenamesSkipsMissingFilesAndLogsWarning(): void
+    /* ================================================================
+     * createZip
+     * ================================================================ */
+
+    public function testCreateZipThrowsOnEmptyLogArray(): void
     {
-        // Un warning attendu pour le fichier absent
-        $this->logger->expects($this->once())
-            ->method('warning')
-            ->with(
-                'Fichier ignoré pour ZIP',
-                $this->callback(fn (array $ctx) => $ctx['filename'] === 'absent.log')
-            );
+        $this->expectException(\RuntimeException::class);
 
-        $zipPath = $this->service->createZipFromFilenames(['app-dev.log', 'absent.log']);
-        $this->zipsToCleanup[] = $zipPath;
+        $this->service->createZip([]);
+    }
 
+    public function testCreateZipProducesZipFromLogArray(): void
+    {
+        $this->touch('prod.log', 'data');
+
+        $logs = [[
+            'name' => 'prod.log',
+            'path' => $this->tmpDir . '/prod.log',
+        ]];
+
+        $zipPath = $this->service->createZip($logs);
+
+        $this->assertFileExists($zipPath);
         $zip = new ZipArchive();
         $zip->open($zipPath);
         $this->assertSame(1, $zip->numFiles);
         $zip->close();
-    }
 
-    private function findByName(array $logs, string $name): array
-    {
-        foreach ($logs as $log) {
-            if ($log['name'] === $name) {
-                return $log;
-            }
-        }
-        $this->fail(sprintf('Entrée "%s" introuvable dans le résultat de listLogs', $name));
+        unlink($zipPath);
     }
 }

@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -19,9 +19,7 @@ use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpClient\Exception\ServerException;
-use Symfony\Component\HttpClient\Exception\TimeoutException;
-use Symfony\Component\HttpClient\Exception\TransportException;
+use Symfony\Component\HttpClient\Exception\{ServerException,TimeoutException,TransportException};
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
@@ -50,13 +48,13 @@ class ClientTest extends TestCase
     public static string $sonarToken = '123456789ABCDEF';
 
     /** @var HttpClientInterface */
-    private $httpClient;
+    private HttpClientInterface $httpClient;
     /** @var ParameterBagInterface */
-    private $params;
+    private ParameterBagInterface $params;
     /** @var LoggerInterface */
-    private $logger;
+    private LoggerInterface $logger;
     /** @var ClientService */
-    private $client;
+    private ClientService $client;
 
     protected function setUp(): void
     {

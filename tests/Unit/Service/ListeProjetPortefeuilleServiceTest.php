@@ -1,5 +1,16 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
@@ -52,8 +63,8 @@ class ListeProjetPortefeuilleServiceTest extends TestCase
         $this->repository->expects($this->once())
             ->method('selectPortefeuille')
             ->with([
-                'titre_portefeuille' => 'Mon PF',
-                'portefeuille' => 'pf-alpha',
+                'portefeuille' => 'Mon PF',
+                'groupe_fonctionnel' => 'pf-alpha',
             ])
             ->willReturn($repoResult);
 
@@ -140,8 +151,8 @@ class ListeProjetPortefeuilleServiceTest extends TestCase
             [
                 'code' => 404,
                 'type' => 'warning',
-                'message' => "Votre portefeuille ne contient pas ce projet (Erreur 200).",
-                'erreur' => 'Aucune erreur remontée.',
+                'message' => "Votre portefeuille ne contient pas ce projet (Erreur 404).",
+                'erreur' => 404,
             ],
             $this->service->listeProjet('My PF', 'pf-x')
         );

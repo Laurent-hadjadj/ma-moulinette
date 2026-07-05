@@ -1,13 +1,21 @@
 <?php
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
 
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
 
-use App\Entity\Historique;
-use App\Entity\Repartition;
-use App\Repository\HistoriqueRepository;
-use App\Repository\RepartitionRepository;
+use App\Entity\{Historique, Repartition};
+use App\Repository\{HistoriqueRepository, RepartitionRepository};
 use App\Service\ProjetCosuiService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;

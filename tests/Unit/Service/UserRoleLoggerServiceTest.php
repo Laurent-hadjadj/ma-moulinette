@@ -1,5 +1,16 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
@@ -27,6 +38,8 @@ class UserRoleLoggerServiceTest extends TestCase
         $user = $this->makeUser('user@example.com');
         $editor = $this->makeUser('editor@example.com');
 
+        /* MODIF 2026-05-07 : capture un UserRoleLog — PHPDoc pour intelephense. */
+        /** @var UserRoleLog|null $captured */
         $captured = null;
         $this->em->expects($this->once())
             ->method('persist')
@@ -62,6 +75,8 @@ class UserRoleLoggerServiceTest extends TestCase
         $user = $this->makeUser('u@x');
         $editor = $this->makeUser('e@x');
 
+        /* MODIF 2026-05-07 : capture un UserRoleLog — PHPDoc pour intelephense. */
+        /** @var UserRoleLog|null $captured */
         $captured = null;
         $this->em->expects($this->once())
             ->method('persist')
@@ -73,6 +88,7 @@ class UserRoleLoggerServiceTest extends TestCase
 
         $this->service->log($user, $editor, [], ['ROLE_UTILISATEUR'], false, true, []);
 
+        $this->assertInstanceOf(UserRoleLog::class, $captured);
         $this->assertSame([], $captured->getAlerts());
     }
 

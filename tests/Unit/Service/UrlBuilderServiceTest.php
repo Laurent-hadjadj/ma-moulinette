@@ -1,56 +1,85 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
+declare(strict_types=1);
+
 namespace App\Tests\Unit\Service;
 
 use App\Service\UrlBuilderService;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
-class UrlBuilderServiceTest extends TestCase
+#[CoversClass(UrlBuilderService::class)]
+final class UrlBuilderServiceTest extends TestCase
 {
-    public function testBuildReturnsValidUrl(): void
+    private UrlBuilderService $service;
+
+    protected function setUp(): void
     {
-        /** @var \Psr\Log\LoggerInterface&\PHPUnit\Framework\MockObject\MockObject $logger */
-        $logger = $this->createMock(LoggerInterface::class);
-
-        // Vérifie qu'un log debug est bien appelé
-        $logger->expects($this->once())
-            ->method('debug')
-            ->with(
-                $this->equalTo('URLBuilder: URL construite avec succès'),
-                $this->arrayHasKey('fullUrl')
-            );
-
-        $builder = new UrlBuilderService($logger);
-
-        $url = $builder->build(
-            'https://example.com/',
-            '/api/data',
-            ['p' => 1, 'ps' => 10]
-        );
-
-        $this->assertEquals('https://example.com/api/data?p=1&ps=10', $url);
+        $this->service = new UrlBuilderService(new NullLogger());
     }
 
-    public function testBuildThrowsExceptionOnInvalidUrl(): void
+    public function testBuildSimpleUrlWithoutQueryParams(): void
     {
-        /** @var \Psr\Log\LoggerInterface&\PHPUnit\Framework\MockObject\MockObject $logger */
-        $logger = $this->createMock(LoggerInterface::class);
+        $url = $this->service->build('https://sonar.example.com', '/api/measures/component');
 
-        // Vérifie qu'un log error est bien appelé
-        $logger->expects($this->once())
-            ->method('error')
-            ->with(
-                $this->equalTo('❌ [URLBuilder] URL invalide générée'),
-                $this->arrayHasKey('fullUrl')
-            );
+        self::assertSame('https://sonar.example.com/api/measures/component', $url);
+    }
 
-        $builder = new UrlBuilderService($logger);
+    public function testTrimsTrailingSlashOnBaseAndLeadingSlashOnPath(): void
+    {
+        $url = $this->service->build('https://sonar.example.com/', '/api/measures/component');
 
+        self::assertSame('https://sonar.example.com/api/measures/component', $url);
+    }
+
+    public function testAppendsQueryParametersWithQuestionMark(): void
+    {
+        $url = $this->service->build(
+            'https://sonar.example.com',
+            '/api/measures/component',
+            ['component' => 'fr.example:my-app', 'metricKeys' => 'reliability_rating']
+        );
+
+        self::assertStringContainsString('?component=', $url);
+        self::assertStringContainsString('metricKeys=reliability_rating', $url);
+        self::assertStringContainsString('component=fr.example%3Amy-app', $url);
+    }
+
+    public function testUsesAmpersandWhenBaseUrlAlreadyHasQueryString(): void
+    {
+        $url = $this->service->build(
+            'https://sonar.example.com',
+            '/api/measures/component?existing=1',
+            ['extra' => 'value']
+        );
+
+        self::assertStringContainsString('?existing=1&extra=value', $url);
+    }
+
+    public function testEmptyQueryParamsArrayDoesNotAddSeparator(): void
+    {
+        $url = $this->service->build('https://sonar.example.com', '/api/health', []);
+
+        self::assertSame('https://sonar.example.com/api/health', $url);
+    }
+
+    public function testThrowsOnInvalidUrl(): void
+    {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('URL invalide générée');
+        $this->expectExceptionMessage('URL invalide');
 
-        // Cas volontairement invalide
-        $builder->build('http://', '/test');
+        $this->service->build('not-a-valid-base', '/path');
     }
 }

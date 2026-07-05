@@ -1,8 +1,9 @@
 <?php
+
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright © 2015-2026
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -26,7 +27,7 @@ class ActivityReportServiceTest extends TestCase
     private EntityManagerInterface $entityManager;
 
     /** @var ActivityReportService */
-    private $activityReportService;
+    private ActivityReportService $activityReportService;
 
     protected function setUp(): void
     {

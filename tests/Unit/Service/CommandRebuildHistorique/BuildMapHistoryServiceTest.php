@@ -1,5 +1,16 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Service\CommandRebuildHistorique;
@@ -62,6 +73,27 @@ class BuildMapHistoryServiceTest extends TestCase
         $this->assertStringContainsString('accepted_issues', $query);
         $this->assertStringContainsString('software_quality_blocker_issues', $query);
         $this->assertStringContainsString('software_quality_maintainability_issues', $query);
+    }
+
+    public function testMetricsKeyForLta2026ReturnsCorePlus10Plus2024Metrics(): void
+    {
+        $query = $this->service->metricsKey(2026);
+
+        $this->assertStringContainsString('bugs', $query);                                    // core
+        $this->assertStringContainsString('accepted_issues', $query);                         // LTA 10
+        $this->assertStringContainsString('software_quality_reliability_rating', $query);     // LTA 10
+        $this->assertStringContainsString('software_quality_security_rating', $query);        // LTA 10
+        $this->assertStringContainsString('software_quality_maintainability_rating', $query); // LTA 10
+        $this->assertStringContainsString('software_quality_blocker_issues', $query);         // 2024+
+        $this->assertStringContainsString('software_quality_maintainability_issues', $query); // 2024+
+    }
+
+    public function testMetricsKeyFor2025ReturnsSameAsLta2024(): void
+    {
+        $query2024 = $this->service->metricsKey(2024);
+        $query2025 = $this->service->metricsKey(2025);
+
+        $this->assertSame($query2024, $query2025);
     }
 
     // ─────────────────────── metricsRebuild happy paths ───────────────────────

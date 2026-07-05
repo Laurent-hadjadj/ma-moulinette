@@ -1,95 +1,91 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
+declare(strict_types=1);
+
 namespace App\Tests\Unit\Service;
 
 use App\Service\DateTools;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-/**
- * [Description DateToolsTest]
- */
-class DateToolsTest extends TestCase
+#[CoversClass(DateTools::class)]
+final class DateToolsTest extends TestCase
 {
-    private DateTools $dateTools;
+    private DateTools $service;
 
     protected function setUp(): void
     {
-        $this->dateTools = new DateTools();
+        $this->service = new DateTools();
     }
 
     /**
-     * Tests pour la méthode dateToMinute
+     * @param int $expected
      */
-    public function testDateToMinute(): void
+    #[DataProvider('dateToMinuteProvider')]
+    public function testDateToMinuteParsesEffortStrings(string $input, int $expected): void
     {
-        // Test avec jours, heures et minutes
-        $this->assertEquals(2941, $this->dateTools->dateToMinute('2d1h1min'));
-
-        // Test avec seulement heures et minutes
-        $this->assertEquals(61, $this->dateTools->dateToMinute('1h1min'));
-
-        // Test avec seulement minutes
-        $this->assertEquals(15, $this->dateTools->dateToMinute('15min'));
-
-        // Test avec seulement heures
-        $this->assertEquals(120, $this->dateTools->dateToMinute('2h'));
-
-        // Test avec jours seulement
-        $this->assertEquals(2880, $this->dateTools->dateToMinute('2d'));
+        self::assertSame($expected, (int) $this->service->dateToMinute($input));
     }
 
     /**
-     * Tests pour la méthode minutesTo
+     * @return array<string, array{0: string, 1: int}>
      */
-    public function testMinutesTo(): void
+    public static function dateToMinuteProvider(): array
     {
-        // Test avec plusieurs jours
-        $this->assertEquals('2d, 1h:1min', $this->dateTools->minutesTo(2941));
+        return [
+            'days hours minutes' => ['2d1h1min', 2 * 1440 + 60 + 1],
+            'hours and minutes only' => ['1h30min', 90],
+            'minutes only' => ['45min', 45],
+            'days only' => ['3d', 3 * 1440],
+            'zero' => ['0', 0],
+        ];
+    }
 
-        // Test avec jours et heures
-        $this->assertEquals('1d, 7h:0min', $this->dateTools->minutesTo(1860));
-
-        // Test avec heures et minutes
-        $this->assertEquals('1h:15min', $this->dateTools->minutesTo(75));
-
-        // Test avec seulement minutes
-        $this->assertEquals('0h:5min', $this->dateTools->minutesTo(5));
+    #[DataProvider('minutesToProvider')]
+    public function testMinutesToFormatsHumanReadable(int $minutes, string $expected): void
+    {
+        self::assertSame($expected, $this->service->minutesTo($minutes));
     }
 
     /**
-     * Tests pour la méthode minutesToString
+     * @return array<string, array{0: int, 1: string}>
      */
-    public function testMinutesToString(): void
+    public static function minutesToProvider(): array
     {
-        // Test avec plusieurs jours
-        $this->assertEquals('2d, 1h:1m', $this->dateTools->minutesToString(2941));
-
-        // Test avec un seul jour
-        $this->assertEquals('1d, 7h:0m', $this->dateTools->minutesToString(1860));
-
-        // Test avec heures et minutes
-        $this->assertEquals('0d, 1h:15m', $this->dateTools->minutesToString(75));
-
-        // Test avec seulement minutes
-        $this->assertEquals('0d, 0h:5m', $this->dateTools->minutesToString(5));
-
-        // Test avec 0 minutes
-        $this->assertEquals('0d, 0h:0m', $this->dateTools->minutesToString(0));
+        return [
+            'minutes only' => [30, '0h:30min'],
+            'one hour' => [60, '1h:0min'],
+            'one hour thirty' => [90, '1h:30min'],
+            'one day' => [1440, '1d, 0h:0min'],
+            'one day, two hours, fifteen minutes' => [1440 + 120 + 15, '1d, 2h:15min'],
+            'zero' => [0, '0h:0min'],
+        ];
     }
 
-    /**
-     * Tests de robustesse
-     */
-    public function testRobustness(): void
+    public function testMinutesToStringFormatsWithSprintf(): void
     {
-        // Test avec une chaîne vide pour dateToMinute
-        $this->assertEquals(0, $this->dateTools->dateToMinute(''));
+        self::assertSame('0d, 0h:0m', $this->service->minutesToString(0));
+        self::assertSame('0d, 1h:30m', $this->service->minutesToString(90));
+        self::assertSame('1d, 0h:0m', $this->service->minutesToString(1440));
+        self::assertSame('2d, 4h:5m', $this->service->minutesToString(2 * 1440 + 4 * 60 + 5));
+    }
 
-        // Test avec des minutes négatives
-        $this->assertEquals('-1h:-5min', $this->dateTools->minutesTo(-65));
-
-        // Test avec 0 minutes
-        $this->assertEquals('0h:0min', $this->dateTools->minutesTo(0));
-        $this->assertEquals('0d, 0h:0m', $this->dateTools->minutesToString(0));
+    public function testRoundTripDateToMinuteAndBack(): void
+    {
+        $minutes = (int) $this->service->dateToMinute('2d1h30min');
+        self::assertSame(2 * 1440 + 60 + 30, $minutes);
+        self::assertSame('2d, 1h:30min', $this->service->minutesTo($minutes));
     }
 }

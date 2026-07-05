@@ -1,11 +1,21 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
 
-use App\Entity\BatchExecution;
-use App\Entity\BatchExecutionJournal;
+use App\Entity\{BatchExecution, BatchExecutionJournal};
 use App\Service\PdfExportService;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
@@ -43,10 +53,9 @@ class PdfExportServiceTest extends TestCase
 
         // Le service lit `kernel.project_dir` pour localiser le logo — on pointe sur le vrai projet.
         $this->projectDir = realpath(__DIR__ . '/../../..');
-        $this->params->expects($this->atLeastOnce())
-            ->method('get')
-            ->with('kernel.project_dir')
-            ->willReturn($this->projectDir);
+        $this->params->method('get')->willReturnMap([
+            ['kernel.project_dir', $this->projectDir],
+        ]);
 
         $this->service = new PdfExportService($this->twig, $this->params);
     }
@@ -91,7 +100,8 @@ class PdfExportServiceTest extends TestCase
             dateEnregistrement: $dateEnregistrement,
         );
 
-        $capturedContext = null;
+        /* MODIF 2026-05-07 : init [] (intelephense by-ref). */
+        $capturedContext = [];
         $this->twig->expects($this->once())
             ->method('render')
             ->with(
@@ -105,7 +115,6 @@ class PdfExportServiceTest extends TestCase
 
         $this->service->generateRapportPdf($batchExecution, 'Interne');
 
-        $this->assertIsArray($capturedContext);
         $this->assertSame('Interne', $capturedContext['document_type']);
         $this->assertIsString($capturedContext['logoBase64']);
         $this->assertNotEmpty($capturedContext['logoBase64']);
@@ -136,7 +145,8 @@ class PdfExportServiceTest extends TestCase
     {
         $batchExecution = $this->buildBatchExecutionMock();
 
-        $capturedContext = null;
+        /* MODIF 2026-05-07 : init [] (intelephense by-ref). */
+        $capturedContext = [];
         $this->twig->expects($this->once())
             ->method('render')
             ->with(
@@ -154,30 +164,214 @@ class PdfExportServiceTest extends TestCase
         $this->assertSame('Document confidentiel', $capturedContext['document_type']);
     }
 
-    public function testGenerateRapportPdfHandlesNullUlidFieldsGracefully(): void
-    {
-        // Les getters executionId/traitementId peuvent renvoyer null → ?->toRfc4122() = null
-        $batchExecution = $this->buildBatchExecutionMock(
-            executionId: null,
-            traitementId: null,
-        );
+    /* MODIF 2026-05-05 : suppression de
+     * `testGenerateRapportPdfHandlesNullUlidFieldsGracefully`. Le scenario testait
+     * `getExecutionId()` / `getTraitementId()` renvoyant null, mais l’entité
+     * BatchExecution a depuis ete alignée sur le DDL (Ulid non-nullable).
+     * Ce test couvrait un comportement qui ne peut plus se produire. */
 
-        $capturedContext = null;
+    /* MODIF 2026-05-17 : tests generateOwaspPdf.
+     * Même pattern que generateRapportPdf : Dompdf instancié réellement,
+     * Twig mocké, params mocké sur kernel.project_dir. */
+
+    public function testGenerateOwaspPdfReturnsValidPdfBinary(): void
+    {
+        $this->twig->method('render')
+            ->willReturn('<html><body><h1>OWASP</h1></body></html>');
+
+        $pdf = $this->service->generateOwaspPdf(['maven_key' => 'fr.test:app'], 'Document Interne');
+
+        $this->assertStringStartsWith('%PDF-', $pdf);
+        $this->assertGreaterThan(1000, strlen($pdf));
+    }
+
+    public function testGenerateOwaspPdfFallsBackToConfidentielWhenDocumentTypeIsNull(): void
+    {
+        $capturedCtx = [];
         $this->twig->expects($this->once())
             ->method('render')
             ->with(
-                $this->anything(),
-                $this->callback(function (array $context) use (&$capturedContext) {
-                    $capturedContext = $context;
+                '/rapport/rapport-owasp.html.twig',
+                $this->callback(function (array $ctx) use (&$capturedCtx) {
+                    $capturedCtx = $ctx;
                     return true;
                 })
             )
             ->willReturn('<html></html>');
 
-        $this->service->generateRapportPdf($batchExecution, 'Public');
+        $this->service->generateOwaspPdf([], null);
 
-        $this->assertNull($capturedContext['batch']['executionId']);
-        $this->assertNull($capturedContext['batch']['traitementId']);
+        $this->assertSame('Document confidentiel', $capturedCtx['document_type']);
+    }
+
+    public function testGenerateOwaspPdfPassesDataToTwigAsRapport(): void
+    {
+        $data = ['maven_key' => 'fr.test:app', 'version' => '2.0'];
+
+        $capturedCtx = [];
+        $this->twig->expects($this->once())
+            ->method('render')
+            ->with(
+                '/rapport/rapport-owasp.html.twig',
+                $this->callback(function (array $ctx) use (&$capturedCtx) {
+                    $capturedCtx = $ctx;
+                    return true;
+                })
+            )
+            ->willReturn('<html></html>');
+
+        $this->service->generateOwaspPdf($data, 'Document Interne');
+
+        $this->assertSame($data,              $capturedCtx['rapport']);
+        $this->assertSame('Document Interne', $capturedCtx['document_type']);
+        $this->assertNotEmpty($capturedCtx['logoBase64']);
+    }
+
+    /* MODIF 2026-05-19 : tests generateCleanCodeSynthesePdf */
+
+    public function testGenerateCleanCodeSynthesePdfReturnsValidPdfBinary(): void
+    {
+        $this->twig->method('render')
+            ->willReturn('<html><body><h1>Synthèse CC</h1></body></html>');
+
+        $pdf = $this->service->generateCleanCodeSynthesePdf([
+            'projets'     => [],
+            'scope_label' => 'Périmètre : TeamA',
+        ], 'Document public');
+
+        $this->assertStringStartsWith('%PDF-', $pdf);
+        $this->assertGreaterThan(1000, strlen($pdf));
+    }
+
+    public function testGenerateCleanCodeSynthesePdfFallsBackToPublicWhenDocumentTypeIsNull(): void
+    {
+        $capturedCtx = [];
+        $this->twig->expects($this->once())
+            ->method('render')
+            ->willReturn('<html></html>');
+
+        $this->service->generateCleanCodeSynthesePdf([
+            'projets'     => [],
+            'scope_label' => '',
+        ], null);
+
+        // La méthode ne plante pas avec document_type null (mock once() couvre l'assertion)
+    }
+
+    public function testGenerateCleanCodeSynthesePdfPassesExpectedDataToTwig(): void
+    {
+        $projets = [
+            [
+                'project_name'  => 'mon-app',
+                'version'       => '1.0.0',
+                'note_mnt'      => 'A',
+                'note_fia'      => 'B',
+                'note_sec'      => 'C',
+                'note_hsp'      => 'A',
+                'risk_score'    => 1.5,
+                'risk_level'    => 'medium',
+                'bugs'          => 0,
+                'vulnerabilities' => 2,
+                'coverage'      => 78.5,
+            ],
+        ];
+
+        $capturedCtx = [];
+        $this->twig->expects($this->once())
+            ->method('render')
+            ->with(
+                'rapport/clean-code/_synthese-landscape.html.twig',
+                $this->callback(function (array $ctx) use (&$capturedCtx) {
+                    $capturedCtx = $ctx;
+                    return true;
+                })
+            )
+            ->willReturn('<html></html>');
+
+        $this->service->generateCleanCodeSynthesePdf([
+            'projets'     => $projets,
+            'scope_label' => 'Périmètre : TeamA',
+        ], 'Document interne');
+
+        $this->assertSame($projets,           $capturedCtx['projets']);
+        $this->assertSame('Périmètre : TeamA', $capturedCtx['scope_label']);
+        $this->assertNotEmpty($capturedCtx['logoBase64']);
+        $this->assertNotEmpty($capturedCtx['date_generation']);
+    }
+
+    /* MODIF 2026-06-07 : tests generateDcPdf + generateSuiviPdf.
+     * Ces méthodes appellent params->get('rapport.pdf.watermark.mode') en plus de
+     * 'kernel.project_dir' : création d'un service dédié via makeServiceForSuiviDc()
+     * pour éviter tout conflit avec l'expectation with('kernel.project_dir') du setUp. */
+
+    private function makeServiceForSuiviDc(string $watermarkMode = 'never'): PdfExportService
+    {
+        $twig = $this->createMock(Environment::class);
+        $twig->method('render')->willReturn('<html><body><p>test</p></body></html>');
+
+        $params = $this->createMock(ParameterBagInterface::class);
+        $params->method('get')->willReturnMap([
+            ['kernel.project_dir', $this->projectDir],
+            ['rapport.pdf.watermark.mode', $watermarkMode],
+        ]);
+
+        return new PdfExportService($twig, $params);
+    }
+
+    public function testGenerateDcPdfReturnsValidPdfBinaryWithoutFindings(): void
+    {
+        $service = $this->makeServiceForSuiviDc('never');
+
+        $pdf = $service->generateDcPdf([
+            'project_group'    => 'fr.test',
+            'project_artifact' => 'mon-app',
+            'project_version'  => '1.0.0',
+            'findings'         => [],
+        ], 'Document interne');
+
+        $this->assertStringStartsWith('%PDF-', $pdf);
+        $this->assertGreaterThan(1000, strlen($pdf));
+    }
+
+    public function testGenerateDcPdfReturnsValidPdfBinaryWithFindings(): void
+    {
+        $service = $this->makeServiceForSuiviDc('never');
+
+        $pdf = $service->generateDcPdf([
+            'project_group'    => 'fr.test',
+            'project_artifact' => 'mon-app',
+            'project_version'  => '2.0.0',
+            'findings'         => [['cve' => 'CVE-2025-1234', 'severity' => 'HIGH']],
+        ], 'Document interne');
+
+        $this->assertStringStartsWith('%PDF-', $pdf);
+        $this->assertGreaterThan(1000, strlen($pdf));
+    }
+
+    public function testGenerateSuiviPdfReturnsValidPdfBinary(): void
+    {
+        $service = $this->makeServiceForSuiviDc('never');
+
+        $pdf = $service->generateSuiviPdf([
+            'maven_key'    => 'fr.test:mon-app',
+            'project_name' => 'Mon Application',
+        ], 'Document public');
+
+        $this->assertStringStartsWith('%PDF-', $pdf);
+        $this->assertGreaterThan(1000, strlen($pdf));
+    }
+
+    public function testGenerateSuiviPdfWithWatermarkAlwaysMode(): void
+    {
+        $service = $this->makeServiceForSuiviDc('always');
+
+        $pdf = $service->generateSuiviPdf([
+            'maven_key'    => 'fr.test:mon-app',
+            'project_name' => 'Mon Application',
+        ], 'Confidentiel');
+
+        $this->assertStringStartsWith('%PDF-', $pdf);
+        $this->assertGreaterThan(1000, strlen($pdf));
     }
 
     private function buildBatchExecutionMock(
@@ -194,8 +388,10 @@ class PdfExportServiceTest extends TestCase
         $mock->method('getCollectes')->willReturn(new ArrayCollection($collectes));
         $mock->method('getId')->willReturn($id);
         $mock->method('getNomTraitement')->willReturn($nomTraitement);
-        $mock->method('getExecutionId')->willReturn($executionId);
-        $mock->method('getTraitementId')->willReturn($traitementId);
+        /* MODIF 2026-05-05 : getExecutionId/getTraitementId
+         * sont desormais non-nullables cote entity. Mock retourne un Ulid par defaut. */
+        $mock->method('getExecutionId')->willReturn($executionId ?? new Ulid());
+        $mock->method('getTraitementId')->willReturn($traitementId ?? new Ulid());
         $mock->method('getModeCollecte')->willReturn($modeCollecte);
         $mock->method('getUtilisateurCollecte')->willReturn($utilisateurCollecte);
         $mock->method('getDateEnregistrement')
