@@ -21,6 +21,12 @@ use Doctrine\DBAL\Statement;
 use Doctrine\DBAL\Exception as DBALExceptionInterface;
 use PHPUnit\Framework\TestCase;
 
+/* MODIF 2026-05-08 : suppression de
+ * `withAnyParameters()` et `with($this->isString())` (deprecated PHPUnit 14
+ * sans `expects()`), et bascule des mocks "stub-only" (Statement,
+ * EntityManager, ManagerRegistry, DBAL Exception) vers `createStub()` pour
+ * éteindre les notices "No expectations were configured for the mock object". */
+
 /**
  * [Description UtilisateurRepositoryHandlerTest]
  */
@@ -49,28 +55,25 @@ class UtilisateurRepositoryHandlerTest extends TestCase
         };
 
         // 2) Stub partiel de Statement : bindValue ok, executeStatement jette l'exception
-        $stmtStub = $this->getMockBuilder(Statement::class)
-                            ->disableOriginalConstructor()
-                            ->onlyMethods(['bindValue', 'executeStatement'])
-                            ->getMock();
-        $stmtStub->method('bindValue')->withAnyParameters();
+        $stmtStub = $this->createStub(Statement::class);
+        $stmtStub->method('bindValue');
         $stmtStub->method('executeStatement')->willThrowException($fakeException);
 
         // 3) Mock de Connection : beginTransaction, prepare, rollBack et commit
         $connectionMock = $this->createMock(Connection::class);
         $connectionMock->expects($this->once())->method('beginTransaction');
-        $connectionMock->method('prepare')->with($this->isString())
+        $connectionMock->method('prepare')
                         ->willReturn($stmtStub);
         $connectionMock->expects($this->once())->method('rollBack');
         // commit ne doit **jamais** être appelé dans ce scénario
         $connectionMock->expects($this->never())->method('commit');
 
         // 4) Stub d'EntityManager pour retourner notre Connection
-        $emStub = $this->createMock(EntityManagerInterface::class);
+        $emStub = $this->createStub(EntityManagerInterface::class);
         $emStub->method('getConnection')->willReturn($connectionMock);
 
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
-        $registry = $this->createMock(ManagerRegistry::class);
+        $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(UtilisateurRepository::class)
                         ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
@@ -83,9 +86,12 @@ class UtilisateurRepositoryHandlerTest extends TestCase
         // 7) getEntityManager() renvoie notre EM stub
         $repo->method('getEntityManager')->willReturn($emStub);
 
+        /* MODIF 2026-05-08 [tests-pcov-warnings] : ajout de la cle 'reset_password'
+         * (la cle 'init' n est pas utilisee par updateUtilisateurResetPassword).
+         */
         // 8) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
         $map = [
-            'init' => 1,
+            'reset_password' => 'fake-reset-token',
             'date_modification' => new \DateTimeImmutable(self::$dateModification),
             'courriel' => self::$courriel
         ];
@@ -111,28 +117,25 @@ class UtilisateurRepositoryHandlerTest extends TestCase
         };
 
         // 2) Stub partiel de Statement : bindValue ok, executeStatement jette l'exception
-        $stmtStub = $this->getMockBuilder(Statement::class)
-                            ->disableOriginalConstructor()
-                            ->onlyMethods(['bindValue', 'executeStatement'])
-                            ->getMock();
-        $stmtStub->method('bindValue')->withAnyParameters();
+        $stmtStub = $this->createStub(Statement::class);
+        $stmtStub->method('bindValue');
         $stmtStub->method('executeStatement')->willThrowException($fakeException);
 
         // 3) Mock de Connection : beginTransaction, prepare, rollBack et commit
         $connectionMock = $this->createMock(Connection::class);
         $connectionMock->expects($this->once())->method('beginTransaction');
-        $connectionMock->method('prepare')->with($this->isString())
+        $connectionMock->method('prepare')
                         ->willReturn($stmtStub);
         $connectionMock->expects($this->once())->method('rollBack');
         // commit ne doit **jamais** être appelé dans ce scénario
         $connectionMock->expects($this->never())->method('commit');
 
         // 4) Stub d'EntityManager pour retourner notre Connection
-        $emStub = $this->createMock(EntityManagerInterface::class);
+        $emStub = $this->createStub(EntityManagerInterface::class);
         $emStub->method('getConnection')->willReturn($connectionMock);
 
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
-        $registry = $this->createMock(ManagerRegistry::class);
+        $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(UtilisateurRepository::class)
                         ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
@@ -165,28 +168,25 @@ class UtilisateurRepositoryHandlerTest extends TestCase
         };
 
         // 2) Stub partiel de Statement : bindValue ok, executeStatement jette l'exception
-        $stmtStub = $this->getMockBuilder(Statement::class)
-                            ->disableOriginalConstructor()
-                            ->onlyMethods(['bindValue', 'executeStatement'])
-                            ->getMock();
-        $stmtStub->method('bindValue')->withAnyParameters();
+        $stmtStub = $this->createStub(Statement::class);
+        $stmtStub->method('bindValue');
         $stmtStub->method('executeStatement')->willThrowException($fakeException);
 
         // 3) Mock de Connection : beginTransaction, prepare, rollBack et commit
         $connectionMock = $this->createMock(Connection::class);
         $connectionMock->expects($this->once())->method('beginTransaction');
-        $connectionMock->method('prepare')->with($this->isString())
+        $connectionMock->method('prepare')
                         ->willReturn($stmtStub);
         $connectionMock->expects($this->once())->method('rollBack');
         // commit ne doit **jamais** être appelé dans ce scénario
         $connectionMock->expects($this->never())->method('commit');
 
         // 4) Stub d'EntityManager pour retourner notre Connection
-        $emStub = $this->createMock(EntityManagerInterface::class);
+        $emStub = $this->createStub(EntityManagerInterface::class);
         $emStub->method('getConnection')->willReturn($connectionMock);
 
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
-        $registry = $this->createMock(ManagerRegistry::class);
+        $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(UtilisateurRepository::class)
                         ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 

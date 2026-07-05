@@ -22,6 +22,12 @@ use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Exception as DBALExceptionInterface;
 use PHPUnit\Framework\TestCase;
 
+/* MODIF 2026-05-08 : suppression de
+ * `withAnyParameters()` et `with($this->isString())` (deprecated PHPUnit 14
+ * sans `expects()`), et bascule des mocks "stub-only" (Statement,
+ * EntityManager, ManagerRegistry, DBAL Exception) vers `createStub()` pour
+ * éteindre les notices "No expectations were configured for the mock object". */
+
 /**
  * [Description OwaspRepositoryHandlerTest]
  */
@@ -39,36 +45,65 @@ class OwaspRepositoryHandlerTest extends TestCase
     private static $aInfo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     private static $aMinor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 
+    /* MODIF 2026-05-10 : test exception SQL pour la nouvelle
+     * méthode selectOwaspVersion (utilisée dans le breadcrumb OWASP). */
+    public function testSelectOwaspVersion_WhenSQLException(): void
+    {
+        $fakeException = $this->createStub(DBALException::class);
+
+        $stmtStub = $this->createStub(Statement::class);
+        $stmtStub->method('bindValue');
+        $stmtStub->method('executeQuery')->willThrowException($fakeException);
+
+        $connectionMock = $this->createStub(Connection::class);
+        $connectionMock->method('prepare')->willReturn($stmtStub);
+
+        $emStub = $this->createStub(EntityManagerInterface::class);
+        $emStub->method('getConnection')->willReturn($connectionMock);
+
+        $registry = $this->createStub(ManagerRegistry::class);
+        $repo = $this->getMockBuilder(OwaspRepository::class)
+                    ->setConstructorArgs([$registry])
+                    ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
+                    ->getMock();
+
+        $expected = ['code' => 500, 'erreur' => 'test-error'];
+        $repo->expects($this->once())->method('handleDatabaseException')
+            ->with($fakeException)
+            ->willReturn($expected);
+
+        $repo->method('getEntityManager')->willReturn($emStub);
+
+        $result = $repo->selectOwaspVersion(self::$mavenKey);
+
+        $this->assertSame($expected, $result);
+    }
+
     public function testSelectOwaspOrderByDateEnregistrement_WhenSQLException(): void
     {
         // 1) Exception DBAL factice
-        /** @var DBALException&\Throwable $fakeException */
-        $fakeException = $this->createMock(DBALException::class);
+        $fakeException = $this->createStub(DBALException::class);
 
         // 2) Mock partiel de Doctrine\DBAL\Statement
-        $stmtStub = $this->getMockBuilder(Statement::class)
-                        ->disableOriginalConstructor()
-                        ->onlyMethods(['bindValue', 'executeQuery'])
-                        ->getMock();
+        $stmtStub = $this->createStub(Statement::class);
 
         // bindValue() : pas d'effet
-        $stmtStub->method('bindValue')->withAnyParameters();
+        $stmtStub->method('bindValue');
         // executeQuery() : on jette notre exception
         $stmtStub->method('executeQuery')->willThrowException($fakeException);
 
         // 3) Mock de Connection dont prepare() renvoie notre Statement mocké
-        $connectionMock = $this->createMock(Connection::class);
+        $connectionMock = $this->createStub(Connection::class);
         $connectionMock->method('prepare')
-            ->with($this->isString())
             ->willReturn($stmtStub);
 
         // 4) Stub d'EntityManager pour renvoyer le Connection mocké
-        $emStub = $this->createMock(EntityManagerInterface::class);
+        $emStub = $this->createStub(EntityManagerInterface::class);
         $emStub->method('getConnection')
             ->willReturn($connectionMock);
 
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
-        $registry = $this->createMock(ManagerRegistry::class);
+        $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(OwaspRepository::class)
                     ->setConstructorArgs([$registry])
                     ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
@@ -99,28 +134,25 @@ class OwaspRepositoryHandlerTest extends TestCase
         };
 
         // 2) Stub partiel de Statement : bindValue ok, executeStatement jette l'exception
-        $stmtStub = $this->getMockBuilder(Statement::class)
-                            ->disableOriginalConstructor()
-                            ->onlyMethods(['bindValue', 'executeStatement'])
-                            ->getMock();
-        $stmtStub->method('bindValue')->withAnyParameters();
+        $stmtStub = $this->createStub(Statement::class);
+        $stmtStub->method('bindValue');
         $stmtStub->method('executeStatement')->willThrowException($fakeException);
 
         // 3) Mock de Connection : beginTransaction, prepare, rollBack et commit
         $connectionMock = $this->createMock(Connection::class);
         $connectionMock->expects($this->once())->method('beginTransaction');
-        $connectionMock->method('prepare')->with($this->isString())
+        $connectionMock->method('prepare')
                         ->willReturn($stmtStub);
         $connectionMock->expects($this->once())->method('rollBack');
         // commit ne doit **jamais** être appelé dans ce scénario
         $connectionMock->expects($this->never())->method('commit');
 
         // 4) Stub d'EntityManager pour retourner notre Connection
-        $emStub = $this->createMock(EntityManagerInterface::class);
+        $emStub = $this->createStub(EntityManagerInterface::class);
         $emStub->method('getConnection')->willReturn($connectionMock);
 
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
-        $registry = $this->createMock(ManagerRegistry::class);
+        $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(OwaspRepository::class)
                         ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
@@ -170,11 +202,8 @@ class OwaspRepositoryHandlerTest extends TestCase
         };
 
         // 2) Stub partiel de Statement : bindValue ok, executeStatement jette l'exception
-        $stmtStub = $this->getMockBuilder(Statement::class)
-                            ->disableOriginalConstructor()
-                            ->onlyMethods(['bindValue', 'executeStatement'])
-                            ->getMock();
-        $stmtStub->method('bindValue')->withAnyParameters();
+        $stmtStub = $this->createStub(Statement::class);
+        $stmtStub->method('bindValue');
         $stmtStub->method('executeStatement')->willThrowException($fakeException);
 
         // 3) Mock de Connection : beginTransaction, prepare, rollBack et commit
@@ -182,7 +211,6 @@ class OwaspRepositoryHandlerTest extends TestCase
         $connectionMock->expects($this->once())
                         ->method('beginTransaction');
         $connectionMock->method('prepare')
-                        ->with($this->isString())
                         ->willReturn($stmtStub);
         $connectionMock->expects($this->once())
                         ->method('rollBack');
@@ -191,11 +219,11 @@ class OwaspRepositoryHandlerTest extends TestCase
                         ->method('commit');
 
         // 4) Stub d'EntityManager pour retourner notre Connection
-        $emStub = $this->createMock(EntityManagerInterface::class);
+        $emStub = $this->createStub(EntityManagerInterface::class);
         $emStub->method('getConnection')->willReturn($connectionMock);
 
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
-        $registry = $this->createMock(ManagerRegistry::class);
+        $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(OwaspRepository::class)
                         ->setConstructorArgs([$registry /*, ErrorHandler si présent */])
                         ->onlyMethods(['getEntityManager', 'handleDatabaseException'])

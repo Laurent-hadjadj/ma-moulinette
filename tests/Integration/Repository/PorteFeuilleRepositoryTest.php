@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -56,7 +56,8 @@ class PorteFeuilleRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['portefeuille' => self::$portefeuille];
+        // MODIF 2026-06-10 — selectPortefeuille cherche maintenant par groupe_fonctionnel
+        $map = ['groupe_fonctionnel' => 'Direction Technique'];
 
         // Appel de la méthode
         $informationProjetRepository = $entityManager->getRepository(Portefeuille::class);

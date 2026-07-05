@@ -1,5 +1,16 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2015-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 namespace App\Tests\Integration\Repository;
 
 use App\DataFixtures\RepartitionFixtures;
@@ -18,7 +29,9 @@ class RepartitionRepositoryTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $this->em = self::getContainer()->get('doctrine')->getManager();
+        /** @var \Doctrine\ORM\EntityManagerInterface $em */
+        $em = self::getContainer()->get('doctrine')->getManager();
+        $this->em = $em;
         $this->purgeDatabase();
         $this->loadFixtures();
     }
@@ -209,5 +222,82 @@ class RepartitionRepositoryTest extends KernelTestCase
 
         $result = $repo->updateRepartition($updateMap);
         $this->assertEquals(200, $result['code']);
+    }
+
+    /**
+     * MODIF 2026-05-21 : vérifie que updateRepartition()
+     * fait bien la transition control 'initial' → 'complet (100%)'.
+     * Le bug consistait en une clause WHERE utilisant la nouvelle valeur (:control = 'complet (100%)')
+     * au lieu de la valeur courante ('initial'), empêchant tout UPDATE.
+     */
+    public function testUpdateRepartitionTransitionsControlToComplet(): void
+    {
+        $repo = $this->getRepository();
+        $map = $this->buildCompleteMap();
+
+        // Insertion initiale : control = 'initial' (hardcodé dans l'INSERT)
+        $repo->selectOrUpdateRepartitionInitial($map);
+
+        // Transition vers 'complet (100%)' — état final quand les 3 catégories sont complètes
+        $updateMap = $this->buildUpdateMapForControl($map['maven_key'], $map['setup'], 'complet (100%)');
+        $result = $repo->updateRepartition($updateMap);
+
+        $this->assertSame(200, $result['code']);
+        $this->assertEmpty($result['erreur'] ?? '');
+    }
+
+    /**
+     * MODIF 2026-05-21 [bug-repartition-historique] : vérifie que findLatestMavenKeyWithControl()
+     * retrouve la ligne après la transition vers 'complet (100%)'.
+     * Avant le fix, la ligne restait 'initial' et la requête ne renvoyait rien.
+     */
+    public function testFindLatestWithControlReturnsDataAfterComplet(): void
+    {
+        $repo = $this->getRepository();
+        $map = $this->buildCompleteMap();
+
+        $repo->selectOrUpdateRepartitionInitial($map);
+        $updateMap = $this->buildUpdateMapForControl($map['maven_key'], $map['setup'], 'complet (100%)');
+        $repo->updateRepartition($updateMap);
+
+        $result = $repo->findLatestMavenKeyWithControl($map['maven_key']);
+
+        $this->assertSame(200, $result['code']);
+        $this->assertNotEmpty($result['result'], 'findLatestMavenKeyWithControl doit retourner une ligne après la transition vers complet (100%).');
+        $this->assertSame('complet (100%)', $result['result'][0]['control']);
+    }
+
+    /**
+     * MODIF 2026-05-21 : vérifie que findLatestMavenKeyWithControl()
+     * retourne bien un tableau vide quand seule une ligne 'initial' existe (pas encore analysée).
+     */
+    public function testFindLatestWithControlReturnsEmptyWhenOnlyInitial(): void
+    {
+        $repo = $this->getRepository();
+        $map = $this->buildCompleteMap();
+
+        // Seulement l'insertion initiale, pas de transition vers 'complet'
+        $repo->selectOrUpdateRepartitionInitial($map);
+
+        $result = $repo->findLatestMavenKeyWithControl($map['maven_key']);
+
+        $this->assertSame(200, $result['code']);
+        $this->assertSame([], $result['result'], 'Aucun résultat attendu : la ligne est encore à initial.');
+    }
+
+    /**
+     * Construit le $map minimal attendu par updateRepartition() pour une transition de control.
+     * Tous les champs numériques absents seront mis à -1 par la méthode (comportement intentionnel).
+     *
+     * @return array<string, mixed>
+     */
+    private function buildUpdateMapForControl(string $mavenKey, int $setup, string $control): array
+    {
+        return [
+            'maven_key'          => $mavenKey,
+            'setup'              => $setup,
+            'control'            => $control,
+            'date_enregistrement' => new \DateTimeImmutable(),
+        ];
     }
 }

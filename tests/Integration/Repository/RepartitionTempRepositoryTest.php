@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -22,6 +22,11 @@ use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\DBAL\Connection;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
+/* MODIF 2026-05-08 : bascule des mocks "stub-only"
+ * (EntityManager, ManagerRegistry) vers `createStub()` et ajout de
+ * `#[AllowMockObjectsWithoutExpectations]` sur les tests qui partial-mockent
+ * le repository sans `expects()`. Éteint les notices PHPUnit 13. */
+
 /**
  * [Description RepartitionTempRepositoryTest]
  */
@@ -36,7 +41,9 @@ class RepartitionTempRepositoryTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        $this->em = self::getContainer()->get('doctrine')->getManager();
+        /** @var \Doctrine\ORM\EntityManagerInterface $em */
+        $em = self::getContainer()->get('doctrine')->getManager();
+        $this->em = $em;
         $this->purgeDatabase();
         $this->loadFixtures();
     }
@@ -87,7 +94,7 @@ class RepartitionTempRepositoryTest extends KernelTestCase
     /**
      * [Description for testBatchInsertIssuesSQLSuccess]
      *
-     * @return [type]
+     * @return void
      *
      * Created at: 06/07/2025 17:34:17 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -288,6 +295,7 @@ class RepartitionTempRepositoryTest extends KernelTestCase
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
+    #[\PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations]
     public function testBatchInsertIssuesSQL_WithSingleIssueAsArray(): void
     {
         $singleIssue = [
@@ -309,10 +317,10 @@ class RepartitionTempRepositoryTest extends KernelTestCase
                 })
             );
 
-        $emStub = $this->createMock(EntityManagerInterface::class);
+        $emStub = $this->createStub(EntityManagerInterface::class);
         $emStub->method('getConnection')->willReturn($connectionMock);
 
-        $registry = $this->createMock(ManagerRegistry::class);
+        $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(RepartitionTempRepository::class)
             ->setConstructorArgs([$registry])
             ->onlyMethods(['getEntityManager'])
@@ -336,7 +344,7 @@ class RepartitionTempRepositoryTest extends KernelTestCase
     public function testBatchInsertIssuesSQL_WithEmptyArray(): void
     {
         /** @var ManagerRegistry&\PHPUnit\Framework\MockObject\MockObject $registry */
-        $registry = $this->createMock(ManagerRegistry::class);
+        $registry = $this->createStub(ManagerRegistry::class);
 
         $repo = new RepartitionTempRepository($registry);
 
@@ -357,6 +365,7 @@ class RepartitionTempRepositoryTest extends KernelTestCase
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
+    #[\PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations]
     public function testBatchInsertIssuesSQL_SkipIncompleteIssue(): void
     {
         // On crée une "issue" incomplète (manque 'severity')
@@ -388,10 +397,10 @@ class RepartitionTempRepositoryTest extends KernelTestCase
                 })
             );
 
-        $emMock = $this->createMock(EntityManagerInterface::class);
+        $emMock = $this->createStub(EntityManagerInterface::class);
         $emMock->method('getConnection')->willReturn($connectionMock);
 
-        $registry = $this->createMock(ManagerRegistry::class);
+        $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(RepartitionTempRepository::class)
             ->setConstructorArgs([$registry])
             ->onlyMethods(['getEntityManager'])

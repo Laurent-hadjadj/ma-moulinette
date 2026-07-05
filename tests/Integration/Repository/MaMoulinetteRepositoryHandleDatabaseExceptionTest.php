@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -16,6 +16,10 @@ namespace App\Tests\Integration\Repository;
 use App\Repository\MaMoulinetteRepository;
 use Doctrine\Persistence\ManagerRegistry;
 use PHPUnit\Framework\TestCase;
+
+/* MODIF 2026-05-08 : bascule des mocks "stub-only"
+ * (ManagerRegistry, Doctrine\DBAL\Driver\Exception) vers `createStub()` pour
+ * éteindre les notices "No expectations were configured for the mock object". */
 
 /**
  * [Description MaMoulinetteRepositoryHandleDatabaseExceptionTest]
@@ -30,7 +34,7 @@ class MaMoulinetteRepositoryHandleDatabaseExceptionTest extends TestCase
     {
         // On a juste besoin d'un ManagerRegistry bidon pour instancier le repo
         /** @var ManagerRegistry&\PHPUnit\Framework\MockObject\MockObject */
-        $registry = $this->createMock(ManagerRegistry::class);
+        $registry = $this->createStub(ManagerRegistry::class);
         $this->repo = new MaMoulinetteRepository($registry);
     }
 
@@ -94,7 +98,7 @@ class MaMoulinetteRepositoryHandleDatabaseExceptionTest extends TestCase
     {
         // Créer un mock pour une exception Driver\Exception
       /** @var \Doctrine\DBAL\Driver\Exception&\PHPUnit\Framework\MockObject\MockObject */
-        $driverExceptionMock = $this->createMock(\Doctrine\DBAL\Driver\Exception::class);
+        $driverExceptionMock = $this->createStub(\Doctrine\DBAL\Driver\Exception::class);
 
         // Créer la ConnectionException en passant null pour la requête
         $exception = new \Doctrine\DBAL\Exception\ConnectionException(
@@ -104,7 +108,7 @@ class MaMoulinetteRepositoryHandleDatabaseExceptionTest extends TestCase
 
         // Crée un repository mock
         /** @var \Doctrine\Persistence\ManagerRegistry&\PHPUnit\Framework\MockObject\MockObject */
-        $managerRegistryMock = $this->createMock(ManagerRegistry::class);
+        $managerRegistryMock = $this->createStub(ManagerRegistry::class);
         $repo = new MaMoulinetteRepository($managerRegistryMock);
 
         // Simuler l'appel de la méthode handleDatabaseException
@@ -121,7 +125,7 @@ class MaMoulinetteRepositoryHandleDatabaseExceptionTest extends TestCase
     {
         // Créer un mock pour une exception Driver\Exception
         /** @var \Doctrine\DBAL\Driver\Exception&\PHPUnit\Framework\MockObject\MockObject */
-        $driverExceptionMock = $this->createMock(\Doctrine\DBAL\Driver\Exception::class);
+        $driverExceptionMock = $this->createStub(\Doctrine\DBAL\Driver\Exception::class);
 
         // Créer la NotNullConstraintViolationException en passant null pour la requête
         $exception = new \Doctrine\DBAL\Exception\NotNullConstraintViolationException(
@@ -131,7 +135,7 @@ class MaMoulinetteRepositoryHandleDatabaseExceptionTest extends TestCase
 
         // Crée un repository mock
         /** @var \Doctrine\Persistence\ManagerRegistry&\PHPUnit\Framework\MockObject\MockObject */
-        $managerRegistryMock = $this->createMock(ManagerRegistry::class);
+        $managerRegistryMock = $this->createStub(ManagerRegistry::class);
         $repo = new MaMoulinetteRepository($managerRegistryMock);
 
         // Simuler l'appel de la méthode handleDatabaseException
@@ -148,7 +152,7 @@ class MaMoulinetteRepositoryHandleDatabaseExceptionTest extends TestCase
     {
         // Créer un mock pour une exception Driver\Exception
         /** @var \Doctrine\DBAL\Driver\Exception&\PHPUnit\Framework\MockObject\MockObject */
-        $driverExceptionMock = $this->createMock(\Doctrine\DBAL\Driver\Exception::class);
+        $driverExceptionMock = $this->createStub(\Doctrine\DBAL\Driver\Exception::class);
 
         // Créer la UniqueConstraintViolationException en passant null pour la requête
         $exception = new \Doctrine\DBAL\Exception\UniqueConstraintViolationException(
@@ -158,7 +162,7 @@ class MaMoulinetteRepositoryHandleDatabaseExceptionTest extends TestCase
 
         // Crée un repository mock
         /** @var \Doctrine\Persistence\ManagerRegistry&\PHPUnit\Framework\MockObject\MockObject */
-        $managerRegistryMock = $this->createMock(ManagerRegistry::class);
+        $managerRegistryMock = $this->createStub(ManagerRegistry::class);
         $repo = new MaMoulinetteRepository($managerRegistryMock);
 
         // Simuler l'appel de la méthode handleDatabaseException

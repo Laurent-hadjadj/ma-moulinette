@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -266,6 +266,94 @@ class UtilisateurRepositoryTest extends KernelTestCase
         $this->assertEmpty($response['erreur']);
     }
 
+
+    // MODIF 2026-06-11 : tests updateUtilisateurSuiviVersion
+
+    public function testUpdateUtilisateurSuiviVersion_Ajout(): void
+    {
+        self::bootKernel();
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+
+        $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
+        $utilisateur = $utilisateurRepository->findOneBy(['courriel' => self::$courriel]);
+        $preference = $utilisateur->getPreference();
+        $preference['statut']         = [];
+        $preference['suivi_projet']   = [];
+        $preference['favori_projet']  = [];
+        $preference['favori_version'] = [];
+        $preference['suivi_version']  = [];
+
+        $map = [
+            'courriel'  => self::$courriel,
+            'maven_key' => self::$mavenKey,
+            'version'   => self::$version,
+            'suivi'     => 1,
+        ];
+
+        $response = $utilisateurRepository->updateUtilisateurSuiviVersion($preference, $map);
+
+        $this->assertEquals(200, $response['code'], self::$erreurCode200);
+        $this->assertEmpty($response['erreur']);
+        $this->assertContains(self::$version, $response['suivi_version'][self::$mavenKey] ?? []);
+    }
+
+    public function testUpdateUtilisateurSuiviVersion_Suppression(): void
+    {
+        self::bootKernel();
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+
+        $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
+        $utilisateur = $utilisateurRepository->findOneBy(['courriel' => self::$courriel]);
+        $preference = $utilisateur->getPreference();
+        $preference['statut']         = [];
+        $preference['suivi_projet']   = [];
+        $preference['favori_projet']  = [];
+        $preference['favori_version'] = [];
+        $preference['suivi_version']  = [self::$mavenKey => [self::$version, '1.0.0-RELEASE']];
+
+        $map = [
+            'courriel'  => self::$courriel,
+            'maven_key' => self::$mavenKey,
+            'version'   => self::$version,
+            'suivi'     => 0,
+        ];
+
+        $response = $utilisateurRepository->updateUtilisateurSuiviVersion($preference, $map);
+
+        $this->assertEquals(200, $response['code'], self::$erreurCode200);
+        $this->assertNotContains(self::$version, $response['suivi_version'][self::$mavenKey] ?? []);
+        $this->assertContains('1.0.0-RELEASE', $response['suivi_version'][self::$mavenKey] ?? []);
+    }
+
+    public function testUpdateUtilisateurSuiviVersion_Limite15(): void
+    {
+        self::bootKernel();
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+
+        $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
+        $utilisateur = $utilisateurRepository->findOneBy(['courriel' => self::$courriel]);
+        $preference = $utilisateur->getPreference();
+        $preference['statut']         = [];
+        $preference['suivi_projet']   = [];
+        $preference['favori_projet']  = [];
+        $preference['favori_version'] = [];
+        // Remplir exactement 15 versions
+        $preference['suivi_version'] = [self::$mavenKey => array_map(static fn(int $i) => "$i.0.0-RELEASE", range(1, 15))];
+
+        $map = [
+            'courriel'  => self::$courriel,
+            'maven_key' => self::$mavenKey,
+            'version'   => '99.0.0-RELEASE',
+            'suivi'     => 1,
+        ];
+
+        $response = $utilisateurRepository->updateUtilisateurSuiviVersion($preference, $map);
+
+        $this->assertEquals(400, $response['code'], 'La limite de 15 doit être bloquante');
+    }
 
     /**
      * [Description for testUpdateUtilisateurResetPassword]

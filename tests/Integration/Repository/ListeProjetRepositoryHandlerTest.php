@@ -22,6 +22,12 @@ use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Exception as DBALExceptionInterface;
 use PHPUnit\Framework\TestCase;
 
+/* MODIF 2026-05-08 : suppression de
+ * `withAnyParameters()` et `with($this->isString())` (deprecated PHPUnit 14
+ * sans `expects()`), et bascule des mocks "stub-only" (Statement,
+ * EntityManager, ManagerRegistry, DBAL Exception) vers `createStub()` pour
+ * éteindre les notices "No expectations were configured for the mock object". */
+
 /**
  * [Description ListeProjetRepositoryHandlerTest]
  */
@@ -32,33 +38,31 @@ class ListeProjetRepositoryHandlerTest extends TestCase
     public function testCountListeProjetVisibility_WhenSQLException(): void
     {
         // 1) Exception DBAL factice
-        /** @var DBALException&\Throwable $fakeException */
-        $fakeException = $this->createMock(DBALException::class);
+        $fakeException = $this->createStub(DBALException::class);
 
         // 2) Mock partiel de Doctrine\DBAL\Statement
-        $stmtStub = $this->getMockBuilder(Statement::class)
-                        ->disableOriginalConstructor()
-                        ->onlyMethods(['bindValue', 'executeQuery'])
-                        ->getMock();
+        $stmtStub = $this->createStub(Statement::class);
 
         // bindValue() : pas d'effet
-        $stmtStub->method('bindValue')->withAnyParameters();
+        $stmtStub->method('bindValue');
         // executeQuery() : on jette notre exception
         $stmtStub->method('executeQuery')->willThrowException($fakeException);
 
-        // 3) Mock de Connection dont prepare() renvoie notre Statement mocké
-        $connectionMock = $this->createMock(Connection::class);
+        // 3) Mock de Connection : prepare() renvoie le Statement mocké (legacy)
+        // MODIF 2026-05-15 : ajout du mock executeQuery() direct
+        // pour couvrir selectListeProjetByGroupe refactorée.
+        $connectionMock = $this->createStub(Connection::class);
         $connectionMock->method('prepare')
-            ->with($this->isString())
             ->willReturn($stmtStub);
+        $connectionMock->method('executeQuery')->willThrowException($fakeException);
 
         // 4) Stub d'EntityManager pour renvoyer le Connection mocké
-        $emStub = $this->createMock(EntityManagerInterface::class);
+        $emStub = $this->createStub(EntityManagerInterface::class);
         $emStub->method('getConnection')
             ->willReturn($connectionMock);
 
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
-        $registry = $this->createMock(ManagerRegistry::class);
+        $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(ListeProjetRepository::class)
                     ->setConstructorArgs([$registry])
                     ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
@@ -84,33 +88,31 @@ class ListeProjetRepositoryHandlerTest extends TestCase
     public function testCountListeProjet_WhenSQLException(): void
     {
         // 1) Exception DBAL factice
-        /** @var DBALException&\Throwable $fakeException */
-        $fakeException = $this->createMock(DBALException::class);
+        $fakeException = $this->createStub(DBALException::class);
 
         // 2) Mock partiel de Doctrine\DBAL\Statement
-        $stmtStub = $this->getMockBuilder(Statement::class)
-                        ->disableOriginalConstructor()
-                        ->onlyMethods(['bindValue', 'executeQuery'])
-                        ->getMock();
+        $stmtStub = $this->createStub(Statement::class);
 
         // bindValue() : pas d'effet
-        $stmtStub->method('bindValue')->withAnyParameters();
+        $stmtStub->method('bindValue');
         // executeQuery() : on jette notre exception
         $stmtStub->method('executeQuery')->willThrowException($fakeException);
 
-        // 3) Mock de Connection dont prepare() renvoie notre Statement mocké
-        $connectionMock = $this->createMock(Connection::class);
+        // 3) Mock de Connection : prepare() renvoie le Statement mocké (legacy)
+        // MODIF 2026-05-15 : ajout du mock executeQuery() direct
+        // pour couvrir selectListeProjetByGroupe refactorée.
+        $connectionMock = $this->createStub(Connection::class);
         $connectionMock->method('prepare')
-            ->with($this->isString())
             ->willReturn($stmtStub);
+        $connectionMock->method('executeQuery')->willThrowException($fakeException);
 
         // 4) Stub d'EntityManager pour renvoyer le Connection mocké
-        $emStub = $this->createMock(EntityManagerInterface::class);
+        $emStub = $this->createStub(EntityManagerInterface::class);
         $emStub->method('getConnection')
             ->willReturn($connectionMock);
 
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
-        $registry = $this->createMock(ManagerRegistry::class);
+        $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(ListeProjetRepository::class)
                     ->setConstructorArgs([$registry])
                     ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
@@ -135,33 +137,31 @@ class ListeProjetRepositoryHandlerTest extends TestCase
     public function testCountListeProjetTags_WhenSQLException(): void
     {
         // 1) Exception DBAL factice
-        /** @var DBALException&\Throwable $fakeException */
-        $fakeException = $this->createMock(DBALException::class);
+        $fakeException = $this->createStub(DBALException::class);
 
         // 2) Mock partiel de Doctrine\DBAL\Statement
-        $stmtStub = $this->getMockBuilder(Statement::class)
-                        ->disableOriginalConstructor()
-                        ->onlyMethods(['bindValue', 'executeQuery'])
-                        ->getMock();
+        $stmtStub = $this->createStub(Statement::class);
 
         // bindValue() : pas d'effet
-        $stmtStub->method('bindValue')->withAnyParameters();
+        $stmtStub->method('bindValue');
         // executeQuery() : on jette notre exception
         $stmtStub->method('executeQuery')->willThrowException($fakeException);
 
-        // 3) Mock de Connection dont prepare() renvoie notre Statement mocké
-        $connectionMock = $this->createMock(Connection::class);
+        // 3) Mock de Connection : prepare() renvoie le Statement mocké (legacy)
+        // MODIF 2026-05-15 : ajout du mock executeQuery() direct
+        // pour couvrir selectListeProjetByGroupe refactorée.
+        $connectionMock = $this->createStub(Connection::class);
         $connectionMock->method('prepare')
-            ->with($this->isString())
             ->willReturn($stmtStub);
+        $connectionMock->method('executeQuery')->willThrowException($fakeException);
 
         // 4) Stub d'EntityManager pour renvoyer le Connection mocké
-        $emStub = $this->createMock(EntityManagerInterface::class);
+        $emStub = $this->createStub(EntityManagerInterface::class);
         $emStub->method('getConnection')
             ->willReturn($connectionMock);
 
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
-        $registry = $this->createMock(ManagerRegistry::class);
+        $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(ListeProjetRepository::class)
                     ->setConstructorArgs([$registry])
                     ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
@@ -186,33 +186,31 @@ class ListeProjetRepositoryHandlerTest extends TestCase
     public function testSelectListeProjetByGroupe_WhenSQLException(): void
     {
         // 1) Exception DBAL factice
-        /** @var DBALException&\Throwable $fakeException */
-        $fakeException = $this->createMock(DBALException::class);
+        $fakeException = $this->createStub(DBALException::class);
 
         // 2) Mock partiel de Doctrine\DBAL\Statement
-        $stmtStub = $this->getMockBuilder(Statement::class)
-                        ->disableOriginalConstructor()
-                        ->onlyMethods(['bindValue', 'executeQuery'])
-                        ->getMock();
+        $stmtStub = $this->createStub(Statement::class);
 
         // bindValue() : pas d'effet
-        $stmtStub->method('bindValue')->withAnyParameters();
+        $stmtStub->method('bindValue');
         // executeQuery() : on jette notre exception
         $stmtStub->method('executeQuery')->willThrowException($fakeException);
 
-        // 3) Mock de Connection dont prepare() renvoie notre Statement mocké
-        $connectionMock = $this->createMock(Connection::class);
+        // 3) Mock de Connection : prepare() renvoie le Statement mocké (legacy)
+        // MODIF 2026-05-15 : ajout du mock executeQuery() direct
+        // pour couvrir selectListeProjetByGroupe refactorée.
+        $connectionMock = $this->createStub(Connection::class);
         $connectionMock->method('prepare')
-            ->with($this->isString())
             ->willReturn($stmtStub);
+        $connectionMock->method('executeQuery')->willThrowException($fakeException);
 
         // 4) Stub d'EntityManager pour renvoyer le Connection mocké
-        $emStub = $this->createMock(EntityManagerInterface::class);
+        $emStub = $this->createStub(EntityManagerInterface::class);
         $emStub->method('getConnection')
             ->willReturn($connectionMock);
 
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
-        $registry = $this->createMock(ManagerRegistry::class);
+        $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(ListeProjetRepository::class)
                     ->setConstructorArgs([$registry])
                     ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
@@ -243,11 +241,8 @@ class ListeProjetRepositoryHandlerTest extends TestCase
         };
 
         // 2) Stub partiel de Statement : bindValue ok, executeStatement jette l'exception
-        $stmtStub = $this->getMockBuilder(Statement::class)
-                            ->disableOriginalConstructor()
-                            ->onlyMethods(['bindValue', 'executeStatement'])
-                            ->getMock();
-        $stmtStub->method('bindValue')->withAnyParameters();
+        $stmtStub = $this->createStub(Statement::class);
+        $stmtStub->method('bindValue');
         $stmtStub->method('executeStatement')->willThrowException($fakeException);
 
         // 3) Mock de Connection : beginTransaction, prepare, rollBack et commit
@@ -255,7 +250,6 @@ class ListeProjetRepositoryHandlerTest extends TestCase
         $connectionMock->expects($this->once())
                         ->method('beginTransaction');
         $connectionMock->method('prepare')
-                        ->with($this->isString())
                         ->willReturn($stmtStub);
         $connectionMock->expects($this->once())
                         ->method('rollBack');
@@ -264,11 +258,11 @@ class ListeProjetRepositoryHandlerTest extends TestCase
                         ->method('commit');
 
         // 4) Stub d'EntityManager pour retourner notre Connection
-        $emStub = $this->createMock(EntityManagerInterface::class);
+        $emStub = $this->createStub(EntityManagerInterface::class);
         $emStub->method('getConnection')->willReturn($connectionMock);
 
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
-        $registry = $this->createMock(ManagerRegistry::class);
+        $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(ListeProjetRepository::class)
                         ->setConstructorArgs([$registry /*, ErrorHandler si présent */])
                         ->onlyMethods(['getEntityManager', 'handleDatabaseException'])

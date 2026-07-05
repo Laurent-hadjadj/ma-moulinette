@@ -1,15 +1,15 @@
 <?php
 
 /*
-*  Ma-Moulinette
-*  --------------
-*  Copyright (c) 2021-2025.
-*  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
-*  ---
-*  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
-*/
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2015-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
 
 namespace App\Tests\Integration\Repository;
 
@@ -21,6 +21,12 @@ use Doctrine\DBAL\Statement;
 use Doctrine\DBAL\Exception as DBALException;
 use PHPUnit\Framework\TestCase;
 
+/* MODIF 2026-05-08 : suppression de
+ * `withAnyParameters()` et `with($this->isString())` (deprecated PHPUnit 14
+ * sans `expects()`), et bascule des mocks "stub-only" (Statement,
+ * EntityManager, ManagerRegistry, DBAL Exception) vers `createStub()` pour
+ * éteindre les notices "No expectations were configured for the mock object". */
+
 /**
  * [Description PortefeuilleRepositoryHandlerTest]
  */
@@ -29,33 +35,28 @@ class PortefeuilleRepositoryHandlerTest extends TestCase
     public function testSelectPortefeuille_WhenSQLException(): void
     {
         // 1) Exception DBAL factice
-        /** @var DBALException&\Throwable $fakeException */
-        $fakeException = $this->createMock(DBALException::class);
+        $fakeException = $this->createStub(DBALException::class);
 
         // 2) Mock partiel de Doctrine\DBAL\Statement
-        $stmtStub = $this->getMockBuilder(Statement::class)
-                        ->disableOriginalConstructor()
-                        ->onlyMethods(['bindValue', 'executeQuery'])
-                        ->getMock();
+        $stmtStub = $this->createStub(Statement::class);
 
         // bindValue() : pas d'effet
-        $stmtStub->method('bindValue')->withAnyParameters();
+        $stmtStub->method('bindValue');
         // executeQuery() : on jette notre exception
         $stmtStub->method('executeQuery')->willThrowException($fakeException);
 
         // 3) Mock de Connection dont prepare() renvoie notre Statement mocké
-        $connectionMock = $this->createMock(Connection::class);
+        $connectionMock = $this->createStub(Connection::class);
         $connectionMock->method('prepare')
-            ->with($this->isString())
             ->willReturn($stmtStub);
 
         // 4) Stub d'EntityManager pour renvoyer le Connection mocké
-        $emStub = $this->createMock(EntityManagerInterface::class);
+        $emStub = $this->createStub(EntityManagerInterface::class);
         $emStub->method('getConnection')
             ->willReturn($connectionMock);
 
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
-        $registry = $this->createMock(ManagerRegistry::class);
+        $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(PortefeuilleRepository::class)
                     ->setConstructorArgs([$registry])
                     ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
@@ -71,7 +72,8 @@ class PortefeuilleRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['portefeuille' => 'exemple de projets'];
+        // MODIF 2026-06-10 — clé groupe_fonctionnel depuis refonte CRUD
+        $map = ['groupe_fonctionnel' => 'exemple-de-projets'];
         $result = $repo->selectPortefeuille($map);
 
         // 9) Vérification

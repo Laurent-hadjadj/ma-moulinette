@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -68,10 +68,11 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $where = " maven_key='".self::$mavenKey."' AND version='1.2.0-RELEASE'";
-
+        /* MODIF 2026-05-07 : signature getProjetFavori a change
+         * (string $mavenKey, array $versions). L'ancien WHERE concatène n'existe plus.
+         */
         $historiqueRepository = $entityManager->getRepository(Historique::class);
-        $r = $historiqueRepository->getProjetFavori($where);
+        $r = $historiqueRepository->getProjetFavori(self::$mavenKey, ['1.2.0-RELEASE']);
 
         // Assert
         $this->assertEquals(200, $r['code'], self::$erreurCode200);
@@ -228,7 +229,8 @@ class HistoriqueRepositoryTest extends KernelTestCase
 
         $map = ['maven_key' => self::$mavenKey,
         'analyse_key' => 'AZCc05qWgfifxdiJPzns', 'version' => '1.5.0-RELEASE',
-        'date_version' => '2024-08-18 15:54:26', 'nom_projet' => 'ma-moulinette',
+        /* MODIF 2026-05-07 : nom_projet renomme en project_name (DDL 2026-03-30). */
+        'date_version' => '2024-08-18 15:54:26', 'project_name' => 'ma-moulinette',
         'version_release' => 2, 'version_snapshot' => 0, 'version_autre' => 1,
         'suppress_warning' => 8, 'no_sonar'=> 0,  'todo' => 17, 'logger_info' => 14, 'logger_warn' => 0, 'logger_error' => 15, 'logger_debug' => 8,     'nombre_ligne' => 17049, 'nombre_ligne_code' => 8928, 'coverage' => 50.1,
         'files' => 180, 'classes' => 226, 'functions' => 52,
@@ -243,14 +245,17 @@ class HistoriqueRepositoryTest extends KernelTestCase
         'note_hotspot' => 'A', 'nombre_hotspot' => 0, 'hotspot_high' => 0,
         'hotspot_medium' => 0, 'hotspot_low' => 0, 'initial' => true,'mode_collecte' => 'COLLECTE', 'utilisateur_collecte' => 'admin@ma-moulinette.fr', 'date_enregistrement' => new \DateTimeImmutable('2024-08-28 14:25:15+02')];
 
-        $json="";
+        /* MODIF 2026-05-07 : signature insertHistoriqueAjoutProjet
+         * accepte un array $json (était string ""). On passe array vide.
+         */
+        $json = [];
 
         // Appel de la méthode
         $historiqueRepository = $entityManager->getRepository(Historique::class);
         $r = $historiqueRepository->insertHistoriqueAjoutProjet($map, $json);
 
         // Assert
-        $this->assertEquals(200, $r['code'], self::$erreurCode200);
+        $this->assertEquals(200, $r['code'], self::$erreurCode200 . ' :: ' . ($r['erreur'] ?? '?'));
         $this->assertEmpty($r['erreur'], $r['erreur']);
 
         $r = $historiqueRepository->insertHistoriqueAjoutProjet($map, $json);
@@ -359,14 +364,79 @@ class HistoriqueRepositoryTest extends KernelTestCase
         /* On se connecte à la base de tests */
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
-        /* C'est une liste 'xxx', 'yyy' */
-        $map = "'" . self::$mavenKey. "'";
+        /* MODIF 2026-05-07 : signature selectHistoriqueIndicateurs
+         * attend `array $mavenKeys` (était une chaîne quotée pour SQL IN). Bind par
+         * placeholder cote Repository depuis MODIF 2026-05-04.
+         */
+        $map = [self::$mavenKey];
 
         // Appel de la méthode
         $historiqueRepository = $entityManager->getRepository(Historique::class);
         $r = $historiqueRepository->selectHistoriqueIndicateurs($map);
 
         // Assert
+        $this->assertEquals(200, $r['code'], self::$erreurCode200 . ' :: ' . ($r['erreur'] ?? '?'));
+        $this->assertEmpty($r['erreur'], $r['erreur']);
+    }
+
+    // MODIF 2026-06-11 : tests des variantes ParVersions
+
+    public function testSelectHistoriqueProjetParVersions(): void
+    {
+        self::bootKernel();
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+
+        $map = ['maven_key' => self::$mavenKey, 'versions' => ['1.3.0-RELEASE']];
+
+        $historiqueRepository = $entityManager->getRepository(Historique::class);
+        $r = $historiqueRepository->selectHistoriqueProjetParVersions($map);
+
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
+        $this->assertEmpty($r['erreur'], $r['erreur']);
+    }
+
+    public function testSelectHistoriquesMesureParVersions(): void
+    {
+        self::bootKernel();
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+
+        $map = ['maven_key' => self::$mavenKey, 'versions' => ['1.3.0-RELEASE']];
+
+        $historiqueRepository = $entityManager->getRepository(Historique::class);
+        $r = $historiqueRepository->selectHistoriquesMesureParVersions($map);
+
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
+        $this->assertEmpty($r['erreur'], $r['erreur']);
+    }
+
+    public function testSelectHistoriqueAnomalieParVersions(): void
+    {
+        self::bootKernel();
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+
+        $map = ['maven_key' => self::$mavenKey, 'versions' => ['1.3.0-RELEASE']];
+
+        $historiqueRepository = $entityManager->getRepository(Historique::class);
+        $r = $historiqueRepository->selectHistoriqueAnomalieParVersions($map);
+
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
+        $this->assertEmpty($r['erreur'], $r['erreur']);
+    }
+
+    public function testSelectHistoriqueDetailsParVersions(): void
+    {
+        self::bootKernel();
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+
+        $map = ['maven_key' => self::$mavenKey, 'versions' => ['1.3.0-RELEASE']];
+
+        $historiqueRepository = $entityManager->getRepository(Historique::class);
+        $r = $historiqueRepository->selectHistoriqueDetailsParVersions($map);
+
         $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }

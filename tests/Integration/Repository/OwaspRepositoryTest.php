@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -31,12 +31,12 @@ class OwaspRepositoryTest extends KernelTestCase
     private static string $version = '1.2.0-RELEASE';
     private static string $dateVersion = '2024-07-10 15:26:07+02';
     private static int $effortTotal = 0;
-    private static $a = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static $aBlocker = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static $aCritical = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static $aMajor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static $aInfo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static $aMinor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    private static array $a = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    private static array $aBlocker = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    private static array $aCritical = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    private static array $aMajor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    private static array $aInfo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    private static array $aMinor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     private static string $modeCollecte = 'TRAITEMENT MANUEL';
     private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
     private static string $dateEnregistrement = '2024-03-26 14:46:38+02';
@@ -71,6 +71,43 @@ class OwaspRepositoryTest extends KernelTestCase
         $purger = new ORMPurger($entityManager);
         $executor = new ORMExecutor($entityManager, $purger);
         $executor->execute([new OwaspFixtures()]);
+    }
+
+    /* MODIF 2026-05-10 : tests selectOwaspVersion (utilise par
+     * la page OWASP pour alimenter le breadcrumb application/version). */
+    public function testSelectOwaspVersionHappyPath(): void
+    {
+        self::bootKernel();
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+
+        $owaspRepository = $entityManager->getRepository(Owasp::class);
+        $r = $owaspRepository->selectOwaspVersion(self::$mavenKey);
+
+        $this->assertSame(200, $r['code'], self::$erreurCode200);
+        $this->assertSame('', $r['erreur']);
+        $this->assertSame(self::$mavenKey, $r['application']);
+        // Les fixtures posent 3 versions (1.0.0/1.1.0/1.2.0), date identique :
+        // on n'asserte pas la version exacte (ordre interne PG sur dates égales),
+        // juste qu'elle est non vide et fait partie de la liste connue.
+        $this->assertContains($r['version'], ['1.0.0-RELEASE', '1.1.0-RELEASE', '1.2.0-RELEASE']);
+    }
+
+    public function testSelectOwaspVersionWithUnknownMavenKeyReturnsNullFields(): void
+    {
+        self::bootKernel();
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+
+        $owaspRepository = $entityManager->getRepository(Owasp::class);
+        $r = $owaspRepository->selectOwaspVersion('fr.unknown:projet-fantome');
+
+        // Le contrat : code=200 + application/version a null
+        // si fetchAssociative() retourne false (0 ligne).
+        $this->assertSame(200, $r['code']);
+        $this->assertSame('', $r['erreur']);
+        $this->assertNull($r['application']);
+        $this->assertNull($r['version']);
     }
 
     public function testSelectOwaspOrderByDateEnregistrement(): void
