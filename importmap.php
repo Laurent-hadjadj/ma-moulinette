@@ -56,16 +56,40 @@ return [
         'path' => './assets/js/mon-application/owasp/index-owasp.js',
         'entrypoint' => true,
     ],
+    'dependency-check' => [
+        'path' => './assets/js/mon-application/dependency-check/index-dependency-check.js',
+        'entrypoint' => true,
+    ],
+    'dependency-check-executive' => [
+        'path' => './assets/js/mon-application/dependency-check/index-dependency-check-executive.js',
+        'entrypoint' => true,
+    ],
+    'dependency-check-dashboard' => [
+        'path' => './assets/js/mon-application/dependency-check/index-dependency-check-dashboard.js',
+        'entrypoint' => true,
+    ],
+    'dependency-check-history' => [
+        'path' => './assets/js/mon-application/dependency-check/index-dependency-check-history.js',
+        'entrypoint' => true,
+    ],
+    'dependency-check-kpi' => [
+        'path' => './assets/js/mon-application/dependency-check/index-dependency-check-kpi.js',
+        'entrypoint' => true,
+    ],
+    'dependency-check-mutualisables' => [
+        'path' => './assets/js/mon-application/dependency-check/index-dependency-check-mutualisables.js',
+        'entrypoint' => true,
+    ],
+    'clean-code' => [
+        'path' => './assets/js/mon-application/clean-code/index-clean-code.js',
+        'entrypoint' => true,
+    ],
+    'dependency-check-comparer' => [
+        'path' => './assets/js/mon-application/dependency-check/index-dependency-check-comparer.js',
+        'entrypoint' => true,
+    ],
     'repartition-module' => [
         'path' => './assets/js/mon-application/repartition-module/index-repartition-module.js',
-        'entrypoint' => true,
-    ],
-    'statistique' => [
-        'path' => './assets/js/mon-application/statistique/app-statistique.js',
-        'entrypoint' => true,
-    ],
-    'statistique-utilisateur' => [
-        'path' => './assets/js/mon-application/statistique/app-statistique-utilisateur.js',
         'entrypoint' => true,
     ],
     'activity' => [
@@ -104,8 +128,25 @@ return [
         'path' => './assets/js/easy-admin/groupe-fonctionnel.js',
         'entrypoint' => true,
     ],
-    'jquery' => [
-        'version' => '3.7.1',
+    'admin-dashboard' => [
+        'path' => './assets/js/easy-admin/admin-dashboard.js',
+        'entrypoint' => true,
+    ],
+    'admin-stats' => [
+        'path' => './assets/js/easy-admin/admin-stats.js',
+        'entrypoint' => true,
+    ],
+    'statistique' => [
+        'path' => './assets/js/mon-application/statistique/app-statistique.js',
+        'entrypoint' => true,
+    ],
+    'statistique-utilisateur' => [
+        'path' => './assets/js/mon-application/statistique/app-statistique-utilisateur.js',
+        'entrypoint' => true,
+    ],
+    'statistique-projet' => [
+        'path' => './assets/js/mon-application/statistique/app-statistique-projet.js',
+        'entrypoint' => true,
     ],
     'foundation-sites' => [
         'version' => '6.9.0',
@@ -125,19 +166,19 @@ return [
         'version' => '5.2.12',
     ],
     'browser-update' => [
-        'version' => '3.3.60',
+        'version' => '3.3.63',
     ],
     'chart.js' => [
-        'version' => '4.5.0',
+        'version' => '4.5.1',
     ],
     '@kurkle/color' => [
-        'version' => '0.3.0',
+        'version' => '0.4.0',
     ],
     'chartjs-plugin-datalabels' => [
         'version' => '2.2.0',
     ],
     'chart.js/helpers' => [
-        'version' => '4.5.0',
+        'version' => '4.5.1',
     ],
     'chartjs-plugin-zoom' => [
         'version' => '2.2.0',
@@ -152,57 +193,43 @@ return [
         'version' => '4.2.8',
     ],
     '@babel/runtime/helpers/typeof' => [
-        'version' => '7.28.3',
+        'version' => '7.29.2',
     ],
     'fflate' => [
-        'version' => '0.8.2',
-    ],
-    'html2canvas' => [
-        'version' => '1.4.1',
-    ],
-    'jspdf' => [
-        'version' => '3.0.2',
+        'version' => '0.8.3',
     ],
     'chartjs-adapter-date-fns' => [
         'version' => '3.0.0',
     ],
     'date-fns' => [
-        'version' => '4.1.0',
+        'version' => '4.3.0',
     ],
     'date-fns/locale' => [
-        'version' => '4.1.0',
+        'version' => '4.3.0',
     ],
     '@babel/runtime/helpers/slicedToArray' => [
-        'version' => '7.28.3',
+        'version' => '7.29.2',
     ],
     'fast-png' => [
-        'version' => '6.4.0',
+        'version' => '8.0.0',
     ],
     'iobuffer' => [
-        'version' => '5.4.0',
+        'version' => '6.0.1',
     ],
     'pako' => [
         'version' => '2.1.0',
     ],
-    'tinymce' => [
-        'version' => '8.2.0',
+    'datatables.net' => [
+        'version' => '2.3.8',
     ],
-    'tinymce/themes/silver' => [
-        'version' => '8.2.0',
+    'datatables.net-zf' => [
+        'version' => '2.3.8',
     ],
-    'tinymce/icons/default' => [
-        'version' => '8.2.0',
+    'datatables.net-zf/css/dataTables.foundation.min.css' => [
+        'version' => '2.3.8',
+        'type' => 'css',
     ],
-    'tinymce/plugins/link' => [
-        'version' => '8.2.0',
-    ],
-    'tinymce/plugins/table' => [
-        'version' => '8.2.0',
-    ],
-    'tinymce/plugins/image' => [
-        'version' => '8.2.0',
-    ],
-    'tinymce/plugins/code' => [
-        'version' => '8.2.0',
+    'jquery' => [
+        'version' => '3.7.1',
     ],
 ];
