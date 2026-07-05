@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -56,7 +56,6 @@ class PortefeuilleKernelTest extends KernelTestCase
         $groupeRepository = $entityManager->getRepository(Portefeuille::class);
         $response = $groupeRepository->findOneBy(['portefeuille' => self::$titre]);
 
-        $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'PORTEFEUILLE: Aucune réponse trouvée');
     }
 }

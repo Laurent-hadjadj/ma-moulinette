@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -56,8 +56,7 @@ class HotspotOwaspKernelTest extends KernelTestCase
         $hotspotOwaspRepository = $entityManager->getRepository(HotspotOwasp::class);
         $response = $hotspotOwaspRepository->findOneBy(['mavenKey' => self::$mavenKey]);
 
-        $this->assertNotNull($response, 'Aucune entité a été trouvée');
-        $this->assertCount(1, [$response], 'MAVENKEY: Aucune réponse trouvée');
+        $this->assertCount(1, [$response], 'maven_key Aucune réponse trouvée');
     }
 
     public function testHotspotOwaspCount(): void
@@ -69,7 +68,6 @@ class HotspotOwaspKernelTest extends KernelTestCase
         $hotspotOwaspRepository = $entityManager->getRepository(HotspotOwasp::class);
         $response = $hotspotOwaspRepository->findBy(['mavenKey' => self::$mavenKey]);
 
-        $this->assertNotNull($response, 'Aucune entité a été trouvée');
-        $this->assertCount(3, $response, 'MAVENKEY: Aucune réponse trouvée');
+        $this->assertCount(3, $response, 'maven_key Aucune réponse trouvée');
     }
 }

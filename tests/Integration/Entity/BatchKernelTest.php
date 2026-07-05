@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -65,7 +65,6 @@ class BatchKernelTest extends KernelTestCase
         $batchRepository = $entityManager->getRepository(Batch::class);
         $response = $batchRepository->findOneBy(['responsable' => self::$responsable]);
 
-        $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'RESPONSABLE: Aucune réponse trouvée');
     }
 
@@ -78,7 +77,6 @@ class BatchKernelTest extends KernelTestCase
         $batchRepository = $entityManager->getRepository(Batch::class);
         $response = $batchRepository->findBy(['responsable' => self::$responsable]);
 
-        $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(3, $response, 'RESPONSABLE: Aucune réponse trouvée');
     }
 }

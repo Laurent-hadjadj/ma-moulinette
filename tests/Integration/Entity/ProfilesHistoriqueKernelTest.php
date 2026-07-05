@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -56,7 +56,6 @@ class ProfilesHistoriqueKernelTest extends KernelTestCase
         $informationProjetRepository = $entityManager->getRepository(ProfilesHistorique::class);
         $response = $informationProjetRepository->findOneBy(['language' => self::$language]);
 
-        $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'LANGUAGE: Aucune réponse trouvée');
     }
 }

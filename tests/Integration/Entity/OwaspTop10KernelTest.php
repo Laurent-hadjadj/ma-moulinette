@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -57,7 +57,6 @@ class OwaspTop10KernelTest extends KernelTestCase
         $owaspRepository = $entityManager->getRepository(OwaspTop10::class);
         $response = $owaspRepository->findOneBy(['category' => self::$category]);
 
-        $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'CATEGORY: Aucune réponse trouvée');
     }
 
@@ -70,7 +69,6 @@ class OwaspTop10KernelTest extends KernelTestCase
         $owaspRepository = $entityManager->getRepository(OwaspTop10::class);
         $response = $owaspRepository->findBy(['year' => self::$year]);
 
-        $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, $response, 'CATEGORY: Aucune réponse trouvée');
     }
 }

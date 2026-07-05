@@ -1,15 +1,15 @@
 <?php
 
 /*
-*  Ma-Moulinette
-*  --------------
-*  Copyright (c) 2021-2024.
-*  Laurent HADJADJ <laurent_h@me.com>.
-*  Licensed Creative Common  CC-BY-NC-SA 4.0.
-*  ---
-*  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
-*  http://creativecommons.org/licenses/by-nc-sa/4.0/
-*/
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2015-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
 
 namespace App\Tests\Integration\Entity;
 
@@ -57,7 +57,6 @@ class RepartitionKernelTest extends KernelTestCase
         $repartitionRepository = $entityManager->getRepository(Repartition::class);
         $response = $repartitionRepository->findOneBy(['mavenKey' => self::$mavenKey, 'setup' => self::$setup]);
 
-        $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'MavenKey & Setup: Aucune réponse trouvée');
     }
 
@@ -70,7 +69,6 @@ class RepartitionKernelTest extends KernelTestCase
         $repartitionRepository = $entityManager->getRepository(Repartition::class);
         $response = $repartitionRepository->findBy(['setup' => self::$setup]);
 
-        $this->assertNotNull($response, 'Une entité doit être présente.');
         $this->assertCount(1, $response, 'Une valeur pour setup doit être trouvée.');
     }
 

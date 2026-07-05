@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -53,8 +53,7 @@ class InformationProjetKernelTest extends KernelTestCase
         $informationProjetRepository = $entityManager->getRepository(InformationProjet::class);
         $response = $informationProjetRepository->findOneBy(['mavenKey' => self::$mavenKey]);
 
-        $this->assertNotNull($response, 'Aucune entité a été trouvée');
-        $this->assertCount(1, [$response], 'Maven_Key: Aucune réponse trouvée');
+        $this->assertCount(1, [$response], 'maven_key: Aucune réponse trouvée');
     }
 
     public function testInformationProjetCount(): void
@@ -66,8 +65,7 @@ class InformationProjetKernelTest extends KernelTestCase
         $informationProjetRepository = $entityManager->getRepository(InformationProjet::class);
         $response = $informationProjetRepository->findBy(['mavenKey' => self::$mavenKey]);
 
-        $this->assertNotNull($response, 'Aucune entité a été trouvée');
-        $this->assertCount(3, $response, 'Maven_Key: Aucune réponse trouvée');
+        $this->assertCount(3, $response, 'maven_key: Aucune réponse trouvée');
     }
 
 }

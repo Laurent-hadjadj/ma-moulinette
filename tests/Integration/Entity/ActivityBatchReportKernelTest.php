@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -56,7 +56,6 @@ class ActivityBatchReportKernelTest extends KernelTestCase
         $activityBatchReportRepository = $entityManager->getRepository(ActivityBatchReport::class);
         $response = $activityBatchReportRepository->findOneBy(['taskCount' => self::$taskCount]);
 
-        $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, [$response], 'TASK_COUNT: Aucune réponse trouvée');
     }
 
@@ -69,7 +68,6 @@ class ActivityBatchReportKernelTest extends KernelTestCase
         $activityBatchReportRepository = $entityManager->getRepository(ActivityBatchReport::class);
         $response = $activityBatchReportRepository->findBy(['taskDone' => self::$taskDone]);
 
-        $this->assertNotNull($response, 'Aucune entité a été trouvée');
         $this->assertCount(1, $response, 'TASK_DONE: Aucune réponse trouvée');
     }
 }
