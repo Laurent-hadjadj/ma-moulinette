@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -33,9 +33,9 @@ class UtilisateurKernelTest extends KernelTestCase
   public static string $courriel = 'admin@ma-moulinette.fr';
   public static string $password = '$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K';
   public static bool $actif = true;
-  public static $roles = ["ROLE_GESTIONNAIRE"];
-  public static $groupe = [];
-  public static $preference = ['{
+  public static array $roles = ["ROLE_GESTIONNAIRE"];
+  public static array $groupe = [];
+  public static array $preference = ['{
     "statut":{"projet":false,"favori":false,"version":false},
     "projet":[],"favori":[],"version":[]}'];
   public static string $dateEnregistrement = '1980-01-01 00:00:00';
