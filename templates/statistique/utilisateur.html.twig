@@ -84,9 +84,22 @@
 
     {# WCAG 2.4.1 / 4.1.1 : id="main-content" (cible du skip link) ; retrait du role="main" redondant #}
     <main id="main-content" class="grid-container margin-bottom-2">
-      {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page ; titre descendu en <h2> #}
       <h2 class="h3 text-center claire-hand"><span aria-hidden="true">💻</span>
         Statistiques utilisateur</h2>
+
+    {# ===================== MODIF 2026-06-09 : bouton batch ROLE_INTERNAL ===================== #}
+    {% if is_granted('ROLE_INTERNAL') %}
+      <div class="grid-x align-right margin-bottom-1">
+        <div class="cell shrink">
+          <a id="bouton-lance-batch-analysis"
+              href="{{ path('runBatchAnalysis') }}"
+            class="button warning small open-sans"
+            aria-label="Relancer l'analyse">
+            <span aria-hidden="true">⚙️</span> Relancer l'analyse
+          </a>
+        </div>
+      </div>
+    {% endif %}
 
     {# ===================== Utilisateur créé/ Utilisateur actif ===================== #}
     <section>
