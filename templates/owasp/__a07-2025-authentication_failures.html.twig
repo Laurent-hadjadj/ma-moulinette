@@ -4,20 +4,19 @@
             <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="">
         </div>
         <div class="small-8 medium-8 large-8">
-            {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page (celui du header) ; descente d'un niveau pour tous les titres (h1->h2, h2->h3, h3->h4) #}
-            <h2 class="h2 claire-hand margin-left-1">A7 - Défauts d’authentification</h2>
+            <h2 class="h3 claire-hand margin-left-1">A7 - Défauts d’authentification</h2>
         </div>
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">📄</span><strong>Résumé</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📄</span><strong>Résumé</strong></h3>
         <div class="callout open-sans font-size-11 text-justify">
             {{ owasp.description }}
         </div>
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">📊</span><strong>Facteurs</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📊</span><strong>Facteurs</strong></h3>
         <div class="table-scroll">
             <table class="responsive-card-table unstriped">
                 <thead>
@@ -51,280 +50,279 @@
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">🔍 </span><strong>Aperçu</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">🔍 </span><strong>Aperçu</strong></h3>
         <p class="open-sans font-size-11 text-justify">La catégorie «&nbsp;Échecs d'authentification&nbsp;» conserve sa 7<sup>e</sup> place, avec un léger changement de nom visant à refléter plus fidèlement les 36 CWE qu'elle regroupe. Malgré les avantages offerts par les cadres normalisés, cette catégorie a conservé son classement de 2021.<br>
-        Parmi les faiblesses notables (CWE – Common Weakness Enumerations), on trouve&nbsp;:</p>
-        <ul class="open-sans font-size-11 margin-left-2">
-            <li>CWE-259 : Utilisation de mots de passe codés en dur</li>
-            <li>CWE-297 : Validation incorrecte d'un certificat avec non-correspondance d'hôte</li>
-            <li>CWE-287 : Authentification incorrecte</li>
-            <li>CWE-384 : Fixation de session</li>
-            <li>CWE-798 : Utilisation d'identifiants codés en dur</li>.
-        </ul>
-    </section>
+    Parmi les faiblesses notables (CWE – Common Weakness Enumerations), on trouve&nbsp;:</p>
+    <ul class="open-sans font-size-11 margin-left-2">
+        <li>CWE-259 : Utilisation de mots de passe codés en dur</li>
+        <li>CWE-297 : Validation incorrecte d'un certificat avec non-correspondance d'hôte</li>
+        <li>CWE-287 : Authentification incorrecte</li>
+        <li>CWE-384 : Fixation de session</li>
+        <li>CWE-798 : Utilisation d'identifiants codés en dur</li>.
+    </ul>
+</section>
 
-    <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">🏷️</span><strong>Description</strong></h3>
-        <p class="open-sans font-size-11 text-justify">Lorsqu’un attaquant parvient à tromper un système pour qu’il reconnaisse comme légitime un utilisateur invalide ou incorrect, cette vulnérabilité est présente. Des faiblesses d’authentification peuvent exister si l’application :&nbsp;:</p>
-        <ul class="open-sans font-size-11 margin-left-2">
-            <li>Autorise des attaques automatisées telles que le credential stuffing, où l’attaquant dispose d’une liste compromise de noms d’utilisateur et de mots de passe valides. Plus récemment, ce type d’attaque s’est étendu pour inclure des attaques hybrides (également appelées password spray), où l’attaquant utilise des variations ou des incréments d’identifiants divulgués pour obtenir un accès, par exemple en essayant « Password1! », « Password2! », « Password3! », etc.</li>
-            <li>Autorise des attaques par force brute ou d’autres attaques automatisées et scriptées qui ne sont pas rapidement bloquées.</li>
-            <li>Autorise des mots de passe par défaut, faibles ou bien connus, tels que « Password1 » ou un nom d’utilisateur « admin » avec un mot de passe « admin ».</li>
-            <li>Permet aux utilisateurs de créer de nouveaux comptes avec des identifiants déjà compromis et connus.</li>
-            <li>Autorise l’utilisation de mécanismes de récupération d’identifiants ou de réinitialisation de mot de passe faibles ou inefficaces, tels que les « questions basées sur la connaissance », qui ne peuvent pas être sécurisées de manière fiable.</li>
-            <li>Utilise des bases de données de mots de passe en clair, chiffrées ou faiblement hachées (voir A04:2025 – Défaillances cryptographiques).</li>
-            <li>Présente une absence d’authentification multifacteur ou une authentification multifacteur inefficace.</li>
-            <li>Autorise des mécanismes de secours faibles ou inefficaces lorsque l’authentification multifacteur n’est pas disponible.</li>
-            <li>Expose l’identifiant de session dans l’URL, un champ caché ou un autre emplacement non sécurisé accessible au client.</li>
-            <li>Réutilise le même identifiant de session après une authentification réussie.</li>
-            <li>N’invalide pas correctement les sessions utilisateur ou les jetons d’authentification (notamment les jetons de type SSO – authentification unique) lors de la déconnexion ou après une période d’inactivité.</li>
-            <li>Ne vérifie pas correctement le périmètre et la destination prévue des identifiants fournis.</li>
-        </ul>
-    </section>
+<section>
+    <h2 class="h4 claire-hand"><span aria-hidden="true">🏷️</span><strong>Description</strong></h3>
+    <p class="open-sans font-size-11 text-justify">Lorsqu’un attaquant parvient à tromper un système pour qu’il reconnaisse comme légitime un utilisateur invalide ou incorrect, cette vulnérabilité est présente. Des faiblesses d’authentification peuvent exister si l’application :&nbsp;:</p>
+    <ul class="open-sans font-size-11 margin-left-2">
+        <li>Autorise des attaques automatisées telles que le credential stuffing, où l’attaquant dispose d’une liste compromise de noms d’utilisateur et de mots de passe valides. Plus récemment, ce type d’attaque s’est étendu pour inclure des attaques hybrides (également appelées password spray), où l’attaquant utilise des variations ou des incréments d’identifiants divulgués pour obtenir un accès, par exemple en essayant « Password1! », « Password2! », « Password3! », etc.</li>
+        <li>Autorise des attaques par force brute ou d’autres attaques automatisées et scriptées qui ne sont pas rapidement bloquées.</li>
+        <li>Autorise des mots de passe par défaut, faibles ou bien connus, tels que « Password1 » ou un nom d’utilisateur « admin » avec un mot de passe « admin ».</li>
+        <li>Permet aux utilisateurs de créer de nouveaux comptes avec des identifiants déjà compromis et connus.</li>
+        <li>Autorise l’utilisation de mécanismes de récupération d’identifiants ou de réinitialisation de mot de passe faibles ou inefficaces, tels que les « questions basées sur la connaissance », qui ne peuvent pas être sécurisées de manière fiable.</li>
+        <li>Utilise des bases de données de mots de passe en clair, chiffrées ou faiblement hachées (voir A04:2025 – Défaillances cryptographiques).</li>
+        <li>Présente une absence d’authentification multifacteur ou une authentification multifacteur inefficace.</li>
+        <li>Autorise des mécanismes de secours faibles ou inefficaces lorsque l’authentification multifacteur n’est pas disponible.</li>
+        <li>Expose l’identifiant de session dans l’URL, un champ caché ou un autre emplacement non sécurisé accessible au client.</li>
+        <li>Réutilise le même identifiant de session après une authentification réussie.</li>
+        <li>N’invalide pas correctement les sessions utilisateur ou les jetons d’authentification (notamment les jetons de type SSO – authentification unique) lors de la déconnexion ou après une période d’inactivité.</li>
+        <li>Ne vérifie pas correctement le périmètre et la destination prévue des identifiants fournis.</li>
+    </ul>
+</section>
 
-    <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">🛟</span><strong>Comment s'en prémunir</strong></h3>
-        <ul class="open-sans font-size-11 margin-left-2">
-            <li>Dans la mesure du possible, implémentez et imposez l’utilisation de l’authentification multifacteur afin de prévenir les attaques automatisées telles que le credential stuffing, les attaques par force brute et la réutilisation d’identifiants volés.</li>
-            <li>Dans la mesure du possible, encouragez et permettez l’utilisation de gestionnaires de mots de passe afin d’aider les utilisateurs à faire de meilleurs choix.</li>
-            <li>Ne livrez ni ne déployez jamais de systèmes avec des identifiants par défaut, en particulier pour les utilisateurs administrateurs.</li>
-            <li>Mettez en place des contrôles de mots de passe faibles, par exemple en testant les nouveaux mots de passe ou ceux modifiés par rapport à une liste des 10 000 pires mots de passe.</li>
-            <li>Lors de la création de nouveaux comptes et des changements de mots de passe, vérifiez les identifiants par rapport à des listes connues de données compromises (par exemple en utilisant haveibeenpwned.com).</li>
-            <li>Alignez les politiques de longueur, de complexité et de rotation des mots de passe avec les recommandations du National Institute of Standards and Technology (NIST) 800-63b, section 5.1.1 concernant les « secrets mémorisés », ou avec d’autres politiques modernes basées sur des preuves.</li>
-            <li>N’imposez pas aux utilisateurs de changer régulièrement leurs mots de passe sauf en cas de suspicion de compromission. Si une compromission est suspectée, forcez immédiatement la réinitialisation des mots de passe.</li>
-            <li>Assurez-vous que les processus d’inscription, de récupération d’identifiants et les API sont protégés contre les attaques d’énumération de comptes en utilisant des messages identiques pour tous les résultats (« Nom d’utilisateur ou mot de passe invalide. »).</li>
-            <li>Limitez ou ralentissez progressivement les tentatives de connexion échouées, tout en veillant à ne pas créer une situation de déni de service. Journalisez tous les échecs et alertez les administrateurs lorsque des attaques de type credential stuffing, force brute ou autres sont détectées ou suspectées.</li>
-            <li>Utilisez un gestionnaire de session côté serveur, sécurisé et intégré, qui génère un nouvel identifiant de session aléatoire avec une forte entropie après la connexion. Les identifiants de session ne doivent pas apparaître dans l’URL, doivent être stockés de manière sécurisée dans un cookie sécurisé et invalidés après la déconnexion, une période d’inactivité ou un délai maximal.</li>
-            <li>Idéalement, utilisez un système préconçu et reconnu pour gérer l’authentification, l’identité et les sessions. Transférez ce risque autant que possible en achetant et en utilisant un système robuste et bien testé.</li>
-            <li>Vérifiez l’utilisation prévue des identifiants fournis, par exemple pour les JWT, validez les revendications « aud » (audience), « iss » (émetteur) ainsi que les périmètres d’accès (scopes).</li>
-        </ul>
-    </section>
+<section>
+    <h2 class="h4 claire-hand"><span aria-hidden="true">🛟</span><strong>Comment s'en prémunir</strong></h3>
+    <ul class="open-sans font-size-11 margin-left-2">
+        <li>Dans la mesure du possible, implémentez et imposez l’utilisation de l’authentification multifacteur afin de prévenir les attaques automatisées telles que le credential stuffing, les attaques par force brute et la réutilisation d’identifiants volés.</li>
+        <li>Dans la mesure du possible, encouragez et permettez l’utilisation de gestionnaires de mots de passe afin d’aider les utilisateurs à faire de meilleurs choix.</li>
+        <li>Ne livrez ni ne déployez jamais de systèmes avec des identifiants par défaut, en particulier pour les utilisateurs administrateurs.</li>
+        <li>Mettez en place des contrôles de mots de passe faibles, par exemple en testant les nouveaux mots de passe ou ceux modifiés par rapport à une liste des 10 000 pires mots de passe.</li>
+        <li>Lors de la création de nouveaux comptes et des changements de mots de passe, vérifiez les identifiants par rapport à des listes connues de données compromises (par exemple en utilisant haveibeenpwned.com).</li>
+        <li>Alignez les politiques de longueur, de complexité et de rotation des mots de passe avec les recommandations du National Institute of Standards and Technology (NIST) 800-63b, section 5.1.1 concernant les « secrets mémorisés », ou avec d’autres politiques modernes basées sur des preuves.</li>
+        <li>N’imposez pas aux utilisateurs de changer régulièrement leurs mots de passe sauf en cas de suspicion de compromission. Si une compromission est suspectée, forcez immédiatement la réinitialisation des mots de passe.</li>
+        <li>Assurez-vous que les processus d’inscription, de récupération d’identifiants et les API sont protégés contre les attaques d’énumération de comptes en utilisant des messages identiques pour tous les résultats (« Nom d’utilisateur ou mot de passe invalide. »).</li>
+        <li>Limitez ou ralentissez progressivement les tentatives de connexion échouées, tout en veillant à ne pas créer une situation de déni de service. Journalisez tous les échecs et alertez les administrateurs lorsque des attaques de type credential stuffing, force brute ou autres sont détectées ou suspectées.</li>
+        <li>Utilisez un gestionnaire de session côté serveur, sécurisé et intégré, qui génère un nouvel identifiant de session aléatoire avec une forte entropie après la connexion. Les identifiants de session ne doivent pas apparaître dans l’URL, doivent être stockés de manière sécurisée dans un cookie sécurisé et invalidés après la déconnexion, une période d’inactivité ou un délai maximal.</li>
+        <li>Idéalement, utilisez un système préconçu et reconnu pour gérer l’authentification, l’identité et les sessions. Transférez ce risque autant que possible en achetant et en utilisant un système robuste et bien testé.</li>
+        <li>Vérifiez l’utilisation prévue des identifiants fournis, par exemple pour les JWT, validez les revendications « aud » (audience), « iss » (émetteur) ainsi que les périmètres d’accès (scopes).</li>
+    </ul>
+</section>
 
-    <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">☠️</span><strong>Exemple de scénarios d'attaque</strong></h3>
-        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 1</strong>&nbsp;: Le credential stuffing, c’est-à-dire l’utilisation de listes connues de combinaisons de noms d’utilisateur et de mots de passe, est aujourd’hui une attaque très courante. Plus récemment, on a observé que des attaquants « incrémentent » ou ajustent les mots de passe en se basant sur des comportements humains fréquents. Par exemple, modifier « Winter2025 » en « Winter2026 », ou « ILoveMyDog6 » en « ILoveMyDog7 » ou « ILoveMyDog5 ».<br>
-        Cet ajustement des tentatives de mots de passe est appelé une attaque hybride de credential stuffing ou une attaque de type password spray, et elles peuvent être encore plus efficaces que la version traditionnelle.<br>
-        Si une application ne met pas en place de défenses contre les menaces automatisées (force brute, scripts ou bots) ou contre le credential stuffing, elle peut être utilisée comme un oracle de mots de passe pour déterminer si des identifiants sont valides et ainsi permettre un accès non autorisé.</p>
+<section>
+    <h2 class="h4 claire-hand"><span aria-hidden="true">☠️</span><strong>Exemple de scénarios d'attaque</strong></h3>
+    <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 1</strong>&nbsp;: Le credential stuffing, c’est-à-dire l’utilisation de listes connues de combinaisons de noms d’utilisateur et de mots de passe, est aujourd’hui une attaque très courante. Plus récemment, on a observé que des attaquants « incrémentent » ou ajustent les mots de passe en se basant sur des comportements humains fréquents. Par exemple, modifier « Winter2025 » en « Winter2026 », ou « ILoveMyDog6 » en « ILoveMyDog7 » ou « ILoveMyDog5 ».<br>
+    Cet ajustement des tentatives de mots de passe est appelé une attaque hybride de credential stuffing ou une attaque de type password spray, et elles peuvent être encore plus efficaces que la version traditionnelle.<br>
+Si une application ne met pas en place de défenses contre les menaces automatisées (force brute, scripts ou bots) ou contre le credential stuffing, elle peut être utilisée comme un oracle de mots de passe pour déterminer si des identifiants sont valides et ainsi permettre un accès non autorisé.</p>
 
-        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 2</strong>&nbsp;: La plupart des attaques d’authentification réussies se produisent en raison de l’utilisation continue des mots de passe comme unique facteur d’authentification. Autrefois considérées comme des bonnes pratiques, les exigences de rotation et de complexité des mots de passe incitent les utilisateurs à réutiliser leurs mots de passe et à en choisir de faibles.<br>
-        Il est recommandé aux organisations d’abandonner ces pratiques conformément aux directives du NIST 800-63 et d’imposer l’utilisation de l’authentification multifacteur sur tous les systèmes importants.</p>
+<p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 2</strong>&nbsp;: La plupart des attaques d’authentification réussies se produisent en raison de l’utilisation continue des mots de passe comme unique facteur d’authentification. Autrefois considérées comme des bonnes pratiques, les exigences de rotation et de complexité des mots de passe incitent les utilisateurs à réutiliser leurs mots de passe et à en choisir de faibles.<br>
+Il est recommandé aux organisations d’abandonner ces pratiques conformément aux directives du NIST 800-63 et d’imposer l’utilisation de l’authentification multifacteur sur tous les systèmes importants.</p>
 
-        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 3</strong>&nbsp;: LLes délais d’expiration des sessions applicatives ne sont pas correctement implémentés. Un utilisateur utilise un ordinateur public pour accéder à une application et, au lieu de sélectionner « se déconnecter », il ferme simplement l’onglet du navigateur et s’en va.<br>
-        Un autre exemple est le cas où une session d’authentification unique (SSO) ne peut pas être fermée via une déconnexion unique (SLO). Autrement dit, une seule connexion vous authentifie, par exemple, à votre messagerie, votre système de gestion de documents et votre outil de messagerie instantanée. Mais la déconnexion ne s’applique qu’au système en cours.<br>
-        Si un attaquant utilise le même navigateur après que la victime pense s’être correctement déconnectée, alors que l’utilisateur est encore authentifié sur certaines applications, il peut accéder au compte de la victime.<br>
-        Le même problème peut survenir dans les bureaux et les entreprises lorsqu’une application sensible n’a pas été correctement fermée et qu’un collègue a (temporairement) accès à l’ordinateur non verrouillé.</p>
-    </section>
+<p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 3</strong>&nbsp;: LLes délais d’expiration des sessions applicatives ne sont pas correctement implémentés. Un utilisateur utilise un ordinateur public pour accéder à une application et, au lieu de sélectionner « se déconnecter », il ferme simplement l’onglet du navigateur et s’en va.<br>
+Un autre exemple est le cas où une session d’authentification unique (SSO) ne peut pas être fermée via une déconnexion unique (SLO). Autrement dit, une seule connexion vous authentifie, par exemple, à votre messagerie, votre système de gestion de documents et votre outil de messagerie instantanée. Mais la déconnexion ne s’applique qu’au système en cours.<br>
+Si un attaquant utilise le même navigateur après que la victime pense s’être correctement déconnectée, alors que l’utilisateur est encore authentifié sur certaines applications, il peut accéder au compte de la victime.<br>
+Le même problème peut survenir dans les bureaux et les entreprises lorsqu’une application sensible n’a pas été correctement fermée et qu’un collègue a (temporairement) accès à l’ordinateur non verrouillé.</p>
+</section>
 
-    <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">📘</span><strong>Références</strong></h3>
-        <ul class="open-sans font-size-11 margin-left-2">
-            <li>
-                <a href="https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Authentication Cheat Sheet">
-                    <span class="source-link"><span aria-hidden="true">🔗</span>OWASP Authentication Cheat Sheet</span>
-                </a>
-            </li>
-            <li>
-                <a href="https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/01-introduction/05-introduction" target="_blank" rel="noopener noreferrer" aria-label="OWASP Secure Coding Practices">
-                    <span class="source-link"><span aria-hidden="true">🔗</span>OWASP Secure Coding Practices</span>
-                </a>
-            </li>
-        </ul>
-        </section>
+<section>
+    <h2 class="h4 claire-hand"><span aria-hidden="true">📘</span><strong>Références</strong></h3>
+    <ul class="open-sans font-size-11 margin-left-2">
+        <li>
+            <a href="https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Authentication Cheat Sheet">
+                <span class="source-link"><span aria-hidden="true">🔗</span>OWASP Authentication Cheat Sheet</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://owasp.org/www-project-secure-coding-practices-quick-reference-guide/stable-en/01-introduction/05-introduction" target="_blank" rel="noopener noreferrer" aria-label="OWASP Secure Coding Practices">
+                <span class="source-link"><span aria-hidden="true">🔗</span>OWASP Secure Coding Practices</span>
+            </a>
+        </li>
+    </ul>
+</section>
 
-        <section>
-            <h3 class="h4 claire-hand"><span aria-hidden="true">📋</span><strong>Liste des CWEs associées</strong></h3>
-            <ul class="open-sans font-size-11 margin-left-2">
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/258.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-258 Empty Password in Configuration File">
-                        <span class="source-link"><span aria-hidden="true">📌 🆕</span>CCWE-258 Empty Password in Configuration File</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/259.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-259 Use of Hard-coded Password">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-259 Use of Hard-coded Password</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/287.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-287 Improper Authentication">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-287 Improper Authentication</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/288.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-288 Authentication Bypass Using an Alternate Path or Channel">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-288 Authentication Bypass Using an Alternate Path or Channel</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/289.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-289 Authentication Bypass by Alternate Name">
-                        <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-289 Authentication Bypass by Alternate Name</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/290.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-290 Authentication Bypass by Spoofing">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-290 Authentication Bypass by Spoofing</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/291.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-291 Reliance on IP Address for Authentication">
-                        <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-291 Reliance on IP Address for Authentication</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/293.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-293 Using Referer Field for Authentication">
-                        <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-293 Using Referer Field for Authentication</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/294.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-294 Authentication Bypass by Capture-replay">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-294 Authentication Bypass by Capture-replay</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/295.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-295 Improper Certificate Validation">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-295 Improper Certificate Validation</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/297.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-297 Improper Validation of Certificate with Host Mismatch">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-297 Improper Validation of Certificate with Host Mismatch</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/298.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-298 Improper Validation of Certificate with Host Mismatch">
-                        <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-298 Improper Validation of Certificate with Host Mismatch</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/299.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-299 Improper Validation of Certificate with Host Mismatch">
-                        <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-299 Improper Validation of Certificate with Host Mismatch</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/300.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-300 Channel Accessible by Non-Endpoint">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-300 Channel Accessible by Non-Endpoint</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/302.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-302 Authentication Bypass by Assumed-Immutable Data">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-302 Authentication Bypass by Assumed-Immutable Data</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/303.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-303 Incorrect Implementation of Authentication Algorithm">
-                        <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-303 Incorrect Implementation of Authentication Algorithm</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/304.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-304 Missing Critical Step in Authentication">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-304 Missing Critical Step in Authentication</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/305.html" target="_blank" rel="noopener noreferrer" aria-label="CCWE-305 Authentication Bypass by Primary Weakness">
-                        <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-305 Authentication Bypass by Primary Weakness</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/306.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-306 Missing Authentication for Critical Function">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-306 Missing Authentication for Critical Function</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/307.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-307 Improper Restriction of Excessive Authentication Attempts">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-307 Improper Restriction of Excessive Authentication Attempts</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/308.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-308 Use of Single-factor Authentication">
-                        <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-308 Use of Single-factor Authentication</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/309.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-309 Use of Password System for Primary Authentication">
-                        <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-309 Use of Password System for Primary Authentication</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/346.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-346 Origin Validation Error">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-346 Origin Validation Error</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/350.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-350 Reliance on Reverse DNS Resolution for a Security-Critical Action">
-                        <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-350 Reliance on Reverse DNS Resolution for a Security-Critical Action/span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/384.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-384 Session Fixation">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-384 Session Fixation</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/521.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-521 Weak Password Requirements">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-521 Weak Password Requirements</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/613.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-613 Insufficient Session Expiration">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-613 Insufficient Session Expiration</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/620.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-620 Unverified Password Change">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-620 Unverified Password Change</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/640.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-640 Weak Password Recovery Mechanism for Forgotten Password">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-640 Weak Password Recovery Mechanism for Forgotten Password</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/798.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-798 Use of Hard-coded Credentials">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-798 Use of Hard-coded Credentials</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/940.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-940 Improper Verification of Source of a Communication Channel">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-940 Improper Verification of Source of a Communication Channel</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/941.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-941 Incorrectly Specified Destination in a Communication Channel">
-                        <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-941 Incorrectly Specified Destination in a Communication Channel</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/1390.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1390 Weak Authentication">
-                        <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-1390 Weak Authentication</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/1391.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1391 Use of Weak Credentials">
-                        <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-1391 Use of Weak Credentials</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/1392.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1392 Use of Default Credentials">
-                        <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-1392 Use of Default Credentials</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/1393.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1393 Use of Default Password">
-                        <span class="source-link"><span aria-hidden="true">📌 🆕</span>CCWE-1393 Use of Default Password</span>
-                    </a>
-                </li>
-            </ul>
-        </section>
-    </div>
+<section>
+    <h2 class="h4 claire-hand"><span aria-hidden="true">📋</span><strong>Liste des CWEs associées</strong></h3>
+    <ul class="open-sans font-size-11 margin-left-2">
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/258.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-258 Empty Password in Configuration File">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span>CCWE-258 Empty Password in Configuration File</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/259.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-259 Use of Hard-coded Password">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-259 Use of Hard-coded Password</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/287.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-287 Improper Authentication">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-287 Improper Authentication</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/288.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-288 Authentication Bypass Using an Alternate Path or Channel">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-288 Authentication Bypass Using an Alternate Path or Channel</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/289.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-289 Authentication Bypass by Alternate Name">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-289 Authentication Bypass by Alternate Name</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/290.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-290 Authentication Bypass by Spoofing">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-290 Authentication Bypass by Spoofing</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/291.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-291 Reliance on IP Address for Authentication">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-291 Reliance on IP Address for Authentication</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/293.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-293 Using Referer Field for Authentication">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-293 Using Referer Field for Authentication</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/294.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-294 Authentication Bypass by Capture-replay">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-294 Authentication Bypass by Capture-replay</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/295.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-295 Improper Certificate Validation">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-295 Improper Certificate Validation</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/297.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-297 Improper Validation of Certificate with Host Mismatch">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-297 Improper Validation of Certificate with Host Mismatch</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/298.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-298 Improper Validation of Certificate with Host Mismatch">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-298 Improper Validation of Certificate with Host Mismatch</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/299.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-299 Improper Validation of Certificate with Host Mismatch">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-299 Improper Validation of Certificate with Host Mismatch</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/300.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-300 Channel Accessible by Non-Endpoint">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-300 Channel Accessible by Non-Endpoint</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/302.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-302 Authentication Bypass by Assumed-Immutable Data">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-302 Authentication Bypass by Assumed-Immutable Data</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/303.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-303 Incorrect Implementation of Authentication Algorithm">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-303 Incorrect Implementation of Authentication Algorithm</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/304.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-304 Missing Critical Step in Authentication">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-304 Missing Critical Step in Authentication</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/305.html" target="_blank" rel="noopener noreferrer" aria-label="CCWE-305 Authentication Bypass by Primary Weakness">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-305 Authentication Bypass by Primary Weakness</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/306.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-306 Missing Authentication for Critical Function">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-306 Missing Authentication for Critical Function</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/307.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-307 Improper Restriction of Excessive Authentication Attempts">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-307 Improper Restriction of Excessive Authentication Attempts</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/308.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-308 Use of Single-factor Authentication">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-308 Use of Single-factor Authentication</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/309.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-309 Use of Password System for Primary Authentication">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-309 Use of Password System for Primary Authentication</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/346.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-346 Origin Validation Error">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-346 Origin Validation Error</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/350.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-350 Reliance on Reverse DNS Resolution for a Security-Critical Action">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-350 Reliance on Reverse DNS Resolution for a Security-Critical Action/span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/384.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-384 Session Fixation">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-384 Session Fixation</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/521.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-521 Weak Password Requirements">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-521 Weak Password Requirements</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/613.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-613 Insufficient Session Expiration">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-613 Insufficient Session Expiration</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/620.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-620 Unverified Password Change">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-620 Unverified Password Change</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/640.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-640 Weak Password Recovery Mechanism for Forgotten Password">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-640 Weak Password Recovery Mechanism for Forgotten Password</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/798.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-798 Use of Hard-coded Credentials">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-798 Use of Hard-coded Credentials</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/940.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-940 Improper Verification of Source of a Communication Channel">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-940 Improper Verification of Source of a Communication Channel</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/941.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-941 Incorrectly Specified Destination in a Communication Channel">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-941 Incorrectly Specified Destination in a Communication Channel</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/1390.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1390 Weak Authentication">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-1390 Weak Authentication</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/1391.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1391 Use of Weak Credentials">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-1391 Use of Weak Credentials</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/1392.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1392 Use of Default Credentials">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-1392 Use of Default Credentials</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/1393.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1393 Use of Default Password">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span>CCWE-1393 Use of Default Password</span>
+            </a>
+        </li>
+    </ul>
+</section>
+</div>
 
-    <div class="grid-container">
-        <div class="callout primary alert-callout-border">
-            <p class="open-sans text-justify">
+<div class="grid-container">
+    <div class="callout primary alert-callout-border">
+        <p class="open-sans text-justify">
             Copyright ©️ 2003-2021 La Fondation OWASP™.<br>
             Ce document est publié sous la licence Creative Commons Attribution Share-Alike 4.0 (CC 4.0 BY-SA).
         </p>
         <p class="open-sans text-justify">Traduction française - Laurent HADJADJ (CC 4.0 BY-SA)</p>
-        </div>
     </div>
-    <br><br>
+</div>

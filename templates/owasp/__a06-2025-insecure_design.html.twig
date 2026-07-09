@@ -4,20 +4,19 @@
             <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="">
         </div>
         <div class="small-8 medium-8 large-8">
-            {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page (celui du header) ; descente d'un niveau pour tous les titres (h1->h2, h2->h3, h3->h4) #}
-            <h2 class="h2 claire-hand margin-left-1">A06:2025 – Conception non sécurisée</h2>
+            <h2 class="h3 claire-hand margin-left-1">A06:2025 – Conception non sécurisée</h2>
         </div>
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">📄</span><strong>Résumé</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📄</span><strong>Résumé</strong></h3>
         <div class="callout open-sans font-size-11 text-justify">
             {{ owasp.description }}
         </div>
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">📊</span><strong>Facteurs</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📊</span><strong>Facteurs</strong></h3>
         <div class="table-scroll">
             <table class="responsive-card-table unstriped">
                 <thead>
@@ -53,302 +52,301 @@
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">🔍 </span><strong>Aperçu</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">🔍 </span><strong>Aperçu</strong></h3>
         <p class="open-sans font-size-11 text-justify">La catégorie « Conception non sécurisée » recule de deux places, passant de la 4<sup>e</sup> à la 6<sup>e<sup> position du classement, devancée par les catégories <strong>A02:2025 – Mauvaise configuration de sécurité</strong> et <strong>A03:2025 – Défaillances de la chaîne d'approvisionnement logicielle</strong>.<br>
         Cette catégorie a été introduite en 2021, et nous avons constaté des améliorations notables dans le secteur en matière de modélisation des menaces et une plus grande importance accordée à la conception sécurisée. Cette catégorie se concentre sur les risques liés aux failles de conception et d'architecture, et préconise un recours accru à la modélisation des menaces, aux modèles de conception sécurisée et aux architectures de référence. Cela inclut les failles dans la logique métier d'une application, par exemple l'absence de définition des changements d'état indésirables ou inattendus au sein d'une application.<br>
         En tant que communauté, nous devons aller au-delà du « shift-left » dans le domaine du codage, pour nous concentrer sur les activités préalables au codage, telles que la rédaction des exigences et la conception d'applications, qui sont essentielles aux principes de la sécurité dès la conception (voir par exemple « Mettre en place un programme AppSec moderne : phase de planification et de conception »).<br>
-        Parmi les énumérations de faiblesses courantes (CWE) notables, on peut citer&nbsp;:</p>
+    Parmi les énumérations de faiblesses courantes (CWE) notables, on peut citer&nbsp;:</p>
+    <ul class="open-sans font-size-11 margin-left-2">
+        <li>CWE-256 : Stockage non protégé des identifiants</li>
+        <li>CWE-269 : Gestion inappropriée des privilèges</li>
+        <li>CWE-434 : Téléchargement sans restriction de fichiers de type dangereux</li>
+        <li>CWE-501 : Violation des limites de confiance</li>
+        <li>CWE-522 : Identifiants insuffisamment protégés</li>
+    </ul>
+</section>
+
+<section>
+    <h2 class="h4 claire-hand"><span aria-hidden="true">🏷️</span><strong>Description</strong></h3>
+    <p class="open-sans font-size-11 text-justify">La conception non sécurisée est une catégorie générale qui englobe différentes faiblesses, décrites comme « une conception de contrôles absente ou inefficace ». La conception non sécurisée n’est pas à l’origine de toutes les autres catégories de risques du Top Ten. Il convient de noter qu’il existe une différence entre une conception non sécurisée et une mise en œuvre non sécurisée. Nous faisons la distinction entre les défauts de conception et les défauts de mise en œuvre pour une bonne raison : ils ont des causes profondes différentes, surviennent à des moments différents du processus de développement et nécessitent des mesures correctives différentes. Une conception sécurisée peut tout de même présenter des défauts de mise en œuvre conduisant à des vulnérabilités susceptibles d'être exploitées. Une conception non sécurisée ne peut pas être corrigée par une mise en œuvre parfaite, car les contrôles de sécurité nécessaires n'ont jamais été créés pour se défendre contre des attaques spécifiques. L'un des facteurs contribuant à une conception non sécurisée est l'absence de profilage des risques métier inhérents au logiciel ou au système en cours de développement, et donc l'incapacité à déterminer le niveau de conception de sécurité requis. Les trois éléments clés d'une conception sécurisée sont les suivants :</p>
+    <ul class="open-sans font-size-11 margin-left-2">
+        <li>Recueil des exigences et gestion des ressources</li>
+        <li>Élaboration d'une conception sécurisée</li>
+        <li>Mise en place d'un cycle de vie de développement sécurisé</li>
+    </ul>
+
+    <h4 class="h5 claire-hand"><strong>Gestion des exigences et des ressources</strong></h4>
+    <p class="open-sans font-size-11 text-justify">Recueillir et négocier avec les services métier les exigences fonctionnelles d'une application, y compris les exigences de protection relatives à la confidentialité, à l'intégrité, à la disponibilité et à l'authenticité de l'ensemble des données, ainsi que la logique métier attendue. Tenez compte du niveau d'exposition de votre application et déterminez si une séparation des locataires est nécessaire (au-delà de celle requise pour le contrôle d'accès). Compilez les exigences techniques, y compris les exigences de sécurité fonctionnelles et non fonctionnelles. Planifiez et négociez le budget couvrant l'ensemble de la conception, du développement, des tests et de l'exploitation, y compris les activités de sécurité.</p>
+
+    <h4 class="h5 claire-hand"><strong>Conception sécurisée</strong></h4>
+    <p class="open-sans font-size-11 text-justify">La conception sécurisée est une culture et une méthodologie qui consiste à évaluer en permanence les menaces et à s'assurer que le code est conçu et testé de manière robuste afin de prévenir les méthodes d'attaque connues. La modélisation des menaces doit être intégrée aux sessions de raffinement (ou à des activités similaires) ; il convient de rechercher les changements dans les flux de données, le contrôle d'accès ou d'autres contrôles de sécurité. Lors de l'élaboration des récits, déterminez les flux corrects et les états de défaillance, et assurez-vous qu'ils sont bien compris et acceptés par les parties responsables et concernées. Analysez les hypothèses et les conditions des flux attendus et des flux de défaillance pour vous assurer qu'ils restent précis et souhaitables. Déterminez comment valider les hypothèses et appliquer les conditions nécessaires à des comportements appropriés. Assurez-vous que les résultats sont documentés dans l'histoire. Tirez les leçons des erreurs et proposez des incitations positives pour encourager les améliorations. La conception sécurisée n'est ni un module complémentaire ni un outil que l'on peut ajouter à un logiciel.</p>
+
+    <h4 class="h5 claire-hand"><strong>Cycle de développement sécurisé</strong></h4>
+    <p class="open-sans font-size-11 text-justify">Un logiciel sécurisé nécessite un cycle de vie de développement sécurisé, des modèles de conception sécurisés, une méthodologie éprouvée, une bibliothèque de composants sécurisés, des outils adaptés, une modélisation des menaces et des analyses rétrospectives des incidents visant à améliorer le processus. Faites appel à vos spécialistes en sécurité dès le début d'un projet logiciel, tout au long de celui-ci et pour la maintenance continue du logiciel. Envisagez d'utiliser le modèle de maturité de l'assurance logicielle (SAMM) de l'OWASP pour structurer vos efforts de développement de logiciels sécurisés.</p>
+
+    <p class="open-sans font-size-11 text-justify">La responsabilité individuelle des développeurs est souvent sous-estimée. Favorisez une culture de sensibilisation, de responsabilité et d'atténuation proactive des risques. Des échanges réguliers sur la sécurité (par exemple lors de sessions de modélisation des menaces) peuvent créer un état d'esprit propice à l'intégration de la sécurité dans toutes les décisions de conception importantes.</p>
+</section>
+
+<section>
+    <h2 class="h4 claire-hand"><span aria-hidden="true">🛟</span><strong>Comment s'en prémunir</strong></h3>
+    <ul class="open-sans font-size-11 margin-left-2">
+        <li>Mettre en place et appliquer un cycle de vie de développement sécurisé en collaboration avec des professionnels de la sécurité des applications (AppSec) afin d'évaluer et de concevoir des contrôles liés à la sécurité et à la confidentialité</li>
+        <li>Mettre en place et utiliser une bibliothèque de modèles de conception sécurisés ou de composants prêts à l'emploi</li>
+        <li>Recourir à la modélisation des menaces pour les éléments critiques de l'application, tels que l'authentification, le contrôle d'accès, la logique métier et les flux clés</li>
+        <li>Utiliser la modélisation des menaces comme outil pédagogique pour développer une culture de la sécurité</li>
+        <li>Intégrer le langage de la sécurité et les contrôles dans les récits utilisateurs</li>
+        <li>Intégrer des contrôles de plausibilité à chaque niveau de votre application (du front-end au back-end).</li>
+        <li>Rédiger des tests unitaires et d'intégration pour vérifier que tous les flux critiques résistent au modèle de menaces. Compiler des cas d'utilisation et des cas d'utilisation abusive pour chaque niveau de votre application.</li>
+        <li>Séparer les couches de niveau au niveau des couches système et réseau, en fonction des besoins d'exposition et de protection.</li>
+        <li>Séparer les tenants de manière robuste dès la conception à tous les niveaux.</li>
+    </section>
+
+    <section>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">☠️</span><strong>Exemple de scénarios d'attaque</strong></h3>
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 1&nbsp;:</strong> Un processus de récupération des identifiants peut inclure des « questions et réponses », ce qui est interdit par la norme NIST 800-63b, l'OWASP ASVS et l'OWASP Top 10. Les questions et réponses ne peuvent être considérées comme une preuve d'identité fiable, car plusieurs personnes peuvent connaître les réponses. Une telle fonctionnalité doit être supprimée et remplacée par une conception plus sécurisée.</p>
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 2&nbsp;:</strong> Une chaîne de cinémas propose des réductions pour les réservations de groupe et n'exige le versement d'un acompte qu'à partir de quinze personnes. Les pirates pourraient analyser ce processus sous l'angle des menaces et vérifier s'il est possible de trouver un vecteur d'attaque dans la logique métier de l'application, par exemple en réservant six cents places et toutes les salles d'un seul coup en quelques requêtes, ce qui entraînerait une perte de revenus considérable.</p>
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 3&nbsp;:</strong> Le site de commerce électronique d'une chaîne de magasins ne dispose d'aucune protection contre les robots utilisés par des revendeurs qui achètent des cartes graphiques haut de gamme pour les revendre sur des sites d'enchères. Cela nuit gravement à l'image des fabricants de cartes graphiques et des propriétaires de chaînes de magasins, et engendre une animosité durable chez les passionnés qui ne parviennent pas à se procurer ces cartes, quel que soit le prix. Une conception anti-robot rigoureuse et des règles logiques de gestion des domaines, telles que l'interdiction des achats effectués dans les quelques secondes suivant la mise en vente, pourraient permettre d'identifier les achats frauduleux et de rejeter ces transactions.</p>
+    </section>
+
+    <section>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">🛟</span><strong>Comment s'en prémunir</strong></h3>
         <ul class="open-sans font-size-11 margin-left-2">
-            <li>CWE-256 : Stockage non protégé des identifiants</li>
-            <li>CWE-269 : Gestion inappropriée des privilèges</li>
-            <li>CWE-434 : Téléchargement sans restriction de fichiers de type dangereux</li>
-            <li>CWE-501 : Violation des limites de confiance</li>
-            <li>CWE-522 : Identifiants insuffisamment protégés</li>
+            <li>
+                <a href="https://cheatsheetseries.owasp.org/cheatsheets/Secure_Product_Design_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Secure Design Principles">
+                    <span class="source-link"><span aria-hidden="true">🔗</span>OWASP Cheat Sheet: Secure Design Principles</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://owaspsamm.org/model/design/secure-architecture/" target="_blank" rel="noopener noreferrer" aria-label="OWASP SAMM: Design | Secure Architecture">
+                    <span class="source-link"><span aria-hidden="true">🔗</span>OWASP SAMM: Design | Secure Architecture</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://owaspsamm.org/model/design/threat-assessment/" target="_blank" rel="noopener noreferrer" aria-label="OWASP SAMM: Design | Threat Assessment">
+                    <span class="source-link"><span aria-hidden="true">🔗</span>OWASP SAMM: Design | Threat Assessment</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://www.nist.gov/publications/guidelines-minimum-standards-developer-verification-software" target="_blank" rel="noopener noreferrer" aria-label="NIST – Guidelines on Minimum Standards for Developer Verification of Software">
+                    <span class="source-link"><span aria-hidden="true">🔗</span>NIST – Guidelines on Minimum Standards for Developer Verification of Software</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://threatmodelingmanifesto.org" target="_blank" rel="noopener noreferrer" aria-label="The Threat Modeling Manifesto">
+                    <span class="source-link"><span aria-hidden="true">🔗</span>The Threat Modeling Manifesto</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://github.com/hysnsec/awesome-threat-modelling" target="_blank" rel="noopener noreferrer" aria-label="Awesome Threat Modeling">
+                    <span class="source-link"><span aria-hidden="true">🔗</span>Awesome Threat Modeling</span>
+                </a>
+            </li>
         </ul>
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">🏷️</span><strong>Description</strong></h3>
-        <p class="open-sans font-size-11 text-justify">La conception non sécurisée est une catégorie générale qui englobe différentes faiblesses, décrites comme « une conception de contrôles absente ou inefficace ». La conception non sécurisée n’est pas à l’origine de toutes les autres catégories de risques du Top Ten. Il convient de noter qu’il existe une différence entre une conception non sécurisée et une mise en œuvre non sécurisée. Nous faisons la distinction entre les défauts de conception et les défauts de mise en œuvre pour une bonne raison : ils ont des causes profondes différentes, surviennent à des moments différents du processus de développement et nécessitent des mesures correctives différentes. Une conception sécurisée peut tout de même présenter des défauts de mise en œuvre conduisant à des vulnérabilités susceptibles d'être exploitées. Une conception non sécurisée ne peut pas être corrigée par une mise en œuvre parfaite, car les contrôles de sécurité nécessaires n'ont jamais été créés pour se défendre contre des attaques spécifiques. L'un des facteurs contribuant à une conception non sécurisée est l'absence de profilage des risques métier inhérents au logiciel ou au système en cours de développement, et donc l'incapacité à déterminer le niveau de conception de sécurité requis. Les trois éléments clés d'une conception sécurisée sont les suivants :</p>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📋</span><strong>Liste des CWEs associées</strong></h3>
         <ul class="open-sans font-size-11 margin-left-2">
-            <li>Recueil des exigences et gestion des ressources</li>
-            <li>Élaboration d'une conception sécurisée</li>
-            <li>Mise en place d'un cycle de vie de développement sécurisé</li>
-        </ul>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/73.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-73 External Control of File Name or Path">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-73 External Control of File Name or Path</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/183.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-183 Permissive List of Allowed Inputs">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-183 Permissive List of Allowed Inputs</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/256.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-256 Unprotected Storage of Credentials">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-256 Unprotected Storage of Credentials</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/266.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-266 Incorrect Privilege Assignment">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-266 Incorrect Privilege Assignment</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/269.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-269 Improper Privilege Management">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-269 Improper Privilege Management</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/286.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-286 Incorrect User Management">
+                    <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-286 Incorrect User Management/span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/311.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-311 Missing Encryption of Sensitive Data">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-311 Missing Encryption of Sensitive Data</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/312.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-312 Cleartext Storage of Sensitive Information">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-312 Cleartext Storage of Sensitive Information</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/313.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-313 Cleartext Storage in a File or on Disk">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-313 Cleartext Storage in a File or on Disk</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/316.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-316 Cleartext Storage of Sensitive Information in Memory">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-316 Cleartext Storage of Sensitive Information in Memory</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/362.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-362 Concurrent Execution using Shared Resource with Improper Synchronization ('Race Condition')">
+                    <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-362 Concurrent Execution using Shared Resource with Improper Synchronization ('Race Condition')</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/382.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-382 J2EE Bad Practices: Use of System.exit()">
+                    <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-382 J2EE Bad Practices: Use of System.exit()</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/419.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-419 Unprotected Primary Channel">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-419 Unprotected Primary Channel</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/434.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-434 Unrestricted Upload of File with Dangerous Type">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-434 Unrestricted Upload of File with Dangerous Type</span>
+                </a>
+            </li>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/436.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-436 Interpretation Conflict">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-436 Interpretation Conflict</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/444.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-444 Inconsistent Interpretation of HTTP Requests ('HTTP Request Smuggling')">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-444 Inconsistent Interpretation of HTTP Requests ('HTTP Request Smuggling')</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/451.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-451 User Interface (UI) Misrepresentation of Critical Information">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-451 User Interface (UI) Misrepresentation of Critical Information</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/454.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-454 External Initialization of Trusted Variables or Data Stores">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-454 External Initialization of Trusted Variables or Data Stores</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/472.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-472 External Control of Assumed-Immutable Web Parameter">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-472 External Control of Assumed-Immutable Web Parameter</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/501.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-501 Trust Boundary Violation">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-501 Trust Boundary Violation</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/522.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-522 Insufficiently Protected Credentials">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-522 Insufficiently Protected Credentials</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/525.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-525 Use of Web Browser Cache Containing Sensitive Information">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-525 Use of Web Browser Cache Containing Sensitive Information</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/539.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-539 Use of Persistent Cookies Containing Sensitive Information">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-539 Use of Persistent Cookies Containing Sensitive Information</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/598.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-598 Use of GET Request Method With Sensitive Query Strings">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-598 Use of GET Request Method With Sensitive Query Strings</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/602.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-602 Client-Side Enforcement of Server-Side Security">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-602 Client-Side Enforcement of Server-Side Security</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/628.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-628 Function Call with Incorrectly Specified Arguments">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-628 Function Call with Incorrectly Specified Arguments</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/642.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-642 External Control of Critical State Data">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-642 External Control of Critical State Data</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/646.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-646 Reliance on File Name or Extension of Externally-Supplied File">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-646 Reliance on File Name or Extension of Externally-Supplied File</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/653.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-653 Insufficient Compartmentalization">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-653 Insufficient Compartmentalization</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/656.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-656 Reliance on Security Through Obscurity">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-656 Reliance on Security Through Obscurity</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/657.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-657 Violation of Secure Design Principles">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-657 Violation of Secure Design Principles</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/693.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-693 Protection Mechanism Failure">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-693 Protection Mechanism Failure</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/799.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-799 Improper Control of Interaction Frequency">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-799 Improper Control of Interaction Frequency</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/807.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-807 Reliance on Untrusted Inputs in a Security Decision">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-807 Reliance on Untrusted Inputs in a Security Decision</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/841.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-841 Improper Enforcement of Behavioral Workflow">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-841 Improper Enforcement of Behavioral Workflow</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/1021.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1021 Improper Restriction of Rendered UI Layers or Frames">
+                <span class="source-link"><span aria-hidden="true">📌</span>CWE-1021 Improper Restriction of Rendered UI Layers or Frames</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/1022.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1022 Use of Web Link to Untrusted Target with window.opener Access">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-1022 Use of Web Link to Untrusted Target with window.opener Access</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://cwe.mitre.org/data/definitions/1125.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1125 Excessive Attack Surface">
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-1125 Excessive Attack Surface</span>
+            </a>
+        </li>
+    </ul>
+</section>
+</div>
 
-        <h4 class="h5 claire-hand"><strong>Gestion des exigences et des ressources</strong></h4>
-        <p class="open-sans font-size-11 text-justify">Recueillir et négocier avec les services métier les exigences fonctionnelles d'une application, y compris les exigences de protection relatives à la confidentialité, à l'intégrité, à la disponibilité et à l'authenticité de l'ensemble des données, ainsi que la logique métier attendue. Tenez compte du niveau d'exposition de votre application et déterminez si une séparation des locataires est nécessaire (au-delà de celle requise pour le contrôle d'accès). Compilez les exigences techniques, y compris les exigences de sécurité fonctionnelles et non fonctionnelles. Planifiez et négociez le budget couvrant l'ensemble de la conception, du développement, des tests et de l'exploitation, y compris les activités de sécurité.</p>
-
-        <h4 class="h5 claire-hand"><strong>Conception sécurisée</strong></h4>
-        <p class="open-sans font-size-11 text-justify">La conception sécurisée est une culture et une méthodologie qui consiste à évaluer en permanence les menaces et à s'assurer que le code est conçu et testé de manière robuste afin de prévenir les méthodes d'attaque connues. La modélisation des menaces doit être intégrée aux sessions de raffinement (ou à des activités similaires) ; il convient de rechercher les changements dans les flux de données, le contrôle d'accès ou d'autres contrôles de sécurité. Lors de l'élaboration des récits, déterminez les flux corrects et les états de défaillance, et assurez-vous qu'ils sont bien compris et acceptés par les parties responsables et concernées. Analysez les hypothèses et les conditions des flux attendus et des flux de défaillance pour vous assurer qu'ils restent précis et souhaitables. Déterminez comment valider les hypothèses et appliquer les conditions nécessaires à des comportements appropriés. Assurez-vous que les résultats sont documentés dans l'histoire. Tirez les leçons des erreurs et proposez des incitations positives pour encourager les améliorations. La conception sécurisée n'est ni un module complémentaire ni un outil que l'on peut ajouter à un logiciel.</p>
-
-        <h4 class="h5 claire-hand"><strong>Cycle de développement sécurisé</strong></h4>
-        <p class="open-sans font-size-11 text-justify">Un logiciel sécurisé nécessite un cycle de vie de développement sécurisé, des modèles de conception sécurisés, une méthodologie éprouvée, une bibliothèque de composants sécurisés, des outils adaptés, une modélisation des menaces et des analyses rétrospectives des incidents visant à améliorer le processus. Faites appel à vos spécialistes en sécurité dès le début d'un projet logiciel, tout au long de celui-ci et pour la maintenance continue du logiciel. Envisagez d'utiliser le modèle de maturité de l'assurance logicielle (SAMM) de l'OWASP pour structurer vos efforts de développement de logiciels sécurisés.</p>
-
-        <p class="open-sans font-size-11 text-justify">La responsabilité individuelle des développeurs est souvent sous-estimée. Favorisez une culture de sensibilisation, de responsabilité et d'atténuation proactive des risques. Des échanges réguliers sur la sécurité (par exemple lors de sessions de modélisation des menaces) peuvent créer un état d'esprit propice à l'intégration de la sécurité dans toutes les décisions de conception importantes.</p>
-    </section>
-
-    <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">🛟</span><strong>Comment s'en prémunir</strong></h3>
-        <ul class="open-sans font-size-11 margin-left-2">
-            <li>Mettre en place et appliquer un cycle de vie de développement sécurisé en collaboration avec des professionnels de la sécurité des applications (AppSec) afin d'évaluer et de concevoir des contrôles liés à la sécurité et à la confidentialité</li>
-            <li>Mettre en place et utiliser une bibliothèque de modèles de conception sécurisés ou de composants prêts à l'emploi</li>
-            <li>Recourir à la modélisation des menaces pour les éléments critiques de l'application, tels que l'authentification, le contrôle d'accès, la logique métier et les flux clés</li>
-            <li>Utiliser la modélisation des menaces comme outil pédagogique pour développer une culture de la sécurité</li>
-            <li>Intégrer le langage de la sécurité et les contrôles dans les récits utilisateurs</li>
-            <li>Intégrer des contrôles de plausibilité à chaque niveau de votre application (du front-end au back-end).</li>
-            <li>Rédiger des tests unitaires et d'intégration pour vérifier que tous les flux critiques résistent au modèle de menaces. Compiler des cas d'utilisation et des cas d'utilisation abusive pour chaque niveau de votre application.</li>
-            <li>Séparer les couches de niveau au niveau des couches système et réseau, en fonction des besoins d'exposition et de protection.</li>
-            <li>Séparer les tenants de manière robuste dès la conception à tous les niveaux.</li>
-        </section>
-
-        <section>
-            <h3 class="h4 claire-hand"><span aria-hidden="true">☠️</span><strong>Exemple de scénarios d'attaque</strong></h3>
-            <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 1&nbsp;:</strong> Un processus de récupération des identifiants peut inclure des « questions et réponses », ce qui est interdit par la norme NIST 800-63b, l'OWASP ASVS et l'OWASP Top 10. Les questions et réponses ne peuvent être considérées comme une preuve d'identité fiable, car plusieurs personnes peuvent connaître les réponses. Une telle fonctionnalité doit être supprimée et remplacée par une conception plus sécurisée.</p>
-            <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 2&nbsp;:</strong> Une chaîne de cinémas propose des réductions pour les réservations de groupe et n'exige le versement d'un acompte qu'à partir de quinze personnes. Les pirates pourraient analyser ce processus sous l'angle des menaces et vérifier s'il est possible de trouver un vecteur d'attaque dans la logique métier de l'application, par exemple en réservant six cents places et toutes les salles d'un seul coup en quelques requêtes, ce qui entraînerait une perte de revenus considérable.</p>
-            <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 3&nbsp;:</strong> Le site de commerce électronique d'une chaîne de magasins ne dispose d'aucune protection contre les robots utilisés par des revendeurs qui achètent des cartes graphiques haut de gamme pour les revendre sur des sites d'enchères. Cela nuit gravement à l'image des fabricants de cartes graphiques et des propriétaires de chaînes de magasins, et engendre une animosité durable chez les passionnés qui ne parviennent pas à se procurer ces cartes, quel que soit le prix. Une conception anti-robot rigoureuse et des règles logiques de gestion des domaines, telles que l'interdiction des achats effectués dans les quelques secondes suivant la mise en vente, pourraient permettre d'identifier les achats frauduleux et de rejeter ces transactions.</p>
-        </section>
-
-        <section>
-            <h3 class="h4 claire-hand"><span aria-hidden="true">🛟</span><strong>Comment s'en prémunir</strong></h3>
-            <ul class="open-sans font-size-11 margin-left-2">
-                <li>
-                    <a href="https://cheatsheetseries.owasp.org/cheatsheets/Secure_Product_Design_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Secure Design Principles">
-                        <span class="source-link"><span aria-hidden="true">🔗</span>OWASP Cheat Sheet: Secure Design Principles</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://owaspsamm.org/model/design/secure-architecture/" target="_blank" rel="noopener noreferrer" aria-label="OWASP SAMM: Design | Secure Architecture">
-                        <span class="source-link"><span aria-hidden="true">🔗</span>OWASP SAMM: Design | Secure Architecture</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://owaspsamm.org/model/design/threat-assessment/" target="_blank" rel="noopener noreferrer" aria-label="OWASP SAMM: Design | Threat Assessment">
-                        <span class="source-link"><span aria-hidden="true">🔗</span>OWASP SAMM: Design | Threat Assessment</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://www.nist.gov/publications/guidelines-minimum-standards-developer-verification-software" target="_blank" rel="noopener noreferrer" aria-label="NIST – Guidelines on Minimum Standards for Developer Verification of Software">
-                        <span class="source-link"><span aria-hidden="true">🔗</span>NIST – Guidelines on Minimum Standards for Developer Verification of Software</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://threatmodelingmanifesto.org" target="_blank" rel="noopener noreferrer" aria-label="The Threat Modeling Manifesto">
-                        <span class="source-link"><span aria-hidden="true">🔗</span>The Threat Modeling Manifesto</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://github.com/hysnsec/awesome-threat-modelling" target="_blank" rel="noopener noreferrer" aria-label="Awesome Threat Modeling">
-                        <span class="source-link"><span aria-hidden="true">🔗</span>Awesome Threat Modeling</span>
-                    </a>
-                </li>
-            </ul>
-        </section>
-
-        <section>
-            <h3 class="h4 claire-hand"><span aria-hidden="true">📋</span><strong>Liste des CWEs associées</strong></h3>
-            <ul class="open-sans font-size-11 margin-left-2">
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/73.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-73 External Control of File Name or Path">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-73 External Control of File Name or Path</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/183.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-183 Permissive List of Allowed Inputs">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-183 Permissive List of Allowed Inputs</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/256.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-256 Unprotected Storage of Credentials">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-256 Unprotected Storage of Credentials</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/266.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-266 Incorrect Privilege Assignment">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-266 Incorrect Privilege Assignment</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/269.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-269 Improper Privilege Management">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-269 Improper Privilege Management</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/286.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-286 Incorrect User Management">
-                        <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-286 Incorrect User Management/span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/311.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-311 Missing Encryption of Sensitive Data">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-311 Missing Encryption of Sensitive Data</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/312.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-312 Cleartext Storage of Sensitive Information">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-312 Cleartext Storage of Sensitive Information</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/313.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-313 Cleartext Storage in a File or on Disk">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-313 Cleartext Storage in a File or on Disk</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/316.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-316 Cleartext Storage of Sensitive Information in Memory">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-316 Cleartext Storage of Sensitive Information in Memory</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/362.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-362 Concurrent Execution using Shared Resource with Improper Synchronization ('Race Condition')">
-                        <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-362 Concurrent Execution using Shared Resource with Improper Synchronization ('Race Condition')</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/382.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-382 J2EE Bad Practices: Use of System.exit()">
-                        <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-382 J2EE Bad Practices: Use of System.exit()</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/419.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-419 Unprotected Primary Channel">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-419 Unprotected Primary Channel</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/434.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-434 Unrestricted Upload of File with Dangerous Type">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-434 Unrestricted Upload of File with Dangerous Type</span>
-                    </a>
-                </li>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/436.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-436 Interpretation Conflict">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-436 Interpretation Conflict</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/444.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-444 Inconsistent Interpretation of HTTP Requests ('HTTP Request Smuggling')">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-444 Inconsistent Interpretation of HTTP Requests ('HTTP Request Smuggling')</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/451.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-451 User Interface (UI) Misrepresentation of Critical Information">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-451 User Interface (UI) Misrepresentation of Critical Information</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/454.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-454 External Initialization of Trusted Variables or Data Stores">
-                        <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-454 External Initialization of Trusted Variables or Data Stores</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/472.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-472 External Control of Assumed-Immutable Web Parameter">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-472 External Control of Assumed-Immutable Web Parameter</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/501.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-501 Trust Boundary Violation">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-501 Trust Boundary Violation</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/522.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-522 Insufficiently Protected Credentials">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-522 Insufficiently Protected Credentials</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/525.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-525 Use of Web Browser Cache Containing Sensitive Information">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-525 Use of Web Browser Cache Containing Sensitive Information</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/539.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-539 Use of Persistent Cookies Containing Sensitive Information">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-539 Use of Persistent Cookies Containing Sensitive Information</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/598.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-598 Use of GET Request Method With Sensitive Query Strings">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-598 Use of GET Request Method With Sensitive Query Strings</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/602.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-602 Client-Side Enforcement of Server-Side Security">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-602 Client-Side Enforcement of Server-Side Security</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/628.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-628 Function Call with Incorrectly Specified Arguments">
-                        <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-628 Function Call with Incorrectly Specified Arguments</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/642.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-642 External Control of Critical State Data">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-642 External Control of Critical State Data</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/646.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-646 Reliance on File Name or Extension of Externally-Supplied File">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-646 Reliance on File Name or Extension of Externally-Supplied File</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/653.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-653 Insufficient Compartmentalization">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-653 Insufficient Compartmentalization</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/656.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-656 Reliance on Security Through Obscurity">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-656 Reliance on Security Through Obscurity</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/657.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-657 Violation of Secure Design Principles">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-657 Violation of Secure Design Principles</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/693.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-693 Protection Mechanism Failure">
-                        <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-693 Protection Mechanism Failure</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/799.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-799 Improper Control of Interaction Frequency">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-799 Improper Control of Interaction Frequency</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/807.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-807 Reliance on Untrusted Inputs in a Security Decision">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-807 Reliance on Untrusted Inputs in a Security Decision</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/841.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-841 Improper Enforcement of Behavioral Workflow">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-841 Improper Enforcement of Behavioral Workflow</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/1021.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1021 Improper Restriction of Rendered UI Layers or Frames">
-                        <span class="source-link"><span aria-hidden="true">📌</span>CWE-1021 Improper Restriction of Rendered UI Layers or Frames</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/1022.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1022 Use of Web Link to Untrusted Target with window.opener Access">
-                        <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-1022 Use of Web Link to Untrusted Target with window.opener Access</span>
-                    </a>
-                </li>
-                <li>
-                    <a href="https://cwe.mitre.org/data/definitions/1125.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-1125 Excessive Attack Surface">
-                        <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-1125 Excessive Attack Surface</span>
-                    </a>
-                </li>
-            </ul>
-        </section>
+<div class="grid-container">
+    <div class="callout primary alert-callout-border">
+        <p class="open-sans text-justify">
+            Copyright © 2003-2021 La Fondation OWASP™.<br>
+            Ce document est publié sous la licence Creative Commons Attribution Share-Alike 4.0 (CC 4.0 BY-SA).
+        </p>
     </div>
-
-    <div class="grid-container">
-        <div class="callout primary alert-callout-border">
-            <p class="open-sans text-justify">
-                Copyright © 2003-2021 La Fondation OWASP™.<br>
-                Ce document est publié sous la licence Creative Commons Attribution Share-Alike 4.0 (CC 4.0 BY-SA).
-            </p>
-        </div>
-    </div>
-    <br><br>
+</div>

@@ -4,20 +4,19 @@
             <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="">
         </div>
         <div class="small-8 medium-8 large-8">
-            {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page (celui du header) ; descente d'un niveau pour tous les titres (h1->h2, h2->h3, h3->h4) #}
-            <h2 class="h2 claire-hand margin-left-1">A01:2021 – Contrôles d'accès défaillants</h2>
+            <h2 class="h3 claire-hand margin-left-1">A01:2021 – Contrôles d'accès défaillants</h2>
         </div>
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">📄</span><strong>Résumé</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📄</span><strong>Résumé</strong></h3>
         <div class="callout open-sans font-size-11 text-justify">
             {{ owasp.description }}
         </div>
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">📊</span><strong>Facteurs</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📊</span><strong>Facteurs</strong></h3>
         <div class="table-scroll">
             <table class="responsive-card-table unstriped">
                 <thead>
@@ -51,7 +50,7 @@
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">🔍 </span><strong>Aperçu</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">🔍 </span><strong>Aperçu</strong></h3>
         <p class="open-sans font-size-11 text-justify">
             Précédemment à la cinquième place, 94&nbsp;% des applications ont été testées pour une forme de contrôle d'accès défaillant avec un taux d'incidence moyen de 3,81&nbsp;%. Cette catégorie a le plus d'occurrences dans l'ensemble de données contribué avec plus de 318&nbsp;000.<br>
             Les <em>Common Weakness Enumerations</em> (CWE) notables incluses sont&nbsp;:</p>
@@ -64,7 +63,7 @@
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">🏷️</span><strong>Description</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">🏷️</span><strong>Description</strong></h3>
         <p class="open-sans font-size-11 text-justify">
             Le contrôle d'accès applique une stratégie telle que les utilisateurs ne peuvent pas agir en dehors de leurs autorisations prévues.
             Les défaillances entraînent généralement la divulgation, la modification ou la destruction d'informations non autorisées de toutes les données ou l'exécution d'une fonctionnalité métier en dehors des limites de l'utilisateur. Les vulnérabilités courantes du contrôle d'accès incluent&nbsp;:
@@ -82,7 +81,7 @@
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">🛟</span><strong>Comment s'en prémunir</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">🛟</span><strong>Comment s'en prémunir</strong></h3>
         <p class="open-sans font-size-11 text-justify">
             Le contrôle d'accès n'est efficace que dans le code de confiance côté serveur ou des API serverless, où l'attaquant ne peut pas modifier la vérification du contrôle d'accès ou les métadonnées.
         </p>
@@ -129,7 +128,7 @@
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">📘</span><strong>Références</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📘</span><strong>Références</strong></h3>
         <ul class="open-sans font-size-11 margin-left-2">
             <li>
                 <a href="https://owasp.org/www-project-proactive-controls/v3/en/c7-enforce-access-controls" target="_blank" rel="noopener noreferrer" aria-label="OWASP Proactive Controls: Enforce Access Controls">
@@ -161,7 +160,7 @@
 </section>
 
 <section>
-    <h3 class="h4 claire-hand"><span aria-hidden="true">📋</span><strong>Liste des CWEs associées</strong></h3>
+    <h2 class="h4 claire-hand"><span aria-hidden="true">📋</span><strong>Liste des CWEs associées</strong></h3>
     <ul class="open-sans font-size-11 margin-left-2">
         <li>
             <a href="https://cwe.mitre.org/data/definitions/22.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-22 Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')">
@@ -345,4 +344,3 @@
         </p>
     </div>
 </div>
-<br><br>

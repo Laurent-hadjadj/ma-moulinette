@@ -4,20 +4,19 @@
             <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="">
         </div>
         <div class="small-8 medium-8 large-8">
-            {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page (celui du header) ; descente d'un niveau pour tous les titres (h1->h2, h2->h3, h3->h4) #}
-            <h2 class="h2 claire-hand margin-left-1">A05:2025 – Injection</h2>
+            <h2 class="h3 claire-hand margin-left-1">A05:2025 – Injection</h2>
         </div>
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">📄</span><strong>Résumé</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📄</span><strong>Résumé</strong></h3>
         <div class="callout open-sans font-size-11 text-justify">
             {{ owasp.description }}
         </div>
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">📊</span><strong>Facteurs</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📊</span><strong>Facteurs</strong></h3>
         <div class="table-scroll">
             <table class="responsive-card-table unstriped">
                 <thead>
@@ -51,14 +50,14 @@
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">🔍</span><strong>Aperçu</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">🔍</span><strong>Aperçu</strong></h3>
         <p class="open-sans font-size-11 text-justify">
             Les failles par injection reculent de deux places, passant de la 3<sup>e</sup> à la 5<sup>e</sup> position du classement, tout en conservant leur rang par rapport aux catégories <strong>A04:2025 (Défaillances cryptographiques)</strong> et  <strong>A06:2025 (Conception non sécurisée)</strong>. Les failles par injection constituent l'une des catégories les plus testées, 100&nbsp;% des applications ayant fait l'objet d'un test pour détecter une forme ou une autre d'injection. Cette catégorie a enregistré le plus grand nombre de CVE parmi toutes les catégories, avec 37 CVE recensés. L'injection comprend le Cross-site Scripting (haute fréquence/faible impact) avec plus de 30&nbsp;000 CVE et l'injection SQL (faible fréquence/impact élevé) avec plus de 14&nbsp;000 CVE. Le nombre massif de CVE signalés pour <em>CWE-79 Neutralisation incorrecte des entrées lors de la génération de pages Web (« Cross-site Scripting »)</em> fait baisser l'impact moyen pondéré de cette catégorie.
         </p>
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">🏷️</span><strong>Description</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">🏷️</span><strong>Description</strong></h3>
         <p class="open-sans font-size-11 text-justify">Une vulnérabilité par injection est une faille d'application qui permet d'envoyer des données non fiables saisies par l'utilisateur à un interpréteur (par exemple, un navigateur, une base de données ou la ligne de commande) et qui amène cet interpréteur à exécuter certaines parties de ces données comme s'il s'agissait de commandes. Une application est vulnérable quand&nbsp;:</p>
         <ul class="open-sans font-size-11 margin-left-2">
             <li>les données venant de l'utilisateur ne sont pas validées, filtrées ou nettoyées par l'application&nbsp;;</li>
@@ -77,7 +76,7 @@
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">🛟</span><strong>Comment s'en prémunir</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">🛟</span><strong>Comment s'en prémunir</strong></h3>
         <p class="open-sans font-size-11 text-justify">Le meilleur moyen de prévenir les injections consiste à séparer les données des commandes et des requêtes :</p>
 
         <ul class="open-sans font-size-11 margin-left-2">
@@ -94,7 +93,7 @@
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">☠️</span><strong>Exemple de scénarios d'attaque</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">☠️</span><strong>Exemple de scénarios d'attaque</strong></h3>
 
         <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scenario #1&nbsp;:</strong> L’application utilise des données non fiables dans la construction de l’appel SQL suivant&nbsp;:</p>
         <pre>
@@ -135,7 +134,7 @@
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">📘</span><strong>Références</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📘</span><strong>Références</strong></h3>
         <ul class="open-sans font-size-11 margin-left-2">
             <li>
                 <a href="https://owasp.org/www-project-proactive-controls/v3/en/c3-secure-database" target="_blank" rel="noopener noreferrer" aria-label="OWASP Proactive Controls: Secure Database Access">
@@ -191,7 +190,7 @@
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">📋</span><strong>Liste des CWEs associées</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📋</span><strong>Liste des CWEs associées</strong></h3>
         <ul class="open-sans font-size-11 margin-left-2">
             <li>
                 <a href="https://cwe.mitre.org/data/definitions/20.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-20 Improper Input Validation">
@@ -391,4 +390,3 @@
         <p class="open-sans text-justify">Traduction française - Laurent HADJADJ (CC 4.0 BY-SA)</p>
     </div>
 </div>
-<br><br>

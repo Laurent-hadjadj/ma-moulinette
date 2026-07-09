@@ -1,0 +1,193 @@
+<div class="grid-container">
+    <section class="container-detail-titre">
+        <div class="small-4 medium-4 large-4">
+            <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="">
+        </div>
+        <div class="small-8 medium-8 large-8">
+            <h2 class="h3 claire-hand margin-left-1">A09:2025 – Défaillances en matière de journalisation et d’alert</h2>
+        </div>
+    </section>
+
+    <section>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📄</span><strong>Résumé</strong></h3>
+        <div class="callout open-sans font-size-11 text-justify">
+            {{ owasp.description }}
+        </div>
+    </section>
+
+    <section>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📊</span><strong>Facteurs</strong></h3>
+        <div class="table-scroll">
+            <table class="responsive-card-table unstriped">
+                <thead>
+                    <tr>
+                        <th>CWEs associées</th>
+                        <th>Taux d'incidence max</th>
+                        <th>Taux d'incidence moyen</th>
+                        <th>Exploitation pondérée moyenne</th>
+                        <th>Impact pondéré moyen</th>
+                        <th>Couverture max</th>
+                        <th>Couverture moyenne</th>
+                        <th>Nombre total d'occurrences</th>
+                        <th>Nombre total de CVEs</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="text-center">
+                        <td data-label="CWEs associées">5</td>
+                        <td data-label="Taux d'incidence max">11,33 %</td>
+                        <td data-label="Taux d'incidence moyen">3,91 %</td>
+                        <td data-label="Exploitation pondérée moyenne">7,19 %</td>
+                        <td data-label="Impact pondéré moyen">2,65 %</td>
+                        <td data-label="Couverture max">85,96 %</td>
+                        <td data-label="Couverture moyenne">46,48 %</td>
+                        <td data-label="Nombre total d'occurrences">260 288</td>
+                        <td data-label="Nombre total de CVEs">723</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <section>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">🔍 </span><strong>Aperçu</strong></h3>
+        <p class="open-sans font-size-11 text-justify">Les Security Logging & Alerting Failures conservent leur position à la 9<sup>e</sup> place. Cette catégorie a légèrement modifié son intitulé pour mettre en avant la fonction d'alerte nécessaire pour provoquer une action sur les événements de journalisation pertinents. Cette catégorie sera toujours sous-représentée dans les données, et a été, pour la troisième fois, votée dans une position du classement par les participants à l'enquête communautaire. Cette catégorie est extrêmement difficile à tester et est peu représentée dans les données CVE/CVSS (seulement 723 CVE), mais peut avoir un impact considérable sur la visibilité, les alertes d'incidents et la criminalistique. Cette catégorie inclut les problèmes liés à la gestion correcte du codage de sortie dans les fichiers journaux (CWE-117), l'insertion de données sensibles dans les fichiers journaux (CWE-532) et la journalisation insuffisante (CWE-778).</p>
+    </section>
+
+    <section>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">🏷️</span><strong>Description</strong></h3>
+        <p class="open-sans font-size-11 text-justify">Sans journalisation et surveillance, les attaques et violations ne peuvent pas être détectées, et sans alerte, il est très difficile de réagir rapidement et efficacement lors d'un incident de sécurité. Une journalisation insuffisante, une surveillance continue, une détection et une alerte pour initier des réponses actives se produisent chaque fois que&nbsp;:</p>
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>Des événements audités, tels que les connexions, les échecs de connexion et les transactions à forte valeur, ne sont pas enregistrés ou sont enregistrés de manière incohérente (par exemple, en ne journalisant que les connexions réussies, mais pas les tentatives échouées).</li>
+            <li>Les avertissements et erreurs ne génèrent pas de messages de journalisation, ou génèrent des messages inadéquats ou peu clairs.</li>
+            <li>L'intégrité des journaux n'est pas correctement protégée contre la falsification.</li>
+            <li>Les journaux des applications et des API ne sont pas surveillés pour détecter des activités suspectes.</li>
+            <li>Les journaux sont uniquement stockés localement et ne sont pas correctement sauvegardés.</li>
+            <li>Les seuils d'alerte appropriés et les processus d'escalade des réponses ne sont pas en place ou ne sont pas efficaces. Les alertes ne sont pas reçues ou examinées dans un délai raisonnable.</li>
+            <li>Les tests de pénétration et les analyses par des outils de tests de sécurité des applications dynamiques (DAST), comme Burp ou ZAP, ne déclenchent pas d'alertes.</li>
+            <li>L'application ne peut pas détecter, escalader ou alerter en temps réel ou quasi réel lors d'attaques actives.</li>
+            <li>Vous êtes vulnérable à la fuite d'informations sensibles en rendant les événements de journalisation et d'alerte visibles pour un utilisateur ou un attaquant (voir A01:2025 - Contrôle d'accès brisé), ou en journalisant des informations sensibles qui ne devraient pas être enregistrées (comme les données personnelles identifiables - PII ou les informations de santé personnelles - PHI).</li>
+            <li>Vous êtes vulnérable aux injections ou attaques sur les systèmes de journalisation ou de surveillance si les données des journaux ne sont pas correctement encodées.</li>
+            <li>L'application manque de gérer correctement les erreurs et autres conditions exceptionnelles, de sorte que le système n'est pas informé d'une erreur et ne peut donc pas enregistrer qu'il y a un problème.</li>
+            <li>Les « cas d’utilisation » appropriés pour émettre des alertes sont manquants ou obsolètes pour reconnaître une situation particulière.</li>
+            <li>Trop de fausses alertes positives rendent impossible de distinguer les alertes importantes des non importantes, ce qui entraîne leur reconnaissance trop tardivement, ou pas du tout (surcharge physique de l'équipe SOC).</li>
+            <li>Les alertes détectées ne peuvent pas être traitées correctement parce que le playbook pour le cas d'utilisation est incomplet, obsolète, ou manquant.</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">🛟</span><strong>Comment s'en prémunir</strong></h3>
+        <p class="open-sans font-size-11 text-justify">Les développeurs doivent mettre en œuvre certains ou l'ensemble des contrôles suivants, en fonction du risque associé à l'application&nbsp;:</p>
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>Assurez-vous que toutes les défaillances de connexion, de contrôle d'accès et de validation des entrées côté serveur puissent être enregistrées avec un contexte utilisateur suffisant pour identifier les comptes suspects ou malveillants et soient conservées pendant suffisamment de temps pour permettre une analyse médico-légale retardée.</li>
+            <li>Assurez-vous que chaque partie de votre application contenant un contrôle de sécurité soit journalisée, qu'elle réussisse ou échoue.</li>
+            <li>Assurez-vous que les journaux soient générés dans un format que les solutions de gestion des journaux peuvent facilement traiter.</li>
+            <li>Assurez-vous que les données des journaux soient correctement encodées pour éviter les injections ou les attaques sur les systèmes de journalisation ou de surveillance.</li>
+            <li>Assurez-vous que toutes les transactions aient une trace d'audit avec des contrôles d'intégrité pour empêcher toute falsification ou suppression, comme des tables de base de données en mode "append-only" (ajout uniquement) ou similaires.</li>
+            <li>Assurez-vous que toutes les transactions qui génèrent une erreur soient annulées et redémarrées. Faites toujours échouer en mode sécurisé.</li>
+            <li>Si votre application ou ses utilisateurs se comportent de manière suspecte, émettez une alerte. Créez des directives pour vos développeurs sur ce sujet afin qu'ils puissent coder en conséquence ou acheter un système adapté.</li>
+            <li>Les équipes DevSecOps et de sécurité doivent établir des cas d’utilisation efficaces pour la surveillance et l'alerte, y compris des playbooks, afin que les activités suspectes soient détectées et répondues rapidement par l'équipe du Security Operations Center (SOC).</li>
+            <li>Ajoutez des « honeytokens » (pièges) dans votre application pour attirer les attaquants, par exemple dans la base de données, les données, en tant qu'identité utilisateur réelle et/ou technique. Comme ces éléments ne sont pas utilisés dans les affaires normales, tout accès génère des données de journalisation qui peuvent être alertées avec presque aucune fausse alerte.</li>
+            <li>L'analyse comportementale et le soutien de l'IA pourraient être une technique supplémentaire optionnelle pour aider à maintenir un faible taux de fausses alertes.</li>
+            <li>Établissez ou adoptez un plan de réponse et de récupération en cas d'incident, comme le NIST 800-61r2 ou une version ultérieure. Apprenez à vos développeurs logiciels à reconnaître les attaques et incidents d'application, afin qu'ils puissent les signaler.</li>
+        </ul>
+
+        <p class="open-sans font-size-11 text-justify">Il existe des produits commerciaux et open-source de protection des applications tels que l'OWASP ModSecurity Core Rule Set, ainsi que des logiciels open-source de corrélation des journaux, tels que la pile Elasticsearch, Logstash, Kibana (ELK), qui offrent des tableaux de bord personnalisés et des alertes qui peuvent vous aider à combattre ces problèmes. Il existe également des outils commerciaux d'observabilité qui peuvent vous aider à répondre à ou bloquer des attaques en temps quasi réel.</p>
+    </section>
+
+    <section>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">☠️</span><strong>Exemple de scénarios d'attaque</strong></h3>
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 1</strong>&nbsp;: L'opérateur du site web d'un fournisseur de plan de santé pour enfants n'a pas pu détecter une violation en raison de l'absence de surveillance et de journalisation. Une partie externe a informé le fournisseur du plan de santé qu'un attaquant avait accédé et modifié des milliers de dossiers médicaux sensibles de plus de 3,5 millions d'enfants. Un examen post-incident a révélé que les développeurs du site web n'avaient pas corrigé des vulnérabilités importantes. Étant donné qu'il n'y avait pas de journalisation ni de surveillance du système, la violation de données aurait pu être en cours depuis 2013, soit une période de plus de sept ans.</p>
+
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 2</strong>&nbsp;: Une grande compagnie aérienne indienne a subi une violation de données impliquant plus de dix ans de données personnelles de millions de passagers, y compris des informations de passeport et des données de cartes de crédit. La violation de données s'est produite chez un fournisseur de services de cloud externe, qui a informé la compagnie aérienne de la violation après un certain temps.</p>
+
+        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 3</strong>&nbsp;: Une grande compagnie aérienne européenne a subi une violation de données signalable en vertu du RGPD. La violation aurait été causée par des vulnérabilités de sécurité dans l'application de paiement exploitées par des attaquants, qui ont collecté plus de 400 000 enregistrements de paiements clients. La compagnie aérienne a été condamnée à une amende de 20 millions de livres par l'autorité de régulation de la vie privée.</p>
+    </section>
+
+    <section>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📘</span><strong>Références</strong></h3>
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>
+                <a href="https://owasp.org/www-project-proactive-controls/v3/en/c9-security-logging.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Proactive Controls: Implement Logging and Monitoring">
+                    <span class="source-link"><span aria-hidden="true">🔗</span>OWASP Proactive Controls: Implement Logging and Monitoring</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://owasp.org/www-project-application-security-verification-standard" target="_blank" rel="noopener noreferrer" aria-label="OWASP Application Security Verification Standard: V7 Logging and Monitoring">
+                    <span class="source-link"><span aria-hidden="true">🔗</span>OWASP Application Security Verification Standard: V7 Logging and Monitoring</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://owasp.org/www-project-web-security-testing-guide/v41/4-Web_Application_Security_Testing/08-Testing_for_Error_Handling/01-Testing_for_Error_Code" target="_blank" rel="noopener noreferrer" aria-label="OWASP Testing Guide: Testing for Detailed Error Code">
+                    <span class="source-link"><span aria-hidden="true">🔗</span>OWASP Testing Guide: Testing for Detailed Error Code</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cheatsheetseries.owasp.org/cheatsheets/Application_Logging_Vocabulary_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Application Logging Vocabulary">
+                    <span class="source-link"><span aria-hidden="true">🔗</span>OWASP Cheat Sheet: Application Logging Vocabulary</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Logging">
+                    <span class="source-link"><span aria-hidden="true">🔗</span>OWASP Cheat Sheet: Logging</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://csrc.nist.gov/publications/detail/sp/1800-11/final" target="_blank" rel="noopener noreferrer" aria-label="Data Integrity: Recovering from Ransomware and Other Destructive Events">
+                    <span class="source-link"><span aria-hidden="true">🔗</span>Data Integrity: Recovering from Ransomware and Other Destructive Events</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://csrc.nist.gov/publications/detail/sp/1800-25/final" target="_blank" rel="noopener noreferrer" aria-label="Data Integrity: Identifying and Protecting Assets Against Ransomware and Other Destructive Events">
+                    <span class="source-link"><span aria-hidden="true">🔗</span>Data Integrity: Identifying and Protecting Assets Against Ransomware and Other Destructive Events</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://csrc.nist.gov/publications/detail/sp/1800-26/final" target="_blank" rel="noopener noreferrer" aria-label="Data Integrity: Detecting and Responding to Ransomware and Other Destructive Events">
+                    <span class="source-link"><span aria-hidden="true">🔗</span>Data Integrity: Detecting and Responding to Ransomware and Other Destructive Events</span>
+                </a>
+            </li>
+        </ul>
+    </section>
+
+    <section>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📋</span><strong>Liste des CWEs associées</strong></h3>
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/117.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-117 Improper Output Neutralization for Logs">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-117 Improper Output Neutralization for Logs</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/221.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-221 Information Loss of Omission">
+                    <span class="source-link"><span aria-hidden="true">📌 🆕</span>CCWE-221 Information Loss of Omission</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/223.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-223 Omission of Security-relevant Information">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-223 Omission of Security-relevant Information</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/532.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-532 Insertion of Sensitive Information into Log File">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-532 Insertion of Sensitive Information into Log File</span>
+                </a>
+            </li>
+            <li>
+                <a href="https://cwe.mitre.org/data/definitions/778.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-778 Insufficient Logging">
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-778 Insufficient Logging</span>
+                </a>
+            </li>
+        </ul>
+    </section>
+</div>
+
+<div class="grid-container">
+    <div class="callout primary alert-callout-border">
+        <p class="open-sans text-justify">
+            Copyright ©️ 2003-2021 La Fondation OWASP™.<br>
+            Ce document est publié sous la licence Creative Commons Attribution Share-Alike 4.0 (CC 4.0 BY-SA).
+        </p>
+        <p class="open-sans text-justify">Traduction française - Laurent HADJADJ (CC 4.0 BY-SA)</p>
+    </div>
+</div>

@@ -4,13 +4,12 @@
             <img class="icon-owasp" src="{{ asset('images/owasp/TOP_10_logo_Final_Logo_Colour.png') }}" alt="">
         </div>
         <div class="small-8 medium-8 large-8">
-            {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page (celui du header) ; descente d'un niveau pour tous les titres (h1->h2, h2->h3, h3->h4) #}
-            <h2 class="h2 claire-hand margin-left-1">A01:2025 – Contrôles d'accès défaillants</h2>
+            <h2 class="h3 claire-hand margin-left-1">A01:2025 – Contrôles d'accès défaillants</h2>
         </div>
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">📄</span><strong>Résumé</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📄</span><strong>Résumé</strong></h3>
         <div class="callout open-sans font-size-11 text-justify">
             {{ owasp.description }}
         </div>
@@ -18,7 +17,7 @@
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">📊</span><strong>Facteurs</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📊</span><strong>Facteurs</strong></h3>
         <div class="table-scroll">
             <table class="responsive-card-table unstriped">
                 <thead>
@@ -52,127 +51,127 @@
     </section>
 
     <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">🔍</span><strong>Aperçu</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">🔍</span><strong>Aperçu</strong></h3>
         <p class="open-sans font-size-11 text-justify">
             Conservant sa première place dans le Top 10, 100% des applications testées présentaient une faille quelconque au niveau du contrôle d'accès. Cette catégorie est celle qui compte le plus grand nombre d'occurrences dans les données fournies, et le deuxième plus grand nombre de CVE associés.<br>
-            Parmi les CWE notables, on peut citer&nbsp;:</p>
+        Parmi les CWE notables, on peut citer&nbsp;:</p>
+        <ul class="open-sans font-size-11 margin-left-2">
+            <li>CWE-200 : Exposition d'informations sensibles à un acteur non autorisé</li>
+            <li>CWE-21 : Exposition d'informations sensibles via des données envoyées</li>
+            <li>CWE-918 : Falsification de requête côté serveur (SSRF)</li>
+            <li>CWE-352 : Falsification de requête intersite (CSRF)<li>.
+            </p>
+        </section>
+
+        <section>
+            <h2 class="h4 claire-hand"><span aria-hidden="true">🏷️</span><strong>Description</strong></h3>
+            <p class="open-sans font-size-11 text-justify">
+                Le contrôle d'accès applique une stratégie telle que les utilisateurs ne peuvent pas agir en dehors de leurs autorisations prévues.
+                Les défaillances entraînent généralement la divulgation, la modification ou la destruction d'informations non autorisées de toutes les données ou l'exécution d'une fonctionnalité métier en dehors des limites de l'utilisateur. Les vulnérabilités courantes du contrôle d'accès incluent&nbsp;:
+            </p>
             <ul class="open-sans font-size-11 margin-left-2">
-                <li>CWE-200 : Exposition d'informations sensibles à un acteur non autorisé</li>
-                <li>CWE-21 : Exposition d'informations sensibles via des données envoyées</li>
-                <li>CWE-918 : Falsification de requête côté serveur (SSRF)</li>
-                <li>CWE-352 : Falsification de requête intersite (CSRF)<li>.
-        </p>
-    </section>
+                <li>Violation du principe du moindre privilège ou de refus par défaut, où l'accès ne doit être accordé que pour des capacités, des rôles ou des utilisateurs particuliers, mais est accessible à tous.</li>
+                <li>Contourner les contrôles d'accès en modifiant l'URL (falsification de paramètres ou navigation forcée), l'état interne de l'application ou la page HTML, ou en utilisant un outil d'attaque modifiant les requêtes API.</li>
+                <li>Autoriser l'affichage ou la modification du compte de quelqu'un d'autre, en fournissant son identifiant unique (références directes d'objet non sécurisées).</li>
+                <li>Accès à l'API avec des contrôles d'accès manquants pour POST, PUT et DELETE.</li>
+                <li>Élévation de privilège. Agir en tant qu'utilisateur sans être connecté ou agir en tant qu'administrateur lorsqu'il est connecté en tant qu'utilisateur.</li>
+                <li>Manipulation de métadonnées, comme le rejeu ou la falsification de JSON Web Token (JWT), de cookies ou de champs cachés, afin d'élever les privilèges ou abuser de l'invalidation JWT.</li>
+                <li>La mauvaise configuration de CORS permettant l'accès à l'API à partir d'origines non autorisées/non approuvées.</li>
+                <li>Forcer la navigation vers des pages authentifiées en tant qu'utilisateur non authentifié ou vers des pages privilégiées en tant qu'utilisateur standard.</li>
+            </ul>
+        </section>
 
-    <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">🏷️</span><strong>Description</strong></h3>
-        <p class="open-sans font-size-11 text-justify">
-            Le contrôle d'accès applique une stratégie telle que les utilisateurs ne peuvent pas agir en dehors de leurs autorisations prévues.
-            Les défaillances entraînent généralement la divulgation, la modification ou la destruction d'informations non autorisées de toutes les données ou l'exécution d'une fonctionnalité métier en dehors des limites de l'utilisateur. Les vulnérabilités courantes du contrôle d'accès incluent&nbsp;:
-        </p>
-        <ul class="open-sans font-size-11 margin-left-2">
-            <li>Violation du principe du moindre privilège ou de refus par défaut, où l'accès ne doit être accordé que pour des capacités, des rôles ou des utilisateurs particuliers, mais est accessible à tous.</li>
-            <li>Contourner les contrôles d'accès en modifiant l'URL (falsification de paramètres ou navigation forcée), l'état interne de l'application ou la page HTML, ou en utilisant un outil d'attaque modifiant les requêtes API.</li>
-            <li>Autoriser l'affichage ou la modification du compte de quelqu'un d'autre, en fournissant son identifiant unique (références directes d'objet non sécurisées).</li>
-            <li>Accès à l'API avec des contrôles d'accès manquants pour POST, PUT et DELETE.</li>
-            <li>Élévation de privilège. Agir en tant qu'utilisateur sans être connecté ou agir en tant qu'administrateur lorsqu'il est connecté en tant qu'utilisateur.</li>
-            <li>Manipulation de métadonnées, comme le rejeu ou la falsification de JSON Web Token (JWT), de cookies ou de champs cachés, afin d'élever les privilèges ou abuser de l'invalidation JWT.</li>
-            <li>La mauvaise configuration de CORS permettant l'accès à l'API à partir d'origines non autorisées/non approuvées.</li>
-            <li>Forcer la navigation vers des pages authentifiées en tant qu'utilisateur non authentifié ou vers des pages privilégiées en tant qu'utilisateur standard.</li>
-        </ul>
-    </section>
+        <section>
+            <h2 class="h4 claire-hand"><span aria-hidden="true">🛟</span><strong>Comment s'en prémunir</strong></h3>
+            <p class="open-sans font-size-11 text-justify">
+                Le contrôle d'accès n'est efficace que dans le code de confiance côté serveur ou des API serverless, où l'attaquant ne peut pas modifier la vérification du contrôle d'accès ou les métadonnées.
+            </p>
+            <ul class="open-sans font-size-11 margin-left-2">
+                <li>À l'exception des ressources publiques, tout doit être bloqué par défaut.</li>
+                <li>Centraliser l'implémentation des mécanismes de contrôle d'accès et les réutiliser dans l'ensemble de l'application. Cela comprend de minimiser l'utilisation de CORS.</li>
+                <li>Le modèle de contrôle d'accès doit imposer l'appartenance des enregistrements, plutôt que de permettre à l'utilisateur de créer, lire, modifier ou supprimer n'importe quel enregistrement.</li>
+                <li>Les exigences métier spécifiques de l'application doivent être appliquées par domaines.</li>
+                <li>Désactiver le listing de dossier sur le serveur web, et vérifier que les fichiers de métadonnées (ex&nbsp;: .git) et de sauvegardes ne se trouvent pas dans l'arborescence web.</li>
+                <li>Tracer les échecs de contrôles d'accès, alerter les administrateurs quand c'est approprié (ex&nbsp;: échecs répétés).</li>
+                <li>Limiter la fréquence d'accès aux API et aux contrôleurs d'accès, afin de minimiser les dégâts que causeraient des outils d'attaques automatisés.</li>
+                <li>Les identifiants de session avec état doivent être invalidés côté serveur après une déconnexion. Les JWT, sans état, doivent être à durée de vie relativement courte pour que la fenêtre d'opportunité d'un attaquant soit minimisée. Pour les JWT avec une durée de vie plus longue, il est fortement recommandé de suivre le standard OAuth de révocation d'accès.</li>
+                <li>Utilisez des bibliothèques d'outils ou des modèles éprouvés qui offrent des contrôles d'accès simples et déclaratifs.</li>
+            </ul>
+            <p class="open-sans font-size-11 text-justify">Les développeurs et les testeurs qualité doivent procéder à des tests unitaires et d'intégration sur les fonctionnalités de contrôle d'accès.</p>
+        </section>
 
-    <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">🛟</span><strong>Comment s'en prémunir</strong></h3>
-        <p class="open-sans font-size-11 text-justify">
-            Le contrôle d'accès n'est efficace que dans le code de confiance côté serveur ou des API serverless, où l'attaquant ne peut pas modifier la vérification du contrôle d'accès ou les métadonnées.
-        </p>
-        <ul class="open-sans font-size-11 margin-left-2">
-            <li>À l'exception des ressources publiques, tout doit être bloqué par défaut.</li>
-            <li>Centraliser l'implémentation des mécanismes de contrôle d'accès et les réutiliser dans l'ensemble de l'application. Cela comprend de minimiser l'utilisation de CORS.</li>
-            <li>Le modèle de contrôle d'accès doit imposer l'appartenance des enregistrements, plutôt que de permettre à l'utilisateur de créer, lire, modifier ou supprimer n'importe quel enregistrement.</li>
-            <li>Les exigences métier spécifiques de l'application doivent être appliquées par domaines.</li>
-            <li>Désactiver le listing de dossier sur le serveur web, et vérifier que les fichiers de métadonnées (ex&nbsp;: .git) et de sauvegardes ne se trouvent pas dans l'arborescence web.</li>
-            <li>Tracer les échecs de contrôles d'accès, alerter les administrateurs quand c'est approprié (ex&nbsp;: échecs répétés).</li>
-            <li>Limiter la fréquence d'accès aux API et aux contrôleurs d'accès, afin de minimiser les dégâts que causeraient des outils d'attaques automatisés.</li>
-            <li>Les identifiants de session avec état doivent être invalidés côté serveur après une déconnexion. Les JWT, sans état, doivent être à durée de vie relativement courte pour que la fenêtre d'opportunité d'un attaquant soit minimisée. Pour les JWT avec une durée de vie plus longue, il est fortement recommandé de suivre le standard OAuth de révocation d'accès.</li>
-            <li>Utilisez des bibliothèques d'outils ou des modèles éprouvés qui offrent des contrôles d'accès simples et déclaratifs.</li>
-        </ul>
-        <p class="open-sans font-size-11 text-justify">Les développeurs et les testeurs qualité doivent procéder à des tests unitaires et d'intégration sur les fonctionnalités de contrôle d'accès.</p>
-    </section>
+        <section>
+            <h3 class="h3 claire-hand"><span aria-hidden="true">☠️</span><strong>Exemple de scénarios d'attaque</strong></h3>
 
-    <section>
-        <h3 class="h3 claire-hand"><span aria-hidden="true">☠️</span><strong>Exemple de scénarios d'attaque</strong></h3>
+            <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scenario 1&nbsp;:</strong> L'application utilise des données non vérifiées dans une requête SQL qui accède à des informations d'un compte&nbsp;:</p>
+            <pre>
+                <code class="code-block source-code">
+                    pstmt.setString(1, request.getParameter("acct"));
+                    ResultSet results = pstmt.executeQuery();
+                </code>
+            </pre>
+            <p class="open-sans font-size-11 text-justify">
+                En modifiant simplement le paramètre 'acct' dans le navigateur, un attaquant peut envoyer le numéro de compte qu'il veut. Si ce numéro n'est pas vérifié, l'attaquant peut accéder à n'importe quel compte utilisateur.
+            </p>
+            <pre>
+                <code class="code-block source-code">
+                    https://example.com/app/accountInfo?acct=notmyacct
+                </code>
+            </pre>
 
-        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scenario 1&nbsp;:</strong> L'application utilise des données non vérifiées dans une requête SQL qui accède à des informations d'un compte&nbsp;:</p>
-        <pre>
-            <code class="code-block source-code">
-                pstmt.setString(1, request.getParameter("acct"));
-                ResultSet results = pstmt.executeQuery();
-            </code>
-        </pre>
-        <p class="open-sans font-size-11 text-justify">
-            En modifiant simplement le paramètre 'acct' dans le navigateur, un attaquant peut envoyer le numéro de compte qu'il veut. Si ce numéro n'est pas vérifié, l'attaquant peut accéder à n'importe quel compte utilisateur.
-        </p>
-        <pre>
-            <code class="code-block source-code">
-                https://example.com/app/accountInfo?acct=notmyacct
-            </code>
-        </pre>
+            <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scenario 2&nbsp;:</strong> Un attaquant force le navigateur à visiter des URL arbitraires. Il faut imposer des droits pour accéder à une page d'administration.</p>
+            <pre>
+                <code class="code-block source-code">
+                    https://example.com/app/getappInfo
+                    https://example.com/app/admin_getappInfo
+                </code>
+            </pre>
+            <p class="open-sans font-size-11 text-justify">
+                Si un utilisateur non-authentifié peut accéder à l'une des pages, c'est une faille. Si un non-administrateur peut accéder à une page d'administration, c'est une faille.
+            </p>
 
-        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scenario 2&nbsp;:</strong> Un attaquant force le navigateur à visiter des URL arbitraires. Il faut imposer des droits pour accéder à une page d'administration.</p>
-        <pre>
-            <code class="code-block source-code">
-                https://example.com/app/getappInfo
-                https://example.com/app/admin_getappInfo
-            </code>
-        </pre>
-        <p class="open-sans font-size-11 text-justify">
-            Si un utilisateur non-authentifié peut accéder à l'une des pages, c'est une faille. Si un non-administrateur peut accéder à une page d'administration, c'est une faille.
-        </p>
+            <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scenario 3&nbsp;:</strong> Une application concentre l'ensemble de son contrôle d'accès au niveau de son interface utilisateur. Bien que l'attaquant ne puisse pas accéder à https://example.com/app/admin_getappInfo en raison du code JavaScript s'exécutant dans le navigateur, il lui suffit d'exécuter, depuis la ligne de commande : </p>
+            <pre>
+                <code class="code-block source-code">
+                    $ curl https://example.com/app/admin_getappInfo
+                </code>
+            </pre>
+        </section>
 
-        <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scenario 3&nbsp;:</strong> Une application concentre l'ensemble de son contrôle d'accès au niveau de son interface utilisateur. Bien que l'attaquant ne puisse pas accéder à https://example.com/app/admin_getappInfo en raison du code JavaScript s'exécutant dans le navigateur, il lui suffit d'exécuter, depuis la ligne de commande : </p>
-        <pre>
-            <code class="code-block source-code">
-                $ curl https://example.com/app/admin_getappInfo
-            </code>
-        </pre>
-    </section>
-
-    <section>
-        <h3 class="h4 claire-hand"><span aria-hidden="true">📘</span><strong>Références</strong></h3>
-        <ul class="open-sans font-size-11 margin-left-2">
-            <li>
-                <a href="https://top10proactive.owasp.org/archive/2024/the-top-10/c1-accesscontrol/" target="_blank" rel="noopener noreferrer" aria-label="OWASP Proactive Controls: C1: Implement Access Control">
-                    <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Proactive Controls: C1: Implement Access Control</span>
+        <section>
+            <h2 class="h4 claire-hand"><span aria-hidden="true">📘</span><strong>Références</strong></h3>
+            <ul class="open-sans font-size-11 margin-left-2">
+                <li>
+                    <a href="https://top10proactive.owasp.org/archive/2024/the-top-10/c1-accesscontrol/" target="_blank" rel="noopener noreferrer" aria-label="OWASP Proactive Controls: C1: Implement Access Control">
+                        <span class="source-link"><span aria-hidden="true">🔗</span> OWASP Proactive Controls: C1: Implement Access Control</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="https://github.com/OWASP/ASVS/blob/master/5.0/en/0x17-V8-Authorization.md" target="_blank" rel="noopener noreferrer" aria-label="OWASP Application Security Verification Standard: V8 Authorization"><span class="source-link"><span aria-hidden="true">🔗</span> OWASP Application Security Verification Standard: V8 Authorization</span>
                 </a>
             </li>
             <li>
-                <a href="https://github.com/OWASP/ASVS/blob/master/5.0/en/0x17-V8-Authorization.md" target="_blank" rel="noopener noreferrer" aria-label="OWASP Application Security Verification Standard: V8 Authorization"><span class="source-link"><span aria-hidden="true">🔗</span> OWASP Application Security Verification Standard: V8 Authorization</span>
+                <a href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/05-Authorization_Testing/README" target="_blank" rel="noopener noreferrer" aria-label="OWASP Testing Guide: Authorization Testing"><span class="source-link"><span aria-hidden="true">🔗</span> OWASP Testing Guide: Authorization Testing</span>
             </a>
         </li>
         <li>
-            <a href="https://owasp.org/www-project-web-security-testing-guide/latest/4-Web_Application_Security_Testing/05-Authorization_Testing/README" target="_blank" rel="noopener noreferrer" aria-label="OWASP Testing Guide: Authorization Testing"><span class="source-link"><span aria-hidden="true">🔗</span> OWASP Testing Guide: Authorization Testing</span>
+            <a href="https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Authorization"><span class="source-link"><span aria-hidden="true">🔗</span> OWASP Cheat Sheet: Authorization</span>
         </a>
     </li>
     <li>
-        <a href="https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Authorization"><span class="source-link"><span aria-hidden="true">🔗</span> OWASP Cheat Sheet: Authorization</span>
+        <a href="https://portswigger.net/blog/exploiting-cors-misconfigurations-for-bitcoins-and-bounties" target="_blank" rel="noopener noreferrer" aria-label="PortSwigger: Exploiting CORS misconfiguration">
+            <span class="source-link"><span aria-hidden="true">🔗</span> PortSwigger: Exploiting CORS misconfiguration</span>
+        </a>
+    </li>
+    <li>
+        <a href="https://www.oauth.com/oauth2-servers/listing-authorizations/revoking-access/" target="_blank" rel="noopener noreferrer" aria-label="OAuth: Revoking Access"><span class="source-link"><span aria-hidden="true">🔗</span> OAuth: Revoking Access</span>
     </a>
-</li>
-<li>
-    <a href="https://portswigger.net/blog/exploiting-cors-misconfigurations-for-bitcoins-and-bounties" target="_blank" rel="noopener noreferrer" aria-label="PortSwigger: Exploiting CORS misconfiguration">
-        <span class="source-link"><span aria-hidden="true">🔗</span> PortSwigger: Exploiting CORS misconfiguration</span>
-    </a>
-</li>
-<li>
-    <a href="https://www.oauth.com/oauth2-servers/listing-authorizations/revoking-access/" target="_blank" rel="noopener noreferrer" aria-label="OAuth: Revoking Access"><span class="source-link"><span aria-hidden="true">🔗</span> OAuth: Revoking Access</span>
-</a>
 </li>
 </ul>
 </section>
 
 <section>
-    <h3 class="h4 claire-hand"><span aria-hidden="true">📋</span><strong>Liste des CWEs associées</strong></h3>
+    <h2 class="h4 claire-hand"><span aria-hidden="true">📋</span><strong>Liste des CWEs associées</strong></h3>
     <ul class="open-sans font-size-11 margin-left-2">
         <li>
             <a href="https://cwe.mitre.org/data/definitions/22.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-22 Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')">
@@ -387,4 +386,3 @@
         <p class="open-sans text-justify">Traduction française - Laurent HADJADJ (CC 4.0 BY-SA)</p>
     </div>
 </div>
-<br><br>
