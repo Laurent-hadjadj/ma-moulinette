@@ -1,0 +1,214 @@
+{# MODIF 2026-05-06 : tableau Tests & Couverture
+  par version. Reprend le pattern de `_suivi_anomalie`. Cellules nulles -> `–`.
+  Colonnes alimentées par selectUnionHistoriqueProjet (cf. HistoriqueRepository). #}
+<div class="table-scroll pleine-page">
+  <table>
+    <caption class="show-for-medium claire-hand">Tests &amp; Couverture.</caption>
+    <caption class="show-for-small-only text-left claire-hand">Tests &amp; Couverture.</caption>
+    <thead>
+      <tr>
+        <th scope="col"></th>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            {% if suivi[i]['initial']==1 %}
+              {% set reference="reference" %}
+            {% else %}
+              {% set reference="null" %}
+            {% endif %}
+            <th scope="col" class="open-sans text-right {{reference}}">
+              {{suivi[i]['version']}}
+              {% if suivi[i]['mode_collecte'] == 'REBUILD' %}
+                <br><small class="text-orange open-sans">(reconstitué)</small>
+              {% else %}
+                <br><small class="text-noir open-sans">(collecte)</small>
+              {% endif %}
+            </th>
+          {% endfor %}
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody id="tableau-tests-couverture" class="open-sans">
+      {# Date en premiere ligne (coherence visuelle avec _suivi_anomalie / _suivi_synthese_notes). #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Date</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              <span>{{suivi[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Quality Gate (OK / WARN / ERROR) — meme code que _suivi_synthese_notes. #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Quality Gate</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['alert_status'] is not null and suivi[i]['alert_status']|trim != '' %}
+                {% set qg = suivi[i]['alert_status']|upper %}
+                {% set qgClass = qg == 'OK' ? 'ok' : (qg == 'WARN' ? 'warn' : 'error') %}
+                <span class="qg-{{qgClass}}">{{qg}}</span>
+              {% else %}
+                <span>&nbsp;-&nbsp;</span>
+              {% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Couverture globale (%) #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Couverture globale</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['coverage'] is not null %}
+                {{suivi[i]['coverage']|number_format(1, ',', ' ')}} %
+              {% else %}<span>–</span>{% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Couverture branches (%) #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Couverture branches</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['branch_coverage'] is not null %}
+                {{suivi[i]['branch_coverage']|number_format(1, ',', ' ')}} %
+              {% else %}<span>–</span>{% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Lignes couvertes / total a couvrir #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Lignes couvertes / total</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['line_coverage'] is not null or suivi[i]['lines_to_cover'] is not null %}
+                {{suivi[i]['line_coverage'] is null ? '–' : suivi[i]['line_coverage']|format_number(locale='fr')}}
+                / {{suivi[i]['lines_to_cover'] is null ? '–' : suivi[i]['lines_to_cover']|format_number(locale='fr')}}
+              {% else %}<span>–</span>{% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Conditions non couvertes / total #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Conditions non couvertes / total</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['uncovered_conditions'] is not null or suivi[i]['conditions_to_cover'] is not null %}
+                {{suivi[i]['uncovered_conditions'] is null ? '–' : suivi[i]['uncovered_conditions']|format_number(locale='fr')}}
+                / {{suivi[i]['conditions_to_cover'] is null ? '–' : suivi[i]['conditions_to_cover']|format_number(locale='fr')}}
+              {% else %}<span>–</span>{% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Nombre de tests #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Nombre de tests</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['tests'] is not null %}
+                {{suivi[i]['tests']|format_number(locale='fr')}}
+              {% else %}<span>–</span>{% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Tests en erreur #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Tests en erreur</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['test_errors'] is not null %}
+                {{suivi[i]['test_errors']|format_number(locale='fr')}}
+              {% else %}<span>–</span>{% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Tests en échec #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Tests en échec</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['test_failures'] is not null %}
+                {{suivi[i]['test_failures']|format_number(locale='fr')}}
+              {% else %}<span>–</span>{% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Tests ignores #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Tests ignorés</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['skipped_tests'] is not null %}
+                {{suivi[i]['skipped_tests']|format_number(locale='fr')}}
+              {% else %}<span>–</span>{% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Taux de réussite (%) #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Taux de réussite</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['test_success_density'] is not null %}
+                {{suivi[i]['test_success_density']|number_format(1, ',', ' ')}} %
+              {% else %}<span>–</span>{% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Temps d'execution — test_execution_time est en ms.
+        < 1000 ms : afficher en ms ;
+        < 60 000 ms (1 min) : afficher en s avec 1 décimale ;
+        sinon : afficher en min/s. #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Temps d'exécution</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% set ms = suivi[i]['test_execution_time'] %}
+              {% if ms is not null %}
+                {% if ms < 1000 %}
+                  {{ms}} ms
+                {% elseif ms < 60000 %}
+                  {{(ms / 1000)|number_format(1, ',', ' ')}} s
+                {% else %}
+                  {{(ms / 60000)|number_format(0)}} min {{((ms % 60000) / 1000)|number_format(0)}} s
+                {% endif %}
+              {% else %}<span>–</span>{% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+    </tbody>
+  </table>
+</div>
