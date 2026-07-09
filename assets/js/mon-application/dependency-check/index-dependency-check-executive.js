@@ -33,6 +33,7 @@ import 'motion-ui';
 
 import '../../common/foundation.js';
 import '../../common/messageHelper';
+import '../../common/modalSafe';
 
 /** Chart.js + plugin datalabels (alignement avec les autres pages chart) */
 import { Chart, registerables } from 'chart.js';
@@ -232,3 +233,13 @@ const  buildPriorityBar = function(cves) {
     },
   });
 }
+
+/* Overture de la modale "Méthode de calcul du JH" */
+$('#bouton-ouvrir-methodology-jh').on('click', () => {
+  modalSafe.open('dc-jh-methodology-modal');
+});
+
+/* Fermeture de la modale "Méthode de calcul du JH" */
+$('#bouton-fermer-methodology-jh').on('click', () => {
+  modalSafe.close('dc-jh-methodology-modal');
+});
