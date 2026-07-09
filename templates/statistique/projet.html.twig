@@ -1,0 +1,183 @@
+{% set title = "Statistiques — Projets" %}
+{% set description = "Ma Moulinette - Métriques par projet" %}
+{% set type_content = "Application Ma-Moulinette, tableau de bord des métriques par projet." %}
+{% set bottom="" %}
+<!DOCTYPE html>
+<!--
+.  ____            _      _
+. |  _ \ _ __ ___ (_) ___| |_
+. | |_) | '__/ _ \| |/ _ \ __|
+. |  __/| | | (_) | |  __/ |_
+. |_|   |_|  \___// |\___|\__|
+.              |__/
+
+    Laurent HADJADJ
+    https://github.com/Laurent-hadjadj/ma-moulinette
+    © 2015-2026 — CC BY-SA-NC 4.0
+-->
+<html lang="fr">
+  <head>
+    <title>{{ title }}</title>
+    {{ include('head.html.twig') }}
+    {% block importmap %}{{ importmap('statistique-projet') }}{% endblock %}
+  </head>
+
+  <body dir="ltr">
+    {{ include('no-script.html.twig') }}
+    {{ include('header.html.twig') }}
+
+    <header class="grid-container">
+      <nav id="fil-ariane" aria-label="Fil d'Ariane, vous êtes ici">
+        <ol class="claire-hand breadcrumbs">
+          <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+          <li><a href="{{ path('statistiques', {}) }}">Statistiques</a></li>
+          <li aria-current="page">Projets</li>
+        </ol>
+      </nav>
+    </header>
+
+    <header class="grid-container" role="banner" aria-label="Message d'alerte">
+      {% for message in app.flashes('notice') %}
+      <div class="callout {{ message.type|default('info') }} alert-callout-border callout-ombre js-flash-box" data-closable>
+        <p class="open-sans text-justify callout-message">{{ message.message }}</p>
+        {% if app.environment == 'dev' and message.trace is defined %}
+          <p class="open-sans">{{ message.trace }}</p>
+        {% endif %}
+        <button class="close-button {{ message.type|default('info') }}" type="button" aria-label="Fermer" data-close>
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      {% endfor %}
+    </header>
+
+    <main id="main-content" class="margin-bottom-2">
+
+      <section class="grid-container">
+        <h2 class="h4 claire-hand"><span aria-hidden="true"></span>Métriques par projet</h2>
+
+        {# Compteur #}
+        <p class="open-sans margin-bottom-05">
+          <strong>{{ projets|length }}</strong> projet{{ projets|length > 1 ? 's' : '' }} — dernière analyse connue par projet.
+        </p>
+      </section>
+
+      <section class="margin-left-2 margin-right-2">
+        {% if projets is empty %}
+          <div class="callout warning alert-callout-border">
+            <p class="open-sans">Aucune donnée d'historique disponible.</p>
+          </div>
+        {% else %}
+          <section>
+          {# Macro badge note #}
+          {% macro noteBadge(note) %}
+            {% if note in ['A','B','C','D','E'] %}
+              <span class="note-badge note-{{ note }}" title="Note {{ note }}">{{ note }}</span>
+            {% else %}
+              <span class="note-badge note-na" title="N/A">–</span>
+            {% endif %}
+          {% endmacro %}
+
+          {# Macro Quality Gate #}
+          {% macro qgBadge(status) %}
+            {% if status == 'OK' or status == 'PASSED' %}
+              <span class="qg-ok" title="{{ status }}">OK</span>
+            {% elseif status == 'ERROR' or status == 'FAILED' %}
+              <span class="qg-ko" title="{{ status }}">KO</span>
+            {% else %}
+              <span class="qg-na" title="{{ status ?? 'N/A' }}">–</span>
+            {% endif %}
+          {% endmacro %}
+
+        <table id="table-projets" class="tbl-projets hover unstriped" aria-label="Métriques par projet">
+          <thead>
+            <tr>
+              <th class="col-projet" scope="col">Projet</th>
+              <th scope="col">Version</th>
+              <th scope="col" title="Quality Gate">QG</th>
+              {# Notes — 8 colonnes #}
+              <th scope="col" title="Fiabilité">Fiab.</th>
+              <th scope="col" title="Sécurité">Sécu.</th>
+              <th scope="col" title="Maintenabilité (SQALE)">Maint.</th>
+              <th scope="col" title="Couverture">Couv.</th>
+              <th scope="col" title="Duplication">Duplic.</th>
+              <th scope="col" title="Revue sécurité">Rev.sécu</th>
+              <th scope="col" title="Complexité cyclomatique">Compl.</th>
+              <th scope="col" title="Complexité cognitive">Cogn.</th>
+              <th scope="col" title="Commentaires">Comment.</th>
+              {# Taille #}
+              <th scope="col" title="Total lignes">Lignes</th>
+              <th scope="col" title="Lignes de code (sans blancs/commentaires)">nCloc</th>
+              <th scope="col" title="Fichiers">Fichiers</th>
+              <th scope="col" title="Classes">Classes</th>
+              <th scope="col" title="Fonctions / méthodes">Fonct.</th>
+              {# Anomalies #}
+              <th scope="col" title="Bugs">Bugs</th>
+              <th scope="col" title="Vulnérabilités">Vuln.</th>
+              <th scope="col" title="Code smells">Smells</th>
+              <th scope="col" title="Hotspots de sécurité">Hotsp.</th>
+              {# Tests #}
+              <th scope="col" title="Couverture % (tests)">Couv.%</th>
+              <th scope="col" title="Nombre de tests">Tests</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in projets %}
+            <tr>
+              <td class="col-projet">
+                <span class="projet-nom">{{ p.project_name }}</span><br>
+                <span class="projet-key">{{ p.maven_key }}</span>
+              </td>
+              <td>
+                {# MODIF 2026-06-10 — masque les valeurs sentinelles de fallback #}
+                {% if p.version in ['inconnue', 'inconnu', 'VIDE', '', null] %}
+                  <span class="projet-key">–</span>
+                {% else %}
+                  {{ p.version }}
+                {% endif %}
+                <br>
+                {# MODIF 2026-06-10 — masque la date sentinelle 1971 #}
+                {% set dv = p.date_version %}
+                <span class="font-size-08">
+                  {%- if dv is null or dv starts with '1971' or dv == 'VIDE' or dv == '' -%}
+                    –
+                  {%- else -%}
+                    {{ dv }}
+                  {%- endif -%}
+                </span>
+              </td>
+              <td>{{ _self.qgBadge(p.alert_status) }}</td>
+              {# Notes #}
+              <td>{{ _self.noteBadge(p.reliability_rating) }}</td>
+              <td>{{ _self.noteBadge(p.security_rating) }}</td>
+              <td>{{ _self.noteBadge(p.sqale_rating) }}</td>
+              <td>{{ _self.noteBadge(p.coverage_rating) }}</td>
+              <td>{{ _self.noteBadge(p.duplicated_lines_rating) }}</td>
+              <td>{{ _self.noteBadge(p.security_review_rating) }}</td>
+              <td>{{ _self.noteBadge(p.complexity_rating) }}</td>
+              <td>{{ _self.noteBadge(p.cognitive_complexity_rating) }}</td>
+              <td>{{ _self.noteBadge(p.comment_lines_rating) }}</td>
+              {# Taille #}
+              <td class="text-right">{{ p.lines is not null ? p.lines|number_format(0, '.', ' ') : '–' }}</td>
+              <td class="text-right">{{ p.ncloc is not null ? p.ncloc|number_format(0, '.', ' ') : '–' }}</td>
+              <td class="text-right">{{ p.files ?? '–' }}</td>
+              <td class="text-right">{{ p.classes ?? '–' }}</td>
+              <td class="text-right">{{ p.functions ?? '–' }}</td>
+              {# Anomalies — rouge si > 0 #}
+              <td class="text-right {% if p.bugs > 0 %}num-warn{% endif %}">{{ p.bugs ?? 0 }}</td>
+              <td class="text-right {% if p.vulnerabilities > 0 %}num-warn{% endif %}">{{ p.vulnerabilities ?? 0 }}</td>
+              <td class="text-right">{{ p.code_smells ?? 0 }}</td>
+              <td class="text-right {% if p.security_hotspots > 0 %}num-warn{% endif %}">{{ p.security_hotspots ?? 0 }}</td>
+              {# Tests #}
+              <td class="text-right">{{ p.coverage is not null ? p.coverage|number_format(1, ',', ' ') ~ ' %' : '–' }}</td>
+              <td class="text-right">{{ p.tests is not null ? p.tests|number_format(0, '.', ' ') : '–' }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        {% endif %}
+      </section>
+    </main>
+
+    {{ include('footer.html.twig') }}
+  </body>
+</html>
