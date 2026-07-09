@@ -1,0 +1,713 @@
+﻿{% set title = 'OWASP DC - Vue exécutive - ' ~ project_artifact %}
+{% set description = 'Ma Moulinette - rapport exécutif scan DependencyCheck.' %}
+{% set bottom = 'footer-fixed' %}
+{# MODIF 2026-05-09 : page exécutive prise de
+  décision pour un scan DependencyCheck.
+  11 sections : contexte, vue globale, sévérité, familles, top deps,
+  radar CWE, CVE prioritaires, table CVE→Décision, plan de remédiation,
+  diff vs scan précédent, top 5 actions. #}
+
+<!DOCTYPE html>
+<!--
+.. __  __             __  __             _ _            _   _
+  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+
+  Laurent HADJADJ
+  https://github.com/Laurent-hadjadj/ma-moulinette
+  © 2024 - CC BY-SA-NC 4.0
+-->
+<html lang="fr">
+  <head>
+    <title>{{ title }}</title>
+    {{ include('head.html.twig') }}
+    {% block importmap %}{{ importmap('dependency-check-executive') }}{% endblock %}
+  </head>
+
+  <body>
+    {{ include('header.html.twig') }}
+
+    <header class="grid-container margin-top-1">
+      <nav aria-label="Fil d'Ariane, vous etes ici">
+        <ol class="claire-hand breadcrumbs">
+          <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+          <li><a href="{{ path('dc_index') }}">Dependency-Check</a></li>
+          <li>
+            <a href="{{ path('dc_projet', {
+              'group': project_group,
+              'artifact': project_artifact,
+              'version': project_version
+            }) }}">{{ project_artifact }} {{ project_version }}</a>
+          </li>
+          <li aria-current="page">Vue exécutive</li>
+        </ol>
+      </nav>
+    </header>
+
+    {{ include('_message.html.twig') }}
+
+    <main class="grid-container">
+
+      {# === 1. Contexte & périmètre =========================================== #}
+      <h2 class="h4 claire-hand">
+        <span aria-hidden="true">🎯</span> Contexte &amp; périmètre &mdash;
+        {{ project_artifact }}
+        <span class="text-muted">({{ project_group }})</span>
+        &mdash; <span class="open-sans">{{ project_version }}</span>
+      </h2>
+
+      {% if scan is null %}
+        <div class="callout alert-callout-border warning">
+          <p><span aria-hidden="true">⚠️</span> Aucun scan trouvé pour ce projet.</p>
+          <p>Vérifier que la CI a bien envoyé un rapport DependencyCheck pour cette version.</p>
+        </div>
+      {% else %}
+
+      {# MODIF 2026-05-13 : boutons
+        d'action en haut de la page exec. Avant, "Rapport PDF" et "Dashboard"
+        n'étaient accessibles que depuis dc_projet (redescente forcée).
+        Maintenant on les expose directement ici. #}
+      <div class="cell shrink margin-bottom-1">
+        <a id="bouton-ouvrir-rapport-PDF"
+          href="{{ path('dc_projet_pdf', {
+                  'group': project_group,
+                  'artifact': project_artifact,
+                  'version': project_version}) }}"
+          class="button open-sans focus-light" target="_blank" rel="noopener">
+          <span aria-hidden="true">📄</span> Rapport PDF
+        </a>
+        <a id="bouton-ouvrir-dc-dashboard"
+          href="{{ path('dc_dashboard') }}"
+          class="button open-sans focus-light"
+          title="Retour à la vue agrégée cross-projets">
+          <span aria-hidden="true">📊</span> Dashboard
+        </a>
+      </div>
+
+      {# MODIF 2026-05-12 : 4e cellule "Socle" conditionnelle.
+        Si scan.parentLabel/parentVersion sont remplis (app héritant d'un socle/BOM),
+        on affiche 4 cellules medium-3 incluant le socle, avec un lien cliquable
+        vers la page executive du socle si archetype_scan est en base. Sinon 3 cellules
+        medium-4 comme avant (app standalone).
+        Renommage UI 2026-05-12 : "Archétype" -> "Socle" pour parent_label
+        (= module Java parent contenant deps/logique technique). "Archétype" reste
+        utilisé pour archetype_version (= template de génération du projet).
+        MODIF 2026-05-12 : style="height: 100%" sur chaque callout
+        pour aligner la hauteur sur la plus haute cellule (Foundation grid-x stretch
+        les cells, on étire le callout interne à 100% de la cell). #}
+      {% set has_socle = scan.parentLabel is not null and scan.parentVersion is not null %}
+      {% set cell_size = has_socle ? 'medium-3' : 'medium-4' %}
+      <div class="grid-x grid-margin-x margin-bottom-1">
+        <div class="cell small-12 {{ cell_size }}">
+          <div class="callout alert-callout-border secondary" style="height: 100%;">
+            <p class="open-sans"><strong>Scan du</strong></p>
+            <p>{{ scan.scanDate|date('Y-m-d H:i') }}</p>
+            {% if scan.engineVersion %}<p class="text-muted">Engine: {{ scan.engineVersion }}</p>{% endif %}
+          </div>
+        </div>
+        <div class="cell small-12 {{ cell_size }}">
+          <div class="callout alert-callout-border info" style="height: 100%;">
+            <p class="open-sans"><strong>Périmètre</strong></p>
+            <p>{{ scan.depCountTotal }} dépendances analysées</p>
+            <p class="text-muted">Bibliothèques applicatives, frameworks, middlewares</p>
+          </div>
+        </div>
+        {% if has_socle %}
+          <div class="cell small-12 {{ cell_size }}">
+            <div class="callout alert-callout-border info" style="height: 100%;">
+              <p class="open-sans"><strong>Socle</strong></p>
+              {% if archetype_scan is not null %}
+                <p>
+                  <a href="{{ path('dc_projet_executive', {
+                    'group': archetype_scan.projectGroup,
+                    'artifact': archetype_scan.projectArtifact,
+                    'version': archetype_scan.projectVersion
+                  }) }}" title="Voir la page exécutive du socle">
+                    <strong>{{ scan.parentLabel }}</strong><br>
+                    v{{ scan.parentVersion }}
+                  </a>
+                </p>
+              {% else %}
+                <p>
+                  <strong>{{ scan.parentLabel }}</strong><br>
+                  v{{ scan.parentVersion }}
+                </p>
+                <p class="text-muted"><em>(non scanné)</em></p>
+              {% endif %}
+              {% if scan.archetypeVersion %}<p class="text-muted">Archétype v{{ scan.archetypeVersion }}</p>{% endif %}
+            </div>
+          </div>
+        {% endif %}
+        <div class="cell small-12 {{ cell_size }}">
+          <div class="callout alert-callout-border secondary" style="height: 100%;">
+            <p class="open-sans"><strong>Hors périmètre</strong></p>
+            <p class="text-muted">OS, JVM, infrastructure</p>
+          </div>
+        </div>
+      </div>
+
+      {# Bouton retour vue détaillée #}
+      <div class="cell margin-bottom-1">
+        <a href="{{ path('dc_projet', {
+          'group': project_group,
+          'artifact': project_artifact,
+          'version': project_version
+        }) }}" class="button hollow open-sans focus-light">
+          <span aria-hidden="true">🔍</span> Vue détaillée des findings
+        </a>
+      </div>
+
+      {# === 2. Vue globale des vulnérabilités ================================= #}
+      <h3 class="h5 claire-hand"><span aria-hidden="true">🔎</span> Vue globale des vulnérabilités</h3>
+      <div class="grid-x grid-margin-x margin-bottom-1">
+        <div class="cell small-6 medium-3">
+          <div class="callout alert-callout-border error">
+            <p class="open-sans"><strong>Total CVE</strong></p>
+            <p><strong>{{ scan.cveCountTotal }}</strong></p>
+          </div>
+        </div>
+        <div class="cell small-6 medium-3">
+          <div class="callout alert-callout-border info">
+            <p class="open-sans"><strong>Dépendances impactées</strong></p>
+            <p><strong>{{ scan.depCountVulnerable }}</strong> / {{ scan.depCountTotal }}</p>
+          </div>
+        </div>
+        <div class="cell small-6 medium-3">
+          <div class="callout alert-callout-border critical">
+            <p class="open-sans"><strong>CRITICAL</strong></p>
+            <p><strong>{{ severity_counts.CRITICAL }}</strong></p>
+          </div>
+        </div>
+        <div class="cell small-6 medium-3">
+          <div class="callout alert-callout-border error">
+            <p class="open-sans"><strong>HIGH</strong></p>
+            <p><strong>{{ severity_counts.HIGH }}</strong></p>
+          </div>
+        </div>
+      </div>
+
+      {# === 3. Répartition par criticité (pie chart) ========================== #}
+      <h3 class="h5 claire-hand"><span aria-hidden="true">📊</span> Répartition par criticité</h3>
+      {{ _self.info_callout('Distribution des findings par sévérité. 1 finding = 1 occurrence CVE × dépendance ; une même CVE sur 3 deps compte 3 fois. Les pourcentages sont calculés sur le total des findings du scan.') }}
+      <div class="grid-x grid-margin-x margin-bottom-1">
+        <div class="cell small-12 medium-6">
+          <div class="callout alert-callout-border secondary" style="min-height: 320px;">
+            <canvas id="dc-exec-severity-pie" aria-label="Répartition des CVE par sévérité"></canvas>
+          </div>
+        </div>
+        <div class="cell small-12 medium-6">
+          <table class="open-sans">
+            <thead>
+              <tr><th>Criticité</th><th class="text-right">Nombre</th><th class="text-right">%</th></tr>
+            </thead>
+            <tbody>
+              {% set total_cves = severity_counts.CRITICAL + severity_counts.HIGH + severity_counts.MEDIUM + severity_counts.LOW + severity_counts.INFO %}
+              <tr><td><span class="badge-level critical">CRITICAL</span></td><td class="text-right">{{ severity_counts.CRITICAL }}</td><td class="text-right">{{ total_cves > 0 ? (severity_counts.CRITICAL * 100 / total_cves)|round : 0 }} %</td></tr>
+              <tr><td><span class="badge-level high">HIGH</span></td><td class="text-right">{{ severity_counts.HIGH }}</td><td class="text-right">{{ total_cves > 0 ? (severity_counts.HIGH * 100 / total_cves)|round : 0 }} %</td></tr>
+              <tr><td><span class="badge-level medium">MEDIUM</span></td><td class="text-right">{{ severity_counts.MEDIUM }}</td><td class="text-right">{{ total_cves > 0 ? (severity_counts.MEDIUM * 100 / total_cves)|round : 0 }} %</td></tr>
+              <tr><td><span class="badge-level low">LOW</span></td><td class="text-right">{{ severity_counts.LOW }}</td><td class="text-right">{{ total_cves > 0 ? (severity_counts.LOW * 100 / total_cves)|round : 0 }} %</td></tr>
+              <tr><td><span class="badge-level info">INFO</span></td><td class="text-right">{{ severity_counts.INFO }}</td><td class="text-right">{{ total_cves > 0 ? (severity_counts.INFO * 100 / total_cves)|round : 0 }} %</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {# === 4. Répartition par famille technologique (bar chart) ============== #}
+      <h3 class="h5 claire-hand"><span aria-hidden="true">📊</span> Répartition par famille technologique</h3>
+      {{ _self.info_callout('Regroupement <strong>heuristique</strong> par famille (Spring, Jackson, Apache Commons, Log4j, etc.) basé sur le vendor/product des dépendances vulnérables. Permet d\'identifier les écosystèmes les plus exposés. Les familles non reconnues tombent dans « Autres ».') }}
+      {% if family_breakdown is empty %}
+        <p class="open-sans text-muted">Aucune donnée à afficher.</p>
+      {% else %}
+      <div class="grid-x grid-margin-x margin-bottom-1">
+        <div class="cell small-12 medium-7">
+          <div class="callout alert-callout-border secondary" style="min-height: 280px;">
+            <canvas id="dc-exec-family-bar" aria-label="Vulnérabilités par famille technologique"></canvas>
+          </div>
+        </div>
+        <div class="cell small-12 medium-5">
+          <table class="open-sans">
+            <thead><tr><th>Famille</th><th class="text-right">Nombre de CVE</th></tr></thead>
+            <tbody>
+              {% for row in family_breakdown %}
+              <tr><td>{{ row.family }}</td><td class="text-right"><strong>{{ row.nb_cves }}</strong></td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+
+      {# === 5. Analyse par dépendance majeure ================================= #}
+      <h3 class="h5 claire-hand"><span aria-hidden="true">🧫</span> Top dépendances vulnérables</h3>
+      {{ _self.info_callout('Top 10 dépendances triées par <strong>sévérité max ASC</strong> (CRITICAL en premier) puis nb CVE DESC. <strong>Sév. max</strong> = la pire CVE détectée sur cette dep. <strong>Nb CVE</strong> = CVE distinctes affectant cette dep (CRITICAL + HIGH + MEDIUM + LOW, INFO exclues).') }}
+      {% if top_deps_severity is empty %}
+        <p class="open-sans text-muted">Aucune dépendance vulnérable.</p>
+      {% else %}
+      <div class="cell table-scroll margin-bottom-1">
+        <table class="open-sans">
+          <thead>
+            <tr>
+              <th>Dépendance</th>
+              <th class="text-center">Version</th>
+              <th class="text-center">Sév. max</th>
+              <th class="text-center">CRITICAL</th>
+              <th class="text-center">HIGH</th>
+              <th class="text-center">MEDIUM</th>
+              <th class="text-center">LOW</th>
+              <th class="text-center">Total CVE</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for d in top_deps_severity %}
+            <tr class="v-middle">
+              <td><strong>{{ d.product }}</strong></td>
+              <td class="text-center">{{ d.version ?: '-' }}</td>
+              <td class="text-center">
+                {% if d.sev_max == 'CRITICAL' %}<span class="badge-level critical">CRITICAL</span>
+                {% elseif d.sev_max == 'HIGH' %}<span class="badge-level high">HIGH</span>
+                {% elseif d.sev_max == 'MEDIUM' %}<span class="badge-level medium">MEDIUM</span>
+                {% elseif d.sev_max == 'LOW' %}<span class="badge-level low">LOW</span>
+                {% else %}<span class="badge-level unknown">{{ d.sev_max }}</span>{% endif %}
+              </td>
+              <td class="text-center">{{ d.nb_critical }}</td>
+              <td class="text-center">{{ d.nb_high }}</td>
+              <td class="text-center">{{ d.nb_medium }}</td>
+              <td class="text-center">{{ d.nb_low }}</td>
+              <td class="text-center"><strong>{{ d.nb_cves }}</strong></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
+      {# === 6. Top CWE (radar chart) ========================================== #}
+      <h3 class="h5 claire-hand"><span aria-hidden="true">🧫</span> Analyse par type de vulnérabilité (CWE)</h3>
+      {{ _self.info_callout('Top 8 types de vulnérabilités (CWE = Common Weakness Enumeration : XSS, désérialisation, injection, etc.). Une CVE peut avoir <strong>plusieurs CWE</strong> et est donc comptée dans chacune. Utile pour identifier des classes de failles récurrentes à traiter de façon transverse.') }}
+      {% if top_cwes is empty %}
+        <p class="open-sans text-muted">Aucun CWE remonté dans ce scan.</p>
+      {% else %}
+      <div class="grid-x grid-margin-x margin-bottom-1">
+        <div class="cell small-12 medium-6">
+          <div class="callout alert-callout-border secondary" style="min-height: 320px;">
+            <canvas id="dc-exec-cwe-radar" aria-label="Top CWE par occurrence"></canvas>
+          </div>
+        </div>
+        <div class="cell small-12 medium-6">
+          <table class="open-sans">
+            <thead><tr><th>CWE</th><th class="text-right">Occurrences</th></tr></thead>
+            <tbody>
+              {% for c in top_cwes %}
+              <tr><td><span class="badge-cve">{{ c.cwe }}</span></td><td class="text-right"><strong>{{ c.nb }}</strong></td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+
+      {# === 7. CVE prioritaires (bar chart par CVSS) ========================== #}
+      <h3 class="h5 claire-hand"><span aria-hidden="true">🚨</span> Vulnérabilités prioritaires (par CVSS décroissant)</h3>
+      {{ _self.info_callout('Top 10 CVE <strong>distinctes</strong> du scan, triées par CVSS DESC puis sévérité. <strong>Dédupliquées par cve_id</strong> : une CVE qui touche N deps n\'apparaît qu\'une seule fois (contrairement à la table « Décision » plus bas qui liste chaque finding).') }}
+      {% if top_priority_cves is empty %}
+        <p class="open-sans text-muted">Aucune CVE prioritaire dans ce scan.</p>
+      {% else %}
+      <div class="grid-x grid-margin-x margin-bottom-1">
+        <div class="cell small-12 medium-7">
+          <div class="callout alert-callout-border secondary" style="min-height: 320px;">
+            <canvas id="dc-exec-priority-bar" aria-label="CVE prioritaires par CVSS"></canvas>
+          </div>
+        </div>
+        <div class="cell small-12 medium-5 table-scroll">
+          <table class="open-sans">
+            <thead><tr><th>CVE</th><th class="text-center">CVSS</th><th class="text-center">Sév.</th></tr></thead>
+            <tbody>
+              {% for c in top_priority_cves %}
+              <tr class="v-middle">
+                <td><strong>{{ c.cve_id }}</strong> <span class="text-muted">{{ c.product }}</span></td>
+                <td class="text-center">{{ c.cvss is not null ? c.cvss : '-' }}</td>
+                <td class="text-center">
+                  {% if c.severity == 'CRITICAL' %}<span class="badge-level critical">CRITICAL</span>
+                  {% elseif c.severity == 'HIGH' %}<span class="badge-level high">HIGH</span>
+                  {% elseif c.severity == 'MEDIUM' %}<span class="badge-level medium">MEDIUM</span>
+                  {% elseif c.severity == 'LOW' %}<span class="badge-level low">LOW</span>
+                  {% else %}<span class="badge-level unknown">{{ c.severity }}</span>{% endif %}
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+      {% endif %}
+
+      {# === 8. Table CVE → Décision → Justification =========================== #}
+      <h3 class="h5 claire-hand"><span aria-hidden="true">📝</span> Table CVE &rarr; Décision &rarr; Justification</h3>
+      {{ _self.info_callout('<strong>1 ligne = 1 finding</strong> (occurrence CVE × dépendance). Une CVE touchant N deps apparaît N fois, potentiellement avec des décisions différentes selon le vecteur d\'attaque CVSS de chaque dep. Heuristique de décision : 2 signaux (sévérité + vecteur), détail en <em>Méthodologie</em>.') }}
+      {% if cve_decisions is empty %}
+        <p class="open-sans text-muted">Aucune CVE à arbitrer.</p>
+      {% else %}
+      <div class="cell table-scroll margin-bottom-1">
+        <table class="open-sans">
+          <thead>
+            <tr>
+              <th>Dépendance</th>
+              <th class="text-center">Version</th>
+              <th>CVE</th>
+              <th class="text-center">Criticité</th>
+              <th class="text-center">Décision</th>
+              <th>Justification</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for r in cve_decisions %}
+            <tr class="v-middle">
+              <td><strong>{{ r.product }}</strong></td>
+              <td class="text-center">{{ r.version ?: '-' }}</td>
+              <td><strong>{{ r.cve_id }}</strong></td>
+              <td class="text-center">
+                {% if r.severity == 'CRITICAL' %}<span class="badge-level critical">CRITICAL</span>
+                {% elseif r.severity == 'HIGH' %}<span class="badge-level high">HIGH</span>
+                {% elseif r.severity == 'MEDIUM' %}<span class="badge-level medium">MEDIUM</span>
+                {% elseif r.severity == 'LOW' %}<span class="badge-level low">LOW</span>
+                {% else %}<span class="badge-level unknown">{{ r.severity }}</span>{% endif %}
+              </td>
+              <td class="text-center">
+                {% if r.decision == 'Upgrade' %}<span class="badge-decision upgrade">{{ r.decision }}</span>
+                {% elseif r.decision == 'Mitigation' %}<span class="badge-decision mitigation">{{ r.decision }}</span>
+                {% else %}<span class="badge-decision surveillance">{{ r.decision }}</span>{% endif %}
+              </td>
+              <td>{{ r.justification|slice(0, 200) }}{% if r.justification|length > 200 %}…{% endif %}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
+      {# === 9. Plan de remédiation chiffré ==================================== #}
+      <h3 class="h5 claire-hand"><span aria-hidden="true">📋</span> Plan de remédiation chiffré (heuristique)</h3>
+      {{ _self.info_callout('Effort estimé en jours-homme <strong>par dépendance à upgrader</strong> (pas par CVE), pour refléter la mutualisation : 1 upgrade corrige souvent N CVE. <strong>Formule paramétrable</strong> selon famille technologique × sévérité max — détail dans la modale ci-dessous. Hors recette métier lourde.') }}
+      <p>
+        <button class="button tiny secondary hollow open-sans" data-open="dc-jh-methodology-modal" type="button">
+          <span aria-hidden="true">ℹ️</span> Méthode de calcul du JH
+        </button>
+      </p>
+      {% if plan_remediation.par_dependance is empty %}
+        <p class="open-sans text-muted">Aucune dépendance à remédier.</p>
+      {% else %}
+      <div class="cell table-scroll margin-bottom-1">
+        <table class="open-sans">
+          <thead>
+            <tr>
+              <th>Dépendance</th>
+              <th class="text-center">Version</th>
+              <th class="text-center">Sév. max</th>
+              <th class="text-center">CRITICAL / HIGH / MED / LOW</th>
+              <th class="text-right">Effort estimé (JH)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for d in plan_remediation.par_dependance %}
+            <tr class="v-middle">
+              <td><strong>{{ d.product }}</strong></td>
+              <td class="text-center">{{ d.version ?: '-' }}</td>
+              <td class="text-center">
+                {% if d.sev_max == 'CRITICAL' %}<span class="badge-level critical">CRITICAL</span>
+                {% elseif d.sev_max == 'HIGH' %}<span class="badge-level high">HIGH</span>
+                {% elseif d.sev_max == 'MEDIUM' %}<span class="badge-level medium">MEDIUM</span>
+                {% elseif d.sev_max == 'LOW' %}<span class="badge-level low">LOW</span>
+                {% else %}<span class="badge-level unknown">{{ d.sev_max }}</span>{% endif %}
+              </td>
+              <td class="text-center">{{ d.nb_critical }} / {{ d.nb_high }} / {{ d.nb_medium }} / {{ d.nb_low }}</td>
+              <td class="text-right"><strong>{{ d.jh }}</strong></td>
+            </tr>
+            {% endfor %}
+            <tr style="border-top: 2px solid #333;">
+              <td colspan="4" class="text-right open-sans"><strong>TOTAL</strong></td>
+              <td class="text-right"><strong>{{ plan_remediation.total_jh }} JH</strong></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      {% endif %}
+
+      {# === 10. Diff vs scan précédent — 2 modes (MODIF 2026-05-12) ===
+        10.a — diff intra-version (re-scan de la même version)
+        10.b — diff inter-versions (release vs version antérieure)
+        Macro de rendu factorisée plus bas dans le fichier pour les 2 cas.
+        MODIF 2026-05-12 : bandeau
+        "Évolution nette" + libelles Apparues/Disparues + note explicative. #}
+
+      {# === 10.a Diff vs scan précédent (même version) === #}
+      <h3 class="h5 claire-hand"><span aria-hidden="true">📈</span> Comparaison vs scan précédent (même version)</h3>
+      {% if previous_scan_same_version is null %}
+        <div class="callout alert-callout-border info">
+          <p>Aucun re-scan antérieur de cette version (<strong>{{ scan.projectVersion }}</strong>). La comparaison intra-version sera disponible au prochain passage.</p>
+        </div>
+      {% elseif scan_diff_same_version.new is empty and scan_diff_same_version.fixed is empty %}
+        <div class="callout alert-callout-border success">
+          <p><span aria-hidden="true">✅</span> <strong>Pas de changement</strong> depuis le scan du {{ previous_scan_same_version.scanDate|date('Y-m-d H:i') }}. NVD n'a rien découvert de nouveau pour les dépendances de cette version.</p>
+        </div>
+      {% else %}
+        <p class="open-sans text-muted">
+          Comparaison entre le scan courant ({{ scan.scanDate|date('Y-m-d H:i') }})
+          et le précédent re-scan de la même version ({{ previous_scan_same_version.scanDate|date('Y-m-d H:i') }}).
+        </p>
+        {{ _self.render_diff_block(scan_diff_same_version, findings|length, count_prev_same_findings, previous_scan_same_version.projectVersion) }}
+      {% endif %}
+
+      {# === 10.b Diff vs version antérieure (release) === #}
+      {% if previous_scan_any_version is not null %}
+        <h3 class="h5 claire-hand"><span aria-hidden="true">🔀</span> Comparaison vs version antérieure</h3>
+        <p class="open-sans text-muted">
+          Comparaison avec la version <strong>{{ previous_scan_any_version.projectVersion }}</strong>
+          (scan du {{ previous_scan_any_version.scanDate|date('Y-m-d H:i') }}).
+          Tri sémantique Maven (cf. <code>docs/audit-dc-traceability.md</code> §7.2.2).
+        </p>
+        {{ _self.render_diff_block(scan_diff_previous_version, findings|length, count_prev_any_findings, previous_scan_any_version.projectVersion) }}
+      {% endif %}
+
+      {# Macro de rendu réutilisée par 10.a et 10.b. Reçoit la diff brute,
+        les 2 totaux (courant + previous) et le libelle de la version comparée. #}
+      {% macro render_diff_block(diff, total_courant, total_previous, previous_label) %}
+        {% set net = total_courant - total_previous %}
+
+        {# Bandeau Evolution nette : response a la question "ma posture est-elle
+          meilleure ou pire ?". Couleur selon signe. #}
+        <div class="callout alert-callout-border {% if net < 0 %}success{% elseif net > 0 %}error{% else %}info{% endif %} margin-bottom-1">
+          <p class="open-sans"><strong>Évolution nette de la posture</strong></p>
+          <p style="font-size:1.6em;">
+            <strong>
+              {% if net > 0 %}+{% elseif net == 0 %}±{% endif %}{{ net }} CVE
+            </strong>
+            {% if net < 0 %}
+              <span class="open-sans font-size-1">(amélioration)</span>
+            {% elseif net > 0 %}
+              <span class="open-sans font-size-1">(dégradation)</span>
+            {% else %}
+              <span class="open-sans font-size-1">(stable)</span>
+            {% endif %}
+          </p>
+          <p class="open-sans text-muted">
+            <strong>{{ total_courant }}</strong> CVE dans le scan courant
+            vs <strong>{{ total_previous }}</strong> CVE dans <strong>{{ previous_label }}</strong>.
+          </p>
+        </div>
+
+        {# Detail technique : 3 compteurs (paires product+version+cve_id). #}
+        <div class="grid-x grid-margin-x margin-bottom-1">
+          <div class="cell small-12 medium-4">
+            <div class="callout alert-callout-border error">
+              <p class="open-sans"><strong>🆕 Apparues</strong></p>
+              <p><strong>{{ diff.new|length }}</strong></p>
+            </div>
+          </div>
+          <div class="cell small-12 medium-4">
+            <div class="callout alert-callout-border info">
+              <p class="open-sans"><strong>✅ Disparues</strong></p>
+              <p><strong>{{ diff.fixed|length }}</strong></p>
+            </div>
+          </div>
+          <div class="cell small-12 medium-4">
+            <div class="callout alert-callout-border secondary">
+              <p class="open-sans"><strong>= Inchangées</strong></p>
+              <p><strong>{{ diff.unchanged_count }}</strong></p>
+            </div>
+          </div>
+        </div>
+
+        <p class="open-sans font-size-085 text-muted">
+          <em>Ces compteurs mesurent les changements de paires <code>(dépendance, version, CVE)</code>.
+          Un upgrade de dépendance (ex : jackson 2.13&rarr;2.15) fait apparaître ses CVE
+          comme <em>disparues</em> sur l'ancienne version et <em>apparues</em> sur la nouvelle,
+          même si une CVE persiste réellement. Pour le bilan global, se reporter au bandeau
+          <strong>Évolution nette</strong> ci-dessus.</em>
+        </p>
+
+        {% if diff.new is not empty %}
+          <h4 class="h6 claire-hand">Détail des CVE apparues</h4>
+          <div class="cell table-scroll margin-bottom-1">
+            <table class="open-sans">
+              <thead><tr><th>CVE</th><th>Dépendance</th><th class="text-center">Criticité</th></tr></thead>
+              <tbody>
+                {% for c in diff.new %}
+                <tr class="v-middle">
+                  <td><strong>{{ c.cve_id }}</strong></td>
+                  <td>{{ c.product }}{% if c.dep_version %} <span class="text-muted">v{{ c.dep_version }}</span>{% endif %}</td>
+                  <td class="text-center">
+                    {% if c.severity == 'CRITICAL' %}<span class="badge-level critical">CRITICAL</span>
+                    {% elseif c.severity == 'HIGH' %}<span class="badge-level high">HIGH</span>
+                    {% elseif c.severity == 'MEDIUM' %}<span class="badge-level medium">MEDIUM</span>
+                    {% elseif c.severity == 'LOW' %}<span class="badge-level low">LOW</span>
+                    {% else %}<span class="badge-level unknown">{{ c.severity }}</span>{% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+
+        {% if diff.fixed is not empty %}
+          <h4 class="h6 claire-hand">Détail des CVE disparues</h4>
+          <div class="cell table-scroll margin-bottom-1">
+            <table class="open-sans">
+              <thead><tr><th>CVE</th><th>Dépendance</th><th class="text-center">Criticité</th></tr></thead>
+              <tbody>
+                {% for c in diff.fixed %}
+                <tr class="v-middle">
+                  <td><strong>{{ c.cve_id }}</strong></td>
+                  <td>{{ c.product }}{% if c.dep_version %} <span class="text-muted">v{{ c.dep_version }}</span>{% endif %}</td>
+                  <td class="text-center">
+                    {% if c.severity == 'CRITICAL' %}<span class="badge-level critical">CRITICAL</span>
+                    {% elseif c.severity == 'HIGH' %}<span class="badge-level high">HIGH</span>
+                    {% elseif c.severity == 'MEDIUM' %}<span class="badge-level medium">MEDIUM</span>
+                    {% elseif c.severity == 'LOW' %}<span class="badge-level low">LOW</span>
+                    {% else %}<span class="badge-level unknown">{{ c.severity }}</span>{% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+      {% endmacro %}
+
+      {% macro info_callout(text) %}
+        <div class="callout alert-callout-border info margin-bottom-1" style="clear: both;">
+          <p class="open-sans font-size-085" style="margin-bottom: 0;">
+            <span aria-hidden="true">ℹ️</span> {{ text|raw }}
+          </p>
+        </div>
+      {% endmacro %}
+
+      {# === 11. Top 5 actions recommandées ==================================== #}
+      <h3 class="h5 claire-hand"><span aria-hidden="true">🎯</span> Top 5 actions recommandées</h3>
+      {{ _self.info_callout('5 dépendances prioritaires : filtre <strong>≥ 1 CRITICAL ou HIGH</strong>, tri par effort estimé décroissant. Permet de planifier les premières actions à mener. Les deps en MEDIUM/LOW seules ne sont pas listées ici (cf. Plan de remédiation au-dessus pour la vue complète).') }}
+      {% if top_actions is empty %}
+        <div class="callout alert-callout-border info">
+          <p>Aucune action prioritaire identifiée (aucune CVE CRITICAL/HIGH dans ce scan).</p>
+        </div>
+      {% else %}
+      <div class="callout alert-callout-border critical">
+        <ol class="open-sans">
+          {% for a in top_actions %}
+          <li>
+            <strong>{{ a.product }}</strong>
+            {% if a.version %} <span class="text-muted">({{ a.version }})</span>{% endif %}
+            &mdash; {{ a.nb_cves }} CVE,
+            sévérité max
+            {% if a.sev_max == 'CRITICAL' %}<span class="badge-level critical">CRITICAL</span>
+            {% elseif a.sev_max == 'HIGH' %}<span class="badge-level high">HIGH</span>
+            {% else %}<span class="badge-level unknown">{{ a.sev_max }}</span>{% endif %}
+            &mdash; effort estimé <strong>{{ a.jh }} JH</strong>
+          </li>
+          {% endfor %}
+        </ol>
+      </div>
+      {% endif %}
+
+      {# === 12. Méthodologie ================================================== #}
+      {# MODIF 2026-05-10 : section pédagogique
+        expliquant comment les décisions et le plan de remédiation sont
+        calculés. Auto-explicatif pour quelqu'un qui découvre le rapport. #}
+      <h3 class="h5 claire-hand"><span aria-hidden="true">📖</span> Méthodologie</h3>
+
+      <h4 class="h6 claire-hand">Décision : Upgrade / Mitigation / Surveillance</h4>
+      <p class="open-sans">
+        La colonne <em>Décision</em> de la table CVE est calculée par une heuristique en 2 étapes
+        à partir de la sévérité et du vecteur d'attaque CVSS.
+      </p>
+      <ol class="open-sans">
+        <li>
+          <strong>Décision de base par sévérité</strong> :
+          <span class="badge-level critical">CRITICAL</span>,
+          <span class="badge-level high">HIGH</span> et
+          <span class="badge-level medium">MEDIUM</span>
+          → <span class="badge-decision upgrade">Upgrade</span> ;
+          <span class="badge-level low">LOW</span> → <span class="badge-decision mitigation">Mitigation</span> ;
+          <span class="badge-level info">INFO</span> et inconnues → <span class="badge-decision surveillance">Surveillance</span>.
+        </li>
+        <li>
+          <strong>Vecteur d'attaque LOCAL ou PHYSICAL</strong> (exploitation post-compromise) :
+          minoration d'un cran &mdash; <span class="badge-decision upgrade">Upgrade</span> &rarr; <span class="badge-decision mitigation">Mitigation</span>,
+          <span class="badge-decision mitigation">Mitigation</span> &rarr; <span class="badge-decision surveillance">Surveillance</span>.
+          Une <span class="badge-level critical">CRITICAL</span> reste cependant en
+          <span class="badge-decision upgrade">Upgrade</span> (escalade post-compromise toujours grave).
+        </li>
+      </ol>
+      <p class="open-sans text-muted">
+        <small>
+          L'heuristique est volontairement simple et conservative. Elle ne tient pas compte
+          du contexte métier (criticité applicative, exposition réseau réelle) qui peut justifier
+          de re-prioriser certains CVE manuellement. La version corrigée publiée par l'éditeur
+          n'est pas intégrée à la décision : le JSON DependencyCheck n'expose pas cette information
+          de manière fiable (l'extraction <code>versionEndExcluding</code> donne une borne de range
+          CPE, pas une fix recommandée). Une source fiable type GHSA/OSV est à brancher pour
+          réintroduire ce signal.
+        </small>
+      </p>
+
+      <h4 class="h6 claire-hand">Plan de remédiation chiffré</h4>
+      <p class="open-sans">
+        L'effort estimé en jours-homme (JH) est calculé <strong>par dépendance à upgrader</strong>
+        (et non par CVE), pour refléter la mutualisation : un seul upgrade corrige souvent toutes
+        les CVE d'une même lib en une fois. La formule combine la <strong>famille technologique</strong>
+        de la dépendance (Log4j, Spring, CXF, etc., chacune ayant un effort de tests de non-régression
+        typique différent), un <strong>overhead fixe</strong> de bump de version, une <strong>marge de
+        sécurité</strong>, et un <strong>bonus sécurité</strong> selon la sévérité max des CVE détectées.
+      </p>
+      <p>
+        <button class="button tiny secondary hollow open-sans" data-open="dc-jh-methodology-modal" type="button">
+          <span aria-hidden="true">ℹ️</span> Voir la méthode complète et les valeurs configurées
+        </button>
+      </p>
+      <p class="open-sans">
+        Le résultat est arrondi au demi-jour. Le <em>total</em> en haut de la section est la somme
+        des JH de toutes les dépendances vulnérables. Le <em>Top 5 actions recommandées</em> liste
+        celles qui ont au moins une CVE CRITICAL ou HIGH, triées par effort décroissant.
+      </p>
+      <p class="open-sans text-muted">
+        <small>
+          Les coefficients sont définis dans <code>config/packages/dc_remediation.yaml</code> et
+          injectés dans <code>DcExecutiveAnalyticsService</code>. Ajustement sans recompilation
+          (juste <code>cache:clear</code> après édition).
+        </small>
+      </p>
+
+      <h4 class="h6 claire-hand">Diff vs scan précédent</h4>
+      <p class="open-sans">
+        La section <em>Diff</em> compare ce scan à la version précédemment analysée (même
+        groupe + artifact, version antérieure par date) pour distinguer les <strong>nouvelles</strong>
+        CVE apparues, les <strong>résolues</strong> entre-temps et les <strong>persistantes</strong>.
+        Permet de mesurer l'efficacité des actions de remédiation entre 2 scans.
+      </p>
+
+      {# === Datasets pour Chart.js =========================================== #}
+      <script type="application/json" id="dc-exec-data">
+      {{ {
+        'severity_counts': severity_counts,
+        'family_breakdown': family_breakdown,
+        'top_cwes': top_cwes,
+        'top_priority_cves': top_priority_cves,
+      }|json_encode|raw }}
+      </script>
+
+      {% endif %} {# scan is null/else #}
+
+      {# MODIF 2026-05-12 : modale partagée pour
+        la méthode de calcul JH. Ouverture via bouton dans la Section 9 Plan
+        de remédiation. Inclusion en fin de main, hors du if scan/null pour
+        que la modale soit présente même si pas de scan (pas critique). #}
+      {% if scan is not null %}
+        {{ include('dependency_check/_dc_jh_methodology_modal.html.twig') }}
+      {% endif %}
+
+    </main>
+
+    {{ include('footer.html.twig') }}
+  </body>
+</html>
