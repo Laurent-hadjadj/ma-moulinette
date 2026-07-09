@@ -1,0 +1,278 @@
+﻿{% set title = 'OWASP Dependency-Check - Comparer' %}
+{% set description = 'Ma Moulinette - comparaison side-by-side de plusieurs applications.' %}
+{% set bottom = 'footer-fixed' %}
+
+{# MODIF 2026-05-13 : page comparateur multi-apps. #}
+<!DOCTYPE html>
+<!--
+.. __  __             __  __             _ _            _   _
+  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+
+  Laurent HADJADJ
+  https://github.com/Laurent-hadjadj/ma-moulinette
+  © 2024 - CC BY-SA-NC 4.0
+-->
+<html lang="fr">
+  <head>
+    <title>{{ title }}</title>
+    {{ include('head.html.twig') }}
+    {# MODIF 2026-05-16 : entrée dédiée (DataTables + Foundation). #}
+    {% block importmap %}{{ importmap('dependency-check-comparer') }}{% endblock %}
+  </head>
+
+  <body>
+    {{ include('header.html.twig') }}
+
+    <header class="grid-container margin-top-1">
+      <nav aria-label="Fil d'Ariane, vous etes ici">
+        <ol class="claire-hand breadcrumbs">
+          <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+          <li><a href="{{ path('dc_index') }}">Dependency-Check</a></li>
+          <li aria-current="page">Comparer</li>
+        </ol>
+      </nav>
+    </header>
+
+    {{ include('_message.html.twig') }}
+
+    <main class="grid-container bottom-2">
+      <h2 class="h4 claire-hand">
+        <span aria-hidden="true">⚖️</span> Comparer des applications
+      </h2>
+
+      <p class="margin-bottom-1">
+        <span class="badge-scope {{ analytics_mode ? 'global' : 'filtered' }}"
+              title="{{ analytics_mode ? 'Accès analytics : visibilité sur tous les projets scannes' : 'Accès filtré par vos groupes_fonctionnels' }}">
+          {{ scope_label }}
+        </span>
+      </p>
+
+      {# MODIF 2026-05-14 : toggle prod/dev.
+        Filtre le sélecteur d'applications : en prod, uniquement les
+        releases stables ; en dev, uniquement les apps en mouvement.
+        La comparaison side-by-side elle-meme reste sur les triplets
+        explicitement choisis par l'utilisateur. #}
+      {{ include('dependency_check/_vue_toggle.html.twig', {
+        'current_vue':  vue|default('prod'),
+        'route_name':   'dc_comparer',
+        'route_params': {},
+      }) }}
+
+      <div class="callout alert-callout-border info margin-bottom-1">
+        <p class="open-sans font-size-085 margin-bottom-0">
+          <span aria-hidden="true">ℹ️</span> Sélectionnez <strong>2 à 4 applications</strong> à comparer. La page affichera les compteurs CVE side-by-side et identifiera les <strong>CVE communes</strong> entre les apps sélectionnées (utile pour piloter une décision d'alignement ou un patch coordonné).
+        </p>
+      </div>
+
+      {# === Formulaire de sélection === #}
+      <form method="GET" action="{{ path('dc_comparer') }}" class="margin-bottom-2">
+        <input type="hidden" name="vue" value="{{ vue|default('prod') }}">
+        <div class="grid-x grid-margin-x">
+          {% for i in 0..3 %}
+            <div class="cell small-12 medium-6 large-3">
+              <label for="app-select-{{ i }}" class="open-sans">
+                <strong>Application {{ i + 1 }}</strong>{% if i < 2 %} <span class="text-muted">(requis)</span>{% endif %}
+              </label>
+              <select name="apps[]" id="app-select-{{ i }}" class="open-sans margin-bottom-0">
+                <option value="">— Choisir —</option>
+                {% for s in available_scans %}
+                  {% set key = s.project_group ~ ':' ~ s.project_artifact ~ ':' ~ s.project_version %}
+                  <option value="{{ key }}"{% if raw_app_keys[i] is defined and raw_app_keys[i] == key %} selected{% endif %}>
+                    {{ s.project_artifact }} v{{ s.project_version }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          {% endfor %}
+        </div>
+        <div class="cell margin-top-1">
+          <button id="bouton-comparer" type="submit" class="button open-sans focus-light">
+            <span aria-hidden="true">⚖️</span> Comparer
+          </button>
+          {% if nb_apps_selected >= 2 %}
+            <a href="{{ path('dc_comparer', {'vue': vue|default('prod')}) }}" class="button hollow primary open-sans focus-light"
+              title="Réinitialiser la sélection">Réinitialiser</a>
+          {% endif %}
+        </div>
+      </form>
+
+      {% if nb_apps_selected < 2 %}
+        <div class="callout alert-callout-border warning">
+          <p class="open-sans"><strong>Sélectionnez au moins 2 applications</strong> pour démarrer la comparaison.</p>
+          <p class="text-muted font-size-085 margin-bottom-0">Les apps hors de votre périmètre groupe_fonctionnel sont automatiquement filtrées.</p>
+        </div>
+      {% else %}
+
+        {# === Tableau synthèse side-by-side === #}
+        <h3 class="h5 claire-hand"><span aria-hidden="true">📊</span> Synthèse comparée</h3>
+        <div class="callout alert-callout-border info margin-bottom-1">
+          <p class="open-sans font-size-085 margin-bottom-0">
+            <span aria-hidden="true">ℹ️</span> 1 colonne par app. <strong>Score sécu</strong> calculé selon la formule de la page KPI (0-100, 100 = parfait). <strong>Sévérité max</strong> = pire sévérité présente.
+          </p>
+        </div>
+
+        <div class="cell table-scroll margin-bottom-2">
+          <table class="open-sans">
+            <thead>
+              <tr>
+                <th>Indicateur</th>
+                {% for c in comparison %}
+                  <th>
+                    <a href="{{ path('dc_projet', {'group': c.group, 'artifact': c.artifact, 'version': c.version}) }}">
+                      <strong>{{ c.artifact }}</strong>
+                    </a><br>
+                    <span class="text-muted">v{{ c.version }}</span>
+                  </th>
+                {% endfor %}
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Score sécu (0-100)</strong></td>
+                {% for c in comparison %}
+                  <td>
+                    <strong style="color: {{ c.score_secu >= 80 ? '#1a5f3f' : (c.score_secu >= 50 ? '#f08a24' : '#cc4b37') }};">{{ c.score_secu|number_format(1, ',', ' ') }}</strong>
+                  </td>
+                {% endfor %}
+              </tr>
+              <tr>
+                <td><strong>Sévérité max</strong></td>
+                {% for c in comparison %}
+                  <td>
+                    {% if c.severity_max == 'CRITICAL' %}<span class="badge-level critical">CRITICAL</span>
+                    {% elseif c.severity_max == 'HIGH' %}<span class="badge-level high">HIGH</span>
+                    {% elseif c.severity_max == 'MEDIUM' %}<span class="badge-level medium">MEDIUM</span>
+                    {% elseif c.severity_max == 'LOW' %}<span class="badge-level low">LOW</span>
+                    {% else %}<span class="badge-level info">NONE</span>{% endif %}
+                  </td>
+                {% endfor %}
+              </tr>
+              <tr>
+                <td>Deps total</td>
+                {% for c in comparison %}<td>{{ c.dep_count_total }}</td>{% endfor %}
+              </tr>
+              <tr>
+                <td>Deps vulnérables</td>
+                {% for c in comparison %}<td>{{ c.dep_count_vulnerable }}</td>{% endfor %}
+              </tr>
+              <tr>
+                <td>CVE total</td>
+                {% for c in comparison %}<td>{{ c.cve_count_total }}</td>{% endfor %}
+              </tr>
+              <tr>
+                <td><span class="badge-level critical">CRITICAL</span></td>
+                {% for c in comparison %}
+                  <td>{% if c.cve_count_critical > 0 %}<span class="badge-count critical">{{ c.cve_count_critical }}</span>{% else %}0{% endif %}</td>
+                {% endfor %}
+              </tr>
+              <tr>
+                <td><span class="badge-level high">HIGH</span></td>
+                {% for c in comparison %}
+                  <td>{% if c.cve_count_high > 0 %}<span class="badge-count high">{{ c.cve_count_high }}</span>{% else %}0{% endif %}</td>
+                {% endfor %}
+              </tr>
+              <tr>
+                <td><span class="badge-level medium">MEDIUM</span></td>
+                {% for c in comparison %}
+                  <td>{% if c.cve_count_medium > 0 %}<span class="badge-count medium">{{ c.cve_count_medium }}</span>{% else %}0{% endif %}</td>
+                {% endfor %}
+              </tr>
+              <tr>
+                <td><span class="badge-level low">LOW</span></td>
+                {% for c in comparison %}
+                  <td>{% if c.cve_count_low > 0 %}<span class="badge-count low">{{ c.cve_count_low }}</span>{% else %}0{% endif %}</td>
+                {% endfor %}
+              </tr>
+              <tr>
+                <td>Socle</td>
+                {% for c in comparison %}
+                  <td>
+                    {% if c.parent_label %}
+                      {{ c.parent_label }}<br><span class="text-muted">v{{ c.parent_version }}</span>
+                    {% else %}
+                      <span class="text-muted"><em>standalone</em></span>
+                    {% endif %}
+                  </td>
+                {% endfor %}
+              </tr>
+              <tr>
+                <td>Archétype</td>
+                {% for c in comparison %}
+                  <td>
+                    {% if c.archetype_version %}v{{ c.archetype_version }}{% else %}<span class="text-muted">—</span>{% endif %}
+                  </td>
+                {% endfor %}
+              </tr>
+              <tr>
+                <td>Date du scan</td>
+                {% for c in comparison %}<td>{{ c.scan_date|date('Y-m-d H:i') }}</td>{% endfor %}
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        {# === Tableau CVE communes === #}
+        <h3 class="h5 claire-hand"><span aria-hidden="true">🔁</span> CVE communes ({{ common_cves|length }})</h3>
+        <div class="callout alert-callout-border info margin-bottom-1">
+          <p class="open-sans font-size-085 margin-bottom-0">
+            <span aria-hidden="true">ℹ️</span> CVE présentes dans <strong>≥ 2 applications</strong> sélectionnées. Un patch coordonné corrige toutes les applications d'un coup. Tri : nb apps DESC → sévérité → CVSS.
+          </p>
+        </div>
+
+        {# MODIF 2026-05-16 : DataTables sur CVE communes. #}
+        {% if common_cves is empty %}
+          <p class="open-sans"><em>Aucune CVE n'est partagée entre les {{ comparison|length }} applications sélectionnées.</em></p>
+        {% else %}
+          <div class="cell table-scroll margin-bottom-1">
+            <table id="table-dc-comparer-cve" class="open-sans">
+              <thead>
+                <tr>
+                  <th>CVE</th>
+                  <th>Sévérité</th>
+                  <th class="text-right">CVSS</th>
+                  <th class="text-right">Nb applications</th>
+                  {% for c in comparison %}
+                    <th>{{ c.artifact }}<br><span class="text-muted">v{{ c.version }}</span></th>
+                  {% endfor %}
+                </tr>
+              </thead>
+              <tbody>
+                {% for cve in common_cves %}
+                {% set sev_rank = cve.severity == 'CRITICAL' ? 4 : (cve.severity == 'HIGH' ? 3 : (cve.severity == 'MEDIUM' ? 2 : (cve.severity == 'LOW' ? 1 : 0))) %}
+                <tr>
+                  <td><strong>{{ cve.cve_id }}</strong></td>
+                  <td data-order="{{ sev_rank }}">
+                    {% if cve.severity == 'CRITICAL' %}<span class="badge-level critical">CRITICAL</span>
+                    {% elseif cve.severity == 'HIGH' %}<span class="badge-level high">HIGH</span>
+                    {% elseif cve.severity == 'MEDIUM' %}<span class="badge-level medium">MEDIUM</span>
+                    {% elseif cve.severity == 'LOW' %}<span class="badge-level low">LOW</span>
+                    {% else %}<span class="badge-level info">{{ cve.severity }}</span>{% endif %}
+                  </td>
+                  <td class="text-right" data-order="{{ cve.cvss_v3_score ?? 0 }}">{{ cve.cvss_v3_score is null ? '—' : cve.cvss_v3_score|number_format(1, ',', ' ') }}</td>
+                  <td class="text-right" data-order="{{ cve.nb_scans }}"><strong>{{ cve.nb_scans }}</strong></td>
+                  {% for c in comparison %}
+                    <td class="text-center">
+                      {% if c.scan_id in cve.scan_ids %}
+                        <span style="color: #cc4b37; font-weight: 700;" title="Présente dans cette application">✓</span>
+                      {% else %}
+                        <span class="text-muted">—</span>
+                      {% endif %}
+                    </td>
+                  {% endfor %}
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+
+      {% endif %}
+
+    </main>
+
+    {{ include('footer.html.twig') }}
+  </body>
+</html>
