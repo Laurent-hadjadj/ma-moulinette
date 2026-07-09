@@ -391,8 +391,11 @@
       <h3 class="h5 claire-hand"><span aria-hidden="true">📋</span> Plan de remédiation chiffré (heuristique)</h3>
       {{ _self.info_callout('Effort estimé en jours-homme <strong>par dépendance à upgrader</strong> (pas par CVE), pour refléter la mutualisation : 1 upgrade corrige souvent N CVE. <strong>Formule paramétrable</strong> selon famille technologique × sévérité max — détail dans la modale ci-dessous. Hors recette métier lourde.') }}
       <p>
-        <button class="button tiny secondary hollow open-sans" data-open="dc-jh-methodology-modal" type="button">
-          <span aria-hidden="true">ℹ️</span> Méthode de calcul du JH
+        <button id="bouton-ouvrir-methodology-jh"
+                class="button tiny secondary hollow open-sans"
+                type="button"
+                aria-label="Méthode de calcul du JH">
+                <span aria-hidden="true">ℹ️</span> Méthode de calcul du JH
         </button>
       </p>
       {% if plan_remediation.par_dependance is empty %}
