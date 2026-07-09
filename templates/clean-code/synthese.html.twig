@@ -1,0 +1,182 @@
+﻿{% set title = 'Clean Code — Synthèse portefeuille' %}
+{% set description = 'Ma Moulinette - Vue synthétique des indicateurs clean code sur l\'ensemble du portefeuille.' %}
+{% set bottom = 'footer-fixed' %}
+
+{# MODIF 2026-05-19 : tableau de bord multi-projets clean code #}
+<!DOCTYPE html>
+<!--
+.. __  __             __  __             _ _            _   _
+  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+
+  Laurent HADJADJ
+  https://github.com/Laurent-hadjadj/ma-moulinette
+  © 2024 - CC BY-SA-NC 4.0
+-->
+<html lang="fr">
+  <head>
+    <title>{{ title }}</title>
+    {{ include('head.html.twig') }}
+    {% block importmap %}{{ importmap('clean-code') }}{% endblock %}
+  </head>
+
+  <body>
+    {{ include('header.html.twig') }}
+
+    <div class="grid-container margin-top-1">
+      <nav aria-label="Fil d'Ariane, vous êtes ici">
+        <ol class="claire-hand breadcrumbs">
+          <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+          <li aria-current="page">Clean Code — Synthèse</li>
+        </ol>
+      </nav>
+    </div>
+
+    {{ include('_message.html.twig') }}
+
+    <main class="grid-container margin-bottom-2">
+      <h2 class="h4 claire-hand">
+        <span aria-hidden="true">🧬</span> Clean Code — Synthèse portefeuille
+      </h2>
+
+      {# MODIF 2026-05-19 : badge périmètre utilisateur #}
+      <p class="margin-bottom-1">
+        <span class="badge-scope filtered" title="Accès filtré par vos groupes fonctionnels">
+          {{ scope_label }}
+        </span>
+      </p>
+
+      {% if projets is empty %}
+        <div class="callout alert-callout-border info margin-bottom-1">
+          <p class="open-sans margin-bottom-0">
+            <span aria-hidden="true">ℹ️</span>
+            Aucun projet du portefeuille ne dispose encore de données clean code dans l'historique.
+            Lancez une collecte puis enregistrez depuis la page projet.
+          </p>
+        </div>
+      {% else %}
+
+      {# Macro badge note A-E — .note-a/b/c/d/e/.note-z définies dans common.css, .badge-note (forme) dans clean-code.css #}
+      {% macro note_badge(note) %}
+        {% set css = {'A': 'note-a', 'B': 'note-b', 'C': 'note-c', 'D': 'note-d', 'E': 'note-e'}[note] ?? 'note-z' %}
+        <span class="badge-note {{ css }}">{{ note }}</span>
+      {% endmacro %}
+
+      <p class="open-sans text-muted margin-bottom-1 font-size-085">
+        <strong>{{ projets|length }}</strong> projet(s) — dernière collecte enregistrée par projet
+        — trié par niveau de risque décroissant.
+        <br>Notes : nouveau modèle SonarQube 10+ avec repli sur l'ancien si absent.
+        Risque CC calculé sur <em>violations</em> (total issues).
+      </p>
+
+      <div class="table-scroll">
+        <table class="open-sans synthese-clean-code" aria-label="Synthèse des indicateurs clean code par projet">
+          <thead>
+            <tr>
+              <th>Projet / Version</th>
+              <th class="text-center">QG</th>
+              <th class="text-center" title="Maintenabilité">MNT</th>
+              <th class="text-center" title="Fiabilité">FIA</th>
+              <th class="text-center" title="Sécurité">SEC</th>
+              <th class="text-center" title="Revue hotspots sécurité">HSP</th>
+              <th class="text-center" title="Complexité cyclomatique">Cpx</th>
+              <th class="text-center" title="Complexité cognitive">CpxCog</th>
+              <th class="text-right">Risque CC</th>
+              <th class="text-right" title="% issues RESPONSIBLE">RESP%</th>
+              <th class="text-right">Bugs</th>
+              <th class="text-right">Vulnér.</th>
+              <th class="text-right" title="Couverture de tests">Couvert.</th>
+              <th class="text-right" title="Duplication de code">Duplic.</th>
+              <th class="text-right" title="Issues OWASP Top 10 2021">OWASP</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for p in projets %}
+            <tr>
+              <td class="white-space-nowrap">
+                <strong>{{ p.project_name }}</strong>
+                <br><span class="text-muted font-size-085">{{ p.version }}</span>
+              </td>
+
+              <td class="text-center">
+                {% set qg = p.alert_status ? p.alert_status|upper : '' %}
+                {% if qg == 'OK' %}
+                  <span class="qg-ok">OK</span>
+                {% elseif qg == 'ERROR' %}
+                  <span class="qg-error">KO</span>
+                {% elseif qg == 'WARN' %}
+                  <span class="qg-warn"><span aria-hidden="true">⚠</span></span>
+                {% else %}
+                  <span class="badge-note note-z">—</span>
+                {% endif %}
+              </td>
+
+              <td class="text-center">{{ _self.note_badge(p.note_mnt) }}</td>
+              <td class="text-center">{{ _self.note_badge(p.note_fia) }}</td>
+              <td class="text-center">{{ _self.note_badge(p.note_sec) }}</td>
+              <td class="text-center">{{ _self.note_badge(p.note_hsp) }}</td>
+              <td class="text-center">{{ _self.note_badge(p.note_cpx) }}</td>
+              <td class="text-center">{{ _self.note_badge(p.note_cpx_cog) }}</td>
+
+              <td class="text-right white-space-nowrap">
+                <span class="badge-level {{ p.risk_level }}">{{ p.risk_score }}</span>
+              </td>
+
+              <td class="text-right{{ p.responsible_pct > 5 ? ' color-rouge' : '' }}">
+                {{ p.responsible_pct }}%
+              </td>
+
+              <td class="text-right{{ p.bugs > 0 ? ' color-rouge' : '' }}">
+                {{ p.bugs > 0 ? p.bugs : '—' }}
+              </td>
+
+              <td class="text-right{{ p.vulnerabilities > 0 ? ' color-rouge' : '' }}">
+                {{ p.vulnerabilities > 0 ? p.vulnerabilities : '—' }}
+              </td>
+
+              <td class="text-right">
+                {% if p.coverage is not null %}{{ p.coverage }}%{% else %}<span class="text-muted">—</span>{% endif %}
+              </td>
+
+              <td class="text-right">
+                {% if p.duplicated_lines_density is not null %}{{ p.duplicated_lines_density }}%{% else %}<span class="text-muted">—</span>{% endif %}
+              </td>
+
+              <td class="text-right{{ p.owasp_top10 > 0 ? ' color-rouge' : '' }}">
+                {{ p.owasp_top10 > 0 ? p.owasp_top10 : '—' }}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      {% endif %}
+
+      <footer class="grid-x grid-margin-x align-justify margin-top-2">
+        <div class="cell shrink">
+          <a id="bouton-retour-precedent"
+              href="{{ path('projet', {}) }}"
+              onclick="history.back(); return false;"
+              class="button open-sans focus-light"
+              aria-label="Retour à la page précédente">
+            <span aria-hidden="true">⬅️</span>Retour
+          </a>
+        </div>
+        <div class="cell shrink">
+          <a id="bouton-ouvrir-rapport"
+              href="{{ path('clean_code_synthese_pdf', {}) }}"
+              class="button open-sans focus-light"
+              aria-label="Télécharger le rapport PDF de la synthèse clean code"
+              target="_blank" rel="noopener">
+            <span aria-hidden="true">📄</span>Rapport PDF
+          </a>
+        </div>
+      </footer>
+    </main>
+
+    {{ include('footer.html.twig') }}
+  </body>
+</html>
