@@ -204,6 +204,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
   {# --- Bloc Information projet --- #}
   <h2>Information projet</h2>
   <table class="info-grid">
+    <th></th>
     <tr>
       <td class="label">Clé Maven</td>
       <td>{{ rapport.maven_key }}</td>
@@ -230,7 +231,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
   <h2>Synthèse</h2>
   <table class="synthese">
     <tr>
-      <th colspan="2">Vulnérabilités OWASP</th>
+      <th id="vulnerability" colspan="2">Vulnérabilités OWASP</th>
     </tr>
     <tr>
       <td class="label">Total</td>
@@ -254,7 +255,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
     </tr>
 
     <tr>
-      <th colspan="2">Hotspots SonarQube</th>
+      <th id="hotspots" colspan="2">Hotspots SonarQube</th>
     </tr>
     <tr>
       <td class="label">Total</td>
@@ -290,7 +291,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
     </tr>
 
     <tr>
-      <th colspan="2">Répartition par module</th>
+      <th id="repartition" colspan="2">Répartition par module</th>
     </tr>
     <tr class="sub">
       <td class="label">Frontend</td>
@@ -352,11 +353,12 @@ https://github.com/Laurent-hadjadj/ma-moulinette
       {% endif %}
     {% endfor %}
     <table class="histogram">
+      <th><th>
       <tr>
         {% for cat in rapport.categories %}
           {% set value = cat.faille|default(0) %}
           {# Hauteur en px proportionnelle ; 140px max pour laisser place au libellé.
-             On garantit min 1px pour qu'une barre 0 reste visible. #}
+            On garantit min 1px pour qu'une barre 0 reste visible. #}
           {% set heightPx = (maxFaille > 0 and value > 0) ? ((value / maxFaille) * 140)|round : 0 %}
           <td class="bar-cell">
             <span class="bar-value">{{ value }}</span>
