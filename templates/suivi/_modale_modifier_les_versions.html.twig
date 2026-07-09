@@ -21,12 +21,14 @@
     <table class="hover">
       <caption class="claire-hand">Modifier les propriétés d'une version.</caption>
       <thead>
+        {# MODIF 2026-06-11 : colonne Suivi + compteur 0/15 #}
         <tr class="open-sans text-center">
           <th id="action" scope="col">Action</th>
           <th id="modifier-date" scope="col">Date</th>
           <th id="modifier-version" scope="col">Version</th>
           <th id="modifier-favori" scope="col">Favori</th>
           <th id="modifier-reference" scope="col">Référence</th>
+          <th id="modifier-suivi" scope="col">Suivi&nbsp;<small id="compteur-suivi" class="open-sans">(0/15)</small></th>
         </tr>
       </thead>
       <tbody id="tableau-liste-version" class="open-sans">
@@ -44,5 +46,6 @@
               type="button"
               aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span>Fermer
       </button>
+    </div>
   </footer>
 </div>
