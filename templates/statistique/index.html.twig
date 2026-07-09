@@ -69,20 +69,81 @@
       {% endfor %}
     </header>
 
-    {# WCAG 2.4.1 / 4.1.1 : id="main-content" (cible du skip link) ; retrait du role="main" redondant #}
     <main id="main-content" class="grid-container">
 
       <section class="stats-selection">
         <div class="grid-x grid-margin-x align-center">
           <div class="cell small-12">
-            {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page ; titre descendu en <h2> #}
             <h2 class="h3 text-center claire-hand"><span aria-hidden="true">📈</span>Statistiques</h2>
             <p class="text-center stats-intro">
-              🎯 Sélectionnez le type de statistiques que vous souhaitez consulter.
+              🎯 Cliquez sur le type de statistiques que vous souhaitez consulter.
             </p>
           </div>
 
-          <!-- Utilisateur -->
+          {# Dashboard #}
+          <div class="cell small-12 medium-4 margin-bottom-2">
+            <a href="{{ path('statistiques_dashboard',{}) }}"
+                class="stats-card" rel="next"
+                aria-labelledby="stats-dashboard-title"
+                aria-describedby="stats-dashboard-desc">
+              <div id="stats-dashboard-desc" class="stats-card-header">
+                <p class="open-sans">
+                  <span class="show-for-large">Informations sur l'application</span>
+                  <span class="show-for-medium-only">Infos sur l'application.</span>
+                  <span class="show-for-small-only">Informations sur l'application.</span>
+                </p>
+              </div>
+              <div class="stats-card-body text-center">
+                <span class="stats-icon">🔩</span>
+                <h3 id="stats-dashboard-title"
+                    class="claire-hand">Dashboard</h3>
+              </div>
+            </a>
+          </div>
+
+          {# Sonar-Report #}
+          <div class="cell small-12 medium-4 margin-bottom-2">
+            <a href="{{ path('statistiques_sonar_report',{}) }}"
+                class="stats-card"
+                aria-labelledby="stats-consommation-title"
+                aria-describedby="stats-consommation-desc">
+              <div id="stats-consommation-desc" class="stats-card-header">
+                <p class="open-sans">
+                  <span class="show-for-large">Suivi des projets, volumes et tendances.</span>
+                  <span class="show-for-medium-only">Suivi des projets.</span>
+                  <span class="show-for-small-only">Suivi des projets, volumes et tendances.</span>
+                </p>
+              </div>
+              <div class="stats-card-body text-center">
+                <span class="stats-icon">🛒</span>
+                <h3 id="stats-consommation-title"
+                    class="claire-hand">Sonar Report</h3>
+              </div>
+            </a>
+          </div>
+
+          {# Projets #}
+          <div class="cell small-12 medium-4 margin-bottom-2">
+            <a href="{{ path('statistiques_projet',{}) }}"
+                class="stats-card" rel="next"
+                aria-labelledby="stats-projet-title"
+                aria-describedby="stats-projet-desc">
+              <div id="stats-projet-desc" class="stats-card-header">
+                <p class="open-sans">
+                  <span class="show-for-large">Métriques par projet : notes, taille, anomalies.</span>
+                  <span class="show-for-medium-only">Métriques par projet.</span>
+                  <span class="show-for-small-only">Métriques par projet : notes, taille, anomalies.</span>
+                </p>
+              </div>
+              <div class="stats-card-body text-center">
+                <span class="stats-icon">📋</span>
+                <h3 id="stats-projet-title"
+                    class="claire-hand">Projets</h3>
+              </div>
+            </a>
+          </div>
+
+          {# Utilisateur #}
           <div class="cell small-12 medium-4 margin-bottom-2">
             <a href="{{ path('statistiques_utilisateur',{}) }}"
                 class="stats-card" rel="next"
@@ -98,49 +159,27 @@
               <div class="stats-card-body text-center">
                 <span class="stats-icon">💻</span>
                 <h3 id="stats-user-title"
-                    class="claire-hand">Utilisateur</h3>
-              </div>
-            </a>
-          </div>
-
-          <!-- Projet -->
-          <div class="cell small-12 medium-4 margin-bottom-2">
-            <a href="{ path('statistiques_projet') }}"
-                class="stats-card"
-                aria-labelledby="stats-consommation-title"
-                aria-describedby="stats-consommation-desc">
-              <div id="stats-consommation-desc" class="stats-card-header">
-                <p class="open-sans">
-                  <span class="show-for-large">Suivi des projets, volumes et tendances.</span>
-                  <span class="show-for-medium-only">Suivi des projets.</span>
-                  <span class="show-for-small-only">Suivi des projets, volumes et tendances.</span>
-                </p>
-              </div>
-              <div class="stats-card-body text-center">
-                <span class="stats-icon">🛒</span>
-                <h3 id="stats-consommation-title"
-                    class="claire-hand">Projet</h3>
+                    class="claire-hand">Activité</h3>
               </div>
             </a>
           </div>
         </div>
       </section>
 
-      {% if is_granted('ROLE_INTERNAL') %}
-      <footer class="grid-x grid-padding-x align-right margin-top-2">
-        <div class="cell shrink">
-          <a href="{{ path('runBatchAnalysis')}}" rel="next">
-            <button id="bouton-lance-batch-analysis"
-                    type="button"
-                    class="button open-sans focus-dark-light"
-                    data-close
-                    aria-label="Analyse userAgent"><span aria-label="true">▶️</span>Analyse UserAgent
-            </button>
-          </a>
+        {% if is_granted('ROLE_INTERNAL') %}
+        <footer class="grid-x grid-padding-x align-right margin-top-2">
+          <div class="cell shrink">
+            <a href="{{ path('runBatchAnalysis')}}" rel="next">
+              <button id="bouton-lance-batch-analysis"
+                      type="button"
+                      class="button open-sans focus-dark-light"
+                      data-close
+                      aria-label="Analyse userAgent"><span aria-label="true">▶️</span>Analyse UserAgent
+              </button>
+            </a>
           </div>
-      </footer>
-      {% endif %}
-
+        </footer>
+        {% endif %}
     </main>
 
     {# Chargement de la section footer #}
