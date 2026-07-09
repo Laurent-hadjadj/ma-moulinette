@@ -1,0 +1,69 @@
+{# section 2 (paysage) — detail des findings par sévérité. #}
+{% set findings = data.findings %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Rapport DC — Détail</title>
+  {{ include('rapport/dc/_styles.html.twig') }}
+</head>
+<body>
+
+{% if findings is not empty %}
+  <h2>Détail des vulnérabilités ({{ findings|length }})</h2>
+
+  {% set severities = [
+    { key: 'CRITICAL', label: 'Critiques',  cls: 'sev-critical' },
+    { key: 'HIGH',     label: 'Élevées',    cls: 'sev-high' },
+    { key: 'MEDIUM',   label: 'Moyennes',   cls: 'sev-medium' },
+    { key: 'LOW',      label: 'Faibles',    cls: 'sev-low' },
+    { key: 'INFO',     label: 'Information',cls: 'sev-info' },
+    { key: 'UNKNOWN',  label: 'Inconnue',   cls: 'sev-info' },
+  ] %}
+
+  {% set first_sev_displayed = true %}
+  {% for sev in severities %}
+    {% set sev_findings = findings|filter(f => f.severity == sev.key) %}
+    {% if sev_findings|length > 0 %}
+      <div class="sev-section-title {{ sev.cls }}"
+          {% if not first_sev_displayed %}style="page-break-before: always;"{% endif %}>
+        {{ sev.label }} — {{ sev_findings|length }} vulnérabilité{{ sev_findings|length > 1 ? 's' }}
+      </div>
+      <table class="findings">
+        <thead>
+          <tr>
+            <th class="num">#</th>
+            <th class="cvss">CVSS</th>
+            <th class="cve">CVE</th>
+            <th class="dep">Dépendance</th>
+            <th class="ver">Version</th>
+            <th class="cwe">CWE</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for f in sev_findings %}
+          <tr>
+            <td class="num">{{ loop.index }}</td>
+            <td class="cvss">{{ f.cvss is not null ? f.cvss : '-' }}</td>
+            <td class="cve">{{ f.cve_id }}</td>
+            <td class="dep">{{ f.product ?: f.file_name }}</td>
+            <td class="ver">{{ f.dep_version ?: '-' }}</td>
+            <td class="cwe">
+              {% for cwe in f.cwes %}{{ cwe }}{% if not loop.last %}<br>{% endif %}{% endfor %}
+            </td>
+            <td class="desc">{{ f.description|slice(0, 350) }}{% if f.description|length > 350 %}…{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% set first_sev_displayed = false %}
+    {% endif %}
+  {% endfor %}
+{% else %}
+  <h2>Aucune vulnérabilité détectée</h2>
+{% endif %}
+
+</body>
+</html>

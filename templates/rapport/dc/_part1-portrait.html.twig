@@ -1,0 +1,119 @@
+{# section 1 (portrait) — page de garde + executive summary. #}
+{% set scan = data.scan %}
+{% set top_deps = data.top_deps ?? [] %}
+{% set top_cwes = data.top_cwes ?? [] %}
+{% set project_label = data.project_group ~ ':' ~ data.project_artifact ~ ':' ~ data.project_version %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Rapport DC — Portrait 1</title>
+  {{ include('rapport/dc/_styles.html.twig') }}
+</head>
+<body>
+
+{# === Page de garde === #}
+<div class="cover">
+  <img class="logo-cover" src="data:image/png;base64,{{ logoBase64 }}" alt="Logo">
+  <h1>Rapport OWASP<br>DependencyCheck</h1>
+  <div class="subtitle">Analyse des vulnérabilités de dépendances</div>
+
+  <div class="project-block">
+    <div class="pname">{{ data.project_artifact }}</div>
+    <div class="pgroup">{{ data.project_group }}</div>
+    <div class="pversion">Version {{ data.project_version }}</div>
+  </div>
+
+  {% if scan %}
+  <div class="meta">
+    Scan effectué le {{ scan.scanDate|date('d/m/Y à H:i') }}
+    {% if scan.engineVersion %} — Engine OWASP DC {{ scan.engineVersion }}{% endif %}
+  </div>
+  {% endif %}
+  <div class="meta">Document généré le {{ "now"|date('d/m/Y à H:i') }}</div>
+</div>
+
+{% if scan %}
+
+{# === Executive summary (nouvelle page) === #}
+<div style="page-break-before: always;">
+  <header class="header">
+    <img class="logo" src="data:image/png;base64,{{ logoBase64 }}" alt="Logo">
+    <div class="header-title">
+      <h2>Synthèse executive</h2>
+      <div class="subtitle">{{ project_label }}</div>
+    </div>
+  </header>
+
+  <h2>Identification</h2>
+  <table class="info-grid">
+    <th></th>
+    <tr><td class="label">Projet</td><td><strong>{{ data.project_artifact }}</strong></td></tr>
+    <tr><td class="label">Group ID</td><td>{{ data.project_group }}</td></tr>
+    <tr><td class="label">Version</td><td>{{ data.project_version }}</td></tr>
+    <tr><td class="label">Date du scan</td><td>{{ scan.scanDate|date('d/m/Y H:i') }}</td></tr>
+    <tr><td class="label">Engine OWASP DependencyCheck</td><td>{{ scan.engineVersion ?: '—' }}</td></tr>
+  </table>
+
+  <h2>Synthèse globale</h2>
+  <table class="synthese">
+    <tr><th>Indicateur</th><th class="stat-value">Valeur</th></tr>
+    <tr><td>Dépendances analysées</td><td class="stat-value">{{ scan.depCountTotal }}</td></tr>
+    <tr><td>Dépendances vulnérables</td><td class="stat-value">{{ scan.depCountVulnerable }}</td></tr>
+    <tr><td>Total CVE détectées</td><td class="stat-value">{{ scan.cveCountTotal }}</td></tr>
+  </table>
+
+  <h2>Répartition par sévérité</h2>
+  <table class="synthese">
+    <tr><th>Sévérité</th><th class="stat-value">Nombre</th></tr>
+    <tr><td><span class="sev sev-critical">CRITICAL</span></td><td class="stat-value">{{ scan.cveCountCritical }}</td></tr>
+    <tr><td><span class="sev sev-high">HIGH</span></td><td class="stat-value">{{ scan.cveCountHigh }}</td></tr>
+    <tr><td><span class="sev sev-medium">MEDIUM</span></td><td class="stat-value">{{ scan.cveCountMedium }}</td></tr>
+    <tr><td><span class="sev sev-low">LOW</span></td><td class="stat-value">{{ scan.cveCountLow }}</td></tr>
+    <tr><td><span class="sev sev-info">INFO</span></td><td class="stat-value">{{ scan.cveCountInfo }}</td></tr>
+  </table>
+
+  {% if top_deps|length > 0 %}
+    <h2>Top {{ top_deps|length }} des dépendances vulnérables</h2>
+    <p style="font-size: 10px; color: #666;">Classement par nombre de CVE détectées sur ce scan.</p>
+    <table class="top-table">
+      <thead>
+        <tr><th class="num">#</th><th>Dépendance</th><th>Version</th><th class="nb">Nb CVE</th></tr>
+      </thead>
+      <tbody>
+        {% for d in top_deps %}
+        <tr>
+          <td class="num">{{ loop.index }}</td>
+          <td><strong>{{ d.label }}</strong></td>
+          <td>{{ d.version ?: '—' }}</td>
+          <td class="nb">{{ d.nb_cves }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+
+  {% if top_cwes|length > 0 %}
+    <h2 style="page-break-before: always;">Top {{ top_cwes|length }} des familles CWE</h2>
+    <p style="font-size: 10px; color: #666;">CWE = catégorie type de faiblesse logicielle (cf. glossaire).</p>
+    <table class="top-table">
+      <thead>
+        <tr><th class="num">#</th><th>CWE</th><th class="nb">Occurrences</th></tr>
+      </thead>
+      <tbody>
+        {% for c in top_cwes %}
+        <tr>
+          <td class="num">{{ loop.index }}</td>
+          <td><strong>{{ c.cwe }}</strong></td>
+          <td class="nb">{{ c.nb }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</div>
+{% endif %}
+
+</body>
+</html>

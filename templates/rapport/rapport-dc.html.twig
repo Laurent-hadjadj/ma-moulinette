@@ -1,0 +1,525 @@
+{% set scan = data.scan %}
+{% set findings = data.findings %}
+{% set top_deps = data.top_deps ?? [] %}
+{% set top_cwes = data.top_cwes ?? [] %}
+{% set project_label = data.project_group ~ ':' ~ data.project_artifact ~ ':' ~ data.project_version %}
+
+<!DOCTYPE html>
+{#
+.__  __             __  __             _ _            _   _
+|  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+| |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+| |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+|_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+
+Laurent HADJADJ
+https://github.com/Laurent-hadjadj/ma-moulinette
+© 2024 - CC BY-SA-NC 4.0
+#}
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Rapport DependencyCheck — {{ project_label }}</title>
+  <style>
+    @page portrait  { size: A4 portrait;  margin: 30px 25px 50px 25px; }
+    @page landscape { size: A4 landscape; margin: 30px 25px 50px 25px; }
+
+    .section-portrait  { page: portrait; }
+    .section-landscape { page: landscape; }
+
+    body {
+      font-family: 'DejaVu Sans', Arial, sans-serif;
+      font-size: 11px;
+      color: #00445b;
+    }
+
+    h1 { font-size: 22px; margin: 0 0 6px 0; }
+    h2 {
+      font-size: 14px;
+      margin: 18px 0 8px 0;
+      padding-bottom: 4px;
+      border-bottom: 2px solid #00445b;
+    }
+    h3 { font-size: 12px; margin: 12px 0 6px 0; }
+
+    /* === Page de garde === */
+    .cover {
+      text-align: center;
+      padding-top: 80px;
+    }
+    .cover .logo-cover {
+      max-height: 70px;
+      margin-bottom: 30px;
+    }
+    .cover h1 {
+      font-size: 28px;
+      margin: 12px 0;
+    }
+    .cover .subtitle {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 60px;
+    }
+    .cover .project-block {
+      display: inline-block;
+      border: 2px solid #00445b;
+      padding: 18px 40px;
+      border-radius: 4px;
+      margin-top: 20px;
+    }
+    .cover .project-block .pname {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    .cover .project-block .pgroup {
+      font-size: 12px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+    .cover .project-block .pversion {
+      font-size: 14px;
+      font-weight: bold;
+      color: #d4333f;
+    }
+    .cover .meta {
+      margin-top: 50px;
+      font-size: 11px;
+      color: #888;
+    }
+
+    /* === Header standard (autres pages portrait) === */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #00445b;
+      padding-bottom: 10px;
+    }
+    .logo { max-height: 35px; }
+    .header-title { text-align: right; }
+    .header-title h2 { font-size: 14px; margin: 0; border: none; padding: 0; }
+    .header-title .subtitle { font-size: 10px; color: #666; }
+
+    /* === Tableaux info & synthèse === */
+    .info-grid, .synthese {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 12px;
+    }
+    .info-grid td, .synthese td, .synthese th {
+      padding: 5px 8px;
+      border: 1px solid #ddd;
+      vertical-align: middle;
+    }
+    .info-grid td.label, .synthese td.label {
+      background: #f0f4f7;
+      font-weight: bold;
+      width: 35%;
+    }
+    .synthese th {
+      background: #00445b;
+      color: #fff;
+      text-align: left;
+      font-size: 11px;
+    }
+    .synthese .stat-value {
+      text-align: center;
+      font-weight: bold;
+      width: 100px;
+    }
+
+    /* === Severity badges === */
+    .sev {
+      display: inline-block;
+      padding: 1px 6px;
+      border-radius: 3px;
+      font-weight: bold;
+      font-size: 10px;
+      color: #fff;
+    }
+    .sev-critical { background: #d4333f; }
+    .sev-high     { background: #e67e22; }
+    .sev-medium   { background: #f5a623; }
+    .sev-low      { background: #1779ba; }
+    .sev-info     { background: #767676; }
+    .sev-unknown  { background: #767676; }
+
+    /* === Tableaux executive (top deps, top CWE) === */
+    .top-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 8px;
+    }
+    .top-table th, .top-table td {
+      padding: 5px 8px;
+      border: 1px solid #ddd;
+      vertical-align: middle;
+    }
+    .top-table th {
+      background: #f0f4f7;
+      font-weight: bold;
+      text-align: left;
+    }
+    .top-table .num { text-align: center; width: 40px; font-weight: bold; }
+    .top-table .nb  { text-align: center; width: 80px; font-weight: bold; }
+
+    /* === Findings (paysage) === */
+    .findings {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10px;
+    }
+    .findings th, .findings td {
+      padding: 4px 6px;
+      border: 1px solid #ddd;
+      vertical-align: middle;
+    }
+    .findings th { background: #f0f4f7; font-weight: bold; }
+    .findings .num   { text-align: center; width: 30px; }
+    .findings .cvss  { text-align: center; width: 50px; }
+    .findings .ver   { text-align: center; width: 80px; }
+    .findings .cve   { white-space: nowrap; font-family: monospace; width: 120px; }
+    .findings .dep   { width: 130px; }
+    .findings .cwe   { width: 100px; font-family: monospace; }
+    .findings .desc  { font-size: 9px; color: #555; }
+
+    .sev-section-title {
+      margin: 18px 0 6px 0;
+      font-size: 13px;
+      padding: 4px 8px;
+      color: #fff;
+      border-radius: 3px;
+    }
+    .sev-section-title.sev-critical { background: #d4333f; }
+    .sev-section-title.sev-high     { background: #e67e22; }
+    .sev-section-title.sev-medium   { background: #f5a623; }
+    .sev-section-title.sev-low      { background: #1779ba; }
+    .sev-section-title.sev-info     { background: #767676; }
+
+    /* === Glossaire === */
+    .glossary dt {
+      font-weight: bold;
+      color: #00445b;
+      margin-top: 10px;
+      font-size: 12px;
+    }
+    .glossary dd {
+      margin-left: 0;
+      font-size: 10px;
+      color: #444;
+      line-height: 1.4;
+    }
+    .glossary .scale {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 4px;
+      font-size: 10px;
+    }
+    .glossary .scale td {
+      padding: 3px 6px;
+      border: 1px solid #ddd;
+    }
+  </style>
+</head>
+<body>
+
+{# ════════════════════════════════════════════════════════════════════
+    SECTION 1 — PAGE DE GARDE (portrait)
+    ════════════════════════════════════════════════════════════════════ #}
+<div class="section-portrait">
+  <div class="cover">
+    <img class="logo-cover" src="data:image/png;base64,{{ logoBase64 }}" alt="Logo">
+    <h1>Rapport OWASP<br>DependencyCheck</h1>
+    <div class="subtitle">Analyse des vulnérabilités de dépendances</div>
+
+    <div class="project-block">
+      <div class="pname">{{ data.project_artifact }}</div>
+      <div class="pgroup">{{ data.project_group }}</div>
+      <div class="pversion">Version {{ data.project_version }}</div>
+    </div>
+
+    {% if scan %}
+    <div class="meta">
+      Scan effectué le {{ scan.scanDate|date('d/m/Y à H:i') }}
+      {% if scan.engineVersion %} — Engine OWASP DC {{ scan.engineVersion }}{% endif %}
+    </div>
+    {% endif %}
+    <div class="meta">Document généré le {{ "now"|date('d/m/Y à H:i') }}</div>
+  </div>
+</div>
+
+{% if scan %}
+
+{# ════════════════════════════════════════════════════════════════════
+    SECTION 2 — EXECUTIVE SUMMARY (portrait, nouvelle page)
+    ════════════════════════════════════════════════════════════════════ #}
+<div class="section-portrait" style="page-break-before: always;">
+  <header class="header">
+    <img class="logo" src="data:image/png;base64,{{ logoBase64 }}" alt="Logo">
+    <div class="header-title">
+      <h2>Synthèse executive</h2>
+      <div class="subtitle">{{ project_label }}</div>
+    </div>
+  </header>
+
+  <h2>Identification</h2>
+  <table class="info-grid">
+    <th></th>
+    <tr><td class="label">Projet</td><td><strong>{{ data.project_artifact }}</strong></td></tr>
+    <tr><td class="label">Group ID</td><td>{{ data.project_group }}</td></tr>
+    <tr><td class="label">Version</td><td>{{ data.project_version }}</td></tr>
+    <tr><td class="label">Date du scan</td><td>{{ scan.scanDate|date('d/m/Y H:i') }}</td></tr>
+    <tr><td class="label">Engine OWASP DependencyCheck</td><td>{{ scan.engineVersion ?: '—' }}</td></tr>
+  </table>
+
+  <h2>Synthèse globale</h2>
+  <table class="synthese">
+    <tr>
+      <th>Indicateur</th>
+      <th class="stat-value">Valeur</th>
+    </tr>
+    <tr><td>Dépendances analysées</td><td class="stat-value">{{ scan.depCountTotal }}</td></tr>
+    <tr><td>Dépendances vulnérables</td><td class="stat-value">{{ scan.depCountVulnerable }}</td></tr>
+    <tr><td>Total CVE détectées</td><td class="stat-value">{{ scan.cveCountTotal }}</td></tr>
+  </table>
+
+  <h2>Répartition par sévérité</h2>
+  <table class="synthese">
+    <tr>
+      <th>Sévérité</th>
+      <th class="stat-value">Nombre</th>
+    </tr>
+    <tr><td><span class="sev sev-critical">CRITICAL</span></td><td class="stat-value">{{ scan.cveCountCritical }}</td></tr>
+    <tr><td><span class="sev sev-high">HIGH</span></td><td class="stat-value">{{ scan.cveCountHigh }}</td></tr>
+    <tr><td><span class="sev sev-medium">MEDIUM</span></td><td class="stat-value">{{ scan.cveCountMedium }}</td></tr>
+    <tr><td><span class="sev sev-low">LOW</span></td><td class="stat-value">{{ scan.cveCountLow }}</td></tr>
+    <tr><td><span class="sev sev-info">INFO</span></td><td class="stat-value">{{ scan.cveCountInfo }}</td></tr>
+  </table>
+
+  {# === Top 5 dépendances === #}
+  {% if top_deps|length > 0 %}
+    <h2>Top {{ top_deps|length }} des dépendances vulnérables</h2>
+    <p style="font-size: 10px; color: #666;">Classement par nombre de CVE détectées sur ce scan.</p>
+    <table class="top-table">
+      <thead>
+        <tr>
+          <th class="num">#</th>
+          <th>Dépendance</th>
+          <th>Version</th>
+          <th class="nb">Nb CVE</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in top_deps %}
+        <tr>
+          <td class="num">{{ loop.index }}</td>
+          <td><strong>{{ d.label }}</strong></td>
+          <td>{{ d.version ?: '—' }}</td>
+          <td class="nb">{{ d.nb_cves }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+
+  {# === Top 5 CWE === #}
+  {% if top_cwes|length > 0 %}
+    <h2 style="page-break-before: always;">Top {{ top_cwes|length }} des familles CWE</h2>
+    <p style="font-size: 10px; color: #666;">CWE = catégorie type de faiblesse logicielle (cf. glossaire).</p>
+    <table class="top-table">
+      <thead>
+        <tr>
+          <th class="num">#</th>
+          <th>CWE</th>
+          <th class="nb">Occurrences</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in top_cwes %}
+        <tr>
+          <td class="num">{{ loop.index }}</td>
+          <td><strong>{{ c.cwe }}</strong></td>
+          <td class="nb">{{ c.nb }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% endif %}
+</div>
+
+{# ════════════════════════════════════════════════════════════════════
+    SECTION 3 — DÉTAILS PAR SÉVÉRITÉ (paysage, nouvelle page)
+    ════════════════════════════════════════════════════════════════════ #}
+{% if findings is not empty %}
+<div class="section-landscape" style="page-break-before: always;">
+  <h2>Détail des vulnérabilités ({{ findings|length }})</h2>
+
+  {% set severities = [
+    { key: 'CRITICAL', label: 'Critiques',  cls: 'sev-critical' },
+    { key: 'HIGH',     label: 'Élevées',    cls: 'sev-high' },
+    { key: 'MEDIUM',   label: 'Moyennes',   cls: 'sev-medium' },
+    { key: 'LOW',      label: 'Faibles',    cls: 'sev-low' },
+    { key: 'INFO',     label: 'Information',cls: 'sev-info' },
+    { key: 'UNKNOWN',  label: 'Inconnue',   cls: 'sev-info' },
+  ] %}
+
+  {% set first_sev_displayed = true %}
+  {% for sev in severities %}
+    {% set sev_findings = findings|filter(f => f.severity == sev.key) %}
+    {% if sev_findings|length > 0 %}
+      <div class="sev-section-title {{ sev.cls }}"
+          {% if not first_sev_displayed %}style="page-break-before: always;"{% endif %}>
+        {{ sev.label }} — {{ sev_findings|length }} vulnérabilité{{ sev_findings|length > 1 ? 's' }}
+      </div>
+      <table class="findings">
+        <thead>
+          <tr>
+            <th class="num">#</th>
+            <th class="cvss">CVSS</th>
+            <th class="cve">CVE</th>
+            <th class="dep">Dépendance</th>
+            <th class="ver">Version</th>
+            <th class="cwe">CWE</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for f in sev_findings %}
+          <tr>
+            <td class="num">{{ loop.index }}</td>
+            <td class="cvss">{{ f.cvss is not null ? f.cvss : '-' }}</td>
+            <td class="cve">{{ f.cve_id }}</td>
+            <td class="dep">{{ f.product ?: f.file_name }}</td>
+            <td class="ver">{{ f.dep_version ?: '-' }}</td>
+            <td class="cwe">
+              {% for cwe in f.cwes %}{{ cwe }}{% if not loop.last %}<br>{% endif %}{% endfor %}
+            </td>
+            <td class="desc">{{ f.description|slice(0, 350) }}{% if f.description|length > 350 %}…{% endif %}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% set first_sev_displayed = false %}
+    {% endif %}
+  {% endfor %}
+</div>
+{% endif %}
+
+{# ════════════════════════════════════════════════════════════════════
+    SECTION 4 — GLOSSAIRE (portrait, nouvelle page)
+    ════════════════════════════════════════════════════════════════════ #}
+<div class="section-portrait" style="page-break-before: always;">
+  <header class="header">
+    <img class="logo" src="data:image/png;base64,{{ logoBase64 }}" alt="Logo">
+    <div class="header-title">
+      <h2>Glossaire</h2>
+      <div class="subtitle">Définitions des indicateurs</div>
+    </div>
+  </header>
+
+  <h2>Glossaire des indicateurs</h2>
+
+  <dl class="glossary">
+
+    <dt>CVE — <em>Common Vulnerabilities and Exposures</em></dt>
+    <dd>
+      Identifiant universel d'une vulnérabilité logicielle, attribué par MITRE et publié dans la
+      base NVD du NIST. Format <strong>CVE-YYYY-NNNNN</strong> (ex : CVE-2023-46120). Chaque CVE
+      décrit une faille précise avec sa description, ses versions affectées et ses correctifs.
+      Source : <em>nvd.nist.gov</em>.
+    </dd>
+
+    <dt>CWE — <em>Common Weakness Enumeration</em></dt>
+    <dd>
+      Catégorie type de faiblesse logicielle (ex : <strong>CWE-79</strong> = Cross-Site Scripting,
+      <strong>CWE-89</strong> = SQL Injection, <strong>CWE-400</strong> = Resource Consumption,
+      <strong>CWE-502</strong> = Deserialization of Untrusted Data, <strong>CWE-863</strong> =
+      Incorrect Authorization). Une CVE est associée à une ou plusieurs CWE qui caractérisent
+      la nature de la faille. Permet de regrouper les vulnérabilités par patron technique.
+    </dd>
+
+    <dt>CVSS — <em>Common Vulnerability Scoring System</em></dt>
+    <dd>
+      Système de notation standardisé (NIST) qui attribue à chaque CVE un score de gravité
+      de <strong>0.0 à 10.0</strong>, calculé à partir de 8 métriques. Le score CVSS v3 est
+      la version actuellement utilisée. Mapping vers les sévérités :
+      <table class="scale">
+        <th></th>
+        <tr><td><span class="sev sev-critical">CRITICAL</span></td><td>9.0 – 10.0</td></tr>
+        <tr><td><span class="sev sev-high">HIGH</span></td><td>7.0 – 8.9</td></tr>
+        <tr><td><span class="sev sev-medium">MEDIUM</span></td><td>4.0 – 6.9</td></tr>
+        <tr><td><span class="sev sev-low">LOW</span></td><td>0.1 – 3.9</td></tr>
+        <tr><td><span class="sev sev-info">NONE / INFO</span></td><td>0.0</td></tr>
+      </table>
+    </dd>
+
+    <dt>Vecteur d'attaque (<em>Attack Vector</em>)</dt>
+    <dd>
+      Contexte d'exploitation possible de la vulnérabilité. Quatre niveaux :
+      <strong>NETWORK</strong> (exploitable à distance, le plus critique),
+      <strong>ADJACENT</strong> (réseau local uniquement),
+      <strong>LOCAL</strong> (accès local au système requis),
+      <strong>PHYSICAL</strong> (accès matériel requis).
+      Une CVE NETWORK + CRITICAL est la combinaison la plus dangereuse.
+    </dd>
+
+    <dt>Complexité d'attaque (<em>Attack Complexity</em>)</dt>
+    <dd>
+      Effort requis pour exploiter la vulnérabilité une fois le vecteur accessible.
+      <strong>LOW</strong> = exploitation triviale (script existant, payload connu).
+      <strong>HIGH</strong> = conditions spéciales requises (timing, configuration particulière).
+      Combinée à la gravité CVSS, cette métrique donne un proxy d'« exploitabilité ».
+    </dd>
+
+    <dt>Indice d'exploitabilité</dt>
+    <dd>
+      Sous-score CVSS qui combine vecteur d'attaque, complexité, privilèges requis et
+      interaction utilisateur. Plus l'indice est élevé, plus la faille est facile à exploiter
+      en pratique. À combiner avec l'impact (confidentialité / intégrité / disponibilité)
+      pour prioriser la remédiation.
+    </dd>
+
+    <dt>OWASP DependencyCheck</dt>
+    <dd>
+      Outil open-source de la fondation OWASP qui analyse les dépendances d'un projet
+      (Maven, npm, .NET, etc.) et croise les versions détectées avec la base NVD pour
+      identifier les vulnérabilités connues. Le rapport produit (JSON / HTML) est la source
+      de ce document.
+    </dd>
+
+    <dt>Sévérité d'un finding</dt>
+    <dd>
+      Niveau de criticité associé à une vulnérabilité dans le contexte de votre projet.
+      Hérité du score CVSS v3 mais peut être ajusté manuellement (acceptation de risque,
+      mitigation existante). Présentée avec un code couleur cohérent dans le rapport.
+    </dd>
+
+    <dt>Finding (occurrence)</dt>
+    <dd>
+      Une vulnérabilité détectée dans une dépendance précise d'un projet. Une même CVE peut
+      apparaître plusieurs fois dans un même scan si plusieurs dépendances sont touchées.
+      Le total « findings » est donc supérieur ou égal au nombre de CVE uniques.
+    </dd>
+
+    <dt>Mutualisation cross-projets</dt>
+    <dd>
+      Beaucoup de projets partagent les mêmes dépendances (archétype Java commun par exemple).
+      Une même CVE détectée dans une lib partagée touchera donc plusieurs projets simultanément.
+      Le tableau de bord agrégé permet de prioriser les corrections qui ont le plus grand
+      impact (« corriger Spring 5.2.22 corrige 12 projets d'un coup »).
+    </dd>
+
+  </dl>
+</div>
+
+{% else %}
+<div class="section-portrait" style="page-break-before: always;">
+  <h2>Aucun scan disponible</h2>
+  <p>Aucun rapport DependencyCheck n'a été ingéré pour <strong>{{ project_label }}</strong>.</p>
+</div>
+{% endif %}
+
+</body>
+</html>

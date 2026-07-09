@@ -1,0 +1,116 @@
+{# section 3 (portrait) — glossaire. #}
+{% set project_label = data.project_group ~ ':' ~ data.project_artifact ~ ':' ~ data.project_version %}
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Rapport DC — Glossaire</title>
+  {{ include('rapport/dc/_styles.html.twig') }}
+</head>
+<body>
+
+<header class="header">
+  <img class="logo" src="data:image/png;base64,{{ logoBase64 }}" alt="Logo">
+  <div class="header-title">
+    <h2>Glossaire</h2>
+    <div class="subtitle">Définitions des indicateurs</div>
+  </div>
+</header>
+
+<h2>Glossaire des indicateurs</h2>
+
+<dl class="glossary">
+
+  <dt>CVE — <em>Common Vulnerabilities and Exposures</em></dt>
+  <dd>
+    Identifiant universel d'une vulnérabilité logicielle, attribué par MITRE et publié dans la
+    base NVD du NIST. Format <strong>CVE-YYYY-NNNNN</strong> (ex : CVE-2023-46120). Chaque CVE
+    décrit une faille précise avec sa description, ses versions affectées et ses correctifs.
+    Source : <em>nvd.nist.gov</em>.
+  </dd>
+
+  <dt>CWE — <em>Common Weakness Enumeration</em></dt>
+  <dd>
+    Catégorie type de faiblesse logicielle (ex : <strong>CWE-79</strong> = Cross-Site Scripting,
+    <strong>CWE-89</strong> = SQL Injection, <strong>CWE-400</strong> = Resource Consumption,
+    <strong>CWE-502</strong> = Deserialization of Untrusted Data, <strong>CWE-863</strong> =
+    Incorrect Authorization). Une CVE est associée à une ou plusieurs CWE qui caractérisent
+    la nature de la faille. Permet de regrouper les vulnérabilités par patron technique.
+  </dd>
+
+  <dt>CVSS — <em>Common Vulnerability Scoring System</em></dt>
+  <dd>
+    Système de notation standardisé (NIST) qui attribue à chaque CVE un score de gravité
+    de <strong>0.0 à 10.0</strong>, calculé à partir de 8 métriques. Le score CVSS v3 est
+    la version actuellement utilisée. Mapping vers les sévérités :
+    <table class="scale">
+      <th></th>
+      <tr><td><span class="sev sev-critical">CRITICAL</span></td><td>9.0 – 10.0</td></tr>
+      <tr><td><span class="sev sev-high">HIGH</span></td><td>7.0 – 8.9</td></tr>
+      <tr><td><span class="sev sev-medium">MEDIUM</span></td><td>4.0 – 6.9</td></tr>
+      <tr><td><span class="sev sev-low">LOW</span></td><td>0.1 – 3.9</td></tr>
+      <tr><td><span class="sev sev-info">NONE / INFO</span></td><td>0.0</td></tr>
+    </table>
+  </dd>
+
+  <dt>Vecteur d'attaque (<em>Attack Vector</em>)</dt>
+  <dd>
+    Contexte d'exploitation possible de la vulnérabilité. Quatre niveaux :
+    <strong>NETWORK</strong> (exploitable à distance, le plus critique),
+    <strong>ADJACENT</strong> (réseau local uniquement),
+    <strong>LOCAL</strong> (accès local au système requis),
+    <strong>PHYSICAL</strong> (accès matériel requis).
+    Une CVE NETWORK + CRITICAL est la combinaison la plus dangereuse.
+  </dd>
+
+  <dt>Complexité d'attaque (<em>Attack Complexity</em>)</dt>
+  <dd>
+    Effort requis pour exploiter la vulnérabilité une fois le vecteur accessible.
+    <strong>LOW</strong> = exploitation triviale (script existant, payload connu).
+    <strong>HIGH</strong> = conditions spéciales requises (timing, configuration particulière).
+    Combinée à la gravité CVSS, cette métrique donne un proxy d'« exploitabilité ».
+  </dd>
+
+  <dt>Indice d'exploitabilité</dt>
+  <dd>
+    Sous-score CVSS qui combine vecteur d'attaque, complexité, privilèges requis et
+    interaction utilisateur. Plus l'indice est élevé, plus la faille est facile à exploiter
+    en pratique. À combiner avec l'impact (confidentialité / intégrité / disponibilité)
+    pour prioriser la remédiation.
+  </dd>
+
+  <dt>OWASP DependencyCheck</dt>
+  <dd>
+    Outil open-source de la fondation OWASP qui analyse les dépendances d'un projet
+    (Maven, npm, .NET, etc.) et croise les versions détectées avec la base NVD pour
+    identifier les vulnérabilités connues. Le rapport produit (JSON / HTML) est la source
+    de ce document.
+  </dd>
+
+  <dt>Sévérité d'un finding</dt>
+  <dd>
+    Niveau de criticité associé à une vulnérabilité dans le contexte de votre projet.
+    Hérité du score CVSS v3 mais peut être ajusté manuellement (acceptation de risque,
+    mitigation existante). Présentée avec un code couleur cohérent dans le rapport.
+  </dd>
+
+  <dt>Finding (occurrence)</dt>
+  <dd>
+    Une vulnérabilité détectée dans une dépendance précise d'un projet. Une même CVE peut
+    apparaître plusieurs fois dans un même scan si plusieurs dépendances sont touchées.
+    Le total « findings » est donc supérieur ou égal au nombre de CVE uniques.
+  </dd>
+
+  <dt>Mutualisation cross-projets</dt>
+  <dd>
+    Beaucoup de projets partagent les mêmes dépendances (archétype Java commun par exemple).
+    Une même CVE détectée dans une lib partagée touchera donc plusieurs projets simultanément.
+    Le tableau de bord agrégé permet de prioriser les corrections qui ont le plus grand
+    impact (« corriger Spring 5.2.22 corrige 12 projets d'un coup »).
+  </dd>
+
+</dl>
+
+</body>
+</html>

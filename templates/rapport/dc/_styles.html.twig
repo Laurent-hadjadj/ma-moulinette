@@ -1,0 +1,118 @@
+<style>
+  body {
+    font-family: 'DejaVu Sans', Arial, sans-serif;
+    font-size: 11px;
+    color: #00445b;
+    margin: 0;
+  }
+  @page { margin: 30px 25px 60px 25px; }
+
+  h1 { font-size: 22px; margin: 0 0 6px 0; }
+  h2 {
+    font-size: 14px;
+    margin: 18px 0 8px 0;
+    padding-bottom: 4px;
+    border-bottom: 2px solid #00445b;
+  }
+  h3 { font-size: 12px; margin: 12px 0 6px 0; }
+
+  /* === Page de garde === */
+  .cover { text-align: center; padding-top: 80px; }
+  .cover .logo-cover { max-height: 70px; margin-bottom: 30px; }
+  .cover h1 { font-size: 28px; margin: 12px 0; }
+  .cover .subtitle { font-size: 14px; color: #666; margin-bottom: 60px; }
+  .cover .project-block {
+    display: inline-block;
+    border: 2px solid #00445b;
+    padding: 18px 40px;
+    border-radius: 4px;
+    margin-top: 20px;
+  }
+  .cover .project-block .pname { font-size: 18px; font-weight: bold; margin-bottom: 4px; }
+  .cover .project-block .pgroup { font-size: 12px; color: #666; margin-bottom: 10px; }
+  .cover .project-block .pversion { font-size: 14px; font-weight: bold; color: #d4333f; }
+  .cover .meta { margin-top: 50px; font-size: 11px; color: #888; }
+
+  /* === Header standard === */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #00445b;
+    padding-bottom: 10px;
+  }
+  .logo { max-height: 35px; }
+  .header-title { text-align: right; }
+  .header-title h2 { font-size: 14px; margin: 0; border: none; padding: 0; }
+  .header-title .subtitle { font-size: 10px; color: #666; }
+
+  /* === Tableaux info & synthèse === */
+  .info-grid, .synthese {
+    width: 100%; border-collapse: collapse; margin-bottom: 12px;
+  }
+  .info-grid td, .synthese td, .synthese th {
+    padding: 5px 8px; border: 1px solid #ddd; vertical-align: middle;
+  }
+  .info-grid td.label, .synthese td.label {
+    background: #f0f4f7; font-weight: bold; width: 35%;
+  }
+  .synthese th {
+    background: #00445b; color: #fff; text-align: left; font-size: 11px;
+  }
+  .synthese .stat-value { text-align: center; font-weight: bold; width: 100px; }
+
+  /* === Severity badges === */
+  .sev {
+    display: inline-block; padding: 1px 6px; border-radius: 3px;
+    font-weight: bold; font-size: 10px; color: #fff;
+  }
+  .sev-critical { background: #d4333f; }
+  .sev-high     { background: #e67e22; }
+  .sev-medium   { background: #f5a623; }
+  .sev-low      { background: #1779ba; }
+  .sev-info     { background: #767676; }
+  .sev-unknown  { background: #767676; }
+
+  /* === Top tables === */
+  .top-table { width: 100%; border-collapse: collapse; margin-bottom: 8px; }
+  .top-table th, .top-table td {
+    padding: 5px 8px; border: 1px solid #ddd; vertical-align: middle;
+  }
+  .top-table th { background: #f0f4f7; font-weight: bold; text-align: left; }
+  .top-table .num { text-align: center; width: 40px; font-weight: bold; }
+  .top-table .nb  { text-align: center; width: 80px; font-weight: bold; }
+
+  /* === Findings (paysage) === */
+  .findings { width: 100%; border-collapse: collapse; font-size: 10px; }
+  .findings th, .findings td {
+    padding: 4px 6px; border: 1px solid #ddd; vertical-align: middle;
+  }
+  .findings th { background: #f0f4f7; font-weight: bold; }
+  .findings .num   { text-align: center; width: 30px; }
+  .findings .cvss  { text-align: center; width: 50px; }
+  .findings .ver   { text-align: center; width: 80px; }
+  .findings .cve   { white-space: nowrap; font-family: monospace; width: 120px; }
+  .findings .dep   { width: 130px; }
+  .findings .cwe   { width: 100px; font-family: monospace; }
+  .findings .desc  { font-size: 9px; color: #555; }
+
+  .sev-section-title {
+    margin: 18px 0 6px 0;
+    font-size: 13px;
+    padding: 4px 8px;
+    color: #fff;
+    border-radius: 3px;
+  }
+  .sev-section-title.sev-critical { background: #d4333f; }
+  .sev-section-title.sev-high     { background: #e67e22; }
+  .sev-section-title.sev-medium   { background: #f5a623; }
+  .sev-section-title.sev-low      { background: #1779ba; }
+  .sev-section-title.sev-info     { background: #767676; }
+
+  /* === Glossaire === */
+  .glossary dt { font-weight: bold; color: #00445b; margin-top: 10px; font-size: 12px; }
+  .glossary dd { margin-left: 0; font-size: 10px; color: #444; line-height: 1.4; }
+  .glossary .scale { width: 100%; border-collapse: collapse; margin-top: 4px; font-size: 10px; }
+  .glossary .scale td { padding: 3px 6px; border: 1px solid #ddd; }
+</style>
