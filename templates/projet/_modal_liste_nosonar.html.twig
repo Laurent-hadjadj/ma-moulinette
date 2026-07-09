@@ -1,0 +1,86 @@
+{# MODIF 2026-05-06 :
+  Modale de detail des annotations NoSonar / @SuppressWarnings / @SuppressPMD /
+   //CHECKSTYLE:OFF / //NOSONAR. Pattern calque sur _modal_liste_todo.html.twig. #}
+<dialog id="modal-affiche-liste-nosonar"
+        class="reveal large"
+        data-close-on-click="true"
+        data-animation-in="fade-in"
+        data-animation-out="fade-out"
+        data-reveal
+        aria-modal="true"
+        aria-labelledby="titre-affiche-liste-nosonar"
+        aria-describedby="desc-affiche-liste-nosonar">
+
+  <header>
+    <h2 id="titre-affiche-liste-nosonar" class="h3 claire-hand"><span aria-hidden="true">ℹ️</span>Information</h2>
+    <h3 id="desc-affiche-liste-nosonar" class="h4 claire-hand"><span aria-hidden="true">📋</span>Détails des annotations NoSonar.</h3>
+    <span class="show-for-sr">
+      Cette page présente la répartition des annotations @SuppressWarnings, NoPMD, Checkstyle et NOSONAR par règle ainsi que les 10 premières occurrences.
+    </span>
+  </header>
+
+  <table>
+    <caption class="claire-hand">Répartition par règle SonarQube.</caption>
+    <thead>
+      <tr>
+        <th scope="col" class="open-sans text-left">Règle</th>
+        <th scope="col" class="open-sans text-right">Total</th>
+      </tr>
+    </thead>
+    <tbody id="tableau-liste-nosonar" class="open-sans">
+      <tr>
+        <td><strong>@SuppressWarnings (java:S1309)</strong></td>
+        <td id="js-suppress-warning-modale" class="text-center stat-projet">--</td>
+      </tr>
+      <tr>
+        <td><strong>//NOPMD (java:S1310)</strong></td>
+        <td id="js-no-pmd-modale" class="text-center stat-projet">--</td>
+      </tr>
+      <tr>
+        <td><strong>//Checkstyle:OFF (java:S1315)</strong></td>
+        <td id="js-check-style-modale" class="text-center stat-projet">--</td>
+      </tr>
+      <tr>
+        <td><strong>//NOSONAR Java (java:NoSonar)</strong></td>
+        <td id="js-no-sonar-java-modale" class="text-center stat-projet">--</td>
+      </tr>
+      <tr>
+        <td><strong>//NOSONAR Python (python:NoSonar)</strong></td>
+        <td id="js-no-sonar-python-modale" class="text-center stat-projet">---</td>
+      </tr>
+      <tr>
+        <td><strong>//NOSONAR PHP (php:NoSonar)</strong></td>
+        <td id="js-no-sonar-php-modale" class="text-center stat-projet">---</td>
+      </tr>
+    </tbody>
+  </table>
+  <br>
+
+  <table>
+    <caption class="claire-hand">Liste des fichiers concernés.</caption>
+    <thead>
+      <tr>
+        <th scope="col" class="open-sans text-left">Règle</th>
+        <th scope="col" class="open-sans text-center">Fichier</th>
+        <th scope="col" class="open-sans text-center">Ligne</th>
+      </tr>
+    </thead>
+    <tbody id="tableau-liste-nosonar-detail" class="open-sans">
+      <tr>
+        <td class="text-center">--</td>
+        <td class="text-center">--</td>
+        <td class="text-center">--</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <footer class="grid-x grid-margin-x align-right margin-top-2">
+    <div class="cell shrink">
+      <button id="bouton-fermer-liste-nosonar"
+              class="button open-sans focus-light"
+              type="button"
+              aria-label="Ferme modale"><span aria-hidden="true">❌</span> Fermer
+      </button>
+    </div>
+  </footer>
+</dialog>
