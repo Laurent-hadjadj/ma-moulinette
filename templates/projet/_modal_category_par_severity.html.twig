@@ -1,0 +1,67 @@
+<dialog id="modal-affiche-severity"
+        class="reveal large" data-reveal
+        aria-modal="true"
+        data-close-on-click="true"
+        data-close-on-click="false"
+        data-animation-out="fade-out"
+        aria-labelledby="titre-affiche-severity"
+        aria-describedby="desc-affiche-severity">
+
+    <h2 id="titre-affiche-severity" class="h3 claire-hand"><span aria-hidden="true">ℹ️</span>Information</h2>
+    <h3 id="desc-affiche-severity" class="h4 claire-hand"><span aria-hidden="true">🎚️</span>Répartition des catégories de violations par sévérité</h3>
+    <span class="show-for-sr">
+      Cette page présente la liste des catégories de violations réparties par niveau de sévérité.
+    </span>
+
+    <table>
+      <caption class="claire-hand">Répartition des catégories de violations par type et sévérité.</caption>
+      <thead>
+        <tr>
+          <th scope="col"></th>
+          <th scope="col" class="open-sans text-center">🐛Fiabilité</th>
+          <th scope="col" class="open-sans text-center">🚨Vulnérabilité</th>
+          <th scope="col" class="open-sans text-center">🚫Mauvaise Pratique</th>
+        </tr>
+      </thead>
+      <tbody id="tableau-liste-severity" class="open-sans">
+        <tr>
+          <td class="color-rouge"><strong>Bloquant</strong></td>
+          <td id="js-bug-blocker" class="text-center stat-projet color-noir">--</td>
+          <td id="js-vulnerability-blocker" class="text-center stat-projet color-noir">--</td>
+          <td id="js-code-smell-blocker" class="text-center stat-projet color-noir">--</td>
+        </tr>
+        <tr>
+          <td class="color-orange"><strong>Critique</strong></td>
+          <td id="js-bug-critical" class="text-center stat-projet color-noir">--</td>
+          <td id="js-vulnerability-critical" class="text-center stat-projet color-noir">--</td>
+          <td id="js-code-smell-critical" class="text-center stat-projet color-noir">--</td>
+        </tr>
+        <tr><td class="color-jaune"><strong>Majeur</strong></td>
+          <td id="js-bug-major" class="text-center stat-projet color-noir">--</td>
+          <td id="js-vulnerability-major" class="text-center stat-projet color-noir">--</td>
+          <td id="js-code-smell-major" class="text-center stat-projet color-noir">--</td>
+        </tr>
+        <tr>
+          <td class="color-vert"><strong>Mineur</strong></td>
+          <td id="js-bug-minor" class="text-center stat-projet color-noir">--</td>
+          <td id="js-vulnerability-minor" class="text-center stat-projet color-noir">--</td>
+          <td id="js-code-smell-minor" class="text-center stat-projet color-noir">--</td>
+        </tr>
+        <tr>
+          <td class="color-bleu"><strong>Info</strong></td>
+          <td id="js-bug-info" class="text-center stat-projet color-noir">--</td>
+          <td id="js-vulnerability-info" class="text-center stat-projet color-noir">--</td>
+          <td id="js-code-smell-info" class="text-center stat-projet color-noir">--</td>
+        </tr>
+      </tbody>
+    </table>
+
+  <footer class="grid-x grid-margin-x align-right margin-top-2">
+    <div class="cell shrink">
+      <button id="bouton-fermer-liste-severity"
+              class="button open-sans focus-light"
+              type="button"
+              aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span>Fermer
+      </button>
+  </footer>
+</dialog>
