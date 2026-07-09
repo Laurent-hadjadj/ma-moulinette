@@ -1,0 +1,97 @@
+{# MODIF 2026-05-06 : tableau + graphique
+  barre empilée de la composition langages par version. Données pre-calculees par
+  LanguageDistributionService::buildDistributionMatrix dans SuiviController.
+  Cellules "absent dans cette version" -> `–`. #}
+<div class="table-scroll pleine-page">
+  <table>
+    <caption class="show-for-medium claire-hand">Distribution par langage.</caption>
+    <caption class="show-for-small-only text-left claire-hand">Distribution par langage.</caption>
+    <thead>
+      <tr>
+        <th scope="col"></th>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            {% if suivi[i]['initial']==1 %}
+              {% set reference="reference" %}
+            {% else %}
+              {% set reference="null" %}
+            {% endif %}
+            <th scope="col" class="open-sans text-right {{reference}}">
+              {{suivi[i]['version']}}
+              {% if suivi[i]['mode_collecte'] == 'REBUILD' %}
+                <br><small class="text-orange open-sans">(reconstitué)</small>
+              {% else %}
+                <br><small class="text-noir open-sans">(collecte)</small>
+              {% endif %}
+            </th>
+          {% endfor %}
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody id="tableau-distribution-langage" class="open-sans">
+      {# Date #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Date</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              <span>{{suivi[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Total lignes de code (ncloc) #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Total lignes de code</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['ncloc'] is not null %}
+                {{suivi[i]['ncloc']|format_number(locale='fr')}}
+              {% else %}<span>–</span>{% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Une ligne par langage. languages = code -> libelle, ordonne par lignes desc
+        sur la dernière version (cf. LanguageDistributionService). #}
+      {% for code, libelle in langueDistribution.languages %}
+        <tr class="open-sans">
+          <td class="text-left text-noir">{{libelle}}</td>
+          {% for row in langueDistribution.rows %}
+            {% set value = row.parsed[code] ?? null %}
+            <td class="text-right">
+              {% if value is not null and value > 0 %}
+                {{value|format_number(locale='fr')}}
+                {# MODIF 2026-05-06 : pourcentage sur 2e ligne + nowrap pour éviter coupure entre nombre et %. #}
+                {% if row.ncloc and row.ncloc > 0 %}
+                  <br><small class="text-noir" style="white-space: nowrap;">({{((value / row.ncloc) * 100)|number_format(1, ',', ' ')}}&nbsp;%)</small>
+                {% endif %}
+              {% else %}<span>–</span>{% endif %}
+            </td>
+          {% endfor %}
+        </tr>
+      {% else %}
+        <tr class="open-sans">
+          <td colspan="{{ (suivi|length) + 1 }}" class="text-noir">
+            <em>Aucune distribution langage disponible (champ ncloc_language_distribution vide en base).</em>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{# Graphique barre empile : composition langage par version.
+  MODIF 2026-05-06 :
+  hauteur CSS explicite sur le container car `maintainAspectRatio: false` (cf. JS) demande une hauteur du parent.
+  Sans ca le canvas s'aplatit sur quelques pixels. #}
+{% if langueDistribution.languages is not empty %}
+<div class="float-center pleine-page" style="height: 360px; position: relative;">
+  <div id="graphique-langage-labels" data-labels="{{ langueDistribution.chart.labels|json_encode|e('html_attr') }}"></div>
+  <div id="graphique-langage-datasets" data-datasets="{{ langueDistribution.chart.datasets|json_encode|e('html_attr') }}"></div>
+  <canvas class="show-for-medium" id="graphique-langage"></canvas>
+</div>
+{% endif %}
