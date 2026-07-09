@@ -1,0 +1,93 @@
+<style>
+  body {
+    font-family: 'DejaVu Sans', Arial, sans-serif;
+    font-size: 10px;
+    color: #00445b;
+    margin: 0;
+  }
+  @page { margin: 20px 20px 50px 20px; size: A4 landscape; }
+
+  h2 {
+    font-size: 13px;
+    margin: 0 0 6px 0;
+    padding-bottom: 4px;
+    border-bottom: 2px solid #00445b;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    border-bottom: 2px solid #00445b;
+    padding-bottom: 8px;
+  }
+  .header .logo { max-height: 30px; }
+  .header-right { text-align: right; }
+  .header-right .title { font-size: 12px; font-weight: bold; }
+  .header-right .subtitle { font-size: 9px; color: #666; }
+
+  .scope-label {
+    font-size: 9px;
+    color: #5a6c7d;
+    border: 1px solid #5a6c7d;
+    display: inline-block;
+    padding: 2px 6px;
+    margin-bottom: 8px;
+  }
+
+  table.synthese {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 9px;
+  }
+  table.synthese th {
+    background: #00445b;
+    color: #fff;
+    padding: 4px 5px;
+    text-align: center;
+    white-space: nowrap;
+  }
+  table.synthese th.left { text-align: left; }
+  table.synthese td {
+    padding: 3px 5px;
+    border: 1px solid #e0e0e0;
+    vertical-align: middle;
+  }
+  table.synthese tbody tr:nth-child(even) { background: #f9f9f9; }
+  table.synthese td.center { text-align: center; }
+  table.synthese td.right  { text-align: right; }
+  table.synthese td.project { max-width: 160px; }
+  table.synthese td.muted { color: #888; }
+
+  /* Notes A-E */
+  .note {
+    display: inline-block;
+    border-radius: 2px;
+    padding: 1px 4px;
+    font-weight: bold;
+    font-size: 9px;
+    color: #fff;
+    text-align: center;
+    min-width: 14px;
+  }
+  .note-a { background: #00aa00; }
+  .note-b { background: #b0d513; color: #333; }
+  .note-c { background: #eabe06; color: #333; }
+  .note-d { background: #ed7d20; }
+  .note-e { background: #d4333f; }
+  .note-z { background: #00445b; }
+
+  /* QG */
+  .qg-ok    { color: #037505; font-weight: bold; }
+  .qg-error { color: #a00a14; font-weight: bold; }
+  .qg-warn  { color: #d4a017; font-weight: bold; }
+
+  /* Risque */
+  .risk-critical { background: #d4333f; color: #fff; padding: 1px 4px; border-radius: 2px; font-weight: bold; }
+  .risk-high     { background: #ed7d20; color: #fff; padding: 1px 4px; border-radius: 2px; font-weight: bold; }
+  .risk-medium   { background: #eabe06; color: #333; padding: 1px 4px; border-radius: 2px; font-weight: bold; }
+  .risk-low      { background: #3adb76; color: #333; padding: 1px 4px; border-radius: 2px; font-weight: bold; }
+
+  .color-rouge { color: #a00a14; font-weight: bold; }
+</style>

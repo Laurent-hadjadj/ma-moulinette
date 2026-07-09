@@ -1,0 +1,82 @@
+{# Rapport PDF synthèse clean code — paysage A4, 9 colonnes #}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Synthèse Clean Code</title>
+  {{ include('rapport/clean-code/_styles.html.twig') }}
+</head>
+<body>
+
+  <div class="header">
+    <img class="logo" src="data:image/png;base64,{{ logoBase64 }}" alt="Logo">
+    <div class="header-right">
+      <div class="title">Clean Code — Synthèse portefeuille</div>
+      <div class="subtitle">Générée le {{ date_generation }} — {{ scope_label }}</div>
+    </div>
+  </div>
+
+  {% if projets is empty %}
+    <p>Aucun projet avec données clean code dans l'historique.</p>
+  {% else %}
+
+  <table class="synthese">
+    <thead>
+      <tr>
+        <th class="left" style="width:22%">Projet / Version</th>
+        <th title="Maintenabilité">MNT</th>
+        <th title="Fiabilité">FIA</th>
+        <th title="Sécurité">SEC</th>
+        <th title="Hotspots sécurité">HSP</th>
+        <th>Score Risque</th>
+        <th>Bugs</th>
+        <th>Vulnér.</th>
+        <th>Couvert.</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in projets %}
+      <tr>
+        <td class="project">
+          <strong>{{ p.project_name }}</strong><br>
+          <span class="muted">{{ p.version }}</span>
+        </td>
+
+        {% macro note_cell(note) %}
+          {% set cls = {'A':'note-a','B':'note-b','C':'note-c','D':'note-d','E':'note-e'}[note] ?? 'note-z' %}
+          <span class="note {{ cls }}">{{ note }}</span>
+        {% endmacro %}
+
+        <td class="center">{{ _self.note_cell(p.note_mnt) }}</td>
+        <td class="center">{{ _self.note_cell(p.note_fia) }}</td>
+        <td class="center">{{ _self.note_cell(p.note_sec) }}</td>
+        <td class="center">{{ _self.note_cell(p.note_hsp) }}</td>
+
+        <td class="center">
+          <span class="risk-{{ p.risk_level }}">{{ p.risk_score }}</span>
+        </td>
+
+        <td class="right{{ p.bugs > 0 ? ' color-rouge' : '' }}">
+          {{ p.bugs > 0 ? p.bugs : '—' }}
+        </td>
+
+        <td class="right{{ p.vulnerabilities > 0 ? ' color-rouge' : '' }}">
+          {{ p.vulnerabilities > 0 ? p.vulnerabilities : '—' }}
+        </td>
+
+        <td class="right">
+          {% if p.coverage is not null %}{{ p.coverage }}%{% else %}—{% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <p style="font-size:8px; color:#888; margin-top:8px;">
+    {{ projets|length }} projet(s) — trié par niveau de risque décroissant — dernière collecte enregistrée par projet.
+  </p>
+
+  {% endif %}
+
+</body>
+</html>
