@@ -1,0 +1,900 @@
+﻿{% set title = 'OWASP Dependency-Check - Dashboard' %}
+{% set description = 'Ma Moulinette - vue agrégée cross-projets DependencyCheck.' %}
+{% set bottom = 'footer-fixed' %}
+
+<!DOCTYPE html>
+<!--
+.. __  __             __  __             _ _            _   _
+  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+
+  Laurent HADJADJ
+  https://github.com/Laurent-hadjadj/ma-moulinette
+  © 2024 - CC BY-SA-NC 4.0
+-->
+<html lang="fr">
+  <head>
+    <title>{{ title }}</title>
+    {{ include('head.html.twig') }}
+    {# MODIF 2026-05-11 : entry dédiée qui charge
+      Chart.js + plugin datalabels pour les 4 graphs en bas de page. #}
+    {% block importmap %}{{ importmap('dependency-check-dashboard') }}{% endblock %}
+  </head>
+
+  <body>
+    {{ include('header.html.twig') }}
+
+    <header class="grid-container margin-top-1">
+      <nav aria-label="Fil d'Ariane, vous etes ici">
+        <ol class="claire-hand breadcrumbs">
+          <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+          <li><a href="{{ path('dc_index') }}">Dependency-Check</a></li>
+          <li aria-current="page">Dashboard</li>
+        </ol>
+      </nav>
+    </header>
+
+    {{ include('_message.html.twig') }}
+
+    <main class="grid-container">
+      <h2 class="h4 claire-hand">
+        <span aria-hidden="true">📊</span> Dashboard cross-projets
+      </h2>
+
+      <p class="margin-bottom-1">
+        <span class="badge-scope {{ analytics_mode ? 'global' : 'filtered' }}"
+              title="{{ analytics_mode ? 'Accès analytics : visibilité sur tous les projets scannés' : 'Accès filtré par vos groupes_fonctionnels' }}">
+          {{ scope_label }}
+        </span>
+      </p>
+
+      {# MODIF 2026-05-14 : toggle prod/dev.
+        Mode strict (pas de fallback comme dc_index) : un couple sans
+        release ingérée n’apparaît pas en mode prod. #}
+      {{ include('dependency_check/_vue_toggle.html.twig', {
+        'current_vue':  vue|default('prod'),
+        'route_name':   'dc_dashboard',
+        'route_params': (current_socle_filter ? {'socle': current_socle_filter} : {})
+                          |merge(current_groupe_filter ? {'groupe': current_groupe_filter} : {}),
+      }) }}
+
+      {# MODIF 2026-05-12 : combo box de filtre par socle.
+        Sémantique : le "socle" (parent_label/parent_version du pom.xml) est le
+        module Java parent qui définit les deps et la logique technique partagée
+        (ex : springboot-config). Distinct de "archétype" qui désigne le
+        template de génération du projet (= archetype_version, optionnel).
+        Lecture/écriture via query string ?socle=label@version (alias ?archetype=
+        conservé pour rétro-compatible).
+        Layout : select + bouton "Effacer" sur la même ligne via flexbox,
+        alignés verticalement. Pas de doublon "Filtre actif" — le nom du socle
+        est déjà visible dans l'option sélectionnée. #}
+      {# MODIF 2026-05-13 : 2e combo box "Filtrer par
+        groupe fonctionnel" en parallèle du filtre socle. Cascade : groupe
+        restreint d'abord le périmètre maven_keys, puis socle filtre dedans.
+        Visible si user a >=2 groupes (sinon pas d'intérêt à filtrer). En
+        analytics_mode, available_groupes est forcé à [] (vue globale). #}
+      {% if available_socles|length > 0 or available_groupes|length >= 2 %}
+        <form method="GET" action="{{ path('dc_dashboard') }}" class="margin-bottom-1">
+          <input type="hidden" name="vue" value="{{ vue|default('prod') }}">
+          <div class="grid-x grid-margin-x">
+
+            {% if available_socles|length > 0 %}
+            <div class="cell small-12 medium-6">
+              <label for="socle-filter" class="open-sans"><strong>Filtrer par socle</strong></label>
+              <div class="flex-container-effacer">
+                <select name="socle" id="socle-filter" onchange="this.form.submit()" class="open-sans flex-1 margin-bottom-0">
+                  <option value="all"{% if current_socle_filter is null %} selected{% endif %}>— Tous les socles —</option>
+                  {% for socle in available_socles %}
+                    <option value="{{ socle }}"{% if current_socle_filter == socle %} selected{% endif %}>{{ socle }}</option>
+                  {% endfor %}
+                </select>
+                {% if current_socle_filter %}
+                  <a id="bouton-effacer-socle"
+                      href="{{ path('dc_dashboard',
+                        (current_groupe_filter ? {'groupe': current_groupe_filter} : {})
+                          |merge({'vue': vue|default('prod')})
+                      ) }}"
+                      class="button tiny hollow primary open-sans focus-light margin-bottom-0 white-space-nowrap" title="Effacer le filtre socle">Effacer
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+            {% endif %}
+
+            {% if available_groupes|length >= 2 %}
+            <div class="cell small-12 medium-6">
+              <label for="groupe-filter" class="open-sans"><strong>Filtrer par groupe</strong></label>
+              <div class="flex-container-effacer">
+                <select name="groupe" id="groupe-filter" onchange="this.form.submit()" class="open-sans flex-1 margin-bottom-0">
+                  <option value=""{% if current_groupe_filter is null %} selected{% endif %}>— Tous mes groupes —</option>
+                  {% for groupe in available_groupes %}
+                    <option value="{{ groupe }}"{% if current_groupe_filter == groupe %} selected{% endif %}>{{ groupe }}</option>
+                  {% endfor %}
+                </select>
+                {% if current_groupe_filter %}
+                  <a id="bouton-effacer-groupe"
+                      href="{{ path('dc_dashboard',
+                        (current_socle_filter ? {'socle': current_socle_filter} : {})
+                          |merge({'vue': vue|default('prod')})
+                      ) }}"
+                      class="button tiny hollow primary open-sans focus-light margin-bottom-0 white-space-nowrap" title="Effacer le filtre groupe">Effacer
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+            {% endif %}
+
+            <noscript>
+              <div class="cell small-12">
+                <button type="submit" class="button tiny hollow open-sans margin-bottom-0">Appliquer</button>
+              </div>
+            </noscript>
+          </div>
+        </form>
+      {% endif %}
+
+      {% if scans_resume is empty %}
+        <div class="callout alert-callout-border info">
+          <p>Aucune donnee à agréger pour le moment.</p>
+        </div>
+      {% else %}
+
+        {# === Section 1 : Synthèse globale === #}
+        {# MODIF 2026-05-14 : ajout du nb d'apps
+          impactées par sévérité. Répond a la question "86 CVE CRITICAL,
+          reparties sur combien d'apps ?" -- utile pour distinguer 1 app
+          très exposée vs 6 apps moyennement exposées. #}
+        {% set total_critical = 0 %}
+        {% set total_high = 0 %}
+        {% set total_medium = 0 %}
+        {% set total_low = 0 %}
+        {% set nb_apps_critical = 0 %}
+        {% set nb_apps_high = 0 %}
+        {% set nb_apps_medium = 0 %}
+        {% set nb_apps_low = 0 %}
+        {% for s in scans_resume %}
+          {% set total_critical = total_critical + s.cve_count_critical %}
+          {% set total_high = total_high + s.cve_count_high %}
+          {% set total_medium = total_medium + s.cve_count_medium %}
+          {% set total_low = total_low + s.cve_count_low %}
+          {% if s.cve_count_critical > 0 %}{% set nb_apps_critical = nb_apps_critical + 1 %}{% endif %}
+          {% if s.cve_count_high > 0 %}{% set nb_apps_high = nb_apps_high + 1 %}{% endif %}
+          {% if s.cve_count_medium > 0 %}{% set nb_apps_medium = nb_apps_medium + 1 %}{% endif %}
+          {% if s.cve_count_low > 0 %}{% set nb_apps_low = nb_apps_low + 1 %}{% endif %}
+        {% endfor %}
+
+        <h3 class="h5 claire-hand"><span aria-hidden="true">🎯</span> Synthèse cumulée ({{ scans_resume|length }} projet{{ scans_resume|length > 1 ? 's' }})</h3>
+        {{ _self.info_callout('Total CVE par sévérité <strong>agrégé sur 1 ligne par application</strong> (vue Pilotage prod = dernière release stable de chaque app ; vue Suivi dev = applications <em>en mouvement</em> uniquement, avec leur version en cours). La mention <em>X app impactées</em> compte le nombre d\'applications ayant au moins une CVE de cette sévérité.') }}
+        <div class="grid-x grid-margin-x margin-bottom-1">
+          <div class="cell small-12 medium-3">
+            <div class="callout alert-callout-border critical">
+              <p class="open-sans"><strong>CRITICAL</strong></p>
+              <p class="open-sans font-size-15">{{ total_critical }}</p>
+              <p class="open-sans font-size-1 margin-bottom-0"><span class="text-muted">{{ nb_apps_critical }} app{{ nb_apps_critical > 1 ? 's' }} impactée{{ nb_apps_critical > 1 ? 's' }}</span></p>
+            </div>
+          </div>
+          <div class="cell small-12 medium-3">
+            <div class="callout alert-callout-border error">
+              <p class="open-sans"><strong>HIGH</strong></p>
+              <p class="open-sans font-size-15">{{ total_high }}</p>
+              <p class="open-sans font-size-1 margin-bottom-0"><span class="text-muted">{{ nb_apps_high }} app{{ nb_apps_high > 1 ? 's' }} impactée{{ nb_apps_high > 1 ? 's' }}</span></p>
+            </div>
+          </div>
+          <div class="cell small-12 medium-3">
+            <div class="callout alert-callout-border warning">
+              <p class="open-sans"><strong>MEDIUM</strong></p>
+              <p class="open-sans font-size-15">{{ total_medium }}</p>
+              <p class="open-sans font-size-1 margin-bottom-0"><span class="text-muted">{{ nb_apps_medium }} app{{ nb_apps_medium > 1 ? 's' }} impactée{{ nb_apps_medium > 1 ? 's' }}</span></p>
+            </div>
+          </div>
+          <div class="cell small-12 medium-3">
+            <div class="callout alert-callout-border info">
+              <p class="open-sans"><strong>LOW</strong></p>
+              <p class="open-sans font-size-15">{{ total_low }}</p>
+              <p class="open-sans font-size-1 margin-bottom-0"><span class="text-muted">{{ nb_apps_low }} app{{ nb_apps_low > 1 ? 's' }} impactée{{ nb_apps_low > 1 ? 's' }}</span></p>
+            </div>
+          </div>
+        </div>
+
+        {# MODIF 2026-05-12 : fragment F.
+          Nouvelles CVE CRITICAL = diff entre le dernier scan d'un projet et
+          son scan immédiatement antérieur. Badge "1ère analyse" pour
+          distinguer un projet jamais scanné avant (toutes ses CVE sont
+          nouvelles par défaut) d'une vraie régression vs scan précédent.
+          Place en tête des fragments analytics : c'est le signal "urgence"
+          que le RSSI/lead dev doit voir d'abord en arrivant sur le dashboard.
+
+          MODIF 2026-05-14 : refonte du
+          panneau. Avant : 1 ligne par scan où la CVE est nouvelle (saturait
+          le tableau quand un socle exemple-config est vulnérable et que 10 apps
+          en héritent — la même CVE apparaissait 10 fois). Maintenant :
+          1 ligne par CVE distincte + bouton qui ouvre une modale listant
+          la liste des applications impactées (avec leur socle pour identifier
+          si la vuln vient de l'héritage ou d'un JAR embarqué). #}
+        <h3 class="h5 claire-hand">
+          <span aria-hidden="true">🆕</span> Nouvelles CVE CRITICAL (depuis le scan précédent)
+          <span class="float-right open-sans font-size-1">
+            Total : <span class="stat">{{ mes_critical_recentes|length }}</span> CVE distinctes
+          </span>
+        </h3>
+        {{ _self.info_callout('CVE CRITICAL apparues entre 2 scans consécutifs de la même version d\'un projet. <strong>1 ligne = 1 CVE distincte</strong>, le compteur <em>Nb apps</em> indique sur combien d\'applications elle apparaît. Cliquez <strong>Voir apps</strong> pour la liste détaillée (avec le socle d\'héritage si identifié). Le badge <span class="badge-level info">1ÈRE ANALYSE</span> indique qu\'au moins une app concernée n\'avait pas de scan antérieur.') }}
+
+        {# MODIF 2026-05-16 : DataTables sur nouvelles CVE + modales. #}
+        {% if mes_critical_recentes is empty %}
+          <p class="open-sans"><em>Aucune nouvelle CVE CRITICAL depuis le scan précédent. 🎉</em></p>
+        {% else %}
+          <div class="margin-left-1 margin-right-1 margin-bottom-1">
+            <table id="table-dc-nouvelles-cve" class="open-sans">
+              <thead>
+                <tr>
+                  <th>CVE</th>
+                  <th class="text-right">CVSS</th>
+                  <th class="text-right">Nb apps</th>
+                  <th>Dernière apparition</th>
+                  <th>Apps impactées</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for c in mes_critical_recentes %}
+                {% set modal_id = 'dc-new-cve-modal-' ~ loop.index %}
+                <tr>
+                  <td>
+                    <strong>{{ c.cve_id }}</strong>
+                    {% if c.any_first_scan %}<br><span class="badge-level info">1ère analyse</span>{% endif %}
+                  </td>
+                  <td class="text-right" data-order="{{ c.cvss_v3_score ?? 0 }}">{{ c.cvss_v3_score is not null ? c.cvss_v3_score : '—' }}</td>
+                  <td class="text-right" data-order="{{ c.nb_apps_impactees }}"><strong>{{ c.nb_apps_impactees }}</strong></td>
+                  <td data-order="{{ c.last_seen_date|date('Y-m-d H:i') }}">{{ c.last_seen_date|date('d/m/Y H:i') }}</td>
+                  <td>
+                    <button type="button"
+                        class="button tiny hollow open-sans focus-light margin-bottom-0"
+                        data-open="{{ modal_id }}"
+                        title="Voir la liste des applications impactées par {{ c.cve_id }}">
+                      Voir apps ({{ c.nb_apps_impactees }})
+                    </button>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          {# === Modales Foundation Reveal : 1 par CVE === #}
+          {# MODIF 2026-05-16 : table DataTables dans chaque modale.
+            id indexé par loop.index. autoWidth:false car modale cachée à l'init. #}
+          {% for c in mes_critical_recentes %}
+            {% set modal_id = 'dc-new-cve-modal-' ~ loop.index %}
+            <div class="reveal large" id="{{ modal_id }}" data-reveal data-multiple-opened="false">
+              <h3 class="claire-hand">
+                <span aria-hidden="true">🆕</span> {{ c.cve_id }}
+                {% if c.severity %}<span class="badge-level {{ c.severity|lower }}">{{ c.severity }}</span>{% endif %}
+                {% if c.cvss_v3_score is not null %}
+                  <span class="text-muted open-sans font-size-1">CVSS {{ c.cvss_v3_score }}</span>
+                {% endif %}
+              </h3>
+              {% if c.description %}
+                <p class="open-sans font-size-085">{{ c.description|length > 400 ? c.description|slice(0, 400) ~ '…' : c.description }}</p>
+              {% endif %}
+              <p class="open-sans"><strong>{{ c.nb_apps_impactees }} application{{ c.nb_apps_impactees > 1 ? 's' }} impactée{{ c.nb_apps_impactees > 1 ? 's' }}</strong> (depuis le scan précédent) :</p>
+              <div class="margin-left-1 margin-right-1">
+                <table id="table-dc-new-cve-{{ loop.index }}" class="open-sans">
+                  <thead>
+                    <tr>
+                      <th>Application</th>
+                      <th>Version</th>
+                      <th>Socle</th>
+                      <th>Dépendance</th>
+                      <th>Date scan</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for a in c.impacted_apps %}
+                      <tr>
+                        <td>
+                          <a href="{{ path('dc_projet', {'group': a.group, 'artifact': a.artifact, 'version': a.version}) }}">
+                            <strong>{{ a.artifact }}</strong>
+                          </a><br>
+                          <span class="text-muted">{{ a.group }}</span>
+                        </td>
+                        <td>{{ a.version }}</td>
+                        <td>
+                          {% if a.parent_label %}
+                            {{ a.parent_label }}<br>
+                            <span class="text-muted">v{{ a.parent_version }}</span>
+                          {% else %}
+                            <span class="text-muted"><em>standalone</em></span>
+                          {% endif %}
+                        </td>
+                        <td>
+                          {{ a.dep_product }}
+                          {% if a.dep_version %}<br><span class="text-muted">v{{ a.dep_version }}</span>{% endif %}
+                        </td>
+                        <td data-order="{{ a.scan_date|date('Y-m-d H:i') }}">{{ a.scan_date|date('d/m/Y H:i') }}</td>
+                        <td>
+                          {% if a.is_first_scan %}<span class="badge-level info">1ère analyse</span>{% endif %}
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              <footer class="grid-x grid-padding-x align-right margin-top-2">
+                  <div class="cell shrink">
+                    <button type="button"
+                            class="button open-sans focus-light bouton-fermer-dc-new-cve"
+                            data-close
+                            aria-label="Fermer"><span aria-hidden="true">❌</span> Fermer</button>
+                  </div>
+                </footer>
+              </button>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        {# MODIF 2026-05-11 : fragment A.
+          Top 5 projets exposes (gauche) + Top 10 CVE CRITICAL (droite).
+          Titre adapte selon analytics_mode. #}
+        <h3 class="h5 claire-hand">
+          <span aria-hidden="true">🎯</span> {{ analytics_mode ? 'Top du parc' : 'Mon périmètre' }}
+        </h3>
+        {{ _self.info_callout('Synthèse double : à gauche, top 5 projets triés par nb de CRITICAL DESC. À droite, top 10 CVE CRITICAL triées par CVSS DESC ; la colonne « Nb projets » indique combien de projets sont touchés par chaque CVE.') }}
+
+        <div class="grid-x grid-margin-x margin-bottom-1">
+
+          {# === Cell gauche : top 5 projets exposes === #}
+          <div class="cell small-12 medium-6">
+            <h4 class="h6 claire-hand">
+              <span aria-hidden="true">🔥</span> Top 5 projets exposés
+            </h4>
+            {% if mes_projets_exposes is empty %}
+              <p class="open-sans"><em>Aucun projet à afficher.</em></p>
+            {% else %}
+              <div class="table-scroll">
+                <table class="open-sans">
+                  <thead>
+                    <tr>
+                      <th>Projet</th>
+                      <th class="text-right">CRITICAL</th>
+                      <th class="text-right">HIGH</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for p in mes_projets_exposes %}
+                    <tr>
+                      <td>
+                        <strong>{{ p.project_artifact }}</strong><br>
+                        <span class="text-muted">{{ p.project_group }} — {{ p.project_version }}</span>
+                      </td>
+                      <td class="text-right">
+                        {% if p.cve_count_critical > 0 %}<span class="badge-count critical">{{ p.cve_count_critical }}</span>{% endif %}
+                      </td>
+                      <td class="text-right">
+                        {% if p.cve_count_high > 0 %}<span class="badge-count high">{{ p.cve_count_high }}</span>{% endif %}
+                      </td>
+                      <td>
+                        <a href="{{ path('dc_projet', {
+                          'group': p.project_group,
+                          'artifact': p.project_artifact,
+                          'version': p.project_version
+                        }) }}" class="button tiny hollow open-sans focus-light">Détail</a>
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% endif %}
+          </div>
+
+          {# === Cell droite : top 10 CVE CRITICAL === #}
+          <div class="cell small-12 medium-6">
+            <h4 class="h6 claire-hand">
+              <span aria-hidden="true">⚠️</span> Top 10 CVE CRITICAL
+            </h4>
+            {% if mes_critical_cves is empty %}
+              <p class="open-sans"><em>Aucune CVE CRITICAL sur le périmètre. 🎉</em></p>
+            {% else %}
+              <div class="table-scroll">
+                <table class="open-sans">
+                  <thead>
+                    <tr>
+                      <th>CVE</th>
+                      <th class="text-right">CVSS</th>
+                      <th class="text-right">Nb projets</th>
+                      <th>Projets</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for c in mes_critical_cves %}
+                    <tr>
+                      <td><strong>{{ c.cve_id }}</strong></td>
+                      <td class="text-right">{{ c.cvss_v3_score is not null ? c.cvss_v3_score : '-' }}</td>
+                      <td class="text-right">{{ c.nb_projets }}</td>
+                      <td>
+                        {% for projet in c.projets|slice(0, 3) %}
+                          <span class="badge-cve">{{ projet }}</span>
+                        {% endfor %}
+                        {% if c.projets|length > 3 %}+ {{ c.projets|length - 3 }}{% endif %}
+                      </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% endif %}
+          </div>
+
+        </div>
+
+        {# MODIF 2026-05-11 : fragment B.
+          Cartographie des projets du périmètre par sévérité max.
+          Tri sql-less, deja effectue cote controller (severityRank desc puis
+          cve_count_total desc). #}
+        <h3 class="h5 claire-hand">
+          <span aria-hidden="true">🗺️</span> Cartographie projets &times; sévérité max
+          <span class="float-right open-sans font-size-1">
+            Total : <span class="stat">{{ mes_cartographie|length }}</span> projet{{ mes_cartographie|length > 1 ? 's' }}
+          </span>
+        </h3>
+        {{ _self.info_callout('Vue d\'ensemble : 1 ligne = 1 projet/version scanné. <strong>Sévérité max</strong> = la plus haute CVE détectée. <strong>Socle</strong> = parent POM dont l\'app hérite (module Java contenant les deps et la logique technique/sécu, ex : springboot-config). <code>—</code> si standalone. Tri par gravité DESC puis nb CVE total DESC.') }}
+
+        {% if mes_cartographie is empty %}
+          <p class="open-sans"><em>Aucun projet à cartographier.</em></p>
+        {% else %}
+          {# MODIF 2026-05-16 : DataTables sur la cartographie. #}
+          <div class="cell table-scroll margin-bottom-1">
+            <table id="table-dc-cartographie" class="open-sans">
+              <thead>
+                <tr>
+                  <th>Projet</th>
+                  <th>Sévérité max</th>
+                  <th class="text-right">Nb CVE</th>
+                  <th>Socle</th>
+                  <th>Last scan</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for p in mes_cartographie %}
+                {% set sev_rank = p.cve_count_critical > 0 ? 4 : (p.cve_count_high > 0 ? 3 : (p.cve_count_medium > 0 ? 2 : (p.cve_count_low > 0 ? 1 : 0))) %}
+                <tr>
+                  <td>
+                    <strong>{{ p.project_artifact }}</strong>
+                    <span class="text-muted">({{ p.project_group }} — {{ p.project_version }})</span>
+                  </td>
+                  <td data-order="{{ sev_rank }}">
+                    {% if p.cve_count_critical > 0 %}
+                      <span class="badge-level critical">CRITICAL</span>
+                    {% elseif p.cve_count_high > 0 %}
+                      <span class="badge-level high">HIGH</span>
+                    {% elseif p.cve_count_medium > 0 %}
+                      <span class="badge-level medium">MEDIUM</span>
+                    {% elseif p.cve_count_low > 0 %}
+                      <span class="badge-level low">LOW</span>
+                    {% else %}
+                      <span class="badge-level info">NONE</span>
+                    {% endif %}
+                  </td>
+                  <td class="text-right" data-order="{{ p.cve_count_total }}">{{ p.cve_count_total }}</td>
+                  <td>
+                    {% if p.parent_label %}
+                      <strong>{{ p.parent_label }}</strong>
+                      {% if p.parent_version %}<br><span class="text-muted">v{{ p.parent_version }}</span>{% endif %}
+                    {% else %}
+                      <span class="text-muted">—</span>
+                    {% endif %}
+                  </td>
+                  <td>{{ p.scan_date|date('d/m/Y') }}</td>
+                  <td>
+                    <a href="{{ path('dc_projet', {
+                      'group': p.project_group,
+                      'artifact': p.project_artifact,
+                      'version': p.project_version
+                    }) }}" class="button tiny hollow open-sans focus-light">Détail</a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+
+        {# MODIF 2026-05-12 : vue agrégée par socle (parent POM).
+          1 ligne par (parent_label, parent_version) référencé par >=1 app
+          du périmètre. Compteurs = somme des CVE des apps qui en héritent
+          (pas le scan du socle lui-même). Standalone exclues. Cf. lot
+          renommage UI archétype → socle (2026-05-12). #}
+        <h3 class="h5 claire-hand">
+          <span aria-hidden="true">🏗️</span> Synthèse par socle
+          <span class="float-right open-sans font-size-1">
+            Total : <span class="stat">{{ mes_socles_synthese|length }}</span> socle{{ mes_socles_synthese|length > 1 ? 's' }}
+          </span>
+        </h3>
+        {{ _self.info_callout('Vue agrégée par <strong>socle (parent POM)</strong> — module Java parent qui définit les dépendances et la logique technique commune (ex : springboot-config). 1 ligne = 1 socle distinct référencé par au moins 1 app du périmètre. Compteurs CVE = <strong>somme sur les apps qui héritent de ce socle</strong> (pas le scan du socle lui-même qui sur compterait). Les apps standalone (sans parent) ne figurent pas ici — voir « Cartographie » au-dessus.') }}
+
+        {% if mes_socles_synthese is empty %}
+          <p class="open-sans"><em>Aucun socle identifié dans le périmètre (toutes les apps sont en standalone).</em></p>
+        {% else %}
+          <div class="cell table-scroll margin-bottom-1">
+            <table class="open-sans">
+              <thead>
+                <tr>
+                  <th>Socle</th>
+                  <th>Statut scan</th>
+                  <th class="text-right">Nb apps</th>
+                  <th class="text-right">CRIT</th>
+                  <th class="text-right">HIGH</th>
+                  <th class="text-right">MED</th>
+                  <th class="text-right">LOW</th>
+                  <th>Sév. max</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for a in mes_socles_synthese %}
+                <tr>
+                  <td>
+                    <strong>{{ a.parent_label }}</strong><br>
+                    <span class="text-muted">v{{ a.parent_version }}</span>
+                  </td>
+                  <td>
+                    {% if a.archetype_scan %}
+                      <a href="{{ path('dc_projet_executive', {
+                        'group': a.archetype_scan.projectGroup,
+                        'artifact': a.archetype_scan.projectArtifact,
+                        'version': a.archetype_scan.projectVersion
+                      }) }}" title="Page exécutive du socle">SCAN OK →</a>
+                    {% else %}
+                      <span class="text-muted"><em>SCAN MISSING</em></span>
+                    {% endif %}
+                  </td>
+                  <td class="text-right"><strong>{{ a.nb_apps }}</strong></td>
+                  <td class="text-right">
+                    {% if a.nb_critical > 0 %}<span class="badge-count critical">{{ a.nb_critical }}</span>{% endif %}
+                  </td>
+                  <td class="text-right">
+                    {% if a.nb_high > 0 %}<span class="badge-count high">{{ a.nb_high }}</span>{% endif %}
+                  </td>
+                  <td class="text-right">
+                    {% if a.nb_medium > 0 %}<span class="badge-count medium">{{ a.nb_medium }}</span>{% endif %}
+                  </td>
+                  <td class="text-right">
+                    {% if a.nb_low > 0 %}<span class="badge-count low">{{ a.nb_low }}</span>{% endif %}
+                  </td>
+                  <td>
+                    {% if a.nb_critical > 0 %}<span class="badge-level critical">CRITICAL</span>
+                    {% elseif a.nb_high > 0 %}<span class="badge-level high">HIGH</span>
+                    {% elseif a.nb_medium > 0 %}<span class="badge-level medium">MEDIUM</span>
+                    {% elseif a.nb_low > 0 %}<span class="badge-level low">LOW</span>
+                    {% else %}<span class="badge-level info">NONE</span>{% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+
+        {# MODIF 2026-05-13 : croisement
+          socle × archétype. 1 ligne par triplet (parent_label, parent_version,
+          archetype_version) référencé par >=1 app. Objectif : repérer la
+          fragmentation des templates de génération sur un même socle. Cf.
+          doc audit DC §9 (mapping pom.xml legacy / archetype). #}
+        <h3 class="h5 claire-hand">
+          <span aria-hidden="true">🧩</span> Distribution archétype × socle
+          <span class="float-right open-sans font-size-1">
+            Total : <span class="stat">{{ mes_socle_archetype_distribution|length }}</span> combinaison{{ mes_socle_archetype_distribution|length > 1 ? 's' }}
+          </span>
+        </h3>
+        {{ _self.info_callout('Croise pour chaque app du périmètre la version <strong>de son socle</strong> (parent_label@parent_version) avec la version <strong>de son archétype</strong> de génération. <strong>1 ligne = 1 triplet</strong> (socle + archétype). Une mention <em>« fragmenté »</em> apparaît quand un même socle (même label + même version) est utilisé avec plusieurs archétypes distincts — signal d\'apps qui « traînent » sur d\'anciens templates. Mapping pom.xml : socle = <code>&lt;springboot-config.version&gt;</code> ou <code>&lt;artifactId&gt;.&lt;version&gt;</code> legacy ; archétype = <code>&lt;springboot-archetype.version&gt;</code> ou <code>&lt;socleVersion&gt;</code> legacy. Apps standalone (sans parent) exclues.') }}
+
+        {% if mes_socle_archetype_distribution is empty %}
+          <p class="open-sans"><em>Aucune association socle/archétype dans le périmètre (toutes les apps sont en standalone, ou le metadata archétype n\'est pas renseigné).</em></p>
+        {% else %}
+          <div class="cell table-scroll margin-bottom-1">
+            <table class="open-sans">
+              <thead>
+                <tr>
+                  <th>Socle</th>
+                  <th>Archétype</th>
+                  <th class="text-right">Nb apps</th>
+                  <th>Applications</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in mes_socle_archetype_distribution %}
+                <tr>
+                  <td>
+                    <strong>{{ row.socle_label }}</strong><br>
+                    <span class="text-muted">v{{ row.socle_version }}</span>
+                    {% if row.is_socle_fragmented %}
+                      <br><em class="text-muted" title="Plusieurs versions d'archétype coexistent pour ce socle — indicateur de dispersion sur les templates de génération.">⚠ fragmenté</em>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if row.archetype_version %}
+                      v{{ row.archetype_version }}
+                    {% else %}
+                      <span class="text-muted"><em>non spécifié</em></span>
+                    {% endif %}
+                  </td>
+                  <td class="text-right"><strong>{{ row.nb_apps }}</strong></td>
+                  <td>
+                    {% for app in row.apps %}
+                      <span class="text-muted">{{ app.artifact }} v{{ app.version }}</span>{% if not loop.last %}, {% endif %}
+                    {% endfor %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+
+        {# MODIF 2026-05-11 : fragment D.
+          Top 10 deps mutualisables par "Gain" (JH * (nb_projets-1)).
+          Le JH unitaire est calcule cote controller via DcExecutiveAnalyticsService. #}
+        <h3 class="h5 claire-hand">
+          <span aria-hidden="true">🔗</span> Mutualisations possibles (top 10 par gain)
+          <span class="float-right open-sans font-size-1">
+            Total : <span class="stat">{{ mes_mutualisables|length }}</span> dépendance{{ mes_mutualisables|length > 1 ? 's' }}
+          </span>
+        </h3>
+        {{ _self.info_callout('Dépendances présentes dans <strong>≥ 2 projets</strong> du périmètre. <strong>Type</strong> : <span class="badge-level convergence">CONVERGENCE</span> = les apps héritent de <strong>socles différents</strong> (ou mix socle+standalone) — <strong>vraie opportunité</strong>. <span class="badge-level unknown">VIA SOCLE</span> = toutes les apps héritent du <strong>même socle</strong> — <strong>déjà mutualisée</strong> par héritage, faible valeur. <strong>JH unit.</strong> = effort upgrade selon famille technologique + bonus sévérité (formule paramétrable). <strong>Gain mutu.</strong> = JH unit. × (nb_projets − 1) = effort économisé. <strong>Nb CVE</strong> = CVE distinctes affectant cette lib.') }}
+        <p>
+          <button id="bouton-ouvrir-methodology-jh"
+                  class="button open-sans focus-light"
+                  data-open="dc-jh-methodology-modal"
+                  type="button"
+                  aria-label="Méthode de calcul du JH">
+                  <span aria-hidden="true">🗒️</span> Méthode de calcul du JH
+          </button>
+        </p>
+
+        {% if mes_mutualisables is empty %}
+          <p class="open-sans"><em>Aucune dépendance présente dans au moins 2 projets du périmètre.</em></p>
+        {% else %}
+          <div class="cell table-scroll margin-bottom-1">
+            <table class="open-sans">
+              <thead>
+                <tr>
+                  <th>Dépendance</th>
+                  <th>Sévérité max</th>
+                  <th>Type</th>
+                  <th class="text-right">Nb projets</th>
+                  <th class="text-right">Nb CVE</th>
+                  <th class="text-right">JH unit.</th>
+                  <th class="text-right">Gain mutu.</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for d in mes_mutualisables %}
+                <tr>
+                  <td>
+                    <strong>{{ d.product ?: d.file_name }}</strong>
+                    {% if d.version %}<span class="text-muted">— v{{ d.version }}</span>{% endif %}
+                    {% if d.vendor %}<br><span class="text-muted">{{ d.vendor }}</span>{% endif %}
+                  </td>
+                  <td>
+                    {% if d.nb_critical > 0 %}
+                      <span class="badge-level critical">CRITICAL</span>
+                    {% elseif d.nb_high > 0 %}
+                      <span class="badge-level high">HIGH</span>
+                    {% elseif d.nb_medium > 0 %}
+                      <span class="badge-level medium">MEDIUM</span>
+                    {% elseif d.nb_low > 0 %}
+                      <span class="badge-level low">LOW</span>
+                    {% else %}
+                      <span class="badge-level info">NONE</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if d.is_via_archetype %}
+                      <span class="badge-level unknown" title="Toutes les apps héritent du même socle (même parent_label) : mutualisation déjà acquise par héritage.">Via socle</span>
+                    {% else %}
+                      <span class="badge-level convergence" title="{{ d.nb_archetypes_distincts }} socles distincts (ou mix socle+standalone) : vraie opportunité de mutualisation.">Convergence</span>
+                    {% endif %}
+                  </td>
+                  <td class="text-right"><strong>{{ d.nb_projets }}</strong></td>
+                  <td class="text-right">{{ d.nb_cves }}</td>
+                  <td class="text-right">{{ d.jh_unit|number_format(1, ',', ' ') }}</td>
+                  <td class="text-right"><strong>{{ d.jh_gain|number_format(1, ',', ' ') }}</strong></td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+
+          {# MODIF 2026-05-13 : lien vers la page complète
+            des mutualisables. Préserve le filtre socle actif pour conserver le
+            contexte de lecture. Visible uniquement quand il y a des données
+            (pas de sens si la table est vide). #}
+          <p class="margin-bottom-2">
+            <a id="bouton-voir-tous-mutualisables"
+              class="button open-sans"
+                href="{{ path('dc_mutualisables', current_socle_filter ? {'socle': current_socle_filter} : {}) }}">
+              Voir tous les mutualisables →
+            </a>
+          </p>
+        {% endif %}
+
+        {# === Section 2 : CVE critiques cross-projets === #}
+        {# MODIF 2026-05-08 : pagination Knp (25/page) sur critical_cves. #}
+        <h3 class="h5 claire-hand">
+          <span aria-hidden="true">🚨</span> CVE CRITICAL/HIGH touchant ≥ 2 projets
+          <span class="float-right open-sans font-size-1">
+            Total : <span class="stat">{{ critical_cves.getTotalItemCount }}</span>
+          </span>
+        </h3>
+        {{ _self.info_callout('CVE de gravité CRITICAL ou HIGH touchant au moins 2 projets du périmètre. Utile pour <strong>prioriser les patchs à large impact</strong>. Pagination : 25 lignes/page.') }}
+        {% if critical_cves.getTotalItemCount == 0 %}
+          <p class="open-sans">Aucune CVE critique partagée entre plusieurs projets.</p>
+        {% else %}
+          <div class="cell table-scroll margin-bottom-1">
+            <table class="open-sans">
+              <thead>
+                <tr>
+                  <th>Sévérité</th>
+                  <th>CVSS</th>
+                  <th>CVE</th>
+                  <th class="text-right">Nb projets</th>
+                  <th>Projets</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for c in critical_cves %}
+                <tr>
+                  <td>
+                    {% if c.severity == 'CRITICAL' %}<span class="badge-level critical">CRITICAL</span>
+                    {% else %}<span class="badge-level high">HIGH</span>{% endif %}
+                  </td>
+                  <td class="text-right">{{ c.cvss_v3_score is not null ? c.cvss_v3_score : '-' }}</td>
+                  <td><strong>{{ c.cve_id }}</strong></td>
+                  <td class="text-right"><strong>{{ c.nb_projets }}</strong></td>
+                  <td>
+                    {% for projet in c.projets|slice(0, 5) %}
+                      <span class="badge-cve">{{ projet }}</span>
+                    {% endfor %}
+                    {% if c.projets|length > 5 %}+ {{ c.projets|length - 5 }}{% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {{ knp_pagination_render(critical_cves, '/actuator/_zf6_pagination.html.twig') }}
+        {% endif %}
+
+        {# === Section 3 : Top dépendances vulnérables === #}
+        <h3 class="h5 claire-hand"><span aria-hidden="true">📦</span> Top dependances vulnerables</h3>
+        {{ _self.info_callout('Top 20 des dépendances avec le plus de CVE, agrégées sur tous les scans visibles. <strong>Nb projets</strong> = combien de projets utilisent cette lib. <strong>Nb CVE</strong> = CVE distinctes affectant cette lib (pas multipliées par projet).') }}
+        {% if top_deps is empty %}
+          <p class="open-sans">Aucune dépendance vulnerable.</p>
+        {% else %}
+          <div class="cell table-scroll margin-bottom-1">
+            <table class="open-sans">
+              <thead>
+                <tr>
+                  <th>Dépendance</th>
+                  <th>Version</th>
+                  <th>Vendor</th>
+                  <th class="text-right">Nb projets</th>
+                  <th class="text-right">Nb CVE</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for d in top_deps %}
+                <tr>
+                  <td><strong>{{ d.product ?: d.file_name }}</strong></td>
+                  <td>{{ d.version ?: '-' }}</td>
+                  <td><span class="text-muted">{{ d.vendor ?: '-' }}</span></td>
+                  <td class="text-right"><strong>{{ d.nb_projets }}</strong></td>
+                  <td class="text-right">{{ d.nb_cves }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+
+        {# === Section 4 : Top CWE === #}
+        <h3 class="h5 claire-hand"><span aria-hidden="true">🧫</span> Top 15 CWE par nb de projets impactés</h3>
+        {{ _self.info_callout('Types de vulnérabilités (Common Weakness Enumeration) les plus répandus dans le périmètre. <strong>Nb projets</strong> = projets touchés par au moins une CVE de ce CWE. Permet d\'identifier les <strong>classes de failles récurrentes</strong> (XSS, désérialisation non sûre, etc.) pour des actions préventives transverses.') }}
+        {% if cwes_breakdown is empty %}
+          <p class="open-sans">Aucune CWE détectée.</p>
+        {% else %}
+          <div class="cell table-scroll margin-bottom-1">
+            <table class="open-sans">
+              <thead>
+                <tr>
+                  <th>CWE</th>
+                  <th class="text-right">Nb projets</th>
+                  <th>Projets impactes</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for c in cwes_breakdown|slice(0, 15) %}
+                <tr>
+                  <td><strong>{{ c.cwe }}</strong></td>
+                  <td class="text-right">{{ c.nb_projets }}</td>
+                  <td>
+                    {% for projet in c.projets|slice(0, 5) %}
+                      <span class="badge-cve">{{ projet }}</span>
+                    {% endfor %}
+                    {% if c.projets|length > 5 %}+ {{ c.projets|length - 5 }}{% endif %}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% endif %}
+
+        {# MODIF 2026-05-11 : 4 graphs Chart.js
+          (timeseries, scatter, stacked, donut). Dataset injecte en JSON via
+          <script type="application/json">. Le JS construit les graphs au
+          DOMContentLoaded (cf. index-dependency-check-dashboard.js). #}
+        <h2 class="h4 claire-hand">
+          <span aria-hidden="true">📊</span> Visualisations
+        </h2>
+        {{ _self.info_callout('4 angles de lecture graphique. <strong>1. Évolution 30j</strong> : volumes de CVE par sévérité agrégés par jour. <strong>2. Bubble</strong> : 1 point = 1 scan, x = nb dépendances total, y = nb CVE total, taille = nb CRITICAL. <strong>3. Top 15 stacked</strong> : projets triés par nb CVE total décroissant. <strong>4. Donut</strong> : répartition globale par sévérité sur tout le périmètre.') }}
+
+        <script type="application/json" id="dc-dashboard-data">{{ charts_data|json_encode|raw }}</script>
+
+        <div class="grid-x grid-margin-x margin-bottom-2">
+          <div class="cell small-12 medium-6">
+            <h3 class="h6 claire-hand">Évolution 30 jours</h3>
+            <div class="graph-280">
+              <canvas id="dc-dash-timeseries"></canvas>
+            </div>
+          </div>
+          <div class="cell small-12 medium-6">
+            <h3 class="h6 claire-hand">Cartographie projets (bubble)</h3>
+            <div class="graph-280">
+              <canvas id="dc-dash-scatter"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid-x grid-margin-x margin-bottom-2">
+          <div class="cell small-12 medium-8">
+            <h3 class="h6 claire-hand">Top 15 projets par sévérité</h3>
+            <div class="graph-320">
+              <canvas id="dc-dash-stacked"></canvas>
+            </div>
+          </div>
+          <div class="cell small-12 medium-4">
+            <h3 class="h6 claire-hand">Répartition globale</h3>
+            <div class="graph-320">
+              <canvas id="dc-dash-donut"></canvas>
+            </div>
+          </div>
+        </div>
+
+      {% endif %}
+
+      {# MODIF 2026-05-12 : modale partagée pour la
+        méthode de calcul JH (Fragment D). Inclusion en fin de main, le bouton
+        d'ouverture est dans le callout du Fragment D. #}
+      {{ include('dependency_check/_dc_jh_methodology_modal.html.twig') }}
+
+      {# MODIF 2026-05-12 : macro réutilisée par toutes
+        les sections du dashboard pour afficher un encadré bleu pédagogique
+        expliquant la règle de lecture du tableau qui suit.
+        `clear: both` force la reprise sous le `<span class="float-right">`
+        "Total : N" des h3, sinon le callout se superpose au compteur. #}
+      {% macro info_callout(text) %}
+        <div class="callout alert-callout-border info margin-bottom-1 clear-both">
+          <p class="open-sans font-size-085 margin-bottom-0">
+            <span aria-hidden="true">ℹ️</span> {{ text|raw }}
+          </p>
+        </div>
+      {% endmacro %}
+    </main>
+
+    {{ include('footer.html.twig') }}
+  </body>
+</html>
