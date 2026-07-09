@@ -1,0 +1,157 @@
+{# MODIF 2026-05-06 : tableau Complexité par version.
+  Cyclomatique + cognitive cote a cote pour reperer un decouplage (cyclo stable +
+cognitive qui explose = code "tordu"). Ratios SonarQube + ratings deriv?es.
+  Cellules nulles -> `–`. Pattern reutilise de _suivi_anomalie. #}
+<div class="table-scroll pleine-page">
+  <table>
+    <caption class="show-for-medium claire-hand">Complexité.</caption>
+    <caption class="show-for-small-only text-left claire-hand">Complexité.</caption>
+    <thead>
+      <tr>
+        <th scope="col"></th>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            {% if suivi[i]['initial']==1 %}
+              {% set reference="reference" %}
+            {% else %}
+              {% set reference="null" %}
+            {% endif %}
+            <th scope="col" class="open-sans text-right {{reference}}">
+              {{suivi[i]['version']}}
+              {% if suivi[i]['mode_collecte'] == 'REBUILD' %}
+                <br><small class="text-orange open-sans">(reconstitué)</small>
+              {% else %}
+                <br><small class="text-noir open-sans">(collecte)</small>
+              {% endif %}
+            </th>
+          {% endfor %}
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody id="tableau-complexite" class="open-sans">
+      {# MODIF 2026-05-06 : Date en premiere ligne (coherence visuelle). #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Date</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              <span>{{suivi[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Cyclomatique (total) #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Cyclomatique (total)</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['complexity'] is not null %}
+                {{suivi[i]['complexity']|format_number(locale='fr')}}
+              {% else %}<span>–</span>{% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Cyclomatique / fonction (calcule a la volée) #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Cyclomatique / fonction</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['complexity'] is not null and suivi[i]['functions'] is not null and suivi[i]['functions'] > 0 %}
+                {{(suivi[i]['complexity'] / suivi[i]['functions'])|number_format(2, ',', ' ')}}
+              {% else %}<span>–</span>{% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Ratio cyclomatique (%) #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Ratio cyclomatique</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['complexity_ratio'] is not null %}
+                {{suivi[i]['complexity_ratio']|number_format(1, ',', ' ')}} %
+              {% else %}<span>–</span>{% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Note cyclomatique (badge A-E) #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Note cyclomatique</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['note_complexity'] %}
+                <span class="note note-{{suivi[i]['note_complexity']|lower}}">{{suivi[i]['note_complexity']}}</span>
+              {% else %}<span>–</span>{% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Cognitive (total) #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Cognitive (total)</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['cognitive_complexity'] is not null %}
+                {{suivi[i]['cognitive_complexity']|format_number(locale='fr')}}
+              {% else %}<span>–</span>{% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Cognitive / fonction (calcule a la volee) #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Cognitive / fonction</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['cognitive_complexity'] is not null and suivi[i]['functions'] is not null and suivi[i]['functions'] > 0 %}
+                {{(suivi[i]['cognitive_complexity'] / suivi[i]['functions'])|number_format(2, ',', ' ')}}
+              {% else %}<span>–</span>{% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Ratio cognitive (%) #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Ratio cognitive</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['cognitive_complexity_ratio'] is not null %}
+                {{suivi[i]['cognitive_complexity_ratio']|number_format(1, ',', ' ')}} %
+              {% else %}<span>–</span>{% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Note cognitive (badge A-E) #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Note cognitive</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['note_cognitive'] %}
+                <span class="note note-{{suivi[i]['note_cognitive']|lower}}">{{suivi[i]['note_cognitive']}}</span>
+              {% else %}<span>–</span>{% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+    </tbody>
+  </table>
+</div>
