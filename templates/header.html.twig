@@ -1,4 +1,3 @@
-{# WCAG 2.4.1 : skip link pour aller directement au contenu principal (cible #main-content placé sur <main>) #}
 <a href="#main-content" class="show-for-sr show-on-focus skip-link">Aller au contenu principal</a>
 
 <!-- head -->
@@ -16,9 +15,7 @@
   <div class="small-6 medium-6 large-6 cell">
     <div class="logo-container">
       <div class="logo">
-        {# WCAG 1.1.1 : alt descriptif (ex. "Logo de {{ marque_entreprise_long }}") remplace "Marque entreprise" générique ; suppression du aria-label redondant avec les alt des images #}
         <img class="show-for-medium marque-entreprise" src="{{ asset('images/' ~logo_entreprise) }}" alt="Logo de {{ marque_entreprise_long ?? 'l\'entreprise' }}">
-        {# WCAG 1.1.1 : précision de la version dans l'alt du logo #}
         <img class="marque-mm" src="{{ asset('images/logo-mm-300x150.min.svg') }}" alt="Logo Ma-Moulinette v{{ version }}">
       </div>
 
@@ -46,7 +43,6 @@
     <div class="float-right right no-select">
       {% if is_granted('ROLE_UTILISATEUR') %}
         <a href="{{ path('admin', {}) }}" title="Gestion des utilisateurs">
-          {# WCAG 1.1.1 / 4.1.2 : SVG porteur de sens : ajout de role="img" + <title> accessible aux lecteurs d'écran #}
           <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
             shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"
             width="100%" height="100%" viewbox="0 0 64 64" class="preferences-svg"
@@ -56,7 +52,6 @@
           </svg>
         </a>
         <a href="{{ path('logout', {}) }}" title="Déconnexion">
-          {# WCAG 1.1.1 / 4.1.2 : SVG porteur de sens : ajout de role="img" + <title> accessible aux lecteurs d'écran #}
           <svg version="1.1" xmlns="http://www.w3.org/2000/svg"
             width="100%" height="100%" viewbox="0 0 64 64" class="logout-svg"
             role="img" aria-labelledby="svg-logout-title">
