@@ -7,57 +7,68 @@
       <span>&nbsp;Qualité</span>
     </h2>
   </div>
+
   <div class="callout-footer open-sans">
-    <h3 class="h5 claire-hand">Notes</h3>
     {# Notes SonarQube — résumé visuel A-E #}
-    <p class="ligne">Fiabilité <span id="note-reliability" class="stat-note result"></span></p>
-    <p class="ligne" title="Hotspots et vulnerabilities peuvent porter sur le même code (vu sous deux angles différents)">Sécurité <span id="note-security" class="stat-note result"></span></p>
-
-    <div class="ligne open-sans" title="Hotspots et vulnerabilities peuvent porter sur le même code (vu sous deux angles différents)">Hotspots&nbsp;
-      <button id="js-affiche-modal-menace-potentielle" aria-label="Affiche le détail des hotspots.">
-        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewbox="0 0 32 32" class="details-svg">
-          <title>Icône pour le bouton Détail Hotspot</title>
-          <desc>Affiche le détail des hotspots.</desc>
-          <path d="M2.888.243C1.602.587.598 1.619.256 2.926c-.168.65-.168 8.416 0 9.066a3.732 3.732 0 002.662 2.691c.67.168 8.383.168 9.053 0a3.732 3.732 0 002.662-2.69c.168-.65.168-8.417 0-9.067A3.732 3.732 0 0011.971.235c-.647-.168-8.46-.16-9.083.008zm17.04 0c-1.286.344-2.29 1.376-2.632 2.683-.167.65-.167 8.416 0 9.066a3.732 3.732 0 002.662 2.691c.67.168 8.384.168 9.053 0a3.732 3.732 0 002.662-2.69c.168-.65.168-8.417 0-9.067A3.732 3.732 0 0029.011.235c-.647-.168-8.46-.16-9.083.008zM2.888 17.366C1.602 17.71.598 18.742.256 20.05c-.168.65-.168 8.417 0 9.067a3.732 3.732 0 002.662 2.69c.67.169 8.383.169 9.053 0a3.732 3.732 0 002.662-2.69c.168-.65.168-8.417 0-9.067a3.732 3.732 0 00-2.662-2.69c-.647-.169-8.46-.161-9.083.007zm20.326-.008a7.202 7.202 0 00-3.986 2.164 7.31 7.31 0 00.038 10.167c1.286 1.345 2.99 2.11 4.876 2.21 3.462.175 6.49-2.088 7.433-5.55.235-.842.235-2.692 0-3.532-.784-2.882-3.02-4.962-5.85-5.459a7.684 7.684 0 00-2.51 0z"/>
-        </svg>
-      </button>&nbsp;<span id="note-menace-potentielle" class="stat-note result"></span>
+    <div class="container-ligne margin-bottom-07" title="Note de Fiabilité, Sécurité et Maintenabilité (SQALE) de A à E, A étant la meilleure note et E la pire.">
+      <span class="ligne-label">Fiabilité&nbsp;:</span>
+      <span id="js-note-reliability"></span>
     </div>
-    <p class="ligne">Maintenabilité
-      <span id="note-sqale" class="stat-note result"></span>
-    </p>
+    <div class="container-ligne margin-bottom-07" title="Hotspots et vulnerabilities peuvent porter sur le même code (vu sous deux angles différents)">
+      <span class="ligne-label">Sécurité&nbsp;:</span>
+      <span id="js-note-security"></span>
+    </div>
+    <div class="container-ligne margin-bottom-07" title="Nombre de vulnérabilités potentielles">
+      <span class="ligne-gauche">
+        <span class="ligne-label">Hotspots&nbsp;:</span>
+        <button id="js-affiche-modal-menace-potentielle" aria-label="Affiche le détail des hotspots.">
+          <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewbox="0 0 32 32" class="details-svg">
+            <title>Icône pour le bouton Détail Hotspot</title>
+            <desc>Affiche le détail des hotspots.</desc>
+            <path d="M2.888.243C1.602.587.598 1.619.256 2.926c-.168.65-.168 8.416 0 9.066a3.732 3.732 0 002.662 2.691c.67.168 8.383.168 9.053 0a3.732 3.732 0 002.662-2.69c.168-.65.168-8.417 0-9.067A3.732 3.732 0 0011.971.235c-.647-.168-8.46-.16-9.083.008zm17.04 0c-1.286.344-2.29 1.376-2.632 2.683-.167.65-.167 8.416 0 9.066a3.732 3.732 0 002.662 2.691c.67.168 8.384.168 9.053 0a3.732 3.732 0 002.662-2.69c.168-.65.168-8.417 0-9.067A3.732 3.732 0 0029.011.235c-.647-.168-8.46-.16-9.083.008zM2.888 17.366C1.602 17.71.598 18.742.256 20.05c-.168.65-.168 8.417 0 9.067a3.732 3.732 0 002.662 2.69c.67.169 8.383.169 9.053 0a3.732 3.732 0 002.662-2.69c.168-.65.168-8.417 0-9.067a3.732 3.732 0 00-2.662-2.69c-.647-.169-8.46-.161-9.083.007zm20.326-.008a7.202 7.202 0 00-3.986 2.164 7.31 7.31 0 00.038 10.167c1.286 1.345 2.99 2.11 4.876 2.21 3.462.175 6.49-2.088 7.433-5.55.235-.842.235-2.692 0-3.532-.784-2.882-3.02-4.962-5.85-5.459a7.684 7.684 0 00-2.51 0z"/>
+          </svg>
+        </button>
+      </span>
+        <span id="js-note-menace-potentielle"></span>
+    </div>
 
-    <div class="line-height-08">&nbsp;</div>
+    <div class="container-ligne margin-bottom-07">
+      <span class="ligne-label">Maintenabilité&nbsp;:</span>
+      <span id="js-note-sqale"></span>
+    </div>
 
-    <h3 class="h5 claire-hand">Type</h3>
-    <p class="ligne">Fiabilité&nbsp;:
-      <span id="nombre-bug" class="stat result"></span>
-    </p>
-    <p class="ligne">Sécurité&nbsp;:
-      <span id="nombre-vulnerability" class="stat result"></span>
-    </p>
-    <p class="ligne">Maintenabilité&nbsp;:
-      <span id="nombre-mauvaise-pratique" class="stat result"></span>
-    </p>
-    <p class="ligne">Maintenabilité réelle&nbsp;:
-      <span id="nombre-mauvaise-pratique-real" class="stat result"></span>
-    </p>
+    <h3 class="h5 claire-hand margin-top-1 margin-bottom-0">Type</h3>
+    <div class="container-ligne">
+      <span class="ligne-label">Fiabilité&nbsp;:</span>
+      <span class="ligne-droite">
+        <span id="js-nombre-bug-real"
+          class="stat-projet font-size-1"
+          title="Nombre de bugs (critiques, majeures, mineures)"></span>
+        <span id="js-separator-bug" class="stat-projet"></span>
+        <span id="js-nombre-bug-total"
+              class="stat-projet color-noir"
+              title="Nombre de bugs total"></span>
+      </span>
+    </div>
+    <div class="container-ligne" title="Nombre de vulnérabilités">
+      <span class="ligne-label">Sécurité&nbsp;:</span>
+      <span id="js-nombre-vulnerability" class="stat-projet color-noir"></span>
+    </div>
+    <div class="container-ligne" title="Nombre de mauvaises pratiques">
+      <span class="ligne-label">Maintenabilité&nbsp;:</span>
+      <span class="ligne-droite">
+        <span id="js-nombre-mauvaise-pratique-real"
+              class="stat-projet color-noir"
+              title="Nombre de mauvaises pratiques (critiques, majeures, mineures)"></span>
+        <span id="js-separator-code-smell" class="stat-projet"></span>
+        <span id="js-nombre-mauvaise-pratique"
+              class="stat-projet color-noir"
+              title="Nombre de mauvaises pratiques total"></span>
+      </span>
+    </div>
 
-    <div class="line-height-08">&nbsp;</div>
-    <p class="ligne">Présentation&nbsp;:
-      <span id="nombre-frontend" class="stat result"></span>
-    </p>
-    <p class="ligne">Métier&nbsp;:
-      <span id="nombre-backend" class="stat result"></span>
-    </p>
-    <p class="ligne">Autre&nbsp;:
-      <span id="nombre-autre" class="stat result"></span>
-    </p>
-    <p class="ligne">Inconnu&nbsp;:
-      <span id="nombre-inconnu" class="stat result"></span>
-    </p>
-
-    <div class="line-height-08">&nbsp;</div>
-    <h3 class="h5 claire-hand">Sévérité
+    {# REPARTITION PAR SEVERITY #}
+    <h3 class="h5 claire-hand margin-top-07">Sévérité
       <button id="js-affiche-severity" aria-label="Affiche le détail des sévérités.">
         <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewbox="0 0 32 32" class="details-svg">
           <title>Icône pour le bouton des Sévérités.</title>
@@ -66,10 +77,73 @@
         </svg>
       </button>
     </h3>
-    <p class="ligne">Anomalie Bloquante&nbsp;: <span id="nombre-anomalie-bloquant" class="stat result"></span></p>
-    <p class="ligne">Anomalie Critique&nbsp;: <span id="nombre-anomalie-critique" class="stat result"></span></p>
-    <p class="ligne">Anomalie Majeure&nbsp;: <span id="nombre-anomalie-majeur" class="stat result"></span></p>
-    <p class="ligne">Anomalie Mineure&nbsp;: <span id="nombre-anomalie-mineur" class="stat result"></span></p>
-    <p class="ligne">Anomalie Info&nbsp;: <span id="nombre-anomalie-info" class="stat result"></span></p>
+
+    <div class="container-ligne">
+      <span class="ligne-label">Présentation&nbsp;:</span>
+        <span class="ligne-droite">
+          <span id="js-nombre-frontend" class="stat-projet color-noir"></span>
+          <span id="js-nombre-frontend-percent" class="stat-projet color-noir"></span>
+        </span>
+    </div>
+    <div class="container-ligne">
+      <span class="ligne-label">Métier&nbsp;:</span>
+      <span class="ligne-droite">
+        <span id="js-nombre-backend" class="stat-projet color-noir"></span>
+        <span id="js-nombre-backend-percent" class="stat-projet color-noir"></span>
+      </span>
+    </div>
+    <div class="container-ligne">
+      <span class="ligne-label">Autre&nbsp;:</span>
+      <span class="ligne-droite">
+        <span id="js-nombre-autre" class="stat-projet color-noir"></span>
+        <span id="js-nombre-autre-percent" class="stat-projet color-noir"></span>
+      </span>
+    </div>
+    <div class="container-ligne">
+      <span class="ligne-label">Inconnu&nbsp;:</span>
+      <span class="ligne-droite">
+        <span id="js-nombre-inconnu" class="stat-projet color-noir"></span>
+        <span id="js-nombre-inconnu-percent" class="stat-projet color-noir"></span>
+      </span>
+    </div>
+
+    {# DETTE TECHNIQUE #}
+    <h3 class="h5 claire-hand margin-top-07">Dette</h3>
+    <div class="container-ligne" title="Dette technique">
+      <span class="ligne-gauche">
+        <span class="ligne-label">Dette technique&nbsp;</span>
+          <button id="js-affiche-detail-dette" aria-label="Affiche le détail de la dette technique.">
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewbox="0 0 32 32" class=" details-svg">
+              <title>Icône pour le bouton Dette technique</title>
+              <desc>Affiche le détail de la dette technique.</desc>
+              <path d="M2.888.243C1.602.587.598 1.619.256 2.926c-.168.65-.168 8.416 0 9.066a3.732 3.732 0 002.662 2.691c.67.168 8.383.168 9.053 0a3.732 3.732 0 002.662-2.69c.168-.65.168-8.417 0-9.067A3.732 3.732 0 0011.971.235c-.647-.168-8.46-.16-9.083.008zm17.04 0c-1.286.344-2.29 1.376-2.632 2.683-.167.65-.167 8.416 0 9.066a3.732 3.732 0 002.662 2.691c.67.168 8.384.168 9.053 0a3.732 3.732 0 002.662-2.69c.168-.65.168-8.417 0-9.067A3.732 3.732 0 0029.011.235c-.647-.168-8.46-.16-9.083.008zM2.888 17.366C1.602 17.71.598 18.742.256 20.05c-.168.65-.168 8.417 0 9.067a3.732 3.732 0 002.662 2.69c.67.169 8.383.169 9.053 0a3.732 3.732 0 002.662-2.69c.168-.65.168-8.417 0-9.067a3.732 3.732 0 00-2.662-2.69c-.647-.169-8.46-.161-9.083.007zm20.326-.008a7.202 7.202 0 00-3.986 2.164 7.31 7.31 0 00.038 10.167c1.286 1.345 2.99 2.11 4.876 2.21 3.462.175 6.49-2.088 7.433-5.55.235-.842.235-2.692 0-3.532-.784-2.882-3.02-4.962-5.85-5.459a7.684 7.684 0 00-2.51 0z"/>
+            </svg>
+          </button>
+      </span>
+      <span id="js-dette" class="stat-dette color-noir" data-dette="0"></span>
+    </div>
+
+    <div class="container-ligne" title="Ratio de dette technique (dette technique / effort pour corriger les anomalies) exprimé en pourcentage. Plus le ratio est élevé, plus la part de dette technique est importante par rapport à l'effort de correction des anomalies.">
+      <span class="ligne-label">Ratio de dette&nbsp;:</span>
+      <span id="js-ratio-dette-technique" class="stat-projet color-noir"></span>
+    </div>
+
+    {# REPARTITION PAR SEVERITY #}
+    <h3 class="h5 claire-hand margin-top-07">Violations</h3>
+    <div class="margin-top-07">
+      <div class="container-ligne open-sans" title="Nombre de violations à corriger (bugs, vulnérabilités, mauvaises pratiques)">
+        <span class="ligne-gauche">
+          <span class="ligne-label">Violations&nbsp;:</span>
+          <button id="js-affiche-violations" aria-label="Affiche le détail des violations par sévérité.">
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewbox="0 0 32 32" class="details-svg">
+              <title>Icône pour le bouton de répartition des violations</title>
+              <desc>Affiches les violations par sévérité.</desc>
+              <path d="M2.888.243C1.602.587.598 1.619.256 2.926c-.168.65-.168 8.416 0 9.066a3.732 3.732 0 002.662 2.691c.67.168 8.383.168 9.053 0a3.732 3.732 0 002.662-2.69c.168-.65.168-8.417 0-9.067A3.732 3.732 0 0011.971.235c-.647-.168-8.46-.16-9.083.008zm17.04 0c-1.286.344-2.29 1.376-2.632 2.683-.167.65-.167 8.416 0 9.066a3.732 3.732 0 002.662 2.691c.67.168 8.384.168 9.053 0a3.732 3.732 0 002.662-2.69c.168-.65.168-8.417 0-9.067A3.732 3.732 0 0029.011.235c-.647-.168-8.46-.16-9.083.008zM2.888 17.366C1.602 17.71.598 18.742.256 20.05c-.168.65-.168 8.417 0 9.067a3.732 3.732 0 002.662 2.69c.67.169 8.383.169 9.053 0a3.732 3.732 0 002.662-2.69c.168-.65.168-8.417 0-9.067a3.732 3.732 0 00-2.662-2.69c-.647-.169-8.46-.161-9.083.007zm20.326-.008a7.202 7.202 0 00-3.986 2.164 7.31 7.31 0 00.038 10.167c1.286 1.345 2.99 2.11 4.876 2.21 3.462.175 6.49-2.088 7.433-5.55.235-.842.235-2.692 0-3.532-.784-2.882-3.02-4.962-5.85-5.459a7.684 7.684 0 00-2.51 0z"/>
+            </svg>
+          </button>
+        </span>
+        <span id="js-violations" class="stat-projet color-noir"></span>
+      </div>
+    </div>
   </div>
 </div>

@@ -7,88 +7,123 @@
       </svg><span>&nbsp;Projet</span>
     </h2>
   </div>
+
   <div class="callout-footer open-sans">
     {# Quality Gate — statut global du projet en tête #}
-    <p class="ligne">Quality Gate&nbsp;: <span id="alert-status" class="stat-note result"></span></p>
-
-    <div class="line-height-08">&nbsp;</div>
+    <div class="container-ligne open-sans" title="Statut de la politique qualité">
+      <span class="ligne-label">Quality Gate&nbsp;:</span>
+      <span id="js-alert-status"></span>
+    </div>
 
     {# Volumétrie #}
-    <p class="ligne">Ligne&nbsp;: <span id="nombre-ligne" class="stat result"></span></p>
-    <p class="ligne">Ligne de Code&nbsp;: <span id="nombre-ligne-de-code" class="stat result"></span></p>
-
-    <div class="line-height-08">&nbsp;</div>
-
-    <p class="ligne">Fichiers&nbsp;: <span id="nombre-fichier" class="stat result"></span></p>
-    <p class="ligne">Classes&nbsp;: <span id="nombre-classe" class="stat result"></span></p>
-    <p class="ligne">Méthodes&nbsp;: <span id="nombre-fonction" class="stat result"></span></p>
-    <p class="ligne">Statements&nbsp;: <span id="nombre-statement" class="stat result"></span></p>
-
-    <div class="line-height-08">&nbsp;</div>
-
-    {# Complexité #}
-    <p class="ligne">Complexité</p>
-    <p class="ligne margin-left-1">Cyclomatique&nbsp;:
-      <span id="complexity-ratio" class="stat result"></span>
-      <span id="note-complexity" class="stat-note result"></span>
-    </p>
-    <p class="ligne margin-left-1">Cognitive&nbsp;:
-      <span id="cognitive-complexity-ratio" class="stat result"></span>
-      <span id="note-cognitive-complexity" class="stat-note result"></span>
-    </p>
-
-    <div class="line-height-08">&nbsp;</div>
-
-    {# Tests + détail #}
-    <p class="ligne">Tests Unitaires&nbsp;: <span id="tests" class="stat result"></span></p>
-    <p class="ligne margin-left-1">Détail&nbsp;:
-      <span title="Erreurs">❌ <span id="test-errors" class="stat result"></span></span>
-      <span title="Échecs">/ <span id="test-failures" class="stat result"></span></span>
-      <span title="Ignorés">⏭ <span id="skipped-tests" class="stat result"></span></span>
-      <span title="Taux de succès">✅ <span id="test-success-density" class="stat result"></span></span>
-    </p>
-
-    <div class="line-height-08">&nbsp;</div>
-
-    {# Couverture / Duplication / Commentaires — métriques avec note inline #}
-    <p class="ligne">Couverture&nbsp;:
-      <span id="coverage" class="stat result"></span>
-      <span id="note-coverage" class="stat-note result"></span>
-    </p>
-    <p class="ligne">Duplication&nbsp;:
-      <span id="duplicated-lines-density" class="stat result"></span>
-      <span id="note-duplication" class="stat-note result"></span>
-    </p>
-    <p class="ligne" title="Lignes de commentaires et densité (% du code documenté)">Commentaires&nbsp;:
-      <span id="comment-lines" class="stat result"></span>
-      (<span id="comment-lines-density" class="stat result"></span>)
-      <span id="note-comment-lines" class="stat-note result"></span>
-    </p>
-
-    <div class="line-height-08">&nbsp;</div>
-
-    <p class="ligne">Défauts&nbsp;&nbsp;: <span id="violations" class="stat result"></span></p>
-
-    {# Dette technique #}
-    <div id="js-dette" class="ligne open-sans" data-dette="0">Dette&nbsp;
-      <button id="js-affiche-detail-dette" aria-label="Affiche le détail de la dette technique.">
-        <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewbox="0 0 32 32" class=" details-svg">
-          <title>Icône pour le bouton Dette technique</title>
-          <desc>Affiche le détail de la dette technique.</desc>
-          <path d="M2.888.243C1.602.587.598 1.619.256 2.926c-.168.65-.168 8.416 0 9.066a3.732 3.732 0 002.662 2.691c.67.168 8.383.168 9.053 0a3.732 3.732 0 002.662-2.69c.168-.65.168-8.417 0-9.067A3.732 3.732 0 0011.971.235c-.647-.168-8.46-.16-9.083.008zm17.04 0c-1.286.344-2.29 1.376-2.632 2.683-.167.65-.167 8.416 0 9.066a3.732 3.732 0 002.662 2.691c.67.168 8.384.168 9.053 0a3.732 3.732 0 002.662-2.69c.168-.65.168-8.417 0-9.067A3.732 3.732 0 0029.011.235c-.647-.168-8.46-.16-9.083.008zM2.888 17.366C1.602 17.71.598 18.742.256 20.05c-.168.65-.168 8.417 0 9.067a3.732 3.732 0 002.662 2.69c.67.169 8.383.169 9.053 0a3.732 3.732 0 002.662-2.69c.168-.65.168-8.417 0-9.067a3.732 3.732 0 00-2.662-2.69c-.647-.169-8.46-.161-9.083.007zm20.326-.008a7.202 7.202 0 00-3.986 2.164 7.31 7.31 0 00.038 10.167c1.286 1.345 2.99 2.11 4.876 2.21 3.462.175 6.49-2.088 7.433-5.55.235-.842.235-2.692 0-3.532-.784-2.882-3.02-4.962-5.85-5.459a7.684 7.684 0 00-2.51 0z"/>
-        </svg>
-      </button>&nbsp;<span id="dette" class="stat-dette result"></span>
+    <div class="margin-top-07">
+      <div class="container-ligne open-sans">
+        <span class="ligne-label" title="Nombre de lignes total">Ligne&nbsp;:</span>
+        <span id="js-nombre-ligne" class="stat-projet color-noir"></span>
+      </div>
+      <div class="container-ligne open-sans">
+        <span class="ligne-label" title="Nombre de lignes de code">Ligne de Code&nbsp;:</span>
+        <span id="js-nombre-ligne-de-code" class="stat-projet color-noir"></span>
+      </div>
+      <div class="container-ligne open-sans">
+        <span class="ligne-label" title="Nombre de lignes de commentaire">Commentaire&nbsp;:</span>
+        <span id="js-comment-lines" class="stat-projet color-noir"></span>
+      </div>
     </div>
-    <p class="ligne">
-      <span class="margin-top-04">Ratio de dette&nbsp;:</span>
-      <span id="ratio-dette-technique" class="stat result"></span></p>
 
-    <div class="line-height-08">&nbsp;</div>
+    <div class="margin-top-07">
+      <div class="container-ligne open-sans">
+        <span class="ligne-label" title="Nombre de fichiers">Fichiers&nbsp;:</span>
+        <span id="js-nombre-fichier" class="stat-projet color-noir"></span>
+      </div>
+      <div class="container-ligne open-sans">
+        <span class="ligne-label" title="Nombre de classes">Classes&nbsp;:</span>
+        <span id="js-nombre-classe" class="stat-projet color-noir"></span>
+      </div>
+      <div class="container-ligne open-sans">
+        <span class="ligne-label" title="Nombre de méthodes">Méthodes&nbsp;:</span>
+        <span id="js-nombre-fonction" class="stat-projet color-noir"></span>
+      </div>
+      <div class="container-ligne open-sans">
+        <span class="ligne-label" title="Nombre de déclarations">Déclarations&nbsp;:</span>
+        <span id="js-nombre-statement" class="stat-projet color-noir"></span>
+      </div>
+    </div>
 
-    {# Workflow de tri des anomalies #}
-    <p class="ligne">Anomalies triées&nbsp;:
-      <span title="Anomalies validées comme acceptables après revue">acceptées <span id="accepted-issues" class="stat result"></span></span>
-      <span title="Anomalies marquées comme faux positifs">/ faux positifs <span id="false-positive-issues" class="stat result"></span></span>
-    </p>
+    {# MODIF 2026-05-06 :
+      Bloc des métriques avec notes A-E groupées ensemble (qualité interne du code) :
+      Complexité cyclomatique + Complexité cognitive + Couverture + Duplication + Commentaires.
+      Les Tests sont sépares (résultats d'execution, pas qualité statique).
+      La dette + ratio sont déplacés dans _bloc_quality.html.twig sous-section "Dette". #}
+    <div class="margin-top-07">
+      <div class="container-ligne margin-bottom-07" title="Complexité Cyclomatique">
+        <span class="ligne-label">C. Cyclomatique&nbsp;:</span>
+        <span class="ligne-droite">
+          <span id="js-complexity-ratio" class="stat-projet color-noir"></span>
+          <span id="js-note-complexity"></span>
+        </span>
+      </div>
+
+      <div class="container-ligne margin-bottom-07" title="Complexité Cognitive">
+        <span class="ligne-label">C. Cognitive&nbsp;:</span>
+        <span class="ligne-droite">
+          <span id="js-cognitive-complexity-ratio" class="stat-projet color-noir"></span>
+          <span id="js-note-cognitive-complexity"></span>
+        </span>
+      </div>
+    </div>
+
+    <div class="margin-top-07">
+        <div class="container-ligne margin-bottom-07" title="Complexité Cyclomatique">
+          <span class="ligne-label">Couverture&nbsp;:</span>
+          <span class="ligne-droite">
+            <span id="js-coverage" class="stat-projet color-noir"></span>
+            <span id="js-note-coverage"></span>
+          </span>
+        </div>
+
+      <div class="container-ligne margin-bottom-07" title="Duplication de codes">
+        <span class="ligne-label">Duplication&nbsp;:</span>
+        <span class="ligne-droite">
+          <span id="js-duplicated-lines-density" class="stat-projet color-noir"></span>
+          <span id="js-note-duplication"></span>
+        </span>
+      </div>
+
+      <div class="container-ligne margin-bottom-07" title="Lignes de commentaires et densité (% du code documenté)">
+        <span class="ligne-label">Commentaires&nbsp;:</span>
+        <span class="ligne-droite">
+          <span id="js-comment-lines-density" class="stat-projet color-noir"></span>
+          <span id="js-note-comment-lines"></span>
+        </span>
+      </div>
+    </div>
+
+    <div class="margin-top-07">
+      <div class="container-ligne" title="Nombre de tests unitaires">
+        <span class="ligne-label">Tests Unitaires&nbsp;:</span>
+        <span id="js-tests" class="stat-projet color-noir"></span>
+      </div>
+      <div class="container-ligne" title="Détail des tests">
+        <span title="Erreurs" aria-hidden="true">❌</span><span id="js-test-errors" class="stat-projet"></span></span>
+        <span title="Échecs" aria-hidden="true">/</span> <span id="js-test-failures" class="stat-projet"></span></span>
+        <span title="Ignorés" aria-hidden="true">⏭</span><span id="js-skipped-tests" class="stat-projet"></span></span>
+        <span title="Taux de succès" aria-hidden="true">✅</span> <span id="js-test-success-density" class="stat-projet"></span></span>
+      </div>
+    </div>
+
+    {# Workflow de tri des violations #}
+    <div class="margin-bottom-07" title="Violations triées : acceptées (validées comme acceptables après revue) / faux positifs (marquées comme faux positifs)">
+      <span class="ligne-label">Violations triées&nbsp;:</span>
+    </div>
+    <div class="container-ligne">
+        <span class="ligne-label" title="Violations validées comme acceptables après revue">acceptées
+          <span id="js-accepted-issues" class="stat-projet color-noir"></span>
+        </span>
+        <span class="ligne-label" title="Violations marquées comme faux positifs">/ faux positifs
+          <span id="js-false-positive-issues" class="stat-projet color-noir"></span>
+        </span>
+    </div>
+
   </div>
 </div>
