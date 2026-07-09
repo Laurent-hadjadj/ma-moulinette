@@ -28,9 +28,10 @@
     {{ include('no-script.html.twig') }}
     {# Chargement de la section header #}
     {{ include('header.html.twig') }}
+    {# Chargement du bloc de messages #}
+    {{ include('_message.html.twig') }}
 
     <header class="grid-container margin-top-1">
-      {# WCAG 2.4.8 : aria-label enrichi ; <ol> à la place de <ul> ; aria-current="page" #}
       <nav aria-label="Fil d'Ariane, vous êtes ici">
         <ol class="claire-hand breadcrumbs">
           <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
@@ -40,7 +41,6 @@
       </nav>
     </header>
 
-    {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page ; titre descendu en <h2> ; ajout de id="main-content" (cible du skip link) #}
     <header id="main-content" class="grid-container"
             aria-labelledby="titre-repartition">
       <h2 id="titre-repartition"
@@ -51,30 +51,6 @@
       <div class="show-for-sr">Sur cette page, vous pouvez collecter et analyser les anomalies SonarQube, par type, sévérité et par module.</div>
     </header>
 
-    {# Gestion des messages flash & JS #}
-    <section>
-      {% for message in app.flashes('notice') %}
-      <div class="callout {{ message.type }} alert-callout-border callout-ombre js-flash-box" role="alert" data-closable>
-        <p class="open-sans text-justify callout-message">
-            <strong>{{ message.titre }}</strong> {{ message.message }}<br>{{ message.debug|default('')}}
-        </p>
-        <button class="close-button {{message.type}}"
-                type="button"
-                aria-label="Dismiss alert" data-close><span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      {% endfor %}
-
-      {# Message d'information JS#}
-      <div id="message-box" class="callout alert-callout-border callout-ombre hide" role="alert" data-closable>
-          <button id="message-button-close" class="close-button" aria-label="Close alert" type="button" data-close>
-          <span aria-hidden="true">&times;</span>
-          </button>
-          <p id="message-text"></p>
-      </div>
-    </section>
-
-    {# WCAG 2.4.1 : le skip link cible id="main-content" placé sur le <header> plus haut qui introduit la page #}
     <main class="grid-container">
       <p class="open-sans">
         <span>Setup : </span>
