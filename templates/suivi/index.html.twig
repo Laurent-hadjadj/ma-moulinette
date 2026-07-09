@@ -1,6 +1,6 @@
 {% set title = 'Suivi des indicateurs du projet' %}
 {% set description = 'Ma Moulinette - Suivi des versions.' %}
-{% set type_content = "Application Ma-Moulinette, Suivi des indicateurs SonarQube le projet." %}
+{% set type_content = "Application Ma-Moulinette, Suivi des indicateurs SonarQube pour le projet." %}
 {% set bottom="footer-fixed" %}
 <!DOCTYPE html>
 <!--
@@ -30,7 +30,6 @@
     {{ include('header.html.twig') }}
 
     <header class="grid-container margin-top-1">
-      {# WCAG 2.4.8 : aria-label enrichi ; <ol> à la place de <ul> ; aria-current="page" #}
       <nav aria-label="Fil d'Ariane, vous êtes ici">
         <ol class="claire-hand breadcrumbs">
           <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
@@ -43,15 +42,15 @@
     {# Message d'information php #}
     {{ include('_message.html.twig') }}
 
-    {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page ; les deux <h1> existants sont rétrogradés en <h2>, le <h2> descend en <h3>. aria-describedby auto-référents retirés. aria-label redondants retirés. Ajout de id="main-content" (cible du skip link). #}
     <header id="main-content" class="grid-container"
               aria-labelledby="titre-sonarqube">
-      <h2 id="titre-sonarqube" class="h3 claire-hand"><span aria-hidden="true">📊</span>Collecte et analyse des indicateurs SonarQube</h2>
-      <div class="show-for-sr">Sur cette page, vous pouvez collecter et visualiser les métriques clés de vos projets SonarQube.</div>
+      <h2 id="titre-sonarqube"
+          class="h3 claire-hand"><span aria-hidden="true">📊</span>Collecte et analyse des indicateurs SonarQube
+      </h2>
     </header>
 
     {# En-tête #}
-    <header id="element1-to-print" class="pleine-page">
+    <header class="pleine-page">
       <h2 id="titre-js-nom" class="h3 claire-hand"
           data-maven="{{mavenKey}}"><span aria-hidden="true">🧭</span>Suivi des indicateurs pour {{nom}}
       </h2>
@@ -65,23 +64,32 @@
       {% else %}
         {% set s="" %}
       {% endif %}
-      <h3 class="h4 claire-hand">
+      <p class="open-sans font-size-11">
           <span id="affiche-total-profil" class="mini-stat">
             <span aria-hidden="true">🗂️</span>{{nombre | default('0') }}</span>
             <span>version{{s}} sélectionnée{{s}} pour ce projet.</span>
           </span>
-      </h3>
+      </p>
     </header>
-
-    {# Affichage du suivi des anomalies #}
-    {{ include('/suivi/_suivi_anomalie.html.twig') }}
 
     {# Menu des outils  #}
     {{ include('/suivi/_menu_outils.html.twig') }}
 
+    {# Page de garde rapport PDF. #}
+    {{ include('/suivi/_suivi_synthese_notes.html.twig') }}
+
+    {# Affichage du suivi des anomalies #}
+    {{ include('/suivi/_suivi_anomalie.html.twig') }}
+
     {# Affiche le graphique des courbes des anomalies #}
     {{ include('/suivi/_affiche_graphique_anomalie.html.twig') }}
     {{ include('/suivi/_suivi_mesures.html.twig') }}
+    {# Tests & Couverture (cf. project_suivi_redesign.md). #}
+    {{ include('/suivi/_suivi_tests_couverture.html.twig') }}
+    {# Complexité (cyclomatique + cognitive). #}
+    {{ include('/suivi/_suivi_complexite.html.twig') }}
+    {# Distribution par langage (tableau + bar chart empile). #}
+    {{ include('/suivi/_suivi_distribution_langage.html.twig') }}
     {{ include('/suivi/_repartition_par_module.html.twig') }}
     {{ include('/suivi/_repartition_par_severity.html.twig') }}
 
