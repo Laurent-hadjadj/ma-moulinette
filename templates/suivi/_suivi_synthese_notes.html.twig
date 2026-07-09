@@ -1,0 +1,193 @@
+{# MODIF 2026-05-06 : tableau de synthèse des notes A-E
+  par version, avec mise en avant Quality Gate + cohabitation legacy / Sonar 10.
+  Page de garde du rapport PDF. Suit le pattern de `_suivi_anomalie.html.twig`. #}
+<div class="table-scroll pleine-page">
+  <table>
+    <caption class="show-for-medium claire-hand">Synthèse Qualité.</caption>
+    <caption class="show-for-small-only text-left claire-hand">Synthèse Qualité.</caption>
+    <thead>
+      <tr>
+        <th scope="col"></th>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            {% if suivi[i]['initial']==1 %}
+              {% set reference="reference" %}
+            {% else %}
+              {% set reference="null" %}
+            {% endif %}
+            {# MODIF 2026-05-06 : marqueur visuel
+              sous chaque version. (reconstitué) en orange = donnees partielles via
+              SonarQube search_history ; (collecte) neutre = donnees completes via
+              BatchCollecte/Peinture. Le label collecte sert aussi a aligner verticalement
+              les en-tetes (sinon le `<br>` du REBUILD décale les colonnes). #}
+            <th scope="col" class="open-sans text-right {{reference}}">
+              {{suivi[i]['version']}}
+              {% if suivi[i]['mode_collecte'] == 'REBUILD' %}
+                <br><small class="text-orange open-sans">(reconstitué)</small>
+              {% else %}
+                <br><small class="text-noir open-sans">(collecte)</small>
+              {% endif %}
+            </th>
+          {% endfor %}
+        {% endif %}
+      </tr>
+    </thead>
+    <tbody id="tableau-synthese-notes" class="open-sans">
+      {# MODIF 2026-05-06 : ajout de la ligne Date pour repérage rapide  (coherence avec _suivi_anomalie.html.twig). #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Date</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              <span>{{suivi[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Quality Gate (OK / WARN / ERROR) — badge dédie .qg-{ok|warn|error}. #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Quality Gate</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['alert_status'] is not null and suivi[i]['alert_status']|trim != '' %}
+                {% set qg = suivi[i]['alert_status']|upper %}
+                {% set qgClass = qg == 'OK' ? 'ok' : (qg == 'WARN' ? 'warn' : 'error') %}
+                <span class="qg-{{qgClass}}">{{qg}}</span>
+              {% else %}
+                <span>&nbsp;-&nbsp;</span>
+              {% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Fiabilité (legacy / Sonar 10)
+        MODIF 2026-06-11 : si S10 est rempli, le legacy est masqué (–/A).
+        Quand SonarSource supprimera les anciennes colonnes, seule la partie droite restera. #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Fiabilité <small>(legacy / S10)</small></td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['s10_reliability'] %}
+                <span>–</span>
+                <span>/</span>
+                <span class="note note-{{suivi[i]['s10_reliability']|lower}}">{{suivi[i]['s10_reliability']}}</span>
+              {% else %}
+                {% if suivi[i]['reliability'] %}
+                  <span class="note note-{{suivi[i]['reliability']|lower}}">{{suivi[i]['reliability']}}</span>
+                {% else %}<span>–</span>{% endif %}
+                <span>/</span>
+                <span>–</span>
+              {% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Securite (legacy / Sonar 10)
+        MODIF 2026-06-11 : si S10 est rempli, le legacy est masqué (–/A). #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Sécurité <small>(legacy / S10)</small></td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['s10_security'] %}
+                <span>–</span>
+                <span>/</span>
+                <span class="note note-{{suivi[i]['s10_security']|lower}}">{{suivi[i]['s10_security']}}</span>
+              {% else %}
+                {% if suivi[i]['security'] %}
+                  <span class="note note-{{suivi[i]['security']|lower}}">{{suivi[i]['security']}}</span>
+                {% else %}<span>–</span>{% endif %}
+                <span>/</span>
+                <span>–</span>
+              {% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Maintenabilite (legacy / Sonar 10)
+        MODIF 2026-06-11 :si S10 est rempli, le legacy est masqué (–/A). #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Maintenabilité <small>(legacy / S10)</small></td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['s10_maintainability'] %}
+                <span>–</span>
+                <span>/</span>
+                <span class="note note-{{suivi[i]['s10_maintainability']|lower}}">{{suivi[i]['s10_maintainability']}}</span>
+              {% else %}
+                {% if suivi[i]['maintainability'] %}
+                  <span class="note note-{{suivi[i]['maintainability']|lower}}">{{suivi[i]['maintainability']}}</span>
+                {% else %}<span>–</span>{% endif %}
+                <span>/</span>
+                <span>–</span>
+              {% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Review Hotspots #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Review Hotspots</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['note_hotspot'] %}
+                <span class="note note-{{suivi[i]['note_hotspot']|lower}}">{{suivi[i]['note_hotspot']}}</span>
+              {% else %}<span>–</span>{% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Commentaires #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Commentaires</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['note_comment'] %}
+                <span class="note note-{{suivi[i]['note_comment']|lower}}">{{suivi[i]['note_comment']}}</span>
+              {% else %}<span>–</span>{% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Complexite cyclomatique #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Complexité cyclomatique</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['note_complexity'] %}
+                <span class="note note-{{suivi[i]['note_complexity']|lower}}">{{suivi[i]['note_complexity']}}</span>
+              {% else %}<span>–</span>{% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# Complexite cognitive #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Complexité cognitive</td>
+        {% if suivi is not empty %}
+          {% for i in 0..suivi|length-1 %}
+            <td class="text-right">
+              {% if suivi[i]['note_cognitive'] %}
+                <span class="note note-{{suivi[i]['note_cognitive']|lower}}">{{suivi[i]['note_cognitive']}}</span>
+              {% else %}<span>–</span>{% endif %}
+            </td>
+          {% endfor %}
+        {% endif %}
+      </tr>
+    </tbody>
+  </table>
+</div>
