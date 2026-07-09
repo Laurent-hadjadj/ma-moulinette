@@ -1,0 +1,226 @@
+{% set title = "Statistiques — Environnement technique" %}
+{% set description = "Ma Moulinette - Tableau de bord technique" %}
+{% set type_content = "Application Ma-Moulinette, informations techniques sur l'environnement." %}
+{% set bottom="" %}
+<!DOCTYPE html>
+<!--
+.   _       _           _             _                  _            _
+.  /_\   __| |_ __ ___ (_)_ __    ___| |_ ___  ___ _ __ (_)___  __ _| |
+. //_\\ / _` | '_ ` _ \| | '_ \  / __| __/ _ \/ __| '_ \| / __|/ _` | |
+./  _  \ (_| | | | | | | | | | | \__ \ ||  __/ (__| | | | \__ \ (_| | |
+.\_/ \_/\__,_|_| |_| |_|_|_| |_| |___/\__\___|\___|_| |_|_|___/\__,_|_|
+
+    Laurent HADJADJ
+    https://github.com/Laurent-hadjadj/ma-moulinette
+    © 2015-2026 — CC BY-SA-NC 4.0
+-->
+<html lang="fr">
+  <head>
+    <title>{{ title }}</title>
+    {{ include('head.html.twig') }}
+    {% block importmap %}{{ importmap('admin-dashboard') }}{% endblock %}
+  </head>
+
+  <body dir="ltr">
+    {{ include('no-script.html.twig') }}
+    {{ include('header.html.twig') }}
+
+    {# MODIF 2026-06-09 [user-agent-init]: breadcrumb navigation — remplace lien back-admin #}
+    <header class="grid-container">
+      <nav id="fil-ariane" aria-label="Fil d'Ariane, vous êtes ici">
+        <ol class="claire-hand breadcrumbs">
+          <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+          <li><a href="{{ path('statistiques', {}) }}">Statistiques</a></li>
+          <li aria-current="page">Dashboard</li>
+        </ol>
+      </nav>
+    </header>
+
+    <main id="main-content" class="grid-container" role="main">
+
+      <h2 class="claire-hand">Environnement technique</h2>
+
+      {# ===== Section Système ===== #}
+      <h3 class="section-title open-sans"><i class="fas fa-server" aria-hidden="true"></i> Système</h3>
+      <div class="grid-x grid-padding-x small-up-2 medium-up-3 large-up-5">
+        <div class="cell">
+          <div class="card metric-card accent-system">
+            <div class="card-section text-center">
+              <p class="metric-label">PHP</p>
+              <p class="metric-value">{{ php_version }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="cell">
+          <div class="card metric-card accent-system">
+            <div class="card-section text-center">
+              <p class="metric-label">Symfony</p>
+              <p class="metric-value">{{ symfony_version }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="cell">
+          <div class="card metric-card accent-system">
+            <div class="card-section text-center">
+              <p class="metric-label">PostgreSQL</p>
+              <p class="metric-value">{{ postgresql_version }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="cell">
+          <div class="card metric-card accent-system">
+            <div class="card-section text-center">
+              <p class="metric-label">Mémoire (Mo)</p>
+              <p class="metric-value">{{ ram }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {# ===== Section Application ===== #}
+      <h3 class="section-title open-sans"><i class="fas fa-cubes" aria-hidden="true"></i> Ma Moulinette</h3>
+      <div class="grid-x grid-padding-x small-up-2 medium-up-3 large-up-5">
+        <div class="cell">
+          <div class="card metric-card accent-app">
+            <div class="card-section text-center">
+              <p class="metric-label">Release</p>
+              <p class="metric-value">{{ application_local_version }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="cell">
+          <div class="card metric-card accent-app">
+            <div class="card-section text-center">
+              <p class="metric-label">Versions livrées</p>
+              <p class="metric-value">{{ application_nombre_version }}</p>
+            </div>
+          </div>
+        </div>
+        <div class="cell">
+          <div class="card metric-card accent-app">
+            <div class="card-section text-center">
+              <p class="metric-label">Tables DB</p>
+              <p class="metric-value">{{ application_table }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {# ===== Section PostgreSQL ===== #}
+      <h3 class="section-title open-sans"><i class="fas fa-database" aria-hidden="true"></i> PostgreSQL — Activité</h3>
+      {% if pg_stat_activity_idle is not null %}
+        <div class="grid-x grid-padding-x small-up-2 medium-up-4 large-up-4">
+          <div class="cell">
+            <div class="card metric-card accent-pg">
+              <div class="card-section text-center">
+                <p class="metric-label">Connexions actives</p>
+                <p class="metric-value">{{ pg_stat_activity_not_idle }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="cell">
+            <div class="card metric-card accent-pg">
+              <div class="card-section text-center">
+                <p class="metric-label">Connexions idle</p>
+                <p class="metric-value">{{ pg_stat_activity_idle }}</p>
+              </div>
+            </div>
+          </div>
+          {% if pg_stat_statements is not empty %}
+            <div class="cell">
+              <div class="card metric-card accent-pg">
+                <div class="card-section text-center">
+                  <p class="metric-label">Durée moy. (s)</p>
+                  <p class="metric-value">{{ pg_stat_statements.avg_exec_s ?? '-' }}</p>
+                </div>
+              </div>
+            </div>
+            <div class="cell">
+              <div class="card metric-card accent-pg">
+                <div class="card-section text-center">
+                  <p class="metric-label">Durée max (s)</p>
+                  <p class="metric-value">{{ pg_stat_statements.max_exec_s ?? '-' }}</p>
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      {% else %}
+        <div class="callout alert-callout-border warning">
+          <p class="open-sans">Extension <code>pg_stat_activity</code> non disponible sur cet environnement.</p>
+        </div>
+      {% endif %}
+
+      {# ===== Section Code source ===== #}
+      <h3 class="section-title open-sans"><i class="fas fa-code" aria-hidden="true"></i> Code source</h3>
+
+      {% if stats_generated_at is null %}
+        <div class="callout alert-callout-border warning">
+          <p class="open-sans">
+            Statistiques statiques (données figées). Pour les actualiser :
+            <code>php bin/console app:admin:refresh-stats</code>
+          </p>
+        </div>
+      {% else %}
+        <div class="callout alert-callout-border info" style="margin-bottom:0.75rem;">
+          <p class="open-sans" style="margin:0;">
+            <i class="fas fa-rotate" aria-hidden="true"></i>
+            Données générées le <strong>{{ stats_generated_at|date('d/m/Y à H:i') }}</strong>
+            {% if phpunit_unit is not null %}
+              &nbsp;·&nbsp; Tests : <strong>{{ phpunit_unit|number_format(0, '.', ' ') }}</strong> unit
+              {% if phpunit_integration is not null %}
+                / <strong>{{ phpunit_integration|number_format(0, '.', ' ') }}</strong> integration
+              {% endif %}
+            {% endif %}
+          </p>
+        </div>
+      {% endif %}
+
+      <div class="table-scroll">
+        <table class="hover unstriped table-code" aria-label="Statistiques du code source">
+          <caption>{{ app_version }} — <code>php bin/console app:admin:refresh-stats</code></caption>
+          <thead>
+            <tr>
+              <th scope="col">Langage</th>
+              <th scope="col" class="text-right">Fichiers</th>
+              <th scope="col" class="text-right">Code</th>
+              <th scope="col" class="text-right">Commentaires</th>
+              <th scope="col" class="text-right">Lignes vides</th>
+              <th scope="col" class="text-right">Total</th>
+            </tr>
+          </thead>
+          {% set t_f = 0 %}{% set t_c = 0 %}{% set t_co = 0 %}{% set t_v = 0 %}{% set t_t = 0 %}
+          <tbody>
+            {% for label, data in { 'PHP': php, 'HTML/Twig': html, 'CSS': css, 'JavaScript': js, 'Markdown': md, 'SQL (init)': sql, 'Migration': migration } %}
+            {% set t_f  = t_f  + data.fichier %}
+            {% set t_c  = t_c  + data.code %}
+            {% set t_co = t_co + data.comment %}
+            {% set t_v  = t_v  + data.vide %}
+            {% set t_t  = t_t  + data.total %}
+            <tr>
+              <th scope="row">{{ label }}</th>
+              {% for v in data %}
+                <td class="text-right">{{ v|number_format(0, '.', ' ') }}</td>
+              {% endfor %}
+            </tr>
+            {% endfor %}
+          </tbody>
+          <tfoot>
+            <tr class="table-total">
+              <th scope="row">Total</th>
+              <td class="text-right">{{ t_f|number_format(0, '.', ' ') }}</td>
+              <td class="text-right">{{ t_c|number_format(0, '.', ' ') }}</td>
+              <td class="text-right">{{ t_co|number_format(0, '.', ' ') }}</td>
+              <td class="text-right">{{ t_v|number_format(0, '.', ' ') }}</td>
+              <td class="text-right">{{ t_t|number_format(0, '.', ' ') }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+
+      <div aria-hidden="true" style="margin-bottom:3rem;"></div>
+    </main>
+
+    {{ include('footer.html.twig') }}
+  </body>
+</html>
