@@ -1,0 +1,193 @@
+{# MODIF 2026-05-11 : styles partages entre les 4 sous-PDFs
+    du rapport Suivi. Aligne sur le pattern templates/rapport/dc/_styles.html.twig.
+    La marge bas est élargie (60px) pour le footer FPDF dessine par le merger. #}
+<style>
+  body {
+    font-family: 'DejaVu Sans', Arial, sans-serif;
+    font-size: 10px;
+    margin: 0;
+    color: #00445b;
+  }
+  @page { margin: 30px 25px 60px 25px; }
+
+  h1 { font-size: 18px; margin: 0 0 6px 0; }
+  h2 {
+    font-size: 13px;
+    margin: 16px 0 6px 0;
+    padding-bottom: 3px;
+    border-bottom: 2px solid #00445b;
+  }
+
+  /* === Header standard (pages autres que la garde) === */
+  .header {
+    width: 100%;
+    margin-bottom: 12px;
+    border-bottom: 2px solid #00445b;
+    padding-bottom: 8px;
+  }
+  .header td { vertical-align: middle; }
+  .logo { max-height: 40px; }
+  .header-title { text-align: right; }
+  .header-title h1 { font-size: 16px; margin: 0; }
+  .header-title .subtitle { font-size: 10px; color: #666; }
+
+  /* === Bloc info projet === */
+  .info-grid {
+    width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 10px;
+  }
+  .info-grid td {
+    padding: 4px 8px; border: 1px solid #ddd; vertical-align: top;
+  }
+  .info-grid td.label {
+    background: #f0f4f7; font-weight: bold; width: 30%;
+  }
+
+  /* === Tableaux versions (T7, T3, T4, T9, anomalie) === */
+  .versions-table {
+    width: 100%; border-collapse: collapse; margin-top: 4px;
+    font-size: 9px; table-layout: fixed;
+  }
+  .versions-table th, .versions-table td {
+    padding: 4px 5px; border: 1px solid #ddd; vertical-align: top;
+  }
+  .versions-table thead th {
+    background: #00445b; color: #fff; text-align: center; font-size: 9px;
+  }
+  .versions-table thead th.col-libelle { text-align: left; width: 28%; }
+  .versions-table tbody td.libelle {
+    background: #f0f4f7; font-weight: bold; text-align: left;
+  }
+  .versions-table tbody td.valeur { text-align: right; }
+  .versions-table thead th .mode-rebuild { color: #ed7d20; font-style: italic; font-size: 8px; }
+  .versions-table thead th .mode-collecte { color: #ddd; font-style: italic; font-size: 8px; }
+  .versions-table thead th.reference { background: #003245; }
+  .versions-table th.col-tendance,
+  .versions-table td.col-tendance { text-align: center; width: 8%; }
+
+  /* === Notes A-E (pastilles) === */
+  .note {
+    display: inline-block; padding: 1px 5px; text-align: center;
+    font-weight: bold; font-size: 9px; color: #fff;
+    border-radius: 2px; line-height: 1;
+  }
+  .note-a { background: #0a0; }
+  .note-b { background: #b0d513; }
+  .note-c { background: #eabe06; }
+  .note-d { background: #ed7d20; }
+  .note-e { background: #d4333f; }
+
+  /* === Quality Gate === */
+  .qg-ok, .qg-warn, .qg-error {
+    display: inline-block; padding: 1px 6px;
+    color: #fff; border-radius: 2px;
+    font-weight: bold; font-size: 9px; line-height: 1;
+  }
+  .qg-ok    { background: #0a0; }
+  .qg-warn  { background: #ed7d20; }
+  .qg-error { background: #d4333f; }
+
+  /* === Tendance (fleches) === */
+  .trend { display: inline-block; font-weight: bold; font-size: 11px; line-height: 1; }
+  .trend-up   { color: #0a0; }
+  .trend-down { color: #d4333f; }
+  .trend-flat { color: #999; }
+
+  .legende { font-size: 9px; color: #666; margin-top: 4px; }
+  .nodata { color: #999; }
+
+  /* === Page de garde === */
+  .cover-page {
+    text-align: center;
+    padding: 90px 40px 0 40px;
+  }
+  .cover-page .cover-logo { max-height: 90px; margin-bottom: 30px; }
+  .cover-page .cover-title {
+    font-size: 32px; font-weight: bold; color: #00445b;
+    margin: 0 0 10px 0; letter-spacing: 1px;
+  }
+  .cover-page .cover-subtitle {
+    font-size: 14px; color: #666; margin: 0 0 50px 0; font-style: italic;
+  }
+  .cover-page .cover-project {
+    border-top: 3px solid #00445b;
+    border-bottom: 3px solid #00445b;
+    padding: 20px 30px;
+    display: inline-block;
+    margin-bottom: 40px;
+    min-width: 320px;
+  }
+  .cover-page .cover-project-name {
+    font-size: 22px; font-weight: bold; color: #00445b; margin-bottom: 6px;
+  }
+  .cover-page .cover-project-key {
+    font-size: 11px; color: #666; font-family: 'DejaVu Sans Mono', monospace;
+  }
+  .cover-page .cover-meta { font-size: 11px; line-height: 1.7; margin-bottom: 60px; }
+  .cover-page .cover-meta .label { color: #888; }
+  .cover-page .cover-classification {
+    display: inline-block;
+    padding: 8px 20px;
+    border: 2px solid #d4333f;
+    color: #d4333f;
+    font-weight: bold; font-size: 12px;
+    letter-spacing: 1px; text-transform: uppercase;
+  }
+
+  /* === Tuiles KPI ===
+    MODIF 2026-05-11 : en page 2 portrait, on bascule
+    en grille 3x2 (3 colonnes -> 33% chacune, 2 rangées). C'est plus lisible
+    qu'une seule ligne 6 colonnes 16% sur largeur portrait réduite. */
+  .kpi-grid { width: 100%; border-collapse: separate; border-spacing: 6px; margin: 6px 0 14px 0; }
+  .kpi-grid td {
+    width: 33.33%;
+    border: 1px solid #ddd;
+    padding: 8px 10px;
+    vertical-align: top;
+  }
+  .kpi-card .kpi-label {
+    font-size: 9px; color: #666; text-transform: uppercase;
+    letter-spacing: 0.5px; margin-bottom: 5px;
+  }
+  .kpi-card .kpi-value {
+    font-size: 18px; font-weight: bold; line-height: 1.1; margin-bottom: 3px;
+  }
+  .kpi-card .kpi-meta { font-size: 9px; color: #888; }
+  .kpi-card .kpi-trend { font-weight: bold; font-size: 11px; margin-left: 4px; }
+  .kpi-card.kpi-ok    { background: #f0faf0; border-color: #c8e6c9; }
+  .kpi-card.kpi-warn  { background: #fff8e1; border-color: #ffe082; }
+  .kpi-card.kpi-error { background: #ffebee; border-color: #ef9a9a; }
+  .kpi-card.kpi-na    { background: #f5f5f5; border-color: #ddd; }
+  .kpi-card.kpi-ok    .kpi-value { color: #0a0; }
+  .kpi-card.kpi-warn  .kpi-value { color: #ed7d20; }
+  .kpi-card.kpi-error .kpi-value { color: #d4333f; }
+  .kpi-card.kpi-na    .kpi-value { color: #999; }
+
+  /* === Alerts box === */
+  .alerts-box {
+    border-left: 4px solid #d4333f;
+    background: #fffaf6;
+    padding: 8px 12px;
+    margin: 6px 0 14px 0;
+  }
+  .alerts-box.alerts-empty {
+    border-left-color: #0a0;
+    background: #f0faf0;
+  }
+  .alerts-box ul { margin: 0; padding: 0 0 0 18px; }
+  .alerts-box li { margin: 4px 0; font-size: 10px; }
+  .alerts-box li .titre { font-weight: bold; }
+  .alerts-box li.sev-error .titre { color: #d4333f; }
+  .alerts-box li.sev-warn  .titre { color: #ed7d20; }
+
+  /* === Glossaire === */
+  .glossaire { margin-top: 8px; }
+  .glossaire dt {
+    font-weight: bold; color: #00445b; font-size: 10px; margin-top: 8px;
+  }
+  .glossaire dd {
+    margin: 2px 0 0 14px;
+    font-size: 10px; color: #333; line-height: 1.4;
+  }
+  .glossaire .note-row { margin: 4px 0; }
+  .glossaire .note-row .note { margin-right: 4px; }
+</style>

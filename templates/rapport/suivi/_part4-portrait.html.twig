@@ -1,0 +1,101 @@
+{# MODIF 2026-05-11 : section 4 (portrait) - glossaire
+    en fin de rapport. Page de definitions pour les lecteurs non familiers
+    de SonarQube. #}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Rapport Suivi - Glossaire</title>
+  {{ include('rapport/suivi/_styles.html.twig') }}
+</head>
+<body>
+
+<header class="header">
+  <table style="width:100%">
+    <th></th>
+    <tr>
+      <td><img src="data:image/png;base64,{{ logoBase64 }}" alt="Logo" class="logo"></td>
+      <td class="header-title">
+        <h1>Glossaire</h1>
+        <div class="subtitle">Définitions des indicateurs</div>
+      </td>
+    </tr>
+  </table>
+</header>
+
+<h2>Glossaire</h2>
+<dl class="glossaire">
+
+  <dt>Notes A → E</dt>
+  <dd>
+    Échelle de qualité standardisée par SonarQube, du meilleur au plus dégradé. Affichées sous forme de pastilles colorées :
+    <div class="note-row">
+      <span class="note note-a">A</span> Excellent —
+      <span class="note note-b">B</span> Bon —
+      <span class="note note-c">C</span> À surveiller —
+      <span class="note note-d">D</span> À traiter —
+      <span class="note note-e">E</span> Critique
+    </div>
+    Les seuils dépendent de la métrique (densité de bugs, dette technique, etc.) et sont définis par le profil SonarQube.
+  </dd>
+
+  <dt>Quality Gate (QG)</dt>
+  <dd>
+    Verdict global d'une analyse SonarQube. Composé de plusieurs conditions (couverture, duplications, nouvelles vulnérabilités, etc.).
+    <span class="qg-ok">OK</span> = toutes les conditions sont satisfaites ;
+    <span class="qg-warn">WARN</span> = au moins un avertissement non bloquant ;
+    <span class="qg-error">ERROR</span> = au moins une condition bloquante non respectée.
+  </dd>
+
+  <dt>Complexité cyclomatique</dt>
+  <dd>
+    Mesure le <strong>nombre de chemins d'exécution indépendants</strong> dans le code (formule de McCabe). Chaque condition (<code>if</code>, <code>else</code>, <code>case</code>, opérateur logique, boucle) ajoute 1.
+    Indique combien de tests unitaires sont nécessaires pour couvrir toutes les branches. Une fonction au-delà de 10-15 devient difficile à tester exhaustivement.
+  </dd>
+
+  <dt>Complexité cognitive</dt>
+  <dd>
+    Mesure plus récente, proposée par SonarSource, qui évalue la <strong>difficulté de compréhension humaine</strong> du code. À la différence de la cyclomatique, elle pénalise plus fortement l'imbrication (un <code>if</code> dans un <code>if</code> dans un <code>for</code> coûte plus que trois <code>if</code> à plat) et ignore les structures triviales (chaînage de méthodes, ternaires courts).
+    Plus représentative de la maintenabilité ressentie par les développeurs. Seuil d'alerte usuel : 15 par fonction.
+  </dd>
+
+  <dt>Ratio de complexité</dt>
+  <dd>
+    Pourcentage qui rapporte la complexité totale au nombre de lignes ou de fonctions. Permet de comparer des projets de tailles différentes.
+  </dd>
+
+  <dt>Couverture de code (coverage)</dt>
+  <dd>
+    Pourcentage de lignes effectivement exécutées par les tests automatisés. <strong>Couverture des branches</strong> = pourcentage de chemins conditionnels (if/else) testés. Une couverture haute n'est pas une garantie de qualité, mais une couverture basse est un signal d'alerte.
+  </dd>
+
+  <dt>Hotspot de sécurité</dt>
+  <dd>
+    Point du code <em>potentiellement</em> sensible (utilisation d'une fonction de chiffrement, désérialisation, requête SQL dynamique, etc.) qui demande une <strong>revue manuelle par un humain</strong>. Différent d'une vulnérabilité avérée : un hotspot peut s'avérer sûr après examen.
+  </dd>
+
+  <dt>Dette technique (sqale_index)</dt>
+  <dd>
+    Estimation du <strong>temps nécessaire pour corriger toutes les "code smells"</strong> détectées (en minutes). Convertie en note A-E via le ratio dette/code (densité de dette).
+  </dd>
+
+  <dt>Code smell</dt>
+  <dd>
+    Symptôme d'un problème de maintenabilité dans le code (méthode trop longue, nom mal choisi, code mort, duplication, etc.). N'empêche pas le code de fonctionner, mais en complique l'évolution.
+  </dd>
+
+  <dt>SuppressWarning / NoSonar</dt>
+  <dd>
+    Annotations <code>@SuppressWarnings</code> (Java) ou commentaires <code>// NOSONAR</code> qui désactivent volontairement une règle SonarQube sur une portion de code. Utiles pour les faux positifs, mais à surveiller : un nombre élevé peut masquer des problèmes réels.
+  </dd>
+
+  <dt>Mode "(reconstitué)" vs "(collecte)"</dt>
+  <dd>
+    <span style="color:#ed7d20;">(reconstitué)</span> : version importée depuis l'API SonarQube <em>search_history</em> — indicateurs <strong>partiels</strong> (les évolutions par sévérité, ratios fins, etc. ne sont pas disponibles dans cette API).
+    <span style="color:#666;">(collecte)</span> : version analysée à chaud via la collecte complète Ma-Moulinette — tous les indicateurs sont disponibles.
+  </dd>
+
+</dl>
+
+</body>
+</html>

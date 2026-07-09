@@ -1,0 +1,209 @@
+{# MODIF 2026-05-11 : section 3 (paysage) - tous les
+    tableaux de suivi : Synthèse qualité (notes A-E), anomalies legacy,
+    tests & couverture, complexité cyclomatique + cognitive, distribution
+    par langage. Le format paysage accueille confortablement jusqu'a
+    10 versions en colonnes. #}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Rapport Suivi - Tableaux</title>
+  {{ include('rapport/suivi/_styles.html.twig') }}
+</head>
+<body>
+
+{# === Helper macro thead (libelle + N colonnes versions). === #}
+{% macro thead_versions(suivi, with_trend = false) %}
+  <thead>
+    <tr>
+      <th id="libellé" class="col-libelle"></th>
+      {% if suivi is not empty %}
+        {% for i in 0..suivi|length-1 %}
+          {% set ref = suivi[i]['initial']==1 ? 'reference' : '' %}
+          <th id="référence" class="{{ref}}">
+            {{ suivi[i]['version'] }}<br>
+            {% if suivi[i]['mode_collecte'] == 'REBUILD' %}
+              <span class="mode-rebuild">(reconstitué)</span>
+            {% else %}
+              <span class="mode-collecte">(collecte)</span>
+            {% endif %}
+          </th>
+        {% endfor %}
+      {% endif %}
+      {% if with_trend %}<th id="tendance" class="col-tendance">Tendance</th>{% endif %}
+    </tr>
+  </thead>
+{% endmacro %}
+
+{# === Helper macro tendance (note ou QG). === #}
+{% macro trend(first, last, kind = 'note') %}
+  {% set scale = kind == 'qg'
+    ? {'OK': 1, 'WARN': 2, 'ERROR': 3}
+    : {'A': 1, 'B': 2, 'C': 3, 'D': 4, 'E': 5} %}
+  {% set f = first is not null and first != '' ? scale[first|upper] ?? null : null %}
+  {% set l = last  is not null and last  != '' ? scale[last|upper]  ?? null : null %}
+  {% if f is null or l is null %}
+    <span class="trend trend-flat" title="Données partielles">→</span>
+  {% elseif l < f %}
+    <span class="trend trend-up" title="{{first|upper}} → {{last|upper}}">↑</span>
+  {% elseif l > f %}
+    <span class="trend trend-down" title="{{first|upper}} → {{last|upper}}">↓</span>
+  {% else %}
+    <span class="trend trend-flat" title="{{first|upper}} → {{last|upper}}">→</span>
+  {% endif %}
+{% endmacro %}
+
+{% import _self as helpers %}
+
+{# ========== Synthèse Qualité ========== #}
+<h2>Synthèse Qualité (notes A-E)</h2>
+{% set firstS = rapport.suivi|first %}
+{% set lastS  = rapport.suivi|last %}
+<table class="versions-table">
+  {{ helpers.thead_versions(rapport.suivi, true) }}
+  <tbody>
+    <tr>
+      <td class="libelle">Date</td>
+      {% for s in rapport.suivi %}<td class="valeur">{{ s['date']|date('d/m/Y', 'Europe/Paris') }}</td>{% endfor %}
+      <td class="col-tendance"><span class="trend trend-flat">→</span></td>
+    </tr>
+    <tr>
+      <td class="libelle">Quality Gate</td>
+      {% for s in rapport.suivi %}
+        <td class="valeur">
+          {% if s['alert_status'] %}
+            {% set qg = s['alert_status']|upper %}
+            {% set cls = qg == 'OK' ? 'ok' : (qg == 'WARN' ? 'warn' : 'error') %}
+            <span class="qg-{{cls}}">{{qg}}</span>
+          {% else %}<span class="nodata">–</span>{% endif %}
+        </td>
+      {% endfor %}
+      <td class="col-tendance">{{ helpers.trend(firstS['alert_status'], lastS['alert_status'], 'qg') }}</td>
+    </tr>
+    {% set rows = [
+      {label: 'Fiabilité (legacy / S10)', cols: ['reliability', 's10_reliability'], dual: true},
+      {label: 'Sécurité (legacy / S10)', cols: ['security', 's10_security'], dual: true},
+      {label: 'Maintenabilité (legacy / S10)', cols: ['maintainability', 's10_maintainability'], dual: true},
+      {label: 'Review Hotspots', cols: ['note_hotspot'], dual: false},
+      {label: 'Commentaires', cols: ['note_comment'], dual: false},
+      {label: 'Complexité cyclomatique', cols: ['note_complexity'], dual: false},
+      {label: 'Complexité cognitive', cols: ['note_cognitive'], dual: false},
+    ] %}
+    {% for r in rows %}
+      <tr>
+        <td class="libelle">{{ r.label }}</td>
+        {% for s in rapport.suivi %}
+          <td class="valeur">
+            {% if r.dual %}
+              {% if s[r.cols[0]] %}<span class="note note-{{s[r.cols[0]]|lower}}">{{s[r.cols[0]]}}</span>{% else %}<span class="nodata">–</span>{% endif %}
+              /
+              {% if s[r.cols[1]] %}<span class="note note-{{s[r.cols[1]]|lower}}">{{s[r.cols[1]]}}</span>{% else %}<span class="nodata">–</span>{% endif %}
+            {% else %}
+              {% if s[r.cols[0]] %}<span class="note note-{{s[r.cols[0]]|lower}}">{{s[r.cols[0]]}}</span>{% else %}<span class="nodata">–</span>{% endif %}
+            {% endif %}
+          </td>
+        {% endfor %}
+        <td class="col-tendance">{{ helpers.trend(firstS[r.cols[0]], lastS[r.cols[0]], 'note') }}</td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+{# ========== Anomalie legacy ========== #}
+<h2>Suivi des anomalies (référentiel legacy)</h2>
+<table class="versions-table">
+  {{ helpers.thead_versions(rapport.suivi) }}
+  <tbody>
+    <tr><td class="libelle">Date</td>{% for s in rapport.suivi %}<td class="valeur">{{ s['date']|date('d/m/Y', 'Europe/Paris') }}</td>{% endfor %}</tr>
+    <tr><td class="libelle">Fiabilité (bugs)</td>
+      {% for s in rapport.suivi %}<td class="valeur">{{ s['bug'] is null ? '–' : s['bug']|format_number(locale='fr') }} {% if s['reliability'] %}<span class="note note-{{s['reliability']|lower}}">{{s['reliability']}}</span>{% endif %}</td>{% endfor %}
+    </tr>
+    <tr><td class="libelle">Sécurité (vulnérabilités)</td>
+      {% for s in rapport.suivi %}<td class="valeur">{{ s['faille'] is null ? '–' : s['faille']|format_number(locale='fr') }} {% if s['security'] %}<span class="note note-{{s['security']|lower}}">{{s['security']}}</span>{% endif %}</td>{% endfor %}
+    </tr>
+    <tr><td class="libelle">Hotspot</td>
+      {% for s in rapport.suivi %}<td class="valeur">{% if s['menace_potentielle_totale'] is not null and s['menace_potentielle_totale']!=-1 %}{{s['menace_potentielle_totale']|format_number(locale='fr')}}{% else %}–{% endif %} {% if s['note_hotspot'] %}<span class="note note-{{s['note_hotspot']|lower}}">{{s['note_hotspot']}}</span>{% endif %}</td>{% endfor %}
+    </tr>
+    <tr><td class="libelle">Maintenabilité (mauvaises pratiques)</td>
+      {% for s in rapport.suivi %}<td class="valeur">{{ s['mauvaise_pratique'] is null ? '–' : s['mauvaise_pratique']|format_number(locale='fr') }} {% if s['maintainability'] %}<span class="note note-{{s['maintainability']|lower}}">{{s['maintainability']}}</span>{% endif %}</td>{% endfor %}
+    </tr>
+    <tr><td class="libelle">SuppressWarning</td>
+      {% for s in rapport.suivi %}<td class="valeur">{% if s['suppress_warning'] is not null and s['suppress_warning']!=-1 %}{{s['suppress_warning']|format_number(locale='fr')}}{% else %}–{% endif %}</td>{% endfor %}
+    </tr>
+    <tr><td class="libelle">No Sonar</td>
+      {% for s in rapport.suivi %}<td class="valeur">{% if s['no_sonar'] is not null and s['no_sonar']!=-1 %}{{s['no_sonar']|format_number(locale='fr')}}{% else %}–{% endif %}</td>{% endfor %}
+    </tr>
+  </tbody>
+</table>
+
+{# ========== T3 - Tests & Couverture ========== #}
+<h2 style="page-break-before: always;">Tests &amp; Couverture</h2>
+<table class="versions-table">
+  {{ helpers.thead_versions(rapport.suivi) }}
+  <tbody>
+    <tr><td class="libelle">Date</td>{% for s in rapport.suivi %}<td class="valeur">{{ s['date']|date('d/m/Y', 'Europe/Paris') }}</td>{% endfor %}</tr>
+    <tr><td class="libelle">Quality Gate</td>
+      {% for s in rapport.suivi %}<td class="valeur">{% if s['alert_status'] %}{% set qg = s['alert_status']|upper %}{% set cls = qg == 'OK' ? 'ok' : (qg == 'WARN' ? 'warn' : 'error') %}<span class="qg-{{cls}}">{{qg}}</span>{% else %}<span class="nodata">–</span>{% endif %}</td>{% endfor %}
+    </tr>
+    <tr><td class="libelle">Couverture globale</td>{% for s in rapport.suivi %}<td class="valeur">{% if s['coverage'] is not null %}{{s['coverage']|number_format(1, ',', ' ')}} %{% else %}<span class="nodata">–</span>{% endif %}</td>{% endfor %}</tr>
+    <tr><td class="libelle">Couverture branches</td>{% for s in rapport.suivi %}<td class="valeur">{% if s['branch_coverage'] is not null %}{{s['branch_coverage']|number_format(1, ',', ' ')}} %{% else %}<span class="nodata">–</span>{% endif %}</td>{% endfor %}</tr>
+    <tr><td class="libelle">Lignes couvertes / total</td>{% for s in rapport.suivi %}<td class="valeur">{% if s['line_coverage'] is not null or s['lines_to_cover'] is not null %}{{s['line_coverage'] is null ? '–' : s['line_coverage']|format_number(locale='fr')}} / {{s['lines_to_cover'] is null ? '–' : s['lines_to_cover']|format_number(locale='fr')}}{% else %}<span class="nodata">–</span>{% endif %}</td>{% endfor %}</tr>
+    <tr><td class="libelle">Conditions non couvertes / total</td>{% for s in rapport.suivi %}<td class="valeur">{% if s['uncovered_conditions'] is not null or s['conditions_to_cover'] is not null %}{{s['uncovered_conditions'] is null ? '–' : s['uncovered_conditions']|format_number(locale='fr')}} / {{s['conditions_to_cover'] is null ? '–' : s['conditions_to_cover']|format_number(locale='fr')}}{% else %}<span class="nodata">–</span>{% endif %}</td>{% endfor %}</tr>
+    <tr><td class="libelle">Nombre de tests</td>{% for s in rapport.suivi %}<td class="valeur">{% if s['tests'] is not null %}{{s['tests']|format_number(locale='fr')}}{% else %}<span class="nodata">–</span>{% endif %}</td>{% endfor %}</tr>
+    <tr><td class="libelle">Tests en erreur</td>{% for s in rapport.suivi %}<td class="valeur">{% if s['test_errors'] is not null %}{{s['test_errors']|format_number(locale='fr')}}{% else %}<span class="nodata">–</span>{% endif %}</td>{% endfor %}</tr>
+    <tr><td class="libelle">Tests en échec</td>{% for s in rapport.suivi %}<td class="valeur">{% if s['test_failures'] is not null %}{{s['test_failures']|format_number(locale='fr')}}{% else %}<span class="nodata">–</span>{% endif %}</td>{% endfor %}</tr>
+    <tr><td class="libelle">Tests ignorés</td>{% for s in rapport.suivi %}<td class="valeur">{% if s['skipped_tests'] is not null %}{{s['skipped_tests']|format_number(locale='fr')}}{% else %}<span class="nodata">–</span>{% endif %}</td>{% endfor %}</tr>
+    <tr><td class="libelle">Taux de réussite</td>{% for s in rapport.suivi %}<td class="valeur">{% if s['test_success_density'] is not null %}{{s['test_success_density']|number_format(1, ',', ' ')}} %{% else %}<span class="nodata">–</span>{% endif %}</td>{% endfor %}</tr>
+    <tr><td class="libelle">Temps d'exécution</td>{% for s in rapport.suivi %}<td class="valeur">{% set ms = s['test_execution_time'] %}{% if ms is not null %}{% if ms < 1000 %}{{ms}} ms{% elseif ms < 60000 %}{{(ms / 1000)|number_format(1, ',', ' ')}} s{% else %}{{(ms / 60000)|number_format(0)}} min {{((ms % 60000) / 1000)|number_format(0)}} s{% endif %}{% else %}<span class="nodata">–</span>{% endif %}</td>{% endfor %}</tr>
+  </tbody>
+</table>
+
+{# ========== Complexité cyclomatique ========== #}
+<h2 style="page-break-before: always;">Complexité cyclomatique</h2>
+<table class="versions-table">
+  {{ helpers.thead_versions(rapport.suivi) }}
+  <tbody>
+    <tr><td class="libelle">Date</td>{% for s in rapport.suivi %}<td class="valeur">{{ s['date']|date('d/m/Y', 'Europe/Paris') }}</td>{% endfor %}</tr>
+    <tr><td class="libelle">Total</td>{% for s in rapport.suivi %}<td class="valeur">{% if s['complexity'] is not null %}{{s['complexity']|format_number(locale='fr')}}{% else %}<span class="nodata">–</span>{% endif %}</td>{% endfor %}</tr>
+    <tr><td class="libelle">Par fonction</td>{% for s in rapport.suivi %}<td class="valeur">{% if s['complexity'] is not null and s['functions'] is not null and s['functions'] > 0 %}{{(s['complexity'] / s['functions'])|number_format(2, ',', ' ')}}{% else %}<span class="nodata">–</span>{% endif %}</td>{% endfor %}</tr>
+    <tr><td class="libelle">Ratio</td>{% for s in rapport.suivi %}<td class="valeur">{% if s['complexity_ratio'] is not null %}{{s['complexity_ratio']|number_format(1, ',', ' ')}} %{% else %}<span class="nodata">–</span>{% endif %}</td>{% endfor %}</tr>
+    <tr><td class="libelle">Note</td>{% for s in rapport.suivi %}<td class="valeur">{% if s['note_complexity'] %}<span class="note note-{{s['note_complexity']|lower}}">{{s['note_complexity']}}</span>{% else %}<span class="nodata">–</span>{% endif %}</td>{% endfor %}</tr>
+  </tbody>
+</table>
+
+{# ========== Complexité cognitive ========== #}
+<h2>Complexité cognitive</h2>
+<table class="versions-table">
+  {{ helpers.thead_versions(rapport.suivi) }}
+  <tbody>
+    <tr><td class="libelle">Date</td>{% for s in rapport.suivi %}<td class="valeur">{{ s['date']|date('d/m/Y', 'Europe/Paris') }}</td>{% endfor %}</tr>
+    <tr><td class="libelle">Total</td>{% for s in rapport.suivi %}<td class="valeur">{% if s['cognitive_complexity'] is not null %}{{s['cognitive_complexity']|format_number(locale='fr')}}{% else %}<span class="nodata">–</span>{% endif %}</td>{% endfor %}</tr>
+    <tr><td class="libelle">Par fonction</td>{% for s in rapport.suivi %}<td class="valeur">{% if s['cognitive_complexity'] is not null and s['functions'] is not null and s['functions'] > 0 %}{{(s['cognitive_complexity'] / s['functions'])|number_format(2, ',', ' ')}}{% else %}<span class="nodata">–</span>{% endif %}</td>{% endfor %}</tr>
+    <tr><td class="libelle">Ratio</td>{% for s in rapport.suivi %}<td class="valeur">{% if s['cognitive_complexity_ratio'] is not null %}{{s['cognitive_complexity_ratio']|number_format(1, ',', ' ')}} %{% else %}<span class="nodata">–</span>{% endif %}</td>{% endfor %}</tr>
+    <tr><td class="libelle">Note</td>{% for s in rapport.suivi %}<td class="valeur">{% if s['note_cognitive'] %}<span class="note note-{{s['note_cognitive']|lower}}">{{s['note_cognitive']}}</span>{% else %}<span class="nodata">–</span>{% endif %}</td>{% endfor %}</tr>
+  </tbody>
+</table>
+
+{# ========== Distribution langage ========== #}
+<h2 style="page-break-before: always;">Distribution par langage</h2>
+<table class="versions-table">
+  {{ helpers.thead_versions(rapport.suivi) }}
+  <tbody>
+    <tr><td class="libelle">Date</td>{% for s in rapport.suivi %}<td class="valeur">{{ s['date']|date('d/m/Y', 'Europe/Paris') }}</td>{% endfor %}</tr>
+    <tr><td class="libelle">Total lignes de code</td>{% for s in rapport.suivi %}<td class="valeur">{% if s['ncloc'] is not null %}{{s['ncloc']|format_number(locale='fr')}}{% else %}<span class="nodata">–</span>{% endif %}</td>{% endfor %}</tr>
+    {% for code, libelle in rapport.langueDistribution.languages %}
+      <tr>
+        <td class="libelle">{{ libelle }}</td>
+        {% for row in rapport.langueDistribution.rows %}
+          {% set value = row.parsed[code] ?? null %}
+          <td class="valeur">{% if value is not null and value > 0 %}{{value|format_number(locale='fr')}}{% if row.ncloc and row.ncloc > 0 %}<br><span style="white-space: nowrap;">({{((value / row.ncloc) * 100)|number_format(1, ',', ' ')}}&nbsp;%)</span>{% endif %}{% else %}<span class="nodata">–</span>{% endif %}</td>
+        {% endfor %}
+      </tr>
+    {% else %}
+      <tr><td colspan="{{ (rapport.suivi|length) + 1 }}"><em class="nodata">Aucune distribution langage disponible.</em></td></tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+</body>
+</html>

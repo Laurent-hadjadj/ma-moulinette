@@ -1,0 +1,98 @@
+{# MODIF 2026-05-11 : section 2 (portrait) - header projet,
+    info-grid, synthèse exécutive (KPI 3x2) et points d'attention.
+    Tient en 1 a 2 pages portrait selon le nombre d'alertes. #}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Rapport Suivi - Synthese</title>
+  {{ include('rapport/suivi/_styles.html.twig') }}
+</head>
+<body>
+
+{# ========== HEADER ========== #}
+<table class="header">
+  <th></th>
+  <tr>
+    <td><img src="data:image/png;base64,{{ logoBase64 }}" alt="Logo" class="logo"></td>
+    <td class="header-title">
+      <h1>Rapport de suivi</h1>
+      <div class="subtitle">Analyse SonarQube par version</div>
+    </td>
+  </tr>
+</table>
+
+{# ========== INFO PROJET ========== #}
+<table class="info-grid">
+  <th></th>
+  <tr><td class="label">Projet</td><td>{{ rapport.project_name }}</td></tr>
+  <tr><td class="label">Clé Maven</td><td>{{ rapport.maven_key }}</td></tr>
+  <tr><td class="label">Nombre de versions</td><td>{{ rapport.suivi|length }}</td></tr>
+  {% if rapport.suivi is not empty %}
+    {% set firstDate = rapport.suivi[0]['date'] %}
+    {% set lastDate = rapport.suivi[rapport.suivi|length-1]['date'] %}
+    <tr><td class="label">Période couverte</td><td>{{ firstDate|date('d/m/Y', 'Europe/Paris') }} → {{ lastDate|date('d/m/Y', 'Europe/Paris') }}</td></tr>
+  {% endif %}
+</table>
+
+<div class="legende">
+  Légende : <span style="color:#ed7d20;">(reconstitué)</span> = version importée depuis SonarQube search_history (indicateurs partiels) ;
+  (collecte) = version collectée à chaud (indicateurs complets).
+</div>
+
+{# ========== Synthèse executive (6 tuiles KPI 3x2 en portrait) ========== #}
+{% if rapport.kpis is defined and rapport.kpis is not empty %}
+<h2>Synthèse exécutive (dernière version)</h2>
+<table class="kpi-grid">
+  <th></th>
+  {% for chunk in rapport.kpis|batch(3) %}
+    <tr>
+      {% for k in chunk %}
+        {% set sev = k.severity ?? 'na' %}
+        <td class="kpi-card kpi-{{ sev }}">
+          <div class="kpi-label">{{ k.label }}</div>
+          <div class="kpi-value">
+            {% if k.value is not null %}{{ k.value }}{% else %}–{% endif %}
+            {% if k.note %}<span class="note note-{{ k.note|lower }}">{{ k.note }}</span>{% endif %}
+          </div>
+          <div class="kpi-meta">
+            {% if k.delta_label %}
+              {% if k.trend == 'up' %}<span class="trend trend-up">↑</span>
+              {% elseif k.trend == 'down' %}<span class="trend trend-down">↓</span>
+              {% else %}<span class="trend trend-flat">→</span>{% endif %}
+              {{ k.delta_label }} <span style="color:#aaa;">vs N-1</span>
+            {% else %}
+              <span style="color:#bbb;">— pas de comparable</span>
+            {% endif %}
+          </div>
+        </td>
+      {% endfor %}
+      {# Pad la derniere rangee si moins de 3 elements pour conserver le layout. #}
+      {% if chunk|length < 3 %}
+        {% for i in 1..(3 - chunk|length) %}<td>&nbsp;</td>{% endfor %}
+      {% endif %}
+    </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+{# ========== Points d'attention ========== #}
+<h2>Points d'attention</h2>
+{% if rapport.alerts is defined and rapport.alerts is not empty %}
+  <div class="alerts-box">
+    <ul>
+      {% for a in rapport.alerts %}
+        <li class="sev-{{ a.severity }}">
+          <span class="titre">{{ a.titre }}.</span> {{ a.phrase }}
+        </li>
+      {% endfor %}
+    </ul>
+  </div>
+{% else %}
+  <div class="alerts-box alerts-empty">
+    <em>Aucun point bloquant détecté sur la dernière version.</em>
+  </div>
+{% endif %}
+
+</body>
+</html>

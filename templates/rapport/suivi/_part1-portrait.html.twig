@@ -1,0 +1,38 @@
+{# MODIF 2026-05-11 : section 1 (portrait) - page de garde.
+    Sous-PDF indépendant rendu par PdfExportService::renderSuiviSubPdf().
+    Pas de footer ni filigrane ici, ils sont dessines au merge FPDI. #}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Rapport Suivi - Page de garde</title>
+  {{ include('rapport/suivi/_styles.html.twig') }}
+</head>
+<body>
+
+<div class="cover-page">
+  <img src="data:image/png;base64,{{ logoBase64 }}" alt="Logo" class="cover-logo">
+  <div class="cover-title">RAPPORT DE SUIVI QUALITÉ</div>
+  <div class="cover-subtitle">Analyse SonarQube par version</div>
+
+  <div class="cover-project">
+    <div class="cover-project-name">{{ rapport.project_name }}</div>
+    <div class="cover-project-key">{{ rapport.maven_key }}</div>
+  </div>
+
+  <div class="cover-meta">
+    {% if rapport.suivi is not empty %}
+      {% set firstDate = rapport.suivi[0]['date'] %}
+      {% set lastDate = rapport.suivi[rapport.suivi|length-1]['date'] %}
+      <div><span class="label">Période couverte :</span>
+        {{ firstDate|date('d/m/Y', 'Europe/Paris') }} → {{ lastDate|date('d/m/Y', 'Europe/Paris') }}</div>
+      <div><span class="label">Versions analysées :</span> {{ rapport.suivi|length }}</div>
+    {% endif %}
+    <div><span class="label">Date du rapport :</span> {{ "now"|date('d/m/Y') }}</div>
+  </div>
+
+  <div class="cover-classification">{{ document_type }}</div>
+</div>
+
+</body>
+</html>
