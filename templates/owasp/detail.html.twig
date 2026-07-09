@@ -25,7 +25,6 @@
     {{ include('header.html.twig') }}
 
     <header class="grid-container margin-top-1">
-      {# WCAG 2.4.8 : aria-label enrichi ; aria-current="page" ; <ol> pour sémantique ordonnée du fil d'Ariane #}
       <nav aria-label="Fil d'Ariane, vous êtes ici">
         <ol class="claire-hand breadcrumbs">
           <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
@@ -36,9 +35,20 @@
       </nav>
     </header>
 
-    {# WCAG 2.4.1 : wrapper <main> avec id="main-content" (cible du skip link). L'inclusion partielle contient les <h1> de la catégorie OWASP — ils seront corrigés dans les partiels owasp/__*.html.twig #}
     <main id="main-content">
       {{ include('owasp/' ~ owasp.lien) }}
+
+      <footer class="grid-x grid-margin-x align-justify margin-left-1 margin-top-2 margin-bottom-2">
+        <div class="cell shrink">
+          <a id="bouton-retour-precedent"
+              href="{{ path('owasp', {}) }}"
+              onclick="history.back(); return false;"
+              class="button open-sans focus-light"
+              aria-label="Retour à la page précédente">
+            <span aria-hidden="true">⬅️</span>Retour
+          </a>
+        </div>
+      </footer>
     </main>
 
     {{ include('footer.html.twig') }}
