@@ -1,6 +1,6 @@
 {# Suivi des anomalies #}
 <div class="table-scroll pleine-page">
-  <table id="element2b-to-print">
+  <table>
     <caption class="show-for-medium claire-hand">Suivi des Mesures.</caption>
     <caption class="show-for-small-only text-left claire-hand">Suivi des Mesures.</caption>
     <thead>
@@ -14,7 +14,16 @@
             {% else %}
               {% set reference="null" %}
             {% endif %}
-            <th scope="col" class="open-sans text-right {{reference}}">{{suivi[i]['version']}}</th>
+            {# MODIF 2026-05-06 : marqueur visuel sous
+              chaque version (reconstitué / collecte) pour distinguer + aligner les colonnes. #}
+            <th scope="col" class="open-sans text-right {{reference}}">
+              {{suivi[i]['version']}}
+              {% if suivi[i]['mode_collecte'] == 'REBUILD' %}
+                <br><small class="text-orange open-sans">(reconstitué)</small>
+              {% else %}
+                <br><small class="text-noir open-sans">(collecte)</small>
+              {% endif %}
+            </th>
           {% endfor %}
         {% endif %}
       </tr>
