@@ -1,6 +1,5 @@
 {% set title = 'Mes projets' %}
 {% set description = 'Ma liste de projets' %}
-{# WCAG 1.4.1 : correspondance texte des notes SonarQube — permet d'associer une signification textuelle à chaque note (A à E) via aria-label, sans dépendre uniquement de la couleur CSS #}
 {% set note_labels = {
     'A': 'A (excellent)',
     'B': 'B (bon)',
@@ -36,7 +35,6 @@
     {{ include('header.html.twig') }}
     <br>
     <header class="grid-container margin-top-1">
-      {# WCAG 2.4.8 : indication "vous êtes ici" portée par aria-label ; aria-current="page" sur l'élément courant ; <ol> à la place de <ul> pour la sémantique ordonnée #}
       <nav aria-label="Fil d'Ariane, vous êtes ici">
         <ol class="claire-hand breadcrumbs">
           <li>
@@ -50,10 +48,8 @@
       </nav>
     </header>
 
-    {# WCAG 2.4.1 : ajout de id="main-content" (cible du skip link du header) #}
     <main id="main-content">
       <div class="grid-container">
-        {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page (celui du header) ; descente d'un niveau pour tous les titres de section #}
         <h2 class="h2 claire-hand">Mes Projets</h2>
         <h3 class="h3 claire-hand">Suivi des principaux indicateurs.</h3>
 
@@ -71,7 +67,6 @@
 
       <div class="table-scroll pleine-page">
         <table class="hover striped">
-          {# WCAG 1.3.1 : caption réelle pour décrire le tableau (anciennement vide avec aria-hidden). On garde l'effet visuel via la classe no-caption/show-for-sr au lieu de aria-hidden #}
           <caption class="show-for-sr">Tableau récapitulatif des projets : application, version, lignes de code, notes SonarQube (fiabilité, sécurité, hotspots, maintenabilité), violations, composants, qualité du code, journalisation et tests.</caption>
           <thead>
             <tr
