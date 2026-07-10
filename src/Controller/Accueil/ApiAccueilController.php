@@ -31,6 +31,7 @@ class ApiAccueilController extends AbstractController
     private static string $sonarUrl = "sonar.url";
     private static string $europeParis = "Europe/Paris";
     private static string $erreur404 = "Je n'ai pas trouvé de projets sur le serveur SonarQube (Erreur 404).";
+    private static string $noData = 'Pas de données disponibles pour le moment.';
 
     /**
      * [Description for __construct]
@@ -75,14 +76,14 @@ class ApiAccueilController extends AbstractController
             $this->logger->critical('[Accueil] 🔴 SonarQube indisponible', [
                 'code' => $result['code'],
                 'url' => $url,
-                'erreur' => $result['erreur'] ?? null
+                'erreur' => $result['erreur'] ?? self::$noData
             ]);
 
             return new JsonResponse([
                 'code' => $result['code'],
                 'type' => 'critical',
                 'message' => "Le serveur SonarQube n'est pas disponible (Erreur {$result['code']}).",
-                'trace' => $result['erreur'] ?? null
+                'trace' => $result['erreur'] ?? self::$noData
             ], Response::HTTP_OK);
         }
 
@@ -129,14 +130,14 @@ class ApiAccueilController extends AbstractController
             $this->logger->error("[Accueil-projet] ❌ Erreur de l'appel à SonarQube.", [
                 'code' => $result['code'],
                 'url' => $url,
-                'erreur' => $result['erreur'] ?? null
+                'erreur' => $result['erreur'] ?? self::$noData
             ]);
 
             return new JsonResponse([
                 'code' => $result['code'],
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => "Une erreur est survenue lors de la recherche des projets depuis le serveur SonarQube (Erreur {$result['code']}).",
-                'trace' => $result['erreur'] ?? null
+                'trace' => $result['erreur'] ?? self::$noData
             ], Response::HTTP_OK);
         }
 
@@ -163,14 +164,14 @@ class ApiAccueilController extends AbstractController
         if ($delete['code'] !== 200) {
             $this->logger->error('[Accueil-projet] ❌ Échec de la requête deleteListeProjet.', [
                 'code' => $delete['code'],
-                'erreur' => $delete['erreur'] ?? null
+                'erreur' => $delete['erreur'] ?? self::$noData
             ]);
 
             return new JsonResponse([
                 'code' => $delete['code'],
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => "La suppression de la liste des projets a échouée ({$delete['code']}).",
-                'trace' => $delete['erreur'] ?? null
+                'trace' => $delete['erreur'] ?? self::$noData
             ], Response::HTTP_OK);
         }
 
@@ -187,10 +188,12 @@ class ApiAccueilController extends AbstractController
                 $this->logger->debug('🛠️ [Accueil-projet] Projet ignoré (SVN)', ['key' => $projet['key']]);
                 continue;
             }
-            /** Constructor signature : (mavenKey, name, visibility, tags = []).
-             *  setDateEnregistrement override la date init par le constructor. */
+            $listeProjet = new ListeProjet();
+            $listeProjet->setMavenKey($projet["key"]);
+            $listeProjet->setName($projet["name"]);
             $tags = (empty($projet['tags'])) ? ['@AUCUN'] : $projet['tags'];
-            $listeProjet = new ListeProjet($projet["key"], $projet["name"], $projet["visibility"], $tags);
+            $listeProjet->setTags($tags);
+            $listeProjet->setVisibility($projet["visibility"]);
             $listeProjet->setDateEnregistrement($date);
 
             $this->em->persist($listeProjet);
@@ -218,14 +221,14 @@ class ApiAccueilController extends AbstractController
             $this->logger->error('[Accueil-projet] ❌ Échec de la requête updatePropertiesProjet.', [
                 'code' => $r['code'],
                 'map' => $map,
-                'erreur' => $r['erreur'] ?? null
+                'erreur' => $r['erreur'] ?? self::$noData
             ]);
 
             return new JsonResponse([
                 'code' => $r['code'],
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => "La mise à jour des méta-données du projet a échouée ({$r['code']}).",
-                'trace' => $r['erreur'] ?? null
+                'trace' => $r['erreur'] ?? self::$noData
             ], Response::HTTP_OK);
         }
 
@@ -271,14 +274,14 @@ class ApiAccueilController extends AbstractController
         if ($tag['code'] != 200) {
             $this->logger->error('[Accueil] ❌ Échec de la requête countListeProjetTags.', [
                 'code' => $tag['code'],
-                'erreur' => $tag['erreur'] ?? null
+                'erreur' => $tag['erreur'] ?? self::$noData
             ]);
 
             return new JsonResponse([
                 'code' => $tag['code'],
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => "Le dénombrement des tags de projets n'a pas abouti ({$tag['code']}).",
-                'trace' => $tag['erreur'] ?? null
+                'trace' => $tag['erreur'] ?? self::$noData
             ], Response::HTTP_OK);
         }
 
