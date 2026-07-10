@@ -58,21 +58,21 @@
 
 {% block _Portefeuille_information_widget %}
 <div class="alert alert-info">
-    <h2 class="h5 claire-hand mb-2">ℹ️ Portefeuille</h2>
-    <p class="open-sans">
-        Ce formulaire vous permet de définir le nom du <em>portefeuille</em>, c'est-à-dire la liste des projets rattachés à un groupe fonctionnel, qui sera utilisée lors des traitements manuels ou automatiques de collecte des indicateurs SonarQube.
+    <h2 class="h5 claire-hand mb-1">ℹ️ Portefeuille</h2>
+    <p class="open-sans mb-1">
+        Un <strong>portefeuille</strong> regroupe les projets SonarQube d’un groupe fonctionnel pour les collectes manuelles ou automatiques d’indicateurs.
     </p>
-
     <p class="open-sans mb-0">
-        ⚠️ <strong>Important :</strong> ce groupe n’a <u>aucun impact sur les droits d’accès</u>.
-        Les permissions sont gérées uniquement par les <strong>rôles</strong>.
+        ⚠️ Aucun impact sur les droits d’accès — les permissions sont gérées par les <strong>rôles</strong>.
     </p>
 </div>
 <div class="alert alert-secondary mt-2">
-    <h3 class="h6 claire-hand mb-2">📝Recommandations</h3>
-    📌 <strong>Taille du Portefeuille</strong> : Limitez le portefeuille à un maximum de 50 projets pour une empreinte mémoire de 400 MO et un temps d'exécution d'environ 8 minutes.<br>
-    📌 <strong>Projets Très Actifs</strong> : Regroupez les projets très actifs dans un portefeuille dédié, par exemple <b>[groupe]-quotidien</b>, pour lesquels une analyse quotidienne est réalisée.<br>
-    📌 <strong>Projets Moins Actifs</strong> : Regroupez les projets moins actifs dans un portefeuille dédié, par exemple <b>[groupe]-hebdomadaire</b>, pour lesquels une analyse hebdomadaire est nécessaire.<br>
-    📌 <strong>Projets Inactifs</strong> : Regroupez les projets inactifs dans un portefeuille dédié, par exemple <b>[groupe]-archive</b>, pour lesquels une analyse régulière n'est pas nécessaire.
+    <h3 class="h6 claire-hand mb-1">📋 Recommandations</h3>
+    <ul class="open-sans mb-0">
+        <li>Max <strong>50 projets</strong> — ~400 Mo, ~8 min d’exécution.</li>
+        <li><strong>[groupe]-quotidien</strong> — projets très actifs (analyse quotidienne).</li>
+        <li><strong>[groupe]-hebdomadaire</strong> — projets modérément actifs.</li>
+        <li><strong>[groupe]-archive</strong> — projets inactifs (analyse ponctuelle).</li>
+    </ul>
 </div>
 {% endblock %}
