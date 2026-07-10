@@ -27,8 +27,7 @@ use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Utilisateur;
 use App\Form\ResetPasswordFormType;
-use App\Repository\UtilisateurRepository;
-use App\Service\UserAgentTrackingFacade;
+use App\Service\UserAgent\UserAgentTrackingFacade;
 
 /**
  * [Description ResetPasswordController]
@@ -54,9 +53,7 @@ class ResetPasswordController extends AbstractController
         ParameterBagInterface $params,
         private LoggerInterface $logger,
         private UserPasswordHasherInterface $passwordHasher,
-        // AUDIT 2026-05 : utilisé par $this->tracking->track('RESET_PASSWORD') dans index() — ne pas retirer même si PhpStan signale "property.onlyWritten"
-        private UserAgentTrackingFacade $tracking
-    ) {
+        private UserAgentTrackingFacade $tracking) {
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
@@ -114,7 +111,7 @@ class ResetPasswordController extends AbstractController
 
         /** On récupère le login de l'utilisateur connecté */
         $courriel = $utilisateur->getCourriel();
-         /**  On récupère les valeurs pour resetPassword */
+        /**  On récupère les valeurs pour resetPassword */
         $resetPasswordCount = $utilisateur->getResetPasswordCount();
 
         /** On créé un objet DateTime */
@@ -132,32 +129,32 @@ class ResetPasswordController extends AbstractController
             $ancienMotDePasse = $form->get('ancienMotDePasse')->getData();
             $isValidPassword = $this->passwordHasher->isPasswordValid($utilisateur, $ancienMotDePasse);
 
-                /** Si l'ancien mot de passe est incorrecte */
+            /** Si l'ancien mot de passe est incorrecte */
             if ($isValidPassword === false) {
-                    /** On verrouille après 5 tentatives */
-                    if ($resetPasswordCount >= 5) {
-                        return $this->redirectToRoute('logout');
-                    }
-                    $this->logger->warning("[Reset-Password] ⚠️ Mot de passe incorrect pour $courriel (tentative n°$resetPasswordCount).");
-
-                    /** On prepare un message flash */
-                $r = 5 - $resetPasswordCount;
-                    $s = ($r === 1) ? '' : 's';
-                $message = "Votre mot de passe est incorrect (" . $r . " tentative" . $s . " restante" . $s . ").";
-                    $this->addFlash('notice', [
-                        'type' => 'warning',
-                        'message' => $message
-                    ]);
-
-                    /** On incrémente le nombre de tentative */
-                    $utilisateur->setResetPasswordCount($resetPasswordCount + 1);
-                    $utilisateur->setDateModification($date);
-                    $utilisateur->setActif(false);
-                    $this->em->flush();
-
-                    $this->logger->info("[Reset-Password] ℹ️ le nombre de tentative a été incrémenté pour [$courriel].");
-                    return $this->redirectToRoute('reset_mot_de_passe');
+                /** On verrouille après 5 tentatives */
+                if ($resetPasswordCount >= 5) {
+                    return $this->redirectToRoute('logout');
                 }
+                $this->logger->warning("[Reset-Password] ⚠️ Mot de passe incorrect pour $courriel (tentative n°$resetPasswordCount).");
+
+                /** On prepare un message flash */
+                $r = 5 - $resetPasswordCount;
+                $s = ($r === 1) ? '' : 's';
+                $message = "Votre mot de passe est incorrect (" . $r . " tentative" . $s . " restante" . $s . ").";
+                $this->addFlash('notice', [
+                    'type' => 'warning',
+                    'message' => $message
+                ]);
+
+                /** On incrémente le nombre de tentative */
+                $utilisateur->setResetPasswordCount($resetPasswordCount + 1);
+                $utilisateur->setDateModification($date);
+                $utilisateur->setActif(false);
+                $this->em->flush();
+
+                $this->logger->info("[Reset-Password] ℹ️ le nombre de tentative a été incrémenté pour [$courriel].");
+                return $this->redirectToRoute('reset_mot_de_passe');
+            }
 
             // Encode(hash) le mot de passe en clair.
             $plainPassword = \Normalizer::normalize($form->get('plainPassword')->getData(), \Normalizer::FORM_C);
@@ -215,7 +212,7 @@ class ResetPasswordController extends AbstractController
                 'type' => 'error',
                 'message' => self::$erreur400
             ], Response::HTTP_OK);
-            }
+        }
 
         $reset_password = $data->reset_password ?? false;
 
@@ -226,9 +223,9 @@ class ResetPasswordController extends AbstractController
 
         /** On met à jour la table propriétés */
         $map = [
-                'reset_password' => $reset_password,
-                'date_modification' => $date_modification,
-                'courriel' => $courriel
+            'reset_password' => $reset_password,
+            'date_modification' => $date_modification,
+            'courriel' => $courriel
         ];
 
         $r = $userEntity->updateUtilisateurResetPassword($map);
