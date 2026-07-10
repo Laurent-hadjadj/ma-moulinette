@@ -15,15 +15,15 @@ namespace App\Controller\Accueil;
 
 use App\Controller\Traits\AppUserAware;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
+use Symfony\Component\HttpFoundation\{JsonResponse, Response};
 use \Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{ListeProjet, Profiles, Properties, Historique, MaMoulinette};
-use App\Service\{ClientService, UrlBuilderService, UserAgentTrackingFacade};
+use App\Service\{ClientService, UrlBuilderService};
+use App\Service\UserAgent\UserAgentTrackingFacade;
 
 /**
  * [Description AccueilController]
@@ -35,6 +35,7 @@ class AccueilController extends AbstractController
     private static string $page = 'accueil/index.html.twig';
     private static string $sonarUrl = 'sonar.url';
     private static string $europeParis = 'Europe/Paris';
+    private static string $noData = 'Pas de données disponibles.';
 
     private string $logoEntreprise;
     private string $marqueEntrepriseShort;
@@ -175,7 +176,7 @@ class AccueilController extends AbstractController
             $this->addFlash(
                 'notice',
                 [
-                    'type' => 'alert',
+                    'type' => 'error',
                     'message' => "❌ {$result['erreur']}"
                 ]
             );
@@ -249,7 +250,7 @@ class AccueilController extends AbstractController
 
         if ($result['code'] !== 200) {
             $this->addFlash('notice', [
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => "❌ {$result['erreur']}"
             ]);
             return -1;
@@ -347,13 +348,13 @@ class AccueilController extends AbstractController
             if ($insert['code'] !== 200) {
                 $this->logger->error("[Accueil] ❌ Échec de la requête insertProperties", [
                     'code' => $insert['code'],
-                    'erreur' => $insert['erreur'] ?? null
+                    'erreur' => $insert['erreur'] ?? self::$noData
                 ]);
 
                 $this->addFlash(
                     'notice',
                     [
-                        'type' => 'alert',
+                        'type' => 'error',
                         'message' => "❌ {$insert['erreur']}"
                     ]
                 );
@@ -425,7 +426,7 @@ class AccueilController extends AbstractController
             $this->addFlash(
                 'notice',
                 [
-                    'type' => 'alert',
+                    'type' => 'error',
                     'message' => "❌ {$result['erreur']}"
                 ]
             );
@@ -589,7 +590,6 @@ class AccueilController extends AbstractController
          * 3 - On met à jour la table liste_projet et/ou profiles et on met à jour la table
          *     properties.
          */
-
         $this->tracking->track('ACCUEIL');
 
         $this->logger->info("[Accueil] ℹ️ Chargement de la page d'accueil");
@@ -699,6 +699,9 @@ class AccueilController extends AbstractController
              * Si le référentiel sonar est égale de celui sur le serveur et que la table de properties n'est pas à jour, on met à jour la table.
              */
             $this->majProperties('projet', $projetBd, $projetSonar);
+        // MODIF 2026-05-26 : else terminal requis par S126 (branche intentionnellement vide).
+        } else {
+            $this->logger->debug('[Accueil] 🔍 Référentiel PROJET : aucune condition vérifiée, aucune action requise.');
         }
 
         /** 3 - PROFIL  */
@@ -720,6 +723,9 @@ class AccueilController extends AbstractController
              * Si le référentiel sonar est égale de celui sur le serveur et que la table de properties n'est pas à jour, on met à jour la table.
              */
             $this->majProperties('profil', $profilBd, $profilSonar);
+        // MODIF 2026-05-26 : else terminal requis par S126 (branche intentionnellement vide).
+        } else {
+            $this->logger->debug('[Accueil] 🔍 Référentiel PROFIL : aucune condition vérifiée, aucune action requise.');
         }
 
         /** 4 - Visibility   */
