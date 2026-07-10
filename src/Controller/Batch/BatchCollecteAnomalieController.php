@@ -63,6 +63,7 @@ class BatchCollecteAnomalieController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
+    /* MODIF 2026-05-07 : ajout $anomalieTotal pour réassigner les orphans à 'inconnu'. */
     private function batchAnalyseAnomalie(array $facet, string $maven_key, ?int $anomalieTotal = null): array
     {
         /** On récupère le nombre total d'anomalie par chemin,donc il suffit d'identifier la nature du chemin pour connaître le nombre d'anomalie par module. */
@@ -120,22 +121,11 @@ class BatchCollecteAnomalieController extends AbstractController
             ];
         }
 
-        /**
-         * Réconciliation avec paging.total : certaines issues SonarQube n'ont pas
-         * de directory (issue package-level). La somme du facet directories peut
-         * donc être < paging.total. On reverse l'écart vers "inconnu" pour que
-         * frontend+backend+autre+inconnu == anomalieTotal.
-         */
+        // Orphans : issues sans directory → réassignées à 'inconnu' pour préserver l'invariant total = somme(modules).
         if ($anomalieTotal !== null) {
-            $sumFacet = $scoreFrontend + $scoreBackend + $scoreAutre + $scoreInconnu;
-            $orphans = $anomalieTotal - $sumFacet;
+            $orphans = $anomalieTotal - ($scoreFrontend + $scoreBackend + $scoreAutre + $scoreInconnu);
             if ($orphans > 0) {
                 $scoreInconnu += $orphans;
-                $this->logger->info('[Batch Anomalie] ℹ️ Issues sans directory réaffectées vers inconnu.', [
-                    'orphans' => $orphans,
-                    'sum_facet' => $sumFacet,
-                    'paging_total' => $anomalieTotal
-                ]);
             }
         }
 
@@ -312,6 +302,7 @@ class BatchCollecteAnomalieController extends AbstractController
                         }
                         break;
                     case 'directories':
+                        /* MODIF 2026-05-07 : passer anomalieTotal pour réassigner les orphans (issues sans directory). */
                         $analyse = $this->batchAnalyseAnomalie($facet, $maven_key, $anomalieTotal);
                         break;
                     default:
