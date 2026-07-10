@@ -124,7 +124,6 @@ class BatchAutoController extends AbstractController
      * [Description for traitementAuto]
      * Lance le traitement automatique programmé
      *
-     * @param Client $client
      * @param Request $request
      *
      * @return JsonResponse
@@ -176,10 +175,8 @@ class BatchAutoController extends AbstractController
                 'message' => self::$erreur403
             ], Response::HTTP_FORBIDDEN);
         }
-
-        // On extrait la liste des projets pour le portefeuille depuis la table batch_traitement
+        // MODIF 2026-06-10 — $data->portefeuille = groupe_fonctionnel (slug) → critère de recherche
         $les_projets = $this->listeProjetService->listeProjet($data->nom_traitement, $data->portefeuille);
-
         if ($les_projets['code'] === 404) {
             $this->logger->warning("[Traitement-Automatique] ❌ La liste est vide ou n'existe plus.", [
                 'code' => $les_projets,
@@ -200,6 +197,7 @@ class BatchAutoController extends AbstractController
         // Création du job principal
         $execution_id = new Ulid();
 
+        try{
         $batchExecution = new BatchExecution(
             'Collecte du ' . date('d/m/Y H:i'),
             $execution_id,
@@ -207,6 +205,19 @@ class BatchAutoController extends AbstractController
             $utilisateur_collecte,
             self::$traitementAutomatique
         );
+        } catch (\Throwable $e) {
+            $this->logger->error("[Traitement-Automatique] ❌ Erreur lors de la création de l'exécution du batch.", [
+                'traitement_id' => $data->traitement_id,
+                'error' => $e->getMessage()
+            ]);
+
+            return new JsonResponse([
+                'code' => 500,
+                'type' => 'error',
+                'message' => "Il n'est pas possible de créer l'exécution du batch.",
+                'erreur' => $e->getMessage()
+            ], Response::HTTP_OK);
+        }
 
         $this->em->persist($batchExecution);
 
@@ -282,15 +293,12 @@ class BatchAutoController extends AbstractController
             $explose_le_projet = explode(':', $le_projet, 2);
             $nom_projet = (count($explose_le_projet) === 2) ? $explose_le_projet[1] : $le_projet;
 
-            /* On utilise le constructeur de l'entité pour créer une nouvelle instance avec les données du résultat de la collecte */
-            $journal = new BatchExecutionJournal(
-                $nom_projet,
-                $data->portefeuille,
-                $result['compte_rendu'],
-                $batchExecution,
-                new \DateTimeImmutable(),
-                $result['code']
-            );
+            $journal = new BatchExecutionJournal();
+            $journal->setCode($result['code']);
+            $journal->setPortefeuille($data->portefeuille);
+            $journal->setNomProjet($nom_projet);
+            $journal->setCompteRendu($result['compte_rendu']);
+            $journal->setDateExecution(new \DateTimeImmutable());
 
             $batchExecution->addJournal($journal);
             $this->em->persist($journal);
