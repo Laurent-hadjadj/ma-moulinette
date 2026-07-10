@@ -21,7 +21,8 @@ use Psr\Log\LoggerInterface;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Activity, ActivityHistorique};
-use App\Service\{ClientService, UserAgentTrackingFacade};
+use App\Service\ClientService;
+use App\Service\UserAgent\UserAgentTrackingFacade;
 
 /**
  * [Description ActivityController]
@@ -31,6 +32,7 @@ class ActivityController extends AbstractController
 
     private static string $sonarUrl = "sonar.url";
     private static string $page = "activity/index.html.twig";
+    private const NO_DATA = 'Pas de données disponibles pour le moment.';
 
     private string $logoEntreprise;
     private string $marqueEntrepriseShort;
@@ -52,8 +54,7 @@ class ActivityController extends AbstractController
         private ClientService $client,
         private LoggerInterface $logger,
         private UserAgentTrackingFacade $tracking
-    )
-    {
+    ) {
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
@@ -94,7 +95,7 @@ class ActivityController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/activity', name: 'activity', methods: 'GET')]
-    public function index()
+    public function index(): Response
     {
         $this->tracking->track('ACTIVITY');
 
@@ -131,7 +132,7 @@ class ActivityController extends AbstractController
         if (isset($result['code']) && in_array($result['code'], [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
             $this->logger->error('[Activity-Page] ❌ Échec de l\'appel httpActivity.', [
                 'code' => $result['code'],
-                'erreur' => $result['erreur'] ?? 'Pas de données'
+                'erreur' => $result['erreur'] ?? self::NO_DATA
             ]);
             $this->addFlash('notice', [
                 'type' => 'error',
@@ -144,8 +145,8 @@ class ActivityController extends AbstractController
         $selectActivity = $activityRepos->selectActivity($actualYear);
         if (($selectActivity['code'] ?? 0) !== 200) {
             $this->logger->error('[Activity-Page] ❌ Échec de la requête selectActivity.', [
-                'code' => $selectActivity['code'] ?? 'Pas de données',
-                'erreur' => $selectActivity['erreur'] ?? 'Pas de données'
+                'code' => $selectActivity['code'] ?? self::NO_DATA,
+                'erreur' => $selectActivity['erreur'] ?? self::NO_DATA
             ]);
             $this->addFlash('notice', [
                 'type' => 'error',
@@ -220,5 +221,4 @@ class ActivityController extends AbstractController
         $render['data'] = $listeHistorique['liste'];
         return $this->render(self::$page, $render);
     }
-
 }
