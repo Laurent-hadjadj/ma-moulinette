@@ -30,10 +30,9 @@ import 'foundation-sites';
 import 'motion-ui';
 
 import '../../common/foundation.js';
-import '../../common/messageHelper';
 
 import { Chart, registerables } from 'chart.js';
-import { showMessage } from '../../common/messageHelper';
+import { showMessage } from '../../common/messageHelper.js';
 Chart.register(...registerables);
 
 const SEVERITY_COLORS = {
