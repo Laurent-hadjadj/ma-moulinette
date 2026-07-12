@@ -61,6 +61,8 @@ class ApiDependencyCheckUploadController extends AbstractController
         path: '/api/secure/dependency-check/upload', name: 'api_dc_upload', methods: ['POST'])]
     public function upload(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/secure/dependency-check/upload");
+
         $this->logger->info('[DC-Ingest] ℹ️ Reception payload OWASP DependencyCheck.', [
             'content_type'   => $request->headers->get('Content-Type'),
             'content_length' => $request->headers->get('Content-Length'),
@@ -213,6 +215,8 @@ class ApiDependencyCheckUploadController extends AbstractController
     )]
     public function status(string $ulid): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/secure/dependency-check/status/{ulid}");
+
         $entry = $this->queueRepository->findByUlid($ulid);
 
         if ($entry === null) {
