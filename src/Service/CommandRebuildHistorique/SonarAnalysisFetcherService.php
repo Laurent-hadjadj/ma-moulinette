@@ -144,7 +144,7 @@ class SonarAnalysisFetcherService
     /**
      * [Description for getLatestAnalysisPerVersion]
      *
-     * @param array $analyses
+     * @param string $project_key
      *
      * @return array
      *
