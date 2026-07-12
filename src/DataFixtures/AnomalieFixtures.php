@@ -1,89 +1,75 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2015-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\Anomalie;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-/**
- * [Description AnomalieFixtures]
+/* MODIF 2026-05-08 : création AnomalieFixtures.
+ * Contrat :
+ *  - AnomalieKernelTest::testAnomalieCount : findBy(mavenKey) -> 3 lignes
+ *  - AnomalieRepositoryTest::testSelectAnomalieByProjectName / testSelectAnomalie /
+ *    testDeleteAnomalieMavenKey : présence de lignes pour la mavenKey de référence
+ * Seed 3 rows à compteurs nuls (PositiveOrZero) ; chaînes de dette obligatoires
+ * (NotBlank) avec valeurs simples.
  */
+
 class AnomalieFixtures extends Fixture
 {
-  private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-  private static string $projectName = 'ma-moulinette';
-  private static int $anomalieTotal = 1956;
-  private static int $detteMinute = 19586;
-  private static int $detteReliabilityMinute = 107;
-  private static int $detteVulnerabilityMinute = 0;
-  private static int $detteCodeSmellMinute = 7369;
-  private static string $detteReliability = '0h:5min';
-  private static string $detteVulnerability = '0h:0min';
-  private static string $dette = '4d, 19h:32min';
-  private static string $detteCodeSmell = '5d, 2h:49min';
-  private static int $frontend = 806;
-  private static int $backend = 0;
-  private static int $autre = 0;
-  private static int $inconnu = 1;
-  private static int $blocker = 0;
-  private static int $critical = 0;
-  private static int $major = 4750;
-  private static int $info = 0;
-  private static int $minor = 222;
-  private static int $bug = 0;
-  private static int $vulnerability = 0;
-  private static int $codeSmell = 801;
-  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
-  private static string $dateEnregistrement = '2024-06-28 17:55:45+02';
+    private const MAVEN_KEY = 'fr.ma-moulinette:ma-moulinette';
+    private const PROJECT_NAME = 'ma-moulinette';
+    private const MODE_COLLECTE = 'TRAITEMENT MANUEL';
+    private const UTILISATEUR_COLLECTE = 'batch.collecte@ma-moulinette.fr';
 
-  /**
-   * [Description for load]
-   *
-   * @param ObjectManager $manager
-   *
-   * @return void
-   *
-   * Created at: 05/05/2024 18:43:05 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  public function load(ObjectManager $manager): void
+    public function load(ObjectManager $manager): void
     {
-      $modeCollecte=['COLLECTE', 'TRAITEMENT MANUEL', 'TRAITEMENT AUTOMATIQUE'];
+        $now = new \DateTimeImmutable('2026-01-01 00:00:00');
 
-      foreach($modeCollecte as $mode){
-        $anomalie=(new Anomalie())
-            ->setMavenKey(self::$mavenKey)
-            ->setProjectName(self::$projectName)
-            ->setAnomalieTotal(self::$anomalieTotal)
-            ->setDetteMinute(self::$detteMinute)
-            ->setDetteReliabilityMinute(self::$detteReliabilityMinute)
-            ->setDetteVulnerabilityMinute(self::$detteVulnerabilityMinute)
-            ->setDetteCodeSmellMinute(self::$detteCodeSmellMinute)
-            ->setDetteReliability(self::$detteReliability)
-            ->setDetteVulnerability(self::$detteVulnerability)
-            ->setDetteCodeSmell(self::$detteCodeSmell)
-            ->setDette(self::$dette)
-            ->setFrontend(self::$frontend)
-            ->setBackend(self::$backend)
-            ->setAutre(self::$autre)
-            ->setInconnu(self::$inconnu)
-            ->setBlocker(self::$blocker)
-            ->setCritical(self::$critical)
-            ->setMajor(self::$major)
-            ->setInfo(self::$info)
-            ->setMinor(self::$minor)
-            ->setBug(self::$bug)
-            ->setVulnerability(self::$vulnerability)
-            ->setCodeSmell(self::$codeSmell)
-            ->setUtilisateurCollecte(self::$utilisateurCollecte)
-            ->setModeCollecte($mode)
-            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
+        for ($i = 0; $i < 3; $i++) {
+            $anomalie = (new Anomalie())
+                ->setMavenKey(self::MAVEN_KEY)
+                ->setProjectName(self::PROJECT_NAME)
+                ->setAnomalieTotal(0)
+                ->setDetteMinute(0)
+                ->setDetteReliabilityMinute(0)
+                ->setDetteVulnerabilityMinute(0)
+                ->setDetteCodeSmellMinute(0)
+                ->setDetteReliability('0h:0min')
+                ->setDetteVulnerability('0h:0min')
+                ->setDette('0h:0min')
+                ->setDetteCodeSmell('0h:0min')
+                ->setFrontend(0)
+                ->setBackend(0)
+                ->setAutre(0)
+                ->setInconnu(0)
+                ->setBlocker(0)
+                ->setCritical(0)
+                ->setMajor(0)
+                ->setInfo(0)
+                ->setMinor(0)
+                ->setBug(0)
+                ->setVulnerability(0)
+                ->setCodeSmell(0)
+                ->setModeCollecte(self::MODE_COLLECTE)
+                ->setUtilisateurCollecte(self::UTILISATEUR_COLLECTE)
+                ->setDateEnregistrement($now);
             $manager->persist($anomalie);
         }
 
-        /** Enregistrement des données dans la base de tests */
         $manager->flush();
     }
-  }
+}

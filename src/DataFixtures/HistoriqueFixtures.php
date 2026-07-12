@@ -1,136 +1,65 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2015-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\Historique;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-/**
- * Fixture Historique — version alignée avec le refactor v2.0.0 de l'entité.
- *
- * Correspondances principales (old → new) :
- *   setNombreLigne        → setLines
- *   setNombreLigneCode    → setNcloc
- *   setNombreBug          → setBugs
- *   setNombreVulnerability→ setVulnerabilities
- *   setNombreCodeSmell    → setCodeSmells
- *   setNombreHotspot      → setSecurityHotspot
- *   setNombreAnomalieXxx  → setBlocker/Critical/Major/Minor/Info Violations
- *   setFrontend/Backend/Autre/inconnu → setRepartitionFrontend/Backend/Autre/Inconnu
- *   setDette              → setSqaleIndex
- *   setNoteReliability    → setReliabilityRating
- *   setNoteSecurity       → setSecurityRating
- *   setNoteSqale          → setSqaleRating
- *   setNoteHotspot        → setSecurityReviewRating
- *   setHotspot{High,Med,Low}  → setMenacePotentielleToReview{High,Medium,Low}
- *   setNoSonar            → setJavaNoSonar (+ Php/Python/Javascript/Typescript/Ruby/Xml)
- *   setTodo               → setJavaTodo   (+ Php/Python/Javascript/Typescript/Ruby/Xml)
- *   setInitial('true')    → setInitial(true)   (typage bool strict)
+/* MODIF 2026-05-08 : creation HistoriqueFixtures.
+ * Contrat : 2 lignes Historique partageant la meme maven_key
+ * (fr.ma-moulinette:ma-moulinette) avec deux couples (version, date_version)
+ * distincts, conformément a la clé composite (maven_key, version, date_version).
+ * - Une ligne porte la version « 1.2.0-RELEASE » exigée par testGetProjetFavori
+ *   et testUpdateHistoriqueReference (HistoriqueRepositoryTest).
+ * - Aucune ligne ne porte (1.5.0-RELEASE, 2024-08-18 15:54:26) : testInsertHistoriqueAjoutProjet
+ *   doit réussir au premier appel puis renvoyer 23505 au second.
+ * Tous les champs non-nullable (nom_projet, analyse_key, initial, date_enregistrement)
+ * sont renseignes avec des valeurs par défaut de cohérences.
  */
+
 class HistoriqueFixtures extends Fixture
 {
-    /**
-     * Jeu de données historique pour deux versions du projet ma-moulinette.
-     */
+    private const MAVEN_KEY = 'fr.ma-moulinette:ma-moulinette';
+    private const PROJECT_NAME = 'ma-moulinette';
+
     public function load(ObjectManager $manager): void
     {
-        foreach ($this->rows() as $row) {
-            $historique = (new Historique())
-                ->setMavenKey('fr.ma-petite-entreprise:ma-moulinette')
-                ->setAnalyseKey('AZCc05qWgfifxdiJPzns')
-                ->setVersion($row['version'])
-                ->setDateVersion($row['dateVersion'])
-                ->setNomProjet('ma-moulinette')
-                ->setVersionRelease($row['versionRelease'])
-                ->setVersionSnapshot(0)
-                ->setVersionAutre(1)
-                ->setSuppressWarning(8)
-                ->setJavaNoSonar(0)
-                ->setJavaTodo(17)
-                ->setLoggerInfo(14)
-                ->setLoggerWarn(0)
-                ->setLoggerError(15)
-                ->setLoggerDebug(8)
-                ->setLines(17049)
-                ->setNcloc(8928)
-                ->setFiles(180)
-                ->setClasses(123)
-                ->setFunctions(457)
-                ->setCoverage(50.1)
-                ->setDuplicatedLinesDensity(0.2)
-                ->setSqaleDebtRatio(1.0)
-                ->setSqaleIndex(3054)
-                ->setTests(55)
-                ->setViolations(295)
-                ->setBugs(88)
-                ->setVulnerabilities(9)
-                ->setCodeSmells(198)
-                ->setBugBlocker(7)
-                ->setBugCritical(0)
-                ->setBugMajor(44)
-                ->setBugMinor(0)
-                ->setBugInfo(37)
-                ->setVulnerabilityBlocker(0)
-                ->setVulnerabilityCritical(9)
-                ->setVulnerabilityMajor(0)
-                ->setVulnerabilityMinor(0)
-                ->setVulnerabilityInfo(0)
-                ->setCodeSmellBlocker(0)
-                ->setCodeSmellCritical(4)
-                ->setCodeSmellMajor(109)
-                ->setCodeSmellMinor(13)
-                ->setCodeSmellInfo(72)
-                ->setRepartitionFrontend(21)
-                ->setRepartitionBackend(136)
-                ->setRepartitionAutre(0)
-                ->setRepartitionInconnu($row['inconnu'])
-                ->setBlockerViolations(7)
-                ->setCriticalViolations(13)
-                ->setMajorViolations(153)
-                ->setMinorViolations(13)
-                ->setInfoViolations(109)
-                ->setReliabilityRating('E')
-                ->setSecurityRating('D')
-                ->setSqaleRating('A')
-                ->setSecurityReviewRating('A')
-                ->setSecurityHotspot(0)
-                ->setMenacePotentielleToReviewHigh(0)
-                ->setMenacePotentielleToReviewMedium(0)
-                ->setMenacePotentielleToReviewLow(0)
-                ->setInitial($row['initial'])
-                ->setModeCollecte('COLLECTE')
-                ->setUtilisateurCollecte('admin@ma-moulinette.fr')
-                ->setDateEnregistrement(new \DateTimeImmutable($row['dateEnregistrement']));
-            $manager->persist($historique);
-        }
+        $now = new \DateTimeImmutable('2026-01-01 00:00:00', new \DateTimeZone('Europe/Paris'));
 
-        /** Enregistrement des données dans la base de tests */
+        $reference = (new Historique())
+            ->setMavenKey(self::MAVEN_KEY)
+            ->setVersion('1.2.0-RELEASE')
+            ->setDateVersion('2024-07-12 16:34:46')
+            ->setNomProjet(self::PROJECT_NAME)
+            ->setAnalyseKey('AZCa01abcdefghijKLmnop')
+            ->setInitial(true)
+            ->setDateEnregistrement($now);
+        $manager->persist($reference);
+
+        $intermediate = (new Historique())
+            ->setMavenKey(self::MAVEN_KEY)
+            ->setVersion('1.3.0-RELEASE')
+            ->setDateVersion('2024-09-15 10:00:00')
+            ->setNomProjet(self::PROJECT_NAME)
+            ->setAnalyseKey('AZCb02abcdefghijKLmnop')
+            ->setInitial(false)
+            ->setDateEnregistrement($now);
+        $manager->persist($intermediate);
+
         $manager->flush();
-    }
-
-    /**
-     * @return array<int, array<string, mixed>>
-     */
-    private function rows(): array
-    {
-        return [
-            [
-                'version'            => '1.2.0-RELEASE',
-                'dateVersion'        => '2024-07-12 16:34:46',
-                'versionRelease'     => 0,
-                'inconnu'            => 10,
-                'initial'            => true,
-                'dateEnregistrement' => '2024-06-28 17:55:45+02',
-            ],
-            [
-                'version'            => '1.2.3-RELEASE',
-                'dateVersion'        => '2024-08-18 15:54:26',
-                'versionRelease'     => 1,
-                'inconnu'            => 5,
-                'initial'            => false,
-                'dateEnregistrement' => '2024-08-28 14:25:15+02',
-            ],
-        ];
     }
 }

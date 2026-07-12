@@ -1,46 +1,50 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2015-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\OwaspTop10;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-/**
- * [Description OwaspTop10Fixtures]
+/* MODIF 2026-05-08 : création OwaspTop10Fixtures.
+ * Contrat :
+ *  - OwaspTop10KernelTest::testOwaspTop10FindOneBy : findOneBy(category="A1 - Attaques d'injection")
+ *  - OwaspTop10KernelTest::testOwaspCount : findBy(year=2017) doit renvoyer exactement 1 ligne
+ *  - OwaspTop10RepositoryTest::testSelectOwaspTop10Referential : 1ère ligne year=2017 category="A1 - Attaques d'injection"
+ *  - OwaspTop10RepositoryTest::testSelectOwaspTop10Details : id=1 doit retourner la ligne A1 2017
+ * Une seule ligne suffit (testOwaspCount exige assertCount 1).
  */
 class OwaspTop10Fixtures extends Fixture
 {
-    private static int $year = 2017;
-    private static string $category = "A1 - Attaques d'injection";
-    private static string $description = "Les failles d'injection, telles que l'injection SQL, NoSQL, OS et LDAP, se produisent lorsque des données non fiables sont envoyées à un interpréteur dans le cadre d'une commande ou d'une requête. Les données hostiles de l'attaquant peuvent inciter l'interpréteur à exécuter des commandes non souhaitées ou à accéder à des données sans autorisation appropriée.";
-    private static string $lien = '__a01-2017-injection.html.twig';
-    private static string $dateEnregistrement = '2024-03-26 14:46:38+02';
-
-
-    /**
-     * [Description for load]
-     *
-     * @param ObjectManager $manager
-     *
-     * @return void
-     *
-     * Created at: 02/01/2025 18:28:45 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function load(ObjectManager $manager): void
     {
-        $owaspTop10=(new OwaspTop10())
-            ->setYear(self::$year)
-            ->setCategory(self::$category)
-            ->setDescription(self::$description)
-            ->setLien(self::$lien)
-            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
-        $manager->persist($owaspTop10);
+        $now = new \DateTimeImmutable('2026-01-01 00:00:00');
 
-      /** Enregistrement des données dans la base de tests */
+        $a1 = (new OwaspTop10())
+            ->setYear(2017)
+            ->setCategory("A1 - Attaques d'injection")
+            ->setDescription(
+                "Les failles d'injection, telles que l'injection SQL, NoSQL, OS et LDAP, "
+                . "se produisent lorsque des données non fiables sont envoyées à un interpréteur "
+                . "dans le cadre d'une commande ou d'une requête."
+            )
+            ->setLien('__a01-2017-injection.html.twig')
+            ->setDateEnregistrement($now);
+        $manager->persist($a1);
+
         $manager->flush();
     }
-
 }

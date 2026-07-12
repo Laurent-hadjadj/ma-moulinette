@@ -1,48 +1,73 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2015-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\Batch;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-/**
- * [Description BatchFixtures]
+/* MODIF 2026-05-08 : création BatchFixturesF.
+ * Contrat BatchKernelTest :
+ *  - testBatchFindOneBy : findOneBy responsable = 'Laurent HADJADJ' renvoie au moins 1.
+ *  - testBatchCount    : findBy responsable = 'Laurent HADJADJ' renvoie 3.
+ * Contraintes BDD : `titre` et `portefeuille` sont uniques → valeurs distinctes par
+ * ligne. Constructeur init traitementId (Ulid) + dateEnregistrement.
  */
 class BatchFixtures extends Fixture
 {
-    // v2.0.0 : renommage `statut` → `activated`, ajout `automatique`, `responsableShort`
-    private static bool $activated = false;
-    private static bool $automatique = false;
-    private static string $description = 'Mon batch à moi';
-    private static string $responsable = 'Laurent HADJADJ';
-    private static string $responsableShort = 'L.HADJADJ';
-    private static int $nombreProjet = 1;
-    private static string $execution = 'OK';
-    private static string $dateModification = '2025-01-02 12:00:00+02';
-    private static string $dateEnregistrement = '2024-07-31 12:27:05+02';
+    private const RESPONSABLE = 'Laurent HADJADJ';
+    private const RESPONSABLE_SHORT = 'lhadjadj';
 
     public function load(ObjectManager $manager): void
     {
-      $data = ['ma-moulinette', 'le-chat', 'logger-tracker'];
+        $batch1 = (new Batch())
+            ->setActivated(true)
+            ->setAutomatique(false)
+            ->setTitre('BATCH-MOULINETTE-A')
+            ->setDescription('Batch de collecte des projets ma-moulinette')
+            ->setResponsable(self::RESPONSABLE)
+            ->setResponsableShort(self::RESPONSABLE_SHORT)
+            ->setPortefeuille('MES PROJETS')
+            ->setNombreProjet(2)
+            ->setExecution('OK');
+        $manager->persist($batch1);
 
-      foreach($data as $titre){
-        $batch=(new Batch())
-          ->setActivated(self::$activated)
-          ->setAutomatique(self::$automatique)
-          ->setTitre($titre)
-          ->setDescription(self::$description)
-          ->setResponsable(self::$responsable)
-          ->setResponsableShort(self::$responsableShort)
-          ->setPortefeuille($titre)
-          ->setNombreProjet(self::$nombreProjet)
-          ->setExecution(self::$execution)
-          ->setDateModification(new \DateTime(self::$dateModification))
-          ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
-        $manager->persist($batch);
-      }
+        $batch2 = (new Batch())
+            ->setActivated(true)
+            ->setAutomatique(true)
+            ->setTitre('BATCH-LEGACY-B')
+            ->setDescription('Batch de collecte des projets legacy')
+            ->setResponsable(self::RESPONSABLE)
+            ->setResponsableShort(self::RESPONSABLE_SHORT)
+            ->setPortefeuille('PROJETS LEGACY')
+            ->setNombreProjet(1)
+            ->setExecution('KO');
+        $manager->persist($batch2);
 
-      /** Enregistrement des données dans la base de tests */
+        $batch3 = (new Batch())
+            ->setActivated(false)
+            ->setAutomatique(false)
+            ->setTitre('BATCH-RND-C')
+            ->setDescription('Batch de collecte des projets R&D')
+            ->setResponsable(self::RESPONSABLE)
+            ->setResponsableShort(self::RESPONSABLE_SHORT)
+            ->setPortefeuille('PROJETS R&D')
+            ->setNombreProjet(0);
+        $manager->persist($batch3);
+
         $manager->flush();
     }
-  }
+}

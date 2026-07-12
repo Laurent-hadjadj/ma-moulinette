@@ -1,41 +1,60 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2015-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\NoSonar;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-/**
- * [Description NoSonarFixtures]
+/* MODIF 2026-05-08 : création NoSonarFixtures.
+ * Contrat :
+ *  - NoSonarKernelTest::testNoSonarCount : findBy(mavenKey) -> 3 lignes
+ *  - NoSonarRepositoryTest::testSelectNoSonarRuleGroupByRule : groupBy rule -> 3 règles distinctes
+ *    permettent de vérifier l'agrégation
+ * Seed 3 rows avec règles distinctes (java:S1309, java:S125, typescript:S6582).
  */
+
 class NoSonarFixtures extends Fixture
 {
+    private const MAVEN_KEY = 'fr.ma-moulinette:ma-moulinette';
+    private const MODE_COLLECTE = 'TRAITEMENT MANUEL';
+    private const UTILISATEUR_COLLECTE = 'batch.collecte@ma-moulinette.fr';
 
-  private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-  private static string $rule = 'java:S1309';
-  private static $component = 'fr.ma-petite-entreprise:mo-moulinette:
-  ma-moulinette-service/src/main/java/fr/ma-petite-entreprise/ma-moulinette/service/ClamAvService.java';
-  private static int $line = 118;
-  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
-  private static string $dateEnregistrement = '2024-03-26 14:46:38+02';
-
-  public function load(ObjectManager $manager): void
+    public function load(ObjectManager $manager): void
     {
-      $modeCollecte=['COLLECTE', 'TRAITEMENT MANUEL', 'TRAITEMENT AUTOMATIQUE'];
+        $now = new \DateTimeImmutable('2026-01-01 00:00:00');
 
-      foreach($modeCollecte as $mode){
-        $nosonar=(new NoSonar())
-            ->setMavenKey(self::$mavenKey)
-            ->setRule(self::$rule)
-            ->setComponent(self::$component)
-            ->setLine(self::$line)
-            ->setModeCollecte($mode)
-            ->setUtilisateurCollecte(self::$utilisateurCollecte)
-            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
-        $manager->persist($nosonar);
-      }
-      /** Enregistrement des données dans la base de tests */
+        $rows = [
+            ['rule' => 'java:S1309',       'component' => 'fr.ma-moulinette:ma-moulinette:src/main/java/fr/example/ServiceA.java', 'line' => 118],
+            ['rule' => 'java:S125',        'component' => 'fr.ma-moulinette:ma-moulinette:src/main/java/fr/example/ServiceB.java', 'line' => 42],
+            ['rule' => 'typescript:S6582', 'component' => 'fr.ma-moulinette:ma-moulinette:src/app/component-c.ts',                 'line' => 17],
+        ];
+
+        foreach ($rows as $row) {
+            $noSonar = (new NoSonar())
+                ->setMavenKey(self::MAVEN_KEY)
+                ->setRule($row['rule'])
+                ->setComponent($row['component'])
+                ->setLine($row['line'])
+                ->setModeCollecte(self::MODE_COLLECTE)
+                ->setUtilisateurCollecte(self::UTILISATEUR_COLLECTE)
+                ->setDateEnregistrement($now);
+            $manager->persist($noSonar);
+        }
+
         $manager->flush();
     }
-  }
+}

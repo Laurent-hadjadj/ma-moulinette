@@ -1,44 +1,55 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2015-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\ProfilesHistorique;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-/**
- * [Description ProfilesHistoriqueFixtures]
+/* MODIF 2026-05-08 : creation ProfilesHistoriqueFixtures.
+ * Contrat : 1 ligne avec language=java pour satisfaire
+ * ProfilesHistoriqueKernelTest::testInformationProjetFindOneBy (findOneBy language=java : 1
+ * resultat), et au moins une ligne avec date_courte=2022-04-14 / action=ACTIVATED pour les
+ * tests ProfilesHistoriqueRepositoryTest (selectProfilesHistoriqueAction /
+ * selectProfilesHistoriqueLangageDateCourte). Tous les champs non-nullable (date_courte,
+ * language, date, action, auteur, rule, description, detail [BLOB], date_enregistrement)
+ * sont renseignes.
  */
 class ProfilesHistoriqueFixtures extends Fixture
 {
-
-  private static string $dateCourte = '2022-04-14';
-  private static string $language = 'java';
-  private static string $date = '2022-08-30T18:42:41+0200';
-  private static string $action = 'ACTIVATED';
-  private static string $auteur = 'HADJADJ Laurent';
-  private static string $rule = 'java:S5679';
-  private static string $description = 'OpenSAML2 should be configured to prevent authentication bypass';
-  private static string $detail = '{"severity":"MAJOR"}';
-  private static string $dateEnregistrement = '2024-04-12 16:23:11+01';
-
-  public function load(ObjectManager $manager): void
+    public function load(ObjectManager $manager): void
     {
+        $tz = new \DateTimeZone('Europe/Paris');
+        $dateCourte = new \DateTimeImmutable('2022-04-14 00:00:00', $tz);
+        $date = new \DateTimeImmutable('2022-08-30 18:42:41', $tz);
+        $now = new \DateTimeImmutable('2026-01-01 00:00:00', $tz);
 
-      /** création du jeu de données pour la table PROFILES HISTORIQUE */
-      $profiles=(new ProfilesHistorique())
-          ->setDateCourte(new \DateTimeImmutable(self::$dateCourte))
-          ->setLanguage(self::$language)
-          ->setDate(new \DateTimeImmutable(self::$date))
-          ->setAction(self::$action)
-          ->setAuteur(self::$auteur)
-          ->setRule(self::$rule)
-          ->setDescription(self::$description)
-          ->setDetail(self::$detail)
-          ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
-      $manager->persist($profiles);
+        $row = (new ProfilesHistorique())
+            ->setDateCourte($dateCourte)
+            ->setLanguage('java')
+            ->setDate($date)
+            ->setAction('ACTIVATED')
+            ->setAuteur('HADJADJ Laurent')
+            ->setRule('java:S5679')
+            ->setDescription('OpenSAML2 should be configured to prevent authentication bypass')
+            ->setDetail('{"severity":"MAJOR"}')
+            ->setDateEnregistrement($now);
 
-      /** Enregistrement des données dans la base de tests */
+        $manager->persist($row);
+
         $manager->flush();
     }
-  }
+}

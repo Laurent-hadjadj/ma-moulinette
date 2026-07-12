@@ -1,60 +1,76 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\Owasp;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-/**
- * [Description OwaspFixtures]
+/* MODIF 2026-05-08 : création OwaspFixtures.
+ * Contrat : 3 lignes pour la même mavenKey (référentiel 2017) afin de satisfaire
+ * OwaspKernelTest::testOwaspCount (assertCount 3 sur findBy mavenKey) et
+ * OwaspKernelTest::testOwaspFindOneBy (findOneBy mavenKey non null). Les 60 compteurs
+ * Ax/AxBlocker/AxCritical/AxMajor/AxMinor/AxInfo + effortTotal sont fixés à 0
+ * (PositiveOrZero), versions distinctes pour garder 3 rows réels.
  */
+
 class OwaspFixtures extends Fixture
 {
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-    private static int $referentialOwasp = 2017;
-    private string $version = '1.2.0-RELEASE';
-    private static string $dateVersion = '2024-07-10 15:26:07+02';
-    private static int $effortTotal = 0;
-    private static $a = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static $aBlocker = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static $aCritical = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static $aMajor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static $aInfo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static $aMinor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
-    private static string $dateEnregistrement = '2024-03-26 14:46:38+02';
+    private const MAVEN_KEY = 'fr.ma-moulinette:ma-moulinette';
+    private const MODE_COLLECTE = 'TRAITEMENT MANUEL';
+    private const UTILISATEUR_COLLECTE = 'batch.collecte@ma-moulinette.fr';
 
     public function load(ObjectManager $manager): void
     {
-        $modeCollecte = ['COLLECTE', 'TRAITEMENT MANUEL', 'TRAITEMENT AUTOMATIQUE'];
+        $now = new \DateTimeImmutable('2026-01-01 00:00:00');
+        $versions = ['1.0.0-RELEASE', '1.1.0-RELEASE', '1.2.0-RELEASE'];
 
-        foreach ($modeCollecte as $mode) {
-            $owasp = new Owasp();
-            $owasp->setMavenKey(self::$mavenKey);
-            $owasp->setReferentialOwasp(self::$referentialOwasp);
-            $owasp->setVersion($this->version);
-            $owasp->setDateVersion(new \DateTimeImmutable(self::$dateVersion));
-            $owasp->setEffortTotal(self::$effortTotal);
-
-            for ($i = 0; $i < 10; $i++) {
-                $owasp->{"setA" . ($i + 1)}(self::$a[$i]);
-                $owasp->{"setA" . ($i + 1) . "Blocker"}(self::$aBlocker[$i]);
-                $owasp->{"setA" . ($i + 1) . "Critical"}(self::$aCritical[$i]);
-                $owasp->{"setA" . ($i + 1) . "Major"}(self::$aMajor[$i]);
-                $owasp->{"setA" . ($i + 1) . "Info"}(self::$aInfo[$i]);
-                $owasp->{"setA" . ($i + 1) . "Minor"}(self::$aMinor[$i]);
-            }
-
-            $owasp->setUtilisateurCollecte(self::$utilisateurCollecte);
-            $owasp->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
-            $owasp->setModeCollecte($mode);
-
+        foreach ($versions as $version) {
+            $owasp = $this->buildOwasp($version, $now);
             $manager->persist($owasp);
         }
 
-        /** Enregistrement des données dans la base de tests */
         $manager->flush();
     }
 
+    /**
+     * Construit une entité Owasp avec tous les compteurs OWASP Top 10 (a1..a10
+     * et leurs sous-niveaux Blocker/Critical/Major/Minor/Info) initialisés à zéro.
+     */
+    private function buildOwasp(string $version, \DateTimeImmutable $now): Owasp
+    {
+        $owasp = (new Owasp())
+            ->setReferentialOwasp(2017)
+            ->setMavenKey(self::MAVEN_KEY)
+            ->setVersion($version)
+            ->setDateVersion($now)
+            ->setEffortTotal(0)
+            ->setModeCollecte(self::MODE_COLLECTE)
+            ->setUtilisateurCollecte(self::UTILISATEUR_COLLECTE)
+            ->setDateEnregistrement($now);
+
+        for ($i = 1; $i <= 10; $i++) {
+            $owasp->{"setA{$i}"}(0);
+            $owasp->{"setA{$i}Blocker"}(0);
+            $owasp->{"setA{$i}Critical"}(0);
+            $owasp->{"setA{$i}Major"}(0);
+            $owasp->{"setA{$i}Info"}(0);
+            $owasp->{"setA{$i}Minor"}(0);
+        }
+
+        return $owasp;
+    }
 }

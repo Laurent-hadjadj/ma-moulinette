@@ -1,50 +1,51 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2015-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\ActivityBatchReport;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-/**
- * [Description ActivityBatchReportFixtures]
+/* MODIF 2026-05-08 : creation ActivityBatchReportFixtures
+ * Contrat : 1 ligne avec task_count=12 et task_done=11 pour satisfaire
+ * ActivityBatchReportKernelTest (findOneBy taskCount=12 : 1 résultat ;
+ * findBy taskDone=11 : assertCount(1)).
+ * Champs non-nullable : date_start, date_end, task_count, task_done, page,
+ * date_enregistrement. Le champ last_error (JSON) est nullable et reste vide.
  */
 class ActivityBatchReportFixtures extends Fixture
 {
-
-
-
-
-
-  private static $lastError = ['Erreur inconnue.'];
-
-
-  /**
-   * [Description for load]
-   * Chargement des utilisateurs
-   *
-   * @param ObjectManager $manager
-   *
-   * @return void
-   *
-   * Created at: 05/05/2024 18:43:05 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  public function load(ObjectManager $manager): void
+    public function load(ObjectManager $manager): void
     {
+        $tz = new \DateTimeZone('Europe/Paris');
+        $start = new \DateTimeImmutable('2026-01-01 00:00:00', $tz);
+        $end = new \DateTimeImmutable('2026-01-01 00:05:00', $tz);
+        $now = new \DateTimeImmutable('2026-01-01 00:05:30', $tz);
 
-        $activityReport=(new ActivityBatchReport())
-          ->setDateStart(new \DateTimeImmutable(self::$dateStart))
-          ->setDateEnd(new \DateTimeImmutable(self::$dateEnd))
-          ->setTaskCount(self::$taskCount)
-          ->setTaskDone(self::$taskDone)
-          ->setPage(self::$page)
-          ->setLastError(self::$lastError)
-          ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
-        $manager->persist($activityReport);
+        $report = (new ActivityBatchReport())
+            ->setDateStart($start)
+            ->setDateEnd($end)
+            ->setTaskCount(12)
+            ->setTaskDone(11)
+            ->setPage(1)
+            ->setLastError([])
+            ->setDateEnregistrement($now);
 
-      /** Enregistrement des données dans la base de tests */
+        $manager->persist($report);
+
         $manager->flush();
     }
-  }
+}

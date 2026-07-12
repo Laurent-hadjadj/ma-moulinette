@@ -1,100 +1,88 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2015-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\Actuator;
 use App\Entity\ActuatorInfo;
 use Doctrine\Bundle\FixturesBundle\Fixture;
+use Doctrine\DBAL\Platforms\PostgreSQLPlatform;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 
-/**
- * [Description ActuatorInfoFixtures]
+/* MODIF 2026-05-08 : création ActuatorInfoFixtures.
+ * Contrat ActuatorInfoKernelTest :
+ *  - testActuatorInfoFindOneBy : findOneBy actuator = 5 (id du parent attendu).
+ *  - testActuatorInfoCount     : findAll = 4.
+ *
+ * MODIF 2026-05-16 : setval rendu CONDITIONNEL.
+ * Pourquoi : ActuatorFixtures s'execute AVANT (ordre alphabetique) sur
+ * doctrine:fixtures:load complet, et insère 4 Actuators (ids 1-4). Le
+ * setval(1, false) inconditionnel d'origine provoquait alors une collision
+ * PK (id=1 reste a créer par le SERIAL).
+ * Solution : ne reset la sequence QUE si la table actuator est vide
+ *   (= contexte isole ActuatorInfoKernelTest avec son propre purger).
+ * En contexte series : pas de reset, le 5e Actuator prend l'id 5 naturellement
+ * (4 deja insères + 1 = 5).
  */
 class ActuatorInfoFixtures extends Fixture
 {
-    /**
-     * [Description for load]
-     *
-     * @param ObjectManager $manager
-     *
-     * @return void
-     *
-     * Created at: 31/07/2024 22:02:00 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function load(ObjectManager $manager): void
     {
-        $actuator01=(new Actuator)
-            ->setId(1)
-            ->setMavenKey('fr.ma-moulinette:app1')
-            ->setNomApplication('Application 01')
-            ->setUrl('http://ma-moulinette.fr/app01')
-            ->setActuatorUser('user1')
-            ->setActuatorPassword('password1')
-            ->setPersonne('John Doe');
-        $manager->persist($actuator01);
-        $manager->flush();
+        if ($manager instanceof EntityManagerInterface) {
+            $connection = $manager->getConnection();
+            if ($connection->getDatabasePlatform() instanceof PostgreSQLPlatform) {
+                $existingCount = (int) $connection->fetchOne('SELECT COUNT(*) FROM ma_moulinette.actuator');
+                if ($existingCount === 0) {
+                    $connection->executeStatement("SELECT setval('ma_moulinette.actuator_id_seq', 1, false);");
+                }
+            }
+        }
 
-        $actuatorInfo01=(new ActuatorInfo())
-            ->setActuator($actuator01)
-            ->setActuatorInfoDescription('[SOCLE][ARCHETYPE]')
-            ->setActuatorInfoValue('socle.archetype');
-        $manager->persist($actuatorInfo01);
+        $now = new \DateTimeImmutable('2026-01-01 00:00:00');
+        $actuators = [];
 
-        $actuator02=(new Actuator)
-            ->setId(2)
-            ->setMavenKey('fr.ma-moulinette:app2')
-            ->setNomApplication('Application 02')
-            ->setUrl('http://ma-moulinette.fr/app02')
-            ->setActuatorUser('user2')
-            ->setActuatorPassword('password2')
-            ->setPersonne('Jane Smith');
-        $manager->persist($actuator02);
-        $manager->flush();
+        for ($i = 1; $i <= 5; $i++) {
+            $suffix = sprintf('%02d', $i);
+            $actuator = new Actuator();
+            $actuator->setMavenKey('fr.ma-moulinette:actuator-info-app' . $i);
+            $actuator->setNomApplication('Application Info ' . $suffix);
+            $actuator->setUrl('https://app-info' . $i . '.ma-moulinette.fr/actuator');
+            $actuator->setActuatorUser('actuator-info-user-' . $i);
+            $actuator->setActuatorPassword('actuator-info-password-' . $i);
+            $actuator->setPersonne('Responsable Info ' . $suffix);
+            $actuator->setDateEnregistrement($now);
+            $manager->persist($actuator);
+            $actuators[$i] = $actuator;
+        }
 
-        $actuatorInfo02=(new ActuatorInfo())
-            ->setActuator($actuator02)
-            ->setActuatorInfoDescription('[SOCLE][ENCODAGE]')
-            ->setActuatorInfoValue('socle.encodage');
-        $manager->persist($actuatorInfo02);
+        // 4 ActuatorInfos : liens vers les Actuators d'id 1, 2, 3 et 5.
+        $infoSpecs = [
+            1 => ['Version application 01', '1.0.1'],
+            2 => ['Version application 02', '1.0.2'],
+            3 => ['Version application 03', '1.0.3'],
+            5 => ['Version application 05', '1.0.5'],
+        ];
 
-        $actuator03=(new Actuator)
-            ->setId(3)
-            ->setMavenKey('fr.ma-moulinette:app3')
-            ->setNomApplication('Application 03')
-            ->setUrl('http://ma-moulinette.fr/app03')
-            ->setActuatorUser('user3')
-            ->setActuatorPassword('password3')
-            ->setPersonne('Bob Johnson');
-        $manager->persist($actuator03);
-        $manager->flush();
+        foreach ($infoSpecs as $actuatorIndex => [$desc, $value]) {
+            $info = new ActuatorInfo();
+            $info->setActuatorInfoDescription($desc);
+            $info->setActuatorInfoValue($value);
+            $actuators[$actuatorIndex]->addActuatorInfo($info);
+            $manager->persist($info);
+        }
 
-        $actuatorInfo03=(new ActuatorInfo())
-            ->setActuator($actuator03)
-            ->setActuatorInfoDescription('[SOCLE][JAVA]')
-            ->setActuatorInfoValue('socle.encodage');
-        $manager->persist($actuatorInfo03);
-
-        $actuator04=(new Actuator)
-            ->setId(4)
-            ->setMavenKey('fr.ma-moulinette:app4')
-            ->setNomApplication('Application 04')
-            ->setUrl('http://ma-moulinette.fr/app04')
-            ->setActuatorUser('user4')
-            ->setActuatorPassword('password4')
-            ->setPersonne('Elsa Davis');
-        $manager->persist($actuator04);
-        $manager->flush();
-
-        $actuatorInfo04=(new ActuatorInfo())
-            ->setActuator($actuator04)
-            ->setActuatorInfoDescription('[APP][JAVAMELODY]')
-            ->setActuatorInfoValue('app.javamelody');
-        $manager->persist($actuatorInfo04);
-
-        /** Enregistrement des données dans la base de tests */
         $manager->flush();
     }
-
 }

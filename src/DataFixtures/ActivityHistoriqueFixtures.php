@@ -1,53 +1,51 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2015-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\ActivityHistorique;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-/**
- * [Description ActivityHistoriqueFixtures]
+/* MODIF 2026-05-08 : creation ActivityHistoriqueFixtures.
+ * Contrat : 1 ligne avec year=2024 pour satisfaire
+ * ActivityHistoriqueKernelTest::testActivityHistoriqueFindOneBy (findOneBy year=2024 : 1
+ * résultat). ActivityHistoriqueRepositoryTest (insert/update/select) ne contrôle que
+ * code 200, sans pre-requis particulier sur le contenu.
+ * Champs non-nullable : year (positif), day (1..366), analyse, analyseAverage, success,
+ * failed, successRate (0..100), maxTime, dateEnregistrement.
  */
 class ActivityHistoriqueFixtures extends Fixture
 {
-
-  private static int $year = 2024;
-  private static int $day = 326;
-  private static int $analyse = 1253;
-  private static float $analyseAverage = 87.3;
-  private static int $success = 1249;
-  private static int $failed = 4;
-  private static float $successRate = 0.99;
-  private static int $maxTime = 34;
-  private static string $dateEnregistrement = '2024-07-14 19:36:33+02';
-
-  /**
-   * [Description for load]
-   * Chargement des utilisateurs
-   *
-   * @param ObjectManager $manager
-   *
-   * @return void
-   *
-   * Created at: 05/05/2024 18:43:05 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  public function load(ObjectManager $manager): void
+    public function load(ObjectManager $manager): void
     {
-      $ActivityHistorique=(new ActivityHistorique())
-          ->setYear(self::$year)
-          ->setDay(self::$day)
-          ->setAnalyse(self::$analyse)
-          ->setAnalyseAverage(self::$analyseAverage)
-          ->setSuccess(self::$success)
-          ->setFailed(self::$failed)
-          ->setSuccessRate(self::$successRate)
-          ->setMaxTime(self::$maxTime)
-          ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
-      $manager->persist($ActivityHistorique);
-      /** Enregistrement des données dans la base de tests */
+        $now = new \DateTimeImmutable('2026-01-01 00:00:00', new \DateTimeZone('Europe/Paris'));
+
+        $row = (new ActivityHistorique())
+            ->setYear(2024)
+            ->setDay(326)
+            ->setAnalyse(1253)
+            ->setAnalyseAverage(87.3)
+            ->setSuccess(1249)
+            ->setFailed(4)
+            ->setSuccessRate(99.0)
+            ->setMaxTime(34)
+            ->setDateEnregistrement($now);
+
+        $manager->persist($row);
+
         $manager->flush();
     }
-  }
+}

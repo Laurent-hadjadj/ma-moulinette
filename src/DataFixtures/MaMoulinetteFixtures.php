@@ -1,30 +1,40 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2015-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\MaMoulinette;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-/**
- * [Description MaMoulinetteFixtures]
+/* MODIF 2026-05-08 : création MaMoulinetteFixtures.
+ * Contrat :
+ *  - MaMoulinetteKernelTest : findOneBy version = '1.0.0' (1 ligne).
+ *  - MaMoulinetteRepositoryTest : getMaMoulinetteVersion (code 200, erreur vide).
+ * Constructeur (version) initialise dateVersion + dateEnregistrement.
  */
 class MaMoulinetteFixtures extends Fixture
 {
-
-  private static string $version = '1.0.0';
-  private static string $dateVersion = '2024-04-12 16:23:11';
-  private static string $dateEnregistrement = '2024-04-12 16:23:11+01';
-
-  public function load(ObjectManager $manager): void
+    public function load(ObjectManager $manager): void
     {
-      /** création du jeu de données pour la table MA_MOULINETTE */
-      $maMoulinette=(new MaMoulinette(self::$version))
-          ->setDateVersion(new \DateTimeImmutable(self::$dateVersion))
-          ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
-      $manager->persist($maMoulinette);
+        $version1 = new MaMoulinette('1.0.0');
+        $manager->persist($version1);
 
-      /** Enregistrement des données dans la base de tests */
+        $version2 = new MaMoulinette('1.1.0');
+        $manager->persist($version2);
+
         $manager->flush();
     }
-  }
+}

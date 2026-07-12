@@ -1,53 +1,67 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2015-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\Hotspots;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-/**
- * [Description HotspotFixtures]
+/* MODIF 2026-05-08 : création HotspotsFixtures.
+ * Contrat :
+ *  - HotspotsKernelTest::testHotspotsCount : findBy(mavenKey) -> 3 lignes
+ *  - HotspotsRepositoryTest::testCountHotspotsStatus : 2 statuts TO_REVIEW + REVIEWED
+ *  - HotspotsRepositoryTest::testSelectHotspotsByNiveau : niveaux variés
+ * Seed 3 rows avec hotspot_key distincts (clé hotspot non unique en BDD mais on
+ * garde une variation pour réalisme).
  */
+
 class HotspotsFixtures extends Fixture
 {
+    private const MAVEN_KEY = 'fr.ma-moulinette:ma-moulinette';
+    private const MODE_COLLECTE = 'TRAITEMENT MANUEL';
+    private const UTILISATEUR_COLLECTE = 'batch.collecte@ma-moulinette.fr';
 
-  private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-  private static string $version = '1.2.0-RELEASE';
-  private static string $dateVersion = '2024-07-10 15:26:07+02';
-  private static string $hotspotKey = 'AZCc06XbgfifxdiJPzw6';
-  private static string $securityCategory = 'dos';
-  private static string $ruleKey = 'typescript:S5852';
-  private static string $probability = 'MEDIUM';
-  private static string $status = 'TO_REVIEW';
-  private static string $resolution = 'Todo';
-  private static int $niveau = 2;
-  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
-  private static string $dateEnregistrement = '2024-04-12 16:23:11+01';
-
-  public function load(ObjectManager $manager): void
+    public function load(ObjectManager $manager): void
     {
-      /** création du jeu de données pour la table MESURES */
-      $modeCollecte=['COLLECTE', 'TRAITEMENT MANUEL', 'TRAITEMENT AUTOMATIQUE'];
+        $now = new \DateTimeImmutable('2026-01-01 00:00:00');
 
-      foreach($modeCollecte as $mode){
-        $hotspots=(new Hotspots())
-          ->setMavenKey(self::$mavenKey)
-          ->setVersion(self::$version)
-          ->setDateVersion(new \DateTimeImmutable(self::$dateVersion))
-          ->setHotspotKey(self::$hotspotKey)
-          ->setSecurityCategory(self::$securityCategory)
-          ->setRuleKey(self::$ruleKey)
-          ->setProbability(self::$probability)
-          ->setStatus(self::$status)
-          ->setResolution(self::$resolution)
-          ->setNiveau(self::$niveau)
-          ->setModeCollecte($mode)
-          ->setUtilisateurCollecte(self::$utilisateurCollecte)
-          ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
-        $manager->persist($hotspots);
-      }
-      /** Enregistrement des données dans la base de tests */
+        $rows = [
+            ['hotspotKey' => 'AZCc06XbgfifxdiJPzw1', 'category' => 'dos',           'rule' => 'typescript:S5852', 'probability' => 'MEDIUM', 'status' => 'TO_REVIEW', 'resolution' => null,   'niveau' => 1],
+            ['hotspotKey' => 'AZCc06XbgfifxdiJPzw2', 'category' => 'sql-injection', 'rule' => 'java:S2077',       'probability' => 'HIGH',   'status' => 'REVIEWED',  'resolution' => 'FIXED', 'niveau' => 2],
+            ['hotspotKey' => 'AZCc06XbgfifxdiJPzw3', 'category' => 'sensitive-data', 'rule' => 'java:S2257',       'probability' => 'LOW',    'status' => 'TO_REVIEW', 'resolution' => null,   'niveau' => 3],
+        ];
+
+        foreach ($rows as $row) {
+            $hotspot = (new Hotspots())
+                ->setMavenKey(self::MAVEN_KEY)
+                ->setVersion('1.0.0-RELEASE')
+                ->setDateVersion($now)
+                ->setHotspotKey($row['hotspotKey'])
+                ->setSecurityCategory($row['category'])
+                ->setRuleKey($row['rule'])
+                ->setProbability($row['probability'])
+                ->setStatus($row['status'])
+                ->setResolution($row['resolution'])
+                ->setNiveau($row['niveau'])
+                ->setModeCollecte(self::MODE_COLLECTE)
+                ->setUtilisateurCollecte(self::UTILISATEUR_COLLECTE)
+                ->setDateEnregistrement($now);
+            $manager->persist($hotspot);
+        }
+
         $manager->flush();
     }
-  }
+}

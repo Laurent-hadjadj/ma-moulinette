@@ -1,51 +1,89 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2015-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\InformationProjet;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-/**
- * [Description InformationProjetFixtures]
+/* MODIF 2026-05-08 : création InformationProjetFixtures.
+ * Contrat :
+ *  - InformationProjetKernelTest : findOneBy mavenKey ma-moulinette + findBy même clé = 3.
+ *  - InformationProjetRepositoryTest : selectInformationProjetIsValide /
+ *    selectInformationProjetVersion / deleteInformationProjetMavenKey /
+ *    insertInformationProjet — tous attendent simplement code 200 et erreur vide.
+ * Trois lignes avec mavenKey identique mais analyseKey distincts ; date_analyse et
+ * type_analyse sont les noms de colonnes après MODIF 2026-05-04.
  */
+
 class InformationProjetFixtures extends Fixture
 {
-  private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-  private static string $analyseKey = 'AYVyxZcQo0TJpgSeq-ph';
-  private static string $date = '2024-04-12 16:23:11';
-  private static string $projectVersion = '2.0.0-RELEASE';
-  private static string $type = 'RELEASE';
-  private static int $versionSonar = 59;
-  private static int $versionReleaseSonar = 54;
-  private static int $versionSnapshotSonar = 3;
-  private static int $versionAutreSonar = 2;
-  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
-  private static string $dateEnregistrement = '2024-04-12 16:23:11+01';
+    private const UTILISATEUR_COLLECTE = 'batch.collecte@ma-moulinette.fr';
+    private const MODE_COLLECTE = 'TRAITEMENT MANUEL';
 
-  public function load(ObjectManager $manager): void
+    public function load(ObjectManager $manager): void
     {
-      $modeCollecte=['COLLECTE', 'TRAITEMENT MANUEL', 'TRAITEMENT AUTOMATIQUE'];
+        $now = new \DateTimeImmutable('2026-01-01 00:00:00');
+        $maven = 'fr.ma-moulinette:ma-moulinette';
 
-      /** création du jeu de données pour la table INFORMATION_PROJET */
-      foreach($modeCollecte as $mode){
-        $listeProjet=(new InformationProjet())
-          ->setMavenKey(self::$mavenKey)
-          ->setAnalyseKey(self::$analyseKey)
-          ->setDate(new \DateTimeImmutable(self::$date))
-          ->setProjectVersion(self::$projectVersion)
-          ->setType(self::$type)
-          ->setVersionSonar(self::$versionSonar)
-          ->setVersionReleaseSonar(self::$versionReleaseSonar)
-          ->setVersionSnapshotSonar(self::$versionSnapshotSonar)
-          ->setVersionAutreSonar(self::$versionAutreSonar)
-          ->setModeCollecte($mode)
-          ->setUtilisateurCollecte(self::$utilisateurCollecte)
-          ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
-          $manager->persist($listeProjet);
-      }
+        $i1 = (new InformationProjet())
+            ->setMavenKey($maven)
+            ->setAnalyseKey('AYabc1234567890ABCDE1')
+            ->setDateAnalyse(new \DateTimeImmutable('2025-12-01 09:15:00'))
+            ->setProjectVersion('1.0.0-RELEASE')
+            ->setTypeAnalyse('RELEASE')
+            ->setVersionSonar(1)
+            ->setVersionReleaseSonar(1)
+            ->setVersionSnapshotSonar(0)
+            ->setVersionAutreSonar(0)
+            ->setModeCollecte(self::MODE_COLLECTE)
+            ->setUtilisateurCollecte(self::UTILISATEUR_COLLECTE)
+            ->setDateEnregistrement($now);
+        $manager->persist($i1);
 
-      /** Enregistrement des données dans la base de tests */
+        $i2 = (new InformationProjet())
+            ->setMavenKey($maven)
+            ->setAnalyseKey('AYabc1234567890ABCDE2')
+            ->setDateAnalyse(new \DateTimeImmutable('2025-12-15 11:42:00'))
+            ->setProjectVersion('1.1.0-SNAPSHOT')
+            ->setTypeAnalyse('SNAPSHOT')
+            ->setVersionSonar(2)
+            ->setVersionReleaseSonar(1)
+            ->setVersionSnapshotSonar(1)
+            ->setVersionAutreSonar(0)
+            ->setModeCollecte('TRAITEMENT AUTOMATIQUE')
+            ->setUtilisateurCollecte(self::UTILISATEUR_COLLECTE)
+            ->setDateEnregistrement($now);
+        $manager->persist($i2);
+
+        $i3 = (new InformationProjet())
+            ->setMavenKey($maven)
+            ->setAnalyseKey('AYabc1234567890ABCDE3')
+            ->setDateAnalyse(new \DateTimeImmutable('2026-01-05 14:00:00'))
+            ->setProjectVersion('1.2.0-RELEASE')
+            ->setTypeAnalyse('RELEASE')
+            ->setVersionSonar(3)
+            ->setVersionReleaseSonar(2)
+            ->setVersionSnapshotSonar(1)
+            ->setVersionAutreSonar(0)
+            ->setModeCollecte('COLLECTE')
+            ->setUtilisateurCollecte(self::UTILISATEUR_COLLECTE)
+            ->setDateEnregistrement($now);
+        $manager->persist($i3);
+
         $manager->flush();
     }
-  }
+}

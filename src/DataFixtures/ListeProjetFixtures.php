@@ -1,44 +1,67 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2015-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\ListeProjet;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-/**
- * [Description ListeProjetFixtures]
+/* MODIF 2026-05-08 : création ListeProjetFixtures.
+ * Contrat :
+ *  - ListeProjetKernelTest : findOneBy mavenKey = fr.ma-moulinette:ma-moulinette (1 ligne).
+ *  - ListeProjetRepositoryTest : countListeProjet, countListeProjetVisibility(private),
+ *    countListeProjetTags, selectListeProjetByGroupe (clause tag LIKE 'ma-moulinette%' OR
+ *    tag LIKE '2048%'), deleteListeProjet (purge). Au moins une ligne private + tags
+ *    ma-moulinette / 2048 nécessaires.
+ * Constructeur : (mavenKey, name, visibility, tags) — initialise dateEnregistrement.
  */
+
 class ListeProjetFixtures extends Fixture
 {
-  private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
-  private static string $name = 'Ma-Moulinette';
-  private static $tags = ['ma-moulinette', '2048'];
-  private static string $visibility = 'private';
-  private static string $dateEnregistrement = '2024-04-12 16:23:11+01';
-
-  /**
-   * [Description for load]
-   *
-   * @param ObjectManager $manager
-   *
-   * @return void
-   *
-   * Created at: 19/04/2026 18:34:33 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  public function load(ObjectManager $manager): void
+    public function load(ObjectManager $manager): void
     {
-      /** création du jeu de données pour la table LISTE_PROJET */
-        $listeProjet=(new ListeProjet(
-          self::$mavenKey,
-          self::$name,
-          self::$visibility,
-          self::$tags))
-            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
-        $manager->persist($listeProjet);
-      /** Enregistrement des données dans la base de tests */
+        $now = new \DateTimeImmutable('2026-01-01 00:00:00');
+
+        $projet1 = new ListeProjet(
+            'fr.ma-moulinette:ma-moulinette',
+            'Ma-Moulinette',
+            'public',
+            ['ma-moulinette', 'symfony']
+        );
+        $projet1->setDateEnregistrement($now);
+        $manager->persist($projet1);
+
+        $projet2 = new ListeProjet(
+            'fr.ma-moulinette:2048-spring',
+            '2048 Spring Boot',
+            'private',
+            ['2048', 'spring-boot']
+        );
+        $projet2->setDateEnregistrement($now);
+        $manager->persist($projet2);
+
+        $projet3 = new ListeProjet(
+            'fr.ma-moulinette:legacy-app',
+            'Legacy App',
+            'private',
+            ['legacy']
+        );
+        $projet3->setDateEnregistrement($now);
+        $manager->persist($projet3);
+
         $manager->flush();
     }
-  }
+}

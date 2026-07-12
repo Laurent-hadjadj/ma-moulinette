@@ -1,67 +1,56 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2015-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
+declare(strict_types=1);
+
 namespace App\DataFixtures;
 
 use App\Entity\Actuator;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Persistence\ObjectManager;
 
-/**
- * [Description ActuatorFixtures]
+/* MODIF 2026-05-08 : création ActuatorFixtures.
+ * Contrat ActuatorKernelTest :
+ *  - testActuatorFindOneBy : findOneBy mavenKey 'fr.ma-moulinette:app4' +
+ *    nomApplication 'Application 04'.
+ *  - testActuatorCount     : findAll = 4.
+ * 4 actuators (app1..app4). Chaque Actuator porte au moins un ActuatorInfo (Assert\Count
+ * min:1 + cascade persist) pour passer la validation.
  */
 class ActuatorFixtures extends Fixture
 {
-    /**
-     * [Description for load]
-     *
-     * @param ObjectManager $manager
-     *
-     * @return void
-     *
-     * Created at: 31/07/2024 22:02:00 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function load(ObjectManager $manager): void
     {
-        $actuator01=(new Actuator())
-            ->setMavenKey('fr.ma-moulinette:app1')
-            ->setNomApplication('Application 01')
-            ->setUrl('http://ma-moulinette.fr/app01')
-            ->setActuatorUser('user1')
-            ->setActuatorPassword('password1')
-            ->setPersonne('John Doe');
-        $manager->persist($actuator01);
+        for ($i = 1; $i <= 4; $i++) {
+            $suffix = sprintf('%02d', $i);
+            $actuator = new Actuator();
+            $actuator->setMavenKey('fr.ma-moulinette:app' . $i);
+            $actuator->setNomApplication('Application ' . $suffix);
+            $actuator->setUrl('https://app' . $i . '.ma-moulinette.fr/actuator');
+            $actuator->setActuatorUser('actuator-user-' . $i);
+            $actuator->setActuatorPassword('actuator-password-' . $i);
+            $actuator->setPersonne('Responsable ' . $suffix);
+            $actuator->setDateEnregistrement(new \DateTimeImmutable('2026-01-01 00:00:00'));
 
-        $actuator02=(new Actuator())
-            ->setMavenKey('fr.ma-moulinette:app2')
-            ->setNomApplication('Application 02')
-            ->setUrl('http://ma-moulinette.fr/app02')
-            ->setActuatorUser('user2')
-            ->setActuatorPassword('password2')
-            ->setPersonne('Jane Smith');
-        $manager->persist($actuator02);
+            // Au moins un info par actuator (cascade persist depuis Actuator).
+            $info = new \App\Entity\ActuatorInfo();
+            $info->setActuatorInfoDescription('Version application ' . $suffix);
+            $info->setActuatorInfoValue('1.0.' . $i);
+            $actuator->addActuatorInfo($info);
 
-        $actuator03=(new Actuator())
-            ->setMavenKey('fr.ma-moulinette:app3')
-            ->setNomApplication('Application 03')
-            ->setUrl('http://ma-moulinette.fr/app03')
-            ->setActuatorUser('user3')
-            ->setActuatorPassword('password3')
-            ->setPersonne('Bob Johnson');
-        $manager->persist($actuator03);
+            $manager->persist($actuator);
+        }
 
-        $actuator04=(new Actuator())
-            ->setMavenKey('fr.ma-moulinette:app4')
-            ->setNomApplication('Application 04')
-            ->setUrl('http://ma-moulinette.fr/app04')
-            ->setActuatorUser('user4')
-            ->setActuatorPassword('password4')
-            ->setPersonne('Elsa Davis');
-        $manager->persist($actuator04);
-
-        /** Enregistrement des données dans la base de tests */
         $manager->flush();
     }
-
 }
