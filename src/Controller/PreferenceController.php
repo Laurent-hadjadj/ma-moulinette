@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common  CC-BY-NC-SA 4.0.
 *  ---
@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
 use Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Service\UserAgentTrackingFacade;
+use App\Service\UserAgent\UserAgentTrackingFacade;
 
 class PreferenceController extends AbstractController
 {
@@ -50,8 +50,8 @@ class PreferenceController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        ParameterBagInterface $params,
         private LoggerInterface $logger,
+        ParameterBagInterface $params,
         private UserAgentTrackingFacade $tracking
     ){
         $this->logoEntreprise = $params->get('logo.entreprise');
@@ -302,7 +302,7 @@ class PreferenceController extends AbstractController
         /**
          * Le modèle :
          * "version":[ {"mavenKey":["version","version"]}, {"mavenKey":["version"]} ]
-        */
+         */
         if (!isset($preference['version'][$index][$mavenKey]) || !is_array($preference['version'][$index][$mavenKey])) {
             $this->logger->warning("[Preference-VersionDelete] ⚠️ Index ou mavenKey introuvable dans les préférences.", [
                 'courriel' => $courriel,
@@ -340,12 +340,12 @@ class PreferenceController extends AbstractController
 
         /** On met à jour les préférences via une requête paramétrée. */
         if ($jarray === false || !$this->updatePreference($jarray, (string) $courriel)) {
-        return new JsonResponse([
+            return new JsonResponse([
                 'code' => 500,
                 'type' => 'error',
                 'message' => self::$erreur500
-        ], Response::HTTP_OK);
-    }
+            ], Response::HTTP_OK);
+        }
 
         return new JsonResponse(['code' => 200], Response::HTTP_OK);
     }
@@ -436,7 +436,7 @@ class PreferenceController extends AbstractController
             ],
         ];
 
-         /** On charge le template du render */
+        /** On charge le template du render */
         $render = $this->genericRender();
         $render['prenom'] = $prenom;
         $render['nom'] = $nom;
