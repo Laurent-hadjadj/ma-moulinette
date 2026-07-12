@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common  CC-BY-NC-SA 4.0.
 *  ---
@@ -120,7 +120,7 @@ class BatchCollecteHotspotController extends AbstractController
         }
 
         /** On reconstruit la date de version au format dateTime */
-        $dateVersion = new \DateTimeImmutable($select['info'][0]['date'], new \DateTimeZone(self::$europeParis));
+        $dateVersion = new \DateTimeImmutable($select['info']['date'], new \DateTimeZone(self::$europeParis));
 
         /** Sécurisation de l'URL */
         $url = $this->urlBuilder->build(
@@ -182,7 +182,7 @@ class BatchCollecteHotspotController extends AbstractController
                 /** Ajout des hotspots à la liste à insérer */
                 $map[] = [
                         'maven_key' => $maven_key,
-                        'version' => $select['info'][0]['version'],
+                        'version' => $select['info']['version'],
                         'date_version' => $dateVersion,
                         'hotspot_key' => $value['key'] ?? 'NC',
                         'security_category' => $value['securityCategory'] ?? 'NC',
@@ -202,7 +202,7 @@ class BatchCollecteHotspotController extends AbstractController
             /** Ajout des hotspots à la liste à insérer */
             $map[] = [
                     'maven_key' => $maven_key,
-                    'version' => $select['info'][0]['version'],
+                    'version' => $select['info']['version'],
                     'date_version' => $dateVersion,
                     'hotspot_key' => 'NC',
                     'security_category' => 'NC',
