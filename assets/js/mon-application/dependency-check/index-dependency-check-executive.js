@@ -32,8 +32,8 @@ import 'foundation-sites';
 import 'motion-ui';
 
 import '../../common/foundation.js';
-import '../../common/messageHelper';
-import '../../common/modalSafe';
+import '../../common/messageHelper.js';
+import '../../common/safeModal.js';
 
 /** Chart.js + plugin datalabels (alignement avec les autres pages chart) */
 import { Chart, registerables } from 'chart.js';
