@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -22,7 +22,8 @@ use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\Historique;
-use App\Service\{MesProjets, UserAgentTrackingFacade};
+use App\Service\{MesProjets};
+use App\Service\UserAgent\UserAgentTrackingFacade;
 
 /**
  * [Description ProjetController]
@@ -41,19 +42,22 @@ class ProjetController extends AbstractController
     private string $environnement;
     private string $version;
     private string $dateCopyright;
+    private int $sonarVersion;
 
     public function __construct(
         private MesProjets $mesProjets,
         private EntityManagerInterface $em,
         ParameterBagInterface $params,
         private LoggerInterface $logger,
-        private UserAgentTrackingFacade $tracking) {
+        private UserAgentTrackingFacade $tracking
+    ) {
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
         $this->environnement = $params->get('environnement');
         $this->version = $params->get('version');
         $this->dateCopyright = \date('Y');
+        $this->sonarVersion = $params->get('sonar.version');
     }
 
     /**
@@ -82,7 +86,6 @@ class ProjetController extends AbstractController
      * [Description for index]
      * Affiche la page projet
      *
-     *
      * @return Response
      *
      * Created at: 15/12/2022, 22:16:04 (Europe/Paris)
@@ -94,6 +97,11 @@ class ProjetController extends AbstractController
     {
         $this->tracking->track('PROJET');
         $render = $this->genericRender();
+
+        /** On récupère la version du serveur SonarQube */
+        /** MODIF 12/07/2026 : getenv ne fonctionne pas toujours, on utilise la mtéhode de récupération des paramètres depuis service.yml */
+        $sonar_version = (int)  ($this->sonarVersion ?: 0);
+        $render['version_serveur_sonar'] = ($sonar_version != 0) ? $sonar_version : 8;
 
         $this->logger->info('[Projet] ℹ️ Affichage de la page projet.');
         return $this->render('projet/index.html.twig', $render);
@@ -112,6 +120,7 @@ class ProjetController extends AbstractController
     public function mesProjets(): Response
     {
         $this->tracking->track('MES_PROJETS');
+
         /** On instancie l'entityRepository */
         $historiqueRepos = $this->em->getRepository(Historique::class);
 
@@ -151,7 +160,7 @@ class ProjetController extends AbstractController
         if ($liste['code'] != 200) {
             $render['liste_projet'] = [];
             $this->addFlash('notice', [
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => self::$erreur404,
                 'debug' => $liste['erreur']
             ]);
