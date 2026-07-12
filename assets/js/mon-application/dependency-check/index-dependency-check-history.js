@@ -31,7 +31,7 @@ import 'foundation-sites';
 import 'motion-ui';
 
 import '../../common/foundation.js';
-import '../../common/messageHelper';
+import '../../common/messageHelper.js';
 
 import { Chart, registerables } from 'chart.js';
 Chart.register(...registerables);
