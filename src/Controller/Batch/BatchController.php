@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common CC-BY-NC-SA 4.0.
 *  ---
@@ -21,7 +21,8 @@ use \Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{BatchTraitement, BatchExecution, BatchExecutionJournal};
-use App\Service\{PdfExportService, UserAgentTrackingFacade};
+use App\Service\PdfExportService;
+use App\Service\UserAgent\UserAgentTrackingFacade;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
@@ -380,7 +381,7 @@ class BatchController extends AbstractController
     #[Route('/traitement/suivi', name: 'traitement_suivi', methods: 'GET')]
     public function traitementSuivi(): Response
     {
-        $this->tracking->track('BATCH');
+        $this->tracking->track('BATCH_SUIVI');
 
         /** On instancie l'EntityRepository */
         $batchTraitementRepos = $this->em->getRepository(BatchTraitement::class);
@@ -492,6 +493,8 @@ class BatchController extends AbstractController
     #[Route('/rapports', name: 'rapport_index')]
     public function rapports(): Response
     {
+        $this->tracking->track('BATCH_RAPPORTS');
+
         /** On instancie l'EntityRepository */
         $batchExecutionRepos = $this->em->getRepository(BatchExecution::class);
         $traitements = $batchExecutionRepos->findBy([], ['dateEnregistrement' => 'DESC']);
@@ -500,17 +503,12 @@ class BatchController extends AbstractController
         $total = count($traitements);
         $nombre_success = $nombre_erreur = $nombre_bypass = 0;
 
+        /* MODIF 2026-05-07 : fix post-increment dans ternaire (sans effet) + in_array d'un tableau (toujours faux). */
         foreach ($traitements as $traitement) {
             $codes = array_map(fn($j) => $j->getCode(), $traitement->getCollectes()->toArray());
-            if (in_array(200, $codes, true)) {
-                $nombre_success++;
-            }
-            if (in_array(202, $codes, true)) {
-                $nombre_bypass++;
-            }
-            if (array_intersect([400, 404, 422, 500, 503], $codes) !== []) {
-                $nombre_erreur++;
-            }
+            if (in_array(200, $codes, true)) { $nombre_success++; }
+            if (in_array(202, $codes, true)) { $nombre_bypass++; }
+            if (!empty(array_intersect([400, 404, 422, 500, 503], $codes))) { $nombre_erreur++; }
         }
 
         // Récupération des utilisateurs distincts
