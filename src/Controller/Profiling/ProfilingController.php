@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\{Response};
 use Symfony\Component\Routing\Attribute\Route;
-use App\Service\UserAgentTrackingFacade;
+use App\Service\UserAgent\UserAgentTrackingFacade;
 
 /**
  * [Description ProfilingController]
@@ -67,15 +67,22 @@ class ProfilingController extends AbstractController
         ];
     }
 
-
     /**
+     * [Description for profiling]
      * Page principale du dashboard Profiling.
      * Le JS côté client interroge les endpoints /api/profiling/* pour charger les données.
+     *
+     * @return Response
+     *
+     * Created at: 12/07/2026 10:08:36 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/traitement/profiling', name: 'profiling_dashboard', methods: ['GET'])]
     public function profiling(): Response
     {
-    	$this->tracking->track('PROFILING');
+        $this->tracking->track('PROFILING');
+
         $render = $this->genericRender();
 
         /** On vérifie que l'utilisateur a le ROLE_BATCH pour voir cette page. */
