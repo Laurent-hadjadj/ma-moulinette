@@ -31,7 +31,7 @@ class Owasp
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(
-        name: '',
+        name: 'id',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'clé unique pour la table Owasp']
@@ -46,7 +46,7 @@ class Owasp
     private int $referentialOwasp = 2017;
 
     #[ORM\Column(
-        name: '',
+        name: 'maven_key',
         type: Types::STRING,
         length: 255,
         nullable: false,
@@ -60,7 +60,7 @@ class Owasp
     private string $mavenKey;
 
     #[ORM\Column(
-        name: '',
+        name: 'version',
         type: Types::STRING,
         length: 32,
         nullable: false,
@@ -70,7 +70,7 @@ class Owasp
     private string $version;
 
     #[ORM\Column(
-        name: '',
+        name: 'date_version',
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => "Date de publication du projet"]
@@ -79,7 +79,7 @@ class Owasp
     private \DateTimeImmutable $dateVersion;
 
     #[ORM\Column(
-        name: '',
+        name: 'effort_total',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => "Score total d'effort pour les questions de sécurité"]
@@ -88,7 +88,7 @@ class Owasp
     private int $effortTotal;
 
     #[ORM\Column(
-        name: '',
+        name: 'a1',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'OWASP Top 10 - A1']
@@ -97,7 +97,7 @@ class Owasp
     private int $a1;
 
     #[ORM\Column(
-        name: '',
+        name: 'a2',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'OWASP Top 10 - A2']
@@ -106,7 +106,7 @@ class Owasp
     private int $a2;
 
     #[ORM\Column(
-        name: '',
+        name: 'a3',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'OWASP Top 10 - A3']
@@ -115,7 +115,7 @@ class Owasp
     private int $a3;
 
     #[ORM\Column(
-        name: '',
+        name: 'a4',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'OWASP Top 10 - A4']
@@ -124,7 +124,7 @@ class Owasp
     private int $a4;
 
     #[ORM\Column(
-        name: '',
+        name: 'a5',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'OWASP Top 10 - A5']
@@ -133,7 +133,7 @@ class Owasp
     private int $a5;
 
     #[ORM\Column(
-        name: '',
+        name: 'a6',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'OWASP Top 10 - A6']
@@ -142,7 +142,7 @@ class Owasp
     private int $a6;
 
     #[ORM\Column(
-        name: '',
+        name: 'a7',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'OWASP Top 10 - A7']
@@ -151,7 +151,7 @@ class Owasp
     private int $a7;
 
     #[ORM\Column(
-        name: '',
+        name: 'a8',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'OWASP Top 10 - A8']
@@ -160,7 +160,7 @@ class Owasp
     private int $a8;
 
     #[ORM\Column(
-        name: '',
+        name: 'a9',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'OWASP Top 10 - A9']
@@ -169,7 +169,7 @@ class Owasp
     private int $a9;
 
     #[ORM\Column(
-        name: '',
+        name: 'a10',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'OWASP Top 10 - A10']
@@ -178,7 +178,7 @@ class Owasp
     private int $a10;
 
     #[ORM\Column(
-        name: '',
+        name: 'a1_blocker',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de bloquantes pour A1']
@@ -187,7 +187,7 @@ class Owasp
     private int $a1Blocker;
 
     #[ORM\Column(
-        name: '',
+        name: 'a1_critical',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de critiques pour A1']
@@ -196,7 +196,7 @@ class Owasp
     private int $a1Critical;
 
     #[ORM\Column(
-        name: '',
+        name: 'a1_major',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de majeurs pour A1']
@@ -205,7 +205,7 @@ class Owasp
     private int $a1Major;
 
     #[ORM\Column(
-        name: '',
+        name: 'a1_info',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre d’informations pour A1']
@@ -214,7 +214,7 @@ class Owasp
     private int $a1Info;
 
     #[ORM\Column(
-        name: '',
+        name: 'a1_minor',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de mineurs pour A1']
@@ -223,7 +223,7 @@ class Owasp
     private int $a1Minor;
 
     #[ORM\Column(
-        name: '',
+        name: 'a2_blocker',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de bloqueurs pour A2']
@@ -232,7 +232,7 @@ class Owasp
     private int $a2Blocker;
 
     #[ORM\Column(
-        name: '',
+        name: 'a2_critical',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de critiques pour A2']
@@ -241,7 +241,7 @@ class Owasp
     private int $a2Critical;
 
     #[ORM\Column(
-        name: '',
+        name: 'a2_major',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de majeurs pour A2']
@@ -250,7 +250,7 @@ class Owasp
     private int $a2Major;
 
     #[ORM\Column(
-        name: '',
+        name: 'a2_info',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre d’informations pour A2']
@@ -259,7 +259,7 @@ class Owasp
     private int $a2Info;
 
     #[ORM\Column(
-        name: '',
+        name: 'a2_minor',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de mineurs pour A2']
@@ -268,7 +268,7 @@ class Owasp
     private int $a2Minor;
 
     #[ORM\Column(
-        name: '',
+        name: 'a3_blocker',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de bloqueurs pour A3']
@@ -277,7 +277,7 @@ class Owasp
     private int $a3Blocker;
 
     #[ORM\Column(
-        name: '',
+        name: 'a3_critical',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de critiques pour A3']
@@ -286,7 +286,7 @@ class Owasp
     private int $a3Critical;
 
     #[ORM\Column(
-        name: '',
+        name: 'a3_major',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de majeurs pour A3']
@@ -295,7 +295,7 @@ class Owasp
     private int $a3Major;
 
     #[ORM\Column(
-        name: '',
+        name: 'a3_info',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre d’informations pour A3']
@@ -304,7 +304,7 @@ class Owasp
     private int $a3Info;
 
     #[ORM\Column(
-        name: '',
+        name: 'a3_minor',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de mineurs pour A3']
@@ -313,7 +313,7 @@ class Owasp
     private int $a3Minor;
 
     #[ORM\Column(
-        name: '',
+        name: 'a4_blocker',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de bloqueurs pour A4']
@@ -322,7 +322,7 @@ class Owasp
     private int $a4Blocker;
 
     #[ORM\Column(
-        name: '',
+        name: 'a4_critical',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de critiques pour A4']
@@ -331,7 +331,7 @@ class Owasp
     private int $a4Critical;
 
     #[ORM\Column(
-        name: '',
+        name: 'a4_major',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de majeurs pour A4']
@@ -340,7 +340,7 @@ class Owasp
     private int $a4Major;
 
     #[ORM\Column(
-        name: '',
+        name: 'a4_info',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre d’informations pour A4']
@@ -349,7 +349,7 @@ class Owasp
     private int $a4Info;
 
     #[ORM\Column(
-        name: '',
+        name: 'a4_minor',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de mineurs pour A4']
@@ -358,7 +358,7 @@ class Owasp
     private int $a4Minor;
 
     #[ORM\Column(
-        name: '',
+        name: 'a5_blocker',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de bloqueurs pour A5']
@@ -367,7 +367,7 @@ class Owasp
     private int $a5Blocker;
 
     #[ORM\Column(
-        name: '',
+        name: 'a5_critical',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de critiques pour A5']
@@ -376,7 +376,7 @@ class Owasp
     private int $a5Critical;
 
     #[ORM\Column(
-        name: '',
+        name: 'a5_major',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de majeurs pour A5']
@@ -385,7 +385,7 @@ class Owasp
     private int $a5Major;
 
     #[ORM\Column(
-        name: '',
+        name: 'a5_info',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre d’informations pour A5']
@@ -394,7 +394,7 @@ class Owasp
     private int $a5Info;
 
     #[ORM\Column(
-        name: '',
+        name: 'a5_minor',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de mineurs pour A5']
@@ -403,7 +403,7 @@ class Owasp
     private int $a5Minor;
 
     #[ORM\Column(
-        name: '',
+        name: 'a6_blocker',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de bloqueurs pour A6']
@@ -412,7 +412,7 @@ class Owasp
     private int $a6Blocker;
 
     #[ORM\Column(
-        name: '',
+        name: 'a6_critical',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de critiques pour A6']
@@ -421,7 +421,7 @@ class Owasp
     private int $a6Critical;
 
     #[ORM\Column(
-        name: '',
+        name: 'a6_major',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de majeurs pour A6']
@@ -430,7 +430,7 @@ class Owasp
     private int $a6Major;
 
     #[ORM\Column(
-        name: '',
+        name: 'a6_info',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre d’informations pour A6']
@@ -439,7 +439,7 @@ class Owasp
     private int $a6Info;
 
     #[ORM\Column(
-        name: '',
+        name: 'a6_minor',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de mineurs pour A6']
@@ -448,7 +448,7 @@ class Owasp
     private int $a6Minor;
 
     #[ORM\Column(
-        name: '',
+        name: 'a7_blocker',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de bloqueurs pour A7']
@@ -457,7 +457,7 @@ class Owasp
     private int $a7Blocker;
 
     #[ORM\Column(
-        name: '',
+        name: 'a7_critical',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de critiques pour A7']
@@ -466,7 +466,7 @@ class Owasp
     private int $a7Critical;
 
     #[ORM\Column(
-        name: '',
+        name: 'a7_major',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de majeurs pour A7']
@@ -475,7 +475,7 @@ class Owasp
     private int $a7Major;
 
     #[ORM\Column(
-        name: '',
+        name: 'a7_info',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre d’informations pour A7']
@@ -484,7 +484,7 @@ class Owasp
     private int $a7Info;
 
     #[ORM\Column(
-        name: '',
+        name: 'a7_minor',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de mineurs pour A7']
@@ -493,7 +493,7 @@ class Owasp
     private int $a7Minor;
 
     #[ORM\Column(
-        name: '',
+        name: 'a8_blocker',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de bloqueurs pour A8']
@@ -502,7 +502,7 @@ class Owasp
     private int $a8Blocker;
 
     #[ORM\Column(
-        name: '',
+        name: 'a8_critical',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de critiques pour A8']
@@ -511,7 +511,7 @@ class Owasp
     private int $a8Critical;
 
     #[ORM\Column(
-        name: '',
+        name: 'a8_major',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de majeurs pour A8']
@@ -520,7 +520,7 @@ class Owasp
     private int $a8Major;
 
     #[ORM\Column(
-        name: '',
+        name: 'a8_info',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre d’informations pour A8']
@@ -529,7 +529,7 @@ class Owasp
     private int $a8Info;
 
     #[ORM\Column(
-        name: '',
+        name: 'a8_minor',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de mineurs pour A8']
@@ -538,7 +538,7 @@ class Owasp
     private int $a8Minor;
 
     #[ORM\Column(
-        name: '',
+        name: 'a9_blocker',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de bloqueurs pour A9']
@@ -547,7 +547,7 @@ class Owasp
     private int $a9Blocker;
 
     #[ORM\Column(
-        name: '',
+        name: 'a9_critical',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de critiques pour A9']
@@ -556,7 +556,7 @@ class Owasp
     private int $a9Critical;
 
     #[ORM\Column(
-        name: '',
+        name: 'a9_major',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de majeurs pour A9']
@@ -565,7 +565,7 @@ class Owasp
     private int $a9Major;
 
     #[ORM\Column(
-        name: '',
+        name: 'a9_info',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre d’informations pour A9']
@@ -574,7 +574,7 @@ class Owasp
     private int $a9Info;
 
     #[ORM\Column(
-        name: '',
+        name: 'a9_minor',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de mineurs pour A9']
@@ -583,7 +583,7 @@ class Owasp
     private int $a9Minor;
 
     #[ORM\Column(
-        name: '',
+        name: 'a10_blocker',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de bloqueurs pour A10']
@@ -592,7 +592,7 @@ class Owasp
     private int $a10Blocker;
 
     #[ORM\Column(
-        name: '',
+        name: 'a10_critical',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de critiques pour A10']
@@ -601,7 +601,7 @@ class Owasp
     private int $a10Critical;
 
     #[ORM\Column(
-        name: '',
+        name: 'a10_major',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de majeurs pour A10']
@@ -610,7 +610,7 @@ class Owasp
     private int $a10Major;
 
     #[ORM\Column(
-        name: '',
+        name: 'a10_info',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre d’informations pour A10']
@@ -619,7 +619,7 @@ class Owasp
     private int $a10Info;
 
     #[ORM\Column(
-        name: '',
+        name: 'a10_minor',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Nombre de mineurs pour A10']
@@ -628,7 +628,7 @@ class Owasp
     private int $a10Minor;
 
     #[ORM\Column(
-        name: '',
+        name: 'mode_collecte',
         type: Types::STRING,
         length: 32,
         nullable: true,
@@ -641,7 +641,7 @@ class Owasp
     private ?string $modeCollecte = null;
 
     #[ORM\Column(
-        name: '',
+        name: 'utilisateur_collecte',
         type: Types::STRING,
         length: 320,
         nullable: true,
@@ -654,7 +654,7 @@ class Owasp
     private ?string $utilisateurCollecte = null;
 
     #[ORM\Column(
-        name: '',
+        name: 'date_enregistrement',
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => 'Date d’enregistrement des données']

@@ -128,7 +128,7 @@ class DcScan
     private int $cveCountCritical = 0;
 
     #[ORM\Column(
-        name: 'cve_count_hight',
+        name: 'cve_count_high',
         type: Types::INTEGER,
         nullable: false
     )]
@@ -152,7 +152,7 @@ class DcScan
     private int $cveCountLow = 0;
 
     #[ORM\Column(
-        name: 'cve_count_zero',
+        name: 'cve_count_info',
         type: Types::INTEGER,
         nullable: false
     )]

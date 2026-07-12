@@ -104,7 +104,7 @@ class DcDependency
     private ?string $version = null;
 
     #[ORM\Column(
-        name: 'licence',
+        name: 'license',
         type: Types::STRING,
         length: 255,
         nullable: true

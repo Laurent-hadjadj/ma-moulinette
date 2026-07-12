@@ -61,7 +61,7 @@ class Properties
     private int $projetSonar;
 
     #[ORM\Column(
-        name: 'projet_bd',
+        name: 'profil_bd',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Identifiant du profil dans la base de données']
@@ -70,7 +70,7 @@ class Properties
     private int $profilBd;
 
     #[ORM\Column(
-        name: 'projet_sonar',
+        name: 'profil_sonar',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Identifiant du profil dans Sonar']

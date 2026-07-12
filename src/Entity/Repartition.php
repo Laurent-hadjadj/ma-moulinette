@@ -590,7 +590,7 @@ class Repartition
     private int $autreCodeSmellBlocker = 0;
 
     #[ORM\Column(
-        name: 'autre_vulnerability_critical',
+        name: 'autre_code_smell_critical',
         type: Types::INTEGER,
         options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique critique (autre)']
     )]
@@ -598,7 +598,7 @@ class Repartition
     private int $autreCodeSmellCritical = 0;
 
     #[ORM\Column(
-        name: 'autre_vulnerability_major',
+        name: 'autre_code_smell_major',
         type: Types::INTEGER,
         options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique majeur (autre)']
     )]
@@ -606,7 +606,7 @@ class Repartition
     private int $autreCodeSmellMajor = 0;
 
     #[ORM\Column(
-        name: 'autre_vulnerability_minor',
+        name: 'autre_code_smell_minor',
         type: Types::INTEGER,
         options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique mineur (autre)']
     )]
@@ -614,7 +614,7 @@ class Repartition
     private int $autreCodeSmellMinor = 0;
 
     #[ORM\Column(
-        name: 'autre_vulnerability_info',
+        name: 'autre_code_smell_info',
         type: Types::INTEGER,
         options: ['default' => 0, 'comment' => 'Nombre de mauvaise pratique informatif (autre)']
     )]
@@ -808,7 +808,7 @@ class Repartition
      * Date d’enregistrement de la répartition dans le système.
      */
     #[ORM\Column(
-        name: 'date_enegistrement',
+        name: 'date_enregistrement',
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
         options: ['comment' => "Date d’enregistrement de la répartition dans le système"]

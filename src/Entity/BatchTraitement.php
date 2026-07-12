@@ -182,7 +182,7 @@ class BatchTraitement
     private ?\DateTimeImmutable $finTraitement = null;
 
     #[ORM\Column(
-        name: '',
+        name: 'traitement_id',
         type: 'ulid',
         unique: true,
         nullable: false,

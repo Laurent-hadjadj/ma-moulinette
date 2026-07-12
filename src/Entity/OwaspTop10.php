@@ -70,7 +70,7 @@ class OwaspTop10
     private string $lien;
 
     #[ORM\Column(
-        name: 'date_renregsitrement',
+        name: 'date_enregistrement',
         type: Types::DATETIMETZ_IMMUTABLE,
         options: ['default' => 'CURRENT_TIMESTAMP']
     )]

@@ -85,7 +85,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     private array $roles = [];
 
-    #[ORM\Column(name: '', type: Types::STRING, length: 64, nullable: true, options: [
+    #[ORM\Column(name: 'groupe_utilisateur', type: Types::STRING, length: 64, nullable: true, options: [
         'comment' => 'Nom du groupe utilisateur.'
     ])]
     #[Assert\Length(max: 64, maxMessage: "Le nom du groupe utilisateur ne doit pas dépasser 64 caractères.")]
@@ -103,14 +103,14 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $groupeId = null;
 
     #[ORM\Column(
-        name: 'password',
+        name: 'liste_groupe_fonctionnel',
         type: Types::JSON,
         nullable: true,
         options: ['comment' => "Liste de groupes fonctionnels"]
     )]
     private array $listeGroupeFonctionnel = [];
 
-    #[ORM\Column(name: '', type: Types::STRING, length: 255, nullable: false, options: ['comment' => "Mot de passe hashé de l'utilisateur (bcrypt 60 chars, marge pour argon2id ~95)"])]
+    #[ORM\Column(name: 'password', type: Types::STRING, length: 255, nullable: false, options: ['comment' => "Mot de passe hashé de l'utilisateur (bcrypt 60 chars, marge pour argon2id ~95)"])]
     #[Assert\NotBlank(groups: ['default'])]
     private string $password;
 

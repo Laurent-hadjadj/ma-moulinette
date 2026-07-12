@@ -34,7 +34,7 @@ class HotspotOwasp
 
     /* MODIF 2026-05-07 : NotNull → PositiveOrZero (rejette -1). */
     #[ORM\Column(
-        name: 'reference_owasp',
+        name: 'referential_owasp',
         type: Types::INTEGER,
         nullable: false,
         options: ['comment' => 'Référentiel OWASP 2017, 2021']
