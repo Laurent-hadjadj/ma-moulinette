@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -28,6 +28,7 @@ class ApiOwaspPeintureController extends AbstractController
     /** Définition des constantes */
     private static string $erreur400 = "La requête est incorrecte (Erreur 400).";
     private static string $noData = 'Pas de données';
+    private static string $logE400 = "[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé.";
 
     public function __construct(
         private EntityManagerInterface $em,
@@ -191,7 +192,7 @@ class ApiOwaspPeintureController extends AbstractController
 
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key') || !is_string($data->maven_key)) {
-            $this->logger->error("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé.", [
+            $this->logger->error(self::$logE400, [
                 'payload' => $data ?? self::$noData
             ]);
 
@@ -315,8 +316,8 @@ class ApiOwaspPeintureController extends AbstractController
 
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key') || !is_string($data->maven_key)) {
-            $this->logger->error("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé.", [
-                'payload' => $data
+            $this->logger->error(self::$logE400, [
+                'payload' => $data ?? self::$noData
             ]);
 
             return new JsonResponse([
@@ -385,7 +386,7 @@ class ApiOwaspPeintureController extends AbstractController
 
         /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'maven_key') || !is_string($data->maven_key)) {
-            $this->logger->error("[Owasp-Peinture] ❌ Requête invalide : clé 'maven_key' manquante ou JSON mal formé.", [
+            $this->logger->error(self::$logE400, [
                 'payload' => $data ?? self::$noData
             ]);
 
@@ -470,7 +471,7 @@ class ApiOwaspPeintureController extends AbstractController
         $high = $hotspotOwaspRepos->countHotspotOwaspMenaceByStatus($map);
 
         if ($high['code'] !== 200) {
-            $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête countHotspotOwaspMenaceByStatus.', [
+            $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête countHotspotOwaspMenaceByStatus (HIGH).', [
                 'code' => $high['code'],
                 'erreur' => $high['erreur'] ?? self::$noData,
                 'maven_key' => $data->maven_key,
@@ -495,7 +496,7 @@ class ApiOwaspPeintureController extends AbstractController
         $medium = $hotspotOwaspRepos->countHotspotOwaspMenaceByStatus($map);
 
         if ($medium['code'] !== 200) {
-            $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête countHotspotOwaspMenaceByStatus.', [
+            $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête countHotspotOwaspMenaceByStatus (MEDIUM).', [
                 'code' => $medium['code'],
                 'erreur' => $medium['erreur'] ?? self::$noData,
                 'maven_key' => $data->maven_key,
@@ -520,7 +521,7 @@ class ApiOwaspPeintureController extends AbstractController
         $low = $hotspotOwaspRepos->countHotspotOwaspMenaceByStatus($map);
 
         if ($low['code'] !== 200) {
-            $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête countHotspotOwaspMenaceByStatus.', [
+            $this->logger->error('[Owasp-Peinture] ❌ Échec de la requête countHotspotOwaspMenaceByStatus (LOW).', [
                 'code' => $low['code'],
                 'erreur' => $low['erreur'] ?? self::$noData,
                 'maven_key' => $data->maven_key,
