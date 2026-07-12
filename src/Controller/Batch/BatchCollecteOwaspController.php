@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common  CC-BY-NC-SA 4.0.
 *  ---
@@ -28,6 +28,8 @@ class BatchCollecteOwaspController extends AbstractController
     private static string $sonarUrl = "sonar.url";
     private static string $europeParis = "Europe/Paris";
     private static string $erreur404 = "Je n'ai pas trouvé le projet dans l'application (Erreur 404).";
+    // MODIF 2026-05-26 : extraction des string literals dupliqués (S1192).
+    private static string $owaspCategories = 'a1,a2,a3,a4,a5,a6,a7,a8,a9,a10';
 
     /**
      * [Description for __construct]
@@ -70,8 +72,9 @@ class BatchCollecteOwaspController extends AbstractController
 
         /** Tableau des paramètres pour la requête HTTP */
         $queryParamsList = [
-            'owasp2017' => ['componentKeys' => $maven_key, 'facets' => 'owaspTop10', 'owaspTop10' => 'a1,a2,a3,a4,a5,a6,a7,a8,a9,a10'],
-            'owasp2021' => ['componentKeys' => $maven_key, 'facets' => 'owaspTop10-2021', 'owaspTop10-2021' => 'a1,a2,a3,a4,a5,a6,a7,a8,a9,a10'],
+            'owasp2017' => ['componentKeys' => $maven_key, 'facets' => 'owaspTop10', 'owaspTop10' => self::$owaspCategories],
+            'owasp2021' => ['componentKeys' => $maven_key, 'facets' => 'owaspTop10-2021', 'owaspTop10-2021' => self::$owaspCategories],
+            'owasp2025' => ['componentKeys' => $maven_key, 'facets' => 'owaspTop10-2025', 'owaspTop10-2025' => self::$owaspCategories]
         ];
 
         /** Sécurisation de l'URL */
@@ -117,10 +120,11 @@ class BatchCollecteOwaspController extends AbstractController
         $map = [ 'maven_key' => $maven_key ];
         $select_information = $informationProjetRepos->selectInformationProjetVersion($map);
             if ($select_information['code'] != 200) {
-                $this->logger->error("[Batch OWASP] ❌ Erreur OWASP 2021 pour {$maven_key} : {$owasp2021['code']}");
+                /* MODIF 2026-05-07 : log libellé corrigé (selectInformationProjetVersion, pas OWASP 2021). */
+                $this->logger->error("[Batch OWASP] ❌ Erreur selectInformationProjetVersion pour {$maven_key} : {$select_information['code']}");
                 return [
                     'code' => $select_information['code'],
-                    'erreur' => $select_information['erreur'] // 'message' => ?
+                    'erreur' => $select_information['erreur']
                 ];
         }
 
@@ -133,9 +137,9 @@ class BatchCollecteOwaspController extends AbstractController
             ];
         }
 
-        /** On reconstruit les dates au format dateTime */
+        /** On reconstruit la date de collecte au format dateTime */
         $date = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
-        $date_version = new \DateTimeImmutable($select_information['info'][0]['date'], new \DateTimeZone(self::$europeParis));
+        $date_version = new \DateTimeImmutable($select_information['info']['date'], new \DateTimeZone(self::$europeParis));
 
         $prepareOwaspData = function($referential) use ($maven_key, $date_version, $date, $select_information, $mode_collecte, $utilisateur_collecte) {
             /** On initialise un tableau avec comme valeur 0 */
@@ -175,7 +179,7 @@ class BatchCollecteOwaspController extends AbstractController
             $map = [
                     'total' => $total,
                     'maven_key' => $maven_key,
-                    'version' => $select_information['info'][0]['project_version'] ?? '0.0.0-SNAPSHOT',
+                    'version' => $select_information['info']['version'] ?? 'N.C',
                     'date_version' => $date_version,
                     'effort_total' => $effort_total,
                     'mode_collecte' => $mode_collecte,
@@ -202,19 +206,19 @@ class BatchCollecteOwaspController extends AbstractController
         $total_2017 = 'NC';
         /* pour chaque référentiel 2017/2021 */
         if (array_key_exists('total', $owasp2017['json'])) {
-            $row = $prepareOwaspData($owasp2017['json']);
-            $row['referential_owasp'] = 2017;
-            $owaspDataList[] = $row;
-            $total_2017 = $row['total'];
+            $owaspDataList[] = $prepareOwaspData($owasp2017['json']);
+            $owaspDataList[0]['referential_owasp'] = 2017;
+            $total_2017 = $owaspDataList[0]['total'];
         }
 
         $total_2021 = 'NC';
         /** $owasp2021 = ['NC'] on a pas de données pour le référentiel 2021 */
-        if (is_array($owasp2021) && isset($owasp2021['json']) && array_key_exists('total', $owasp2021['json'])) {
-            $row = $prepareOwaspData($owasp2021['json']);
-            $row['referential_owasp'] = 2021;
-            $owaspDataList[] = $row;
-            $total_2021 = $row['total'];
+        if (isset($owasp2021['json']) && array_key_exists('total', $owasp2021['json'])) {
+            /* MODIF 2026-05-07 : index dynamique + lecture sous-clé 'json' (cohérent avec 2017). */
+            $owaspDataList[] = $prepareOwaspData($owasp2021['json']);
+            $idx2021 = array_key_last($owaspDataList);
+            $owaspDataList[$idx2021]['referential_owasp'] = 2021;
+            $total_2021 = $owaspDataList[$idx2021]['total'];
         }
 
         /** On supprime les informations sur le projet pour la dernière analyse. */
