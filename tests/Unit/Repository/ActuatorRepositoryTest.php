@@ -233,7 +233,7 @@ class ActuatorRepositoryTest extends TestCase
     public function testFindActuatorMavenKeyReturnsRow(): void
     {
         $this->connection->method('prepare')->willReturn($this->statement);
-        $this->statement->expects($this->once())->method('bindValue')->with(':maven_key', 'fr.test:app');
+        $this->statement->expects($this->once())->method('bindValue')->with(':maven_key', 'fr.ma-moulinette:ma-moulinette');
         $this->statement->method('executeQuery')->willReturn($this->result);
         $this->result->method('fetchAllAssociative')->willReturn([[
             'id' => 7,
@@ -242,7 +242,7 @@ class ActuatorRepositoryTest extends TestCase
             'actuator_password' => 'secret',
         ]]);
 
-        $response = $this->repo->findActuatorMavenKey(['maven_key' => 'fr.test:app']);
+        $response = $this->repo->findActuatorMavenKey(['maven_key' => 'fr.ma-moulinette:ma-moulinette']);
 
         $this->assertSame(200, $response['code']);
         $this->assertSame(7, $response['id']);

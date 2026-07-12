@@ -48,8 +48,8 @@ class MesProjetsTest extends TestCase
     public function testListeReturnsProjectsWhenRepositoryReturnsNonEmptyListe(): void
     {
         $projets = [
-            ['maven_key' => 'com.acme:app', 'name' => 'App'],
-            ['maven_key' => 'com.acme:api', 'name' => 'API'],
+            ['maven_key' => 'fr.ma-moulinette:projet-a', 'name' => 'App'],
+            ['maven_key' => 'fr.ma-moulinette:projet-b', 'name' => 'API'],
         ];
 
         $this->repository->expects($this->once())

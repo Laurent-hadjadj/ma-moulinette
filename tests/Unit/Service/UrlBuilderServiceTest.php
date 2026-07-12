@@ -49,12 +49,12 @@ final class UrlBuilderServiceTest extends TestCase
         $url = $this->service->build(
             'https://sonar.example.com',
             '/api/measures/component',
-            ['component' => 'fr.example:my-app', 'metricKeys' => 'reliability_rating']
+            ['component' => 'fr.ma-moulinette:ma-moulinette', 'metricKeys' => 'reliability_rating']
         );
 
         self::assertStringContainsString('?component=', $url);
         self::assertStringContainsString('metricKeys=reliability_rating', $url);
-        self::assertStringContainsString('component=fr.example%3Amy-app', $url);
+        self::assertStringContainsString('component=fr.ma-moulinette%3Ama-moulinette', $url);
     }
 
     public function testUsesAmpersandWhenBaseUrlAlreadyHasQueryString(): void
