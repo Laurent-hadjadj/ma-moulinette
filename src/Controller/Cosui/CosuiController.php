@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -17,7 +17,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{Request, Response};
 use \Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
-use App\Service\{ProjetCosuiService, UserAgentTrackingFacade};
+use App\Service\ProjetCosuiService;
+use App\Service\UserAgent\UserAgentTrackingFacade;
 
 /**
  * [Description CosuiController]
@@ -27,7 +28,6 @@ class CosuiController extends AbstractController
 
     private static string $erreur400 = '❌ La requête est incorrecte (Erreur 400).';
     private static string $page = 'projet/cosui.html.twig';
-    private static string $titreFlash = '[COSUI]';
 
     /**
      * [Description for __construct]
@@ -39,8 +39,9 @@ class CosuiController extends AbstractController
     public function __construct(
         private LoggerInterface $logger,
         private ProjetCosuiService $cosuiService,
-        private UserAgentTrackingFacade $tracking)
-    {}
+        private UserAgentTrackingFacade $tracking
+    ) {
+    }
 
     /**
      * [Description for addFlashAndRender]
@@ -59,7 +60,7 @@ class CosuiController extends AbstractController
      */
     private function addFlashAndRender(string $type, string $message, string|null $trace, array $render): Response
     {
-        $this->logger->info("[COSUI] ℹ️ Ajout d’un message flash de type '{$type}' avec le titre : " . self::$titreFlash);
+        $this->logger->info("[COSUI] ℹ️ Ajout d’un message flash de type '{$type}'");
         $this->logger->debug("Contenu du message flash", [
             'message' => $message,
             'trace' => $trace ?? 'Pas de traces',
@@ -109,7 +110,7 @@ class CosuiController extends AbstractController
             return null;
         }
 
-        $result = strtolower($parts[1]);
+        $result =$parts[1];
         $this->logger->info("[COSUI] ℹ️ Token décodé avec succès", ['valeur_extraite' => $result]);
 
         return $result;
@@ -130,26 +131,24 @@ class CosuiController extends AbstractController
     #[Route('/projet/cosui', name: 'projet_cosui', methods: 'GET')]
     public function projetCosui(Request $request): Response
     {
-        $this->logger->info('[COSUI] ℹ️ Accès à /projet/cosui');
-
         $this->tracking->track('COSUI');
+        $this->logger->info('[COSUI] ℹ️ Accès à /projet/cosui');
 
         $render = $this->cosuiService->initialRender();
 
         $token = $request->query->get('token');
         if (empty($token)) {
             $this->logger->warning('[COSUI] ⚠️ Token manquant dans la requête');
-            return $this->addFlashAndRender('alert', self::$erreur400, 'token', $render);
+            return $this->addFlashAndRender('error', self::$erreur400, 'token', $render);
         }
 
         $maven_key = $this->decodeToken($token);
         if (null === $maven_key) {
             $this->logger->error('[COSUI] ❌ Échec du décodage du token.');
-            return $this->addFlashAndRender('alert', self::$erreur400, 'Problème de décodage du token.', $render);
+            return $this->addFlashAndRender('error', self::$erreur400, 'Problème de décodage du token.', $render);
         }
 
         $this->logger->info('[COSUI] ℹ️ Token décodé, maven_key reçu', ['maven_key' => $maven_key]);
-
         try {
             $result = $this->cosuiService->generateRender($maven_key);
 
@@ -166,7 +165,7 @@ class CosuiController extends AbstractController
                 );
             }
         } catch (\RuntimeException $e) {
-            return $this->addFlashAndRender('alert', '🔴 Erreur lors de la génération COSUI.', $e->getMessage(), $render);
+            return $this->addFlashAndRender('critical', '🔴 Erreur lors de la génération COSUI.', $e->getMessage(), $render);
         }
 
         return $this->render(self::$page, $result);
