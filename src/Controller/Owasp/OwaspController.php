@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -21,7 +21,9 @@ use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\{OwaspTop10, Owasp, HotspotOwasp, HotspotDetails, Historique};
-use App\Service\{PdfExportService, UserAgentTrackingFacade};
+use App\Repository\DcScanRepository;
+use App\Service\{PdfExportService};
+use App\Service\UserAgent\UserAgentTrackingFacade;
 
 /**
  * [Description OwaspController]
@@ -31,6 +33,7 @@ class OwaspController extends AbstractController
 
     private static string $page = "owasp/index.html.twig";
     private static string $erreur404 = "⚠️ Les informations concernant les référentiels OWASP n'ont pas été trouvés.";
+    private static string $erreur400 = '❌ La requête est incorrecte (Erreur 400).';
     private static string $noData = 'Pas de données';
 
     private string $logoEntreprise;
@@ -40,7 +43,7 @@ class OwaspController extends AbstractController
     private string $version;
     private string $dateCopyright;
 
-        /**
+    /**
      * [Description for __construct]
      *
      * Created at: 13/02/2023, 08:57:23 (Europe/Paris)
@@ -51,8 +54,9 @@ class OwaspController extends AbstractController
         ParameterBagInterface $params,
         private EntityManagerInterface $em,
         private LoggerInterface $logger,
-        private UserAgentTrackingFacade $tracking,
-        private PdfExportService $pdfExportService)
+        private PdfExportService $pdfExportService,
+        private DcScanRepository $dcScanRepository,
+        private UserAgentTrackingFacade $tracking)
     {
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
@@ -85,7 +89,80 @@ class OwaspController extends AbstractController
     }
 
     /**
+     * [Description for addFlashAndRender]
+     *
+     * @param string $type
+     * @param string $message
+     * @param string|null $trace
+     * @param array $render
+     *
+     * @return Response
+     *
+     * Created at: 10/05/2026 11:41:25 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function addFlashAndRender(string $type, string $message, string|null $trace, array $render): Response
+    {
+        $this->logger->info("[OWASP] ℹ️ Ajout d’un message flash de type '{$type}'");
+        $this->logger->debug("Contenu du message flash", [
+            'message' => $message,
+            'trace' => $trace ?? 'Pas de traces',
+            'render_keys' => array_keys($render),
+        ]);
+
+        $this->addFlash('notice', [
+            'type' => $type,
+            'message' => $message,
+            'trace' => $trace ?? null,
+        ]);
+
+        return $this->render(self::$page, $render);
+    }
+
+    /**
+     * [Description for decodeToken]
+     *
+     * @param string $token
+     *
+     * @return string|null
+     *
+     * Created at: 10/05/2026 10:55:38 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function decodeToken(string $token): ?string
+    {
+        //token=BGR2ZQL5ZQLjA3kzpv5gLF1go3IfnJ5yqUEyBzkyYJAbLKD=
+        //1 - b64=OTE2MDY5MDYwN3xmci5tYS1tb3VsaW5ldHRlOmxlLWNoYXQ=
+        //2 - rot13=BGR2ZQL5ZQLjA3kzpv5gLF1go3IfnJ5yqUEyBzkyYJAbLKD=
+        $this->logger->debug("[OWASP] 🛠️ Tentative de décodage du token", ['token_brut' => $token]);
+
+        $string = str_rot13($token);
+        $decoded = base64_decode($string, true); // `true` => return false si invalide
+        if ($decoded === false) {
+            $this->logger->warning("[OWASP] ⚠️ Échec du décodage base64 du token", ['token_rot13' => $string]);
+            return null;
+        }
+
+        $parts = preg_split("/[|]+/", $decoded);
+
+        if (count($parts) !== 2) {
+            $this->logger->warning("[OWASP] ⚠️ Format de token invalide après décodage", ['decoded' => $decoded]);
+            return null;
+        }
+
+        $result = strtolower($parts[1]);
+        $this->logger->info("[OWASP] ℹ️ Token décodé avec succès", ['valeur_extraite' => $result]);
+
+        return $result;
+    }
+
+    /**
      * [Description for index]
+     * Page web OWASP
+     *
+     * @param Request $request
      *
      * @return Response
      *
@@ -94,16 +171,28 @@ class OwaspController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/owasp', name: 'owasp')]
-    public function index(): Response
+    public function index(Request $request): Response
     {
-
         $this->tracking->track('OWASP');
 
         /** On charge le template du render */
         $render = $this->genericRender();
 
+        $token = $request->query->get('token');
+        if (empty($token)) {
+            $this->logger->warning('[OWASP] ⚠️ Token manquant dans la requête');
+            return $this->addFlashAndRender('error', self::$erreur400, 'token', $render);
+        }
+
+        $maven_key = $this->decodeToken($token);
+        if (null === $maven_key) {
+            $this->logger->error('[OWASP] ❌ Échec du décodage du token.');
+            return $this->addFlashAndRender('error', self::$erreur400, 'Problème de décodage du token.', $render);
+        }
+
         /** On instancie l'entityRepos */
         $owaspTop10Repos = $this->em->getRepository(OwaspTop10::class);
+        $owaspRepos = $this->em->getRepository(Owasp::class);
 
         /** On récupère les informations du projet de la table historique */
         $map = ['referential_version' => 2017];
@@ -136,18 +225,79 @@ class OwaspController extends AbstractController
             return $this->render(self::$page, $render);
         }
 
-        if (count($owasp_2017['liste']) === 0 && count($owasp_2021['liste']) === 0) {
-            $this->logger->warning('[Owasp] ⚠️ Référentiels OWASP 2017 et 2021 vides.');
+        $map = ['referential_version' => 2025];
+        $owasp_2025 = $owaspTop10Repos->selectOwaspTop10Referential($map);
+
+        if ($owasp_2025['code'] != 200) {
+            $this->logger->error('[Owasp] ❌ Échec selectOwaspTop10Referential 2025.', [
+                'code' => $owasp_2025['code'],
+                'erreur' => $owasp_2025['erreur'] ?? self::$noData
+            ]);
+            $this->addFlash('notice', [
+                'type' => 'error',
+                'message' => '❌' . ($owasp_2025['erreur'] ?? self::$noData)
+            ]);
+            return $this->render(self::$page, $render);
+        }
+
+        if (count($owasp_2017['liste']) === 0 && count($owasp_2021['liste']) === 0 && count($owasp_2025['liste']) === 0) {
+            $this->logger->warning('[Owasp] ⚠️ Référentiels OWASP 2017, 2021 et 2025 vides.');
             $this->addFlash('notice', [
                 'type' => 'warning',
                 'message' => self::$erreur404
             ]);
         }
 
-        $render['sonar_version'] = $this->getParameter('sonar.version');
+        $breadCrumb = $owaspRepos->selectOwaspVersion($maven_key);
+        if (($breadCrumb['code'] ?? 500) !== 200) {
+            $this->logger->error('[OWASP] ❌ Échec de la requête selectOwaspVersion.', [
+                'code'   => $breadCrumb['code'] ?? 500,
+                'erreur' => $breadCrumb['erreur'] ?? '',
+            ]);
+            $this->addFlash('notice', [
+                'type'    => 'error',
+                'message' => sprintf(
+                    'La récupération de la version du projet a échoué (Erreur %s). %s',
+                    $breadCrumb['code'] ?? 500,
+                    $breadCrumb['erreur'] ?? ''
+                ),
+            ]);
+        }
+
+        /* MODIF 2026-05-10 : split robuste de la maven_key
+         * (group:artifact). On expose `application_group` en plus pour que
+         * le template puisse construire le lien dc_projet. Garde-fou null :
+         * `breadCrumb['application']` peut être null si selectOwaspVersion
+         * a échoué (code != 200) ou n'a trouve aucune ligne (no-data). */
+        $mavenKeyComplete = $breadCrumb['application'] ?? null;
+        $parts = is_string($mavenKeyComplete) ? explode(':', $mavenKeyComplete) : [];
+
+        $render['sonar_version'] = (int) $this->getParameter('sonar.version');
         $render['serveur'] = $this->getParameter('sonar.url');
         $render['owasp_2017'] = $owasp_2017;
         $render['owasp_2021'] = $owasp_2021;
+        $render['owasp_2025'] = $owasp_2025;
+        $render['application_group']   = $parts[0] ?? null;
+        $render['application']         = $parts[1] ?? null;
+        $render['application_version'] = $breadCrumb['version'] ?? null;
+
+        /* MODIF 2026-05-11 : le bouton DC est totalement
+         * découplé du breadcrumb OWASP Sonar (qui peut être vide pour des projets
+         * scannes DC mais sans analyse OWASP récente). On cherche le dernier scan
+         * DC pour le maven_key decode du token et on expose `dc_link_*` depuis ce
+         * scan (toutes versions confondues). Le bouton apparaît dès qu'un scan DC
+         * existe, peu importe l'état de la table `owasp`. */
+        $render['has_dc_scan']      = false;
+        $render['dc_link_group']    = null;
+        $render['dc_link_artifact'] = null;
+        $render['dc_link_version']  = null;
+        $latestDcScan = $this->dcScanRepository->findLatestByMavenKey($maven_key);
+        if ($latestDcScan !== null) {
+            $render['has_dc_scan']      = true;
+            $render['dc_link_group']    = $latestDcScan->getProjectGroup();
+            $render['dc_link_artifact'] = $latestDcScan->getProjectArtifact();
+            $render['dc_link_version']  = $latestDcScan->getProjectVersion();
+        }
         return $this->render(self::$page, $render);
     }
 
@@ -162,9 +312,11 @@ class OwaspController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/owasp/detail/{id}', name: 'owasp_detail', condition: "params['id'] < 21", methods: ['GET', 'HEAD'])]
+    #[Route('/owasp/detail/{id}', name: 'owasp_detail', condition: "params['id'] < 31", methods: ['GET', 'HEAD'])]
     public function details(int $id): Response
     {
+        $this->tracking->track('OWASP_DETAILS');
+
         /** On charge le template du render */
         $render = $this->genericRender();
 
@@ -195,7 +347,15 @@ class OwaspController extends AbstractController
      * [Description for owaspLabels]
      * Libellés des catégories OWASP par référentiel.
      *
-     * @return array<string, array<int, string>
+     * MODIF 2026-05-15 : clés du référentiel passées de string
+     * `'2017'` / `'2021'` à int `2017` / `2021`. PHP convertit automatiquement
+     * les clés string numériques en int → l'array était de facto `array<int, …>`
+     * mais le @return déclarait `array<string, …>` + ligne 536 accédait via
+     * string `['2021']`, déclenchant offsetAccess.notFound sous PHPStan.
+     * Le code fonctionnait en runtime (PHP cast l'accès string→int) mais
+     * l'incohérence trompait l'analyse statique.
+     *
+     * @return array<int, array<int, string>>
      *
      * Created at: 03/05/2026 16:57:39 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -204,7 +364,7 @@ class OwaspController extends AbstractController
     private static function owaspLabels(): array
     {
         return [
-            '2017' => [
+            2017 => [
                 1 => "Attaques d'injection",
                 2 => "Authentification défaillante",
                 3 => "Fuites de données sensibles",
@@ -216,7 +376,7 @@ class OwaspController extends AbstractController
                 9 => "Composants tiers vulnérables",
                 10 => "Journalisation et surveillance insuffisantes",
             ],
-            '2021' => [
+            2021 => [
                 1 => "Contrôle d'accès défaillant",
                 2 => "Défauts cryptographiques",
                 3 => "Injections",
@@ -227,6 +387,18 @@ class OwaspController extends AbstractController
                 8 => "Manque d'intégrité des données et du logiciel",
                 9 => "Carences des systèmes de contrôle et de journalisation",
                 10 => "Falsification de requête côté serveur (SSRF)",
+            ],
+            2025 => [
+                1 => "Contrôle d’accès défaillant",
+                2 => "Mauvaise configuration de sécurité",
+                3 => "Défaillances de la chaîne d’approvisionnement des logiciels",
+                4 => "Défaillances cryptographiques",
+                5 => "Injection",
+                6 => "Conception non sécurisée",
+                7 => "Défauts d’authentification",
+                8 => "Défauts d’intégrité des logiciels ou des données",
+                9 => "Défaillances en matière de journalisation et d’alerte",
+                10 => "Mauvaise gestion des conditions exceptionnelles",
             ],
         ];
     }
@@ -240,7 +412,6 @@ class OwaspController extends AbstractController
      * puis délègue le rendu PDF à PdfExportService::generateOwaspPdf.
      *
      * @param Request $request
-     * @param bool $download Force l'attachement (true) ou rendu inline (false)
      *
      * Created at: 2026-05-03 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -391,7 +562,7 @@ class OwaspController extends AbstractController
          *  + ratings A-E vulnérabilité (severity breakdown) et hotspot (taux
          *  = 1 - share_de_la_categorie). Reproduit la logique JS de la page
          *  pour cohérence d'affichage. */
-        $labels = self::owaspLabels()[$referentialOwasp] ?? self::owaspLabels()['2021'];
+        $labels = self::owaspLabels()[$referentialOwasp] ?? self::owaspLabels()[2021];
         $totalHotspots = array_sum($categoriesHotspot);
         $categories = [];
         for ($i = 1; $i <= 10; $i++) {
@@ -435,7 +606,16 @@ class OwaspController extends AbstractController
     }
 
     /**
-     * Dernier segment de la maven_key (ex: "fr.acme:paddpm" → "paddpm").
+     * [Description for extractProjectName]
+     * Dernier segment de la maven_key (ex: "fr.acme:app" → "app").
+     *
+     * @param string $mavenKey
+     *
+     * @return string
+     *
+     * Created at: 12/07/2026 09:17:28 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private static function extractProjectName(string $mavenKey): string
     {
@@ -444,10 +624,17 @@ class OwaspController extends AbstractController
     }
 
     /**
+     * [Description for computeFailleRating]
      * Rating A-E d'une catégorie OWASP basé sur la severity breakdown.
      * Reproduit la logique du JS remplissageOwaspInfo (seuil > 1 par sévérité).
      *
-     * @param array{blocker:int, critical:int, major:int, minor:int} $sev
+     * @param array $sev
+     *
+     * @return string
+     *
+     * Created at: 12/07/2026 09:19:26 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private static function computeFailleRating(array $sev): string
     {
@@ -467,8 +654,18 @@ class OwaspController extends AbstractController
     }
 
     /**
+     * [Description for computeHotspotRating]
      * Rating A-E hotspot d'une catégorie : taux = 1 - (count_categorie / total).
      * Plus le taux est proche de 1, mieux c'est (cf. JS calculNoteHotspot).
+     *
+     * @param int $count
+     * @param int $total
+     *
+     * @return string
+     *
+     * Created at: 12/07/2026 09:19:03 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private static function computeHotspotRating(int $count, int $total): string
     {
@@ -480,7 +677,16 @@ class OwaspController extends AbstractController
     }
 
     /**
+     * [Description for computeHotspotNoteFromTaux]
      * Conversion taux → lettre A-E (mêmes seuils que JS calculNoteHotspot).
+     *
+     * @param float $taux
+     *
+     * @return string
+     *
+     * Created at: 12/07/2026 09:18:41 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private static function computeHotspotNoteFromTaux(float $taux): string
     {
