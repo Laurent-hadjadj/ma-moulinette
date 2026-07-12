@@ -71,7 +71,7 @@ class DependencyCheckProcessCommand extends Command
         private readonly EntityManagerInterface $em,
         private readonly DcProcessingQueueRepository $queueRepository,
         private readonly LoggerInterface $logger,
-        // MODIF 2026-05-08 phase 2 : injection de l'Ingester metier.
+        // MODIF 2026-05-08 : injection de l'Ingester metier.
         // Optionnel : si null (cas tests Unit pre-phase-2), on bascule sur le
         // comportement legacy (juste validation).
         private readonly ?DependencyCheckIngester $ingester = null,
@@ -335,7 +335,7 @@ class DependencyCheckProcessCommand extends Command
      * [Description for processOne]
      * Traitement d'UN rapport.
      *
-     * MODIF 2026-05-08 phase 2 :
+     * MODIF 2026-05-08 :
      *   - si Ingester injecte : délègue tout le pipeline metier (parse + dedup +
      *     creation scan + findings) avec idempotence par (projet, version, scan_date).
      *   - sinon : fallback sur la validation light (compatibilité tests Unit phase 1).

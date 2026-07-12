@@ -588,11 +588,11 @@ class Historique
     #[Assert\Range(min: 0, max: 100)]
     private ?float $duplicatedLinesDensity = null;
 
-    /* MODIF 2026-05-16 [bug-historique-duplicated-lines-rating] : ajout
-     * propriete duplicatedLinesRating, meme bug que coverageRating
-     * (cf commentaire). Colonne presente dans le DDL (historique.sql l.93)
-     * et utilisee dans HistoriqueRepository whitelist + ratingColumns, mais
-     * absente de l'entite. */
+    /* MODIF 2026-05-16 : ajout propriété duplicatedLinesRating,
+     * même bug que coverageRating (cf commentaire).
+     * Colonne présente dans le DDL (historique.sql l.93)
+     * et utilisée dans HistoriqueRepository whitelist + ratingColumns, mais
+     * absente de l'entité. */
     #[ORM\Column(
         name: 'duplicated_lines_rating',
         type: Types::STRING,
@@ -2031,8 +2031,7 @@ class Historique
         return $this;
     }
 
-    // MODIF 2026-05-16 [bug-historique-coverage-rating] : getter/setter pour
-    // la propriete coverageRating ajoutee (cf. commentaire en-tete de la propriete).
+    // MODIF 2026-05-16 : getter/setter pour la propriété coverageRating ajoutée (cf. commentaire en-tête de la propriété).
     public function getCoverageRating(): ?string
     {
         return $this->coverageRating;
@@ -2198,7 +2197,6 @@ class Historique
         return $this;
     }
 
-    // MODIF 2026-05-16 [bug-historique-duplicated-lines-rating]
     public function getDuplicatedLinesRating(): ?string
     {
         return $this->duplicatedLinesRating;

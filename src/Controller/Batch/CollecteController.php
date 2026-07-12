@@ -35,7 +35,7 @@ class CollecteController extends AbstractController
     private static string $htmlSectionOpen  = "\n            <section>\n                <p>";
     private static string $htmlSectionClose = "</li>\n                </ul>\n            </section>";
     private static string $htmlDetteMinute  = "</li>\n                    <li><span>Dette en minute : </span>";
-    /* MODIF 2026-05-04 [audit-notes] : suppression $erreurFinTraitement (uniquement utilisé par les blocs notes retirés) */
+    /* MODIF 2026-05-04 : suppression $erreurFinTraitement (uniquement utilisé par les blocs notes retirés) */
 
     /**
      * [Description for __construct]

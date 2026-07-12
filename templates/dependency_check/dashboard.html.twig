@@ -198,21 +198,12 @@
           </div>
         </div>
 
-        {# MODIF 2026-05-12 : fragment F.
-          Nouvelles CVE CRITICAL = diff entre le dernier scan d'un projet et
-          son scan immédiatement antérieur. Badge "1ère analyse" pour
-          distinguer un projet jamais scanné avant (toutes ses CVE sont
-          nouvelles par défaut) d'une vraie régression vs scan précédent.
-          Place en tête des fragments analytics : c'est le signal "urgence"
-          que le RSSI/lead dev doit voir d'abord en arrivant sur le dashboard.
+        {# 
+          MODIF 2026-05-12 :  Nouvelles CVE CRITICAL = diff entre le     dernier scan d'un projet et son scan immédiatement antérieur. Badge "1ère analyse" pour distinguer un projet jamais scanné avant (toutes ses CVE sont nouvelles par défaut) d'une vraie régression vs scan précédent. Place en tête des fragments analytics : c'est le signal "urgence" que le RSSI/lead dev doit voir d'abord en arrivant sur le dashboard.
 
-          MODIF 2026-05-14 : refonte du
-          panneau. Avant : 1 ligne par scan où la CVE est nouvelle (saturait
-          le tableau quand un socle exemple-config est vulnérable et que 10 apps
-          en héritent — la même CVE apparaissait 10 fois). Maintenant :
+          MODIF 2026-05-14 : refonte du panneau. Avant : 1 ligne par scan où la CVE est nouvelle (saturait le tableau quand un socle exemple-config est vulnérable et que 10 apps en héritent — la même CVE apparaissait 10 fois). Maintenant :
           1 ligne par CVE distincte + bouton qui ouvre une modale listant
-          la liste des applications impactées (avec leur socle pour identifier
-          si la vuln vient de l'héritage ou d'un JAR embarqué). #}
+          la liste des applications impactées (avec leur socle pour identifier si la vuln vient de l'héritage ou d'un JAR embarqué). #}
         <h3 class="h5 claire-hand">
           <span aria-hidden="true">🆕</span> Nouvelles CVE CRITICAL (depuis le scan précédent)
           <span class="float-right open-sans font-size-1">
@@ -334,8 +325,7 @@
           {% endfor %}
         {% endif %}
 
-        {# MODIF 2026-05-11 : fragment A.
-          Top 5 projets exposes (gauche) + Top 10 CVE CRITICAL (droite).
+        {# MODIF 2026-05-11 : Top 5 projets exposes (gauche) + Top 10 CVE CRITICAL (droite).
           Titre adapte selon analytics_mode. #}
         <h3 class="h5 claire-hand">
           <span aria-hidden="true">🎯</span> {{ analytics_mode ? 'Top du parc' : 'Mon périmètre' }}
@@ -430,8 +420,7 @@
 
         </div>
 
-        {# MODIF 2026-05-11 : fragment B.
-          Cartographie des projets du périmètre par sévérité max.
+        {# MODIF 2026-05-11 : Cartographie des projets du périmètre par sévérité max.
           Tri sql-less, deja effectue cote controller (severityRank desc puis
           cve_count_total desc). #}
         <h3 class="h5 claire-hand">
@@ -634,8 +623,7 @@
           </div>
         {% endif %}
 
-        {# MODIF 2026-05-11 : fragment D.
-          Top 10 deps mutualisables par "Gain" (JH * (nb_projets-1)).
+        {# MODIF 2026-05-11 : Top 10 deps mutualisables par "Gain" (JH * (nb_projets-1)).
           Le JH unitaire est calcule cote controller via DcExecutiveAnalyticsService. #}
         <h3 class="h5 claire-hand">
           <span aria-hidden="true">🔗</span> Mutualisations possibles (top 10 par gain)
