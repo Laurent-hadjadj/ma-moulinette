@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -21,7 +21,7 @@ use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\Profiles;
-use App\Service\UserAgentTrackingFacade;
+use App\Service\UserAgent\UserAgentTrackingFacade;
 
 /**
  * [Description ProfilController]
@@ -50,7 +50,6 @@ class ProfilController extends AbstractController
         private EntityManagerInterface $em,
         ParameterBagInterface $params,
         private LoggerInterface $logger,
-        // AUDIT 2026-05 : utilisé par $this->tracking->track('PROFIL') dans index() — ne pas retirer même si PhpStan signale "property.onlyWritten"
         private UserAgentTrackingFacade $tracking
     ) {
         $this->logoEntreprise = $params->get('logo.entreprise');
@@ -134,10 +133,10 @@ class ProfilController extends AbstractController
                 return $this->render(self::$page, $render);
             }
 
-                $this->logger->info('[Profil] ℹ️ Profils récupérés avec succès', [
-                    'nb_profils' => count($r['liste']),
-                    'code_retour' => $r['code']
-                ]);
+            $this->logger->info('[Profil] ℹ️ Profils récupérés avec succès', [
+                'nb_profils' => count($r['liste']),
+                'code_retour' => $r['code']
+            ]);
         } catch (\Throwable $e) {
             $this->logger->critical('[Profil] 🔴 Exception lors de l’appel à selectProfiles()', [
                 'exception' => $e->getMessage()
