@@ -118,6 +118,18 @@ class ProfilingApiController extends AbstractController
         ];
     }
 
+    /**
+     * [Description for indicateur]
+     * Retourne la liste d'indicateur extrait de findGlobalSummary()
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     *
+     * Created at: 12/07/2026 10:01:09 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     #[Route('/api/secure/profiling/indicateur', name: 'profiling_indicateur', methods: ['POST'])]
     public function indicateur(Request $request): JsonResponse
     {
@@ -174,6 +186,7 @@ class ProfilingApiController extends AbstractController
 
     /**
      * [Description for summary]
+     * retourne les données macros extrait de la requête getGlobalKpi()
      *
      * @return JsonResponse
      *
@@ -208,6 +221,7 @@ class ProfilingApiController extends AbstractController
 
     /**
      * [Description for latest]
+     * Retourne les 10 derniers résultats.
      *
      * @return JsonResponse
      *
@@ -242,6 +256,7 @@ class ProfilingApiController extends AbstractController
 
     /**
      * [Description for weekly]
+     * Retourne les données agrégés sur une semaine.
      *
      * @return JsonResponse
      *
@@ -282,6 +297,7 @@ class ProfilingApiController extends AbstractController
 
     /**
      * [Description for monthlyAll]
+     * Retourne les données agrégés sur un mois.
      *
      * @return JsonResponse
      *
@@ -322,6 +338,7 @@ class ProfilingApiController extends AbstractController
 
     /**
      * [Description for users]
+     * Retourne les données agrégés par utilisateur.
      *
      * @return JsonResponse
      *
@@ -362,6 +379,7 @@ class ProfilingApiController extends AbstractController
 
     /**
      * [Description for allPortefeuille]
+     * Retourne les données agrégés par portefeuille d'application.
      *
      * @return JsonResponse
      *
