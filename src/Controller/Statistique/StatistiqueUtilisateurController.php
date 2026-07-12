@@ -16,30 +16,25 @@ declare(strict_types=1);
 namespace App\Controller\Statistique;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\{Response, Request};
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\Security\Http\Attribute\IsGranted;
-
-use App\Service\UserAgentTrackingFacade;
-use App\Service\UserAgentReportingService;
+use App\Service\UserAgent\{UserAgentTrackingFacade, UserAgentReportingService};
 
 /**
  * [Description StatistiqueUtilisateurController]
  */
 class StatistiqueUtilisateurController extends AbstractController
 {
-    private static string $erreur403 = "Vous devez avoir le rôle <strong>GESTIONNAIRE</strong> pour accéder à cette page (Erreur 403).";
     private static string $message = "Les données n'ont pas été correctement récupérées ";
     private static string $index = 'statistique/utilisateur.html.twig';
 
-    private $logoEntreprise;
-    private $marqueEntrepriseShort;
-    private $marqueEntrepriseLong;
-    private $environnement;
-    private $version;
-    private $dateCopyright;
+    private string $logoEntreprise;
+    private string $marqueEntrepriseShort;
+    private string $marqueEntrepriseLong;
+    private string $environnement;
+    private string $version;
+    private string $dateCopyright;
 
     public function __construct(
         ParameterBagInterface $params,
@@ -81,7 +76,7 @@ class StatistiqueUtilisateurController extends AbstractController
      *
      * @param string $type
      * @param string $message
-     * @param string $code
+     * @param int $code
      * @param string|null|null $error
      *
      * @return void
@@ -97,6 +92,7 @@ class StatistiqueUtilisateurController extends AbstractController
 
     /**
      * [Description for statistique]
+     * Page de statistique utilisateur.
      *
      * @return Response
      *
@@ -105,7 +101,6 @@ class StatistiqueUtilisateurController extends AbstractController
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/statistiques/utilisateur', name: 'statistiques_utilisateur', methods: ['GET'])]
-    #[IsGranted('ROLE_GESTIONNAIRE', message: 'Vous ne disposez pas des droits suffisants pour accéder à cette page.', statusCode: 403)]
     public function statistiques(Request $request): Response
     {
         $this->tracking->track('STATISTIQUES_UTILISATEUR');
@@ -129,15 +124,6 @@ class StatistiqueUtilisateurController extends AbstractController
         $render['nb_session_unique'] = [];
         $render['session_category'] = [];
         $render['session_unique_category'] = [];
-
-        /** On vérifie que l'utilisateur a bien le ROLE_GESTIONNAIRE */
-        if (!$this->isGranted('ROLE_GESTIONNAIRE')) {
-            $this->addFlash('notice', [
-                'type' => 'warning',
-                'message' => self::$erreur403,
-                'trace' => '']);
-            return $this->render(self::$index, $render);
-        }
 
         /******************************************/
         /**               USER_AGENT              */
