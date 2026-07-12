@@ -35,6 +35,8 @@ services:
     environment:
       - "TZ=${LOCAL_TZ}"
       - "LANG=${LOCAL_LANG}"
+      # MODIF 2026-05-08 : token requis par le subscriber DC.
+      - "DC_INGEST_TOKEN=${DC_INGEST_TOKEN}"
     build:
       dockerfile: php-custom.dockerfile
       context: .
@@ -46,6 +48,41 @@ services:
     restart: unless-stopped
     depends_on:
       - database-ma-moulinette
+    networks:
+      - proxy-net
+
+  # MODIF 2026-05-08 : sidecar Supercronic pour le worker DC.
+  # - meme volume /var/www que php-fpm (partage code Symfony)
+  # - meme network proxy-net pour atteindre postgresql
+  # - process court par tick : zero fuite mémoire, OS récupère a chaque exit
+  cron-ma-moulinette:
+    platform: ${platform}
+    container_name: cron-ma-moulinette
+    hostname: cron-ma-moulinette
+    environment:
+      - "TZ=${LOCAL_TZ}"
+      - "LANG=${LOCAL_LANG}"
+      - "DC_INGEST_TOKEN=${DC_INGEST_TOKEN}"
+      # MODIF 2026-05-21 : URL/tokens pour jobs prod update-tags et collecte.
+      - "SONAR_URL=${SONAR_URL}"
+      - "SONAR_TOKEN=${SONAR_TOKEN}"
+      - "MAMOUL_URL=${MAMOUL_URL}"
+      - "MAMOUL_TOKEN=${MAMOUL_TOKEN}"
+      # DATABASE_URL doit pointer sur le service postgres dans le network docker
+      # (pas localhost). Surcharge la valeur éventuelle de .env.local.
+      - "DATABASE_URL=postgresql://${postgresql_user}:${db_user_password}@postgresql-ma-moulinette:5432/${postgresql_db}?serverVersion=18&charset=utf8"
+    build:
+      dockerfile: cron-ma-moulinette.dockerfile
+      context: .
+      args:
+        - "http_proxy=${http_proxy}"
+        - "https_proxy=${https_proxy}"
+    volumes:
+      - "${root_volume}/web-app:/var/www/"
+    restart: unless-stopped
+    depends_on:
+      - database-ma-moulinette
+      - php-fpm-ma-moulinette
     networks:
       - proxy-net
 
@@ -62,7 +99,7 @@ services:
     volumes:
       - "${root_volume}/web-app:/var/www/"
       - "${root_volume}/log:/var/log/nginx/"
-      - "${root_volume}/opt:/opt:rw"      
+      - "${root_volume}/opt:/opt:rw"
       - "${root_volume}/etc/nginx/ssl/dhparam.pem:/etc/nginx/ssl/dhparam.pem:ro"
       - "${root_volume}/etc/nginx/conf.d/:/etc/nginx/conf.d/:ro"
       - "${root_volume}/etc/nginx/sites-enabled/:/etc/nginx/sites-enabled/:ro"
