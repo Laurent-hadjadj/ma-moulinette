@@ -15,7 +15,6 @@ namespace App\Controller\Batch;
 
 use App\Controller\Traits\AppUserAware;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\{Request, Response, JsonResponse, BinaryFileResponse};
 use \Symfony\Component\Routing\Attribute\Route;
@@ -171,7 +170,7 @@ class BatchManuelController extends AbstractController
         $this->logger->info("[API] 📥 Requête reçue sur /traitement/start");
 
         // ========= Debug =========
-        /*$this->collecte->collecte(
+        /*"$this->collecte->collecte(
                 'test_portefeuille',
                 'fr.ma-moulinette:monapplication',
                 self::$traitementManuel,
@@ -392,14 +391,12 @@ class BatchManuelController extends AbstractController
             $explose_le_projet = explode(':', $le_projet, 2);
             $nom_projet = (count($explose_le_projet) === 2) ? $explose_le_projet[1] : $le_projet;
 
-            $journal = new BatchExecutionJournal(
-                $nom_projet,
-                $data->portefeuille,
-                $result['compte_rendu'],
-                $batchExecution,
-                new \DateTimeImmutable(),
-                $result['code']
-            );
+            $journal = new BatchExecutionJournal();
+            $journal->setCode($result['code']);
+            $journal->setPortefeuille($data->portefeuille);
+            $journal->setNomProjet($nom_projet);
+            $journal->setCompteRendu($result['compte_rendu']);
+            $journal->setDateExecution(new \DateTimeImmutable());
 
             $batchExecution->addJournal($journal);
             $this->em->persist($journal);
