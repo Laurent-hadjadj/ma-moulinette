@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common  CC-BY-NC-SA 4.0.
 *  ---
@@ -153,15 +153,33 @@ class BatchCollecteTodoController extends AbstractController
             ];
         }
 
-        /** Si pas d'issues, on arrête (après avoir nettoyé) */
+        /** Si pas d'issues, on arrête (après avoir nettoyé)
+         * MODIF 2026-05-15 : le retour "pas de todos" doit
+         * exposer la même shape que le retour nominal — sinon
+         * le caller ApiCollecteController::apiCollecteTodo
+         * déclenche "Warning: Undefined array key 'historique'" lorsqu'il
+         * lit `$to.do['historique']`. On retourne donc historique avec tous
+         * les compteurs à 0 (symétrie de contrat). */
         if (empty($result['issues']) || $result['paging']['total'] === 0) {
             $this->logger->info('[Batch Todo] ℹ️ Aucun TODO trouvé pour ce projet.', [
                 'maven_key' => $maven_key
             ]);
 
             return [
-                    'code' => 200,
-                    'nombre' => 0,
+                'code' => 200,
+                'nombre' => 0,
+                'message' => 'La collecte des todo pour le projet est terminées, aucun todo trouvé.',
+                'historique' => [
+                    'java_todo'       => 0,
+                    'python_todo'     => 0,
+                    'php_todo'        => 0,
+                    'xml_todo'        => 0,
+                    'web_todo'        => 0,
+                    'javascript_todo' => 0,
+                    'typescript_todo' => 0,
+                    'ruby_todo'       => 0,
+                    'total_todo'      => 0,
+                ],
             ];
         }
 
