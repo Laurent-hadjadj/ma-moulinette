@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common  CC-BY-NC-SA 4.0.
 *  ---
@@ -109,8 +109,9 @@ class BatchCollecteMesureController extends AbstractController
         ]);
 
         // [3] Collecte des mesures secondaires : lignes de code, fichiers, classes, fonctions, distribution par langage...
-        // Par défaut, on suppose une version 8 si la variable d'environnement n'est pas définie
-        $versionSonar = getenv('SONAR_VERSION') ?: 8;
+        // MODIF 2026-06-11 : getenv() ne voit pas les .env.local en contexte web/FPM.
+        // On utilise le paramètre Symfony `sonar.version` (services.yaml) qui est résolu correctement.
+        $versionSonar = (int) $this->getParameter('sonar.version');
         $metrics = $this->apiBuildRequest->metricsKey($versionSonar);
         $url = $this->urlBuilder->build(
             $this->getParameter(self::$sonarUrl),
