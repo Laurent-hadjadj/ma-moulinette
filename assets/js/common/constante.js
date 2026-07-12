@@ -109,4 +109,4 @@ export const listeOwasp2021 =[
 
   /** Liste des menaces OWASP 2025 */
   export const listeOwasp2025 =[
-  '','A01 : Contrôle d\'accès insuffisant','A02 : Erreur de configuration de sécurité','A03 : Défaillances de la chaîne d\'approvisionnement logicielle','A04 : Défaillances cryptographiques','A05 : Injection','A06 : Conception non sécurisée','A07 : Échecs d\'authentification','A08 : Défaillances d\'intégrité des logiciels ou des données','A09 : Échecs de journalisation et d\'alerte de sécurité','A10 : Mauvaise gestion des conditions exceptionnelles'];
+  '','A01 : Contrôle d\'accès défaillant','A02 : Mauvaise configuration de sécurité','A03 : Défaillances de la chaîne d\'approvisionnement des logiciels','A04 : Défaillances cryptographiques','A05 : Injection','A06 : Conception non sécurisée','A07 : Défauts d\'authentification','A08 : Défauts d\'intégrité des logiciels ou des données','A09 : Défaillances en matière de journalisation et d\'alerte','A10 : Mauvaise gestion des conditions exceptionnelles'];
