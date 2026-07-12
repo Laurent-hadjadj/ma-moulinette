@@ -262,7 +262,7 @@ class AccueilControllerTest extends TestCase
     }
 
     /* ============ construitMaRequest ============
-     * MODIF 2026-05-07 [tests-validators] : tests skipped — méthode utilitaire
+     * MODIF 2026-05-07 : tests skipped — méthode utilitaire
      * `construitMaRequest()` retirée d'AccueilController. Le SQL est construit
      * désormais via paramètres bind dans les Repository (`maven_key=:maven_key`). */
 

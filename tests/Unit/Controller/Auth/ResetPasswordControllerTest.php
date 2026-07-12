@@ -136,7 +136,7 @@ class ResetPasswordControllerTest extends TestCase
         $user = $this->makeUser();
         $this->stubTokenStorageUser($user);
 
-        /* MODIF 2026-05-07 [tests-validators] : init [] au lieu de null — intelephense
+        /* MODIF 2026-05-07 : init [] au lieu de null — intelephense
          * ne suit pas l'assignment by-reference dans le callback. */
         $capturedMap = [];
         $this->utilisateurRepo->expects($this->once())
@@ -152,7 +152,7 @@ class ResetPasswordControllerTest extends TestCase
 
         $this->assertSame(200, $data['code']);
         $this->assertTrue($capturedMap['reset_password']);
-        $this->assertSame('u@example.com', $capturedMap['courriel']);
+        $this->assertSame('u@ma-moulinette.fr', $capturedMap['courriel']);
     }
 
     public function testResetMotDePasseRendersFormWhenNotSubmitted(): void
@@ -173,7 +173,7 @@ class ResetPasswordControllerTest extends TestCase
         $twig->expects($this->once())
             ->method('render')
             ->with('auth/reset.html.twig', $this->callback(fn($ctx) =>
-                isset($ctx['resetPasswordForm']) && $ctx['courriel'] === 'u@example.com'
+                isset($ctx['resetPasswordForm']) && $ctx['courriel'] === 'u@ma-moulinette.fr'
             ))
             ->willReturn('<html>reset</html>');
 
@@ -213,7 +213,7 @@ class ResetPasswordControllerTest extends TestCase
     private function makeUser(): Utilisateur
     {
         $u = new Utilisateur();
-        $u->setCourriel('u@example.com');
+        $u->setCourriel('u@ma-moulinette.fr');
         return $u;
     }
 

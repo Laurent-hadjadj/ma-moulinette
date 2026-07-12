@@ -111,7 +111,7 @@ class FooterControllerTest extends TestCase
 
     public function testMentionLegalEnrichesRenderWithCguParameters(): void
     {
-        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        /* MODIF 2026-05-07 : init [] (intelephense by-ref). */
         $capturedCtx = [];
         $this->twig->expects($this->once())
             ->method('render')
@@ -136,7 +136,7 @@ class FooterControllerTest extends TestCase
 
     public function testDonneesPersonnellesIncludesUrlSiteInContext(): void
     {
-        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        /* MODIF 2026-05-07 : init [] (intelephense by-ref). */
         $capturedCtx = [];
         $this->twig->expects($this->once())
             ->method('render')

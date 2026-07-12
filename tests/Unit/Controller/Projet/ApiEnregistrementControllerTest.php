@@ -172,7 +172,7 @@ class ApiEnregistrementControllerTest extends TestCase
         $payload['files'] = 'null';                // ← string 'null' sur un autre champ
         // Champs string : on n'y touche pas (maven_key etc.)
 
-        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        /* MODIF 2026-05-07 : init [] (intelephense by-ref). */
         $capturedMap = [];
         $this->historiqueRepo->expects($this->once())
             ->method('insertHistoriqueAjoutProjet')

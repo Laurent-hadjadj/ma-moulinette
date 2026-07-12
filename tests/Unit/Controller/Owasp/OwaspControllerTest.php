@@ -86,7 +86,7 @@ class OwaspControllerTest extends TestCase
             ['sonar.url', 'https://sonar.example.com'],
         ]);
 
-        /* MODIF 2026-05-17 [coverage-vague6-owasp-helpers] : dispatch étendu
+        /* MODIF 2026-05-17 : dispatch étendu
          * aux repos rapportPdf (HotspotOwasp / HotspotDetails / Historique). */
         $this->em->method('getRepository')->willReturnCallback(
             fn(string $class) => match ($class) {
@@ -116,7 +116,6 @@ class OwaspControllerTest extends TestCase
             ['parameter_bag', 1, $this->params],
         ]);
 
-        // MODIF 2026-06-09 [user-agent-tracking]
         $this->controller = new OwaspController(
             $this->params,
             $this->em,
@@ -459,7 +458,7 @@ class OwaspControllerTest extends TestCase
 
     /* ============ computeFailleRating ============ */
 
-    /* MODIF 2026-05-17 [coverage-vague6-owasp-helpers] : tests helpers statiques privés. */
+    /* MODIF 2026-05-17 : tests helpers statiques privés. */
 
     public function testComputeFailleRatingReturnsE(): void
     {
@@ -560,7 +559,7 @@ class OwaspControllerTest extends TestCase
 
     /* ============ rapportPdf ============ */
 
-    /* MODIF 2026-05-17 [coverage-vague6-owasp-pdf] : tests rapportPdf. */
+    /* MODIF 2026-05-17 : tests rapportPdf. */
 
     public function testRapportPdfThrowsNotFoundWhenMavenKeyIsEmpty(): void
     {

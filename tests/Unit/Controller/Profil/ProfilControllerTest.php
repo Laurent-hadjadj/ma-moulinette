@@ -81,7 +81,6 @@ class ProfilControllerTest extends TestCase
             ['parameter_bag', 1, $this->params],
         ]);
 
-        // MODIF 2026-06-09 [user-agent-tracking]
         $this->controller = new ProfilController($this->em, $this->params, $this->logger, $this->tracking);
         $this->controller->setContainer($container);
     }
@@ -127,7 +126,7 @@ class ProfilControllerTest extends TestCase
 
         $this->flashBag->expects($this->never())->method('add');
 
-        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        /* MODIF 2026-05-07 : init [] (intelephense by-ref). */
         $capturedCtx = [];
         $this->twig->expects($this->once())
             ->method('render')

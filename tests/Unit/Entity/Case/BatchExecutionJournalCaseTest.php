@@ -146,7 +146,7 @@ class BatchExecutionJournalCaseTest extends TestCase
         $entity->getId();
     }
 
-    /* MODIF 2026-06-08 [coverage-batch-entities] : getCompteRendu retourne '' quand compteRendu vaut null (via Reflection).
+    /* MODIF 2026-06-08 : getCompteRendu retourne '' quand compteRendu vaut null (via Reflection).
      * setAccessible() supprimé : no-op depuis PHP 8.1, déprécié PHP 8.5. */
     public function testGetCompteRenduReturnsEmptyStringWhenNull(): void
     {

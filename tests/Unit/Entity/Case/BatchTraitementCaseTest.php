@@ -153,7 +153,7 @@ class BatchTraitementCaseTest extends TestCase
         $this->assertEquals($newFinTraitement, $this->batchTraitement->getFinTraitement());
     }
 
-    /* MODIF 2026-05-05 [fix-batchtraitement-test-ulid] : setTraitementId attend Ulid object. */
+    /* MODIF 2026-05-05 : setTraitementId attend Ulid object. */
     public function testSettingAndGettingTraitementId(): void
     {
         $newTraitementId = new Ulid();

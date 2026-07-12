@@ -35,7 +35,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Twig\Environment;
 
 #[AllowMockObjectsWithoutExpectations]
-/* MODIF 2026-05-05 [fix-test-orphan-mocks-useragent] : retrait des mocks
+/* MODIF 2026-05-05 : retrait des mocks
  * pointant vers UserAgentTrackingFacade / UserAgentReportingService /
  * LogArchiveService (classes supprimees de src/). */
 class ProjetControllerTest extends TestCase
@@ -74,6 +74,7 @@ class ProjetControllerTest extends TestCase
             ['marque.entreprise.long', 'Ma Moulinette'],
             ['environnement', 'test'],
             ['version', '2.0.0'],
+            ['sonar.version', '10'],
         ]);
 
         $this->em->method('getRepository')->willReturn($this->historiqueRepo);
@@ -155,7 +156,7 @@ class ProjetControllerTest extends TestCase
         $this->token->method('getUser')->willReturn($user);
 
         $this->mesProjets->method('liste')->willReturn([
-            'code' => 200, 'projets' => [['id' => 'com.acme:app']],
+            'code' => 200, 'projets' => [['id' => 'fr.ma-moulinette:ma-moulinette']],
         ]);
 
         $this->historiqueRepo->expects($this->once())
@@ -178,13 +179,13 @@ class ProjetControllerTest extends TestCase
 
         $this->mesProjets->method('liste')->willReturn([
             'code' => 200,
-            'projets' => [['id' => 'com.acme:app'], ['id' => 'com.acme:other']],
+            'projets' => [['id' => 'fr.ma-moulinette:ma-moulinette'], ['id' => 'fr.ma-moulinette:projet-b']],
         ]);
         $this->historiqueRepo->method('selectHistoriqueIndicateurs')->willReturn([
             'code' => 200, 'indicateur' => [['nom' => 'App', 'bug' => 2]],
         ]);
 
-        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        /* MODIF 2026-05-07 : init [] (intelephense by-ref). */
         $capturedCtx = [];
         $this->twig->expects($this->once())
             ->method('render')

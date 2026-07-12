@@ -404,7 +404,7 @@ class BatchControllerTest extends TestCase
             ],
         ]);
 
-        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        /* MODIF 2026-05-07 : init [] (intelephense by-ref). */
         $capturedCtx = [];
         $this->twig->expects($this->once())
             ->method('render')
@@ -458,7 +458,7 @@ class BatchControllerTest extends TestCase
 
         $this->batchExecutionRepo->method('createQueryBuilder')->willReturn($qb);
 
-        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        /* MODIF 2026-05-07 : init [] (intelephense by-ref). */
         $capturedCtx = [];
         $this->twig->expects($this->once())
             ->method('render')

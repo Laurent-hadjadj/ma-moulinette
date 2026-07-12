@@ -50,8 +50,8 @@ class BatchExecutionCaseTest extends TestCase
         $this->assertInstanceOf(\DateTimeImmutable::class, $entity->getDateEnregistrement());
     }
 
-    /* MODIF 2026-05-05 [fix-ulid-nullable] : test de regression — le constructor exige
-     * desormais des Ulid non-nullables (alignement DDL NOT NULL). Passer null doit lever TypeError. */
+    /* MODIF 2026-05-05 : test de regression — le constructor exige
+     * désormais des Ulid non-nullables (alignement DDL NOT NULL). Passer null doit lever TypeError. */
     public function testConstructorRejectsNullExecutionId(): void
     {
         $this->expectException(\TypeError::class);
@@ -101,8 +101,8 @@ class BatchExecutionCaseTest extends TestCase
     public function testSettingAndGettingUtilisateurCollecte(): void
     {
         $entity = $this->getEntity();
-        $entity->setUtilisateurCollecte('user@example.com');
-        $this->assertSame('user@example.com', $entity->getUtilisateurCollecte());
+        $entity->setUtilisateurCollecte('user@ma-moulinette.fr');
+        $this->assertSame('user@ma-moulinette.fr', $entity->getUtilisateurCollecte());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void
