@@ -65,7 +65,7 @@ class Activity
 
     /* MODIF 2026-05-05 : alignement entite ↔ DDL.*/
     #[ORM\Column(
-        name: 'maven_key',
+        name: 'analyse_id',
         type: Types::STRING,
         length: 26,
         nullable: false,
