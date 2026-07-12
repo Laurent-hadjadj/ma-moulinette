@@ -186,7 +186,7 @@ class BuildMapHistoryService
     /**
      * [Description for fetchMetrics]
      *
-     * @return array
+     * @return string
      *
      * Created at: 17/03/2026 04:05:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -232,14 +232,15 @@ class BuildMapHistoryService
         )));
 
         // On récupère la version du serveur déclaré dans les properties.
-        if ((int) $version == 10) {
-            // Si la version est 10, on prend core + 10
-            $query = $sonar_core . ',' . $sonar_10;
-        } elseif ((int) $version == 2024) {
-            // Si la version est 2024, on prend core + 10 + 2024
+        // Comparaison par plage : >= 2024 couvre 2024, 2025, 2026 et les futures LTA.
+        if ((int) $version >= 2024) {
+            // LTA 2024+ (2024, 2025, 2026...) : core + 10 + 2024
             $query = $sonar_core . ',' . $sonar_10 . ',' . $sonar_2024;
+        } elseif ((int) $version >= 10) {
+            // LTA 10 : core + 10
+            $query = $sonar_core . ',' . $sonar_10;
         } else {
-            // Si la version est autre que 10 ou 2024, on ne met que le core
+            // Sonar 8 / 9 : core uniquement
             $query = $sonar_core;
         }
         return $query;
@@ -297,7 +298,7 @@ class BuildMapHistoryService
     /**
      * [Description for ratingToLetter]
      *
-     * @param mixed $value
+     * @param string $value
      *
      * @return string
      *
