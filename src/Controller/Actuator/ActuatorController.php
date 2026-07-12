@@ -17,12 +17,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\{Request, Response};
+use Psr\Log\LoggerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Actuator, ActuatorInfo};
 use App\Form\ActuatorFormType;
-use App\Service\UserAgentTrackingFacade;
-use Psr\Log\LoggerInterface;
+use App\Service\ClientService;
+use App\Service\UserAgent\UserAgentTrackingFacade;
 
 /**
  * [Description ActuatorController]
@@ -80,9 +81,9 @@ class ActuatorController extends AbstractController
     #[Route('/actuator', name: 'actuator', methods: 'GET')]
     public function actuator(Request $request): Response
     {
-        $this->tracking->track('PROMPT_SIMPLE');
+        $this->tracking->track('ACTUATOR');
 
-      /** On instancie l'EntityRepository */
+        /** On instancie l'EntityRepository */
         $actuatorRepository = $this->em->getRepository(Actuator::class);
 
         /** Whitelist des colonnes triables (valeurs venant de l URL) */
@@ -141,6 +142,8 @@ class ActuatorController extends AbstractController
     #[Route('/actuator/info', name: 'actuator_info', methods: 'GET')]
     public function actuatorInfo(Request $request): Response
     {
+        $this->tracking->track('ACTUATOR_INFO');
+
         /** On instancie l'EntityRepository */
         //$actuatorRepository = $this->em->getRepository(BatchTraitement::class);
 
@@ -181,7 +184,7 @@ class ActuatorController extends AbstractController
                 "cachetserveur" => "2.0.7-RELEASE",
                 "mcc" => "2.9.0-RELEASE",
             ]
-            ];
+        ];
 
         $actuatorEntity = new Actuator();
         $actuatorInfoEntity = new ActuatorInfo();
