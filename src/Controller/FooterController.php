@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Service\UserAgentTrackingFacade;
+use App\Service\UserAgent\UserAgentTrackingFacade;
 
 /**
  * [Description FooterController]
@@ -78,7 +78,7 @@ class FooterController extends AbstractController
     #[Route('/plan-du-site', name: 'plan_du_site')]
     public function planDuSite(): Response
     {
-        $this->tracking->track('PLAN_DU_SITE');
+        $this->tracking->track('FOOTER_PLAN_SITE');
         $render = $this->genericRender();
         return $this->render('footer/plan-du-site.html.twig', $render);
     }
@@ -95,7 +95,7 @@ class FooterController extends AbstractController
     #[Route('/mention-legale', name: 'mention_legal')]
     public function mentionLegal(): Response
     {
-        $this->tracking->track('MENTION_LEGALE');
+        $this->tracking->track('FOOTER_MENTION_LEGAL');
         $render = $this->genericRender();
         $render['editeur'] = $this->getParameter('cgu.editeur');
         $render['siret'] = $this->getParameter('cgu.siret');
@@ -118,7 +118,7 @@ class FooterController extends AbstractController
     #[Route('/donnees-personnelles', name: 'donnees_personnelles')]
     public function donneesPersonnelles(): Response
     {
-        $this->tracking->track('CGU');
+        $this->tracking->track('FOOTER_DONNEES_PERSO');
         $render = $this->genericRender();
         $render['urlSite'] = $this->getParameter('cgu.url.site');
         return $this->render('footer/donnees-personnelles.html.twig', $render);
