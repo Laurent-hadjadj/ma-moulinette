@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common CC-BY-NC-SA 4.0.
 *  ---
@@ -14,7 +14,6 @@
 namespace App\Controller\Batch;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Historique;
@@ -32,6 +31,11 @@ class CollecteController extends AbstractController
     private static string $noMessage = 'Aucun message remonté.';
     private static string $noError = 'Aucune erreur remontée.';
     private static string $jeNeSaisPas = 'Je ne sais pas.';
+    // MODIF 2026-05-26 : extraction des string literals HTML dupliqués (S1192).
+    private static string $htmlSectionOpen  = "\n            <section>\n                <p>";
+    private static string $htmlSectionClose = "</li>\n                </ul>\n            </section>";
+    private static string $htmlDetteMinute  = "</li>\n                    <li><span>Dette en minute : </span>";
+    /* MODIF 2026-05-04 [audit-notes] : suppression $erreurFinTraitement (uniquement utilisé par les blocs notes retirés) */
 
     /**
      * [Description for __construct]
@@ -167,21 +171,12 @@ class CollecteController extends AbstractController
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
         $mode_collecte = htmlspecialchars($mode_collecte, ENT_QUOTES, 'UTF-8');
 
-        // debug
-        /*
-        '$mesure = $this->batchCollecteMesure->batchCollecteMesure(
-            $maven_key,
-            $mode_collecte,
-            $utilisateur_collecte);
-        dd($mesure);
-        */
-
         /** On démarre la mesure du traitement */
         $debutTraitement = new \DateTime('now', new \DateTimeZone(self::$europeParis));
         $this->logger->info("[Batch] ℹ️ Démarrage du traitement différé en mode {$mode_collecte}.");
 
         $collecte[] =
-            '<div role="header">
+            '<div role="banner">
                 <h1 class="h4"><span aria-hidden="true">🎬</span>Début du traitement</h1>
                 <div class="callout alert-callout-border secondary">
                     <ul>
@@ -210,9 +205,7 @@ class CollecteController extends AbstractController
         /** Tout vas bien, on peut lancer la collecte */
         if ($informationProjet['code'] === 200){
             $item = $informationProjet['historique'];
-            $collecte[] ='
-            <section>
-                <p>'. $informationProjet['message'] .'</p>
+            $collecte[] = self::$htmlSectionOpen . $informationProjet['message'] .'</p>
                 <ul>
                     <li><span>Clé d’analyse : </span>' . $item['analyse_key'] . '</li>
                     <li><span>Version du projet : </span>' . $item['version'] . '</li>
@@ -224,9 +217,7 @@ class CollecteController extends AbstractController
                     <li><span>Nombre Snapshot (sonar) : </span>' . $item['version_snapshot_sonar'] .'</li>
                     <li><span>Nombre Autre (sonar) : </span>' . $item['version_autre_sonar'] .'</li>
                     <li><span>Nombre total (sonar) : </span>' . $item['version_sonar'] .'</li>
-                    <li><span>Nombre Release (sonar) : </span>' . $item['version_release_sonar'] .'</li>
-                </ul>
-            </section>';
+                    <li><span>Nombre Release (sonar) : </span>' . $item['version_release_sonar'] .self::$htmlSectionClose;
 
             /** On met à jour le tableau des données pour la table historique */
             $mergeHistorique = array_merge($mergeHistorique, $informationProjet['historique']);
@@ -238,9 +229,7 @@ class CollecteController extends AbstractController
             /** Pas de mise à jour local = historique = SonarQube */
             $item = $informationProjet['historique'];
             if (isset($informationProjet['historique']) && isset($informationProjet['historique']['Locale'])){
-            $collecte[] ='
-            <section>
-                <p>'. $informationProjet['message'] .'</p>
+            $collecte[] = self::$htmlSectionOpen . $informationProjet['message'] .'</p>
                 <ul>
                     <li><span>Code : </span>' . $item['code'] . '</li>
                     <li><span>Mode : </span>' . $item['mode_collecte'] .'</li>
@@ -310,25 +299,90 @@ class CollecteController extends AbstractController
         if ($mesure['code'] === 200){
             $item = $mesure['historique'];
             $data = $mesure['data'];
-            $collecte[] ='
-            <section>
-                <p>'. $mesure['message'] .'</p>
+            $collecte[] = self::$htmlSectionOpen . $mesure['message'] .'</p>
                 <ul>
-                    <li><span>Clé maven : </span>' . $data['maven_key'] . '</li>
-                    <li><span>Version du projet : </span>' . $item['nom_projet'] . '</li>
-                    <li><span>Nombre de ligne : </span>' . $item['nombre_ligne'] . '</li>
-                    <li><span>Nombre de ligne de code : </span>' . $item['nombre_ligne_code'] .'</li>
-                    <li><span>Nombre de classes : </span>' . $item['nombre_classes'] .'</li>
-                    <li><span>Nombre de fonctions/méthodes : </span>' . $item['nombre_functions'] .'</li>
-                    <li><span>Nombre de fichiers : </span>' . $item['nombre_files'] .'</li>
-                    <li><span>Distribution des langages : </span>' . json_encode($item['language_distribution']) .'</li>
-                    <li><span>Ratio de dette technique : </span>' . $item['sqale_debt_ratio'] .'</li>
-                    <li><span>Couverture du code : </span>' . $item['coverage'] .'</li>
-                    <li><span>Codes dupliqué : </span>' . $item['duplicated_lines_density'] .'</li>
-                    <li><span>Nombre de tests unitaires : </span>' . $item['tests'] .'</li>
-                    <li><span>Nombre d’anomalie : </span>' . $item['issues'] .'</li>
-                </ul>
-            </section>';
+                <li><span>Clé maven : </span>' . $data['maven_key'] . '</li>
+                <li><span>Nombre de lignes : </span>' . $item['lines'] . '</li>
+                <li><span>Nombre de lignes de code : </span>' . $item['ncloc'] . '</li>
+                <li><span>Distribution des lignes de code par langage : </span>' . $item['ncloc_language_distribution'] . '</li>
+                <li><span>Nombre de fichiers : </span>' . $item['files'] . '</li>
+                <li><span>Nombre de classes : </span>' . $item['classes'] . '</li>
+                <li><span>Nombre de fonctions : </span>' . $item['functions'] . '</li>
+                <li><span>Nombre de lignes de commentaires : </span>' . $item['comment_lines'] . '</li>
+                <li><span>Densité des lignes de commentaires : </span>' . $item['comment_lines_density'] . '</li>
+                <li><span>Notation des lignes de commentaires : </span>' . $item['comment_lines_rating'] . '</li>
+                <li><span>Couverture du code : </span>' . $item['coverage'] . '</li>
+                <li><span>Couverture des branches : </span>' . $item['branch_coverage'] . '</li>
+                <li><span>Couverture des lignes : </span>' . $item['line_coverage'] . '</li>
+                <li><span>Lignes à couvrir : </span>' . $item['lines_to_cover'] . '</li>
+                <li><span>Conditions à couvrir : </span>' . $item['conditions_to_cover'] . '</li>
+                <li><span>Conditions non couvertes : </span>' . $item['uncovered_conditions'] . '</li>
+                <li><span>Notation de la couverture : </span>' . $item['coverage_rating'] . '</li>
+                <li><span>Tests : </span>' . $item['tests'] . '</li>
+                <li><span>Temps d\'exécution des tests : </span>' . $item['test_execution_time'] . '</li>
+                <li><span>Erreurs de test : </span>' . $item['test_errors'] . '</li>
+                <li><span>Échecs de test : </span>' . $item['test_failures'] . '</li>
+                <li><span>Tests ignorés : </span>' . $item['skipped_tests'] . '</li>
+                <li><span>Densité des tests réussis : </span>' . $item['test_success_density'] . '</li>
+                <li><span>Blocs en double : </span>' . $item['duplicated_blocks'] . '</li>
+                <li><span>Fichiers en double : </span>' . $item['duplicated_files'] . '</li>
+                <li><span>Lignes en double : </span>' . $item['duplicated_lines'] . '</li>
+                <li><span>Densité des lignes en double : </span>' . $item['duplicated_lines_density'] . '</li>
+                <li><span>Notation des lignes en double : </span>' . $item['duplicated_lines_rating'] . '</li>
+                <li><span>Problèmes ouverts : </span>' . $item['open_issues'] . '</li>
+                <li><span>Problèmes réouverts : </span>' . $item['reopened_issues'] . '</li>
+                <li><span>Problèmes confirmés : </span>' . $item['confirmed_issues'] . '</li>
+                <li><span>Problèmes à faux positif : </span>' . $item['false_positive_issues'] . '</li>
+                <li><span>Problèmes à haut impact acceptés : </span>' . $item['high_impact_accepted_issues'] . '</li>
+                <li><span>Problèmes acceptés : </span>' . $item['accepted_issues'] . '</li>
+                <li><span>Violations : </span>' . $item['violations'] . '</li>
+                <li><span>Violations bloquantes : </span>' . $item['blocker_violations'] . '</li>
+                <li><span>Violations critiques : </span>' . $item['critical_violations'] . '</li>
+                <li><span>Violations majeures : </span>' . $item['major_violations'] . '</li>
+                <li><span>Violations mineures : </span>' . $item['minor_violations'] . '</li>
+                <li><span>Violations d\'information : </span>' . $item['info_violations'] . '</li>
+                <li><span>Problèmes de qualité logicielle bloquants : </span>' . $item['software_quality_blocker_issues'] . '</li>
+                <li><span>Problèmes de qualité logicielle à haut impact : </span>' . $item['software_quality_high_issues'] . '</li>
+                <li><span>Problèmes de qualité logicielle d\'information : </span>' . $item['software_quality_info_issues'] . '</li>
+                <li><span>Problèmes de qualité logicielle à bas impact : </span>' . $item['software_quality_low_issues'] . '</li>
+                <li><span>Problèmes de qualité logicielle à moyen impact : </span>' . $item['software_quality_medium_issues'] . '</li>
+                <li><span>Complexité : </span>' . $item['complexity'] . '</li>
+                <li><span>Complexité cognitive : </span>' . $item['cognitive_complexity'] . '</li>
+                <li><span>Rapport de complexité : </span>' . $item['complexity_ratio'] . '</li>
+                <li><span>Rapport de complexité cognitive : </span>' . $item['cognitive_complexity_ratio'] . '</li>
+                <li><span>Notation de la complexité : </span>' . $item['complexity_rating'] . '</li>
+                <li><span>Notation de la complexité cognitive : </span>' . $item['cognitive_complexity_rating'] . '</li>
+                <li><span>Smells de code : </span>' . $item['code_smells'] . '</li>
+                <li><span>Index SQALE : </span>' . $item['sqale_index'] . '</li>
+                <li><span>Notation SQALE : </span>' . $item['sqale_rating'] . '</li>
+                <li><span>Rapport de dette SQALE : </span>' . $item['sqale_debt_ratio'] . '</li>
+                <li><span>Problèmes de maintenabilité : </span>' . $item['maintainability_issues'] . '</li>
+                <li><span>Notation de la maintenabilité de la qualité logicielle : </span>' . $item['software_quality_maintainability_rating'] . '</li>
+                <li><span>Rapport de dette de la maintenabilité de la qualité logicielle : </span>' . $item['software_quality_maintainability_debt_ratio'] . '</li>
+                <li><span>Effort pour atteindre la notation A de maintenabilité : </span>' . $item['effort_to_reach_maintainability_rating_a'] . '</li>
+                <li><span>Effort de remédiation pour la maintenabilité de la qualité logicielle : </span>' . $item['software_quality_maintainability_remediation_effort'] . '</li>
+                <li><span>Problèmes de maintenabilité de la qualité logicielle : </span>' . $item['software_quality_maintainability_issues'] . '</li>
+                <li><span>Effort pour atteindre la notation A de la qualité logicielle : </span>' . $item['effort_to_reach_software_quality_maintainability_rating_a'] . '</li>
+                <li><span>Bugs : </span>' . $item['bugs'] . '</li>
+                <li><span>Notation de la fiabilité : </span>' . $item['reliability_rating'] . '</li>
+                <li><span>Effort de remédiation pour la fiabilité : </span>' . $item['reliability_remediation_effort'] . '</li>
+                <li><span>Problèmes de fiabilité : </span>' . $item['reliability_issues'] . '</li>
+                <li><span>Notation de la fiabilité de la qualité logicielle : </span>' . $item['software_quality_reliability_rating'] . '</li>
+                <li><span>Effort de remédiation pour la fiabilité de la qualité logicielle : </span>' . $item['software_quality_reliability_remediation_effort'] . '</li>
+                <li><span>Problèmes de fiabilité de la qualité logicielle : </span>' . $item['software_quality_reliability_issues'] . '</li>
+                <li><span>Vulnérabilités : </span>' . $item['vulnerabilities'] . '</li>
+                <li><span>Notation de la sécurité : </span>' . $item['security_rating'] . '</li>
+                <li><span>Effort de remédiation pour la sécurité : </span>' . $item['security_remediation_effort'] . '</li>
+                <li><span>Notation de la sécurité de la qualité logicielle : </span>' . $item['software_quality_security_rating'] . '</li>
+                <li><span>Effort de remédiation pour la sécurité de la qualité logicielle : </span>' . $item['software_quality_security_remediation_effort'] . '</li>
+                <li><span>Problèmes de sécurité de la qualité logicielle : </span>' . $item['software_quality_security_issues'] . '</li>
+                <li><span>Points chauds de sécurité : </span>' . $item['security_hotspots'] . '</li>
+                <li><span>Points chauds de sécurité revus : </span>' . $item['security_hotspots_reviewed'] . '</li>
+                <li><span>Notation de revue de sécurité : </span>' . $item['security_review_rating'] . '</li>
+                <li><span>Clé maven : </span>' . $item['maven_key'] . '</li>
+                <li><span>Nom du projet : </span>' . $item['project_name'] . '</li>
+                <li><span>Mode de collecte : </span>' . $item['mode_collecte'] . '</li>
+                <li><span>Utilisateur de collecte : </span>' . $item['utilisateur_collecte'] . self::$htmlSectionClose;
 
             /** On met à jour le tableau des données pour la table historique */
             $mergeHistorique = array_merge($mergeHistorique, $mesure['historique']);
@@ -354,8 +408,6 @@ class CollecteController extends AbstractController
                 ];
         }
 
-        /** Notes du projet (fiabilité, sécurité, mauvaise pratique) -> collecte dans les mesures*/
-
         /** Signalement des Anomalies pour le projet  */
         $this->logger->info('[Batch] ℹ️ Démarrage de la collecte des anomalies pour le projet.');
         $collecte[] =
@@ -368,19 +420,13 @@ class CollecteController extends AbstractController
 
         if ($anomalie['code'] === 200){
             $item = $anomalie['data'];
-            $collecte[] ='
-            <section>
-                <p>'. $anomalie['message'] .'</p>
+            $collecte[] = self::$htmlSectionOpen . $anomalie['message'] .'</p>
                 <ul>
                     <li><span>Nombre d’anomalie total : </span>' . $item['anomalie_total'] . '</li>
-                    <li><span>Dette technique : </span>' . $item['dette'] . '</li>
-                    <li><span>Dette en minute : </span>' . $item['dette_minute'] . '</li>
-                    <li><span>Dette reliability : </span>' . $item['dette_reliability'] . '</li>
-                    <li><span>Dette en minute : </span>' . $item['dette_reliability_minute'] . '</li>
-                    <li><span>Dette vulnerability : </span>' . $item['dette_vulnerability'] . '</li>
-                    <li><span>Dette en minute : </span>' . $item['dette_vulnerability_minute'] . '</li>
-                    <li><span>Dette code_smell : </span>' . $item['dette_code_smell'] . '</li>
-                    <li><span>Dette en minute : </span>' . $item['dette_code_smell_minute'] . '</li>
+                    <li><span>Dette technique : </span>' . $item['dette'] . self::$htmlDetteMinute . $item['dette_minute'] . '</li>
+                    <li><span>Dette reliability : </span>' . $item['dette_reliability'] . self::$htmlDetteMinute . $item['dette_reliability_minute'] . '</li>
+                    <li><span>Dette vulnerability : </span>' . $item['dette_vulnerability'] . self::$htmlDetteMinute . $item['dette_vulnerability_minute'] . '</li>
+                    <li><span>Dette code_smell : </span>' . $item['dette_code_smell'] . self::$htmlDetteMinute . $item['dette_code_smell_minute'] . '</li>
                     <li><span>Nombre d’anomalie de type BUG : </span>' . $item['bug'] . '</li>
                     <li><span>Nombre d’anomalie de type VULNERABILITY : </span>' . $item['vulnerability'] . '</li>
                     <li><span>Nombre d’anomalie de type CODE_SMELL : </span>' . $item['code_smell'] . '</li>
@@ -392,9 +438,7 @@ class CollecteController extends AbstractController
                     <li><span>Nombre d’anomalie critique: </span>' . $item['critical'] . '</li>
                     <li><span>Nombre d’anomalie majeur: </span>' . $item['major'] . '</li>
                     <li><span>Nombre d’anomalie en info: </span>' . $item['info'] . '</li>
-                    <li><span>Nombre d’anomalie mineur: </span>' . $item['minor'] . '</li>
-                </ul>
-            </section>';
+                    <li><span>Nombre d’anomalie mineur: </span>' . $item['minor'] . self::$htmlSectionClose;
 
             /** On met à jour le tableau des données pour la table historique */
             $mergeHistorique = array_merge($mergeHistorique, $anomalie['historique']);
@@ -501,16 +545,12 @@ class CollecteController extends AbstractController
 
         if ($hotspot['code'] === 200){
             $item = $hotspot['historique'];
-            $collecte[] ='
-            <section>
-                <p>'. $hotspot['message'] .'</p>
+            $collecte[] = self::$htmlSectionOpen . $hotspot['message'] .'</p>
                 <ul>
                     <li><span>Nombre de Hotspot de niveau High : </span>' . $item['hotspot_high'] . '</li>
                     <li><span>Nombre de Hotspot de niveau Medium : </span>' . $item['hotspot_medium'] . '</li>
                     <li><span>Nombre de Hotspot de niveau Low : </span>' . $item['hotspot_low'] . '</li>
-                    <li><span>Nombre de Hotspot : </span>' . $item['nombre_hotspot'] . '</li>
-                </ul>
-            </section>';
+                    <li><span>Nombre de Hotspot : </span>' . $item['nombre_hotspot'] . self::$htmlSectionClose;
 
         } else {
             $this->logger->error('[Batch] ❌ Erreur lors du traitement des menaces du projet.', [
@@ -533,6 +573,7 @@ class CollecteController extends AbstractController
                 'compte_rendu' => $compte_rendu
             ];
         }
+
         /** Signalement du détail des Hotspots pour le projet */
         $this->logger->info('[Batch] ℹ️ Démarrage de la collecte du détail des hotspots pour le projet.');
         $collecte[] =
@@ -549,6 +590,8 @@ class CollecteController extends AbstractController
                 $msg = htmlspecialchars($hotspotDetails['message']);
                 $collecte[] ='<p>'. $msg .'</p>';
             } else  {
+                //"menace_potentielle_totale" => 61
+
                 $collecte[] ='
                 <section>
                     <p>'. htmlspecialchars($hotspotDetails['message']) .'</p>
@@ -558,11 +601,11 @@ class CollecteController extends AbstractController
                         <li><span>Nombre de menaces total  : </span>' .
                             (htmlspecialchars($item['menace_potentielle_totale']) ?: self::$jeNeSaisPas) . '</li>
                         <li><span>Nombre de menaces de niveau HIGH au statut REVIEW : </span>' .
-                            (htmlspecialchars($item['menace_potentielle_review_high']) ?: self::$jeNeSaisPas) . '</li>
+                            (htmlspecialchars($item['menace_potentielle_to_review_high']) ?: self::$jeNeSaisPas) . '</li>
                         <li><span>Menaces de niveau MEDIUM au statut REVIEW : </span>' .
-                            (htmlspecialchars($item['menace_potentielle_review_medium']) ?: self::$jeNeSaisPas) . '</li>
+                            (htmlspecialchars($item['menace_potentielle_to_review_medium']) ?: self::$jeNeSaisPas) . '</li>
                         <li><span>Menaces de niveau LOW au statut REVIEW : </span>' .
-                            (htmlspecialchars($item['menace_potentielle_review_low']) ?: self::$jeNeSaisPas) . '</li>
+                            (htmlspecialchars($item['menace_potentielle_to_review_low']) ?: self::$jeNeSaisPas) . '</li>
                         <li><span>Menaces de niveau HIGH au statut REVIEWED : </span>' .
                             (htmlspecialchars($item['menace_potentielle_reviewed_high']) ?: self::$jeNeSaisPas) . '</li>
                         <li><span>Menaces de niveau MEDIUM au statut REVIEWED : </span>' .
@@ -608,15 +651,17 @@ class CollecteController extends AbstractController
             $utilisateur_collecte);
 
         if ($owasp['code'] === 200){
-        $collecte[] ='
-        <section>
-            <p>'. $owasp['message'] .'</p>
-            <ul>
-                <li><span>Nombre de menace 2017  : </span>' . $owasp['owasp2017'] . '</li>
-                <li><span>Nombre de menace 2021  : </span>' . $owasp['owasp2021'] . '</li>
-            </ul>
-        </section>';
-        /** Pas de données historisées */
+            $collecte[] ='
+            <section>
+                <p>'. $owasp['message'] .'</p>
+                <ul>
+                    <li><span>Nombre de menace 2017  : </span>' . $owasp['owasp2017'] . '</li>
+                    <li><span>Nombre de menace 2021  : </span>' . $owasp['owasp2021'] . '</li>
+                </ul>
+            </section>';
+                //<li><span>Nombre de menace 2025  : </span>' . isset($owasp['owasp2025']) ? $owasp['owasp2025'] : "Non disponible pour le moment" . '</li>
+
+            /** Pas de données historisées */
         } else {
             $this->logger->error('[Batch] ❌ Erreur lors du traitement des menaces OWASP du projet.', [
                         'code' => $owasp['code'],
@@ -670,6 +715,7 @@ class CollecteController extends AbstractController
                     </div>
                     <p>Détail</p>
                     <div class="callout">'. $html .'</div>';
+                    //# <li><span>Nombre de menace 2025  : </span>' . $hotspotOwasp['owasp_2025'] ?? "Non disponible pour le moment" . '</li> #}
                 }
             } else {
                 $this->logger->error('[Batch] ❌ Erreur lors du traitement des menaces OWASP potentielles du projet.', [
@@ -688,15 +734,14 @@ class CollecteController extends AbstractController
                         $hotspotOwasp['erreur'] ?? self::$noError );
 
                 $collecte[] = $erreurTitre . $erreurSousTitre. $erreurContain;
-                $compte_rendu = implode("\n", $collecte);
-
                 $errorEncountered = true;
             }
 
             if ($errorEncountered) {
                 return [
                     'code' => 500,
-                    'compte_rendu' => $compte_rendu];
+                    'compte_rendu' => implode("\n", $collecte)
+                ];
             }
         }
 
@@ -712,14 +757,17 @@ class CollecteController extends AbstractController
 
         if ($noSonar['code'] === 200){
             $item = $noSonar['historique'];
-            $collecte[] ='
-            <section>
-                <p>'. $noSonar['message'] .'</p>
+            $collecte[] = self::$htmlSectionOpen . $noSonar['message'] .'</p>
                 <ul>
-                    <li><span>Nombre de noSonar : </span>' . $item['no_sonar'] . '</li>
-                    <li><span>Nombre de suppressWarning : </span>' . $item['suppress_warning'] . '</li>
+                    <li><span>Nombre de noSonar (Java) : </span>' . $item["java_no_sonar"] . '</li>
+                    <li><span>Nombre de noSonar (Python) : </span>' . $item["python_no_sonar"] . '</li>
+                    <li><span>Nombre de noSonar (PHP) : </span>' . $item["php_no_sonar"] . '</li>
+                    <li><span>Nombre de noSonar (Checkstyle) : </span>' . $item["check_style"] . '</li>
+                    <li><span>Nombre de noSonar (PMD) : </span>' . $item["no_pmd"] . '</li>
+                    <li><span>Nombre de suppressWarning : </span>' . $item["suppress_warning"] . '</li>
+                    <li><span>Nombre de noSonar (Total) : </span>' . $item["total_no_sonar"] . '</li>
                 </ul>
-            </section>';
+            </div>' . self::$htmlSectionClose;
 
             /** On met à jour le tableau des données pour la table historique */
             $mergeHistorique = array_merge($mergeHistorique, $noSonar['historique']);
@@ -762,7 +810,15 @@ class CollecteController extends AbstractController
             '<p>'. $todo['message'] .'</p>
             <div>
                 <ul>
-                    <li><span>Nombre de todo : </span>' . $item['todo'] . '</li>
+                    <li><span>Nombre de todo (Java) : </span>' . $item['java_todo'] . '</li>
+                    <li><span>Nombre de todo (Python) : </span>' . $item['python_todo'] . '</li>
+                    <li><span>Nombre de todo (PHP) : </span>' . $item['php_todo'] . '</li>
+                    <li><span>Nombre de todo (XML) : </span>' . $item['xml_todo'] . '</li>
+                    <li><span>Nombre de todo (Web) : </span>' . $item['web_todo'] . '</li>
+                    <li><span>Nombre de todo (JavaScript) : </span>' . $item['javascript_todo'] . '</li>
+                    <li><span>Nombre de todo (TypeScript) : </span>' . $item['typescript_todo'] . '</li>
+                    <li><span>Nombre de todo (Ruby) : </span>' . $item['ruby_todo'] . '</li>
+                    <li><span>Nombre de todo (Total) : </span>' . $item['total_todo'] . '</li>
                 </ul>
             </div>';
 
@@ -797,11 +853,12 @@ class CollecteController extends AbstractController
         '<h2 class="h5"><span aria-hidden="true">🔜</span>13 - Collecte des informations Actuator pour le projet</h2>';
 
         $actuatorInfo = $this->batchCollecteActuator->BatchCollecteActuatorInfo($maven_key);
+
         if ($actuatorInfo['code'] === 200 || $actuatorInfo['code'] === 404){
             $collecte[] = '<p>'. $actuatorInfo['message'] .'</p>';
 
             /** Information a joindre dans l'historique */
-            $json = $actuatorInfo['dataJson']['json'] ?? '{}';
+            $json = \json_decode($actuatorInfo['dataJson']['json'] ?? '[]', true);
         } else {
                 $this->logger->error('[Batch] ❌ Erreur lors du traitement des informations actuator du projet.', [
                         'code' => $actuatorInfo['code'],
@@ -837,16 +894,12 @@ class CollecteController extends AbstractController
         if ($loggerJava['code'] === 200 || $loggerJava['code'] === 404){
             $item = $loggerJava['historique'];
 
-            $collecte[] ='
-            <section>
-                <p>'. $loggerJava['message'] .'</p>
+            $collecte[] = self::$htmlSectionOpen . $loggerJava['message'] .'</p>
                 <ul>
                     <li><span>Nombre de Logger INFO : </span>' . $item['logger_info'] . '</li>
                     <li><span>Nombre de Logger WARN : </span>' . $item['logger_warn'] . '</li>
                     <li><span>Nombre de Logger ERROR : </span>' . $item['logger_error'] . '</li>
-                    <li><span>Nombre de Logger DEBUG : </span>' . $item['logger_debug'] . '</li>
-                </ul>
-            </section>';
+                    <li><span>Nombre de Logger DEBUG : </span>' . $item['logger_debug'] . self::$htmlSectionClose;
 
             /** On met à jour le tableau des données pour la table historique */
             $mergeHistorique = array_merge($mergeHistorique, $loggerJava['historique']);
