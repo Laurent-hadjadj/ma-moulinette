@@ -507,7 +507,7 @@ class AccueilController extends AbstractController
      */
     public function construitMaRequest(array $liste, array $maven_key, int $index): string
     {
-        //maven_key='fr.ma-petite-entreprise:ma-moulinette' AND (version = '1.2.0-RELEASE' OR version = '1.2.1-RELEASE')
+        //maven_key='fr.ma-moulinette:ma-moulinette' AND (version = '1.2.0-RELEASE' OR version = '1.2.1-RELEASE')
         $m = $maven_key[0];
         $l = "";
         $maven_Key = "maven_key='" . $m . "'";
@@ -699,7 +699,7 @@ class AccueilController extends AbstractController
              * Si le référentiel sonar est égale de celui sur le serveur et que la table de properties n'est pas à jour, on met à jour la table.
              */
             $this->majProperties('projet', $projetBd, $projetSonar);
-        // MODIF 2026-05-26 : else terminal requis par S126 (branche intentionnellement vide).
+            // MODIF 2026-05-26 : else terminal requis par S126 (branche intentionnellement vide).
         } else {
             $this->logger->debug('[Accueil] 🔍 Référentiel PROJET : aucune condition vérifiée, aucune action requise.');
         }
@@ -723,7 +723,7 @@ class AccueilController extends AbstractController
              * Si le référentiel sonar est égale de celui sur le serveur et que la table de properties n'est pas à jour, on met à jour la table.
              */
             $this->majProperties('profil', $profilBd, $profilSonar);
-        // MODIF 2026-05-26 : else terminal requis par S126 (branche intentionnellement vide).
+            // MODIF 2026-05-26 : else terminal requis par S126 (branche intentionnellement vide).
         } else {
             $this->logger->debug('[Accueil] 🔍 Référentiel PROFIL : aucune condition vérifiée, aucune action requise.');
         }
