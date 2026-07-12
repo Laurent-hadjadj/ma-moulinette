@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -15,7 +15,6 @@ namespace App\Controller\Projet;
 
 use App\Controller\Traits\AppUserAware;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\{JsonResponse, Response, Request};
 use \Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
@@ -35,6 +34,7 @@ class ApiProjetController extends AbstractController
     private static string $erreur404 = "Vous devez être rattaché à une équipe (Erreur 404).";
     private static string $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. " .
         "Vérifie le nom du tag utilisé dans SonarQube (Erreur 406).";
+    private static string $noData = 'Pas de données disponibles pour cette requête.';
 
     /**
      * [Description for __construct]
@@ -82,7 +82,7 @@ class ApiProjetController extends AbstractController
 
             return new JsonResponse([
                 'code' => 400,
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => self::$erreur400,
             ], Response::HTTP_OK);
         }
@@ -108,7 +108,7 @@ class ApiProjetController extends AbstractController
 
             return new JsonResponse([
                 'code' => $requestUpdate['code'],
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => "La mise à jour du projet en favori a échoué (Erreur 500).",
                 'trace' => $requestUpdate['erreur']
             ], Response::HTTP_OK);
@@ -156,7 +156,7 @@ class ApiProjetController extends AbstractController
 
             return new JsonResponse([
                 'code' => 400,
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => self::$erreur400,
             ], Response::HTTP_OK);
         }
@@ -170,7 +170,7 @@ class ApiProjetController extends AbstractController
 
             return new JsonResponse([
                 'code' => 500,
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => "Impossible d'accéder aux favoris de l'utilisateur (Erreur 500)."
             ], Response::HTTP_OK);
         }
@@ -217,7 +217,7 @@ class ApiProjetController extends AbstractController
 
             return new JsonResponse([
                 'code' => 404,
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => self::$erreur404
             ], Response::HTTP_OK);
         }
@@ -243,9 +243,9 @@ class ApiProjetController extends AbstractController
 
             return new JsonResponse([
                 'code' => $requestListe['code'],
-                'type' => 'alert',
+                'type' => 'error',
                 'message' => "Une erreur s'est produite lors de la construction de la liste des projets (Erreur 500).",
-                'trace' => $requestListe['erreur'] ?? null
+                'trace' => $requestListe['erreur'] ?? self::$noData
             ], Response::HTTP_OK);
         }
 
