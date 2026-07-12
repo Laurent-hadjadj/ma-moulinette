@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common  CC-BY-NC-SA 4.0.
 *  ---
@@ -16,7 +16,7 @@ namespace App\Controller\Batch;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Logger;
+use App\Entity\{InformationProjet, Logger, LoggerDetail};
 use App\Service\{ClientService, UrlBuilderService};
 
 /**
@@ -57,10 +57,20 @@ class BatchCollecteLoggerController extends AbstractController
      */
     private function makeRequest(array $queryParams): array
     {
-         /** Sécurisation de l'URL */
+        /** Sécurisation de l'URL
+          * MODIF 2026-05-15 : endpoint corrigé.
+          * `/api/project_analyses/search` ne supporte PAS les paramètres
+          * `statuses=OPEN` + `rules=...` (qui appartiennent à
+          * `/api/issues/search`). En Sonar 9, l'API était permissive et
+          * silencieusement tolérait ces paramètres ignorés. En Sonar 10+
+          * la validation est stricte et retourne 400 :
+          * "Value of parameter 'statuses' (OPEN) must be one of: [P, U, L]".
+          * Le bon endpoint pour compter les issues d'une règle est
+          * `/api/issues/search` qui existe en Sonar 7+ et reste compatible
+          * 9 / 10 / 11+. */
         $url = $this->urlBuilder->build(
             $this->getParameter(self::$sonarUrl),
-            '/api/project_analyses/search',
+            '/api/issues/search',
             $queryParams
         );
 
@@ -80,7 +90,78 @@ class BatchCollecteLoggerController extends AbstractController
             ];
         }
 
-        return ['total' => $result['json']['paging']['total'] ?? -1];
+        /* MODIF 2026-05-15 : on remonte aussi le tableau
+         * des issues (jusqu'a `ps=500`). En plus du `total` pour la table
+         * `logger` aggregate, ces issues serviront a peupler `logger_details`
+         * (1 ligne par occurrence, drill-down par fichier + framework). */
+        return [
+            'total'  => $result['json']['paging']['total'] ?? -1,
+            'issues' => $result['json']['issues'] ?? [],
+        ];
+    }
+
+    /**
+     * MODIF 2026-05-15 : parse une issue Sonar en row
+     * `logger_details`. Retourne null si la row est invalide (sans level
+     * ou sans file_path qui sont NOT NULL en BDD).
+     *
+     * Défensif (compat plugin v1.x) : framework et line_number peuvent être
+     * null sans rejeter la row.
+     *
+     * @param array<string, mixed> $issue
+     * @return array<string, mixed>|null
+     */
+    private static function parseIssueToDetail(
+        array $issue,
+        string $mavenKey,
+        ?string $projectVersion,
+        string $modeCollecte,
+        string $utilisateurCollecte,
+        \DateTimeImmutable $date,
+    ): ?array {
+        // level depuis `rule` : "track-logger-method:track-<level>-method"
+        $rule = (string) ($issue['rule'] ?? '');
+        if (preg_match('/track-(\w+)-method$/', $rule, $m) !== 1) {
+            return null; // rule malformee, on skip
+        }
+        $level = strtolower($m[1]);
+
+        // framework depuis le `message` (plugin v2+). Pattern : "...[<framework>]"
+        // En v1, le message n'a pas de [...] -> framework = null (insertion quand meme).
+        $framework = null;
+        $message = (string) ($issue['message'] ?? '');
+        if (preg_match('/\[([^\]]+)\]\s*$/', $message, $m) === 1) {
+            $framework = trim($m[1]);
+        }
+
+        // file_path depuis `component` : "<group>:<artifact>:<chemin/dans/repo>"
+        // On prend tout apres les 2 premiers ':' (le chemin peut en contenir).
+        $component = (string) ($issue['component'] ?? '');
+        $parts = explode(':', $component, 3);
+        if (count($parts) !== 3 || $parts[2] === '') {
+            return null; // pas de file_path identifiable, on skip (NOT NULL)
+        }
+        $filePath  = $parts[2];
+        $fileName  = basename($filePath);
+        $className = pathinfo($fileName, PATHINFO_FILENAME); // ex: ApplicationExceptionHandler.java -> ApplicationExceptionHandler
+
+        $lineNumber    = isset($issue['line']) ? (int) $issue['line'] : null;
+        $sonarIssueKey = isset($issue['key']) ? (string) $issue['key'] : null;
+
+        return [
+            'maven_key'            => $mavenKey,
+            'project_version'      => $projectVersion,
+            'level'                => $level,
+            'framework'            => $framework,
+            'file_path'            => $filePath,
+            'file_name'            => $fileName,
+            'class_name'           => $className,
+            'line_number'          => $lineNumber,
+            'sonar_issue_key'      => $sonarIssueKey,
+            'mode_collecte'        => $modeCollecte,
+            'utilisateur_collecte' => $utilisateurCollecte,
+            'date_enregistrement'  => $date,
+        ];
     }
 
     /**
@@ -207,6 +288,65 @@ class BatchCollecteLoggerController extends AbstractController
             ];
         }
 
+        /* MODIF 2026-05-15 : peuplement de la table
+         * `logger_details` pour le drill-down par fichier + framework.
+         * 1 ligne par occurrence parsée depuis les `issues` retournées
+         * par chaque appel (makeRequest renvoie maintenant aussi 'issues').
+         * Compat plugin v1.x : framework et line_number peuvent être null,
+         * la row est insérée quand meme (filtre défensif uniquement sur
+         * level + file_path qui sont NOT NULL en BDD).
+         *
+         * Stratégie DELETE + batch INSERT (1 SQL pour N rows). Non bloquant :
+         * si l'insertion échoue, on log mais on ne fait pas planter la
+         * collecte (la table `logger` aggregate est deja a jour). */
+        $detailsRepos = $this->em->getRepository(LoggerDetail::class);
+        $delete = $detailsRepos->deleteLoggerDetailMavenKey(['maven_key' => $maven_key]);
+        if ($delete['code'] !== 200) {
+            $this->logger->warning("[Batch Logger] ⚠️ Échec deleteLoggerDetailMavenKey, drill-down potentiellement obsolete", [
+                'maven_key' => $maven_key,
+                'erreur' => $delete['erreur'],
+            ]);
+        } else {
+            /* MODIF 2026-05-15 : recuperation de la version
+             * courante depuis information_projet pour la stocker dans chaque
+             * row logger_details (utile pour le drill-down "loggers de la
+             * version X"). En cas d'échec/absence on garde null, ce qui
+             * reste valide (colonne nullable). */
+            $projectVersion = null;
+            $informationProjetRepos = $this->em->getRepository(InformationProjet::class);
+            $versionResult = $informationProjetRepos->selectInformationProjetVersion(['maven_key' => $maven_key]);
+            // MODIF 2026-06-10 — fetchAssociative() retourne un tableau plat, pas [0]
+            if (($versionResult['code'] ?? 500) === 200 && !empty($versionResult['info']['version'])) {
+                $projectVersion = (string) $versionResult['info']['version'];
+            }
+
+            $detailRows = [];
+            foreach ($method as $tracker) {
+                $issues = $results[$tracker]['issues'] ?? [];
+                foreach ($issues as $issue) {
+                    if (!is_array($issue)) { continue; }
+                    $row = self::parseIssueToDetail($issue, $maven_key, $projectVersion, $mode_collecte, $utilisateur_collecte, $date);
+                    if ($row !== null) {
+                        $detailRows[] = $row;
+                    }
+                }
+            }
+
+            $insertDetails = $detailsRepos->insertLoggerDetailBatch($detailRows);
+            if ($insertDetails['code'] !== 200) {
+                $this->logger->warning("[Batch Logger] ⚠️ Echec insertLoggerDetailBatch, drill-down indisponible", [
+                    'maven_key' => $maven_key,
+                    'nb_rows'   => count($detailRows),
+                    'erreur'    => $insertDetails['erreur'],
+                ]);
+            } else {
+                $this->logger->info("[Batch Logger] ℹ️ logger_details peuples", [
+                    'maven_key' => $maven_key,
+                    'nb_rows'   => $insertDetails['nombre'] ?? count($detailRows),
+                ]);
+            }
+        }
+
         /** Log de succès */
         $this->logger->info("[Batch Logger] ℹ️ Collecte réussie", [
             'maven_key' => $maven_key,
@@ -216,6 +356,26 @@ class BatchCollecteLoggerController extends AbstractController
             'debug' => $loggerData['logger_debug']
         ]);
 
+        /* MODIF 2026-05-15 : breakdown level × framework
+         * exposé au front. Forme : { info: { SLF4J: N, Commons Logging: M, "—": K },
+         * warn: {...}, error: {...}, debug: {...} }. Les frameworks null
+         * (plugin v1.x non parsable) sont consolidés sous la clé "—" pour
+         * conserver le compte sans clé string-null en JSON. Si aucun
+         * logger_details n'a été inséré (échec ou aucune occurrence), le
+         * breakdown reste vide. */
+        $breakdown = ['info' => [], 'warn' => [], 'error' => [], 'debug' => []];
+        /* MODIF 2026-05-20 : $detailsRepos toujours défini (getRepository non-null). */
+        $breakdownResult = $detailsRepos->countByMavenKeyGroupedByLevelAndFramework($maven_key);
+        if ($breakdownResult['code'] === 200) {
+            foreach ($breakdownResult['liste'] ?? [] as $row) {
+                $level     = (string) $row['level'];
+                $framework = $row['framework'] !== null ? (string) $row['framework'] : '—';
+                $nb        = (int) $row['nb'];
+                if (!isset($breakdown[$level])) { $breakdown[$level] = []; }
+                $breakdown[$level][$framework] = $nb;
+            }
+        }
+
         /** Données à retourner */
         $historique = [
             'maven_key' => $maven_key,
@@ -223,6 +383,8 @@ class BatchCollecteLoggerController extends AbstractController
             'logger_warn' => $loggerData['logger_warn'],
             'logger_error' => $loggerData['logger_error'],
             'logger_debug' => $loggerData['logger_debug'],
+            // MODIF 2026-05-15 : breakdown par level × framework
+            'breakdown' => $breakdown,
         ];
 
         return [
