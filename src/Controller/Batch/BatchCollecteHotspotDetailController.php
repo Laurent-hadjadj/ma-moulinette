@@ -40,8 +40,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
         private ClientService $client,
         private UrlBuilderService $urlBuilder,
         private LoggerInterface $logger
-    ) {
-    }
+    ) {}
 
     /**
      * [Description for vulnerabilityProbability]
@@ -94,11 +93,11 @@ class BatchCollecteHotspotDetailController extends AbstractController
         $total = intval($high) + intval($medium) + intval($low);
 
         return [
-                'high' => $high,
-                'medium' => $medium,
-                'low' => $low,
-                'total' => $total
-            ];
+            'high' => $high,
+            'medium' => $medium,
+            'low' => $low,
+            'total' => $total
+        ];
     }
 
     /**
@@ -113,12 +112,12 @@ class BatchCollecteHotspotDetailController extends AbstractController
     public function hotspotDetail(string $maven_key, string $hotspotKey): array
     {
 
-         /** Sécurisation de l'URL */
+        /** Sécurisation de l'URL */
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
         $url = $this->urlBuilder->build(
             $this->getParameter(self::$sonarUrl),
             '/api/hotspots/show',
-            [ 'hotspot' => $hotspotKey ]
+            ['hotspot' => $hotspotKey]
         );
 
         $this->logger->debug("[Batch HotspotDétail] 🛠️ Appel API SonarQube", ['url' => $url]);
@@ -139,28 +138,28 @@ class BatchCollecteHotspotDetailController extends AbstractController
         }
 
         /** On a pas trouvé de données */
-        if (!array_key_exists('json', $result)){
+        if (!array_key_exists('json', $result)) {
             $this->logger->error("[HotspotDetail] ❌ Résultat API invalide ou vide", [
                 'hotspot_key' => $hotspotKey
             ]);
 
             return [
-                    'security_category' =>  'NC',
-                    'severity' => 'NC',
-                    'niveau' => 'NC',
-                    'status' => 'NC',
-                    'resolution' => 'NC',
-                    'frontend' => 'NC',
-                    'backend' => 'NC',
-                    'autre' => 'NC',
-                    'file_name' => 'NC',
-                    'file_path' => 'NC',
-                    'line' => 'NC',
-                    'rule_key' => 'NC',
-                    'rule_name' => 'NC',
-                    'message' => 'Aucune données trouvée pour ce projet.',
-                    'hotspot_key' => 'NC',
-                ];
+                'security_category' =>  'NC',
+                'severity' => 'NC',
+                'niveau' => 'NC',
+                'status' => 'NC',
+                'resolution' => 'NC',
+                'frontend' => 'NC',
+                'backend' => 'NC',
+                'autre' => 'NC',
+                'file_name' => 'NC',
+                'file_path' => 'NC',
+                'line' => 'NC',
+                'rule_key' => 'NC',
+                'rule_name' => 'NC',
+                'message' => 'Aucune données trouvée pour ce projet.',
+                'hotspot_key' => 'NC',
+            ];
         }
 
         /****************** préparation des données globales */
@@ -175,9 +174,9 @@ class BatchCollecteHotspotDetailController extends AbstractController
         if (array_key_exists('path', $result['json']['component'])) {
             $path = $result['json']['component']['path'];
         } elseif (array_key_exists('component', $result['json'])) {
-            /** "key" => "fr.ma-petite-entreprise:ma-moulinette:assets/js/app-password.js" */
+            /** "key" => "fr.ma-moulinette:ma-moulinette:assets/js/app-password.js" */
             $path = str_replace($maven_key . ':', '', $result['json']['component']['key']);
-        // MODIF 2026-05-26 : else terminal requis par S126 (branche intentionnellement vide).
+            // MODIF 2026-05-26 : else terminal requis par S126 (branche intentionnellement vide).
         } else {
             $this->logger->debug('[BatchHotspotDetail] 🔍 Aucune clé path/component trouvée dans le résultat JSON.');
         }
@@ -217,7 +216,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
         /* On calcule le score pour les clés non identifiées */
         $score_inconnu = ($score_frontend === 0 && $score_backend === 0 && $score_autre === 0) ? 1 : 0;
 
-       /** On renvoie le tableau à insérer */
+        /** On renvoie le tableau à insérer */
         return [
             'security_category' => $result['json']['rule'] ? $result['json']['rule']['securityCategory'] : 'NC',
             'severity' => $severity,
@@ -265,7 +264,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
         ]);
 
         /** On récupère dans la table information_projet la version et la date du projet la plus récente. */
-        $map = [ 'maven_key'=> $maven_key ];
+        $map = ['maven_key' => $maven_key];
         $information = $informationProjetRepos->selectInformationProjetVersion($map);
         if ($information['code'] !== 200) {
             $this->logger->error('[HotspotDetail] ❌ Erreur récupération projet', [
@@ -297,7 +296,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
         $date = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
 
         /** On récupère la liste des hotspots au status TO_REVIEW */
-        $map = [ 'maven_key' => $mavenKey ];
+        $map = ['maven_key' => $mavenKey];
         $liste = $hotspotsRepos->selectHotspotsToReview($map);
 
         if ($liste['code'] !== 200) {
@@ -313,7 +312,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
         }
 
         /** On supprime les résultats pour la maven_key. */
-        $map = [ 'maven_key' => $mavenKey ];
+        $map = ['maven_key' => $mavenKey];
         $delete = $hotspotDetailsRepos->deleteHotspotDetailsMavenKey($map);
 
         if ($delete['code'] !== 200) {
@@ -370,7 +369,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
                 'maven_key' => $mavenKey,
                 'version' => $information['info']['version'],
                 'date_version' => $dateVersion,
-                'date_enregistrement'=> $date,
+                'date_enregistrement' => $date,
                 'hotspot_key' => $elt['hotspot_key']
             ];
             // Fusion des tableaux après la boucle
@@ -400,7 +399,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
 
         /** On calcul le nombre de menace potentielle en fonction du niveau et du status */
         /** Retourne une liste par niveau (1,2,3) du nombre de hotspot à vérifier */
-        $map = [ 'maven_key' => $maven_key, 'status' => 'TO_REVIEW' ];
+        $map = ['maven_key' => $maven_key, 'status' => 'TO_REVIEW'];
         $getToReview = $hotspotsRepos->selectHotspotsByNiveau($map);
 
         if ($getToReview['code'] !== 200) {
@@ -413,7 +412,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
             ];
         }
 
-        $map = [ 'maven_key' => $maven_key, 'status' => 'REVIEWED'];
+        $map = ['maven_key' => $maven_key, 'status' => 'REVIEWED'];
 
         $getReviewed = $hotspotsRepos->selectHotspotsByNiveau($map);
         if ($getReviewed['code'] !== 200) {
@@ -424,7 +423,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
                 'message' => "La récupération des données a échouée pour selectHotspotsByNiveau avec REVIEWED (Erreur {$getReviewed['code']}).",
                 'trace' => $getReviewed['erreur'],
                 'test' => 'REVIEWED'
-                ];
+            ];
         }
 
         $toReview = $this->vulnerabilityProbabilityListe($getToReview['liste']);
