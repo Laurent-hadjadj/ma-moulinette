@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common  CC-BY-NC-SA 4.0.
 *  ---
@@ -112,6 +112,7 @@ class BatchCollecteInformationProjetController extends AbstractController
                 'maven_key' => $maven_key]);
             return [
                 'code' => 202,
+                /* MODIF 2026-05-07 : message inversé (cas: trouvé sur serveur, pas en base). */
                 'message' => "Le projet est présent sur le serveur mais pas en base.",
                 'data-sonarqube' => $result,
                 'data-baseInformation'=>[],
@@ -149,17 +150,7 @@ class BatchCollecteInformationProjetController extends AbstractController
         }
 
         $this->logger->error('[Batch ControlVersionProjet] ❌  Erreur inattendue', [
-            'maven_key' => $maven_key,
-            'isFound' => $isFound,
-            'inBase' => $inBase,
-            'isNotInBase' => $isNotInBase,
-            'isNotAuthorize' => $isNotAuthorize,
-            'isNotFound' => $isNotFound,
-            'isNotAvailable' => $isNotAvailable,
-            'result_code' => $result['code'] ?? 'N/A',
-            'requestInformation_code' => $requestInformation['code'] ?? 'N/A',
-            'requestHistorique_code' => $requestHistorique['code'] ?? 'N/A',
-        ]);
+            'maven_key' => $maven_key]);
         return [
             'code' => 500,
             'message' => 'Une erreur inattendue est survenue (Erreur500).'
@@ -183,14 +174,17 @@ class BatchCollecteInformationProjetController extends AbstractController
         $total = $release = $snapshot = $autre = 0;
         foreach ($analyses as $analyse) {
             if (array_key_exists('projectVersion', $analyse)) {
-                    $total++;
-                    if (strpos(strtolower($analyse['projectVersion']), 'release') !== false) {
-                        $release++;
-                    } elseif (strpos(strtolower($analyse['projectVersion']), 'snapshot') !== false) {
-                        $snapshot++;
-                    }
+                $total++;
+                if (strpos(strtolower($analyse['projectVersion']), 'release') !== false) {
+                    $release++;
+                } elseif (strpos(strtolower($analyse['projectVersion']), 'snapshot') !== false) {
+                    $snapshot++;
+                // MODIF 2026-05-26 : else terminal requis par S126 (version autre, comptée via $autre = $total - release - snapshot).
+                } else {
+                    $this->logger->debug('[BatchInfoProjet] 🔍 Version non release/snapshot, comptée dans "autre".', ['version' => $analyse['projectVersion']]);
                 }
             }
+        }
         $autre = $total - ($release + $snapshot);
 
         $this->logger->debug('[Batch CalculRepartitionProjet] 🛠️ Répartition calculée', [
@@ -237,13 +231,14 @@ class BatchCollecteInformationProjetController extends AbstractController
             ];
         }
 
+        // MODIF 2026-06-10 — fetchAssociative() retourne un tableau plat, pas [0]
         return [
-                'analyse_key' => $version['info'][0]['analyse_key'] ?? 'inconnu',
-                'release' => $version['info'][0]['version_release_sonar'] ?? 0,
-                'snapshot' => $version['info'][0]['version_snapshot_sonar'] ?? 0,
-                'autre' => $version['info'][0]['version_autre_sonar'] ?? 0,
-                'projet_version' => $version['info'][0]['version'] ?? 'inconnu',
-                'date' => $version['info'][0]['date'] ?? '1971-07-04 00:00:00',
+                'analyse_key' => $version['info']['analyse_key'] ?? 'inconnu',
+                'release' => $version['info']['version_release_sonar'] ?? 0,
+                'snapshot' => $version['info']['version_snapshot_sonar'] ?? 0,
+                'autre' => $version['info']['version_autre_sonar'] ?? 0,
+                'projet_version' => $version['info']['version'] ?? 'inconnu',
+                'date' => $version['info']['date'] ?? '1971-07-04 00:00:00',
                 ];
     }
 
