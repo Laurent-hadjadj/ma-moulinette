@@ -50,7 +50,7 @@ Chart.register(ChartDataLabels);
 
 /** On importe les constantes */
 import { http_200, http_201, http_400, http_401, http_403, http_404, http_500, http_503, http_504, chartColors, zero, un, deux, soixante, cent, dateOptions, content_type } from '../../common/constante.js';
-import { modalSafe } from '../../common/safeModal';
+import { modalSafe } from '../../common/safeModal.js';
 
 /**
  * [Description for dessineMoiUnMouton]
@@ -864,7 +864,7 @@ const versionFavoriUpdate = async function (maven_key, favori, version, date_ver
   const data = { maven_key, favori, version, date_version };
   const options = {
     url: `${serveur()}/api/secure/suivi/version/favori`,
-    type: 'POST',
+    type: 'PUT',
     dataType: 'json',
     data: JSON.stringify(data),
     contentType,
