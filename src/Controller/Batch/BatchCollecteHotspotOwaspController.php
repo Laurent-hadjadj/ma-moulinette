@@ -150,7 +150,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
 
         /** On reconstruit les dates au format dateTimeImmutable */
         $date = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
-        $dateVersion = new \DateTimeImmutable($information['info'][0]['date'], new \DateTimeZone(self::$europeParis));
+        $dateVersion = new \DateTimeImmutable($information['info']['date'], new \DateTimeZone(self::$europeParis));
 
         /** Tableau des paramètres pour la requête HTTP
          *  SonarQube 26.x accepte a1..a10 pour les DEUX versions OWASP (pas de zero-padding).
@@ -213,7 +213,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
             return [
                     'referential_owasp' => $ref,
                     'maven_key' => $maven_key,
-                    'version' => $information['info'][0]['version'],
+                    'version' => $information['info']['version'],
                     'date_version' => $dateVersion,
                     'menace' => $menace,
                     'security_category' => $data['securityCategory'] ?? 'NC',
