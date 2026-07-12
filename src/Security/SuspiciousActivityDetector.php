@@ -26,6 +26,8 @@ class SuspiciousActivityDetector
         'ROLE_BATCH',
         'ROLE_ACTUATOR',
         'ROLE_ACTIVITY',
+        'ROLE_SECURITY',
+        'ROLE_SECURITY_ANALYTICS'
     ];
 
     public function __construct(private LoggerInterface $log) {}
@@ -81,6 +83,7 @@ class SuspiciousActivityDetector
             $alerts[] = 'RETRAIT_GESTIONNAIRE';
         }
 
+        /* MODIF 2026-05-03 : log conditionnel — on n'écrit que s'il y a des alertes (sinon bruit). */
         if (!empty($alerts)) {
             $this->log->warning('[SuspiciousActivityDetector] ⚠️ Suspicious activity detected', [
                 'target_user' => $target->getCourriel(),
