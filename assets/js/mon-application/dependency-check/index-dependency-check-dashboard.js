@@ -36,8 +36,8 @@ import 'foundation-sites';
 import 'motion-ui';
 
 import '../../common/foundation.js';
-import '../../common/messageHelper';
-import '../../common/modalSafe';
+import '../../common/messageHelper.js';
+import '../../common/safeModal.js';
 
 /** MODIF 2026-05-16 : DataTables pour la cartographie projets. */
 import DataTable from 'datatables.net-zf'; //NOSONAR
