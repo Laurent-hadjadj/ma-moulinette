@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -15,16 +15,15 @@ namespace App\Controller\Repartition;
 
 use App\Controller\Traits\AppUserAware;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\{Request, Response};
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Controller\Batch\BatchCollecteRepartitionController;
-
 use App\Entity\Repartition;
-use App\Service\{ExtractName, UserAgentTrackingFacade};
+use App\Service\ExtractName;
+use App\Service\UserAgent\UserAgentTrackingFacade;
 
 /**
  * [Description RepartitionController]
@@ -32,7 +31,6 @@ use App\Service\{ExtractName, UserAgentTrackingFacade};
 class RepartitionController extends AbstractController
 {
     use AppUserAware;
-
 
     private static string $erreur400 = "❌ La requête est incorrecte (Erreur 400).";
     private static string $erreur403 = "🚫 Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
@@ -62,8 +60,6 @@ class RepartitionController extends AbstractController
         private LoggerInterface $logger,
         private UserAgentTrackingFacade $tracking
     ) {
-        $this->params = $params;
-
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
         $this->marqueEntrepriseLong = $params->get('marque.entreprise.long');
@@ -137,7 +133,7 @@ class RepartitionController extends AbstractController
         $string = str_rot13($token);
         $decoded = base64_decode($string);
         $parts = preg_split("/[|]+/", $decoded);
-        return (count($parts) === 2) ? strtolower($parts[1]) : null;
+        return (count($parts) === 2) ? $parts[1] : null;
     }
 
     /**
@@ -154,7 +150,8 @@ class RepartitionController extends AbstractController
     #[Route('/repartition', name: 'repartition', methods: ['GET'])]
     public function repartition(Request $request): Response
     {
-    	$this->tracking->track('REPARTITION');
+        $this->tracking->track('REPARTITION_MODULE');
+
         $user = $this->appUser();
 
         $this->logger->info('[Répartition] ℹ️ Chargement de la page.', [
