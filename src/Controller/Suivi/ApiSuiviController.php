@@ -1,5 +1,16 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2024.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 declare(strict_types=1);
 
 namespace App\Controller\Suivi;
@@ -12,10 +23,8 @@ use Symfony\Component\HttpFoundation\{JsonResponse, Request, Response};
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Historique, Utilisateur, InformationProjet};
 use App\Service\ClientService;
-use App\Service\CommandRebuildHistorique\BuildMapHistoryService;
-use App\Service\CommandRebuildHistorique\SonarAnalysisFetcherService;
+use App\Service\CommandRebuildHistorique\{BuildMapHistoryService, SonarAnalysisFetcherService};
 use Psr\Log\LoggerInterface;
-
 
 /**
  * [Description ApiSuiviController]
@@ -58,6 +67,8 @@ class ApiSuiviController extends AbstractController
     #[Route('/api/secure/liste/v1.0/version', name: 'liste_v1_version', methods: ['POST'])]
     public function listeVersionV1(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/secure/liste/v1.0/version");
+
         /** On instancie l'entityRepository */
         $informationProjetRepository = $this->em->getRepository(InformationProjet::class);
 
@@ -114,9 +125,22 @@ class ApiSuiviController extends AbstractController
         ], Response::HTTP_OK);
     }
 
+    /**
+     * [Description for listeVersionV2]
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     *
+     * Created at: 12/07/2026 21:34:12 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     #[Route('/api/secure/liste/v2.0/version', name: 'liste_v2_version', methods: ['POST'])]
     public function listeVersionV2(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/secure/liste/v2.0/version");
+
         $user = $this->appUser();
         $username = $user->getUserIdentifier();
 
@@ -130,8 +154,8 @@ class ApiSuiviController extends AbstractController
 
             return new JsonResponse([
                 'code' => 400,
-                    'type' => 'error',
-                    'message' => self::$erreur400
+                'type' => 'error',
+                'message' => self::$erreur400
             ], Response::HTTP_OK);
         }
 
@@ -172,7 +196,11 @@ class ApiSuiviController extends AbstractController
         $adapted = $this->analysisFetcher->computeVersionCounters($adapted);
 
         /** Tri pour le sélecteur : version desc (natural sort, "1.0.10" > "1.0.9")
-         *  puis date desc en tiebreaker. */
+         *  puis date desc en tiebreaker.
+         *  MODIF 2026-05-06 : retour au tri version d'abord (revert du fix-suivi-modale-tri-date)
+         *  car le tri par date mélangeait des numéros de version (1.3.2 puis 0.0.0)
+         *  difficiles a lire. La date reste affichée dans le `text` du select2 pour
+         *  permettre a l'utilisateur de repérer une éventuelle incoherence date/version. */
         usort($adapted, static function (array $a, array $b): int {
             $cmp = strnatcmp($b['version'] ?? '', $a['version'] ?? '');
             if ($cmp !== 0) {
@@ -208,7 +236,7 @@ class ApiSuiviController extends AbstractController
 
     /**
      * [Description for getVersion]
-     * On récupère les données disponibles pour une version données
+     * On récupère les données disponibles pour une version donnée (maven_key + date) depuis l'historique des mesures SonarQube
      * http://{url}}/api/get/version
      *
      * @param Request $request
@@ -222,6 +250,8 @@ class ApiSuiviController extends AbstractController
     #[Route('/api/secure/get/version', name: 'get_version', methods: ['POST'])]
     public function getVersion(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/secure/get/version");
+
         $user = $this->appUser();
         $username = $user->getUserIdentifier();
 
@@ -322,9 +352,11 @@ class ApiSuiviController extends AbstractController
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/api/secure/suivi/mise-a-jour', name: 'suivi_mise_a_jour', methods: ['PUT'])]
+    #[Route('/api/secure/suivi/mise-a-jour', name: 'suivi_mise_a_jour', methods: ['POST'])]
     public function suiviMiseAJour(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/secure/suivi/mise-a-jour");
+
         /** On instancie l'entityRepository */
         $historiqueRepository = $this->em->getRepository(Historique::class);
 
@@ -356,13 +388,14 @@ class ApiSuiviController extends AbstractController
          *  null (colonnes nullable), les champs en trop sont ignorés. */
         $map = (array) $data;
         $map['analyse_key'] = $data->analyse_key ?? '-';
-        $map['mode_collecte'] = 'COLLECTE';
+        /* MODIF 2026-05-06 : tag 'REBUILD' au lieu de
+         * 'COLLECTE' — cette route ajoute une version reconstituée depuis SonarQube
+         * search_history, donc avec des indicateurs PARTIELS (pas de comment_lines_rating,
+         * complexity_rating, cognitive_complexity_rating, etc.). 'COLLECTE' reste
+         * reserve aux vraies collectes a chaud (BatchCollecteMesureController). */
+        $map['mode_collecte'] = 'REBUILD';
         $map['utilisateur_collecte'] = $this->appUser()->getCourriel() ?? self::$noData;
         $map['date_enregistrement'] = $dateEnregistrement;
-
-        /** 🔍 DEBUG temporaire : à retirer une fois le bug "pas d'INSERT" diagnostiqué.
-         *  Halte l'exécution et inspecte $data (payload brut) et $map (bind). */
-        //"dd(['data_recue_du_js' => $data, 'map_envoye_au_repo' => $map]);
 
         /** Normalise les valeurs string 'null' / '' / null en vrai null PHP pour
          *  les champs numériques (Postgres refuse 'null' string sur INT/FLOAT)
@@ -436,6 +469,8 @@ class ApiSuiviController extends AbstractController
     #[Route('/api/secure/suivi/version/liste', name: 'suivi_version_liste', methods: ['POST'])]
     public function suiviVersionListe(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/secure/suivi/version/liste");
+
         /** On instancie l'entityRepository */
         $historiqueRepository = $this->em->getRepository(Historique::class);
 
@@ -483,20 +518,28 @@ class ApiSuiviController extends AbstractController
         // Récupérer les versions favorites pour la maven_key
         $listeVersions = self::getFavoriVersions($preferenceFavoriVersion, $data->maven_key);
 
-        // Ajouter la clé 'favori' aux versions correspondantes dans la liste des versions
+        // MODIF 2026-06-11 : récupère les versions suivi
+        $preferenceSuiviVersion = $preference['suivi_version'] ?? [];
+        $listeSuiviVersions = $preferenceSuiviVersion[$data->maven_key] ?? [];
+
+        // Ajouter les clés 'favori' et 'suivi' aux versions correspondantes dans la liste
         foreach ($result['version'] as &$version) {
             if ($version['maven_key'] === $data->maven_key && in_array($version['version'], $listeVersions)) {
                 $version['favori'] = true;
             } else {
                 $version['favori'] = false;
             }
+            $version['suivi'] = in_array($version['version'], $listeSuiviVersions, true);
         }
+        unset($version);
+
         return new JsonResponse([
             'code' => 200,
             'type' => 'info',
             'message' => "La liste des versions a été chargée correctement.",
             'versions' => $result['version'],
-            'preference_favori' => $preferenceFavoriVersion
+            'preference_favori' => $preferenceFavoriVersion,
+            'suivi_version_count' => count($listeSuiviVersions),
         ], Response::HTTP_OK);
     }
 
@@ -515,9 +558,6 @@ class ApiSuiviController extends AbstractController
      */
     public static function getFavoriVersions(array $version, string $app_key): array
     {
-        if (!is_array($version)) {
-            return [];
-        }
         foreach ($version as $entry) {
             if (isset($entry[$app_key])) {
                 return $entry[$app_key];
@@ -542,6 +582,8 @@ class ApiSuiviController extends AbstractController
     #[Route('/api/secure/suivi/version/favori', name: 'suivi_projet_favori', methods: ['PUT'])]
     public function suiviVersionFavori(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/secure/suivi/version/favori");
+
         /** On instancie l'entityRepository */
         $utilisateurRepository = $this->em->getRepository(Utilisateur::class);
 
@@ -616,6 +658,8 @@ class ApiSuiviController extends AbstractController
     #[Route('/api/secure/suivi/version/reference', name: 'suivi_version_reference', methods: ['PUT'])]
     public function suiviVersionReference(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/secure/suivi/version/reference");
+
         /** On instancie l'entityRepository */
         $historiqueRepository = $this->em->getRepository(Historique::class);
 
@@ -641,7 +685,7 @@ class ApiSuiviController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        /** si on est pas GESTIONNAIRE on ne fait rien. */
+        /** si on a pas le role SUIVI on ne fait rien. */
         if (!$this->security->isGranted('ROLE_SUIVI')) {
             $this->logger->error(self::$loggerE403, [
                 'utilisateur' => $username,
@@ -669,6 +713,76 @@ class ApiSuiviController extends AbstractController
     }
 
     /**
+     * [Description for suiviVersionSuivi]
+     * Ajoute ou supprime une version de la liste de suivi personnalisée.
+     * Max 15 versions par projet. La version de référence (initial=true) reste toujours affichée.
+     * http://{url}}/api/suivi/version/suivi
+     *
+     * @param Request $request
+     * @return JsonResponse
+     *
+     * Created at: 2026-06-11 (Europe/Paris)
+     * @author    Laurent HADJADJ <laurent_h@me.com>
+     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    #[Route('/api/secure/suivi/version/suivi', name: 'suivi_version_suivi', methods: ['POST'])]
+    public function suiviVersionSuivi(Request $request): JsonResponse
+    {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/secure/suivi/version/suivi");
+
+        /** On instancie l'entityRepository */
+        $utilisateurRepository = $this->em->getRepository(Utilisateur::class);
+
+        $preference = $this->appUser()->getPreference();
+        $courriel   = $this->appUser()->getCourriel();
+        $username   = $this->appUser()->getUserIdentifier();
+
+        $data = json_decode($request->getContent());
+
+        if ($data === null ||
+            !property_exists($data, 'maven_key') || !is_string($data->maven_key) ||
+            !property_exists($data, 'version')   || !is_string($data->version)   ||
+            !property_exists($data, 'suivi')
+        ) {
+            $this->logger->error("[Suivi-Suivi] ❌ Requête invalide : clé 'maven_key', 'version', 'suivi' manquante ou JSON mal formé.", [
+                'utilisateur' => $username,
+                'payload' => $data ?? self::$noData
+            ]);
+            return new JsonResponse([
+                'code' => 400, 'type' => 'error', 'message' => self::$erreur400
+            ], Response::HTTP_OK);
+        }
+
+        $map = [
+            'courriel'  => $courriel,
+            'maven_key' => $data->maven_key,
+            'version'   => $data->version,
+            'suivi'     => (int) $data->suivi,
+        ];
+
+        $result = $utilisateurRepository->updateUtilisateurSuiviVersion($preference, $map);
+
+        if ($result['code'] !== 200) {
+            $this->logger->error('[Suivi-Suivi] ❌ Échec de la requête updateUtilisateurSuiviVersion.', [
+                'code' => $result['code'],
+                'erreur' => $result['erreur'] ?? self::$noData,
+                'data' => $map,
+            ]);
+            return new JsonResponse([
+                'code' => $result['code'], 'type' => 'error',
+                'message' => $result['erreur'] ?? "Une erreur est survenue lors de la mise à jour du suivi.",
+            ], Response::HTTP_OK);
+        }
+
+        $count = count($result['suivi_version'][$data->maven_key] ?? []);
+        return new JsonResponse([
+            'code' => 200, 'type' => 'success',
+            'message' => "Mise à jour du suivi effectuée.",
+            'suivi_version_count' => $count,
+        ], Response::HTTP_OK);
+    }
+
+    /**
      * [Description for suiviVersionPoubelle]
      * On supprime la version de historique
      * On fait PUT pour un DELETE. (i.e on bloque la méthode DELETE)
@@ -685,6 +799,8 @@ class ApiSuiviController extends AbstractController
     #[Route('/api/secure/suivi/version/poubelle', name: 'suivi_version_poubelle', methods: ['PUT'])]
     public function suiviVersionPoubelle(Request $request): JsonResponse
     {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/secure/suivi/version/poubelle");
+
         /** On instancie l'entityRepository */
         $historiqueRepository = $this->em->getRepository(Historique::class);
         $utilisateurRepository = $this->em->getRepository(Utilisateur::class);
@@ -715,7 +831,7 @@ class ApiSuiviController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        /** si on est pas GESTIONNAIRE on ne fait rien. */
+        /** si on a pas le role SUIVI on ne fait rien. */
         if (!$this->security->isGranted('ROLE_SUIVI')) {
             $this->logger->error(self::$loggerE403, [
                 'utilisateur' => $username,
@@ -784,6 +900,30 @@ class ApiSuiviController extends AbstractController
                 'message' => "Une erreur est survenue lors de la mise à jour des favoris",
                 'trace' => $result['erreur'] ?? self::$noData
                 ], Response::HTTP_OK);
+            }
+            // On rafraîchit $preference avec la version mise à jour (suivi_version préservée)
+            $preference = $result['preference'] ?? $preference;
+        }
+
+        // MODIF 2026-06-11 : nettoyer suivi_version si la version supprimée y était.
+        $suiviVersion = $preference['suivi_version'] ?? [];
+        $estSuivi = is_array($suiviVersion)
+            && isset($suiviVersion[$data->maven_key])
+            && in_array($data->version, (array) $suiviVersion[$data->maven_key], true);
+
+        if ($estSuivi) {
+            $mapSuivi = [
+                'courriel'  => $courriel,
+                'maven_key' => $data->maven_key,
+                'version'   => $data->version,
+                'suivi'     => 0,
+            ];
+            $resultSuivi = $utilisateurRepository->updateUtilisateurSuiviVersion($preference, $mapSuivi);
+            if ($resultSuivi['code'] !== 200) {
+                $this->logger->error('[Suivi-Update] ❌ Échec de la requête updateUtilisateurSuiviVersion lors de la suppression.', [
+                    'code' => $resultSuivi['code'],
+                    'erreur' => $resultSuivi['erreur'] ?? self::$noData,
+                ]);
             }
         }
 
