@@ -43,7 +43,7 @@ import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common
 /** On importe les constantes */
 import {dateOptions, content_type, couleur, note, espace, rien,
   http_200, http_400, http_406,
-  listeOwasp2017, listeOwasp2021,
+  listeOwasp2017, listeOwasp2021, listeOwasp2025,
   un, deux, trois, quatre, cinq, six, sept, huit, neuf, dix, onze,
   vingtNeuf, trente, soixanteNeuf, soixanteDix, cent} from '../../common/constante.js';
 
