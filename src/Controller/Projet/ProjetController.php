@@ -57,7 +57,7 @@ class ProjetController extends AbstractController
         $this->environnement = $params->get('environnement');
         $this->version = $params->get('version');
         $this->dateCopyright = \date('Y');
-        $this->sonarVersion = $params->get('sonar.version');
+        $this->sonarVersion = (int) $params->get('sonar.version');
     }
 
     /**
