@@ -39,7 +39,7 @@ class ApiDependencyCheckUploadControllerTest extends WebTestCase
 {
     private const URL   = '/api/secure/dependency-check/upload';
     private const TOKEN = 'test-dc-ingest-token-32chars-aaaa';
-    private const VALID_JSON = '{"reportSchema":"1.1","projectInfo":{"groupID":"fr.test","artifactID":"demo","version":"1.0"},"dependencies":[]}';
+    private const VALID_JSON = '{"reportSchema":"1.1","projectInfo":{"groupID":"fr.ma-moulinette","artifactID":"ma-moulinette","version":"1.0"},"dependencies":[]}';
     private const CONTENT_TYPE = 'application/json';
 
     private KernelBrowser $client;
@@ -136,8 +136,8 @@ class ApiDependencyCheckUploadControllerTest extends WebTestCase
         // Verif persistance
         $entity = $this->repo->findByUlid($payload['ulid']);
         $this->assertNotNull($entity);
-        $this->assertSame('fr.test', $entity->getProjectGroup());
-        $this->assertSame('demo', $entity->getProjectArtifact());
+        $this->assertSame('fr.ma-moulinette', $entity->getProjectGroup());
+        $this->assertSame('ma-moulinette', $entity->getProjectArtifact());
         $this->assertSame('1.0', $entity->getProjectVersion());
         $this->assertSame(DcProcessingQueue::CONTENT_JSON, $entity->getContentType());
         $this->assertSame(DcProcessingQueue::STATUS_QUEUED, $entity->getStatus());
@@ -230,7 +230,7 @@ class ApiDependencyCheckUploadControllerTest extends WebTestCase
         $this->assertSame($ulid, $payload['ulid']);
         $this->assertSame('queued', $payload['status']);
         $this->assertSame($uploadPayload['sha256'], $payload['sha256']);
-        $this->assertSame('fr.test:demo:1.0', $payload['project']);
+        $this->assertSame('fr.ma-moulinette:ma-moulinette:1.0', $payload['project']);
         $this->assertSame('json', $payload['content_type']);
         $this->assertSame(0, $payload['attempts']);
         $this->assertArrayHasKey('created_at', $payload);

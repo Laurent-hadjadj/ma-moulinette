@@ -35,8 +35,8 @@ class UserRoleLoggerServiceTest extends TestCase
 
     public function testLogPersistsAndFlushesUserRoleLog(): void
     {
-        $user = $this->makeUser('user@example.com');
-        $editor = $this->makeUser('editor@example.com');
+        $user = $this->makeUser('user@ma-moulinette.fr');
+        $editor = $this->makeUser('editor@ma-moulinette.fr');
 
         /* MODIF 2026-05-07 : capture un UserRoleLog — PHPDoc pour intelephense. */
         /** @var UserRoleLog|null $captured */
@@ -61,8 +61,8 @@ class UserRoleLoggerServiceTest extends TestCase
         );
 
         $this->assertInstanceOf(UserRoleLog::class, $captured);
-        $this->assertSame('user@example.com', $captured->getUserEmail());
-        $this->assertSame('editor@example.com', $captured->getEditorEmail());
+        $this->assertSame('user@ma-moulinette.fr', $captured->getUserEmail());
+        $this->assertSame('editor@ma-moulinette.fr', $captured->getEditorEmail());
         $this->assertSame(['ROLE_UTILISATEUR'], $captured->getOldRoles());
         $this->assertSame(['ROLE_COLLECTE'], $captured->getNewRoles());
         $this->assertTrue($captured->isOldActive());

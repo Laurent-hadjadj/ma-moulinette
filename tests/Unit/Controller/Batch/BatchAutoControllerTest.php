@@ -186,7 +186,7 @@ class BatchAutoControllerTest extends TestCase
     {
         $this->listeProjetService->method('listeProjet')->willReturn([
             'code' => 200,
-            'liste' => ['com.acme:app'],
+            'liste' => ['fr.ma-moulinette:ma-moulinette'],
         ]);
 
         $this->batchTraitementRepo->expects($this->once())
@@ -211,7 +211,7 @@ class BatchAutoControllerTest extends TestCase
     {
         $this->listeProjetService->method('listeProjet')->willReturn([
             'code' => 200,
-            'liste' => ['com.acme:app', 'com.acme:other'],
+            'liste' => ['fr.ma-moulinette:ma-moulinette', 'fr.ma-moulinette:projet-b'],
         ]);
 
         // First update OK (pre-loop), second update on 500 failure inside loop
@@ -230,14 +230,14 @@ class BatchAutoControllerTest extends TestCase
         $data = json_decode($response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
-        $this->assertStringContainsString("collecte du projet com.acme:app", $data['message']);
+        $this->assertStringContainsString("collecte du projet fr.ma-moulinette:ma-moulinette", $data['message']);
     }
 
     public function testAutoHappyPathReturnsReferenceAfterFullLoop(): void
     {
         $this->listeProjetService->method('listeProjet')->willReturn([
             'code' => 200,
-            'liste' => ['com.acme:app'],
+            'liste' => ['fr.ma-moulinette:ma-moulinette'],
         ]);
 
         // Both updateBatchTraitement calls succeed (before + after loop)
@@ -263,7 +263,7 @@ class BatchAutoControllerTest extends TestCase
     {
         $this->listeProjetService->method('listeProjet')->willReturn([
             'code' => 200,
-            'liste' => ['com.acme:app'],
+            'liste' => ['fr.ma-moulinette:ma-moulinette'],
         ]);
 
         $this->batchTraitementRepo->method('updateBatchTraitement')->willReturnOnConsecutiveCalls(

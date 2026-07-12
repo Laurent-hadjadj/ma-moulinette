@@ -247,7 +247,7 @@ class RepartitionRepositoryTest extends KernelTestCase
     }
 
     /**
-     * MODIF 2026-05-21 [bug-repartition-historique] : vérifie que findLatestMavenKeyWithControl()
+     * MODIF 2026-05-21 : vérifie que findLatestMavenKeyWithControl()
      * retrouve la ligne après la transition vers 'complet (100%)'.
      * Avant le fix, la ligne restait 'initial' et la requête ne renvoyait rien.
      */

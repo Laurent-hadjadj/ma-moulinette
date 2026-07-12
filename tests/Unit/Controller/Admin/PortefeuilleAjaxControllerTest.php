@@ -61,7 +61,7 @@ class PortefeuilleAjaxControllerTest extends TestCase
             ->willReturn($statement);
         $statement->method('executeQuery')->willReturn($result);
         $result->method('fetchAllAssociative')->willReturn([
-            ['name' => 'App1', 'maven_key' => 'com.acme:app1'],
+            ['name' => 'App1', 'maven_key' => 'fr.ma-moulinette:ma-moulinette'],
         ]);
 
         $response = $this->controller->listProjets(new Request(['groupe' => 'java']));

@@ -52,7 +52,7 @@ class ListeProjetPortefeuilleServiceTest extends TestCase
 
     public function testListeProjetReturnsDecodedMavenKeysOnSuccess(): void
     {
-        $mavenKeys = ['com.acme:app', 'com.acme:api', 'com.acme:ui'];
+        $mavenKeys = ['fr.ma-moulinette:projet-a', 'fr.ma-moulinette:projet-b', 'fr.ma-moulinette:projet-c'];
         $repoResult = [
             'code' => 200,
             'liste' => [

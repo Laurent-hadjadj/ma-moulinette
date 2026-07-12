@@ -23,7 +23,7 @@ use Symfony\Component\Validator\ConstraintViolation;
 class AnomalieValidatorTest extends KernelTestCase
 {
 
-  private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+  private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
   private static string $projectName = 'ma-moulinette';
   private static int $anomalieTotal = 1956;
   private static int $detteMinute = 19586;
@@ -47,12 +47,12 @@ class AnomalieValidatorTest extends KernelTestCase
   private static int $vulnerability = 0;
   private static int $codeSmell = 801;
   private static string $modeCollecte = "TRAITEMENT AUTOMATIQUE";
-  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-moulinette.fr';
   private static string $dateEnregistrement = '2024-03-25 12:26:58+02';
 
   private function getEntity(): Anomalie
   {
-      return (new anomalie())
+    return (new anomalie())
       ->setMavenKey(self::$mavenKey)
       ->setProjectName(self::$projectName)
       ->setAnomalieTotal(self::$anomalieTotal)
@@ -88,7 +88,7 @@ class AnomalieValidatorTest extends KernelTestCase
     $errors = $container->get('validator')->validate($entity);
     $messages = [];
     /** @var ConstraintViolation $error */
-    foreach($errors as $error) {
+    foreach ($errors as $error) {
       $messages[] = $error->getPropertyPath() . ' => ' . $error->getMessage();
     }
     $this->assertCount($number, $errors, implode(', ', $messages));
@@ -129,7 +129,7 @@ class AnomalieValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setMinor(0), 0);
     $this->assertHasErrors($this->getEntity()->setInfo(0), 0);
     $this->assertHasErrors($this->getEntity()->setBug(0), 0);
-    }
+  }
 
   /**
    * v2.0.0 : valeurs negatives REJETEES par les contraintes PositiveOrZero / Positive / Range.
@@ -151,13 +151,13 @@ class AnomalieValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setMinor(-1), 1);
     $this->assertHasErrors($this->getEntity()->setInfo(-1), 1);
     $this->assertHasErrors($this->getEntity()->setBug(-1), 1);
-    }
+  }
 
   public function testCountAttribut(): void
   {
-      $entity = $this->getEntity();
-      $reflectionClass = new \ReflectionClass($entity);
-      $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 27);
+    $entity = $this->getEntity();
+    $reflectionClass = new \ReflectionClass($entity);
+    $nbAttributs = count($reflectionClass->getProperties());
+    $this->assertEquals($nbAttributs, 27);
   }
 }

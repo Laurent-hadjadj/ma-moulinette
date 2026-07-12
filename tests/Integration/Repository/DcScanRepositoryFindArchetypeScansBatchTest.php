@@ -182,13 +182,13 @@ class DcScanRepositoryFindArchetypeScansBatchTest extends KernelTestCase
         $result = $this->repo->findArchetypeScansBatch([
             ['label' => 'springboot-config', 'version' => self::VERSION_RELEASE],   // existe
             ['label' => 'unknown-socle',         'version' => '1.0.0-RELEASE'],    // orphelin
-            ['label' => 'fr.unknown:bom',        'version' => '2.0.0-RELEASE'],    // orphelin groupé
+            ['label' => 'fr.ma-moulinette:projet-inconnu',        'version' => '2.0.0-RELEASE'],    // orphelin groupé
         ]);
 
         $this->assertCount(1, $result);
         $this->assertArrayHasKey(self::SPRING_BOOT_FAM_CONFIG, $result);
         $this->assertArrayNotHasKey('unknown-socle@1.0.0-RELEASE',      $result);
-        $this->assertArrayNotHasKey('fr.unknown:bom@2.0.0-RELEASE',     $result);
+        $this->assertArrayNotHasKey('fr.ma-moulinette:projet-inconnu@2.0.0-RELEASE',     $result);
     }
 
     public function testDedupsDuplicatePairsInInput(): void

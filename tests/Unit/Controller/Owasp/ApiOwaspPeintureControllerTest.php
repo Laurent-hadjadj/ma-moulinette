@@ -29,7 +29,7 @@ use Symfony\Component\HttpFoundation\{JsonResponse, Request};
 #[AllowMockObjectsWithoutExpectations]
 class ApiOwaspPeintureControllerTest extends TestCase
 {
-    private const MAVEN_KEY = 'com.acme:app';
+    private const MAVEN_KEY = 'fr.ma-moulinette:ma-moulinette';
 
     /** @var EntityManagerInterface&MockObject */
     private MockObject $em;

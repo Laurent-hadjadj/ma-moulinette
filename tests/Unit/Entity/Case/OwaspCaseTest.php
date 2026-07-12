@@ -31,7 +31,7 @@ class OwaspCaseTest extends TestCase
     public static function attributesProvider(): iterable
     {
         // Identification
-        yield 'mavenKey' => ['MavenKey', 'fr.ma-petite-entreprise:ma-moulinette'];
+        yield 'mavenKey' => ['MavenKey', 'fr.ma-moulinette:ma-moulinette'];
         yield 'version' => ['Version', '1.2.0-RELEASE'];
 
         // Effort global

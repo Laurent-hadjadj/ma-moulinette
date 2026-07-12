@@ -219,16 +219,16 @@ class SuspiciousActivityDetectorTest extends TestCase
 
     public function testLoggerContextIncludesEmailsAndAlerts(): void
     {
-        $target = $this->makeUser('target@example.com', ['ROLE_UTILISATEUR']);
-        $editor = $this->makeUser('editor@example.com', ['ROLE_GESTIONNAIRE']);
+        $target = $this->makeUser('target@ma-moulinette.fr', ['ROLE_UTILISATEUR']);
+        $editor = $this->makeUser('editor@ma-moulinette.fr', ['ROLE_GESTIONNAIRE']);
 
         $this->logger->expects($this->once())
             ->method('warning')
             ->with(
                 $this->stringContains('Suspicious activity detected'),
                 $this->callback(function (array $ctx) {
-                    return $ctx['target_user'] === 'target@example.com'
-                        && $ctx['editor_user'] === 'editor@example.com'
+                    return $ctx['target_user'] === 'target@ma-moulinette.fr'
+                        && $ctx['editor_user'] === 'editor@ma-moulinette.fr'
                         && in_array('ATTRIBUTION_ROLE_SENSIBLE', $ctx['alerts'], true);
                 })
             );

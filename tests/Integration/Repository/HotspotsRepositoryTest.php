@@ -27,7 +27,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class HotspotsRepositoryTest extends KernelTestCase
 {
     private static string $erreurCode200 = 'Erreur le code retour doit être 200.';
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
 
     protected function setUp(): void
     {
@@ -77,7 +77,7 @@ class HotspotsRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map=['maven_key' => self::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         $hotspotsRepository = $entityManager->getRepository(Hotspots::class);
         $r = $hotspotsRepository->selectHotspotsToReview($map);
@@ -144,15 +144,21 @@ class HotspotsRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map = [['maven_key' => self::$mavenKey,
+        $map = [[
+            'maven_key' => self::$mavenKey,
             'version' => '2.0.0-RELEASE',
             'date_version' => new \DateTimeImmutable('2024-07-10 15:26:07+02'),
-            'hotspot_key' => 'AZCc06XbgfifxdiJPzw6', 'security_category' => 'dos',
-            'rule_key' => 'typescript:S5852', 'probability' => 'MEDIUM',
-            'status' => 'TO_REVIEW', 'resolution' => 'Todo',
-            'niveau' => 2, 'mode_collecte' => 'TRAITEMENT MANUEL',
-            'utilisateur_collecte' => 'laurent.hadjadj@ma-petite-entreprise.fr',
-            'date_enregistrement' => new \DateTimeImmutable('2024-04-12 16:23:11+01')]];
+            'hotspot_key' => 'AZCc06XbgfifxdiJPzw6',
+            'security_category' => 'dos',
+            'rule_key' => 'typescript:S5852',
+            'probability' => 'MEDIUM',
+            'status' => 'TO_REVIEW',
+            'resolution' => 'Todo',
+            'niveau' => 2,
+            'mode_collecte' => 'TRAITEMENT MANUEL',
+            'utilisateur_collecte' => 'laurent.hadjadj@ma-moulinette.fr',
+            'date_enregistrement' => new \DateTimeImmutable('2024-04-12 16:23:11+01')
+        ]];
 
         $hotspotsRepository = $entityManager->getRepository(Hotspots::class);
         $r = $hotspotsRepository->insertHotspots($map);

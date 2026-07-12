@@ -34,7 +34,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 #[AllowMockObjectsWithoutExpectations]
 class BatchCollecteLoggerControllerTest extends TestCase
 {
-    private const MAVEN_KEY = 'com.acme:app';
+    private const MAVEN_KEY = 'fr.ma-moulinette:ma-moulinette';
 
     /** @var EntityManagerInterface&MockObject */     private MockObject $em;
     /** @var ClientService&MockObject */               private MockObject $client;
@@ -58,7 +58,7 @@ class BatchCollecteLoggerControllerTest extends TestCase
         $this->informationProjetRepo = $this->createMock(InformationProjetRepository::class);
         $this->parameterBag = $this->createMock(ParameterBagInterface::class);
 
-        /* MODIF 2026-05-15 [logger-details] : routing par classe pour supporter
+        /* MODIF 2026-05-15 : routing par classe pour supporter
          * les nouveaux repos Logger / LoggerDetail / InformationProjet appeles par le controller. */
         $this->em->expects($this->atLeastOnce())
             ->method('getRepository')
@@ -168,7 +168,7 @@ class BatchCollecteLoggerControllerTest extends TestCase
         $this->loggerDetailRepo->method('countByMavenKeyGroupedByLevelAndFramework')
             ->willReturn(['code' => 200, 'liste' => []]);
 
-        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        /* MODIF 2026-05-07 : init [] (intelephense by-ref). */
         $capturedInsert = [];
         $this->repo->expects($this->once())
             ->method('insertLogger')

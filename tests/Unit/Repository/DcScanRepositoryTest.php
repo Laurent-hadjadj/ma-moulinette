@@ -72,9 +72,9 @@ class DcScanRepositoryTest extends TestCase
         $repo = $this->buildRepo([
             [
                 'id' => '42',
-                'maven_key' => 'fr.example:app-a',
-                'project_group' => 'fr.example',
-                'project_artifact' => 'app-a',
+                'maven_key' => 'fr.ma-moulinette:ma-moulinette',
+                'project_group' => 'fr.ma-moulinette',
+                'project_artifact' => 'ma-moulinette',
                 'project_version' => '1.0.0',
                 'scan_date' => '2026-05-08 12:00:00',
                 'dep_count_total' => '120',
@@ -93,7 +93,7 @@ class DcScanRepositoryTest extends TestCase
         $this->assertSame('', $result['erreur']);
         $this->assertCount(1, $result['liste']);
         $this->assertSame(42, $result['liste'][0]['id']);
-        $this->assertSame('fr.example:app-a', $result['liste'][0]['maven_key']);
+        $this->assertSame('fr.ma-moulinette:ma-moulinette', $result['liste'][0]['maven_key']);
         $this->assertSame('1.0.0', $result['liste'][0]['project_version']);
         $this->assertInstanceOf(\DateTimeImmutable::class, $result['liste'][0]['scan_date']);
         $this->assertSame('2026-05-08 12:00:00', $result['liste'][0]['scan_date']->format('Y-m-d H:i:s'));

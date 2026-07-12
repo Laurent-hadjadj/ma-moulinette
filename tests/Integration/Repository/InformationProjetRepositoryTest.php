@@ -25,7 +25,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  */
 class InformationProjetRepositoryTest extends KernelTestCase
 {
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
     private static string $erreurCode200 = 'Erreur le code retour doit être 200.';
 
     protected function setUp(): void
@@ -113,17 +113,20 @@ class InformationProjetRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => self::$mavenKey,
-                'analyse_key' => 'BYVyxZcQo0TJpgSeq-ph',
-                'date' => '2024-08-12 16:23:11+02',
-                'project_version' => '3.0.0-RELEASE',
-                'version_sonar' => 59,
-                'version_release_sonar' => 54,
-                'version_snapshot_sonar' => 3,
-                'version_autre_sonar' => 2,
-                'type' => 'RELEASE', 'mode_collecte' => 'TRAITEMENT MANUEL',
-                'utilisateur_collecte' => 'laurent.hadjadj@ma-petite-entreprise.fr',
-                'date_enregistrement' => new \DateTimeImmutable('2024-04-12 16:23:11+01')];
+        $map = [
+            'maven_key' => self::$mavenKey,
+            'analyse_key' => 'BYVyxZcQo0TJpgSeq-ph',
+            'date' => '2024-08-12 16:23:11+02',
+            'project_version' => '3.0.0-RELEASE',
+            'version_sonar' => 59,
+            'version_release_sonar' => 54,
+            'version_snapshot_sonar' => 3,
+            'version_autre_sonar' => 2,
+            'type' => 'RELEASE',
+            'mode_collecte' => 'TRAITEMENT MANUEL',
+            'utilisateur_collecte' => 'laurent.hadjadj@ma-moulinette.fr',
+            'date_enregistrement' => new \DateTimeImmutable('2024-04-12 16:23:11+01')
+        ];
 
         // Appel de la méthode
         $informationProjetRepository = $entityManager->getRepository(InformationProjet::class);
@@ -144,5 +147,4 @@ class InformationProjetRepositoryTest extends KernelTestCase
         $entityManager->close();
         $entityManager = null;
     }
-
 }

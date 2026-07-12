@@ -54,7 +54,7 @@ class BatchProfilingCaseTest extends TestCase
 
     public function testExecutionReferenceCanBeNull(): void
     {
-        $entity = new BatchProfiling('P', 1, 1.0, 1.0, 1.0, 1.0, 'u@x.fr');
+        $entity = new BatchProfiling('P', 1, 1.0, 1.0, 1.0, 1.0, 'u@ma-moulinette.fr');
         $this->assertNull($entity->getExecutionReference());
     }
 

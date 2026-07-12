@@ -19,7 +19,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 #[AllowMockObjectsWithoutExpectations]
 class BatchCollecteHotspotDetailControllerTest extends TestCase
 {
-    private const MAVEN_KEY = 'com.acme:app';
+    private const MAVEN_KEY = 'fr.ma-moulinette:ma-moulinette';
 
     /** @var EntityManagerInterface&MockObject */      private MockObject $em;
     /** @var ClientService&MockObject */               private MockObject $client;
@@ -281,7 +281,7 @@ class BatchCollecteHotspotDetailControllerTest extends TestCase
         ];
         $this->client->method('httpSonarQube')->willReturn($hsJson);
 
-        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        /* MODIF 2026-05-07 : init [] (intelephense by-ref). */
         $capturedInsert = [];
         $this->hotspotDetailsRepo->expects($this->once())
             ->method('insertHotspotDetails')

@@ -80,9 +80,9 @@ class DcProcessingQueueTest extends TestCase
     public function testSetGetProjectGroup(): void
     {
         $q = new DcProcessingQueue();
-        $result = $q->setProjectGroup('fr.test');
+        $result = $q->setProjectGroup('fr.ma-moulinette');
         $this->assertSame($q, $result);
-        $this->assertSame('fr.test', $q->getProjectGroup());
+        $this->assertSame('fr.ma-moulinette', $q->getProjectGroup());
     }
 
     public function testSetGetProjectArtifact(): void

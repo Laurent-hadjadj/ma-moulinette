@@ -55,17 +55,17 @@ class DcScanTest extends TestCase
     public function testSetGetMavenKey(): void
     {
         $s = new DcScan();
-        $result = $s->setMavenKey('fr.test:mon-app');
+        $result = $s->setMavenKey('fr.ma-moulinette:ma-moulinette');
         $this->assertSame($s, $result);
-        $this->assertSame('fr.test:mon-app', $s->getMavenKey());
+        $this->assertSame('fr.ma-moulinette:ma-moulinette', $s->getMavenKey());
     }
 
     public function testSetGetProjectGroup(): void
     {
         $s = new DcScan();
-        $result = $s->setProjectGroup('fr.test');
+        $result = $s->setProjectGroup('fr.ma-moulinette');
         $this->assertSame($s, $result);
-        $this->assertSame('fr.test', $s->getProjectGroup());
+        $this->assertSame('fr.ma-moulinette', $s->getProjectGroup());
     }
 
     public function testSetGetProjectArtifact(): void

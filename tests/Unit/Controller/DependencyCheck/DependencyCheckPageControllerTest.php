@@ -50,8 +50,8 @@ use Twig\Environment;
 #[CoversClass(DependencyCheckPageController::class)]
 class DependencyCheckPageControllerTest extends TestCase
 {
-    private const GROUP    = 'com.acme';
-    private const ARTIFACT = 'my-app';
+    private const GROUP    = 'fr.ma-moulinette';
+    private const ARTIFACT = 'ma-moulinette';
     private const VERSION  = '1.2.3';
 
     /** @var DcScanRepository&MockObject */       private MockObject $scanRepo;
@@ -494,8 +494,8 @@ class DependencyCheckPageControllerTest extends TestCase
 
         $scanRow = [
             'id'                 => 1,
-            'maven_key'          => 'com.acme:app',
-            'project_artifact'   => 'app',
+            'maven_key'          => 'fr.ma-moulinette:ma-moulinette',
+            'project_artifact'   => 'ma-moulinette',
             'project_version'    => '1.0',
             'parent_label'       => 'springboot-config',
             'parent_version'     => '3.2.0',

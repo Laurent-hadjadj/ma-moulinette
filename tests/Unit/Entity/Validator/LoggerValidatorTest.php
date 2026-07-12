@@ -23,26 +23,27 @@ use Symfony\Component\Validator\ConstraintViolation;
 class LoggerValidatorTest extends KernelTestCase
 {
 
-  private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+  private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
   private static int $loggerInfo = 14;
   private static int $loggerWarn = 0;
   private static int $loggerError = 15;
   private static int $loggerDebug = 8;
   private static string $modeCollecte = 'TRAITEMENT MANUEL';
-  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-moulinette.fr';
   private static string $dateEnregistrement = '2024-04-12 16:23:11+01';
 
   private function getEntity(): Logger
   {
-      return (new logger(
-        self::$mavenKey,
-        self::$loggerInfo,
-        self::$loggerWarn,
-        self::$loggerError,
-        self::$loggerDebug,
-        self::$modeCollecte,
-        self::$utilisateurCollecte))
-        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
+    return (new logger(
+      self::$mavenKey,
+      self::$loggerInfo,
+      self::$loggerWarn,
+      self::$loggerError,
+      self::$loggerDebug,
+      self::$modeCollecte,
+      self::$utilisateurCollecte
+    ))
+      ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
   }
 
   public function assertHasErrors(Logger $entity, int $number = 0): void
@@ -52,7 +53,7 @@ class LoggerValidatorTest extends KernelTestCase
     $errors = $container->get('validator')->validate($entity);
     $messages = [];
     /** @var ConstraintViolation $error */
-    foreach($errors as $error) {
+    foreach ($errors as $error) {
       $messages[] = $error->getPropertyPath() . ' => ' . $error->getMessage();
     }
     $this->assertCount($number, $errors, implode(', ', $messages));
@@ -77,7 +78,7 @@ class LoggerValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setLoggerWarn(0), 0);
     $this->assertHasErrors($this->getEntity()->setLoggerError(0), 0);
     $this->assertHasErrors($this->getEntity()->setLoggerDebug(0), 0);
-    }
+  }
 
   /**
    * v2.0.0 : valeurs negatives REJETEES par les contraintes PositiveOrZero / Positive / Range.
@@ -88,13 +89,13 @@ class LoggerValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setLoggerWarn(-1), 1);
     $this->assertHasErrors($this->getEntity()->setLoggerError(-1), 1);
     $this->assertHasErrors($this->getEntity()->setLoggerDebug(-1), 1);
-    }
+  }
 
   public function testCountAttribut(): void
   {
-      $entity = $this->getEntity();
-      $reflectionClass = new \ReflectionClass($entity);
-      $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 9);
+    $entity = $this->getEntity();
+    $reflectionClass = new \ReflectionClass($entity);
+    $nbAttributs = count($reflectionClass->getProperties());
+    $this->assertEquals($nbAttributs, 9);
   }
 }

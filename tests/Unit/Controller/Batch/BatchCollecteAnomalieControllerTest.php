@@ -33,7 +33,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 #[AllowMockObjectsWithoutExpectations]
 class BatchCollecteAnomalieControllerTest extends TestCase
 {
-    private const MAVEN_KEY = 'com.acme:app';
+    private const MAVEN_KEY = 'fr.ma-moulinette:ma-moulinette';
 
     /** @var EntityManagerInterface&MockObject */ private MockObject $em;
     /** @var ClientService&MockObject */           private MockObject $client;
@@ -125,7 +125,7 @@ class BatchCollecteAnomalieControllerTest extends TestCase
 
         $this->repo->expects($this->never())->method('deleteAnomalieMavenKey');
 
-        /* MODIF 2026-05-07 [tests-validators] : init [] au lieu de null — intelephense ne suit pas l'assignment by-reference dans le callback. */
+        /* MODIF 2026-05-07 : init [] au lieu de null — intelephense ne suit pas l'assignment by-reference dans le callback. */
         $capturedMap = [];
         $this->repo->expects($this->once())
             ->method('insertAnomalie')
@@ -213,7 +213,7 @@ class BatchCollecteAnomalieControllerTest extends TestCase
 
         $this->repo->method('deleteAnomalieMavenKey')->willReturn(['code' => 200]);
 
-        /* MODIF 2026-05-07 [tests-validators] : init [] au lieu de null — intelephense ne suit pas l'assignment by-reference dans le callback. */
+        /* MODIF 2026-05-07 : init [] au lieu de null — intelephense ne suit pas l'assignment by-reference dans le callback. */
         $capturedMap = [];
         $this->repo->expects($this->once())
             ->method('insertAnomalie')
@@ -297,7 +297,7 @@ class BatchCollecteAnomalieControllerTest extends TestCase
 
         $this->repo->method('deleteAnomalieMavenKey')->willReturn(['code' => 200]);
 
-        /* MODIF 2026-05-07 [tests-validators] : init [] au lieu de null — intelephense ne suit pas l'assignment by-reference dans le callback. */
+        /* MODIF 2026-05-07 : init [] au lieu de null — intelephense ne suit pas l'assignment by-reference dans le callback. */
         $capturedMap = [];
         $this->repo->expects($this->once())
             ->method('insertAnomalie')

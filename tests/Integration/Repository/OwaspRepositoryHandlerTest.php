@@ -33,7 +33,7 @@ use PHPUnit\Framework\TestCase;
  */
 class OwaspRepositoryHandlerTest extends TestCase
 {
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
     private static string $gestionTest = 'gestion test';
     private static string $version = '1.2.0-RELEASE';
     private static string $dateVersion = '2024-07-10 15:26:07+02';
@@ -63,9 +63,9 @@ class OwaspRepositoryHandlerTest extends TestCase
 
         $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(OwaspRepository::class)
-                    ->setConstructorArgs([$registry])
-                    ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
-                    ->getMock();
+            ->setConstructorArgs([$registry])
+            ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
+            ->getMock();
 
         $expected = ['code' => 500, 'erreur' => 'test-error'];
         $repo->expects($this->once())->method('handleDatabaseException')
@@ -105,9 +105,9 @@ class OwaspRepositoryHandlerTest extends TestCase
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
         $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(OwaspRepository::class)
-                    ->setConstructorArgs([$registry])
-                    ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
-                    ->getMock();
+            ->setConstructorArgs([$registry])
+            ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
+            ->getMock();
 
         // 6) On s'attend à handleDatabaseException() appelé une fois avec notre exception
         $expected = ['code' => 500, 'erreur' => 'test-error'];
@@ -130,7 +130,10 @@ class OwaspRepositoryHandlerTest extends TestCase
     {
         // 1) Crée une vraie exception qui implémente DBAL\Exception et Throwable
         $fakeException = new class('erreur insert') extends \Exception implements DBALExceptionInterface {
-            public function getSqlState(): null { return null; }
+            public function getSqlState(): null
+            {
+                return null;
+            }
         };
 
         // 2) Stub partiel de Statement : bindValue ok, executeStatement jette l'exception
@@ -142,7 +145,7 @@ class OwaspRepositoryHandlerTest extends TestCase
         $connectionMock = $this->createMock(Connection::class);
         $connectionMock->expects($this->once())->method('beginTransaction');
         $connectionMock->method('prepare')
-                        ->willReturn($stmtStub);
+            ->willReturn($stmtStub);
         $connectionMock->expects($this->once())->method('rollBack');
         // commit ne doit **jamais** être appelé dans ce scénario
         $connectionMock->expects($this->never())->method('commit');
@@ -154,13 +157,13 @@ class OwaspRepositoryHandlerTest extends TestCase
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
         $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(OwaspRepository::class)
-                        ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
+            ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
         $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
-                ->with($fakeException)
-                ->willReturn($expected);
+            ->with($fakeException)
+            ->willReturn($expected);
 
         // 7) getEntityManager() renvoie notre EM stub
         $repo->method('getEntityManager')->willReturn($emStub);
@@ -185,7 +188,7 @@ class OwaspRepositoryHandlerTest extends TestCase
         }
 
         $map['mode_collecte'] = 'COLLECTE';
-        $map['utilisateur_collecte'] = 'laurent.hadjadj@ma-petite-entreprise.fr';
+        $map['utilisateur_collecte'] = 'laurent.hadjadj@ma-moulinette.fr';
         $map['date_enregistrement'] = new \DateTimeImmutable('2024-03-26 14:46:38');
 
         // 9) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
@@ -198,7 +201,10 @@ class OwaspRepositoryHandlerTest extends TestCase
     {
         // 1) Crée une vraie exception qui implémente DBAL\Exception et Throwable
         $fakeException = new class('erreur delete') extends \Exception implements DBALExceptionInterface {
-            public function getSqlState(): null { return null; }
+            public function getSqlState(): null
+            {
+                return null;
+            }
         };
 
         // 2) Stub partiel de Statement : bindValue ok, executeStatement jette l'exception
@@ -209,14 +215,14 @@ class OwaspRepositoryHandlerTest extends TestCase
         // 3) Mock de Connection : beginTransaction, prepare, rollBack et commit
         $connectionMock = $this->createMock(Connection::class);
         $connectionMock->expects($this->once())
-                        ->method('beginTransaction');
+            ->method('beginTransaction');
         $connectionMock->method('prepare')
-                        ->willReturn($stmtStub);
+            ->willReturn($stmtStub);
         $connectionMock->expects($this->once())
-                        ->method('rollBack');
+            ->method('rollBack');
         // commit ne doit **jamais** être appelé dans ce scénario
         $connectionMock->expects($this->never())
-                        ->method('commit');
+            ->method('commit');
 
         // 4) Stub d'EntityManager pour retourner notre Connection
         $emStub = $this->createStub(EntityManagerInterface::class);
@@ -225,15 +231,15 @@ class OwaspRepositoryHandlerTest extends TestCase
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
         $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(OwaspRepository::class)
-                        ->setConstructorArgs([$registry /*, ErrorHandler si présent */])
-                        ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
-                        ->getMock();
+            ->setConstructorArgs([$registry /*, ErrorHandler si présent */])
+            ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
+            ->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
         $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
-                ->with($fakeException)
-                ->willReturn($expected);
+            ->with($fakeException)
+            ->willReturn($expected);
 
         // 7) getEntityManager() renvoie notre EM stub
         $repo->method('getEntityManager')->willReturn($emStub);
@@ -246,5 +252,4 @@ class OwaspRepositoryHandlerTest extends TestCase
 
         $this->assertSame($expected, $result);
     }
-
 }

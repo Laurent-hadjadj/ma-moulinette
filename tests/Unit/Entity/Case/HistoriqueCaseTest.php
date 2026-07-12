@@ -31,7 +31,7 @@ class HistoriqueCaseTest extends TestCase
     public static function attributesProvider(): iterable
     {
         // Cle composite + identifiants
-        yield 'mavenKey' => ['MavenKey', 'fr.ma-petite-entreprise:ma-moulinette'];
+        yield 'mavenKey' => ['MavenKey', 'fr.ma-moulinette:ma-moulinette'];
         yield 'version' => ['Version', '1.2.0-RELEASE'];
         yield 'dateVersion' => ['DateVersion', '2024-07-12 16:34:46'];
         yield 'nomProjet' => ['NomProjet', 'ma-moulinette'];
@@ -73,7 +73,7 @@ class HistoriqueCaseTest extends TestCase
         // Statistiques de code
         yield 'lines' => ['Lines', 17049];
         yield 'ncloc' => ['Ncloc', 8928];
-        // MODIF 2026-05-05 [fix-historique-add-ncloc-lang] : ajout ncloc_language_distribution.
+        // MODIF 2026-05-05 : ajout ncloc_language_distribution.
         yield 'nclocLanguageDistribution' => ['NclocLanguageDistribution', 'java=4278;ts=18690'];
         yield 'files' => ['Files', 226];
         yield 'classes' => ['Classes', 123];
@@ -142,7 +142,7 @@ class HistoriqueCaseTest extends TestCase
         yield 'codeSmellMajor' => ['CodeSmellMajor', 109];
         yield 'codeSmellMinor' => ['CodeSmellMinor', 13];
         yield 'codeSmellInfo' => ['CodeSmellInfo', 72];
-        // MODIF 2026-05-05 [fix-historique-maintainability-type] : passage int -> string(255) (DDL VARCHAR(255)).
+        // MODIF 2026-05-05 : passage int -> string(255) (DDL VARCHAR(255)).
         yield 'maintainabilityIssues' => ['MaintainabilityIssues', '198'];
         yield 'sqaleIndex' => ['SqaleIndex', 3054];
         yield 'sqaleDebtRatio' => ['SqaleDebtRatio', 1.0];

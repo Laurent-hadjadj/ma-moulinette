@@ -76,7 +76,7 @@ class SonarMetricsFetcherServiceTest extends TestCase
                 self::SONAR_URL,
                 '/api/measures/component',
                 [
-                    'component' => 'com.acme:app',
+                    'component' => 'fr.ma-moulinette:ma-moulinette',
                     'metricKeys' => self::METRIC_KEYS,
                     'analysisId' => 'AY123',
                 ]
@@ -121,7 +121,7 @@ class SonarMetricsFetcherServiceTest extends TestCase
                 'vulnerabilities' => '0',
                 'code_smells' => '42',
             ],
-            $this->service->fetchMetrics('com.acme:app', 'AY123')
+            $this->service->fetchMetrics('fr.ma-moulinette:ma-moulinette', 'AY123')
         );
     }
 
@@ -139,7 +139,7 @@ class SonarMetricsFetcherServiceTest extends TestCase
             );
 
         try {
-            $this->service->fetchMetrics('com.acme:app', 'AY123');
+            $this->service->fetchMetrics('fr.ma-moulinette:ma-moulinette', 'AY123');
             $this->fail('Expected SonarApiException was not thrown');
         } catch (SonarApiException $e) {
             $this->assertStringContainsString('HTTP 503', $e->getMessage());
@@ -167,11 +167,11 @@ class SonarMetricsFetcherServiceTest extends TestCase
             ->method('warning')
             ->with(
                 $this->stringContains('Aucune metrics trouvée'),
-                $this->callback(fn (array $ctx) => $ctx['project_key'] === 'com.acme:app')
+                $this->callback(fn (array $ctx) => $ctx['project_key'] === 'fr.ma-moulinette:ma-moulinette')
             );
         $this->logger->expects($this->never())->method('error');
 
-        $result = $this->service->fetchMetrics('com.acme:app', 'AY123');
+        $result = $this->service->fetchMetrics('fr.ma-moulinette:ma-moulinette', 'AY123');
 
         $this->assertSame(['bugs' => '1'], $result);
     }
@@ -192,10 +192,10 @@ class SonarMetricsFetcherServiceTest extends TestCase
             ->method('info')
             ->with(
                 '[SonarMetricsFetcher] Analyse sans métriques',
-                $this->callback(fn (array $ctx) => $ctx['project_key'] === 'com.acme:app')
+                $this->callback(fn (array $ctx) => $ctx['project_key'] === 'fr.ma-moulinette:ma-moulinette')
             );
 
-        $this->assertSame([], $this->service->fetchMetrics('com.acme:app', 'AY123'));
+        $this->assertSame([], $this->service->fetchMetrics('fr.ma-moulinette:ma-moulinette', 'AY123'));
     }
 
     public function testFetchMetricsDefaultsMeasureValueToZeroWhenMissing(): void
@@ -221,7 +221,7 @@ class SonarMetricsFetcherServiceTest extends TestCase
 
         $this->assertSame(
             ['bugs' => 0, 'vulnerabilities' => '7'],
-            $this->service->fetchMetrics('com.acme:app', 'AY123')
+            $this->service->fetchMetrics('fr.ma-moulinette:ma-moulinette', 'AY123')
         );
     }
 }

@@ -27,7 +27,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class HotspotDetailsRepositoryTest extends KernelTestCase
 {
     private static string $erreurCode200 = 'Erreur le code retour doit être 200';
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
 
     protected function setUp(): void
     {
@@ -58,7 +58,7 @@ class HotspotDetailsRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map=['maven_key' => self::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         $hotspotDetailsRepository = $entityManager->getRepository(HotspotDetails::class);
         $r = $hotspotDetailsRepository->selectHotspotDetailsByStatus($map);
@@ -77,7 +77,7 @@ class HotspotDetailsRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map=['maven_key' => self::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         $hotspotDetailsRepository = $entityManager->getRepository(HotspotDetails::class);
         $r = $hotspotDetailsRepository->deleteHotspotDetailsMavenKey($map);
@@ -96,18 +96,29 @@ class HotspotDetailsRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map= [['maven_key' => self::$mavenKey,
-        'version' => '2.0.0-RELEASE', 'date_version' => new \DateTimeImmutable('2024-08-30 10:12:17+02'),
-        'security_category' => 'dos', 'rule_key' => 'typescript:S5852',
-        'rule_name' => 'Using slow regular expressions is security-sensitive',
-        'severity' => 'MEDIUM', 'status' => 'TO_REVIEW', 'resolution' => 'Todo',
-        'niveau' => 2, 'frontend' => 1, 'backend' => 1, 'autre' => 0,
-        'file_name' => 'service-worker-network-first.ts',
-        'file_path' => 'ma-moulinette/angular/src/service-worker-network-first.ts',
-        'line' => 60, 'message' => 'Make sure the regex used here, which is vulnerable to super-linear runtime due to backtracking, cannot lead to denial of service.', 'hotspot_key' => 'AZCc06XbgfifxdiJPzw2',
-        'mode_collecte' => 'TRAITEMENT AUTOMATIQUE',
-        'utilisateur_collecte' => 'laurent.hadjadj@ma-petite-entreprise.fr',
-        'date_enregistrement' => new \DateTimeImmutable('2024-03-26 14:46:38+02')]];
+        $map = [[
+            'maven_key' => self::$mavenKey,
+            'version' => '2.0.0-RELEASE',
+            'date_version' => new \DateTimeImmutable('2024-08-30 10:12:17+02'),
+            'security_category' => 'dos',
+            'rule_key' => 'typescript:S5852',
+            'rule_name' => 'Using slow regular expressions is security-sensitive',
+            'severity' => 'MEDIUM',
+            'status' => 'TO_REVIEW',
+            'resolution' => 'Todo',
+            'niveau' => 2,
+            'frontend' => 1,
+            'backend' => 1,
+            'autre' => 0,
+            'file_name' => 'service-worker-network-first.ts',
+            'file_path' => 'ma-moulinette/angular/src/service-worker-network-first.ts',
+            'line' => 60,
+            'message' => 'Make sure the regex used here, which is vulnerable to super-linear runtime due to backtracking, cannot lead to denial of service.',
+            'hotspot_key' => 'AZCc06XbgfifxdiJPzw2',
+            'mode_collecte' => 'TRAITEMENT AUTOMATIQUE',
+            'utilisateur_collecte' => 'laurent.hadjadj@ma-moulinette.fr',
+            'date_enregistrement' => new \DateTimeImmutable('2024-03-26 14:46:38+02')
+        ]];
 
         $hotspotDetailsRepository = $entityManager->getRepository(HotspotDetails::class);
         $r = $hotspotDetailsRepository->insertHotspotDetails($map);

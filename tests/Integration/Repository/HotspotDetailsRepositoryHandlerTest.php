@@ -33,7 +33,7 @@ use PHPUnit\Framework\TestCase;
  */
 class HotspotDetailsRepositoryHandlerTest extends TestCase
 {
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
     private static string $gestionTest = 'gestion test';
 
     public function testSelectHotspotDetailsByStatus_WhenSQLException(): void
@@ -62,9 +62,9 @@ class HotspotDetailsRepositoryHandlerTest extends TestCase
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
         $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(HotspotDetailsRepository::class)
-                    ->setConstructorArgs([$registry])
-                    ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
-                    ->getMock();
+            ->setConstructorArgs([$registry])
+            ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
+            ->getMock();
 
         // 6) On s'attend à handleDatabaseException() appelé une fois avec notre exception
         $expected = ['code' => 500, 'erreur' => 'test-error'];
@@ -87,7 +87,10 @@ class HotspotDetailsRepositoryHandlerTest extends TestCase
     {
         // 1) Crée une vraie exception qui implémente DBAL\Exception et Throwable
         $fakeException = new class('erreur insert') extends \Exception implements DBALExceptionInterface {
-            public function getSqlState(): null { return null; }
+            public function getSqlState(): null
+            {
+                return null;
+            }
         };
 
         // 2) Stub partiel de Statement : bindValue ok, executeStatement jette l'exception
@@ -99,7 +102,7 @@ class HotspotDetailsRepositoryHandlerTest extends TestCase
         $connectionMock = $this->createMock(Connection::class);
         $connectionMock->expects($this->once())->method('beginTransaction');
         $connectionMock->method('prepare')
-                        ->willReturn($stmtStub);
+            ->willReturn($stmtStub);
         $connectionMock->expects($this->once())->method('rollBack');
         // commit ne doit **jamais** être appelé dans ce scénario
         $connectionMock->expects($this->never())->method('commit');
@@ -111,30 +114,41 @@ class HotspotDetailsRepositoryHandlerTest extends TestCase
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
         $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(HotspotDetailsRepository::class)
-                        ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
+            ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
         $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
-                ->with($fakeException)
-                ->willReturn($expected);
+            ->with($fakeException)
+            ->willReturn($expected);
 
         // 7) getEntityManager() renvoie notre EM stub
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Prépare un jeu de données minimal pour le $map
-        $map = [['maven_key' => self::$mavenKey,
-        'version' => '2.0.0-RELEASE', 'date_version' => new \DateTimeImmutable('2024-08-30 10:12:17+02'),
-        'security_category' => 'dos', 'rule_key' => 'typescript:S5852',
-        'rule_name' => 'Using slow regular expressions is security-sensitive',
-        'severity' => 'MEDIUM', 'status' => 'TO_REVIEW', 'resolution' => 'Todo',
-        'niveau' => 2, 'frontend' => 1, 'backend' => 1, 'autre' => 0,
-        'file_name' => 'service-worker-network-first.ts',
-        'file_path' => 'ma-moulinette/angular/src/service-worker-network-first.ts',
-        'line' => 60, 'message' => 'Make sure the regex used here, which is vulnerable to super-linear runtime due to backtracking, cannot lead to denial of service.', 'hotspot_key' => 'AZCc06XbgfifxdiJPzw2',
-        'mode_collecte' => 'TRAITEMENT AUTOMATIQUE',
-        'utilisateur_collecte' => 'laurent.hadjadj@ma-petite-entreprise.fr',
-        'date_enregistrement' => new \DateTimeImmutable('2024-03-26 14:46:38+02')]];
+        $map = [[
+            'maven_key' => self::$mavenKey,
+            'version' => '2.0.0-RELEASE',
+            'date_version' => new \DateTimeImmutable('2024-08-30 10:12:17+02'),
+            'security_category' => 'dos',
+            'rule_key' => 'typescript:S5852',
+            'rule_name' => 'Using slow regular expressions is security-sensitive',
+            'severity' => 'MEDIUM',
+            'status' => 'TO_REVIEW',
+            'resolution' => 'Todo',
+            'niveau' => 2,
+            'frontend' => 1,
+            'backend' => 1,
+            'autre' => 0,
+            'file_name' => 'service-worker-network-first.ts',
+            'file_path' => 'ma-moulinette/angular/src/service-worker-network-first.ts',
+            'line' => 60,
+            'message' => 'Make sure the regex used here, which is vulnerable to super-linear runtime due to backtracking, cannot lead to denial of service.',
+            'hotspot_key' => 'AZCc06XbgfifxdiJPzw2',
+            'mode_collecte' => 'TRAITEMENT AUTOMATIQUE',
+            'utilisateur_collecte' => 'laurent.hadjadj@ma-moulinette.fr',
+            'date_enregistrement' => new \DateTimeImmutable('2024-03-26 14:46:38+02')
+        ]];
 
         // 9) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
         $result = $repo->insertHotspotDetails($map);
@@ -146,7 +160,10 @@ class HotspotDetailsRepositoryHandlerTest extends TestCase
     {
         // 1) Crée une vraie exception qui implémente DBAL\Exception et Throwable
         $fakeException = new class('erreur delete') extends \Exception implements DBALExceptionInterface {
-            public function getSqlState(): null { return null; }
+            public function getSqlState(): null
+            {
+                return null;
+            }
         };
 
         // 2) Stub partiel de Statement : bindValue ok, executeStatement jette l'exception
@@ -157,14 +174,14 @@ class HotspotDetailsRepositoryHandlerTest extends TestCase
         // 3) Mock de Connection : beginTransaction, prepare, rollBack et commit
         $connectionMock = $this->createMock(Connection::class);
         $connectionMock->expects($this->once())
-                        ->method('beginTransaction');
+            ->method('beginTransaction');
         $connectionMock->method('prepare')
-                        ->willReturn($stmtStub);
+            ->willReturn($stmtStub);
         $connectionMock->expects($this->once())
-                        ->method('rollBack');
+            ->method('rollBack');
         // commit ne doit **jamais** être appelé dans ce scénario
         $connectionMock->expects($this->never())
-                        ->method('commit');
+            ->method('commit');
 
         // 4) Stub d'EntityManager pour retourner notre Connection
         $emStub = $this->createStub(EntityManagerInterface::class);
@@ -173,26 +190,25 @@ class HotspotDetailsRepositoryHandlerTest extends TestCase
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
         $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(HotspotDetailsRepository::class)
-                        ->setConstructorArgs([$registry /*, ErrorHandler si présent */])
-                        ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
-                        ->getMock();
+            ->setConstructorArgs([$registry /*, ErrorHandler si présent */])
+            ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
+            ->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
         $expected = ['code' => 500, 'erreur' => self::$gestionTest];
         $repo->expects($this->once())->method('handleDatabaseException')
-                ->with($fakeException)
-                ->willReturn($expected);
+            ->with($fakeException)
+            ->willReturn($expected);
 
         // 7) getEntityManager() renvoie notre EM stub
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Prépare un jeu de données minimal pour le $map
-        $map = [ 'maven_key' => self::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         // 9) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
         $result = $repo->deleteHotspotDetailsMavenKey($map);
 
         $this->assertSame($expected, $result);
     }
-
 }

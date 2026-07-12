@@ -23,7 +23,7 @@ use Symfony\Component\Validator\ConstraintViolation;
 class AnomalieDetailsValidatorTest extends KernelTestCase
 {
 
-  private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+  private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
   private static string $name = 'ma-moulinette';
   private static int $bugBlocker = 7;
   private static int $bugCritical = 0;
@@ -40,14 +40,14 @@ class AnomalieDetailsValidatorTest extends KernelTestCase
   private static int $codeSmellMajor = 109;
   private static int $codeSmellInfo = 72;
   private static int $codeSmellMinor = 13;
-  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-moulinette.fr';
   private static string $modeCollecte = 'TRAITEMENT MANUEL';
   private static string $dateEnregistrement = '2024-07-14 19:36:33+02';
 
 
   private function getEntity(): AnomalieDetails
   {
-      return (new anomalieDetails())
+    return (new anomalieDetails())
       ->setMavenKey(self::$mavenKey)
       ->setName(self::$name)
       ->setBugBlocker(self::$bugBlocker)
@@ -77,7 +77,7 @@ class AnomalieDetailsValidatorTest extends KernelTestCase
     $errors = $container->get('validator')->validate($entity);
     $messages = [];
     /** @var ConstraintViolation $error */
-    foreach($errors as $error) {
+    foreach ($errors as $error) {
       $messages[] = $error->getPropertyPath() . ' => ' . $error->getMessage();
     }
     $this->assertCount($number, $errors, implode(', ', $messages));
@@ -114,7 +114,7 @@ class AnomalieDetailsValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setCodeSmellMajor(0), 0);
     $this->assertHasErrors($this->getEntity()->setCodeSmellMinor(0), 0);
     $this->assertHasErrors($this->getEntity()->setCodeSmellInfo(0), 0);
-    }
+  }
 
   /**
    * v2.0.0 : valeurs negatives REJETEES par les contraintes PositiveOrZero / Positive / Range.
@@ -136,13 +136,13 @@ class AnomalieDetailsValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setCodeSmellMajor(-1), 1);
     $this->assertHasErrors($this->getEntity()->setCodeSmellMinor(-1), 1);
     $this->assertHasErrors($this->getEntity()->setCodeSmellInfo(-1), 1);
-    }
+  }
 
   public function testCountAttribut(): void
   {
-      $entity = $this->getEntity();
-      $reflectionClass = new \ReflectionClass($entity);
-      $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 21);
+    $entity = $this->getEntity();
+    $reflectionClass = new \ReflectionClass($entity);
+    $nbAttributs = count($reflectionClass->getProperties());
+    $this->assertEquals($nbAttributs, 21);
   }
 }

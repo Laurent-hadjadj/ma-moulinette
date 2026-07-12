@@ -25,18 +25,18 @@ class PortefeuilleCaseTest extends TestCase
 
     private static string $portefeuilles = 'MES PROJETS';
     private static string $groupeFonctionnel = 'MA PETITE ENTREPRISE';
-    private static $liste =  ['fr.ma-petite-entreprise:ma-moulinette'];
+    private static $liste =  ['fr.ma-moulinette:ma-moulinette'];
     private static string $dateModification = '2024-03-26 14:46:38+01';
     private static string $dateEnregistrement = '2024-03-25 12:26:58+01';
 
     private function getEntity(): Portefeuille
     {
         return (new portefeuille())
-        ->setPortefeuille(self::$portefeuilles)
-        ->setGroupeFonctionnel(self::$groupeFonctionnel)
-        ->setListe(self::$liste)
-        ->setDateModification(new \DateTime(self::$dateModification))
-        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
+            ->setPortefeuille(self::$portefeuilles)
+            ->setGroupeFonctionnel(self::$groupeFonctionnel)
+            ->setListe(self::$liste)
+            ->setDateModification(new \DateTime(self::$dateModification))
+            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -71,14 +71,14 @@ class PortefeuilleCaseTest extends TestCase
 
     public function testSettingAndGettingDateModification(): void
     {
-        $newDate=new \DateTime(self::$dateModification);
+        $newDate = new \DateTime(self::$dateModification);
         $this->portefeuille->setDateModification($newDate);
         $this->assertEquals($newDate, $this->portefeuille->getDateModification());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
+        $newDate = new \DateTimeImmutable(self::$dateEnregistrement);
         $this->portefeuille->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->portefeuille->getDateEnregistrement());
     }
@@ -93,12 +93,16 @@ class PortefeuilleCaseTest extends TestCase
 
         $this->assertInstanceOf(\ReflectionNamedType::class, $type);
         $this->assertSame('array', $type->getName());
-        $this->assertFalse($type->allowsNull(),
-            'Portefeuille::$liste doit etre typee non-nullable (alignement DDL NOT NULL).');
+        $this->assertFalse(
+            $type->allowsNull(),
+            'Portefeuille::$liste doit etre typee non-nullable (alignement DDL NOT NULL).'
+        );
 
         $entity = new Portefeuille();
-        $this->assertSame([], $entity->getListe(),
-            'Portefeuille::$liste doit avoir un default array vide.');
+        $this->assertSame(
+            [],
+            $entity->getListe(),
+            'Portefeuille::$liste doit avoir un default array vide.'
+        );
     }
-
 }

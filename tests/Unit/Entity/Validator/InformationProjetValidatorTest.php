@@ -23,7 +23,7 @@ use Symfony\Component\Validator\ConstraintViolation;
 class InformationProjetValidatorTest extends KernelTestCase
 {
 
-  private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+  private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
   private static string $analyseKey = 'AYVyxZcQo0TJpgSeq-ph';
   /* MODIF 2026-05-06 : alignement avec entity
    * (setDate -> setDateAnalyse, setType -> setTypeAnalyse). */
@@ -35,25 +35,25 @@ class InformationProjetValidatorTest extends KernelTestCase
   private static int $versionSnapshotSonar = 3;
   private static int $versionAutreSonar = 2;
   private static string $modeCollecte = 'TRAITEMENT MANUEL';
-  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-moulinette.fr';
   private static string $dateEnregistrement = '2024-04-12 16:23:11+01';
 
   private function getEntity(): InformationProjet
   {
-      return (new informationProjet())
-        ->setMavenKey(self::$mavenKey)
-        ->setAnalyseKey(self::$analyseKey)
-        ->setDateAnalyse(new \DateTimeImmutable(self::$dateAnalyse))
-        ->setProjectVersion(self::$projectVersion)
-        ->setTypeAnalyse(self::$typeAnalyse)
-        ->setVersionSonar(self::$versionSonar)
-        ->setVersionReleaseSonar(self::$versionReleaseSonar)
-        ->setVersionSnapshotSonar(self::$versionSnapshotSonar)
-        ->setVersionAutreSonar(self::$versionAutreSonar)
-        ->setModeCollecte(self::$modeCollecte)
-        ->setUtilisateurCollecte(self::$utilisateurCollecte)
-        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
-}
+    return (new informationProjet())
+      ->setMavenKey(self::$mavenKey)
+      ->setAnalyseKey(self::$analyseKey)
+      ->setDateAnalyse(new \DateTimeImmutable(self::$dateAnalyse))
+      ->setProjectVersion(self::$projectVersion)
+      ->setTypeAnalyse(self::$typeAnalyse)
+      ->setVersionSonar(self::$versionSonar)
+      ->setVersionReleaseSonar(self::$versionReleaseSonar)
+      ->setVersionSnapshotSonar(self::$versionSnapshotSonar)
+      ->setVersionAutreSonar(self::$versionAutreSonar)
+      ->setModeCollecte(self::$modeCollecte)
+      ->setUtilisateurCollecte(self::$utilisateurCollecte)
+      ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
+  }
 
   public function assertHasErrors(InformationProjet $entity, int $number = 0): void
   {
@@ -62,7 +62,7 @@ class InformationProjetValidatorTest extends KernelTestCase
     $errors = $container->get('validator')->validate($entity);
     $messages = [];
     /** @var ConstraintViolation $error */
-    foreach($errors as $error) {
+    foreach ($errors as $error) {
       $messages[] = $error->getPropertyPath() . ' => ' . $error->getMessage();
     }
     $this->assertCount($number, $errors, implode(', ', $messages));
@@ -81,7 +81,6 @@ class InformationProjetValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setTypeAnalyse(''), 1);
     $this->assertHasErrors($this->getEntity()->setModeCollecte(''), 0);
     $this->assertHasErrors($this->getEntity()->setUtilisateurCollecte(''), 0);
-
   }
 
   public function testValidIntegerEntity(): void
@@ -91,13 +90,13 @@ class InformationProjetValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setVersionReleaseSonar(0), 0);
     $this->assertHasErrors($this->getEntity()->setVersionSnapshotSonar(0), 0);
     $this->assertHasErrors($this->getEntity()->setVersionAutreSonar(0), 0);
-    }
+  }
 
   public function testCountAttribut(): void
   {
     $entity = $this->getEntity();
     $reflectionClass = new \ReflectionClass($entity);
     $nbAttributs = count($reflectionClass->getProperties());
-    $this->assertEquals($nbAttributs,13);
+    $this->assertEquals($nbAttributs, 13);
   }
 }

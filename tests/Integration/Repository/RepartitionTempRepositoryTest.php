@@ -36,7 +36,7 @@ class RepartitionTempRepositoryTest extends KernelTestCase
 
     private static int $setup = 1000000000001;
     private static string $component = '/src/Controller/ApiController.php';
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
 
     protected function setUp(): void
     {
@@ -414,5 +414,4 @@ class RepartitionTempRepositoryTest extends KernelTestCase
         // Résultat attendu = succès (car issue valide insérée)
         $this->assertEquals(['code' => 200, 'erreur' => ''], $result);
     }
-
 }

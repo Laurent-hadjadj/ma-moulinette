@@ -25,7 +25,7 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 class RepartitionKernelTest extends KernelTestCase
 {
 
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
     private static string $setup = '1739816022572';
 
     protected function setUp(): void
@@ -71,5 +71,4 @@ class RepartitionKernelTest extends KernelTestCase
 
         $this->assertCount(1, $response, 'Une valeur pour setup doit être trouvée.');
     }
-
 }

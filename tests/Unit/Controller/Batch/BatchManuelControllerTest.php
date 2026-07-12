@@ -241,11 +241,11 @@ class BatchManuelControllerTest extends TestCase
         $this->batchTraitementRepo->method('findBy')->willReturn([]);
         $this->listeProjetService->method('listeProjet')->willReturn([
             'code' => 200,
-            'liste' => ['com.acme:app'],
+            'liste' => ['fr.ma-moulinette:ma-moulinette'],
         ]);
 
         $user = new Utilisateur();
-        $user->setCourriel('u@example.com');
+        $user->setCourriel('u@ma-moulinette.fr');
         $this->token->method('getUser')->willReturn($user);
 
         $this->batchTraitementRepo->expects($this->once())
@@ -270,11 +270,11 @@ class BatchManuelControllerTest extends TestCase
         $this->batchTraitementRepo->method('findBy')->willReturn([]);
         $this->listeProjetService->method('listeProjet')->willReturn([
             'code' => 200,
-            'liste' => ['com.acme:app', 'com.acme:other'],
+            'liste' => ['fr.ma-moulinette:ma-moulinette', 'fr.ma-moulinette:projet-b'],
         ]);
 
         $user = new Utilisateur();
-        $user->setCourriel('u@example.com');
+        $user->setCourriel('u@ma-moulinette.fr');
         $this->token->method('getUser')->willReturn($user);
 
         $this->batchTraitementRepo->method('updateBatchTraitement')->willReturn(['code' => 200]);
@@ -292,7 +292,7 @@ class BatchManuelControllerTest extends TestCase
 
         $this->assertSame(500, $data['code']);
         $this->assertSame('warning', $data['type']);
-        $this->assertStringContainsString('com.acme:app', $data['message']);
+        $this->assertStringContainsString('fr.ma-moulinette:ma-moulinette', $data['message']);
     }
 
     public function testTraitementManuelHappyPathReturnsReferenceAfterFullLoop(): void
@@ -301,11 +301,11 @@ class BatchManuelControllerTest extends TestCase
         $this->batchTraitementRepo->method('findBy')->willReturn([]);
         $this->listeProjetService->method('listeProjet')->willReturn([
             'code' => 200,
-            'liste' => ['com.acme:app'],
+            'liste' => ['fr.ma-moulinette:ma-moulinette'],
         ]);
 
         $user = new Utilisateur();
-        $user->setCourriel('u@example.com');
+        $user->setCourriel('u@ma-moulinette.fr');
         $this->token->method('getUser')->willReturn($user);
 
         // Both updateBatchTraitement calls succeed (before loop + after loop)
@@ -333,11 +333,11 @@ class BatchManuelControllerTest extends TestCase
         $this->batchTraitementRepo->method('findBy')->willReturn([]);
         $this->listeProjetService->method('listeProjet')->willReturn([
             'code' => 200,
-            'liste' => ['com.acme:app'],
+            'liste' => ['fr.ma-moulinette:ma-moulinette'],
         ]);
 
         $user = new Utilisateur();
-        $user->setCourriel('u@example.com');
+        $user->setCourriel('u@ma-moulinette.fr');
         $this->token->method('getUser')->willReturn($user);
 
         // First updateBatchTraitement (before loop) succeeds, second (after loop) fails

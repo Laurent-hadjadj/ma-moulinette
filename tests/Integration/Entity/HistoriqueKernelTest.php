@@ -25,7 +25,7 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 class HistoriqueKernelTest extends KernelTestCase
 {
 
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
 
     protected function setUp(): void
     {
@@ -63,5 +63,4 @@ class HistoriqueKernelTest extends KernelTestCase
 
         $this->assertCount(2, $response, 'Maven_Key: Aucune réponse trouvée');
     }
-
 }

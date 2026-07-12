@@ -20,7 +20,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 #[AllowMockObjectsWithoutExpectations]
 class BatchCollecteMesureControllerTest extends TestCase
 {
-    private const MAVEN_KEY = 'com.acme:app';
+    private const MAVEN_KEY = 'fr.ma-moulinette:ma-moulinette';
     private const SONAR_URL = 'https://sonar.example.com';
     private const BUILT_URL = 'https://sonar.example.com/api/...';
 
@@ -147,7 +147,7 @@ class BatchCollecteMesureControllerTest extends TestCase
         $this->repo->method('deleteMesuresMavenKey')->willReturn(['code' => 200]);
 
         // On capture la map passée à metricsRebuild pour vérifier la parsing
-        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        /* MODIF 2026-05-07 : init [] (intelephense by-ref). */
         $capturedMetrics = [];
         $this->buildMap->method('metricsRebuild')
             ->willReturnCallback(function (array $measures) use (&$capturedMetrics) {
@@ -155,7 +155,7 @@ class BatchCollecteMesureControllerTest extends TestCase
                 return ['rebuilt' => true];
             });
 
-        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        /* MODIF 2026-05-07 : init [] (intelephense by-ref). */
         $capturedInsert = [];
         $this->repo->expects($this->once())
             ->method('insertMesures')
@@ -196,7 +196,7 @@ class BatchCollecteMesureControllerTest extends TestCase
 
         $this->repo->method('deleteMesuresMavenKey')->willReturn(['code' => 200]);
 
-        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        /* MODIF 2026-05-07 : init [] (intelephense by-ref). */
         $captured = [];
         $this->repo->expects($this->once())
             ->method('insertMesures')

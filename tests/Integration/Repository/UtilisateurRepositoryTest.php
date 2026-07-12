@@ -27,7 +27,7 @@ class UtilisateurRepositoryTest extends KernelTestCase
 {
 
     public static string $courriel = 'aurelie.petit-coeur@ma-moulinette.fr';
-    public static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    public static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
     public static string $version = '2.0.0-RELEASE';
     public static string $dateModification = '1981-01-01 00:00:00';
     public static string $erreurCode200 = 'Erreur le code retour doit être 200';
@@ -96,8 +96,8 @@ class UtilisateurRepositoryTest extends KernelTestCase
         $this->assertEquals(200, $response['code']);
         $this->assertContains(self::$mavenKey, $response['preference']['favori_projet']);
         $this->assertEquals([
-                [self::$mavenKey => [self::$version]]
-            ], $response['preference']['favori_version']);
+            [self::$mavenKey => [self::$version]]
+        ], $response['preference']['favori_version']);
     }
 
     /**
@@ -177,7 +177,8 @@ class UtilisateurRepositoryTest extends KernelTestCase
                 self::$mavenKey => [
                     "1.0.0-RELEASE",
                     '2.0.0-RELEASE',
-                    '3.0.0-RELEASE']
+                    '3.0.0-RELEASE'
+                ]
             ]
         ];
 
@@ -227,7 +228,7 @@ class UtilisateurRepositoryTest extends KernelTestCase
         $utilisateur = $utilisateurRepository->findOneBy(['courriel' => self::$courriel]);
         $preference = $utilisateur->getPreference();
 
-        $map = [ 'maven_key' => self::$mavenKey, 'courriel' => self::$courriel ];
+        $map = ['maven_key' => self::$mavenKey, 'courriel' => self::$courriel];
         $preference['statut'] = 'invalid'; // structure invalide → erreur 400 (statut doit être un array)
         $preference['suivi_projet'] = [];
         $preference['favori_projet'] = [self::$mavenKey];
@@ -251,7 +252,7 @@ class UtilisateurRepositoryTest extends KernelTestCase
         $utilisateur = $utilisateurRepository->findOneBy(['courriel' => self::$courriel]);
         $preference = $utilisateur->getPreference();
 
-        $map = [ 'maven_key' => self::$mavenKey, 'courriel' => self::$courriel ];
+        $map = ['maven_key' => self::$mavenKey, 'courriel' => self::$courriel];
         $preference['statut'] = [];
         $preference['suivi_projet'] = [];
         $preference['favori_projet'] = [];
@@ -398,5 +399,4 @@ class UtilisateurRepositoryTest extends KernelTestCase
         $entityManager->close();
         $entityManager = null;
     }
-
 }

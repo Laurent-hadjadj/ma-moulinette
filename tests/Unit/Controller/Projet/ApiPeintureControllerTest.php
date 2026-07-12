@@ -34,7 +34,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 #[AllowMockObjectsWithoutExpectations]
 class ApiPeintureControllerTest extends TestCase
 {
-    private const MAVEN_KEY = 'com.acme:app';
+    private const MAVEN_KEY = 'fr.ma-moulinette:ma-moulinette';
 
     /** @var EntityManagerInterface&MockObject */
     private MockObject $em;
@@ -135,14 +135,14 @@ class ApiPeintureControllerTest extends TestCase
         $this->anomalieRepo->expects($this->once())
             ->method('selectAnomalieByProjectName')
             ->willReturn(['code' => 200, 'liste' => [
-                ['key' => 'com.acme:app'],
-                ['key' => 'com.acme:api'],
+                ['key' => 'fr.ma-moulinette:ma-moulinette'],
+                ['key' => 'fr.ma-moulinette:projet-b'],
             ]]);
 
         $user = $this->createMock(Utilisateur::class);
         $user->method('getPreference')->willReturn([
-            'favori_projet' => ['com.acme:app', 'com.acme:api', 'com.acme:absent'],
-            'favori_version' => ['com.acme:app' => '1.0.0'],
+            'favori_projet' => ['fr.ma-moulinette:ma-moulinette', 'fr.ma-moulinette:projet-b', 'fr.ma-moulinette:projet-inconnu'],
+            'favori_version' => ['fr.ma-moulinette:ma-moulinette' => '1.0.0'],
         ]);
         // appUser() (trait AppUserAware) lit security.token_storage, pas le param Security
         $this->token->method('getUser')->willReturn($user);
@@ -163,8 +163,8 @@ class ApiPeintureControllerTest extends TestCase
         foreach ($payload['projets'] as $p) {
             $byKey[$p['key']] = $p;
         }
-        $this->assertTrue($byKey['com.acme:app']['favori']);
-        $this->assertFalse($byKey['com.acme:api']['favori']);
+        $this->assertTrue($byKey['fr.ma-moulinette:ma-moulinette']['favori']);
+        $this->assertFalse($byKey['fr.ma-moulinette:projet-b']['favori']);
     }
 
     // ═══════════════════════ peintureProjetVersion ═════════════════════════
@@ -346,7 +346,7 @@ class ApiPeintureControllerTest extends TestCase
             ->method('selectAnomalie')
             ->willReturn(['code' => 500, 'erreur' => 'db']);
 
-        /* MODIF 2026-05-24 [callout-alert-to-error] : migration terminée, type = 'error'. */
+        /* MODIF 2026-05-24 : migration terminée, type = 'error'. */
         $this->assertJsonStatus(
             $this->controller->peintureProjetAnomalie($this->jsonRequest(['maven_key' => self::MAVEN_KEY])),
             500,
@@ -499,7 +499,7 @@ class ApiPeintureControllerTest extends TestCase
                 ['rule' => 'python:NoSonar', 'total' => 7],
                 ['rule' => 'php:NoSonar', 'total' => 1],
             ]]);
-        /* MODIF 2026-05-07 [tests-validators] : mock selectNoSonarComponentOrderByRule
+        /* MODIF 2026-05-07 : mock selectNoSonarComponentOrderByRule
          * (ajouté côté controller le 2026-05-06 pour alimenter le tableau modale). */
         $this->noSonarRepo->expects($this->once())
             ->method('selectNoSonarComponentOrderByRule')
@@ -787,7 +787,7 @@ class ApiPeintureControllerTest extends TestCase
 
     // ═══════════════════ 400 / 404 bulk coverage ═══════════════════════════
 
-    /* MODIF 2026-05-24 [callout-alert-to-error] : migration terminée — toutes les méthodes
+    /* MODIF 2026-05-24 : migration terminée — toutes les méthodes
      * retournent désormais 'error' (plus de 'alert'). Colonne expectedType400 unifiée.
      */
     public static function methodsWithValidation(): array

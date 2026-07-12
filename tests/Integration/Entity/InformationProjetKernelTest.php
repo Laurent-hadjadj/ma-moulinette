@@ -22,7 +22,7 @@ use Doctrine\Common\DataFixtures\Purger\ORMPurger;
 class InformationProjetKernelTest extends KernelTestCase
 {
 
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
 
     protected function setUp(): void
     {
@@ -67,5 +67,4 @@ class InformationProjetKernelTest extends KernelTestCase
 
         $this->assertCount(3, $response, 'maven_key: Aucune réponse trouvée');
     }
-
 }

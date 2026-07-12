@@ -32,8 +32,8 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 #[AllowMockObjectsWithoutExpectations]
 class ApiCollecteControllerTest extends TestCase
 {
-    private const MAVEN_KEY = 'com.acme:app';
-    private const USER_EMAIL = 'collecte@acme.fr';
+    private const MAVEN_KEY = 'fr.ma-moulinette:ma-moulinette';
+    private const USER_EMAIL = 'collecte@ma-moulinette.fr';
 
     /** @var BatchCollecteInformationProjetController&MockObject */  private MockObject $batchInfo;
     /** @var BatchCollecteMesureController&MockObject */             private MockObject $batchMesure;

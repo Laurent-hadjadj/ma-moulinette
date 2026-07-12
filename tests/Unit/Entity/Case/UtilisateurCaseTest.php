@@ -33,7 +33,7 @@ class UtilisateurCaseTest extends TestCase
   public static $roles = ["ROLE_GESTIONNAIRE"];
   public static string $groupeUtilisateur = 'admin';
   public static string $groupeId = 'gest-001';
-  public static $listeGroupeFonctionnel = ['fr.ma-petite-entreprise:ma-moulinette'];
+  public static $listeGroupeFonctionnel = ['fr.ma-moulinette:ma-moulinette'];
   public static $preference = ['{
     "statut":{"projet":false,"favori":false,"version":false},
     "projet":[],"favori":[],"version":[]}'];
@@ -67,7 +67,7 @@ class UtilisateurCaseTest extends TestCase
     $utilisateur = new Utilisateur();
     $utilisateur->setNom(self::$nom);
     $utilisateur->setPrenom(self::$prenom);
-    $this->assertEquals(self::$nom .' '. self::$prenom, $utilisateur->getPersonne());
+    $this->assertEquals(self::$nom . ' ' . self::$prenom, $utilisateur->getPersonne());
   }
 
   public function testUtilisateurPersonneIsEmptyByDefault(): void
@@ -86,11 +86,11 @@ class UtilisateurCaseTest extends TestCase
   {
     $utilisateur = new Utilisateur();
     $utilisateur->setAvatar(self::$avatar);
-    $this->assertSame('/avatar/'.self::$avatar, $utilisateur->getAvatarUrl());
+    $this->assertSame('/avatar/' . self::$avatar, $utilisateur->getAvatarUrl());
   }
 
   public function testGettersAndSetters(): void
-    {
+  {
     // Définition de l'entité
     $entity = $this->getEntity();
 
@@ -130,7 +130,7 @@ class UtilisateurCaseTest extends TestCase
     $this->assertEquals(self::$groupeUtilisateur, $entity->getGroupeUtilisateur(), "Erreur GROUPE_UTILISATEUR");
     $this->assertEquals(self::$groupeId, $entity->getGroupeId(), "Erreur GROUPE_ID");
     $this->assertEquals(self::$listeGroupeFonctionnel, $entity->getListeGroupeFonctionnel(), "Erreur LISTE_GROUPE_FONCTIONNEL");
-    $this->assertEquals(self::$preference, $entity->getPreference(),"Erreur PREFERENCE");
+    $this->assertEquals(self::$preference, $entity->getPreference(), "Erreur PREFERENCE");
     $this->assertEquals(new \DateTimeImmutable(self::$lastActivityAt), $entity->getLastActivityAt(), "Erreur LAST_ACTIVITY_AT");
     $this->assertEquals(new \DateTime(self::$dateModification), $entity->getDateModification(), "Erreur DATEModification");
     $this->assertEquals(new \DateTimeImmutable(self::$dateEnregistrement), $entity->getDateEnregistrement(), "Erreur DATEEnregistrement");

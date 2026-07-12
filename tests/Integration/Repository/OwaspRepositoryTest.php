@@ -27,7 +27,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class OwaspRepositoryTest extends KernelTestCase
 {
 
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
     private static string $version = '1.2.0-RELEASE';
     private static string $dateVersion = '2024-07-10 15:26:07+02';
     private static int $effortTotal = 0;
@@ -38,7 +38,7 @@ class OwaspRepositoryTest extends KernelTestCase
     private static array $aInfo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     private static array $aMinor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     private static string $modeCollecte = 'TRAITEMENT MANUEL';
-    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-moulinette.fr';
     private static string $dateEnregistrement = '2024-03-26 14:46:38+02';
 
     private static string $erreurCode200 = 'Erreur le code retour doit être 200.';
@@ -100,7 +100,7 @@ class OwaspRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $owaspRepository = $entityManager->getRepository(Owasp::class);
-        $r = $owaspRepository->selectOwaspVersion('fr.unknown:projet-fantome');
+        $r = $owaspRepository->selectOwaspVersion('fr.ma-moulinette:projet-inconnu');
 
         // Le contrat : code=200 + application/version a null
         // si fetchAssociative() retourne false (0 ligne).
@@ -197,5 +197,4 @@ class OwaspRepositoryTest extends KernelTestCase
         $entityManager->close();
         $entityManager = null;
     }
-
 }

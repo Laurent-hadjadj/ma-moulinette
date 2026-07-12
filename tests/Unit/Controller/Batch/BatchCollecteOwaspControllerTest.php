@@ -30,7 +30,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 #[AllowMockObjectsWithoutExpectations]
 class BatchCollecteOwaspControllerTest extends TestCase
 {
-    private const MAVEN_KEY = 'com.acme:app';
+    private const MAVEN_KEY = 'fr.ma-moulinette:ma-moulinette';
     private const SONAR_URL = 'https://sonar.example.com';
     private const BUILT_URL_2017 = 'https://sonar.example.com/api/issues/search?...owasp2017';
     private const BUILT_URL_2021 = 'https://sonar.example.com/api/issues/search?...owasp2021';
@@ -348,7 +348,7 @@ class BatchCollecteOwaspControllerTest extends TestCase
                 'date' => '2026-04-22', 'version' => '1.0',
             ]]);
 
-        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        /* MODIF 2026-05-07 : init [] (intelephense by-ref). */
         $capturedMap = [];
         $this->owaspRepo->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
         $this->owaspRepo->expects($this->once())

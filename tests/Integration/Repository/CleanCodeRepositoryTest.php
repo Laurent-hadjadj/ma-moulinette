@@ -16,7 +16,7 @@ namespace App\Tests\Integration\Repository;
 /* MODIF 2026-05-17 : tests d'intégration pour
  * CleanCodeRepository (delete / select / insert) — 3 scénarios
  * compatibles avec le contrat défini dans CleanCodeFixtures.php :
- *   - 3 rows pour fr.ma-petite-entreprise:ma-moulinette,
+ *   - 3 rows pour fr.ma-moulinette:ma-moulinette,
  *     dates distinctes → selectCleanCode retourne la plus récente (LIMIT 1). */
 
 use App\Entity\CleanCode;
@@ -27,7 +27,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class CleanCodeRepositoryTest extends KernelTestCase
 {
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
     private static string $erreurCode200 = 'Erreur : le code retour doit être 200.';
 
     protected function setUp(): void
@@ -77,7 +77,7 @@ class CleanCodeRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         $repository = $entityManager->getRepository(CleanCode::class);
-        $r = $repository->selectCleanCode(['maven_key' => 'fr.inconnu:projet-fantome']);
+        $r = $repository->selectCleanCode(['maven_key' => 'fr.ma-moulinette:projet-inconnu']);
 
         $this->assertSame(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur']);
@@ -136,7 +136,7 @@ class CleanCodeRepositoryTest extends KernelTestCase
             'sans_top25'              => 2,
             'cwe'                     => 6,
             'mode_collecte'           => 'TRAITEMENT MANUEL',
-            'utilisateur_collecte'    => 'laurent.hadjadj@ma-petite-entreprise.fr',
+            'utilisateur_collecte'    => 'laurent.hadjadj@ma-moulinette.fr',
             'date_enregistrement'     => new \DateTimeImmutable('2026-05-15 12:00:00'),
         ];
 

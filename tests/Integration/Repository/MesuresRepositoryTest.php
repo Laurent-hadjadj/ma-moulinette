@@ -25,7 +25,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  */
 class MesuresRepositoryTest extends KernelTestCase
 {
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
     private static string $erreurCode200 = 'Erreur le code retour doit être 200';
 
     protected function setUp(): void
@@ -75,11 +75,24 @@ class MesuresRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => self::$mavenKey,
-                'project_name' => 'Ma-Moulinette', 'lines' => 22015,
-                'ncloc' => 10043, 'language_distribution' => ['java' => 4278, 'ts' => 18690], 'files' => 18, 'classes' => 26, 'functions' => '52', 'coverage' => 10.3, 'duplicated_lines_density' => 5.1, 'sqale_debt_ratio' => 26.0, 'issues' => 200, 'tests' => 123,
-                'mode_collecte' => 'TRAITEMENT MANUEL','utilisateur_collecte' => 'laurent.hadjadj@ma-petite-entreprise.fr',
-                'date_enregistrement' => new \DateTimeImmutable('2024-04-12 16:23:11')];
+        $map = [
+            'maven_key' => self::$mavenKey,
+            'project_name' => 'Ma-Moulinette',
+            'lines' => 22015,
+            'ncloc' => 10043,
+            'language_distribution' => ['java' => 4278, 'ts' => 18690],
+            'files' => 18,
+            'classes' => 26,
+            'functions' => '52',
+            'coverage' => 10.3,
+            'duplicated_lines_density' => 5.1,
+            'sqale_debt_ratio' => 26.0,
+            'issues' => 200,
+            'tests' => 123,
+            'mode_collecte' => 'TRAITEMENT MANUEL',
+            'utilisateur_collecte' => 'laurent.hadjadj@ma-moulinette.fr',
+            'date_enregistrement' => new \DateTimeImmutable('2024-04-12 16:23:11')
+        ];
 
         // Appel de la méthode
         $mesuresRepository = $entityManager->getRepository(Mesures::class);
@@ -119,5 +132,4 @@ class MesuresRepositoryTest extends KernelTestCase
         $entityManager->close();
         $entityManager = null;
     }
-
 }

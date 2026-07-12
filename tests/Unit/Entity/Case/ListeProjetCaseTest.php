@@ -23,7 +23,7 @@ class ListeProjetCaseTest extends TestCase
 {
     private ListeProjet $listeProjet;
 
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
     private static string $name = 'Ma-Moulinette';
     private static $tags = ['ma-moulinette', '2048'];
     private static string $visibility = 'private';
@@ -35,8 +35,9 @@ class ListeProjetCaseTest extends TestCase
             self::$mavenKey,
             self::$name,
             self::$visibility,
-            self::$tags))
-        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
+            self::$tags
+        ))
+            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -77,9 +78,8 @@ class ListeProjetCaseTest extends TestCase
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
+        $newDate = new \DateTimeImmutable(self::$dateEnregistrement);
         $this->listeProjet->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->listeProjet->getDateEnregistrement());
     }
-
 }

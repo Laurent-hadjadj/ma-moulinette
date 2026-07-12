@@ -23,25 +23,25 @@ class NoSonarCaseTest extends TestCase
 {
     private NoSonar $nosonar;
 
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
     private static string $rule = 'java:S1309';
-    private static $component = 'fr.ma-petite-entreprise:mo-moulinette:
+    private static $component = 'fr.ma-moulinette:mo-moulinette:
     ma-moulinette-service/src/main/java/fr/ma-petite-entreprise/ma-moulinette/service/ClamAvService.java';
     private static int $line = 118;
     private static string $modeCollecte = 'TRAITEMENT MANUEL';
-    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-moulinette.fr';
     private static string $dateEnregistrement = '2024-03-26 14:46:38+01';
 
     private function getEntity(): NoSonar
     {
         return (new nosonar())
-        ->setMavenKey(self::$mavenKey)
-        ->setRule(self::$rule)
-        ->setComponent(self::$component)
-        ->setLine(self::$line)
-        ->setModeCollecte(self::$modeCollecte)
-        ->setUtilisateurCollecte(self::$utilisateurCollecte)
-        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
+            ->setMavenKey(self::$mavenKey)
+            ->setRule(self::$rule)
+            ->setComponent(self::$component)
+            ->setLine(self::$line)
+            ->setModeCollecte(self::$modeCollecte)
+            ->setUtilisateurCollecte(self::$utilisateurCollecte)
+            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -93,9 +93,8 @@ class NoSonarCaseTest extends TestCase
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
+        $newDate = new \DateTimeImmutable(self::$dateEnregistrement);
         $this->nosonar->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->nosonar->getDateEnregistrement());
     }
-
 }

@@ -27,7 +27,7 @@ class LoggerRepositoryTest extends KernelTestCase
 {
 
     private static string $erreurCode200 = 'Erreur le code retour doit être 200.';
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
 
     protected function setUp(): void
     {
@@ -58,7 +58,7 @@ class LoggerRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map=['maven_key' => self::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         $notesRepository = $entityManager->getRepository(Logger::class);
         $r = $notesRepository->deleteLoggerMavenKey($map);
@@ -77,7 +77,7 @@ class LoggerRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map=['maven_key' => self::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         $loggerRepository = $entityManager->getRepository(Logger::class);
         $r = $loggerRepository->selectLogger($map);
@@ -102,8 +102,9 @@ class LoggerRepositoryTest extends KernelTestCase
             'logger_error' => 15,
             'logger_debug' => 8,
             'mode_collecte' => 'TRAITEMENT AUTOMATIQUE',
-            'utilisateur_collecte' => 'laurent.hadjadj@ma-petite-entreprise.fr',
-            'date_enregistrement' => new \DateTimeImmutable('2024-03-26 14:46:38+02')];
+            'utilisateur_collecte' => 'laurent.hadjadj@ma-moulinette.fr',
+            'date_enregistrement' => new \DateTimeImmutable('2024-03-26 14:46:38+02')
+        ];
 
         // Appel de la méthode
         $loggerRepository = $entityManager->getRepository(Logger::class);
@@ -124,6 +125,4 @@ class LoggerRepositoryTest extends KernelTestCase
         $entityManager->close();
         $entityManager = null;
     }
-
-
 }

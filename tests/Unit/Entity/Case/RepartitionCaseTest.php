@@ -46,7 +46,7 @@ class RepartitionCaseTest extends TestCase
     public static function attributesProvider(): iterable
     {
         // Identification
-        yield 'mavenKey' => ['MavenKey', 'fr.ma-petite-entreprise:ma-moulinette'];
+        yield 'mavenKey' => ['MavenKey', 'fr.ma-moulinette:ma-moulinette'];
         yield 'name' => ['Name', 'ma-moulinette'];
 
         // 15 setters racine (BugBlocker, BugCritical, ..., CodeSmellInfo)

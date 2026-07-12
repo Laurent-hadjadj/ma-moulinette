@@ -83,7 +83,7 @@ class PdfExportServiceTest extends TestCase
 
         $journal = $this->createMock(BatchExecutionJournal::class);
         $journal->method('getId')->willReturn(11);
-        $journal->method('getNomProjet')->willReturn('com.acme:app');
+        $journal->method('getNomProjet')->willReturn('fr.ma-moulinette:ma-moulinette');
         $journal->method('getPortefeuille')->willReturn('PF-alpha');
         $journal->method('getCode')->willReturn(200);
         $journal->method('getDateExecution')
@@ -132,7 +132,7 @@ class PdfExportServiceTest extends TestCase
         $this->assertSame(
             [
                 'id' => 11,
-                'nomProjet' => 'com.acme:app',
+                'nomProjet' => 'fr.ma-moulinette:ma-moulinette',
                 'portefeuille' => 'PF-alpha',
                 'code' => 200,
                 'dateExecution' => '22/04/2026 09:35',
@@ -179,7 +179,7 @@ class PdfExportServiceTest extends TestCase
         $this->twig->method('render')
             ->willReturn('<html><body><h1>OWASP</h1></body></html>');
 
-        $pdf = $this->service->generateOwaspPdf(['maven_key' => 'fr.test:app'], 'Document Interne');
+        $pdf = $this->service->generateOwaspPdf(['maven_key' => 'fr.ma-moulinette:ma-moulinette'], 'Document Interne');
 
         $this->assertStringStartsWith('%PDF-', $pdf);
         $this->assertGreaterThan(1000, strlen($pdf));
@@ -206,7 +206,7 @@ class PdfExportServiceTest extends TestCase
 
     public function testGenerateOwaspPdfPassesDataToTwigAsRapport(): void
     {
-        $data = ['maven_key' => 'fr.test:app', 'version' => '2.0'];
+        $data = ['maven_key' => 'fr.ma-moulinette:ma-moulinette', 'version' => '2.0'];
 
         $capturedCtx = [];
         $this->twig->expects($this->once())
@@ -323,8 +323,8 @@ class PdfExportServiceTest extends TestCase
         $service = $this->makeServiceForSuiviDc('never');
 
         $pdf = $service->generateDcPdf([
-            'project_group'    => 'fr.test',
-            'project_artifact' => 'mon-app',
+            'project_group'    => 'fr.ma-moulinette',
+            'project_artifact' => 'ma-moulinette',
             'project_version'  => '1.0.0',
             'findings'         => [],
         ], 'Document interne');
@@ -338,8 +338,8 @@ class PdfExportServiceTest extends TestCase
         $service = $this->makeServiceForSuiviDc('never');
 
         $pdf = $service->generateDcPdf([
-            'project_group'    => 'fr.test',
-            'project_artifact' => 'mon-app',
+            'project_group'    => 'fr.ma-moulinette',
+            'project_artifact' => 'ma-moulinette',
             'project_version'  => '2.0.0',
             'findings'         => [['cve' => 'CVE-2025-1234', 'severity' => 'HIGH']],
         ], 'Document interne');
@@ -353,7 +353,7 @@ class PdfExportServiceTest extends TestCase
         $service = $this->makeServiceForSuiviDc('never');
 
         $pdf = $service->generateSuiviPdf([
-            'maven_key'    => 'fr.test:mon-app',
+            'maven_key'    => 'fr.ma-moulinette:ma-moulinette',
             'project_name' => 'Mon Application',
         ], 'Document public');
 
@@ -366,7 +366,7 @@ class PdfExportServiceTest extends TestCase
         $service = $this->makeServiceForSuiviDc('always');
 
         $pdf = $service->generateSuiviPdf([
-            'maven_key'    => 'fr.test:mon-app',
+            'maven_key'    => 'fr.ma-moulinette:ma-moulinette',
             'project_name' => 'Mon Application',
         ], 'Confidentiel');
 
@@ -381,7 +381,7 @@ class PdfExportServiceTest extends TestCase
         ?Ulid $executionId = null,
         ?Ulid $traitementId = null,
         string $modeCollecte = 'manual',
-        string $utilisateurCollecte = 'user@test.fr',
+        string $utilisateurCollecte = 'user@ma-moulinette.fr',
         ?\DateTimeImmutable $dateEnregistrement = null,
     ): BatchExecution&MockObject {
         $mock = $this->createMock(BatchExecution::class);

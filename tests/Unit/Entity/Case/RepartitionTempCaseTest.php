@@ -10,6 +10,7 @@
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
+
 namespace App\Tests\Unit\Entity\Case;
 
 use App\Entity\RepartitionTemp;
@@ -24,18 +25,18 @@ class RepartitionTempCaseTest extends TestCase
 
     private static int $setup = 1000000000000;
     private static string $component = '/src/Controller/ApiController.php';
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
     private static string $type = 'CODE_SMELL';
     private static string $severity = 'CRITICAL';
 
     private function getEntity(): RepartitionTemp
     {
         return (new RepartitionTemp())
-        ->setComponent(self::$component)
-        ->setType(self::$type)
-        ->setSeverity(self::$severity)
-        ->setSetup(self::$setup)
-        ->setMavenKey(self::$mavenKey);
+            ->setComponent(self::$component)
+            ->setType(self::$type)
+            ->setSeverity(self::$severity)
+            ->setSetup(self::$setup)
+            ->setMavenKey(self::$mavenKey);
     }
 
     protected function setUp(): void

@@ -23,7 +23,7 @@ use Symfony\Component\Validator\ConstraintViolation;
 class ListeProjetValidatorTest extends KernelTestCase
 {
 
-  private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+  private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
   private static string $name = 'Ma-Moulinette';
   private static array $tags = ['ma-moulinette', '2048'];
   private static string $visibility = 'private';
@@ -31,11 +31,12 @@ class ListeProjetValidatorTest extends KernelTestCase
 
   private function getEntity(): ListeProjet
   {
-      return (new ListeProjet(
-        self::$mavenKey,
-        self::$name,
-        self::$visibility,
-        self::$tags))
+    return (new ListeProjet(
+      self::$mavenKey,
+      self::$name,
+      self::$visibility,
+      self::$tags
+    ))
       ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
   }
 
@@ -46,7 +47,7 @@ class ListeProjetValidatorTest extends KernelTestCase
     $errors = $container->get('validator')->validate($entity);
     $messages = [];
     /** @var ConstraintViolation $error */
-    foreach($errors as $error) {
+    foreach ($errors as $error) {
       $messages[] = $error->getPropertyPath() . ' => ' . $error->getMessage();
     }
     $this->assertCount($number, $errors, implode(', ', $messages));
@@ -62,14 +63,13 @@ class ListeProjetValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setMavenKey(''), 1);
     $this->assertHasErrors($this->getEntity()->setName(''), 1);
     $this->assertHasErrors($this->getEntity()->setVisibility(''), 1);
-
   }
 
   public function testCountAttribut(): void
   {
-      $entity = $this->getEntity();
-      $reflectionClass = new \ReflectionClass($entity);
-      $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 6);
+    $entity = $this->getEntity();
+    $reflectionClass = new \ReflectionClass($entity);
+    $nbAttributs = count($reflectionClass->getProperties());
+    $this->assertEquals($nbAttributs, 6);
   }
 }

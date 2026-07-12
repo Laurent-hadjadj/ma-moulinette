@@ -158,10 +158,10 @@ class ProjetCosuiServiceTest extends TestCase
     {
         $this->histoRepo->expects($this->once())
             ->method('selectHistoriqueProjetLast')
-            ->with(['maven_key' => 'com.acme:app'])
+            ->with(['maven_key' => 'fr.ma-moulinette:ma-moulinette'])
             ->willReturn(['code' => 500, 'erreur' => 'DB down']);
 
-        $result = $this->service->generateRender('com.acme:app');
+        $result = $this->service->generateRender('fr.ma-moulinette:ma-moulinette');
 
         $this->assertSame(500, $result['code']);
         $this->assertSame('error', $result['type']);
@@ -175,7 +175,7 @@ class ProjetCosuiServiceTest extends TestCase
             ->method('selectHistoriqueProjetLast')
             ->willReturn(['code' => 200, 'infos' => []]);
 
-        $result = $this->service->generateRender('com.acme:app');
+        $result = $this->service->generateRender('fr.ma-moulinette:ma-moulinette');
 
         $this->assertSame(404, $result['code']);
         $this->assertSame('warning', $result['type']);
@@ -194,7 +194,7 @@ class ProjetCosuiServiceTest extends TestCase
             ->method('selectHistoriqueProjetReference')
             ->willReturn(['code' => 503, 'erreur' => 'ref failed']);
 
-        $result = $this->service->generateRender('com.acme:app');
+        $result = $this->service->generateRender('fr.ma-moulinette:ma-moulinette');
 
         $this->assertSame(503, $result['code']);
         $this->assertSame('error', $result['type']);
@@ -217,7 +217,7 @@ class ProjetCosuiServiceTest extends TestCase
 
         $this->logger->expects($this->atLeastOnce())->method('critical');
 
-        $result = $this->service->generateRender('com.acme:app');
+        $result = $this->service->generateRender('fr.ma-moulinette:ma-moulinette');
 
         $this->assertSame(500, $result['code']);
         $this->assertSame('critical', $result['type']);
@@ -236,13 +236,13 @@ class ProjetCosuiServiceTest extends TestCase
 
         $this->repartRepo->expects($this->once())
             ->method('findLatestSetupByMavenKey')
-            ->with('com.acme:app')
+            ->with('fr.ma-moulinette:ma-moulinette')
             ->willReturn(['code' => 200, 'result' => 'NaN']);
 
         // createQueryBuilder NE doit PAS être appelé (setup='NaN' court-circuite)
         $this->em->expects($this->never())->method('createQueryBuilder');
 
-        $result = $this->service->generateRender('com.acme:app');
+        $result = $this->service->generateRender('fr.ma-moulinette:ma-moulinette');
 
         // Notes actuelles injectées
         $this->assertSame('Mon App', $result['monApplication']);
@@ -285,7 +285,7 @@ class ProjetCosuiServiceTest extends TestCase
             ->method('findLatestSetupByMavenKey')
             ->willReturn(['code' => 200, 'result' => 'NaN']);
 
-        $result = $this->service->generateRender('com.acme:app');
+        $result = $this->service->generateRender('fr.ma-moulinette:ma-moulinette');
 
         // Pas d'erreur, les valeurs par défaut 'F' restent en place pour les initial_*
         $this->assertSame('F', $result['initial_note_reliability']);

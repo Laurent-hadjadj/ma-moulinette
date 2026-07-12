@@ -50,28 +50,28 @@ class AnomalieDetailsRepositoryHandlerTest extends TestCase
     // 3) Mock de Connection dont prepare() renvoie notre Statement mocké
     $connectionMock = $this->createStub(Connection::class);
     $connectionMock
-        ->method('prepare')
-        ->willReturn($stmtStub);
+      ->method('prepare')
+      ->willReturn($stmtStub);
 
     // 4) Stub d'EntityManager pour renvoyer le Connection mocké
     $emStub = $this->createStub(EntityManagerInterface::class);
     $emStub
-        ->method('getConnection')
-        ->willReturn($connectionMock);
+      ->method('getConnection')
+      ->willReturn($connectionMock);
 
     // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
     $registry = $this->createStub(ManagerRegistry::class);
     $repo = $this->getMockBuilder(AnomalieDetailsRepository::class)
-                ->setConstructorArgs([$registry])
-                ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
-                ->getMock();
+      ->setConstructorArgs([$registry])
+      ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
+      ->getMock();
 
     // 6) On s'attend à handleDatabaseException() appelé une fois avec notre exception
     $expected = ['code' => 500, 'erreur' => 'test-error'];
     $repo->expects($this->once())
-        ->method('handleDatabaseException')
-        ->with($fakeException)
-        ->willReturn($expected);
+      ->method('handleDatabaseException')
+      ->with($fakeException)
+      ->willReturn($expected);
 
     // 7) getEntityManager() renvoie notre EM stub
     $repo->method('getEntityManager')->willReturn($emStub);
@@ -87,73 +87,76 @@ class AnomalieDetailsRepositoryHandlerTest extends TestCase
   {
     // 1) Crée une vraie exception qui implémente DBAL\Exception et Throwable
     $fakeException = new class('erreur insert') extends \Exception implements DBALExceptionInterface {
-        public function getSqlState(): null { return null; }
+      public function getSqlState(): null
+      {
+        return null;
+      }
     };
 
     // 2) Stub partiel de Statement : bindValue ok, executeStatement jette l'exception
     $stmtStub = $this->createStub(Statement::class);
     $stmtStub->method('bindValue');
     $stmtStub->method('executeStatement')
-              ->willThrowException($fakeException);
+      ->willThrowException($fakeException);
 
     // 3) Mock de Connection : beginTransaction, prepare, rollBack et commit
     $connectionMock = $this->createMock(Connection::class);
     $connectionMock->expects($this->once())
-                    ->method('beginTransaction');
+      ->method('beginTransaction');
     $connectionMock->method('prepare')
-                    ->willReturn($stmtStub);
+      ->willReturn($stmtStub);
     $connectionMock->expects($this->once())
-                    ->method('rollBack');
+      ->method('rollBack');
     // commit ne doit **jamais** être appelé dans ce scénario
     $connectionMock->expects($this->never())
-                    ->method('commit');
+      ->method('commit');
 
     // 4) Stub d'EntityManager pour retourner notre Connection
     $emStub = $this->createStub(EntityManagerInterface::class);
     $emStub->method('getConnection')
-            ->willReturn($connectionMock);
+      ->willReturn($connectionMock);
 
     // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
     $registry = $this->createStub(ManagerRegistry::class);
     $repo = $this->getMockBuilder(AnomalieDetailsRepository::class)
-                  ->setConstructorArgs([$registry /*, ErrorHandler si présent */])
-                  ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
-                  ->getMock();
+      ->setConstructorArgs([$registry /*, ErrorHandler si présent */])
+      ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
+      ->getMock();
 
     // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
     $expected = ['code' => 500, 'erreur' => 'gestion test'];
     $repo->expects($this->once())
-          ->method('handleDatabaseException')
-          ->with($fakeException)
-          ->willReturn($expected);
+      ->method('handleDatabaseException')
+      ->with($fakeException)
+      ->willReturn($expected);
 
     // 7) getEntityManager() renvoie notre EM stub
     $repo->method('getEntityManager')
-          ->willReturn($emStub);
+      ->willReturn($emStub);
 
     // 8) Prépare un jeu de données minimal pour le $map (seuls maven_key et name sont bindés ici)
     $dummyDate = new \DateTimeImmutable('2025-05-11 10:00:00');
     $map = [
-        'maven_key' => 'MK',
-        'name'       => 'Nom',
-        'bug_blocker'        => 0,
-        'bug_critical'       => 0,
-        'bug_major'          => 0,
-        'bug_minor'          => 0,
-        'bug_info'           => 0,
-        'vulnerability_blocker'  => 0,
-        'vulnerability_critical' => 0,
-        'vulnerability_major'    => 0,
-        'vulnerability_minor'    => 0,
-        'vulnerability_info'     => 0,
-        'code_smell_blocker'     => 0,
-        'code_smell_critical'    => 0,
-        'code_smell_major'       => 0,
-        'code_smell_minor'       => 0,
-        'code_smell_info'        => 0,
-        'mode_collecte'          => 'auto',
-        'utilisateur_collecte'   => 'test',
-        'date_enregistrement'    => $dummyDate,
+      'maven_key' => 'MK',
+      'name'       => 'Nom',
+      'bug_blocker'        => 0,
+      'bug_critical'       => 0,
+      'bug_major'          => 0,
+      'bug_minor'          => 0,
+      'bug_info'           => 0,
+      'vulnerability_blocker'  => 0,
+      'vulnerability_critical' => 0,
+      'vulnerability_major'    => 0,
+      'vulnerability_minor'    => 0,
+      'vulnerability_info'     => 0,
+      'code_smell_blocker'     => 0,
+      'code_smell_critical'    => 0,
+      'code_smell_major'       => 0,
+      'code_smell_minor'       => 0,
+      'code_smell_info'        => 0,
+      'mode_collecte'          => 'auto',
+      'utilisateur_collecte'   => 'test',
+      'date_enregistrement'    => $dummyDate,
     ];
 
     // 9) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
@@ -166,7 +169,10 @@ class AnomalieDetailsRepositoryHandlerTest extends TestCase
   {
     // 1) Crée une vraie exception qui implémente DBAL\Exception et Throwable
     $fakeException = new class('erreur delete') extends \Exception implements DBALExceptionInterface {
-        public function getSqlState(): null { return null; }
+      public function getSqlState(): null
+      {
+        return null;
+      }
     };
 
     // 2) Stub partiel de Statement : bindValue ok, executeStatement jette l'exception
@@ -178,7 +184,7 @@ class AnomalieDetailsRepositoryHandlerTest extends TestCase
     $connectionMock = $this->createMock(Connection::class);
     $connectionMock->expects($this->once())->method('beginTransaction');
     $connectionMock->method('prepare')
-                    ->willReturn($stmtStub);
+      ->willReturn($stmtStub);
     $connectionMock->expects($this->once())->method('rollBack');
     // commit ne doit **jamais** être appelé dans ce scénario
     $connectionMock->expects($this->never())->method('commit');
@@ -190,21 +196,21 @@ class AnomalieDetailsRepositoryHandlerTest extends TestCase
     // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
     $registry = $this->createStub(ManagerRegistry::class);
     $repo = $this->getMockBuilder(AnomalieDetailsRepository::class)
-                  ->setConstructorArgs([$registry /*, ErrorHandler si présent */])
-                  ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
-                  ->getMock();
+      ->setConstructorArgs([$registry /*, ErrorHandler si présent */])
+      ->onlyMethods(['getEntityManager', 'handleDatabaseException'])
+      ->getMock();
 
     // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
     $expected = ['code' => 500, 'erreur' => 'gestion test'];
     $repo->expects($this->once())->method('handleDatabaseException')
-          ->with($fakeException)
-          ->willReturn($expected);
+      ->with($fakeException)
+      ->willReturn($expected);
 
     // 7) getEntityManager() renvoie notre EM stub
     $repo->method('getEntityManager')->willReturn($emStub);
 
     // 8) Prépare un jeu de données minimal pour le $map
-    $map = [ 'maven_key' => 'fr.ma-petite-entreprise:ma-moulinette'];
+    $map = ['maven_key' => 'fr.ma-moulinette:ma-moulinette'];
 
     // 9) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
     $result = $repo->deleteAnomalieDetailsMavenKey($map);

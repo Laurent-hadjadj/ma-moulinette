@@ -57,7 +57,7 @@ class AnomalieDetailsRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map=['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette'];
+        $map = ['maven_key' => 'fr.ma-moulinette:ma-moulinette'];
 
         $anomalieDetailsRepository = $entityManager->getRepository(AnomalieDetails::class);
         $r = $anomalieDetailsRepository->deleteAnomalieDetailsMavenKey($map);
@@ -76,7 +76,7 @@ class AnomalieDetailsRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette'];
+        $map = ['maven_key' => 'fr.ma-moulinette:ma-moulinette'];
 
         $anomalieDetailsRepository = $entityManager->getRepository(AnomalieDetails::class);
         $r = $anomalieDetailsRepository->selectAnomalieDetailsMavenKey($map);
@@ -94,16 +94,28 @@ class AnomalieDetailsRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map=[
-                'maven_key' => 'fr.ma-petite-entreprise:ma-moulinette',
-                'name' => 'ma-moulinette', 'bug_blocker' => 7,
-                'bug_critical' => 0, 'bug_major' => 44, 'bug_info' => 37,
-                'bug_minor' => 0, 'vulnerability_blocker' => 0,
-                'vulnerability_critical' => 9, 'vulnerability_major' => 0,
-                'vulnerability_info' => 0, 'vulnerability_minor' => 0,
-                'code_smell_blocker' => 0, 'code_smell_critical' => 4,
-                'code_smell_major' => 109, 'code_smell_info' => 72,
-                'code_smell_minor' => 13,  'utilisateur_collecte' => 'laurent.hadjadj@ma-petite-entreprise.fr', 'mode_collecte' => 'TRAITEMENT MANUEL', 'date_enregistrement' => new \DateTimeImmutable('2024-06-28 17:55:45+02')];
+        $map = [
+            'maven_key' => 'fr.ma-moulinette:ma-moulinette',
+            'name' => 'ma-moulinette',
+            'bug_blocker' => 7,
+            'bug_critical' => 0,
+            'bug_major' => 44,
+            'bug_info' => 37,
+            'bug_minor' => 0,
+            'vulnerability_blocker' => 0,
+            'vulnerability_critical' => 9,
+            'vulnerability_major' => 0,
+            'vulnerability_info' => 0,
+            'vulnerability_minor' => 0,
+            'code_smell_blocker' => 0,
+            'code_smell_critical' => 4,
+            'code_smell_major' => 109,
+            'code_smell_info' => 72,
+            'code_smell_minor' => 13,
+            'utilisateur_collecte' => 'laurent.hadjadj@ma-moulinette.fr',
+            'mode_collecte' => 'TRAITEMENT MANUEL',
+            'date_enregistrement' => new \DateTimeImmutable('2024-06-28 17:55:45+02')
+        ];
 
         // Appel de la méthode
         $anomalieDetailsRepository = $entityManager->getRepository(AnomalieDetails::class);

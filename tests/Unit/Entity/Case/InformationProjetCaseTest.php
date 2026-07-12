@@ -23,9 +23,9 @@ class InformationProjetCaseTest extends TestCase
 {
     private InformationProjet $informationProjet;
 
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
     private static string $analyseKey = 'AYVyxZcQo0TJpgSeq-ph';
-    /* MODIF 2026-05-06 [fix-informationprojet-test-rename] : alignement avec entite
+    /* MODIF 2026-05-06 : alignement avec entite
      * (setDate -> setDateAnalyse, setType -> setTypeAnalyse). */
     private static string $dateAnalyse = '2024-04-12 16:23:11';
     private static string $projectVersion = '2.0.0-RELEASE';
@@ -35,24 +35,24 @@ class InformationProjetCaseTest extends TestCase
     private static int $versionSnapshotSonar = 3;
     private static int $versionAutreSonar = 2;
     private static string $modeCollecte = 'TRAITEMENT MANUEL';
-    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-moulinette.fr';
     private static string $dateEnregistrement = '2024-04-12 16:23:11+01';
 
     private function getEntity(): InformationProjet
     {
         return (new informationProjet())
-        ->setMavenKey(self::$mavenKey)
-        ->setAnalyseKey(self::$analyseKey)
-        ->setDateAnalyse(new \DateTimeImmutable(self::$dateAnalyse))
-        ->setProjectVersion(self::$projectVersion)
-        ->setTypeAnalyse(self::$typeAnalyse)
-        ->setVersionSonar(self::$versionSonar)
-        ->setVersionReleaseSonar(self::$versionReleaseSonar)
-        ->setVersionSnapshotSonar(self::$versionSnapshotSonar)
-        ->setVersionAutreSonar(self::$versionAutreSonar)
-        ->setModeCollecte(self::$modeCollecte)
-        ->setUtilisateurCollecte(self::$utilisateurCollecte)
-        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
+            ->setMavenKey(self::$mavenKey)
+            ->setAnalyseKey(self::$analyseKey)
+            ->setDateAnalyse(new \DateTimeImmutable(self::$dateAnalyse))
+            ->setProjectVersion(self::$projectVersion)
+            ->setTypeAnalyse(self::$typeAnalyse)
+            ->setVersionSonar(self::$versionSonar)
+            ->setVersionReleaseSonar(self::$versionReleaseSonar)
+            ->setVersionSnapshotSonar(self::$versionSnapshotSonar)
+            ->setVersionAutreSonar(self::$versionAutreSonar)
+            ->setModeCollecte(self::$modeCollecte)
+            ->setUtilisateurCollecte(self::$utilisateurCollecte)
+            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -81,7 +81,7 @@ class InformationProjetCaseTest extends TestCase
 
     public function testSettingAndGettingDate(): void
     {
-        $newDate=new \DateTimeImmutable(self::$dateAnalyse);
+        $newDate = new \DateTimeImmutable(self::$dateAnalyse);
         $this->informationProjet->setDateAnalyse($newDate);
         $this->assertEquals($newDate, $this->informationProjet->getDateAnalyse());
     }
@@ -135,9 +135,8 @@ class InformationProjetCaseTest extends TestCase
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
+        $newDate = new \DateTimeImmutable(self::$dateEnregistrement);
         $this->informationProjet->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->informationProjet->getDateEnregistrement());
     }
-
 }

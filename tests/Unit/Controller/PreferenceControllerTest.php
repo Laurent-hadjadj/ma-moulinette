@@ -34,7 +34,7 @@ use Twig\Environment;
 #[AllowMockObjectsWithoutExpectations]
 class PreferenceControllerTest extends TestCase
 {
-    private const COURRIEL = 'user@acme.fr';
+    private const COURRIEL = 'user@ma-moulinette.fr';
 
     /** @var EntityManagerInterface&MockObject */     private MockObject $em;
     /** @var ParameterBagInterface&MockObject */      private MockObject $params;
@@ -148,7 +148,7 @@ class PreferenceControllerTest extends TestCase
     public function testApiPreferenceFavoriDeleteRemovesMavenKeyFromFavoris(): void
     {
         $prefs = $this->buildBasePreferences();
-        $prefs['favori'] = ['com.acme:a', 'com.acme:b', 'com.acme:c'];
+        $prefs['favori'] = ['fr.ma-moulinette:projet-a', 'fr.ma-moulinette:projet-b', 'fr.ma-moulinette:projet-c'];
         $this->user->expects($this->atLeastOnce())->method('getPreference')->willReturn($prefs);
 
         // Capture des binds via prepared statement
@@ -161,14 +161,14 @@ class PreferenceControllerTest extends TestCase
         $this->statement->expects($this->once())->method('executeStatement')->willReturn(1);
 
         $response = $this->controller->apiPreferenceFavoriDelete(
-            $this->jsonRequest(['mavenKey' => 'com.acme:b'])
+            $this->jsonRequest(['mavenKey' => 'fr.ma-moulinette:projet-b'])
         );
 
         $this->assertSame(200, $response->getStatusCode());
         // Le JSON sérialisé doit contenir les 2 favoris restants mais pas celui supprimé
-        $this->assertStringContainsString('com.acme:a', $capturedBinds['preference']);
-        $this->assertStringContainsString('com.acme:c', $capturedBinds['preference']);
-        $this->assertStringNotContainsString('"com.acme:b"', $capturedBinds['preference']);
+        $this->assertStringContainsString('fr.ma-moulinette:projet-a', $capturedBinds['preference']);
+        $this->assertStringContainsString('fr.ma-moulinette:projet-c', $capturedBinds['preference']);
+        $this->assertStringNotContainsString('"fr.ma-moulinette:projet-b"', $capturedBinds['preference']);
     }
 
     // ═════════════════════ apiPreferenceVersionDelete ══════════════════════
@@ -177,8 +177,8 @@ class PreferenceControllerTest extends TestCase
     {
         $prefs = $this->buildBasePreferences();
         $prefs['version'] = [
-            ['com.acme:a' => ['1.0', '1.1', '1.2']], // index 0
-            ['com.acme:b' => ['2.0']],              // index 1
+            ['fr.ma-moulinette:projet-a' => ['1.0', '1.1', '1.2']], // index 0
+            ['fr.ma-moulinette:projet-b' => ['2.0']],              // index 1
         ];
         $this->user->expects($this->atLeastOnce())->method('getPreference')->willReturn($prefs);
 
@@ -192,7 +192,7 @@ class PreferenceControllerTest extends TestCase
 
         $response = $this->controller->apiPreferenceVersionDelete($this->jsonRequest([
             'index' => 0,
-            'mavenKey' => 'com.acme:a',
+            'mavenKey' => 'fr.ma-moulinette:projet-a',
             'version' => '1.1',
         ]));
 
@@ -203,9 +203,9 @@ class PreferenceControllerTest extends TestCase
         // La version 1.1 doit être retirée, les autres conservées
         $this->assertStringContainsString('1.0', $json);
         $this->assertStringContainsString('1.2', $json);
-        // 1.1 ne doit plus apparaître parmi les versions de com.acme:a
+        // 1.1 ne doit plus apparaître parmi les versions de fr.ma-moulinette:projet-a
         $this->assertStringNotContainsString('"1.1"', $json);
-        // L'entrée com.acme:b/2.0 reste intacte
+        // L'entrée fr.ma-moulinette:projet-b/2.0 reste intacte
         $this->assertStringContainsString('2.0', $json);
     }
 
@@ -214,14 +214,14 @@ class PreferenceControllerTest extends TestCase
     public function testApiPreferenceCategorieReturnsStatutAndCategorieData(): void
     {
         $prefs = $this->buildBasePreferences();
-        $prefs['projet'] = ['com.acme:a', 'com.acme:b'];
+        $prefs['projet'] = ['fr.ma-moulinette:projet-a', 'fr.ma-moulinette:projet-b'];
         $this->user->expects($this->atLeastOnce())->method('getPreference')->willReturn($prefs);
 
         $request = new Request(['categorie' => 'projet']);
         $payload = json_decode($this->controller->apiPreferenceCategorie($request)->getContent(), true);
 
         $this->assertSame(200, $payload['code']);
-        $this->assertSame(['com.acme:a', 'com.acme:b'], $payload['projet']);
+        $this->assertSame(['fr.ma-moulinette:projet-a', 'fr.ma-moulinette:projet-b'], $payload['projet']);
         $this->assertSame($prefs['statut'], $payload['statut']);
     }
 
@@ -237,7 +237,7 @@ class PreferenceControllerTest extends TestCase
         $this->user->method('getRoles')->willReturn(['ROLE_USER']);
         $this->user->method('getListeGroupeFonctionnel')->willReturn(['equipe-1']);
 
-        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        /* MODIF 2026-05-07 : init [] (intelephense by-ref). */
         $capturedCtx = [];
         $this->twig->expects($this->once())
             ->method('render')
@@ -270,7 +270,7 @@ class PreferenceControllerTest extends TestCase
         $this->user->method('getRoles')->willReturn([]);
         $this->user->method('getListeGroupeFonctionnel')->willReturn([]); // vide
 
-        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        /* MODIF 2026-05-07 : init [] (intelephense by-ref). */
         $capturedCtx = [];
         $this->twig->expects($this->once())
             ->method('render')
@@ -345,7 +345,7 @@ class PreferenceControllerTest extends TestCase
         $this->user->method('getPreference')->willReturn($prefs);
 
         $response = $this->controller->apiPreferenceVersionDelete($this->jsonRequest([
-            'index' => 0, 'mavenKey' => 'unknown:app', 'version' => '1.0',
+            'index' => 0, 'mavenKey' => 'fr.ma-moulinette:projet-inconnu', 'version' => '1.0',
         ]));
         $payload = json_decode($response->getContent(), true);
 

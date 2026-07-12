@@ -22,19 +22,19 @@ class PortefeuilleValidatorTest extends KernelTestCase
 
   private static string $portefeuille = 'MES PROJETS';
   private static string $groupeFonctionnel = 'MA PETITE ENTREPRISE';
-  private static array $liste =  ['fr.ma-petite-entreprise:ma-moulinette'];
+  private static array $liste =  ['fr.ma-moulinette:ma-moulinette'];
   private static string $dateModification = '2024-03-26 14:46:38+01';
   private static string $dateEnregistrement = '2024-03-25 12:26:58+01';
 
   private function getEntity(): Portefeuille
   {
-      return (new portefeuille())
+    return (new portefeuille())
       ->setPortefeuille(self::$portefeuille)
       ->setGroupeFonctionnel(self::$groupeFonctionnel)
       ->setListe(self::$liste)
       ->setDateModification(new \DateTime(self::$dateModification))
       ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
-}
+  }
 
   public function assertHasErrors(Portefeuille $entity, int $number = 0): void
   {
@@ -43,7 +43,7 @@ class PortefeuilleValidatorTest extends KernelTestCase
     $errors = $container->get('validator')->validate($entity);
     $messages = [];
     /** @var ConstraintViolation $error */
-    foreach($errors as $error) {
+    foreach ($errors as $error) {
       $messages[] = $error->getPropertyPath() . ' => ' . $error->getMessage();
     }
     $this->assertCount($number, $errors, implode(', ', $messages));
@@ -92,9 +92,9 @@ class PortefeuilleValidatorTest extends KernelTestCase
 
   public function testCountAttribut(): void
   {
-      $entity = $this->getEntity();
-      $reflectionClass = new \ReflectionClass($entity);
-      $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 6);
+    $entity = $this->getEntity();
+    $reflectionClass = new \ReflectionClass($entity);
+    $nbAttributs = count($reflectionClass->getProperties());
+    $this->assertEquals($nbAttributs, 6);
   }
 }

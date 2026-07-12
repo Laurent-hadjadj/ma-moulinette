@@ -23,7 +23,7 @@ use Symfony\Component\Validator\ConstraintViolation;
 class ActivityValidatorTest extends KernelTestCase
 {
 
-  private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+  private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
   private static string $projectName = 'ma-moulinette';
   private static string $analyseId = 'vtrf14lkiutq9mp';
   private static string $status = 'SUCCESS';
@@ -35,16 +35,16 @@ class ActivityValidatorTest extends KernelTestCase
 
   private function getEntity(): Activity
   {
-      return (new activity())
-        ->setMavenKey(self::$mavenKey)
-        ->setProjectName(self::$projectName)
-        ->setAnalyseId(self::$analyseId)
-        ->setStatus(self::$status)
-        ->setSubmitterLogin(self::$submitterLogin)
-        ->setSubmittedAt(new \DateTimeImmutable(self::$submittedAt))
-        ->setStartedAt(new \DateTimeImmutable(self::$startedAt))
-        ->setExecutedAt(new \DateTimeImmutable(self::$executedAt))
-        ->setExecutionTime(self::$executionTime);
+    return (new activity())
+      ->setMavenKey(self::$mavenKey)
+      ->setProjectName(self::$projectName)
+      ->setAnalyseId(self::$analyseId)
+      ->setStatus(self::$status)
+      ->setSubmitterLogin(self::$submitterLogin)
+      ->setSubmittedAt(new \DateTimeImmutable(self::$submittedAt))
+      ->setStartedAt(new \DateTimeImmutable(self::$startedAt))
+      ->setExecutedAt(new \DateTimeImmutable(self::$executedAt))
+      ->setExecutionTime(self::$executionTime);
   }
 
   public function assertHasErrors(Activity $entity, int $number = 0): void
@@ -54,7 +54,7 @@ class ActivityValidatorTest extends KernelTestCase
     $errors = $container->get('validator')->validate($entity);
     $messages = [];
     /** @var ConstraintViolation $error */
-    foreach($errors as $error) {
+    foreach ($errors as $error) {
       $messages[] = $error->getPropertyPath() . ' => ' . $error->getMessage();
     }
     $this->assertCount($number, $errors, implode(', ', $messages));
@@ -94,11 +94,11 @@ class ActivityValidatorTest extends KernelTestCase
 
   public function testCountAttribut(): void
   {
-      $entity = $this->getEntity();
-      $reflectionClass = new \ReflectionClass($entity);
-      $nbAttributs = count($reflectionClass->getProperties());
-      // 10 attributs : id, mavenKey, projectName, analyseId, status, submitterLogin,
-      //                submittedAt, startedAt, executedAt, executionTime
-      $this->assertEquals(10, $nbAttributs);
+    $entity = $this->getEntity();
+    $reflectionClass = new \ReflectionClass($entity);
+    $nbAttributs = count($reflectionClass->getProperties());
+    // 10 attributs : id, mavenKey, projectName, analyseId, status, submitterLogin,
+    //                submittedAt, startedAt, executedAt, executionTime
+    $this->assertEquals(10, $nbAttributs);
   }
 }

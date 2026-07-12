@@ -148,8 +148,8 @@ class ApiAccueilControllerTest extends TestCase
         $this->client->method('httpSonarQube')->willReturn([
             'code' => 200,
             'json' => ['components' => [
-                ['key' => 'com.acme:app', 'name' => 'App', 'tags' => ['TeamA'], 'visibility' => 'public'],
-                ['key' => 'com.acme:legacy-SVN', 'name' => 'Legacy', 'tags' => [], 'visibility' => 'private'],
+                ['key' => 'fr.ma-moulinette:ma-moulinette', 'name' => 'App', 'tags' => ['TeamA'], 'visibility' => 'public'],
+                ['key' => 'fr.ma-moulinette:projet-legacy-SVN', 'name' => 'Legacy', 'tags' => [], 'visibility' => 'private'],
             ]],
         ]);
         $this->listeProjetRepo->method('deleteListeProjet')->willReturn(['code' => 200]);

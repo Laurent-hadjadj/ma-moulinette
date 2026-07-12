@@ -26,8 +26,8 @@ class UserRoleLogTest extends TestCase
     public function testConstructorInitializesAllFields(): void
     {
         $log = new UserRoleLog(
-            'user@example.com',
-            'editor@example.com',
+            'user@ma-moulinette.fr',
+            'editor@ma-moulinette.fr',
             ['ROLE_UTILISATEUR'],
             ['ROLE_COLLECTE', 'ROLE_UTILISATEUR'],
             true,
@@ -40,8 +40,8 @@ class UserRoleLogTest extends TestCase
          * que setId fonctionne. */
         $log->setId(42);
         $this->assertSame(42, $log->getId());
-        $this->assertSame('user@example.com', $log->getUserEmail());
-        $this->assertSame('editor@example.com', $log->getEditorEmail());
+        $this->assertSame('user@ma-moulinette.fr', $log->getUserEmail());
+        $this->assertSame('editor@ma-moulinette.fr', $log->getEditorEmail());
         $this->assertSame(['ROLE_UTILISATEUR'], $log->getOldRoles());
         $this->assertSame(['ROLE_COLLECTE', 'ROLE_UTILISATEUR'], $log->getNewRoles());
         $this->assertTrue($log->isOldActive());
@@ -63,8 +63,8 @@ class UserRoleLogTest extends TestCase
     {
         $log = new UserRoleLog('u@x', 'e@x', [], [], true, true, []);
 
-        $log->setUserEmail('new@example.com');
-        $log->setEditorEmail('admin@example.com');
+        $log->setUserEmail('new@ma-moulinette.fr');
+        $log->setEditorEmail('admin@ma-moulinette.fr');
         $log->setOldRoles(['ROLE_A']);
         $log->setNewRoles(['ROLE_B']);
         $log->setOldActive(false);
@@ -74,8 +74,8 @@ class UserRoleLogTest extends TestCase
         $date = new \DateTimeImmutable('2026-01-01 00:00:00');
         $log->setCreatedAt($date);
 
-        $this->assertSame('new@example.com', $log->getUserEmail());
-        $this->assertSame('admin@example.com', $log->getEditorEmail());
+        $this->assertSame('new@ma-moulinette.fr', $log->getUserEmail());
+        $this->assertSame('admin@ma-moulinette.fr', $log->getEditorEmail());
         $this->assertSame(['ROLE_A'], $log->getOldRoles());
         $this->assertSame(['ROLE_B'], $log->getNewRoles());
         $this->assertFalse($log->isOldActive());

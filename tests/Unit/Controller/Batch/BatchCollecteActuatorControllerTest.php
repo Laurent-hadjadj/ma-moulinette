@@ -30,8 +30,8 @@ use Psr\Log\LoggerInterface;
 #[AllowMockObjectsWithoutExpectations]
 class BatchCollecteActuatorControllerTest extends TestCase
 {
-    private const MAVEN_KEY = 'com.acme:app';
-    private const BUILT_URL = 'http://app.example.com/actuator/info?project=com.acme:app';
+    private const MAVEN_KEY = 'fr.ma-moulinette:ma-moulinette';
+    private const BUILT_URL = 'http://app.example.com/actuator/info?project=fr.ma-moulinette:ma-moulinette';
 
     /** @var EntityManagerInterface&MockObject */
     private MockObject $em;
@@ -222,8 +222,8 @@ class BatchCollecteActuatorControllerTest extends TestCase
     public function testBatchCollecteActuatorInfoSanitizesMavenKey(): void
     {
         // maven_key avec balise HTML → htmlspecialchars avec ENT_QUOTES
-        $rawKey = 'com.acme:<script>';
-        $escapedKey = 'com.acme:&lt;script&gt;';
+        $rawKey = 'fr.ma-moulinette:<script>';
+        $escapedKey = 'fr.ma-moulinette:&lt;script&gt;';
 
         $this->repository->expects($this->once())
             ->method('findActuatorMavenKey')

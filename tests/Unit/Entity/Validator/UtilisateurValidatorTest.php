@@ -30,7 +30,7 @@ class UtilisateurValidatorTest extends KernelTestCase
     public static string $avatar = 'chiffre/01.png';
     public static string $prenom = 'Laurent';
     public static string $nom = 'HADJADJ';
-    public static string $courriel = 'laurent.hadjadj@ma-petite-entreprise.fr';
+    public static string $courriel = 'laurent.hadjadj@ma-moulinette.fr';
     public static string $pass = '$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K';
     public static bool $actif = true;
     public static array $roles = ["ROLE_GESTIONNAIRE"];

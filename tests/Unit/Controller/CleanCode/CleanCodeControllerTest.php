@@ -38,7 +38,7 @@ use Twig\Environment;
 #[AllowMockObjectsWithoutExpectations]
 class CleanCodeControllerTest extends TestCase
 {
-    private const MAVEN_KEY = 'fr.ma-petite-entreprise:ma-moulinette';
+    private const MAVEN_KEY = 'fr.ma-moulinette:ma-moulinette';
 
     /** @var ParameterBagInterface&MockObject */   private MockObject $params;
     /** @var EntityManagerInterface&MockObject */  private MockObject $em;
@@ -178,7 +178,7 @@ class CleanCodeControllerTest extends TestCase
             ->method('add')
             ->with('notice', $this->callback(fn($v) => $v['type'] === 'warning'));
 
-        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        /* MODIF 2026-05-07 : init [] (intelephense by-ref). */
         $capturedCtx = [];
         $this->twig->expects($this->once())
             ->method('render')
@@ -226,7 +226,7 @@ class CleanCodeControllerTest extends TestCase
 
         $this->flashBag->expects($this->never())->method('add');
 
-        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        /* MODIF 2026-05-07 : init [] (intelephense by-ref). */
         $capturedCtx = [];
         $this->twig->expects($this->once())
             ->method('render')

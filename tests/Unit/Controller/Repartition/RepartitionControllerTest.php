@@ -39,8 +39,8 @@ use Twig\Environment;
 #[AllowMockObjectsWithoutExpectations]
 class RepartitionControllerTest extends TestCase
 {
-    // Valid token encoding "1234567890|com.acme:app" (pipe-separated)
-    // We pre-compute: str_rot13(base64_encode("1234567890|com.acme:app"))
+    // Valid token encoding "1234567890|fr.ma-moulinette:ma-moulinette" (pipe-separated)
+    // We pre-compute: str_rot13(base64_encode("1234567890|fr.ma-moulinette:ma-moulinette"))
     private string $validToken;
 
     /** @var EntityManagerInterface&MockObject */              private MockObject $em;
@@ -61,7 +61,7 @@ class RepartitionControllerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->validToken = str_rot13(base64_encode('1234567890|com.acme:app'));
+        $this->validToken = str_rot13(base64_encode('1234567890|fr.ma-moulinette:ma-moulinette'));
 
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->extractName = $this->createMock(ExtractName::class);
@@ -212,7 +212,7 @@ class RepartitionControllerTest extends TestCase
 
         $this->extractName->expects($this->once())
             ->method('extractNameFromMavenKey')
-            ->with('com.acme:app')
+            ->with('fr.ma-moulinette:ma-moulinette')
             ->willReturn('app');
 
         $this->repo->expects($this->once())
@@ -234,7 +234,7 @@ class RepartitionControllerTest extends TestCase
         $this->controller->repartition(new Request(['token' => $this->validToken]));
 
         $this->assertSame('app', $capturedCtx['mon_application']);
-        $this->assertSame('com.acme:app', $capturedCtx['maven_key']);
+        $this->assertSame('fr.ma-moulinette:ma-moulinette', $capturedCtx['maven_key']);
         $this->assertSame('initial', $capturedCtx['statut']);
     }
 
@@ -266,7 +266,7 @@ class RepartitionControllerTest extends TestCase
     private function makeUser(): Utilisateur
     {
         $u = new Utilisateur();
-        $u->setCourriel('user@example.com');
+        $u->setCourriel('user@ma-moulinette.fr');
         $u->setPrenom('User');
         $u->setNom('Test');
         return $u;

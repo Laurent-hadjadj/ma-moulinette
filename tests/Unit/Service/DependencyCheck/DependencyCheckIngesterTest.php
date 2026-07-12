@@ -89,7 +89,7 @@ class DependencyCheckIngesterTest extends TestCase
 
     public function testReturnsExistingScanIfAlreadyProcessed(): void
     {
-        $existing = $this->makeScan(42, 'fr.test', 'demo', '1.0');
+        $existing = $this->makeScan(42, 'fr.ma-moulinette', 'ma-moulinette', '1.0');
         $this->scanRepo->method('findByProjectVersionDate')->willReturn($existing);
 
         $queue = $this->buildQueue($this->minimalReport());
@@ -128,7 +128,7 @@ class DependencyCheckIngesterTest extends TestCase
         $scan = $this->ingester->ingest($queue);
 
         $this->assertInstanceOf(DcScan::class, $scan);
-        $this->assertSame('fr.test:demo', $scan->getMavenKey());
+        $this->assertSame('fr.ma-moulinette:ma-moulinette', $scan->getMavenKey());
         $this->assertSame('1.0', $scan->getProjectVersion());
         $this->assertSame(1, $scan->getDepCountTotal());
         $this->assertSame(1, $scan->getDepCountVulnerable());
@@ -306,7 +306,7 @@ class DependencyCheckIngesterTest extends TestCase
         $this->depRepo->method('findBySha1')->willReturn(null);
 
         $report = $this->minimalReport(['projectInfo' => [
-            'groupID' => 'fr.test', 'artifactID' => 'demo', 'version' => '1.0',
+            'groupID' => 'fr.ma-moulinette', 'artifactID' => 'ma-moulinette', 'version' => '1.0',
             'reportDate' => '2026-05-08T06:15:17.838775800Z',
         ]]);
 
@@ -323,7 +323,7 @@ class DependencyCheckIngesterTest extends TestCase
             ->setPayloadSha256(str_repeat('x', 64))
             ->setPayloadSize(15)
             ->setContentType('json')
-            ->setProjectGroup('fr.test')->setProjectArtifact('demo')->setProjectVersion('1.0');
+            ->setProjectGroup('fr.ma-moulinette')->setProjectArtifact('ma-moulinette')->setProjectVersion('1.0');
 
         $this->scanRepo->method('findByProjectVersionDate')->willReturn(null);
         $this->expectException(\RuntimeException::class);
@@ -381,7 +381,7 @@ class DependencyCheckIngesterTest extends TestCase
             'reportSchema' => '1.1',
             'scanInfo' => ['engineVersion' => '12.2.0'],
             'projectInfo' => [
-                'groupID' => 'fr.test', 'artifactID' => 'demo', 'version' => '1.0',
+                'groupID' => 'fr.ma-moulinette', 'artifactID' => 'ma-moulinette', 'version' => '1.0',
                 'reportDate' => '2026-05-08T08:00:00Z',
             ],
             'dependencies' => [],
@@ -401,8 +401,8 @@ class DependencyCheckIngesterTest extends TestCase
             ->setPayloadSha256(hash('sha256', $json))
             ->setPayloadSize(strlen($json))
             ->setContentType('json')
-            ->setProjectGroup('fr.test')
-            ->setProjectArtifact('demo')
+            ->setProjectGroup('fr.ma-moulinette')
+            ->setProjectArtifact('ma-moulinette')
             ->setProjectVersion('1.0');
     }
 

@@ -47,7 +47,7 @@ class DependencyCheckProcessCommandTest extends TestCase
 
     private CommandTester $tester;
 
-    private const VALID_JSON = '{"reportSchema":"1.1","projectInfo":{"groupID":"fr.test","artifactID":"demo","version":"1.0"},"dependencies":[]}';
+    private const VALID_JSON = '{"reportSchema":"1.1","projectInfo":{"groupID":"fr.ma-moulinette","artifactID":"ma-moulinette","version":"1.0"},"dependencies":[]}';
 
     protected function setUp(): void
     {
@@ -175,8 +175,8 @@ class DependencyCheckProcessCommandTest extends TestCase
             ->setPayloadSha256(str_repeat((string) $id, 64))
             ->setPayloadSize(strlen(self::VALID_JSON))
             ->setContentType(DcProcessingQueue::CONTENT_JSON)
-            ->setProjectGroup('fr.test')
-            ->setProjectArtifact('demo')
+            ->setProjectGroup('fr.ma-moulinette')
+            ->setProjectArtifact('ma-moulinette')
             ->setProjectVersion('1.0')
             ->setStatus(DcProcessingQueue::STATUS_PROCESSING)
             ->setAttempts($attempts);

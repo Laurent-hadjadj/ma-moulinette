@@ -10,6 +10,7 @@
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
+
 namespace App\Tests\Unit\Entity\Case;
 
 use App\Entity\Anomalie;
@@ -22,7 +23,7 @@ class AnomalieCaseTest extends TestCase
 {
     private Anomalie $anomalie;
 
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
     private static string $projectName = 'ma-moulinette';
     private static int $anomalieTotal = 1956;
     private static int $detteMinute = 19586;
@@ -46,38 +47,38 @@ class AnomalieCaseTest extends TestCase
     private static int $vulnerability = 0;
     private static int $codeSmell = 801;
     private static string $modeCollecte = 'TRAITEMENT MANUEL';
-    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-moulinette.fr';
     private static string $dateEnregistrement = '2024-06-28 17:55:45+02';
 
     private function getEntity(): Anomalie
     {
         return (new anomalie())
-        ->setMavenKey(self::$mavenKey)
-        ->setProjectName(self::$projectName)
-        ->setAnomalieTotal(self::$anomalieTotal)
-        ->setDetteMinute(self::$detteMinute)
-        ->setDetteReliabilityMinute(self::$detteReliabilityMinute)
-        ->setDetteVulnerabilityMinute(self::$detteVulnerabilityMinute)
-        ->setDetteCodeSmellMinute(self::$detteCodeSmellMinute)
-        ->setDetteReliability(self::$detteReliability)
-        ->setDetteVulnerability(self::$detteVulnerability)
-        ->setDetteCodeSmell(self::$detteCodeSmell)
-        ->setDette(self::$dette)
-        ->setFrontend(self::$frontend)
-        ->setBackend(self::$backend)
-        ->setAutre(self::$autre)
-        ->setInconnu(self::$inconnu)
-        ->setBlocker(self::$blocker)
-        ->setCritical(self::$critical)
-        ->setMajor(self::$major)
-        ->setInfo(self::$info)
-        ->setMinor(self::$minor)
-        ->setBug(self::$bug)
-        ->setVulnerability(self::$vulnerability)
-        ->setCodeSmell(self::$codeSmell)
-        ->setModeCollecte(self::$modeCollecte)
-        ->setUtilisateurCollecte(self::$utilisateurCollecte)
-        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
+            ->setMavenKey(self::$mavenKey)
+            ->setProjectName(self::$projectName)
+            ->setAnomalieTotal(self::$anomalieTotal)
+            ->setDetteMinute(self::$detteMinute)
+            ->setDetteReliabilityMinute(self::$detteReliabilityMinute)
+            ->setDetteVulnerabilityMinute(self::$detteVulnerabilityMinute)
+            ->setDetteCodeSmellMinute(self::$detteCodeSmellMinute)
+            ->setDetteReliability(self::$detteReliability)
+            ->setDetteVulnerability(self::$detteVulnerability)
+            ->setDetteCodeSmell(self::$detteCodeSmell)
+            ->setDette(self::$dette)
+            ->setFrontend(self::$frontend)
+            ->setBackend(self::$backend)
+            ->setAutre(self::$autre)
+            ->setInconnu(self::$inconnu)
+            ->setBlocker(self::$blocker)
+            ->setCritical(self::$critical)
+            ->setMajor(self::$major)
+            ->setInfo(self::$info)
+            ->setMinor(self::$minor)
+            ->setBug(self::$bug)
+            ->setVulnerability(self::$vulnerability)
+            ->setCodeSmell(self::$codeSmell)
+            ->setModeCollecte(self::$modeCollecte)
+            ->setUtilisateurCollecte(self::$utilisateurCollecte)
+            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -222,9 +223,8 @@ class AnomalieCaseTest extends TestCase
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
+        $newDate = new \DateTimeImmutable(self::$dateEnregistrement);
         $this->anomalie->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->anomalie->getDateEnregistrement());
     }
-
 }

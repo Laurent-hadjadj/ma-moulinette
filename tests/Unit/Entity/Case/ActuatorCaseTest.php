@@ -23,7 +23,7 @@ class ActuatorCaseTest extends TestCase
 {
     private Actuator $actuator;
 
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
     private static string $nomApplication = 'Application 04';
     private static string $url = 'http://ma-moulinette.fr/app04';
     private static string $actuatorUser = 'user4';
@@ -35,15 +35,15 @@ class ActuatorCaseTest extends TestCase
     {
         $actuator = new Actuator();
         $actuator->setMavenKey(self::$mavenKey)
-                    ->setNomApplication(self::$nomApplication)
-                    ->setUrl(self::$url)
-                    ->setActuatorUser(self::$actuatorUser)
-                    ->setActuatorPassword(self::$actuatorPassword)
-                    ->setPersonne(self::$personne)
-                    ->setDateModification(new \DateTimeImmutable(self::$dateModification))
-                    ->setDateEnregistrement(new \DateTimeImmutable());
+            ->setNomApplication(self::$nomApplication)
+            ->setUrl(self::$url)
+            ->setActuatorUser(self::$actuatorUser)
+            ->setActuatorPassword(self::$actuatorPassword)
+            ->setPersonne(self::$personne)
+            ->setDateModification(new \DateTimeImmutable(self::$dateModification))
+            ->setDateEnregistrement(new \DateTimeImmutable());
         return $actuator;
-}
+    }
 
     protected function setUp(): void
     {
@@ -95,7 +95,7 @@ class ActuatorCaseTest extends TestCase
 
     public function testSettingAndGettingDateModification(): void
     {
-        $newDate=new \DateTimeImmutable(self::$dateModification);
+        $newDate = new \DateTimeImmutable(self::$dateModification);
         $this->actuator->setDateModification($newDate);
         $this->assertEquals($newDate, $this->actuator->getDateModification());
     }

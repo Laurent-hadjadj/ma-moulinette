@@ -194,7 +194,7 @@ class ChangeMeControllerTest extends TestCase
     private function makeUser(): Utilisateur
     {
         $u = new Utilisateur();
-        $u->setCourriel('u@example.com');
+        $u->setCourriel('u@ma-moulinette.fr');
         $u->setAvatar('chiffre/01.png');
         return $u;
     }

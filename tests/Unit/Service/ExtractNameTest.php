@@ -44,7 +44,7 @@ final class ExtractNameTest extends TestCase
     {
         self::assertSame(
             'ma-moulinette',
-            $this->service->extractNameFromMavenKey('fr.ma-petite-entreprise:ma-moulinette')
+            $this->service->extractNameFromMavenKey('fr.ma-moulinette:ma-moulinette')
         );
     }
 
@@ -60,7 +60,7 @@ final class ExtractNameTest extends TestCase
     public static function mavenKeyProvider(): array
     {
         return [
-            'standard groupId:artifactId' => ['fr.example:my-app', 'my-app'],
+            'standard groupId:artifactId' => ['fr.ma-moulinette:projet-b', 'projet-b'],
             'multiple colons returns second segment' => ['a:b:c', 'b'],
             'empty artifact returns empty' => ['groupId:', ''],
             'empty group returns artifact' => [':my-app', 'my-app'],

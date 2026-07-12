@@ -28,7 +28,7 @@ class MesuresValidatorTest extends KernelTestCase
     private function getEntity(): Mesures
     {
         return (new Mesures())
-            ->setMavenKey('fr.ma-petite-entreprise:ma-moulinette')
+            ->setMavenKey('fr.ma-moulinette:ma-moulinette')
             ->setProjectName('Ma-Moulinette')
             ->setDateEnregistrement(new \DateTimeImmutable('2024-04-12 16:23:11', new \DateTimeZone('Europe/Paris')));
     }
@@ -81,25 +81,55 @@ class MesuresValidatorTest extends KernelTestCase
     public static function positiveOrZeroIntProvider(): iterable
     {
         $names = [
-            'Lines', 'Ncloc', 'Files', 'Classes', 'Functions', 'Statements', 'CommentLines',
-            'LineCoverage', 'LinesToCover', 'ConditionsToCover', 'UncoveredConditions',
-            'Tests', 'TestExecutionTime', 'TestErrors', 'TestFailures', 'SkippedTests',
-            'DuplicatedFiles', 'DuplicatedBlocks', 'DuplicatedLines',
-            'Complexity', 'CognitiveComplexity',
-            'OpenIssues', 'ReopenedIssues', 'ConfirmedIssues', 'FalsePositiveIssues',
-            'AcceptedIssues', 'HighImpactAcceptedIssues',
-            'Violations', 'BlockerViolations', 'CriticalViolations', 'MajorViolations',
-            'MinorViolations', 'InfoViolations',
-            'SoftwareQualityBlockerIssues', 'SoftwareQualityHighIssues', 'SoftwareQualityMediumIssues',
-            'SoftwareQualityLowIssues', 'SoftwareQualityInfoIssues',
+            'Lines',
+            'Ncloc',
+            'Files',
+            'Classes',
+            'Functions',
+            'Statements',
+            'CommentLines',
+            'LineCoverage',
+            'LinesToCover',
+            'ConditionsToCover',
+            'UncoveredConditions',
+            'Tests',
+            'TestExecutionTime',
+            'TestErrors',
+            'TestFailures',
+            'SkippedTests',
+            'DuplicatedFiles',
+            'DuplicatedBlocks',
+            'DuplicatedLines',
+            'Complexity',
+            'CognitiveComplexity',
+            'OpenIssues',
+            'ReopenedIssues',
+            'ConfirmedIssues',
+            'FalsePositiveIssues',
+            'AcceptedIssues',
+            'HighImpactAcceptedIssues',
+            'Violations',
+            'BlockerViolations',
+            'CriticalViolations',
+            'MajorViolations',
+            'MinorViolations',
+            'InfoViolations',
+            'SoftwareQualityBlockerIssues',
+            'SoftwareQualityHighIssues',
+            'SoftwareQualityMediumIssues',
+            'SoftwareQualityLowIssues',
+            'SoftwareQualityInfoIssues',
             'CodeSmells',
-            'SqaleIndex', 'EffortToReachMaintainabilityRatingA',
+            'SqaleIndex',
+            'EffortToReachMaintainabilityRatingA',
             'SoftwareQualityMaintainabilityRemediationEffort',
             'EffortToReachSoftwareQualityMaintainabilityRatingA',
             'Bugs',
-            'ReliabilityRemediationEffort', 'SoftwareQualityReliabilityRemediationEffort',
+            'ReliabilityRemediationEffort',
+            'SoftwareQualityReliabilityRemediationEffort',
             'Vulnerabilities',
-            'SecurityRemediationEffort', 'SoftwareQualitySecurityRemediationEffort',
+            'SecurityRemediationEffort',
+            'SoftwareQualitySecurityRemediationEffort',
             'SecurityHotspot',
         ];
         foreach ($names as $n) {
@@ -187,10 +217,15 @@ class MesuresValidatorTest extends KernelTestCase
     public static function choiceRatingProvider(): iterable
     {
         $names = [
-            'CommentLinesRating', 'ComplexityRating', 'CognitiveComplexityRating',
-            'SqaleRating', 'SoftwareQualityMaintainabilityRating',
-            'ReliabilityRating', 'SoftwareQualityReliabilityRating',
-            'SecurityRating', 'SoftwareQualitySecurityRating',
+            'CommentLinesRating',
+            'ComplexityRating',
+            'CognitiveComplexityRating',
+            'SqaleRating',
+            'SoftwareQualityMaintainabilityRating',
+            'ReliabilityRating',
+            'SoftwareQualityReliabilityRating',
+            'SecurityRating',
+            'SoftwareQualitySecurityRating',
         ];
         foreach ($names as $n) {
             yield $n => [$n];

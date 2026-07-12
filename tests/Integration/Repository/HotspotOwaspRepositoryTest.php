@@ -27,7 +27,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class HotspotOwaspRepositoryTest extends KernelTestCase
 {
     private static string $erreurCode200 = 'Erreur le code retour doit être 200.';
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
 
     protected function setUp(): void
     {
@@ -58,8 +58,8 @@ class HotspotOwaspRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map1=['maven_key' => self::$mavenKey, 'status' =>'TO_REVIEW'];
-        $map2=['maven_key' => self::$mavenKey, 'status' =>'REVIEWED'];
+        $map1 = ['maven_key' => self::$mavenKey, 'status' => 'TO_REVIEW'];
+        $map2 = ['maven_key' => self::$mavenKey, 'status' => 'REVIEWED'];
 
         $hotspotOwaspRepository = $entityManager->getRepository(HotspotOwasp::class);
         $r1 = $hotspotOwaspRepository->countHotspotOwaspStatus($map1);
@@ -157,13 +157,22 @@ class HotspotOwaspRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map = [['referential_owasp' => 2017, 'version' => '2.0.0-RELEASE',
-                'maven_key' => self::$mavenKey,
-                'date_version' => new \DateTimeImmutable('2024-08-10 15:26:07+02'), 'menace' => 'a1', 'security_category' => 'dos',
-                'rule_key' => 'typescript:S5852', 'probability' => 'MEDIUM',
-                'status' => 'TO_REVIEW', 'resolution' => 'Todo', 'niveau' => 2,
-                'mode_collecte' => 'TRAITEMENT MANUEL', 'utilisateur_collecte' => 'laurent.hadjadj@ma-petite-entreprise.fr',
-                'date_enregistrement' => new \DateTimeImmutable('2024-04-12 16:23:11+01')]];
+        $map = [[
+            'referential_owasp' => 2017,
+            'version' => '2.0.0-RELEASE',
+            'maven_key' => self::$mavenKey,
+            'date_version' => new \DateTimeImmutable('2024-08-10 15:26:07+02'),
+            'menace' => 'a1',
+            'security_category' => 'dos',
+            'rule_key' => 'typescript:S5852',
+            'probability' => 'MEDIUM',
+            'status' => 'TO_REVIEW',
+            'resolution' => 'Todo',
+            'niveau' => 2,
+            'mode_collecte' => 'TRAITEMENT MANUEL',
+            'utilisateur_collecte' => 'laurent.hadjadj@ma-moulinette.fr',
+            'date_enregistrement' => new \DateTimeImmutable('2024-04-12 16:23:11+01')
+        ]];
         $hotspotOwaspRepository = $entityManager->getRepository(HotspotOwasp::class);
         $r = $hotspotOwaspRepository->insertHotspotOwasp($map);
 

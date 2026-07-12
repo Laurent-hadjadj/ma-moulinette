@@ -124,14 +124,14 @@ class SuiviControllerTest extends TestCase
     {
         $this->session->expects($this->once())
             ->method('set')
-            ->with('maven_key', 'com.acme:app');
+            ->with('maven_key', 'fr.ma-moulinette:ma-moulinette');
 
         $this->router->expects($this->once())
             ->method('generate')
             ->with('suivi', [], $this->anything())
             ->willReturn('/suivi');
 
-        $request = new Request(['maven_key' => 'com.acme:app']);
+        $request = new Request(['maven_key' => 'fr.ma-moulinette:ma-moulinette']);
         $request->setSession($this->session);
 
         $response = $this->controller->setSession($request);
@@ -166,7 +166,7 @@ class SuiviControllerTest extends TestCase
     {
         $request = new Request();
         $request->setSession($this->session);
-        $this->session->method('get')->willReturn('com.acme:app');
+        $this->session->method('get')->willReturn('fr.ma-moulinette:ma-moulinette');
 
         // Empty groupes via getListeGroupeFonctionnel
         $user = $this->makeUser([]);
@@ -185,7 +185,7 @@ class SuiviControllerTest extends TestCase
     {
         $request = new Request();
         $request->setSession($this->session);
-        $this->session->method('get')->willReturn('com.acme:app');
+        $this->session->method('get')->willReturn('fr.ma-moulinette:ma-moulinette');
 
         $user = $this->makeUser(['TeamA']);
         $this->token->method('getUser')->willReturn($user);
@@ -194,7 +194,7 @@ class SuiviControllerTest extends TestCase
             ->method('selectListeProjetByGroupe')
             ->willReturn([
                 'code' => 200,
-                'liste' => [['id' => 'other.project', 'nom' => 'Other']], // does not include com.acme:app
+                'liste' => [['id' => 'other.project', 'nom' => 'Other']], // does not include fr.ma-moulinette:ma-moulinette
             ]);
 
         $this->flashBag->expects($this->once())
@@ -210,14 +210,14 @@ class SuiviControllerTest extends TestCase
     {
         $request = new Request();
         $request->setSession($this->session);
-        $this->session->method('get')->willReturn('com.acme:app');
+        $this->session->method('get')->willReturn('fr.ma-moulinette:ma-moulinette');
 
         $user = $this->makeUser(['TeamA']);
         $this->token->method('getUser')->willReturn($user);
 
         $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
             'code' => 200,
-            'liste' => [['id' => 'com.acme:app']],
+            'liste' => [['id' => 'fr.ma-moulinette:ma-moulinette']],
         ]);
         $this->historiqueRepo->expects($this->once())
             ->method('countHistoriqueProjet')
@@ -238,14 +238,14 @@ class SuiviControllerTest extends TestCase
     {
         $request = new Request();
         $request->setSession($this->session);
-        $this->session->method('get')->willReturn('com.acme:app');
+        $this->session->method('get')->willReturn('fr.ma-moulinette:ma-moulinette');
 
         $user = $this->makeUser(['TeamA']);
         $this->token->method('getUser')->willReturn($user);
 
         $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
             'code' => 200,
-            'liste' => [['id' => 'com.acme:app']],
+            'liste' => [['id' => 'fr.ma-moulinette:ma-moulinette']],
         ]);
         $this->historiqueRepo->method('countHistoriqueProjet')->willReturn([
             'code' => 200, 'nombre' => 5,
@@ -270,7 +270,7 @@ class SuiviControllerTest extends TestCase
             ],
         ]);
 
-        /* MODIF 2026-05-07 [tests-validators] : init [] (intelephense by-ref). */
+        /* MODIF 2026-05-07 : init [] (intelephense by-ref). */
         $capturedCtx = [];
         $this->twig->expects($this->once())
             ->method('render')
@@ -283,7 +283,7 @@ class SuiviControllerTest extends TestCase
         $this->controller->suivi($request);
 
         $this->assertSame('App', $capturedCtx['nom']);
-        $this->assertSame('com.acme:app', $capturedCtx['mavenKey']);
+        $this->assertSame('fr.ma-moulinette:ma-moulinette', $capturedCtx['mavenKey']);
         $this->assertSame('[2]', $capturedCtx['data1']);
         $this->assertSame('[1]', $capturedCtx['data2']);
         $this->assertSame('[3]', $capturedCtx['data3']);
@@ -293,14 +293,14 @@ class SuiviControllerTest extends TestCase
     {
         $request = new Request();
         $request->setSession($this->session);
-        $this->session->method('get')->willReturn('com.acme:app');
+        $this->session->method('get')->willReturn('fr.ma-moulinette:ma-moulinette');
 
         $user = $this->makeUser(['TeamA']);
         $this->token->method('getUser')->willReturn($user);
 
         $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
             'code' => 200,
-            'liste' => [['id' => 'com.acme:app']],
+            'liste' => [['id' => 'fr.ma-moulinette:ma-moulinette']],
         ]);
         $this->historiqueRepo->method('countHistoriqueProjet')->willReturn([
             'code' => 200, 'nombre' => 5,
@@ -322,7 +322,7 @@ class SuiviControllerTest extends TestCase
     private function makeUser(array $groupes): Utilisateur
     {
         $u = new Utilisateur();
-        $u->setCourriel('user@example.com');
+        $u->setCourriel('user@ma-moulinette.fr');
         $u->setListeGroupeFonctionnel($groupes);
         return $u;
     }

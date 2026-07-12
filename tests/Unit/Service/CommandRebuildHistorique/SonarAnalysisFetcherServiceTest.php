@@ -80,7 +80,7 @@ class SonarAnalysisFetcherServiceTest extends TestCase
                 ],
             ]);
 
-        $result = $this->service->fetchAnalyses('com.acme:app');
+        $result = $this->service->fetchAnalyses('fr.ma-moulinette:ma-moulinette');
 
         // Tri décroissant par date
         $this->assertSame(['A2', 'A3', 'A1'], array_column($result, 'analysisKey'));
@@ -113,7 +113,7 @@ class SonarAnalysisFetcherServiceTest extends TestCase
                 ],
             );
 
-        $result = $this->service->fetchAnalyses('com.acme:app');
+        $result = $this->service->fetchAnalyses('fr.ma-moulinette:ma-moulinette');
 
         $this->assertCount(2, $result);
     }
@@ -132,7 +132,7 @@ class SonarAnalysisFetcherServiceTest extends TestCase
             );
 
         // Pas d'exception : la méthode sort de la boucle et retourne un tableau (vide ici)
-        $this->assertSame([], $this->service->fetchAnalyses('com.acme:app'));
+        $this->assertSame([], $this->service->fetchAnalyses('fr.ma-moulinette:ma-moulinette'));
     }
 
     #[DataProvider('versionExtractionProvider')]
@@ -148,7 +148,7 @@ class SonarAnalysisFetcherServiceTest extends TestCase
                 ],
             ]);
 
-        $result = $this->service->fetchAnalyses('com.acme:app');
+        $result = $this->service->fetchAnalyses('fr.ma-moulinette:ma-moulinette');
 
         $this->assertSame($expectedVersion, $result[0]['version']);
     }
@@ -203,7 +203,7 @@ class SonarAnalysisFetcherServiceTest extends TestCase
                 ],
             ]);
 
-        $result = $this->service->fetchLatestAnalysesPerVersion('com.acme:app');
+        $result = $this->service->fetchLatestAnalysesPerVersion('fr.ma-moulinette:ma-moulinette');
 
         // On garde 1 analyse par version — les plus récentes
         $keys = array_column($result, 'analysisKey');

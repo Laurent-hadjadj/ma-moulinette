@@ -28,9 +28,9 @@ use Psr\Log\LoggerInterface;
 class CollecteControllerTest extends TestCase
 {
     private const PORTEFEUILLE = 'PF-1';
-    private const MAVEN_KEY = 'com.acme:app';
+    private const MAVEN_KEY = 'fr.ma-moulinette:ma-moulinette';
     private const MODE = 'manual';
-    private const USER = 'admin@acme.fr';
+    private const USER = 'admin@ma-moulinette.fr';
 
     /** @var EntityManagerInterface&MockObject */
     private MockObject $em;
@@ -414,7 +414,7 @@ class CollecteControllerTest extends TestCase
 
         $result = $this->controller->collecte(
             self::PORTEFEUILLE,
-            'com.acme:<script>alert(1)</script>',
+            'fr.ma-moulinette:<script>alert(1)</script>',
             'manual<img>',
             self::USER
         );

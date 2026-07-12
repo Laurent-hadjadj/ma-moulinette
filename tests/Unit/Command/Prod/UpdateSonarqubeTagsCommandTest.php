@@ -123,7 +123,7 @@ class UpdateSonarqubeTagsCommandTest extends TestCase
         $cmd->method('callApi')->willReturnCallback(
             static function (string $sonarUrl, string $auth, array $ssl, array $proxy, string $endpoint): mixed {
                 if (str_contains($endpoint, 'search_projects')) {
-                    return ['components' => [['key' => 'fr.test:mon-app']]];
+                    return ['components' => [['key' => 'fr.ma-moulinette:ma-moulinette']]];
                 }
                 if (str_contains($endpoint, 'permissions/groups')) {
                     return ['groups' => []];
@@ -153,7 +153,7 @@ class UpdateSonarqubeTagsCommandTest extends TestCase
         $cmd->method('callApi')->willReturnCallback(
             static function (string $sonarUrl, string $auth, array $ssl, array $proxy, string $endpoint, array $params): mixed {
                 if (str_contains($endpoint, 'search_projects')) {
-                    return ['components' => [['key' => 'fr.test:archive-app']]];
+                    return ['components' => [['key' => 'fr.ma-moulinette:projet-archive']]];
                 }
                 if (str_contains($endpoint, 'permissions/groups')) {
                     return ['groups' => [['name' => 'Archive', 'permissions' => ['user'], 'description' => '']]];

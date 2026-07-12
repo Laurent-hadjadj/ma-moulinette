@@ -111,7 +111,7 @@ class UtilisateurCrudControllerTest extends TestCase
     public function testPersistEntitySetsDefaultAvatarAndHashedPassword(): void
     {
         $user = new Utilisateur();
-        $user->setCourriel('new@example.com');
+        $user->setCourriel('new@ma-moulinette.fr');
         $user->setRoles([]);
         $user->setGroupeUtilisateur('default');
 
@@ -151,7 +151,7 @@ class UtilisateurCrudControllerTest extends TestCase
     public function testUpdateEntityDoesNotLogWhenRolesAndActifUnchanged(): void
     {
         $user = new Utilisateur();
-        $user->setCourriel('u@example.com');
+        $user->setCourriel('u@ma-moulinette.fr');
         $user->setRoles(['ROLE_UTILISATEUR']);
         $user->setActif(true);
         $user->setGroupeUtilisateur('default');
@@ -179,7 +179,7 @@ class UtilisateurCrudControllerTest extends TestCase
     public function testUpdateEntityLogsWhenRolesChanged(): void
     {
         $user = new Utilisateur();
-        $user->setCourriel('u@example.com');
+        $user->setCourriel('u@ma-moulinette.fr');
         $user->setRoles(['ROLE_COLLECTE']);
         $user->setActif(true);
         $user->setGroupeUtilisateur('default');

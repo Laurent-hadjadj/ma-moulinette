@@ -23,7 +23,7 @@ class ActivityCaseTest extends TestCase
 {
     private Activity $activity;
 
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
     private static string $projectName = 'ma-moulinette';
     private static string $analyseId = 'vtrf14lkiutq9mp';
     private static string $status = 'SUCCESS';
@@ -36,15 +36,15 @@ class ActivityCaseTest extends TestCase
     private function getEntity(): Activity
     {
         return (new activity())
-        ->setMavenKey(self::$mavenKey)
-        ->setProjectName(self::$projectName)
-        ->setAnalyseId(self::$analyseId)
-        ->setStatus(self::$status)
-        ->setSubmitterLogin(self::$submitterLogin)
-        ->setSubmittedAt(new \DateTimeImmutable(self::$submittedAt))
-        ->setStartedAt(new \DateTimeImmutable(self::$startedAt))
-        ->setExecutedAt(new \DateTimeImmutable(self::$executedAt))
-        ->setExecutionTime(self::$executionTime);
+            ->setMavenKey(self::$mavenKey)
+            ->setProjectName(self::$projectName)
+            ->setAnalyseId(self::$analyseId)
+            ->setStatus(self::$status)
+            ->setSubmitterLogin(self::$submitterLogin)
+            ->setSubmittedAt(new \DateTimeImmutable(self::$submittedAt))
+            ->setStartedAt(new \DateTimeImmutable(self::$startedAt))
+            ->setExecutedAt(new \DateTimeImmutable(self::$executedAt))
+            ->setExecutionTime(self::$executionTime);
     }
 
     protected function setUp(): void
@@ -91,21 +91,21 @@ class ActivityCaseTest extends TestCase
 
     public function testSettingAndGettingSubmittedAt(): void
     {
-        $newDate=new \DateTimeImmutable(self::$submittedAt);
+        $newDate = new \DateTimeImmutable(self::$submittedAt);
         $this->activity->setSubmittedAt($newDate);
         $this->assertEquals($newDate, $this->activity->getSubmittedAt());
     }
 
     public function testSettingAndGettingStartedAt(): void
     {
-        $newDate=new \DateTimeImmutable(self::$startedAt);
+        $newDate = new \DateTimeImmutable(self::$startedAt);
         $this->activity->setStartedAt($newDate);
         $this->assertEquals($newDate, $this->activity->getStartedAt());
     }
 
     public function testSettingAndGettingExecutedAt(): void
     {
-        $newDate=new \DateTimeImmutable(self::$executedAt);
+        $newDate = new \DateTimeImmutable(self::$executedAt);
         $this->activity->setExecutedAt($newDate);
         $this->assertEquals($newDate, $this->activity->getExecutedAt());
     }
@@ -116,7 +116,7 @@ class ActivityCaseTest extends TestCase
         $this->assertEquals(self::$executionTime, $this->activity->getExecutionTime());
     }
 
-    /* MODIF 2026-05-05 [fix-activity-analyseid-nullable] : test de regression.
+    /* MODIF 2026-05-05 : test de regression.
      * La propriete `analyseId` doit etre typee `string` non-nullable et le getter doit
      * retourner `string` (DDL activity.sql:20 = NOT NULL). */
     public function testAnalyseIdIsNonNullable(): void
@@ -126,15 +126,18 @@ class ActivityCaseTest extends TestCase
 
         $this->assertInstanceOf(\ReflectionNamedType::class, $type);
         $this->assertSame('string', $type->getName());
-        $this->assertFalse($type->allowsNull(),
-            'Activity::$analyseId doit etre typee non-nullable (alignement DDL NOT NULL).');
+        $this->assertFalse(
+            $type->allowsNull(),
+            'Activity::$analyseId doit etre typee non-nullable (alignement DDL NOT NULL).'
+        );
 
         $getter = new \ReflectionMethod(Activity::class, 'getAnalyseId');
         $returnType = $getter->getReturnType();
         $this->assertInstanceOf(\ReflectionNamedType::class, $returnType);
         $this->assertSame('string', $returnType->getName());
-        $this->assertFalse($returnType->allowsNull(),
-            'Activity::getAnalyseId() doit retourner string (pas ?string).');
+        $this->assertFalse(
+            $returnType->allowsNull(),
+            'Activity::getAnalyseId() doit retourner string (pas ?string).'
+        );
     }
-
 }

@@ -23,7 +23,7 @@ use Symfony\Component\Validator\ConstraintViolation;
 class HotspotOwaspValidatorTest extends KernelTestCase
 {
 
-  private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+  private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
   private static int $referentialOwasp = 2017;
   private static string $version = '1.2.0-RELEASE';
   private static string $dateVersion = '2024-07-10 15:26:07+02';
@@ -35,12 +35,12 @@ class HotspotOwaspValidatorTest extends KernelTestCase
   private static string $resolution = 'Todo';
   private static int $niveau = 2;
   private static string $modeCollecte = 'TRAITEMENT MANUEL';
-  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-moulinette.fr';
   private static string $dateEnregistrement = '2024-04-12 16:23:11+01';
 
   private function getEntity(): HotspotOwasp
   {
-      return (new hotspotOwasp())
+    return (new hotspotOwasp())
       ->setMavenKey(self::$mavenKey)
       ->setReferentialOwasp(self::$referentialOwasp)
       ->setVersion(self::$version)
@@ -64,7 +64,7 @@ class HotspotOwaspValidatorTest extends KernelTestCase
     $errors = $container->get('validator')->validate($entity);
     $messages = [];
     /** @var ConstraintViolation $error */
-    foreach($errors as $error) {
+    foreach ($errors as $error) {
       $messages[] = $error->getPropertyPath() . ' => ' . $error->getMessage();
     }
     $this->assertCount($number, $errors, implode(', ', $messages));
@@ -94,7 +94,7 @@ class HotspotOwaspValidatorTest extends KernelTestCase
     // v2.0.0 : valeurs limites BASSES acceptees par PositiveOrZero (>= 0)
     $this->assertHasErrors($this->getEntity()->setReferentialOwasp(0), 0);
     $this->assertHasErrors($this->getEntity()->setNiveau(0), 0);
-    }
+  }
 
   /**
    * v2.0.0 : valeurs negatives REJETÉES par les contraintes PositiveOrZero / Positive / Range.
@@ -103,13 +103,13 @@ class HotspotOwaspValidatorTest extends KernelTestCase
   {
     $this->assertHasErrors($this->getEntity()->setReferentialOwasp(-1), 1);
     $this->assertHasErrors($this->getEntity()->setNiveau(0), 0);
-    }
+  }
 
   public function testCountAttribut(): void
   {
-      $entity = $this->getEntity();
-      $reflectionClass = new \ReflectionClass($entity);
-      $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 15);
+    $entity = $this->getEntity();
+    $reflectionClass = new \ReflectionClass($entity);
+    $nbAttributs = count($reflectionClass->getProperties());
+    $this->assertEquals($nbAttributs, 15);
   }
 }

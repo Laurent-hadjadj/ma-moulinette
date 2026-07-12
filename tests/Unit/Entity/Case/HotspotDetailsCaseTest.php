@@ -10,6 +10,7 @@
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
+
 namespace App\Tests\Unit\Entity\Case;
 
 use App\Entity\HotspotDetails;
@@ -22,7 +23,7 @@ class HotspotDetailsCaseTest extends TestCase
 {
     private HotspotDetails $hotspotDetails;
 
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
     private static string $version = '1.2.0-RELEASE';
     private static string $dateVersion = '2024-07-10 15:26:07+02';
     private static string $securityCategory = 'dos';
@@ -41,7 +42,7 @@ class HotspotDetailsCaseTest extends TestCase
     private static string $message = 'Make sure the regex used here, which is vulnerable to super-linear runtime due to backtracking, cannot lead to denial of service.';
     private static string $key = 'AZCc06XbgfifxdiJPzw2';
     private static string $modeCollecte = 'TRAITEMENT AUTOMATIQUE';
-    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-moulinette.fr';
     private static string $dateEnregistrement = '2024-03-26 14:46:38+02';
 
     private function getEntity(): HotspotDetails
@@ -204,7 +205,7 @@ class HotspotDetailsCaseTest extends TestCase
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
+        $newDate = new \DateTimeImmutable(self::$dateEnregistrement);
         $this->hotspotDetails->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->hotspotDetails->getDateEnregistrement());
     }

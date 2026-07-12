@@ -123,12 +123,12 @@ class CleanCodeSyntheseControllerTest extends TestCase
     private function makeUser(array $groupes): Utilisateur
     {
         $u = new Utilisateur();
-        $u->setCourriel('user@example.com');
+        $u->setCourriel('user@ma-moulinette.fr');
         $u->setListeGroupeFonctionnel($groupes);
         return $u;
     }
 
-    private function buildRow(string $mavenKey = 'com.acme:app'): array
+    private function buildRow(string $mavenKey = 'fr.ma-moulinette:ma-moulinette'): array
     {
         return [
             'maven_key'                      => $mavenKey,
@@ -210,7 +210,7 @@ class CleanCodeSyntheseControllerTest extends TestCase
         $this->token->method('getUser')->willReturn($this->makeUser(['TeamA']));
 
         $this->mesProjets->method('liste')->willReturn([
-            'code' => 200, 'projets' => [['id' => 'com.acme:app']],
+            'code' => 200, 'projets' => [['id' => 'fr.ma-moulinette:ma-moulinette']],
         ]);
         $this->historiqueRepo->method('selectHistoriqueCleanCodeSynthese')
             ->willReturn(['code' => 200, 'liste' => []]);
@@ -235,7 +235,7 @@ class CleanCodeSyntheseControllerTest extends TestCase
         $this->token->method('getUser')->willReturn($this->makeUser(['TeamA']));
 
         $this->mesProjets->method('liste')->willReturn([
-            'code' => 200, 'projets' => [['id' => 'com.acme:app']],
+            'code' => 200, 'projets' => [['id' => 'fr.ma-moulinette:ma-moulinette']],
         ]);
         $this->historiqueRepo->method('selectHistoriqueCleanCodeSynthese')
             ->willReturn(['code' => 200, 'liste' => [$this->buildRow()]]);
@@ -292,7 +292,7 @@ class CleanCodeSyntheseControllerTest extends TestCase
         $this->token->method('getUser')->willReturn($this->makeUser(['TeamA']));
 
         $this->mesProjets->method('liste')->willReturn([
-            'code' => 200, 'projets' => [['id' => 'com.acme:app']],
+            'code' => 200, 'projets' => [['id' => 'fr.ma-moulinette:ma-moulinette']],
         ]);
         $this->historiqueRepo->method('selectHistoriqueCleanCodeSynthese')
             ->willReturn(['code' => 200, 'liste' => [$this->buildRow()]]);

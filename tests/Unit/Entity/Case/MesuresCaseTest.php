@@ -10,6 +10,7 @@
  *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
  *  http://creativecommons.org/licenses/by-nc-sa/4.0/
  */
+
 namespace App\Tests\Unit\Entity\Case;
 
 use App\Entity\Mesures;
@@ -38,7 +39,7 @@ class MesuresCaseTest extends TestCase
     public static function attributesProvider(): iterable
     {
         // Cles d'identification
-        yield 'mavenKey' => ['MavenKey', 'fr.ma-petite-entreprise:ma-moulinette'];
+        yield 'mavenKey' => ['MavenKey', 'fr.ma-moulinette:ma-moulinette'];
         yield 'projectName' => ['ProjectName', 'Ma-Moulinette'];
 
         // Quality gate
@@ -57,7 +58,7 @@ class MesuresCaseTest extends TestCase
         yield 'commentLinesRating' => ['CommentLinesRating', 'A'];
         yield 'coverage' => ['Coverage', 10.3];
         yield 'branchCoverage' => ['BranchCoverage', 8.6];
-        /* MODIF 2026-05-07 [tests-validators] : lineCoverage INT→FLOAT (cf MODIF 2026-05-06 [pourcentage-line-coverage]). */
+        /* MODIF 2026-05-07 : lineCoverage INT→FLOAT (cf MODIF 2026-05-06 [pourcentage-line-coverage]). */
         yield 'lineCoverage' => ['LineCoverage', 5.0];
         yield 'linesToCover' => ['LinesToCover', 100];
         yield 'conditionsToCover' => ['ConditionsToCover', 50];
@@ -110,8 +111,8 @@ class MesuresCaseTest extends TestCase
 
         // Code smells
         yield 'codeSmells' => ['CodeSmells', 198];
-        // MODIF 2026-05-05 [fix-mesures-align-ddl] : codeSmell{Blocker/Critical/Major/Minor/Info} retires.
-        // MODIF 2026-05-05 [fix-mesures-maintainability-type] : maintainabilityIssues passe de int a string(255).
+        // MODIF 2026-05-05 : codeSmell{Blocker/Critical/Major/Minor/Info} retires.
+        // MODIF 2026-05-05 : maintainabilityIssues passe de int a string(255).
         yield 'maintainabilityIssues' => ['MaintainabilityIssues', '198'];
         yield 'sqaleIndex' => ['SqaleIndex', 3054];
         yield 'sqaleDebtRatio' => ['SqaleDebtRatio', 26.0];
@@ -135,7 +136,7 @@ class MesuresCaseTest extends TestCase
 
         // Vulnerabilities
         yield 'vulnerabilities' => ['Vulnerabilities', 9];
-        // MODIF 2026-05-05 [fix-mesures-align-ddl] : vulnerability{Blocker/Critical/Major/Minor/Info} retires.
+        // MODIF 2026-05-05 : vulnerability{Blocker/Critical/Major/Minor/Info} retires.
         yield 'securityIssues' => ['SecurityIssues', '9'];
         yield 'securityRating' => ['SecurityRating', 'D'];
         yield 'securityRemediationEffort' => ['SecurityRemediationEffort', 540];
@@ -152,7 +153,7 @@ class MesuresCaseTest extends TestCase
 
         // Mode collecte / utilisateur
         yield 'modeCollecte' => ['ModeCollecte', 'TRAITEMENT MANUEL'];
-        yield 'utilisateurCollecte' => ['UtilisateurCollecte', 'laurent.hadjadj@ma-petite-entreprise.fr'];
+        yield 'utilisateurCollecte' => ['UtilisateurCollecte', 'laurent.hadjadj@ma-moulinette.fr'];
     }
 
     #[DataProvider('attributesProvider')]

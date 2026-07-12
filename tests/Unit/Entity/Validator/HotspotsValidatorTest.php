@@ -23,7 +23,7 @@ use Symfony\Component\Validator\ConstraintViolation;
 class HotspotsValidatorTest extends KernelTestCase
 {
 
-  private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+  private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
   private static string $version = '1.2.0-RELEASE';
   private static string $dateVersion = '2024-07-10 15:26:07+02';
   private static string $hotspotKey = 'AZCc06XbgfifxdiJPzw6';
@@ -34,12 +34,12 @@ class HotspotsValidatorTest extends KernelTestCase
   private static string $resolution = 'Todo';
   private static int $niveau = 2;
   private static string $modeCollecte = 'TRAITEMENT MANUEL';
-  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-moulinette.fr';
   private static string $dateEnregistrement = '2024-04-12 16:23:11+01';
 
   private function getEntity(): Hotspots
   {
-      return (new hotspots())
+    return (new hotspots())
       ->setMavenKey(self::$mavenKey)
       ->setVersion(self::$version)
       ->setDateVersion(new \DateTimeImmutable(self::$dateVersion))
@@ -62,7 +62,7 @@ class HotspotsValidatorTest extends KernelTestCase
     $errors = $container->get('validator')->validate($entity);
     $messages = [];
     /** @var ConstraintViolation $error */
-    foreach($errors as $error) {
+    foreach ($errors as $error) {
       $messages[] = $error->getPropertyPath() . ' => ' . $error->getMessage();
     }
     $this->assertCount($number, $errors, implode(', ', $messages));
@@ -91,7 +91,7 @@ class HotspotsValidatorTest extends KernelTestCase
   {
     // v2.0.0 : valeurs limites BASSES acceptees par PositiveOrZero (>= 0)
     $this->assertHasErrors($this->getEntity()->setNiveau(0), 0);
-    }
+  }
 
   /**
    * v2.0.0 : valeurs negatives REJETEES par les contraintes PositiveOrZero / Positive / Range.
@@ -99,13 +99,13 @@ class HotspotsValidatorTest extends KernelTestCase
   public function testInvalidIntegerEntity(): void
   {
     $this->assertHasErrors($this->getEntity()->setNiveau(-1), 1);
-    }
+  }
 
   public function testCountAttribut(): void
   {
-      $entity = $this->getEntity();
-      $reflectionClass = new \ReflectionClass($entity);
-      $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 14);
+    $entity = $this->getEntity();
+    $reflectionClass = new \ReflectionClass($entity);
+    $nbAttributs = count($reflectionClass->getProperties());
+    $this->assertEquals($nbAttributs, 14);
   }
 }

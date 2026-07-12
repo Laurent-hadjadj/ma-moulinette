@@ -30,7 +30,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 #[AllowMockObjectsWithoutExpectations]
 class BatchCollecteRepartitionControllerTest extends TestCase
 {
-    private const MAVEN_KEY = 'com.acme:app';
+    private const MAVEN_KEY = 'fr.ma-moulinette:ma-moulinette';
     private const SETUP = 'setup-1';
     private const SONAR_URL = 'https://sonar.example.com';
     private const BUILT_URL = 'https://sonar.example.com/api/issues/search?...';
@@ -211,7 +211,7 @@ class BatchCollecteRepartitionControllerTest extends TestCase
         $this->tempRepo->method('checkExistData')->willReturn(['total' => 0]);
 
         // Première page pour pré-check + batch pages 1..N ensuite
-        $issue = ['component' => 'com.acme:app:src/X.java', 'severity' => 'BLOCKER'];
+        $issue = ['component' => 'fr.ma-moulinette:ma-moulinette:src/X.java', 'severity' => 'BLOCKER'];
         $this->client->expects($this->exactly(3)) // pré-check + page 1 + page 2 (vide)
             ->method('httpSonarQube')
             ->willReturnOnConsecutiveCalls(
@@ -263,11 +263,11 @@ class BatchCollecteRepartitionControllerTest extends TestCase
     {
         // composants aux paths qui matchent frontend/backend/autre/inconnu
         $issues = [
-            ['component' => 'com.acme:app:presentation/views/home.html'],        // frontend
-            ['component' => 'com.acme:app:webapp/src/main/app.ts'],              // frontend
-            ['component' => 'com.acme:app:api/rest/Controller.java'],            // backend (backend keywords include 'api')
-            ['component' => 'com.acme:app:batch/nightly.sh'],                    // autre
-            ['component' => 'com.acme:app:unclassified/readme.md'],              // inconnu
+            ['component' => 'fr.ma-moulinette:ma-moulinette:presentation/views/home.html'],        // frontend
+            ['component' => 'fr.ma-moulinette:ma-moulinette:webapp/src/main/app.ts'],              // frontend
+            ['component' => 'fr.ma-moulinette:ma-moulinette:api/rest/Controller.java'],            // backend (backend keywords include 'api')
+            ['component' => 'fr.ma-moulinette:ma-moulinette:batch/nightly.sh'],                    // autre
+            ['component' => 'fr.ma-moulinette:ma-moulinette:unclassified/readme.md'],              // inconnu
         ];
 
         $this->tempRepo->expects($this->once())

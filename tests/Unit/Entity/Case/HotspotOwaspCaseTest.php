@@ -23,7 +23,7 @@ class HotspotOwaspCaseTest extends TestCase
 {
     private HotspotOwasp $hotspotOwasp;
 
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
     private static int $referentialOwasp = 2017;
     private static string $version = '1.2.0-RELEASE';
     private static string $dateVersion = '2024-07-10 15:26:07+02';
@@ -35,7 +35,7 @@ class HotspotOwaspCaseTest extends TestCase
     private static string $resolution = 'Todo';
     private static int $niveau = 2;
     private static string $modeCollecte = 'TRAITEMENT MANUEL';
-    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-moulinette.fr';
     private static string $dateEnregistrement = '2024-04-12 16:23:11+01';
 
     private function getEntity(): HotspotOwasp
@@ -148,7 +148,7 @@ class HotspotOwaspCaseTest extends TestCase
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
+        $newDate = new \DateTimeImmutable(self::$dateEnregistrement);
         $this->hotspotOwasp->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->hotspotOwasp->getDateEnregistrement());
     }

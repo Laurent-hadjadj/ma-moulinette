@@ -23,7 +23,7 @@ use Symfony\Component\Validator\ConstraintViolation;
 class OwaspValidatorTest extends KernelTestCase
 {
 
-  private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+  private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
   private static int $referentialOwasp = 2017;
   private static string $version = '1.2.0-RELEASE';
   private static string $dateVersion = '2024-07-10 15:26:07+02';
@@ -35,7 +35,7 @@ class OwaspValidatorTest extends KernelTestCase
   private static array $aInfo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   private static array $aMinor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
   private static string $modeCollecte = 'TRAITEMENT MANUEL';
-  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-moulinette.fr';
   private static string $dateEnregistrement = '2024-03-26 14:46:38+02';
 
   private function getEntity(): Owasp
@@ -48,12 +48,12 @@ class OwaspValidatorTest extends KernelTestCase
     $owasp->setEffortTotal(self::$effortTotal);
 
     for ($i = 0; $i < 10; $i++) {
-        $owasp->{"setA" . ($i + 1)}(self::$a[$i]);
-        $owasp->{"setA" . ($i + 1) . "Blocker"}(self::$aBlocker[$i]);
-        $owasp->{"setA" . ($i + 1) . "Critical"}(self::$aCritical[$i]);
-        $owasp->{"setA" . ($i + 1) . "Major"}(self::$aMajor[$i]);
-        $owasp->{"setA" . ($i + 1) . "Info"}(self::$aInfo[$i]);
-        $owasp->{"setA" . ($i + 1) . "Minor"}(self::$aMinor[$i]);
+      $owasp->{"setA" . ($i + 1)}(self::$a[$i]);
+      $owasp->{"setA" . ($i + 1) . "Blocker"}(self::$aBlocker[$i]);
+      $owasp->{"setA" . ($i + 1) . "Critical"}(self::$aCritical[$i]);
+      $owasp->{"setA" . ($i + 1) . "Major"}(self::$aMajor[$i]);
+      $owasp->{"setA" . ($i + 1) . "Info"}(self::$aInfo[$i]);
+      $owasp->{"setA" . ($i + 1) . "Minor"}(self::$aMinor[$i]);
     }
 
     $owasp->setModeCollecte(self::$modeCollecte);
@@ -69,7 +69,7 @@ class OwaspValidatorTest extends KernelTestCase
     $errors = $container->get('validator')->validate($entity);
     $messages = [];
     /** @var ConstraintViolation $error */
-    foreach($errors as $error) {
+    foreach ($errors as $error) {
       $messages[] = $error->getPropertyPath() . ' => ' . $error->getMessage();
     }
     $this->assertCount($number, $errors, implode(', ', $messages));
@@ -179,9 +179,9 @@ class OwaspValidatorTest extends KernelTestCase
 
   public function testCountAttribut(): void
   {
-      $entity = $this->getEntity();
-      $reflectionClass = new \ReflectionClass($entity);
-      $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 69);
+    $entity = $this->getEntity();
+    $reflectionClass = new \ReflectionClass($entity);
+    $nbAttributs = count($reflectionClass->getProperties());
+    $this->assertEquals($nbAttributs, 69);
   }
 }

@@ -71,8 +71,8 @@ class PortefeuilleHistoriqueTest extends TestCase
     public function testAuteurRoundTrip(): void
     {
         $e = new PortefeuilleHistorique();
-        $e->setAuteur('laurent.hadjadj@example.com');
-        $this->assertSame('laurent.hadjadj@example.com', $e->getAuteur());
+        $e->setAuteur('batch.collecte@ma-moulinette.fr');
+        $this->assertSame('batch.collecte@ma-moulinette.fr', $e->getAuteur());
     }
 
     public function testRuleRoundTrip(): void

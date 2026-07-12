@@ -103,7 +103,7 @@ class BuildMapHistoryServiceTest extends TestCase
         $result = $this->service->metricsRebuild(
             [],
             ['analysisKey' => 'AY1', 'version' => '1.0', 'date' => '2026-04-22T00:00:00+0000'],
-            'com.acme:app'
+            'fr.ma-moulinette:ma-moulinette'
             // $collect = 'measures' par défaut
         );
 
@@ -133,12 +133,12 @@ class BuildMapHistoryServiceTest extends TestCase
                 'version_snapshot' => 2,
                 'version_autre' => 1,
             ],
-            'com.acme:app',
+            'fr.ma-moulinette:ma-moulinette',
             'analytics'
         );
 
         // Informations projet propagées
-        $this->assertSame('com.acme:app', $result['maven_key']);
+        $this->assertSame('fr.ma-moulinette:ma-moulinette', $result['maven_key']);
         $this->assertSame('AY1', $result['analyse_key']);
         $this->assertSame('1.2.3', $result['version']);
         $this->assertSame('my-project', $result['project_name']);
@@ -180,7 +180,7 @@ class BuildMapHistoryServiceTest extends TestCase
                 'tests' => '250',
             ],
             ['analysisKey' => 'AY1', 'version' => '1.0', 'date' => '2026-04-22T00:00:00+0000'],
-            'com.acme:app'
+            'fr.ma-moulinette:ma-moulinette'
         );
 
         $this->assertSame('OK', $result['alert_status']);
@@ -206,7 +206,7 @@ class BuildMapHistoryServiceTest extends TestCase
         $result = $this->service->metricsRebuild(
             [],
             ['analysisKey' => 'AY1', 'version' => '1.0', 'date' => '2026-04-22T00:00:00+0000'],
-            'com.acme:app'
+            'fr.ma-moulinette:ma-moulinette'
         );
 
         $this->assertSame('UNKNOWN', $result['alert_status']);
@@ -217,7 +217,7 @@ class BuildMapHistoryServiceTest extends TestCase
         $result = $this->service->metricsRebuild(
             ['ncloc' => '1000', 'complexity' => '0', 'cognitive_complexity' => '0'],
             ['analysisKey' => 'AY1', 'version' => '1.0', 'date' => '2026-04-22T00:00:00+0000'],
-            'com.acme:app'
+            'fr.ma-moulinette:ma-moulinette'
         );
 
         $this->assertNull($result['complexity_ratio']);
@@ -234,7 +234,7 @@ class BuildMapHistoryServiceTest extends TestCase
         $result = $this->service->metricsRebuild(
             $measures,
             ['analysisKey' => 'AY1', 'version' => '1.0', 'date' => '2026-04-22T00:00:00+0000'],
-            'com.acme:app'
+            'fr.ma-moulinette:ma-moulinette'
         );
 
         $this->assertSame($expected, $result['coverage_rating']);
@@ -260,7 +260,7 @@ class BuildMapHistoryServiceTest extends TestCase
         $result = $this->service->metricsRebuild(
             $measures,
             ['analysisKey' => 'AY1', 'version' => '1.0', 'date' => '2026-04-22T00:00:00+0000'],
-            'com.acme:app'
+            'fr.ma-moulinette:ma-moulinette'
         );
 
         $this->assertSame($expected, $result['duplicated_lines_rating']);
@@ -284,7 +284,7 @@ class BuildMapHistoryServiceTest extends TestCase
         $result = $this->service->metricsRebuild(
             ['comment_lines_density' => (string) $ratio],
             ['analysisKey' => 'AY1', 'version' => '1.0', 'date' => '2026-04-22T00:00:00+0000'],
-            'com.acme:app'
+            'fr.ma-moulinette:ma-moulinette'
         );
 
         $this->assertSame($expected, $result['comment_lines_rating']);
@@ -309,7 +309,7 @@ class BuildMapHistoryServiceTest extends TestCase
         $result = $this->service->metricsRebuild(
             ['ncloc' => (string) $ncloc, 'complexity' => (string) $complexity],
             ['analysisKey' => 'AY1', 'version' => '1.0', 'date' => '2026-04-22T00:00:00+0000'],
-            'com.acme:app'
+            'fr.ma-moulinette:ma-moulinette'
         );
 
         $this->assertSame($expected, $result['complexity_rating']);
@@ -333,7 +333,7 @@ class BuildMapHistoryServiceTest extends TestCase
         $result = $this->service->metricsRebuild(
             ['reliability_rating' => $value],
             ['analysisKey' => 'AY1', 'version' => '1.0', 'date' => '2026-04-22T00:00:00+0000'],
-            'com.acme:app'
+            'fr.ma-moulinette:ma-moulinette'
         );
 
         $this->assertSame($expected, $result['reliability_rating']);

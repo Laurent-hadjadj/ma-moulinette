@@ -22,7 +22,7 @@ use Symfony\Component\Validator\ConstraintViolation;
  */
 class RepartitionValidatorTest extends KernelTestCase
 {
-  private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+  private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
   private static string $name = 'ma-moulinette';
   private static int $bugBlocker = 0;
   private static int $bugCritical = 0;
@@ -106,12 +106,12 @@ class RepartitionValidatorTest extends KernelTestCase
   private static string $control = 'complet (100%)';
   private static int $setup = 1739816022572;
   private static string $modeCollecte = 'COLLECTE';
-  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+  private static string $utilisateurCollecte = 'laurent.hadjadj@ma-moulinette.fr';
   private static string $dateEnregistrement = '2025-02-17 19:13:59+01';
 
   private function getEntity(): Repartition
   {
-      return (new repartition())
+    return (new repartition())
       ->setMavenKey(self::$mavenKey)
       ->setName(self::$name)
       ->setBugBlocker(self::$bugBlocker)
@@ -207,7 +207,7 @@ class RepartitionValidatorTest extends KernelTestCase
     $errors = $container->get('validator')->validate($entity);
     $messages = [];
     /** @var ConstraintViolation $error */
-    foreach($errors as $error) {
+    foreach ($errors as $error) {
       $messages[] = $error->getPropertyPath() . ' => ' . $error->getMessage();
     }
     $this->assertCount($number, $errors, implode(', ', $messages));
@@ -309,7 +309,7 @@ class RepartitionValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setInconnuCodeSmellMajor(0), 0);
     $this->assertHasErrors($this->getEntity()->setInconnuCodeSmellMinor(0), 0);
     $this->assertHasErrors($this->getEntity()->setInconnuCodeSmellInfo(0), 0);
-    }
+  }
 
   /**
    * v2.0.0 : valeurs negatives REJETEES par les contraintes PositiveOrZero / Positive / Range.
@@ -396,13 +396,13 @@ class RepartitionValidatorTest extends KernelTestCase
     $this->assertHasErrors($this->getEntity()->setInconnuCodeSmellMajor(-1), 1);
     $this->assertHasErrors($this->getEntity()->setInconnuCodeSmellMinor(-1), 1);
     $this->assertHasErrors($this->getEntity()->setInconnuCodeSmellInfo(-1), 1);
-    }
+  }
 
   public function testCountAttribut(): void
   {
-      $entity = $this->getEntity();
-      $reflectionClass = new \ReflectionClass($entity);
-      $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 87, "Le nombre d'attribut doit être de 87.");
+    $entity = $this->getEntity();
+    $reflectionClass = new \ReflectionClass($entity);
+    $nbAttributs = count($reflectionClass->getProperties());
+    $this->assertEquals($nbAttributs, 87, "Le nombre d'attribut doit être de 87.");
   }
 }

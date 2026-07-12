@@ -23,24 +23,24 @@ class TodoCaseTest extends TestCase
 {
     private Todo $todo;
 
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
     private static string $rule = 'java:S1135';
-    private static string $component = 'fr.ma-petite-entreprise:ma-moulinette:ma-moulinette/src/main/java/fr/ma-petite-entreprise/service/AnalyseTraceService.java';
+    private static string $component = 'fr.ma-moulinette:ma-moulinette:ma-moulinette/src/main/java/fr/ma-petite-entreprise/service/AnalyseTraceService.java';
     private static int $line = 81;
     private static string $modeCollecte = 'TRAITEMENT AUTOMATIQUE';
-    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-moulinette.fr';
     private static string $dateEnregistrement = '2024-03-26 14:46:38+02';
 
     private function getEntity(): Todo
     {
         return (new todo())
-        ->setMavenKey(self::$mavenKey)
-        ->setRule(self::$rule)
-        ->setComponent(self::$component)
-        ->setLine(self::$line)
-        ->setModeCollecte(self::$modeCollecte)
-        ->setUtilisateurCollecte(self::$utilisateurCollecte)
-        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
+            ->setMavenKey(self::$mavenKey)
+            ->setRule(self::$rule)
+            ->setComponent(self::$component)
+            ->setLine(self::$line)
+            ->setModeCollecte(self::$modeCollecte)
+            ->setUtilisateurCollecte(self::$utilisateurCollecte)
+            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -92,9 +92,8 @@ class TodoCaseTest extends TestCase
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
+        $newDate = new \DateTimeImmutable(self::$dateEnregistrement);
         $this->todo->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->todo->getDateEnregistrement());
     }
-
 }

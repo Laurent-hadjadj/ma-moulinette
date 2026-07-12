@@ -22,7 +22,7 @@ use Symfony\Component\Validator\ConstraintViolation;
  */
 class RepartitionTempValidatorTest extends KernelTestCase
 {
-  private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+  private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
   private static int $setup = 1739816022572;
   private static string $component = '/src/Controller/Accueil/AccueilController.php';
   private static string $type = 'CODE_SMELL';
@@ -30,7 +30,7 @@ class RepartitionTempValidatorTest extends KernelTestCase
 
   private function getEntity(): RepartitionTemp
   {
-      return (new RepartitionTemp())
+    return (new RepartitionTemp())
       ->setMavenKey(self::$mavenKey)
       ->setSetup(self::$setup)
       ->setType(self::$type)
@@ -45,7 +45,7 @@ class RepartitionTempValidatorTest extends KernelTestCase
     $errors = $container->get('validator')->validate($entity);
     $messages = [];
     /** @var ConstraintViolation $error */
-    foreach($errors as $error) {
+    foreach ($errors as $error) {
       $messages[] = $error->getPropertyPath() . ' => ' . $error->getMessage();
     }
     $this->assertCount($number, $errors, implode(', ', $messages));
@@ -68,7 +68,7 @@ class RepartitionTempValidatorTest extends KernelTestCase
   {
     // v2.0.0 : valeurs limites BASSES acceptees par PositiveOrZero (>= 0)
     $this->assertHasErrors($this->getEntity()->setSetup(0), 0);
-    }
+  }
 
   /**
    * v2.0.0 : valeurs negatives REJETEES par les contraintes PositiveOrZero / Positive / Range.
@@ -76,13 +76,13 @@ class RepartitionTempValidatorTest extends KernelTestCase
   public function testInvalidIntegerEntity(): void
   {
     $this->assertHasErrors($this->getEntity()->setSetup(-1), 1);
-    }
+  }
 
   public function testCountAttribut(): void
   {
-      $entity = $this->getEntity();
-      $reflectionClass = new \ReflectionClass($entity);
-      $nbAttributs = count($reflectionClass->getProperties());
-      $this->assertEquals($nbAttributs, 6, "Le nombre d'attribut doit être de 6.");
+    $entity = $this->getEntity();
+    $reflectionClass = new \ReflectionClass($entity);
+    $nbAttributs = count($reflectionClass->getProperties());
+    $this->assertEquals($nbAttributs, 6, "Le nombre d'attribut doit être de 6.");
   }
 }

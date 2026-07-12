@@ -68,10 +68,10 @@ class DependencyCheckPageControllerTest extends WebTestCase
         $this->em->getConnection()->executeStatement('DELETE FROM ma_moulinette.dc_scan');
         $this->em->getConnection()->executeStatement('DELETE FROM ma_moulinette.dc_dependency');
         $this->em->getConnection()->executeStatement('DELETE FROM ma_moulinette.dc_cve');
-        /* Le projet `fr.test:demo` doit aussi être dans liste_projet pour passer
+        /* Le projet `fr.ma-moulinette:demo` doit aussi être dans liste_projet pour passer
          * l'ACL de MesProjets (filtre par tag LIKE prefix%). */
         $this->em->getConnection()->executeStatement(
-            "DELETE FROM ma_moulinette.liste_projet WHERE maven_key IN ('fr.test:demo', 'other.group:other-app')"
+            "DELETE FROM ma_moulinette.liste_projet WHERE maven_key IN ('fr.ma-moulinette:demo', 'fr.hors-perimetre:projet-externe')"
         );
     }
 
@@ -96,7 +96,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
     /* MODIF 2026-05-11 : la liste dc_index doit respecter le
      * périmètre groupe_fonctionnel de l'utilisateur. On insère 2 scans :
-     * `fr.test:demo` (périmètre emma) et `other.group:other-app` (hors
+     * `fr.ma-moulinette:demo` (périmètre emma) et `fr.hors-perimetre:projet-externe` (hors
      * périmètre). La page ne doit afficher QUE `demo`. */
     public function testIndexFiltersOutOfScopeProjects(): void
     {
@@ -108,7 +108,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
         $body = $this->client->getResponse()->getContent();
         $this->assertStringContainsString('demo', $body, 'Le projet du perimetre user doit apparaitre');
         $this->assertStringNotContainsString('other-app', $body, 'Le projet hors perimetre ne doit PAS apparaitre');
-        $this->assertStringNotContainsString('other.group', $body, 'Le group hors perimetre ne doit PAS apparaitre');
+        $this->assertStringNotContainsString('fr.hors-perimetre', $body, 'Le group hors perimetre ne doit PAS apparaitre');
     }
 
     /* MODIF 2026-05-11 : utilisateur sans groupe_fonctionnel
@@ -170,7 +170,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
     {
         $this->seedMinimalFixture();
 
-        $this->client->request('GET', '/dependency-check/projet/fr.test/demo/1.0');
+        $this->client->request('GET', '/dependency-check/projet/fr.ma-moulinette/demo/1.0');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $body = $this->client->getResponse()->getContent();
         $this->assertStringContainsString('CVE-2023-46120', $body);
@@ -183,7 +183,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
     {
         $this->seedMinimalFixture();
 
-        $this->client->request('GET', '/dependency-check/projet/fr.test/demo/1.0/pdf');
+        $this->client->request('GET', '/dependency-check/projet/fr.ma-moulinette/demo/1.0/pdf');
         $response = $this->client->getResponse();
 
         $this->assertSame(200, $response->getStatusCode());
@@ -212,9 +212,9 @@ class DependencyCheckPageControllerTest extends WebTestCase
      * structure '---' (cf. template projet.html.twig). */
     public function testProjetReturns200WithDashesWhenScanMissing(): void
     {
-        $this->seedMinimalFixture(); // insère fr.test:demo dans liste_projet
+        $this->seedMinimalFixture(); // insère fr.ma-moulinette:demo dans liste_projet
 
-        $this->client->request('GET', '/dependency-check/projet/fr.test/demo/9.9.9-INEXISTANT');
+        $this->client->request('GET', '/dependency-check/projet/fr.ma-moulinette/demo/9.9.9-INEXISTANT');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $body = $this->client->getResponse()->getContent();
         $this->assertStringContainsString('---', $body, 'La page doit afficher --- en l\'absence de scan');
@@ -224,13 +224,13 @@ class DependencyCheckPageControllerTest extends WebTestCase
     /**
      * Insère une fixture minimale : 1 scan, 1 dep, 1 cve, 1 finding.
      * MODIF 2026-05-10 : insère aussi un row
-     * ListeProjet pour que `fr.test:demo` soit dans le périmètre ACL d'emma
+     * ListeProjet pour que `fr.ma-moulinette:demo` soit dans le périmètre ACL d'emma
      * (groupe `fr-test` -> tag prefix `fr-test%`).
      */
     private function seedMinimalFixture(): void
     {
         $listeProjet = new ListeProjet(
-            mavenKey: 'fr.test:demo',
+            mavenKey: 'fr.ma-moulinette:demo',
             name: 'demo',
             visibility: 'public',
             tags: ['fr-test-acl']
@@ -260,8 +260,8 @@ class DependencyCheckPageControllerTest extends WebTestCase
         $this->em->persist($dep);
 
         $scan = (new DcScan())
-            ->setMavenKey('fr.test:demo')
-            ->setProjectGroup('fr.test')
+            ->setMavenKey('fr.ma-moulinette:demo')
+            ->setProjectGroup('fr.ma-moulinette')
             ->setProjectArtifact('demo')
             ->setProjectVersion('1.0')
             ->setScanDate(new \DateTimeImmutable('2026-05-08T08:00:00+02:00'))
@@ -285,7 +285,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
         // is_latest_overall=is_latest_release=FALSE par defaut -> scan
         // invisible dans les agregats depuis le lot [dc-latest-version-filter]).
         $updater = static::getContainer()->get(DcLatestVersionUpdater::class);
-        $updater->recomputeFor('fr.test', 'demo');
+        $updater->recomputeFor('fr.ma-moulinette', 'demo');
     }
 
     /**
@@ -297,7 +297,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
     private function seedOutOfScopeScan(): void
     {
         $listeProjet = new ListeProjet(
-            mavenKey: 'other.group:other-app',
+            mavenKey: 'fr.hors-perimetre:projet-externe',
             name: 'other-app',
             visibility: 'public',
             tags: ['autre-groupe-acl']
@@ -305,8 +305,8 @@ class DependencyCheckPageControllerTest extends WebTestCase
         $this->em->persist($listeProjet);
 
         $scan = (new DcScan())
-            ->setMavenKey('other.group:other-app')
-            ->setProjectGroup('other.group')
+            ->setMavenKey('fr.hors-perimetre:projet-externe')
+            ->setProjectGroup('fr.hors-perimetre')
             ->setProjectArtifact('other-app')
             ->setProjectVersion('2.0')
             ->setScanDate(new \DateTimeImmutable('2026-05-09T08:00:00+02:00'))
@@ -320,7 +320,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
         // MODIF 2026-05-15 : recompute is_latest_* idem seedMinimalFixture.
         $updater = static::getContainer()->get(DcLatestVersionUpdater::class);
-        $updater->recomputeFor('other.group', 'other-app');
+        $updater->recomputeFor('fr.hors-perimetre', 'projet-externe');
     }
 
     /* ====================================================================
@@ -339,7 +339,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
     {
         // Projet dans ACL (liste_projet) mais 0 scan en base
         $listeProjet = new ListeProjet(
-            mavenKey: 'fr.test:demo',
+            mavenKey: 'fr.ma-moulinette:demo',
             name: 'demo',
             visibility: 'public',
             tags: ['fr-test-acl']
@@ -347,7 +347,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
         $this->em->persist($listeProjet);
         $this->em->flush();
 
-        $this->client->request('GET', '/dependency-check/projet/fr.test/demo/history');
+        $this->client->request('GET', '/dependency-check/projet/fr.ma-moulinette/demo/history');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $body = $this->client->getResponse()->getContent();
         $this->assertStringContainsString('Historique', $body);
@@ -358,7 +358,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
     {
         $this->seedMinimalFixture();
 
-        $this->client->request('GET', '/dependency-check/projet/fr.test/demo/history');
+        $this->client->request('GET', '/dependency-check/projet/fr.ma-moulinette/demo/history');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $body = $this->client->getResponse()->getContent();
         $this->assertStringContainsString('Scans cumulés', $body);
@@ -372,9 +372,9 @@ class DependencyCheckPageControllerTest extends WebTestCase
     {
         $this->seedMinimalFixture();
         // Ajoute un 2e scan d'une autre version : v2.0 plus récent
-        $this->seedAdditionalScan('fr.test', 'demo', '2.0', '2026-05-12T08:00:00+02:00', critical: 1, high: 2);
+        $this->seedAdditionalScan('fr.ma-moulinette', 'demo', '2.0', '2026-05-12T08:00:00+02:00', critical: 1, high: 2);
 
-        $this->client->request('GET', '/dependency-check/projet/fr.test/demo/history');
+        $this->client->request('GET', '/dependency-check/projet/fr.ma-moulinette/demo/history');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $body = $this->client->getResponse()->getContent();
         // Versions distinctes >= 2 (le compteur est dans une cell font-size-15)
@@ -388,9 +388,9 @@ class DependencyCheckPageControllerTest extends WebTestCase
     {
         $this->seedMinimalFixture(); // v1.0 : critical=0, high=1
         // 2e scan v1.0 ré-scané avec plus de CVE => delta_high doit être calculé
-        $this->seedAdditionalScan('fr.test', 'demo', '1.0', '2026-05-14T08:00:00+02:00', critical: 2, high: 3);
+        $this->seedAdditionalScan('fr.ma-moulinette', 'demo', '1.0', '2026-05-14T08:00:00+02:00', critical: 2, high: 3);
 
-        $this->client->request('GET', '/dependency-check/projet/fr.test/demo/history');
+        $this->client->request('GET', '/dependency-check/projet/fr.ma-moulinette/demo/history');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $body = $this->client->getResponse()->getContent();
         // Au moins 2 scans
@@ -409,7 +409,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
     {
         // ACL OK (projet en liste_projet) mais pas de scan pour la version ciblée
         $listeProjet = new ListeProjet(
-            mavenKey: 'fr.test:demo',
+            mavenKey: 'fr.ma-moulinette:demo',
             name: 'demo',
             visibility: 'public',
             tags: ['fr-test-acl']
@@ -417,7 +417,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
         $this->em->persist($listeProjet);
         $this->em->flush();
 
-        $this->client->request('GET', '/dependency-check/projet/fr.test/demo/9.9.9-INEXISTANT/executive');
+        $this->client->request('GET', '/dependency-check/projet/fr.ma-moulinette/demo/9.9.9-INEXISTANT/executive');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $body = $this->client->getResponse()->getContent();
         $this->assertStringContainsString('Aucun scan trouvé pour ce projet', $body);
@@ -427,7 +427,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
     {
         $this->seedMinimalFixture();
 
-        $this->client->request('GET', '/dependency-check/projet/fr.test/demo/1.0/executive');
+        $this->client->request('GET', '/dependency-check/projet/fr.ma-moulinette/demo/1.0/executive');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $body = $this->client->getResponse()->getContent();
         $this->assertStringContainsString('Contexte', $body);
@@ -442,9 +442,9 @@ class DependencyCheckPageControllerTest extends WebTestCase
     {
         $this->seedMinimalFixture(); // v1.0 du 2026-05-08
         // Re-scan v1.0 plus récent
-        $this->seedAdditionalScan('fr.test', 'demo', '1.0', '2026-05-14T08:00:00+02:00', critical: 0, high: 1);
+        $this->seedAdditionalScan('fr.ma-moulinette', 'demo', '1.0', '2026-05-14T08:00:00+02:00', critical: 0, high: 1);
 
-        $this->client->request('GET', '/dependency-check/projet/fr.test/demo/1.0/executive');
+        $this->client->request('GET', '/dependency-check/projet/fr.ma-moulinette/demo/1.0/executive');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $body = $this->client->getResponse()->getContent();
         // Au moins une des 2 branches (success "Pas de changement" si findings identiques,
@@ -456,9 +456,9 @@ class DependencyCheckPageControllerTest extends WebTestCase
     {
         $this->seedMinimalFixture(); // v1.0
         // v2.0 plus récent, la requête cible v2.0 -> previous_any = v1.0
-        $this->seedAdditionalScan('fr.test', 'demo', '2.0', '2026-05-14T08:00:00+02:00', critical: 0, high: 0);
+        $this->seedAdditionalScan('fr.ma-moulinette', 'demo', '2.0', '2026-05-14T08:00:00+02:00', critical: 0, high: 0);
 
-        $this->client->request('GET', '/dependency-check/projet/fr.test/demo/2.0/executive');
+        $this->client->request('GET', '/dependency-check/projet/fr.ma-moulinette/demo/2.0/executive');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $body = $this->client->getResponse()->getContent();
         $this->assertStringContainsString('Comparaison vs version antérieure', $body);
@@ -523,7 +523,7 @@ class DependencyCheckPageControllerTest extends WebTestCase
     {
         $this->seedMinimalFixture();
 
-        $this->client->request('GET', '/dependency-check/comparer?apps%5B%5D=fr.test%3Ademo%3A1.0');
+        $this->client->request('GET', '/dependency-check/comparer?apps%5B%5D=fr.ma-moulinette%3Ademo%3A1.0');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $body = $this->client->getResponse()->getContent();
         // 1 app seule => raw_app_keys prérempli mais branche "Sélectionnez au moins 2"
@@ -533,21 +533,21 @@ class DependencyCheckPageControllerTest extends WebTestCase
 
     public function testComparerReturns200WithTwoAppsShowsComparison(): void
     {
-        $this->seedMinimalFixture(); // fr.test:demo:1.0
+        $this->seedMinimalFixture(); // fr.ma-moulinette:demo:1.0
         // 2e app dans le périmètre ACL : ajoute fr-test-acl tag + nouveau scan
         $listeProjet2 = new ListeProjet(
-            mavenKey: 'fr.test:bravo',
+            mavenKey: 'fr.ma-moulinette:bravo',
             name: 'bravo',
             visibility: 'public',
             tags: ['fr-test-acl']
         );
         $this->em->persist($listeProjet2);
         $this->em->flush();
-        $this->seedAdditionalScan('fr.test', 'bravo', '1.0', '2026-05-12T08:00:00+02:00', high: 1);
+        $this->seedAdditionalScan('fr.ma-moulinette', 'bravo', '1.0', '2026-05-12T08:00:00+02:00', high: 1);
 
         $this->client->request(
             'GET',
-            '/dependency-check/comparer?apps%5B%5D=fr.test%3Ademo%3A1.0&apps%5B%5D=fr.test%3Abravo%3A1.0'
+            '/dependency-check/comparer?apps%5B%5D=fr.ma-moulinette%3Ademo%3A1.0&apps%5B%5D=fr.ma-moulinette%3Abravo%3A1.0'
         );
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $body = $this->client->getResponse()->getContent();
@@ -559,13 +559,13 @@ class DependencyCheckPageControllerTest extends WebTestCase
     public function testComparerExcludesAppsOutsideAcl(): void
     {
         $this->seedMinimalFixture();
-        $this->seedOutOfScopeScan(); // other.group:other-app:2.0 hors ACL emma
+        $this->seedOutOfScopeScan(); // fr.hors-perimetre:projet-externe:2.0 hors ACL emma
 
         // emma sélectionne 2 apps : demo (dans ACL) + other-app (hors ACL).
         // Comportement attendu : other-app filtré -> reste 1 app -> branche < 2.
         $this->client->request(
             'GET',
-            '/dependency-check/comparer?apps%5B%5D=fr.test%3Ademo%3A1.0&apps%5B%5D=other.group%3Aother-app%3A2.0'
+            '/dependency-check/comparer?apps%5B%5D=fr.ma-moulinette%3Ademo%3A1.0&apps%5B%5D=fr.hors-perimetre%3Aprojet-externe%3A2.0'
         );
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $body = $this->client->getResponse()->getContent();
@@ -618,14 +618,14 @@ class DependencyCheckPageControllerTest extends WebTestCase
     {
         // Seed une app avec version SNAPSHOT pour qu'elle apparaisse en cohorte dev
         $listeProjet = new ListeProjet(
-            mavenKey: 'fr.test:wip',
+            mavenKey: 'fr.ma-moulinette:projet-wip',
             name: 'wip',
             visibility: 'public',
             tags: ['fr-test-acl']
         );
         $this->em->persist($listeProjet);
         $this->em->flush();
-        $this->seedAdditionalScan('fr.test', 'wip', '1.0-SNAPSHOT', '2026-05-14T08:00:00+02:00', high: 1);
+        $this->seedAdditionalScan('fr.ma-moulinette', 'projet-wip', '1.0-SNAPSHOT', '2026-05-14T08:00:00+02:00', high: 1);
 
         $this->client->request('GET', '/dependency-check/dashboard?vue=dev');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
@@ -638,13 +638,13 @@ class DependencyCheckPageControllerTest extends WebTestCase
     {
         // Seed 2 apps partageant le même parent_label/version
         $listeProjet1 = new ListeProjet(
-            mavenKey: 'fr.test:alpha',
+            mavenKey: 'fr.ma-moulinette:projet-a',
             name: 'alpha',
             visibility: 'public',
             tags: ['fr-test-acl']
         );
         $listeProjet2 = new ListeProjet(
-            mavenKey: 'fr.test:bravo',
+            mavenKey: 'fr.ma-moulinette:projet-b',
             name: 'bravo',
             visibility: 'public',
             tags: ['fr-test-acl']
@@ -652,8 +652,8 @@ class DependencyCheckPageControllerTest extends WebTestCase
         $this->em->persist($listeProjet1);
         $this->em->persist($listeProjet2);
         $this->em->flush();
-        $this->seedScanWithSocle('fr.test', 'alpha', '1.0', '2026-05-10T08:00:00+02:00', 'springboot-config', '2.7.0');
-        $this->seedScanWithSocle('fr.test', 'bravo', '1.0', '2026-05-10T08:00:00+02:00', 'springboot-config', '2.7.0');
+        $this->seedScanWithSocle('fr.ma-moulinette', 'projet-a', '1.0', '2026-05-10T08:00:00+02:00', 'springboot-config', '2.7.0');
+        $this->seedScanWithSocle('fr.ma-moulinette', 'projet-b', '1.0', '2026-05-10T08:00:00+02:00', 'springboot-config', '2.7.0');
 
         $this->client->request('GET', '/dependency-check/dashboard?socle=springboot-config%402.7.0');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());

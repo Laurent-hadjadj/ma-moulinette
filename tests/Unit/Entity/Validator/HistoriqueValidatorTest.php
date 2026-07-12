@@ -28,7 +28,7 @@ class HistoriqueValidatorTest extends KernelTestCase
     private function getEntity(): Historique
     {
         return (new Historique())
-            ->setMavenKey('fr.ma-petite-entreprise:ma-moulinette')
+            ->setMavenKey('fr.ma-moulinette:ma-moulinette')
             ->setVersion('1.2.0-RELEASE')
             ->setDateVersion('2024-07-12 16:34:46')
             ->setNomProjet('ma-moulinette')
@@ -85,44 +85,106 @@ class HistoriqueValidatorTest extends KernelTestCase
     {
         $names = [
             // Versions / repartition / langages
-            'VersionRelease', 'VersionSnapshot', 'VersionAutre',
-            'RepartitionFrontend', 'RepartitionBackend', 'RepartitionAutre', 'RepartitionInconnu',
-            'JavaNoSonar', 'PythonNoSonar', 'PhpNoSonar',
-            'SuppressWarning', 'NoPmd', 'CheckStyle',
-            'JavaTodo', 'PythonTodo', 'PhpTodo', 'XmlTodo', 'JavascriptTodo', 'TypescriptTodo', 'RubyTodo',
+            'VersionRelease',
+            'VersionSnapshot',
+            'VersionAutre',
+            'RepartitionFrontend',
+            'RepartitionBackend',
+            'RepartitionAutre',
+            'RepartitionInconnu',
+            'JavaNoSonar',
+            'PythonNoSonar',
+            'PhpNoSonar',
+            'SuppressWarning',
+            'NoPmd',
+            'CheckStyle',
+            'JavaTodo',
+            'PythonTodo',
+            'PhpTodo',
+            'XmlTodo',
+            'JavascriptTodo',
+            'TypescriptTodo',
+            'RubyTodo',
             // Statistiques de code
-            'Lines', 'Ncloc', 'Files', 'Classes', 'Functions', 'Statements', 'CommentLines',
-            'LineCoverage', 'LinesToCover', 'ConditionsToCover', 'UncoveredConditions',
+            'Lines',
+            'Ncloc',
+            'Files',
+            'Classes',
+            'Functions',
+            'Statements',
+            'CommentLines',
+            'LineCoverage',
+            'LinesToCover',
+            'ConditionsToCover',
+            'UncoveredConditions',
             // Tests
-            'Tests', 'TestExecutionTime', 'TestErrors', 'TestFailures', 'SkippedTests',
+            'Tests',
+            'TestExecutionTime',
+            'TestErrors',
+            'TestFailures',
+            'SkippedTests',
             // Duplication / complexity
-            'DuplicatedFiles', 'DuplicatedBlocks', 'DuplicatedLines',
-            'Complexity', 'CognitiveComplexity',
+            'DuplicatedFiles',
+            'DuplicatedBlocks',
+            'DuplicatedLines',
+            'Complexity',
+            'CognitiveComplexity',
             // Anomalies
-            'OpenIssues', 'ReopenedIssues', 'ConfirmedIssues', 'FalsePositiveIssues',
-            'AcceptedIssues', 'HighImpactAcceptedIssues',
-            'Violations', 'BlockerViolations', 'CriticalViolations', 'MajorViolations',
-            'MinorViolations', 'InfoViolations',
-            'SoftwareQualityBlockerIssues', 'SoftwareQualityHighIssues', 'SoftwareQualityMediumIssues',
-            'SoftwareQualityLowIssues', 'SoftwareQualityInfoIssues',
+            'OpenIssues',
+            'ReopenedIssues',
+            'ConfirmedIssues',
+            'FalsePositiveIssues',
+            'AcceptedIssues',
+            'HighImpactAcceptedIssues',
+            'Violations',
+            'BlockerViolations',
+            'CriticalViolations',
+            'MajorViolations',
+            'MinorViolations',
+            'InfoViolations',
+            'SoftwareQualityBlockerIssues',
+            'SoftwareQualityHighIssues',
+            'SoftwareQualityMediumIssues',
+            'SoftwareQualityLowIssues',
+            'SoftwareQualityInfoIssues',
             // Code smells / maintenabilite
-            'CodeSmells', 'CodeSmellBlocker', 'CodeSmellCritical', 'CodeSmellMajor',
-            'CodeSmellMinor', 'CodeSmellInfo',
-            /* MODIF 2026-05-07 [tests-validators] : MaintainabilityIssues n'est plus int (DDL VARCHAR(255)). */
-            'SqaleIndex', 'EffortToReachMaintainabilityRatingA',
+            'CodeSmells',
+            'CodeSmellBlocker',
+            'CodeSmellCritical',
+            'CodeSmellMajor',
+            'CodeSmellMinor',
+            'CodeSmellInfo',
+            /* MODIF 2026-05-07 : MaintainabilityIssues n'est plus int (DDL VARCHAR(255)). */
+            'SqaleIndex',
+            'EffortToReachMaintainabilityRatingA',
             'SoftwareQualityMaintainabilityRemediationEffort',
             'EffortToReachSoftwareQualityMaintainabilityRatingA',
             // Bugs / fiabilite
-            'Bugs', 'BugBlocker', 'BugCritical', 'BugMajor', 'BugMinor', 'BugInfo',
-            'ReliabilityRemediationEffort', 'SoftwareQualityReliabilityRemediationEffort',
+            'Bugs',
+            'BugBlocker',
+            'BugCritical',
+            'BugMajor',
+            'BugMinor',
+            'BugInfo',
+            'ReliabilityRemediationEffort',
+            'SoftwareQualityReliabilityRemediationEffort',
             // Vulnerabilites / securite
-            'Vulnerabilities', 'VulnerabilityBlocker', 'VulnerabilityCritical', 'VulnerabilityMajor',
-            'VulnerabilityMinor', 'VulnerabilityInfo',
-            'SecurityRemediationEffort', 'SoftwareQualitySecurityRemediationEffort',
+            'Vulnerabilities',
+            'VulnerabilityBlocker',
+            'VulnerabilityCritical',
+            'VulnerabilityMajor',
+            'VulnerabilityMinor',
+            'VulnerabilityInfo',
+            'SecurityRemediationEffort',
+            'SoftwareQualitySecurityRemediationEffort',
             // Hotspots / menaces
             'SecurityHotspot',
-            'MenacePotentielleToReviewHigh', 'MenacePotentielleToReviewMedium', 'MenacePotentielleToReviewLow',
-            'MenacePotentielleReviewedHigh', 'MenacePotentielleReviewedMedium', 'MenacePotentielleReviewedLow',
+            'MenacePotentielleToReviewHigh',
+            'MenacePotentielleToReviewMedium',
+            'MenacePotentielleToReviewLow',
+            'MenacePotentielleReviewedHigh',
+            'MenacePotentielleReviewedMedium',
+            'MenacePotentielleReviewedLow',
             'MenacePotentielleTotale',
         ];
         foreach ($names as $n) {
@@ -210,10 +272,15 @@ class HistoriqueValidatorTest extends KernelTestCase
     public static function choiceRatingProvider(): iterable
     {
         $names = [
-            'CommentLinesRating', 'ComplexityRating', 'CognitiveComplexityRating',
-            'SqaleRating', 'SoftwareQualityMaintainabilityRating',
-            'ReliabilityRating', 'SoftwareQualityReliabilityRating',
-            'SecurityRating', 'SoftwareQualitySecurityRating',
+            'CommentLinesRating',
+            'ComplexityRating',
+            'CognitiveComplexityRating',
+            'SqaleRating',
+            'SoftwareQualityMaintainabilityRating',
+            'ReliabilityRating',
+            'SoftwareQualityReliabilityRating',
+            'SecurityRating',
+            'SoftwareQualitySecurityRating',
         ];
         foreach ($names as $n) {
             yield $n => [$n];
@@ -246,8 +313,8 @@ class HistoriqueValidatorTest extends KernelTestCase
     public function testCountAttribut(): void
     {
         /* MODIF 2026-05-07 : 134 → 135 (ajout webTodo le 2026-05-06).
-         * MODIF 2026-05-15 [logger-details]   : 135 → 136 (ajout loggerBreakdown JSONB).
-         * MODIF 2026-05-16 [bug-historique-rating-columns] : 136 → 138 (ajout
+         * MODIF 2026-05-15 : 135 → 136 (ajout loggerBreakdown JSONB).
+         * MODIF 2026-05-16 : 136 → 138 (ajout
          * coverageRating + duplicatedLinesRating oubliées de l’entité, présentes
          * dans DDL et HistoriqueRepository).
          * MODIF 2026-05-17 : 138 → 153 (+15 colonnes

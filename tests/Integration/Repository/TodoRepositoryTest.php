@@ -26,12 +26,12 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class TodoRepositoryTest extends KernelTestCase
 {
 
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
     private static string $rule = 'java:S1135';
-    private static string $component = 'fr.ma-petite-entreprise:ma-moulinette:ma-moulinette/src/main/java/fr/ma-petite-entreprise/service/AnalyseTraceService.java';
+    private static string $component = 'fr.ma-moulinette:ma-moulinette:ma-moulinette/src/main/java/fr/ma-petite-entreprise/service/AnalyseTraceService.java';
     private static int $line = 81;
     private static string $modeCollecte = 'TRAITEMENT AUTOMATIQUE';
-    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-moulinette.fr';
     private static string $dateEnregistrement = '2024-03-26 14:46:38+02';
 
     private static string $erreurCode200 = 'Erreur le code retour doit être 200.';
@@ -64,7 +64,7 @@ class TodoRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map=['maven_key' => self::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         // Appel de la méthode
         $todoRepository = $entityManager->getRepository(Todo::class);
@@ -121,13 +121,15 @@ class TodoRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = [['maven_key' => self::$mavenKey,
-                'rule' => self::$rule,
-                'component' => self::$component,
-                'line' => self::$line,
-                'mode_collecte' => self::$modeCollecte,
-                'utilisateur_collecte' => self::$utilisateurCollecte,
-                'date_enregistrement' =>  new \DateTimeImmutable(self::$dateEnregistrement)]];
+        $map = [[
+            'maven_key' => self::$mavenKey,
+            'rule' => self::$rule,
+            'component' => self::$component,
+            'line' => self::$line,
+            'mode_collecte' => self::$modeCollecte,
+            'utilisateur_collecte' => self::$utilisateurCollecte,
+            'date_enregistrement' =>  new \DateTimeImmutable(self::$dateEnregistrement)
+        ]];
 
         // Appel de la méthode
         $todoRepository = $entityManager->getRepository(Todo::class);
@@ -148,5 +150,4 @@ class TodoRepositoryTest extends KernelTestCase
         $entityManager->close();
         $entityManager = null;
     }
-
 }

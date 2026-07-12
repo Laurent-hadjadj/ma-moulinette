@@ -23,7 +23,7 @@ class AnomalieDetailsCaseTest extends TestCase
 {
     private AnomalieDetails $anomalieDetails;
 
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
     private static string $name = 'ma-moulinette';
     private static int $bugBlocker = 7;
     private static int $bugCritical = 0;
@@ -40,33 +40,33 @@ class AnomalieDetailsCaseTest extends TestCase
     private static int $codeSmellMajor = 109;
     private static int $codeSmellInfo = 72;
     private static int $codeSmellMinor = 13;
-    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-petite-entreprise.fr';
+    private static string $utilisateurCollecte = 'laurent.hadjadj@ma-moulinette.fr';
     private static string $modeCollecte = 'TRAITEMENT MANUEL';
     private static string $dateEnregistrement = '2024-07-14 19:36:33+02';
 
     private function getEntity(): AnomalieDetails
     {
         return (new anomalieDetails())
-        ->setMavenKey(self::$mavenKey)
-        ->setName(self::$name)
-        ->setBugBlocker(self::$bugBlocker)
-        ->setBugCritical(self::$bugCritical)
-        ->setBugMajor(self::$bugMajor)
-        ->setBugInfo(self::$bugInfo)
-        ->setBugMinor(self::$bugMinor)
-        ->setVulnerabilityBlocker(self::$vulnerabilityBlocker)
-        ->setVulnerabilityCritical(self::$vulnerabilityCritical)
-        ->setVulnerabilityMajor(self::$vulnerabilityMajor)
-        ->setVulnerabilityInfo(self::$vulnerabilityInfo)
-        ->setVulnerabilityMinor(self::$vulnerabilityMinor)
-        ->setCodeSmellBlocker(self::$codeSmellBlocker)
-        ->setCodeSmellCritical(self::$codeSmellCritical)
-        ->setCodeSmellMajor(self::$codeSmellMajor)
-        ->setCodeSmellInfo(self::$codeSmellInfo)
-        ->setCodeSmellMinor(self::$codeSmellMinor)
-        ->setUtilisateurCollecte(self::$utilisateurCollecte)
-        ->setModeCollecte(self::$modeCollecte)
-        ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
+            ->setMavenKey(self::$mavenKey)
+            ->setName(self::$name)
+            ->setBugBlocker(self::$bugBlocker)
+            ->setBugCritical(self::$bugCritical)
+            ->setBugMajor(self::$bugMajor)
+            ->setBugInfo(self::$bugInfo)
+            ->setBugMinor(self::$bugMinor)
+            ->setVulnerabilityBlocker(self::$vulnerabilityBlocker)
+            ->setVulnerabilityCritical(self::$vulnerabilityCritical)
+            ->setVulnerabilityMajor(self::$vulnerabilityMajor)
+            ->setVulnerabilityInfo(self::$vulnerabilityInfo)
+            ->setVulnerabilityMinor(self::$vulnerabilityMinor)
+            ->setCodeSmellBlocker(self::$codeSmellBlocker)
+            ->setCodeSmellCritical(self::$codeSmellCritical)
+            ->setCodeSmellMajor(self::$codeSmellMajor)
+            ->setCodeSmellInfo(self::$codeSmellInfo)
+            ->setCodeSmellMinor(self::$codeSmellMinor)
+            ->setUtilisateurCollecte(self::$utilisateurCollecte)
+            ->setModeCollecte(self::$modeCollecte)
+            ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
     protected function setUp(): void
@@ -184,7 +184,7 @@ class AnomalieDetailsCaseTest extends TestCase
 
     public function testSettingAndGettingDateEnregistrement(): void
     {
-        $newDate=new \DateTimeImmutable(self::$dateEnregistrement);
+        $newDate = new \DateTimeImmutable(self::$dateEnregistrement);
         $this->anomalieDetails->setDateEnregistrement($newDate);
         $this->assertEquals($newDate, $this->anomalieDetails->getDateEnregistrement());
     }

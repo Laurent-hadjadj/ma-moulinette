@@ -27,7 +27,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class NoSonarRepositoryTest extends KernelTestCase
 {
 
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
     private static string $erreurCode200 = 'Erreur le code retour doit être 200.';
 
     protected function setUp(): void
@@ -96,11 +96,16 @@ class NoSonarRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = [['maven_key' => self::$mavenKey, 'rule' => 'java:S1309',
-                'component'=> 'fr.ma-petite-entreprise:mo-moulinette:
-                ma-moulinette-service/src/main/java/fr/ma-petite-entreprise/ma-moulinette/service/ClamAvService.java', 'line' => 118,
-                'mode_collecte' => 'TRAITEMENT MANUEL','utilisateur_collecte' => 'laurent.hadjadj@ma-petite-entreprise.fr',
-                'date_enregistrement'=> new \DateTimeImmutable('2024-03-26 14:46:38')]];
+        $map = [[
+            'maven_key' => self::$mavenKey,
+            'rule' => 'java:S1309',
+            'component' => 'fr.ma-moulinette:mo-moulinette:
+                ma-moulinette-service/src/main/java/fr/ma-petite-entreprise/ma-moulinette/service/ClamAvService.java',
+            'line' => 118,
+            'mode_collecte' => 'TRAITEMENT MANUEL',
+            'utilisateur_collecte' => 'laurent.hadjadj@ma-moulinette.fr',
+            'date_enregistrement' => new \DateTimeImmutable('2024-03-26 14:46:38')
+        ]];
 
         // Appel de la méthode
         $nosonarRepository = $entityManager->getRepository(NoSonar::class);
@@ -121,5 +126,4 @@ class NoSonarRepositoryTest extends KernelTestCase
         $entityManager->close();
         $entityManager = null;
     }
-
 }

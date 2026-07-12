@@ -41,9 +41,9 @@ class ActuatorTest extends TestCase
     public function testSetGetMavenKey(): void
     {
         $a = new Actuator();
-        $result = $a->setMavenKey('fr.test:mon-app');
+        $result = $a->setMavenKey('fr.ma-moulinette:ma-moulinette');
         $this->assertInstanceOf(Actuator::class, $result);
-        $this->assertSame('fr.test:mon-app', $a->getMavenKey());
+        $this->assertSame('fr.ma-moulinette:ma-moulinette', $a->getMavenKey());
     }
 
     public function testSetGetNomApplication(): void

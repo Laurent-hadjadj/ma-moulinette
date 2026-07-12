@@ -27,7 +27,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 class AnomalieRepositoryTest extends KernelTestCase
 {
     private static string $erreurCode200 = 'Erreur le code retour doit être 200';
-    private static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
 
     protected function setUp(): void
     {
@@ -92,7 +92,7 @@ class AnomalieRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map=['maven_key' => self::$mavenKey];
+        $map = ['maven_key' => self::$mavenKey];
 
         // Appel de la méthode
         $anomalieRepository = $entityManager->getRepository(Anomalie::class);
@@ -111,16 +111,34 @@ class AnomalieRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
-        $map = ['maven_key' => self::$mavenKey,
-        'project_name' => 'ma-moulinette', 'anomalie_total' => 1956,
-        'dette_minute' => 19586, 'dette_reliability_minute' => 107,
-        'dette_vulnerability_minute' => 0, 'dette_code_smell_minute' => 7369,
-        'dette_reliability' => '0h:5min', 'dette_vulnerability' => '0h:0min',
-        'dette' => '4d, 19h:32min',  'dette_code_smell' => '5d, 2h:49min',
-        'frontend' => 806, 'backend' => 0, 'autre' => 0, 'inconnu' => 1, 'blocker' => 0,
-        'critical' => 0, 'major' => 4750, 'info' => 0, 'minor' => 222,
-        'bug' => 0, 'vulnerability' => 0, 'code_smell' => 801,
-        'mode_collecte' => 'TRAITEMENT MANUEL', 'utilisateur_collecte' => 'laurent.hadjadj@ma-petite-entreprise.fr',  'date_enregistrement' => new \DateTimeImmutable('2024-06-28 17:55:45+02')];
+        $map = [
+            'maven_key' => self::$mavenKey,
+            'project_name' => 'ma-moulinette',
+            'anomalie_total' => 1956,
+            'dette_minute' => 19586,
+            'dette_reliability_minute' => 107,
+            'dette_vulnerability_minute' => 0,
+            'dette_code_smell_minute' => 7369,
+            'dette_reliability' => '0h:5min',
+            'dette_vulnerability' => '0h:0min',
+            'dette' => '4d, 19h:32min',
+            'dette_code_smell' => '5d, 2h:49min',
+            'frontend' => 806,
+            'backend' => 0,
+            'autre' => 0,
+            'inconnu' => 1,
+            'blocker' => 0,
+            'critical' => 0,
+            'major' => 4750,
+            'info' => 0,
+            'minor' => 222,
+            'bug' => 0,
+            'vulnerability' => 0,
+            'code_smell' => 801,
+            'mode_collecte' => 'TRAITEMENT MANUEL',
+            'utilisateur_collecte' => 'laurent.hadjadj@ma-moulinette.fr',
+            'date_enregistrement' => new \DateTimeImmutable('2024-06-28 17:55:45+02')
+        ];
 
         // Appel de la méthode
         $anomalieRepository = $entityManager->getRepository(Anomalie::class);

@@ -97,7 +97,7 @@ class ApiSuiviControllerTest extends TestCase
 
         // appUser() trait → getUser() → tokenStorage->getToken()->getUser()
         $this->defaultUser = new Utilisateur();
-        $this->defaultUser->setCourriel('test@example.com');
+        $this->defaultUser->setCourriel('test@ma-moulinette.fr');
         $this->defaultUser->setPreference([
             'statut' => ['favori_projet' => false, 'favori_version' => false],
             'favori_projet' => [], 'favori_version' => [],
@@ -667,7 +667,7 @@ class ApiSuiviControllerTest extends TestCase
 
     public function testSuiviVersionPoubellePropagatesDeleteError(): void
     {
-        /* MODIF 2026-05-16 [phpunit-14-with-expects] : expects($this->any()) ajoute pour PHPUnit 14. */
+        /* MODIF 2026-05-16 : expects($this->any()) ajoute pour PHPUnit 14. */
         $this->security->expects($this->once())->method('isGranted')->with('ROLE_SUIVI')->willReturn(true);
 
         $this->historiqueRepo->expects($this->once())
@@ -692,7 +692,7 @@ class ApiSuiviControllerTest extends TestCase
         $this->defaultUser->setPreference([
             'favori_version' => [['k' => ['1.0']]],
         ]);
-        /* MODIF 2026-05-16 [phpunit-14-with-expects] : expects($this->any()) ajoute pour PHPUnit 14. */
+        /* MODIF 2026-05-16 : expects($this->any()) ajoute pour PHPUnit 14. */
         $this->security->expects($this->once())->method('isGranted')->with('ROLE_SUIVI')->willReturn(true);
 
         $this->historiqueRepo->method('deleteHistoriqueProjet')->willReturn(['code' => 200]);
@@ -717,7 +717,7 @@ class ApiSuiviControllerTest extends TestCase
         $this->defaultUser->setPreference([
             'favori_version' => [['k' => ['1.0']]],
         ]);
-        /* MODIF 2026-05-16 [phpunit-14-with-expects] : expects($this->any()) ajoute pour PHPUnit 14. */
+        /* MODIF 2026-05-16 : expects($this->any()) ajoute pour PHPUnit 14. */
         $this->security->expects($this->once())->method('isGranted')->with('ROLE_SUIVI')->willReturn(true);
 
         $this->historiqueRepo->method('deleteHistoriqueProjet')->willReturn(['code' => 200]);

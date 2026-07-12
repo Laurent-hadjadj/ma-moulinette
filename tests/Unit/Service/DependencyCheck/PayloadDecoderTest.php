@@ -37,7 +37,7 @@ class PayloadDecoderTest extends TestCase
     /**
      * Payload JSON minimal valide DC v1.1.
      */
-    private const VALID_JSON = '{"reportSchema":"1.1","projectInfo":{"groupID":"fr.test","artifactID":"demo","version":"1.0"},"dependencies":[]}';
+    private const VALID_JSON = '{"reportSchema":"1.1","projectInfo":{"groupID":"fr.ma-moulinette","artifactID":"ma-moulinette","version":"1.0"},"dependencies":[]}';
 
     protected function setUp(): void
     {
@@ -120,8 +120,8 @@ class PayloadDecoderTest extends TestCase
         $result = $this->decoder->decode(self::VALID_JSON, 'application/json');
         $this->assertSame(DcProcessingQueue::CONTENT_JSON, $result->contentType);
         $this->assertSame(strlen(self::VALID_JSON), $result->decodedSize);
-        $this->assertSame('fr.test', $result->projectGroup);
-        $this->assertSame('demo', $result->projectArtifact);
+        $this->assertSame('fr.ma-moulinette', $result->projectGroup);
+        $this->assertSame('ma-moulinette', $result->projectArtifact);
         $this->assertSame('1.0', $result->projectVersion);
     }
 
@@ -336,7 +336,7 @@ class PayloadDecoderTest extends TestCase
 
     public function testSha256DifferentForDifferentPayloads(): void
     {
-        $body2 = '{"reportSchema":"1.1","projectInfo":{"groupID":"fr.other","artifactID":"app","version":"2.0"},"dependencies":[]}';
+        $body2 = '{"reportSchema":"1.1","projectInfo":{"groupID":"fr.ma-moulinette","artifactID":"projet-b","version":"2.0"},"dependencies":[]}';
         $r1 = $this->decoder->decode(self::VALID_JSON, 'application/json');
         $r2 = $this->decoder->decode($body2, 'application/json');
         $this->assertNotSame($r1->sha256, $r2->sha256);

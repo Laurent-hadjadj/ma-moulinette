@@ -33,7 +33,7 @@ use PHPUnit\Framework\TestCase;
 class UtilisateurRepositoryHandlerTest extends TestCase
 {
     private static string $utilisateurTest = 'utilisateur test';
-    public static string $mavenKey = 'fr.ma-petite-entreprise:ma-moulinette';
+    public static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
     private static string $courriel = 'aurelie.petit-coeur@ma-moulinette.fr';
     private static string $dateModification = '1981-01-01 00:00:00';
 
@@ -51,7 +51,10 @@ class UtilisateurRepositoryHandlerTest extends TestCase
     {
         // 1) Crée une vraie exception qui implémente DBAL\Exception et Throwable
         $fakeException = new class('erreur updates') extends \Exception implements DBALExceptionInterface {
-            public function getSqlState(): null { return null; }
+            public function getSqlState(): null
+            {
+                return null;
+            }
         };
 
         // 2) Stub partiel de Statement : bindValue ok, executeStatement jette l'exception
@@ -63,7 +66,7 @@ class UtilisateurRepositoryHandlerTest extends TestCase
         $connectionMock = $this->createMock(Connection::class);
         $connectionMock->expects($this->once())->method('beginTransaction');
         $connectionMock->method('prepare')
-                        ->willReturn($stmtStub);
+            ->willReturn($stmtStub);
         $connectionMock->expects($this->once())->method('rollBack');
         // commit ne doit **jamais** être appelé dans ce scénario
         $connectionMock->expects($this->never())->method('commit');
@@ -75,18 +78,18 @@ class UtilisateurRepositoryHandlerTest extends TestCase
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
         $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(UtilisateurRepository::class)
-                        ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
+            ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
         $expected = ['code' => 500, 'erreur' => self::$utilisateurTest];
         $repo->expects($this->once())->method('handleDatabaseException')
-                ->with($fakeException)
-                ->willReturn($expected);
+            ->with($fakeException)
+            ->willReturn($expected);
 
         // 7) getEntityManager() renvoie notre EM stub
         $repo->method('getEntityManager')->willReturn($emStub);
 
-        /* MODIF 2026-05-08 [tests-pcov-warnings] : ajout de la cle 'reset_password'
+        /* MODIF 2026-05-08 : ajout de la cle 'reset_password'
          * (la cle 'init' n est pas utilisee par updateUtilisateurResetPassword).
          */
         // 8) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
@@ -113,7 +116,10 @@ class UtilisateurRepositoryHandlerTest extends TestCase
     {
         // 1) Crée une vraie exception qui implémente DBAL\Exception et Throwable
         $fakeException = new class('erreur update') extends \Exception implements DBALExceptionInterface {
-            public function getSqlState(): null { return null; }
+            public function getSqlState(): null
+            {
+                return null;
+            }
         };
 
         // 2) Stub partiel de Statement : bindValue ok, executeStatement jette l'exception
@@ -125,7 +131,7 @@ class UtilisateurRepositoryHandlerTest extends TestCase
         $connectionMock = $this->createMock(Connection::class);
         $connectionMock->expects($this->once())->method('beginTransaction');
         $connectionMock->method('prepare')
-                        ->willReturn($stmtStub);
+            ->willReturn($stmtStub);
         $connectionMock->expects($this->once())->method('rollBack');
         // commit ne doit **jamais** être appelé dans ce scénario
         $connectionMock->expects($this->never())->method('commit');
@@ -137,20 +143,20 @@ class UtilisateurRepositoryHandlerTest extends TestCase
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
         $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(UtilisateurRepository::class)
-                        ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
+            ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
         $expected = ['code' => 500, 'erreur' => self::$utilisateurTest];
         $repo->expects($this->once())->method('handleDatabaseException')
-                ->with($fakeException)
-                ->willReturn($expected);
+            ->with($fakeException)
+            ->willReturn($expected);
 
         // 7) getEntityManager() renvoie notre EM stub
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode : elle doit entrer dans le catch et renvoyer $expected
-        $map = [ 'maven_key' => self::$mavenKey, 'courriel' => self::$courriel ];
-        $preference['statut'] = ['suivi_projet' => false, 'favori_projet' => true,'favori_version' => true];
+        $map = ['maven_key' => self::$mavenKey, 'courriel' => self::$courriel];
+        $preference['statut'] = ['suivi_projet' => false, 'favori_projet' => true, 'favori_version' => true];
         $preference['suivi_projet'] = [];
         $preference['favori_projet'] = [self::$mavenKey];
         $preference['favori_version'] = [];
@@ -164,7 +170,10 @@ class UtilisateurRepositoryHandlerTest extends TestCase
     {
         // 1) Crée une vraie exception qui implémente DBAL\Exception et Throwable
         $fakeException = new class('erreur update') extends \Exception implements DBALExceptionInterface {
-            public function getSqlState(): null { return null; }
+            public function getSqlState(): null
+            {
+                return null;
+            }
         };
 
         // 2) Stub partiel de Statement : bindValue ok, executeStatement jette l'exception
@@ -176,7 +185,7 @@ class UtilisateurRepositoryHandlerTest extends TestCase
         $connectionMock = $this->createMock(Connection::class);
         $connectionMock->expects($this->once())->method('beginTransaction');
         $connectionMock->method('prepare')
-                        ->willReturn($stmtStub);
+            ->willReturn($stmtStub);
         $connectionMock->expects($this->once())->method('rollBack');
         // commit ne doit **jamais** être appelé dans ce scénario
         $connectionMock->expects($this->never())->method('commit');
@@ -188,13 +197,13 @@ class UtilisateurRepositoryHandlerTest extends TestCase
         // 5) Partial mock du Repository pour surcharger getEntityManager() & handleDatabaseException()
         $registry = $this->createStub(ManagerRegistry::class);
         $repo = $this->getMockBuilder(UtilisateurRepository::class)
-                        ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
+            ->setConstructorArgs([$registry])->onlyMethods(['getEntityManager', 'handleDatabaseException'])->getMock();
 
         // 6) Quand handleDatabaseException() est appelé avec notre exception, on renvoie ce tableau
         $expected = ['code' => 500, 'erreur' => self::$utilisateurTest];
         $repo->expects($this->once())->method('handleDatabaseException')
-                ->with($fakeException)
-                ->willReturn($expected);
+            ->with($fakeException)
+            ->willReturn($expected);
 
         // 7) getEntityManager() renvoie notre EM stub
         $repo->method('getEntityManager')->willReturn($emStub);

@@ -33,7 +33,7 @@ use Twig\Environment;
  * LogArchiveService (classes supprimées de src/). */
 class CosuiControllerTest extends TestCase
 {
-    // Valid token: encoding "1234567890|com.acme:app" with ROT13+base64
+    // Valid token: encoding "1234567890|fr.ma-moulinette:ma-moulinette" with ROT13+base64
     private string $validToken;
 
     /** @var LoggerInterface&MockObject */          private MockObject $logger;
@@ -47,7 +47,7 @@ class CosuiControllerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->validToken = str_rot13(base64_encode('1234567890|com.acme:app'));
+        $this->validToken = str_rot13(base64_encode('1234567890|fr.ma-moulinette:ma-moulinette'));
 
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->cosuiService = $this->createMock(ProjetCosuiService::class);
@@ -113,7 +113,7 @@ class CosuiControllerTest extends TestCase
         $this->cosuiService->method('initialRender')->willReturn([]);
         $this->cosuiService->expects($this->once())
             ->method('generateRender')
-            ->with('com.acme:app')
+            ->with('fr.ma-moulinette:ma-moulinette')
             ->willReturn([
                 'code' => 404,
                 'type' => 'warning',
@@ -151,7 +151,7 @@ class CosuiControllerTest extends TestCase
         $this->cosuiService->method('generateRender')->willReturn([
             'code' => 200,
             'data' => ['something'],
-            'projet' => 'com.acme:app',
+            'projet' => 'fr.ma-moulinette:ma-moulinette',
         ]);
 
         $this->flashBag->expects($this->never())->method('add');
