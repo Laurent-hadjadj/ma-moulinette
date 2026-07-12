@@ -32,6 +32,9 @@ import {serveur} from '../../common/properties.js';
 /** La gestion des messagesJS */
 import { showMessage,  hideMessage, prepareTechnicalDetails, escapeHtml } from '../../common/messageHelper.js';
 
+/** Gestion propre des modales  */
+import { modalSafe } from '../../common/safeModal.js';
+
 /** On importe les constantes */
 import { http_200, http_400, http_401, http_403, http_404, http_500, content_type, paletteCouleur, matrice, dateOptions, dateOptionsShort } from '../../common/constante.js';
 
@@ -284,8 +287,12 @@ const autreProfil = async function(langage) {
   tableBody.innerHTML = str;
 
   // Ouverture de la modale Foundation
-  $('#modal-autre-profil').foundation('open');
+  modalSafe.open('#modal-autre-profil');
 };
+/** fermeture propre de la modale */
+$('#bouton-fermer-autre-profil').on('click', function (){
+  modalSafe.close('#modal-autre-profil');
+})
 
 $('#js-container-langage').on('click', '.js-bouton-autre-profil', (e) => {
   /* On récupère l'id */
@@ -418,7 +425,8 @@ $('#bouton-affiche-graphique').on('click', async () => {
       return;
   }
 
-  $('#modal-affiche-graphique').foundation('open');
+  // on ouvre proprement la modale
+  modalSafe.open('#modal-affiche-graphique');
 
   const canvasId = 'graphique-langage';
   const canvas = document.getElementById(canvasId);
@@ -445,6 +453,11 @@ $('#bouton-affiche-graphique').on('click', async () => {
   dessineMoiUnMouton(label, dataset);
   /** on affiche le container */
   $('.graphique-langage-container').show();
+});
+
+/** On ferme proprement la modale */
+$('#bouton-fermer-affiche-graphique').on('click', function(){
+  modalSafe.close('#modal-affiche-graphique')
 });
 
 /**
