@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -22,6 +22,7 @@ use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Properties, Profiles, ProfilesHistorique};
 use App\Service\{ClientService, UrlBuilderService};
+use App\Service\UserAgent\UserAgentTrackingFacade;
 
 /**
  * [Description ApiProfilController]
@@ -60,6 +61,7 @@ class ApiProfilController extends AbstractController
         ParameterBagInterface $params,
         private LoggerInterface $logger,
         private UrlBuilderService $urlBuilder,
+        private UserAgentTrackingFacade $tracking
     ) {
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
@@ -167,6 +169,7 @@ class ApiProfilController extends AbstractController
      * Renvoie la liste des profils qualité
      * http://{url}/api/qualityprofiles/search?qualityProfile={name}
      * RÔLE-GESTIONNAIRE
+     *
      * @return JsonResponse
      *
      * Created at: 07/05/2023, 21:12:09 (Europe/Paris)
@@ -174,7 +177,7 @@ class ApiProfilController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/secure/quality/profiles', name: 'liste_quality_profiles', methods: ['POST'])]
-    public function listeQualityProfiles(Request $request): JsonResponse
+    public function listeQualityProfiles(): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/quality/profiles");
 
@@ -208,7 +211,7 @@ class ApiProfilController extends AbstractController
 
         if (in_array($result['code'] ?? -1, [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
             $this->logger->error('[Profil] ❌ Erreur retour API SonarQube', [
-            'code' => $result['code'],
+                'code' => $result['code'],
                 'erreur' => $result['erreur'] ?? self::$noData,
             ]);
 
@@ -243,10 +246,10 @@ class ApiProfilController extends AbstractController
         $r1 = $profilesRepos->deleteProfiles();
         if ($r1['code'] !== 200) {
             $this->logger->error('[Profil] ❌ Échec de la requête deleteProfiles.', [
-            'code' => $r1['code'],
+                'code' => $r1['code'],
                 'total' => $profilsCount,
                 'erreur' => $r1['erreur'] ?? self::$noData
-        ]);
+            ]);
 
             $message = "Une erreur s'est produite lors de la suppression des données (Erreur {$r1['code']}).";
             return new JsonResponse([
@@ -298,15 +301,15 @@ class ApiProfilController extends AbstractController
 
         /** On met à jour la table propriétés */
         $map = [
-                'profil_bd' => $r2['nombre'],
+            'profil_bd' => $r2['nombre'],
             'profil_sonar' => $r2['nombre'],
-                'date_modification_profil' => $date
+            'date_modification_profil' => $date
         ];
 
         $r4 = $propertiesRepos->updatePropertiesProfiles($map);
         if ($r4['code'] !== 200) {
             $this->logger->error('[Profil] ❌ Échec de la requête updatePropertiesProfiles', [
-            'code' => $r4['code'],
+                'code' => $r4['code'],
                 'data' => $map,
                 'erreur' => $r4['erreur'] ?? self::$noData
             ]);
@@ -343,7 +346,7 @@ class ApiProfilController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/api/secure/quality/langage', name: 'liste_quality_langage', methods: ['POST'])]
-    public function listeQualityLangage(Request $request): JsonResponse
+    public function listeQualityLangage(): JsonResponse
     {
         $this->logger->info("[API] 📥 Requête reçue sur /api/quality/langage");
 
@@ -427,6 +430,8 @@ class ApiProfilController extends AbstractController
     #[Route('/profil/details', name: 'profil_details', methods: ['GET'])]
     public function profilDetails(Request $request)
     {
+        $this->tracking->track('PROFIL_DETAILS');
+
         $this->logger->info("[API] 📥 Requête reçue sur /profil/details");
 
         $profilesHistoriqueRepos = $this->em->getRepository(ProfilesHistorique::class);
@@ -514,7 +519,7 @@ class ApiProfilController extends AbstractController
         /* On récupère que les 500 premiers */
         $url = $this->urlBuilder->build(
             $this->getParameter(self::$sonarUrl),
-        '/api/qualityprofiles/changelog',
+            '/api/qualityprofiles/changelog',
             ['language' => $language, 'qualityProfile' => $profil, 'ps' => 500, 'p' => 1]
         );
 
@@ -657,39 +662,39 @@ class ApiProfilController extends AbstractController
         /** On décode le body */
         $data = json_decode($request->getContent());
 
-      /** On teste si la clé est valide */
+        /** On teste si la clé est valide */
         if ($data === null || !property_exists($data, 'langage') || !is_string($data->langage)) {
             $this->logger->error("[Profil] ❌ Requête invalide : 'langage' manquant ou malformé", [
                 'payload' => $data ?? self::$noData
             ]);
 
             return new JsonResponse([
-                    'code' => 400,
+                'code' => 400,
                 'type' => 'error',
                 'message' => self::$erreur400
-                ], Response::HTTP_OK);
+            ], Response::HTTP_OK);
         }
 
         /** On récupère le language */
         $langage = $data->langage;
         try {
-                $referential_default = 'false';
+            $referential_default = 'false';
 
-                $liste = $profilesRepos->selectProfiles($referential_default, $langage);
-                $count = $profilesRepos->countProfiles($referential_default, $langage);
-                // Log des résultats
-                $this->logger->info('[Profil] ℹ️ non actifs récupérés', [
-                    'langage' => $langage,
-                    'count' => $count['request'][0]['total'] ?? 0
-                ]);
+            $liste = $profilesRepos->selectProfiles($referential_default, $langage);
+            $count = $profilesRepos->countProfiles($referential_default, $langage);
+            // Log des résultats
+            $this->logger->info('[Profil] ℹ️ non actifs récupérés', [
+                'langage' => $langage,
+                'count' => $count['request'][0]['total'] ?? 0
+            ]);
 
-                return new JsonResponse([
-                    'code' => 200,
-                    'listeProfil' => $liste['liste'],
-                    'countProfil' => $count,
-                ], Response::HTTP_OK);
+            return new JsonResponse([
+                'code' => 200,
+                'listeProfil' => $liste['liste'],
+                'countProfil' => $count,
+            ], Response::HTTP_OK);
         } catch (\Throwable $e) {
-            $this->logger->error('[Profil] 🔴 Erreur lors de la récupération des profils non actifs', [
+            $this->logger->critical('[Profil] 🔴 Erreur lors de la récupération des profils non actifs', [
                 'langage' => $langage,
                 'exception' => $e->getMessage()
             ]);
