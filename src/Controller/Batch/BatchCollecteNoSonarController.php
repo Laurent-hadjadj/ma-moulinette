@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common  CC-BY-NC-SA 4.0.
 *  ---
@@ -74,7 +74,12 @@ class BatchCollecteNoSonarController extends AbstractController
             '/api/issues/search',
             [
                 'componentKeys' => $maven_key,
-                'rules' => 'java:S1309,java:NoSonar',
+                /* MODIF 2026-05-06 :
+                 * Filtre étendu pour collecter les 6 rules supportées par le switch
+                 * en aval (java:S1310 = no_pmd, java:S1315 = check_style,
+                 * python:NoSonar et php:NoSonar). Sans ces rules, les colonnes
+                 * historique correspondantes restent NULL en base. */
+                'rules' => 'java:S1309,java:S1310,java:S1315,java:NoSonar,python:NoSonar,php:NoSonar',
                 'p' => 1,
                 'ps' => 500
             ]
