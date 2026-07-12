@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common  CC-BY-NC-SA 4.0.
 *  ---
@@ -177,6 +177,9 @@ class BatchCollecteHotspotDetailController extends AbstractController
         } elseif (array_key_exists('component', $result['json'])) {
             /** "key" => "fr.ma-petite-entreprise:ma-moulinette:assets/js/app-password.js" */
             $path = str_replace($maven_key . ':', '', $result['json']['component']['key']);
+        // MODIF 2026-05-26 : else terminal requis par S126 (branche intentionnellement vide).
+        } else {
+            $this->logger->debug('[BatchHotspotDetail] 🔍 Aucune clé path/component trouvée dans le résultat JSON.');
         }
 
         /** On récupère la liste des clés pour chaque module */
@@ -288,7 +291,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
         }
 
         /** On reconstruit la date de version au format dateTime */
-        $dateVersion = new \DateTimeImmutable($information['info'][0]['date'], new \DateTimeZone(self::$europeParis));
+        $dateVersion = new \DateTimeImmutable($information['info']['date'], new \DateTimeZone(self::$europeParis));
 
         /** Création de la date du jour */
         $date = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
@@ -365,7 +368,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
                 'mode_collecte' => $mode_collecte,
                 'utilisateur_collecte' => $utilisateur_collecte,
                 'maven_key' => $mavenKey,
-                'version' => $information['info'][0]['version'],
+                'version' => $information['info']['version'],
                 'date_version' => $dateVersion,
                 'date_enregistrement'=> $date,
                 'hotspot_key' => $elt['hotspot_key']
