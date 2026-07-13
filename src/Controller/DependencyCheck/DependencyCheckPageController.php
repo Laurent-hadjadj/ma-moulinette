@@ -14,9 +14,9 @@
 namespace App\Controller\DependencyCheck;
 
 use App\Controller\Traits\AppUserAware;
-use App\Repository\{DcCveRepository, DcDependencyRepository, DcFindingRepository,DcScanRepository};
+use App\Repository\{DcCveRepository, DcDependencyRepository, DcFindingRepository, DcScanRepository};
 use App\Service\DependencyCheck\{DcExecutiveAnalyticsService};
-use App\Service\{MesProjets,PdfExportService};
+use App\Service\{MesProjets, PdfExportService};
 use App\Service\UserAgent\UserAgentTrackingFacade;
 use App\Util\MavenVersionComparator;
 use App\Util\ScanViewMode;
@@ -84,7 +84,7 @@ class DependencyCheckPageController extends AbstractController
      * [Description for genericRender]
      *
      * @return array<string, mixed>
-    *
+     *
      * Created at: 08/05/2026 18:06:13 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
@@ -315,8 +315,12 @@ class DependencyCheckPageController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/dependency-check/projet/{group}/{artifact}/history', name: 'dc_projet_history', methods: ['GET'],
-        requirements: ['group' => self::REGEX, 'artifact' => self::REGEX])]
+    #[Route(
+        '/dependency-check/projet/{group}/{artifact}/history',
+        name: 'dc_projet_history',
+        methods: ['GET'],
+        requirements: ['group' => self::REGEX, 'artifact' => self::REGEX]
+    )]
     public function history(string $group, string $artifact): Response
     {
         /**
@@ -421,8 +425,12 @@ class DependencyCheckPageController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/dependency-check/projet/{group}/{artifact}/{version}', name: 'dc_projet', methods: ['GET'],
-        requirements: ['group' => self::REGEX, 'artifact' => self::REGEX, 'version' => self::REGEX])]
+    #[Route(
+        '/dependency-check/projet/{group}/{artifact}/{version}',
+        name: 'dc_projet',
+        methods: ['GET'],
+        requirements: ['group' => self::REGEX, 'artifact' => self::REGEX, 'version' => self::REGEX]
+    )]
     public function projet(string $group, string $artifact, string $version): Response
     {
         $this->tracking->track('DC_PROJET');
@@ -446,7 +454,9 @@ class DependencyCheckPageController extends AbstractController
                 'type'    => 'warning',
                 'message' => sprintf(
                     'Aucun scan trouvé pour %s:%s:%s. Vérifier que la CI a bien envoyé un rapport DependencyCheck pour cette version.',
-                    $group, $artifact, $version
+                    $group,
+                    $artifact,
+                    $version
                 ),
             ]);
             $render['scan'] = null;
@@ -496,8 +506,12 @@ class DependencyCheckPageController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/dependency-check/projet/{group}/{artifact}/{version}/pdf', name: 'dc_projet_pdf', methods: ['GET'],
-        requirements: ['group'    => self::REGEX, 'artifact' => self::REGEX, 'version'  => self::REGEX,])]
+    #[Route(
+        '/dependency-check/projet/{group}/{artifact}/{version}/pdf',
+        name: 'dc_projet_pdf',
+        methods: ['GET'],
+        requirements: ['group'    => self::REGEX, 'artifact' => self::REGEX, 'version'  => self::REGEX,]
+    )]
     public function projetPdf(string $group, string $artifact, string $version, Request $request): Response
     {
         /* MODIF 2026-05-10 : ACL stricte HTTP 403
@@ -668,7 +682,7 @@ class DependencyCheckPageController extends AbstractController
         /* MODIF 2026-05-12 : nommage UI "socle" au
          * lieu de "archétype" cote affichage. Le `parent_label`/`parent_version`
          * du pom.xml représente le SOCLE (module deps + logique technique/sécurité,
-         * ex: springboot-config) — distinct de l'ARCHETYPE qui est le template
+         * ex: springboot-socle-config) — distinct de l'ARCHETYPE qui est le template
          * de generation du projet (= `archetype_version`). Le query param reste
          * `?archetype=...` pour les URLs deja partagées, mais le label UI parle
          * de socle. Cote code SQL/repo, on garde les noms `parent_label`. */
@@ -696,8 +710,7 @@ class DependencyCheckPageController extends AbstractController
         if ($isSocleFilterValid) {
             $scansResume = array_values(array_filter(
                 $scansResume,
-                static fn(array $s) =>
-                    ($s['parent_label'] ?? '') !== ''
+                static fn(array $s) => ($s['parent_label'] ?? '') !== ''
                     && ($s['parent_version'] ?? '') !== ''
                     && (($s['parent_label'] . '@' . $s['parent_version']) === $socleFilter)
             ));
@@ -742,8 +755,9 @@ class DependencyCheckPageController extends AbstractController
          * de scans_resume deja charge (pas de requête SQL en plus).
          * mes_critical_cves  = top 10 CVE CRITICAL du périmètre, par CVSS desc. */
         $scansSorted = $render['scans_resume'];
-        usort($scansSorted, static fn(array $a, array $b) =>
-            ((int) ($b['cve_count_critical'] ?? 0)) <=> ((int) ($a['cve_count_critical'] ?? 0))
+        usort(
+            $scansSorted,
+            static fn(array $a, array $b) => ((int) ($b['cve_count_critical'] ?? 0)) <=> ((int) ($a['cve_count_critical'] ?? 0))
         );
         $render['mes_projets_exposes'] = array_slice($scansSorted, 0, 5);
 
@@ -774,12 +788,18 @@ class DependencyCheckPageController extends AbstractController
          * Evite les sequences HIGH 7.5 / MEDIUM 7.5 / HIGH 7.5 vues en audit. */
         usort($mutualisables, function (array $a, array $b): int {
             $gainCmp = $b['jh_gain'] <=> $a['jh_gain'];
-            if ($gainCmp !== 0) { return $gainCmp; }
+            if ($gainCmp !== 0) {
+                return $gainCmp;
+            }
             $rankA = $this->severityRank($a);
             $rankB = $this->severityRank($b);
-            if ($rankA !== $rankB) { return $rankB <=> $rankA; }
+            if ($rankA !== $rankB) {
+                return $rankB <=> $rankA;
+            }
             $projCmp = ((int) ($b['nb_projets'] ?? 0)) <=> ((int) ($a['nb_projets'] ?? 0));
-            if ($projCmp !== 0) { return $projCmp; }
+            if ($projCmp !== 0) {
+                return $projCmp;
+            }
             return strcmp((string) ($a['product'] ?? ''), (string) ($b['product'] ?? ''));
         });
         $render['mes_mutualisables'] = array_slice($mutualisables, 0, 10);
@@ -903,7 +923,7 @@ class DependencyCheckPageController extends AbstractController
          *
          * Mapping pom.xml (Cf. doc audit DC) :
          *  - apps "archetype" : archetype_version = <springboot-archetype.version>,
-         *    socle = parent_label/parent_version (= springboot-exemple-config.version).
+         *    socle = parent_label/parent_version (= springboot-socle-config.version).
          *  - apps legacy : archetype_version = <socleVersion>, socle = parent_label
          *    (= <artifactId>) + parent_version.
          *  - apps standalone (sans parent_label) exclues.
@@ -990,8 +1010,9 @@ class DependencyCheckPageController extends AbstractController
 
         // Stacked bar : top 15 projets par cve_count_total desc.
         $stackedSource = $render['scans_resume'];
-        usort($stackedSource, static fn(array $a, array $b): int =>
-            ((int) ($b['cve_count_total'] ?? 0)) <=> ((int) ($a['cve_count_total'] ?? 0))
+        usort(
+            $stackedSource,
+            static fn(array $a, array $b): int => ((int) ($b['cve_count_total'] ?? 0)) <=> ((int) ($a['cve_count_total'] ?? 0))
         );
         $stackedSource = array_slice($stackedSource, 0, 15);
         $stacked = [
@@ -1313,7 +1334,7 @@ class DependencyCheckPageController extends AbstractController
                 'dep_count_total'   => $scan->getDepCountTotal(),
                 'dep_count_vulnerable' => $scan->getDepCountVulnerable(),
                 'cve_count_total'   => $scan->getCveCountTotal(),
-                'cve_count_critical'=> $crit,
+                'cve_count_critical' => $crit,
                 'cve_count_high'    => $high,
                 'cve_count_medium'  => $med,
                 'cve_count_low'     => $low,
@@ -1418,8 +1439,7 @@ class DependencyCheckPageController extends AbstractController
         if ($isSocleFilterValid) {
             $scansResume = array_values(array_filter(
                 $scansResume,
-                static fn(array $s) =>
-                    ($s['parent_label'] ?? '') !== ''
+                static fn(array $s) => ($s['parent_label'] ?? '') !== ''
                     && ($s['parent_version'] ?? '') !== ''
                     && (($s['parent_label'] . '@' . $s['parent_version']) === $socleFilter)
             ));
@@ -1486,8 +1506,9 @@ class DependencyCheckPageController extends AbstractController
         /* MODIF 2026-05-16: tri et pagination délégués à
          * DataTables côté client. Tri par défaut jh_gain DESC pour rendu
          * sans JS ; DataTables ré-ordonnera au chargement. */
-        usort($mutualisables, static fn(array $a, array $b): int =>
-            ((float) ($b['jh_gain'] ?? 0)) <=> ((float) ($a['jh_gain'] ?? 0))
+        usort(
+            $mutualisables,
+            static fn(array $a, array $b): int => ((float) ($b['jh_gain'] ?? 0)) <=> ((float) ($a['jh_gain'] ?? 0))
         );
         $render['total_count']   = count($mutualisables);
         $render['mutualisables'] = $mutualisables;
@@ -1717,10 +1738,18 @@ class DependencyCheckPageController extends AbstractController
      */
     private function severityRank(array $scan): int
     {
-        if ((int) ($scan['cve_count_critical'] ?? 0) > 0) { return 4; }
-        if ((int) ($scan['cve_count_high'] ?? 0)     > 0) { return 3; }
-        if ((int) ($scan['cve_count_medium'] ?? 0)   > 0) { return 2; }
-        if ((int) ($scan['cve_count_low'] ?? 0)      > 0) { return 1; }
+        if ((int) ($scan['cve_count_critical'] ?? 0) > 0) {
+            return 4;
+        }
+        if ((int) ($scan['cve_count_high'] ?? 0)     > 0) {
+            return 3;
+        }
+        if ((int) ($scan['cve_count_medium'] ?? 0)   > 0) {
+            return 2;
+        }
+        if ((int) ($scan['cve_count_low'] ?? 0)      > 0) {
+            return 1;
+        }
         return 0;
     }
 
@@ -1759,5 +1788,4 @@ class DependencyCheckPageController extends AbstractController
         );
         return $this->dcAnalytics->computeDepJh($family, $sevMax);
     }
-
 }
