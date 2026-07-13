@@ -1,12 +1,21 @@
 <?php
 
+/*
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ */
+
 namespace App\Form;
 
 use App\Entity\ActuatorInfo;
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Form\{AbstractType, FormBuilderInterface};
+use Symfony\Component\Validator\Constraints\{Length, NotBlank};
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 
@@ -29,9 +38,7 @@ class ActuatorInfoFormType extends AbstractType
                 'attr' => [ 'placeholder' => 'placeholder.actuator.info.value',
                             'class' => 'color-bleu open-sans margin-left-05' ],
                 'constraints' => [
-                    new NotBlank([
-                        'message' => "Entrez la valeur de la clé.",
-                    ]),
+                    new NotBlank(message : "Entrez la valeur de la clé."),
                     new Length(
                         min: 2,
                         max: 255,
@@ -50,9 +57,7 @@ class ActuatorInfoFormType extends AbstractType
                 'attr' => [ 'placeholder' => 'placeholder.actuator.info.description',
                             'class' => 'color-bleu open-sans' ],
                 'constraints' => [
-                    new NotBlank([
-                        'message' => "Entrez une description courte.",
-                    ]),
+                    new NotBlank(message:  "Entrez une description courte."),
                     new Length(
                         min: 1,
                         max: 255,
