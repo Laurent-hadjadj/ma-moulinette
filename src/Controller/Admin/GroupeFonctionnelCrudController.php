@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common CC-BY-NC-SA 4.0.
 *  ---
@@ -16,7 +16,6 @@ namespace App\Controller\Admin;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\{Action, Actions, Assets, Crud, Filters, };
 use EasyCorp\Bundle\EasyAdminBundle\Field\{FormField, TextField, ChoiceField, DateTimeField};
-use Symfony\Component\HttpFoundation\RequestStack;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\GroupeFonctionnel;
 
@@ -160,7 +159,7 @@ class GroupeFonctionnelCrudController extends AbstractCrudController
     {
             // Modifier la requête SQL pour exclure les tags indésirables
             $sql = "SELECT DISTINCT tag
-                    FROM liste_projet
+                    FROM ma_moulinette.liste_projet
                     CROSS JOIN LATERAL json_array_elements_text(tags) AS tag
                     WHERE tag NOT IN ('@AUCUN', 'aucun', 'test')
                     ORDER BY tag ASC";
@@ -203,6 +202,7 @@ class GroupeFonctionnelCrudController extends AbstractCrudController
             ->setLabel('Tags disponibles')
             ->setChoices(array_combine($this->listeTags(), $this->listeTags()))
             ->onlyOnForms()
+            ->setFormTypeOption('choice_translation_domain', false)
             ->setFormTypeOption('mapped', false)
             ->setFormTypeOption('attr', [
                     'mapped', false,
@@ -226,7 +226,7 @@ class GroupeFonctionnelCrudController extends AbstractCrudController
         yield TextField::new('description')
         ->addCssClass('mb-4')
         ->setFormTypeOption('attr', ['placeholder' => 'Application - JAVA'])
-        ->setHelp('Description du groupe. Par exemple, Application - ?[langage]');
+        ->setHelp('Description du groupe. Par exemple, Application - ?[language]');
 
         yield DateTimeField::new('dateModification')
             ->setTimezone('Europe/Paris')
@@ -250,6 +250,8 @@ class GroupeFonctionnelCrudController extends AbstractCrudController
      */
     public function persistEntity(EntityManagerInterface $em, $entityInstance): void
     {
+        /* MODIF 2026-05-07 : guard instanceof. */
+        // @phpstan-ignore-next-line instanceof.alwaysTrue (garde défensive EasyAdmin)
         if (!$entityInstance instanceof GroupeFonctionnel) {
             return;
         }
@@ -257,6 +259,8 @@ class GroupeFonctionnelCrudController extends AbstractCrudController
         // Normalisation
         $clean = $this->normalize($entityInstance->getGroupeFonctionnel());
         $entityInstance->setGroupeFonctionnel($clean);
+
+        $entityInstance->setDateEnregistrement(new \DateTimeImmutable());
 
         // Vérification unicité (logique métier)
         $existing = $em->getRepository(GroupeFonctionnel::class)
