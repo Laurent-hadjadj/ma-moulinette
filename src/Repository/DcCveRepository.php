@@ -441,7 +441,7 @@ class DcCveRepository extends ServiceEntityRepository
      * scans ou cette CVE apparaît comme nouvelle (avec leur socle).
      *
     //  * Objectif : éviter le panneau "10 lignes pour la meme CVE qui touche
-     * exemple-config 4.1.0, 4.1.1, 4.1.2..." qui saturait l'affichage. Le user
+     * socle-config 4.1.0, 4.1.1, 4.1.2..." qui saturait l'affichage. Le user
      * voit 1 ligne par CVE distincte + un bouton qui ouvre une modale
      * détaillée avec la liste des apps (et leur socle pour identifier
      * l'origine de la vulnérabilité : socle vs jar embarque).
