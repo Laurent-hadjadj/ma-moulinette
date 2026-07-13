@@ -15,15 +15,12 @@ namespace App\Controller\Admin;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\{Response, Request, JsonResponse, BinaryFileResponse};
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Psr\Log\LoggerInterface;
-use App\Service\LogArchiveService;
-use App\Service\UserAgentTrackingFacade;
+use App\Service\LogArchive\LogArchiveService;
+use App\Service\UserAgent\UserAgentTrackingFacade;
 
 /**
  * [Description AdminLogController]
@@ -32,25 +29,13 @@ use App\Service\UserAgentTrackingFacade;
 class AdminLogController extends AbstractController
 {
 
-    private $logoEntreprise;
-    private $marqueEntrepriseShort;
-    private $marqueEntrepriseLong;
-    private $environnement;
-    private $version;
-    private $dateCopyright;
+    private string $logoEntreprise;
+    private string $marqueEntrepriseShort;
+    private string $marqueEntrepriseLong;
+    private string $environnement;
+    private string $version;
+    private string $dateCopyright;
 
-    /**
-     * [Description for __construct]
-     *
-     * @param  private
-     * @param  private
-     * @param  private
-     * @param  private
-     *
-     * Created at: 13/12/2025 20:25:31 (Europe/Paris)
-     * @author     Laurent HADJADJ <laurent_h@me.com>
-     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
     public function __construct(
         ParameterBagInterface $params,
         private LoggerInterface $logger,
@@ -99,12 +84,12 @@ class AdminLogController extends AbstractController
     #[Route('/admin/logs', name: 'admin_logs_index')]
     public function index(): Response
     {
-        $this->tracking->track('ADMIN_LOGS');
+        $this->tracking->track('ADMIN_LOG');
 
         $logDir = $this->getParameter('kernel.logs_dir');
         $files = [];
 
-        foreach (scandir($logDir) as $file) {
+        foreach ((scandir($logDir) ?: []) as $file) {
             if ($file === '.' || $file === '..') {
                 continue;
             }
@@ -176,6 +161,7 @@ class AdminLogController extends AbstractController
 
     /**
      * [Description for downloadSelection]
+     * Permet de télécharger l'archive de logs
      *
      * @param Request $request
      *
@@ -219,9 +205,13 @@ class AdminLogController extends AbstractController
             ], Response::HTTP_OK);
         }
 
-        return new BinaryFileResponse($zipPath, 200, [
+        $filename = 'logs_' . date('Ymd_His') . '.zip';
+        $response = new BinaryFileResponse($zipPath, 200, [
             'Content-Type' => 'application/zip',
+            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
         ]);
+        $response->deleteFileAfterSend(true);
+        return $response;
     }
 
 }
