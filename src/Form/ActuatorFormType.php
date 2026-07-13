@@ -3,14 +3,10 @@
 namespace App\Form;
 
 use App\Entity\Actuator;
-use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Form\{AbstractType, FormBuilderInterface};
+use Symfony\Component\Validator\Constraints\{Length, NotBlank};
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\UrlType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\{UrlType, TextType, CollectionType};
 
 /**
  * [Description ActuatorFormType]
@@ -33,9 +29,7 @@ class ActuatorFormType extends AbstractType
                 'attr' => [ 'placeholder' => 'placeholder.actuator.url',
                             'class' => 'color-bleu' ],
                 'constraints' => [
-                    new NotBlank([
-                        'message' => "Entrez l'adresse du site web.",
-                    ]),
+                    new NotBlank(message : "Entrez l'adresse du site web."),
                     new Length(
                         min: 12,
                         max: 128,
