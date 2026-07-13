@@ -14,6 +14,7 @@
 declare(strict_types=1);
 
 /* MODIF 2026-05-21 : déplacé dans App\Command\Dev. */
+
 namespace App\Command\Dev;
 
 use App\Entity\DcProcessingQueue;
@@ -22,7 +23,7 @@ use App\Exception\DependencyCheck\DcInvalidStructureException;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\{InputArgument,InputInterface};
+use Symfony\Component\Console\Input\{InputArgument, InputInterface};
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -112,7 +113,7 @@ class DcIngestLocalCommand extends Command
          * d'un sidecar `dc-metadata.json` situé dans le même dossier que les
          * rapports. Format :
          *   { "ma-moulinette-1.0.0-RELEASE.json": {
-         *       "parent_label": "springboot-config",
+         *       "parent_label": "springboot-socle-config",
          *       "parent_version": "1.2.0-RC1",
          *       "archetype_version": "1.2.0-RELEASE"
          *     },
@@ -186,8 +187,12 @@ class DcIngestLocalCommand extends Command
                 $this->em->flush();
                 $enqueued++;
                 $metaSuffix = $parentLabel !== null || $parentVersion !== null || $archetypeVersion !== null
-                    ? sprintf(' [parent=%s@%s, archetype=%s]',
-                        $parentLabel ?? '-', $parentVersion ?? '-', $archetypeVersion ?? '-')
+                    ? sprintf(
+                        ' [parent=%s@%s, archetype=%s]',
+                        $parentLabel ?? '-',
+                        $parentVersion ?? '-',
+                        $archetypeVersion ?? '-'
+                    )
                     : '';
                 $io->writeln(sprintf(
                     '<info>✓</info> %s → %s:%s:%s%s (ulid=%s)',
