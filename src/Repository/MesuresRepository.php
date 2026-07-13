@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2025.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common  CC-BY-NC-SA 4.0.
 *  ---
@@ -133,6 +133,8 @@ class MesuresRepository extends ServiceEntityRepository
             'lines_to_cover',
             'conditions_to_cover',
             'uncovered_conditions',
+            /* MODIF 2026-05-05 : coverage_rating ajouté. */
+            'coverage_rating',
 
             'tests',
             'test_execution_time',
@@ -145,6 +147,8 @@ class MesuresRepository extends ServiceEntityRepository
             'duplicated_blocks',
             'duplicated_lines',
             'duplicated_lines_density',
+            /* MODIF 2026-05-05 : duplicated_lines_rating ajouté. */
+            'duplicated_lines_rating',
 
             'complexity',
             'complexity_rating',
