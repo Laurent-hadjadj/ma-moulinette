@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2024.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common CC-BY-NC-SA 4.0.
 *  ---
@@ -33,6 +33,8 @@ class UtilisateurCrudController extends AbstractCrudController
     use AppUserAware;
 
     private static string $europeParis = 'Europe/Paris';
+    // MODIF 2026-05-26 : extraction des string literals dupliqués (S1192).
+    private const ROLE_LABEL_AUCUN_ACCES = 'Aucun accès';
 
     /**
      * [Description for __construct]
@@ -123,21 +125,24 @@ class UtilisateurCrudController extends AbstractCrudController
                 'ROLE_COLLECTE' => 'success',
                 'ROLE_SUIVI' => 'warning',
                 'ROLE_BATCH' => 'warning',
-                'ROLE_ACTUATOR' => 'info',
+                'ROLE_ACTUATOR' => 'warning',
                 'ROLE_ACTIVITY' => 'info',
+                'ROLE_SECURITY' => 'danger',
                 'ROLE_GESTIONNAIRE' => 'danger',
                 'ROLE_INTERNAL' => 'dark',
             ];
 
         // liste complète des rôles pour les formulaires (filtrée ensuite selon le rôle de l’éditeur et de l’utilisateur édité)
         $allRoles = [
-            'Aucun accès' => 'ROLE_NONE',
+            self::ROLE_LABEL_AUCUN_ACCES => 'ROLE_NONE',
             'Utilisateur' => 'ROLE_UTILISATEUR',
             'Collecte' => 'ROLE_COLLECTE',
             'Suivi' => 'ROLE_SUIVI',
             'Activité' => 'ROLE_ACTIVITY',
             'Batch' => 'ROLE_BATCH',
             'Actuator' => 'ROLE_ACTUATOR',
+            'Sécurité' => 'ROLE_SECURITY',
+            'Sécu. Analytics' => 'ROLE_SECURITY_ANALYTICS',
             'Gestionnaire' => 'ROLE_GESTIONNAIRE',
             'Interne' => 'ROLE_INTERNAL',
         ];
@@ -149,10 +154,8 @@ class UtilisateurCrudController extends AbstractCrudController
                 $entityInstance = $context->getEntity()->getInstance();
         }
 
-        /** @var mixed $_callback Variable non utilisée */
         yield FormField::addColumn(6);
         yield AvatarField::new('avatar')
-            /** @var mixed $value Variable non utilisée */
             ->formatValue(
                 /**
                  * Asset Mapper + Packages -> respecte le base path Symfony
@@ -186,10 +189,11 @@ class UtilisateurCrudController extends AbstractCrudController
             $assignableRoles = $allRoles;
         } elseif ($this->isGranted('ROLE_GESTIONNAIRE')) {
             $assignableRoles = [
-                'Aucun accès' => 'ROLE_NONE',
+                self::ROLE_LABEL_AUCUN_ACCES => 'ROLE_NONE',
                 'Utilisateur' => 'ROLE_UTILISATEUR',
                 'Collecte' => 'ROLE_COLLECTE',
                 'Suivi' => 'ROLE_SUIVI',
+                'Sécurité' => 'ROLE_SECURITY',
             ];
 
             // Si on édite un gestionnaire → on garde visible son rôle
@@ -197,7 +201,7 @@ class UtilisateurCrudController extends AbstractCrudController
                 $assignableRoles['Gestionnaire'] = 'ROLE_GESTIONNAIRE';
             }
         } else {
-            $assignableRoles = ['Aucun accès' => 'ROLE_NONE'];
+            $assignableRoles = [self::ROLE_LABEL_AUCUN_ACCES => 'ROLE_NONE'];
         }
 
         // rôle de l’utilisateur édité
@@ -222,6 +226,7 @@ class UtilisateurCrudController extends AbstractCrudController
             ->onlyOnIndex()
             ->setSortable(false)
             ->setChoices($allRoles)
+            ->setFormTypeOption('choice_translation_domain', false)
             ->renderAsBadges($badges);
 
         yield ChoiceField::new('roles')
@@ -257,12 +262,13 @@ class UtilisateurCrudController extends AbstractCrudController
 
                 return [];
             })
+            ->setFormTypeOption('choice_translation_domain', false)
             ->setHelp($helper_role);
 
         yield BooleanField::new('actif')->renderAsSwitch(false);
 
         /** On récupère la liste des groupes utilisateurs */
-        $sql = "SELECT groupe_utilisateur, description FROM groupe_utilisateur ORDER BY groupe_utilisateur ASC";
+        $sql = "SELECT groupe_utilisateur, description FROM ma_moulinette.groupe_utilisateur ORDER BY groupe_utilisateur ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $result = $l->fetchAllAssociative();
 
@@ -281,10 +287,11 @@ class UtilisateurCrudController extends AbstractCrudController
         yield FormField::addColumn(6);
         yield ChoiceField::new('groupeUtilisateur')
             ->setChoices(array_combine($key, $val))
+            ->setFormTypeOption('choice_translation_domain', false)
             ->setHelp('Sélectionne le groupe utilisateur.');
 
         /** On récupère la liste des groupes fonctionnels */
-        $sql = "SELECT groupe_fonctionnel, description FROM groupe_fonctionnel ORDER BY groupe_fonctionnel ASC";
+        $sql = "SELECT groupe_fonctionnel, description FROM ma_moulinette.groupe_fonctionnel ORDER BY groupe_fonctionnel ASC";
         $l = $this->emm->getConnection()->prepare($sql)->executeQuery();
         $result = $l->fetchAllAssociative();
 
@@ -305,6 +312,7 @@ class UtilisateurCrudController extends AbstractCrudController
             ->setLabel('Groupe fonctionnel')
             ->setChoices($choices)
             ->allowMultipleChoices()
+            ->setFormTypeOption('choice_translation_domain', false)
             ->setFormTypeOption('placeholder', 'Choisissez un groupe fonctionnel')
             ->setFormTypeOption('by_reference', false)
             ->setHelp('Sélectionne le groupe fonctionnel.');
@@ -330,7 +338,12 @@ class UtilisateurCrudController extends AbstractCrudController
      */
     public function persistEntity(EntityManagerInterface $em, $entityInstance): void
     {
-        if (!$entityInstance instanceof Utilisateur) { return; }
+        /* MODIF 2026-05-07 : guard instanceof. */
+        // @phpstan-ignore-next-line instanceof.alwaysTrue (garde défensive EasyAdmin)
+        if (!$entityInstance instanceof Utilisateur) {
+            return;
+        }
+
         $entityInstance->setAvatar('personne.png');
         $entityInstance->setResetPassword(false);
 
@@ -353,7 +366,7 @@ class UtilisateurCrudController extends AbstractCrudController
 
         $conn = $this->emm->getConnection();
         $result = $conn->fetchOne(
-            "SELECT groupe_id FROM groupe_utilisateur WHERE groupe_utilisateur = :groupe LIMIT 1",
+            "SELECT groupe_id FROM ma_moulinette.groupe_utilisateur WHERE groupe_utilisateur = :groupe LIMIT 1",
             ['groupe' => $groupe_utilisateur]
         );
 
@@ -383,13 +396,18 @@ class UtilisateurCrudController extends AbstractCrudController
      */
     public function updateEntity(EntityManagerInterface $em, $entityInstance): void
     {
-        if (!$entityInstance instanceof Utilisateur) { return; }
+        /* MODIF 2026-05-07 : guard instanceof. */
+        // @phpstan-ignore-next-line instanceof.alwaysTrue (garde défensive EasyAdmin)
+        if (!$entityInstance instanceof Utilisateur) {
+            return;
+        }
+
         $conn = $this->emm->getConnection();
 
         /** Récupération sécurisée */
         // On récupère les rôles actuels de l’utilisateur depuis la base de données pour éviter les manipulations malveillantes
         $result = $conn->fetchOne(
-            "SELECT roles FROM utilisateur WHERE courriel = :courriel LIMIT 1",
+            "SELECT roles FROM ma_moulinette.utilisateur WHERE courriel = :courriel LIMIT 1",
             ['courriel' => $entityInstance->getCourriel()]
         );
 
@@ -429,7 +447,7 @@ class UtilisateurCrudController extends AbstractCrudController
 
         // On récupère le groupe_id à partir du groupe_utilisateur
         $groupeId = $conn->fetchOne(
-            "SELECT groupe_id FROM groupe_utilisateur WHERE groupe_utilisateur = :groupe LIMIT 1",
+            "SELECT groupe_id FROM ma_moulinette.groupe_utilisateur WHERE groupe_utilisateur = :groupe LIMIT 1",
             ['groupe' => $groupe_utilisateur]
         );
         $entityInstance->setGroupeId($groupeId);
