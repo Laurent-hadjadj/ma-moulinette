@@ -14,25 +14,34 @@
 
 namespace App\Exception;
 
+use Exception;
+
 /**
  * [Description SonarApiException]
- * Exception levée lors d'une erreur avec l'API Sonar
+ *
+ * Levée quand un appel à l'API SonarQube renvoie un code HTTP non-200.
+ * Conserve le payload de la réponse pour permettre au caller de logger ou réagir.
+ *
+ * Created at: 2026-05-01  — classe ajoutée pour corriger PHPStan class.notFound
+ * dans SonarMetricsFetcherService::fetchMetrics().
  */
-class SonarApiException extends \RuntimeException
+class SonarApiException extends Exception
 {
+    /** @var array<int|string, mixed> */
     private array $response;
 
-    public function __construct(
-        string $message,
-        array $response = [],
-        int $code = 0,
-        ?\Throwable $previous = null
-    ) {
+    /**
+     * @param array<int|string, mixed> $response
+     */
+    public function __construct(string $message, array $response, int $code = 0, ?Exception $previous = null)
+    {
         parent::__construct($message, $code, $previous);
-
         $this->response = $response;
     }
 
+    /**
+     * @return array<int|string, mixed>
+     */
     public function getResponse(): array
     {
         return $this->response;
