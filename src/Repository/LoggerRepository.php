@@ -98,7 +98,7 @@ class LoggerRepository extends ServiceEntityRepository
   /**
    * [Description for selectLogger]
    *
-   * @param mixed $map
+   * @param array $map
    *
    * @return array<int|string, mixed>
    *
@@ -124,7 +124,7 @@ class LoggerRepository extends ServiceEntityRepository
   /**
    * [Description for insertLogger]
    *
-   * @param mixed $map
+   * @param array $map
    *
    * @return array<int|string, mixed>
    *
