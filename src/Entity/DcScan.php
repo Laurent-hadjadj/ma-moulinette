@@ -169,7 +169,7 @@ class DcScan
 
     /* MODIF 2026-05-12 : métadonnées pom.xml
      * transmises par la CI via headers HTTP a l'upload.
-     *   parent_label   = "springboot-config" (archetype) ou "groupId:artifactId" (legacy) ou null
+     *   parent_label   = "springboot-socle-config" (archetype) ou "groupId:artifactId" (legacy) ou null
      *   parent_version = version du BOM/parent qui pilote les CVE
      *   archetype_version = version du template (springboot-archetype.version), null hors archetype */
     #[ORM\Column(
