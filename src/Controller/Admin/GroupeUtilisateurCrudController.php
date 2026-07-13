@@ -180,6 +180,8 @@ class GroupeUtilisateurCrudController extends AbstractCrudController
      */
     public function persistEntity(EntityManagerInterface $em, $entityInstance): void
     {
+        /* MODIF 2026-05-07 : guard instanceof. */
+        // @phpstan-ignore-next-line instanceof.alwaysTrue (garde défensive EasyAdmin)
         if (!$entityInstance instanceof GroupeUtilisateur) {
             return;
         }
