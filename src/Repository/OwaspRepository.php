@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2025.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common  CC-BY-NC-SA 4.0.
 *  ---
@@ -93,6 +93,41 @@ class OwaspRepository extends ServiceEntityRepository
     return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
   }
 
+
+  /**
+   * [Description for selectOwaspVersion]
+   * Récupère l'application (maven_key) et la version de la dernière
+   * analyse OWASP pour alimenter le breadcrumb de la page OWASP.
+   *
+   * @param string $maven_key
+   *
+   * @return array<int|string, mixed>
+   *
+   * Created at: 10/05/2026 00:00:00 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function selectOwaspVersion(string $maven_key): array
+  {
+    $sql = "SELECT maven_key, version
+            FROM ma_moulinette.owasp
+            WHERE maven_key=:maven_key
+            ORDER BY date_enregistrement DESC LIMIT 1";
+
+    try {
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(':maven_key', $maven_key);
+          $row = $stmt->executeQuery()->fetchAssociative();
+    } catch (\Throwable $e) {
+        return $this->handleDatabaseException($e);
+    }
+
+    if ($row === false) {
+        return ['code' => 200, 'application' => null, 'version' => null, 'erreur' => ''];
+    }
+
+    return ['code' => 200, 'application' => $row['maven_key'], 'version' => $row['version'], 'erreur' => ''];
+  }
 
   /**
    * [Description for deleteOwaspMavenKey]
