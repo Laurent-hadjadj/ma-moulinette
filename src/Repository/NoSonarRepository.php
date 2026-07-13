@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -115,6 +115,36 @@ class NoSonarRepository extends ServiceEntityRepository
     try {
           $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+          $liste = $stmt->executeQuery()->fetchAllAssociative();
+    } catch (\Throwable $e) {
+        return $this->handleDatabaseException($e);
+    }
+    return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
+  }
+
+  /**
+   * [Description for selectNoSonarComponentOrderByRule]
+   * Liste détaillée des @SuppressWarnings/NoPMD/Checkstyle/NoSonar du projet.
+   *
+   * MODIF 2026-05-06 : Renvoie la liste détaillée (rule, component, line) pour alimenter la modale "Detail des NoSonar / @Suppress".
+   * Tri par rule pour grouper visuellement les annotations Java vs commentaires NOSONAR.
+   *
+   * @param array<int|string, mixed> $map
+   * @return array<int|string, mixed>
+   *
+   * Created at: 06/05/2026
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function selectNoSonarComponentOrderByRule(array $map): array
+  {
+    $sql = "SELECT rule, component, line
+            FROM ma_moulinette.no_sonar
+            WHERE maven_key=:maven_key
+            ORDER BY rule, component, line";
+    try {
+          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+          $stmt->bindValue(self::$mavenKey, $map['maven_key']);
           $liste = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
