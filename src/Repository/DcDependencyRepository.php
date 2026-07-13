@@ -106,8 +106,12 @@ class DcDependencyRepository extends ServiceEntityRepository
          * MIN() utilise pour les champs stables (pkg_coordinates / file_name /
          * vendor) car Postgres pre-16 n'a pas ANY_VALUE. */
         $whereClauses = [];
-        if ($allowedMavenKeys !== null) { $whereClauses[] = 's.maven_key IN (:keys)'; }
-        if ($allowedScanIds  !== null) { $whereClauses[] = 's.id IN (:scan_ids)'; }
+        if ($allowedMavenKeys !== null) {
+            $whereClauses[] = 's.maven_key IN (:keys)';
+        }
+        if ($allowedScanIds  !== null) {
+            $whereClauses[] = 's.id IN (:scan_ids)';
+        }
         $whereScope = $whereClauses !== [] ? 'WHERE ' . implode(' AND ', $whereClauses) : '';
         $sql = <<<SQL
             SELECT
@@ -215,7 +219,7 @@ class DcDependencyRepository extends ServiceEntityRepository
          *                                  mix archetype+standalone, vraie opportunité).
          *
          * MODIF 2026-05-12 : CTE known_bom_labels.
-         * Détecte : un scan du BOM lui-meme (springboot-config) a parent_label NULL,
+         * Détecte : un scan du BOM lui-meme (springboot-socle-config) a parent_label NULL,
          * et était donc traite comme standalone implicite, gonflant artificiellement
          * nb_archetypes_distincts pour les deps présentes dans le BOM ET dans les apps
          * qui en héritent (cas apache-cxf vu en audit). Solution : on identifie les
@@ -313,9 +317,11 @@ class DcDependencyRepository extends ServiceEntityRepository
                         ];
                     }
                 }
-                usort($usingProjects, static fn(array $a, array $b): int =>
+                usort(
+                    $usingProjects,
+                    static fn(array $a, array $b): int =>
                     strcmp($a['artifact'], $b['artifact'])
-                    ?: strcmp($a['version'], $b['version'])
+                        ?: strcmp($a['version'], $b['version'])
                 );
             }
 
