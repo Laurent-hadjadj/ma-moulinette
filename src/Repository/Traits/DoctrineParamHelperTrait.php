@@ -1,7 +1,19 @@
 <?php
 
+/*
+*  Ma-Moulinette
+*  --------------
+*  Copyright (c) 2021-2026.
+*  Laurent HADJADJ <laurent_h@me.com>.
+*  Licensed Creative Common  CC-BY-NC-SA 4.0.
+*  ---
+*  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+*  http://creativecommons.org/licenses/by-nc-sa/4.0/
+*/
+
 namespace App\Repository\Traits;
 
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
 use Symfony\Component\Uid\Ulid;
 use Doctrine\DBAL\Statement;
@@ -33,7 +45,7 @@ trait DoctrineParamHelperTrait
     /**
      * Lie une valeur générique nullable, en déduisant automatiquement le type PDO.
      */
-    protected function bindNullableValue(Statement $stmt, string $param, mixed $value, int $defaultType = ParameterType::STRING): void
+    protected function bindNullableValue(Statement $stmt, string $param, mixed $value, ParameterType|ArrayParameterType $defaultType = ParameterType::STRING): void
     {
         if ($value === null) {
             $stmt->bindValue($param, null, ParameterType::NULL);
