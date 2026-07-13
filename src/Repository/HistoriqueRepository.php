@@ -3,7 +3,7 @@
 /*
 *  Ma-Moulinette
 *  --------------
-*  Copyright (c) 2021-2025.
+*  Copyright (c) 2021-2026.
 *  Laurent HADJADJ <laurent_h@me.com>.
 *  Licensed Creative Common  CC-BY-NC-SA 4.0.
 *  ---
@@ -120,13 +120,17 @@ class HistoriqueRepository extends ServiceEntityRepository
             return ['code' => 200, 'version' => [], 'erreur' => ''];
         }
 
+        /* MODIF 2026-05-07 : alignement noms de colonnes apres rename
+         * du 2026-03-30 (project_name, *_rating, bugs/vulnerabilities/code_smells au pluriel,
+         * note_hotspot -> security_review_rating). Alias conservés pour compat appelants.
+         */
         $sql = "SELECT DISTINCT
-                    maven_key as mavenkey, nom_projet as nom,
-                    version, date_version as date, note_reliability as reliability,
-                    note_security as security, note_hotspot as hotspot,
-                    note_sqale as sqale, nombre_bug as bug,
-                    nombre_vulnerability as vulnerability,
-                    nombre_code_smell as code_smell, menace_potentielle_totale as hotspots
+                    maven_key as mavenkey, project_name as nom,
+                    version, date_version as date, reliability_rating as reliability,
+                    security_rating as security, security_review_rating as hotspot,
+                    sqale_rating as sqale, bugs as bug,
+                    vulnerabilities as vulnerability,
+                    code_smells as code_smell, menace_potentielle_totale as hotspots
                 FROM ma_moulinette.historique
                 WHERE maven_key = :maven_key AND version IN (:versions)
                 ORDER BY date DESC LIMIT 4";
@@ -249,6 +253,10 @@ class HistoriqueRepository extends ServiceEntityRepository
         // -- Sélection de la version initiale (la plus ancienne)
         // -- Sélection des 10 dernières versions (triées par date décroissante)
         // -- Tri final : version initiale en premier, puis les autres par date croissante
+        /* MODIF 2026-05-06 : ajout de 7 colonnes pour
+         * alimenter le tableau de synthese des notes A-E (T7 - page de garde rapport PDF) :
+         * alert_status (Quality Gate), software_quality_*_rating x3 (Sonar 10),
+         * comment_lines_rating, complexity_rating, cognitive_complexity_rating. */
         $sql = "SELECT *
             FROM (
                 (
@@ -270,6 +278,22 @@ class HistoriqueRepository extends ServiceEntityRepository
                         security_rating AS security,
                         security_review_rating AS note_hotspot,
                         sqale_rating AS maintainability,
+                        alert_status,
+                        software_quality_reliability_rating AS s10_reliability,
+                        software_quality_security_rating AS s10_security,
+                        software_quality_maintainability_rating AS s10_maintainability,
+                        comment_lines_rating AS note_comment,
+                        complexity_rating AS note_complexity,
+                        cognitive_complexity_rating AS note_cognitive,
+                        coverage, branch_coverage, line_coverage,
+                        lines_to_cover, conditions_to_cover, uncovered_conditions,
+                        tests, test_execution_time, test_errors, test_failures,
+                        skipped_tests, test_success_density,
+                        complexity, cognitive_complexity,
+                        complexity_ratio, cognitive_complexity_ratio,
+                        functions,
+                        ncloc, ncloc_language_distribution,
+                        mode_collecte,
                         initial
                     FROM ma_moulinette.historique
                     WHERE maven_key = :maven_key AND initial = :initial_true
@@ -292,6 +316,22 @@ class HistoriqueRepository extends ServiceEntityRepository
                         security_rating AS security,
                         security_review_rating AS note_hotspot,
                         sqale_rating AS maintainability,
+                        alert_status,
+                        software_quality_reliability_rating AS s10_reliability,
+                        software_quality_security_rating AS s10_security,
+                        software_quality_maintainability_rating AS s10_maintainability,
+                        comment_lines_rating AS note_comment,
+                        complexity_rating AS note_complexity,
+                        cognitive_complexity_rating AS note_cognitive,
+                        coverage, branch_coverage, line_coverage,
+                        lines_to_cover, conditions_to_cover, uncovered_conditions,
+                        tests, test_execution_time, test_errors, test_failures,
+                        skipped_tests, test_success_density,
+                        complexity, cognitive_complexity,
+                        complexity_ratio, cognitive_complexity_ratio,
+                        functions,
+                        ncloc, ncloc_language_distribution,
+                        mode_collecte,
                         initial
                     FROM ma_moulinette.historique
                     WHERE maven_key = :maven_key AND initial = :initial_false
@@ -313,11 +353,88 @@ class HistoriqueRepository extends ServiceEntityRepository
         return ['code' => 200, 'request' => $suivi, 'erreur' => ''];
     }
 
+    /* MODIF 2026-05-06 :
+     * Variante de selectUnionHistoriqueProjet pour le rapport PDF Suivi.
+     * Limite aux N dernieres versions (LIMIT :limit, defaut 10 cote appelant)
+     * et trie ASC sur date pour l'affichage. Pas d'UNION avec la version `initial=1` :
+     * elle n'a pas sa place dans un rapport "N dernieres".
+     *
+     * NB : on a essaye un filtre `version_release > 0` pour ne garder que les
+     * releases — abandonne car version_release est un compteur cumule, pas un flag
+     * par-version. Le rapport prend donc TOUTES les versions (release + snapshot)
+     * et c'est l'utilisateur qui choisira ses versions a l'usage. */
+    /**
+     * [Description for selectHistoriqueProjetForRapport]
+     * Remonte les N dernieres versions du projet pour le rapport PDF.
+     * @param array<int|string, mixed> $map  attend `maven_key` et `limit`
+     *
+     * @return array<int|string, mixed>
+     *
+     * Created at: 06/05/2026
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function selectHistoriqueProjetForRapport(array $map): array
+    {
+        $sql = "SELECT * FROM (
+                    SELECT
+                        project_name AS nom,
+                        date_version AS date,
+                        version,
+                        suppress_warning,
+                        (java_no_sonar + python_no_sonar + php_no_sonar) AS no_sonar,
+                        bugs AS bug,
+                        vulnerabilities AS faille,
+                        code_smells AS mauvaise_pratique,
+                        menace_potentielle_totale,
+                        repartition_frontend AS presentation,
+                        repartition_backend AS metier,
+                        repartition_autre AS autre,
+                        repartition_inconnu AS inconnu,
+                        reliability_rating AS reliability,
+                        security_rating AS security,
+                        security_review_rating AS note_hotspot,
+                        sqale_rating AS maintainability,
+                        alert_status,
+                        software_quality_reliability_rating AS s10_reliability,
+                        software_quality_security_rating AS s10_security,
+                        software_quality_maintainability_rating AS s10_maintainability,
+                        comment_lines_rating AS note_comment,
+                        complexity_rating AS note_complexity,
+                        cognitive_complexity_rating AS note_cognitive,
+                        coverage, branch_coverage, line_coverage,
+                        lines_to_cover, conditions_to_cover, uncovered_conditions,
+                        tests, test_execution_time, test_errors, test_failures,
+                        skipped_tests, test_success_density,
+                        complexity, cognitive_complexity,
+                        complexity_ratio, cognitive_complexity_ratio,
+                        functions,
+                        ncloc, ncloc_language_distribution,
+                        mode_collecte,
+                        initial
+                    FROM ma_moulinette.historique
+                    WHERE maven_key = :maven_key
+                    ORDER BY date_version DESC
+                    LIMIT :limit
+                ) AS versions
+                ORDER BY date ASC";
+
+        try {
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+            $stmt->bindValue(self::$limit, $map['limit'] ?? 10, ParameterType::INTEGER);
+            $suivi = $stmt->executeQuery()->fetchAllAssociative();
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
+        }
+        return ['code' => 200, 'request' => $suivi, 'erreur' => ''];
+    }
+
     /**
      * [Description for selectUnionHistoriqueMesure]
      * On remonte les mesures pour les projets du suivi
      *
-     * @param mixed $map
+     * @param array $map
      *
      * @return array<int|string, mixed>
      *
@@ -471,6 +588,162 @@ class HistoriqueRepository extends ServiceEntityRepository
         return ['code' => 200, 'request' => $details, 'erreur' => ''];
     }
 
+    // MODIF 2026-06-11 variantes "par liste de versions"
+    // pour bypasser le LIMIT quand l'utilisateur a choisi ses versions dans ses préférences.
+    // Pattern : WHERE maven_key = :maven_key AND (initial = true OR version IN (:v0, :v1, ...))
+    // La version de référence (initial=true) est toujours incluse.
+
+    /**
+     * [Description for selectHistoriqueProjetParVersions]
+     * @param array<int|string, mixed> $map  [maven_key, versions: string[]]
+     * @return array<int|string, mixed>
+     */
+    public function selectHistoriqueProjetParVersions(array $map): array
+    {
+        $versions = $map['versions'] ?? [];
+        $placeholders = array_map(static fn(int $i) => ':v' . $i, array_keys($versions));
+        $inClause = implode(', ', $placeholders);
+
+        $sql = "SELECT
+                    project_name AS nom, date_version AS date, version,
+                    suppress_warning,
+                    (java_no_sonar + python_no_sonar + php_no_sonar) AS no_sonar,
+                    bugs AS bug, vulnerabilities AS faille, code_smells AS mauvaise_pratique,
+                    menace_potentielle_totale,
+                    repartition_frontend AS presentation, repartition_backend AS metier,
+                    repartition_autre AS autre, repartition_inconnu AS inconnu,
+                    reliability_rating AS reliability, security_rating AS security,
+                    security_review_rating AS note_hotspot, sqale_rating AS maintainability,
+                    alert_status,
+                    software_quality_reliability_rating AS s10_reliability,
+                    software_quality_security_rating AS s10_security,
+                    software_quality_maintainability_rating AS s10_maintainability,
+                    comment_lines_rating AS note_comment, complexity_rating AS note_complexity,
+                    cognitive_complexity_rating AS note_cognitive,
+                    coverage, branch_coverage, line_coverage,
+                    lines_to_cover, conditions_to_cover, uncovered_conditions,
+                    tests, test_execution_time, test_errors, test_failures,
+                    skipped_tests, test_success_density,
+                    complexity, cognitive_complexity, complexity_ratio, cognitive_complexity_ratio,
+                    functions, ncloc, ncloc_language_distribution, mode_collecte, initial
+                FROM ma_moulinette.historique
+                WHERE maven_key = :maven_key AND (initial = true" .
+                ($inClause !== '' ? " OR version IN ($inClause)" : '') . ")
+                ORDER BY date_version ASC";
+
+        try {
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+            foreach ($versions as $i => $v) {
+                $stmt->bindValue(':v' . $i, $v);
+            }
+            $suivi = $stmt->executeQuery()->fetchAllAssociative();
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
+        }
+        return ['code' => 200, 'request' => $suivi, 'erreur' => ''];
+    }
+
+    /**
+     * [Description for selectHistoriquesMesureParVersions]
+     * @param array<int|string, mixed> $map  [maven_key, versions: string[]]
+     * @return array<int|string, mixed>
+     */
+    public function selectHistoriquesMesureParVersions(array $map): array
+    {
+        $versions = $map['versions'] ?? [];
+        $placeholders = array_map(static fn(int $i) => ':v' . $i, array_keys($versions));
+        $inClause = implode(', ', $placeholders);
+
+        $sql = "SELECT date_version AS date,
+                    lines AS nombre_ligne, ncloc AS nombre_ligne_code,
+                    files AS nombre_files, classes AS nombre_classes,
+                    functions AS nombre_functions
+                FROM ma_moulinette.historique
+                WHERE maven_key = :maven_key AND (initial = true" .
+                ($inClause !== '' ? " OR version IN ($inClause)" : '') . ")
+                ORDER BY date_version ASC";
+
+        try {
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+            foreach ($versions as $i => $v) {
+                $stmt->bindValue(':v' . $i, $v);
+            }
+            $liste = $stmt->executeQuery()->fetchAllAssociative();
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
+        }
+        return ['code' => 200, 'request' => $liste, 'erreur' => ''];
+    }
+
+    /**
+     * [Description for selectHistoriqueAnomalieParVersions]
+     * @param array<int|string, mixed> $map  [maven_key, versions: string[]]
+     * @return array<int|string, mixed>
+     */
+    public function selectHistoriqueAnomalieParVersions(array $map): array
+    {
+        $versions = $map['versions'] ?? [];
+        $placeholders = array_map(static fn(int $i) => ':v' . $i, array_keys($versions));
+        $inClause = implode(', ', $placeholders);
+
+        $sql = "SELECT date_version AS date,
+                    blocker_violations AS bloquant, critical_violations AS critique,
+                    major_violations AS majeur, minor_violations AS mineur
+                FROM ma_moulinette.historique
+                WHERE maven_key = :maven_key AND (initial = true" .
+                ($inClause !== '' ? " OR version IN ($inClause)" : '') . ")
+                ORDER BY date_version ASC";
+
+        try {
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+            foreach ($versions as $i => $v) {
+                $stmt->bindValue(':v' . $i, $v);
+            }
+            $liste = $stmt->executeQuery()->fetchAllAssociative();
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
+        }
+        return ['code' => 200, 'request' => $liste, 'erreur' => ''];
+    }
+
+    /**
+     * [Description for selectHistoriqueDetailsParVersions]
+     * @param array<int|string, mixed> $map  [maven_key, versions: string[]]
+     * @return array<int|string, mixed>
+     */
+    public function selectHistoriqueDetailsParVersions(array $map): array
+    {
+        $versions = $map['versions'] ?? [];
+        $placeholders = array_map(static fn(int $i) => ':v' . $i, array_keys($versions));
+        $inClause = implode(', ', $placeholders);
+
+        $sql = "SELECT date_version AS date, version,
+                    bug_blocker, bug_critical, bug_major, bug_minor, bug_info,
+                    vulnerability_blocker, vulnerability_critical, vulnerability_major,
+                    vulnerability_minor, vulnerability_info,
+                    code_smell_blocker, code_smell_critical, code_smell_major,
+                    code_smell_minor, code_smell_info, initial
+                FROM ma_moulinette.historique
+                WHERE maven_key = :maven_key AND (initial = true" .
+                ($inClause !== '' ? " OR version IN ($inClause)" : '') . ")
+                ORDER BY date_version ASC";
+
+        try {
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+            foreach ($versions as $i => $v) {
+                $stmt->bindValue(':v' . $i, $v);
+            }
+            $details = $stmt->executeQuery()->fetchAllAssociative();
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
+        }
+        return ['code' => 200, 'request' => $details, 'erreur' => ''];
+    }
+
     /**
      * [Description for selectHistoriqueAnomalieGraphique]
      * On remonte les données pour construire le graphique.
@@ -537,23 +810,32 @@ class HistoriqueRepository extends ServiceEntityRepository
         // No-sonar / suppress / pmd / checkstyle (parser ma-moulinette)
         'java_no_sonar', 'python_no_sonar', 'php_no_sonar',
         'suppress_warning', 'no_pmd', 'check_style',
-        // TODO par langage (parser ma-moulinette)
-        'java_todo', 'python_todo', 'php_todo', 'xml_todo',
+        // MODIF 2026-05-06 : ajout web_to.do
+        'java_todo', 'python_todo', 'php_todo', 'xml_todo', 'web_todo',
         'javascript_todo', 'typescript_todo', 'ruby_todo',
         // Quality gate
         'alert_status',
         // Size
         'lines', 'ncloc', 'files', 'classes', 'functions', 'statements',
+        // MODIF 2026-05-06 :ncloc_language_distribution était pose dans $map cote ApiEnregistrement
+        // (cf. serializeLanguageDistribution) mais absent du whitelist => INSERT
+        // l'ignorait silencieusement => colonne NULL en base.
+        'ncloc_language_distribution',
         // Comments
         'comment_lines', 'comment_lines_density', 'comment_lines_rating',
         // Coverage
-        'coverage', 'branch_coverage', 'line_coverage',
+        // MODIF 2026-05-15 : ajout `coverage_rating` (présent
+        // dans mesures + peintureProjetMesures + table historique, mais oublié
+        // dans la whitelist → colonne toujours NULL après INSERT).
+        'coverage', 'branch_coverage', 'line_coverage', 'coverage_rating',
         'lines_to_cover', 'conditions_to_cover', 'uncovered_conditions',
         // Tests
         'tests', 'test_execution_time', 'test_errors', 'test_failures',
         'skipped_tests', 'test_success_density',
         // Duplication
+        // MODIF 2026-05-15 : ajout `duplicated_lines_rating`.
         'duplicated_files', 'duplicated_blocks', 'duplicated_lines', 'duplicated_lines_density',
+        'duplicated_lines_rating',
         // Complexity (cyclomatique + cognitive + ratios + ratings dérivés)
         'complexity', 'complexity_rating', 'cognitive_complexity', 'cognitive_complexity_rating',
         'complexity_ratio', 'cognitive_complexity_ratio',
@@ -598,38 +880,93 @@ class HistoriqueRepository extends ServiceEntityRepository
         'menace_potentielle_totale',
         // Logger (parser ma-moulinette)
         'logger_info', 'logger_warn', 'logger_error', 'logger_debug',
+        // MODIF 2026-05-17 : indicateurs SonarQube 10+
+        'cc_consistent', 'cc_intentional', 'cc_adaptable', 'cc_responsible',
+        'quality_maintainability', 'quality_reliability', 'quality_security',
+        'impact_blocker', 'impact_high', 'impact_medium', 'impact_low', 'impact_info',
+        'owasp_top10', 'sans_top25', 'cwe',
         // Méta enregistrement
         'initial', 'mode_collecte', 'utilisateur_collecte', 'date_enregistrement',
     ];
 
-    public function insertHistoriqueAjoutProjet(array $map, array $json): array
+    /* MODIF 2026-05-06 : liste des colonnes ratings
+     * SonarQube. Convention SonarQube : 1.0=A, 2.0=B, 3.0=C, 4.0=D, 5.0=E. La collecte
+     * recoit parfois la valeur numerique brute ("0"/"1.0"/...), parfois la lettre.
+     * On normalise au moment de l'INSERT pour avoir toujours A-E ou null en base. */
+    private static array $historiqueRatingColumns = [
+        'comment_lines_rating', 'coverage_rating', 'duplicated_lines_rating',
+        'complexity_rating', 'cognitive_complexity_rating',
+        'sqale_rating', 'software_quality_maintainability_rating',
+        'reliability_rating', 'software_quality_reliability_rating',
+        'security_rating', 'software_quality_security_rating',
+        'security_review_rating',
+    ];
+
+    /**
+     * Normalise un rating SonarQube : numérique 1-5 -> A-E, lettre A-E inchangée,
+     * autre valeur (0, null, '', 'null') -> null.
+     */
+    private static function normalizeRating(mixed $value): ?string
+    {
+        if ($value === null || $value === '' || $value === 'null') {
+            return null;
+        }
+        if (is_string($value) && preg_match('/^[A-E]$/i', $value)) {
+            return strtoupper($value);
+        }
+        return match ((int) $value) {
+            1 => 'A',
+            2 => 'B',
+            3 => 'C',
+            4 => 'D',
+            5 => 'E',
+            default => null,
+        };
+    }
+
+    /**
+     * MODIF 2026-05-15 : 3e paramètre `$loggerBreakdown`
+     * (array nullable) sérialisé en JSONB littéral pour la colonne
+     * `historique.logger_breakdown`. Pattern symétrique à `actuator_info`
+     * (déjà JSONB). Null si plugin track-logger-method désactivé ou non
+     * collecté.
+     *
+     * @param array<int|string, mixed>      $map
+     * @param array<int|string, mixed>      $json
+     * @param array<int|string, mixed>|null $loggerBreakdown
+     */
+    public function insertHistoriqueAjoutProjet(array $map, array $json, ?array $loggerBreakdown = null): array
     {
         /** SQL générée à partir du whitelist + champ actuator_info en littéral JSON. */
         $cols = self::$historiqueColumns;
-        $colList = implode(', ', $cols) . ', actuator_info';
+        $colList = implode(', ', $cols) . ', actuator_info, logger_breakdown';
+        $loggerBreakdownLit = $loggerBreakdown === null ? 'NULL' : "'" . json_encode($loggerBreakdown) . "'";
         $placeholders = implode(', ', array_map(static fn (string $c): string => ':' . $c, $cols))
-            . ", '" . json_encode($json) . "'";
+            . ", '" . json_encode($json) . "'"
+            . ", " . $loggerBreakdownLit;
         $sql = "INSERT INTO ma_moulinette.historique ($colList) VALUES ($placeholders)";
-
-        /** 🔍 DEBUG temporaire : décommente pour voir le SQL exécuté + le map.
-         *  À retirer une fois le bug "pas d'INSERT" diagnostiqué. */
-        // dd(['sql' => preg_replace(self::$removeReturnLine, ' ', $sql), 'map' => $map]);
-
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $ratingColsSet = array_flip(self::$historiqueRatingColumns);
             foreach ($cols as $col) {
                 /** Cas spéciaux :
                  *   - 'initial' : Doctrine ne peut pas binder un bool, on force la chaîne 'false'
                  *     (les nouvelles versions ne sont jamais "version de référence" à la création
                  *     — le toggle se fait via updateHistoriqueReference).
                  *   - 'date_enregistrement' : DateTimeInterface → string ISO avec offset.
+                 *   - ratings SonarQube : normalisation 1-5 -> A-E (cf. self::normalizeRating).
                  *   - Tout le reste : valeur du map ou null si absent (colonnes nullable). */
                 $value = $map[$col] ?? null;
                 if ($col === 'initial') {
                     $value = 'false';
                 } elseif ($col === 'date_enregistrement' && $value instanceof \DateTimeInterface) {
                     $value = $value->format('Y-m-d H:i:sO');
+                } elseif (isset($ratingColsSet[$col])) {
+                    $value = self::normalizeRating($value);
+                // MODIF 2026-05-26 : else terminal requis par S126 (colonne standard, valeur inchangée).
+                } else {
+                    // colonne standard : $value déjà assigné depuis $map[$col] ?? null
                 }
                 $stmt->bindValue(':' . $col, $value);
             }
@@ -664,13 +1001,10 @@ class HistoriqueRepository extends ServiceEntityRepository
                 ORDER BY date_version DESC";
 
         try {
-                $this->getEntityManager()->getConnection()->beginTransaction();
-                    $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-                    $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-                    $version = $stmt->executeQuery()->fetchAllAssociative();
-                $this->getEntityManager()->getConnection()->commit();
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+            $version = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
-            $this->getEntityManager()->getConnection()->rollBack();
             return $this->handleDatabaseException($e);
         }
 
@@ -701,7 +1035,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         code_smell_blocker, code_smell_critical, code_smell_major,
                         menace_potentielle_totale, coverage, sqale_debt_ratio
                 FROM ma_moulinette.historique
-                WHERE maven_key=:maven_key
+                WHERE maven_key = :maven_key
                 ORDER BY date_version DESC LIMIT 1";
 
         try {
@@ -772,6 +1106,15 @@ class HistoriqueRepository extends ServiceEntityRepository
         }
 
         /** On prépare la requête */
+        /* MODIF 2026-05-15 : remplacement de la concaténation
+         * IN (".$map['liste_projet'].") par le placeholder :liste_projet bindé
+         * via ArrayParameterType::STRING (cf executeQuery ci-dessous).
+         * Bug runtime : "Warning: Array to string conversion" — la
+         * concaténation d'un array dans une string SQL produisait
+         * "WHERE maven_key IN (Array)", erreur SQL silencieusement attrapée
+         * par handleDatabaseException qui renvoyait systématiquement 500.
+         * Symétrique du fix appliqué à selectHistoriqueIndicateurs en session
+         * 2026-05-04 — cette méthode-ci avait été oubliée. */
         $sql = "WITH LastVersions AS (
                 SELECT  maven_key AS mavenkey, project_name AS nom,
                         version, date_version AS date,
@@ -783,7 +1126,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         menace_potentielle_totale AS hotspots,
                 ROW_NUMBER() OVER (PARTITION BY maven_key ORDER BY date_version DESC) AS rn
                 FROM ma_moulinette.historique
-                WHERE maven_key IN (".$map['liste_projet']."))
+                WHERE maven_key IN (:liste_projet))
                 SELECT  mavenkey, nom, version, date, reliability, security, hotspot, sqale, bug,
                         vulnerability, code_smell, hotspots
                 FROM LastVersions
@@ -853,10 +1196,17 @@ class HistoriqueRepository extends ServiceEntityRepository
         }
 
         /** On prépare la requête */
+        /* MODIF 2026-05-04 : remplacement de la concaténation IN (".$map.") (variable indéfinie)
+         * par le placeholder :maven_keys déjà bindé via ArrayParameterType::STRING ci-dessous.
+         * La méthode était cassée : la concaténation produisait WHERE maven_key IN () et levait une exception
+         * SQL silencieusement attrapée par handleDatabaseException, renvoyant systématiquement code 500. */
         $sql = "SELECT DISTINCT ON (maven_key)
                     project_name, version, suppress_warning,
                     (java_no_sonar + python_no_sonar + php_no_sonar) AS no_sonar,
-                    (java_todo + python_todo + php_todo + xml_todo + javascript_todo + typescript_todo + ruby_todo) AS todo,
+                    /* MODIF 2026-05-07 : ancien commentaire SQL ligne (deux tirets)
+                    supprime - le collapse \s+/u tronquait la requête jusqu a la fin.
+                       Le total inclut web_todo (MODIF 2026-05-06). */
+                    (COALESCE(java_todo,0) + COALESCE(python_todo,0) + COALESCE(php_todo,0) + COALESCE(xml_todo,0) + COALESCE(web_todo,0) + COALESCE(javascript_todo,0) + COALESCE(typescript_todo,0) + COALESCE(ruby_todo,0)) AS todo,
                     lines AS nombre_ligne, ncloc AS nombre_ligne_code, tests, violations,
                     bugs AS nombre_bug, vulnerabilities AS nombre_vulnerability, code_smells AS nombre_code_smell,
                     repartition_frontend AS frontend, repartition_backend AS backend,
@@ -865,7 +1215,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                     sqale_rating AS note_sqale, security_review_rating AS note_hotspot,
                     logger_info, logger_warn, logger_error, logger_debug
                 FROM ma_moulinette.historique
-                WHERE maven_key IN (".$map.") ORDER BY maven_key ASC, version DESC, date_version DESC";
+                WHERE maven_key IN (:maven_keys) ORDER BY maven_key ASC, version DESC, date_version DESC";
 
         try {
             $indicateur = $this->getEntityManager()->getConnection()->executeQuery(
@@ -878,6 +1228,100 @@ class HistoriqueRepository extends ServiceEntityRepository
         }
         /** on prépare la réponse */
         return ['code' => 200, 'indicateur' => $indicateur, 'erreur' => ''];
+    }
+
+    /**
+     * [Description for selectHistoriqueCleanCodeSynthese]
+     * Retourne la dernière collecte clean code par projet pour la vue synthèse multi-projets.
+     *
+     * @param array $mavenKeys
+     *
+     * @return array
+     *
+     * Created at: 19/05/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    /* MODIF 2026-05-19 : synthèse multi-projets, dernière collecte par projet */
+    public function selectHistoriqueCleanCodeSynthese(array $mavenKeys): array
+    {
+        if ($mavenKeys === []) {
+            return ['code' => 200, 'liste' => [], 'erreur' => ''];
+        }
+
+        $sql = "SELECT DISTINCT ON (maven_key)
+                    maven_key, project_name, version, date_enregistrement,
+                    alert_status,
+                    COALESCE(software_quality_maintainability_rating, sqale_rating) AS note_mnt,
+                    COALESCE(software_quality_reliability_rating, reliability_rating) AS note_fia,
+                    COALESCE(software_quality_security_rating, security_rating) AS note_sec,
+                    security_review_rating AS note_hsp,
+                    complexity_rating AS note_cpx,
+                    cognitive_complexity_rating AS note_cpx_cog,
+                    COALESCE(violations, 0) AS violations,
+                    COALESCE(bugs, 0) AS bugs,
+                    COALESCE(vulnerabilities, 0) AS vulnerabilities,
+                    coverage,
+                    duplicated_lines_density,
+                    COALESCE(cc_consistent, 0) AS cc_consistent,
+                    COALESCE(cc_intentional, 0) AS cc_intentional,
+                    COALESCE(cc_adaptable, 0) AS cc_adaptable,
+                    COALESCE(cc_responsible, 0) AS cc_responsible,
+                    COALESCE(impact_blocker, 0) AS impact_blocker,
+                    COALESCE(impact_high, 0) AS impact_high,
+                    COALESCE(impact_medium, 0) AS impact_medium,
+                    COALESCE(impact_low, 0) AS impact_low,
+                    COALESCE(impact_info, 0) AS impact_info,
+                    COALESCE(owasp_top10, 0) AS owasp_top10
+                FROM ma_moulinette.historique
+                WHERE maven_key IN (:maven_keys) AND cc_responsible IS NOT NULL
+                ORDER BY maven_key ASC, date_enregistrement DESC";
+
+        try {
+            $liste = $this->getEntityManager()->getConnection()->executeQuery(
+                preg_replace(self::$removeReturnLine, " ", $sql),
+                ['maven_keys' => $mavenKeys],
+                ['maven_keys' => ArrayParameterType::STRING],
+            )->fetchAllAssociative();
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
+        }
+        return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
+    }
+
+    // MODIF 2026-06-09
+    /**
+     * Retourne la dernière synthèse (DISTINCT ON maven_key) de chaque projet,
+     * triée par date_enregistrement DESC.
+     *
+     * @return array<int|string, mixed>
+     */
+    public function selectAllProjetsDerniereSynthese(): array
+    {
+        $sql = "SELECT DISTINCT ON (maven_key)
+                    maven_key, project_name, version, date_version,
+                    alert_status,
+                    lines, ncloc, files, classes, functions, statements,
+                    comment_lines, comment_lines_rating,
+                    coverage, coverage_rating, tests,
+                    reliability_rating, security_rating, sqale_rating,
+                    duplicated_lines, duplicated_lines_density, duplicated_lines_rating,
+                    security_review_rating, complexity, complexity_rating,
+                    cognitive_complexity, cognitive_complexity_rating,
+                    bugs, vulnerabilities, code_smells, security_hotspots,
+                    blocker_violations, critical_violations, major_violations,
+                    minor_violations, info_violations,
+                    date_enregistrement
+                FROM ma_moulinette.historique
+                ORDER BY maven_key, date_enregistrement DESC";
+        try {
+            $rows = $this->getEntityManager()->getConnection()
+                ->executeQuery(preg_replace(self::$removeReturnLine, ' ', $sql))
+                ->fetchAllAssociative();
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
+        }
+        return ['code' => 200, 'projets' => $rows, 'erreur' => ''];
     }
 
 }
