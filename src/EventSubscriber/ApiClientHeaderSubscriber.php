@@ -82,6 +82,16 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
             return;
         }
 
+        /* Exclusion des routes /api/secure/dependency-check/.
+         * ces endpoints sont appelés par la CI GitLab (machine-to-machine)
+         * et non par le front Symfony. Ils sont proteges par un subscriber dédié
+         * qui valide un token bearer plutôt
+         * que la combinaison Origin + X-Internal-Front.
+         */
+        if (str_starts_with($request->getPathInfo(), '/api/secure/dependency-check/')) {
+            return;
+        }
+
         $origin         = $request->headers->get('Origin') ?? '';
         $referer        = $request->headers->get('Referer') ?? '';
         $internalHeader = $request->headers->get($this->internalHeaderName);
@@ -123,12 +133,12 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
     /**
      * [Description for isAllowedOrigin]
      *
-     * Verifie que le host extrait de l'URL (Origin ou Referer) appartient
-     * a la liste des origines autorisees.
+     * Vérifie que le host extrait de l'URL (Origin ou Referer) appartient
+     * a la liste des origines autorisées.
      *
      * Why: l'ancienne version retombait sur $request->getHost() quand l'URL
-     * etait vide, ce qui validait la requete via le host du serveur lui-meme
-     * (toujours dans allowedOrigins) et neutralisait le controle Origin/Referer.
+     * etait vide, ce qui validait la requête via le host du serveur lui-meme
+     * (toujours dans allowedOrigins) et neutralisait le contrôle Origin/Referer.
      *
      * @param string $url
      *
@@ -149,9 +159,9 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
             return false;
         }
 
-            foreach ($this->allowedOrigins as $allowed) {
-                if ($host === $allowed || str_ends_with($host, '.' . $allowed)) {
-                    return true;
+        foreach ($this->allowedOrigins as $allowed) {
+            if ($host === $allowed || str_ends_with($host, '.' . $allowed)) {
+                return true;
             }
         }
 
