@@ -44,24 +44,24 @@ class InformationProjetRepository extends ServiceEntityRepository
    */
   public function handleDatabaseException(\Throwable $e): array
   {
+    $message = $e->getMessage();
+
+    // message = 'SQLSTATE[08006]'
+    if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
+      $message = self::$noDataBase;
+    }
+
+    // state = '23502'
+    if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
       $message = $e->getMessage();
+    }
 
-      // message = 'SQLSTATE[08006]'
-      if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-          $message = self::$noDataBase;
-      }
+    // state = '23505'
+    if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+      return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+    }
 
-      // state = '23502'
-      if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
-          $message = $e->getMessage();
-      }
-
-      // state = '23505'
-      if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
-          return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
-      }
-
-      return ['code' => 500, 'erreur' => $message];
+    return ['code' => 500, 'erreur' => $message];
   }
 
   /**
@@ -81,18 +81,18 @@ class InformationProjetRepository extends ServiceEntityRepository
     $sql = "SELECT *
             FROM ma_moulinette.information_projet
             WHERE maven_key=:maven_key LIMIT 1";
-      try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-            $isValide = $stmt->executeQuery()->fetchAllAssociative();
-            /** j'ai pas trouvé de projet */
+    try {
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+      $isValide = $stmt->executeQuery()->fetchAllAssociative();
+      /** j'ai pas trouvé de projet */
       if (!$isValide) {
         return ['code' => 404, 'erreur' => "Je n'ai pas trouvé le projet dans la base de données."];
-            }
-          } catch (\Throwable $e) {
-              return $this->handleDatabaseException($e);
       }
-      return ['code' => 200, 'is_valide' => $isValide[0], 'erreur' => ''];
+    } catch (\Throwable $e) {
+      return $this->handleDatabaseException($e);
+    }
+    return ['code' => 200, 'is_valide' => $isValide[0], 'erreur' => ''];
   }
 
   /**
@@ -109,19 +109,23 @@ class InformationProjetRepository extends ServiceEntityRepository
    */
   public function selectInformationProjetVersion(array $map): array
   {
+    /* MODIF 2026-05-04 : colonnes `date` et `type` renommées en
+     * `date_analyse` et `type_analyse` côté DB le 2026-04-26 (cf. comments.sql:17, indexes.sql:15).
+     * On les alias pour préserver les clés 'date'/'type' attendues par les callers
+     * (ApiPeintureController, BatchCollecteHotspotDetailController,
+     *  BatchCollecteHotspotOwaspController, BatchCollecteOwaspController). */
     $sql = "SELECT maven_key, analyse_key, project_version as version, date_analyse AS date,
                     type_analyse AS type, version_sonar, version_release_sonar, version_snapshot_sonar, version_autre_sonar
             FROM ma_moulinette.information_projet
-            WHERE maven_key=:maven_key";
-      try {
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-            $liste = $stmt->executeQuery()->fetchAllAssociative();
-      } catch (\Throwable $e) {
-      $this->getEntityManager()->getConnection()->rollBack();
-          return $this->handleDatabaseException($e);
-      }
-      return ['code' => 200, 'info' => $liste, 'erreur' => ''];
+            WHERE maven_key = :maven_key";
+    try {
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+      $data = $stmt->executeQuery()->fetchAssociative();
+    } catch (\Throwable $e) {
+      return $this->handleDatabaseException($e);
+    }
+    return ['code' => 200, 'info' => $data, 'erreur' => ''];
   }
 
   /**
@@ -141,17 +145,17 @@ class InformationProjetRepository extends ServiceEntityRepository
     $sql = "DELETE
             FROM ma_moulinette.information_projet
             WHERE maven_key=:maven_key";
-      try {
-          $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-              $stmt->executeStatement();
-          $this->getEntityManager()->getConnection()->commit();
-      } catch (\Throwable $e) {
-          $this->getEntityManager()->getConnection()->rollBack();
-          return $this->handleDatabaseException($e);
-      }
-      return ['code' => 200, 'erreur' => ''];
+    try {
+      $this->getEntityManager()->getConnection()->beginTransaction();
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+      $stmt->executeStatement();
+      $this->getEntityManager()->getConnection()->commit();
+    } catch (\Throwable $e) {
+      $this->getEntityManager()->getConnection()->rollBack();
+      return $this->handleDatabaseException($e);
+    }
+    return ['code' => 200, 'erreur' => ''];
   }
 
   /**
@@ -167,34 +171,35 @@ class InformationProjetRepository extends ServiceEntityRepository
    */
   public function insertInformationProjet(array $map): array
   {
+    /* MODIF 2026-05-04 : colonnes `date`/`type` → `date_analyse`/`type_analyse`.
+     * Les placeholders :date et :type sont conservés (les callers passent $map['date']/$map['type']). */
     $sql = "INSERT INTO ma_moulinette.information_projet
               (maven_key, analyse_key, date_analyse, project_version, type_analyse, version_sonar, version_release_sonar, version_snapshot_sonar, version_autre_sonar, mode_collecte, utilisateur_collecte, date_enregistrement)
             VALUES
               (:maven_key, :analyse_key, :date, :project_version, :type, :version_sonar, :version_release_sonar, :version_snapshot_sonar, :version_autre_sonar,:mode_collecte, :utilisateur_collecte, :date_enregistrement)";
     try {
-          $this->getEntityManager()->getConnection()->beginTransaction();
-            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-              $stmt->bindValue(self::$mavenKey, $map['maven_key']);
-              $stmt->bindValue(':analyse_key', $map['analyse_key']);
-              $stmt->bindValue(':date', $map['date']);
-              $stmt->bindValue(':project_version', $map['project_version']);
-              $stmt->bindValue(':type', $map['type']);
-              $stmt->bindValue(':version_sonar', $map['version_sonar']);
-              $stmt->bindValue(':version_release_sonar', $map['version_release_sonar']);
-              $stmt->bindValue(':version_snapshot_sonar', $map['version_snapshot_sonar']);
-              $stmt->bindValue(':version_autre_sonar', $map['version_autre_sonar']);
-              $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
-              $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
-              /** on formate la date avant de l'enregistrer */
-              $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
-              $stmt->executeStatement();
-          $this->getEntityManager()->getConnection()->commit();
+      $this->getEntityManager()->getConnection()->beginTransaction();
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+      $stmt->bindValue(':analyse_key', $map['analyse_key']);
+      $stmt->bindValue(':date', $map['date']);
+      $stmt->bindValue(':project_version', $map['project_version']);
+      $stmt->bindValue(':type', $map['type']);
+      $stmt->bindValue(':version_sonar', $map['version_sonar']);
+      $stmt->bindValue(':version_release_sonar', $map['version_release_sonar']);
+      $stmt->bindValue(':version_snapshot_sonar', $map['version_snapshot_sonar']);
+      $stmt->bindValue(':version_autre_sonar', $map['version_autre_sonar']);
+      $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
+      $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
+      /** on formate la date avant de l'enregistrer */
+      $stmt->bindValue(':date_enregistrement', $map['date_enregistrement']->format('Y-m-d H:i:sO'));
+      $stmt->executeStatement();
+      $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
-        $this->getEntityManager()->getConnection()->rollBack();
-        return $this->handleDatabaseException($e);
+      $this->getEntityManager()->getConnection()->rollBack();
+      return $this->handleDatabaseException($e);
     }
 
     return ['code' => 200, 'erreur' =>  ''];
   }
-
 }
