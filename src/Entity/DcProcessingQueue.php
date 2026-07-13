@@ -200,7 +200,7 @@ class DcProcessingQueue
         type: Types::STRING,
         length: 128,
         nullable: true,
-        options: ['comment' => 'parent POM ou BOM (springboot-exemple-config | groupId:artifactId)']
+        options: ['comment' => 'parent POM ou BOM (springboot-socle-config | groupId:artifactId)']
     )]
     #[Assert\Length(max: 128)]
     private ?string $parentLabel = null;
