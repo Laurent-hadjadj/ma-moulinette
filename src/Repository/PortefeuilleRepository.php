@@ -44,24 +44,24 @@ class PortefeuilleRepository extends ServiceEntityRepository
    */
   public function handleDatabaseException(\Throwable $e): array
   {
+    $message = $e->getMessage();
+
+    // message = 'SQLSTATE[08006]'
+    if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
+      $message = self::$noDataBase;
+    }
+
+    // state = '23502'
+    if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
       $message = $e->getMessage();
+    }
 
-      // message = 'SQLSTATE[08006]'
-      if ($e instanceof \Doctrine\DBAL\Exception\ConnectionException) {
-          $message = self::$noDataBase;
-      }
+    // state = '23505'
+    if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
+      return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+    }
 
-      // state = '23502'
-      if ($e instanceof \Doctrine\DBAL\Exception\NotNullConstraintViolationException) {
-          $message = $e->getMessage();
-      }
-
-      // state = '23505'
-      if ($e instanceof \Doctrine\DBAL\Exception\UniqueConstraintViolationException) {
-          return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
-      }
-
-      return ['code' => 500, 'erreur' => $message];
+    return ['code' => 500, 'erreur' => $message];
   }
 
   /**
@@ -78,18 +78,16 @@ class PortefeuilleRepository extends ServiceEntityRepository
    */
   public function selectPortefeuille(array $map): array
   {
+    // MODIF 2026-06-10 — groupe_fonctionnel est la clé naturelle depuis la refonte CRUD
     $sql = "SELECT liste
             FROM ma_moulinette.portefeuille
-            WHERE portefeuille = :portefeuille";
+            WHERE groupe_fonctionnel = :groupe_fonctionnel";
     try {
-          /** On escape les ' : normalement on en a pas besoin */
-          //"$reEncode = str_replace("'", "''", $map['portefeuille']);
-
-          $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
-            $stmt->bindValue(':portefeuille', $map['portefeuille']);
-          $liste = $stmt->executeQuery()->fetchAllAssociative();
-        } catch (\Throwable $e) {
-            return $this->handleDatabaseException($e);
+      $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      $stmt->bindValue(':groupe_fonctionnel', $map['groupe_fonctionnel']);
+      $liste = $stmt->executeQuery()->fetchAllAssociative();
+    } catch (\Throwable $e) {
+      return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
   }
