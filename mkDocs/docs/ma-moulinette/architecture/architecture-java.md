@@ -1,149 +1,54 @@
-# Architecture des applications Java
+# ☕ Architecture des applications Java
 
-![Ma-Moulinette](/assets/images/home/home-000.jpg)
+Il est possible de passer la *moulinette* sur n'importe quelle application disponible sur la plateforme SonarQube. Certains indicateurs (répartition frontend/backend/autre) reposent cependant sur une classification automatique du chemin des fichiers analysés.
 
-Il est possible de passer la *moulinette* sur toutes les applications disponibles sur la plateforme SonarQube.
+## 🔍 Classification par mots-clés
 
-Cependant, certains indicateurs ne seront pas calculés si l'architecture n'est pas conforme à l'organisation qui a été retenue pour les applications Java.
+Contrairement à une correspondance stricte sur le nom du module Maven, la classification se fait par **recherche de mots-clés** (insensible à la casse, sur des limites de mot) n'importe où dans le chemin du composant SonarQube analysé. Les listes de mots-clés sont configurables par variable d'environnement (`config/services.yaml` → `module.frontend`/`module.backend`/`module.autre`), pas codées en dur :
 
-L'architecture pour les applications Java repose sur les principes SOA et de cloisonnement des responsabilités. Les applications sont composées des deux applications JAVA, l'une pour le frontend et la seconde pour le backend.
-
-Les indicateurs de suivi par module (frontend, backend et autre) sont calculés sur la base d'un filtrage du nom du dossier parent.
-
-Le projet Java doit avoir au moins les modules suivants :
-
-Pour l'application frontend :
-
-![Ma-Moulinette](/assets/images/architecture/architecture-applicative-presentation.jpg)
-
-Pour l'application frontend :
-
-![Ma-Moulinette](/assets/images/architecture/architecture-applicative-metier.jpg)
-
-> Note : Cette architecture peut être adaptée.
-
-Le filtrage est utilisé par la méthode **hotspotDetails()** et la méthode **projetAnomalie()** du controller **ApiProjet**.
-
-Les deux méthodes sont présentes dans la class `Controller\ApiProjetController.php`. Ci-dessous un exemple simple tiré de la méthode hotspotDetails().
-
-```js
-$frontend = 0;
-    $backend = 0;
-    $autre = 0;
-    // nom du projet
-    $app = explode(":", $mavenKey);
-
-    $status = $hotspot["status"];
-    $file = str_replace($mavenKey . ":", "", $hotspot["component"]["key"]);
-    $module = explode("/", $file);
-
-    if ($module[0] == "du-presentation") {
-      $frontend++;
-    }
-    if ($module[0] == "rs-presentation") {
-      $frontend++;
-    }
-    if ($module[0] == "rs-metier") {
-      $backend++;
-    }
-
-    /**
-     *  Application Frontend
-     */
-    if ($module[0] == $app[1] . "-presentation") {
-      $frontend++;
-    }
-    if ($module[0] == $app[1] . "-presentation-commun") {
-      $frontend++;
-    }
-    if ($module[0] == $app[1] . "-presentation-ear") {
-      $frontend++;
-    }
-    if ($module[0] == $app[1] . "-webapp") {
-      $frontend++;
-    }
-
-    /**
-     * Application Backend
-     */
-    if ($module[0] == $app[1] . "-metier") {
-      $backend++;
-    }
-    if ($module[0] == $app[1] . "-common") {
-      $backend++;
-    }
-    if ($module[0] == $app[1] . "-api") {
-      $backend++;
-    }
-    if ($module[0] == $app[1] . "-dao") {
-      $backend++;
-    }
-    if ($module[0] == $app[1] . "-metier-ear") {
-      $backend++;
-    }
-    if ($module[0] == $app[1] . "-service") {
-      $backend++;
-    }
-    // Application : Legacy
-    if ($module[0] == $app[1] . "-serviceweb") {
-      $backend++;
-    }
-    if ($module[0] == $app[1] . "-middleoffice") {
-      $backend++;
-    }
-    // Application : Starter-Kit
-    if ($module[0] == $app[1] . "-metier-rest") {
-      $backend++;
-    }
-    // Application : Legacy
-    if ($module[0] == $app[1] . "-entite") {
-      $backend++;
-    }
-    // Application : Legacy
-    if ($module[0] == $app[1] . "-serviceweb-client") {
-      $backend++;
-    }
-
-    /**
-     * Application Batch et Autres
-     */
-    if ($module[0] == $app[1] . "-batch") {
-      $autre++;
-    }
-    if ($module[0] == $app[1] . "-batch") {
-      $autre++;
-    }
-    if ($module[0] == $app[1] . "-rdd") {
-      $autre++;
-    }
+```bash
+MODULE_FRONTEND="presentation,webapp,front,frontend,angular,templates,styles,css,js,ts,vue,react,svelte,scss,less,html,xhtml"
+MODULE_BACKEND="metier,back,backend,controller,api,service,business,common,dao,dto,sql,liquibase,changelog,middleoffice,rest,soap,entite,entity,repository,interface,converter,serviceweb,serviceweb-client"
+MODULE_AUTRE="batch,rdd,etl,pipeline,processing"
 ```
 
-Ci-dessous la liste des filtres pour une application frontend :
+```mermaid
+flowchart TD
+    A[Chemin du composant analysé] --> B{Contient un mot-clé<br/>MODULE_FRONTEND ?}
+    B -- Oui --> F[🎨 Frontend]
+    B -- Non --> C{Contient un mot-clé<br/>MODULE_BACKEND ?}
+    C -- Oui --> K[⚙️ Backend]
+    C -- Non --> D{Contient un mot-clé<br/>MODULE_AUTRE ?}
+    D -- Oui --> A2[📦 Autre]
+    D -- Non --> I[❔ Inconnu]
+```
 
-* [x] `presentation-ear`
-* [x] `webapp`
-* [ ] `presentation`
-* [ ] `presentation-commun`
+L'ordre de test est **frontend → backend → autre → inconnu** : un chemin qui matcherait plusieurs catégories est classé dans la première qui correspond. Exemple de chemin classé frontend : `test-presentation/test-presentation-webapp/src/main/java/fr/mamoulinette/testpresentation/util/BeanUtils.java` (mot-clé `presentation`/`webapp`).
 
-Ci-dessous la liste des filtres pour une application backend :
+!!! note "🧩 Logique dupliquée dans 3 controllers"
+    Ce mécanisme de classification est implémenté de façon similaire dans `BatchCollecteRepartitionController`, `BatchCollecteHotspotDetailController` et `BatchCollecteAnomalieController` (un par type d'indicateur collecté). Pour ajuster la classification d'un projet particulier, modifier les variables `MODULE_FRONTEND`/`MODULE_BACKEND`/`MODULE_AUTRE` plutôt que le code.
 
-* [x] `api`
-* [x] `common`
-* [x] `dao`
-* [ ] `service`
-* [ ] `metier`
-* [ ] `metier-ear`
-* [ ] `middleoffice`
-* [ ] `serviceweb`
-* [ ] `serviceweb-client`
-* [ ] `metier-rest`
-* [ ] `entite`
+## 🧬 Socle technique et archétype (module DependencyCheck)
 
-Ci-dessous la liste des filtres pour les autres modules backend :
+Au-delà du frontend/backend, les applications Java partagent souvent un **socle commun** : un parent POM ou BOM (Bill of Materials) d'entreprise qui fixe les versions de dépendances, éventuellement lui-même généré depuis un **archétype** Maven (template de scaffolding initial). Cette information est précieuse pour le module [DependencyCheck](../architecture/architecture-technique.md) : elle permet de regrouper les applications qui héritent des mêmes CVE potentielles via leur socle, plutôt que de les traiter comme complètement indépendantes.
 
-* [ ] `Batchs`
-* [ ] `batch`
-* [ ] `rdd`
+!!! caution "⚠️ Non déductible du rapport DependencyCheck seul"
+    OWASP DependencyCheck scanne les **jars runtime résolus**, pas le `pom.xml` — l'information de socle/archétype ne peut donc pas être extraite du rapport JSON lui-même. Elle est transmise séparément par la CI via des **en-têtes HTTP optionnels** au moment de l'upload.
+
+| En-tête HTTP | Colonne (`dc_scan`/`dc_processing_queue`) | Rôle |
+| --- | --- | --- |
+| `X-Parent-Label` | `parent_label` (VARCHAR 128, nullable) | Identifiant du socle/BOM (ex. `springboot-config`, ou `<groupId>:<artifactId>` du parent legacy) |
+| `X-Parent-Version` | `parent_version` (VARCHAR 64, nullable) | Version effective du socle qui pilote les CVE |
+| `X-Archetype-Version` | `archetype_version` (VARCHAR 64, nullable) | Version du template Maven ayant généré le projet (optionnel) |
+
+Les trois en-têtes sont optionnels et indépendants : un projet standalone (pas de socle d'entreprise) n'en envoie aucun, ce qui stocke `NULL` partout — c'est un cas nominal, pas une erreur.
+
+Ces métadonnées alimentent, côté dashboard DependencyCheck, un **filtre par socle** (`?socle=<parent_label>@<parent_version>`, alias rétrocompatible `?archetype=`) qui restreint toutes les sections à un socle donné, une synthèse agrégeant les CVE par socle, et une distribution croisée socle × archétype qui repère les applications restées sur un ancien template alors que le reste du parc a migré (`is_socle_fragmented`).
+
+## 📚 Pour aller plus loin
+
+- [Architecture technique](architecture-technique.md) : vue d'ensemble applicative.
+- [Répartition détaillée](../application/repartition_details.md) : utilisation de cette classification côté application.
 
 -**-- FIN --**-
 
