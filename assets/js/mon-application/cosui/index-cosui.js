@@ -26,6 +26,9 @@ import 'motion-ui';
 import '../../common/foundation.js';
 import '../../auth/details.js';
 
+/** Gestion des modales zurb foundation compatible WCAG  */
+import { modalSafe } from '../../common/safeModal.js';
+
 /** On importe les constantes */
 import { zero, dix, vingt, trente, quarante, cinquante, soixante, soixanteDix, cent, quatreVingt } from '../../common/constante.js';
 
@@ -200,6 +203,7 @@ const dessineMoiUnRadar = function (dataset1, dataset2, label1, label2){
  * description
  * On affiche/désactive les indicateurs de variation
  * Faux positif : sonarLint(javascript:S1192)
+ *
  * @constant
  * @name oui_non
  * @type {"#js-oui-non"}
@@ -221,8 +225,18 @@ $(oui_non).on('click', function () {
  * @method
  * @name JQuery
  */
-$('#js-affiche-projet-reference').on('click', function () {
-  $('#modal-projet-reference').foundation('open');
+$('.js-affiche-projet-reference').on('click', function () {
+  modalSafe.open('#modal-projet-reference');
+});
+
+/**
+ * On ferme l'affichage des indicateurs du projet de référence
+ *
+ * @method
+ * @name JQuery
+ */
+$('#bouton-fermer-projet-reference').on('click', function () {
+  modalSafe.close('#modal-projet-reference');
 });
 
 /** Affiche le radar des indicateurs clés */
