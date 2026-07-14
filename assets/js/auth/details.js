@@ -152,7 +152,12 @@ const changeMe = async function(avatar){
   }
 }
 
-/** On ouvre la modale utilisateur */
+/** On ouvre la modale des informations personnelles (icône ⚙️ du bandeau) */
+$('#bouton-ouvrir-information-utilisateur').on('click', function () {
+  modalSafe.open('#modal-information-utilisateur');
+});
+
+/** On ouvre la modale des avatars */
 $('#bouton-changer-avatar').on('click', function () {
   modalSafe.open('#mes-avatars');
 });
@@ -160,6 +165,11 @@ $('#bouton-changer-avatar').on('click', function () {
 /** On ferme proprement la modale */
 $('#bouton-fermer-information-utilisateur').on('click', function () {
   modalSafe.close('#modal-information-utilisateur');
+});
+
+/** On ferme la modale des avatars sans en choisir un */
+$('#bouton-fermer-mes-avatars').on('click', function () {
+  modalSafe.close('#mes-avatars');
 });
 
 /** Validation du choix de l'avatar */
