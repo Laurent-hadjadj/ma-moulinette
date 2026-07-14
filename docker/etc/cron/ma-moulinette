@@ -1,0 +1,39 @@
+# Ma-Moulinette — crontab Supercronic
+# Format : min heure jour mois weekday commande
+# Timezone : Europe/Paris (définie dans php.ini du sidecar)
+# Logs : Supercronic redirige stdout/stderr du process enfant vers ses propres
+# stdout/stderr -> visible via `docker logs cron-ma-moulinette`.
+#
+# MODIF 2026-05-08 : Jobs d'ingestion OWASP DependencyCheck.
+# MODIF 2026-05-21 : Jobs clean-tags et collecteSonarQube.
+# MODIF 2026-05-21 : renomme dc-ingest → ma-moulinette (jobs SonarQube ajoutés).
+# MODIF 2026-05-24 : job collecte Activity (remplace Symfony Scheduler).
+
+
+ ── OWASP DependencyCheck ─────────────────────────────────────────────────────
+# Worker : traitement de la queue toutes les minutes
+# - --batch=5    : max 5 rapports par execution (plafond mémoire prévisible)
+# - --no-interaction : pas de prompt (mode CLI non interactif)
+* * * * * php /var/www/bin/console app:dependency-check:process --batch=5 --no-interaction --env=prod
+
+# Purge quotidienne a 03h00 (heure container, cf TZ=Europe/Paris dans compose)
+# - --days=30 : retention 30 jours sur les status done|failed
+0 3 * * * php /var/www/bin/console app:dependency-check:purge --days=30 --no-interaction --env=prod
+
+ ── SONARQUBE Clean & Collecte ─────────────────────────────────────────────────
+## Mise a jour des tags projets SonarQube chaque nuit a 00h30
+# - SONAR_URL   : URL de l'instance SonarQube (ex. https://sonar.serveur.fr)
+# - SONAR_TOKEN : token API SonarQube (scope Administer ou Create Project)
+# Injecte via docker-compose (cron-ma-moulinette.environment)
+30 0 * * * php /var/www/bin/console app:sonar:update-tags --url=${SONAR_URL} --token=${SONAR_TOKEN} --no-interaction --env=prod
+
+# Lancement des batchs de collecte Ma-Moulinette chaque nuit a 00h30
+# - MAMOUL_URL   : URL de l'application Ma-Moulinette (ex. https://ma.moulinette.serveur.fr)
+# - MAMOUL_TOKEN : token d'accès généré dans Ma-Moulinette (Profil → Tokens)
+# Injecte via docker-compose (cron-ma-moulinette.environment)
+30 1 * * * php /var/www/bin/console app:collecte:run --url=${MAMOUL_URL} --token=${MAMOUL_TOKEN} --no-interaction --env=prod
+
+# ── SonarQube Activity ────────────────────────────────────────────────────────
+# Collecte des tâches CE Activity J-1 (quotidien à 22h00)
+# Rattrappe automatiquement les jours manqués en fenêtres de 7 jours.
+0 22 * * * php /var/www/bin/console app:activity:collecte
