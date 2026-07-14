@@ -48,6 +48,11 @@ class ClientService
     private static string $responseData = "Response Data: ";
 
     private static string $exceptionInattendu = "Chemin d'exécution inattendu dans ";
+    // MODIF 2026-05-26 : extraction des string literals dupliqués (S1192).
+    private static string $sonarToken         = 'sonar.token';
+    private static string $sonarActivityToken = 'sonar.activity.token';
+    private static string $verifyHost         = 'verify.host';
+    private static string $verifyPeer         = 'verify.peer';
 
     public function __construct(
         private HttpClientInterface $client,
@@ -142,20 +147,27 @@ class ClientService
         // Décoder le JSON en tableau associatif
         $data = json_decode($body, true);
 
-        // Vérifier si 'detail' existe dans les données
+        /* MODIF 2026-05-07 : log unique systématique.
+         * Capture des 1000 premiers chars uniquement si data['detail'] est exploitable, sinon body=null. */
         if (isset($data['detail']) && is_array($data['detail'])) {
             $firstTenLines = substr($body, 0, 1000);
         }
 
-        // On vérifie si la réponse contient un message d'erreur spécifique pour le code d'erreur, sinon on utilise un message générique.
+        // On  vérifie si la réponse contient un message d'erreur spécifique pour le code d'erreur, sinon on utilise un message générique.
         if (isset($data['errors']) && is_string($data['errors'][0]['msg']) && !empty(trim($data['errors'][0]['msg']))) {
             $errorMessage = $data['errors'][0]['msg'];
             $this->logger->error("[handleClientException] ❌ Une erreur de l'API SonarQube a été retournée. ", [
-                'code' => $errorCode,
-                'body' => $errorMessage
-            ]);
+            'code' => $errorCode,
+            'body' => $errorMessage
+        ]);
             return ['code' => $errorCode, 'erreur' => $errorMessage];
         }
+
+        // Cas générique : log unique avec body éventuellement null si non-JSON.
+        $this->logger->error("[handleClientException] ❌ Une erreur non spécifiée est survenue. ", [
+            'code' => $errorCode,
+            'body' => $firstTenLines,
+        ]);
 
         $errorMessage = match ($errorCode) {
             400 => self::$erreur400,
@@ -170,11 +182,6 @@ class ClientService
             default => "Erreur du client non spécifiée (Erreur {$errorCode}).",
         };
 
-        // Log final - toujours appelé pour assurer l'observabilité (cohérent avec handleServerException)
-        $this->logger->error("[handleClientException] ❌ Une erreur non spécifiée est survenue. ", [
-            'code' => $errorCode,
-            'body' => $firstTenLines
-        ]);
         return ['code' => $errorCode, 'erreur' => $errorMessage];
     }
 
@@ -280,25 +287,25 @@ class ClientService
      */
     public function httpSonarQube(string $url): array
     {
-        if (empty($this->params->get('sonar.token')) && empty($this->params->get('sonar.user'))){
+        if (empty($this->params->get(self::$sonarToken)) && empty($this->params->get('sonar.user'))){
             return [
                     'code' => 401,
                     'erreur' => self::$erreur401
                     ];
         }
 
-        if (empty($this->params->get('sonar.token'))) {
+        if (empty($this->params->get(self::$sonarToken))) {
             $user = $this->params->get('sonar.user');
             $password = $this->params->get('sonar.password');
         } else {
-            $user = $this->params->get('sonar.token');
+            $user = $this->params->get(self::$sonarToken);
             $password = '';
         }
 
         try {
             $ciphers = $this->params->get('ciphers');
-            $verify_host = $this->params->get('verify.host');
-            $verify_peer =$this->params->get('verify.peer');
+            $verify_host = $this->params->get(self::$verifyHost);
+            $verify_peer =$this->params->get(self::$verifyPeer);
 
             $options = [
                 'auth_basic' => [$user, $password],
@@ -385,8 +392,8 @@ class ClientService
     {
         try {
             $ciphers = $this->params->get('ciphers');
-            $verify_host = $this->params->get('verify.host');
-            $verify_peer =$this->params->get('verify.peer');
+            $verify_host = $this->params->get(self::$verifyHost);
+            $verify_peer =$this->params->get(self::$verifyPeer);
 
             /** Options sans Auth_http_basic */
             $options=[
@@ -459,25 +466,25 @@ class ClientService
      */
     public function httpActivity(string $url): array
     {
-        if (empty($this->params->get('sonar.activity.token')) && empty($this->params->get('sonar.activity.user'))){
+        if (empty($this->params->get(self::$sonarActivityToken)) && empty($this->params->get('sonar.activity.user'))){
             return [
                 'code'=> 401,
                 'erreur' => self::$erreur401
             ];
         }
 
-        if (empty($this->params->get('sonar.activity.token'))) {
+        if (empty($this->params->get(self::$sonarActivityToken))) {
             $user = $this->params->get('sonar.activity.user');
             $password = $this->params->get('sonar.activity.password');
         } else {
-            $user = $this->params->get('sonar.activity.token');
+            $user = $this->params->get(self::$sonarActivityToken);
             $password = '';
         }
 
         try {
             $ciphers = $this->params->get('ciphers');
-            $verify_host = $this->params->get('verify.host');
-            $verify_peer =$this->params->get('verify.peer');
+            $verify_host = $this->params->get(self::$verifyHost);
+            $verify_peer =$this->params->get(self::$verifyPeer);
 
             $options = [
                 'auth_basic' => [$user, $password],
