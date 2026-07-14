@@ -106,8 +106,8 @@ class RepartitionRepository extends ServiceEntityRepository
                   WHERE id = :id AND control = 'initial'";
 
     $sqlInsert = "INSERT INTO ma_moulinette.repartition (
-                maven_key, name, bug_blocker, bug_critical, bug_major, bug_minor, bug_info, vulnerability_blocker, vulnerability_critical, vulnerability_major, vulnerability_minor, vulnerability_info, code_smell_blocker,code_smell_critical, code_smell_major, code_smell_minor, code_smell_info, setup, mode_collecte, utilisateur_collecte,date_enregistrement)
-                VALUES (:maven_key, :name, :bug_blocker, :bug_critical, :bug_major, :bug_minor, :bug_info, :vulnerability_blocker, :vulnerability_critical, :vulnerability_major, :vulnerability_minor, :vulnerability_info, :code_smell_blocker, :code_smell_critical, :code_smell_major, :code_smell_minor, :code_smell_info, :setup, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
+                maven_key, name, bug_blocker, bug_critical, bug_major, bug_minor, bug_info, vulnerability_blocker, vulnerability_critical, vulnerability_major, vulnerability_minor, vulnerability_info, code_smell_blocker,code_smell_critical, code_smell_major, code_smell_minor, code_smell_info, setup, control, mode_collecte, utilisateur_collecte,date_enregistrement)
+                VALUES (:maven_key, :name, :bug_blocker, :bug_critical, :bug_major, :bug_minor, :bug_info, :vulnerability_blocker, :vulnerability_critical, :vulnerability_major, :vulnerability_minor, :vulnerability_info, :code_smell_blocker, :code_smell_critical, :code_smell_major, :code_smell_minor, :code_smell_info, :setup, 'initial', :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
 
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
@@ -255,9 +255,11 @@ class RepartitionRepository extends ServiceEntityRepository
     $setParts[] = "control = :control";
     $setParts[] = "date_enregistrement = :date_enregistrement";
 
+    /* MODIF 2026-05-21 : WHERE utilisait :control (nouvelle valeur)
+       au lieu de la valeur courante 'initial' → UPDATE matchait 0 lignes silencieusement. */
     $sqlUpdate = "UPDATE ma_moulinette.repartition SET " . implode(", ", $setParts) . "
                   WHERE id = :id
-                  AND control = :control
+                  AND control = 'initial'
                   AND setup = :setup";
 
     try {
@@ -309,7 +311,7 @@ class RepartitionRepository extends ServiceEntityRepository
   public function findLatestSetupByMavenKey(string $maven_key): array
   {
       $sql = 'SELECT setup
-              FROM repartition
+              FROM ma_moulinette.repartition
               WHERE maven_key = :maven_key
               ORDER BY setup DESC LIMIT 1';
 
@@ -318,7 +320,6 @@ class RepartitionRepository extends ServiceEntityRepository
               $stmt->bindValue(self::$mavenKey, $maven_key);
               $result = $stmt->executeQuery()->fetchOne();
     } catch (\Throwable $e) {
-      $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'result' => $result ?: 'NaN', 'erreur' => ''];
@@ -337,19 +338,20 @@ class RepartitionRepository extends ServiceEntityRepository
    */
   public function findLatestMavenKeyWithControl(string $maven_key): array
   {
+      /* MODIF 2026-05-21 : ajout préfixe ma_moulinette. (manquant, identique aux autres requêtes). */
       $sql = 'SELECT *
-              FROM repartition
+              FROM ma_moulinette.repartition
               WHERE control = :control AND maven_key = :maven_key
               ORDER BY date_enregistrement DESC
               limit 1';
 
+      /* MODIF 2026-05-04 : retrait du rollBack() (SELECT sans beginTransaction). */
       try {
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
               $stmt->bindValue(self::$mavenKey, $maven_key);
               $stmt->bindValue('control', "complet (100%)");
               $result = $stmt->executeQuery()->fetchAllAssociative();
     } catch (\Throwable $e) {
-      $this->getEntityManager()->getConnection()->rollBack();
         return $this->handleDatabaseException($e);
     }
     return ['code' => 200, 'result' => $result, 'erreur' => ''];
