@@ -35,6 +35,9 @@ import '../../select2/i18n/fr.js'
 import '../../common/foundation.js';
 import '../../auth/details.js';
 
+/** Gestion des modales zurb foundation compatible WCAG  */
+import { modalSafe } from '../../common/safeModal.js';
+
 /** On importe les paramètres serveur */
 import {serveur} from '../../common/properties.js';
 
@@ -1223,5 +1226,19 @@ $('.js-details').on('click', function () {
   if (id[1] === 'a10') {
     remplissageDetailsHotspotOwasp(k_key, 'a10', dix);
   }
-  $('#details').foundation('open');
+  modalSafe.open('#details');
+});
+
+/** On ferme la modale "Owasp et points chauds" */
+$('#bouton-fermer-details-owasp').on('click', function () {
+  modalSafe.close('#details');
+});
+
+/** On ouvre / ferme la modale de comparaison des référentiels OWASP */
+$('#bouton-ouvrir-comparaison-owasp').on('click', function () {
+  modalSafe.open('#compare-owasp-modal');
+});
+
+$('#bouton-fermer-comparaison-owasp').on('click', function () {
+  modalSafe.close('#compare-owasp-modal');
 });

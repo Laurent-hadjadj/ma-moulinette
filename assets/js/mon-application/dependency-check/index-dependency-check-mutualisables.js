@@ -32,6 +32,9 @@ import 'motion-ui';
 
 import '../../common/foundation.js';
 
+/** Gestion des modales zurb foundation compatible WCAG  */
+import { modalSafe } from '../../common/safeModal.js';
+
 import DataTable from 'datatables.net-zf'; //NOSONAR
 
 const DT_LANG_FR = {
@@ -72,4 +75,14 @@ document.addEventListener('DOMContentLoaded', () => {
         ],
         language: DT_LANG_FR,
     });
+});
+
+/* Ouverture de la modale "Méthode de calcul du JH" */
+$('.js-ouvrir-methodology-jh').on('click', () => {
+  modalSafe.open('#dc-jh-methodology-modal');
+});
+
+/* Fermeture de la modale "Méthode de calcul du JH" */
+$('#bouton-fermer-methodology-jh').on('click', () => {
+  modalSafe.close('#dc-jh-methodology-modal');
 });
