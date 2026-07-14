@@ -30,8 +30,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\{Request, RequestStack};
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBagInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -497,7 +496,7 @@ class DependencyCheckPageControllerTest extends TestCase
             'maven_key'          => 'fr.ma-moulinette:ma-moulinette',
             'project_artifact'   => 'ma-moulinette',
             'project_version'    => '1.0',
-            'parent_label'       => 'springboot-config',
+            'parent_label'       => 'springboot-socle-config',
             'parent_version'     => '3.2.0',
             'archetype_version'  => '2.0',
             'cve_count_critical' => 1,
@@ -525,7 +524,7 @@ class DependencyCheckPageControllerTest extends TestCase
         $this->depRepo->method('topMutualisableDependencies')
             ->willReturn(['code' => 200, 'liste' => []]);
 
-        $request = Request::create('/', 'GET', ['socle' => 'springboot-config@3.2.0']);
+        $request = Request::create('/', 'GET', ['socle' => 'springboot-socle-config@3.2.0']);
         $response = $this->controller->dashboard($request);
 
         $this->assertSame(200, $response->getStatusCode());
