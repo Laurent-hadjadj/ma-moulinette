@@ -373,6 +373,18 @@
 
 .bulle-information-svg { margin-top: -14px; }
 
+/* Déclencheur de la modale d'information sur les tags.
+   Bouton transparent : le SVG portait le clic mais n'était pas focusable au clavier. */
+.bulle-information-bouton {
+  display: inline-block;
+  width: 32px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
 /* Bouton désactivé */
 .bouton-disabled {
   cursor: not-allowed;

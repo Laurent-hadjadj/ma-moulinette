@@ -1005,9 +1005,20 @@ body {
   cursor: pointer;
 }
 
+/* Le déclencheur de la modale d'informations personnelles est un <button> (a11y clavier) :
+   on neutralise le style bouton par défaut pour conserver le rendu texte d'origine. */
+button.identifiant-titre {
+  padding: 0;
+  border: 0;
+  font: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
 .identifiant-titre:hover { color: #e7552c; }
 
-#bouton-fermer-information-utilisateur {
+#bouton-fermer-information-utilisateur,
+#bouton-fermer-mes-avatars {
   min-width: 9rem;
   font-size: 0.95rem;
   border-radius: 0.375rem;
@@ -1028,7 +1039,7 @@ body {
     background-color: #00445b;
 }
 #bouton-fermer-information-utilisateur:hover,
-#bouton-changer-avatar:hover { background-color: #006182; }
+#bouton-changer-avatar:hover, #bouton-fermer-mes-avatars:hover { background-color: #006182; }
 
 /***************  Avatar                        *******************************/
 .sepia { filter: sepia(0); }
