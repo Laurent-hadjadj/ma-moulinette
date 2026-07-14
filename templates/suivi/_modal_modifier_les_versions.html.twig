@@ -1,13 +1,12 @@
 {# Formulaire - Modifier les versions #}
-<div id="modal-modifier-analyse"
-      class="reveal large"
-      data-close-on-click="true"
-      data-animation-in="fade-in"
-      data-animation-out="fade-out"
-      data-reveal
-      aria-modal="true"
-      aria-labelledby="titre-modifier-version"
-      aria-describedby="desc-modifier-version">
+<dialog id="modal-modifier-analyse"
+        class="reveal large" data-reveal
+        aria-modal="true"
+        data-close-on-click="true"
+        data-animation-in="fade-in"
+        data-animation-out="fade-out"
+        aria-labelledby="titre-modifier-version"
+        aria-describedby="desc-modifier-version">
 
   <header>
     <h1 id="titre-modifier-version" class="h3 claire-hand"><span aria-hidden="true">ℹ️</span>Suivi des versions</h1>
@@ -41,11 +40,11 @@
   {# fermeture de la fenêtre modale #}
   <footer class="grid-x grid-margin-x align-right margin-top-2">
     <div class="cell shrink">
-      <button id="bouton-fermer-modifier-analyse" data-close
+      <button id="bouton-fermer-modifier-analyse"
               class="button open-sans focus-light"
               type="button"
               aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span>Fermer
       </button>
     </div>
   </footer>
-</div>
+</dialog>
