@@ -652,13 +652,13 @@ class DependencyCheckPageControllerTest extends WebTestCase
         $this->em->persist($listeProjet1);
         $this->em->persist($listeProjet2);
         $this->em->flush();
-        $this->seedScanWithSocle('fr.ma-moulinette', 'projet-a', '1.0', '2026-05-10T08:00:00+02:00', 'springboot-config', '2.7.0');
-        $this->seedScanWithSocle('fr.ma-moulinette', 'projet-b', '1.0', '2026-05-10T08:00:00+02:00', 'springboot-config', '2.7.0');
+        $this->seedScanWithSocle('fr.ma-moulinette', 'projet-a', '1.0', '2026-05-10T08:00:00+02:00', 'springboot-socle-config', '2.7.0');
+        $this->seedScanWithSocle('fr.ma-moulinette', 'projet-b', '1.0', '2026-05-10T08:00:00+02:00', 'springboot-socle-config', '2.7.0');
 
-        $this->client->request('GET', '/dependency-check/dashboard?socle=springboot-config%402.7.0');
+        $this->client->request('GET', '/dependency-check/dashboard?socle=springboot-socle-config%402.7.0');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
         $body = $this->client->getResponse()->getContent();
-        $this->assertStringContainsString('springboot-config', $body);
+        $this->assertStringContainsString('springboot-socle-config', $body);
     }
 
     public function testDashboardIgnoresInvalidSocleFilter(): void
