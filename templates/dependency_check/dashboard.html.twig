@@ -240,8 +240,8 @@
                   <td data-order="{{ c.last_seen_date|date('Y-m-d H:i') }}">{{ c.last_seen_date|date('d/m/Y H:i') }}</td>
                   <td>
                     <button type="button"
-                        class="button tiny hollow open-sans focus-light margin-bottom-0"
-                        data-open="{{ modal_id }}"
+                        class="button tiny hollow open-sans focus-light margin-bottom-0 js-ouvrir-dc-new-cve"
+                        data-modal-id="{{ modal_id }}"
                         title="Voir la liste des applications impactées par {{ c.cve_id }}">
                       Voir apps ({{ c.nb_apps_impactees }})
                     </button>
@@ -257,7 +257,7 @@
             id indexé par loop.index. autoWidth:false car modale cachée à l'init. #}
           {% for c in mes_critical_recentes %}
             {% set modal_id = 'dc-new-cve-modal-' ~ loop.index %}
-            <div class="reveal large" id="{{ modal_id }}" data-reveal data-multiple-opened="false">
+            <dialog class="reveal large" id="{{ modal_id }}" data-reveal data-multiple-opened="false" aria-modal="true">
               <h3 class="claire-hand">
                 <span aria-hidden="true">🆕</span> {{ c.cve_id }}
                 {% if c.severity %}<span class="badge-level {{ c.severity|lower }}">{{ c.severity }}</span>{% endif %}
@@ -313,15 +313,14 @@
                 </table>
               </div>
               <footer class="grid-x grid-padding-x align-right margin-top-2">
-                  <div class="cell shrink">
-                    <button type="button"
-                            class="button open-sans focus-light bouton-fermer-dc-new-cve"
-                            data-close
-                            aria-label="Fermer"><span aria-hidden="true">❌</span> Fermer</button>
-                  </div>
-                </footer>
-              </button>
-            </div>
+                <div class="cell shrink">
+                  <button type="button"
+                          class="button open-sans focus-light js-fermer-dc-new-cve"
+                          data-modal-id="{{ modal_id }}"
+                          aria-label="Fermer"><span aria-hidden="true">❌</span> Fermer</button>
+                </div>
+              </footer>
+            </dialog>
           {% endfor %}
         {% endif %}
 
@@ -634,7 +633,7 @@
         {{ _self.info_callout('Dépendances présentes dans <strong>≥ 2 projets</strong> du périmètre. <strong>Type</strong> : <span class="badge-level convergence">CONVERGENCE</span> = les apps héritent de <strong>socles différents</strong> (ou mix socle+standalone) — <strong>vraie opportunité</strong>. <span class="badge-level unknown">VIA SOCLE</span> = toutes les apps héritent du <strong>même socle</strong> — <strong>déjà mutualisée</strong> par héritage, faible valeur. <strong>JH unit.</strong> = effort upgrade selon famille technologique + bonus sévérité (formule paramétrable). <strong>Gain mutu.</strong> = JH unit. × (nb_projets − 1) = effort économisé. <strong>Nb CVE</strong> = CVE distinctes affectant cette lib.') }}
         <p>
           <button id="bouton-ouvrir-methodology-jh"
-                  class="button open-sans focus-light"
+                  class="button open-sans focus-light js-ouvrir-methodology-jh"
                   type="button"
                   aria-label="Méthode de calcul du JH">
                   <span aria-hidden="true">🗒️</span> Méthode de calcul du JH
