@@ -29,6 +29,9 @@ import 'foundation-sites';
 import 'motion-ui';
 
 import '../../common/foundation.js';
+
+/** Gestion des modales zurb foundation compatible WCAG  */
+import { modalSafe } from '../../common/safeModal.js';
 import '../../auth/details.js';
 
 /* On importe les paramètres serveur. */
@@ -364,7 +367,7 @@ const traitementInformation = async function(traitement_id){
       });
     }
     // Ouvrir modale
-    $('#modal-traitement-information').foundation('open');
+    modalSafe.open('#modal-traitement-information');
   } catch(erreur) {
     const trace = prepareTechnicalDetails(erreur);
     showMessage('critical', "Une erreur globale est survenue lors du traitement (Erreur 500).", trace);
@@ -519,11 +522,21 @@ $('.js-select-journal').on('select2:select', async function(e) {
     $('.js-journal-content').html(response.html);
 
     // Ouverture de la modale
-    $('#modal-journal').foundation('open');
+    modalSafe.open('#modal-journal');
   } catch (erreur) {
     const trace = prepareTechnicalDetails(erreur);
     showMessage('critical', 'Impossible de charger le journal demandé.', trace);
   }
+});
+
+/** On ferme la modale "Information sur le traitement" */
+$('#bouton-fermer-information').on('click', function() {
+  modalSafe.close('#modal-traitement-information');
+});
+
+/** On ferme la modale "Journal d'exécution" */
+$('#bouton-fermer-journal').on('click', function() {
+  modalSafe.close('#modal-journal');
 });
 
 // Optionnel : nettoyage du contenu à la fermeture
