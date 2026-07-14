@@ -9,7 +9,7 @@ if ($http_user_agent ~* LWP::Simple|BBBike|wget) {
  }
 
 ## Only allow these request methods ##
-if ($request_method !~ ^(GET|HEAD|POST)$ ) {
+if ($request_method !~ ^(GET|HEAD|POST|PUT)$ ) {
    return 444;
  }
 
