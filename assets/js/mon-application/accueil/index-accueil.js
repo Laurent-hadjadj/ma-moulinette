@@ -28,6 +28,9 @@ import '../../common/foundation.js';
 
 import '../../auth/details.js';
 
+/** Gestion des modales zurb foundation compatible WCAG  */
+import { modalSafe } from '../../common/safeModal.js';
+
 /** On importe les paramètres serveur */
 import {serveur} from '../../common/properties.js';
 
@@ -257,3 +260,13 @@ $('.tableau-de-board-svg').on('click', function(e) {
 const element = document.getElementById("version-sonar");
 const version_sonar = element.dataset.versionSonar ?? "8";
 sessionStorage.setItem('ma_moulinette_version_sonar', version_sonar);
+
+/** On ouvre la modale d'information sur les tags */
+$('#bouton-ouvrir-information-tag').on('click', function () {
+  modalSafe.open('#modal-information-tag');
+});
+
+/** On ferme la modale d'information sur les tags */
+$('#bouton-fermer-information-tag').on('click', function () {
+  modalSafe.close('#modal-information-tag');
+});
