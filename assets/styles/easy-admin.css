@@ -97,6 +97,8 @@
 .card-wallet::before { background: #059669; }
 .card-batch::before { background: #059669; }
 .card-stats::before { background: #d70808; }
+.card-account::before { background: #d97706; }
+.card-actuator::before { background: #16a34a; }
 
 /*========== Page statistique  ============*/
 .card-font-size { font-size: 1.2rem; }
