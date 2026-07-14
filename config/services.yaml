@@ -34,6 +34,10 @@ parameters:
     sonar.profiles: '%env(SONAR_PROFILES)%'
     sonar.organization: '%env(SONAR_ORGANIZATION)%'
 
+    # Chiffrement réversible du mot de passe d'accès Actuator (AES-256-GCM)
+    # Générer via : openssl rand -base64 32
+    actuator.cipher_key: '%env(ACTUATOR_CIPHER_KEY)%'
+
     # Paramètre HTTP
     ciphers: '%env(CIPHERS)%'
     verify.host: '%env(VERIFY_HOST)%'
@@ -119,6 +123,10 @@ services:
             $allowedOrigins: '%app.allowed_origins%'
             $internalHeaderName: 'X-Internal-Front'
             $internalHeaderValue: 'front-app'
+
+    App\Service\ActuatorCredentialCipher:
+        arguments:
+            $cipherKey: '%actuator.cipher_key%'
 
     # Permet d'offusquer les informations sensibles dans les logs.
     App\EventListener\ExceptionListener:
