@@ -32,7 +32,7 @@ class DateTools
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function dateToMinute(string $str): int
+    public function dateToMinute(string $str)
     {
         $jour = $heure = $minute = 0;
         //[2d1h1min]-- >[2] [1h1min]
@@ -65,14 +65,14 @@ class DateTools
             $minute = $mm[0];
         }
 
-        return (int) (($jour * 24 * 60) + ($heure * 60) + intval($minute));
+        return ($jour * 24 * 60) + ($heure * 60) + intval($minute);
     }
 
     /**
      * [Description for minutesTo]
      * Converti les minutes en jours, heures et minutes
      *
-     * @param string $minutes
+     * @param int $minutes
      *
      * @return string
      *
@@ -80,7 +80,10 @@ class DateTools
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function minutesTo(string $minutes): string
+    /* MODIF 2026-05-04 : signature `string $minutes` → `int $minutes`.
+     * Tous les callers passent un int (effortTotal typé int dans Owasp.php),
+     * et la fonction faisait des opérations arithmétiques (/, -, %) sur le paramètre. */
+    public function minutesTo(int $minutes): string
     {
         $j = (int)($minutes / 1440);
         $h = (int)(($minutes - ($j * 1440)) / 60);
