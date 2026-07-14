@@ -1,478 +1,187 @@
-# Base de données
+# 🗄️ Architecture — base de données
 
-![Ma-Moulinette](/assets/images/home/home-000.jpg)
+Depuis la v2.0.0, Ma-Moulinette utilise **une seule base PostgreSQL 18**, dans un schéma unique `ma_moulinette`. Les deux bases SQLite historiques (`data.db` et `temp.db`) ont été décommissionnées.
 
-## Création des bases de données
+!!! note "🪶 SQLite décommissionné"
+    Jusqu'en v1.6.0, l'application utilisait deux bases SQLite distinctes (`data.db` pour les données de collecte, `temp.db` pour les calculs intermédiaires de répartition). La migration vers PostgreSQL a fusionné les deux dans un schéma unique. L'historique détaillé de cette migration est dans `CHANGELOG.md` ; les scripts SQL de l'époque SQLite ne sont plus maintenus.
 
-Les deux bases de données sont disponibles dans le dossier `ma-moulinette\var\` :
+## 📂 Organisation des scripts de migration
 
-- [x] **ma-moulinette\var\data.db**
-- [x] **ma-moulinette\var\temp.db**
+Le schéma est défini par des scripts SQL bruts dans `migrations/PosgreSQL/`, organisés par type d'objet et exécutés dans un ordre précis (voir `99_master_install.sql`) :
 
-Elles contiennent l'ensemble des tables définies depuis les class du dossier **Entity/Main** et **Entity/Secondary**.
+| Dossier | Contenu | Ordre |
+| --- | --- | :---: |
+| `00_init/` | Drop/création rôle, base, extensions (`pg_stat_statements`), search path | 1 |
+| `10_schema/` | Création du schéma `ma_moulinette` | 2 |
+| `20_tables/` | 45 tables (un fichier par table) | 3 |
+| `30_views/` | 5 vues (statistiques `batch_profiling`) | 4 |
+| `40_indexes/` | Les indexes | 5 |
+| `50_functions/` | Fonctions PL/pgSQL (ex. purge `batch_profiling`) | 6 |
+| `60_comments/` | Commentaires SQL sur tables/colonnes | 7 |
+| `70_constraints/` | Contraintes (clés étrangères, uniques) | 8 |
+| `80_grants/` | Droits d'accès par rôle | 9 |
+| `90_fixtures/` | Données de référence (admin, OWASP, groupes par défaut) | 10 |
+| `95_e2e/` | Jeu de données dédié aux tests E2E | — |
+| `updates/` | Scripts d'évolution ponctuels hors création initiale | — |
 
-Les tables pour la base **data** sont les suivantes :
+Installation complète (nouvel environnement) :
 
-  > activite (v2.0.0)
-
-![ER-Diagram](/assets/images/database/data.db_-_activite.png)
-
-> anomalie
-
-![ER-Diagram](/assets/images/database/data.db_-_anomalie.png)
-
-> anomalie_details
-
-![ER-Diagram](/assets/images/database/data.db_-_anomalie_details.png)
-
-> batch (v2.0.0)
-
-![ER-Diagram](/assets/images/database/data.db_-_batch.png)
-
-> batch_traitement (v2.0.0)
-
-![ER-Diagram](/assets/images/database/data.db_-_batch_traitement.png)
-
-> ~~favori~~ (v2.0.0)
-
-Table supprimée.
-
-> historique
-
-![ER-Diagram](/assets/images/database/data.db_-_historique.png)
-
-> hotspots_details
-
-![ER-Diagram](/assets/images/database/data.db_-_hotspot_details.png)
-
-> hotspot_owasp
-
-![ER-Diagram](/assets/images/database/data.db_-_hotspot_owasp.png)
-
-> hotspots
-
-![ER-Diagram](/assets/images/database/data.db_-_hotspots.png)
-
-> information_projet
-
-![ER-Diagram](/assets/images/database/data.db_-_information_projet.png)
-
-> liste_projet
-
-![ER-Diagram](/assets/images/database/data.db_-_liste_projet.png)
-
-> ma_moulinette (v1.6.0)
-
-![ER-Diagram](/assets/images/database/data.db_-_ma_moulinette.png)
-
-> mesures
-
-![ER-Diagram](/assets/images/database/data.db_-_mesures.png)
-
-> no_sonar
-
-![ER-Diagram](/assets/images/database/data.db_-_no_sonar.png)
-
-> notes
-
-![ER-Diagram](/assets/images/database/data.db_-_notes.png)
-
-> owasp
-
-![ER-Diagram](/assets/images/database/data.db_-_owasp.png)
-
-> profiles
-
-![ER-Diagram](/assets/images/database/data.db_-_profiles.png)
-
-> profiles_historique (v2.0.0)
-
-![ER-Diagram](/assets/images/database/data.db_-_anomalie.png)
-
-> properties (1.6.0)
-
-![ER-Diagram](/assets/images/database/data.db_-_properties.png)
-
-> todo (1.6.0)
-
-![ER-Diagram](/assets/images/database/data.db_-_todo.png)
-
-> Utilisateur
-
-![ER-Diagram](/assets/images/database/data.db_-_utilisateur.png)
-
-Les tables pour la base **temp** sont les suivantes :
-
-- repartition
-
-### Génération des entities
-
-La génération des entity, i.e. la création des **getter** et des **setter** est réalisée avec la commande :
-
-`php bin/console make:entity --regenerate --overwrite App\Entity\Main\`
-`php bin/console make:entity --regenerate --overwrite App\Entity\Secondary\`
-
-Si tout va bien, vous devriez avoir une message comme celui-la :
-
-```plaintext
- no change: src/Entity/Main/Anomalie.php
- no change: src/Entity/Main/AnomalieDetails.php
- no change: src/Entity/Main/Favori.php
- no change: src/Entity/Main/Historique.php
- no change: src/Entity/Main/HotspotDetails.php
- no change: src/Entity/Main/HotspotOwasp.php
- no change: src/Entity/Main/Hotspots.php
- no change: src/Entity/Main/InformationProjet.php
- no change: src/Entity/Main/ListeProjet.php
- no change: src/Entity/Main/MaMoulinette.php
- no change: src/Entity/Main/Mesures.php
- no change: src/Entity/Main/NoSonar.php
- no change: src/Entity/Main/Notes.php
- no change: src/Entity/Main/Owasp.php
- no change: src/Entity/Main/Profiles.php
- updated: src/Entity/Main/Utilisateur.php
-
-  Success!
+```bash
+psql -U postgres -v ON_ERROR_STOP=1 -f 99_master_install.sql
 ```
 
-Pour créer le fichier de création automatique des relations, il suffit de lancer la commande :
+!!! caution "⚠️ Deux mécanismes de migration coexistent"
+    `doctrine/doctrine-migrations-bundle` est présent dans `composer.json` et configuré (`config/packages/doctrine_migrations.yaml`, namespace `Migrations` → `migrations/`), mais **le dossier ne contient aucune classe de migration PHP** : le schéma réel est piloté par les scripts SQL ci-dessus, complétés en développement par `php bin/console doctrine:schema:update --force` pour resynchroniser rapidement le mapping Doctrine (`#[ORM\Column(name: ...)]`) sur la base. En cas d'erreur `Undefined column` après un changement d'entité, comparer d'abord le `name:` de la colonne au script `20_tables/<table>.sql` correspondant — un décalage entre les deux est la cause la plus fréquente.
 
-```plaintext
-php bin/console doctrine:migrations:diff --em default --namespace MigrationsDefault --no-interaction
+## 🔗 Convention relationnelle
+
+La grande majorité des tables **ne sont pas reliées par clé étrangère SQL** : les relations se font par clé naturelle au niveau applicatif (`maven_key`, `groupe_id`, tags JSON). Les seules contraintes `FOREIGN KEY` réellement déclarées (`70_constraints/constraints.sql`) concernent le domaine DependencyCheck et deux relations `batch`/`actuator` ponctuelles.
+
+```mermaid
+flowchart LR
+    U[👤 utilisateur<br/>groupe_utilisateur, groupe_id<br/>liste_groupe_fonctionnel: JSON]
+    GU[👥 groupe_utilisateur<br/>groupe_id]
+    GF[🏷️ groupe_fonctionnel]
+    P[💼 portefeuille<br/>groupe_fonctionnel, liste: JSON]
+    LP[📦 liste_projet<br/>maven_key, tags: JSON]
+
+    U -.->|groupe_id référencé par valeur| GU
+    U -.->|préfixes de tags| GF
+    P -.->|préfixe de tag| GF
+    P -.->|liste de maven_key| LP
 ```
 
-```plaintext
-php bin/console doctrine:migrations:diff --em secondary --namespace MigrationsSecondary --no-interaction
+Les flèches en pointillés indiquent une **référence par valeur** (chaîne stockée, comparée par `LIKE prefix%` ou recherche dans un tableau JSON), pas une contrainte `FOREIGN KEY` — l'intégrité référentielle de ce périmètre est garantie côté applicatif (services/repository), pas par PostgreSQL.
+
+À l'inverse, le domaine **DependencyCheck** est un modèle relationnel classique avec clés étrangères réelles :
+
+```mermaid
+erDiagram
+    dc_processing_queue ||--o{ dc_scan : "ingéré vers"
+    dc_scan ||--o{ dc_finding : "a"
+    dc_dependency ||--o{ dc_finding : "concernée par"
+    dc_cve ||--o{ dc_finding : "référencée par"
+
+    dc_processing_queue {
+        bigint id PK
+        string ulid
+        string status
+        bytea payload_gzip
+        string payload_sha256
+    }
+    dc_scan {
+        bigint id PK
+        bigint queue_id FK
+        string maven_key
+        string project_group
+        string project_artifact
+        string project_version
+        bool is_latest_overall
+        bool is_latest_release
+    }
+    dc_dependency {
+        bigint id PK
+        char sha1
+        string file_name
+        string license
+    }
+    dc_cve {
+        bigint id PK
+        string cve_id
+        string severity
+    }
+    dc_finding {
+        bigint id PK
+        bigint scan_id FK
+        bigint dependency_id FK
+        bigint cve_id FK
+        string severity_at_scan
+    }
 ```
 
-La commande permet de créer un fichier de version faisant état de l'cart entre l'entity et la base de données.
-
-### Génération des fichiers de migrations
-
-La commande utilisé permet de générer le script de montée de version. Le fichier est présent dans le dossier **migrations** situé à la racine du projet. Pour chaque base de données, un fichier sera créé soit dans le sous dossier **default** ou dans le dossier **secondary**.
-
-Pour la base de données **data** :
-
-```plaintext
-php bin/console doctrine:migrations:diff --em default --namespace MigrationsDefault --no-interaction
-```
-
-Pour la base de données **temp** :
-
-```plaintext
-php bin/console doctrine:migrations:diff --em secondary --namespace MigrationsSecondary --no-interaction
-```
-
-### Mise à jour de la base de données
-
-A partir des fichiers générés lors de la procédure de migration, il est possible de mettre à jour les deux base de données en utilisant la commande **doctrine:migrations:migrate**.
-
-Pour la base de données **data** :
-
-```plaintext
-php bin/console doctrine:migrations:migrate --em default --no-interaction
-```
-
-Pour la base de données **temp** :
-
-```plaintext
-php bin/console doctrine:migrations:migrate --em secondary --no-interaction
-```
-
-## Migration 1.0.0 vers 1.1.0
-
-`Note :` Le fichier SQL `data-1.1.0.sql`, de mise à jour est disponible dans le dossier **/migrations/**.
-
-- [x] La table **anomalie_details** doit être supprimée :
-
-```sql
-DROP TABLE anomalie_details;
-```
-
-[X] La table **temp_anomalie** doit être supprimée :
-
-```sql
-DROP TABLE temp_anomalie;
-```
-
-[X] La table **anomalie_details** doit être ajoutée avec la commande :
-
-```sql
-CREATE TABLE anomalie_details (
-  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  maven_key VARCHAR (128) NOT NULL,
-  name VARCHAR (128) NOT NULL,
-  bug_blocker INTEGER NOT NULL,
-  bug_critical INTEGER NOT NULL,
-  bug_info INTEGER NOT NULL,
-  bug_major INTEGER NOT NULL,
-  bug_minor INTEGER NOT NULL,
-  vulnerability_blocker INTEGER NOT NULL,
-  vulnerability_critical INTEGER NOT NULL,
-  vulnerability_info INTEGER NOT NULL,
-  vulnerability_major INTEGER NOT NULL,
-  vulnerability_minor INTEGER NOT NULL,
-  code_smell_blocker INTEGER NOT NULL,
-  code_smell_critical INTEGER NOT NULL,
-  code_smell_info INTEGER NOT NULL,
-  code_smell_major INTEGER NOT NULL,
-  code_smell_minor INTEGER NOT NULL,
-  date_enregistrement DATETIME NOT NULL);
-```
-
-[X] La table **historique** doit être modifiée :
-
-```sql
-ALTER TABLE historique ADD COLUMN bug_blocker INTEGER ;
-ALTER TABLE historique ADD COLUMN bug_critical INTEGER ;
-ALTER TABLE historique ADD COLUMN bug_major INTEGER ;
-ALTER TABLE historique ADD COLUMN bug_minor INTEGER ;
-ALTER TABLE historique ADD COLUMN bug_info INTEGER ;
-ALTER TABLE historique ADD COLUMN vulnerability_blocker INTEGER ;
-ALTER TABLE historique ADD COLUMN vulnerability_critical INTEGER ;
-ALTER TABLE historique ADD COLUMN vulnerability_major INTEGER ;
-ALTER TABLE historique ADD COLUMN vulnerability_minor INTEGER ;
-ALTER TABLE historique ADD COLUMN vulnerability_info INTEGER ;
-ALTER TABLE historique ADD COLUMN code_smell_blocker INTEGER ;
-ALTER TABLE historique ADD COLUMN code_smell_critical INTEGER ;
-ALTER TABLE historique ADD COLUMN code_smell_major INTEGER ;
-ALTER TABLE historique ADD COLUMN code_smell_minor INTEGER ;
-ALTER TABLE historique ADD COLUMN code_smell_info INTEGER ;
-```
-
-## Migration 1.2.3 vers 1.2.4
-
-`Note :` Le fichier SQL `data-1.2.4.sql` de mise à jour, est disponible dans le dossier **/migrations/**.
-
-La version **1.2.4** introduit plusieurs changements :
-
-- Remplacement de l'attribut **batch** par **autre** sur les tables **Anomalie**, **Historique** et **HotspotDetails** ;
-- Ajout de l'attribut **niveau** pour la gestion du tri sur la table HotspotDetails ;
-
-Les instructions suivantes permettent de remplacer, pour chaque table, l'attribut **batch** par **autre**.
-
-### Pour la table Anomalie
-
-```sql
-ALTER TABLE anomalie RENAME batch TO autre;
-```
-
-### Pour la table Historique
-
-```sql
-ALTER TABLE historique RENAME batch TO autre;
-```
-
-### Pour la table Hotspotdetails
-
-```sql
-ALTER TABLE hotspot_details RENAME batch TO autre;
-ALTER TABLE hotspot_details ADD COLUMN niveau INTEGER;
-```
-
-### Mise à jour de la colonne niveau
-
-```sql
-UPDATE hotspot_details SET niveau=1 WHERE severity='HIGH';
-UPDATE hotspot_details SET niveau=2 WHERE severity='MEDIUM';
-UPDATE hotspot_details SET niveau=3 WHERE severity='LOW';
-```
-
-## Migration 1.2.4 vers 1.3.0
-
-`Note :` Le fichier SQL `data-1.3.0.sql` de mise à jour, est disponible dans le dossier **/migrations/**.
-
-La version **1.3.0** introduit un changement majeur :
-
-- Ajout d'une table **repartition** pour réaliser les calculs intermédiaires sur les indicateurs de sévérité par module.
-
-```sql
-CREATE TABLE repartition (
-  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  maven_key VARCHAR(128) NOT NULL, name VARCHAR(128) NOT NULL,
-  component CLOB NOT NULL, type VARCHAR(16) NOT NULL,
-  severity VARCHAR(8) NOT NULL, setup UNSIGNED BIG INT NOT NULL,
-  date_enregistrement DATETIME NOT NULL);
-```
-
-## Migration 1.3.0 vers 1.4.0
-
-`Note :` Le fichier SQL `data-1.4.0.sql` de mise à jour est disponible dans le dossier **/migrations/**.
-
-La version **1.4.0** introduit un changement mineur :
-
-```sql
-ALTER TABLE anomalie ADD COLUMN liste BOOLEAN DEFAULT 1 NOT NULL;
-```
-
-## Migration 1.4.0 vers 1.5.0
-
-`Note :` Le fichier SQL `data-1.5.0.sql` de mise à jour, est disponible dans le dossier **/migrations/**.
-
-La version **1.5.0** introduit plusieurs changement à la base **data.db**:
-
-- L'ajout d'une table des versions de ma-moulinette [ma_moulinette];
-- L'ajout d'une table des utilisateurs : [utilisateur] ;
-
-- [x] Création de la table ma_moulinette
-
-```sql
-CREATE TABLE ma_moulinette
-(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  version VARCHAR(8) NOT NULL,
-  date_version DATETIME NOT NULL,
-  is_default BOOLEAN DEFAULT FALSE NOT NULL,
-  date_enregistrement DATETIME NOT NULL);
-```
-
-- [x] Mise à jour de la table des versions ;
-
-```sql
-INSERT INTO ma_moulinette (version, date_version, date_enregistrement)VALUES ('1.0.0', '2022-01-04', date('now'));
-INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('1.1.0', '2022-04-24', date('now'));
-INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('1.2.0', '2022-05-05', date('now'));
-INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('1.2.6', '2022-06-02', date('now'));
-INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('1.3.0', '2022-07-03', date('now'));
-INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('1.4.0', '2022-07-06', date('now'));
-INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('1.5.0', '2022-09-18', date('now'));
-```
-
-- [x] Ajout de la table des utilisateurs  ;
-
-```sql
-CREATE TABLE utilisateur
-(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  avatar VARCHAR(128) DEFAULT NULL),
-  prenom VARCHAR(32) NOT NULL,
-  nom VARCHAR(64) NOT NULL,
-  courriel VARCHAR(180) NOT NULL,
-  password VARCHAR(255) NOT NULL,
-  actif BOOLEAN DEFAULT 0 NOT NULL,
-  date_modification DATETIME DEFAULT NULL,
-  date_enregistrement DATETIME NOT NULL,
-  roles CLOB NOT NULL --(DC2Type:json)
-);
-```
-
-- [x] Création d'un indexe ;
-
-```sql
-CREATE UNIQUE INDEX UNIQ_1D1C63B344FB41C9 ON utilisateur (courriel);
-```
-
-- [x] Ajout du compte admin
-
-```sql
--- ## Ajoute le compte admin
-
-INSERT INTO utilisateur
-(courriel, roles,  password, nom, prenom, date_enregistrement, actif, avatar )
-VALUES
-('admin@ma-moulinette.fr', '["ROLE_GESTIONNAIRE"]',
-'$2y$10$g1KdFM/ARBc7DG0UClLOl./4Cv.urhltS8zWPtOVzq78qkcSjliGa',
-'admin','@ma-moulinette','1980-01-01 00:00:00', 1, 'chiffre/01.png');
-```
-
-- [x] Ajout de la table des properties
-
-```sql
-CREATE TABLE properties (
-  id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
-  type VARCHAR(255) NOT NULL,
-  projet_bd INTEGER NOT NULL,
-  projet_sonar INTEGER NOT NULL,
-  profil_bd INTEGER NOT NULL,
-  profil_sonar INTEGER NOT NULL,
-  date_creation DATETIME NOT NULL,
-  date_modification_projet DATETIME DEFAULT NULL,
-  date_modification_profil DATETIME DEFAULT NULL);
-  ```
-
-## Migration 1.5.0 vers 1.6.0
-
-`Note :` Le fichier SQL `data-1.6.0.sql` de mise à jour, est disponible dans le dossier **/migrations/**.
-
-- [x] Mise à jour de la table **ma_mouilinette** ;
-
-```sql
-BEGIN TRANSACTION;
-
--- ## Ajout de la version 1.6.0 dans la table ma_moulinette
-INSERT INTO ma_moulinette (version, date_version, date_enregistrement) VALUES ('1.6.0', '2022-11-29', date('now'));
-
-COMMIT;
-```
-
-- [x] Ajout de la tables **tags** et de la visibilité ;
-
-```sql
-BEGIN TRANSACTION;
-
--- ## Ajout de la table tags
-CREATE TABLE IF NOT EXISTS tags (
- "id" INTEGER NOT NULL,
- "maven_key" VARCHAR(128) NOT NULL,
- "name" VARCHAR(64) NOT NULL,
- "tags" CLOB NOT NULL,
- "visibility" VARCHAR(8) NOT NULL,
- "date_enregistrement" DATETIME NOT NULL,
- PRIMARY KEY("id" AUTOINCREMENT)
-);
-
-COMMIT;
-```
-
-- [x] Mise à jour de la table **equipe** ;
-
-```sql
-BEGIN TRANSACTION;
-
--- ## Ajout de la table equipe
-CREATE TABLE IF NOT EXISTS equipe (
- "id" INTEGER NOT NULL,
- "nom" VARCHAR(32) NOT NULL,
- "description" VARCHAR(128) NOT NULL,
- "date_modification" DATETIME DEFAULT NULL,
- "date_enregistrement" DATETIME NOT NULL,
- PRIMARY KEY("id" AUTOINCREMENT)
-);
-
-COMMIT;
-```
-
-```sql
-BEGIN TRANSACTION;
-
--- ## Ajout de la table portefeuilles
-CREATE TABLE IF NOT EXISTS portefeuille (
- "id" INTEGER NOT NULL,
- "equipe" VARCHAR(32) NOT NULL,
- "liste" CLOB NOT NULL,
- "nom" VARCHAR(32) NOT NULL,
- "date_modification" DATETIME DEFAULT NULL,
- "date_enregistrement" DATETIME NOT NULL,
- PRIMARY KEY("id" AUTOINCREMENT)
-);
-
-COMMIT;
-```
-
-- [x] Ajout de l'attribut **equipe** à la table **utilisateur** ;
-
-```sql
-BEGIN TRANSACTION;
-
--- ## Ajout de l'attribut equipe dans la table utilisateur
-ALTER TABLE utilisateur ADD COLUMN equipe CLOB DEFAULT NULL;
-
-COMMIT;
-```
-
-## Migration 1.6.0 vers 2.0.0
-
-`Note :` Le fichier SQL `data-2.0.0.sql` de mise à jour, est disponible dans le dossier **/migrations/**.
-
-La version **2.0.0** introduit plusieurs changements :
+## 📋 Tables par domaine
+
+### 🔐 Identité et sécurité
+
+| Table | Rôle |
+| --- | --- |
+| `utilisateur` | Comptes (local + provisioning LDAP), rôles, préférences JSON |
+| `groupe_utilisateur` | Groupes d'accès (ADMIN, CONSULTATION, COLLECTE, GESTIONNAIRE…) |
+| `groupe_fonctionnel` | Périmètres fonctionnels (préfixes de tags projet) |
+| `user_role_log` | Journal des changements de rôle |
+
+### 💼 Portefeuille et projets
+
+| Table | Rôle |
+| --- | --- |
+| `portefeuille` | Regroupement de projets par groupe fonctionnel |
+| `portefeuille_historique` | Historique des modifications de portefeuille |
+| `liste_projet` | Référentiel des projets SonarQube (clé maven, tags, visibilité) |
+| `information_projet` | Métadonnées projet (dernière analyse, langage…) |
+
+### 📊 Collecte SonarQube
+
+| Table | Rôle |
+| --- | --- |
+| `historique` | Série temporelle des indicateurs par version de projet |
+| `anomalie`, `anomalie_details` | Bugs/vulnérabilités/code smells, détail par sévérité |
+| `hotspots`, `hotspot_details`, `hotspot_owasp` | Hotspots de sécurité, classification OWASP |
+| `owasp`, `owasp_top10` | Référentiel OWASP (2017/2021) et rattachement par projet |
+| `mesures` | Mesures brutes (couverture, duplication, complexité…) |
+| `no_sonar` | Occurrences `//NOSONAR` |
+| `todo` | Occurrences `TODO`/`FIXME` |
+| `profiles`, `profiles_historique` | Profils qualité SonarQube suivis |
+| `properties` | Propriétés de configuration par projet |
+| `repartition`, `repartition_temp` | Répartition des indicateurs par module (frontend/backend/autre) |
+| `clean_code` | Indicateurs Clean Code (nouveau modèle SonarQube) |
+
+### 📈 Activité SonarQube
+
+| Table | Rôle |
+| --- | --- |
+| `activity` | Activité de collecte en cours |
+| `activity_historique` | Historique des collectes Activity |
+| `activity_batch_report` | Rapport de collecte batch Activity |
+
+### ⚙️ Traitement et batch
+
+| Table | Rôle |
+| --- | --- |
+| `batch` | Configuration des traitements automatiques/manuels |
+| `batch_traitement` | Instance de traitement (identifiant ULID) |
+| `batch_execution`, `batch_execution_journal` | Exécutions et journal détaillé |
+| `batch_profiling` | Mesures de performance des batchs (vues `30_views/`) |
+
+### 🛡️ DependencyCheck (OWASP)
+
+| Table | Rôle |
+| --- | --- |
+| `dc_processing_queue` | File d'ingestion des rapports uploadés par la CI |
+| `dc_scan` | Un scan = un couple projet/version analysé |
+| `dc_dependency` | Référentiel dédupliqué des dépendances (par sha1) |
+| `dc_cve` | Référentiel des CVE |
+| `dc_finding` | Association scan × dépendance × CVE |
+
+### 🌱 Actuator (Spring Boot)
+
+| Table | Rôle |
+| --- | --- |
+| `actuator` | Résultat de collecte Actuator par projet |
+| `actuator_info` | Informations détaillées (build, env) associées |
+
+### 🔭 Observabilité
+
+| Table | Rôle |
+| --- | --- |
+| `logger`, `logger_detail` | Répartition des appels au logger Java |
+| `user_agent_analysis`, `user_agent_event` | Analyse des User-Agent (détection d'activité suspecte) |
+| `ma_moulinette` | Table de version applicative |
+
+## 📚 Pour aller plus loin
+
+- [Architecture technique](architecture-technique.md) : vue d'ensemble applicative.
+- [Migration PostgreSQL](../developpement/guide-migration.md) : procédure détaillée pour un nouvel environnement.
+- `CHANGELOG.md` : historique complet des évolutions de schéma, y compris la migration SQLite → PostgreSQL.
 
 -**-- FIN --**-
 
