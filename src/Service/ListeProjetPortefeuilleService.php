@@ -17,7 +17,6 @@ use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\Portefeuille;
-use App\Entity\BatchTraitement;
 
 /**
  * [Description ListeProjetPortefeuilleService]
@@ -37,8 +36,8 @@ class ListeProjetPortefeuilleService
      * [Description for listeProjet]
      * Récupère la liste des projets depuis un portefeuille de projets.
      *
-     * @param string $titre_portefeuille
      * @param string $portefeuille
+     * @param string $groupe_fonctionnel
      *
      * @return array<int|string, mixed>
      *
@@ -46,15 +45,15 @@ class ListeProjetPortefeuilleService
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function listeProjet(string $titre_portefeuille, string $portefeuille): array
+    public function listeProjet(string $portefeuille, string $groupe_fonctionnel): array
     {
         /*** On instancie l'entityRepository */
         $portefeuilleRepos = $this->em->getRepository(Portefeuille::class);
 
         /** On envoi le titre du portefeuille et le nom du portefeuille */
         $map = [
-            'titre_portefeuille' => $titre_portefeuille,
-            'portefeuille' => $portefeuille
+            'portefeuille' => $portefeuille,
+            'groupe_fonctionnel' => $groupe_fonctionnel
         ];
 
         /** On récupère le portefeuille de projets */
@@ -65,7 +64,8 @@ class ListeProjetPortefeuilleService
                 'code' => $liste_projets['code'],
                 'message' => $liste_projets['message'] ?? self::$noMessage,
                 'erreur' => $liste_projets['erreur'] ?? self::$noError,
-                'portefeuille' => $titre_portefeuille
+                'portefeuille' => $portefeuille,
+                'groupe_fonctionnel' => $groupe_fonctionnel
                 ]);
 
             return [
@@ -81,14 +81,15 @@ class ListeProjetPortefeuilleService
                 'code' => $liste_projets['code'],
                 'message' => $liste_projets['message'] ?? self::$noMessage,
                 'erreur' => $liste_projets['erreur'] ?? self::$noError,
-                'portefeuille' => $titre_portefeuille
+                'portefeuille' => $portefeuille,
+                'groupe_fonctionnel' => $groupe_fonctionnel
                 ]);
 
             return [
                 'code' => 404,
                 'type' => 'warning',
-                'message' => "Votre portefeuille ne contient pas ce projet (Erreur {$liste_projets['code']}).",
-                'erreur' => $liste_projets['erreur'] ?? self::$noError
+                'message' => "Votre portefeuille ne contient pas ce projet (Erreur 404).",
+                'erreur' => 404
             ];
         }
 
