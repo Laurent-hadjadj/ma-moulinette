@@ -176,9 +176,9 @@ class DcProcessingQueueTest extends TestCase
     public function testSetGetParentLabel(): void
     {
         $q = new DcProcessingQueue();
-        $result = $q->setParentLabel('springboot-config');
+        $result = $q->setParentLabel('springboot-socle-config');
         $this->assertSame($q, $result);
-        $this->assertSame('springboot-config', $q->getParentLabel());
+        $this->assertSame('springboot-socle-config', $q->getParentLabel());
     }
 
     public function testSetGetParentLabelNull(): void
