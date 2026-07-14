@@ -10,16 +10,19 @@
  */
 
 /** Import des dépendances */
+import 'foundation-sites/dist/css/foundation.min.css';
+import 'motion-ui/dist/motion-ui.css';
+import '../../../styles/common/common.css';
+import '../../../styles/common/police.css';
 import '../../../styles/mon-application/mes-projets.css';
 
 /** Intégration de jquery */
 import $ from 'jquery';
+window.$ = $;
 
 import 'what-input';
 import 'foundation-sites';
 import 'motion-ui';
 
 import '../../common/foundation.js';
-
-//initialisation du JS
-$('').hide();
+import '../../auth/details.js';
