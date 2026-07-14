@@ -3,7 +3,7 @@
 /*
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2025.
+ *  Copyright (c) 2015-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -35,7 +35,7 @@ class TwigLintTest extends KernelTestCase
 
             try {
                 $twig->parse($twig->tokenize($source));
-                $this->assertTrue(true); // Le template est valide
+                $this->addToAssertionCount(1); // Le template est valide
             } catch (SyntaxError $e) {
                 $this->fail("Syntax error in template '{$file->getRelativePathname()}': " . $e->getMessage());
             }
