@@ -169,6 +169,37 @@
         </div>
 
     </div>
+
+    {# Espace personnel #}
+    <div class="row">
+        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+            <a href="{{ path('preferences') }}"
+                class="dashboard-card card-account">
+                <div class="dashboard-card-top">
+                    <i class="fas fa-sliders"></i>
+                    <h3 class="open-sans">Réglages personnels</h3>
+                </div>
+                <div class="dashboard-card-bottom">
+                    <p class="open-sans font-size-1">Mes informations et mes préférences de suivi de projets.</p>
+                </div>
+            </a>
+        </div>
+
+        {% if is_granted('ROLE_ACTUATOR') %}
+        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+            <a href="{{ path('actuator') }}"
+                class="dashboard-card card-actuator">
+                <div class="dashboard-card-top">
+                    <i class="fas fa-seedling"></i>
+                    <h3 class="open-sans">Actuator</h3>
+                </div>
+                <div class="dashboard-card-bottom">
+                    <p class="open-sans font-size-1">Inventaire des points d'accès Actuator des applications.</p>
+                </div>
+            </a>
+        </div>
+        {% endif %}
+    </div>
 </main>
 {% endblock %}
 
