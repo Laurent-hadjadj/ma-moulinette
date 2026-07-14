@@ -190,9 +190,9 @@ class DcScanTest extends TestCase
     public function testSetGetParentLabel(): void
     {
         $s = new DcScan();
-        $result = $s->setParentLabel('springboot-config');
+        $result = $s->setParentLabel('springboot-socle-config');
         $this->assertSame($s, $result);
-        $this->assertSame('springboot-config', $s->getParentLabel());
+        $this->assertSame('springboot-socle-config', $s->getParentLabel());
     }
 
     public function testSetGetParentLabelNull(): void
