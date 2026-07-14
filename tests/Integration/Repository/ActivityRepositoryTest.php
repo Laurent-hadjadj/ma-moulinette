@@ -56,7 +56,7 @@ class ActivityRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $year=2024;
+        $year = 2024;
 
         $activityRepository = $entityManager->getRepository(Activity::class);
         $r = $activityRepository->selectActivity($year);
@@ -75,13 +75,17 @@ class ActivityRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $map=[['maven_key' => 'fr.ma-petite-entreprise:ma-moulinette',
-            'project_name' => 'ma-moulinette', 'analyse_id' => 'vtrf14lkiutq9mp',
-            'status' => 'SUCCESS', 'submitter_login' => 'laurent.hadjadj',
+        $map = [[
+            'maven_key' => 'fr.ma-moulinette:ma-moulinette',
+            'project_name' => 'ma-moulinette',
+            'analyse_id' => 'vtrf14lkiutq9mp',
+            'status' => 'SUCCESS',
+            'submitter_login' => 'laurent.hadjadj',
             'submitted_at' => new  \DateTime('2024-07-31 12:26:58+02'),
             'started_at' => new  \DateTime('2024-07-31 12:27:05+02'),
             'executed_at' => new  \DateTime('2024-07-31 12:27:47+02'),
-            'execution_time' => 42]];
+            'execution_time' => 42
+        ]];
 
         $activityRepository = $entityManager->getRepository(Activity::class);
         $r = $activityRepository->insertActivity($map);
@@ -100,7 +104,7 @@ class ActivityRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $year=2024;
+        $year = 2024;
 
         $activityRepository = $entityManager->getRepository(Activity::class);
         $r = $activityRepository->nombreJourAnneeDonnee($year);
@@ -119,7 +123,7 @@ class ActivityRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $year=2024;
+        $year = 2024;
 
         $activityRepository = $entityManager->getRepository(Activity::class);
         $r = $activityRepository->tempsExecutionMax($year);
@@ -138,8 +142,8 @@ class ActivityRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $year=2024;
-        $status='SUCCESS';
+        $year = 2024;
+        $status = 'SUCCESS';
 
         $activityRepository = $entityManager->getRepository(Activity::class);
         $r = $activityRepository->nombreStatus($year, $status);
@@ -159,7 +163,7 @@ class ActivityRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $year=2024;
+        $year = 2024;
 
         $activityRepository = $entityManager->getRepository(Activity::class);
         $r = $activityRepository->nombreAnalyse($year);
@@ -178,8 +182,8 @@ class ActivityRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $year=2024;
-        $yearNull=null;
+        $year = 2024;
+        $yearNull = null;
 
         $activityRepository = $entityManager->getRepository(Activity::class);
         $r = $activityRepository->dernierDate($year);
@@ -201,8 +205,8 @@ class ActivityRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $year=2024;
-        $yearNull=null;
+        $year = 2024;
+        $yearNull = null;
 
         $activityRepository = $entityManager->getRepository(Activity::class);
         $r = $activityRepository->premiereDate($year);
@@ -224,8 +228,8 @@ class ActivityRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $year=2024;
-        $yearNull=null;
+        $year = 2024;
+        $yearNull = null;
 
         $activityRepository = $entityManager->getRepository(Activity::class);
         $r = $activityRepository->listeProjectAnalyse($year);
@@ -247,8 +251,8 @@ class ActivityRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $year=2024;
-        $yearNull=null;
+        $year = 2024;
+        $yearNull = null;
 
         $activityRepository = $entityManager->getRepository(Activity::class);
         $r = $activityRepository->listeAnalyseJour($year);
@@ -270,8 +274,8 @@ class ActivityRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Appel de la méthode
-        $year=2024;
-        $yearNull=null;
+        $year = 2024;
+        $yearNull = null;
 
         $activityRepository = $entityManager->getRepository(Activity::class);
         $r = $activityRepository->listeAnalyseProjet($year);
