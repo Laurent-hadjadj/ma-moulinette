@@ -1,54 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <!--
-    Configuration PHPUnit 13 pour Ma-Moulinette.
-    Documentation : https://docs.phpunit.de/en/13.0/configuration.html
-
-    Trois suites de tests :
-      - unit        : tests unitaires (pas de conteneur Symfony, pas de DB)
-      - integration : KernelTestCase (conteneur, DB de test, services DI)
-      - functional  : WebTestCase (requêtes HTTP simulées, fixtures Doctrine)
-
-    Pour exécuter :
-      vendor/bin/phpunit --testsuite=unit
-      vendor/bin/phpunit --testsuite=integration
-      vendor/bin/phpunit --testsuite=functional
-      vendor/bin/phpunit                       (tout)
+    MODIF 2026-05-04 : modernisation du fichier au format PHPUnit 11/13.
+    Avant : format PHPUnit 9 (convertDeprecationsToExceptions, <listeners>, <extensions>, <coverage processUncoveredFiles>).
+    Après : format PHPUnit 11/13 (cacheDirectory, <source>, plus de listeners/extensions vides).
+    Bridge Symfony retiré (incohérent avec PHPUnit 13 — le bridge tirait PHPUnit 9.5 en parallèle).
+    Sauvegarde dans phpunit.xml.dist.bak.
 -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
-         backupGlobals="false"
-         colors="true"
-         bootstrap="tests/bootstrap.php"
-         cacheDirectory=".phpunit.cache"
-         executionOrder="depends,defects"
-         requireCoverageMetadata="false"
-         beStrictAboutCoverageMetadata="false"
-         beStrictAboutOutputDuringTests="true"
-         failOnWarning="false"
-         failOnDeprecation="false"
-         failOnNotice="false"
-         failOnRisky="false"
-         displayDetailsOnIncompleteTests="true"
-         displayDetailsOnSkippedTests="true">
+        xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+        bootstrap="tests/bootstrap.php"
+        colors="true"
+        cacheDirectory="var/cache/.phpunit.cache"
+        executionOrder="depends,defects"
+        beStrictAboutOutputDuringTests="true"
+        failOnRisky="true"
+        failOnWarning="true"
+        displayDetailsOnTestsThatTriggerDeprecations="true"
+        displayDetailsOnTestsThatTriggerErrors="true"
+        displayDetailsOnTestsThatTriggerNotices="true"
+        displayDetailsOnTestsThatTriggerWarnings="true"
+>
     <php>
         <ini name="display_errors" value="1" />
         <ini name="error_reporting" value="-1" />
         <server name="APP_ENV" value="test" force="true" />
         <server name="SHELL_VERBOSITY" value="-1" />
-        <server name="SYMFONY_PHPUNIT_REMOVE" value="" />
-        <server name="SYMFONY_PHPUNIT_VERSION" value="13.1" />
-        <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled" />
-        <env name="SYMFONY_PHPUNIT_DISABLE_DATABASE_PURGER" value="0" />
-
-        <!-- ###+ symfony/framework-bundle ### -->
-        <env name="APP_SECRET" value="e2d3599f3e2beac6b46b54693a065526"/>
-        <!-- ###- symfony/framework-bundle ### -->
-
-        <!-- ###+ doctrine/doctrine-bundle ### -->
-        <!-- DATABASE_URL est défini dans .env.test.local pour la base PostgreSQL de test -->
-        <!-- Exemple : postgresql://db_user:db_password@localhost:5432/ma_moulinette_test?serverVersion=18&charset=utf8 -->
-        <!-- ###- doctrine/doctrine-bundle ### -->
+        <!-- MODIF 2026-05-21 : force les variables test avant bootEnv() pour éviter
+            que .env.local.php (compilé par dump-env prod en CI) ne les écrase.
+            force="true" → PHPUnit peuple $_ENV avant Dotenv::bootEnv() ;
+            Dotenv (overrideExistingVars=false) ne surcharge pas ce qui est déjà défini. -->
+        <env name="DC_INGEST_TOKEN" value="test-dc-ingest-token-32chars-aaaa" force="true" />
     </php>
 
     <testsuites>
@@ -63,25 +45,21 @@
         </testsuite>
     </testsuites>
 
-    <!--
-        PHPUnit 13 : `restrictDeprecations` (12.x) supprimé du schéma.
-        Remplacé par `ignoreIndirectDeprecations` (sémantique inverse).
-        Migration appliquée par `vendor/bin/phpunit --migrate-configuration`.
-    -->
-    <source restrictNotices="true" restrictWarnings="true" ignoreIndirectDeprecations="true">
+    <source>
         <include>
-            <directory suffix=".php">src</directory>
+            <directory>src</directory>
         </include>
         <exclude>
             <directory>src/DataFixtures</directory>
-            <directory>src/Kernel.php</directory>
+            <directory>src/Migrations</directory>
+            <file>src/Kernel.php</file>
         </exclude>
     </source>
 
     <coverage includeUncoveredFiles="true">
         <report>
-            <clover outputFile="build/logs/clover.xml" />
-            <html outputDirectory="build/coverage-report" />
+            <clover outputFile="var/coverage/clover.xml" />
+            <html outputDirectory="var/coverage/report" />
             <text outputFile="php://stdout" showOnlySummary="true" />
         </report>
     </coverage>
