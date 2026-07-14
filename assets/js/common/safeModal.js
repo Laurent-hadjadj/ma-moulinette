@@ -17,8 +17,18 @@ export const modalSafe = (() => {
         return document.querySelector(`[data-open="${id}"]`);
     }
 
+    /**
+     * Tolère un identifiant nu ('ma-modale') en plus d'un sélecteur ('#ma-modale').
+     * Sans ce garde-fou, un appel sans '#' cible un nom de balise inexistant et
+     * la modale ne s'ouvre / ne se ferme jamais, en silence.
+     */
+    function normalise(selector) {
+        if (typeof selector !== 'string' || selector === '') return selector;
+        return /^[#.[]/.test(selector) ? selector : `#${selector}`;
+    }
+
     function safeOpen(selector) {
-        const modal = document.querySelector(selector);
+        const modal = document.querySelector(normalise(selector));
         if (!modal) return;
 
         lastTrigger = document.activeElement;
@@ -33,7 +43,7 @@ export const modalSafe = (() => {
     }
 
     function safeClose(selector) {
-        const modal = document.querySelector(selector);
+        const modal = document.querySelector(normalise(selector));
         if (!modal) return;
 
         const trigger = getTrigger(modal.id) || lastTrigger || document.body;
