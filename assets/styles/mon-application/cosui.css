@@ -138,12 +138,12 @@
 .information-svg:hover { fill: #ed7d20; }
 
 /** Ajoute un bouton fermer à la fenêtre modale */
-#fermer-projet-reference {
+#bouton-fermer-projet-reference {
   color: #fff;
   background-color: #00445b;
 }
 
-#fermer-projet-reference:hover { background-color: #006182; }
+#bouton-fermer-projet-reference:hover { background-color: #006182; }
 
 /* Gestion du switch variation */
 input:checked ~ .switch-paddle-cosui { background-color: #00445b; }
