@@ -6,17 +6,16 @@
   BLOC : footer   → actions / bouton fermer
   ------------------------------------------------
 #}
-<dialog
-    id="modal-traitement-information"
-    class="modal-template reveal large"
-    data-reveal
-    data-close-on-click="true"
-    aria-modal="true"
-    aria-label="Information sur le traitement">
+<dialog id="modal-traitement-information"
+        class="reveal large" data-reveal
+        aria-modal="true"
+        data-close-on-click="true"
+        data-animation-in="fade-in"
+        data-animation-out="fade-out"
+        aria-label="Information sur le traitement">
 
   {# ------- Header (titre) ------- #}
   <header>
-    {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page (header "Ma-Moulinette"), le titre de la modale devient <h2> ; descente de toute la hiérarchie d'un niveau #}
       <h2 class="h3 claire-hand header-h1">
       <span aria-hidden="true">ℹ️</span>Information
     </h2>
@@ -70,34 +69,46 @@
       </select>
     </div>
 
-    {# Deuxième modale pour le contenu du journal #}
-    <div id="modal-journal" class="reveal large" data-reveal aria-modal="true">
-      <header>
-        <h3 class="h4 claire-hand">
-          <span aria-hidden="true">📓</span>
-          Journal d'exécution – <span class="js-journal-nom"></span>
-        </h3>
-      </header>
-
-      <section class="journal-content js-journal-content open-sans"
-              style="max-height:70vh; overflow-y:auto; background:#fafafa; border-radius:8px; padding:1rem;">
-        <p class="text-center text-muted">Aucun journal chargé.</p>
-      </section>
-
-      <footer class="grid-x grid-margin-x align-right margin-top-2">
-        <div class="cell shrink">
-          <button data-close class="button secondary open-sans">Fermer</button>
-        </div>
-      </footer>
-    </div>
   </section>
 
   <footer class="grid-x grid-margin-x align-right margin-top-2">
     <div class="cell shrink">
-      <button id="bouton-fermer-information" data-close
+      <button id="bouton-fermer-information"
               class="button open-sans focus-light"
               type="button"
-              aria-label="Ferme la fenêtre"><span arial-hidden="true">❌</span> Fermer
+              aria-label="Ferme la fenêtre"><span aria-hidden="true">❌</span> Fermer
       </button>
+    </div>
+  </footer>
+</dialog>
+
+{# Deuxième modale, pour le contenu du journal.
+    Déclarée en dehors de #modal-traitement-information : Foundation Reveal ne gère pas
+    une modale imbriquée dans une autre. #}
+<dialog id="modal-journal"
+        class="reveal large" data-reveal
+        aria-modal="true"
+        data-close-on-click="true"
+        aria-label="Journal d'exécution">
+  <header>
+    <h3 class="h4 claire-hand">
+      <span aria-hidden="true">📓</span>
+      Journal d'exécution – <span class="js-journal-nom"></span>
+    </h3>
+  </header>
+
+  <section class="journal-content js-journal-content open-sans"
+          style="max-height:70vh; overflow-y:auto; background:#fafafa; border-radius:8px; padding:1rem;">
+    <p class="text-center text-muted">Aucun journal chargé.</p>
+  </section>
+
+  <footer class="grid-x grid-margin-x align-right margin-top-2">
+    <div class="cell shrink">
+      <button id="bouton-fermer-journal"
+              class="button secondary open-sans focus-light"
+              type="button"
+              aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span> Fermer
+      </button>
+    </div>
   </footer>
 </dialog>
