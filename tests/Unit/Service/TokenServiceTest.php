@@ -90,7 +90,7 @@ final class TokenServiceTest extends TestCase
             $service->decodeToken('tokenwithoutseparator');
             $this->fail('Attendu : InvalidArgumentException');
         } catch (\InvalidArgumentException $e) {
-            $this->assertSame('Invalid token', $e->getMessage());
+            $this->assertSame('Invalid token format', $e->getMessage());
         } finally {
             restore_error_handler();
         }
@@ -106,7 +106,7 @@ final class TokenServiceTest extends TestCase
 
         $service = new TokenService($csrf, new NullLogger());
 
-        $payload = ['maven_key' => 'fr.example:my-app', 'version' => '1.2.3'];
+        $payload = ['maven_key' => 'fr.ma-moulinette:ma-moulinette', 'version' => '1.2.3'];
         $token = $service->generateToken($payload);
 
         self::assertSame($payload, $service->decodeToken($token));
