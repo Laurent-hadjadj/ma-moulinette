@@ -52,6 +52,22 @@ return [
         'path' => './assets/js/mon-application/suivi/index-suivi.js',
         'entrypoint' => true,
     ],
+    'mes-projets' => [
+        'path' => './assets/js/mon-application/projet/mes-projets.js',
+        'entrypoint' => true,
+    ],
+    'preference' => [
+        'path' => './assets/js/mon-application/preference/index-preference.js',
+        'entrypoint' => true,
+    ],
+    'actuator' => [
+        'path' => './assets/js/mon-application/actuator/index-actuator.js',
+        'entrypoint' => true,
+    ],
+    'actuator-ajouter' => [
+        'path' => './assets/js/mon-application/actuator/ajouter-actuator.js',
+        'entrypoint' => true,
+    ],
     'owasp' => [
         'path' => './assets/js/mon-application/owasp/index-owasp.js',
         'entrypoint' => true,
