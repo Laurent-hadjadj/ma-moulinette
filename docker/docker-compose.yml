@@ -37,6 +37,8 @@ services:
       - "LANG=${LOCAL_LANG}"
       # MODIF 2026-05-08 : token requis par le subscriber DC.
       - "DC_INGEST_TOKEN=${DC_INGEST_TOKEN}"
+      # MODIF 2026-07-14 : clé de chiffrement du mot de passe d'accès Actuator.
+      - "ACTUATOR_CIPHER_KEY=${ACTUATOR_CIPHER_KEY}"
     build:
       dockerfile: php-custom.dockerfile
       context: .
@@ -68,6 +70,8 @@ services:
       - "SONAR_TOKEN=${SONAR_TOKEN}"
       - "MAMOUL_URL=${MAMOUL_URL}"
       - "MAMOUL_TOKEN=${MAMOUL_TOKEN}"
+      # MODIF 2026-07-14 : requis pour déchiffrer le mot de passe Actuator lors de la collecte.
+      - "ACTUATOR_CIPHER_KEY=${ACTUATOR_CIPHER_KEY}"
       # DATABASE_URL doit pointer sur le service postgres dans le network docker
       # (pas localhost). Surcharge la valeur éventuelle de .env.local.
       - "DATABASE_URL=postgresql://${postgresql_user}:${db_user_password}@postgresql-ma-moulinette:5432/${postgresql_db}?serverVersion=18&charset=utf8"
