@@ -25,9 +25,8 @@
   <head>
     <title>{{ title }}</title>
     {{ include('head.html.twig') }}
-    {% block stylesheets %}
-      {{ encore_entry_link_tags('mes-projets') }}
-    {% endblock %}
+    {# Chargement des assets JS et CSS #}
+    {% block importmap %}{{ importmap('mes-projets') }}{% endblock %}
   </head>
 
   <body>
@@ -188,9 +187,5 @@
     <br><br>
     {# Chargement de la section footer #}
     {{ include('footer.html.twig') }}
-    {# Chargement du code javascript #}
-    {% block javascripts %}
-      {{ encore_entry_script_tags('mes-projets') }}
-    {% endblock %}
   </body>
 </html>
