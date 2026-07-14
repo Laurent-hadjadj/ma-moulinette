@@ -37,7 +37,7 @@ import 'motion-ui';
 
 import '../../common/foundation.js';
 import '../../common/messageHelper.js';
-import '../../common/safeModal.js';
+import { modalSafe } from '../../common/safeModal.js';
 
 /** MODIF 2026-05-16 : DataTables pour la cartographie projets. */
 import DataTable from 'datatables.net-zf'; //NOSONAR
@@ -360,12 +360,21 @@ const buildDonut = function(d) {
   });
 }
 
-/* Overture de la modale "Méthode de calcul du JH" */
-$('#bouton-ouvrir-methodology-jh').on('click', () => {
-  modalSafe.open('dc-jh-methodology-modal');
+/* Ouverture / fermeture des modales "Applications impactées" (une par CVE récente) */
+$('.js-ouvrir-dc-new-cve').on('click', function () {
+  modalSafe.open(`#${$(this).data('modal-id')}`);
+});
+
+$('.js-fermer-dc-new-cve').on('click', function () {
+  modalSafe.close(`#${$(this).data('modal-id')}`);
+});
+
+/* Ouverture de la modale "Méthode de calcul du JH" */
+$('.js-ouvrir-methodology-jh').on('click', () => {
+  modalSafe.open('#dc-jh-methodology-modal');
 });
 
 /* Fermeture de la modale "Méthode de calcul du JH" */
 $('#bouton-fermer-methodology-jh').on('click', () => {
-  modalSafe.close('dc-jh-methodology-modal');
+  modalSafe.close('#dc-jh-methodology-modal');
 });
