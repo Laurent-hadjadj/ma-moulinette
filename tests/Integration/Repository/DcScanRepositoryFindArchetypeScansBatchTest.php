@@ -41,7 +41,7 @@ class DcScanRepositoryFindArchetypeScansBatchTest extends KernelTestCase
     private DcScanRepository $repo;
     private const DELETE_QUERY = 'DELETE FROM ';
     private const VERSION_RELEASE = '4.2.0-RELEASE';
-    private const SPRING_BOOT_FAM_CONFIG = 'springboot-config@4.2.0-RELEASE';
+    private const SPRING_BOOT_FAM_CONFIG = 'springboot-socle-config@4.2.0-RELEASE';
 
     protected function setUp(): void
     {
@@ -65,15 +65,15 @@ class DcScanRepositoryFindArchetypeScansBatchTest extends KernelTestCase
 
         // 4 scans variés : label simple, label groupé, 2 versions d'un même artifact.
         $this->persistScan(
-            mavenKey: 'springboot-config:springboot-config',
-            group: 'springboot-config',
-            artifact: 'springboot-config',
+            mavenKey: 'springboot-socle-config:springboot-socle-config',
+            group: 'springboot-socle-config',
+            artifact: 'springboot-socle-config',
             version: self::VERSION_RELEASE
         );
         $this->persistScan(
-            mavenKey: 'springboot-config:springboot-config',
-            group: 'springboot-config',
-            artifact: 'springboot-config',
+            mavenKey: 'springboot-socle-config:springboot-socle-config',
+            group: 'springboot-socle-config',
+            artifact: 'springboot-socle-config',
             version: '4.1.0-RC1'
         );
         $this->persistScan(
@@ -139,14 +139,14 @@ class DcScanRepositoryFindArchetypeScansBatchTest extends KernelTestCase
     public function testFindsSimpleLabelScan(): void
     {
         $result = $this->repo->findArchetypeScansBatch([
-            ['label' => 'springboot-config', 'version' => self::VERSION_RELEASE],
+            ['label' => 'springboot-socle-config', 'version' => self::VERSION_RELEASE],
         ]);
 
         $this->assertCount(1, $result);
         $this->assertArrayHasKey(self::SPRING_BOOT_FAM_CONFIG, $result);
         $scan = $result[self::SPRING_BOOT_FAM_CONFIG];
         $this->assertInstanceOf(DcScan::class, $scan);
-        $this->assertSame('springboot-config', $scan->getProjectArtifact());
+        $this->assertSame('springboot-socle-config', $scan->getProjectArtifact());
         $this->assertSame(self::VERSION_RELEASE,         $scan->getProjectVersion());
     }
 
@@ -166,7 +166,7 @@ class DcScanRepositoryFindArchetypeScansBatchTest extends KernelTestCase
     public function testHandlesMixedSimpleAndGroupedInOneCall(): void
     {
         $result = $this->repo->findArchetypeScansBatch([
-            ['label' => 'springboot-config', 'version' => self::VERSION_RELEASE],
+            ['label' => 'springboot-socle-config', 'version' => self::VERSION_RELEASE],
             ['label' => 'fr.ma-moulinette:projet-config',    'version' => '4.2.0-RELEASE'],
             ['label' => 'fr.ma-moulinette:projet-parent', 'version' => '3.0.0-RELEASE'],
         ]);
@@ -180,7 +180,7 @@ class DcScanRepositoryFindArchetypeScansBatchTest extends KernelTestCase
     public function testOrphanPairsAreAbsentFromMap(): void
     {
         $result = $this->repo->findArchetypeScansBatch([
-            ['label' => 'springboot-config', 'version' => self::VERSION_RELEASE],   // existe
+            ['label' => 'springboot-socle-config', 'version' => self::VERSION_RELEASE],   // existe
             ['label' => 'unknown-socle',         'version' => '1.0.0-RELEASE'],    // orphelin
             ['label' => 'fr.ma-moulinette:projet-inconnu',        'version' => '2.0.0-RELEASE'],    // orphelin groupé
         ]);
@@ -194,9 +194,9 @@ class DcScanRepositoryFindArchetypeScansBatchTest extends KernelTestCase
     public function testDedupsDuplicatePairsInInput(): void
     {
         $result = $this->repo->findArchetypeScansBatch([
-            ['label' => 'springboot-config', 'version' => self::VERSION_RELEASE],
-            ['label' => 'springboot-config', 'version' => self::VERSION_RELEASE], // doublon strict
-            ['label' => 'springboot-config', 'version' => self::VERSION_RELEASE], // doublon strict
+            ['label' => 'springboot-socle-config', 'version' => self::VERSION_RELEASE],
+            ['label' => 'springboot-socle-config', 'version' => self::VERSION_RELEASE], // doublon strict
+            ['label' => 'springboot-socle-config', 'version' => self::VERSION_RELEASE], // doublon strict
         ]);
 
         $this->assertCount(1, $result);
@@ -206,16 +206,16 @@ class DcScanRepositoryFindArchetypeScansBatchTest extends KernelTestCase
     public function testReturnsTwoDistinctEntriesForTwoVersionsOfSameArtifact(): void
     {
         $result = $this->repo->findArchetypeScansBatch([
-            ['label' => 'springboot-config', 'version' => self::VERSION_RELEASE],
-            ['label' => 'springboot-config', 'version' => '4.1.0-RC1'],
+            ['label' => 'springboot-socle-config', 'version' => self::VERSION_RELEASE],
+            ['label' => 'springboot-socle-config', 'version' => '4.1.0-RC1'],
         ]);
 
         $this->assertCount(2, $result);
         $this->assertArrayHasKey(self::SPRING_BOOT_FAM_CONFIG, $result);
-        $this->assertArrayHasKey('springboot-config@4.1.0-RC1',     $result);
+        $this->assertArrayHasKey('springboot-socle-config@4.1.0-RC1',     $result);
         $this->assertNotSame(
             $result[self::SPRING_BOOT_FAM_CONFIG]->getProjectVersion(),
-            $result['springboot-config@4.1.0-RC1']->getProjectVersion()
+            $result['springboot-socle-config@4.1.0-RC1']->getProjectVersion()
         );
     }
 }
