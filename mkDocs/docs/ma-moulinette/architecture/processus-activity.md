@@ -1,43 +1,22 @@
-# Processus de récupération des tâches entre deux dates
+# 🔄 Processus de récupération des tâches d'activité SonarQube
 
-## Description Fonctionnelle
+## 🎯 Objectif fonctionnel
 
-L’objectif est de concevoir un processus asynchrone qui permet de récupérer les tâches d’une API SonarQube entre le jour précédent (j-1) et la première date de l’année en cours. Ce processus :
+Récupérer, pour un projet donné, l'historique des tâches d'analyse (`api/ce/activity`) entre J-1 et la première date disponible de l'année en cours, puis les persister dans la table `activity` — voir [Page Activité](../application/activite.md).
 
-1. Identification des bornes temporelles : détermine les dates disponibles dans l’API (depuis j-1 jusqu’à la première date de l'année).
-2. Récupération des données : effectue des appels paginés pour collecter toutes les tâches.
-3. Publication dans une queue : traite et publie les données récupérées dans une file de messages pour un traitement ultérieur.
-4. Le processus est déclenché par un bouton sur l’interface utilisateur et doit s’exécuter de manière asynchrone pour ne pas bloquer la page ou le backend.
+## 📖 Pagination selon la version de SonarQube
 
-## Description Technique
+L'API `api/ce/activity` ne se comporte pas de la même façon selon la version du serveur, ce qui impose une stratégie différente pour retrouver la date la plus ancienne accessible :
 
-Architecture du Processus
+- **SonarQube 8** : limité à 1000 tâches par requête, sans compteur de total fiable. Il faut récupérer les 1000 premières tâches disponibles et utiliser la date de la dernière comme borne la plus ancienne accessible.
+- **SonarQube 9 et supérieur** : le champ `paging.total` est disponible. On calcule le numéro de la dernière page (taille de page `ps=1000`), on la récupère, et la date de la tâche la plus ancienne de cette page devient la borne de départ.
 
-> Front-End (UI) :
+Une fois la borne identifiée, la collecte avance jour par jour jusqu'à J-1.
 
-- Un bouton déclenche un appel à un endpoint backend.
-- L’état du processus peut être suivi (optionnel) via un système de notifications ou une interface.
+## ⚙️ Mécanisme d'exécution
 
-> Back-End (API) :
+Le déclenchement (manuel depuis la page Activité, ou automatique par cron) exécute la commande console `app:activity:collecte` (`ActivityCollecteCommand`), qui appelle l'API SonarQube en pages successives et enregistre directement les résultats — voir [Traitement quotidien](processus-batch-activity.md) pour le détail de la planification automatique.
 
-- Le back-end expose un endpoint HTTP pour lancer le processus.
-- Le processus récupère les données via des appels asynchrones à l’API SonarQube.
-- Les résultats sont envoyés dans une queue Messenger.
+-**-- FIN --**-
 
-> API SonarQube :
-
-- Appels paginés via p=<numero de page> et ps=<taille de page> pour récupérer les tâches.
-- Filtrage des données selon les dates de début et de fin spécifiées.
-
-> Messaging System :
-
-- Une queue Messenger reçoit les messages contenant les données récupérées pour un traitement ultérieur.
-
-Pour SonarQube 8 : Limité à 1000 tâches par requête, il faudra prendre les 1000 premières tâches disponibles et utiliser la date de la dernière tâche comme date la plus ancienne accessible.
-
-Pour SonarQube 9 et supérieur :
-
-Récupérer le total de tâches (paging.total).
-Calculer le numéro de la dernière page en fonction de la taille de page (ps=1000).
-Récupérer cette dernière page et extraire la date de la dernière tâche, qui correspond à la date la plus ancienne.
-Une fois cette date identifiée, on peut lancer un batch pour récupérer les tâches, jour par jour, jusqu'à J-1, et publier chaque tâche dans une queue Messenger.
+[Retour au menu principal](/index.html)
