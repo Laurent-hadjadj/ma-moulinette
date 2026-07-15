@@ -62,7 +62,7 @@ class StatistiqueController extends AbstractController
     /**
      * [Description for genericRender]
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 30/10/2024 08:21:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -95,7 +95,7 @@ class StatistiqueController extends AbstractController
     public function statistique(): Response
     {
         $this->tracking->track('STATISTIQUES');
-        $render = static::genericRender();
+        $render = $this->genericRender();
         return $this->render('statistique/index.html.twig', $render);
     }
 
@@ -119,16 +119,18 @@ class StatistiqueController extends AbstractController
 
         $exec = $this->analysis->runBatch(100);
 
+        /* En cas d'échec, runBatch() relaie la réponse du repository : elle porte 'erreur'
+           (le message, au singulier) et non 'erreurs' (la liste du cas nominal). */
         if ($exec['code'] !== 200) {
             $this->addFlash('notice', [
                 'type'    => 'error',
                 'message' => "Une erreur s'est produite pendant l'analyse des données UserAgent ({$exec['code']})",
-                'trace'   => count($exec['erreurs']),
+                'trace'   => $exec['erreur'] ?? null,
             ]);
             return $this->redirectToRoute('statistiques_utilisateur');
         }
 
-        $erreur = count($exec['erreurs']) ?? 0;
+        $erreur = count($exec['erreurs']);
         $this->addFlash('notice', [
             'type'    => 'info',
             'message' => "Collecte terminée : {$exec['processed']} collecté, {$erreur} erreurs.",
@@ -174,7 +176,7 @@ class StatistiqueController extends AbstractController
      *
      * @param string $path
      *
-     * @return array|null
+     * @return array<int|string, mixed>|null
      *
      * Created at: 12/07/2026 12:08:03 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -289,7 +291,7 @@ class StatistiqueController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    #[Route('/statistiques/sonar-report', name: 'statistiques_sonar_report')]
+    #[Route('/statistiques/ma-moulinette', name: 'statistiques_sonar_report')]
     public function adminStats(): Response
     {
         $conn = $this->em->getConnection();
@@ -332,7 +334,7 @@ class StatistiqueController extends AbstractController
         $vulnerability = (int)($results['mesure_vulnerability'][0]['total'] ?? 0);
         $codeSmell     = (int)($results['mesure_code_smell'][0]['total'] ?? 0);
 
-        return $this->render('statistique/sonar-report.html.twig', $this->genericRender() + [
+        return $this->render('statistique/ma-moulinette.html.twig', $this->genericRender() + [
             'application_utilisateur' => $results['utilisateur_count'][0]['total'] ?? 0,
             'projet_projet'           => $results['projet_count'][0]['total'] ?? 0,
             'projet_profile'          => $results['profile_count'][0]['total'] ?? 0,
