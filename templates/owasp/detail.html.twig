@@ -5,52 +5,54 @@
 <!DOCTYPE html>
 <!--
 .. __  __             __  __             _ _            _   _
-  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
-  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
-  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
-  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+|  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+| |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+| |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+|_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
 
-  Laurent HADJADJ
-  https://github.com/Laurent-hadjadj/ma-moulinette
-  © 2024 - CC BY-SA-NC 4.0
+Laurent HADJADJ
+https://github.com/Laurent-hadjadj/ma-moulinette
+© 2024 - CC BY-SA-NC 4.0
 -->
 <html lang="fr">
-  {# Chargement de la section HEAD #}
-  <head>
-      <title>{{ title }}</title>
-      {{ include('head.html.twig') }}
-      {% block importmap %}{{ importmap('owasp') }}{% endblock %}
-  </head>
-  <body>
-    {{ include('header.html.twig') }}
+    {# Chargement de la section HEAD #}
+    <head>
+        <title>{{ title }}</title>
+        {{ include('head.html.twig') }}
+        {% block importmap %}
+            {{ importmap('owasp') }}
+        {% endblock %}
+    </head>
+    <body>
+        {{ include('header.html.twig') }}
 
-    <header class="grid-container margin-top-1">
-      <nav aria-label="Fil d'Ariane, vous êtes ici">
-        <ol class="claire-hand breadcrumbs">
-          <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
-          <li><a href="{{ path('projet', {}) }}">Projet</a></li>
-          <li><a href="{{ path('owasp', {}) }}">Owasp</a></li>
-          <li aria-current="page">{{ owasp.category }}</li>
-        </ol>
-      </nav>
-    </header>
+        <header class="grid-container margin-top-1">
+            <nav aria-label="Fil d'Ariane, vous êtes ici">
+                <ol class="claire-hand breadcrumbs">
+                    <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+                    <li><a href="{{ path('projet', {}) }}">Projet</a></li>
+                    <li><a href="{{ path('owasp', {}) }}">Owasp</a></li>
+                    <li aria-current="page">{{ owasp.category }}</li>
+                </ol>
+            </nav>
+        </header>
 
-    <main id="main-content">
-      {{ include('owasp/' ~ owasp.lien) }}
+        <main id="main-content">
+            {{ include('owasp/' ~ owasp.lien) }}
 
-      <footer class="grid-x grid-margin-x align-justify margin-left-1 margin-top-2 margin-bottom-2">
-        <div class="cell shrink">
-          <a id="bouton-retour-precedent"
-              href="{{ path('owasp', {}) }}"
-              onclick="history.back(); return false;"
-              class="button open-sans focus-light"
-              aria-label="Retour à la page précédente">
-            <span aria-hidden="true">⬅️</span>Retour
-          </a>
-        </div>
-      </footer>
-    </main>
+            <footer class="grid-x grid-margin-x align-justify margin-left-1 margin-top-2 margin-bottom-2">
+                <div class="cell shrink">
+                    <a id="bouton-retour-precedent"
+                        href="{{ path('owasp', {}) }}"
+                        onclick="history.back(); return false;"
+                        class="button open-sans focus-light"
+                        aria-label="Retour à la page précédente">
+                        <span aria-hidden="true">⬅️</span>Retour
+                    </a>
+                </div>
+            </footer>
+        </main>
 
-    {{ include('footer.html.twig') }}
-  </body>
+        {{ include('footer.html.twig') }}
+    </body>
 </html>
