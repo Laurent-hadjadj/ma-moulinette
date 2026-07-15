@@ -30,10 +30,10 @@ class ActivityBatchReport
     #[ORM\Column(name: 'id', type: Types::INTEGER)]
     private ?int $id = null;
 
-    #[ORM\Column(name: 'data_start', type: Types::DATETIMETZ_IMMUTABLE, nullable: false)]
+    #[ORM\Column(name: 'date_start', type: Types::DATETIMETZ_IMMUTABLE, nullable: false)]
     private \DateTimeImmutable $dateStart;
 
-    #[ORM\Column(name: 'data_end', type: Types::DATETIMETZ_IMMUTABLE, nullable: false)]
+    #[ORM\Column(name: 'date_end', type: Types::DATETIMETZ_IMMUTABLE, nullable: false)]
     private \DateTimeImmutable $dateEnd;
 
     #[ORM\Column(name: 'task_count', type: Types::INTEGER, nullable: false, options: ['default' => 0])]
