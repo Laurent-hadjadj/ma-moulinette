@@ -83,7 +83,8 @@ class CustomAuthenticatorTest extends TestCase
             $this->passwordHasher,
             $this->router,
             $this->logger,
-            $this->ldap
+            $this->ldap,
+            '@ma-moulinette.fr'
         );
     }
 
@@ -271,6 +272,33 @@ class CustomAuthenticatorTest extends TestCase
         $this->expectExceptionMessage('Identifiant ou mot de passe incorrect');
 
         $this->authenticator->authenticate($request);
+    }
+
+    public function testAuthenticateBuildsCourrielFromShortLoginUsingConfiguredSuffix(): void
+    {
+        /* Identifiant court (pas une adresse) → l'adresse est reconstruite avec le
+           domaine de repli injecté, jamais un domaine codé en dur. */
+        $request = $this->buildLoginRequest('charlie', 'wrong', 'csrf-token');
+
+        $this->utilisateurRepo->method('findOneBy')->willReturn(null);
+
+        $capturedDn = null;
+        $ldapConn = $this->createMock(LdapConnectionInterface::class);
+        $ldapConn->method('bind')->willReturnCallback(
+            function (string $dn) use (&$capturedDn): void {
+                $capturedDn = $dn;
+                throw new InvalidCredentialsException('Invalid creds');
+            }
+        );
+        $this->ldapAdapter->method('getConnection')->willReturn($ldapConn);
+
+        try {
+            $this->authenticator->authenticate($request);
+        } catch (CustomUserMessageAuthenticationException) {
+            /* Attendu : bind LDAP en échec → message générique. */
+        }
+
+        $this->assertSame('charlie@ma-moulinette.fr', $capturedDn);
     }
 
     /* ============ helpers ============ */
