@@ -338,7 +338,7 @@ class StatistiqueControllerTest extends TestCase
 
         $this->twig->expects($this->once())
             ->method('render')
-            ->with('statistique/sonar-report.html.twig', $this->callback(fn($ctx) =>
+            ->with('statistique/ma-moulinette.html.twig', $this->callback(fn($ctx) =>
                 $ctx['application_utilisateur'] === 5
                 && $ctx['projet_projet'] === 10
                 && $ctx['projet_profile'] === 3
@@ -416,7 +416,7 @@ class StatistiqueControllerTest extends TestCase
 
         $this->twig->expects($this->once())
             ->method('render')
-            ->with('statistique/sonar-report.html.twig', $this->callback(fn($ctx) =>
+            ->with('statistique/ma-moulinette.html.twig', $this->callback(fn($ctx) =>
                 $ctx['projet_line'] === 0
                 && $ctx['projet_test'] === 0
             ))
@@ -543,11 +543,32 @@ class StatistiqueControllerTest extends TestCase
         $this->assertSame('/statistiques/utilisateur', $response->getTargetUrl());
     }
 
+    /**
+     * Régression : en cas d'échec, runBatch() relaie la réponse du repository, qui porte
+     * 'erreur' (message) et non 'erreurs' (liste). Le controller faisait count($exec['erreurs'])
+     * sur cette clé absente -> TypeError (count(null)) en PHP 8.
+     */
     public function testRunBatchRedirectsToUtilisateurOnError(): void
     {
         $ctrl = $this->buildControllerForBatch();
         $this->analysis->method('runBatch')
-            ->willReturn(['code' => 500, 'processed' => 0, 'erreurs' => ['e1', 'e2']]);
+            ->willReturn(['code' => 500, 'erreur' => 'Échec de la requête selectPendingEvents().']);
+
+        $response = $ctrl->runBatchAnalysis();
+
+        $this->assertInstanceOf(RedirectResponse::class, $response);
+        $this->assertSame('/statistiques/utilisateur', $response->getTargetUrl());
+    }
+
+    /**
+     * Réponse d'échec dégradée (ni 'erreur' ni 'erreurs') : le controller doit rester
+     * silencieux plutôt que de lever une erreur sur une clé manquante.
+     */
+    public function testRunBatchRedirectsOnErrorWithoutErreurKey(): void
+    {
+        $ctrl = $this->buildControllerForBatch();
+        $this->analysis->method('runBatch')
+            ->willReturn(['code' => 500]);
 
         $response = $ctrl->runBatchAnalysis();
 
