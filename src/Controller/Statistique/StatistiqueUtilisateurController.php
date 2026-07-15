@@ -52,7 +52,7 @@ class StatistiqueUtilisateurController extends AbstractController
     /**
      * [Description for genericRender]
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 30/10/2024 08:21:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -105,7 +105,7 @@ class StatistiqueUtilisateurController extends AbstractController
     {
         $this->tracking->track('STATISTIQUES_UTILISATEUR');
 
-        $render = static::genericRender();
+        $render = $this->genericRender();
 
         /** Initialisation des variables */
         $render['generated_on'] = new \DateTimeImmutable();
