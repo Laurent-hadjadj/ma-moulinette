@@ -281,16 +281,23 @@ class BuildMapHistoryService
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private function getComplexityRating(float|null $ratio): string {
+        // MODIF 2026-07-15 : le ratio est ncloc/complexité (lignes de code par point de
+        // complexité) — un ratio FAIBLE signifie une complexité DENSE (mauvais signe),
+        // un ratio ÉLEVÉ signifie du code plus simple (bon signe). Les lettres étaient
+        // inversées (un ratio faible obtenait 'A', le meilleur) ; corrigé ici.
+        if ($ratio === null) {
+                return '--';
+        }
         if ($ratio <= 3) {
-                return 'A';
+                return 'E';
         } elseif ($ratio > 3 && $ratio <= 7) {
-                return 'B';
+                return 'D';
         } elseif ($ratio > 7 && $ratio <= 12) {
                 return 'C';
         } elseif ($ratio > 12 && $ratio <= 18) {
-                return 'D';
+                return 'B';
         } elseif ($ratio > 18) {
-                return 'E';
+                return 'A';
         }
         return '--';
     }
