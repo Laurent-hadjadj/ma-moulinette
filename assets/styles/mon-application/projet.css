@@ -404,7 +404,8 @@ textarea[readonly] {
 #bouton-fermer-liste-projet,
 #bouton-fermer-liste-nosonar,
 #bouton-fermer-logger-detail,
-#bouton-fermer-logger-graphique {
+#bouton-fermer-logger-graphique,
+#bouton-fermer-information-complexity {
   min-width: 9rem;
   font-size: 0.95rem;
   border-radius: 0.375rem;
@@ -435,7 +436,8 @@ textarea[readonly] {
 #bouton-fermer-liste-nosonar:hover,
 #bouton-ouvrir-clean-code:hover,
 #bouton-fermer-logger-detail:hover,
-#bouton-fermer-logger-graphique:hover { background-color: #006182; }
+#bouton-fermer-logger-graphique:hover,
+#bouton-fermer-information-complexity:hover { background-color: #006182; }
 
 /* select2 custom
  *  placeholder
@@ -599,67 +601,6 @@ textarea[readonly] {
   border: solid 1px #00445b;
   border-radius: 0.2rem;
 }
-
-/* bouton actions pour la liste des projets */
-.capsule { padding-left: 0.1rem; }
-
-.capsule-bulle {
-  cursor: pointer;
-  width: 34px;
-  height: 34px;
-  background-color: #eee;
-  text-align: center;
-  line-height: 32px;
-  display: block;
-  border: 1px solid #00445b;
-}
-
-/* Validation */
-.V { color: #187e3d; }
-
-/* Restitution, Suivi, COSUI, OWASP, Répartition-Module */
-.R,
-.S,
-.C,
-.O,
-.RM { color: #00445b; }
-
-.V,
-.R,
-.S,
-.C,
-.O,
-.RM {
-  position: relative;
-  transition: 0.5s;
-  font-size: 1.2rem;
-  font-weight: 600;
-}
-
-.V:hover,
-.R:hover,
-.S:hover,
-.C:hover,
-.O:hover,
-.RM:hover {
-  color: #fff;
-  background-color: #b33926;
-}
-
-.modifier-liste-projet {
-  display: flex;
-  align-items: center;
-}
-.modifier-liste-label { font-size: 1.2rem; }
-
-.modifier-liste-projet-svg {
-  fill: #00445b;
-  width: 42px;
-  height: 36px;
-  padding-right: 0.5rem;
-}
-
-.modifier-liste-projet-svg:hover { fill: #e7552c; }
 
 /** Information projet et statut */
 .information-statut { font-size: 1.2rem; }
