@@ -15,7 +15,7 @@ flowchart LR
     Page -->|"⚙️ Préférences"| Admin[⚙️ Back-office /admin]
     Page -->|"🚪 Déconnexion"| Logout[🚪 /logout]
     Page -->|"✉️ courriel"| ModalUser[🪟 Mes informations]
-    Admin -.->|"cartes selon rôle"| Autres[Activité · Statistiques · DependencyCheck]
+    Admin -.->|"cartes selon rôle"| Autres[Statistiques · Activité SonarQube · DependencyCheck]
 ```
 <!-- markdownlint-enable MD046 -->
 
@@ -91,7 +91,10 @@ Le bandeau supérieur (`header.html.twig`, inclus sur **toutes** les pages de l'
 !!! note "🔐 Une seule icône, plusieurs niveaux d'accès derrière"
     L'icône « Préférences de l'application » est volontairement accessible à tous (`ROLE_UTILISATEUR`) : c'est la porte d'entrée du back-office, dont la page d'accueil affiche ensuite des cartes filtrées par rôle (`ROLE_GESTIONNAIRE`, `ROLE_BATCH`, `ROLE_ACTUATOR`...) — voir [Dashboard back-office](../back-office/dashboard.md#-page-daccueil-cartes). Il n'y a **pas** d'icône « Mes préférences » dans ce bandeau : la page [Préférences](preferences.md) est accessible depuis une carte du back-office (« Réglages personnels ») ou depuis la page « Plan du site » (lien en bas de page).
 
-Depuis la v2.0.0, le back-office donne aussi accès (selon rôle) aux pages [Activité](activite.md), [Statistiques](statistiques.md) et au module [DependencyCheck](../dependency-check/pages.md).
+Depuis la v2.0.0, le back-office donne aussi accès (selon rôle) aux pages [Statistiques](statistiques.md), [Activité SonarQube](activite.md) (`ROLE_ACTIVITY`) et au module [DependencyCheck](../dependency-check/pages.md).
+
+!!! note "🔀 Deux cartes « Activité » distinctes"
+    Ne pas confondre la carte **« Activité »** (statistiques d'usage des utilisateurs, sans rôle particulier) et la carte **« Activité SonarQube »** (historique des tâches d'analyse SonarQube, `ROLE_ACTIVITY`) — voir [Dashboard back-office](../back-office/dashboard.md#-page-daccueil-cartes).
 
 ## 📚 Bloc référentiel local
 
