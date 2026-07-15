@@ -4,7 +4,7 @@
       <div  class="callout alert-callout {{ message.type }} alert-callout-border callout-ombre js-flash-box"
             role="alert"
             data-closable>
-        <p class="open-sans text-justify callout-message">{{ message.message }}</p>
+        <p class="open-sans text-justify callout-message">{{ message.message|nl2br }}</p>
         {% if app.environment == 'dev' and message.debug is defined %}
         <p class="open-sans">{{message.debug}}</p>
         {% endif %}
