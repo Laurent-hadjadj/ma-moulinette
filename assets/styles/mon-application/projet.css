@@ -758,3 +758,26 @@ canvas {
   font-size: 1.5rem;
   display: block;
 }
+
+/* Bouton « Aide » (bulle d'information) — bloc Projet, complexité cyclomatique/cognitive.
+  Même pattern que .bulle-information-bouton de la page Accueil (bouton transparent,
+  le SVG portait le clic mais n'était pas focusable au clavier). */
+.bulle-information-bouton {
+  display: inline-block;
+  width: 28px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.bulle-information-svg {
+  width: 100%;
+  height: auto;
+  max-width: 28px;
+  fill: #00445b;
+  cursor: pointer;
+}
+
+.bulle-information-svg:hover { fill: #850385; }
