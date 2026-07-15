@@ -102,9 +102,29 @@
     <p class="open-sans">
       En utilisant ces métriques, les développeurs peuvent identifier les zones du code qui pourraient bénéficier d'une refactorisation pour améliorer la lisibilité, la maintenabilité et la qualité globale du code.
     </p>
+
+    <h4 class="h4 claire-hand"><span aria-hidden="true">🧮</span>Comment Ma-Moulinette calcule le ratio et la note affichés</h4>
     <p class="open-sans">
-      On calcule le rapport de complexité (cyclomatique ou cognitive) en prenant le nombre total de points de décision et en les divisant par le nombre total de fonctions ou de méthodes dans le code. Cela permet d'obtenir une mesure de la complexité moyenne par fonction ou méthode, ce qui peut aider à identifier les zones du code qui sont particulièrement complexes et qui pourraient nécessiter une attention particulière.
+      SonarQube expose la complexité cyclomatique et cognitive sous forme de <strong>compteurs bruts</strong> (nombre total de points de décision pour l'ensemble du projet). Ma-Moulinette calcule ensuite, pour chacun des deux compteurs, un <strong>ratio</strong> en divisant le nombre de lignes de code (<code>ncloc</code>) par ce compteur : <code>ratio = ncloc ÷ complexité</code>. Un ratio élevé signifie donc plus de lignes de code pour un même nombre de points de complexité ; un ratio faible signifie une concentration plus forte de points de complexité sur peu de lignes.
     </p>
+    <p class="open-sans">
+      Ce ratio est ensuite converti en note A à E selon les seuils suivants (identiques pour la complexité cyclomatique et cognitive) :
+    </p>
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Ratio (ncloc ÷ complexité)</th>
+          <th scope="col">Note</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">≤ 3</th><td>A</td></tr>
+        <tr><th scope="row">] 3 ; 7 ]</th><td>B</td></tr>
+        <tr><th scope="row">] 7 ; 12 ]</th><td>C</td></tr>
+        <tr><th scope="row">] 12 ; 18 ]</th><td>D</td></tr>
+        <tr><th scope="row">&gt; 18</th><td>E</td></tr>
+      </tbody>
+    </table>
 </section>
 
   <footer class="grid-x grid-margin-x align-right margin-top-2">
