@@ -65,7 +65,7 @@
       </div>
 
       <div class="table-scroll pleine-page">
-        <table class="hover striped">
+        <table id="table-mes-projets" class="hover striped" aria-label="Métriques par projet">
           <caption class="show-for-sr">Tableau récapitulatif des projets : application, version, lignes de code, notes SonarQube (fiabilité, sécurité, hotspots, maintenabilité), violations, composants, qualité du code, journalisation et tests.</caption>
           <thead>
             <tr
@@ -114,7 +114,7 @@
                   class="open-sans">
                   <!-- Application et version -->
                   <td class="text-right">
-                    <span>{{ projet['nom_projet'] }}</span>
+                    <span>{{ projet['project_name'] }}</span>
                   </td>
                   <td class="text-right">
                     <span>{{ projet['version'] }}</span>
