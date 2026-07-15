@@ -15,6 +15,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Service;
 
+use App\Exception\EmptyLogSelectionException;
+use App\Exception\LogDirectoryNotFoundException;
 use App\Service\LogArchive\LogArchiveService;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -74,7 +76,7 @@ class LogArchiveServiceTest extends TestCase
     {
         $logger = $this->createStub(LoggerInterface::class);
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(LogDirectoryNotFoundException::class);
         $this->expectExceptionMessage('Dossier de logs introuvable');
 
         new LogArchiveService('/nonexistent/path/that/cannot/exist_' . uniqid('', true), $logger);
@@ -188,14 +190,14 @@ class LogArchiveServiceTest extends TestCase
 
     public function testCreateZipFromFilenamesThrowsOnEmptyInput(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(EmptyLogSelectionException::class);
 
         $this->service->createZipFromFilenames([]);
     }
 
     public function testCreateZipFromFilenamesThrowsWhenAllFilesAreInvalid(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(EmptyLogSelectionException::class);
         $this->expectExceptionMessageMatches('/aucun fichier valide/i');
 
         // Aucun fichier créé → tous les noms sont introuvables
@@ -206,7 +208,7 @@ class LogArchiveServiceTest extends TestCase
     {
         $this->touch('prod.log');
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(EmptyLogSelectionException::class);
 
         // Seul le fichier avec slash est passé → aucun valide → exception
         $this->service->createZipFromFilenames(['../etc/passwd']);
@@ -216,7 +218,7 @@ class LogArchiveServiceTest extends TestCase
     {
         $this->touch('prod.log');
 
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(EmptyLogSelectionException::class);
 
         $this->service->createZipFromFilenames(['..\windows\system32\config']);
     }
@@ -242,7 +244,7 @@ class LogArchiveServiceTest extends TestCase
 
     public function testCreateZipThrowsOnEmptyLogArray(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(EmptyLogSelectionException::class);
 
         $this->service->createZip([]);
     }
