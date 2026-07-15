@@ -261,20 +261,10 @@ class AccueilControllerTest extends TestCase
         $this->assertSame(11, $result['projet_sonar']);
     }
 
-    /* ============ construitMaRequest ============
-     * MODIF 2026-05-07 : tests skipped — méthode utilitaire
-     * `construitMaRequest()` retirée d'AccueilController. Le SQL est construit
-     * désormais via paramètres bind dans les Repository (`maven_key=:maven_key`). */
-
-    public function testConstruitMaRequestBuildsSqlWithSingleVersion(): void
-    {
-        $this->markTestSkipped('Méthode construitMaRequest() retirée — SQL via bindParams dans Repository.');
-    }
-
-    public function testConstruitMaRequestBuildsSqlWithMultipleVersions(): void
-    {
-        $this->markTestSkipped('Méthode construitMaRequest() retirée — SQL via bindParams dans Repository.');
-    }
+    /* MODIF 2026-07-14 : les 2 tests `construitMaRequest` (skipped depuis le 2026-05-07)
+     * sont supprimés en même temps que la méthode, qui était restée dans le controller
+     * sans aucun appelant. Le SQL est construit via paramètres bind dans les Repository
+     * (`maven_key=:maven_key`). */
 
     /* ============ index ============ */
 
@@ -313,8 +303,10 @@ class AccueilControllerTest extends TestCase
             'favori_version' => [],
         ]);
         $this->token->method('getUser')->willReturn($user);
+        // Le favori 'acme:app' EST présent dans l'historique (clé 'liste' + 'mavenkey',
+        // forme réelle renvoyée par selectHistoriqueProjetFavori) → aucune désync.
         $this->historiqueRepo->method('selectHistoriqueProjetFavori')->willReturn([
-            'code' => 200, 'request' => [['maven_key' => 'acme:app']],
+            'code' => 200, 'liste' => [['mavenkey' => 'acme:app']],
         ]);
 
         // SonarQube version lookup
@@ -342,6 +334,63 @@ class AccueilControllerTest extends TestCase
         $response = $this->controller->index();
 
         $this->assertSame('<html>accueil</html>', $response->getContent());
+    }
+
+    public function testIndexFlashesWhenFavoriProjetDesynced(): void
+    {
+        // Contexte "frais" identique au happy-path, mais le favori des préférences
+        // n'existe plus dans l'historique → on attend un flash de désynchronisation.
+        $today = new \DateTimeImmutable('now', new \DateTimeZone('Europe/Paris'));
+        $this->propertiesRepo->method('getProperties')->willReturn([
+            'request' => [[
+                'projet_bd' => 10, 'projet_sonar' => 10,
+                'profil_bd' => 5, 'profil_sonar' => 5,
+                'date_modification_projet' => $today,
+                'date_modification_profil' => $today,
+            ]],
+        ]);
+        $this->listeProjetRepo->method('countListeProjetVisibility')->willReturnMap([
+            ['public', ['request' => [['visibility' => 6]]]],
+            ['private', ['request' => [['visibility' => 4]]]],
+        ]);
+        $this->listeProjetRepo->method('countListeProjetTags')->willReturn([
+            'nombre' => [['tag' => 12]],
+        ]);
+        $this->maMoulinetteRepo->method('getMaMoulinetteVersion')->willReturn([
+            'request' => [['version' => '2.0.0']],
+        ]);
+
+        $user = new Utilisateur();
+        $user->setCourriel('u@x');
+        $user->setPreference([
+            'statut' => ['favori_projet' => true, 'favori_version' => false],
+            'favori_projet' => ['acme:ghost'],
+            'favori_version' => [],
+        ]);
+        $this->token->method('getUser')->willReturn($user);
+
+        // Historique VIDE pour ce favori → 'acme:ghost' est orphelin.
+        $this->historiqueRepo->method('selectHistoriqueProjetFavori')->willReturn([
+            'code' => 200, 'liste' => [],
+        ]);
+        $this->client->method('httpSonarQube')->willReturn([
+            'code' => 200, 'json' => ['texte' => '10.4'],
+        ]);
+        $this->authChecker->method('isGranted')->willReturn(true);
+
+        // Un flash 'notice' de type warning nommant explicitement le favori orphelin.
+        $this->flashBag->expects($this->once())
+            ->method('add')
+            ->with('notice', $this->callback(fn($m) =>
+                is_array($m)
+                && ($m['type'] ?? null) === 'warning'
+                && str_contains($m['message'] ?? '', 'acme:ghost')
+            ));
+
+        $this->twig->method('render')->willReturn('<html>desync</html>');
+
+        $response = $this->controller->index();
+        $this->assertSame('<html>desync</html>', $response->getContent());
     }
 
     public function testIndexFlashesWhenVersionsDiffer(): void
@@ -405,6 +454,9 @@ class AccueilControllerTest extends TestCase
             ->method('render')
             ->with('accueil/index.html.twig', $this->callback(fn($ctx) =>
                 $ctx['projet_bd'] === 0 && $ctx['composant'] === 0
+                // MODIF 2026-07-15 : sur retour anticipé, la version serveur doit être
+                // le sentinel « inconnu » explicite, pas un 0 trompeur.
+                && $ctx['version_serveur_sonar'] === 'Version inconnue.'
             ))
             ->willReturn('<html>early</html>');
 
