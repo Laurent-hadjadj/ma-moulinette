@@ -29,16 +29,26 @@
  @media (width >= 160.025em) { /* vide */ }
 
  /*******************  Global ******************/
-.bouton-activity-refresh,
-.bouton-activity-graph,
-.bouton-activity-du-jour {
+#bouton-activity-refresh,
+#bouton-courbe-analyse,
+#bouton-courbe-projet,
+#bouton-courbe-analyse-projet {
+  min-width: 9rem;
+  font-size: 0.95rem;
+  border-radius: 0.375rem;
+  margin: 0 0.25rem 0.5rem 0.25rem;
+  padding: 0.8rem 0.6rem;
   color: #fff;
+  text-align: center;
   background-color: #00445b;
 }
 
-.bouton-activity-refresh:hover,
-.bouton-activity-graph:hover,
-.bouton-activity-du-jour:hover { background-color: #006182; }
+#bouton-activity-refresh:hover,
+#bouton-courbe-analyse:hover,
+#bouton-courbe-projet:hover,
+#bouton-courbe-analyse-projet:hover,
+#bouton-activity-du-jour:hover { background-color: #006182; }
+
 .couleur-changement{ color: #c46e27; }
 
 /* Tool-tip pour le tableau */
@@ -51,9 +61,9 @@
 /* Propriété du texte qui sera affiché dans le tool-type */
 .tool-tip-activity .tool-tip-activity-text-top {
   visibility: hidden;
-  top: 30%; /* Centre verticalement */
-  left: 50%; /* Centre horizontalement */
-  transform: translate(-50%, calc(-100% - 8px)); /* Monte au-dessus du parent avec un léger espace */
+  top: 50%; /* Centre verticalement */
+  left: 100%; /* Affiche à droite du parent */
+  transform: translate(8px, -50%); /* Décale à droite avec un léger espace */
   width: 227px;
   background-color: #555;
   color: #fff;
@@ -68,18 +78,17 @@
   font-size: 0.8rem;
 }
 
-/* Mise en place de l'encoche en bas */
+/* Mise en place de l'encoche à gauche */
 .tool-tip-activity .tool-tip-activity-text-top::after {
   content: "";
   position: absolute;
-  top: 99%;
-  left: 50%;
-  transform: translateX(-50%);
+  top: 50%;
+  right: 100%;
+  transform: translateY(-50%);
   border-width: 8px;
   border-style: solid;
-  border-color: #555 transparent transparent transparent;
+  border-color: transparent #555 transparent transparent;
 }
-
 
 /* Action au moment du survol du tool-type */
 .tool-tip-activity:hover .tool-tip-activity-text-top {
