@@ -159,7 +159,7 @@ class DashboardController extends AbstractDashboardController
 
         // MODIF : routes déplacées sous /statistiques/*
         yield MenuItem::linkToRoute('Dashboard', 'fas fa-chart-bar', 'statistiques_dashboard');
-        yield MenuItem::linkToRoute('Sonar-Report', 'fas fa-chart-pie', 'statistiques_sonar_report');
+        yield MenuItem::linkToRoute('Ma-Moulinette', 'fas fa-chart-pie', 'statistiques_sonar_report');
         yield MenuItem::linkToRoute('Activité', 'fas fa-chart-line', 'statistiques_utilisateur');
         yield MenuItem::linkToRoute('Projets', 'fas fa-th-list', 'statistiques_projet');
     }
