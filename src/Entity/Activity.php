@@ -52,14 +52,14 @@ class Activity
     #[ORM\Column(
         name: 'project_name',
         type: Types::STRING,
-        length: 64,
+        length: 255,
         nullable: false,
         options: ['comment' => 'Nom du projet associé à la clé maven']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
-        max: 64,
-        maxMessage: "Le nom du projet ne doit pas dépasser 64 caractères."
+        max: 255,
+        maxMessage: "Le nom du projet ne doit pas dépasser 255 caractères."
     )]
     private string $projectName;
 
@@ -67,14 +67,14 @@ class Activity
     #[ORM\Column(
         name: 'analyse_id',
         type: Types::STRING,
-        length: 26,
+        length: 40,
         nullable: false,
-        options: ['comment' => 'Identifiant de l’analyse du projet']
+        options: ['comment' => 'Identifiant de la tâche SonarQube (UUID, 36 caractères)']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
-        max: 26,
-        maxMessage: "L'identifiant de l'analyse ne doit pas dépasser 26 caractères."
+        max: 40,
+        maxMessage: "L'identifiant de la tâche ne doit pas dépasser 40 caractères."
     )]
     private string $analyseId;
 
@@ -95,14 +95,14 @@ class Activity
     #[ORM\Column(
         name: 'submitter_login',
         type: Types::STRING,
-        length: 32,
+        length: 100,
         nullable: false,
         options: ['comment' => 'Utilisateur soumettant l’import']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
-        max: 32,
-        maxMessage: "Le login ne doit pas dépasser 32 caractères."
+        max: 100,
+        maxMessage: "Le login ne doit pas dépasser 100 caractères."
     )]
     private string $submitterLogin;
 
