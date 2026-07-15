@@ -63,18 +63,20 @@ class ApiActivityController extends AbstractController
 
     private function calculAnalyseMoyenne(int $nbJour, int $nbAnalyse): int
     {
-        if ($nbAnalyse === 0) {
+        // Moyenne d'analyses PAR JOUR = nombre d'analyses / nombre de jours.
+        if ($nbJour === 0) {
             return 0;
         }
-        return (int) ($nbJour / $nbAnalyse);
+        return (int) round($nbAnalyse / $nbJour);
     }
 
     private function calculeTauxReussite(int $nbAnalyseTotal, int $nbAnalyseReussite): float
     {
-        if ($nbAnalyseReussite === 0) {
+        // Taux = réussites / total (borné naturellement à 100 %).
+        if ($nbAnalyseTotal === 0) {
             return 0.0;
         }
-        return $nbAnalyseTotal / $nbAnalyseReussite * 100;
+        return round($nbAnalyseReussite / $nbAnalyseTotal * 100, 1);
     }
 
     /**
@@ -130,26 +132,52 @@ class ApiActivityController extends AbstractController
         $donneeTableau[$year]['success'] = (int) ($result['request']['nb_status'] ?? 0);
 
         $result = $activityRepos->nombreStatus($year, 'FAILED');
-        $donneeTableau[$year]['fail'] = (int) ($result['request']['nb_status'] ?? 0);
+        // Clé 'failed' pour correspondre au binding SQL du repository (et non 'fail').
+        $donneeTableau[$year]['failed'] = (int) ($result['request']['nb_status'] ?? 0);
 
         $result = $activityRepos->tempsExecutionMax($year);
-        $donneeTableau[$year]['max_time'] = $this->formatDureeMax((int) ($result['request']['max_time'] ?? 0));
+        // Stocké en SECONDES (colonne max_time INTEGER) ; formaté H:i:s à l'affichage.
+        $donneeTableau[$year]['max_time'] = (int) ($result['request']['max_time'] ?? 0);
 
-        $donneeTableau[$year]['analyse']      = $this->calculAnalyseMoyenne($donneeTableau[$year]['day'], $donneeTableau[$year]['analyse']);
-        $donneeTableau[$year]['success_rate'] = $this->calculeTauxReussite($donneeTableau[$year]['analyse'], $donneeTableau[$year]['success']);
+        // La colonne « Analyse » conserve le TOTAL ; la moyenne va dans sa colonne dédiée.
+        $donneeTableau[$year]['analyse_average'] = $this->calculAnalyseMoyenne(
+            $donneeTableau[$year]['day'],
+            $donneeTableau[$year]['analyse']
+        );
+        // Taux de réussite = succès / total (et non l'inverse).
+        $donneeTableau[$year]['success_rate'] = $this->calculeTauxReussite(
+            $donneeTableau[$year]['analyse'],
+            $donneeTableau[$year]['success']
+        );
         $donneeTableau[$year]['date_enregistrement'] = $dateActuelle;
 
+        // selectActivity() renvoie la clé 'liste' (et non 'request').
         $verifUpdateOuInsert = $activityHistoriqueRepository->selectActivity($year);
-        if (empty($verifUpdateOuInsert['request'])) {
-            $activityHistoriqueRepository->insertHistoriqueActivity($donneeTableau);
+        if (empty($verifUpdateOuInsert['liste'])) {
+            $ecriture = $activityHistoriqueRepository->insertHistoriqueActivity($donneeTableau);
         } else {
-            $activityHistoriqueRepository->updateHistoriqueActivity($donneeTableau);
+            $ecriture = $activityHistoriqueRepository->updateHistoriqueActivity($donneeTableau);
+        }
+
+        // On NE masque plus un échec d'écriture (sinon le front affiche « Aucune donnée »
+        // sans raison). Si l'insert/update échoue, on remonte l'erreur explicitement.
+        if (is_array($ecriture) && ($ecriture['code'] ?? 200) !== 200) {
+            $this->logger->error('[API] ❌ Échec écriture activity_historique.', $ecriture);
+            return new JsonResponse([
+                'code'    => 500,
+                'type'    => 'error',
+                'message' => "Échec de l'enregistrement des statistiques : " . ($ecriture['erreur'] ?? 'erreur inconnue'),
+            ], Response::HTTP_OK);
         }
 
         $tableHistoriqueActivity = $activityHistoriqueRepository->selectActivity();
-        if (!empty($tableHistoriqueActivity['request'])) {
-            $tableHistoriqueActivity['request'][0]['date_enregistrement'] =
-                (new \DateTime($tableHistoriqueActivity['request'][0]['date_enregistrement']))->format('d-m-Y H:i:s');
+        if (!empty($tableHistoriqueActivity['liste'])) {
+            // max_time est stocké en secondes → formaté H:i:s pour l'affichage.
+            foreach ($tableHistoriqueActivity['liste'] as $i => $ligne) {
+                $tableHistoriqueActivity['liste'][$i]['max_time'] = $this->formatDureeMax((int) ($ligne['max_time'] ?? 0));
+            }
+            $tableHistoriqueActivity['liste'][0]['date_enregistrement'] =
+                (new \DateTime($tableHistoriqueActivity['liste'][0]['date_enregistrement']))->format('d-m-Y H:i:s');
         }
 
         return new JsonResponse([
