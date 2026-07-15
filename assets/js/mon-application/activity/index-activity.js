@@ -84,9 +84,15 @@ const refreshActivity=async function() {
           showMessage('warning', `Vous n'êtes pas autorisé à effectuer cette opération (Erreur 403).`);
           return;
         }
+        // 204 (aucune donnée à agréger) ou 500 (échec d'écriture) : on affiche le message
+        // du serveur au lieu d'un « Aucune donnée disponible » trompeur.
+        if (t.code !== http_200) {
+          showMessage(t.type || 'alert', t.message || 'Impossible de générer les statistiques.');
+          return;
+        }
 
         /** On efface le container */
-        const stats = t.listeDonnee?.request || [];
+        const stats = t.listeDonnee?.liste || [];
         $dateEnregistrement.html('');
         if (stats.length > 0) {
           str += `<p><strong>Dernière date d'enregistrement : </strong><span class="couleur-changement">${stats[0].date_enregistrement}</span></p>`;
@@ -101,7 +107,7 @@ const refreshActivity=async function() {
                 <td>${stat.analyse}</td>
                 <td>${stat.analyse_average}</td>
                 <td>${stat.success}</td>
-                <td>${stat.fail}</td>
+                <td>${stat.failed}</td>
                 <td>${stat.success_rate} %</td>
                 <td>${stat.max_time}</td>
               </tr>`;
@@ -165,7 +171,8 @@ const graphToto = function(type, donnee, source) {
     });
   }
 
-  const formattedLabels = la.map(date => moment(date).format('DD-MMMM').slice(0, 6));
+  // date-fns (moment n'est pas importé) : « 2026-07-15 » → « 15 juil. »
+  const formattedLabels = la.map(date => format(new Date(date), 'dd MMM', { locale: fr }));
 
   function getRandomColor() {
     const r = Math.floor(Math.random() * 256);
@@ -184,6 +191,10 @@ const graphToto = function(type, donnee, source) {
     datasets: datasets
   };
 
+  const titre = source === 'projet' ? 'Projets analysés par jour'
+    : source === 'projet_analyse' ? 'Analyses et projets par jour'
+    : 'Analyses par jour';
+
   const options = {
     responsive: true,
     interaction: {
@@ -194,40 +205,21 @@ const graphToto = function(type, donnee, source) {
     plugins: {
       title: {
         display: true,
-        text: 'Chart.js Graphique linéaire'
+        text: titre
       }
     },
     scales: {
+      // Les labels sont des dates déjà formatées (chaînes) → axe catégoriel.
       x: {
-        type: 'timeseries',
-        time: {
-          unit: 'day',
-          unitStepSize: 1,
-          tooltipFormat: 'll',
-          displayFormats: { 'day': 'dd/MM/yyyy' }
-        },
-        ticks: {
-          callback: function(value, index, values) {
-            // Utilise date-fns pour formater la date en français
-            const formattedDate = format(new Date(value), 'dd LLL yyyy', { locale: fr });
-            return formattedDate;  // Retourner la date formatée
-          }
-        },
+        type: 'category',
         display: true
       },
       y: {
         type: 'linear',
         display: true,
         position: 'left',
-      },
-      y1: {
-        type: 'linear',
-        display: true,
-        position: 'right',
-        grid: {
-          drawOnChartArea: false,
-        },
-      },
+        beginAtZero: true
+      }
     }
   };
 
@@ -257,10 +249,23 @@ const dessineGraph = async function(type, source) {
     },
   };
 
-  const t = await $.ajax(optionsRefresh);
+  try {
+    const t = await $.ajax(optionsRefresh);
 
-  const donnee = t.listeDonnee.request;
-  graphToto(type, donnee, source);
+    if (t.code === http_403) {
+      showMessage('warning', `Vous n'êtes pas autorisé à effectuer cette opération (Erreur 403).`);
+      return;
+    }
+    if (t.code !== http_200 || !t.listeDonnee?.request) {
+      showMessage('alert', `Impossible de récupérer les données du graphique (Erreur ${t.code || 500}).`);
+      return;
+    }
+
+    graphToto(type, t.listeDonnee.request, source);
+  } catch (error) {
+    sessionStorage.setItem('ma_moulinette_error', `Erreur graphique : ${JSON.stringify(error, null, 2)}`);
+    showMessage('critical', 'Une erreur est survenue lors du tracé du graphique (Erreur 500).');
+  }
 }
 
 $('.js-show-graph').on('click', (e) => {
