@@ -53,7 +53,7 @@
         {% if not already_added %}
           {% set unique_messages = unique_messages|merge([message]) %}
       <div class="callout {{ message.type }} alert-callout-border callout-ombre js-flash-box" role="alert" data-closable>
-        <p class="open-sans text-justify callout-message">{{ message.message }}</p>
+        <p class="open-sans text-justify callout-message">{{ message.message|nl2br }}</p>
         <button class="close-button {{message.type}}"
                 type="button"
                 aria-label="Dismiss alert" data-close><span aria-hidden="true">&times;</span>
@@ -150,7 +150,13 @@
             </fieldset>
             <div class="referential-filler">
               <img class="svg-sonarqube-serveur" src="{{ asset('images/sonarqubeserver.svg') }}" alt="SonarQube Serveur">
-              <span id="version-sonar" class="color-noir font-size-09"> Version du serveur : {{version_serveur_sonar}}.</span>
+              <span id="version-sonar" class="font-size-09"> Version du serveur :
+                {%- if version_serveur_sonar is empty or version_serveur_sonar == 'Version inconnue.' %}
+                  <strong class="color-rouge">Inconnu</strong>.
+                {%- else %}
+                  <span class="color-noir">{{ version_serveur_sonar }}</span>.
+                {%- endif %}
+              </span>
             </div>
           </div>
 
