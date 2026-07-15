@@ -135,7 +135,7 @@ class ActivityControllerTest extends TestCase
 
         $this->flashBag->expects($this->once())
             ->method('add')
-            ->with('notice', $this->callback(fn($v) => $v['type'] === 'warning' && str_contains($v['message'], 'vide')));
+            ->with('notice', $this->callback(fn($v) => $v['type'] === 'warning' && str_contains($v['message'], 'Aucune analyse en base')));
 
         $this->twig->expects($this->once())->method('render')->willReturn('<html>empty</html>');
 
@@ -174,7 +174,7 @@ class ActivityControllerTest extends TestCase
 
     public function testIndexFlashesUpdateNoticeWhenSonarHasNewerTasks(): void
     {
-        // dateSonar > dateBase → flash "mise à jour"
+        // dateSonar > dateBase → flash informatif « analyses plus récentes »
         $this->client->method('httpActivity')->willReturn([
             'code' => 200,
             'json' => ['tasks' => [['executedAt' => '2026-04-20 10:00:00']]],
@@ -206,6 +206,6 @@ class ActivityControllerTest extends TestCase
         $this->controller->index();
 
         $joined = implode(' | ', $capturedFlashes);
-        $this->assertStringContainsString('mettre à jour', $joined);
+        $this->assertStringContainsString('plus récentes', $joined);
     }
 }
