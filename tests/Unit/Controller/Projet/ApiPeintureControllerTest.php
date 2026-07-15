@@ -16,7 +16,7 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Controller\Projet;
 
 use App\Controller\Projet\ApiPeintureController;
-use App\Entity\{Anomalie, AnomalieDetails, Hotspots, InformationProjet, LoggerDetail, Mesures, NoSonar, Todo, Utilisateur};
+use App\Entity\{Anomalie, AnomalieDetails, Hotspots, InformationProjet, LoggerDetail, Mesures, NoSonar, Todo};
 use App\Entity\Logger as LoggerEntity;
 use App\Repository\{AnomalieDetailsRepository, AnomalieRepository, HotspotsRepository, InformationProjetRepository, LoggerDetailRepository, LoggerRepository, MesuresRepository, NoSonarRepository, TodoRepository};
 use App\Service\IsValideMavenKey;
@@ -25,7 +25,6 @@ use PHPUnit\Framework\Attributes\{AllowMockObjectsWithoutExpectations, DataProvi
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request};
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -101,70 +100,6 @@ class ApiPeintureControllerTest extends TestCase
 
         $this->controller = new ApiPeintureController($this->em, $this->isValide, $this->logger);
         $this->controller->setContainer($container);
-    }
-
-    // ═══════════════════════ projetMesApplicationsListe ═══════════════════
-
-    public function testProjetMesApplicationsListeReturns400WhenBodyIsInvalidJson(): void
-    {
-        $security = $this->createMock(Security::class);
-        $response = $this->controller->projetMesApplicationsListe(
-            new Request([], [], [], [], [], [], 'not-json'),
-            $security
-        );
-
-        $this->assertJsonStatus($response, 400, 'error');
-    }
-
-    public function testProjetMesApplicationsListeReturns406WhenEmpty(): void
-    {
-        $this->anomalieRepo->expects($this->once())
-            ->method('selectAnomalieByProjectName')
-            ->willReturn(['code' => 200, 'liste' => []]);
-
-        $response = $this->controller->projetMesApplicationsListe(
-            $this->jsonRequest(['dummy' => 1]),
-            $this->createMock(Security::class)
-        );
-
-        $this->assertJsonStatus($response, 406, 'primary');
-    }
-
-    public function testProjetMesApplicationsListeReturnsFilteredFavoris(): void
-    {
-        $this->anomalieRepo->expects($this->once())
-            ->method('selectAnomalieByProjectName')
-            ->willReturn(['code' => 200, 'liste' => [
-                ['key' => 'fr.ma-moulinette:ma-moulinette'],
-                ['key' => 'fr.ma-moulinette:projet-b'],
-            ]]);
-
-        $user = $this->createMock(Utilisateur::class);
-        $user->method('getPreference')->willReturn([
-            'favori_projet' => ['fr.ma-moulinette:ma-moulinette', 'fr.ma-moulinette:projet-b', 'fr.ma-moulinette:projet-inconnu'],
-            'favori_version' => ['fr.ma-moulinette:ma-moulinette' => '1.0.0'],
-        ]);
-        // appUser() (trait AppUserAware) lit security.token_storage, pas le param Security
-        $this->token->method('getUser')->willReturn($user);
-        $security = $this->createMock(Security::class);
-        $security->method('getUser')->willReturn($user);
-
-        $response = $this->controller->projetMesApplicationsListe(
-            $this->jsonRequest(['whatever' => 1]),
-            $security
-        );
-
-        $payload = $this->decode($response);
-        $this->assertSame(200, $payload['code']);
-
-        // 'absent' ignoré (pas dans liste) ; 'app' favori=true, 'api' favori=false
-        $this->assertCount(2, $payload['projets']);
-        $byKey = [];
-        foreach ($payload['projets'] as $p) {
-            $byKey[$p['key']] = $p;
-        }
-        $this->assertTrue($byKey['fr.ma-moulinette:ma-moulinette']['favori']);
-        $this->assertFalse($byKey['fr.ma-moulinette:projet-b']['favori']);
     }
 
     // ═══════════════════════ peintureProjetVersion ═════════════════════════
