@@ -134,7 +134,7 @@ class ApiCollecteController extends AbstractController
                 'code' => $information['code'] ?? 500,
                 'type' => 'warning',
                 'message' => $information['message'] ?? $message,
-                'trace' => $information['erreur'] ?? $information['trace'] ?? self::$noData
+                'trace' => $information['erreur'] ?? $information['trace'] ?? null
             ], Response::HTTP_OK);
         }
 
@@ -243,7 +243,7 @@ class ApiCollecteController extends AbstractController
                 'code' => $mesure['code'],
                 'type' => 'error',
                 'message' => $mesure['message'] ?? $message,
-                'trace' => $mesure['erreur'] ?? $mesure['trace'] ?? self::$noData
+                'trace' => $mesure['erreur'] ?? $mesure['trace'] ?? null
             ], Response::HTTP_OK);
         }
 
@@ -335,7 +335,7 @@ class ApiCollecteController extends AbstractController
                 'code' => $owasp['code'],
                 'type' => 'error',
                 'message' => $owasp['message'] ?? $message,
-                'trace' => $owasp['erreur'] ?? $owasp['trace'] ?? self::$noData
+                'trace' => $owasp['erreur'] ?? $owasp['trace'] ?? null
             ], Response::HTTP_OK);
         }
 
@@ -431,7 +431,7 @@ class ApiCollecteController extends AbstractController
                 'code' => $hotspot['code'],
                 'type' => 'error',
                 'message' => $hotspot['message'] ?? $message,
-                'trace' => $hotspot['erreur'] ?? $hotspot['trace'] ?? self::$noData
+                'trace' => $hotspot['erreur'] ?? $hotspot['trace'] ?? null
             ], Response::HTTP_OK);
         }
 
@@ -530,7 +530,7 @@ class ApiCollecteController extends AbstractController
                 'code' => $anomalie['code'],
                 'type' => 'error',
                 'message' => $anomalie['message'] ?? $message,
-                'trace' => $anomalie['erreur'] ?? $anomalie['trace'] ?? self::$noData
+                'trace' => $anomalie['erreur'] ?? $anomalie['trace'] ?? null
             ], Response::HTTP_OK);
         }
 
@@ -645,7 +645,7 @@ class ApiCollecteController extends AbstractController
                 'code' => $anomalieDetail['code'],
                 'type' => 'error',
                 'message' => $anomalieDetail['message'] ?? $message,
-                'trace' => $anomalieDetail['erreur'] ?? $anomalieDetail['trace'] ?? self::$noData
+                'trace' => $anomalieDetail['erreur'] ?? $anomalieDetail['trace'] ?? null
             ], Response::HTTP_OK);
         }
 
@@ -740,7 +740,7 @@ class ApiCollecteController extends AbstractController
                 'code' => $hotspotOwasp['code'],
                 'type' => 'error',
                 'message' => $hotspotOwasp['message'] ?? $message,
-                'trace' => $hotspotOwasp['erreur'] ?? $hotspotOwasp['trace'] ?? self::$noData
+                'trace' => $hotspotOwasp['erreur'] ?? $hotspotOwasp['trace'] ?? null
             ], Response::HTTP_OK);
         }
 
@@ -835,7 +835,7 @@ class ApiCollecteController extends AbstractController
                 'code' => $hotspotDetail['code'],
                 'type' => 'error',
                 'message' => $hotspotDetail['message'] ?? $message,
-                'trace' => $hotspotDetail['erreur'] ?? $hotspotDetail['trace'] ?? self::$noData
+                'trace' => $hotspotDetail['erreur'] ?? $hotspotDetail['trace'] ?? null
             ], Response::HTTP_OK);
         }
 
@@ -925,7 +925,7 @@ class ApiCollecteController extends AbstractController
                 'code' => $noSonar['code'],
                 'type' => 'error',
                 'message' => $noSonar['message'] ?? $message,
-                'trace' => $noSonar['erreur'] ?? $noSonar['trace'] ?? self::$noData
+                'trace' => $noSonar['erreur'] ?? $noSonar['trace'] ?? null
             ], Response::HTTP_OK);
         }
 
@@ -1018,7 +1018,7 @@ class ApiCollecteController extends AbstractController
                 'code' => $todo['code'],
                 'type' => 'error',
                 'message' => $todo['message'] ?? $message,
-                'trace' => $todo['erreur'] ?? $todo['trace'] ?? self::$noData
+                'trace' => $todo['erreur'] ?? $todo['trace'] ?? null
             ], Response::HTTP_OK);
         }
 
@@ -1105,7 +1105,7 @@ class ApiCollecteController extends AbstractController
                 'code' => $actuatorInfo['code'],
                 'type' => 'error',
                 'message' => $actuatorInfo['message'] ?? $message,
-                'trace' => $actuatorInfo['erreur'] ?? $actuatorInfo['trace'] ?? self::$noData
+                'trace' => $actuatorInfo['erreur'] ?? $actuatorInfo['trace'] ?? null
             ], Response::HTTP_OK);
         }
 
@@ -1194,7 +1194,7 @@ class ApiCollecteController extends AbstractController
                 'code' => $logger['code'],
                 'type' => 'error',
                 'message' => $logger['message'] ?? $message,
-                'trace' => $logger['erreur'] ?? $logger['trace'] ?? self::$noData
+                'trace' => $logger['erreur'] ?? $logger['trace'] ?? null
             ], Response::HTTP_OK);
         }
 
