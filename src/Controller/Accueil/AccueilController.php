@@ -110,6 +110,7 @@ class AccueilController extends AbstractController
         return $this->countProfilSonar();
     }
 
+    /** @return array<int|string, mixed> */
     public function getGetProperties(): array
     {
         return $this->getProperties();
@@ -472,6 +473,7 @@ class AccueilController extends AbstractController
         ]);
 
         $listeProjet = '';
+        $desync = [];
 
         /** Si la liste de favoris pour les projets est activée et que le nombre de projet > 0  */
         if ($statutFavoriProjet === true && count($listeFavoriProjet) > 0) {
@@ -480,6 +482,17 @@ class AccueilController extends AbstractController
                 'nombre_projet_favori' => (int) $nombreProjetFavori,
             ];
             $listeProjet = $historiqueRepos->selectHistoriqueProjetFavori($map);
+
+            /**
+             * Désynchronisation : un projet favori des préférences peut ne plus exister
+             * dans l'historique (changement de serveur SonarQube, purge SQL). On calcule
+             * les clés maven présentes en préférence mais absentes de l'historique.
+             */
+            $mavenPresents = array_column((array) ($listeProjet['liste'] ?? []), 'mavenkey');
+            $desync = array_values(array_diff(
+                array_map('strval', $listeFavoriProjet),
+                array_map('strval', $mavenPresents)
+            ));
         } else {
             $map = [];
         }
@@ -488,42 +501,10 @@ class AccueilController extends AbstractController
             'code' => $listeProjet['code'] ?? 200,
             'statut' => $statutFavoriProjet,
             'liste_favori' => $listeProjet,
-            'nombre_projet' => count($listeFavoriProjet)
+            'nombre_projet' => count($listeFavoriProjet),
+            'desync' => $desync
         ], Response::HTTP_OK);
     }
-
-    /**
-     * [Description for construitMaRequest]
-     *
-     * @param array $liste
-     * @param array $maven_key
-     * @param integer $index
-     *
-     * @return string
-     *
-     * Created at: 14/06/2023, 16:06:05 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    public function construitMaRequest(array $liste, array $maven_key, int $index): string
-    {
-        //maven_key='fr.ma-moulinette:ma-moulinette' AND (version = '1.2.0-RELEASE' OR version = '1.2.1-RELEASE')
-        $m = $maven_key[0];
-        $l = "";
-        $maven_Key = "maven_key='" . $m . "'";
-        $version = "";
-
-        $versions = array_values($liste[$index]);
-        for ($v = 0; $v < count($versions[0]); $v++) {
-            $version = $version . " version='" . $versions[0][$v] . "' OR ";
-        }
-        $l = $l . ' ' . $maven_Key . ' AND (' . $version;
-
-        /** On supprime le dernier OR */
-        $rtrimOr = rtrim($l, " OR ");
-        return $rtrimOr . ')';
-    }
-
 
     /**
      * [Description for getListeFavoriVersion]
@@ -548,13 +529,19 @@ class AccueilController extends AbstractController
         $listeFavoriVersion = $preference['favori_version'];
 
         $liste = [];
+        $desync = [];
         /** Si la liste de favoris pour les versions est activée et que le nombre de projet > 0  */
         if ($statutFavoriVersion === true && count($listeFavoriVersion) > 0) {
             /** Structure attendue : [{maven_key: [version1, version2, ...]}, ...] */
             foreach ($listeFavoriVersion as $entry) {
                 $mavenKey = (string) array_key_first($entry);
                 $versions = array_map('strval', (array) $entry[$mavenKey]);
-                $liste[] = $historiqueRepos->getProjetFavori($mavenKey, $versions);
+                $resultat = $historiqueRepos->getProjetFavori($mavenKey, $versions);
+                $liste[] = $resultat;
+                /** Aucune version d'historique remontée pour ce favori → désynchronisé. */
+                if (empty($resultat['version'])) {
+                    $desync[] = $mavenKey;
+                }
             }
         }
 
@@ -562,9 +549,41 @@ class AccueilController extends AbstractController
             'code' => 200,
             'statut' => $statutFavoriVersion,
             'liste_version' => $liste,
-            'nombre_projet' => count($listeFavoriVersion)
+            'nombre_projet' => count($listeFavoriVersion),
+            'desync' => $desync
         ];
         return new JsonResponse($data, Response::HTTP_OK);
+    }
+
+    /**
+     * [Description for flashDesyncFavori]
+     * Signale à l'utilisateur une désynchronisation : un ou plusieurs favoris présents
+     * dans ses préférences n'ont plus de correspondance dans l'historique (changement de
+     * serveur SonarQube ou purge SQL). On l'oriente vers les deux corrections possibles :
+     * relancer une collecte du projet, ou retirer le favori depuis la page Préférences.
+     *
+     * @param array<int, string> $orphelins Clés maven orphelines.
+     *
+     * @return void
+     *
+     * Created at: 14/07/2026 09:59:01 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function flashDesyncFavori(array $orphelins): void
+    {
+        if ($orphelins === []) {
+            return;
+        }
+
+        $this->addFlash('notice', [
+            'type' => 'warning',
+            'message' => sprintf(
+                "⚠️ Favori désynchronisé — absent de l'historique : %s. "
+                . "\nRelancez une collecte de ce projet, ou retirez-le depuis la page Préférences.",
+                implode(', ', $orphelins)
+            ),
+        ]);
     }
 
     /**
@@ -614,9 +633,16 @@ class AccueilController extends AbstractController
             'public',
             'private',
             'nombre_projet_local',
-            'nombre_tag',
-            'version_serveur_sonar'
+            'nombre_tag'
         ], 0);
+
+        /**
+         * La version du serveur SonarQube est un texte, pas un compteur : on lui
+         * donne un défaut « inconnu » explicite (et non 0), écrasé plus bas si
+         * l'appel aboutit. Ainsi les retours anticipés (properties en erreur ou
+         * SonarQube injoignable) affichent « Inconnu » au lieu d'un « 0 » trompeur.
+         */
+        $render['version_serveur_sonar'] = 'Version inconnue.';
 
         /** Le tableau des properties et il y a un code 500 */
         if (!empty($properties) && array_key_exists('code', $properties) && $properties['code'] !== 200) {
@@ -642,12 +668,12 @@ class AccueilController extends AbstractController
         ) {
             $this->logger->info('[Accueil] ℹ️ Vérification projet requise.');
             /** On récupère le nombre de projet depuis le serveur sonar */
-            $projetSonar = static::getCountProjetSonar();
+            $projetSonar = $this->getCountProjetSonar();
             if ($projetSonar === -1) {
                 return $this->render(self::$page, $render);
             }
             /** On récupère le nombre de projet en base */
-            $projetBd = static::getCountProjetBD();
+            $projetBd = $this->getCountProjetBD();
             $dateVerificationProjet = true;
         } else {
             /** Sinon, on récupère les valeurs de la table de properties */
@@ -665,10 +691,10 @@ class AccueilController extends AbstractController
         ) {
             $this->logger->info('[Accueil] ℹ️ Vérification profil requise.');
             /** On récupère le nombre de profil en base. */
-            $profilBd = static::getCountProfilBD();
+            $profilBd = $this->getCountProfilBD();
 
             /** On récupère le nombre de projet depuis le serveur sonar */
-            $profilSonar = static::getCountProfilSonar();
+            $profilSonar = $this->getCountProfilSonar();
 
             if ($profilSonar === -1) {
                 return $this->render(self::$page, $render);
@@ -738,7 +764,7 @@ class AccueilController extends AbstractController
 
         /** 6 - VERSION  */
         /** On récupère le numero de version en base et de l'application*/
-        $versionBd = self::getGetVersion();
+        $versionBd = $this->getGetVersion();
         $versionApp = $this->getParameter('version');
 
         /** si la dernière version en base est inférieure, on renvoie une alerte ; */
@@ -764,10 +790,12 @@ class AccueilController extends AbstractController
             $favori = $favoriProjet->liste_favori;
             $nombreProjet = $favoriProjet->nombre_projet;
             $composant = 'projet';
+            $this->flashDesyncFavori((array) ($favoriProjet->desync ?? []));
         } elseif ($favoriVersion->statut && $favoriVersion->code !== 500) {
             $favori = $favoriVersion->liste_version;
             $nombreProjet = $favoriVersion->nombre_projet;
             $composant = 'version';
+            $this->flashDesyncFavori((array) ($favoriVersion->desync ?? []));
         } else {
             $nombreProjet = 0;
             $favori = [];
@@ -775,7 +803,7 @@ class AccueilController extends AbstractController
         }
 
         /** On récupère la version du serveur SonarQube */
-        $sonar_version = self::getSonarQubeVersion();
+        $sonar_version = $this->getSonarQubeVersion();
 
         /** On récupère le rôle de l'utilisateur  */
         $refreshBD = $this->isGranted('ROLE_GESTIONNAIRE');
