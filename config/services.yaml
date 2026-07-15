@@ -54,6 +54,11 @@ parameters:
     env(MAMOUL_CLI_PROXY_USER_PWD): 'utilisateur:motdepasse'
     env(MAMOUL_CLI_NO_PROXY): 'localhost,127.0.0.1'
 
+    # Domaine de repli utilisé pour reconstruire l'adresse à partir d'un identifiant
+    # court (« prenom.nom ») lors de l'authentification. Valeur de démonstration :
+    # à surcharger via LDAP_UPN_SUFFIX en .env.local sur une instance réelle.
+    env(LDAP_UPN_SUFFIX): '@ma-moulinette.fr'
+
     # Gestion des projets et profils
     maj.projet: '%env(MAJ_PROJET)%'
     maj.profil: '%env(MAJ_PROFIL)%'
@@ -170,6 +175,12 @@ services:
                     referrals: false
                     network_timeout: 3
                     x_tls_require_cert: '%env(LDAP_X_TLS_REQUIRE_CERT)%'
+
+    # Domaine de repli LDAP injecté explicitement (plus aucune valeur codée en dur
+    # dans CustomAuthenticator) — voir env(LDAP_UPN_SUFFIX) ci-dessus.
+    App\Security\CustomAuthenticator:
+        arguments:
+            $ldapUpnSuffix: '%env(LDAP_UPN_SUFFIX)%'
 
     # MODIF 2026-06-03 : unification MAMOUL_CLI_* + injection RunMoulinetteCollecteCommand.
     App\Command\Prod\UpdateSonarqubeTagsCommand:
