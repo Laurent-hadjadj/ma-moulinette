@@ -45,6 +45,7 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
         private RouterInterface $router,
         private LoggerInterface $logger,
         private Ldap $ldap,
+        private string $ldapUpnSuffix,
     ) {
     }
 
@@ -75,7 +76,9 @@ class CustomAuthenticator extends AbstractLoginFormAuthenticator
             $samAccountName = strstr($login, '@', true);
         } else {
             $samAccountName = $login;
-            $courriel = $login . ($_ENV['LDAP_UPN_SUFFIX'] ?? '@ma-moulinette.fr');
+            // Domaine de repli injecté via configuration (LDAP_UPN_SUFFIX) : plus de
+            // valeur codée en dur, chaque instance paramètre son propre domaine.
+            $courriel = $login . $this->ldapUpnSuffix;
         }
 
         $this->logger->info('[AUTH] ℹ️ Login normalisé', [
