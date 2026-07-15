@@ -448,7 +448,7 @@ const projetMesure = async function (maven_key) {
   } catch (error) {
     const trace = prepareTechnicalDetails(error);
     const message = "Une erreur inattendue s'est produite lors de la phase 02.";
-    showMessage('alert', message, trace);
+    showMessage('critical', message, trace);
     sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 02');
     log(` - ❌ (02) Collecte des mesures en échec.`);
     errorButton($boutonCollecteIndicateur, aria_label);
@@ -540,7 +540,7 @@ const projetOwasp = async function (maven_key) {
   } catch (error) {
     const trace = prepareTechnicalDetails(error);
     const message = "Une erreur inattendue s'est produite lors de la phase 04.";
-    showMessage('alert', message, trace);
+    showMessage('critical', message, trace);
     sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 04');
     log(' - ❌ (03) Collecte des menaces OWASP en échec.');
     errorButton($boutonCollecteIndicateur, aria_label);
@@ -617,7 +617,7 @@ const projetHotspot = async function (maven_key) {
   } catch (error) {
     const trace = prepareTechnicalDetails(error);
     const message = "Une erreur inattendue s'est produite lors de la phase 05.";
-    showMessage('alert', message, trace);
+    showMessage('critical', message, trace);
     sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 05');
     log(' - ❌ (04) Collecte des menaces potentielles en échec.');
     errorButton($boutonCollecteIndicateur, aria_label);
@@ -686,7 +686,7 @@ const projetAnomalie = async function (maven_key) {
   } catch (error) {
     const trace = prepareTechnicalDetails(error);
     const message = "Une erreur inattendue s'est produite lors de la phase 06.";
-    showMessage('alert', message, trace);
+    showMessage('critical', message, trace);
     sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 06');
     log(' - ❌ (05) Collecte des anomalies en échec.');
     errorButton($boutonCollecteIndicateur, aria_label);
@@ -753,7 +753,7 @@ const projetAnomalieDetails = async function (maven_key) {
   } catch (error) {
     const trace = prepareTechnicalDetails(error);
     const message = "Une erreur inattendue s'est produite lors de la phase 07.";
-    showMessage('alert', message, trace);
+    showMessage('critical', message, trace);
     sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 07');
     log(` - ❌ (06) Je n'ai pas réussi à collecter les données.`);
     errorButton($boutonCollecteIndicateur, aria_label);
@@ -844,7 +844,7 @@ const projetHotspotOwasp = async function (maven_key, menace) {
   } catch (error) {
     const trace = prepareTechnicalDetails(error);
     const message = "Une erreur inattendue s'est produite lors de la phase 08/09.";
-    showMessage('alert', message, trace);
+    showMessage('critical', message, trace);
     sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 08/09');
     log(` - ❌ (08/09) Collecte des menaces potentielles Owasp en échec.`);
     errorButton($boutonCollecteIndicateur, aria_label);
@@ -915,7 +915,7 @@ const projetHotspotOwaspDetails = async function (maven_key) {
   } catch (error) {
     const trace = prepareTechnicalDetails(error);
     const message = "Une erreur inattendue s'est produite lors de la phase 10.";
-    showMessage('alert', message, trace);
+    showMessage('critical', message, trace);
     sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 10');
     log(` - ❌ (09) Collecte des informations détaillées pour les hotspots en échec.`);
     errorButton($boutonCollecteIndicateur, aria_label);
@@ -996,7 +996,7 @@ const projetNoSonar = async function (maven_key) {
   } catch (error) {
     const trace = prepareTechnicalDetails(error);
     const message = "Une erreur inattendue s'est produite lors de la phase 11.";
-    showMessage('alert', message, trace);
+    showMessage('critical', message, trace);
     sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 11');
     log(` - ❌ (10) Collecte des annotations NoSonar/SuppressWarning en échec.`);
     errorButton($boutonCollecteIndicateur, aria_label);
@@ -1075,7 +1075,7 @@ const projetTodo = async function (maven_key) {
   } catch (error) {
     const trace = prepareTechnicalDetails(error);
     const message = "Une erreur inattendue s'est produite lors de la phase 12.";
-    showMessage('alert', message, trace);
+    showMessage('critical', message, trace);
     sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 12');
     log(` - ❌ (11) Collecte des commentaires Todo.`);
     errorButton($boutonCollecteIndicateur, aria_label);
@@ -1160,7 +1160,7 @@ const projetLogger = async function (maven_key) {
   } catch (error) {
     const trace = prepareTechnicalDetails(error);
     const message = "Une erreur inattendue s'est produite lors de la phase 13.";
-    showMessage('alert', message, trace);
+    showMessage('critical', message, trace);
     sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 13');
     log(` - ❌ (12) Collecte des Loggers en échec.`);
     errorButton($boutonCollecteIndicateur, aria_label);
@@ -1337,8 +1337,8 @@ $('.js-analyse').on('click', function () {
   const roles = JSON.parse(userRating.dataset.user);
   const $boutonCollecteIndicateur = $('.js-analyse');
 
-  if (!roles.includes('ROLE_COLLECTE') && !roles.includes('ROLE_BATCH') && !roles.includes('ROLE_GESTIONNAIRE')) {
-    showMessage('alert', 'Vous devez avoir au moins le rôle COLLECTE pour lancer la collecte des données.');
+  if (!roles.includes('ROLE_COLLECTE')) {
+    showMessage('error', 'Vous devez avoir au moins le rôle COLLECTE pour lancer la collecte des données.');
     return;
   }
 
@@ -1470,8 +1470,8 @@ $('.js-enregistrement').on('click', () => {
   const userRating = document.querySelector('.js-user-rating');
   const roles = JSON.parse(userRating.dataset.user);
 
-  if (!roles.includes('ROLE_COLLECTE') && !roles.includes('ROLE_BATCH') && !roles.includes('ROLE_GESTIONNAIRE')) {
-    showMessage('alert', `Vous devez avoir au moins le rôle COLLECTE pour lancer la commande d'enregistrement (Erreur 403).`);
+  if (!roles.includes('ROLE_COLLECTE')) {
+    showMessage('error', `Vous devez avoir au moins le rôle COLLECTE pour lancer la commande d'enregistrement (Erreur 403).`);
     return;
   }
 
@@ -1594,6 +1594,17 @@ $('.js-repartition-module').on('click', () => {
 /******************************************************/
 /***                  Les modales                     */
 /******************************************************/
+/**
+ * description
+ * Aide sur le calcul de la complexité cyclomatique/cognitive (bloc Projet).
+ */
+$('#bouton-ouvrir-information-complexity').on('click', function () {
+  modalSafe.open('#modal-information-complexity');
+});
+$('#bouton-fermer-information-complexity').on('click', function () {
+  modalSafe.close('#modal-information-complexity');
+});
+
 /**
  * description
  * On affiche la liste des types d'anomalies par sévérité.
