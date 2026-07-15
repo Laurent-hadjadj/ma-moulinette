@@ -15,7 +15,6 @@ namespace App\Controller\Projet;
 
 use App\Controller\Traits\AppUserAware;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\{JsonResponse, Response, Request};
 use \Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
@@ -121,109 +120,6 @@ class ApiPeintureController extends AbstractController
         ];
     }
 
-    /**
-     * [Description for projetMesApplicationsListe]
-     * Récupère la liste des projets que j'ai visité et ceux en favori
-     *
-     * @param Request $request
-     * @param Security $security
-     *
-     * @return JsonResponse
-     *
-     * Created at: 15/12/2022, 21:51:40 (Europe/Paris)
-     * @author    Laurent HADJADJ <laurent_h@me.com>
-     * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-     */
-    #[Route('/api/secure/projet/mes-applications/liste', name: 'projet_mes_applications_liste', methods: ['POST'])]
-    public function projetMesApplicationsListe(Request $request, Security $security): JsonResponse
-    {
-        $this->logger->info("[API] 📥 Requête reçue sur /api/projet/mes-applications/liste");
-
-        /** On instancie l'entityRepository */
-        $anomalieRepos = $this->em->getRepository(Anomalie::class);
-
-        /** On décode le body */
-        $data = json_decode($request->getContent());
-        /** On teste si la clé est valide */
-        if ($data === null) {
-            $this->logger->error(
-                "[Collecte] ❌ Requête invalide : clé 'data', manquante ou JSON mal formé.",
-                ['payload' => self::$noData]
-            );
-
-            return new JsonResponse([
-                'data' => $data,
-                'code' => 400,
-                'type' => 'error',
-                'message' => self::$erreur400
-            ], Response::HTTP_OK);
-        }
-
-        /**
-         * On récupère la liste des projets ayant déjà fait l'objet d'une analyse.
-         * On n'utilise plus le critère liste = TRUE/FALSE car on utilise les préférences
-         * de l'utilisateur. ex. "de.merv:2048"
-         */
-        $request = $anomalieRepos->selectAnomalieByProjectName();
-
-        if ($request['code'] !== 200) {
-            $this->logger->error('[Collecte-Peinture] ❌ Échec de la requête selectAnomalieByProjectName.', [
-                'code' => $request['code'],
-                'erreur' => $request['erreur'] ??  self::$noData
-            ]);
-
-            return new JsonResponse([
-                'code' => $request['code'],
-                'type' => 'warning',
-                'message' => "La récupération des données du projet a échouée (Erreur {$request['code']}).",
-                'trace' => $request['erreur'] ??  self::$noData
-            ], Response::HTTP_OK);
-        }
-
-        /** Si on a pas trouvé d'application. */
-        if (empty($request['liste'])) {
-            $this->logger->info('[Collecte-Peinture] 📌 La liste des anomalies est vide.');
-
-            return new JsonResponse([
-                'code' => 406,
-                'type' => 'primary',
-                'message' => self::$erreur404,
-                'trace' => null
-            ], Response::HTTP_OK);
-        }
-
-        /** On récupère l'objet User du contexte de sécurité */
-        $preference = $this->appUser()->getPreference();
-
-        /**
-         * Pour chaque projet de la liste de préférence,
-         * on regarde si le projet a déjà fait l'objet d'une analyse
-         * et si le projet est en favori.
-         */
-        $mesProjets = $preference['favori_projet'];
-        $mesFavoris = $preference['favori_version'];
-        $projets = [];
-
-        //projet : "fr.ma-moulinette:mon-application"
-        //request['liste'] : ["key" => "fr.ma-moulinette:mon-application"]
-        foreach ($mesProjets as $projet) {
-            if (in_array(['key' => $projet], $request['liste'])) {
-                $t = explode(':', $projet);
-                array_push(
-                    $projets,
-                    [
-                        'key' => $projet,
-                        'name' => $t[1],
-                        'favori' => array_key_exists($projet, $mesFavoris)
-                    ]
-                );
-            }
-        }
-        return new JsonResponse([
-            'code' => 200,
-            'projets' => $projets
-        ], Response::HTTP_OK);
-    }
 
     /**
      * [Description for peintureProjetVersion]
