@@ -110,16 +110,36 @@ class ApiActivityControllerTest extends TestCase
             'code' => 200, 'request' => ['max_time' => 120],
         ]);
 
+        // selectActivity() renvoie la clé 'liste' : vide au 1er appel → insert.
         $this->historiqueRepo->method('selectActivity')->willReturnOnConsecutiveCalls(
-            ['request' => []],
-            ['request' => [['date_enregistrement' => '2026-01-15 10:00:00']]],
+            ['liste' => []],
+            ['liste' => [['date_enregistrement' => '2026-01-15 10:00:00']]],
         );
-        $this->historiqueRepo->expects($this->once())->method('insertHistoriqueActivity');
+
+        $captured = null;
+        $this->historiqueRepo->expects($this->once())
+            ->method('insertHistoriqueActivity')
+            ->willReturnCallback(function (array $data) use (&$captured): array {
+                $captured = $data;
+                return ['code' => 200];
+            });
 
         $response = $this->controller->sauvegardeHistorique();
         $data = json_decode($response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
+
+        // ── Régression sur les 4 bugs de calcul corrigés le 2026-07-15 ──
+        $annee = array_key_first($captured);
+        // 1) La colonne « Analyse » conserve le TOTAL (50), elle n'est plus écrasée par un ratio.
+        $this->assertSame(50, $captured[$annee]['analyse']);
+        // 2) Le nombre d'échecs est sous la clé 'failed' (binding repository), plus 'fail'.
+        $this->assertSame(45, $captured[$annee]['failed']);
+        $this->assertArrayNotHasKey('fail', $captured[$annee]);
+        // 3) Taux = succès/total = 45/50 = 90 % (borné à 100 %), plus l'inverse.
+        $this->assertSame(90.0, $captured[$annee]['success_rate']);
+        // 4) La moyenne d'analyses par jour a sa propre colonne.
+        $this->assertArrayHasKey('analyse_average', $captured[$annee]);
     }
 
     public function testSauvegardeUpdatesHistoriqueOnSubsequentCall(): void
@@ -139,9 +159,10 @@ class ApiActivityControllerTest extends TestCase
             'code' => 200, 'request' => ['max_time' => 200],
         ]);
 
+        // selectActivity() renvoie la clé 'liste' : non vide au 1er appel → update.
         $this->historiqueRepo->method('selectActivity')->willReturnOnConsecutiveCalls(
-            ['request' => [['year' => '2026']]],
-            ['request' => [['date_enregistrement' => '2026-04-24 11:00:00']]],
+            ['liste' => [['year' => '2026']]],
+            ['liste' => [['date_enregistrement' => '2026-04-24 11:00:00']]],
         );
         $this->historiqueRepo->expects($this->once())->method('updateHistoriqueActivity');
 
