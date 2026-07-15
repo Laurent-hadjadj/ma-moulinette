@@ -15,6 +15,7 @@ namespace App\Controller\Activity;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Psr\Log\LoggerInterface;
@@ -95,6 +96,7 @@ class ActivityController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/activity', name: 'activity', methods: 'GET')]
+    #[IsGranted('ROLE_ACTIVITY')]
     public function index(): Response
     {
         $this->tracking->track('ACTIVITY');
@@ -113,7 +115,7 @@ class ActivityController extends AbstractController
             'day' => '---',
             'analyse' => '---',
             'success' => '---',
-            'fail' => '---',
+            'failed' => '---',
             'max_time' => '---',
             'analyse_average' => '---',
             'success_rate' => '---',
@@ -123,8 +125,8 @@ class ActivityController extends AbstractController
         $render = $this->genericRender();
         $render['data'] = [$data];
 
-        /** On récupère la dernière task */
-        $url = $this->getParameter(self::$sonarUrl);
+        /** On récupère la dernière task (rtrim : éviter un double slash si SONAR_URL finit par « / ») */
+        $url = rtrim($this->getParameter(self::$sonarUrl), '/');
         $queryParams = ['ps' => 1];
         $result = $this->client->httpActivity("$url/api/ce/activity?" . http_build_query($queryParams));
 
@@ -160,7 +162,7 @@ class ActivityController extends AbstractController
             // Ajoute un message flash pour informer l'utilisateur que la liste des analyses est vide pour l'année courante.
             $this->addFlash('notice', [
                 'type' => 'warning',
-                'message' => "⚠️ La liste des analyses SonarQube est vide. Veuillez rafraîchir la liste."
+                'message' => "⚠️ Aucune analyse en base pour cette année. La collecte automatique (cron « app:activity:collecte ») alimentera la table."
             ]);
             return $this->render(self::$page, $render);
         }
@@ -178,13 +180,29 @@ class ActivityController extends AbstractController
         $dateBase = new \DateTime($dernierDate['liste']['date']);
         $dateSonar = new \DateTime($result['json']['tasks'][0]['executedAt']);
 
+        /**
+         * Si l'historique agrégé n'a pas encore été généré (table activity_historique
+         * vide), on affiche UN SEUL message d'action — pas une erreur — et on s'arrête.
+         * On n'affiche pas la comparaison de fraîcheur ci-dessous, qui prêterait à
+         * confusion (« à jour » alors qu'aucun tableau n'existe encore).
+         */
+        $listeHistorique = $activityHistoriqueRepos->selectActivity();
+        if (empty($listeHistorique['liste'])) {
+            $this->addFlash('notice', [
+                'type' => 'primary',
+                'message' => "📊 Aucune statistique n'a encore été générée. Cliquez sur « Recalculer les statistiques » pour construire le tableau."
+            ]);
+            return $this->render(self::$page, $render);
+        }
+
         /** Si SonarQube contient des nouvelles tâches */
         if ($dateSonar > $dateBase) {
-            // Ici on calcule l'interval de jour entre la base et sonar
-            $interval = $dateBase->diff($dateSonar)->format('%d');
+            // Écart en jours TOTAUX (%a) entre la base et SonarQube.
+            $interval = $dateBase->diff($dateSonar)->format('%a');
+            // La collecte n'est plus déclenchable depuis l'UI : message purement informatif.
             $this->addFlash('notice', [
                 'type' => 'warning',
-                'message' => "⚠️ Vous pouvez mettre à jour la liste des analyses SonarQube. Il y a " . $interval . " jours de retard."
+                'message' => "⏳ SonarQube a des analyses plus récentes que la base (" . $interval . " jours d'écart). La collecte automatique quotidienne les intégrera."
             ]);
         }
 
@@ -196,20 +214,9 @@ class ActivityController extends AbstractController
             ]);
         }
 
-        /** On récupère la listes des données statistiques. On suppose que la mise à jour a été faite. */
-        $listeHistorique = $activityHistoriqueRepos->selectActivity();
-        if (empty($listeHistorique['liste'])) {
-            $this->addFlash('notice', [
-                'type' => 'error',
-                'message' => "❌ L'historique n'a pas correctement été initialisé pour cette année."
-            ]);
-            return $this->render(self::$page, $render);
-        }
-
-        /** Pour chaque durée d'execution on converti les secondes en h:m:s */
+        /** Pour chaque durée d'execution on convertit les secondes (int) en h:m:s */
         for ($i = 0; $i < count($listeHistorique['liste']); $i++) {
-            $maxTime = new \DateTimeImmutable($listeHistorique['liste'][$i]['max_time']);
-            $listeHistorique['liste'][$i]['max_time'] = $maxTime->format('H:i:s');
+            $listeHistorique['liste'][$i]['max_time'] = gmdate('H:i:s', (int) $listeHistorique['liste'][$i]['max_time']);
         }
 
         /** On formate la date d'enregistrement (depuis l'historique BDD, pas $result qui est l'API SonarQube) */
