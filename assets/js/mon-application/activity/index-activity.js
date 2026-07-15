@@ -87,7 +87,7 @@ const refreshActivity=async function() {
         // 204 (aucune donnée à agréger) ou 500 (échec d'écriture) : on affiche le message
         // du serveur au lieu d'un « Aucune donnée disponible » trompeur.
         if (t.code !== http_200) {
-          showMessage(t.type || 'alert', t.message || 'Impossible de générer les statistiques.');
+          showMessage(t.type || 'error', t.message || 'Impossible de générer les statistiques.');
           return;
         }
 
@@ -257,7 +257,7 @@ const dessineGraph = async function(type, source) {
       return;
     }
     if (t.code !== http_200 || !t.listeDonnee?.request) {
-      showMessage('alert', `Impossible de récupérer les données du graphique (Erreur ${t.code || 500}).`);
+      showMessage('error', `Impossible de récupérer les données du graphique (Erreur ${t.code || 500}).`);
       return;
     }
 
