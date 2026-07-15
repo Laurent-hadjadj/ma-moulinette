@@ -47,9 +47,15 @@ Statut: Programmé
 Nombre Projet: Projets
 
 # Actuator
+label.actuator.nom_application: Nom de l'application
+label.actuator.maven_key: Clé Maven
+label.actuator.personne: Responsable (prénom, nom)
 label.actuator.url: URL du serveur
 label.actuator.user: Nom de l'utilisateur
 label.actuator.password: Mot de passe de l'utilisateur
+placeholder.actuator.nom_application: Mon Application
+placeholder.actuator.maven_key: fr.ma-moulinette:mon-application
+placeholder.actuator.personne: Jean Dupont
 placeholder.actuator.url: http://ma-moulinette.fr
 placeholder.actuator.user: actuator
 placeholder.actuator.password: change-me
