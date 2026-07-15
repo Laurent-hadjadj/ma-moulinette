@@ -47,27 +47,26 @@
           <strong>Dernière date d'enregistrement : </strong> {{data[0]['date_enregistrement']}}
       </p>
 
-      <div class="grid-x grid-padding-x">
-        <div class="cell small-12 medium-6 large-6">
-          <button class="button expanded float-center bouton-activity-refresh js-activity-refresh" aria-label="Met à jour la liste.">
-            <span class="show-for-medium open-sans color-blanc">Mise à jour de la liste.</span>
-            <span class="show-for-small-only open-sans color-blanc">Mise à jour.</span>
-          </button>
+      <div class="grid-x grid-margin-x align-right margin-top-2">
+        <div class="cell shrink">
+          <button id="bouton-activity-refresh"
+                  class="button open-sans focus-light js-activity-refresh"
+                  type="button"
+                  aria-label="Recalcule les statistiques d'activité."><span aria-hidden="true">🔄</span>
+                  <span class="show-for-medium open-sans color-blanc">&nbsp;Recalculer les statistiques.</span>
+                  <span class="show-for-small-only open-sans color-blanc">&nbsp;Recalculer.</span>
+            </button>
+          </div>
+        </div>
           <div class="spinner js-spinner" style="display: none;"></div>
         </div>
-        <div class="small-12 medium-6 large-6 cell">
-          <button class="button expanded float-center bouton-activity-du-jour" aria-label="Affiche les données du jour.">
-            <span class="show-for-medium open-sans color-blanc">Affiche les données du jour.</span>
-            <span class="show-for-small-only open-sans color-blanc">Données du jour.</span>
-          </button>
-        </div>
       </div>
-      <br>
+
       <table class="hover">
         <thead>
           <tr>
             <th class="text-center open-sans">
-              <span class="tool-tip-activity"><span class="tool-tip-activity-text-top">L'année des analyses.</span>Année</span>
+              <div class="tool-tip-activity"><span class="tool-tip-activity-text-top">L'année des analyses.</span>Année</div>
             </th>
             <th class="text-center open-sans">
               <span class="tool-tip-activity"><span class="tool-tip-activity-text-top">Le nombre de jours depuis la première analyse.</span>Jour</span>
@@ -106,7 +105,7 @@
               <td>{{ item.analyse }}</td>
               <td>{{ item.analyse_average }}</td>
               <td>{{ item.success }}</td>
-              <td>{{ item.fail }}</td>
+              <td>{{ item.failed }}</td>
               <td>{{ item.success_rate }} %</td>
               <td>{{ item.max_time }}</td>
             </tr>
@@ -114,20 +113,45 @@
         </tbody>
       </table>
 
-      <div class="grid-x grid-padding-x">
-        <div class="cell small-12 medium-4">
-          <p class="button expanded bouton-activity-graph js-show-graph" data-type="line" data-source="analyse" id="courbe_analyse">Courbes des analyses</p>
+      <div class="grid-x grid-margin-x margin-top-2">
+        <div class="cell shrink">
+          <button id="bouton-courbe-analyse"
+                  class="button open-sans focus-light js-show-graph"
+                  type="button"
+                  data-type="line" data-source="analyse"
+                  aria-label="Tracer la courbe des analyses par jour.">
+                  <span aria-hidden="true">📈</span>
+                  <span class="show-for-medium open-sans color-blanc">&nbsp;Courbes des analyses</span>
+                  <span class="show-for-small-only open-sans color-blanc">&nbsp;Analyses</span>
+            </button>
         </div>
-        <div class="cell small-12 medium-4">
-          <p class="button expanded bouton-activity-graph js-show-graph" data-type="line" data-source="projet" id="courbe_projet">Courbes des projets</p>
+        <div class="cell shrink">
+            <button id="bouton-courbe-projet"
+                    class="button open-sans focus-light js-show-graph"
+                    type="button"
+                    data-type="line" data-source="projet"
+                    aria-label="Tracer la courbe des projets par jour">
+                    <span aria-hidden="true">📊</span>
+                    <span class="show-for-medium open-sans color-blanc">&nbsp;Courbes des projets</span>
+                    <span class="show-for-small-only open-sans color-blanc">&nbsp;Projets</span>
+            </button>
         </div>
-        <div class="cell small-12 medium-4">
-          <p class="button expanded bouton-activity-graph js-show-graph open-sans" data-type="line" data-source="projet_analyse" id="courbe_analyse_projet">Courbe des analyses et des projets</p>
+        <div class="cell shrink">
+          <button id="bouton-courbe-analyse-projet"
+                  class="button open-sans focus-light js-show-graph"
+                  type="button"
+                  data-type="line" data-source="projet_analyse"
+                  aria-label="Tracer la courbe des analyses et des projets par jour">
+                  <span aria-hidden="true">📉</span>
+                    <span class="show-for-medium open-sans color-blanc">&nbsp;Analyses | Projets</span>
+                    <span class="show-for-small-only open-sans color-blanc">&nbsp;Comparaison</span>
+          </button>
         </div>
       </div>
 
+
       <div class="float-center graphique-langage-container">
-        <canvas id="graphique-langage" aria-label="Distribution des langages."></canvas>
+        <canvas id="graphique-langage" aria-label="Graphique des analyses et projets par jour."></canvas>
       </div>
 
     </main>
