@@ -51,7 +51,13 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 class ActivityCollecteCommand extends Command
 {
     private const DEFAULT_WINDOW_DAYS = 7;
+    // Profondeur de backfill par défaut quand la base est vide (≈ 3 ans) : on balaie
+    // tout l'historique disponible côté SonarQube, borné par sa rétention.
+    private const DEFAULT_INIT_DAYS = 1096;
     private const DATE_TIME = 'Y-m-d H:i:s';
+    // Format attendu par l'API SonarQube pour minSubmittedAt/maxExecutedAt :
+    // ISO 8601 avec offset de timezone (ex. 2026-07-08T00:00:00+0200), sinon 400.
+    private const DATE_TIME_API = 'Y-m-d\TH:i:sO';
 
     public function __construct(
         private readonly ActivityRepository $activityRepository,
@@ -91,6 +97,12 @@ class ActivityCollecteCommand extends Command
                 InputOption::VALUE_REQUIRED,
                 'Largeur max de chaque fenêtre de rattrapage (jours).',
                 self::DEFAULT_WINDOW_DAYS
+            )
+            ->addOption(
+                'init-days', null,
+                InputOption::VALUE_REQUIRED,
+                'Profondeur du backfill quand la base est vide (jours d\'historique à balayer).',
+                self::DEFAULT_INIT_DAYS
             )
             ->addOption(
                 'page-size', null,
@@ -144,10 +156,19 @@ class ActivityCollecteCommand extends Command
                 $from     = $lastDate->modify('+1 day')->setTime(0, 0, 0);
                 $io->text(sprintf('Dernière date connue : %s', $lastDate->format(self::DATE_TIME)));
             } else {
+                // Base vide : on part de la date la plus éloignée (backfill) pour tout
+                // récupérer, et non de la seule fenêtre de rattrapage. Le découpage en
+                // sous-fenêtres de $windowDays jours (ci-dessous) maintient chaque requête
+                // sous le plafond des 10 000 résultats de l'API SonarQube.
+                $initDays = max(1, (int) $input->getOption('init-days'));
                 $from = (new \DateTimeImmutable('yesterday', $tz))
-                    ->modify('-' . ($windowDays - 1) . ' days')
+                    ->modify('-' . ($initDays - 1) . ' days')
                     ->setTime(0, 0, 0);
-                $io->text('Aucune donnée en base — initialisation sur ' . $windowDays . ' jours.');
+                $io->text(sprintf(
+                    'Aucune donnée en base — backfill de l\'historique sur %d jours (fenêtres de %d j).',
+                    $initDays,
+                    $windowDays
+                ));
             }
 
             $to = $yesterday;
@@ -172,16 +193,27 @@ class ActivityCollecteCommand extends Command
         ];
 
         foreach ($windows as [$winFrom, $winTo]) {
-            $fromStr = $winFrom->format(self::DATE_TIME);
-            $toStr   = $winTo->format(self::DATE_TIME);
-            $io->section(sprintf('Fenêtre : %s → %s', $fromStr, $toStr));
+            // Affichage lisible (heure locale).
+            $io->section(sprintf(
+                'Fenêtre : %s → %s',
+                $winFrom->format(self::DATE_TIME),
+                $winTo->format(self::DATE_TIME)
+            ));
 
             if ($dryRun) {
                 $io->text('[dry-run] pas d\'appel API.');
                 continue;
             }
 
-            $result = $this->collectWindow($fromStr, $toStr, $pageSize, $io, $infos, $allErrors);
+            // SonarQube exige un datetime ISO 8601 avec offset (sinon 400 « cannot be parsed »).
+            $result = $this->collectWindow(
+                $winFrom->format(self::DATE_TIME_API),
+                $winTo->format(self::DATE_TIME_API),
+                $pageSize,
+                $io,
+                $infos,
+                $allErrors
+            );
             $totals['tasks']    += $result['tasks'];
             $totals['inserted'] += $result['inserted'];
             $totals['skipped']  += $result['skipped'];
@@ -251,6 +283,7 @@ class ActivityCollecteCommand extends Command
     }
 
     /**
+     * [Description for collectWindow]
      * Collecte et persiste les tâches pour une fenêtre [fromDate, toDate].
      *
      * @param array<string, mixed> $infos  (passage par référence pour le rapport)
@@ -271,7 +304,9 @@ class ActivityCollecteCommand extends Command
     ): array {
         $counts      = ['tasks' => 0, 'inserted' => 0, 'skipped' => 0, 'errors' => 0];
         $pageIndex   = 1;
-        $baseUrl     = $this->params->get('sonar.url');
+        // SONAR_URL peut se terminer par « / » : on le retire pour éviter un double
+        // slash (http://host//api/... renvoie la page HTML de SonarQube, pas du JSON).
+        $baseUrl     = rtrim($this->params->get('sonar.url'), '/');
         $urlTemplate = $baseUrl . '/api/ce/activity';
 
         do {
@@ -284,15 +319,36 @@ class ActivityCollecteCommand extends Command
 
             try {
                 $response = $this->client->httpActivity($url);
-                $tasks    = $response['json']['tasks'] ?? [];
+
+                // Une réponse non-200 (401/403/…) ne doit PAS être confondue avec « aucune tâche ».
+                $code = $response['code'] ?? 0;
+                if ($code !== 200) {
+                    $detail = (string) ($response['body'] ?? ($response['erreur'] ?? 'erreur inconnue'));
+                    // Plafond SonarQube (p × ps > 10 000) : fenêtre trop dense, pas un échec dur.
+                    if (str_contains($detail, '10000') || str_contains($detail, '10 000')) {
+                        $io->warning(sprintf(
+                            'Page %d — plafond SonarQube (10 000 résultats) atteint sur cette fenêtre. '
+                            . 'Relancez avec un --catch-up-days plus petit (ex. 1) pour tout récupérer.',
+                            $pageIndex
+                        ));
+                    } else {
+                        $io->error(sprintf('Page %d — SonarQube a répondu %d : %s', $pageIndex, $code, $detail));
+                    }
+                    $errors[]         = sprintf('HTTP %d — %s', $code, $detail);
+                    $counts['errors'] += 1;
+                    break;
+                }
+
+                $tasks = $response['json']['tasks'] ?? [];
 
                 if (empty($tasks)) {
                     $io->text(sprintf('  Page %d — aucune tâche, fin de pagination.', $pageIndex));
                     break;
                 }
 
-                $io->text(sprintf('  Page %d — %d tâche(s).', $pageIndex, count($tasks)));
-                $counts['tasks'] += count($tasks);
+                $pageCount = count($tasks);
+                $io->text(sprintf('  Page %d — %d tâche(s).', $pageIndex, $pageCount));
+                $counts['tasks'] += $pageCount;
 
                 foreach ($tasks as $task) {
                     $result = $this->persistTask($task, $errors);
@@ -307,6 +363,12 @@ class ActivityCollecteCommand extends Command
 
                 unset($tasks, $response);
                 gc_collect_cycles();
+
+                // Page partielle (< page-size) → c'est la dernière. Demander la page
+                // suivante provoquerait un 400 SonarQube (« Can return only … 1001th result asked »).
+                if ($pageCount < $pageSize) {
+                    break;
+                }
 
                 // SonarQube 8 ne pagine pas
                 if ($this->params->get('sonar.version') == 8) {
@@ -329,6 +391,7 @@ class ActivityCollecteCommand extends Command
     }
 
     /**
+     * [Description for persistTask]
      * Persiste une tâche SonarQube. Retourne 'inserted', 'skipped' ou 'error'.
      *
      * @param array<string, mixed> $task
@@ -354,7 +417,8 @@ class ActivityCollecteCommand extends Command
             $activity->setMavenKey($task['componentId']);
             $activity->setProjectName($task['componentName']);
             $activity->setStatus($task['status']);
-            $activity->setSubmitterLogin($task['submitterLogin']);
+            // submitterLogin est absent pour les tâches déclenchées par CI/système.
+            $activity->setSubmitterLogin($task['submitterLogin'] ?? '');
             $activity->setSubmittedAt(new \DateTimeImmutable($task['submittedAt']));
             $activity->setStartedAt(new \DateTimeImmutable($task['startedAt'] ?? $task['submittedAt']));
             $activity->setExecutedAt(new \DateTimeImmutable($task['executedAt']));
