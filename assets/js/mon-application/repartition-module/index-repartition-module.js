@@ -521,7 +521,7 @@ const collecte = async function (maven_key, category, severity, counter, timer) 
       $collecteAnimation1.removeClass('sp-volume');
       const message = `Une erreur inconnue s'est produite (Erreur 500).`;
       const techDetails = prepareTechnicalDetails(error);
-      showMessage('alert', message, techDetails);
+      showMessage('critical', message, techDetails);
       sessionStorage.setItem('ma_moulinette_erreur-collect-repartition', `Erreur lors de la collecte [${category}, ${severity}] : ${error.message}`);
       return 99;
   }
@@ -607,7 +607,7 @@ $('#bouton-collecte-bug').on('click', async () => {
       isNaN(severities[2]['value']) ||
       isNaN(severities[3]['value']) ||
       isNaN(severities[4]['value'])) {
-        showMessage('alert', "Impossible de récupérer les informations concernant cette catégorie.");
+        showMessage('error', "Impossible de récupérer les informations concernant cette catégorie.");
         $boutonCollecteBug.removeClass('clicked-true').addClass('clicked-false');
       return;
     }
@@ -632,9 +632,11 @@ $('#bouton-collecte-bug').on('click', async () => {
     }
 
       const severity = severities[i];
-      counter += severity.value;
-      tempo += Number(timerElement.dataset.timer);
-      const result = await collecte(maven_key, 'BUG', severity.key, counter, tempo);
+      if (severity.value !== 0) {
+          counter += severity.value;
+          tempo += Number(timerElement.dataset.timer);
+          const result = await collecte(maven_key, 'BUG', severity.key, counter, tempo);
+        }
   }
 
   /** On réactive le bouton à la fin */
@@ -686,7 +688,7 @@ $('#bouton-collecte-vulnerability').on('click', async () => {
       isNaN(severities[2]['value']) ||
       isNaN(severities[3]['value']) ||
       isNaN(severities[4]['value'])) {
-        showMessage('alert', "Impossible de récupérer les informations concernant cette catégorie.");
+        showMessage('error', "Impossible de récupérer les informations concernant cette catégorie.");
         $boutonCollecteVulnerability.removeClass('clicked-true').addClass('clicked-false');
       return;
     }
@@ -767,7 +769,7 @@ $('#bouton-collecte-code-smell').on('click', async () => {
       isNaN(severities[2]['value']) ||
       isNaN(severities[3]['value']) ||
       isNaN(severities[4]['value'])) {
-        showMessage('alert', "Impossible de récupérer les informations concernant cette catégorie.");
+        showMessage('error', "Impossible de récupérer les informations concernant cette catégorie.");
         $boutonCollecteCodeSmell.removeClass('clicked-true').addClass('clicked-false');
         return;
     }
@@ -802,7 +804,7 @@ $('#bouton-collecte-code-smell').on('click', async () => {
     /** On réactive le bouton à la fin */
     setTimeout(function() {
         $boutonCollecteCodeSmell.removeClass('clicked-true disabled-bouton');
-        $boutonCollecteCodeSmell.attr('aria-label', "Lance la collecte des anomalies SonarQube de type mauvaise-pratique.");
+        $boutonCollecteCodeSmell.attr('aria-label', "Lance la collecte des anomalies SonarQube de type maintenabilité.");
         $boutonCollecteCodeSmell.removeAttr('aria-disabled tabindex');
       $('#etape-3').css('color', '#c45d4e');
     }, 3000);
@@ -817,7 +819,7 @@ $('#bouton-analyse').on('click', async () =>{
   control = sessionStorage.getItem('ma_moulinette_erreur-analyse-repartition');
 
   if (control === 'true') {
-    showMessage('alert', 'Une erreur générale lors du calcul de la répartition a été rencontrée (Erreur 500).');
+    showMessage('critical', 'Une erreur générale lors du calcul de la répartition a été rencontrée (Erreur 500).');
     return http_500;
   } else {
     sessionStorage.setItem('ma_moulinette_erreur-analyse-repartition', 'false');
@@ -890,7 +892,7 @@ $('#bouton-analyse').on('click', async () =>{
 $('#bouton-historique').on('click', async () =>{
   const control = sessionStorage.getItem('ma_moulinette_erreur-historique-repartition');
   if (control === 'true'){
-    showMessage('alert', 'Une erreur générale lors de la récupération des données historisées a été rencontrée (Erreur 500).');
+    showMessage('critical', 'Une erreur générale lors de la récupération des données historisées a été rencontrée (Erreur 500).');
     return;
   }
 
