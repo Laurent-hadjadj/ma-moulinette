@@ -34,6 +34,9 @@ import { modalSafe } from '../../common/safeModal.js';
 /** On importe les paramètres serveur */
 import {serveur} from '../../common/properties.js';
 
+/** On importe l'encodage ROT13 utilisé pour les jetons de navigation (Suivi, COSUI...) */
+import { encode } from '../../common/encode.js';
+
 /** La gestion des messagesJS */
 import { showMessage,  hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
 /** On importe les constantes */
@@ -250,7 +253,15 @@ $('.tableau-de-board-svg').on('click', function(e) {
   const element = document.getElementById(id);
   const mavenKey = element.dataset.mavenkey;
   if (mavenKey !== ''){
-    window.location.href = `/suivi/set?maven_key=${mavenKey}`;
+    /** on créé un hash avec la méthode reduce() comme clé de salt */
+    const salt = mavenKey.split('').reduce((hash, char) => {
+      return char.charCodeAt(0) + (hash << 6) + (hash << 16) - hash;
+    }, 0);
+
+    /** on créé un token pour encoder les paramètres */
+    const param = `${salt}|${mavenKey}`;
+    const token = encode(btoa(param));
+    window.location.href = `${serveur()}/suivi/set?token=${token}`;
     } else {
       sessionStorage.setItem('ma_moulinette_accueil_error', "La clé maven n'est pas correcte !! !");
   }
