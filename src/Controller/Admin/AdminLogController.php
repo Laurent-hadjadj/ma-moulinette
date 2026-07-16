@@ -53,7 +53,7 @@ class AdminLogController extends AbstractController
     /**
      * [Description for genericRender]
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 13/12/2025 20:26:07 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -105,7 +105,7 @@ class AdminLogController extends AbstractController
             }
         }
 
-        $render = static::genericRender();
+        $render = $this->genericRender();
         $render['files'] = $files;
 
         return $this->render('admin/admin_log.html.twig', $render);
