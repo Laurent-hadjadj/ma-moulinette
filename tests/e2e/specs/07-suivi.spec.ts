@@ -12,8 +12,8 @@ import { USERS } from '../helpers/users';
  *   1. Login Sophie
  *   2. Navigate to /projet
  *   3. Sélectionne tetris:TetrisGame depuis #liste-projet
- *   4. Clique #bouton-tableau-de-bord → navigation vers /suivi/set?maven_key=...
- *      qui redirige sur /suivi
+ *   4. Clique #bouton-tableau-de-bord → navigation vers /suivi/set?token=...
+ *      (jeton ROT13+base64, depuis 2026-07-16) qui redirige sur /suivi
  *   5. Vérifie qu'on est bien sur la page /suivi
  *
  * Note : le scénario complet de la page /suivi (suppression historique,
@@ -54,7 +54,7 @@ test.describe('07 — Page Suivi', () => {
     await suiviBtn.click();
 
     // ---------- 4. Vérifier la nav vers /suivi ----------
-    // Le clic redirige vers /suivi/set?maven_key=... qui redirige vers /suivi.
+    // Le clic redirige vers /suivi/set?token=... (jeton ROT13+base64) qui redirige vers /suivi.
     await expect(page).toHaveURL(/\/suivi/, { timeout: 15_000 });
   });
 });

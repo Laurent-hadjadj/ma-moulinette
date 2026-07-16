@@ -286,6 +286,37 @@ class RepartitionRepositoryTest extends KernelTestCase
     }
 
     /**
+     * MODIF 2026-07-16 : vérifie que findLatestSetupByMavenKey() (utilisée par COSUI) ignore
+     * la ligne 'initial' la plus récente (simple chargement de la page Répartition, sans
+     * collecte ni analyse) et retrouve bien le dernier cycle réellement analysé.
+     * Avant le fix, une simple visite de la page masquait silencieusement une analyse
+     * complète antérieure (COSUI affichait 0 % de complétude alors qu'une analyse
+     * 100 % existait).
+     */
+    public function testFindLatestSetupByMavenKeyIgnoresFreshInitialRow(): void
+    {
+        $repo = $this->getRepository();
+        $map = $this->buildCompleteMap();
+
+        // 1er cycle : collecté puis complètement analysé
+        $repo->selectOrUpdateRepartitionInitial($map);
+        $updateMap = $this->buildUpdateMapForControl($map['maven_key'], $map['setup'], 'complet (100%)');
+        $repo->updateRepartition($updateMap);
+
+        // 2e cycle : simple visite de la page Répartition (setup plus récent, jamais analysé)
+        $freshMap = $this->buildCompleteMap();
+        $freshMap['setup'] = $map['setup'] + 1000;
+        $repo->selectOrUpdateRepartitionInitial($freshMap);
+
+        $result = $repo->findLatestSetupByMavenKey($map['maven_key']);
+
+        $this->assertSame(200, $result['code']);
+        $this->assertIsArray($result['result']);
+        $this->assertSame($map['setup'], $result['result']['setup']);
+        $this->assertSame('complet (100%)', $result['result']['control']);
+    }
+
+    /**
      * Construit le $map minimal attendu par updateRepartition() pour une transition de control.
      * Tous les champs numériques absents seront mis à -1 par la méthode (comportement intentionnel).
      *

@@ -192,7 +192,8 @@ input:checked ~ .switch-paddle { background-color: #00445b; }
 
 /** modale : modifier les paramètres */
 .custom-switch-favori,
-.custom-switch-reference {
+.custom-switch-reference,
+.custom-switch-suivi {
   margin-bottom: 0.1rem;
   margin-top: 0.3rem;
 }

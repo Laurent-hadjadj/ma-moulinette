@@ -31,6 +31,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\{Request, RequestStack};
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -52,6 +53,7 @@ class SuiviControllerTest extends TestCase
     /** @var Session&MockObject */                  private MockObject $session;
 
     /** @var UserAgentTrackingFacade&MockObject */  private MockObject $tracking;
+    /** @var PdfExportService&MockObject */         private MockObject $pdfExportService;
 
     private SuiviController $controller;
 
@@ -70,6 +72,7 @@ class SuiviControllerTest extends TestCase
         $this->router = $this->createMock(RouterInterface::class);
         $this->session = $this->createMock(Session::class);
         $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
+        $this->pdfExportService = $this->createMock(PdfExportService::class);
 
         $this->params->method('get')->willReturnMap([
             ['logo.entreprise', 'logo.png'],
@@ -111,7 +114,7 @@ class SuiviControllerTest extends TestCase
             $this->params,
             $this->logger,
             new LanguageDistributionService(),
-            $this->createMock(PdfExportService::class),
+            $this->pdfExportService,
             new RapportInsightService(),
             $this->tracking,
         );
@@ -131,12 +134,49 @@ class SuiviControllerTest extends TestCase
             ->with('suivi', [], $this->anything())
             ->willReturn('/suivi');
 
-        $request = new Request(['maven_key' => 'fr.ma-moulinette:ma-moulinette']);
+        $token = str_rot13(base64_encode('1234567890|fr.ma-moulinette:ma-moulinette'));
+        $request = new Request(['token' => $token]);
         $request->setSession($this->session);
 
         $response = $this->controller->setSession($request);
 
         $this->assertSame('/suivi', $response->headers->get('Location'));
+    }
+
+    public function testSetSessionStoresNullMavenKeyWhenTokenMissing(): void
+    {
+        // MODIF 2026-07-16 : le paramètre `maven_key` en clair n'est plus lu du tout —
+        // sans `token`, aucun projet n'est mémorisé en session.
+        $this->session->expects($this->once())
+            ->method('set')
+            ->with('maven_key', null);
+
+        $this->router->expects($this->once())
+            ->method('generate')
+            ->with('suivi', [], $this->anything())
+            ->willReturn('/suivi');
+
+        $request = new Request(['maven_key' => 'fr.ma-moulinette:ma-moulinette']);
+        $request->setSession($this->session);
+
+        $this->controller->setSession($request);
+    }
+
+    public function testSetSessionStoresNullMavenKeyWhenTokenInvalid(): void
+    {
+        $this->session->expects($this->once())
+            ->method('set')
+            ->with('maven_key', null);
+
+        $this->router->expects($this->once())
+            ->method('generate')
+            ->with('suivi', [], $this->anything())
+            ->willReturn('/suivi');
+
+        $request = new Request(['token' => 'not-a-valid-token']);
+        $request->setSession($this->session);
+
+        $this->controller->setSession($request);
     }
 
     /* ============ suivi ============ */
@@ -289,6 +329,54 @@ class SuiviControllerTest extends TestCase
         $this->assertSame('[3]', $capturedCtx['data3']);
     }
 
+    public function testSuiviGraphiqueUtiliseParVersionsQuandListeDeSuiviActive(): void
+    {
+        // MODIF 2026-07-16 : verrouille le fix — le graphique de courbe cumulée doit
+        // respecter la liste de suivi personnalisée comme les autres tableaux, au lieu
+        // de toujours remonter tout l'historique sans filtre.
+        $request = new Request();
+        $request->setSession($this->session);
+        $this->session->method('get')->willReturn('fr.ma-moulinette:ma-moulinette');
+
+        $user = $this->makeUser(['TeamA']);
+        $user->setPreference(['suivi_version' => ['fr.ma-moulinette:ma-moulinette' => ['1.0.0', '2.0.0']]]);
+        $this->token->method('getUser')->willReturn($user);
+
+        $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
+            'code' => 200,
+            'liste' => [['id' => 'fr.ma-moulinette:ma-moulinette']],
+        ]);
+        $this->historiqueRepo->method('countHistoriqueProjet')->willReturn([
+            'code' => 200, 'nombre' => 5,
+        ]);
+        $this->historiqueRepo->method('selectHistoriqueProjetParVersions')->willReturn([
+            'code' => 200, 'request' => [['nom' => 'App']],
+        ]);
+        $this->historiqueRepo->method('selectHistoriquesMesureParVersions')->willReturn([
+            'code' => 200, 'request' => [],
+        ]);
+        $this->historiqueRepo->method('selectHistoriqueAnomalieParVersions')->willReturn([
+            'code' => 200, 'request' => [],
+        ]);
+        $this->historiqueRepo->method('selectHistoriqueDetailsParVersions')->willReturn([
+            'code' => 200, 'request' => [],
+        ]);
+
+        // La variante ParVersions du graphique doit être appelée...
+        $this->historiqueRepo->expects($this->once())
+            ->method('selectHistoriqueAnomalieGraphiqueParVersions')
+            ->with($this->callback(fn($map) => $map['versions'] === ['1.0.0', '2.0.0']))
+            ->willReturn(['code' => 200, 'request' => []]);
+
+        // ...et jamais la variante sans filtre.
+        $this->historiqueRepo->expects($this->never())->method('selectHistoriqueAnomalieGraphique');
+        $this->historiqueRepo->expects($this->never())->method('selectUnionHistoriqueProjet');
+
+        $this->twig->expects($this->once())->method('render')->willReturn('<html>ok</html>');
+
+        $this->controller->suivi($request);
+    }
+
     public function testSuiviFlashesAlertWhenFetchDataThrows(): void
     {
         $request = new Request();
@@ -317,6 +405,73 @@ class SuiviControllerTest extends TestCase
         $this->twig->expects($this->once())->method('render')->willReturn('<html>throw</html>');
 
         $this->controller->suivi($request);
+    }
+
+    /* ============ rapportPdf ============ */
+
+    public function testRapportPdfThrows404WhenNoGroupeFonctionnel(): void
+    {
+        // MODIF 2026-07-16 : verrouille le fix — le rapport PDF doit refuser
+        // l'accès si l'utilisateur n'a aucun groupe fonctionnel, comme suivi().
+        $request = new Request(['maven_key' => 'fr.ma-moulinette:ma-moulinette']);
+        $request->setSession($this->session);
+
+        $user = $this->makeUser([]);
+        $this->token->method('getUser')->willReturn($user);
+
+        $this->historiqueRepo->expects($this->never())->method('countHistoriqueProjet');
+
+        $this->expectException(NotFoundHttpException::class);
+        $this->controller->rapportPdf($request);
+    }
+
+    public function testRapportPdfThrows404WhenProjectNotInGroupe(): void
+    {
+        // MODIF 2026-07-16 : verrouille le fix — un projet hors du groupe fonctionnel
+        // de l'utilisateur ne doit plus permettre de générer le PDF.
+        $request = new Request(['maven_key' => 'fr.autre:projet-hors-perimetre']);
+        $request->setSession($this->session);
+
+        $user = $this->makeUser(['TeamA']);
+        $this->token->method('getUser')->willReturn($user);
+
+        $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
+            'code' => 200,
+            'liste' => [['id' => 'fr.ma-moulinette:ma-moulinette']],
+        ]);
+
+        $this->historiqueRepo->expects($this->never())->method('countHistoriqueProjet');
+
+        $this->expectException(NotFoundHttpException::class);
+        $this->controller->rapportPdf($request);
+    }
+
+    public function testRapportPdfHappyPathGeneratesPdf(): void
+    {
+        $request = new Request(['maven_key' => 'fr.ma-moulinette:ma-moulinette']);
+        $request->setSession($this->session);
+
+        $user = $this->makeUser(['TeamA']);
+        $this->token->method('getUser')->willReturn($user);
+
+        $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
+            'code' => 200,
+            'liste' => [['id' => 'fr.ma-moulinette:ma-moulinette']],
+        ]);
+        $this->historiqueRepo->method('countHistoriqueProjet')->willReturn([
+            'code' => 200, 'nombre' => 3,
+        ]);
+        $this->historiqueRepo->method('selectHistoriqueProjetForRapport')->willReturn([
+            'code' => 200,
+            'request' => [['nom' => 'App', 'version' => '1.0.0']],
+        ]);
+        $this->pdfExportService->method('generateSuiviPdf')->willReturn('%PDF-1.4 contenu factice');
+
+        $response = $this->controller->rapportPdf($request);
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertSame('application/pdf', $response->headers->get('Content-Type'));
+        $this->assertSame('%PDF-1.4 contenu factice', $response->getContent());
     }
 
     private function makeUser(array $groupes): Utilisateur

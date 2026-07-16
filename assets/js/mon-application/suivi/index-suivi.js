@@ -867,7 +867,7 @@ const versionFavoriUpdate = async function (maven_key, favori, version, date_ver
     type: 'PUT',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -991,7 +991,7 @@ const versionSuiviUpdate = async function (maven_key, version, suivi) {
     type: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'

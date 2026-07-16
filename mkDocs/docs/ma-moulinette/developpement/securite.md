@@ -1,146 +1,169 @@
-# Gestion de la sécurité
+# 🔐 Gestion de la sécurité
 
-![Ma-Moulinette](/assets/images/home/home-000.jpg)
+## 👤 Compte administrateur
 
-## Compte admin
+Un compte `admin` (`admin@ma-moulinette.fr`, rôle `ROLE_INTERNAL`) est créé par les fixtures de base (`migrations/PosgreSQL/90_fixtures/fixtures.sql`). Son mot de passe par défaut, volontairement simple pour l'installation initiale, est **`test`**.
 
-Le compte **Admin** est ajouté par défaut en version  `1.5.0`.
+!!! warning "🔒 Changement obligatoire avant toute mise en production"
+    Le mot de passe `test` est un identifiant de démarrage connu et public (documenté ici volontairement), pas un secret — il **doit être changé manuellement** avant toute exposition de l'environnement au-delà d'un poste de développement local. Sur la fixture `admin`, `reset_password` vaut `false` : le changement **n'est pas forcé automatiquement** à la première connexion, contrairement aux autres comptes créés via l'application (où `reset_password = true` par défaut). Une fois un gestionnaire applicatif nommé, il est recommandé de désactiver le compte `admin` (attribut `actif`) plutôt que de le laisser actif en permanence.
 
-- [x] Son identifiant de connexion est <admin@ma-moulinette.fr>.
-- [x] Son mot de passe est : `eYK8k4[T;99N!em^`
+## 🌐 Filtrage par host/proxy
 
-> **Important** :
-> Pour des raison de sécurité, le mot de passe du compte admin devra être changé à la première connexion.
-
-L'utilisateur **Admin** permet d'accéder à la page de gestion des utilisateurs. Une fois qu'un gestionnaire applicatif est assigné, il est **recommandé** de désactiver le compte en utilisant l'option **Actif** de la page d'édition du compte.
-
-## Filtrage pas IP/Host
-
-Le filtrage est activé par défaut depuis le fichier de configuration `framework.yaml'.
+`config/packages/framework.yaml` restreint les hosts autorisés et déclare les en-têtes de confiance pour le reverse proxy Traefik (voir [Environnement d'exécution](../architecture/architecture-technique.md#-environnement-dexécution)) :
 
 ```yaml
-trusted_hosts: ['%env(TRUST_HOST1)%','%env(TRUST_HOST2)%',]
+trusted_hosts: ['%env(TRUST_HOST1)%', '%env(TRUST_HOST2)%']
+trusted_proxies: '%env(TRUSTED_PROXIES)%'
+trusted_headers: ['x-forwarded-for', 'x-forwarded-host', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-prefix']
 ```
 
-`Note :` il est possible d'ajouter plusieurs HOSTs.
+`TRUST_HOST1`/`TRUST_HOST2` sont définis par environnement dans `.env.local` (jamais dans `.env` versionné).
 
-Par défaut, nous avons défini deux points de contrôle **TRUST_HOST1** et **TRUST_HOST2**, qui peuvent être utilisés pour filtrer :
+## 🧩 Rôles et hiérarchie
 
-- [x] Une adresse IP :  `127.0.0.1`, `192.168.0.1`,... ;
-- [ ] Une adresse DNS : `localhost`, `www.ma-petite-entreprise.fr` ;
-- [ ] un domaine : `^ma-petite-entreprise\.fr$`
+`config/packages/security.yaml` définit la hiérarchie de rôles suivante :
 
-Il est nécessaire de définir dans le fichier **.env** la valeur de ces deux paramètres :
-
-```yaml
-TRUST_HOST1="^ma-petite-entreprise\.fr$"
-TRUST_HOST2="10.0.0.1"
+```mermaid
+flowchart TD
+    NONE["ROLE_NONE<br/>(compte désactivé, aucun privilège)"]
+    U["ROLE_UTILISATEUR<br/>(base — toute page privée hors périmètre restreint)"]
+    U --> COLLECTE[ROLE_COLLECTE]
+    U --> SUIVI[ROLE_SUIVI]
+    U --> BATCH[ROLE_BATCH]
+    U --> ACTUATOR[ROLE_ACTUATOR]
+    U --> SECURITY[ROLE_SECURITY]
+    SECURITY --> ANALYTICS[ROLE_SECURITY_ANALYTICS]
+    U --> GESTIONNAIRE[ROLE_GESTIONNAIRE]
+    GESTIONNAIRE --> INTERNAL[ROLE_INTERNAL]
+    U --> ACTIVITY[ROLE_ACTIVITY]
 ```
 
-## La gestion de la sécurité
+!!! note "🧬 Hiérarchie à plat, pas en cascade"
+    Contrairement à une hiérarchie classique où un rôle hériterait des droits d'un autre rôle métier, ici **tous les rôles fonctionnels héritent uniquement de `ROLE_UTILISATEUR`** — `ROLE_BATCH` n'inclut pas `ROLE_COLLECTE` par exemple. Seules deux chaînes existent : `ROLE_SECURITY_ANALYTICS → ROLE_SECURITY` et `ROLE_INTERNAL → ROLE_GESTIONNAIRE`. Un utilisateur qui doit accéder à plusieurs périmètres fonctionnels doit se voir attribuer chaque rôle explicitement.
 
-Le fichier `security.yml` contient le paramétrage de la sécurité et de l'authentification.
+`ROLE_NONE` est une sentinelle sans aucun privilège, utilisée pour les comptes désactivés ou pas encore affectés (notamment en jeu de données E2E).
 
-```yaml
-  # On active le mécanisme d'authentification
-    enable_authenticator_manager: true
-    # On lève une exception si l'utilisateur n'existe pas
-    hide_user_not_found: false
-```
+## 🧱 Firewalls
 
-La hiérarchie des rôles permet l'héritage de droits.
+Deux firewalls sont configurés :
 
-```yaml
-    role_hierarchy:
-        ROLE_COLLECTE: ['ROLE_UTILISATEUR']
-        ROLE_BATCH: ['ROLE_COLLECTE', ROLE_UTILISATEUR]
-        ROLE_GESTIONNAIRE: ['ROLE_COLLECTE', 'ROLE_BATCH', ROLE_UTILISATEUR]
-```
+| Firewall | Périmètre | Authentification |
+| --- | --- | --- |
+| `api` | `^/api` | Contexte partagé avec `main` (session), erreurs gérées par `App\Security\ApiSecurityHandler` (retour JSON, pas de redirection HTML) |
+| `main` | `^/` | Formulaire de login + `App\Security\CustomAuthenticator` (authentification locale et LDAP, voir [Annuaire LDAP local](openldap-local.md)) |
 
-Les points d'accès sont définis de cette façon :
+Le firewall `main` applique un throttling de connexion : **3 tentatives par tranche de 15 minutes**. `remember_me` est désactivé.
+
+## 🚦 Points d'accès (`access_control`)
 
 ```yaml
-  access_control:
-   - { path: ^/login, roles: PUBLIC_ACCESS }
+access_control:
+    - { path: ^/api/public/, roles: PUBLIC_ACCESS }
+    - { path: ^/api/secure/dependency-check/, roles: PUBLIC_ACCESS }   # protégé par token bearer dédié
+    - { path: ^/api/secure/, roles: ROLE_UTILISATEUR }
+    - { path: ^/login, roles: PUBLIC_ACCESS }
     - { path: ^/register, roles: PUBLIC_ACCESS }
     - { path: ^/welcome, roles: PUBLIC_ACCESS }
     - { path: ^/plan-du-site, roles: PUBLIC_ACCESS }
-    - { path: ^/mentions-legales, roles: PUBLIC_ACCESS }
+    - { path: ^/mention-legal, roles: PUBLIC_ACCESS }
+    - { path: ^/donnees-personnelles, roles: PUBLIC_ACCESS }
     - { path: ^/admin, roles: ROLE_UTILISATEUR }
     - { path: ^/, roles: ROLE_UTILISATEUR }
 ```
 
-Le chiffrement utilise l'algorithme **brcrypt** par défaut avec un niveau de hachage de niveau 13.
+`/api/secure/dependency-check/*` est publique **au sens Symfony** (`PUBLIC_ACCESS`) car son authentification ne repose pas sur une session utilisateur mais sur un token bearer vérifié par `DependencyCheckTokenSubscriber` — voir [Filtrage des appels API internes](../architecture/architecture-technique.md#-filtrage-des-appels-api-internes--apiclientheadersubscriber) pour le détail des deux mécanismes de sécurité API qui coexistent.
 
-```yaml
-password_hashers:
-        Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface:
-            algorithm: 'bcrypt'
-            cost:      13
+Au-delà de `ROLE_UTILISATEUR` (accès de base à toute page privée), certaines fonctionnalités exigent un rôle fonctionnel supplémentaire, vérifié au niveau du controller (`#[IsGranted(...)]` ou `$this->isGranted(...)`) :
+
+| Fonctionnalité | Rôle requis | Vérifié dans |
+| --- | --- | --- |
+| Collecte manuelle d'un projet | `ROLE_COLLECTE` | `ApiCollecteController` |
+| Traitement batch (page + actions) | `ROLE_BATCH` | `BatchController`, `ProfilingController`/`ProfilingApiController` |
+| Collecte Actuator (Spring Boot) | `ROLE_ACTUATOR` | `ActuatorController` |
+| Page Activité SonarQube (affichage + actions) | `ROLE_ACTIVITY` | `ActivityController`, `ApiActivityController` |
+| Toutes les pages DependencyCheck | `ROLE_SECURITY` | `DependencyCheckPageController` (attribut de classe) |
+| Vue transverse multi-projets DependencyCheck | `ROLE_SECURITY_ANALYTICS` | `isAnalyticsMode()` (`DependencyCheckPageController`) |
+| Mise à jour de la liste des projets/profils (Accueil) | `ROLE_GESTIONNAIRE` | `AccueilController`, `ApiAccueilController` |
+| Gestion des portefeuilles (actions Ajax) | `ROLE_GESTIONNAIRE` | `PortefeuilleAjaxController` |
+| Statistiques d'utilisation transverses | `ROLE_INTERNAL` | `StatistiqueController` |
+| Journal d'administration | `ROLE_INTERNAL` | `AdminLogController` |
+| CRUD Utilisateur / Groupe / Portefeuille / Batch (back-office) | `ROLE_GESTIONNAIRE` (EasyAdmin) | `Controller/Admin/*CrudController` |
+
+!!! caution "⚠️ Cette liste n'est pas exhaustive"
+    De nouvelles fonctionnalités peuvent introduire de nouvelles restrictions de rôle sans que cette page soit mise à jour immédiatement. En cas de doute sur le rôle requis par une page, chercher `#[IsGranted]` ou `isGranted(`/`denyAccessUnlessGranted(` dans le controller concerné — c'est la source de vérité.
+
+## 🎓 Jetons de navigation vs sécurité réelle (démonstration boîte noire)
+
+Plusieurs pages (Suivi, Répartition, COSUI, OWASP, Clean Code) sont ouvertes depuis un bouton JavaScript qui construit une URL du type `?token=...` — un encodage **ROT13 + Base64** de la clé Maven (`salt|maven_key`), décodé côté serveur par une méthode `decodeToken()` dupliquée dans chaque contrôleur concerné.
+
+**Pourquoi une URL et pas un vrai appel sécurisé ?** Une route Symfony déclarée en `GET` n'a pas de corps de requête exploitable pour transporter un paramètre applicatif, et une navigation classique (`<a href>`, `location.href = ...`) ne permet pas d'ajouter un en-tête HTTP personnalisé — la seule façon de transmettre la clé du projet est donc la chaîne de requête de l'URL. Le jeton n'est **pas conçu comme un mécanisme de sécurité** : c'est une réponse à cette contrainte mécanique du GET, et un confort (éviter d'afficher `?maven_key=fr.example:mon-projet` en clair dans la barre d'adresse).
+
+!!! note "🧪 Vérification empirique en boîte noire (sans lire le code), 2026-07-16"
+    Trois appels `curl` strictement anonymes (aucun cookie de session, aucune connexion préalable) contre l'application locale :
+
+    ```text
+    $ curl -s -D - -o /dev/null http://localhost:8000/suivi
+    HTTP/1.1 302 Found
+    Location: /login
+
+    $ curl -s -D - -o /dev/null "http://localhost:8000/suivi/set?token=<jeton_forgé_au_hasard>"
+    HTTP/1.1 302 Found
+    Location: /login
+
+    $ curl -s -X POST -H "Content-Type: application/json" \
+           -d '{"maven_key":"fr.ma-moulinette:projet-viti"}' \
+           http://localhost:8000/api/secure/suivi/version/liste
+    {"code":403,"message":"[API-Credential] 🚫 Accès interdit : client non autorisé."}
+    ```
+
+    Dans les 3 cas, **aucun contrôleur métier n'est exécuté** (ni `SuiviController::suivi()`/`setSession()`, ni `ApiSuiviController`) — le pare-feu (`main` pour les pages web, `App\Security\ApiSecurityHandler` pour `/api/secure/*`) intercepte la requête avant que le moindre jeton ne soit lu ou décodé, qu'il soit valide, forgé au hasard, ou absent. C'est exactement la même réponse qu'on obtienne un jeton correctement formé ou une suite de caractères aléatoire : **le contenu du jeton ne change rien tant qu'aucune session authentifiée n'est présente.**
+
+**Ce qui protège réellement l'accès** (indépendamment du jeton) :
+
+1. **Le pare-feu Symfony** (`access_control`, voir ci-dessus) — une session authentifiée valide (`ROLE_UTILISATEUR` a minima) est exigée pour atteindre la moindre route `^/` ou `^/api/secure/`.
+2. **Les contrôles serveur par rôle/périmètre**, exécutés seulement *après* le pare-feu, pour l'utilisateur *authentifié* réel : `ROLE_COLLECTE` sur Répartition, `listeProjet()` (appartenance au groupe fonctionnel) sur Suivi. Ces contrôles s'appliquent que la clé Maven soit arrivée via un jeton, une session, ou un paramètre en clair — le canal de transport n'a aucune incidence sur eux.
+
+Un attacker capable de forger un jeton valide (après rétro-ingénierie du JS, triviale avec les outils de développement du navigateur) n'obtient donc **rien de plus** qu'un utilisateur qui taperait l'URL à la main : il lui faut de toute façon une session authentifiée légitime, et cette session reste bornée à son propre périmètre par les contrôles du point 2.
+
+## 🔑 Hachage des mots de passe
+
+Algorithme **bcrypt**, coût 13 en production/développement (`config/packages/security.yaml`). En environnement de test, le coût est abaissé au minimum (`cost: 4`) pour ne pas ralentir la suite de tests — voir [Tests unitaires](test-unitaire.md).
+
+## 🔐 Jetons d'authentification SonarQube
+
+Ma-Moulinette appelle l'API SonarQube avec deux jetons distincts, définis en `.env.local` :
+
+| Variable | Utilisé par | Type de jeton attendu |
+| --- | --- | --- |
+| `SONAR_TOKEN` | Collecte standard (`ApiCollecteController`, `BatchCollecteInformationProjetController`, etc.) — appels `/api/measures/*`, `/api/issues/*`, `/api/project_analyses/search`... | **Jeton personnel (User Token)** |
+| `SONAR_ACTIVITY_TOKEN` | Page [Activité SonarQube](../application/activite.md) — appel `/api/ce/activity` | **Jeton personnel (User Token)**, compte **administrateur** (permission « Administer System ») |
+
+!!! caution "⚠️ Les jetons d'analyse (projet ou global) ne conviennent PAS pour ces appels"
+    Depuis SonarQube 2025/2026, trois portées de jeton existent : **jeton d'analyse de projet**, **jeton d'analyse globale**, et **jeton personnel (utilisateur)**. Les deux premiers sont conçus **uniquement pour pousser des résultats d'analyse** (`sonar-scanner ... -Dsonar.token=...`) — ils n'ont **pas accès aux endpoints Web API de lecture** (mesures, issues, historique des tâches, etc.), quelle que soit leur portée. Un jeton d'analyse globale a ainsi provoqué un `403 Insufficient privileges` sur `/api/project_analyses/search` (incident `tetris:TetrisGame`, 2026-07-15) — passer à un jeton d'analyse **projet** ne change rien au problème, car **la nature du jeton** (analyse vs personnel) est en cause, pas sa portée. Seul un **jeton personnel**, généré depuis *My Account → Security* d'un compte utilisateur ayant les permissions nécessaires sur le(s) projet(s) concerné(s) (a minima *Browse*), fonctionne de façon fiable pour ces appels.
+
+## 🖍️ Filtrage côté Twig et controllers
+
+Dans les templates Twig :
+
+```twig
+{% if is_granted('ROLE_UTILISATEUR') %} ... {% endif %}
+{% if is_granted('ROLE_GESTIONNAIRE') %} ... {% endif %}
 ```
 
-## Firewall
+Dans les controllers, par attribut ou par appel explicite :
 
-Le firewall dans Symfony permet de sécuriser, par le biais de rôles, l'accès aux pages de l'application.
-
-Il existe deux rôles par défaut auquel nous avons ajouté **trois** (3) rôles fonctionnels.
-
-- [x] **PUBLIC_ACCESS**, permet à l'accès aux pages publiques.
-- [ ] **ROLE_USER**, permet dans Symfony l'accès à des pages privés.
-- [x] **ROLE_UTILISATEUR**, permet l'accès à toutes les pages privées ayant se rôle.
-- [x] **ROLE_GESTIONNAIRE**, permet l'accès aux pages de gestion de l'application.
-- [x] **ROLE_BATCH**, permet l'accès à la page de suivi des traitements automatique et manuel.
-
-Toute personne authentifiée peut accéder à l'ensemble des pages de l'application, à l'exception des pages destinées aux personnes ayant le rôle de `GESTIONNAIRE` et `BATCH` (Traitement).
-
-Le tableau ci-dessous liste par rôle les droits des pages accessibles.
-
-|   Page      | PUBLIC | UTILISATEUR | COLLECTE | BATCH | GESTIONNAIRE | URL               |
-|:-----------:|:------:|:-----------:|:--------:|:-----:|:------------:|:------------------|
-| Accueil     | NON    | OUI         | -        | -     | -            | /home             |
-| plan du site| OUI    | OUI         | -        | -     | -            | /plan-du-site     |
-| Mentions    | OUI    | OUI         | -        | -     | -            | /mentions-legales |
-| Inscription | OUI    | OUI         | -        | -     | -            | /register         |
-| Connexion   | OUI    | OUI         | -        | -     | -            | /login            |
-| Déconnexion | OUI    | OUI         | -        | -     | -            | /logout           |
-| Reset passwd| NON    | OUI         | -        | -     | -            | reset/mot-de-passe|
-| Bienvenue   | OUI    | NON         | -        | -     | -            | /welcome          |
-| Dashboard   | NON    | OUI         | -        | -     | -            | /admin            |
-| Utilisateur | NON    | NON         | -        | -     | OUI          | /admin?crudAction |
-| Projet      | NON    | PARTIEL     | OUI      | OUI   | OUI          | /projet           |
-| Owasp       | NON    | OUI         | -        | -     | -            | /owasp            |
-| Suivi       | NON    | OUI         | -        | -     | -            | /suivi            |
-| Profil      | NON    | PARTIEL     | OUI      | OUI   | OUI          | /profil           |
-| Repartition | NON    | PARTIEL     | OUI      | OUI   | OUI          | /repartition      |
-| Traitement  | NON    | NON         | -        | OUI   | OUI          | /traitement/suivi |
-
-Le fichier `security.yaml` contient la configuration suivante pour étendre les droits du rôle :
-
-- `UTILISATEUR` avec les droits de `COLLECTE`
-- `UTILISATEUR` avec les droits de `BATCH`.
-- `UTILISATEUR` avec les droits de `GESTIONNAIRE`.
-
-## Filtrage twig et dans les contrôleurs
-
-Le contrôle des droits se fait au niveau des pages twig ou des contrôleurs.
-
-Dans les pages HTML en TWIG :
-
-```T
-{% if is_granted('ROLE_UTILISATEUR') %} ...  {%end if%}
-
-{% if is_granted('ROLE_GESTIONNAIRE') %} ...  {%end if%}
-```
-
-Dans les contrôleurs par l'ajout d'un attribut ou par l'utilisation de la méthode denyAccessUnlessGranted :
-
-```plaintext
+```php
 #[IsGranted('ROLE_UTILISATEUR')]
 ```
 
 ```php
-$this->denyAccessUnlessGranted('ROLE_GESTIONNAIRE', null, "L'utilisateur essaye d’accéder à la page sans avoir le rôle ROLE_GESTIONNAIRE");
+$this->denyAccessUnlessGranted('ROLE_GESTIONNAIRE', null, "Accès refusé : rôle ROLE_GESTIONNAIRE requis.");
 ```
+
+## 📚 Pour aller plus loin
+
+- [Architecture technique](../architecture/architecture-technique.md) : filtrage des appels API internes, rôles vs. architecture globale.
+- [Annuaire LDAP local](openldap-local.md) : authentification LDAP/AD en complément du compte local.
 
 -**-- FIN --**-
 

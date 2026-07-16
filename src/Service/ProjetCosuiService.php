@@ -111,7 +111,6 @@ class ProjetCosuiService
         // 3. Setup
         try {
                 $setup = $this->setup($maven_key);
-                $render['setup'] = $setup[0] ?? 'NoN';
             } catch (\Throwable $e) {
                 $render['setup'] = 'inconnu';
                 $message = '🔴 Erreur lors de la récupération du setup';
@@ -124,6 +123,23 @@ class ProjetCosuiService
                         'trace' => null
                 ];
             }
+
+        // setup() peut retourner un échec métier (repository en erreur) sans lever d'exception
+        if (isset($setup['code'])) {
+            $render['setup'] = 'inconnu';
+            $this->logger->error("❌ [COSUI] {$setup['message']}", ['trace' => $setup['trace'] ?? self::$erreurInconnue]);
+            return [
+                'code' => $setup['code'],
+                'type' => $setup['type'] ?? 'error',
+                'message' => $setup['message'],
+                'trace' => $setup['trace'] ?? self::$erreurInconnue
+            ];
+        }
+
+        $render['setup'] = $setup[0] ?? 'NaN';
+        $render['repartition_percent'] = ($render['setup'] !== 'NaN')
+            ? $this->controlToPercent($setup[1] ?? null)
+            : null;
 
         // 4. Traitement des anomalies
         try {
@@ -271,6 +287,7 @@ class ProjetCosuiService
             'type_application' => $defaultString,
             'date_application' => $defaultDate,
             'setup' => $defaultString,
+            'repartition_percent' => null,
 
             'bug_blocker' => $defaultCount,
             'bug_critical' => $defaultCount,
@@ -574,7 +591,7 @@ class ProjetCosuiService
         if ($getSetup['code'] != 200) {
             $message = "❌ Échec de récupération du dernier setup pour le projet.";
             $messageLog = "❌ [COSUI] Échec de récupération du dernier setup pour le projet.";
-            $this->logger->error($messageLog, $getSetup['erreur']);
+            $this->logger->error($messageLog, ['erreur' => $getSetup['erreur']]);
             return [
                 'code' => $getSetup['code'],
                 'type' => 'alert',
@@ -588,7 +605,8 @@ class ProjetCosuiService
             return ['NaN'];
         }
 
-        $setup = $getSetup['result'];
+        $setup = $getSetup['result']['setup'] ?? null;
+        $control = $getSetup['result']['control'] ?? null;
 
         if ($setup === null) {
             $this->logger->error("❌ [COSUI] Setup null dans l'entité Repartition pour ce maven_key", ['maven_key' => $maven_key]);
@@ -596,8 +614,30 @@ class ProjetCosuiService
         }
 
         $this->logger->info("ℹ️ [COSUI] Dernier setup récupéré avec succès",
-            ['mavenKey' => $maven_key, 'setup' => $setup]);
-        return [$setup];
+            ['mavenKey' => $maven_key, 'setup' => $setup, 'control' => $control]);
+        return [$setup, $control];
+    }
+
+    /**
+     * Convertit le champ `control` de la table `repartition` en pourcentage de complétude.
+     *
+     * @param string|null $control
+     *
+     * @return int|null null si l'information de complétude est absente/inconnue.
+     *
+     * Created at: 16/07/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function controlToPercent(?string $control): ?int
+    {
+        return match ($control) {
+            'complet (100%)' => 100,
+            'partiel (66%)' => 66,
+            'partiel (33%)' => 33,
+            'initial', 'inconnue' => 0,
+            default => null,
+        };
     }
 
     /**
@@ -714,7 +754,7 @@ class ProjetCosuiService
         // Vérification du format de version
         $versionSplit = explode('-', $info['version']);
         $version = $versionSplit[0] !== '' ? $versionSplit[0] : self::$defaultVersion;
-        $type = $versionSplit[1] ?? 'undefined';
+        $type = $versionSplit[1] ?? '';
 
         $this->logger->info("ℹ️ [COSUI] Indicateurs qualité récupérés avec succès", [
             'mavenKey' => $maven_key,
@@ -788,7 +828,7 @@ class ProjetCosuiService
         $ref = $request['reference'][0];
         $versionSplit = explode('-', $ref['version'] ?? '');
         $version = $versionSplit[0] !== '' ? $versionSplit[0] : self::$defaultVersion;
-        $type = $versionSplit[1] ?? 'undefined';
+        $type = $versionSplit[1] ?? '';
 
         $this->logger->info("ℹ️ [COSUI] Données de référence récupérées", ['mavenKey' => $maven_key, 'version' => $version, 'type' => $type]);
 
@@ -801,9 +841,9 @@ class ProjetCosuiService
             'initial_note_security' => $ref['note_security'] ?? null,
             'initial_note_hotspot' => $ref['note_hotspot'] ?? null,
             'initial_note_code_smell' => $ref['note_sqale'] ?? null,
-            'initial_bug_blocker' => $ref['bug_blocker'] ?? 0,
-            'initial_bug_critical' => $ref['bug_critical'] ?? 0,
-            'initial_bug_major' => $ref['bug_major'] ?? 0,
+            'initial_bug_blocker' => $ref['bug_blocker'] ?? -1,
+            'initial_bug_critical' => $ref['bug_critical'] ?? -1,
+            'initial_bug_major' => $ref['bug_major'] ?? -1,
             'initial_vulnerability_blocker' => $ref['vulnerability_blocker'] ?? -1,
             'initial_vulnerability_critical' => $ref['vulnerability_critical'] ?? -1,
             'initial_vulnerability_major' => $ref['vulnerability_major'] ?? -1,

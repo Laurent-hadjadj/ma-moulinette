@@ -149,7 +149,47 @@ class SuiviController extends AbstractController
     }
 
     /**
+     * [Description for decodeToken]
+     *
+     * Décode un token ROT13+base64 contenant deux parties séparées par |.
+     * Retourne la seconde partie (la maven_key) si le format est correct, sinon null.
+     *
+     * @param string $token
+     * @return string|null
+     *
+     * Created at: 16/07/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function decodeToken(string $token): ?string
+    {
+        $string = str_rot13($token);
+        $decoded = base64_decode($string, true);
+        if ($decoded === false) {
+            $this->logger->warning('[Suivi] ⚠️ Échec du décodage base64 du token');
+            return null;
+        }
+
+        $parts = preg_split("/[|]+/", $decoded);
+        if (count($parts) !== 2) {
+            $this->logger->warning('[Suivi] ⚠️ Format de token invalide après décodage', ['decoded' => $decoded]);
+            return null;
+        }
+
+        return $parts[1];
+    }
+
+    /**
      * [Description for setSession]
+     *
+     * MODIF 2026-07-16 : remplacement du paramètre `maven_key` en clair par un
+     * `token` obfusqué (ROT13+base64), aligné sur le mécanisme déjà utilisé par
+     * Répartition/COSUI/OWASP/Clean Code. Ce n'est pas un filtrage fort en soi
+     * (aucune vérification cryptographique), mais la page reste inaccessible
+     * sans un token — et pour en obtenir un, il faut être authentifié et
+     * sélectionner un projet déjà filtré par son groupe fonctionnel sur la page
+     * Projet. Le contrôle réel d'appartenance au groupe fonctionnel reste fait
+     * par listeProjet() plus loin dans suivi().
      *
      * @param Request $request
      *
@@ -161,7 +201,13 @@ class SuiviController extends AbstractController
     #[Route('/suivi/set', name: 'suivi_set', methods: ['GET'])]
     public function setSession(Request $request)
     {
-        $maven_key = $request->query->get('maven_key');
+        $token = $request->query->get('token');
+        $maven_key = null;
+
+        if (!empty($token)) {
+            $maven_key = $this->decodeToken($token);
+        }
+
         // Stocker des données dans la session via l'objet Request
         $session = $request->getSession();
         $session->set('maven_key', $maven_key);
@@ -327,13 +373,14 @@ class SuiviController extends AbstractController
                 $mesure   = $this->fetchData($historiqueRepos, 'selectHistoriquesMesureParVersions', $mapVersions);
                 $severity = $this->fetchData($historiqueRepos, 'selectHistoriqueAnomalieParVersions', $mapVersions);
                 $details  = $this->fetchData($historiqueRepos, 'selectHistoriqueDetailsParVersions', $mapVersions);
+                $graph    = $this->fetchData($historiqueRepos, 'selectHistoriqueAnomalieGraphiqueParVersions', $mapVersions);
             } else {
                 $suivi    = $this->fetchData($historiqueRepos, 'selectUnionHistoriqueProjet', $map);
                 $mesure   = $this->fetchData($historiqueRepos, 'selectUnionHistoriqueMesure', $map);
                 $severity = $this->fetchData($historiqueRepos, 'selectUnionHistoriqueAnomalie', $map);
                 $details  = $this->fetchData($historiqueRepos, 'selectUnionHistoriqueDetails', $map);
+                $graph    = $this->fetchData($historiqueRepos, 'selectHistoriqueAnomalieGraphique', $map);
             }
-            $graph = $this->fetchData($historiqueRepos, 'selectHistoriqueAnomalieGraphique', $map);
 
             // Traitement des données graphiques
             $graphData = $this->processGraphData($graph['request']);
@@ -403,6 +450,21 @@ class SuiviController extends AbstractController
         }
         if ($mavenKey === '') {
             throw $this->createNotFoundException('Clé Maven manquante.');
+        }
+
+        // MODIF 2026-07-16 : le rapport PDF ne vérifiait que l'existence d'un
+        // historique pour la clé Maven, pas son appartenance au groupe fonctionnel
+        // de l'utilisateur connecté — contrairement à la route web /suivi. Un
+        // utilisateur connaissant la clé Maven exacte d'un projet hors de son
+        // périmètre pouvait donc en générer le PDF alors que la page HTML le lui
+        // refusait. Alignement sur le même contrôle que suivi().
+        $groupes = $this->appUser()->getListeGroupeFonctionnel();
+        if (empty($groupes)) {
+            throw $this->createNotFoundException(self::$erreur404);
+        }
+        $listeProjet = $this->listeProjet($mavenKey, $groupes);
+        if ($listeProjet['code'] === 406) {
+            throw $this->createNotFoundException($listeProjet['message'] ?? self::$erreur406);
         }
 
         $download = (bool) $request->query->get('download', false);

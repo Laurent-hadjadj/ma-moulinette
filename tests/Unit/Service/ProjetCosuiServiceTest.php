@@ -270,6 +270,87 @@ class ProjetCosuiServiceTest extends TestCase
         $this->assertSame('up', $result['evolution_bug_blocker']);
     }
 
+    public function testGenerateRenderComputesRepartitionPercentWhenPartial(): void
+    {
+        $this->histoRepo->expects($this->once())
+            ->method('selectHistoriqueProjetLast')
+            ->willReturn(['code' => 200, 'infos' => [$this->sampleNotesRow()]]);
+
+        $this->histoRepo->expects($this->once())
+            ->method('selectHistoriqueProjetReference')
+            ->willReturn(['code' => 200, 'reference' => [$this->sampleReferenceRow()]]);
+
+        $this->repartRepo->expects($this->once())
+            ->method('findLatestSetupByMavenKey')
+            ->willReturn(['code' => 200, 'result' => ['setup' => 1234567890, 'control' => 'partiel (33%)']]);
+
+        $result = $this->service->generateRender('fr.ma-moulinette:ma-moulinette');
+
+        $this->assertSame(1234567890, $result['setup']);
+        $this->assertSame(33, $result['repartition_percent']);
+    }
+
+    public function testGenerateRenderRepartitionPercentIsFullWhenComplete(): void
+    {
+        $this->histoRepo->expects($this->once())
+            ->method('selectHistoriqueProjetLast')
+            ->willReturn(['code' => 200, 'infos' => [$this->sampleNotesRow()]]);
+
+        $this->histoRepo->expects($this->once())
+            ->method('selectHistoriqueProjetReference')
+            ->willReturn(['code' => 200, 'reference' => [$this->sampleReferenceRow()]]);
+
+        $this->repartRepo->expects($this->once())
+            ->method('findLatestSetupByMavenKey')
+            ->willReturn(['code' => 200, 'result' => ['setup' => 1234567890, 'control' => 'complet (100%)']]);
+
+        $result = $this->service->generateRender('fr.ma-moulinette:ma-moulinette');
+
+        $this->assertSame(100, $result['repartition_percent']);
+    }
+
+    public function testGenerateRenderRepartitionPercentIsNullWhenNoSetup(): void
+    {
+        $this->histoRepo->expects($this->once())
+            ->method('selectHistoriqueProjetLast')
+            ->willReturn(['code' => 200, 'infos' => [$this->sampleNotesRow()]]);
+
+        $this->histoRepo->expects($this->once())
+            ->method('selectHistoriqueProjetReference')
+            ->willReturn(['code' => 200, 'reference' => [$this->sampleReferenceRow()]]);
+
+        $this->repartRepo->expects($this->once())
+            ->method('findLatestSetupByMavenKey')
+            ->willReturn(['code' => 200, 'result' => 'NaN']);
+
+        $result = $this->service->generateRender('fr.ma-moulinette:ma-moulinette');
+
+        $this->assertSame('NaN', $result['setup']);
+        $this->assertNull($result['repartition_percent']);
+    }
+
+    public function testGenerateRenderPropagatesErrorWhenSetupRepositoryFails(): void
+    {
+        // MODIF 2026-07-16 : avant correction, cette erreur était avalée silencieusement
+        // ('NoN' affiché sans aucun message) — ce test verrouille la propagation correcte.
+        $this->histoRepo->expects($this->once())
+            ->method('selectHistoriqueProjetLast')
+            ->willReturn(['code' => 200, 'infos' => [$this->sampleNotesRow()]]);
+
+        $this->histoRepo->expects($this->once())
+            ->method('selectHistoriqueProjetReference')
+            ->willReturn(['code' => 200, 'reference' => [$this->sampleReferenceRow()]]);
+
+        $this->repartRepo->expects($this->once())
+            ->method('findLatestSetupByMavenKey')
+            ->willReturn(['code' => 503, 'erreur' => 'setup repository down']);
+
+        $result = $this->service->generateRender('fr.ma-moulinette:ma-moulinette');
+
+        $this->assertSame(503, $result['code']);
+        $this->assertSame('setup repository down', $result['trace']);
+    }
+
     public function testGenerateRenderProceedsWhenReferenceIsEmpty(): void
     {
         // Cas : reference renvoie result=false → on continue sans injecter les données de référence.

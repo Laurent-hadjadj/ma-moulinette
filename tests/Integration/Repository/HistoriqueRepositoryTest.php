@@ -509,6 +509,25 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $this->assertEmpty($r['erreur'], $r['erreur']);
     }
 
+    /**
+     * MODIF 2026-07-16 : verrouille le fix du graphique de courbe cumulée
+     * (page Suivi) qui ignorait la liste de suivi personnalisée.
+     */
+    public function testSelectHistoriqueAnomalieGraphiqueParVersions(): void
+    {
+        self::bootKernel();
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+
+        $map = ['maven_key' => self::$mavenKey, 'versions' => ['1.3.0-RELEASE']];
+
+        $historiqueRepository = $entityManager->getRepository(Historique::class);
+        $r = $historiqueRepository->selectHistoriqueAnomalieGraphiqueParVersions($map);
+
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
+        $this->assertEmpty($r['erreur'], $r['erreur']);
+    }
+
     protected function tearDown(): void
     {
         parent::tearDown();

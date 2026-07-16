@@ -5,6 +5,21 @@ Depuis la v2.0.0, Ma-Moulinette utilise **une seule base PostgreSQL 18**, dans u
 !!! note "🪶 SQLite décommissionné"
     Jusqu'en v1.6.0, l'application utilisait deux bases SQLite distinctes (`data.db` pour les données de collecte, `temp.db` pour les calculs intermédiaires de répartition). La migration vers PostgreSQL a fusionné les deux dans un schéma unique. L'historique détaillé de cette migration est dans `CHANGELOG.md` ; les scripts SQL de l'époque SQLite ne sont plus maintenus.
 
+## 📊 Vue d'ensemble chiffrée
+
+Décompte réel des objets déclarés dans `migrations/PosgreSQL/` (un fichier SQL = une définition, comptage exhaustif, pas une estimation) :
+
+| Type d'objet | Nombre | Source |
+| --- | :---: | --- |
+| Tables | 45 (44 *logged* + 1 *UNLOGGED*, voir ci-dessous) | `20_tables/*.sql` |
+| Vues | 5 | `30_views/*.sql` |
+| Index | 142 | `40_indexes/indexes.sql` |
+| Fonctions PL/pgSQL | 1 (`purge_batch_profiling`) | `50_functions/*.sql` |
+| Commentaires (`COMMENT ON`) | 868 | `60_comments/comments.sql` |
+| Contraintes (`ADD CONSTRAINT`, dont clés étrangères) | 41 | `70_constraints/constraints.sql` |
+| Séquences explicites | 0 (colonnes `GENERATED ... AS IDENTITY`, séquences implicites) | — |
+| Triggers | 0 | — |
+
 ## 📂 Organisation des scripts de migration
 
 Le schéma est défini par des scripts SQL bruts dans `migrations/PosgreSQL/`, organisés par type d'objet et exécutés dans un ordre précis (voir `99_master_install.sql`) :
@@ -32,6 +47,21 @@ psql -U postgres -v ON_ERROR_STOP=1 -f 99_master_install.sql
 
 !!! caution "⚠️ Deux mécanismes de migration coexistent"
     `doctrine/doctrine-migrations-bundle` est présent dans `composer.json` et configuré (`config/packages/doctrine_migrations.yaml`, namespace `Migrations` → `migrations/`), mais **le dossier ne contient aucune classe de migration PHP** : le schéma réel est piloté par les scripts SQL ci-dessus, complétés en développement par `php bin/console doctrine:schema:update --force` pour resynchroniser rapidement le mapping Doctrine (`#[ORM\Column(name: ...)]`) sur la base. En cas d'erreur `Undefined column` après un changement d'entité, comparer d'abord le `name:` de la colonne au script `20_tables/<table>.sql` correspondant — un décalage entre les deux est la cause la plus fréquente.
+
+## 🧊 Tables logged vs tables UNLOGGED
+
+PostgreSQL propose un mode `UNLOGGED` pour les tables : les écritures ne passent pas par le WAL (journal de transactions), ce qui les rend plus rapides mais **non répliquées** et **non garanties après un crash ou un arrêt non propre du serveur** — leur contenu est alors automatiquement vidé (`TRUNCATE` implicite) au redémarrage. C'est un mécanisme PostgreSQL natif (`CREATE UNLOGGED TABLE`), différent d'une table `TEMPORARY` (qui, elle, est propre à une session/connexion et disparaît à sa fermeture).
+
+Dans `migrations/PosgreSQL/`, une seule table utilise ce mécanisme aujourd'hui :
+
+| Table | Mode | Rôle |
+| --- | --- | --- |
+| `repartition_temp` | `UNLOGGED` | Tampon de collecte détaillée pour [Répartition par module](../application/repartition_details.md) — un volume élevé de lignes écrites/purgées à chaque cycle, sans besoin de durabilité (les données utiles sont réécrites dans `repartition` une fois l'analyse terminée) |
+
+Toutes les autres tables du schéma (y compris `repartition`, la table finale versionnée) sont des tables **`logged`** classiques, avec garantie de durabilité standard.
+
+!!! caution "⚠️ À confirmer : d'autres tables candidates au mode `UNLOGGED` ?"
+    Un grep exhaustif de `migrations/PosgreSQL/` ne trouve `CREATE UNLOGGED TABLE` que sur `repartition_temp`. Si d'autres tables tampons/sensibles sont censées bénéficier du même comportement de purge automatique, leur DDL ne le déclare pas actuellement — à vérifier avec l'équipe avant de les lister ici.
 
 ## 🔗 Convention relationnelle
 
@@ -132,7 +162,8 @@ erDiagram
 | `todo` | Occurrences `TODO`/`FIXME` |
 | `profiles`, `profiles_historique` | Profils qualité SonarQube suivis |
 | `properties` | Propriétés de configuration par projet |
-| `repartition`, `repartition_temp` | Répartition des indicateurs par module (frontend/backend/autre) |
+| `repartition` | Répartition des indicateurs par module (frontend/backend/autre), résultat final versionné |
+| `repartition_temp` | Tampon de collecte détaillée — table `UNLOGGED`, vidée automatiquement au redémarrage (voir [🧊 Tables simples vs `UNLOGGED`](#-tables-simples-logged-vs-tables-unlogged)) |
 | `clean_code` | Indicateurs Clean Code (nouveau modèle SonarQube) |
 
 ### 📈 Activité SonarQube

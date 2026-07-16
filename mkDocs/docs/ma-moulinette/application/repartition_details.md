@@ -1,7 +1,7 @@
 # 🧩 Répartition détaillée par module
 
 Analyse la répartition des signalements SonarQube (fiabilité, sécurité, maintenabilité) par module applicatif (frontend/backend/autre/inconnu — voir [Architecture des applications Java](../architecture/architecture-java.md)).
-Accessible depuis [Projet](projet.md) via un lien signé (jeton), rôle **`ROLE_COLLECTE`** requis pour toutes les actions de cette page (bouton d'ouverture masqué sans ce rôle, et vérifié à nouveau côté serveur au chargement).
+Accessible depuis [Projet](projet.md) via un jeton obfusqué (confort de navigation, pas une signature — voir [COSUI](cosui.md)), rôle **`ROLE_COLLECTE`** requis pour toutes les actions de cette page (bouton d'ouverture masqué sans ce rôle, et vérifié à nouveau côté serveur au chargement — c'est ce contrôle de rôle par le pare-feu/serveur qui constitue la vraie protection, pas le jeton).
 
 ## 🗺️ Cartographie — adhérences avec les autres pages
 
@@ -12,12 +12,15 @@ Le **bandeau commun** est identique sur toutes les pages — voir [Page d'accuei
 flowchart TD
     Proj[📁 Projet] -->|"bouton Répartition par Module"<br/>jeton signé + maven_key<br/>ROLE_COLLECTE| Repart[🧩 Répartition détaillée]
     Repart -->|"écrit"| Tab[(repartition)]
-    Tab -->|"dernier cycle control = complet 100%"| Cosui[📅 COSUI]
+    Tab -->|"dernier setup, sans filtre sur control"| Cosui[📅 COSUI]
     Repart -.->|"tampon transitoire"| Temp[(repartition_temp<br/>UNLOGGED)]
 ```
 <!-- markdownlint-enable MD046 -->
 
-Aucun bouton ne repart de cette page vers COSUI directement : c'est [COSUI](cosui.md) qui, de son côté, va relire le dernier cycle complet de `repartition` pour ce projet — la dépendance est à sens unique (Répartition alimente, COSUI consomme).
+Aucun bouton ne repart de cette page vers COSUI directement : c'est [COSUI](cosui.md) qui, de son côté, va relire `repartition` pour ce projet — la dépendance est à sens unique (Répartition alimente, COSUI consomme).
+
+!!! caution "⚠️ COSUI ne filtre pas sur `control` — contrairement à ce qu'on pourrait attendre"
+    `RepartitionRepository::findLatestSetupByMavenKey()` (utilisée par COSUI) prend le **dernier `setup` tout court** (`ORDER BY setup DESC LIMIT 1`), sans condition sur `control`. Contrairement au bouton **Historique** de cette page (qui lui filtre bien sur `control = 'complet (100%)'`), COSUI peut donc afficher une répartition **partielle** (`partiel (33%)`, `partiel (66%)`, voire `inconnue`) sans avertissement — voir [COSUI](cosui.md#-répartition-des-défauts).
 
 ## 🧭 Chemin de fer de la page
 

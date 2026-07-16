@@ -784,6 +784,56 @@ class HistoriqueRepository extends ServiceEntityRepository
     }
 
     /**
+     * [Description for selectHistoriqueAnomalieGraphiqueParVersions]
+     * MODIF 2026-07-16 : variante de selectHistoriqueAnomalieGraphique() qui respecte
+     * la liste de suivi personnalisée (mêmes versions que les autres tableaux de la
+     * page Suivi quand $modeVersionsChoisies est actif), au lieu de toujours remonter
+     * tout l'historique sans filtre.
+     *
+     * @param array<int|string, mixed> $map  [maven_key, versions: string[]]
+     *
+     * @return array<int|string, mixed>
+     *
+     * Created at: 16/07/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function selectHistoriqueAnomalieGraphiqueParVersions(array $map): array
+    {
+        $versions = $map['versions'] ?? [];
+        $placeholders = array_map(static fn(int $i) => ':v' . $i, array_keys($versions));
+        $inClause = implode(', ', $placeholders);
+
+        $sql = "SELECT bugs AS bug,
+                        vulnerabilities AS sec,
+                        code_smells AS code_smell,
+                        date_version AS date
+                FROM ma_moulinette.historique
+                WHERE maven_key = :maven_key AND (initial = true" .
+                ($inClause !== '' ? " OR version IN ($inClause)" : '') . ")
+                GROUP BY bugs, vulnerabilities, code_smells, date_version
+                ORDER BY date ASC";
+
+        try {
+                $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+                $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+                foreach ($versions as $i => $v) {
+                    $stmt->bindValue(':v' . $i, $v);
+                }
+                $graph = $stmt->executeQuery()->fetchAllAssociative();
+
+            // Conversion des dates en format ISO 8601 (DateTime::ATOM)
+            array_walk($graph, function (&$row) {
+                $row['date'] = (new \DateTime($row['date']))->format(\DateTime::ATOM);
+            });
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
+        }
+        /** on prépare la réponse */
+        return ['code' => 200, 'request' => $graph, 'erreur' => ''];
+    }
+
+    /**
      * [Description for insertHistoriqueAjoutProjet]
      * On ajoute une version à l'historique à partir des données SonarQube historisées.
      * @param array<int|string, mixed> $map
