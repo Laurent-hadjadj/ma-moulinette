@@ -444,14 +444,14 @@ export const remplissage = async function(maven_key) {
     const logger3 = document.getElementById('js-logger-error');
     const logger4 = document.getElementById('js-logger-debug');
 
-      /* MODIF 2026-05-04 : le backend renvoie maintenant null
-       * (au lieu de -1) quand la table logger est vide (plugin SonarQube inactif).
-       * Pour le dataset HTML, on coalesce vers 0 (l'historique enregistre une valeur numérique).
-       * Pour l'affichage (plus bas via displayNumber), null → '-' (distingue "pas de plugin" de "0 logger"). */
-      logger1.dataset.loggerInfo = String(t.logger_info ?? 0);
-      logger2.dataset.loggerWarn = String(t.logger_warn ?? 0);
-      logger3.dataset.loggerError = String(t.logger_error ?? 0);
-      logger4.dataset.loggerDebug = String(t.logger_debug ?? 0);
+    /* MODIF 2026-05-04 : le backend renvoie maintenant null
+      * (au lieu de -1) quand la table logger est vide (plugin SonarQube inactif).
+      * Pour le dataset HTML, on coalesce vers 0 (l'historique enregistre une valeur numérique).
+      * Pour l'affichage (plus bas via displayNumber), null → '-' (distingue "pas de plugin" de "0 logger"). */
+    logger1.dataset.loggerInfo = String(t.logger_info ?? 0);
+    logger2.dataset.loggerWarn = String(t.logger_warn ?? 0);
+    logger3.dataset.loggerError = String(t.logger_error ?? 0);
+    logger4.dataset.loggerDebug = String(t.logger_debug ?? 0);
 
     $('#js-logger-liste').html(displayNumber(t.total));
     $('#js-logger-total').html(displayNumber(t.total));
@@ -459,6 +459,18 @@ export const remplissage = async function(maven_key) {
     $('#js-logger-warn').html(displayNumber(t.logger_warn));
     $('#js-logger-error').html(displayNumber(t.logger_error));
     $('#js-logger-debug').html(displayNumber(t.logger_debug));
+
+    /** Injecte les pourcentages */
+    $('#js-logger-info-pct').html(displayPercent(t.logger_info_pct));
+    $('#js-logger-warn-pct').html(displayPercent(t.logger_warn_pct));
+    $('#js-logger-error-pct').html(displayPercent(t.logger_error_pct));
+    $('#js-logger-debug-pct').html(displayPercent(t.logger_debug_pct));
+
+    /** Injecte les barres de pourcentage */
+    $('#js-logger-info-bar').css('--percent', t.logger_info_pct ?? 0);
+    $('#js-logger-warn-bar').css('--percent', t.logger_warn_pct ?? 0);
+    $('#js-logger-error-bar').css('--percent', t.logger_error_pct ?? 0);
+    $('#js-logger-debug-bar').css('--percent', t.logger_debug_pct ?? 0);
 
     log(' - 🎨 [Peinture] Affichage des informations sur les loggers JAVA.');
   } catch(error) {
@@ -828,11 +840,11 @@ export const remplissage = async function(maven_key) {
       t19a.dataset.nombreInconnu = t.inconnu;
 
       /* Répartition des violations par sévérité */
-      $('#js-nombre-violation-bloquant').html(t.blocker);
-      $('#js-nombre-violation-critique').html(t.critical);
-      $('#js-nombre-violation-info').html(t.info);
-      $('#js-nombre-violation-majeur').html(t.major);
-      $('#js-nombre-violation-mineur').html(t.minor);
+      $('#js-nombre-violation-bloquant').html(displayNumber(t.blocker));
+      $('#js-nombre-violation-critique').html(displayNumber(t.critical));
+      $('#js-nombre-violation-info').html(displayNumber(t.info));
+      $('#js-nombre-violation-majeur').html(displayNumber(t.major));
+      $('#js-nombre-violation-mineur').html(displayNumber(t.minor));
       const totalCodeSmellReal = Number(t.blocker + t.critical + t.major + t.minor);
 
       // On ajoute un séparateur entre les deux résultats
