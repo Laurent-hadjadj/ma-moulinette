@@ -84,7 +84,7 @@ flowchart LR
 
 !!! note "🔑 Prérequis de collecte : un token utilisateur administrateur"
     La commande `app:activity:collecte` interroge l'API Compute Engine (`api/ce/activity`), qui exige la permission **« Administer System »**.
-    Un **token d'analyse globale ne suffit pas** (`403 Insufficient privileges`) : il faut un **token utilisateur personnel** généré depuis un compte **administrateur**, placé dans `SONAR_ACTIVITY_TOKEN` (variable distincte de `SONAR_TOKEN`).
+    Un **token d'analyse globale ne suffit pas** (`403 Insufficient privileges`) : il faut un **token utilisateur personnel** généré depuis un compte **administrateur**, placé dans `SONAR_ACTIVITY_TOKEN` (variable distincte de `SONAR_TOKEN`) — voir [Jetons d'authentification SonarQube](../developpement/securite.md#-jetons-dauthentification-sonarqube) pour le détail des 3 portées de jeton et pourquoi les jetons d'analyse (projet ou global) ne conviennent à aucun des deux tokens de cette application.
     Les bornes de période sont envoyées au format **ISO 8601 avec offset** (`2026-07-08T00:00:00+0200`), faute de quoi SonarQube renvoie `400 « cannot be parsed »`.
 
 !!! note "🔁 Fenêtre de collecte : reprise incrémentale ou backfill complet"
