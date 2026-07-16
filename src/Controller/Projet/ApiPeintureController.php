@@ -1464,6 +1464,7 @@ class ApiPeintureController extends AbstractController
          * différent de `0` qui signifie "0 logger collecté".
          * Le frontend (displayHelper.displayNumber) affiche '-' pour null et '0' pour 0. */
         $loggerInfo = $loggerWarn = $loggerError = $loggerDebug = $total = null;
+        $loggerInfoPct = $loggerWarnPct = $loggerErrorPct = $loggerDebugPct = null;
 
         if (!empty($logger['liste'])) {
             $loggerInfo = $logger['liste']['logger_info'] ?? 0;
@@ -1473,6 +1474,12 @@ class ApiPeintureController extends AbstractController
 
             /** Calcul la somme des loggers */
             $total = (int) $loggerInfo + (int) $loggerWarn + (int) $loggerError + (int) $loggerDebug;
+
+            /* Calcul de la répartition en pourcentage pour chaque niveau de logger. */
+            $loggerInfoPct = $total > 0 ? round(($loggerInfo / $total) * 100, 2) : 0;
+            $loggerWarnPct = $total > 0 ? round(($loggerWarn / $total) * 100, 2) : 0;
+            $loggerErrorPct = $total > 0 ? round(($loggerError / $total) * 100, 2) : 0;
+            $loggerDebugPct = $total > 0 ? round(($loggerDebug / $total) * 100, 2) :   0;
         }
 
         return new JsonResponse([
@@ -1481,7 +1488,11 @@ class ApiPeintureController extends AbstractController
             'logger_info' => $loggerInfo,
             'logger_warn' => $loggerWarn,
             'logger_error' => $loggerError,
-            'logger_debug' => $loggerDebug
+            'logger_debug' => $loggerDebug,
+            'logger_info_pct' => $loggerInfoPct,
+            'logger_warn_pct' => $loggerWarnPct,
+            'logger_error_pct' => $loggerErrorPct,
+            'logger_debug_pct' => $loggerDebugPct
         ], Response::HTTP_OK);
     }
 
