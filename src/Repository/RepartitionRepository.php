@@ -310,7 +310,10 @@ class RepartitionRepository extends ServiceEntityRepository
    */
   public function findLatestSetupByMavenKey(string $maven_key): array
   {
-      $sql = 'SELECT setup
+      /* MODIF 2026-07-16 : ajout de la colonne control (état de complétude
+       * de la dernière répartition), utilisée par COSUI pour signaler un
+       * cycle partiel. */
+      $sql = 'SELECT setup, control
               FROM ma_moulinette.repartition
               WHERE maven_key = :maven_key
               ORDER BY setup DESC LIMIT 1';
@@ -318,7 +321,7 @@ class RepartitionRepository extends ServiceEntityRepository
       try {
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
               $stmt->bindValue(self::$mavenKey, $maven_key);
-              $result = $stmt->executeQuery()->fetchOne();
+              $result = $stmt->executeQuery()->fetchAssociative();
     } catch (\Throwable $e) {
         return $this->handleDatabaseException($e);
     }
