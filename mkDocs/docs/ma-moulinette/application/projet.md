@@ -20,7 +20,7 @@ flowchart TD
 ```
 <!-- markdownlint-enable MD046 -->
 
-Deux façons de naviguer : un vrai lien `<a href>` (fil d'Ariane « Accueil », bouton « Dependency-Check ») ou un bouton piloté par JavaScript qui construit l'URL cible avec un jeton signé et la clé du projet sélectionné (`Répartition`, `Suivi`, `COSUI`, `OWASP`, `Clean Code`) — dans les deux cas, un projet doit être sélectionné au préalable.
+Deux façons de naviguer : un vrai lien `<a href>` (fil d'Ariane « Accueil », bouton « Dependency-Check ») ou un bouton piloté par JavaScript qui construit l'URL cible avec un jeton obfusqué (ROT13+Base64, pas une signature — confort de navigation, la vraie sécurité vient du pare-feu et des contrôles de rôle/périmètre serveur) et la clé du projet sélectionné (`Répartition`, `Suivi`, `COSUI`, `OWASP`, `Clean Code`) — dans les deux cas, un projet doit être sélectionné au préalable.
 
 ## 🧭 Chemin de fer de la page
 
@@ -67,7 +67,7 @@ L'icône ⭐ à côté du titre bascule le projet actuellement sélectionné en 
 
 Le bouton **Mes projets** ouvre directement la page dédiée `/projet/mes-projets` (route `mes_projets`) : un **tableau complet** (volumétrie, notes A-E, violations, composants, qualité du code, loggers, tests) pour tous les projets du **groupe fonctionnel** de l'utilisateur — pas seulement ses favoris.
 
-!!! note "✅ Modale supprimée, fonctionnalités unifiées (2026-07-14)"
+!!! note "✅ Modale supprimée, fonctionnalités unifiées"
     Le bouton ouvrait auparavant une **modale** limitée aux projets favoris, avec des raccourcis d'action (bulles **V / R / S / C / O / RM**) déjà simplifiés une première fois (raccourcis retirés) le même jour.
     Cette modale faisait doublon avec la page `/projet/mes-projets` (jusque-là accessible uniquement depuis le plan du site) : les deux portaient le même nom pour des listes différentes (favoris vs groupe fonctionnel entier).
     La modale, son JS (`afficheMesProjets()`, gestionnaires de clic) et son template (`_modal_liste_projet.html.twig`) ainsi que l'endpoint `projet_mes_applications_liste` ont été **supprimés** ; le bouton pointe désormais directement vers la page dédiée, plus riche.
@@ -112,6 +112,9 @@ Identité SonarQube du projet : nom, clé d'analyse, clé Maven, distribution de
 - Nombre de tags `TODO` (bouton vers le détail par langage/fichier) ;
 - Nombre de loggers Java, avec accès au détail par framework et à un graphique de répartition.
 
+!!! note "✅ Répartition en pourcentage par niveau de logger"
+    La modale de détail des loggers affiche désormais, pour chaque niveau (`info`/`warn`/`error`/`debug`), un pourcentage (`niveau ÷ total`) et une barre de proportion en CSS (`width: calc(var(--percent) * 1%)`), en plus du nombre brut.
+
 ### 🏀 Bloc « Projet » (volumétrie + qualité interne)
 
 - Statut de la **Quality Gate** SonarQube (badge coloré) ;
@@ -120,10 +123,10 @@ Identité SonarQube du projet : nom, clé d'analyse, clé Maven, distribution de
 - Tests unitaires : nombre total, erreurs, échecs, ignorés, taux de succès ;
 - Violations acceptées / faux positifs (marquées comme telles après revue).
 
-!!! note "✅ Aide branchée sur la complexité (2026-07-14)"
+!!! note "✅ Aide branchée sur la complexité"
     Un bouton **ℹ️** (« Aide ») a été ajouté au titre du bloc « Projet », ouvrant `_modal_complexity.html.twig` : une page pédagogique qui explique la complexité cyclomatique et cognitive (concepts SonarQube), **et** la formule réellement utilisée par Ma-Moulinette pour la note A-E affichée (`ratio = ncloc ÷ complexité`, seuils `≤3→E … >18→A`).
 
-!!! note "✅ Note de complexité inversée — corrigée (2026-07-14)"
+!!! note "✅ Note de complexité inversée"
     Le ratio `ncloc ÷ complexité` était converti en note A-E à l'envers : un ratio **faible** (complexité dense sur peu de lignes — code a priori moins bon) obtenait **A** (verte, meilleure), et un ratio **élevé** (code plus simple) obtenait **E** (rouge, pire).
     Corrigé dans `BuildMapHistoryService::getComplexityRating()` : ratio faible → **E**, ratio élevé → **A**, cohérent avec la convention A=bon/vert utilisée partout ailleurs dans l'app.
     Un ratio `null` (complexité absente) renvoie désormais `'--'` au lieu de `'A'` par accident de coercition PHP.
@@ -186,7 +189,7 @@ sequenceDiagram
     Contrairement au sélecteur de projet (filtré par groupe fonctionnel), les routes `ApiPeintureController` ne vérifient que l'**existence** d'une clé maven en base — pas son appartenance au périmètre de l'utilisateur connecté.
     En théorie, un utilisateur qui connaîtrait la clé Maven exacte d'un projet hors de son périmètre pourrait en afficher les données via une requête directe.
 
-!!! note "✅ Erreurs SonarQube correctement relayées pendant la collecte (2026-07-14)"
+!!! note "✅ Erreurs SonarQube correctement relayées pendant la collecte"
     `BatchCollecteInformationProjetController::controlVersionProjet()` n'anticipait que 3 codes d'erreur (401/404/503) : tout autre code (ex. `403 Insufficient privileges`) tombait dans une branche générique qui **remplaçait le vrai code/message par un « 500 » opaque**.
     Corrigé : le 403 est désormais géré explicitement, et le fallback générique **relaie le vrai code/message** de SonarQube au lieu de le masquer.
     `ApiCollecteController` envoyait aussi un texte placeholder (« Pas de données disponible. ») à la place d'une trace technique absente, ce qui affichait à tort un bouton « détails techniques » vide côté JS — corrigé pour envoyer `null`.
