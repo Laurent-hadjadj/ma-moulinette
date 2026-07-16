@@ -35,10 +35,24 @@ class LogArchiveService
     }
 
     /**
+     * [Description for listLogs]
      * Liste les logs selon l'environnement et le type
      *
      * @param string|null $env
-     * @param array|null $types
+     * @param array<int, string>|null $types
+     *
+     * @return list<array{
+     *     name: string,
+     *     path: string,
+     *     type: string,
+     *     env: string|null,
+     *     size: int|false,
+     *     mtime: int|false
+     * }>
+     *
+     * Created at: 14/07/2026 16:27:04 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function listLogs(?string $env = null, ?array $types = null): array
     {
@@ -84,6 +98,19 @@ class LogArchiveService
         return $logs;
     }
 
+    /**
+     * [Description for createZip]
+     * Archive les logs déjà listés par listLogs() : chaque entrée doit porter
+     * au moins les clés 'path' (chemin absolu) et 'name' (nom dans l'archive).
+     *
+     * @param array<int, array<string, mixed>> $logs
+     *
+     * @return string
+     *
+     * Created at: 14/07/2026 16:27:55 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function createZip(array $logs): string
     {
         if (empty($logs)) {
@@ -106,6 +133,20 @@ class LogArchiveService
         return $zipPath;
     }
 
+    /**
+     * [Description for createZipFromFilenames]
+     * Archive une sélection de journaux désignés par leur seul nom de fichier.
+     * Tout nom contenant un séparateur de chemin, ou ne résolvant pas vers un
+     * fichier du dossier de logs, est ignoré (protection contre la traversée de répertoire).
+     *
+     * @param array<int, string> $filenames
+     *
+     * @return string
+     *
+     * Created at: 14/07/2026 16:29:37 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     public function createZipFromFilenames(array $filenames): string
     {
         if (empty($filenames)) {
