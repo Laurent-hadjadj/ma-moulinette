@@ -85,6 +85,15 @@
         <span id="js-setup" class="open-sans color-noir">{{setup}}</span>
       </p>
 
+      {% if repartition_percent is not null and repartition_percent < 100 %}
+        <div id="js-repartition-partielle" class="callout warning" role="alert">
+          <p class="open-sans">
+            <span aria-hidden="true">⚠️</span>
+            La répartition par module affichée est <strong>partielle</strong> ({{ repartition_percent }}&nbsp;%) : certaines catégories n'ont pas été entièrement analysées. Relancez une analyse complète depuis la page « Répartition par module » (accessible depuis Projet).
+          </p>
+        </div>
+      {% endif %}
+
       <div class="grid-x">
         <p class="open-sans">Afficher les variations ?</p>
         <div class="switch switch-cosui small">
