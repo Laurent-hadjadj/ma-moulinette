@@ -13,10 +13,14 @@
 
 namespace App\Controller\Cosui;
 
+use App\Controller\Traits\AppUserAware;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{Request, Response};
 use \Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Entity\ListeProjet;
+use App\Repository\ListeProjetRepository;
 use App\Service\ProjetCosuiService;
 use App\Service\UserAgent\UserAgentTrackingFacade;
 
@@ -25,8 +29,12 @@ use App\Service\UserAgent\UserAgentTrackingFacade;
  */
 class CosuiController extends AbstractController
 {
+    use AppUserAware;
 
     private static string $erreur400 = '❌ La requête est incorrecte (Erreur 400).';
+    private static string $erreur404 = '⚠️ Vous devez être rattaché à une équipe (Erreur 404).';
+    private static string $erreur406 = "⚠️ Je n'ai pas trouvé de projets pour ton équipe. " .
+        "Vérifie le nom du tag utilisé dans SonarQube (Erreur 406).";
     private static string $page = 'projet/cosui.html.twig';
 
     /**
@@ -37,10 +45,65 @@ class CosuiController extends AbstractController
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     public function __construct(
+        private EntityManagerInterface $em,
         private LoggerInterface $logger,
         private ProjetCosuiService $cosuiService,
         private UserAgentTrackingFacade $tracking
     ) {
+    }
+
+    /**
+     * [Description for listeProjet]
+     *
+     * Vérifie que la clé Maven appartient bien au groupe fonctionnel de l'utilisateur.
+     * aligné sur SuiviController::listeProjet() — jusqu'ici COSUI
+     * n'avait aucune vérification de périmètre, seulement le pare-feu (ROLE_UTILISATEUR).
+     *
+     * @param string $maven_key
+     * @param array<int, string> $groupes
+     *
+     * @return array<int|string, mixed>
+     *
+     * Created at: 16/07/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function listeProjet(string $maven_key, array $groupes): array
+    {
+        $listeProjetRepository = $this->em->getRepository(ListeProjet::class);
+
+        $tagPrefixes = ListeProjetRepository::normalizeGroupesToTagPrefixes($groupes);
+        $requestListe = $listeProjetRepository->selectListeProjetByGroupe($tagPrefixes);
+        if ($requestListe['code'] != 200) {
+            return ['code' => $requestListe['code']];
+        }
+
+        $projets = $requestListe['liste'];
+
+        if (empty($projets)) {
+            return [
+                'code' => 406,
+                'message' => self::$erreur406
+            ];
+        }
+
+        $idFound = false;
+        foreach ($projets as $item) {
+            if (isset($item['id']) && $item['id'] === $maven_key) {
+                $idFound = true;
+                break;
+            }
+        }
+        if ($idFound === false) {
+            $message = "[COSUI] ⚠️ Le projet n'est pas présent dans la liste de projets de l'utilisateur.";
+            $this->logger->warning($message);
+
+            return [
+                'code' => 406,
+                'message' => $message
+            ];
+        }
+        return ['code' => 200];
     }
 
     /**
@@ -92,7 +155,7 @@ class CosuiController extends AbstractController
      */
     private function toHttpStatus(int $code): int
     {
-        return in_array($code, [400, 401, 403, 404, 409, 422, 500, 503], true) ? $code : 500;
+        return in_array($code, [400, 401, 403, 404, 406, 409, 422, 500, 503], true) ? $code : 500;
     }
 
     /**
@@ -168,6 +231,21 @@ class CosuiController extends AbstractController
         }
 
         $this->logger->info('[COSUI] ℹ️ Token décodé, maven_key reçu', ['maven_key' => $maven_key]);
+
+        // MODIF 2026-07-14 : ajout du filtrage par groupe fonctionnel, aligné sur
+        // SuiviController::suivi() — jusqu'ici seul le pare-feu (ROLE_UTILISATEUR)
+        // protégeait cette page, sans vérification de périmètre.
+        $groupes = $this->appUser()->getListeGroupeFonctionnel();
+        if (empty($groupes)) {
+            $this->logger->warning('[COSUI] ⚠️ Utilisateur sans groupe fonctionnel');
+            return $this->addFlashAndRender(404, 'warning', self::$erreur404, null, $render);
+        }
+        $listeProjet = $this->listeProjet($maven_key, $groupes);
+        if ($listeProjet['code'] === 406) {
+            $this->logger->warning('[COSUI] ⚠️ ' . $listeProjet['message']);
+            return $this->addFlashAndRender(406, 'warning', $listeProjet['message'], null, $render);
+        }
+
         try {
             $result = $this->cosuiService->generateRender($maven_key);
 
