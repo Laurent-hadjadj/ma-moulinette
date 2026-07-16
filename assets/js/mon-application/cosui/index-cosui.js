@@ -30,7 +30,7 @@ import '../../auth/details.js';
 import { modalSafe } from '../../common/safeModal.js';
 
 /** On importe les constantes */
-import { zero, dix, vingt, trente, quarante, cinquante, soixante, soixanteDix, cent, quatreVingt } from '../../common/constante.js';
+import { zero, dix, vingt, trente, quarante, soixante, cent, quatreVingt } from '../../common/constante.js';
 
 import {Chart, registerables} from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -137,12 +137,18 @@ const dessineMoiUnRadar = function (dataset1, dataset2, label1, label2){
                   { value: dix, note: 'E' },
                   { value: zero, note: 'Z' }
                 ],
+                /* MODIF 2026-07-16 : alignement sur ProjetCosuiService::note2point() —
+                 * Hotspot est bien converti via la même grille A-F que Fiabilité/
+                 * Vulnérabilité/Maintenabilité côté serveur (construireRadarChart()),
+                 * contrairement à Couverture/Dette qui sont de vraies valeurs numériques
+                 * (pas de note lettre serveur à répliquer ici). */
                 'Hotspot': [
-                  { value: quatreVingt, note: 'A' },
-                  { value: soixanteDix, note: 'B' },
-                  { value: cinquante, note: 'C' },
+                  { value: cent, note: 'A' },
+                  { value: quatreVingt, note: 'B' },
+                  { value: soixante, note: 'C' },
                   { value: trente, note: 'D' },
-                  { value: zero, note: 'E' }
+                  { value: dix, note: 'E' },
+                  { value: zero, note: 'Z' }
                 ],
                 'Dette': [
                   { value: quatreVingt, note: 'A' },
