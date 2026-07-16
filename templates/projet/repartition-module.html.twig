@@ -61,7 +61,7 @@
         <li>
           <a class="callout open-sans">Tableau des sévérités par catégorie.</a>
           <ul class="menu vertical">
-            <div class="fieldset open-sans">
+            <fieldset class="fieldset open-sans">
               <legend><strong>Pour les anomalies ouvertes, confirmées et ré-ouvertes.</strong></legend>
               <br>
               <p class="ligne">
@@ -164,7 +164,7 @@
               <p class="ligne">
                 <strong>Maintenabilité</strong>&nbsp;:
                 <span id="nombre-code-smell" class="stat result"
-                      data-nombre-code-smell="{{information['CODE_SMELL']['total']}}">{{information['CODE_SMELL']['total']}}</span>
+                      data-nombre-code-smell="{{information['CODE_SMELL']['total']}}">{{information['CODE_SMELL']['total']|number_format(0, '.', ' ')}}</span>
               </p>
               <ul class="stats-list">
                 <li>
@@ -208,7 +208,7 @@
                         {{information['CODE_SMELL']['info']|number_format(0, '.', ' ')}}</span>
                 </li>
               </ul>
-            </div>
+            </fieldset>
           </ul>
         </li>
       </ul>
