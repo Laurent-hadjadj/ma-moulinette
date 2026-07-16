@@ -1,53 +1,93 @@
-# Ma-Moulinette en images
+# 📅 COSUI — Comité de suivi
 
-![Ma-Moulinette](/assets/images/home/home-000.jpg)
+Compare la **version courante** d'un projet (dernière ligne de `historique`, triée par date) à sa **version de référence** (ligne marquée `historique.initial = true`, définie depuis la page [Suivi](suivi.md#️-modifier-les-paramètres-dune-version)).
+Accessible depuis [Projet](projet.md) via un lien avec la clé Maven encodée.
 
-## Page COmité de SUIvi
+Aucun rôle métier spécifique n'est requis (`ROLE_UTILISATEUR` suffit — aucun contrôle de rôle explicite dans `CosuiController`, la seule protection vient du pare-feu global).
 
-Cette page affiche le tableau de suivi du Comité de Suivi des signalements SonarQube.
+!!! note "🔓 Pas un vrai jeton signé"
+    Comme sur [Répartition](repartition_details.md) et OWASP/Clean Code, le paramètre `token` de l'URL est une simple obfuscation **ROT13 + Base64** de la clé Maven (`CosuiController::decodeToken()`) — il n'y a aucune vérification cryptographique.
 
-![suivi](/assets/images/cosui/cosui-001.jpg)
+## 🗺️ Origine des données
 
-Le **setup** correspond à la valeur de la dernière analyse de répartition des signalements des modules de l'application. Si la valeur est à **NaN** le tableau affichera des valeurs égales à (0) zéro.
+```mermaid
+flowchart LR
+    Suivi[📈 Suivi<br/>marque une version<br/>initial = true] -.->|version de référence| Cosui[📅 COSUI]
+    Repart[🧩 Répartition par module<br/>dernier setup] -.->|répartition présentation/métier| Cosui
+    Hist[(historique)] --> Cosui
+```
 
-Le premier tableau présente les résultats de la dernière analyse SonarQube. Les informations sont les suivantes :
+Si aucune version de référence n'a été définie, les valeurs par défaut sont affichées (version « 0.0.0 », notes « F », compteurs à zéro) plutôt qu'une erreur bloquante. De même, si aucune [Répartition par module](repartition_details.md) n'a encore été lancée pour ce projet, le tableau « Répartition des défauts » reste vide (`--`).
 
-* **Application** : corresponds à la version de référence qui servira de version étalon pour les comparaisons.
-* **Critère** : rassemble les critères qualité du moins importants au plus importants.
-* **Version** : version de l'application.
-* **Bloquant** : signalements bloquants.
-* **Critique** : signalements critiques.
-* **Majeur** : signalements majeurs.
-* **Note** : note SonarQube.
+!!! note "✅ Avertissement affiché en cas de répartition partielle (2026-07-14)"
+    Un bandeau d'avertissement s'affiche désormais sous le `setup` dès que la répartition lue n'est pas complète : `complet (100%)` → rien, `partiel (66%)`/`partiel (33%)` → 66 %/33 %, `inconnue` → 0 %.
+    Le calcul (`ProjetCosuiService::controlToPercent()`) est fait une fois pour toutes côté serveur, pas dupliqué en JS.
 
-![suivi](/assets/images/cosui/cosui-002.jpg)
+COSUI est une page **100 % SSR** (server-side rendering) : elle ne fait **aucun appel réseau à SonarQube**, ni côté PHP ni côté JavaScript — tout provient de `historique` et `repartition` en base locale, via `ProjetCosuiService`.
 
-En cliquant sur l'icône située à côté de la date de référence présente dans la colonne **Application**, vous afficherez les informations de références.
+## 🧭 Chemin de fer de la page
 
-![suivi](/assets/images/cosui/cosui-003.jpg)
+<!-- markdownlint-disable MD046 -->
+```text
+Page COSUI
+│
+├── 🧵 Fil d'Ariane : Accueil › Projet › COSUI
+├── 🔔 Zone de messages (flash serveur uniquement — aucun message JS, voir plus bas)
+│
+├── 🆔 Setup (dernier cycle de répartition connu pour ce projet)
+├── ⚠️ Bandeau « répartition partielle » (si control ≠ complet 100 %)
+├── 🔀 Interrupteur « Afficher les variations ? » (flèches ▲/▼/= , purement client)
+│
+├── 📊 Tableau de comparaison des notes
+│        ├── Colonne « Application référence » (+ bouton ℹ️ → modale de détail)
+│        ├── Maintenabilité / Fiabilité / Vulnérabilité / Hotspot
+│        └── Bloquant / Critique / Majeur / Note (référence vs courante)
+│
+├── 🧩 Tableau « Répartition des défauts » (version courante uniquement)
+│        └── Maintenabilité / Fiabilité / Vulnérabilité × Métier / Présentation × Bloquant/Critique/Majeur
+│
+├── 🕸️ Graphique radar (6 axes, référence vs courante)
+│
+└── 🪟 Modale « Projet de référence » (déjà chargée en SSR, pas de nouvel appel réseau)
+```
+<!-- markdownlint-enable MD046 -->
 
-Si vous n'avez pas choisi de projet de référence, vous aurez un message d'erreur.
+## 📊 Tableau de comparaison des notes
 
-![suivi](/assets/images/cosui/cosui-002a.jpg)
+Une colonne « référence » et une colonne « courante », avec pour chacune : version, date, notes de fiabilité/sécurité/maintenabilité/hotspot (badge coloré A-F), et le détail bloquant/critique/majeur par catégorie (bug, vulnérabilité, mauvaise pratique).
+Une icône ℹ️ à côté de la date de référence ouvre une fenêtre récapitulant en détail cette version de référence (les données sont déjà chargées côté serveur, aucun nouvel appel réseau).
 
-Il est possible d'afficher les variations entre la version de référence et la dernière version en cliquant sur le bouton **Afficher les variations ?**
+Un interrupteur **« Afficher les variations ? »** affiche/masque, purement côté navigateur (aucun rappel serveur), des flèches de tendance (▲/▼/=) à côté de chaque compteur, comparant référence et version courante.
 
-![suivi](/assets/images/cosui/cosui-004.jpg)
+## 🧩 Répartition des défauts
 
-Le dernier tableau présente la répartition des signalements en fonction des modules applicatifs (front, back). Si une analyse de la répartition des signalements n'a pas été lancée, les valeurs seront toujours *null*.
+Tableau croisé Maintenabilité/Fiabilité/Vulnérabilité × Présentation/Métier × Bloquant/Critique/Majeur — **pour la version courante uniquement** (pas de comparaison référence/courante ici, contrairement au tableau du dessus), alimenté par le dernier cycle de la page [Répartition par module](repartition_details.md).
 
-![suivi](/assets/images/cosui/cosui-005.jpg)
+## 🕸️ Graphique radar
 
-Le graphique ci-dessous affiche un graphique de type radar entre la version de référence et la version courante de l'application selon les créitères suivants :
+Compare visuellement référence et version courante sur 6 axes : fiabilité, vulnérabilité, hotspots, maintenabilité, couverture de tests, dette technique (ratio inversé). Les notes lettres sont converties en points sur 100 pour permettre le tracé (`note2point()` côté serveur).
 
-* [x] Fiabilité. 100 étant la meilleure note ;
-* [x] Vulnérabilité. 100 étant la meilleure note ;
-* [x] Hotspot. 100 étant la meilleure note ;
-* [x] Maintenabilité. 100 étant la meilleure note ;
-* [x] Couverture des tests unitaires. 100 étant la meilleure note ;
-* [x] Ratio de la dette technique. 0 étant la meilleure note ;
+!!! note "✅ Seuils du tooltip Hotspot alignés sur `note2point()` (2026-07-14)"
+    Le serveur (`ProjetCosuiService::note2point()`) utilise des seuils fixes (A=100/B=80/C=60/D=30/E=10/F=0) pour construire les points du radar — et `construireRadarChart()` convertit bien l'axe **Hotspot** via cette même grille, au même titre que Fiabilité/Vulnérabilité/Maintenabilité.
+    Les axes **Couverture** et **Dette** restent une bucketisation JS purement indicative (le serveur n'y calcule pas de note lettre, seulement une valeur numérique), donc rien à aligner pour eux.
 
-![suivi](/assets/images/cosui/cosui-006.jpg)
+## ⚠️ Messages remontés par la page
+
+COSUI n'utilise jamais `showMessage()` côté JavaScript (`index-cosui.js` ne contient aucun appel) — la page ne fait aucun appel AJAX propre, donc **tous les messages viennent du flash serveur** au chargement (`CosuiController::projetCosui()`).
+
+| Sévérité | Déclencheur | Message |
+| --- | --- | --- |
+| `error` | Paramètre `token` absent de l'URL | ❌ La requête est incorrecte (Erreur 400). |
+| `error` | Décodage du token en échec (base64/format invalide) | ❌ La requête est incorrecte (Erreur 400). |
+| *(dynamique, relayé du service)* | `ProjetCosuiService::generateRender()` retourne un code ≠ 200 (ex. aucune donnée de référence en base, échec de lecture du `setup`) | Le type et le message renvoyés par le service sont affichés tels quels (préfixés ❌) |
+| `critical` | Exception `RuntimeException` inattendue pendant la génération | 🔴 Erreur lors de la génération COSUI. |
+
+## 📚 Pour aller plus loin
+
+- [Projet](projet.md) — point d'entrée vers COSUI.
+- [Suivi](suivi.md) — définit la version de référence (`historique.initial = true`) et l'historique complet.
+- [Répartition détaillée](repartition_details.md) — alimente le tableau « Répartition des défauts ».
+- [Gestion de la sécurité](../developpement/securite.md) — détail des rôles.
 
 -**-- FIN --**-
 
