@@ -159,7 +159,7 @@ class CosuiController extends AbstractController
                 ]);
                 return $this->addFlashAndRender(
                     $result['type'],
-                    "❌ {$result['message']}",
+                    "{$result['message']}",
                     $result['trace'] ?? '',
                     $render
                 );
