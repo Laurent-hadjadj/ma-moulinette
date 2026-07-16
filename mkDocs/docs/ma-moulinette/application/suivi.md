@@ -2,7 +2,7 @@
 
 Historique des versions d'un projet, avec tendances et comparaison à une version de référence. Accessible depuis [Projet](projet.md) (bouton « Tableaux de suivi ») ou depuis [Accueil](accueil.md) (icône de suivi rapide sur un favori).
 
-!!! note "🔓 Jeton = confort de navigation, pas un mécanisme de sécurité"
+!!! note "🔓 Jeton = confort de navigation, mais pas que..."
     L'accès se fait via `/suivi/set?token=...`, un jeton **ROT13 + Base64** (`salt|maven_key`) — même mécanisme que [Répartition](repartition_details.md)/[COSUI](cosui.md)/OWASP/Clean Code.
     Ce jeton n'a jamais eu vocation à être une preuve cryptographique : sa fonction est d'éviter d'exposer la clé Maven en clair dans l'URL au fil de la navigation interne, pas de filtrer l'accès.
     Le vrai périmètre de sécurité tient en deux couches, indépendantes du contenu du jeton :
