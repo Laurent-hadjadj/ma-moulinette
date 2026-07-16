@@ -317,14 +317,27 @@ class BuildMapHistoryServiceTest extends TestCase
 
     public static function complexityRatingProvider(): array
     {
-        // ratio = ncloc / complexity, rating sur le ratio
+        // ratio = ncloc / complexity : un ratio FAIBLE = complexité dense (mauvais → E),
+        // un ratio ÉLEVÉ = code simple (bon → A). Corrigé le 2026-07-15 (lettres inversées).
         return [
-            'ratio 2 → A'  => [200, 100, 'A'], // 2.0
-            'ratio 5 → B'  => [500, 100, 'B'], // 5.0
+            'ratio 2 → E'  => [200, 100, 'E'], // 2.0
+            'ratio 5 → D'  => [500, 100, 'D'], // 5.0
             'ratio 10 → C' => [1000, 100, 'C'],
-            'ratio 15 → D' => [1500, 100, 'D'],
-            'ratio 20 → E' => [2000, 100, 'E'],
+            'ratio 15 → B' => [1500, 100, 'B'],
+            'ratio 20 → A' => [2000, 100, 'A'],
         ];
+    }
+
+    public function testComplexityRatingIsUnknownWhenComplexityMissing(): void
+    {
+        $result = $this->service->metricsRebuild(
+            ['ncloc' => '1000'],
+            ['analysisKey' => 'AY1', 'version' => '1.0', 'date' => '2026-04-22T00:00:00+0000'],
+            'fr.ma-moulinette:ma-moulinette'
+        );
+
+        $this->assertNull($result['complexity_ratio']);
+        $this->assertSame('--', $result['complexity_rating']);
     }
 
     #[DataProvider('ratingToLetterProvider')]
