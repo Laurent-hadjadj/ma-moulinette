@@ -58,7 +58,7 @@ class CosuiController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function addFlashAndRender(string $type, string $message, string|null $trace, array $render): Response
+    private function addFlashAndRender(int $code, string $type, string $message, string|null $trace, array $render): Response
     {
         $this->logger->info("[COSUI] ℹ️ Ajout d’un message flash de type '{$type}'");
         $this->logger->debug("Contenu du message flash", [
@@ -73,7 +73,26 @@ class CosuiController extends AbstractController
             'trace' => $trace ?? null,
         ]);
 
-        return $this->render(self::$page, $render);
+        return $this->render(self::$page, $render, new Response(status: $this->toHttpStatus($code)));
+    }
+
+    /**
+     * [Description for toHttpStatus]
+     * Ramène un code d'erreur métier (souvent un code PostgreSQL/SQLSTATE côté
+     * repository, ex. 42703) vers un code HTTP standard, pour éviter d'envoyer
+     * un statut HTTP non conforme au navigateur.
+     *
+     * @param int $code
+     *
+     * @return int
+     *
+     * Created at: 14/07/2026 16:25:07 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function toHttpStatus(int $code): int
+    {
+        return in_array($code, [400, 401, 403, 404, 409, 422, 500, 503], true) ? $code : 500;
     }
 
     /**
@@ -139,13 +158,13 @@ class CosuiController extends AbstractController
         $token = $request->query->get('token');
         if (empty($token)) {
             $this->logger->warning('[COSUI] ⚠️ Token manquant dans la requête');
-            return $this->addFlashAndRender('error', self::$erreur400, 'token', $render);
+            return $this->addFlashAndRender(400, 'error', self::$erreur400, 'token', $render);
         }
 
         $maven_key = $this->decodeToken($token);
         if (null === $maven_key) {
             $this->logger->error('[COSUI] ❌ Échec du décodage du token.');
-            return $this->addFlashAndRender('error', self::$erreur400, 'Problème de décodage du token.', $render);
+            return $this->addFlashAndRender(400, 'error', self::$erreur400, 'Problème de décodage du token.', $render);
         }
 
         $this->logger->info('[COSUI] ℹ️ Token décodé, maven_key reçu', ['maven_key' => $maven_key]);
@@ -158,6 +177,7 @@ class CosuiController extends AbstractController
                     'trace' => $result['trace'] ?? 'Non disponible'
                 ]);
                 return $this->addFlashAndRender(
+                    (int) $result['code'],
                     $result['type'],
                     "{$result['message']}",
                     $result['trace'] ?? '',
@@ -165,7 +185,7 @@ class CosuiController extends AbstractController
                 );
             }
         } catch (\RuntimeException $e) {
-            return $this->addFlashAndRender('critical', '🔴 Erreur lors de la génération COSUI.', $e->getMessage(), $render);
+            return $this->addFlashAndRender(500, 'critical', '🔴 Erreur lors de la génération COSUI.', $e->getMessage(), $render);
         }
 
         return $this->render(self::$page, $result);
