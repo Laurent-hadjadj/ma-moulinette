@@ -3,23 +3,30 @@
 Compare la **version courante** d'un projet (dernière ligne de `historique`, triée par date) à sa **version de référence** (ligne marquée `historique.initial = true`, définie depuis la page [Suivi](suivi.md#️-modifier-les-paramètres-dune-version)).
 Accessible depuis [Projet](projet.md) via un lien avec la clé Maven encodée.
 
-Aucun rôle métier spécifique n'est requis (`ROLE_UTILISATEUR` suffit — aucun contrôle de rôle explicite dans `CosuiController`, la seule protection vient du pare-feu global).
+Aucun rôle métier spécifique n'est requis (`ROLE_UTILISATEUR` suffit).
 
-!!! note "🔓 Pas un vrai jeton signé"
-    Comme sur [Répartition](repartition_details.md) et OWASP/Clean Code, le paramètre `token` de l'URL est une simple obfuscation **ROT13 + Base64** de la clé Maven (`CosuiController::decodeToken()`) — il n'y a aucune vérification cryptographique.
+!!! note "🔓 Jeton = confort de navigation, mais pas que..."
+    L'accès se fait via `/projet/cosui?token=...`, un jeton **ROT13 + Base64** (`salt|maven_key`) — même mécanisme que [Suivi](suivi.md)/[Répartition](repartition_details.md)/OWASP/Clean Code.
+    Ce jeton n'a jamais eu vocation à être une preuve cryptographique : sa fonction est d'éviter d'exposer la clé Maven en clair dans l'URL au fil de la navigation interne, pas de filtrer l'accès.
+    Le vrai périmètre de sécurité tient en deux couches, indépendantes du contenu du jeton :
+
+    1. **Le pare-feu Symfony** (`config/packages/security.yaml`, `access_control` sur `^/api/secure/` → `ROLE_UTILISATEUR`) exige une session authentifiée valide pour atteindre la moindre route — un `curl` sans session (même avec un jeton parfaitement forgé après rétro-ingénierie du JS) est rejeté avant même d'atteindre le contrôleur.
+    2. **`listeProjet()`**, appelée dans `projetCosui()` — 404 si l'utilisateur n'a aucun groupe fonctionnel, 406 si le projet n'appartient pas à son périmètre. La méthode vérifie que la clé Maven décodée appartient bien au **groupe fonctionnel** de l'utilisateur *authentifié* — donc même une session légitime ne peut pas afficher un projet hors de son périmètre, jeton ou pas.
 
 ## 🗺️ Origine des données
 
+<!-- markdownlint-disable MD046 -->
 ```mermaid
 flowchart LR
     Suivi[📈 Suivi<br/>marque une version<br/>initial = true] -.->|version de référence| Cosui[📅 COSUI]
     Repart[🧩 Répartition par module<br/>dernier setup] -.->|répartition présentation/métier| Cosui
     Hist[(historique)] --> Cosui
 ```
+<!-- markdownlint-enable MD046 -->
 
 Si aucune version de référence n'a été définie, les valeurs par défaut sont affichées (version « 0.0.0 », notes « F », compteurs à zéro) plutôt qu'une erreur bloquante. De même, si aucune [Répartition par module](repartition_details.md) n'a encore été lancée pour ce projet, le tableau « Répartition des défauts » reste vide (`--`).
 
-!!! note "✅ Avertissement affiché en cas de répartition partielle (2026-07-14)"
+!!! note "✅ Avertissement affiché en cas de répartition partielle"
     Un bandeau d'avertissement s'affiche désormais sous le `setup` dès que la répartition lue n'est pas complète : `complet (100%)` → rien, `partiel (66%)`/`partiel (33%)` → 66 %/33 %, `inconnue` → 0 %.
     Le calcul (`ProjetCosuiService::controlToPercent()`) est fait une fois pour toutes côté serveur, pas dupliqué en JS.
 
@@ -67,7 +74,7 @@ Tableau croisé Maintenabilité/Fiabilité/Vulnérabilité × Présentation/Mét
 
 Compare visuellement référence et version courante sur 6 axes : fiabilité, vulnérabilité, hotspots, maintenabilité, couverture de tests, dette technique (ratio inversé). Les notes lettres sont converties en points sur 100 pour permettre le tracé (`note2point()` côté serveur).
 
-!!! note "✅ Seuils du tooltip Hotspot alignés sur `note2point()` (2026-07-14)"
+!!! note "✅ Seuils du tooltip Hotspot alignés sur `note2point()`"
     Le serveur (`ProjetCosuiService::note2point()`) utilise des seuils fixes (A=100/B=80/C=60/D=30/E=10/F=0) pour construire les points du radar — et `construireRadarChart()` convertit bien l'axe **Hotspot** via cette même grille, au même titre que Fiabilité/Vulnérabilité/Maintenabilité.
     Les axes **Couverture** et **Dette** restent une bucketisation JS purement indicative (le serveur n'y calcule pas de note lettre, seulement une valeur numérique), donc rien à aligner pour eux.
 
@@ -79,6 +86,8 @@ COSUI n'utilise jamais `showMessage()` côté JavaScript (`index-cosui.js` ne co
 | --- | --- | --- |
 | `error` | Paramètre `token` absent de l'URL | ❌ La requête est incorrecte (Erreur 400). |
 | `error` | Décodage du token en échec (base64/format invalide) | ❌ La requête est incorrecte (Erreur 400). |
+| `warning` | Utilisateur sans groupe fonctionnel | ⚠️ Vous devez être rattaché à une équipe (Erreur 404). |
+| `warning` | Projet absent de la liste filtrée par groupe fonctionnel (`listeProjet()`) | ⚠️ Je n'ai pas trouvé de projets pour ton équipe / le projet n'est pas dans ta liste (Erreur 406). |
 | *(dynamique, relayé du service)* | `ProjetCosuiService::generateRender()` retourne un code ≠ 200 (ex. aucune donnée de référence en base, échec de lecture du `setup`) | Le type et le message renvoyés par le service sont affichés tels quels (préfixés ❌) |
 | `critical` | Exception `RuntimeException` inattendue pendant la génération | 🔴 Erreur lors de la génération COSUI. |
 
