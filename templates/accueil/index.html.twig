@@ -168,7 +168,6 @@
             {# Nombre de projet | tags #}
             <fieldset class="fieldset fieldset-tag cell">
               <legend class="open-sans fieldset-legend-custom">Tags.
-                {# WCAG 2.1.1 : le SVG seul n'était pas atteignable au clavier, il est encapsulé dans un vrai bouton. #}
                 <button id="bouton-ouvrir-information-tag"
                         type="button"
                         class="bulle-information-bouton"
@@ -241,17 +240,7 @@
       </div>
     </main>
 
-
-    {# On choisi le composant en fonction des préférences #}
-    {% if composant == 'projet' and favori|length > 0 %}
-      {{ include('/accueil/_projet.html.twig') }}
-    {% elseif composant == 'version' and favori|length > 0 %}
-      {{ include('/accueil/_version.html.twig') }}
-    {% else %}
-      {{ include('/accueil/_vide.html.twig') }}
-    {% endif %}
-
-    <footer class="grid-x grid-margin-x align-right margin-top-2">
+        <footer class="grid-x grid-margin-x align-right margin-top-2">
       <div class="cell shrink">
         <a href="{{ path('projet') }}"
             id="bouton-ouvrir-projet"
@@ -265,6 +254,15 @@
         </a>
       </div>
     </footer>
+
+    {# On choisi le composant en fonction des préférences #}
+    {% if composant == 'projet' and favori|length > 0 %}
+      {{ include('/accueil/_projet.html.twig') }}
+    {% elseif composant == 'version' and favori|length > 0 %}
+      {{ include('/accueil/_version.html.twig') }}
+    {% else %}
+      {{ include('/accueil/_vide.html.twig') }}
+    {% endif %}
 
     {# Affichage de la note d'information sur les Tags #}
     {{ include('/accueil/_modal_information_tag.html.twig') }}
