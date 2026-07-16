@@ -83,9 +83,11 @@ class BatchCollecteInformationProjetController extends AbstractController
         /** Analyse du retour de la réponse du serveur SonarQube */
         $isNotFound = false;
         $isNotAuthorize = false;
+        $isForbidden = false;
         $isNotAvailable = false;
         if ( $isFound === false){
             $isNotAuthorize = ($result['code'] == 401) ? true : false;
+            $isForbidden = ($result['code'] == 403) ? true : false;
             $isNotFound = ($result['code'] == 404) ? true : false;
             $isNotAvailable = ($result['code'] == 503) ? true : false;
         }
@@ -130,6 +132,18 @@ class BatchCollecteInformationProjetController extends AbstractController
             ];
         }
 
+        /** Le token/utilisateur n'a pas les droits suffisants sur CE projet (ex. permission Browse manquante). */
+        if ($isForbidden){
+            $this->logger->error('[Batch ControlVersionProjet] ❌ Droits SonarQube insuffisants sur le projet (403)', [
+                'maven_key' => $maven_key,
+                'erreur' => $result['erreur'] ?? null,
+            ]);
+            return [
+                'code' => 403,
+                'message' => "Droits SonarQube insuffisants pour ce projet (Erreur 403) : " . ($result['erreur'] ?? 'Insufficient privileges') . "."
+            ];
+        }
+
         /** Le projet n'est pas disponible sur SonarQube */
         if ($isNotFound){
             $this->logger->error('[Batch ControlVersionProjet] ❌ Projet introuvable sur Sonar (404)', [
@@ -149,11 +163,23 @@ class BatchCollecteInformationProjetController extends AbstractController
                 'message' => "La résolution DNS n'a pas permis d'accéder au serveur SonarQube (Erreur 503)."];
         }
 
-        $this->logger->error('[Batch ControlVersionProjet] ❌  Erreur inattendue', [
-            'maven_key' => $maven_key]);
+        /**
+         * Code d'erreur SonarQube non anticipé par les branches ci-dessus (ex. 400, 429...) :
+         * on relaie le VRAI code/message plutôt que de renvoyer un 500 opaque qui masquerait
+         * la cause réelle (cf. incident tetris:TetrisGame du 2026-07-15 : un 403 tombait ici).
+         */
+        $codeReel = (int) ($result['code'] ?? 500);
+        $messageReel = $result['erreur'] ?? null;
+        $this->logger->error('[Batch ControlVersionProjet] ❌ Erreur inattendue de l’API SonarQube', [
+            'maven_key' => $maven_key,
+            'code' => $codeReel,
+            'erreur' => $messageReel,
+        ]);
         return [
-            'code' => 500,
-            'message' => 'Une erreur inattendue est survenue (Erreur500).'
+            'code' => $codeReel,
+            'message' => $messageReel
+                ? "Erreur inattendue de l'API SonarQube (Erreur {$codeReel}) : {$messageReel}."
+                : "Une erreur inattendue est survenue (Erreur {$codeReel})."
         ];
     }
 
@@ -266,7 +292,9 @@ class BatchCollecteInformationProjetController extends AbstractController
 
         /** On récupère les informations du projet */
         $isValide = $this->controlVersionProjet($maven_key);
-        if (in_array($isValide['code'], [401, 404, 503, 500])) {
+        /** Seuls 200 (trouvé) et 202 (trouvé sur SonarQube, pas encore en base) sont des cas valides ;
+         *  tout le reste (401/403/404/503, ou tout autre code relayé tel quel) est une erreur. */
+        if (!in_array($isValide['code'], [200, 202])) {
             $this->logger->error("[Batch ControlVersionProjet] ❌ {$isValide['message']} (Erreur {$isValide['code']}).") ;
             return [
                 'code' => $isValide['code'],
