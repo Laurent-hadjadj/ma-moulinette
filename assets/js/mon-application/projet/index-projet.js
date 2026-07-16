@@ -1492,7 +1492,16 @@ $('.js-enregistrement').on('click', () => {
 $('.js-tableau-de-bord').on('click', () => {
   if ($('select[name="projet"]').val() !== '' && $('select[name="projet"]').val() !== 'TheID') {
     const maven_key = $('#select-result').text().trim();
-    window.location.href = `${serveur()}/suivi/set?maven_key=${maven_key}`;
+
+    /** on créé un hash avec la méthode reduce() comme clé de salt */
+    const salt = maven_key.split('').reduce((hash, char) => {
+      return char.charCodeAt(0) + (hash << 6) + (hash << 16) - hash;
+    }, 0);
+
+    /** on créé un token pour encoder les paramètres */
+    const param = `${salt}|${maven_key}`;
+    const a = encode(btoa(param));
+    window.location.href = `${serveur()}/suivi/set?token=${a}`;
   } else {
     log(' - ❌ ERROR - [SUIVI] - Vous devez choisir un projet dans la liste !! !');
   }
