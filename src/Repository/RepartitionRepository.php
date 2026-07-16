@@ -312,11 +312,18 @@ class RepartitionRepository extends ServiceEntityRepository
   {
       /* MODIF 2026-07-16 : ajout de la colonne control (état de complétude
        * de la dernière répartition), utilisée par COSUI pour signaler un
-       * cycle partiel. */
-      $sql = 'SELECT setup, control
+       * cycle partiel.
+       * MODIF 2026-07-16 (bis) : exclusion de control='initial' — cette valeur
+       * ne marque pas un cycle partiel mais la ligne posée par le simple
+       * CHARGEMENT de la page Répartition (RepartitionController::repartition()),
+       * sans aucune collecte/analyse. Sans ce filtre, une simple visite de la
+       * page (aucun bouton cliqué) devenait le `setup` le plus récent et
+       * masquait silencieusement une analyse complète précédente pour COSUI
+       * (répartition_percent retombait à 0% alors qu'une analyse 100% existait). */
+      $sql = "SELECT setup, control
               FROM ma_moulinette.repartition
-              WHERE maven_key = :maven_key
-              ORDER BY setup DESC LIMIT 1';
+              WHERE maven_key = :maven_key AND control <> 'initial'
+              ORDER BY setup DESC LIMIT 1";
 
       try {
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
