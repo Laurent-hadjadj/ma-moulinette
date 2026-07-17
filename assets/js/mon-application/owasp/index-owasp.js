@@ -122,38 +122,46 @@ const injectionOwaspInfo = function(id, menace, badge, laNote) {
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
 const videLeTableau = function() {
-  /** réinitialise les valeurs. */
+  /** réinitialise les valeurs.
+   *  MODIF 2026-07-18 : '' -> '--' (une cellule vide se confondait avec un
+   *  vrai zéro), + ajout de la boucle #a1..#a10 (tableau de synthèse) qui
+   *  manquait ici : sans données pour le référentiel sélectionné (406), les
+   *  compteurs de failles du référentiel précédent restaient affichés. */
+  const placeholder = '--';
+
   /** version et la date du projet dans SonarQube */
-  $('#js-application-version').html('');
+  $('#js-application-version').html(placeholder);
+  $('#owasp-version').html(placeholder);
 
   /** les vulnérabilités */
-  $('#nombre-faille-owasp').html('');
-  $('#nombre-faille-bloquant').html('');
-  $('#nombre-faille-critique').html('');
-  $('#nombre-faille-majeur').html('');
-  $('#nombre-faille-mineur').html('');
+  $('#nombre-faille-owasp').html(placeholder);
+  $('#nombre-faille-bloquant').html(placeholder);
+  $('#nombre-faille-critique').html(placeholder);
+  $('#nombre-faille-majeur').html(placeholder);
+  $('#nombre-faille-mineur').html(placeholder);
 
   /** nombre de hotspot au status REVIEWED */
-  $('#hotspot-reviewed').html('');
+  $('#hotspot-reviewed').html(placeholder);
   /** nombre de hotspot au status TO_REVIEW */
-  $('#hotspot-to-review').html('');
+  $('#hotspot-to-review').html(placeholder);
 
 /**  hotspot OWASP  */
-  $('#hotspot-total').html('');
-  $('#nombre-hotspot-high').html('');
-  $('#nombre-hotspot-medium').html('');
-  $('#nombre-hotspot-low').html('');
-  $('#note-hotspot').html('');
+  $('#hotspot-total').html(placeholder);
+  $('#nombre-hotspot-high').html(placeholder);
+  $('#nombre-hotspot-medium').html(placeholder);
+  $('#nombre-hotspot-low').html(placeholder);
+  $('#note-hotspot').html(placeholder);
 
-  /* Hotspot */
-  for (let id=0; id<11; id++) {
-    $(`#h${id}`).html('');
+  /* Tableau de synthèse (failles) + Hotspot */
+  for (let id=1; id<11; id++) {
+    $(`#a${id}`).html(placeholder);
+    $(`#h${id}`).html(placeholder);
   }
 
   /** répartition front/back */
-  $('#frontend').html('');
-  $('#backend').html('');
-  $('#autre').html('');
+  $('#frontend').html(placeholder);
+  $('#backend').html(placeholder);
+  $('#autre').html(placeholder);
 
   /** on supprime le référentiel par défaut */
   sessionStorage.setItem('ma_moulinette_referential_owasp', '');
@@ -209,8 +217,12 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
   const date_version = new Intl.DateTimeFormat('default', dateOptions).format(new Date(r.date_version));
   $('#js-application-version').html(`V${r.version}, (${date_version})`);
 
-  /** On affiche la version du référentiel */
-  $('#owasp-version').html(`Référentiel OWASP Actuel : <span class="lead color-noir">${r.referential_owasp}</span>`);
+  /** On affiche la version du référentiel.
+   *  MODIF 2026-07-18 : ajout de la source (facet = classification officielle
+   *  SonarQube, tag = secours par tag owasp-aXX quand la facette ne renvoie
+   *  rien) — cf. owasp.md. */
+  const sourceLabel = r.source === 'tag' ? 'OWASP (tag)' : 'OWASP (facet)';
+  $('#owasp-version').html(`Référentiel OWASP Actuel : <span class="lead color-noir">${r.referential_owasp}</span> — <span class="lead color-noir">${sourceLabel}</span>`);
 
   /* On génère l'histogramme avec les menaces OWASP */
   let dataBar=[];
@@ -1054,13 +1066,23 @@ const selectReferentialOwasp = function(version){
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
+/* MODIF 2026-07-18 : conserve l'instance du graphique pour la détruire avant
+ * d'en recréer une — sans ça, chaque clic sur un référentiel (2017/2021/2025)
+ * tentait un new Chart() sur le même canvas déjà utilisé, provoquant
+ * "Uncaught (in promise) Error: Canvas is already in use." */
+let owaspBarChartInstance = null;
+
 const dessineMoiUneBarre = function (referential, data){
 
   // Données statiques pour les pourcentages de chaque type de vulnérabilité
   const labels = ['A1','A2','A3','A4','A5','A6','A7','A8','A9','A10'];
 
+  if (owaspBarChartInstance) {
+    owaspBarChartInstance.destroy();
+  }
+
   const ctx = document.getElementById('owasp-bar-chart').getContext('2d');
-  const owaspPieChart = new Chart(ctx, {
+  owaspBarChartInstance = new Chart(ctx, {
     type: 'bar',
     data: {
       labels: labels,
