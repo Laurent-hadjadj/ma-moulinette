@@ -13,6 +13,7 @@
 
 namespace App\Controller\Owasp;
 
+use App\Controller\Traits\{AppUserAware, ProjetPerimetreGuard};
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\{JsonResponse, Response, Request};
 use \Symfony\Component\Routing\Attribute\Route;
@@ -25,6 +26,9 @@ use App\Entity\{Owasp, HotspotOwasp, HotspotDetails};
  */
 class ApiOwaspPeintureController extends AbstractController
 {
+    use AppUserAware;
+    use ProjetPerimetreGuard;
+
     /** Définition des constantes */
     private static string $erreur400 = "La requête est incorrecte (Erreur 400).";
     private static string $noData = 'Pas de données';
@@ -34,6 +38,38 @@ class ApiOwaspPeintureController extends AbstractController
         private EntityManagerInterface $em,
         private LoggerInterface $logger,
     ) {}
+
+    /**
+     * [Description for checkPerimetre]
+     *
+     * Vérifie que la clé Maven reçue (envoyée par le client depuis
+     * `sessionStorage.ma_moulinette_projet`, pas depuis un token décodé
+     * côté serveur comme sur Suivi/COSUI/OWASP-page) appartient bien au
+     * groupe fonctionnel de l'utilisateur authentifié.
+     *
+     * @param string $maven_key
+     *
+     * @return JsonResponse|null null si autorisé, sinon la réponse JSON à renvoyer telle quelle.
+     *
+     * Created at: 17/07/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function checkPerimetre(string $maven_key): ?JsonResponse
+    {
+        $perimetre = $this->verifierPerimetreProjet($maven_key, '[Owasp-Peinture]');
+        if ($perimetre['code'] === 200) {
+            return null;
+        }
+
+        $type = in_array($perimetre['code'], [404, 406], true) ? 'warning' : 'error';
+        return new JsonResponse([
+            'code' => $perimetre['code'],
+            'type' => $type,
+            'message' => $perimetre['message']
+                ?? "Une erreur est survenue lors de la vérification du périmètre (Erreur {$perimetre['code']}).",
+        ], Response::HTTP_OK);
+    }
 
     /**
      * [Description for total]
@@ -100,6 +136,11 @@ class ApiOwaspPeintureController extends AbstractController
             ], Response::HTTP_OK);
         }
 
+        $guard = $this->checkPerimetre($data->maven_key);
+        if ($guard !== null) {
+            return $guard;
+        }
+
         /** On récupère les failles owasp */
         $map = [
             'maven_key' => $data->maven_key,
@@ -146,6 +187,10 @@ class ApiOwaspPeintureController extends AbstractController
         $payload = [
             'code' => 200,
             'referential_owasp' => $referential_owasp,
+            /* MODIF 2026-07-18 : 'facet' (classification officielle SonarQube)
+             * ou 'tag' (secours par tag owasp-aXX, cf. BatchCollecteOwaspController
+             * et owasp.md) — permet au front d'afficher la source des données. */
+            'source' => $ligne['source'] ?? 'facet',
             'total' => $total,
             'version' => $ligne['version'],
             'date_version' => $ligne['date_version'],
@@ -201,6 +246,11 @@ class ApiOwaspPeintureController extends AbstractController
                 'type' => 'error',
                 'message' => self::$erreur400
             ], Response::HTTP_OK);
+        }
+
+        $guard = $this->checkPerimetre($data->maven_key);
+        if ($guard !== null) {
+            return $guard;
         }
 
         /** On compte le nombre de hotspot REVIEWED */
@@ -327,6 +377,11 @@ class ApiOwaspPeintureController extends AbstractController
             ], Response::HTTP_OK);
         }
 
+        $guard = $this->checkPerimetre($data->maven_key);
+        if ($guard !== null) {
+            return $guard;
+        }
+
         /** On compte le nombre de hotspot de type OWASP au statut TO_REVIEWED */
         $map = ['maven_key' => $data->maven_key];
         $menaces = $hotspotOwaspRepos->countHotspotOwaspMenaces($map);
@@ -397,6 +452,11 @@ class ApiOwaspPeintureController extends AbstractController
             ], Response::HTTP_OK);
         }
 
+        $guard = $this->checkPerimetre($data->maven_key);
+        if ($guard !== null) {
+            return $guard;
+        }
+
         /** On récupère la liste des hotspots par status de la table détails. */
         $map = ['maven_key' => $data->maven_key];
         $details = $hotspotDetailsRepos->selectHotspotDetailsByStatus($map);
@@ -460,6 +520,11 @@ class ApiOwaspPeintureController extends AbstractController
                 'type' => 'error',
                 'message' => self::$erreur400
             ], Response::HTTP_OK);
+        }
+
+        $guard = $this->checkPerimetre($data->maven_key);
+        if ($guard !== null) {
+            return $guard;
         }
 
         /** On compte le nombre de faille OWASP au statut HIGH */
