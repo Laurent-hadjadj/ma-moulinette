@@ -16,9 +16,9 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Controller\Owasp;
 
 use App\Controller\Owasp\OwaspController;
-use App\Entity\{HotspotDetails, HotspotOwasp, Historique, Owasp, OwaspTop10};
+use App\Entity\{HotspotDetails, HotspotOwasp, Historique, ListeProjet, Owasp, OwaspTop10, Utilisateur};
 use App\Service\UserAgent\UserAgentTrackingFacade;
-use App\Repository\{DcScanRepository, HistoriqueRepository, HotspotDetailsRepository, HotspotOwaspRepository, OwaspRepository, OwaspTop10Repository};
+use App\Repository\{DcScanRepository, HistoriqueRepository, HotspotDetailsRepository, HotspotOwaspRepository, ListeProjetRepository, OwaspRepository, OwaspTop10Repository};
 use App\Service\PdfExportService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
@@ -30,6 +30,8 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\{Request, RequestStack};
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Twig\Environment;
 
 /**
@@ -50,8 +52,11 @@ class OwaspControllerTest extends TestCase
     /** @var HotspotOwaspRepository&MockObject */   private MockObject $repoHotspotOwasp;
     /** @var HotspotDetailsRepository&MockObject */ private MockObject $repoHotspotDetails;
     /** @var HistoriqueRepository&MockObject */      private MockObject $repoHistorique;
+    /** @var ListeProjetRepository&MockObject */     private MockObject $listeProjetRepo;
     /** @var Environment&MockObject */               private MockObject $twig;
     /** @var FlashBag&MockObject */                  private MockObject $flashBag;
+    /** @var TokenStorageInterface&MockObject */     private MockObject $tokenStorage;
+    /** @var TokenInterface&MockObject */            private MockObject $token;
 
     /** @var UserAgentTrackingFacade&MockObject */   private MockObject $tracking;
 
@@ -72,8 +77,12 @@ class OwaspControllerTest extends TestCase
         $this->repoHotspotOwasp   = $this->createMock(HotspotOwaspRepository::class);
         $this->repoHotspotDetails = $this->createMock(HotspotDetailsRepository::class);
         $this->repoHistorique     = $this->createMock(HistoriqueRepository::class);
+        $this->listeProjetRepo    = $this->createMock(ListeProjetRepository::class);
         $this->twig               = $this->createMock(Environment::class);
         $this->flashBag           = $this->createMock(FlashBag::class);
+        $this->tokenStorage       = $this->createMock(TokenStorageInterface::class);
+        $this->token              = $this->createMock(TokenInterface::class);
+        $this->tokenStorage->method('getToken')->willReturn($this->token);
         $this->tracking           = $this->createMock(UserAgentTrackingFacade::class);
 
         $this->params->method('get')->willReturnMap([
@@ -95,6 +104,7 @@ class OwaspControllerTest extends TestCase
                 HotspotOwasp::class   => $this->repoHotspotOwasp,
                 HotspotDetails::class => $this->repoHotspotDetails,
                 Historique::class     => $this->repoHistorique,
+                ListeProjet::class    => $this->listeProjetRepo,
                 default               => $this->repoTop10,
             }
         );
@@ -109,11 +119,13 @@ class OwaspControllerTest extends TestCase
             ['twig', true],
             ['request_stack', true],
             ['parameter_bag', true],
+            ['security.token_storage', true],
         ]);
         $container->method('get')->willReturnMap([
             ['twig', 1, $this->twig],
             ['request_stack', 1, $requestStack],
             ['parameter_bag', 1, $this->params],
+            ['security.token_storage', 1, $this->tokenStorage],
         ]);
 
         $this->controller = new OwaspController(
@@ -141,6 +153,26 @@ class OwaspControllerTest extends TestCase
     private function buildRequest(?string $token): Request
     {
         return new Request($token === null ? [] : ['token' => $token]);
+    }
+
+    /**
+     * MODIF 2026-07-17 : configure l'utilisateur authentifié + la liste de
+     * projets de son groupe fonctionnel pour que verifierPerimetreProjet()
+     * autorise $mavenKey. Un seul stub par mock (jamais de valeur par défaut
+     * dans setUp()) pour éviter toute ambiguïté d'ordre entre tests — cf.
+     * CosuiControllerTest.
+     */
+    private function authorizeMavenKey(string $mavenKey = self::MAVEN_KEY): void
+    {
+        $user = new Utilisateur();
+        $user->setCourriel('user@ma-moulinette.fr');
+        $user->setListeGroupeFonctionnel(['TeamA']);
+        $this->token->method('getUser')->willReturn($user);
+
+        $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
+            'code' => 200,
+            'liste' => [['id' => $mavenKey]],
+        ]);
     }
 
     /* ============ Token : missing / invalide ============ */
@@ -194,10 +226,77 @@ class OwaspControllerTest extends TestCase
         $this->controller->index($this->buildRequest($token));
     }
 
+    public function testIndexPreservesCaseOfMavenKeyFromToken(): void
+    {
+        // MODIF 2026-07-18 : verrouille le fix — decodeToken() ne doit plus
+        // forcer la casse en minuscules (une clé Maven mixed-case comme
+        // "fr.ma-moulinette:Ma-Moulinette" était sinon rejetée à tort
+        // en 406, la comparaison stricte dans ProjetPerimetreGuard ne
+        // matchant plus jamais l'entrée `liste_projet`).
+        $mixedCaseKey = 'fr.ma-moulinette:Ma-Moulinette';
+        $this->authorizeMavenKey($mixedCaseKey);
+
+        $this->repoTop10->method('selectOwaspTop10Referential')->willReturn([
+            'code' => 200, 'liste' => [['menace' => 1]],
+        ]);
+        $this->repoOwasp->expects($this->once())
+            ->method('selectOwaspVersion')
+            ->with($mixedCaseKey)
+            ->willReturn(['code' => 200, 'application' => $mixedCaseKey, 'version' => '1.0', 'erreur' => '']);
+
+        $this->flashBag->expects($this->never())->method('add');
+        $this->twig->expects($this->once())->method('render')->willReturn('<html>ok</html>');
+
+        $this->controller->index($this->buildRequest($this->buildValidToken($mixedCaseKey)));
+    }
+
+    /* ============ Filtrage par groupe fonctionnel (MODIF 2026-07-17) ============ */
+
+    public function testIndexFlashesWarning404WhenNoGroupeFonctionnel(): void
+    {
+        $user = new Utilisateur();
+        $user->setCourriel('user@ma-moulinette.fr');
+        $user->setListeGroupeFonctionnel([]);
+        $this->token->method('getUser')->willReturn($user);
+
+        $this->repoTop10->expects($this->never())->method('selectOwaspTop10Referential');
+
+        $this->flashBag->expects($this->once())
+            ->method('add')
+            ->with('notice', $this->callback(fn($v) => $v['type'] === 'warning'));
+
+        $this->twig->expects($this->once())->method('render')->willReturn('<html>no-groupe</html>');
+
+        $this->controller->index($this->buildRequest($this->buildValidToken()));
+    }
+
+    public function testIndexFlashesWarning406WhenProjectNotInGroupe(): void
+    {
+        $user = new Utilisateur();
+        $user->setCourriel('user@ma-moulinette.fr');
+        $user->setListeGroupeFonctionnel(['TeamA']);
+        $this->token->method('getUser')->willReturn($user);
+        $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
+            'code' => 200,
+            'liste' => [['id' => 'fr.autre:projet-different']],
+        ]);
+
+        $this->repoTop10->expects($this->never())->method('selectOwaspTop10Referential');
+
+        $this->flashBag->expects($this->once())
+            ->method('add')
+            ->with('notice', $this->callback(fn($v) => $v['type'] === 'warning'));
+
+        $this->twig->expects($this->once())->method('render')->willReturn('<html>406</html>');
+
+        $this->controller->index($this->buildRequest($this->buildValidToken()));
+    }
+
     /* ============ Référentiels OwaspTop10 ============ */
 
     public function testIndexFlashesAndRendersWhen2017Fails(): void
     {
+        $this->authorizeMavenKey();
         $this->repoTop10->expects($this->once())
             ->method('selectOwaspTop10Referential')
             ->willReturn(['code' => 500, 'erreur' => 'db fail']);
@@ -218,6 +317,7 @@ class OwaspControllerTest extends TestCase
 
     public function testIndexFlashesAndRendersWhen2021Fails(): void
     {
+        $this->authorizeMavenKey();
         $this->repoTop10->method('selectOwaspTop10Referential')->willReturnOnConsecutiveCalls(
             ['code' => 200, 'liste' => [['a' => 1]]], // 2017 OK
             ['code' => 500, 'erreur' => 'fail-2021'],  // 2021 FAIL
@@ -234,6 +334,7 @@ class OwaspControllerTest extends TestCase
 
     public function testIndexWarnsWhenAllReferentialsAreEmpty(): void
     {
+        $this->authorizeMavenKey();
         $this->repoTop10->method('selectOwaspTop10Referential')->willReturn([
             'code' => 200, 'liste' => [],
         ]);
@@ -256,6 +357,7 @@ class OwaspControllerTest extends TestCase
      * selectOwaspVersion (nouveau second repo OwaspRepository). */
     public function testIndexHappyPathInjectsReferentialsAndApplicationVersion(): void
     {
+        $this->authorizeMavenKey();
         $owasp2017 = ['code' => 200, 'liste' => [['menace' => 1]]];
         $owasp2021 = ['code' => 200, 'liste' => [['menace' => 2]]];
         $owasp2025 = ['code' => 200, 'liste' => [['menace' => 3]]];
@@ -315,6 +417,7 @@ class OwaspControllerTest extends TestCase
      * breadcrumb OWASP est absent (cas reel : table `owasp` vide pour ce projet). */
     public function testIndexHasDcScanTrueWithDcLinkCoordinatesFromScan(): void
     {
+        $this->authorizeMavenKey();
         $this->repoTop10->method('selectOwaspTop10Referential')->willReturn([
             'code' => 200, 'liste' => [['menace' => 1]],
         ]);
@@ -358,6 +461,7 @@ class OwaspControllerTest extends TestCase
 
     public function testIndexFlashesErrorButRendersWhenSelectOwaspVersionFails(): void
     {
+        $this->authorizeMavenKey();
         $this->repoTop10->method('selectOwaspTop10Referential')->willReturn([
             'code' => 200, 'liste' => [['menace' => 1]],
         ]);
@@ -401,6 +505,7 @@ class OwaspControllerTest extends TestCase
      * bouton dc. */
     public function testIndexHandlesNoDataBreadcrumbWithoutCrashing(): void
     {
+        $this->authorizeMavenKey();
         $this->repoTop10->method('selectOwaspTop10Referential')->willReturn([
             'code' => 200, 'liste' => [['menace' => 1]],
         ]);
@@ -567,8 +672,35 @@ class OwaspControllerTest extends TestCase
         $this->controller->rapportPdf(new Request());
     }
 
+    public function testRapportPdfThrows404WhenNoGroupeFonctionnel(): void
+    {
+        $user = new Utilisateur();
+        $user->setCourriel('user@ma-moulinette.fr');
+        $user->setListeGroupeFonctionnel([]);
+        $this->token->method('getUser')->willReturn($user);
+
+        $this->expectException(\Symfony\Component\HttpKernel\Exception\NotFoundHttpException::class);
+        $this->controller->rapportPdf(new Request(['maven_key' => self::MAVEN_KEY]));
+    }
+
+    public function testRapportPdfThrows404WhenProjectNotInGroupe(): void
+    {
+        $user = new Utilisateur();
+        $user->setCourriel('user@ma-moulinette.fr');
+        $user->setListeGroupeFonctionnel(['TeamA']);
+        $this->token->method('getUser')->willReturn($user);
+        $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
+            'code' => 200,
+            'liste' => [['id' => 'fr.autre:projet-different']],
+        ]);
+
+        $this->expectException(\Symfony\Component\HttpKernel\Exception\NotFoundHttpException::class);
+        $this->controller->rapportPdf(new Request(['maven_key' => self::MAVEN_KEY]));
+    }
+
     public function testRapportPdfNormalizesInvalidReferentialTo2021(): void
     {
+        $this->authorizeMavenKey();
         $this->setupRapportPdfRepos();
 
         $capturedData = null;
@@ -586,6 +718,7 @@ class OwaspControllerTest extends TestCase
 
     public function testRapportPdfHappyPathReturnsPdfResponse(): void
     {
+        $this->authorizeMavenKey();
         $this->setupRapportPdfRepos();
         $this->pdfExport->method('generateOwaspPdf')->willReturn('%PDF-minimal');
 
@@ -598,6 +731,7 @@ class OwaspControllerTest extends TestCase
 
     public function testRapportPdfDownloadTrueUsesAttachment(): void
     {
+        $this->authorizeMavenKey();
         $this->setupRapportPdfRepos();
         $this->pdfExport->method('generateOwaspPdf')->willReturn('%PDF-minimal');
 
@@ -611,6 +745,7 @@ class OwaspControllerTest extends TestCase
 
     public function testRapportPdfFallsBackToHistoriqueWhenOwaspDataIsEmpty(): void
     {
+        $this->authorizeMavenKey();
         // Mocks explicites (pas de helper) pour éviter le pre-stub FIFO sur repoHistorique.
         $this->repoOwasp->method('selectOwaspOrderByDateEnregistrement')->willReturn(['code' => 404]);
         $this->repoHotspotOwasp->method('countHotspotOwaspStatus')->willReturn(['request' => [['nombre' => 0]]]);
@@ -638,6 +773,7 @@ class OwaspControllerTest extends TestCase
 
     public function testRapportPdfPopulatesHotspotProbabilityBreakdown(): void
     {
+        $this->authorizeMavenKey();
         // Mocks explicites (pas de helper) pour éviter le pre-stub FIFO sur countHotspotOwaspStatus.
         $this->repoOwasp->method('selectOwaspOrderByDateEnregistrement')->willReturn(['code' => 404]);
         $this->repoHotspotOwasp->method('countHotspotOwaspStatus')
@@ -676,6 +812,7 @@ class OwaspControllerTest extends TestCase
 
     public function testRapportPdfBuildsTenCategoriesWithRatings(): void
     {
+        $this->authorizeMavenKey();
         $ligne = ['version' => '1.0', 'date_version' => '2026-01-01'];
         for ($i = 1; $i <= 10; $i++) {
             $ligne["a{$i}"]          = ($i === 1) ? 5 : 0;
