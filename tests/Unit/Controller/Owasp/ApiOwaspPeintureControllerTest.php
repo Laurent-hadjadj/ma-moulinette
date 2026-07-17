@@ -16,8 +16,8 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Controller\Owasp;
 
 use App\Controller\Owasp\ApiOwaspPeintureController;
-use App\Entity\{HotspotDetails, HotspotOwasp, Owasp};
-use App\Repository\{HotspotDetailsRepository, HotspotOwaspRepository, OwaspRepository};
+use App\Entity\{HotspotDetails, HotspotOwasp, ListeProjet, Owasp, Utilisateur};
+use App\Repository\{HotspotDetailsRepository, HotspotOwaspRepository, ListeProjetRepository, OwaspRepository};
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -25,6 +25,8 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\{JsonResponse, Request};
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 
 #[AllowMockObjectsWithoutExpectations]
 class ApiOwaspPeintureControllerTest extends TestCase
@@ -43,8 +45,17 @@ class ApiOwaspPeintureControllerTest extends TestCase
     /** @var HotspotDetailsRepository&MockObject */
     private MockObject $hotspotDetailsRepo;
 
+    /** @var ListeProjetRepository&MockObject */
+    private MockObject $listeProjetRepo;
+
     /** @var LoggerInterface&MockObject */
     private MockObject $logger;
+
+    /** @var TokenStorageInterface&MockObject */
+    private MockObject $tokenStorage;
+
+    /** @var TokenInterface&MockObject */
+    private MockObject $token;
 
     private ApiOwaspPeintureController $controller;
 
@@ -54,20 +65,50 @@ class ApiOwaspPeintureControllerTest extends TestCase
         $this->owaspRepo = $this->createMock(OwaspRepository::class);
         $this->hotspotOwaspRepo = $this->createMock(HotspotOwaspRepository::class);
         $this->hotspotDetailsRepo = $this->createMock(HotspotDetailsRepository::class);
+        $this->listeProjetRepo = $this->createMock(ListeProjetRepository::class);
         $this->logger = $this->createMock(LoggerInterface::class);
+        $this->tokenStorage = $this->createMock(TokenStorageInterface::class);
+        $this->token = $this->createMock(TokenInterface::class);
+        $this->tokenStorage->method('getToken')->willReturn($this->token);
 
         $this->em->method('getRepository')->willReturnMap([
             [Owasp::class, $this->owaspRepo],
             [HotspotOwasp::class, $this->hotspotOwaspRepo],
             [HotspotDetails::class, $this->hotspotDetailsRepo],
+            [ListeProjet::class, $this->listeProjetRepo],
         ]);
 
-        // Container mock pour AbstractController::json()
+        // Container mock pour AbstractController::json() + security.token_storage
         $container = $this->createMock(ContainerInterface::class);
-        $container->method('has')->willReturn(false);
+        $container->method('has')->willReturnCallback(
+            fn(string $id): bool => $id === 'security.token_storage'
+        );
+        $container->method('get')->willReturnMap([
+            ['security.token_storage', 1, $this->tokenStorage],
+        ]);
 
         $this->controller = new ApiOwaspPeintureController($this->em, $this->logger);
         $this->controller->setContainer($container);
+    }
+
+    /**
+     * MODIF 2026-07-17 : autorise self::MAVEN_KEY pour l'utilisateur courant
+     * (groupe fonctionnel + ListeProjetRepository), condition désormais
+     * requise par ProjetPerimetreGuard avant tout accès aux données. Un seul
+     * stub par mock (jamais de valeur par défaut dans setUp()) pour éviter
+     * toute ambiguïté d'ordre entre tests — cf. CosuiControllerTest.
+     */
+    private function authorizeMavenKey(string $mavenKey = self::MAVEN_KEY): void
+    {
+        $user = new Utilisateur();
+        $user->setCourriel('user@ma-moulinette.fr');
+        $user->setListeGroupeFonctionnel(['TeamA']);
+        $this->token->method('getUser')->willReturn($user);
+
+        $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
+            'code' => 200,
+            'liste' => [['id' => $mavenKey]],
+        ]);
     }
 
     // ═══════════════════════ peintureOwaspListe ════════════════════════════
@@ -83,6 +124,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
 
     public function testPeintureOwaspListePropagatesRepositoryError(): void
     {
+        $this->authorizeMavenKey();
         $this->owaspRepo->expects($this->once())
             ->method('selectOwaspOrderByDateEnregistrement')
             ->willReturn(['code' => 500, 'erreur' => 'boom']);
@@ -97,6 +139,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
 
     public function testPeintureOwaspListeReturns406WhenListIsEmpty(): void
     {
+        $this->authorizeMavenKey();
         $this->owaspRepo->expects($this->once())
             ->method('selectOwaspOrderByDateEnregistrement')
             ->willReturn(['code' => 200, 'liste' => []]);
@@ -112,6 +155,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
 
     public function testPeintureOwaspListeReturnsAggregatesAndA1ToA10Counts(): void
     {
+        $this->authorizeMavenKey();
         $row = $this->buildOwaspRow();
         $this->owaspRepo->expects($this->once())
             ->method('selectOwaspOrderByDateEnregistrement')
@@ -138,12 +182,31 @@ class ApiOwaspPeintureControllerTest extends TestCase
         $this->assertSame(20, $payload['critique']);
         $this->assertSame(30, $payload['majeur']);
         $this->assertSame(40, $payload['mineur']);
+        $this->assertSame('facet', $payload['source']);
 
         // Valeurs exposées individuellement
         $this->assertSame(1, $payload['a1']);
         $this->assertSame(10, $payload['a10']);
         $this->assertSame(1, $payload['a1Blocker']);
         $this->assertSame(2, $payload['a1Critical']);
+    }
+
+    public function testPeintureOwaspListeExposesTagSourceWhenSetInRow(): void
+    {
+        // MODIF 2026-07-18 : la ligne persistée par le secours par tag
+        // (BatchCollecteOwaspController) porte source='tag' — vérifie que
+        // l'API de peinture la relaie telle quelle au front.
+        $this->authorizeMavenKey();
+        $row = array_merge($this->buildOwaspRow(), ['source' => 'tag']);
+        $this->owaspRepo->method('selectOwaspOrderByDateEnregistrement')
+            ->willReturn(['code' => 200, 'liste' => [$row]]);
+
+        $payload = $this->decode($this->controller->peintureOwaspListe($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+            'referential_owasp' => 2017,
+        ])));
+
+        $this->assertSame('tag', $payload['source']);
     }
 
     // ═══════════════════════ peintureOwaspHotspotInfo ══════════════════════
@@ -157,6 +220,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
 
     public function testPeintureOwaspHotspotInfoPropagatesReviewedQueryError(): void
     {
+        $this->authorizeMavenKey();
         $this->hotspotOwaspRepo->expects($this->once())
             ->method('countHotspotOwaspStatus')
             ->with(['maven_key' => self::MAVEN_KEY, 'status' => 'REVIEWED'])
@@ -173,6 +237,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
 
     public function testPeintureOwaspHotspotInfoAggregatesReviewedAndToReviewTotals(): void
     {
+        $this->authorizeMavenKey();
         $this->hotspotOwaspRepo->expects($this->exactly(2))
             ->method('countHotspotOwaspStatus')
             ->willReturnCallback(function (array $map) {
@@ -213,6 +278,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
 
     public function testPeintureOwaspHotspotListePropagatesRepositoryError(): void
     {
+        $this->authorizeMavenKey();
         $this->hotspotOwaspRepo->expects($this->once())
             ->method('countHotspotOwaspMenaces')
             ->willReturn(['code' => 503, 'erreur' => 'timeout']);
@@ -227,6 +293,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
 
     public function testPeintureOwaspHotspotListeReturnsMenaceA1ToA10Counts(): void
     {
+        $this->authorizeMavenKey();
         $this->hotspotOwaspRepo->expects($this->once())
             ->method('countHotspotOwaspMenaces')
             ->willReturn(['code' => 200, 'menaces' => [
@@ -259,6 +326,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
 
     public function testPeintureOwaspHotspotDetailsPropagatesRepositoryError(): void
     {
+        $this->authorizeMavenKey();
         $this->hotspotDetailsRepo->expects($this->once())
             ->method('selectHotspotDetailsByStatus')
             ->willReturn(['code' => 500, 'erreur' => 'db']);
@@ -272,6 +340,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
 
     public function testPeintureOwaspHotspotDetailsReturnsDetailsOnSuccess(): void
     {
+        $this->authorizeMavenKey();
         $repoResult = ['code' => 200, 'liste' => [['id' => 1]]];
         $this->hotspotDetailsRepo->expects($this->once())
             ->method('selectHotspotDetailsByStatus')
@@ -299,6 +368,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
 
     public function testPeintureOwaspSeverityReturnsAllThreeProbabilityBuckets(): void
     {
+        $this->authorizeMavenKey();
         $this->hotspotOwaspRepo->expects($this->exactly(3))
             ->method('countHotspotOwaspMenaceByStatus')
             ->willReturnCallback(function (array $map) {
@@ -322,6 +392,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
 
     public function testPeintureOwaspSeverityPropagatesErrorFromHighQuery(): void
     {
+        $this->authorizeMavenKey();
         $this->hotspotOwaspRepo->expects($this->once())
             ->method('countHotspotOwaspMenaceByStatus')
             ->willReturn(['code' => 500, 'erreur' => 'high failed']);
@@ -336,6 +407,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
 
     public function testPeintureOwaspSeverityPropagatesErrorFromMediumQuery(): void
     {
+        $this->authorizeMavenKey();
         // HIGH OK, MEDIUM fails
         $this->hotspotOwaspRepo->method('countHotspotOwaspMenaceByStatus')->willReturnCallback(
             fn(array $map): array => $map['probability'] === 'HIGH'
@@ -353,6 +425,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
 
     public function testPeintureOwaspSeverityPropagatesErrorFromLowQuery(): void
     {
+        $this->authorizeMavenKey();
         // HIGH and MEDIUM OK, LOW fails
         $this->hotspotOwaspRepo->method('countHotspotOwaspMenaceByStatus')->willReturnCallback(
             fn(array $map): array => $map['probability'] === 'LOW'
@@ -370,6 +443,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
 
     public function testPeintureOwaspHotspotInfoPropagatesToReviewQueryError(): void
     {
+        $this->authorizeMavenKey();
         // REVIEWED OK, TO_REVIEW fails
         $this->hotspotOwaspRepo->method('countHotspotOwaspStatus')->willReturnCallback(
             fn(array $map): array => $map['status'] === 'REVIEWED'
@@ -388,6 +462,7 @@ class ApiOwaspPeintureControllerTest extends TestCase
 
     public function testPeintureOwaspHotspotInfoPropagatesProbabilityQueryError(): void
     {
+        $this->authorizeMavenKey();
         $this->hotspotOwaspRepo->method('countHotspotOwaspStatus')
             ->willReturn(['code' => 200, 'request' => [['nombre' => 5]]]);
 
@@ -400,6 +475,130 @@ class ApiOwaspPeintureControllerTest extends TestCase
         ]));
 
         $this->assertJsonStatus($response, 500, 'error');
+    }
+
+    // ═══════════════════ Filtrage par groupe fonctionnel (MODIF 2026-07-17) ═══
+    // La maven_key parvient ici via sessionStorage côté client (pas via un
+    // token décodé côté serveur comme sur Suivi/COSUI/la page OWASP) : le
+    // filtrage doit donc se faire directement dans chacun des 5 endpoints.
+
+    public function testPeintureOwaspListeReturns404WhenNoGroupeFonctionnel(): void
+    {
+        $user = new Utilisateur();
+        $user->setCourriel('user@ma-moulinette.fr');
+        $user->setListeGroupeFonctionnel([]);
+        $this->token->method('getUser')->willReturn($user);
+
+        $this->owaspRepo->expects($this->never())->method('selectOwaspOrderByDateEnregistrement');
+
+        $response = $this->controller->peintureOwaspListe($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+            'referential_owasp' => 2021,
+        ]));
+
+        $this->assertJsonStatus($response, 404, 'warning');
+    }
+
+    public function testPeintureOwaspListeReturns406WhenProjectNotInGroupe(): void
+    {
+        $user = new Utilisateur();
+        $user->setCourriel('user@ma-moulinette.fr');
+        $user->setListeGroupeFonctionnel(['TeamA']);
+        $this->token->method('getUser')->willReturn($user);
+        $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
+            'code' => 200,
+            'liste' => [['id' => 'fr.autre:projet-different']],
+        ]);
+
+        $this->owaspRepo->expects($this->never())->method('selectOwaspOrderByDateEnregistrement');
+
+        $response = $this->controller->peintureOwaspListe($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+            'referential_owasp' => 2021,
+        ]));
+
+        $this->assertJsonStatus($response, 406, 'warning');
+    }
+
+    public function testPeintureOwaspHotspotInfoReturns406WhenProjectNotInGroupe(): void
+    {
+        $user = new Utilisateur();
+        $user->setCourriel('user@ma-moulinette.fr');
+        $user->setListeGroupeFonctionnel(['TeamA']);
+        $this->token->method('getUser')->willReturn($user);
+        $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
+            'code' => 200,
+            'liste' => [['id' => 'fr.autre:projet-different']],
+        ]);
+
+        $this->hotspotOwaspRepo->expects($this->never())->method('countHotspotOwaspStatus');
+
+        $response = $this->controller->peintureOwaspHotspotInfo($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+        ]));
+
+        $this->assertJsonStatus($response, 406, 'warning');
+    }
+
+    public function testPeintureOwaspHotspotListeReturns406WhenProjectNotInGroupe(): void
+    {
+        $user = new Utilisateur();
+        $user->setCourriel('user@ma-moulinette.fr');
+        $user->setListeGroupeFonctionnel(['TeamA']);
+        $this->token->method('getUser')->willReturn($user);
+        $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
+            'code' => 200,
+            'liste' => [['id' => 'fr.autre:projet-different']],
+        ]);
+
+        $this->hotspotOwaspRepo->expects($this->never())->method('countHotspotOwaspMenaces');
+
+        $response = $this->controller->peintureOwaspHotspotListe($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+        ]));
+
+        $this->assertJsonStatus($response, 406, 'warning');
+    }
+
+    public function testPeintureOwaspHotspotDetailsReturns406WhenProjectNotInGroupe(): void
+    {
+        $user = new Utilisateur();
+        $user->setCourriel('user@ma-moulinette.fr');
+        $user->setListeGroupeFonctionnel(['TeamA']);
+        $this->token->method('getUser')->willReturn($user);
+        $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
+            'code' => 200,
+            'liste' => [['id' => 'fr.autre:projet-different']],
+        ]);
+
+        $this->hotspotDetailsRepo->expects($this->never())->method('selectHotspotDetailsByStatus');
+
+        $response = $this->controller->peintureOwaspHotspotDetails($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+        ]));
+
+        $this->assertJsonStatus($response, 406, 'warning');
+    }
+
+    public function testPeintureOwaspSeverityReturns406WhenProjectNotInGroupe(): void
+    {
+        $user = new Utilisateur();
+        $user->setCourriel('user@ma-moulinette.fr');
+        $user->setListeGroupeFonctionnel(['TeamA']);
+        $this->token->method('getUser')->willReturn($user);
+        $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
+            'code' => 200,
+            'liste' => [['id' => 'fr.autre:projet-different']],
+        ]);
+
+        $this->hotspotOwaspRepo->expects($this->never())->method('countHotspotOwaspMenaceByStatus');
+
+        $response = $this->controller->peintureOwaspSeverity($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+            'menace' => 'a1',
+        ]));
+
+        $this->assertJsonStatus($response, 406, 'warning');
     }
 
     // ═══════════════════════ helpers ═══════════════════════════════════════
