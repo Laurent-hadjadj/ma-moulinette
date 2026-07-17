@@ -109,15 +109,6 @@ Page OWASP
 - **Graphique en barres** : répartition des failles par catégorie ;
 - **Sélecteur de référentiel** (2017/2021/2025) : accordéon listant chaque catégorie avec description et lien vers sa page de détail complète (contenu documentaire OWASP officiel).
 
-!!! caution "⚠️ Tableau de synthèse : libellés de catégories figés sur la nomenclature 2017"
-    Le **tableau de synthèse** (A1-A10, celui du chemin de fer plus haut) affiche des libellés de catégorie (ex. « A1 - Attaques d'injection ») câblés en dur dans le HTML sur la nomenclature **2017**, quel que soit le référentiel réellement sélectionné — ces libellés ne sont pas pilotés par JS, ils sont statiques dans `templates/owasp/index.html.twig`. Les libellés 2021/2025 corrects n'apparaissent que dans l'**accordéon Référentiel** (voir note ci-dessous) et dans l'export PDF (`OwaspController::owaspLabels()`).
-
-!!! note "✅ Accordéon Référentiel : le sélecteur `<select>` ne basculait jamais sur 2025 (corrigé)"
-    À ne pas confondre avec la note ci-dessus (tableau de synthèse, toujours figé sur 2017) : l'**accordéon Référentiel**, lui, a bien 3 blocs distincts et corrects par référentiel (`owasp_2017`/`owasp_2021`/`owasp_2025`, chacun avec ses vrais libellés). Mais le `<select id="js-owasp-select">` avait un copier-coller resté sur l'option "OWASP 2025" : `<option value="2021">OWASP 2025</option>` — la valeur dupliquait celle de 2021 au lieu de `2025`. Choisir "OWASP 2025" dans la liste déroulante déclenchait donc `selectReferentialOwasp('2021')` et ré-affichait simplement le bloc 2021, sans jamais atteindre le bloc 2025 — d'où l'observation « entre 2017 et 2021 ça change, mais pas entre 2021 et 2025 ». Les boutons `#bouton-choisir-owasp-2017/2021/2025` (indépendants du `<select>`) n'étaient pas concernés par ce bug précis.
-
-!!! note "✅ `selectReferentialOwasp()` : double négation inversant la logique de masquage (corrigé)"
-    Les branches 2017 et 2025 de cette fonction JS testaient `!X.hasClass('display-off') === false` — strictement équivalent à `X.hasClass('display-off')` seul (la double négation s'annule), ce qui revient à « masquer seulement si déjà masqué » : un no-op. Seule la branche 2021 était écrite correctement. Résultat concret : choisir 2017 ou 2025 ne masquait jamais les deux autres blocs, qui restaient visibles en même temps — d'où l'impression de contenu dupliqué/superposé en changeant de référentiel. Les 3 branches suivent désormais le même schéma que la 2021 (masquer si pas déjà masqué).
-
 !!! note "✅ Accordéon masqué par défaut au chargement"
     Les 3 blocs de l'accordéon démarraient tous avec `display-off` — rien n'était visible tant qu'on n'avait pas interagi une première fois, ce qui donnait l'impression qu'un premier clic « ne faisait rien ».
     Le bloc du référentiel actif le plus récent (2025 > 2021 > 2017, calculé côté Twig à partir des mêmes variables `referential_2017`/`referential_2021`/`referential_2025`) est désormais visible dès le chargement — sans appel SonarQube, c'est de la documentation déjà chargée par le contrôleur.
@@ -145,9 +136,6 @@ Le bouton vers [DependencyCheck](../dependency-check/pages.md) est **indépendan
 | `error` | `peinture/owasp/hotspot/info`, `/hotspot/liste` ou `/hotspot/details` renvoie `code=400` | ❌ La requête n'est pas conforme (Erreur 400). |
 | `error` | `peinture/owasp/hotspot/severity` renvoie `code=400` | ❌ [Severity] La requête n'est pas conforme (Erreur 400) ! |
 | `warning` | Export PDF cliqué sans projet en `sessionStorage` | ⚠️ Aucun projet sélectionné — impossible d'exporter le rapport. |
-
-!!! note "✅ Message « info » trompeur supprimé"
-    `remplissageOwaspInfo()` affichait un message `info` (« Les données ont été trouvées. ») dès que `code !== 200` — y compris pour les codes `400` et `406`, qui affichent chacun **leur propre** message juste après. Un utilisateur obtenant une erreur 400/406 voyait donc **deux** bandeaux empilés, dont le premier était incorrect (le libellé annonçait des données trouvées alors que la requête avait échoué). Ce message inutile et trompeur a été supprimé.
 
 ### Flash serveur (`OwaspController`)
 
