@@ -729,6 +729,7 @@ COMMENT ON COLUMN ma_moulinette.owasp.maven_key IS 'Clé unique du projet';
 COMMENT ON COLUMN ma_moulinette.owasp.version IS 'Version du projet';
 COMMENT ON COLUMN ma_moulinette.owasp.date_version IS 'Date de publication du projet';
 COMMENT ON COLUMN ma_moulinette.owasp.effort_total IS 'Effort total pour corriger les anomalies';
+COMMENT ON COLUMN ma_moulinette.owasp.source IS 'Origine du comptage : facet (classification officielle SonarQube owaspTop10/owaspTop10-2021) ou tag (secours par tag owasp-aXX quand la facette ne renvoie rien)';
 COMMENT ON COLUMN ma_moulinette.owasp.a1 IS 'OWASP Top 10 - A1';
 COMMENT ON COLUMN ma_moulinette.owasp.a2 IS 'OWASP Top 10 - A2';
 COMMENT ON COLUMN ma_moulinette.owasp.a3 IS 'OWASP Top 10 - A3';
