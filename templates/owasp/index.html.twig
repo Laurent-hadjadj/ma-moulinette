@@ -13,6 +13,25 @@ sonar.version — pas de seuil numérique à deviner. #}
 {% set referential_2021 = version >= 9 ? 'enable' : 'disable' %}
 {% set referential_2025 = 'disable' %}
 
+{# MODIF 2026-07-18 : les 3 blocs de l'accordéon Référentiel démarraient tous
+masqués (display-off) — rien n'était visible tant qu'on n'avait pas cliqué,
+ce qui donnait l'impression que le premier clic ne faisait rien. On affiche
+par défaut le référentiel actif le plus récent (2025 > 2021 > 2017), sans
+appel SonarQube : c'est de la documentation déjà chargée par le contrôleur. #}
+{% set display_off_2017 = 'display-off' %}
+{% set display_off_2021 = 'display-off' %}
+{% set display_off_2025 = 'display-off' %}
+{% set referentiel_affiche_defaut = '2017' %}
+{% if referential_2025 == 'enable' %}
+    {% set display_off_2025 = '' %}
+    {% set referentiel_affiche_defaut = '2025' %}
+{% elseif referential_2021 == 'enable' %}
+    {% set display_off_2021 = '' %}
+    {% set referentiel_affiche_defaut = '2021' %}
+{% else %}
+    {% set display_off_2017 = '' %}
+{% endif %}
+
 <!DOCTYPE html>
 <!--
 .. __  __             __  __             _ _            _   _
@@ -437,18 +456,21 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                 <div class="grid-x">
                     <div class="small-12 medium-6 large-6 cell">
                         <label for="js-owasp-select">Choisis ton référentiel :</label>
+                        {# MODIF 2026-07-18 : `selected` aligné sur referentiel_affiche_defaut —
+                        sans ça, le select montrait toujours "2017" par défaut même quand
+                        l'accordéon affichait 2021/2025, un état incohérent entre les deux. #}
                         <select id="js-owasp-select" name="owasp" data-tags="true"
                             data-placeholder='Cliquez pour ouvrir la liste' data-language='fr'>
-                            <option value="2017">OWASP 2017</option>
-                            <option value="2021">OWASP 2021</option>
-                            <option value="2021">OWASP 2025</option>
+                            <option value="2017" {{ referentiel_affiche_defaut == '2017' ? 'selected' : '' }}>OWASP 2017</option>
+                            <option value="2021" {{ referentiel_affiche_defaut == '2021' ? 'selected' : '' }}>OWASP 2021</option>
+                            <option value="2025" {{ referentiel_affiche_defaut == '2025' ? 'selected' : '' }}>OWASP 2025</option>
                         </select>
                     </div>
                 </div>
         </section>
 
         {# Référentiel OWASP 2017 #}
-        <section id="owasp-2017" class="grid-container owasp-content display-off margin-bottom-2">
+        <section id="owasp-2017" class="grid-container owasp-content {{ display_off_2017 }} margin-bottom-2">
             <legend class="container-owasp-description open-sans color-noir font-size-1">Documentation Owasp 2017
             </legend>
             <ul class="vertical menu accordion-menu" data-accordion-menu>
@@ -477,7 +499,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
         </section>
 
         {# Référentiel OWASP 2021 #}
-        <section id="owasp-2021" class="grid-container owasp-content display-off margin-bottom-2">
+        <section id="owasp-2021" class="grid-container owasp-content {{ display_off_2021 }} margin-bottom-2">
             <legend class="container-owasp-description open-sans color-noir font-size-1">Documentation Owasp 2021
             </legend>
             <ul class="vertical menu accordion-menu" data-accordion-menu>
@@ -506,7 +528,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
         </section>
 
         {# Référentiel OWASP 2025 #}
-        <section id="owasp-2025" class="grid-container owasp-content display-off margin-bottom-2">
+        <section id="owasp-2025" class="grid-container owasp-content {{ display_off_2025 }} margin-bottom-2">
             <legend class="container-owasp-description open-sans color-noir font-size-1">Documentation Owasp 2025
             </legend>
             <ul class="vertical menu accordion-menu" data-accordion-menu>
