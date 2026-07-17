@@ -30,6 +30,11 @@ class BatchCollecteOwaspController extends AbstractController
     private static string $erreur404 = "Je n'ai pas trouvé le projet dans l'application (Erreur 404).";
     // MODIF 2026-05-26 : extraction des string literals dupliqués (S1192).
     private static string $owaspCategories = 'a1,a2,a3,a4,a5,a6,a7,a8,a9,a10';
+    /* MODIF 2026-07-18 : liste des tags de secours (owasp-aXX, zéro-paddés —
+     * cf. mkDocs/docs/ma-moulinette/application/owasp.md) utilisée quand la
+     * facette officielle owaspTop10/owaspTop10-2021 ne classe aucune issue. */
+    private static string $owaspTagCategories =
+        'owasp-a01,owasp-a02,owasp-a03,owasp-a04,owasp-a05,owasp-a06,owasp-a07,owasp-a08,owasp-a09,owasp-a10';
 
     /**
      * [Description for __construct]
@@ -106,6 +111,7 @@ class BatchCollecteOwaspController extends AbstractController
             $queryParamsList['owasp2021']
             );
 
+            $this->logger->debug("[Batch OWASP] 🛠️ Appel OWASP 2021 → {$url}");
             $owasp2021 = $this->client->httpSonarQube($url);
             if (isset($owasp2021['code']) && in_array($owasp2021['code'], [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
                 $this->logger->error("[Batch OWASP] ❌ Erreur OWASP 2021 pour {$maven_key} : {$owasp2021['code']}");
@@ -141,26 +147,56 @@ class BatchCollecteOwaspController extends AbstractController
         $date = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
         $date_version = new \DateTimeImmutable($select_information['info']['date'], new \DateTimeZone(self::$europeParis));
 
-        $prepareOwaspData = function($referential) use ($maven_key, $date_version, $date, $select_information, $mode_collecte, $utilisateur_collecte) {
-            /** On initialise un tableau avec comme valeur 0 */
-            $nombre = array_fill(1, 10, 0);
-            $nombre[0] = $referential['total'];
-            $effort_total = $referential['effortTotal'];
-
-            /** Pour chaque signalement OWASP a1, a2, a3,... */
-            $total = 0;
-            foreach ($referential['facets'][0]['values'] as $value) {
-                $index = substr($value['val'], 1);
-                $nombre[$index] = $value['count'];
-                $total += $value['count']; // Ajoute cette valeur au total
+        /* MODIF 2026-07-18 : appel de secours (mémoïsé, un seul appel HTTP
+         * même si 2017 ET 2021 en ont besoin) quand la facette officielle ne
+         * classe aucune issue. Le tag `owasp-aXX` n'étant pas spécifique à un
+         * référentiel (contrairement à la facette owaspTop10 vs
+         * owaspTop10-2021), le même résultat sert aux deux. */
+        $tagFallback = null;
+        $fetchTagFallback = function () use (&$tagFallback, $maven_key) {
+            if ($tagFallback !== null) {
+                return $tagFallback;
             }
+            $url = $this->urlBuilder->build(
+                $this->getParameter(self::$sonarUrl),
+                '/api/issues/search',
+                ['componentKeys' => $maven_key, 'tags' => self::$owaspTagCategories, 'ps' => 500]
+            );
+            $this->logger->debug("[Batch OWASP] 🛠️ Appel de secours par tag (owasp-aXX) → {$url}");
+            $response = $this->client->httpSonarQube($url);
+            if (
+                isset($response['code'])
+                && in_array($response['code'], [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])
+            ) {
+                $this->logger->warning("[Batch OWASP] ⚠️ Échec de l'appel de secours par tag : {$response['code']}");
+                $tagFallback = ['issues' => [], 'total' => 0, 'effortTotal' => 0];
+                return $tagFallback;
+            }
+            $tagFallback = $response['json'] ?? ['issues' => [], 'total' => 0, 'effortTotal' => 0];
+            return $tagFallback;
+        };
 
-            /** On remplie le tableau pour les signalement a1 à a10 pour les clés de sévérité */
+        $prepareOwaspData = function ($referential) use (
+            $maven_key,
+            $date_version,
+            $date,
+            $select_information,
+            $mode_collecte,
+            $utilisateur_collecte,
+            $fetchTagFallback
+        ) {
+            $source = 'facet';
+            $nombre = array_fill(1, 10, 0);
             $owaspIssues = array_fill_keys(range(1, 10), array_fill_keys(
                 ['blocker', 'critical', 'major', 'info', 'minor'], 0));
+            $effort_total = (int) ($referential['effortTotal'] ?? 0);
 
-            /** Calcul du nombre d'issue par type de signalement OWASP et par type de sévérité */
-            if ($referential['total'] != 0) {
+            if ((int) ($referential['total'] ?? 0) !== 0) {
+                /** Classification officielle SonarQube (facette owaspTop10/owaspTop10-2021) */
+                foreach ($referential['facets'][0]['values'] as $value) {
+                    $index = substr($value['val'], 1);
+                    $nombre[$index] = $value['count'];
+                }
                 foreach ($referential['issues'] as $issue) {
                     if (in_array($issue['status'], ['OPEN', 'CONFIRMED', 'REOPENED'])) {
                         foreach ($issue['tags'] as $tag) {
@@ -174,14 +210,44 @@ class BatchCollecteOwaspController extends AbstractController
                         }
                     }
                 }
+            } else {
+                /* MODIF 2026-07-18 : la facette officielle ne classe aucune
+                 * issue pour ce référentiel — secours par tag `owasp-aXX`
+                 * (cf. owasp.md, note "Pourquoi le tableau de synthèse peut
+                 * sembler incohérent..."). Le tag n'étant pas spécifique à
+                 * une année de référentiel, le comptage obtenu ici vaudra
+                 * aussi bien pour 2017 que pour 2021. */
+                $fallback = $fetchTagFallback();
+                $effort_total = (int) ($fallback['effortTotal'] ?? $effort_total);
+                foreach ($fallback['issues'] ?? [] as $issue) {
+                    if (in_array($issue['status'], ['OPEN', 'CONFIRMED', 'REOPENED'])) {
+                        foreach ($issue['tags'] ?? [] as $tag) {
+                            if (preg_match("/owasp-a(\d+)/", $tag, $matches)) {
+                                $owaspIndex = (int)$matches[1];
+                                if ($owaspIndex < 1 || $owaspIndex > 10) {
+                                    continue;
+                                }
+                                $nombre[$owaspIndex]++;
+                                $severity = strtolower($issue['severity']);
+                                if (isset($owaspIssues[$owaspIndex][$severity])) {
+                                    $owaspIssues[$owaspIndex][$severity]++;
+                                }
+                            }
+                        }
+                    }
+                }
+                if (array_sum($nombre) > 0) {
+                    $source = 'tag';
+                }
             }
 
             $map = [
-                    'total' => $total,
+                    'total' => array_sum($nombre),
                     'maven_key' => $maven_key,
                     'version' => $select_information['info']['version'] ?? 'N.C',
                     'date_version' => $date_version,
                     'effort_total' => $effort_total,
+                    'source' => $source,
                     'mode_collecte' => $mode_collecte,
                     'utilisateur_collecte' => $utilisateur_collecte,
                     'date_enregistrement' => $date
