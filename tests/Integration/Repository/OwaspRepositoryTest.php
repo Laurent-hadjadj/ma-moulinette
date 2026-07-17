@@ -164,6 +164,8 @@ class OwaspRepositoryTest extends KernelTestCase
         $map['version'] = self::$version;
         $map['date_version'] = self::$dateVersion;
         $map['effort_total'] = self::$effortTotal;
+        // MODIF 2026-07-18 : nouvelle colonne NOT NULL (source du comptage : facet|tag).
+        $map['source'] = 'facet';
 
         for ($i = 0; $i < 10; $i++) {
             $map["a" . ($i + 1)] = self::$a[$i];
@@ -185,6 +187,65 @@ class OwaspRepositoryTest extends KernelTestCase
         // Assert
         $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
+    }
+
+    /**
+     * MODIF 2026-07-18 : verrouille le fix — `executeStatement()` était hors
+     * de la boucle `foreach ($owaspDataList as $map)`, si bien qu'un seul
+     * appel avec plusieurs lignes (ex. 2017 + 2021, cas réel de
+     * BatchCollecteOwaspController) n'insérait en pratique que la DERNIÈRE
+     * ligne — les liaisons de paramètres se réécrivent sur la même requête
+     * préparée, elles ne s'accumulent pas en plusieurs exécutions.
+     */
+    public function testInsertOwaspPersistsAllRowsWhenMultipleReferentialsInSameCall(): void
+    {
+        self::bootKernel();
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+
+        $buildMap = function (int $referentialOwasp): array {
+            $map = [
+                'referential_owasp' => $referentialOwasp,
+                'maven_key' => self::$mavenKey,
+                'version' => self::$version,
+                'date_version' => self::$dateVersion,
+                'effort_total' => self::$effortTotal,
+                'source' => 'facet',
+            ];
+            for ($i = 0; $i < 10; $i++) {
+                $map["a" . ($i + 1)] = self::$a[$i];
+                $map["a" . ($i + 1) . "_blocker"] = self::$aBlocker[$i];
+                $map["a" . ($i + 1) . "_critical"] = self::$aCritical[$i];
+                $map["a" . ($i + 1) . "_major"] = self::$aMajor[$i];
+                $map["a" . ($i + 1) . "_info"] = self::$aInfo[$i];
+                $map["a" . ($i + 1) . "_minor"] = self::$aMinor[$i];
+            }
+            $map['mode_collecte'] = self::$modeCollecte;
+            $map['utilisateur_collecte'] = self::$utilisateurCollecte;
+            $map['date_enregistrement'] = new DateTimeImmutable(self::$dateEnregistrement);
+            return $map;
+        };
+
+        // Les fixtures posent déjà 3 lignes pour self::$mavenKey (cf. testSelectOwaspVersionHappyPath) :
+        // on repart d'un état propre pour isoler précisément l'effet de l'appel testé.
+        $entityManager->getConnection()->executeStatement(
+            'DELETE FROM ma_moulinette.owasp WHERE maven_key = ?',
+            [self::$mavenKey]
+        );
+
+        $owaspRepository = $entityManager->getRepository(Owasp::class);
+        $r = $owaspRepository->insertOwasp([$buildMap(2017), $buildMap(2021)]);
+
+        $this->assertEquals(200, $r['code'], self::$erreurCode200);
+
+        $rows = $entityManager->getConnection()->fetchAllAssociative(
+            'SELECT referential_owasp FROM ma_moulinette.owasp WHERE maven_key = ? ORDER BY referential_owasp',
+            [self::$mavenKey]
+        );
+
+        $this->assertCount(2, $rows, 'Les lignes 2017 ET 2021 doivent être persistées, pas seulement la dernière.');
+        $this->assertSame(2017, (int) $rows[0]['referential_owasp']);
+        $this->assertSame(2021, (int) $rows[1]['referential_owasp']);
     }
 
     protected function tearDown(): void
