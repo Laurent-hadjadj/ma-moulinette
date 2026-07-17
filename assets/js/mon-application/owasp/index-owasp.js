@@ -1001,6 +1001,35 @@ const remplissageDetailsHotspotOwasp = async function(maven_key, menace, titre) 
 };
 
 /**
+ * [Description for updateCategoryLabels]
+ * Met à jour les libellés de catégorie (colonne "show-for-medium") du tableau
+ * de synthèse selon le référentiel sélectionné.
+ *
+ * MODIF 2026-07-18 : ces libellés étaient câblés en dur dans le HTML sur la
+ * nomenclature 2017, quel que soit le référentiel réellement choisi (ex.
+ * "A1 - Attaques d'injection" restait affiché même en 2021, où A1 signifie
+ * "Contrôle d'accès défaillant"). Les listes `listeOwasp2017/2021/2025`
+ * existent déjà (utilisées pour le titre de la modale de détail) — on les
+ * réutilise ici pour le tableau de synthèse.
+ *
+ * @param string referential_owasp
+ *
+ * Created at: 18/07/2026 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ */
+const updateCategoryLabels = function (referential_owasp) {
+  const listes = { '2017': listeOwasp2017, '2021': listeOwasp2021, '2025': listeOwasp2025 };
+  const liste = listes[referential_owasp];
+  if (!liste) {
+    return;
+  }
+  for (let i = 1; i <= 10; i++) {
+    $(`#label-a${i}`).text(liste[i]);
+  }
+};
+
+/**
  * [Description for selectAnalyseVersion]
  * Ajoute une classe active au bouton sélectionné et appelle les fonctions de remplissage.
  *
@@ -1011,6 +1040,8 @@ const remplissageDetailsHotspotOwasp = async function(maven_key, menace, titre) 
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
 const selectAnalyseVersion = function (key, referential_owasp) {
+  /** Libellés de catégorie du tableau de synthèse pour ce référentiel */
+  updateCategoryLabels(referential_owasp);
   /** Affiche les vulnérabilités par criticité */
   remplissageOwaspInfo(key, referential_owasp);
   /** Affiche les hotspot par criticité */
