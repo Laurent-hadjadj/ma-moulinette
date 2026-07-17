@@ -158,16 +158,31 @@ public function testCalculRepartitionCountsReleaseSnapshotAndAutre(): void
         $this->assertSame(503, $r['code']);
     }
 
-    public function testControlVersionProjetReturns500WhenUnexpected(): void
+    public function testControlVersionProjetRelaysRealCodeAndMessageWhenUnexpected(): void
     {
-        // No json (isFound = false) but no matching error code (500, for example)
+        // No json (isFound = false) et aucun code anticipé (401/403/404/503) : on relaie
+        // le VRAI code/message plutôt que de les masquer derrière un 500 générique
+        // (cf. incident tetris:TetrisGame du 2026-07-15 : un 403 tombait ici en 500 opaque).
         $this->client->method('httpSonarQube')->willReturn(['code' => 418, 'erreur' => 'teapot']);
         $this->isValidMavenKey->method('isValideInformation')->willReturn(['code' => 500]);
         $this->isValidMavenKey->method('isValideHistorique')->willReturn(['code' => 500]);
 
         $r = $this->controller->controlVersionProjet(self::MAVEN_KEY);
 
-        $this->assertSame(500, $r['code']);
+        $this->assertSame(418, $r['code']);
+        $this->assertStringContainsString('teapot', $r['message']);
+    }
+
+    public function testControlVersionProjetReturns403WhenForbidden(): void
+    {
+        $this->client->method('httpSonarQube')->willReturn(['code' => 403, 'erreur' => 'Insufficient privileges']);
+        $this->isValidMavenKey->method('isValideInformation')->willReturn(['code' => 404]);
+        $this->isValidMavenKey->method('isValideHistorique')->willReturn(['code' => 404]);
+
+        $r = $this->controller->controlVersionProjet(self::MAVEN_KEY);
+
+        $this->assertSame(403, $r['code']);
+        $this->assertStringContainsString('Insufficient privileges', $r['message']);
     }
 
     /* ---------------- batchInformationVersion ---------------- */
