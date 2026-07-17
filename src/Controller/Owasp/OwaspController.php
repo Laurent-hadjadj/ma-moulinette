@@ -156,7 +156,7 @@ class OwaspController extends AbstractController
         }
 
         /* MODIF 2026-07-18 : ne plus forcer la casse en minuscules — une
-         * clé Maven comme "fr.mamoulientte:Ma-Moulinette" ne matchait
+         * clé Maven comme "fr.ma-moulinette:Ma-Moulinette" ne matchait
          * plus jamais l'entrée `liste_projet`/`historique` (comparaison stricte
          * dans ProjetPerimetreGuard/selectOwaspVersion), faussement rejetée en
          * 406. Aligné sur SuiviController/CosuiController::decodeToken(), qui
