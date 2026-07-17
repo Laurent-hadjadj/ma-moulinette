@@ -88,6 +88,17 @@ class Owasp
     private int $effortTotal;
 
     #[ORM\Column(
+        name: 'source',
+        type: Types::STRING,
+        length: 10,
+        nullable: false,
+        options: ['default' => 'facet', 'comment' =>
+            "Origine de la classification : 'facet' (owaspTop10/owaspTop10-2021 officiel) ou 'tag' (secours par tag owasp-aXX)"]
+    )]
+    #[Assert\Choice(choices: ['facet', 'tag'])]
+    private string $source = 'facet';
+
+    #[ORM\Column(
         name: 'a1',
         type: Types::INTEGER,
         nullable: false,
@@ -728,6 +739,18 @@ class Owasp
     public function setEffortTotal(int $effortTotal): static
     {
         $this->effortTotal = $effortTotal;
+
+        return $this;
+    }
+
+    public function getSource(): ?string
+    {
+        return $this->source;
+    }
+
+    public function setSource(string $source): static
+    {
+        $this->source = $source;
 
         return $this;
     }
