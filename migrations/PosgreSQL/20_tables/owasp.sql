@@ -2,13 +2,15 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.0.1 - 28/06/2026                  ##
+##           V2.1.0 - 18/07/2026                  ##
 ##                                                ##
 ####################################################*/
 
 --- 2025-11-30 : Migration postGreSql 18
 --- 2026-06-28 : On passe le script en automatique avec l'utilisateur postgres, puis on applique le script grants.sql.
 ---              On supprime l'utilisateur db_user pour éviter de passer le mot de passe une seconde fois.
+--- 2026-07-18 : Ajout de la colonne source pour distinguer les facettes des tags.
+
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette;
@@ -25,6 +27,11 @@ CREATE TABLE ma_moulinette.owasp
   date_version TIMESTAMPTZ NOT NULL,
 
   effort_total INT NOT NULL,
+
+  -- 'facet' (classification officielle SonarQube owaspTop10/owaspTop10-2021)
+  -- ou 'tag' (secours par tag owasp-aXX quand la facette ne renvoie rien) :
+  -- cf. mkDocs/docs/ma-moulinette/application/owasp.md.
+  source VARCHAR(10) NOT NULL DEFAULT 'facet',
 
   a1 INT NOT NULL,
   a2 INT NOT NULL,
