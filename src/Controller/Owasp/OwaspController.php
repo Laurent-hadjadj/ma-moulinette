@@ -13,6 +13,7 @@
 
 namespace App\Controller\Owasp;
 
+use App\Controller\Traits\{AppUserAware, ProjetPerimetreGuard};
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Attribute\Route;
@@ -30,6 +31,8 @@ use App\Service\UserAgent\UserAgentTrackingFacade;
  */
 class OwaspController extends AbstractController
 {
+    use AppUserAware;
+    use ProjetPerimetreGuard;
 
     private static string $page = "owasp/index.html.twig";
     private static string $erreur404 = "⚠️ Les informations concernant les référentiels OWASP n'ont pas été trouvés.";
@@ -152,7 +155,13 @@ class OwaspController extends AbstractController
             return null;
         }
 
-        $result = strtolower($parts[1]);
+        /* MODIF 2026-07-18 : ne plus forcer la casse en minuscules — une
+         * clé Maven comme "fr.mamoulientte:Ma-Moulinette" ne matchait
+         * plus jamais l'entrée `liste_projet`/`historique` (comparaison stricte
+         * dans ProjetPerimetreGuard/selectOwaspVersion), faussement rejetée en
+         * 406. Aligné sur SuiviController/CosuiController::decodeToken(), qui
+         * préservent déjà la casse. */
+        $result = $parts[1];
         $this->logger->info("[OWASP] ℹ️ Token décodé avec succès", ['valeur_extraite' => $result]);
 
         return $result;
@@ -178,6 +187,21 @@ class OwaspController extends AbstractController
         /** On charge le template du render */
         $render = $this->genericRender();
 
+        /* MODIF 2026-07-18 : le template référence sonar_version/application/
+         * application_version/has_dc_scan sans garde `is defined` (breadcrumb,
+         * activation des boutons de référentiel, bouton Dependency-Check). Ces
+         * clés n'étaient historiquement affectées qu'en toute fin de chemin
+         * heureux — tout retour anticipé (token, périmètre, échec de lecture
+         * d'un référentiel) rendait la page avec un render incomplet et
+         * plantait Twig ("Variable ... does not exist"). Valeurs par défaut
+         * posées une fois pour toutes, écrasées plus bas si le chemin
+         * est atteint. */
+        $render['sonar_version'] = (int) $this->getParameter('sonar.version');
+        $render['application'] = null;
+        $render['application_group'] = null;
+        $render['application_version'] = null;
+        $render['has_dc_scan'] = false;
+
         $token = $request->query->get('token');
         if (empty($token)) {
             $this->logger->warning('[OWASP] ⚠️ Token manquant dans la requête');
@@ -188,6 +212,17 @@ class OwaspController extends AbstractController
         if (null === $maven_key) {
             $this->logger->error('[OWASP] ❌ Échec du décodage du token.');
             return $this->addFlashAndRender('error', self::$erreur400, 'Problème de décodage du token.', $render);
+        }
+
+        /* MODIF 2026-07-17 : ajout du filtrage par groupe fonctionnel, aligné sur
+         * SuiviController::suivi()/CosuiController::projetCosui() — jusqu'ici seul
+         * le pare-feu (ROLE_UTILISATEUR) protégeait cette page, sans vérification
+         * de périmètre. */
+        $perimetre = $this->verifierPerimetreProjet($maven_key, '[OWASP]');
+        if ($perimetre['code'] !== 200) {
+            $message = $perimetre['message']
+                ?? "Une erreur est survenue lors de la vérification du périmètre (Erreur {$perimetre['code']}).";
+            return $this->addFlashAndRender('warning', $message, null, $render);
         }
 
         /** On instancie l'entityRepos */
@@ -272,7 +307,6 @@ class OwaspController extends AbstractController
         $mavenKeyComplete = $breadCrumb['application'] ?? null;
         $parts = is_string($mavenKeyComplete) ? explode(':', $mavenKeyComplete) : [];
 
-        $render['sonar_version'] = (int) $this->getParameter('sonar.version');
         $render['serveur'] = $this->getParameter('sonar.url');
         $render['owasp_2017'] = $owasp_2017;
         $render['owasp_2021'] = $owasp_2021;
@@ -432,6 +466,16 @@ class OwaspController extends AbstractController
 
         if ($mavenKey === '') {
             throw $this->createNotFoundException('Clé Maven manquante.');
+        }
+
+        /* MODIF 2026-07-17 : le rapport PDF ne vérifiait aucune appartenance au
+         * groupe fonctionnel de l'utilisateur connecté, contrairement à la page
+         * web /owasp — un utilisateur connaissant la clé Maven exacte d'un projet
+         * hors de son périmètre pouvait en générer le PDF. Alignement sur
+         * SuiviController::rapportPdf(). */
+        $perimetre = $this->verifierPerimetreProjet($mavenKey, '[OWASP]');
+        if ($perimetre['code'] !== 200) {
+            throw $this->createNotFoundException($perimetre['message'] ?? self::$erreur404);
         }
 
         /** Repos */
