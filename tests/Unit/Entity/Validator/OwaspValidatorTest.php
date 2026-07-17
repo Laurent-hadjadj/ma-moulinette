@@ -182,6 +182,7 @@ class OwaspValidatorTest extends KernelTestCase
     $entity = $this->getEntity();
     $reflectionClass = new \ReflectionClass($entity);
     $nbAttributs = count($reflectionClass->getProperties());
-    $this->assertEquals($nbAttributs, 69);
+    // MODIF 2026-07-18 : +1 (nouveau champ `source` : 'facet'|'tag').
+    $this->assertEquals($nbAttributs, 70);
   }
 }
