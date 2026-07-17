@@ -199,9 +199,6 @@ const remplissageOwaspInfo = async function(maven_key, referential_owasp) {
   };
 
   const r = await $.ajax(options);
-  if (r.code !== http_200) {
-    showMessage('info', `Les données ont été trouvées.`);
-  }
   if (r.code === http_400) {
     showMessage('error', `La requête n'est pas conforme (Erreur 400).`);
     videLeTableau();
@@ -559,7 +556,7 @@ const remplissageHotspotInfo = async function(maven_key, referential_owasp) {
 * Created at: 19/12/2022, 21:41:13 (Europe/Paris)
 * @author     Laurent HADJADJ <laurent_h@me.com>
 */
-const injectionHotspotListe=function(id, formatage, menace, leTaux, badge, laNote) {
+const injectionHotspotListe = function(id, formatage, menace, leTaux, badge, laNote) {
   const i = `<span class="stat-note">${new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(menace)}</span>
   <span class="stat-note">${formatage} ${Intl.NumberFormat('fr-FR', { style: 'percent' }).format(leTaux)}
   </span> <span class="badge ${badge}">${laNote}</span>`;
@@ -985,15 +982,16 @@ const remplissageDetailsHotspotOwasp = async function(maven_key, menace, titre) 
 
     /** on affiche le titre en fonction du référentiel */
     const x = sessionStorage.getItem('ma_moulinette_referential_owasp');
+
     if (x === undefined || x == '') { return; }
 
-    if (x === 2017) {
+    if (x === "2017") {
       $('.details-titre').html(listeOwasp2017[titre]);
     }
-    if (x === 2021) {
+    if (x === "2021") {
       $('.details-titre').html(listeOwasp2021[titre]);
     }
-    if (x === 2025) {
+    if (x === "2025") {
       $('.details-titre').html(listeOwasp2025[titre]);
     }
 
@@ -1002,27 +1000,27 @@ const remplissageDetailsHotspotOwasp = async function(maven_key, menace, titre) 
     $('#detail-faible').html(new Intl.NumberFormat('fr-FR', { style: 'decimal' }).format(r.low));
 };
 
-  /**
-   * [Description for selectAnalyseVersion]
-   * Ajoute une classe active au bouton sélectionné et appelle les fonctions de remplissage.
-   *
-   * @param mixed referential_owasp
-   *
-   * Created at: 20/11/2024 19:46:23 (Europe/Paris)
-   * @author     Laurent HADJADJ <laurent_h@me.com>
-   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
-   */
-  const selectAnalyseVersion = function (key, referential_owasp) {
-    /** Affiche les vulnérabilités par criticité */
-    remplissageOwaspInfo(key, referential_owasp);
-    /** Affiche les hotspot par criticité */
-    remplissageHotspotInfo(key, referential_owasp);
-    /** On rempli le tableau avec les données des menaces owasp */
-    remplissageHotspotListe(key, referential_owasp);
-    /** On rempli le tableau avec led données des hotspot */
-    remplissageHotspotDetails(key, referential_owasp);
-    //owaspPieChart.update();
-  }
+/**
+ * [Description for selectAnalyseVersion]
+ * Ajoute une classe active au bouton sélectionné et appelle les fonctions de remplissage.
+ *
+ * @param mixed referential_owasp
+ *
+ * Created at: 20/11/2024 19:46:23 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+ */
+const selectAnalyseVersion = function (key, referential_owasp) {
+  /** Affiche les vulnérabilités par criticité */
+  remplissageOwaspInfo(key, referential_owasp);
+  /** Affiche les hotspot par criticité */
+  remplissageHotspotInfo(key, referential_owasp);
+  /** On rempli le tableau avec les données des menaces owasp */
+  remplissageHotspotListe(key, referential_owasp);
+  /** On rempli le tableau avec led données des hotspot */
+  remplissageHotspotDetails(key, referential_owasp);
+  //owaspPieChart.update();
+}
 
 /**
  * [Description for selectReferentialOwasp]
@@ -1038,9 +1036,17 @@ const selectReferentialOwasp = function(version){
   const $version_2021 = $('#owasp-2021');
   const $version_2025 = $('#owasp-2025');
 
+  /* MODIF 2026-07-18 : les branches 2017/2025 avaient une double négation
+   * (`!X.hasClass('display-off') === false`, équivalente à `X.hasClass(...)`
+   * seul) qui inversait la logique voulue — elle ne masquait un bloc que
+   * s'il était déjà masqué (no-op), jamais quand il était visible. Résultat :
+   * sélectionner 2017 ou 2025 ne masquait jamais les deux autres blocs, qui
+   * restaient affichés en même temps. Seule la branche 2021 était correcte
+   * (sans le `!` en trop) — les 3 branches suivent maintenant ce même
+   * schéma : masquer si PAS déjà masqué. */
   if (version === "2017") {
-    if (!$version_2021.hasClass('display-off') === false) { $version_2021.addClass('display-off')}
-    if (!$version_2025.hasClass('display-off') === false) { $version_2025.addClass('display-off')}
+    if ($version_2021.hasClass('display-off') === false) { $version_2021.addClass('display-off')}
+    if ($version_2025.hasClass('display-off') === false) { $version_2025.addClass('display-off')}
     $version_2017.removeClass('display-off');
   }
   if (version === "2021") {
@@ -1049,8 +1055,8 @@ const selectReferentialOwasp = function(version){
     $version_2021.removeClass('display-off');
   }
   if (version === "2025") {
-    if (!$version_2017.hasClass('display-off') === false) { $version_2017.addClass('display-off')}
-    if (!$version_2021.hasClass('display-off') === false) { $version_2021.addClass('display-off')}
+    if ($version_2017.hasClass('display-off') === false) { $version_2017.addClass('display-off')}
+    if ($version_2021.hasClass('display-off') === false) { $version_2021.addClass('display-off')}
     $version_2025.removeClass('display-off');
   }
 }
@@ -1067,9 +1073,9 @@ const selectReferentialOwasp = function(version){
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
 /* MODIF 2026-07-18 : conserve l'instance du graphique pour la détruire avant
- * d'en recréer une — sans ça, chaque clic sur un référentiel (2017/2021/2025)
- * tentait un new Chart() sur le même canvas déjà utilisé, provoquant
- * "Uncaught (in promise) Error: Canvas is already in use." */
+* d'en recréer une — sans ça, chaque clic sur un référentiel (2017/2021/2025)
+* tentait un new Chart() sur le même canvas déjà utilisé, provoquant
+* "Uncaught (in promise) Error: Canvas is already in use." */
 let owaspBarChartInstance = null;
 
 const dessineMoiUneBarre = function (referential, data){
@@ -1151,12 +1157,24 @@ const dessineMoiUneBarre = function (referential, data){
 }
 
 /*************** Main du programme **************/
-/** On récupère la clé du projet */
+
+/** On récupère la clé du projet.
+ *  MODIF 2026-07-18 : `maven_key` peut être `null` (sessionStorage vidé,
+ *  page rouverte directement, nouvel onglet...) — un `.split(':')` sur
+ *  `null` plantait ici, en tête de script, AVANT l'attachement de tous les
+ *  gestionnaires de clic plus bas (référentiels, export PDF, modales) : la
+ *  page semblait chargée mais restait totalement inerte, sans message
+ *  visible pour l'utilisateur (seule une erreur JS non catchable dans le
+ *  flux applicatif apparaissait en console). */
 const maven_key = sessionStorage.getItem('ma_moulinette_projet');
-const projet = maven_key.split(':');
+
+if (!maven_key) {
+  showMessage('warning', "Aucun projet sélectionné — retournez à la page Projet pour ouvrir OWASP depuis un projet.", null);
+}
+const projet = maven_key ? maven_key.split(':') : ['', ''];
 
 /** On met à jour la page */
-$('#js-application').html(projet[1]);
+$('#js-application').html(projet[1] || '');
 
 /** On appel les fonctions de remplissage pour la version OWASP.
  *  Fix 2026-05-03 : ligne `setItem(..., 2021)` parasite supprimée — elle
