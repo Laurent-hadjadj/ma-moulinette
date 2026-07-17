@@ -99,11 +99,12 @@ class OwaspCaseTest extends TestCase
     }
 
     /**
-     * v2.0.0 : l’entité Owasp comporte 69 attributs.
+     * v2.0.0 : l’entité Owasp comporte 70 attributs (dont `source` depuis le 2026-07-18).
      */
     public function testCountAttribut(): void
     {
         $reflectionClass = new \ReflectionClass(new Owasp());
-        $this->assertEquals(69, count($reflectionClass->getProperties()));
+        // MODIF 2026-07-18 : +1 (nouveau champ `source` : 'facet'|'tag').
+        $this->assertEquals(70, count($reflectionClass->getProperties()));
     }
 }
