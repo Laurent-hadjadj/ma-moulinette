@@ -223,7 +223,7 @@ class DcScan
     private bool $isLatestRelease = false;
 
     #[ORM\Column(
-        name: 'create_at',
+        name: 'created_at',
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false
     )]
