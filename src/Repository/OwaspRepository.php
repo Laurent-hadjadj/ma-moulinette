@@ -174,7 +174,7 @@ class OwaspRepository extends ServiceEntityRepository
   public function insertOwasp(array $owaspDataList): array
   {
     $sql = "INSERT INTO ma_moulinette.owasp
-                (referential_owasp, maven_key, version, date_version, effort_total,
+                (referential_owasp, maven_key, version, date_version, effort_total, source,
                 mode_collecte, utilisateur_collecte, date_enregistrement,
                 a1, a2, a3, a4, a5, a6, a7, a8, a9, a10,
                 a1_blocker, a1_critical, a1_major, a1_info, a1_minor,
@@ -188,7 +188,7 @@ class OwaspRepository extends ServiceEntityRepository
                 a9_blocker, a9_critical, a9_major, a9_info, a9_minor,
                 a10_blocker, a10_critical, a10_major, a10_info, a10_minor)
             VALUES
-                (:referential_owasp, :maven_key, :version, :date_version, :effort_total, :mode_collecte, :utilisateur_collecte, :date_enregistrement,
+                (:referential_owasp, :maven_key, :version, :date_version, :effort_total, :source, :mode_collecte, :utilisateur_collecte, :date_enregistrement,
                 :a1, :a2, :a3, :a4, :a5, :a6, :a7, :a8, :a9, :a10,
                 :a1_blocker, :a1_critical, :a1_major, :a1_info, :a1_minor,
                 :a2_blocker, :a2_critical, :a2_major, :a2_info, :a2_minor,
@@ -204,6 +204,11 @@ class OwaspRepository extends ServiceEntityRepository
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
       $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+      /* MODIF 2026-07-18 : executeStatement() était hors de la boucle — une
+       * seule exécution après avoir lié TOUTES les lignes sur la même
+       * requête préparée n'insérait que la dernière ligne (les liaisons se
+       * réécrivent, elles ne s'accumulent pas). Avec 2 référentiels (2017 +
+       * 2021), seul le dernier de la liste était réellement persisté. */
       foreach ($owaspDataList as $map) {
                 foreach ($map as $key => $value) {
                   if ($value instanceof \DateTimeImmutable) {
@@ -214,8 +219,8 @@ class OwaspRepository extends ServiceEntityRepository
                       }
                   }
                 }
+                $stmt->executeStatement();
               }
-            $stmt->executeStatement();
           $this->getEntityManager()->getConnection()->commit();
     } catch (\Throwable $e) {
         $this->getEntityManager()->getConnection()->rollBack();
