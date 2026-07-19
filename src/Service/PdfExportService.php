@@ -340,10 +340,10 @@ class PdfExportService
 
         $projectLabel = $data['project_name'] ?? ($data['maven_key'] ?? 'projet');
         $merger->SetTitle($this->toLatin1('Rapport de suivi qualite - ' . $projectLabel));
-        $merger->SetAuthor('Sonar-Report');
+        $merger->SetAuthor('Ma-Moulinette');
         $merger->SetSubject($this->toLatin1('Suivi qualite SonarQube - ' . ($data['maven_key'] ?? '')));
         $merger->SetKeywords('SonarQube, qualite, suivi, rapport, ' . ($data['maven_key'] ?? ''));
-        $merger->SetCreator('Sonar-Report');
+        $merger->SetCreator('Ma-Moulinette');
 
         $tmpFiles = [];
         try {
@@ -663,10 +663,10 @@ class PdfExportService
             $data['project_version'] ?? '?'
         );
         $merger->SetTitle($this->toLatin1('Rapport DependencyCheck - ' . $projectLabel));
-        $merger->SetAuthor('Sonar-Report');
+        $merger->SetAuthor('Ma-Moulinette');
         $merger->SetSubject($this->toLatin1('Rapport vulnerabilites OWASP DependencyCheck'));
         $merger->SetKeywords('OWASP, DependencyCheck, CVE, CWE');
-        $merger->SetCreator('Sonar-Report');
+        $merger->SetCreator('Ma-Moulinette');
 
         // Écrit chaque sous-PDF dans un fichier temporaire (FPDI requiert un fichier)
         $tmpFiles = [];
