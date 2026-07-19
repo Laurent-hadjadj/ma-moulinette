@@ -1,0 +1,245 @@
+---
+spec:
+  inputs:
+    DEPLOYED_HOSTNAME:
+      type: string
+      options: ['ma-moulinette-dev', 'ma-moulinette-rec', 'ma-moulinette-prod']
+      default: 'ma-moulinette-dev'
+      description: |
+        Indique le nom du serveur pour le déploiement :<br />
+        [DEV] ➔ ma-moulinette-dev<br />
+        [REC] ➔ ma-moulinette-rec<br />
+        [PRD] ➔ ma-moulinette-prod
+    APP_ENV:
+      type: string
+      options: ['dev', 'rec', 'prod']
+      default: 'prod'
+      description: |
+        Indique le mode de distribution :<br />
+        [Environnement de développement/intégration et de recette]  ➔ dev<br />
+        [Environnement de recette]  ➔ dev<br />
+        [Environnement de production]  ➔ prod
+    APP_DEBUG:
+      type: string
+      options: ['1', '0']
+      default: '0'
+      description: |
+        Active les traces :<br />
+        [Les logs applicatives sont activées] ➔ 1<br />
+        [Les logs applicatives sont désactivées] ➔ 0
+    ENVIRONNEMENT:
+      options: ['DEV', 'REC', 'PRD']
+      default: 'DEV'
+      description: |
+        Indique le type d'environnement :<br />
+        [Environnement de développement] ➔ DEV<br />
+        [Environnement de recette] ➔ REC<br />
+        [Environnement de production] ➔ PRD
+    TRUST_HOST2:
+      options: ['ma-moulinette-dev.mon-serveur.fr', 'ma-moulinette-rec.mon-serveur.fr', 'ma-moulinette.mon-serveur.fr']
+      default: 'ma-moulinette-dev.mon-serveur.fr'
+      description: |
+        Indiquer la racine d'accès au site.<br />
+        [DEV] ➔ ma-moulinette-dev.mon-serveur.fr<br />
+        [REC] ➔ ma-moulinette-rec.mon-serveur.fr<br />
+        [PRD] ➔ ma-moulinette.mon-serveur.fr
+
+---
+
+############################
+#          Stages          #
+############################
+stages:
+  - pre-quality
+  - build
+  - deploy
+
+############################
+#   Runner tag reférence   #
+############################
+default:
+  tags:
+    - php
+
+
+############################
+#         Variables        #
+############################
+variables:
+  DEPLOY_SERVER: "$SSH_USER@$DEPLOYED_HOSTNAME"
+  DEPLOY_PATH: "$SSH_DEPLOY_PATH"
+  DEPLOYED_HOSTNAME: $[[ inputs.DEPLOYED_HOSTNAME ]]
+  APP_ENV: $[[ inputs.APP_ENV ]]
+  APP_DEBUG: $[[ inputs.APP_DEBUG ]]
+  ENVIRONNEMENT: $[[ inputs.ENVIRONNEMENT ]]
+  TRUST_HOST2: $[[ inputs.TRUST_HOST2 ]]
+  TRUST_HOST1: $[[ inputs.DEPLOYED_HOSTNAME ]]
+
+############################
+#    Include Components    #
+############################
+
+
+
+############################
+#           JOBS           #
+############################
+
+build_ma_moulinette_job:
+  stage: build
+  variables:
+    # Only for postgresql service
+    POSTGRES_DB: ma_moulinette
+    POSTGRES_USER: db_user
+    POSTGRES_PASSWORD: db_password
+  image:
+    name: composer:lts
+  services:
+    # starts a Postgres container and links it to the build
+    - name: postgres:18.1-alpine3.22
+      alias: postgresql-ma-moulinette  # MUST match the hostname in your DATABASE_URL
+  needs: []
+  interruptible: false
+
+  before_script:
+    - |
+      echo "Setting HTTP_PROXY for ALPINE if needed"
+      #check if HTTP_PROXY is define
+      if [ -z "$HTTP_PROXY" ]; then
+        echo "HTTP_PROXY is not set. Nothing to do..."
+      else
+        #backuping initial values
+        original_http_proxy=$http_proxy
+        original_https_proxy=$https_proxy
+        ORIGINAL_HTTP_PROXY=$HTTP_PROXY
+        ORIGINAL_HTTPS_PROXY=$HTTPS_PROXY
+
+        # Define the pattern
+        pattern='^([1-9][0-9]{0,2}|1[0-9]{0,2}|2[0-4][0-9]|25[0-4])\.([0-9]{1,3})\.([0-9]{1,3})\.([0-9]{1,3}):([1-9][0-9]{0,4}|[1-5][0-9]{4}|6[0-4][0-9]{3}|65[0-4][0-9]{2}|655[0-2][0-9]|6553[0-5])$'
+        # Check if HTTP_PROXY matches the pattern
+        if [[ "$HTTP_PROXY" =~ $pattern ]]; then
+          ALPINE_PROXY="http://$HTTP_PROXY"
+          echo "ALPINE_PROXY: $ALPINE_PROXY"
+
+          # using ALPINE exported proxy
+          export http_proxy=$ALPINE_PROXY
+          export https_proxy=$ALPINE_PROXY
+          export HTTP_PROXY=$ALPINE_PROXY
+          export HTTPS_PROXY=$ALPINE_PROXY
+        else
+          echo "HTTP_PROXY does not match the required pattern (IP:PORT) xxx.xxx.xxx.xxx:yyyy"
+        fi
+      fi
+    - apk update
+    - apk add --no-cache openldap-dev libldap postgresql-dev php82-pgsql php82-pdo_pgsql php84-pgsql php84-pdo_pgsql
+    - docker-php-ext-configure ldap
+    - docker-php-ext-install ldap
+    - docker-php-ext-install pdo pdo_pgsql
+    - docker-php-ext-configure pdo_pgsql
+    - php -m | grep pgsql
+    - cp ${LOCAL_VAR_FILE} .env.local
+    - ls -lathr ./assets/js/common
+    - cp ${SECRET_JS} ./assets/js/common/secrets.local.js
+    - ls -lathr ./assets/js/common
+  script:
+    - |
+      unset DATABASE_URL
+      echo "==========================="
+      echo "-------- Compiling the code... --------"
+      echo "---- Composer install ----"
+      composer install -n --ignore-platform-req=ext-gd
+      echo "---- PHP importmap:update ----"
+      php ./bin/console importmap:update
+      echo "---- PHP importmap:require jquery@3.7.1 ----"
+      php ./bin/console importmap:require jquery@3.7.1
+      if [ "${APP_ENV:-}" = "prod" ]; then
+        echo "APP_ENV is set to prod"
+        echo "---- Composer dump-env prod ----"
+        composer dump-env prod
+        echo "---- Composer install --no-dev --optimize-autoloader ----"
+        composer install --no-dev --optimize-autoloader --ignore-platform-req=ext-gd
+      else
+        echo "APP_ENV is either unset or not equal to prod"
+        echo "---- Composer install --optimize-autoloader ----"
+        composer install --optimize-autoloader --ignore-platform-req=ext-gd
+      fi
+      echo "---- PHP asset-map:compile ----"
+      php bin/console asset-map:compile
+      echo "-------- Compile complete. --------"
+
+  after_script:
+    - echo "JOB_ID=$CI_JOB_ID" >> git_external_job_id.env
+  artifacts:
+    expire_in: 30 min
+    paths:
+      - $CI_PROJECT_DIR
+
+deploy_ma_moulinette_job:
+  stage: deploy
+  image:
+    name: maven:3.8.6-openjdk-8
+  needs: [build_ma_moulinette_job]
+  interruptible: false
+  only:
+    - web
+  when: manual
+  before_script:
+    - |
+      apt update
+      apt install -y jq unzip bc
+    - |
+      echo "==========================="
+      echo "- DEPLOY_SERVER : $DEPLOY_SERVER"
+      echo "- DEPLOY_PATH : $DEPLOY_PATH"
+      echo "- DEPLOYED_HOSTNAME : $DEPLOYED_HOSTNAME"
+      echo "- ENVIRONNEMENT : $ENVIRONNEMENT"
+      echo "- APP_ENV :  $APP_ENV"
+
+  script:
+    - |
+      ls -lathr
+      # Define the path of the file to retrieve previous job id
+      file="git_external_job_id.env"
+      # Extract the JOB_ID value from the file
+      job_id=$(grep -oP '(?<=JOB_ID=)[0-9]+' "$file")
+      echo $job_id
+      echo "$CI_SERVER_PROTOCOL://$CI_SERVER_FQDN/api/v4/projects/$CI_PROJECT_ID/jobs/$job_id/artifacts?job_token=$CI_JOB_TOKEN"
+      http_response=$(curl -s -k -o /dev/null -w "%{http_code}" "$CI_SERVER_PROTOCOL://$CI_SERVER_FQDN/api/v4/projects/$CI_PROJECT_ID/jobs/$job_id/artifacts?job_token=$CI_JOB_TOKEN")
+      echo $http_response
+      if [ "$http_response" -eq 200 ]; then
+        curl -s -k --output artifacts.zip "$CI_SERVER_PROTOCOL://$CI_SERVER_FQDN/api/v4/projects/$CI_PROJECT_ID/jobs/$job_id/artifacts?job_token=$CI_JOB_TOKEN"
+        ls -lathr
+        # Check if the artifacts.zip file exists
+          if [ -f "artifacts.zip" ]; then
+            echo "File artifacts.zip exists"
+            # Get the file size in bytes
+            file_size=$(stat -c%s "artifacts.zip")
+            # Print the file size
+            echo "File size: $file_size bytes"
+            file_size_kb=$((file_size / 1024))
+            # Print the file size in kilobytes
+            echo "File size: $file_size_kb KB"
+            # Convert the file size to megabytes (MB)
+            file_size_mb=$(echo "scale=2; $file_size / 1048576" | bc)
+            # Print the file size in megabytes
+            echo "File size: $file_size_mb MB"
+          else
+            echo "File does not exist"
+            exit 1
+          fi
+        echo "Starting deployment..."
+        mkdir -p ~/.ssh
+        echo "$SSH_PRIVATE_KEY_BASE64" | base64 -d > ~/.ssh/id_rsa
+        chmod 600 ~/.ssh/id_rsa
+        echo eval ssh-agent
+        eval $(ssh-agent)
+        echo "$SSH_PRIVATE_KEY_PASSWORD" | ssh-add ~/.ssh/id_rsa
+        scp -o "StrictHostKeyChecking no" -o "UserKnownHostsFile=/dev/null" artifacts.zip $DEPLOY_SERVER:$DEPLOY_PATH
+        ssh -o "StrictHostKeyChecking no" -o "UserKnownHostsFile=/dev/null" $DEPLOY_SERVER "echo 'Executing commands on the remote server...' ; export MY_PATH='$DEPLOY_PATH'; echo \$MY_PATH; cd \"\$MY_PATH\"; pwd; ls -l; echo \"\$MY_PATH/archives/prod_ma_moulinette-\$(date +'%Y%m%d_%H%M%S').tar.gz\"; tar -czf \"\$MY_PATH/archives/prod_ma_moulinette-\$(date +'%Y%m%d_%H%M%S').tar.gz\" prod_ma_moulinette; rm -rf prod_ma_moulinette; unzip artifacts.zip -d prod_ma_moulinette; ls -l; ls -la prod_ma_moulinette; rm artifacts.zip; ls -lathr; ls -lathr archives; chmod -R 777  \"\${MY_PATH}prod_ma_moulinette/var/cache\" ; chmod -R 777  \"\${MY_PATH}prod_ma_moulinette/var/log\" "
+        scp -o "StrictHostKeyChecking no" -o "UserKnownHostsFile=/dev/null" migrations/updates/* $DEPLOY_SERVER:$SSH_DEPLOY_SQL
+        ssh -o "StrictHostKeyChecking no" -o "UserKnownHostsFile=/dev/null" $DEPLOY_SERVER "echo 'Executing commands on the remote server...' ; export MY_PATH='$SSH_DEPLOY_SQL'; echo \$MY_PATH; cd \"\$MY_PATH\"; pwd; ls -l; docker exec -i postgresql-ma-moulinette ls -lathr /data/sql/update ; docker exec -i postgresql-ma-moulinette /scripts/postgresql/execute_sql_files.sh"
+        #
+      else
+        echo "Erreur : impossible de trouver l'artefacts du job precedent"
+        exit 1
+      fi
