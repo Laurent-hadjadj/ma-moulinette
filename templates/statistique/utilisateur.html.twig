@@ -3,11 +3,14 @@
 {% set type_content = "Application Ma-moulinette, La page des statistiques utilisateur." %}
 {% set bottom="footer-fixed footer-fixed-small" %}
 {% if nombre_utilisateur_disponible != 0 %}
+  {# MODIF 2026-07-19 : adhesion est une fraction (0-1), pas un pourcentage (0-100) —
+    les seuils doivent être comparés en fraction, sinon la couleur "faible adhésion"
+    (rouge) s'affichait quasiment tout le temps quel que soit le taux réel. #}
   {% set adhesion = (nombre_utilisateur_actif / nombre_utilisateur_disponible) %}
-  {% if adhesion < 25 %} {% set couleur = 'stats-list-rouge' %} {% endif %}
-  {% if adhesion > 25 and adhesion < 50 %} {% set couleur = 'stats-list-orange' %} {% endif %}
-  {% if adhesion > 50 and adhesion < 75 %} {% set couleur = 'stats-list-bleu' %} {% endif %}
-  {% if adhesion > 75 %} {% set couleur = 'stats-list-vert' %} {% endif %}
+  {% if adhesion < 0.25 %} {% set couleur = 'stats-list-rouge' %} {% endif %}
+  {% if adhesion >= 0.25 and adhesion < 0.50 %} {% set couleur = 'stats-list-orange' %} {% endif %}
+  {% if adhesion >= 0.50 and adhesion < 0.75 %} {% set couleur = 'stats-list-bleu' %} {% endif %}
+  {% if adhesion >= 0.75 %} {% set couleur = 'stats-list-vert' %} {% endif %}
   {% else %}
     {% set couleur = 'stats-list-rouge' %}
   {% endif %}
