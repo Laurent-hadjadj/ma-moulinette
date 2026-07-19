@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.1.1 - 11/05/2026                  ##
+##           V2.2.0 - 09/07/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -10,6 +10,7 @@
 --- 2026-05-05 : Ajout UNIQUE sur groupe_utilisateur(groupe_utilisateur, groupe_id)
 --- 2026-05-08 : Ajout des contraintes pour les tables dc_cve, dc_dependency, dc_finding, dc_processing_queue, dc_scan
 --- 2026-05-11 : Corrections contraintes dc_dependency et dc_processing_queue
+--- 2026-07-19 : Ajout de la contraintes d'unicité sur la table profil_historique.
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette postgres;
@@ -112,6 +113,10 @@ ALTER TABLE ma_moulinette.portefeuille
 ALTER TABLE ma_moulinette.profiles
   ADD CONSTRAINT ck_profiles_active_rule_count
   CHECK (active_rule_count >= 0);
+
+-- profiles_historique
+ALTER TABLE ma_moulinette.profiles_historique
+  ADD CONSTRAINT uniq_profiles_historique_event UNIQUE (language, date, rule, action);
 
 -- properties
 ALTER TABLE ma_moulinette.properties
