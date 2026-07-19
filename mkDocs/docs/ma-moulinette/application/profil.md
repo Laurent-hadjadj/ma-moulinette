@@ -1,88 +1,98 @@
-# Ma-Moulinette en images
+# 📋 Profils qualité SonarQube
 
-![Ma-Moulinette](/assets/images/home/home-000.jpg)
+Affiche, pour chaque langage détecté, le **profil qualité par défaut** utilisé par SonarQube (`referential_default = true`).
+Accessible depuis [Accueil](accueil.md), aucun rôle spécifique requis pour la consultation (`ROLE_UTILISATEUR`). La page se charge en lecture pure (table `profiles`) ; les 3 actions (rafraîchir, graphique, autres profils) passent ensuite par des appels AJAX vers `ApiProfilController`.
 
-## Page profil
+## 🗺️ Cartographie
 
-Cette page affiche la liste des référentiels disponibles sur le serveur SonarQube.
-
-> Evolutions 2.0.0
-
-* [x] Il faut avoir le Rôle `Gestionnaire` pour mettre à jour la liste des référentiels.
-* [x] Ajout de la colonne `Outil` et de l'icône pour afficher le détail des changements pour le profil.
-* [x] Suppression de la date dans la légende du tableau.
-* [x] La requête de mise à jour de la liste des profils a été migré en POST.
-
-La consultation et/ou la mise à jour de la liste des profils qualités est disponnible en cliquant, depuis la page d'**accueil**, sur le bouton suivant `Profils qualités SonarQube`:
-
-![profil](/assets/images/profil/profil-000.jpg)
-
-La page affiche la liste des profils disponibles et pour chacun :
-
-* Sa version ;
-* Le langage ;
-* Le nombre de règles ;
-* La date de dernière modification ;
-* Son statut, **activé** ou **désactivé** ;
-
-![profil](/assets/images/profil/profil-001.jpg)
-
-Plusieurs actions sont disponibles :
-
-* [x] je peux afficher le détails des règles pour une profil, i.e. les règles lié à un langage de programmation ;
-* [x] je peux mettre à jour les profils ;
-* [x] je peux afficher un graphique représentant la répartition des règles par langage ;
-
-## Mettre à jour le liste des profils
-
-Si la liste des référentiels de règles est vide, un message d'information sera affiché à l'utilisateur.
-
-![profil](/assets/images/profil/profil-002.jpg)
-
-Il faudra dès lors cliquer sur le bouton `Mise à jour de la table`.
-
-![profil](/assets/images/profil/profil-003.jpg)
-
-La requête de mise à jour utilise la méthode `POST`. Si vous essayez de lancer directement la mise à jour avec un appel de type `GET` un message d'erreur sera affiché.
-
-![profil](/assets/images/profil/profil-005.jpg)
-
-> Seul les utilisateurs ayant le rôle **gestionnaire** peuvent réaliser cette action.
-
-Si vous tentez de mettre à jour la liste des profils alors que vous n'avez pas le rôle **gestionnaire**, vous serez averti par un message.
-
-![profil](/assets/images/profil/profil-006.jpg)
-
-Vous devez avoir au moins un profil déclaré sur le serveur SonarQube correspondant à la clé définie dans le fichier de propriétés.
-
-![profil](/assets/images/profil/profil-007.jpg)
-
-> **Rappel**  Le nom du profil est unique, i.e **Ma petite Entreprise v1.0.0**. Il est défini dans le fichier **.env** ou **.env.local.php** par la propriété **SONAR_PROFILES**.
-
-```properties
-SONAR_PROFILES="Ma petite Entreprise V1.0.0"
+```mermaid
+flowchart TD
+    Profil["📋 /profil<br/>1 carte par langage"] -->|"icône ℹ️ d'un profil"| Details["🔍 /profil/details<br/>lien signé"]
+    Profil -->|"#bouton-refresh-profil<br/>(ROLE_GESTIONNAIRE requis côté serveur)"| Refresh["⚙️ POST /api/secure/quality/profiles<br/>vide + réimporte la table profiles"]
+    Profil -->|"#bouton-affiche-graphique"| Graph["📊 POST /api/secure/quality/langage<br/>→ modale graphique en anneau"]
+    Profil -->|"#bouton-language-{langage}"| Off["🗂️ POST /api/secure/quality/off<br/>→ modale « autres profils »"]
 ```
 
-![profil](/assets/images/profil/profil-012.jpg)
+## 🧭 Chemin de fer de la page
 
-## Liste des référentiels actifs
+<!-- markdownlint-disable MD046 -->
+```text
+Page Profil
+│
+├── 🧵 Fil d'Ariane : Accueil › Profil
+├── 🔔 Zone de messages (flash serveur au chargement + messages JS ensuite)
+│
+├── 🔘 Boutons (toujours visibles)
+│        ├── Mise à jour de la liste (#bouton-refresh-profil)
+│        └── Répartition des langages (#bouton-affiche-graphique)
+│
+├── ℹ️ Total de règles du référentiel (recalculé côté client après rafraîchissement)
+│
+└── 🗂️ 1 carte par langage
+         ├── Badge nombre de profils disponibles pour ce langage
+         ├── Ligne : profil actif, nombre de règles, date de dernière modification
+         ├── Icône ℹ️ → construit un lien signé et navigue vers /profil/details
+         └── Bouton « Afficher les autres profils » (désactivé si un seul profil pour ce langage)
 
-Ci-dessous notre référentiel pour les applications `JAVA`, `WEB`, `PHP`, `PYTHON`.
+Modales
+├── 🪟 Autres profils du langage (table, ouverte par le bouton de la carte)
+└── 🪟 Répartition des règles par langage (graphique en anneau)
+```
+<!-- markdownlint-enable MD046 -->
 
-![profil](/assets/images/profil/profil-013.jpg)
+## 📊 Contenu
 
-## Liste des référentiels non actifs
+Une carte par langage : 
 
-Le bouton `Afficher les autres profils` ![profil](/assets/images/profil/profil-015.jpg) affiche une fenêtre modal donnant les profils qui ne sont pas actifs pour le language sélectionné.
+- nom du profil actif, nombre de règles, date de dernière modification.
+- Un badge indique le nombre total de profils disponibles pour ce langage (pas seulement celui par défaut).
 
-![profil](/assets/images/profil/profil-014.jpg)
+!!! note "🚫 Pas de colonne « statut » visible"
+    La donnée technique `referential_default` est bien récupérée en base mais n'est **affichée nulle part** dans le tableau — la distinction « actif vs non actif » se déduit uniquement de l'endroit où le profil apparaît (carte principale = profil par défaut ; fenêtre « autres profils » = tous les profils non-défaut du même langage).
 
-## Répartition des règles par langage
+## 🔄 Mettre à jour la liste des profils
 
-Le bouton `Afficher la répartition des langages` ![profil](/assets/images/profil/profil-009.jpg)
-affiche un graphique représentant la répartition des règles par langage.
+Bouton **toujours visible**, mais l'action est réservée au rôle `ROLE_GESTIONNAIRE` **côté serveur uniquement** (`ApiProfilController::listeQualityProfiles()`) — un utilisateur sans ce rôle voit le bouton, clique, et reçoit un message d'erreur plutôt qu'un bouton désactivé.
+En cas de succès : vide puis réimporte entièrement la table `profiles` depuis `/api/qualityprofiles/search`, met à jour `properties.profil_bd`/`profil_sonar`, et reconstruit la liste affichée côté client sans recharger la page.
 
-![profil](/assets/images/profil/profil-011.jpg)
+## 📈 Répartition des règles par langage
+
+Bouton ouvrant un graphique en anneau (Chart.js) du nombre de règles par langage, pour les profils par défaut uniquement.
+
+## 🗂️ Autres profils disponibles pour un langage
+
+Bouton **« Afficher les autres profils »**, désactivé automatiquement si un seul profil existe pour ce langage. Sinon, ouvre la liste des profils non-défaut de ce langage (nom, nombre de règles, date).
+
+## 🔗 Accès au détail des changements
+
+Chaque profil dispose d'un lien signé (jeton `rot13(base64(salt|langage|profil))`, décodage non vérifié cryptographiquement — voir la mise en garde dans [Profil — détails](profil-details.md)) vers l'historique des modifications de règles de ce profil.
+
+## ⚠️ Messages remontés par la page
+
+### Flash serveur (chargement, `ProfilController::index()`)
+
+| Sévérité | Déclencheur | Message |
+| --- | --- | --- |
+| `error` | `selectProfiles()` renvoie un code différent de 200 | ❌ La liste des profils n'a pas été récupérée ({code}). |
+| `warning` | Table `profiles` vide | ⚠️ La liste des profils est vide. Vous devez la mettre à jour ! (Erreur 404) |
+| `critical` | Exception lors de l'appel à `selectProfiles()` | ❌ Une erreur technique est survenue lors de la récupération des profils (Erreur 500). |
+
+### Messages JS (`index-profil.js` → `showMessage()`)
+
+Les 3 actions AJAX relaient directement le `type`/`message` renvoyés par `ApiProfilController`, sauf mention contraire.
+
+| Sévérité | Déclencheur | Message |
+| --- | --- | --- |
+| `warning` | Rafraîchissement sans le rôle `ROLE_GESTIONNAIRE` | Vous devez avoir le rôle GESTIONNAIRE pour réaliser cette action (Erreur 403). |
+| `error` | Rafraîchissement : aucun profil renvoyé par SonarQube | Vous devez au moins avoir un profil déclaré sur le serveur SonarQube (Erreur 404). |
+| `error` | Rafraîchissement : échec suppression/insertion/relecture/mise à jour en base | message dynamique selon l'étape en échec |
+| `alert` | Rafraîchissement : exception JS (réseau, timeout…) | Erreur technique lors de l'appel à l'API. |
+| `success` | Rafraîchissement réussi | La liste des profils qualités a été mise à jour. *(auto-masqué après 3 s)* |
+| — | « Autres profils » ou « Répartition » : erreur applicative | message dynamique relayé tel quel (`t.type`/`t.message`) |
+
+## 📚 Pour aller plus loin
+
+- [Profil — détails](profil-details.md) : historique des changements d'un profil.
 
 -**-- FIN --**-
 

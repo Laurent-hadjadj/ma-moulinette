@@ -1,54 +1,74 @@
-# Ma-Moulinette en images
+# 🔍 Profil — détails des changements
 
-![Ma-Moulinette](/assets/images/home/home-000.jpg)
+Historique des modifications de règles d'un profil qualité SonarQube, groupées par date. Accessible uniquement via le lien signé généré depuis [Profil](profil.md#-accès-au-détail-des-changements) ; aucun rôle spécifique n'est requis pour la consultation.
+Contrairement à [Profil](profil.md), cette page n'est pas de la lecture pure : chaque chargement appelle `/api/qualityprofiles/changelog` sur SonarQube et **persiste** les changements reçus dans la table `profiles_historique` avant de les afficher.
 
-## Page profil détails
+!!! note "🔓 Le jeton n'est pas un mécanisme de sécurité"
+    Le paramètre `?token=` (langage + nom de profil encodés en `rot13(base64(...))`) n'est **jamais revérifié cryptographiquement** côté serveur — c'est un simple obscurcissement d'URL, pas une signature.
+    Un token absent affiche silencieusement une page minimale (`profil = 'NC'`, aucun message) ; un token présent mais mal formé (mauvais nombre de segments) affiche un message d'erreur.
 
-Cette page affiche la liste des changements groupés par date. Le nombre de changements est limité dans cette version à **500**.
+## 🗺️ Cartographie
 
-![profil-details](/assets/images/profil/profil-details-000a.jpg) Pour afficher la page, il suffit de choisir un langage sur la page `Profil` et cliquer sur l'icône de suivi des changements.
+```mermaid
+flowchart TD
+    Profil["📋 Page Profil<br/>icône ℹ️ d'un profil"] -->|"lien signé rot13/base64"| Details["🔍 /profil/details"]
+    Details -->|"GET /api/qualityprofiles/changelog"| Sonar[(SonarQube)]
+    Sonar -->|"événements (max 500)"| Insert["💾 insertProfilesHistorique()<br/>1 tentative par événement"]
+    Insert -->|"contrainte d'unicité<br/>(language, date, rule, action)"| Historique[(profiles_historique)]
+    Historique --> Render["🧾 Rendu : compteurs + accordéon par date"]
+```
 
-![profil-details](/assets/images/profil/profil-details-000b.jpg)
+## 🧭 Chemin de fer de la page
 
-Une nouvelle page s'ouvre avec la liste des changements.
+<!-- markdownlint-disable MD046 -->
+```text
+Page Profil — Détails
+│
+├── 🧵 Fil d'Ariane : Accueil › Profil › Détails
+├── 🔔 Zone de messages (flash serveur uniquement — pas d'appel AJAX sur cette page)
+│
+├── ⚠️ Callout fixe « Seuls les 500 premiers changements sont affichés »
+├── 🔢 Nombre total de changements trouvés pour le profil
+│
+├── ℹ️ Informations générales
+│        ├── Date d'initialisation (1ʳᵉ entrée connue)
+│        ├── Date de dernière modification
+│        ├── Nombre de règles (total renvoyé par SonarQube)
+│        ├── Nombre de règles activées
+│        ├── Nombre de règles modifiées
+│        └── Nombre de règles désactivées
+│
+└── 📘 Accordéon groupé par date
+         └── Par changement : statut (A/D/U), règle, description, auteur, détail technique (masqué sur mobile)
+```
+<!-- markdownlint-enable MD046 -->
 
-![profil-details](/assets/images/profil/profil-details-001.jpg)
+## 📅 Contenu
 
-Un message est affiché si le token passé est corrompu.
+Bandeau de synthèse : date de première analyse, date de dernière modification, nombre total de changements, nombre de règles activées / modifiées / désactivées.
+Puis un menu accordéon groupé par date, chaque changement affichant : statut (A/D/U), nom de la règle, description, auteur, et détail technique (paramètres SonarQube) masqué sur mobile.
 
-![profil-details](/assets/images/profil/profil-details-004.jpg)
+!!! note "✅ La réinsertion en doublon à chaque consultation a été corrigée"
+    Ajout d'une contrainte d'unicité `(language, date, rule, action)` sur la table : une insertion en doublon est désormais silencieusement rejetée par `insertProfilesHistorique()` (code retour `23505`, déjà géré par `handleDatabaseException()`), sans casser la boucle d'insertion des événements suivants.
 
-Cette page est composée d'une zone d'information et d'un menu de type accordéon permettant de regrouper par date les changements.
+## 📏 Limite d'affichage
 
-## Informations générales
+Seuls les **500 premiers changements** remontés par SonarQube sont affichés (limite de pagination fixe, pas un vrai plafond calculé) — l'avertissement à l'écran est affiché systématiquement, qu'il y ait effectivement plus de 500 changements ou non.
 
-Cette section présente les informations suivantes :
+## ⚠️ Messages remontés par la page
 
-* [x] la date d'initialisation du référentiel de règles ;
-* [x] la date de la dernière modification ;
-* [x] le nombre total de règles ;
-* [x] le nombre de règles activé ;
-* [x] Le nombre de règles modifié ;
-* [x] le nombre de règles désactivé ;
+Flash serveur uniquement (`ApiProfilController::profilDetails()`) — cette page n'a pas d'appel AJAX.
 
-## Changements par date
+| Sévérité | Déclencheur | Message |
+| --- | --- | --- |
+| — | Token absent | *(aucun message — page minimale silencieuse, `profil = 'NC'`)* |
+| `error` | Token présent mais mal formé (nombre de segments ≠ 3 après décodage) | ⚠️ Le token fourni est invalide ou mal formé (Erreur 422). |
+| `warning` | Langage décodé non reconnu (ni référentiel SonarQube, ni alias Ma-Moulinette) | ⚠️ Le langage sélectionné n'est pas supporté (Erreur 404). |
+| `error` | Échec de l'appel à `/api/qualityprofiles/changelog` | ❌ message d'erreur SonarQube dynamique |
 
-Les changements sont regroupés par date. Pour chaque groupe, un menu permet d'afficher la liste des changements.
+## 📚 Pour aller plus loin
 
-![profil-details](/assets/images/profil/profil-details-002.jpg)
-
-Les éléments suivants sont affichés :
-
-* [x] le numéro de changement ;
-* [x] le statut : **activé** (A), **désactivé** (D);
-* [x] le nom de la règle ;
-* [x] la description ;
-* [ ] La liste des paramètres de la règle ;
-* [x] l'auteur ;
-
-En mode mobile, les paramètres ne sont pas affichés.
-
-![profil-details](/assets/images/profil/profil-details-003.jpg)
+- [Profil](profil.md) : liste des profils qualité par langage.
 
 -**-- FIN --**-
 
