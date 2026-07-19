@@ -201,7 +201,7 @@
         {# 
           MODIF 2026-05-12 :  Nouvelles CVE CRITICAL = diff entre le     dernier scan d'un projet et son scan immédiatement antérieur. Badge "1ère analyse" pour distinguer un projet jamais scanné avant (toutes ses CVE sont nouvelles par défaut) d'une vraie régression vs scan précédent. Place en tête des fragments analytics : c'est le signal "urgence" que le RSSI/lead dev doit voir d'abord en arrivant sur le dashboard.
 
-          MODIF 2026-05-14 : refonte du panneau. Avant : 1 ligne par scan où la CVE est nouvelle (saturait le tableau quand un socle exemple-config est vulnérable et que 10 apps en héritent — la même CVE apparaissait 10 fois). Maintenant :
+          MODIF 2026-05-14 : refonte du panneau. Avant : 1 ligne par scan où la CVE est nouvelle (saturait le tableau quand un socle applicatif partagé est vulnérable et que 10 apps en héritent — la même CVE apparaissait 10 fois). Maintenant :
           1 ligne par CVE distincte + bouton qui ouvre une modale listant
           la liste des applications impactées (avec leur socle pour identifier si la vuln vient de l'héritage ou d'un JAR embarqué). #}
         <h3 class="h5 claire-hand">
