@@ -390,6 +390,39 @@ class ApiProfilControllerTest extends TestCase
         $this->assertSame('<html>ok</html>', $response->getContent());
     }
 
+    public function testProfilDetailsCountsClosedWithDeactivatedAction(): void
+    {
+        /* MODIF 2026-07-19 : verrouille le fix — le compteur "règles désactivées"
+         * interrogeait la base avec l'action 'DEACTIVATE' (inexistante), alors que
+         * SonarQube (et le reste du code, cf. le badge de l'accordéon) utilise
+         * 'DEACTIVATED'. Le compteur affichait donc toujours 0. */
+        $token = $this->buildToken('salt|java|my-profil');
+
+        $this->client->method('httpSonarQube')->willReturn([
+            'code' => 200,
+            'json' => ['events' => [], 'total' => 0],
+        ]);
+
+        $this->historiqueRepo->method('selectProfilesHistoriqueAction')->willReturnCallback(
+            fn(array $map) => match ($map['action']) {
+                'DEACTIVATED' => ['nombre' => [['nombre' => 7]]],
+                default       => ['nombre' => [['nombre' => 0]]],
+            }
+        );
+        $this->historiqueRepo->method('selectProfilesHistoriqueDateTri')->willReturn(['liste' => []]);
+        $this->historiqueRepo->method('selectProfilesHistoriqueDateCourteGroupeBy')->willReturn(['liste' => []]);
+
+        $twig = $this->createMock(\Twig\Environment::class);
+        $twig->expects($this->once())
+            ->method('render')
+            ->with('profil/details.html.twig', $this->callback(fn($ctx) => $ctx['closed'] === 7))
+            ->willReturn('<html>ok</html>');
+
+        $this->setTwigContainer($twig);
+
+        $this->controller->profilDetails(new Request(['token' => $token]));
+    }
+
     /* ============ helper ============ */
 
     private function jsonRequest(array|string $body): Request
