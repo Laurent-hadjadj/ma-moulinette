@@ -210,7 +210,7 @@ class StatistiqueUtilisateurController extends AbstractController
         }
 
         /* Session de type courte, moyenne, longue*/
-        $categoryByUniqueSessionStats = $this->reporting->getCategoryByUniqueSessionReport();
+        $categoryByUniqueSessionStats = $this->reporting->getCategoryByUniqueSessionReport($start, $end, $label);
 
         if ($categoryByUniqueSessionStats['code'] !== 200) {
             self::genericAddFlashMessage('error', self::$message, $categoryByUniqueSessionStats['code'], $categoryByUniqueSessionStats['erreur']);
@@ -218,7 +218,7 @@ class StatistiqueUtilisateurController extends AbstractController
         }
 
         /* Session unique typé par une catégorie */
-        $uniqueSessionCategoryStats = $this->reporting->getUniqueSessionByCategoryReport();
+        $uniqueSessionCategoryStats = $this->reporting->getUniqueSessionByCategoryReport($start, $end, $label);
 
         if ($uniqueSessionCategoryStats['code'] !== 200) {
             self::genericAddFlashMessage('error', self::$message, $uniqueSessionCategoryStats['code'], $uniqueSessionCategoryStats['erreur']);
@@ -235,12 +235,15 @@ class StatistiqueUtilisateurController extends AbstractController
         $render['device'] = $deviceStats;
         $render['page_vue_unique'] = $sessionPagesStats;
         $render['session_duration'] = $sessionDurationByPeriodStats;
-
-        /* ==== Sur le journée ==== */
-        $render['avg_session_duration'] = $avgSessionDurationStats['data'];
-        $render['nb_session_unique'] = $uniqueSessionStats['data'];
+        /* MODIF 2026-07-19 : session_category/session_unique_category étaient
+         * jusqu'ici calculés sur CURRENT_DATE côté SQL, indépendamment de la
+         * période choisie à l'écran — désormais filtrés sur [$start, $end]. */
         $render['session_category'] = $categoryByUniqueSessionStats;
         $render['session_unique_category'] = $uniqueSessionCategoryStats;
+
+        /* ==== Sur l'ensemble de l'historique (pas de filtre période) ==== */
+        $render['avg_session_duration'] = $avgSessionDurationStats['data'];
+        $render['nb_session_unique'] = $uniqueSessionStats['data'];
 
         return $this->render(self::$index, $render);
     }
