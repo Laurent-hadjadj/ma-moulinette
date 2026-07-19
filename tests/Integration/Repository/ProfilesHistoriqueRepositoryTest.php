@@ -65,9 +65,11 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
         $container = static::getContainer();
         $entityManager = $container->get('doctrine')->getManager();
 
+        /* MODIF 2026-07-19 : (date/rule) distincts de ProfilesHistoriqueFixtures — sinon
+         * la contrainte d'unicité (language, date, rule, action) rejette l'insertion. */
         $map=[  'date_courte'=>self::$dateCourte, 'language'=>self::$language,
-                'date'=>self::$date, 'action'=>self::$action, 'auteur'=>self::$auteur,
-                'rule'=>self::$rule, 'description'=>self::$description,
+                'date'=>'2022-09-15T09:12:00+0200', 'action'=>self::$action, 'auteur'=>self::$auteur,
+                'rule'=>'java:S9999', 'description'=>self::$description,
                 'detail'=>self::$detail, 'date_enregistrement'=> new \DateTimeImmutable(self::$dateEnregistrement)];
 
         // Appel de la méthode
@@ -77,6 +79,29 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
         // Assert
         $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
+    }
+
+    public function testInsertProfilesHistoriqueRejectsDuplicateEvent(): void
+    {
+        /* MODIF 2026-07-19 : verrouille le fix — une consultation répétée de
+         * /profil/details ne doit plus dupliquer les lignes en base. La contrainte
+         * uniq_profiles_historique_event (language, date, rule, action) doit rejeter
+         * une seconde insertion du même événement SonarQube. */
+        self::bootKernel();
+        $container = static::getContainer();
+        $entityManager = $container->get('doctrine')->getManager();
+
+        $map=[  'date_courte'=>self::$dateCourte, 'language'=>self::$language,
+                'date'=>self::$date, 'action'=>self::$action, 'auteur'=>self::$auteur,
+                'rule'=>self::$rule, 'description'=>self::$description,
+                'detail'=>self::$detail, 'date_enregistrement'=> new \DateTimeImmutable(self::$dateEnregistrement)];
+
+        // L'événement identique existe déjà via ProfilesHistoriqueFixtures.
+        $profilesHistoriqueRepository = $entityManager->getRepository(ProfilesHistorique::class);
+        $r = $profilesHistoriqueRepository->insertProfilesHistorique($map);
+
+        $this->assertEquals(23505, $r['code']);
+        $this->assertSame('Les informations existent déjà.', $r['erreur']);
     }
 
     public function testSelectProfilesHistoriqueAction(): void
