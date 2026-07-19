@@ -1,0 +1,19 @@
+#TODO: Mettre à jour la clé maven du projet (une fois)
+sonar.projectKey=fr.ma-moulinette:ma-moulinette
+sonar.organization=Ma-Moulinette
+
+#TODO: Mettre à jour  le nom du projet (une fois)
+sonar.projectName=Ma-Moulinette
+#TODO: Mettre à jour pour chaque version du projet la variable
+sonar.projectVersion=3.0.0
+
+sonar.language=php
+sonar.sources=.
+sonar.sourceEncoding=UTF-8
+
+# Chemin du rapport clover/pcov de couverture de tests
+sonar.php.coverage.reportPaths=var/coverage/coverage.xml
+
+# Fichiers/dossiers à inclure ou à exclure de l'analyse.
+sonar.inclusions=**/*.php,**/php.ini
+sonar.exclusions=vendor/**, assets/vendor/**, /bin/*, var/**, importmap.php, .env, .env.*, **/*.md, **/*.xml, **/*.yml, **/*.yaml, **/*.json, **/*.lock, public/**, **/node_modules/**, **/Test/**, **/Tests/**, **/test/**, **/tests/**, src/DataFixtures/**, **/Fixture/**, **/Fixtures/**, **/fixture/**, **/fixtures/**
