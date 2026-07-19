@@ -260,14 +260,15 @@ class UserAgentStatsRepositoryTest extends TestCase
     public function testSelectSessionDurationByCategoryStatsReturnsRows(): void
     {
         $rows = [['session_id' => 'abc', 'duration_minutes' => '15.50', 'session_length_category' => 'moyen']];
-        $result = $this->buildRepo($rows)->selectSessionDurationByCategoryStats();
+        $result = $this->buildRepo($rows)->selectSessionDurationByCategoryStats(...$this->makeDates());
         $this->assertSame(200, $result['code']);
         $this->assertSame($rows, $result['rows']);
     }
 
     public function testSelectSessionDurationByCategoryStatsReturnsErrorOnException(): void
     {
-        $result = $this->buildRepo(new \RuntimeException('cat fail'))->selectSessionDurationByCategoryStats();
+        $result = $this->buildRepo(new \RuntimeException('cat fail'))
+            ->selectSessionDurationByCategoryStats(...$this->makeDates());
         $this->assertSame(500, $result['code']);
     }
 
@@ -276,14 +277,15 @@ class UserAgentStatsRepositoryTest extends TestCase
     public function testSelectCategoryByUniqueSessionStatsReturnsRows(): void
     {
         $rows = [['category' => 'Moyen', 'session_count' => '5', 'percentage' => '50']];
-        $result = $this->buildRepo($rows)->selectCategoryByUniqueSessionStats();
+        $result = $this->buildRepo($rows)->selectCategoryByUniqueSessionStats(...$this->makeDates());
         $this->assertSame(200, $result['code']);
         $this->assertSame($rows, $result['rows']);
     }
 
     public function testSelectCategoryByUniqueSessionStatsReturnsErrorOnException(): void
     {
-        $result = $this->buildRepo(new \RuntimeException('cat2 fail'))->selectCategoryByUniqueSessionStats();
+        $result = $this->buildRepo(new \RuntimeException('cat2 fail'))
+            ->selectCategoryByUniqueSessionStats(...$this->makeDates());
         $this->assertSame(500, $result['code']);
     }
 
