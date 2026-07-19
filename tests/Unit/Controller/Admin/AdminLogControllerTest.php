@@ -72,8 +72,8 @@ class AdminLogControllerTest extends TestCase
 
         $this->params->method('get')->willReturnMap([
             ['logo.entreprise',         'logo.png'],
-            ['marque.entreprise.short', 'FAM'],
-            ['marque.entreprise.long',  'FAM Long'],
+            ['marque.entreprise.short', 'MM'],
+            ['marque.entreprise.long',  'Ma-Moulinette'],
             ['environnement',           'prod'],
             ['version',                 '2.0.0'],
             ['kernel.logs_dir',         sys_get_temp_dir()],
