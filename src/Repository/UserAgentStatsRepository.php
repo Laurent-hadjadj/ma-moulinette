@@ -330,7 +330,7 @@ class UserAgentStatsRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectSessionDurationByCategoryStats(): array
+    public function selectSessionDurationByCategoryStats(\DateTimeInterface $start, \DateTimeInterface $end): array
     {
         $sql = "WITH session_bounds AS (
                     SELECT
@@ -339,7 +339,7 @@ class UserAgentStatsRepository extends ServiceEntityRepository
                         MAX(created_at) FILTER (WHERE event_type = 'LOGOUT') AS session_logout,
                         MAX(created_at) AS session_last_event
                     FROM ma_moulinette.user_agent_analysis
-                    WHERE created_at::date = CURRENT_DATE
+                    WHERE created_at BETWEEN :start AND :end
                         AND session_id IS NOT NULL
                         AND event_type IS NOT NULL
                         AND event_type NOT IN ('LOGGED', 'LOGIN_PAGE_VIEW')
@@ -372,6 +372,8 @@ class UserAgentStatsRepository extends ServiceEntityRepository
 
         try {
                 $stmt = $conn->prepare($sql);
+                $stmt->bindValue(self::START, $start->format(self::DATE_COMPLETE));
+                $stmt->bindValue(self::END, $end->format(self::DATE_COMPLETE));
                 $rows = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
@@ -383,13 +385,16 @@ class UserAgentStatsRepository extends ServiceEntityRepository
     /**
      * [Description for selectCategoryByUniqueSessionStats]
      *
+     * @param \DateTimeInterface $start
+     * @param \DateTimeInterface $end
+     *
      * @return array
      *
      * Created at: 22/12/2025 11:22:32 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function selectCategoryByUniqueSessionStats(): array
+    public function selectCategoryByUniqueSessionStats(\DateTimeInterface $start, \DateTimeInterface $end): array
     {
         $sql = "WITH session_bounds AS (
                     SELECT
@@ -398,7 +403,7 @@ class UserAgentStatsRepository extends ServiceEntityRepository
                         MAX(created_at) FILTER (WHERE event_type = 'LOGOUT') AS session_logout,
                         MAX(created_at) AS session_last_event
                     FROM ma_moulinette.user_agent_analysis
-                    WHERE created_at::date = CURRENT_DATE
+                    WHERE created_at BETWEEN :start AND :end
                     AND event_type IS NOT NULL
                     AND event_type NOT IN ('LOGGED', 'LOGIN_PAGE_VIEW')
                     GROUP BY session_id
@@ -440,6 +445,8 @@ class UserAgentStatsRepository extends ServiceEntityRepository
 
         try {
                 $stmt = $conn->prepare($sql);
+                $stmt->bindValue(self::START, $start->format(self::DATE_COMPLETE));
+                $stmt->bindValue(self::END, $end->format(self::DATE_COMPLETE));
                 $rows = $stmt->executeQuery()->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
