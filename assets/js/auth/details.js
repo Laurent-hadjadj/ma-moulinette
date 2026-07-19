@@ -39,9 +39,14 @@ if (init >= un) {
  * description
  * On active ou non la mise à jour du mot de passe.
  *
+ * MODIF 2026-07-19 : `$.ajax()` était appelé sans `await` dans un handler non
+ * async — `t` valait l'objet jqXHR (pas la réponse JSON), donc `t.code`
+ * valait toujours `undefined` : la branche d'erreur (400/500) ne se
+ * déclenchait jamais, quelle que soit la réponse réelle du serveur.
+ *
  * @type {"#js-reset-password"}
  */
-$('#js-reset-password').on('click', function () {
+$('#js-reset-password').on('click', async function () {
   let data = {}, reset_password = 0;
 
   /** On efface les messages */
@@ -73,7 +78,7 @@ $('#js-reset-password').on('click', function () {
   };
 
   try {
-    const t = $.ajax(options);
+    const t = await $.ajax(options);
     if (Number(t.code) === http_400 || Number(t.code) === http_500){
         $('#mise-a-jour-message').html(t.message)
         return;
