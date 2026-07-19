@@ -16,13 +16,15 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Controller\CleanCode;
 
 /* MODIF 2026-05-17 : tests unitaires pour
- * CleanCodeController (4 scénarios : token manquant / invalide /
- * no-data / happy path avec indicateurs calculés). */
+ * CleanCodeController (token manquant / invalide / no-data / happy path avec
+ * indicateurs calculés).
+ * MODIF 2026-07-19 : ajout de la couverture du filtrage par groupe
+ * fonctionnel (verifierPerimetreProjet, alignement sur OwaspControllerTest). */
 
 use App\Controller\CleanCode\CleanCodeController;
-use App\Entity\CleanCode;
+use App\Entity\{CleanCode, ListeProjet, Utilisateur};
 use App\Service\UserAgent\UserAgentTrackingFacade;
-use App\Repository\CleanCodeRepository;
+use App\Repository\{CleanCodeRepository, ListeProjetRepository};
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -33,6 +35,8 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\{Request, RequestStack};
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Twig\Environment;
 
 #[AllowMockObjectsWithoutExpectations]
@@ -40,12 +44,15 @@ class CleanCodeControllerTest extends TestCase
 {
     private const MAVEN_KEY = 'fr.ma-moulinette:ma-moulinette';
 
-    /** @var ParameterBagInterface&MockObject */   private MockObject $params;
-    /** @var EntityManagerInterface&MockObject */  private MockObject $em;
-    /** @var LoggerInterface&MockObject */         private MockObject $logger;
-    /** @var CleanCodeRepository&MockObject */     private MockObject $cleanCodeRepo;
-    /** @var Environment&MockObject */             private MockObject $twig;
-    /** @var FlashBag&MockObject */                private MockObject $flashBag;
+    /** @var ParameterBagInterface&MockObject */    private MockObject $params;
+    /** @var EntityManagerInterface&MockObject */   private MockObject $em;
+    /** @var LoggerInterface&MockObject */          private MockObject $logger;
+    /** @var CleanCodeRepository&MockObject */      private MockObject $cleanCodeRepo;
+    /** @var ListeProjetRepository&MockObject */    private MockObject $listeProjetRepo;
+    /** @var Environment&MockObject */              private MockObject $twig;
+    /** @var FlashBag&MockObject */                 private MockObject $flashBag;
+    /** @var TokenStorageInterface&MockObject */    private MockObject $tokenStorage;
+    /** @var TokenInterface&MockObject */           private MockObject $token;
 
     /** @var UserAgentTrackingFacade&MockObject */ private MockObject $tracking;
 
@@ -53,13 +60,17 @@ class CleanCodeControllerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->params        = $this->createMock(ParameterBagInterface::class);
-        $this->em            = $this->createMock(EntityManagerInterface::class);
-        $this->logger        = $this->createMock(LoggerInterface::class);
-        $this->cleanCodeRepo = $this->createMock(CleanCodeRepository::class);
-        $this->twig          = $this->createMock(Environment::class);
-        $this->flashBag      = $this->createMock(FlashBag::class);
-        $this->tracking      = $this->createMock(UserAgentTrackingFacade::class);
+        $this->params          = $this->createMock(ParameterBagInterface::class);
+        $this->em              = $this->createMock(EntityManagerInterface::class);
+        $this->logger          = $this->createMock(LoggerInterface::class);
+        $this->cleanCodeRepo   = $this->createMock(CleanCodeRepository::class);
+        $this->listeProjetRepo = $this->createMock(ListeProjetRepository::class);
+        $this->twig            = $this->createMock(Environment::class);
+        $this->flashBag        = $this->createMock(FlashBag::class);
+        $this->tokenStorage    = $this->createMock(TokenStorageInterface::class);
+        $this->token           = $this->createMock(TokenInterface::class);
+        $this->tokenStorage->method('getToken')->willReturn($this->token);
+        $this->tracking        = $this->createMock(UserAgentTrackingFacade::class);
 
         $this->params->method('get')->willReturnMap([
             ['logo.entreprise',      'logo.png'],
@@ -69,7 +80,12 @@ class CleanCodeControllerTest extends TestCase
             ['version',              '2.0.0'],
         ]);
 
-        $this->em->method('getRepository')->willReturn($this->cleanCodeRepo);
+        $this->em->method('getRepository')->willReturnCallback(
+            fn(string $class) => match ($class) {
+                ListeProjet::class => $this->listeProjetRepo,
+                default            => $this->cleanCodeRepo,
+            }
+        );
 
         $session = $this->createMock(Session::class);
         $session->method('getFlashBag')->willReturn($this->flashBag);
@@ -81,11 +97,13 @@ class CleanCodeControllerTest extends TestCase
             ['twig',          true],
             ['request_stack', true],
             ['parameter_bag', true],
+            ['security.token_storage', true],
         ]);
         $container->method('get')->willReturnMap([
             ['twig',          1, $this->twig],
             ['request_stack', 1, $requestStack],
             ['parameter_bag', 1, $this->params],
+            ['security.token_storage', 1, $this->tokenStorage],
         ]);
 
         $this->controller = new CleanCodeController(
@@ -107,6 +125,24 @@ class CleanCodeControllerTest extends TestCase
     private function buildRequest(?string $token): Request
     {
         return new Request($token === null ? [] : ['token' => $token]);
+    }
+
+    /**
+     * MODIF 2026-07-19 : configure l'utilisateur authentifié + la liste de
+     * projets de son groupe fonctionnel pour que verifierPerimetreProjet()
+     * autorise $mavenKey.
+     */
+    private function authorizeMavenKey(string $mavenKey = self::MAVEN_KEY): void
+    {
+        $user = new Utilisateur();
+        $user->setCourriel('user@ma-moulinette.fr');
+        $user->setListeGroupeFonctionnel(['TeamA']);
+        $this->token->method('getUser')->willReturn($user);
+
+        $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
+            'code' => 200,
+            'liste' => [['id' => $mavenKey]],
+        ]);
     }
 
     // ─── 1. Token manquant → flash error ─────────────────────────────────────
@@ -169,6 +205,8 @@ class CleanCodeControllerTest extends TestCase
 
     public function testIndexFlashesWarningWhenNoCleanCodeData(): void
     {
+        $this->authorizeMavenKey();
+
         $this->cleanCodeRepo->expects($this->once())
             ->method('selectCleanCode')
             ->with(['maven_key' => self::MAVEN_KEY])
@@ -194,10 +232,85 @@ class CleanCodeControllerTest extends TestCase
         $this->assertNull($capturedCtx['data']);
     }
 
+    // ─── 4bis. Le décodage du token ne doit pas forcer la casse ──────────────
+
+    public function testIndexPreservesCaseOfMavenKeyFromToken(): void
+    {
+        /* MODIF 2026-07-19 : verrouille le fix — decodeToken() ne doit plus
+         * forcer la casse en minuscules (une clé Maven mixed-case comme
+         * "fr.ma-moulinette:Ma-Moulinette" était sinon cherchée en base sous
+         * une forme qui ne correspond à aucune ligne, la comparaison SQL
+         * étant sensible à la casse). */
+        $mixedCaseKey = 'fr.ma-moulinette:Ma-Moulinette';
+        $this->authorizeMavenKey($mixedCaseKey);
+
+        $this->cleanCodeRepo->expects($this->once())
+            ->method('selectCleanCode')
+            ->with(['maven_key' => $mixedCaseKey])
+            ->willReturn(['code' => 200, 'liste' => [], 'erreur' => '']);
+
+        $this->twig->expects($this->once())
+            ->method('render')
+            ->willReturn('<html>ok</html>');
+
+        $this->controller->index($this->buildRequest($this->buildValidToken($mixedCaseKey)));
+    }
+
+    /* ============ Filtrage par groupe fonctionnel (MODIF 2026-07-19) ============ */
+
+    public function testIndexFlashesWarning404WhenNoGroupeFonctionnel(): void
+    {
+        $user = new Utilisateur();
+        $user->setCourriel('user@ma-moulinette.fr');
+        $user->setListeGroupeFonctionnel([]);
+        $this->token->method('getUser')->willReturn($user);
+
+        $this->cleanCodeRepo->expects($this->never())->method('selectCleanCode');
+
+        $this->flashBag->expects($this->once())
+            ->method('add')
+            ->with('notice', $this->callback(
+                fn($v) => $v['type'] === 'warning' && str_contains($v['message'], 'groupe fonctionnel')
+            ));
+
+        $this->twig->expects($this->once())
+            ->method('render')
+            ->willReturn('<html>no-groupe</html>');
+
+        $this->controller->index($this->buildRequest($this->buildValidToken()));
+    }
+
+    public function testIndexFlashesWarning406WhenProjectNotInGroupe(): void
+    {
+        $user = new Utilisateur();
+        $user->setCourriel('user@ma-moulinette.fr');
+        $user->setListeGroupeFonctionnel(['TeamA']);
+        $this->token->method('getUser')->willReturn($user);
+
+        $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
+            'code' => 200,
+            'liste' => [['id' => 'fr.ma-moulinette:autre-projet']],
+        ]);
+
+        $this->cleanCodeRepo->expects($this->never())->method('selectCleanCode');
+
+        $this->flashBag->expects($this->once())
+            ->method('add')
+            ->with('notice', $this->callback(fn($v) => $v['type'] === 'warning'));
+
+        $this->twig->expects($this->once())
+            ->method('render')
+            ->willReturn('<html>hors-perimetre</html>');
+
+        $this->controller->index($this->buildRequest($this->buildValidToken()));
+    }
+
     // ─── 5. Happy path : indicateurs calculés injectés dans le template ───────
 
     public function testIndexHappyPathInjectsComputedIndicators(): void
     {
+        $this->authorizeMavenKey();
+
         $row = [
             'project_name'        => 'ma-moulinette',
             'date_enregistrement' => '2026-03-01 00:00:00',
