@@ -136,10 +136,10 @@
                 class="dashboard-card card-stats">
                 <div class="dashboard-card-top">
                     <i class="fas fa-chart-pie"></i>
-                    <h3 class="open-sans">Sonar-Report</h3>
+                    <h3 class="open-sans">Ma-Moulinette</h3>
                 </div>
                 <div class="dashboard-card-bottom">
-                    <p class="open-sans font-size-1">Statistiques sur l'application Sonar-Report.</p>
+                    <p class="open-sans font-size-1">Statistiques sur l'application Ma-Moulinette.</p>
                 </div>
             </a>
         </div>
@@ -168,6 +168,20 @@
             </a>
         </div>
 
+        {% if is_granted('ROLE_ACTIVITY') %}
+        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+            <a href="{{ path('activity') }}"
+                class="dashboard-card card-stats">
+                <div class="dashboard-card-top">
+                    <i class="fas fa-clock-rotate-left"></i>
+                    <h3 class="open-sans">Activité SonarQube</h3>
+                </div>
+                <div class="dashboard-card-bottom">
+                    <p class="open-sans font-size-1">Historique des tâches d'analyse SonarQube.</p>
+                </div>
+            </a>
+        </div>
+        {% endif %}
     </div>
 
     {# Espace personnel #}
