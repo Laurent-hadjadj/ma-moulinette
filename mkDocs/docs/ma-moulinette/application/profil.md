@@ -42,7 +42,7 @@ Modales
 
 ## 📊 Contenu
 
-Une carte par langage : 
+Une carte par langage :
 
 - nom du profil actif, nombre de règles, date de dernière modification.
 - Un badge indique le nombre total de profils disponibles pour ce langage (pas seulement celui par défaut).
