@@ -509,10 +509,10 @@ class UserAgentReportingService
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getUniqueSessionByCategoryReport():array{
+    public function getUniqueSessionByCategoryReport(\DateTimeInterface $start, \DateTimeInterface $end, string $label):array{
 
         try {
-                $result = $this->userAgentRepos->selectSessionDurationByCategoryStats();
+                $result = $this->userAgentRepos->selectSessionDurationByCategoryStats($start, $end);
 
                 if ($result['code'] !== 200) {
                     $message = '[Statistique] ⚠️ Échec de la requête selectSessionDurationByCategoryStats().';
@@ -539,7 +539,7 @@ class UserAgentReportingService
                     'code' => 200,
                     'total' => $totalSessions,
                     'items' => $items,
-                    'period_label' => self::TODAY,
+                    'period_label' => $label,
                 ];
             } catch (\Throwable $e) {
             return [
@@ -552,15 +552,19 @@ class UserAgentReportingService
     /**
      * [Description for getCategoryByUniqueSessionReport]
      *
+     * @param \DateTimeInterface $start
+     * @param \DateTimeInterface $end
+     * @param string $label
+     *
      * @return array
      *
      * Created at: 22/12/2025 11:32:40 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function getCategoryByUniqueSessionReport():array{
+    public function getCategoryByUniqueSessionReport(\DateTimeInterface $start, \DateTimeInterface $end, string $label):array{
         try {
-                $result = $this->userAgentRepos->selectCategoryByUniqueSessionStats();
+                $result = $this->userAgentRepos->selectCategoryByUniqueSessionStats($start, $end);
 
                 if ($result['code'] !== 200) {
                     $message = '[Statistique] ⚠️ Échec de la requête selectCategoryByUniqueSessionStats().';
@@ -585,7 +589,7 @@ class UserAgentReportingService
                     'code' => 200,
                     'total' => $totalCategory,
                     'items' => $items,
-                    'period_label' => self::TODAY,
+                    'period_label' => $label,
                 ];
             } catch (\Throwable $e) {
             return [
