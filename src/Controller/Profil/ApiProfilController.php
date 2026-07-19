@@ -573,7 +573,7 @@ class ApiProfilController extends AbstractController
         $render['profil'] = $profil;
         $render['langage'] = $language;
         $render['opened'] = $this->getCount($profilesHistoriqueRepos, $language, 'ACTIVATED');
-        $render['closed'] = $this->getCount($profilesHistoriqueRepos, $language, 'DEACTIVATE');
+        $render['closed'] = $this->getCount($profilesHistoriqueRepos, $language, 'DEACTIVATED');
         $render['updated'] = $this->getCount($profilesHistoriqueRepos, $language, 'UPDATED');
         $render['total_rule'] = $total;
         $render['premier'] = $this->getDateTri($profilesHistoriqueRepos, $language, 'ASC');
