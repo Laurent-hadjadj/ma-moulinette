@@ -13,6 +13,7 @@
 
 namespace App\Controller\CleanCode;
 
+use App\Controller\Traits\{AppUserAware, ProjetPerimetreGuard};
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\Routing\Attribute\Route;
@@ -32,6 +33,9 @@ use App\Service\UserAgent\UserAgentTrackingFacade;
  */
 class CleanCodeController extends AbstractController
 {
+    use AppUserAware;
+    use ProjetPerimetreGuard;
+
     private static string $page = 'clean-code/index.html.twig';
     private static string $erreur400 = '❌ La requête est incorrecte (Erreur 400).';
     private static string $erreur404 = '⚠️ Aucune donnée clean code disponible pour ce projet. Lancez une collecte depuis la page projet.';
@@ -101,7 +105,7 @@ class CleanCodeController extends AbstractController
         if (count($parts) !== 2) {
             return null;
         }
-        return strtolower($parts[1]);
+        return $parts[1];
     }
 
     /**
@@ -138,6 +142,17 @@ class CleanCodeController extends AbstractController
             $this->logger->error('[Clean Code] ❌ Décodage du token échoué.');
             $this->addFlash('notice', ['type' => 'error', 'message' => self::$erreur400, 'trace' => 'Décodage token.']);
             return $this->render(self::$page, $render);
+        }
+
+        /* MODIF 2026-07-19 : ajout du filtrage par groupe fonctionnel — jusqu'ici
+         * seul le pare-feu (ROLE_UTILISATEUR) protégeait cette page, sans
+         * vérification de périmètre (alignement sur OwaspController::index()). */
+        $perimetre = $this->verifierPerimetreProjet($maven_key, '[Clean Code]');
+        if ($perimetre['code'] !== 200) {
+            $message = $perimetre['message']
+                ?? "Une erreur est survenue lors de la vérification du périmètre (Erreur {$perimetre['code']}).";
+            $this->addFlash('notice', ['type' => 'warning', 'message' => $message, 'trace' => null]);
+            return $this->render(self::$page, array_merge($render, ['maven_key' => $maven_key, 'data' => null]));
         }
 
         $cleanCodeRepos = $this->em->getRepository(CleanCode::class);
