@@ -20,6 +20,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProfilesHistoriqueRepository::class)]
 #[ORM\Table(name: "profiles_historique", schema: "ma_moulinette")]
+#[ORM\UniqueConstraint(
+    name: "uniq_profiles_historique_event",
+    columns: ["language", "date", "rule", "action"]
+)]
 class ProfilesHistorique
 {
     #[ORM\Id]
