@@ -54,13 +54,13 @@
         <strong>Attention</strong> - Seul les 500 premiers changements sont affichés.
       </div>
 
-      {% if total_rule|length > 1 %}
+      {% if total_rule > 1 %}
         {% set s = "s" %}
       {% else %}
         {% set s = "" %}
       {% endif %}
       <p class="profil-titre">
-        <span id="affiche-total-profil" class="stat">{{total_rule|length}}</span>
+        <span id="affiche-total-profil" class="stat">{{total_rule}}</span>
         changement{{s}} trouvé{{s}} pour le profil.
       </p>
 
