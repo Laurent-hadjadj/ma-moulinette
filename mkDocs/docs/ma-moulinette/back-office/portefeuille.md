@@ -8,19 +8,19 @@ CRUD EasyAdmin (`Admin\PortefeuilleCrudController`) permettant de regrouper un e
 flowchart TD
     Home["🏠 /admin<br/>carte Portefeuilles<br/>ROLE_BATCH"] --> Index["📋 Liste des portefeuilles"]
 
-    Index -->|Créer| FormNew["📝 groupe fonctionnel → projets (AJAX) → nom"]
+    Index -->|Créer| FormNew["📝 groupe fonctionnel →<br> projets (AJAX) → nom"]
     FormNew -->|persistEntity| CheckNew{"Nom déjà utilisé ?"}
-    CheckNew -->|oui| FlashNew["🚫 Flash danger « existe déjà »<br/>rien n'est écrit"]
+    CheckNew -->|oui| FlashNew["🚫 Flash danger <br>« existe déjà »<br/>rien n'est écrit"]
     CheckNew -->|non| SaveNew[("💾 portefeuille")]
 
-    Index -->|Modifier| FormEdit["📝 projets modifiables<br/>nom + groupe en lecture seule"]
+    Index -->|Modifier| FormEdit["📝 projets modifiables<br/>nom + groupe en lecture<br> seule"]
     FormEdit -->|updateEntity| SaveEdit[("💾 mise à jour")]
-    SaveEdit --> SyncBatch{"Un Batch existe déjà<br/>pour ce groupe fonctionnel ?"}
-    SyncBatch -->|oui| Sync["🔄 nombre_projet resynchronisé<br/>sur Batch + BatchTraitement"]
+    SaveEdit --> SyncBatch{"Un Batch existe déjà<br/>pour ce groupe<br> fonctionnel ?"}
+    SyncBatch -->|oui| Sync["🔄 nombre_projet <br>resynchronisé sur<br> Batch + BatchTraitement"]
     SyncBatch -->|non| NoSync["— rien à synchroniser"]
 
     Index -->|Supprimer| CheckDelete{"Traitements liés<br/>à ce groupe fonctionnel ?"}
-    CheckDelete -->|oui| FlashDelete["🚫 Flash danger, suppression bloquée"]
+    CheckDelete -->|oui| FlashDelete["🚫 Flash danger,<br> suppression bloquée"]
     CheckDelete -->|non| DoDelete[("🗑️ suppression")]
 ```
 
@@ -59,7 +59,12 @@ Formulaire (Créer / Modifier)
     Contrairement à [Groupe Utilisateur / Groupe Fonctionnel](groupes.md), `Portefeuille` ne porte aucune contrainte Symfony `#[UniqueEntity]` — seule une vérification manuelle dans `persistEntity()` empêchait l'écriture d'un doublon. Cette vérification fonctionnait, mais **sans aucun message** : la tentative échouait silencieusement (rien n'était écrit) tandis qu'EasyAdmin affichait quand même son message de succès par défaut, laissant croire à tort que le portefeuille avait été créé. Corrigé en ajoutant un flash `danger` explicite, aligné sur le comportement des groupes.
 
 !!! note "✅ Synchronisation du nombre de projets vers Batch/BatchTraitement corrigée"
-    Piège de nommage réel : les colonnes `portefeuille` de `Batch` et `BatchTraitement` ne stockent **pas** le nom du portefeuille, mais le **slug du groupe fonctionnel** (voir le commentaire `$data->portefeuille = groupe_fonctionnel (slug)` dans `BatchAutoController::traitementListe()`, et le menu « Portefeuille » de [Traitements](traitement.md) qui liste en réalité des groupes fonctionnels). `PortefeuilleCrudController::updateEntity()` comparait à tort sur le nom du portefeuille — la resynchronisation de `nombre_projet` sur `Batch`/`BatchTraitement` après modification de la liste de projets ne trouvait donc jamais de correspondance et restait figée. Corrigé pour comparer sur le groupe fonctionnel, comme partout ailleurs dans le code (y compris le blocage de suppression ci-dessous, qui lui était déjà correct).
+    Piège de nommage réel : les colonnes `portefeuille` de `Batch` et `BatchTraitement` ne stockent **pas** le nom du portefeuille, mais le **slug du groupe fonctionnel** (voir le commentaire `$data->portefeuille = groupe_fonctionnel (slug)` dans `BatchAutoController::traitementListe()`, et le menu « Portefeuille » de [Traitements](traitement.md) qui liste en réalité des groupes fonctionnels).
+    `PortefeuilleCrudController::updateEntity()` comparait à tort sur le nom du portefeuille — la resynchronisation de `nombre_projet` sur `Batch`/`BatchTraitement` après modification de la liste de projets ne trouvait donc jamais de correspondance et restait figée. Corrigé pour comparer sur le groupe fonctionnel, comme partout ailleurs dans le code (y compris le blocage de suppression ci-dessous, qui lui était déjà correct).
+
+!!! note "✅ Renforcement de la sécurité : contrôle de rôle strict désormais appliqué sur le contrôleur"
+    `PortefeuilleCrudController` n'imposait aucune restriction de rôle côté serveur — seule la carte de la page d'accueil du back-office masquait l'accès (`is_granted('ROLE_BATCH')`).
+    **Corrigé** par l'ajout de `#[IsGranted('ROLE_BATCH', statusCode: 403)]` sur le contrôleur (même correctif appliqué à [Batch](traitement.md)) — voir [Gestion des utilisateurs](utilisateur.md) et [Gestion de la sécurité](../developpement/securite.md) pour le détail complet de cette faille.
 
 ## 🗑️ Suppression
 
