@@ -308,8 +308,13 @@ class BatchCrudController extends AbstractCrudController
         $conn = $this->emm->getConnection();
 
         /** On vérifie que le nombre de projet n'a pas changé */
+        /* MODIF 2026-07-20 : colonne "titre" inexistante depuis le renommage du
+         * 2026-04-07 (titre/groupe -> portefeuille/groupe_fonctionnel, voir
+         * migrations/PosgreSQL/20_tables/portefeuille.sql) — provoquait un
+         * SQLSTATE[42703] à chaque modification d'un traitement. Alignée sur
+         * persistEntity() qui utilise déjà groupe_fonctionnel correctement. */
         $portefeuille = $entityInstance->getPortefeuille();
-        $sqlSelect = "SELECT liste FROM ma_moulinette.portefeuille WHERE titre = :portefeuille";
+        $sqlSelect = "SELECT liste FROM ma_moulinette.portefeuille WHERE groupe_fonctionnel = :portefeuille";
         $exec = $conn->executeQuery($sqlSelect, ['portefeuille' => $portefeuille])->fetchAssociative();
 
         $nombre_projet = 0;
