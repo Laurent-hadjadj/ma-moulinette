@@ -91,7 +91,7 @@ Aucun groupe fonctionnel n'est créé par les fixtures de base : à créer selon
 
 !!! note "✅ Renforcement de la sécurité : contrôle de rôle strict désormais appliqué sur les deux contrôleurs"
     Ni `GroupeUtilisateurCrudController` ni `GroupeFonctionnelCrudController` n'imposaient de restriction de rôle côté serveur — seule la carte de la page d'accueil du back-office masquait l'accès (`is_granted('ROLE_GESTIONNAIRE')`).
-    **Corrigé** par l'ajout de `#[IsGranted('ROLE_GESTIONNAIRE', statusCode: 403)]` sur les deux contrôleurs — voir [Gestion des utilisateurs](utilisateur.md) et [Gestion de la sécurité](../developpement/securite.md) pour le détail complet de cette faille et de son correctif.
+    **Corrigé** par l'ajout de `#[IsGranted('ROLE_GESTIONNAIRE', statusCode: 403)]` sur les deux contrôleurs — voir [Gestion des utilisateurs](utilisateur.md) et [Gestion de la sécurité](../developpement/securite.md) pour le détail complet de ce renforcement.
 
 ## 📚 Pour aller plus loin
 
