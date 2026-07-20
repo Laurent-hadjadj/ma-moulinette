@@ -1,100 +1,69 @@
-# Gestion des portefeuilles
+# 💼 Gestion des portefeuilles
 
-![Ma-Moulinette](/assets/images/home/home-000.jpg)
+CRUD EasyAdmin (`Admin\PortefeuilleCrudController`) permettant de regrouper un ensemble de projets SonarQube en vue d'une collecte automatique ou manuelle — le rattachement à un [portefeuille](portefeuille.md) est un préalable pour créer un [traitement](traitement.md).
 
-## Backoffice de gestion
+## 🗺️ Cartographie — cycle de vie
 
-La gestion des **portefeuille** s'appuie sur un contrôleur CRUD du bundle EasyAdmin. Les options disponibles sont les suivantes :
+```mermaid
+flowchart TD
+    Home["🏠 /admin<br/>carte Portefeuilles<br/>ROLE_BATCH"] --> Index["📋 Liste des portefeuilles"]
 
-* [X] Je peux visualiser la liste des portefeuille de projets ;
-* [X] Je peux afficher le détail d'un portefeuille ;
-* [X] Je peux modifier le titre et la description d'un portefeuille ;
-* [X] Je peux supprimer un portefeuille ;
+    Index -->|Créer| FormNew["📝 groupe fonctionnel → projets (AJAX) → nom"]
+    FormNew -->|persistEntity| CheckNew{"Nom déjà utilisé ?"}
+    CheckNew -->|oui| FlashNew["🚫 Flash danger « existe déjà »<br/>rien n'est écrit"]
+    CheckNew -->|non| SaveNew[("💾 portefeuille")]
 
-L'entité `Portefeuille` permet de rassembler le ou les projets dans un groupe. Cette étape est obligatoire pour programmer les traitements de collectes automatiques où manuels.
+    Index -->|Modifier| FormEdit["📝 projets modifiables<br/>nom + groupe en lecture seule"]
+    FormEdit -->|updateEntity| SaveEdit[("💾 mise à jour")]
+    SaveEdit --> SyncBatch{"Un Batch existe déjà<br/>pour ce groupe fonctionnel ?"}
+    SyncBatch -->|oui| Sync["🔄 nombre_projet resynchronisé<br/>sur Batch + BatchTraitement"]
+    SyncBatch -->|non| NoSync["— rien à synchroniser"]
 
-## Accéder à l'interface d'administration
+    Index -->|Supprimer| CheckDelete{"Traitements liés<br/>à ce groupe fonctionnel ?"}
+    CheckDelete -->|oui| FlashDelete["🚫 Flash danger, suppression bloquée"]
+    CheckDelete -->|non| DoDelete[("🗑️ suppression")]
+```
 
-Il faut avoir le rôle `GESTIONNAIRE` et cliquer sur l'icône utilisateur en haut à droite.
+## 🧭 Chemin de fer
 
-![utilisateur-icône](/assets/images/bo-portefeuille/utilisateur-001.jpg)
+<!-- markdownlint-disable MD046 -->
+```text
+Liste des portefeuilles (/admin, PortefeuilleCrudController)
+│
+├── 🔎 Filtres : portefeuille, groupeFonctionnel
+├── 📊 Colonnes : Nom, Groupe fonctionnel, Projets (liste), Dernière modification, Date d'enregistrement
+└── 🔘 Actions par ligne : Modifier, Supprimer (Détail retiré de l'index)
 
-Puis, depuis le menu latéral, cliquez sur l'icône **portefeuille**.
+Formulaire (Créer / Modifier)
+│
+├── 🏷️ Groupe fonctionnel        — liste déroulante des groupes fonctionnels existants,
+│                                    lecture seule en modification
+├── 📁 Liste des projets         — choix multiple (autocomplete), reconstruite en AJAX à
+│                                    chaque changement de groupe (/api/secure/admin/portefeuille/list-projets)
+└── 🔤 Nom du portefeuille       — convention [groupe]-[fréquence], lecture seule en modification
+```
+<!-- markdownlint-enable MD046 -->
 
-![portefeuille-icône](/assets/images/bo-portefeuille/portefeuille-000.jpg)
+## 📋 Champs
 
-## Afficher la liste des portefeuille
+| Champ | Détail |
+| --- | --- |
+| Nom du portefeuille | Texte, lecture seule après création, convention `[groupe]-[fréquence]` (ex. `java-c-cool-quotidien`) |
+| Groupe fonctionnel | Choix parmi les [groupes fonctionnels](groupes.md) existants, lecture seule après création |
+| Liste des projets | Choix multiple, filtré dynamiquement (Ajax) selon le groupe fonctionnel sélectionné — seuls les projets dont un tag correspond au groupe fonctionnel apparaissent |
 
-Par exemple, lors de la première ouverture, la liste des portefeuilles est vide.
+!!! note "🔗 Rattachement par groupe fonctionnel, pas par équipe"
+    Un portefeuille se rattache à un [groupe fonctionnel](groupes.md#-groupe-fonctionnel), qui filtre la liste des projets sélectionnables — la notion d'« équipe » n'existe plus dans le modèle de données depuis la v2.0.0.
 
-![portefeuille-liste](/assets/images/bo-portefeuille/portefeuille-001.jpg)
+!!! note "✅ Doublon à la création : silence trompeur corrigé"
+    Contrairement à [Groupe Utilisateur / Groupe Fonctionnel](groupes.md), `Portefeuille` ne porte aucune contrainte Symfony `#[UniqueEntity]` — seule une vérification manuelle dans `persistEntity()` empêchait l'écriture d'un doublon. Cette vérification fonctionnait, mais **sans aucun message** : la tentative échouait silencieusement (rien n'était écrit) tandis qu'EasyAdmin affichait quand même son message de succès par défaut, laissant croire à tort que le portefeuille avait été créé. Corrigé en ajoutant un flash `danger` explicite, aligné sur le comportement des groupes.
 
-Pour chaque portefeuille, le tableau affiche les éléments suivants  :
+!!! note "✅ Synchronisation du nombre de projets vers Batch/BatchTraitement corrigée"
+    Piège de nommage réel : les colonnes `portefeuille` de `Batch` et `BatchTraitement` ne stockent **pas** le nom du portefeuille, mais le **slug du groupe fonctionnel** (voir le commentaire `$data->portefeuille = groupe_fonctionnel (slug)` dans `BatchAutoController::traitementListe()`, et le menu « Portefeuille » de [Traitements](traitement.md) qui liste en réalité des groupes fonctionnels). `PortefeuilleCrudController::updateEntity()` comparait à tort sur le nom du portefeuille — la resynchronisation de `nombre_projet` sur `Batch`/`BatchTraitement` après modification de la liste de projets ne trouvait donc jamais de correspondance et restait figée. Corrigé pour comparer sur le groupe fonctionnel, comme partout ailleurs dans le code (y compris le blocage de suppression ci-dessous, qui lui était déjà correct).
 
-* [ ] Le titre ;
-* [ ] L'équipe ;
-* [ ] La liste (des projets) ;
-* [ ] La date de modification ;
-* [ ] La date de création ;
+## 🗑️ Suppression
 
-Le menu en fin de ligne permet de (consulter, éditer et supprimer le portefeuille).
-
-![portefeuille-menu](/assets/images/bo-utilisateur/utilisateur-003.jpg)
-
-## Ajouter un nouveau portefeuille
-
-Il suffit de cliquer sur le bouton **Créer portefeuille** en haut à droite de l'écran. En suite, il suffit de saisir le `titre` du portefeuille, de sélectionner une `équipe` d'utilisateur et de choisir dans la `liste` déroulante les projets que l'on veut ajouter.
-
-![portefeuille-ajouter](/assets/images/bo-portefeuille/portefeuille-002.jpg)
-
-Il faudra cliquer sur le bouton `Créer` pour valider le formulaire.
-
-![portefeuille-erreur](/assets/images/bo-portefeuille/portefeuille-003.jpg)
-
-`Attention.` **Le titre** du portefeuille doit être **unique**.
-
-![portefeuille-liste](/assets/images/bo-portefeuille/portefeuille-004.jpg)
-
-`Note :` Un portefeuille a été ajoutée par défaut pour l'équipe de développement de `Ma Moulinette`. Il contient le projet `Ma Moulinette`.
-
-## Consulter l'équipe
-
-Il est possible de :
-
-* [x] **supprimer** l'équipe ;
-* [x] **revenir à la liste** ;
-* [x] **éditer** l'équipe ;
-
-![portefeuille-consulter](/assets/images/bo-portefeuille/portefeuille-005.jpg)
-
-## Éditez l'équipe
-
-Il est possible de :
-
-* [x] Modifier le titre de l'équipe ;
-* [x] Modifier la description ;
-
-![portefeuille-editer](/assets/images/bo-portefeuille/portefeuille-006.jpg)
-
-Pour valider la modification, il suffit de cliquer sur le bouton `Sauvegarder les modifications`.
-
-## Messages utilisateurs
-
-* Ajout d'une nouvelle équipe.
-
-![portefeuille-editer](/assets/images/bo-portefeuille/portefeuille-007.jpg)
-
-* L'équipe existe déjà.
-
-![portefeuille-editer](/assets/images/bo-portefeuille/portefeuille-008.jpg)
-
-* Suppression de l'équipe.
-
-![portefeuille-editer](/assets/images/bo-portefeuille/portefeuille-009.jpg)
-
-* Mise à jour de l'équipe.
-
-![portefeuille-editer](/assets/images/bo-portefeuille/portefeuille-010.jpg)
+La suppression d'un portefeuille est bloquée si un [traitement](traitement.md) y fait encore référence — il faut d'abord supprimer ou réaffecter les traitements concernés.
 
 -**-- FIN --**-
 
