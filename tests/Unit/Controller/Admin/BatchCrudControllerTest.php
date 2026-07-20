@@ -158,7 +158,11 @@ class BatchCrudControllerTest extends TestCase
         $this->connection->expects($this->once())
             ->method('executeQuery')
             ->with(
-                $this->stringContains(':portefeuille'),
+                $this->logicalAnd(
+                    $this->stringContains(':portefeuille'),
+                    $this->stringContains('groupe_fonctionnel'),
+                    $this->logicalNot($this->stringContains('titre'))
+                ),
                 $this->arrayHasKey('portefeuille')
             )
             ->willReturn($result);
