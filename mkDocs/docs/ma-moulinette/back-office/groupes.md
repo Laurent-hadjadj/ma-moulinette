@@ -3,7 +3,9 @@
 Depuis la v2.0.0, la notion d'**équipe** a été remplacée par deux concepts distincts et complémentaires : le **groupe utilisateur** (un profil d'accès) et le **groupe fonctionnel** (un périmètre de projets). Deux CRUD EasyAdmin séparés les gèrent.
 
 !!! caution "⚠️ Ne pas confondre les deux"
-    Un **groupe utilisateur** répond à la question « à quel service/profil appartient cette personne ? » (ex. `Service-SI`). Un **groupe fonctionnel** répond à la question « sur quels projets cette personne peut-elle intervenir ? » (ex. `java-c-cool`, associé à des tags SonarQube). Un utilisateur a **un seul** groupe utilisateur mais peut avoir **plusieurs** groupes fonctionnels.
+    Un **groupe utilisateur** répond à la question « à quel service/profil appartient cette personne ? » (ex. `Service-SI`).
+    Un **groupe fonctionnel** répond à la question « sur quels projets cette personne peut-elle intervenir ? » (ex. `java-c-cool`, associé à des tags SonarQube).
+    Un utilisateur a **un seul** groupe utilisateur mais peut avoir **plusieurs** groupes fonctionnels.
 
 ## 🗺️ Cartographie — cycle de vie d'une création
 
@@ -17,13 +19,13 @@ flowchart TD
     IndexGU -->|Créer| FormGU["📝 Formulaire<br/>nom + description"]
     FormGU -->|persistEntity| NormGU["🧹 Normalisation<br/>minuscule, [a-z0-9_ -]"]
     NormGU --> CheckGU{"Nom déjà utilisé ?"}
-    CheckGU -->|oui| FlashGU["🚫 Flash danger « Ce groupe existe déjà »<br/>retour au formulaire, rien n'est écrit"]
+    CheckGU -->|oui| FlashGU["🚫 Flash danger « Ce groupe existe déjà »<br/>retour au formulaire,<br> rien n'est écrit"]
     CheckGU -->|non| SaveGU[("💾 groupe_utilisateur<br/>+ ULID généré")]
 
-    IndexGF -->|Créer / Modifier| FormGF["📝 Formulaire<br/>tag SonarQube + nom + description"]
+    IndexGF -->|Créer / Modifier| FormGF["📝 Formulaire<br/>tag SonarQube + nom<br> + description"]
     FormGF -->|persistEntity| NormGF["🧹 Normalisation<br/>minuscule, [a-z0-9_-]"]
     NormGF --> CheckGF{"Nom déjà utilisé ?"}
-    CheckGF -->|oui| FlashGF["🚫 Flash danger « Ce groupe existe déjà »<br/>retour au formulaire, rien n'est écrit"]
+    CheckGF -->|oui| FlashGF["🚫 Flash danger « Ce groupe existe déjà »<br/>retour au formulaire,<br> rien n'est écrit"]
     CheckGF -->|non| SaveGF[("💾 groupe_fonctionnel")]
 ```
 
@@ -86,6 +88,10 @@ Aucun groupe fonctionnel n'est créé par les fixtures de base : à créer selon
 
 !!! note "🔎 Pourquoi une vérification manuelle en plus de `#[UniqueEntity]`"
     Les deux entités portent déjà une contrainte Symfony `#[UniqueEntity]` sur le nom, mais elle valide la **valeur brute saisie**, avant la normalisation appliquée dans `persistEntity()`. Deux saisies différentes (`Service SI`, `service_si`, `SERVICE-SI`…) peuvent normaliser vers la même valeur stockée sans que `#[UniqueEntity]` s'en aperçoive — d'où la recherche manuelle par `findOneBy()` sur le nom déjà normalisé, seule à même de détecter ce cas.
+
+!!! note "✅ Renforcement de la sécurité : contrôle de rôle strict désormais appliqué sur les deux contrôleurs"
+    Ni `GroupeUtilisateurCrudController` ni `GroupeFonctionnelCrudController` n'imposaient de restriction de rôle côté serveur — seule la carte de la page d'accueil du back-office masquait l'accès (`is_granted('ROLE_GESTIONNAIRE')`).
+    **Corrigé** par l'ajout de `#[IsGranted('ROLE_GESTIONNAIRE', statusCode: 403)]` sur les deux contrôleurs — voir [Gestion des utilisateurs](utilisateur.md) et [Gestion de la sécurité](../developpement/securite.md) pour le détail complet de cette faille et de son correctif.
 
 ## 📚 Pour aller plus loin
 
