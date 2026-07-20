@@ -320,7 +320,14 @@ JS);
         /** Si la valeur de l'attribut 'portefeuille' n'existe pas, on enregistre.*/
         if (is_null($record)) {
             parent::persistEntity($em, $entityInstance);
+            return;
         }
+
+        /* MODIF 2026-07-19 : Portefeuille n'a pas de contrainte #[UniqueEntity] (contrairement
+         * à GroupeUtilisateur/GroupeFonctionnel) — sans ce flash, un nom déjà utilisé était
+         * silencieusement ignoré : aucune écriture, mais EasyAdmin affichait quand même son
+         * message de succès par défaut. */
+        $this->addFlash('danger', 'Ce portefeuille existe déjà.');
     }
 
     /**
@@ -379,19 +386,24 @@ JS);
 
         /** On récupère le nombre de projet pour ce portefeuille */
         $nombre_projet = count($entityInstance->getListe());
-        /** On récupère le nom du portefeuille */
-        $nom_portefeuille = $entityInstance->getPortefeuille();
         /** On ajoute la date de modification  */
         $entityInstance->setDateModification(new \DateTime('now', new \DateTimeZone(self::$europeParis)));
 
         try {
             parent::persistEntity($em, $entityInstance);
 
-            /** On met à jour le nombre de projet pour ce portefeuille */
-            $isExist = $this->emm->getRepository(Batch::class)->findOneBy(['portefeuille' => mb_strtoupper($nom_portefeuille)]);
+            /* MODIF 2026-07-19 : Batch.portefeuille/BatchTraitement.portefeuille stockent en
+             * réalité le slug du groupe fonctionnel, pas le nom du portefeuille (voir le
+             * commentaire "$data->portefeuille = groupe_fonctionnel (slug)" dans
+             * BatchAutoController::traitementListe()) — la recherche/mise à jour ci-dessous
+             * comparait à tort sur le nom du portefeuille, ce qui ne trouvait jamais de
+             * correspondance et laissait `nombre_projet` figé après un changement de la
+             * liste de projets. */
+            $groupeFonctionnel = $entityInstance->getGroupeFonctionnel();
+            $isExist = $this->emm->getRepository(Batch::class)->findOneBy(['portefeuille' => $groupeFonctionnel]);
 
             $map = [
-                'portefeuille' => $nom_portefeuille,
+                'portefeuille' => $groupeFonctionnel,
                 'nombre_projet' => $nombre_projet
             ];
 
