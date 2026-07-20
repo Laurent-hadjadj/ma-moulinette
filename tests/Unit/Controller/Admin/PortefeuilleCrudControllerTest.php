@@ -98,6 +98,10 @@ class PortefeuilleCrudControllerTest extends TestCase
 
     public function testPersistEntityDoesNothingWhenRecordExists(): void
     {
+        /* MODIF 2026-07-19 : verrouille le fix — Portefeuille n'a pas de contrainte
+         * #[UniqueEntity] ; sans flash explicite ici, un doublon était silencieusement
+         * ignoré (rien n'est écrit) mais EasyAdmin affichait quand même son message de
+         * succès par défaut, laissant croire à tort que le portefeuille avait été créé. */
         $p = new Portefeuille();
         $p->setPortefeuille('mon-portefeuille');
 
@@ -105,6 +109,10 @@ class PortefeuilleCrudControllerTest extends TestCase
         $this->repo->method('findOneBy')->willReturn($existing);
 
         $this->em->expects($this->never())->method('persist');
+
+        $this->flashBag->expects($this->once())
+            ->method('add')
+            ->with('danger', $this->stringContains('existe déjà'));
 
         $this->controller->persistEntity($this->em, $p);
 
@@ -137,6 +145,7 @@ class PortefeuilleCrudControllerTest extends TestCase
     {
         $p = new Portefeuille();
         $p->setPortefeuille('MON-PF');
+        $p->setGroupeFonctionnel('java-c-cool');
         $p->setListe(['a', 'b', 'c']);
 
         $existingBatch = new Batch();
@@ -150,6 +159,33 @@ class PortefeuilleCrudControllerTest extends TestCase
         $this->controller->updateEntity($this->em, $p);
 
         $this->assertNotNull($p->getDateModification());
+    }
+
+    public function testUpdateEntityLooksUpBatchByGroupeFonctionnelNotPortefeuilleName(): void
+    {
+        /* MODIF 2026-07-19 : verrouille le fix — Batch.portefeuille/BatchTraitement.portefeuille
+         * stockent le slug du groupe fonctionnel (voir BatchAutoController::traitementListe()),
+         * pas le nom du portefeuille. La recherche/mise à jour doit donc utiliser
+         * getGroupeFonctionnel(), pas getPortefeuille(). */
+        $p = new Portefeuille();
+        $p->setPortefeuille('MON-PF');
+        $p->setGroupeFonctionnel('java-c-cool');
+        $p->setListe(['a', 'b']);
+
+        $existingBatch = new Batch();
+        $this->batchRepo->expects($this->once())
+            ->method('findOneBy')
+            ->with(['portefeuille' => 'java-c-cool'])
+            ->willReturn($existingBatch);
+
+        $this->batchRepo->expects($this->once())
+            ->method('updatePortefeuille')
+            ->with(['portefeuille' => 'java-c-cool', 'nombre_projet' => 2]);
+        $this->batchTraitementRepo->expects($this->once())
+            ->method('updatePortefeuille')
+            ->with(['portefeuille' => 'java-c-cool', 'nombre_projet' => 2]);
+
+        $this->controller->updateEntity($this->em, $p);
     }
 
     public function testUpdateEntitySkipsBatchUpdateWhenNoMatchingBatch(): void
