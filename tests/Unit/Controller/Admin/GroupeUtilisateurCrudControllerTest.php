@@ -113,6 +113,12 @@ class GroupeUtilisateurCrudControllerTest extends TestCase
 
     public function testPersistEntityFlashesDangerWhenGroupeExists(): void
     {
+        /* MODIF 2026-07-19 : verrouille le fix — persistEntity() tombait dans
+         * parent::persistEntity() même après avoir détecté un doublon (déjà
+         * corrigé côté GroupeFonctionnelCrudController, qui a le `return;`),
+         * ce qui provoquait une violation de contrainte d'unicité PostgreSQL
+         * non rattrapée derrière un flash "Ce groupe existe déjà" pourtant
+         * correctement affiché. */
         $groupe = new GroupeUtilisateur();
         $groupe->setGroupeUtilisateur('Service SI');
         $groupe->setDescription('desc');
@@ -124,7 +130,8 @@ class GroupeUtilisateurCrudControllerTest extends TestCase
             ->method('add')
             ->with('danger', $this->stringContains('existe déjà'));
 
-        // parent::persistEntity will be called anyway, but with doubled em mock it's a no-op
+        $this->em->expects($this->never())->method('persist');
+
         $this->controller->persistEntity($this->em, $groupe);
 
         // Normalisation doit avoir été appliquée (lowercase ; espaces et tirets préservés)
