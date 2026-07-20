@@ -204,6 +204,7 @@ class GroupeUtilisateurCrudController extends AbstractCrudController
 
         if ($existing) {
             $this->addFlash('danger', 'Ce groupe existe déjà.');
+            return;
         }
 
         parent::persistEntity($em, $entityInstance);
