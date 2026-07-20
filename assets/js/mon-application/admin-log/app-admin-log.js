@@ -233,7 +233,25 @@ import { showMessage, hideMessage, prepareTechnicalDetails } from '../../common/
                 xhrFields: {
                         responseType: 'blob' // Pour gérer le téléchargement du fichier
                 },
-                success: function(data) {
+                success: function(data, textStatus, jqXHR) {
+                        const contentType = jqXHR.getResponseHeader('Content-Type') || '';
+
+                        // Le serveur répond toujours en HTTP 200 (code métier dans le corps
+                        // JSON), y compris en cas d'erreur — sans ce test, une erreur 500
+                        // survenue après l'appel serait téléchargée comme un faux ZIP ne
+                        // contenant que le JSON d'erreur, sans que l'utilisateur soit prévenu.
+                        if (contentType.includes('application/json')) {
+                                const reader = new FileReader();
+                                reader.onload = function() {
+                                        let t = null;
+                                        try { t = JSON.parse(reader.result); } catch (e) { t = null; }
+                                        const message = t?.message || "Une erreur inattendue est survenue lors du téléchargement (Erreur 500).";
+                                        showMessage(t?.type || 'error', message);
+                                };
+                                reader.readAsText(data);
+                                return;
+                        }
+
                         // Créer un lien de téléchargement pour le blob reçu
                         const blob = new Blob([data]);
                         const url = window.URL.createObjectURL(blob);
