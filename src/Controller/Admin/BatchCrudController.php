@@ -18,6 +18,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\{Action, Actions, Crud, Filters};
 use EasyCorp\Bundle\EasyAdminBundle\Field\{BooleanField, ChoiceField, DateTimeField, IntegerField, TextField};
 use Symfony\Component\Uid\Ulid;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Batch, BatchTraitement, BatchExecution };
 use App\Exception\SqlRequestException;
@@ -25,6 +26,8 @@ use App\Exception\SqlRequestException;
 /**
  * @extends AbstractCrudController<Batch>
  */
+/* MODIF 2026-07-20 : restriction serveur manquante, voir PortefeuilleCrudController. */
+#[IsGranted('ROLE_BATCH', message: 'Vous ne disposez pas des droits suffisants pour accéder à cette page.', statusCode: 403)]
 class BatchCrudController extends AbstractCrudController
 {
     use AppUserAware;

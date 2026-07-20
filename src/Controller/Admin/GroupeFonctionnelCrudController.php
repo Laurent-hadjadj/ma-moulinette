@@ -16,12 +16,15 @@ namespace App\Controller\Admin;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\{Action, Actions, Assets, Crud, Filters, };
 use EasyCorp\Bundle\EasyAdminBundle\Field\{FormField, TextField, ChoiceField, DateTimeField};
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\GroupeFonctionnel;
 
 /**
  * @extends AbstractCrudController<GroupeFonctionnel>
  */
+/* MODIF 2026-07-20 : restriction serveur manquante, voir UtilisateurCrudController. */
+#[IsGranted('ROLE_GESTIONNAIRE', message: 'Vous ne disposez pas des droits suffisants pour accéder à cette page.', statusCode: 403)]
 class GroupeFonctionnelCrudController extends AbstractCrudController
 {
     /**

@@ -16,12 +16,16 @@ namespace App\Controller\Admin;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\{Assets, Crud, Filters};
 use EasyCorp\Bundle\EasyAdminBundle\Field\{FormField, ChoiceField, TextField, DateTimeField};
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Portefeuille, Batch, BatchTraitement};
 
 /**
  * @extends AbstractCrudController<Portefeuille>
  */
+/* MODIF 2026-07-20 : restriction serveur manquante — seule la carte du
+ * dashboard (home.html.twig, is_granted('ROLE_BATCH')) filtrait l'accès. */
+#[IsGranted('ROLE_BATCH', message: 'Vous ne disposez pas des droits suffisants pour accéder à cette page.', statusCode: 403)]
 class PortefeuilleCrudController extends AbstractCrudController
 {
     private static string $europeParis = 'Europe/Paris';

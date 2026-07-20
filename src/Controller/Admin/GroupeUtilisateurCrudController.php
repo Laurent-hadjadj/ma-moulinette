@@ -17,6 +17,7 @@ use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\{Action, Actions, Crud, Filters};
 use EasyCorp\Bundle\EasyAdminBundle\Field\{FormField, TextField, DateTimeField};
 use Symfony\Component\Uid\{Ulid};
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\GroupeUtilisateur;
@@ -24,6 +25,8 @@ use App\Entity\GroupeUtilisateur;
 /**
  * @extends AbstractCrudController<GroupeUtilisateur>
  */
+/* MODIF 2026-07-20 : restriction serveur manquante, voir UtilisateurCrudController. */
+#[IsGranted('ROLE_GESTIONNAIRE', message: 'Vous ne disposez pas des droits suffisants pour accéder à cette page.', statusCode: 403)]
 class GroupeUtilisateurCrudController extends AbstractCrudController
 {
     /**

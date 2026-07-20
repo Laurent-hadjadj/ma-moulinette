@@ -20,6 +20,7 @@ use App\Service\{RoleManagerService, UserRoleLoggerService};
 use App\Security\SuspiciousActivityDetector;
 use Symfony\Component\Asset\Packages;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\{Crud, Filters};
 use EasyCorp\Bundle\EasyAdminBundle\Field\{FormField, TextField, EmailField, AvatarField, ChoiceField, BooleanField, DateTimeField};
@@ -28,6 +29,10 @@ use Psr\Log\LoggerInterface;
 /**
  * @extends AbstractCrudController<Utilisateur>
  */
+/* MODIF 2026-07-20 : restriction serveur manquante — seule la carte du
+ * dashboard (home.html.twig, is_granted('ROLE_GESTIONNAIRE')) filtrait
+ * l'accès. */
+#[IsGranted('ROLE_GESTIONNAIRE', message: 'Vous ne disposez pas des droits suffisants pour accéder à cette page.', statusCode: 403)]
 class UtilisateurCrudController extends AbstractCrudController
 {
     use AppUserAware;
@@ -171,8 +176,10 @@ class UtilisateurCrudController extends AbstractCrudController
             ->setFormTypeOption('disabled',  in_array($pageName, [Crud::PAGE_DETAIL, Crud::PAGE_EDIT], true))
             ->hideOnForm();
 
+        /* MODIF 2026-07-20 : 'disabled' retiré — champ calculé (getPersonne()),
+         * hideOnForm() le retire déjà des formulaires Créer/Modifier dans tous
+         * les cas, l'option précédente était donc morte et trompeuse. */
         yield TextField::new('personne')
-            ->setFormTypeOption('disabled',  in_array($pageName, [Crud::PAGE_EDIT], true))
             ->hideOnForm();
 
         yield TextField::new('prenom')
