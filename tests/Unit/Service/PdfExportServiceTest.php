@@ -299,6 +299,55 @@ class PdfExportServiceTest extends TestCase
         $this->assertNotEmpty($capturedCtx['date_generation']);
     }
 
+    /* MODIF 2026-07-20 : tests generateUserRoleLogPdf */
+
+    public function testGenerateUserRoleLogPdfReturnsValidPdfBinary(): void
+    {
+        $this->twig->method('render')
+            ->willReturn('<html><body><h1>Journal des rôles</h1></body></html>');
+
+        $pdf = $this->service->generateUserRoleLogPdf([], '2 ligne(s) sélectionnée(s)');
+
+        $this->assertStringStartsWith('%PDF-', $pdf);
+        $this->assertGreaterThan(1000, strlen($pdf));
+    }
+
+    public function testGenerateUserRoleLogPdfPassesExpectedDataToTwig(): void
+    {
+        $lignes = [
+            [
+                'id' => 1,
+                'userEmail' => 'emma.durand@ma-moulinette.fr',
+                'editorEmail' => 'admin@ma-moulinette.fr',
+                'oldRoles' => ['ROLE_UTILISATEUR'],
+                'newRoles' => ['ROLE_GESTIONNAIRE'],
+                'oldActive' => true,
+                'newActive' => true,
+                'alerts' => [],
+                'date' => '20/07/2026 10:30:00',
+            ],
+        ];
+
+        $capturedCtx = [];
+        $this->twig->expects($this->once())
+            ->method('render')
+            ->with(
+                'rapport/journal-roles/_rapport.html.twig',
+                $this->callback(function (array $ctx) use (&$capturedCtx) {
+                    $capturedCtx = $ctx;
+                    return true;
+                })
+            )
+            ->willReturn('<html></html>');
+
+        $this->service->generateUserRoleLogPdf($lignes, '1 ligne(s) sélectionnée(s)', 'Document interne');
+
+        $this->assertSame($lignes, $capturedCtx['lignes']);
+        $this->assertSame('1 ligne(s) sélectionnée(s)', $capturedCtx['filtre_label']);
+        $this->assertNotEmpty($capturedCtx['logoBase64']);
+        $this->assertNotEmpty($capturedCtx['date_generation']);
+    }
+
     /* MODIF 2026-06-07 : tests generateDcPdf + generateSuiviPdf.
      * Ces méthodes appellent params->get('rapport.pdf.watermark.mode') en plus de
      * 'kernel.project_dir' : création d'un service dédié via makeServiceForSuiviDc()
