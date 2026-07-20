@@ -771,6 +771,72 @@ class PdfExportService
     }
 
     /**
+     * [Description for generateUserRoleLogPdf]
+     * Génère le rapport PDF du journal des changements de rôle
+     * (paysage A4, un seul sous-PDF Dompdf, pas de fusion FPDI).
+     *
+     * @param array<int, array<string, mixed>> $lignes lignes déjà formatées
+     *   (date, userEmail, editorEmail, oldRoles, newRoles, oldActive, newActive, alerts)
+     * @param string|null $filtreLabel description du filtre appliqué, affichée en sous-titre
+     * @param string|null $document_type
+     *
+     * @return string contenu binaire du PDF
+     *
+     * Created at: 20/07/2026 00:00:00 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function generateUserRoleLogPdf(array $lignes, ?string $filtreLabel = null, ?string $document_type = null): string
+    {
+        $documentType = $document_type ?? self::$confidentiel;
+
+        $html = $this->twig->render('rapport/journal-roles/_rapport.html.twig', [
+            'lignes'          => $lignes,
+            'filtre_label'    => $filtreLabel,
+            'date_generation' => (new \DateTimeImmutable())->format('d/m/Y H:i'),
+            'logoBase64'      => base64_encode(
+                file_get_contents($this->params->get(self::$projectDir) . self::$logo)
+            ),
+        ]);
+
+        $options = new Options();
+        $options->set('defaultFont', self::$police);
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isRemoteEnabled', true);
+
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html, 'UTF-8');
+        $dompdf->setPaper('A4', 'landscape');
+        $dompdf->render();
+
+        $canvas     = $dompdf->getCanvas();
+        $pageWidth  = $canvas->get_width();
+        $pageHeight = $canvas->get_height();
+        $fontSize   = 9;
+        $font       = $dompdf->getFontMetrics()->getFont(self::$police);
+        $colorLine  = [0/255, 68/255, 91/255];
+        $colorText  = [0/255, 68/255, 91/255];
+        $y = $pageHeight - 30;
+
+        $canvas->page_script(function($pageNumber, $pageCount, $canvas, $fontMetrics)
+            use ($pageWidth, $y, $documentType, $colorLine, $colorText, $font, $fontSize) {
+            $canvas->line(30, $y - 5, $pageWidth - 30, $y - 5, $colorLine, 0.5);
+
+            $dateText = self::$footerDateText . (new \DateTimeImmutable())->format(self::$dateFormat);
+            $canvas->text(30, $y, $dateText, $font, $fontSize, $colorText);
+
+            $textWidth = $fontMetrics->getTextWidth($documentType, $font, $fontSize);
+            $canvas->text(($pageWidth - $textWidth) / 2, $y, $documentType, $font, $fontSize, $colorText);
+
+            $pageText = sprintf(self::$footerPageFmt, $pageNumber, $pageCount);
+            $textWidthRight = $fontMetrics->getTextWidth($pageText, $font, $fontSize);
+            $canvas->text($pageWidth - 30 - $textWidthRight, $y, $pageText, $font, $fontSize, $colorText);
+        });
+
+        return $dompdf->output();
+    }
+
+    /**
      * [Description for toLatin1]
      * FPDF n'accepte que latin1 nativement. Conversion safe avec fallback.
      *
