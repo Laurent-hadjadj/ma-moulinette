@@ -1,6 +1,4 @@
-# Annuaire OpenLDAP local
-
-![Ma-Moulinette](/assets/images/home/home-000.jpg)
+# 🔑 Annuaire OpenLDAP local
 
 ## Pourquoi un LDAP local ?
 
@@ -145,7 +143,7 @@ Sortie attendue lorsque le serveur OpenLDAP local tourne et que le compte de ser
 
 En cas d'échec, la commande affiche le message d'erreur, le code retour LDAP et la trace pour faciliter le diagnostic (port fermé, mauvais DN de bind, mot de passe incorrect, certificat TLS rejeté, etc.).
 
-> Source : `src/Command/LdapTestCommand.php`.
+> Source : `src/Command/Dev/LdapTestCommand.php`.
 
 ## Adaptation du `CustomAuthenticator`
 
@@ -153,7 +151,11 @@ L'authenticator actuel est calibré pour Active Directory :
 
 ```php
 // src/Security/CustomAuthenticator.php
-$filter = sprintf('(&(objectClass=user)(sAMAccountName=%s))', $samAccountName);
+$filter = sprintf(
+    '(&(objectClass=user)(|(sAMAccountName=%s)(mail=%s)))',
+    $this->ldap->escape($samAccountName, '', Ldap::ESCAPE_FILTER),
+    $this->ldap->escape($courriel, '', Ldap::ESCAPE_FILTER)
+);
 ```
 
 Pour fonctionner sur OpenLDAP avec le DIT ci-dessus, deux objectClass / attributs n'existent pas (`user`, `sAMAccountName`). Il faudra paramétrer le filtre par environnement, par exemple :
