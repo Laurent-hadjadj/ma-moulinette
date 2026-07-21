@@ -1,7 +1,7 @@
 /**
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -10,10 +10,15 @@
  */
 
 /** Import des dépendances */
+import 'foundation-sites/dist/css/foundation.min.css';
+import 'motion-ui/dist/motion-ui.css';
+import '../../../styles/common/common.css';
+import '../../../styles/common/police.css';
 import '../../../styles/mon-application/preference.css';
 
 /** Intégration de jquery */
 import $ from 'jquery';
+window.$ = $;
 
 import 'what-input';
 import 'foundation-sites';
@@ -21,6 +26,9 @@ import 'motion-ui';
 
 import '../../common/foundation.js';
 import '../../auth/details.js';
+
+/** Gestion des modales zurb foundation compatible WCAG  */
+import { modalSafe } from '../../common/safeModal.js';
 
 /** On importe les constantes */
 import {content_type} from '../../common/constante.js';
@@ -38,17 +46,15 @@ const poubelleSVG=`
  * [Description for modifierStatut]
  *
  * @param mixed statut
- * @param mixed categorie
- *
- * @return [type]
+ * @param mixed category
  *
  * Created at: 17/05/2023, 15:55:05 (Europe/Paris)
  * @author    Laurent HADJADJ <laurent_h@me.com>
  * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-const modifierStatut = async function(statut, categorie) {
+const modifierStatut = async function(statut, category) {
   /** on récupère les préférences */
-  const data={ statut, categorie }
+  const data = { statut, category };
   const options = {
     url: `${serveur()}/api/secure/preference/statut`,
     type: 'POST',
@@ -67,17 +73,18 @@ const modifierStatut = async function(statut, categorie) {
  * [Description for favori]
  * Récupération de la liste et suppression d'un favori
  *
- * @return [type]
+ * @return void
  *
  * Created at: 18/05/2023, 16:59:18 (Europe/Paris)
  * @author    Laurent HADJADJ <laurent_h@me.com>
  * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-const favori=async function(){
+const favori = async function(){
   /** on récupère les préférences */
-  const data={ categorie: 'favori' }
+  const data={ category: 'favori_projet' }
   const options = {
-    url: `${serveur()}/api/secure/preference/categorie`, type: 'GET',
+    url: `${serveur()}/api/secure/preference/category`,
+    type: 'GET',
     dataType: 'json',
     data,
     contentType: content_type,
@@ -90,15 +97,17 @@ const favori=async function(){
   const r = await $.ajax(options);
   /** Par défaut on affiche pas de favoris */
   $('#js-modal-favori-statut').html(`<span class="option-false"><strong>Désactivée.</strong></span>`);
+
   /** On a un favori */
-  if (r.statut.favori && r['favori'].length > 0)
+  if (r.statut.favori_projet && r['favori_projet'].length > 0)
   {
     $('#js-modal-favori-statut').html(`<span class="option-true"><strong>Activée.</strong></span>`);
+
     /** On construit la liste des favoris */
     $('#tableau-liste-favori').html('');
     let n = 1, zero = '';
 
-    r.favori.forEach(l =>
+    r.favori_projet.forEach(l =>
     {
       if (n < 10)
       {
@@ -114,8 +123,10 @@ const favori=async function(){
       n = n + 1;
     });
   }
+
   /** On ouvre la fenêtre modal */
-  $('#modal-favori').foundation('open');
+  modalSafe.open('#modal-preference-favori');
+
   /** On récupère l'ID de la ligne que l'on veut supprimer */
   $('.js-poubelle').on('click', e =>
   {
@@ -141,11 +152,16 @@ const favori=async function(){
   });
 }
 
+/** On ferme '#modal-preference-favori' */
+$('#bouton-fermer-preference-favori').on('click', () => {
+  modalSafe.close('#modal-preference-favori');
+});
+
 /**
  * [Description for version]
  * Récupération de la liste des versions favorites
  *
- * @return [type]
+ * @return void
  *
  * Created at: 12/06/2023, 13:48:34 (Europe/Paris)
  * @author    Laurent HADJADJ <laurent_h@me.com>
@@ -153,9 +169,9 @@ const favori=async function(){
  */
 const version=async function(){
   /** on récupère les préférences */
-  const data={ categorie: 'version' }
-  const options = { 
-    url: `${serveur()}/api/secure/preference/categorie`,
+  const data={ category: 'favori_version' }
+  const options = {
+    url: `${serveur()}/api/secure/preference/category`,
     type: 'GET',
     dataType: 'json',
     data,
@@ -174,12 +190,12 @@ const version=async function(){
   /** On a une version ? */
   let n = 1, m, lignes, ligne, debut, fin;
 
-  if (r.statut.version && r.version.length > 0)
+  if (r.statut.favori_version && r.favori_version.length > 0)
   {
     $('#js-modal-version-statut').html(`<span class="option-true"><strong>Activée.</strong></span>`);
 
     $('.js-accordion').html('');
-    r.version.forEach(o =>
+    r.favori_version.forEach(o =>
     {
       for (const [key, value] of Object.entries(o)) {
         debut = `
@@ -213,9 +229,11 @@ const version=async function(){
   }
 
   /** On ouvre la fenêtre modal */
-  $('#modal-version').foundation('open');
+  modalSafe.open('#modal-preference-version');
+
   /** On initialise l'accordéon */
   $('.js-accordion').foundation('_init');
+
   /** On récupère l'ID de la ligne que l'on veut supprimer */
   $('.js-poubelle').on('click', e_1 =>
   {
@@ -226,10 +244,11 @@ const version=async function(){
     /** On prépare les données avant l'appel Ajax */
     const t = document.getElementById(`version-${ id[2] }`);
     const mavenKey = t.dataset.key;
-    const index = t.dataset.index;
+    const index = parseInt(t.dataset.index, 10);
     const version = $(`#version-${ id[2] }`).text();
 
     const data_1 = { index, mavenKey, version };
+
     const options_1 = {
       /** On appel le service de suppression de la version favorite */
       url: `${ serveur() }/api/secure/preference/version/delete`,
@@ -242,27 +261,30 @@ const version=async function(){
         'X-Internal-Front': 'front-app'
       },
     };
-    console.log(options_1);
-    //$.ajax(options_1).then(r_1 => { console.log(r_1); });
+    $.ajax(options_1).then(r_1 => { console.log(r_1); });
   });
 }
 
+/** On ferme '#modal-preference-version' */
+$('#bouton-fermer-preference-version').on('click', () => {
+  modalSafe.close('#modal-preference-version');
+});
 
 /**
  * [Description for projet]
  * Modifier la liste des projets
  *
- * @return [type]
+ * @return void
  *
  * Created at: 19/05/2023, 10:48:28 (Europe/Paris)
  * @author    Laurent HADJADJ <laurent_h@me.com>
  * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-const projet=async function(){
+const projet = async function(){
   /** on récupère les préférences */
-  const data = { categorie: 'projet' }
+  const data = { category: 'suivi_projet' }
   const options = {
-    url: `${serveur()}/api/secure/preference/categorie`,
+    url: `${serveur()}/api/secure/preference/category`,
     type: 'GET',
     dataType: 'json',
     data,
@@ -274,16 +296,18 @@ const projet=async function(){
   };
 
   const r = await $.ajax(options);
-  $('#js-modal-projet-statut').html(`<span class="option-false"><strong>Désactivée.</strong></span>`);
+  $('#js-modal-projet-statut').html(`<output class="option-false"><strong>Désactivée.</strong></output>`);
+
   /** On a un favori */
-  if (r.statut.projet && r['projet'].length > 0)
+  if (r.statut.suivi_projet && r['suivi_projet'].length > 0)
   {
-    $('#js-modal-projet-statut').html(`<span class="option-true"><strong>Activée.</strong></span>`);
+    $('#js-modal-projet-statut').html(`<output class="option-true"><strong>Activée.</strong></output>`);
+
     /** On construit la liste des projets */
     $('#tableau-liste-projet').html('');
     let n = 1, zero = '';
 
-    r.projet.forEach(l =>
+    r.suivi_projet.forEach(l =>
     {
       if (n < 10)
       {
@@ -298,12 +322,12 @@ const projet=async function(){
     });
   } else
   {
-    if (r['projet'].length > 0)
+    if (r['suivi_projet'].length > 0)
     {
       /** On construit la liste des projets */
       $('#tableau-liste-projet').html('');
       let n_1 = 1, zero_1 = '';
-      r.projet.forEach(l_1 =>
+      r.suivi_projet.forEach(l_1 =>
       {
         if (n_1 < 10)
         {
@@ -318,8 +342,13 @@ const projet=async function(){
     }
   }
   /** On ouvre la fenêtre modal */
-  $('#modal-projet').foundation('open');
+  modalSafe.open('#modal-preference-projet');
 }
+
+/** On ferme '#modal-preference-projet' */
+$('#bouton-fermer-preference-projet').on('click', () => {
+  modalSafe.close('#modal-preference-projet');
+});
 
 /*************** ÉVÉNEMENT *************/
 /**
@@ -330,40 +359,40 @@ $('#js-switch-favori').on('click', ()=> {
   const ouinon = $('#js-switch-favori').is(':checked');
   if (ouinon===true) {
     /** on active l'option */
-    modifierStatut(true, 'favori');
+    modifierStatut(true, 'favori_projet');
   } else {
     /** on désactive l'option */
-    modifierStatut(false, 'favori');
+    modifierStatut(false, 'favori_projet');
   }
 });
 
 /**
  * Description
- * On active ou pas les projets
+ * On active ou pas le suivi des projets
  */
 $('#js-switch-projet').on('click', ()=> {
   const ouinon = $('#js-switch-projet').is(':checked');
   if (ouinon===true) {
     /** on active l'option */
-    modifierStatut(true, 'projet');
+    modifierStatut(true, 'suivi_projet');
   } else {
     /** on désactive l'option */
-    modifierStatut(false, 'projet');
+    modifierStatut(false, 'suivi_projet');
   }
 });
 
 /**
  * Description
- * On active ou pas les projets
+ * On active ou pas les versions favorites
  */
 $('#js-switch-version').on('click', ()=> {
   const ouinon = $('#js-switch-version').is(':checked');
   if (ouinon===true) {
     /** on active l'option */
-    modifierStatut(true, 'version');
+    modifierStatut(true, 'favori_version');
   } else {
     /** on désactive l'option */
-    modifierStatut(false, 'version');
+    modifierStatut(false, 'favori_version');
   }
 });
 
