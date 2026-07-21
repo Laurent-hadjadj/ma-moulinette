@@ -255,4 +255,52 @@ class BatchProfilingRepository extends ServiceEntityRepository
             ORDER BY utilisateur ASC')
           ->fetchAllAssociative();
   }
+
+  /**
+   * [Description for countOlderThan]
+   * Nombre de lignes que purgerait purge_batch_profiling() sans les supprimer (dry-run).
+   *
+   * @param int $days
+   *
+   * @return int
+   *
+   * Created at: 20/07/2026 00:00:00 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function countOlderThan(int $days): int
+  {
+      return (int) $this->getEntityManager()
+          ->getConnection()
+          ->executeQuery(
+              'SELECT COUNT(*) FROM ma_moulinette.batch_profiling
+                WHERE date_execution < NOW() - (:days || \' days\')::INTERVAL',
+              ['days' => $days]
+          )
+          ->fetchOne();
+  }
+
+  /**
+   * [Description for purge]
+   * Appelle la fonction PostgreSQL ma_moulinette.purge_batch_profiling(),
+   * qui supprime les lignes de batch_profiling plus anciennes que $days jours.
+   *
+   * @param int $days
+   *
+   * @return int nombre de lignes supprimées
+   *
+   * Created at: 20/07/2026 00:00:00 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
+  public function purge(int $days = 90): int
+  {
+      return (int) $this->getEntityManager()
+          ->getConnection()
+          ->executeQuery(
+              'SELECT ma_moulinette.purge_batch_profiling(:days) AS deleted',
+              ['days' => $days]
+          )
+          ->fetchOne();
+  }
 }
