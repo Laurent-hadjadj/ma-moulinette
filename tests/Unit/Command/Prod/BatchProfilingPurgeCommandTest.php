@@ -22,6 +22,9 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Tester\CommandTester;
 
+/**
+ * [Description BatchProfilingPurgeCommandTest]
+ */
 #[AllowMockObjectsWithoutExpectations]
 class BatchProfilingPurgeCommandTest extends TestCase
 {
