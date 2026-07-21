@@ -25,9 +25,10 @@ flowchart TD
 
     DcExec -->|bouton| DcPdf
     DcExec -->|bouton| DcDash
-    DcExec -.->|Synthèse par socle| DcExec
+    DcExec -.->|"cellule Socle,<br/>si scan archétype existe"| DcExec
 
     DcDash -->|cartographie tableau| DcProjet
+    DcDash -->|"table Synthèse par socle<br/>SCAN OK →"| DcExec
     DcDash -->|bouton Voir tous| DcMut
     DcDash -.->|filtre socle / vue prod-dev| DcDash
 
@@ -60,6 +61,13 @@ flowchart TD
 | `GET /dependency-check/comparer` | Comparaison | Comparaison side-by-side de 2 à 4 applications (CVE communes, écarts) |
 | `GET /dependency-check/mutualisables` | Mutualisations | Liste exhaustive et triable des dépendances mutualisables (paginée), filtrable par socle |
 
+Le détail de chaque page (chemin de fer bloc par bloc, messages remontés) est réparti dans 4 pages dédiées pour ne pas alourdir celle-ci :
+
+- [Index, Détail scan et Export PDF](pages-index-projet.md)
+- [Executive summary et Historique](pages-executive-history.md)
+- [Dashboard et KPI](pages-dashboard-kpi.md)
+- [Comparaison et Mutualisables](pages-comparer-mutualisables.md)
+
 ## 🎚️ Filtre socle et vue prod/dev
 
 Le dashboard, le KPI et les pages associées supportent deux filtres transverses, propagés en query string :
@@ -72,6 +80,7 @@ Le dashboard, le KPI et les pages associées supportent deux filtres transverses
 
 ## 📚 Pour aller plus loin
 
+- [Index, Détail scan et Export PDF](pages-index-projet.md), [Executive summary et Historique](pages-executive-history.md), [Dashboard et KPI](pages-dashboard-kpi.md), [Comparaison et Mutualisables](pages-comparer-mutualisables.md) : détail bloc par bloc de chaque page.
 - [Architecture d'ingestion](architecture.md) : pipeline, décisions techniques.
 - [Référence](reference.md) : formule de remédiation JH, glossaire.
 
