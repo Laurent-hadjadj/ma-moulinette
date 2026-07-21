@@ -156,19 +156,22 @@ input:checked ~ .switch-paddle { background-color: #00445b; }
 #ma-tete { width: 50px; }
 
 /******* fenêtre modal favori *****/
-#fermer-preference-favori,
-#fermer-preference-projet,
-#fermer-preference-version {
-  background-color: #00445b;
+#bouton-fermer-preference-favori,
+#bouton-fermer-preference-projet,
+#bouton-fermer-preference-version {
+  min-width: 9rem;
+  font-size: 0.95rem;
+  border-radius: 0.375rem;
+  margin: 0 0.25rem 0.5rem 0.25rem;
+  padding: 0.8rem 0.6rem;
   color: #fff;
+  text-align: center;
+  background-color: #00445b;
 }
 
-#fermer-preference-favori:hover,
-#fermer-preference-projet:hover,
-#fermer-preference-version:hover {
-  background-color: #006182;
-  color: #fff;
-}
+#bouton-fermer-preference-favori:hover,
+#bouton-fermer-preference-projet:hover,
+#bouton-fermer-preference-version:hover { background-color: #006182; }
 
 /** Couleurs et tailles pour les labels */
 .option-true { color: #0a0; }
