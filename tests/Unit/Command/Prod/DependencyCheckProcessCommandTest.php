@@ -23,6 +23,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
 
 /**
@@ -118,12 +119,14 @@ class DependencyCheckProcessCommandTest extends TestCase
         // MODIF 2026-05-16 : expects($this->any()) ajoute pour PHPUnit 14.
         $this->repo->expects($this->once())->method('find')->with(3)->willReturn($entry);
 
-        $this->tester->execute([]);
+        $exitCode = $this->tester->execute([]);
 
         $this->assertSame(DcProcessingQueue::STATUS_FAILED, $entry->getStatus());
         $this->assertNotNull($entry->getProcessedAt());
         $this->assertNotNull($entry->getErrorMessage());
         $this->assertStringContainsString('FAILED', $this->tester->getDisplay());
+        // MODIF 2026-07-21 : un échec définitif doit se refléter dans le code retour.
+        $this->assertSame(Command::FAILURE, $exitCode);
     }
 
     public function testReportsRequeuedStaleCount(): void
