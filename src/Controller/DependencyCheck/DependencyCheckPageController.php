@@ -523,18 +523,35 @@ class DependencyCheckPageController extends AbstractController
         }
         $scan = $this->scanRepository->findLatestForProject($group, $artifact, $version);
 
+        /* MODIF 2026-07-22 : un scan absent ne doit pas produire un PDF
+         * silencieux (garde + glossaire seuls, sans le moindre signal). On
+         * redirige vers la page Détail scan, qui affiche déjà le flash
+         * "Aucun scan trouvé..." dans ce cas. */
+        if ($scan === null) {
+            $this->addFlash('notice', [
+                'type'    => 'warning',
+                'message' => sprintf(
+                    'Aucun scan trouvé pour %s:%s:%s. Impossible de générer le rapport PDF.',
+                    $group,
+                    $artifact,
+                    $version
+                ),
+            ]);
+            return $this->redirectToRoute('dc_projet', ['group' => $group, 'artifact' => $artifact, 'version' => $version]);
+        }
+
         $findings = [];
-        if ($scan !== null) {
-            $result = $this->findingRepository->listForScan((int) $scan->getId());
-            if ($result['code'] !== 200) {
-                $this->logger->error('[DC] ❌ Échec de la requête listForScan (PDF)', [
-                    'scan_id' => (int) $scan->getId(),
-                    'code'    => $result['code'],
-                    'erreur'  => $result['erreur'] ?? '',
-                ]);
-            } else {
-                $findings = $result['liste'] ?? [];
-            }
+        $findingsError = false;
+        $result = $this->findingRepository->listForScan((int) $scan->getId());
+        if ($result['code'] !== 200) {
+            $findingsError = true;
+            $this->logger->error('[DC] ❌ Échec de la requête listForScan (PDF)', [
+                'scan_id' => (int) $scan->getId(),
+                'code'    => $result['code'],
+                'erreur'  => $result['erreur'] ?? '',
+            ]);
+        } else {
+            $findings = $result['liste'] ?? [];
         }
 
         // Données executive : top 5 deps par nb CVE + top 5 CWE par occurrence
@@ -561,6 +578,7 @@ class DependencyCheckPageController extends AbstractController
                 'project_version'  => $version,
                 'scan'             => $scan,
                 'findings'         => $findings,
+                'findings_error'   => $findingsError,
                 'top_deps'         => $topDeps,
                 'top_cwes'         => $topCwes,
             ],
@@ -1460,10 +1478,11 @@ class DependencyCheckPageController extends AbstractController
          * Passe au repo qui restreint le JOIN dc_scan a ces ids. */
         $allowedScanIds = array_map(static fn(array $s): int => (int) $s['id'], $scansResume);
 
-        $mutualisables = $this->extractListeOrFlash(
-            $this->depRepository->topMutualisableDependencies(2, 5000, $allowedKeysList, $allowedScanIds),
-            'topMutualisableDependencies'
-        );
+        $mutResult = $this->depRepository->topMutualisableDependencies(2, 5000, $allowedKeysList, $allowedScanIds);
+        $mutualisables = $this->extractListeOrFlash($mutResult, 'topMutualisableDependencies');
+        /* MODIF 2026-07-22 : signale la troncature au template plutôt que de
+         * la laisser silencieuse (cf. DcDependencyRepository::topMutualisableDependencies()). */
+        $render['mutualisables_truncated'] = $mutResult['code'] === 200 && ($mutResult['truncated'] ?? false);
 
         foreach ($mutualisables as &$m) {
             $m['jh_unit'] = $this->computeDepJh($m);
