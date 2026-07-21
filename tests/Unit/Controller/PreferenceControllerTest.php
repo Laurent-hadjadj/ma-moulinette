@@ -29,6 +29,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Twig\Environment;
 
 #[AllowMockObjectsWithoutExpectations]
@@ -44,6 +45,7 @@ class PreferenceControllerTest extends TestCase
     /** @var Environment&MockObject */                private MockObject $twig;
     /** @var Connection&MockObject */                 private MockObject $connection;
     /** @var Statement&MockObject */                  private MockObject $statement;
+    /** @var AuthorizationCheckerInterface&MockObject */ private MockObject $authChecker;
 
     /** @var Utilisateur&MockObject */                private MockObject $user;
 
@@ -70,6 +72,7 @@ class PreferenceControllerTest extends TestCase
         $this->user->method('getCourriel')->willReturn(self::COURRIEL);
         $this->token->method('getUser')->willReturn($this->user);
         $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
+        $this->authChecker = $this->createMock(AuthorizationCheckerInterface::class);
 
         // Params (constructeur + getParameter)
         $this->params->method('get')->willReturnMap([
@@ -86,10 +89,12 @@ class PreferenceControllerTest extends TestCase
             ['parameter_bag', false],
             ['serializer', false],
             ['security.token_storage', true],
+            ['security.authorization_checker', true],
         ]);
         $container->method('get')->willReturnMap([
             ['twig', 1, $this->twig],
             ['security.token_storage', 1, $this->tokenStorage],
+            ['security.authorization_checker', 1, $this->authChecker],
         ]);
 
         $this->controller = new PreferenceController(
@@ -126,11 +131,11 @@ class PreferenceControllerTest extends TestCase
         });
         $this->statement->expects($this->once())->method('executeStatement')->willReturn(1);
 
-        $request = $this->jsonRequest(['statut' => 'ON', 'categorie' => 'favori_projet']);
+        $request = $this->jsonRequest(['statut' => 'ON', 'category' => 'favori_projet']);
 
         $payload = json_decode($this->controller->apiPreferenceStatut($request)->getContent(), true);
 
-        $this->assertSame('favori_projet', $payload['categorie']);
+        $this->assertSame('favori_projet', $payload['category']);
         // Nouveau statut reflété
         $this->assertSame('ON', $payload['statut']['favori_projet']);
         // Autres statuts inchangés
@@ -148,7 +153,7 @@ class PreferenceControllerTest extends TestCase
     public function testApiPreferenceFavoriDeleteRemovesMavenKeyFromFavoris(): void
     {
         $prefs = $this->buildBasePreferences();
-        $prefs['favori'] = ['fr.ma-moulinette:projet-a', 'fr.ma-moulinette:projet-b', 'fr.ma-moulinette:projet-c'];
+        $prefs['favori_projet'] = ['fr.ma-moulinette:projet-a', 'fr.ma-moulinette:projet-b', 'fr.ma-moulinette:projet-c'];
         $this->user->expects($this->atLeastOnce())->method('getPreference')->willReturn($prefs);
 
         // Capture des binds via prepared statement
@@ -176,7 +181,7 @@ class PreferenceControllerTest extends TestCase
     public function testApiPreferenceVersionDeleteRemovesTargetedVersion(): void
     {
         $prefs = $this->buildBasePreferences();
-        $prefs['version'] = [
+        $prefs['favori_version'] = [
             ['fr.ma-moulinette:projet-a' => ['1.0', '1.1', '1.2']], // index 0
             ['fr.ma-moulinette:projet-b' => ['2.0']],              // index 1
         ];
@@ -209,19 +214,19 @@ class PreferenceControllerTest extends TestCase
         $this->assertStringContainsString('2.0', $json);
     }
 
-    // ═════════════════════ apiPreferenceCategorie ══════════════════════════
+    // ═════════════════════ apiPreferenceCategory ═══════════════════════════
 
-    public function testApiPreferenceCategorieReturnsStatutAndCategorieData(): void
+    public function testApiPreferenceCategoryReturnsStatutAndCategoryData(): void
     {
         $prefs = $this->buildBasePreferences();
-        $prefs['projet'] = ['fr.ma-moulinette:projet-a', 'fr.ma-moulinette:projet-b'];
+        $prefs['suivi_projet'] = ['fr.ma-moulinette:projet-a', 'fr.ma-moulinette:projet-b'];
         $this->user->expects($this->atLeastOnce())->method('getPreference')->willReturn($prefs);
 
-        $request = new Request(['categorie' => 'projet']);
-        $payload = json_decode($this->controller->apiPreferenceCategorie($request)->getContent(), true);
+        $request = new Request(['category' => 'suivi_projet']);
+        $payload = json_decode($this->controller->apiPreferenceCategory($request)->getContent(), true);
 
         $this->assertSame(200, $payload['code']);
-        $this->assertSame(['fr.ma-moulinette:projet-a', 'fr.ma-moulinette:projet-b'], $payload['projet']);
+        $this->assertSame(['fr.ma-moulinette:projet-a', 'fr.ma-moulinette:projet-b'], $payload['suivi_projet']);
         $this->assertSame($prefs['statut'], $payload['statut']);
     }
 
@@ -229,12 +234,14 @@ class PreferenceControllerTest extends TestCase
 
     public function testIndexBuildsRenderContextAndTracks(): void
     {
+        $this->authChecker->method('isGranted')->willReturn(false);
         $prefs = $this->buildBasePreferences();
         $this->user->method('getPreference')->willReturn($prefs);
         $this->user->method('getPrenom')->willReturn('Alice');
         $this->user->method('getNom')->willReturn('Doe');
         $this->user->method('getAvatar')->willReturn('avatar.png');
         $this->user->method('getRoles')->willReturn(['ROLE_USER']);
+        $this->user->method('getGroupeUtilisateur')->willReturn('Groupe-A');
         $this->user->method('getListeGroupeFonctionnel')->willReturn(['equipe-1']);
 
         /* MODIF 2026-05-07 : init [] (intelephense by-ref). */
@@ -256,18 +263,47 @@ class PreferenceControllerTest extends TestCase
         $this->assertSame('Alice', $capturedCtx['prenom']);
         $this->assertSame('Doe', $capturedCtx['nom']);
         $this->assertSame(['ROLE_USER'], $capturedCtx['roles']);
-        $this->assertSame(['equipe-1'], $capturedCtx['groupes']);
+        // Régression : la clé de contexte doit être 'groupeUtilisateur' (singulier), pas 'groupesUtilisateur' — c'est le nom lu par le template.
+        $this->assertSame('Groupe-A', $capturedCtx['groupeUtilisateur']);
+        $this->assertSame(['equipe-1'], $capturedCtx['groupesFonctionnel']);
         $this->assertArrayHasKey('suivi_projet', $capturedCtx['preferences']);
         $this->assertArrayHasKey('favori_projet', $capturedCtx['preferences']);
+        $this->assertFalse($capturedCtx['peut_voir_actuator']);
+    }
+
+    public function testIndexExposesActuatorLinkWhenRoleGranted(): void
+    {
+        $this->authChecker->method('isGranted')->willReturn(true);
+        $this->user->method('getPreference')->willReturn($this->buildBasePreferences());
+        $this->user->method('getPrenom')->willReturn('Alice');
+        $this->user->method('getNom')->willReturn('Doe');
+        $this->user->method('getAvatar')->willReturn('avatar.png');
+        $this->user->method('getRoles')->willReturn(['ROLE_ACTUATOR']);
+        $this->user->method('getListeGroupeFonctionnel')->willReturn(['equipe-1']);
+
+        $capturedCtx = [];
+        $this->twig->expects($this->once())
+            ->method('render')
+            ->with('preference/index.html.twig', $this->callback(function (array $ctx) use (&$capturedCtx) {
+                $capturedCtx = $ctx;
+                return true;
+            }))
+            ->willReturn('<html></html>');
+
+        $this->controller->index();
+
+        $this->assertTrue($capturedCtx['peut_voir_actuator']);
     }
 
     public function testIndexFillsGroupesWithSentinelNullWhenEmpty(): void
     {
+        $this->authChecker->method('isGranted')->willReturn(false);
         $this->user->method('getPreference')->willReturn($this->buildBasePreferences());
         $this->user->method('getPrenom')->willReturn('A');
         $this->user->method('getNom')->willReturn('B');
         $this->user->method('getAvatar')->willReturn('a.png');
         $this->user->method('getRoles')->willReturn([]);
+        $this->user->method('getGroupeUtilisateur')->willReturn(null);
         $this->user->method('getListeGroupeFonctionnel')->willReturn([]); // vide
 
         /* MODIF 2026-05-07 : init [] (intelephense by-ref). */
@@ -285,8 +321,10 @@ class PreferenceControllerTest extends TestCase
 
         $this->controller->index();
 
-        // L'implémentation positionne groupes[0]='null' quand la liste est vide
-        $this->assertSame(['null'], $capturedCtx['groupes']);
+        // L'implémentation positionne groupesFonctionnel[0]='null' quand la liste est vide
+        $this->assertSame(['null'], $capturedCtx['groupesFonctionnel']);
+        // et 'Aucun' pour le groupe utilisateur (singulier) quand il est absent
+        $this->assertSame('Aucun', $capturedCtx['groupeUtilisateur']);
     }
 
     // ═════════════════════ chemins d'erreur (validation, 4xx, 5xx) ═════════
@@ -302,6 +340,21 @@ class PreferenceControllerTest extends TestCase
         $this->assertSame('error', $payload['type']);
     }
 
+    public function testApiPreferenceStatutReturns400OnUnknownCategorie(): void
+    {
+        // Régression : les anciennes clés courtes ('favori'/'projet'/'version') ne sont plus acceptées,
+        // seules les vraies clés partagées avec le reste de l'application le sont.
+        $this->user->method('getPreference')->willReturn($this->buildBasePreferences());
+
+        $response = $this->controller->apiPreferenceStatut(
+            $this->jsonRequest(['statut' => true, 'category' => 'favori'])
+        );
+        $payload = json_decode($response->getContent(), true);
+
+        $this->assertSame(400, $payload['code']);
+        $this->assertSame('error', $payload['type']);
+    }
+
     public function testApiPreferenceStatutReturns500WhenUpdateFails(): void
     {
         $this->user->method('getPreference')->willReturn($this->buildBasePreferences());
@@ -310,7 +363,7 @@ class PreferenceControllerTest extends TestCase
         $this->statement->method('executeStatement')->willThrowException(new \RuntimeException('db down'));
 
         $response = $this->controller->apiPreferenceStatut(
-            $this->jsonRequest(['statut' => 'ON', 'categorie' => 'favori_projet'])
+            $this->jsonRequest(['statut' => 'ON', 'category' => 'favori_projet'])
         );
         $payload = json_decode($response->getContent(), true);
 
@@ -341,7 +394,7 @@ class PreferenceControllerTest extends TestCase
     public function testApiPreferenceVersionDeleteReturns404WhenIndexNotFound(): void
     {
         $prefs = $this->buildBasePreferences();
-        $prefs['version'] = []; // pas d'entrée à l'index 0
+        $prefs['favori_version'] = []; // pas d'entrée à l'index 0
         $this->user->method('getPreference')->willReturn($prefs);
 
         $response = $this->controller->apiPreferenceVersionDelete($this->jsonRequest([
@@ -353,18 +406,18 @@ class PreferenceControllerTest extends TestCase
         $this->assertSame('warning', $payload['type']);
     }
 
-    public function testApiPreferenceCategorieReturns400OnUnknownCategorie(): void
+    public function testApiPreferenceCategoryReturns400OnUnknownCategory(): void
     {
-        $request = new Request(['categorie' => 'bogus']); // pas dans CATEGORIES_AUTORISEES
-        $response = $this->controller->apiPreferenceCategorie($request);
+        $request = new Request(['category' => 'bogus']); // pas dans CATEGORIES_AUTORISEES
+        $response = $this->controller->apiPreferenceCategory($request);
         $payload = json_decode($response->getContent(), true);
 
         $this->assertSame(400, $payload['code']);
     }
 
-    public function testApiPreferenceCategorieReturns400WhenMissing(): void
+    public function testApiPreferenceCategoryReturns400WhenMissing(): void
     {
-        $response = $this->controller->apiPreferenceCategorie(new Request());
+        $response = $this->controller->apiPreferenceCategory(new Request());
         $payload = json_decode($response->getContent(), true);
 
         $this->assertSame(400, $payload['code']);
@@ -380,15 +433,16 @@ class PreferenceControllerTest extends TestCase
     private function buildBasePreferences(): array
     {
         // Note : 'bookmark' retiré des préférences (refacto 2026-04, impact entité Utilisateur + fixtures)
+        // Clés alignées sur le schéma réel utilisé partout ailleurs (CustomAuthenticator, UtilisateurRepository...).
         return [
             'statut' => [
                 'suivi_projet' => 'off',
                 'favori_projet' => 'on',
                 'favori_version' => 'off',
             ],
-            'projet' => [],
-            'favori' => [],
-            'version' => [],
+            'suivi_projet' => [],
+            'favori_projet' => [],
+            'favori_version' => [],
         ];
     }
 }
