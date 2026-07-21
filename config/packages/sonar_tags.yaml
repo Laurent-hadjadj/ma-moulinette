@@ -1,0 +1,18 @@
+---
+# MODIF 2026-07-21 : critère de reconnaissance du "groupe projet" SonarQube,
+# utilisé par UpdateSonarqubeTagsCommand::getProjectGroup() pour déterminer
+# quel tag appliquer à chaque projet.
+# Modifiable sans recompilation, juste un `bin/console cache:clear` après édition.
+parameters:
+
+    # Un groupe SonarQube n'est reconnu comme "groupe projet valide" que si ses
+    # permissions sont EXACTEMENT cet ensemble (ni plus, ni moins).
+    sonar_tags.group_permissions:
+        - codeviewer
+        - securityhotspotadmin
+        - user
+
+    # ... ET que sa description contient ce texte. Convention de nommage
+    # historique des groupes SonarQube de l'organisation — à faire évoluer ici
+    # si la convention change (ex. nouveaux groupes "2026").
+    sonar_tags.group_description_marker: '2021'
