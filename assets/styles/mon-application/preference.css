@@ -153,7 +153,7 @@ input:checked ~ .switch-paddle { background-color: #00445b; }
 
 /** Taille de l'avatar */
 
-#ma-tete { width: 50px; }
+#ma-tronche { width: 36px; }
 
 /******* fenêtre modal favori *****/
 #bouton-fermer-preference-favori,
