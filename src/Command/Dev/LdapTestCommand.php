@@ -18,6 +18,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Ldap\Ldap;
 use Symfony\Component\Ldap\Exception\LdapException;
 
@@ -33,6 +34,13 @@ class LdapTestCommand extends Command
     // MODIF 2026-05-26 : extraction des string literals dupliqués (S1192).
     private const TAG_ERROR_CLOSE = '</error>';
 
+    public function __construct(
+        #[Autowire('%kernel.environment%')]
+        private readonly string $appEnv,
+    ) {
+        parent::__construct();
+    }
+
     /**
      * [Description for execute]
      *
@@ -47,6 +55,15 @@ class LdapTestCommand extends Command
      */
     public function execute(InputInterface $input, OutputInterface $output): int
     {
+        /* MODIF 2026-07-21 : garde-fou d'environnement ajouté, cohérent avec
+         * les 4 autres commandes de App\Command\Dev — cette commande ne fait
+         * que tester une connexion LDAP mais n'a aucune raison de tourner
+         * en prod (identifiants de bind affichés en erreur en cas d'échec). */
+        if ($this->appEnv !== 'dev') {
+            $output->writeln(sprintf('<error>❌ Cette commande est réservée à env=dev (env courant : %s).</error>', $this->appEnv));
+            return Command::FAILURE;
+        }
+
         $ldapHost = $_ENV['LDAP_HOST'];
         $ldapPort = (int) $_ENV['LDAP_PORT'];
         $ldapEncryption = $_ENV['LDAP_ENCRYPTION'];
@@ -63,7 +80,6 @@ class LdapTestCommand extends Command
                 ],
         ]);
 
-
         try {
             $ldap->bind(
                 $_ENV['LDAP_BIND_DN'],
@@ -75,10 +91,14 @@ class LdapTestCommand extends Command
                         $output->writeln('<error>❌ Erreur LDAP: ' . $e->getMessage() . self::TAG_ERROR_CLOSE);
                         $output->writeln('<error>❌ Code d\'erreur LDAP: ' . $e->getCode() . self::TAG_ERROR_CLOSE);
                         $output->writeln('<error>❌ Trace de l\'erreur: ' . $e->getTraceAsString() . self::TAG_ERROR_CLOSE);
+                        // MODIF 2026-07-21 : le code retournait toujours Command::SUCCESS,
+                        // y compris quand le bind LDAP échouait.
+                        return Command::FAILURE;
                 } catch (\Exception $e) {
                         $output->writeln('<error>❌ Erreur générale: ' . $e->getMessage() . self::TAG_ERROR_CLOSE);
                         $output->writeln('<error>❌ Code d\'erreur: ' . $e->getCode() . self::TAG_ERROR_CLOSE);
                         $output->writeln('<error>❌ Trace de l\'erreur: ' . $e->getTraceAsString() . self::TAG_ERROR_CLOSE);
+                        return Command::FAILURE;
                 }
 
         return Command::SUCCESS;
