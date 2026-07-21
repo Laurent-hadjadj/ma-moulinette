@@ -1,0 +1,55 @@
+<dialog id="modal-preference-favori"
+        class="reveal large"
+        data-close-on-click="true"
+        data-animation-in="fade-in"
+        data-animation-out="fade-out"
+        data-reveal
+        aria-modal="true"
+        aria-labelledby="titre-modifier-favori"
+        aria-describedby="desc-modifier-favori">
+
+  <header>
+    <h1 id="titre-modifier-favori" class="h3 claire-hand"><span aria-hidden="true">ℹ️</span>Mes préférences</h1>
+    <h2 id="desc-modifier-favori" class="h4 claire-hand"><span aria-hidden="true">📋</span>Favoris</h2>
+    <span class="show-for-sr">
+      Cette page présente la listes des projets en favoris.
+    </span>
+  </header>
+
+  <blockquote class="text-justify">
+    Mettre en <em>favori</em>
+    (petit-coeur) un projet permet son ajout à la liste des projets qui seront affichés sur la page d'accueil. Il est possible d'afficher jusqu'à dix (recommandé) projets.
+  </blockquote>
+
+  <p class="open-sans">La liste des favoris est : <output id="js-modal-favori-statut" aria-live="polite"></output></p>
+
+  <table>
+    <caption class="claire-hand">Liste des favoris.</caption>
+    <thead>
+      <tr>
+        <th scope="col" class="open-sans text-center width-2">N°</th>
+        <th scope="col" class="open-sans text-center">Clé</th>
+        <th scope="col" class="open-sans text-center">Action</th>
+      </tr>
+    </thead>
+    <tbody id="tableau-liste-favori" class="open-sans">
+      {# On créé des pseudos lignes pour éviter une erreur HTML sur le tbody vide ! #}
+      <tr>
+        <td class="preference-compteur-tableau">--</td>
+        <td class="preference-compteur-tableau text-center">--</td>
+        <td class="preference-compteur-tableau text-center">--</td>
+      </tr>
+    </tbody>
+  </table>
+
+    {# fermeture de la fenêtre modale #}
+  <footer class="grid-x grid-margin-x align-right margin-top-2">
+    <div class="cell shrink">
+      <button id="bouton-fermer-preference-favori"
+              class="button open-sans focus-light"
+              type="button"
+              aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span>Fermer
+      </button>
+    </div>
+  </footer>
+</dialog>
