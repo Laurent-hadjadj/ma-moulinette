@@ -25,6 +25,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * MODIF 2026-05-21 : conversion du script CLI
@@ -50,6 +51,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 )]
 class UpdateSonarqubeTagsCommand extends Command
 {
+    /**
+     * @param string[] $sonarTagsGroupPermissions
+     */
     public function __construct(
         private readonly LoggerInterface $logger,
         private readonly int $mamoulCliVerifyPeer,
@@ -58,7 +62,13 @@ class UpdateSonarqubeTagsCommand extends Command
         private readonly int $mamoulCliUseProxy,
         private readonly string $mamoulCliProxyUrl,
         private readonly string $mamoulCliProxyUserPwd,
-        private readonly string $mamoulCliNoProxy
+        private readonly string $mamoulCliNoProxy,
+        /* MODIF 2026-07-21 : critère de détection du groupe projet SonarQube,
+         * paramétrable via config/packages/sonar_tags.yaml (auparavant en dur). */
+        #[Autowire(param: 'sonar_tags.group_permissions')]
+        private readonly array $sonarTagsGroupPermissions = ['codeviewer', 'securityhotspotadmin', 'user'],
+        #[Autowire(param: 'sonar_tags.group_description_marker')]
+        private readonly string $sonarTagsGroupDescriptionMarker = '2021',
     ) {
         parent::__construct();
     }
@@ -175,11 +185,19 @@ class UpdateSonarqubeTagsCommand extends Command
 
         /* MODIF 2026-05-24 : chemin var/ + méthode protégée mockable. */
         $mappingFile = 'var/mapping_projets_groupes.json';
-        $this->writeMappingFile($mappingFile, $mapping);
+        /* MODIF 2026-07-21 : cette écriture était inconditionnelle — le fichier
+         * était donc bien réécrit sur disque même en --dry-run, alors que l'option
+         * annonce explicitement "aucune modification réelle" (seuls les appels de
+         * tag SonarQube étaient jusqu'ici simulés). */
+        if ($dryRun) {
+            $io->text(sprintf('  [DRY-RUN] Mapping non écrit : %s', $mappingFile));
+        } else {
+            $this->writeMappingFile($mappingFile, $mapping);
+        }
 
         $io->success(sprintf(
             'Traitement terminé. Archivés: %d | Tagués: %d | Sans tag: %d | Mapping: %s',
-            $archive, $proceeded, $warning, $mappingFile
+            $archive, $proceeded, $warning, $dryRun ? $mappingFile . ' (non écrit)' : $mappingFile
         ));
         $this->logger->info('[SonarTags] Terminé.', [
             'archive' => $archive, 'proceeded' => $proceeded, 'warning' => $warning,
@@ -199,10 +217,16 @@ class UpdateSonarqubeTagsCommand extends Command
      */
     private function buildSslConfig(): array
     {
+        /* MODIF 2026-07-21 : verify_peer/verify_host sont typés int non-nullables
+         * (résolus par Symfony via %env(int:MAMOUL_CLI_VERIFY_*)%, qui échoue au
+         * démarrage si la variable est absente) — un "?: 0" ici ne pouvait donc
+         * jamais retomber sur un défaut sûr, il ne faisait que réécrire la même
+         * valeur en donnant l'illusion trompeuse d'un fallback. Voir
+         * docker/.env.template pour les valeurs par défaut réellement sûres. */
         return [
-            'verify_peer' => (int) $this->mamoulCliVerifyPeer ?: 0,
-            'verify_host' => (int) $this->mamoulCliVerifyHost ?: 0,
-            'ciphers'     => (string) $this->mamoulCliCiphers ?: 'DEFAULT:!DH'
+            'verify_peer' => $this->mamoulCliVerifyPeer,
+            'verify_host' => $this->mamoulCliVerifyHost,
+            'ciphers'     => $this->mamoulCliCiphers ?: 'DEFAULT:!DH'
         ];
     }
 
@@ -448,8 +472,8 @@ class UpdateSonarqubeTagsCommand extends Command
             $permissions = $g['permissions'] ?? [];
             $desc        = $g['description'] ?? '';
             if (!empty($permissions)
-                && count(array_diff($permissions, ['codeviewer', 'securityhotspotadmin', 'user'])) === 0
-                && str_contains($desc, '2021')) {
+                && count(array_diff($permissions, $this->sonarTagsGroupPermissions)) === 0
+                && str_contains($desc, $this->sonarTagsGroupDescriptionMarker)) {
                 return ['name' => (string) $g['name'], 'permissions' => (array) $permissions];
             }
         }
