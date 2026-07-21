@@ -30,8 +30,11 @@ import '../../auth/details.js';
 /** Gestion des modales zurb foundation compatible WCAG  */
 import { modalSafe } from '../../common/safeModal.js';
 
+/** La gestion des messages JS */
+import { showMessage, hideMessage, prepareTechnicalDetails } from '../../common/messageHelper.js';
+
 /** On importe les constantes */
-import {content_type} from '../../common/constante.js';
+import {content_type, http_400, http_401, http_403, http_404, http_500} from '../../common/constante.js';
 
 /* On importe les paramètres serveur. */
 import {serveur} from '../../common/properties.js';
@@ -66,7 +69,25 @@ const modifierStatut = async function(statut, category) {
       'X-Internal-Front': 'front-app'
     },
   };
-  return $.ajax(options);
+
+  try {
+    const t = await $.ajax(options);
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500];
+    if (errorCodes.includes(t.code)) {
+      showMessage(t.type, t.message);
+      return;
+    }
+    showMessage('success', 'La préférence a bien été mise à jour.');
+    setTimeout(() => { hideMessage(); }, 5000);
+  } catch (error) {
+    const message = "Une erreur inattendue s'est produite lors de la mise à jour de la préférence (Erreur 500).";
+    const trace = prepareTechnicalDetails(error);
+    if (typeof(trace) === 'object' && trace.message && trace.code && trace.type) {
+      showMessage(trace.type, trace.message);
+      return;
+    }
+    showMessage('critical', message, trace);
+  }
 }
 
 /**
@@ -94,7 +115,25 @@ const favori = async function(){
       },
   };
 
-  const r = await $.ajax(options);
+  let r;
+  try {
+    r = await $.ajax(options);
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500];
+    if (errorCodes.includes(r.code)) {
+      showMessage(r.type, r.message);
+      return;
+    }
+  } catch (error) {
+    const message = "Une erreur inattendue s'est produite lors de la récupération des favoris (Erreur 500).";
+    const trace = prepareTechnicalDetails(error);
+    if (typeof(trace) === 'object' && trace.message && trace.code && trace.type) {
+      showMessage(trace.type, trace.message);
+      return;
+    }
+    showMessage('critical', message, trace);
+    return;
+  }
+
   /** Par défaut on affiche pas de favoris */
   $('#js-modal-favori-statut').html(`<span class="option-false"><strong>Désactivée.</strong></span>`);
 
@@ -128,11 +167,10 @@ const favori = async function(){
   modalSafe.open('#modal-preference-favori');
 
   /** On récupère l'ID de la ligne que l'on veut supprimer */
-  $('.js-poubelle').on('click', e =>
+  $('.js-poubelle').on('click', async e =>
   {
     const tempoId = $(e.currentTarget).attr('id');
     const id = tempoId.split("-");
-    $(`#ligne-favori-${ id[2] }`).hide();
     /** On appel le service de suppression du favori */
     const mavenKey = $(`#mavenkey-favori-${ id[2] }`).text();
     const data_1 = { mavenKey };
@@ -148,7 +186,25 @@ const favori = async function(){
       },
     };
 
-    $.ajax(options_1).then(r_1 => { console.log(r_1); });
+    try {
+      const r_1 = await $.ajax(options_1);
+      const errorCodes = [http_400, http_401, http_403, http_404, http_500];
+      if (errorCodes.includes(r_1.code)) {
+        showMessage(r_1.type, r_1.message);
+        return;
+      }
+      $(`#ligne-favori-${ id[2] }`).hide();
+      showMessage('success', 'Le favori a bien été supprimé.');
+      setTimeout(() => { hideMessage(); }, 5000);
+    } catch (error) {
+      const message = "Une erreur inattendue s'est produite lors de la suppression du favori (Erreur 500).";
+      const trace = prepareTechnicalDetails(error);
+      if (typeof(trace) === 'object' && trace.message && trace.code && trace.type) {
+        showMessage(trace.type, trace.message);
+        return;
+      }
+      showMessage('critical', message, trace);
+    }
   });
 }
 
@@ -182,7 +238,24 @@ const version=async function(){
     },
   };
 
-  const r = await $.ajax(options);
+  let r;
+  try {
+    r = await $.ajax(options);
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500];
+    if (errorCodes.includes(r.code)) {
+      showMessage(r.type, r.message);
+      return;
+    }
+  } catch (error) {
+    const message = "Une erreur inattendue s'est produite lors de la récupération des versions favorites (Erreur 500).";
+    const trace = prepareTechnicalDetails(error);
+    if (typeof(trace) === 'object' && trace.message && trace.code && trace.type) {
+      showMessage(trace.type, trace.message);
+      return;
+    }
+    showMessage('critical', message, trace);
+    return;
+  }
 
   /** Par défaut on affiche pas de version */
   $('#js-modal-version-statut').html(`<span class="option-false"><strong>Désactivée.</strong></span>`);
@@ -235,11 +308,10 @@ const version=async function(){
   $('.js-accordion').foundation('_init');
 
   /** On récupère l'ID de la ligne que l'on veut supprimer */
-  $('.js-poubelle').on('click', e_1 =>
+  $('.js-poubelle').on('click', async e_1 =>
   {
     const tempoId = $(e_1.currentTarget).attr('id');
     const id = tempoId.split("-");
-    $(`#ligne-version-${ id[2] }`).hide();
 
     /** On prépare les données avant l'appel Ajax */
     const t = document.getElementById(`version-${ id[2] }`);
@@ -261,7 +333,26 @@ const version=async function(){
         'X-Internal-Front': 'front-app'
       },
     };
-    $.ajax(options_1).then(r_1 => { console.log(r_1); });
+
+    try {
+      const r_1 = await $.ajax(options_1);
+      const errorCodes = [http_400, http_401, http_403, http_404, http_500];
+      if (errorCodes.includes(r_1.code)) {
+        showMessage(r_1.type, r_1.message);
+        return;
+      }
+      $(`#ligne-version-${ id[2] }`).hide();
+      showMessage('success', 'La version a bien été supprimée des favoris.');
+      setTimeout(() => { hideMessage(); }, 5000);
+    } catch (error) {
+      const message = "Une erreur inattendue s'est produite lors de la suppression de la version (Erreur 500).";
+      const trace = prepareTechnicalDetails(error);
+      if (typeof(trace) === 'object' && trace.message && trace.code && trace.type) {
+        showMessage(trace.type, trace.message);
+        return;
+      }
+      showMessage('critical', message, trace);
+    }
   });
 }
 
@@ -295,7 +386,25 @@ const projet = async function(){
       },
   };
 
-  const r = await $.ajax(options);
+  let r;
+  try {
+    r = await $.ajax(options);
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500];
+    if (errorCodes.includes(r.code)) {
+      showMessage(r.type, r.message);
+      return;
+    }
+  } catch (error) {
+    const message = "Une erreur inattendue s'est produite lors de la récupération des projets suivis (Erreur 500).";
+    const trace = prepareTechnicalDetails(error);
+    if (typeof(trace) === 'object' && trace.message && trace.code && trace.type) {
+      showMessage(trace.type, trace.message);
+      return;
+    }
+    showMessage('critical', message, trace);
+    return;
+  }
+
   $('#js-modal-projet-statut').html(`<output class="option-false"><strong>Désactivée.</strong></output>`);
 
   /** On a un favori */
