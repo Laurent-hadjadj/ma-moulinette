@@ -1,0 +1,160 @@
+{% set title = "Journal des rôles" %}
+{% set description = "Consultation du journal des changements de rôle" %}
+{% set type_content = "Application Ma-Moulinette, journal des changements de rôle." %}
+{% set bottom="footer-fixed footer-fixed-small" %}
+<!DOCTYPE html>
+<!--
+.. __  __             __  __             _ _            _   _
+|  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+| |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+| |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+|_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+
+Laurent HADJADJ
+https://github.com/Laurent-hadjadj/ma-moulinette
+© 2024 - CC BY-SA-NC 4.0
+-->
+
+<html	lang="fr">
+    {# Chargement de la section HEAD #}
+    <head>
+        <title>{{ title }}</title>
+        {{ include('head.html.twig') }}
+        {# Chargement des assets JS et CSS #}
+        {% block importmap %}
+            {{ importmap('user-role-log') }}
+        {% endblock %}
+    </head>
+
+    <body dir="ltr" data-csrf-delete="{{ csrf_token('journal_roles_delete') }}">
+        {# no-script #}
+        {{ include('no-script.html.twig') }}
+        {# Chargement de la section header #}
+        {{ include('header.html.twig') }}
+
+        {# Message d'information php #}
+        {{ include('_message.html.twig') }}
+
+        <header class="grid-container margin-top-2">
+            {# WCAG 2.4.8 : indication "vous êtes ici" portée par aria-label ; aria-current="page" sur l'élément courant #}
+            <nav id="fil-ariane" aria-label="Fil d'Ariane, vous êtes ici">
+                <ol class="claire-hand breadcrumbs">
+                    <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+                    <li aria-current="page">Journal des rôles</li>
+                </ol>
+            </nav>
+        </header>
+
+        <main id="main-content" class="admin-logs role-log">
+            <div class="grid-container">
+                <h2 class="h4 claire-hand"><span aria-hidden="true">🗂️</span> Journal des changements de rôle</h2>
+
+                <p class="open-sans font-size-1">
+                    Trace chaque modification de rôle ou de statut Actif effectuée depuis la
+                    gestion des utilisateurs du back-office.
+                </p>
+
+                {# Filtres #}
+                <div class="callout secondary role-log-filters">
+                    <div class="grid-x grid-padding-x">
+                        <div class="cell medium-4">
+                            <label>Courriel (cible ou éditeur)
+                                <input id="filter-courriel" type="text" placeholder="ex. aurelie.petit-coeur@ma-moulinette.fr">
+                            </label>
+                        </div>
+
+                        <div class="cell medium-3">
+                            <label>Depuis le
+                                <input id="filter-start" type="date">
+                            </label>
+                        </div>
+
+                        <div class="cell medium-3">
+                            <label>Jusqu'au
+                                <input id="filter-end" type="date">
+                            </label>
+                        </div>
+
+                        <div class="cell medium-2 align-self-bottom">
+                            <button id="bouton-apply-filters"
+                                type="button"
+                                class="button open-sans focus-dark-light"
+                                data-close
+                                aria-label="Appliquer les filtres"><span aria-hidden="true">🛠️</span> Filtrer
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="role-log-loading" class="callout primary hide">
+                        Chargement en cours…
+                    </div>
+                </div>
+
+                {# Table : hors grid-container pour utiliser toute la largeur disponible #}
+                <div class="role-log-table-wrap">
+                    <div class="callout role-log-table">
+                        <div class="table-scroll">
+                            <table id="role-log-table" class="hover stack">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Compte modifié</th>
+                                        <th>Éditeur</th>
+                                        <th>Rôles avant</th>
+                                        <th>Rôles après</th>
+                                        <th>Actif avant → après</th>
+                                        <th>Alertes</th>
+                                        <th class="text-center">
+                                            <label for="select-all" class="sr-only">Sélectionner tous</label>
+                                            <input type="checkbox" id="select-all">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-container">
+                    {# Actions #}
+                    <footer class="grid-x grid-padding-x align-right align-middle margin-top-2">
+                        <div class="cell shrink">
+                            <output id="role-log-action-spinner" aria-live="polite">
+                                <div id="role-log-spinner" class="sp"></div>
+                                <span class="show-for-sr">Traitement en cours...</span>
+                            </output>
+                        </div>
+                        <div class="cell shrink">
+                            <button id="bouton-archiver"
+                                type="button"
+                                class="button open-sans focus-dark-light"
+                                data-close
+                                aria-label="Archiver la sélection (CSV)"><span aria-hidden="true">📦</span> Archiver la sélection (CSV)
+                                </button>
+                        </div>
+                        <div class="cell shrink">
+                            <button id="bouton-rapport-pdf"
+                                type="button"
+                                class="button open-sans focus-dark-light"
+                                data-close
+                                aria-label="Rapport PDF de la sélection"><span aria-hidden="true">📄</span> Rapport PDF
+                                </button>
+                        </div>
+                        <div class="cell shrink">
+                            <button id="bouton-supprimer"
+                                type="button"
+                                class="button alert open-sans focus-dark-light"
+                                data-close
+                                aria-label="Supprimer la sélection"><span aria-hidden="true">🗑️</span> Supprimer la sélection
+                                </button>
+                        </div>
+                    </footer>
+                </div>
+            </main>
+
+            {# Chargement de la section footer #}
+            {{ include('footer.html.twig') }}
+        </body>
+    </html>
