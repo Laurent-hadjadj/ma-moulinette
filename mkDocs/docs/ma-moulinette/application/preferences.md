@@ -1,62 +1,48 @@
-# Préférences utilisateur
+# ⚙️ Préférences utilisateur
 
-![Ma-Moulinette](../../assets/images/home/home-000.jpg)
+Consultation des informations personnelles et personnalisation du suivi de projets. Aucun rôle spécifique requis (`ROLE_UTILISATEUR`).
 
-La page **Préférences** permet à un utilisateur authentifié de personnaliser son expérience dans Ma-Moulinette. Elle a été introduite en v2.0.0.
+!!! note "🔗 Accès"
+    Cette page n'a pas d'icône dédiée dans le bandeau commun (voir [Accueil](accueil.md#-haut-de-page)) : elle est accessible depuis la carte « Réglages personnels » de la page d'accueil du back-office (`/admin`, voir [Dashboard back-office](../back-office/dashboard.md#-page-daccueil-cartes)), ou depuis la page « Plan du site » (lien en bas de page).
 
-## Accès
+## 👤 Informations personnelles
 
-L'accès s'effectue depuis l'icône ![préférences](../../assets/images/preference/icone-preferences.png) située dans le haut de page. Cette icône est visible pour tout utilisateur authentifié disposant du rôle **ROLE_UTILISATEUR**.
+Affiche en lecture seule : avatar, nom/prénom, adresse courriel, rôles, groupe utilisateur (organisation de rattachement, un seul) et groupes fonctionnels (périmètre applicatif, un ou plusieurs).
 
-## Évolutions
+!!! note "✅ ajout du groupe utilisateur"
+    Cette page n'affichait auparavant que les groupes fonctionnels. Le groupe utilisateur (`Utilisateur::getGroupeUtilisateur()`, une seule valeur possible) est désormais affiché en complément, avec `Aucun` comme valeur par défaut si l'utilisateur n'en a pas.
 
-> En version **2.0.0**
+## 🌱 Lien vers Actuator
 
-* [x] Ajout du **support des versions de projet en favoris**.
-* [x] Ajout du **support de la version** des projets favoris ou des versions favorites d'un même projet.
-* [x] **Suppression de la notion de "bookmark"** au profit du **sessionStorage** du navigateur (persistant sur la session de navigation).
+Un bouton « Accéder à l'inventaire Actuator » est affiché sur cette page uniquement pour les utilisateurs disposant du rôle `ROLE_ACTUATOR` — voir [Actuator](actuator.md). La carte « Actuator » de la page d'accueil du back-office (même rôle requis) offre un second point d'entrée équivalent.
 
-## Gestion des favoris
+## ⭐ Tableau des préférences (3 interrupteurs)
 
-Deux modes d'affichage sont disponibles pour la page d'accueil :
+| Option affichée | Clé réelle | Description affichée |
+| --- | --- | --- |
+| **Projet** | `suivi_projet` | Liste des projets à suivre |
+| **Favori** | `favori_projet` | Liste des projets favoris |
+| **Version** | `favori_version` | Liste des versions favorites |
 
-* **Projets favoris** : chaque projet favori affiche sa **version la plus récente** ;
-* **Versions favorites** : pour un projet favori, toutes les versions marquées comme favorites sont listées.
+Chaque interrupteur ouvre une modale listant les éléments concernés, avec un bouton de suppression par ligne pour les favoris et les versions — ces deux suppressions déclenchent bien un appel réseau.
 
-> Il n'est pas possible de mixer les deux modes sur la page d'accueil.
+!!! note "✅ clés désormais alignées avec le reste de l'application"
+    Ces interrupteurs et leurs modales lisaient/écrivaient auparavant des clés `projet`/`favori`/`version` distinctes de celles utilisées ailleurs (bouton « cœur » de la page [Projet](projet.md), bloc favoris de l'[Accueil](accueil.md#-bloc-des-favoris), [Suivi](suivi.md)), ce qui rendait ces 3 réglages sans effet réel. `PreferenceController`, le JavaScript de la page et la suppression de version favorite (dont l'appel réseau était commenté) ont été corrigés pour utiliser les vraies clés `suivi_projet`/`favori_projet`/`favori_version` — les 3 interrupteurs et leurs modales pilotent maintenant bien l'état affiché ailleurs dans l'application.
 
-Le nombre maximal de favoris affichés est défini par la variable d'environnement `NOMBRE_FAVORI` (10 par défaut).
+La page « Ajouter une préférence » (orpheline, non routée, bouton « Valider » non fonctionnel) a été supprimée du code (template + JS).
 
-## Gestion des notifications
+Les 3 modales (Favoris/Projets/Versions) utilisent désormais un élément `<dialog>` avec gestion du focus à l'ouverture/fermeture (retour sur le bouton déclencheur), pour un fonctionnement correct au clavier et avec un lecteur d'écran.
 
-L'utilisateur peut choisir d'activer ou non :
+## 💾 Enregistrement
 
-* les **messages flash** en haut de page ;
-* les **notifications JS** asynchrones (popover discret en bas à droite).
+Les préférences sont persistées en base (table `utilisateur`, colonne `preference` au format JSON). Chaque bascule d'interrupteur déclenche un enregistrement immédiat via une requête asynchrone.
 
-## Bookmark de projet (sessionStorage)
+## 📚 Pour aller plus loin
 
-Quand l'option est activée, le **dernier projet consulté** est mémorisé dans le `sessionStorage` du navigateur. À la prochaine ouverture de la page **Projet**, le projet est automatiquement sélectionné, ce qui évite la recherche depuis le sélecteur.
-
-> **Note** : le bookmark est local au navigateur et à l'onglet. Il n'est **pas** synchronisé entre différents appareils.
-
-## Langue d'affichage
-
-La langue peut être basculée entre **Français** (par défaut) et **Anglais**. Les libellés utilisent le composant `symfony/translation`.
-
-## Thème
-
-Trois modes d'affichage sont proposés :
-
-* **Automatique** (suit le thème du système d'exploitation) ;
-* **Clair** ;
-* **Sombre**.
-
-## Enregistrement
-
-Les préférences sont persistées en base (table `utilisateur`, colonne `preferences` au format JSON). Le bouton **Enregistrer** valide les modifications. Un message flash confirme l'enregistrement.
-
-> [CAPTURE À FAIRE] — capture de la page des préférences une fois la refonte UI terminée.
+- [Projet](projet.md) : bouton « cœur » pour gérer un favori-projet.
+- [Accueil](accueil.md#-bloc-des-favoris) : affichage des favoris.
+- [Suivi](suivi.md) : gestion des favoris de version et de la version de référence.
+- [Actuator](actuator.md) : accessible depuis cette page pour les utilisateurs `ROLE_ACTUATOR`.
 
 -**-- FIN --**-
 
