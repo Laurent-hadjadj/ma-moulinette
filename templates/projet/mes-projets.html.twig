@@ -19,8 +19,8 @@
   https://github.com/Laurent-hadjadj/ma-moulinette
   © 2024 - CC BY-SA-NC 4.0
 -->
-<html
-  lang="fr">
+
+<html lang="fr">
   {# Chargement de la section HEAD #}
   <head>
     <title>{{ title }}</title>
@@ -32,36 +32,23 @@
   <body>
     {# Chargement de la section header #}
     {{ include('header.html.twig') }}
-    <br>
+    {# On affiche les messages #}
+    {{ include('_message.html.twig') }}
+
     <header class="grid-container margin-top-1">
       <nav aria-label="Fil d'Ariane, vous êtes ici">
         <ol class="claire-hand breadcrumbs">
-          <li>
-            <a href="{{ path('accueil', {}) }}">Accueil</a>
-          </li>
-          <li>
-            <a href="{{ path('projet', {}) }}">Projet</a>
-          </li>
+          <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+          <li><a href="{{ path('projet', {}) }}">Projet</a></li>
           <li aria-current="page">Mes-Projets</li>
         </ol>
       </nav>
     </header>
 
-    <main id="main-content">
+    <main id="main-content" class="margin-bottom-2">
       <div class="grid-container">
-        <h2 class="h2 claire-hand">Mes Projets</h2>
-        <h3 class="h3 claire-hand">Suivi des principaux indicateurs.</h3>
-
-        {# On affiche les messages #}
-        {% for message in app.flashes('notice') %}
-        <div class="callout alert-callout-border {{message.type}} cell" data-closable>
-          <p class="open-sans text-justify callout-message">
-              <strong>{{message.titre}}</strong> {{ message.message }}
-              <br>{{message.debug}}</p>
-          <button class="close-button {{message.type}}" aria-label="Dismiss alert" type="button" data-close><span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-      {% endfor %}
+        <h2 class="h3 claire-hand">Mes Projets</h2>
+        <h3 class="h4 claire-hand">Suivi des principaux indicateurs.</h3>
       </div>
 
       <div class="table-scroll pleine-page">
@@ -128,7 +115,6 @@
                     <span>{{ projet['nombre_ligne_code']|format_number(locale='fr') }}</span>
                   </td>
 
-                  {# WCAG 1.4.1 : les notes A à E sont rendues en couleur via la classe note-* ; ajout d'aria-label avec la signification pour ne pas dépendre de la seule couleur #}
                   <!-- Notes avec icônes et couleurs -->
                   <td class="text-center">
                     <span class="note note-{{ projet['note_reliability']|lower }}" aria-label="Fiabilité : note {{ note_labels[projet['note_reliability']] ?? projet['note_reliability'] }}">{{ projet['note_reliability'] }}</span>
@@ -143,7 +129,6 @@
                     <span class="note note-{{ projet['note_sqale']|lower }}" aria-label="Maintenabilité : note {{ note_labels[projet['note_sqale']] ?? projet['note_sqale'] }}">{{ projet['note_sqale'] }}</span>
                   </td>
 
-                  {# WCAG 1.4.1 : les labels "alert" / "success" / "warning" sont rendus en couleur ; ajout d'un aria-label explicite pour l'état (OK / bugs détectés, etc.) #}
                   <!-- Violations avec formatage en fonction des valeurs -->
                   <td class="text-right">
                     <span class="{{ projet['nombre_bug'] > 0 ? 'label alert' : 'label success' }}" aria-label="{{ projet['nombre_bug'] > 0 ? projet['nombre_bug'] ~ ' bugs détectés' : 'Aucun bug' }}">{{ projet['nombre_bug']|format_number(locale='fr') }}</span>
@@ -184,7 +169,6 @@
       </div>
     </main>
 
-    <br><br>
     {# Chargement de la section footer #}
     {{ include('footer.html.twig') }}
   </body>
