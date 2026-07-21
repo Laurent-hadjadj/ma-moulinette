@@ -34,9 +34,12 @@ class CompareSonarMetricsCommand extends Command
 
     protected function configure(): void
         {
+            /* MODIF 2026-07-21 : setName()/setDescription() étaient en
+             * conflit avec l'attribut #[AsCommand] ci-dessus (nom
+             * "-v1" jamais utilisé nulle part ailleurs dans le dépôt,
+             * ni dans les exemples de ce fichier) — supprimés pour que
+             * l'attribut fasse foi, seul nom réellement documenté. */
             $this
-                ->setName('app:sonar:compare-metrics-v1')
-                ->setDescription('Compare les metrics entre deux versions de SonarQube.')
                 ->addArgument('source', InputArgument::REQUIRED, 'Fichier JSON ou version source (ex: metrics_8.9.json).')
                 ->addArgument('target', InputArgument::REQUIRED, 'Fichier JSON ou version cible (ex: metrics_9.8.json).')
                 ->addOption('dir', null, InputOption::VALUE_OPTIONAL, 'Répertoire contenant les fichiers JSON.', './bin/metrics/')
