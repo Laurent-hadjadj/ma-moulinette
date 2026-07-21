@@ -975,7 +975,7 @@ const remplissageDetailsHotspotOwasp = async function(maven_key, menace, titre) 
 
   const r = await $.ajax(options);
   if (r.code===http_400) {
-    const message=`[Severity] La requête n'est pas conforme (Erreur 400) !`;
+    const message=`La requête n'est pas conforme (Erreur 400) !`;
     showMessage('error', message);
     return;
   }
