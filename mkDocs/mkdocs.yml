@@ -12,25 +12,39 @@ nav:
         - Architecture java: ma-moulinette/architecture/architecture-java.md
         - Architecture organisation: ma-moulinette/architecture/architecture-organisation.md
         - Base de données: ma-moulinette/architecture/architecture-base-de-donnees.md
+        - Processus de récupération d'activité: ma-moulinette/architecture/processus-activity.md
+        - Traitement quotidien d'activité: ma-moulinette/architecture/processus-batch-activity.md
     - Développement:
+        - Ouvrir l'application: ma-moulinette/developpement/ouvrir_mon_application.md
         - Environnement de développement: ma-moulinette/developpement/pour_bien_demarrer.md
         - Gestion de la sécurité: ma-moulinette/developpement/securite.md
         - Test Unitaires: ma-moulinette/developpement/test-unitaire.md
         - Annuaire LDAP local: ma-moulinette/developpement/openldap-local.md
         - Migration PostgreSQL: ma-moulinette/developpement/guide-migration.md
-        - MOM RabbitMQ: ma-moulinette/developpement/rabbitMQ.md
         - Travailler à plusieurs: ma-moulinette/developpement/tuto-git.md
         - Automatisation des tâches: ma-moulinette/developpement/gitlab-ci.md
+        - Tests End-to-End: ma-moulinette/developpement/test-e2e.md
+    - Commandes:
+        - Vue d'ensemble: ma-moulinette/commandes/index.md
+        - Commandes Prod: ma-moulinette/commandes/prod.md
+        - Commandes Maintenance: ma-moulinette/commandes/maintenance.md
+        - Commandes Dev: ma-moulinette/commandes/dev.md
+    - DependencyCheck:
+        - Architecture d'ingestion: ma-moulinette/dependency-check/architecture.md
+        - Pages et navigation: ma-moulinette/dependency-check/pages.md
+        - Index, Détail scan et Export PDF: ma-moulinette/dependency-check/pages-index-projet.md
+        - Executive summary et Historique: ma-moulinette/dependency-check/pages-executive-history.md
+        - Dashboard et KPI: ma-moulinette/dependency-check/pages-dashboard-kpi.md
+        - Comparaison et Mutualisables: ma-moulinette/dependency-check/pages-comparer-mutualisables.md
+        - Configuration et exploitation: ma-moulinette/dependency-check/exploitation.md
+        - Référence: ma-moulinette/dependency-check/reference.md
     - Gestion des erreurs:
         - Erreurs HTTP: ma-moulinette/erreur/http-erreur.md
-        - Erreurs applicatives: ma-moulinette/erreur/erreurs.md
+        - Gestion des messages: ma-moulinette/erreur/gestion-messages.md
     - Ma-Moulinette en image:
-        - Ouvrir l'application: ma-moulinette/application/ouvrir_ma_moulinette.md
         - L'authentification :
-          - Inscription: ma-moulinette/authentification/inscription.md
           - Connexion: ma-moulinette/authentification/authentification.md
-          - Bienvenue: ma-moulinette/authentification/bienvenue.md
-          - Changez sont mot de passe: ma-moulinette/authentification/mise_a_jour_du_mot_de_passe.md
+          - Changer son mot de passe: ma-moulinette/authentification/mise_a_jour_du_mot_de_passe.md
         - L'application:
           - Accueil: ma-moulinette/application/accueil.md
           - Profil: ma-moulinette/application/profil.md
@@ -41,21 +55,31 @@ nav:
           - COSUI: ma-moulinette/application/cosui.md
           - Répartition détaillée: ma-moulinette/application/repartition_details.md
           - Préférences: ma-moulinette/application/preferences.md
+          - Activité: ma-moulinette/application/activite.md
+          - Statistiques: ma-moulinette/application/statistiques.md
+          - Clean Code: ma-moulinette/application/clean-code.md
+          - Actuator: ma-moulinette/application/actuator.md
     - Backoffice de gestion:
         - Dashboard: ma-moulinette/back-office/dashboard.md
         - Utilisateur: ma-moulinette/back-office/utilisateur.md
-        - Équipe: ma-moulinette/back-office/equipe.md
+        - Groupes: ma-moulinette/back-office/groupes.md
         - Portefeuille: ma-moulinette/back-office/portefeuille.md
-        - Traitement: ma-moulinette/back-office/batch.md
+        - Traitement: ma-moulinette/back-office/traitement.md
+        - Profiling: ma-moulinette/back-office/profiling.md
 
 markdown_extensions:
+  - admonition
   - pymdownx.highlight:
       anchor_linenums: true
       pygments_lang_class: true
       use_pygments: true
       linenums: true
       linenums_style: pymdownx-inline
-  - pymdownx.superfences
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
   - pymdownx.inlinehilite
   - pymdownx.tasklist:
       custom_checkbox: true
