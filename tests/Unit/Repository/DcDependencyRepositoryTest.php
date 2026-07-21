@@ -256,4 +256,48 @@ class DcDependencyRepositoryTest extends TestCase
         $this->assertSame(500, $result['code']);
         $this->assertSame('boom', $result['erreur']);
     }
+
+    /* MODIF 2026-07-22 : régression troncature silencieuse — la requête
+     * demande hardLimit+1 lignes pour détecter si le parc dépasse la limite. */
+
+    private function buildDependencyRow(string $product): array
+    {
+        return [
+            'pkg_coordinates' => 'pkg:m/g/' . $product . '@1', 'file_name' => $product . '.jar',
+            'vendor' => 'v', 'product' => $product, 'version' => '1',
+            'nb_projets' => '2', 'nb_cves' => '1',
+            'nb_critical' => '0', 'nb_high' => '1', 'nb_medium' => '0', 'nb_low' => '0',
+            'nb_archetypes_distincts' => '1',
+        ];
+    }
+
+    public function testTopMutualisableDependenciesFlagsTruncatedWhenMoreRowsThanHardLimit(): void
+    {
+        // hardLimit=2, la requête interne demande hardLimit+1=3 lignes ; le mock
+        // en renvoie 3 -> troncature détectée, résultat ramené à hardLimit=2.
+        $repo = $this->buildRepo([
+            $this->buildDependencyRow('a'),
+            $this->buildDependencyRow('b'),
+            $this->buildDependencyRow('c'),
+        ]);
+
+        $result = $repo->topMutualisableDependencies(2, 2);
+
+        $this->assertTrue($result['truncated']);
+        $this->assertCount(2, $result['liste']); // tronqué à hardLimit, pas hardLimit+1
+        $this->assertSame(['a', 'b'], array_column($result['liste'], 'product'));
+    }
+
+    public function testTopMutualisableDependenciesNotTruncatedWhenRowsWithinHardLimit(): void
+    {
+        $repo = $this->buildRepo([
+            $this->buildDependencyRow('a'),
+            $this->buildDependencyRow('b'),
+        ]);
+
+        $result = $repo->topMutualisableDependencies(2, 2);
+
+        $this->assertFalse($result['truncated']);
+        $this->assertCount(2, $result['liste']);
+    }
 }
