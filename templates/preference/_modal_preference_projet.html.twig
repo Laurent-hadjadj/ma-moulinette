@@ -1,0 +1,54 @@
+{# Fenêtre modale pour la liste des projets suivis. #}
+<dialog id="modal-preference-projet"
+        class="reveal large"
+        data-close-on-click="true"
+        data-animation-in="fade-in"
+        data-animation-out="fade-out"
+        data-reveal
+        aria-modal="true"
+        aria-labelledby="titre-preference-projet"
+        aria-describedby="desc-preference-projet">
+
+  <header>
+    <h1 id="titre-preference-projet" class="h3 claire-hand"><span aria-hidden="true">ℹ️</span>Mes préférences</h1>
+    <h2 id="desc-preference-projet" class="h4 claire-hand"><span aria-hidden="true">📋</span>Projets</h2>
+    <span class="show-for-sr">
+      Cette page présente la liste des projets suivis.
+    </span>
+  </header>
+
+  <blockquote class="text-justify">
+    La liste des <em>projets</em> contient tous mes projets dont une collecte a été effectuée. Les projets sont ainsi
+    disponibles depuis le bouton <em>Liste des projets</em> de la page Projet.
+  </blockquote>
+
+  <p class="open-sans">La liste des projets est : <output id="js-modal-projet-statut" aria-live="polite"></output></p>
+
+  <table>
+    <caption class="claire-hand">Liste des projets.</caption>
+    <thead>
+      <tr>
+        <th scope="col" class="open-sans text-center width-2">N°</th>
+        <th scope="col" class="open-sans text-center">Clé</th>
+      </tr>
+    </thead>
+    <tbody id="tableau-liste-projet" class="open-sans">
+      {# On créé des pseudos lignes pour éviter une erreur HTML sur le tbody vide ! #}
+      <tr>
+        <td class="preference-compteur-tableau">--</td>
+        <td class="preference-compteur-tableau text-center">--</td>
+      </tr>
+    </tbody>
+  </table>
+
+  {# fermeture de la fenêtre modale #}
+  <footer class="grid-x grid-margin-x align-right margin-top-2">
+    <div class="cell shrink">
+      <button id="bouton-fermer-preference-projet"
+              class="button open-sans focus-light"
+              type="button"
+              aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span>Fermer
+      </button>
+    </div>
+  </footer>
+</dialog>
