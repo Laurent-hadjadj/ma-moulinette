@@ -114,9 +114,8 @@ public function __construct(
         $progressBar = new ProgressBar($output, $total);
         $progressBar->start();
 
-        $batch = [];
-        $batchSize = 50;
         $inserted = 0;
+        $errors = 0;
 
         foreach ($analyses as $analysis) {
 
@@ -128,10 +127,12 @@ public function __construct(
             } catch (SonarApiException $e) {
                 $io->warning($e->getMessage());
                 $io->newLine();
+                $progressBar->advance();
                 continue;
             } catch (\Throwable $e) {
                 $io->error($e->getMessage());
                 $io->newLine();
+                $progressBar->advance();
                 continue;
             }
             // analytics = full map  ||+ measures = metrics uniquement
@@ -177,30 +178,43 @@ public function __construct(
                 $progressBar->display();
 
             } else {
-                $batch[] = $map;
-                if (count($batch) >= $batchSize) {
-                    $inserted +=                 $this->historiqueRepos->insertHistoriqueAjoutProjet($batch,[]);
-                    $batch = [];
+                /* MODIF 2026-07-21 : insertHistoriqueAjoutProjet() insère UNE ligne
+                 * (pas un tableau) et renvoie ['code'=>200|500, 'erreur'=>...] — pas
+                 * un compteur. L'ancienne logique de "batch de 50" accumulait les
+                 * maps puis appelait cette méthode avec le tableau entier (jamais
+                 * atteint en pratique à cause du dd() ci-dessous), et la sortie de
+                 * boucle appelait HistoriqueRepository::batchInsert(), une méthode
+                 * qui n'existe pas sur ce repository. */
+                $result = $this->historiqueRepos->insertHistoriqueAjoutProjet($map, []);
+                if (($result['code'] ?? null) === 200) {
+                    $inserted++;
+                } else {
+                    $errors++;
+                    $io->warning(sprintf(
+                        "Échec insertion version %s : %s",
+                        $map['version'] ?? 'unknown',
+                        $result['erreur'] ?? 'erreur inconnue'
+                    ));
                 }
             }
-            dd($batch, $inserted);
-            $progressBar->advance();
-        }
 
-        if (!$dryRun && !empty($batch)) {
-            $inserted += $this->historiqueRepos->batchInsert($batch,[]);
+            $progressBar->advance();
         }
 
         $progressBar->finish();
         $io->newLine(2);
 
         if (!$dryRun) {
-            $io->success("$inserted lignes insérées");
+            $io->success(sprintf(
+                '%d ligne(s) insérée(s)%s',
+                $inserted,
+                $errors > 0 ? sprintf(', %d échec(s)', $errors) : ''
+            ));
+        } else {
+            $io->success('Simulation terminée');
         }
 
-        $io->success('Batch terminé');
-
-        return Command::SUCCESS;
+        return $errors > 0 ? Command::FAILURE : Command::SUCCESS;
     }
 
 }
