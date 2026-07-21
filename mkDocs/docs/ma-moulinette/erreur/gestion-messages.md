@@ -1,99 +1,60 @@
-# Gestion des messages utilisateurs
+# 💬 Gestion des messages utilisateurs
 
-![Ma-Moulinette](../../assets/images/home/home-000.jpg)
+Depuis la v2.0.0, les messages destinés aux utilisateurs suivent une convention commune, qu'ils soient générés côté serveur (PHP/Symfony) ou côté client (JavaScript/jQuery).
 
-La version **2.0.0** de **Ma-Moulinette** introduit une **normalisation des messages** destinés aux utilisateurs, qu'ils soient générés côté serveur (PHP / Symfony) ou côté client (JavaScript / jQuery).
+## 🏷️ Types de messages
 
-L'objectif : proposer une expérience cohérente entre les **messages flash**, les **notifications asynchrones** et les **erreurs HTTP**.
+| Type | Icône | Usage |
+| --- | --- | --- |
+| `success` | ✅ | Action réussie |
+| `info` | ℹ️ | Information neutre |
+| `warning` | ⚠️ | Point d'attention non bloquant |
+| `error` / `alert` | ❌ | Erreur |
+| `critical` | 🔴 | Erreur grave |
+| `debug` | 🛠️ | Information de diagnostic (dev) |
+| `primary` / `secondary` | 📌 / 📄 | Message neutre stylé |
 
-## Types de messages
+!!! note "🗑️ Deux types définis mais inatteignables via `showMessage()`"
+    Le dictionnaire d'icônes de `messageHelper.js` définit aussi `delete` (🗑️) et `notAuthorize` (🚫), mais ces deux valeurs ne figurent pas dans la liste `allowedTypes` de `showMessage()` — un appel avec l'un de ces types retomberait donc sur `critical`. Aucun appel `showMessage('delete', ...)`/`showMessage('notAuthorize', ...)` n'existe dans le code actuel : ce sont des entrées résiduelles, pas des types utilisables aujourd'hui.
 
-| Type | Canal | Usage | Couleur |
-| --- | --- | --- | --- |
-| `success` | flash + JS | Action réussie | Vert |
-| `info` | flash + JS | Information neutre | Bleu |
-| `warning` | flash + JS | Point d'attention non bloquant | Orange |
-| `danger` | flash + JS | Erreur bloquante | Rouge |
-| `notice` | callout | Message pédagogique dans une page | Gris |
+## 🖥️ Messages flash côté Symfony
 
-## Messages flash côté Symfony
-
-Depuis un contrôleur, utilisez la méthode standard `addFlash` :
+Convention utilisée par la majorité des controllers applicatifs : un seul type de flash Symfony (`notice`), portant un tableau structuré `type`/`message` :
 
 ```php
-$this->addFlash('success', 'La collecte des indicateurs a bien été enregistrée.');
-$this->addFlash('warning', 'La version sélectionnée ne dispose pas de toutes les métriques.');
-$this->addFlash('danger',  'Impossible de contacter le serveur SonarQube (HTTP 503).');
+$this->addFlash('notice', ['type' => 'success', 'message' => 'La collecte des indicateurs a bien été enregistrée.']);
+$this->addFlash('notice', ['type' => 'warning', 'message' => 'La version sélectionnée ne dispose pas de toutes les métriques.']);
+$this->addFlash('notice', ['type' => 'error',   'message' => 'Impossible de contacter le serveur SonarQube (HTTP 503).']);
 ```
 
-Les messages sont affichés par un partial Twig commun (`templates/_partials/flash.html.twig`) présent dans la base template. Ils s'auto-ferment après **5 secondes** (sauf `danger`).
+Ces messages sont affichés par le partial commun `templates/_message.html.twig`, inclus dans la base template. En environnement `dev`, un message peut porter une clé `debug` supplémentaire affichée sous le message principal.
 
-## Messages JS / jQuery
+!!! note "⚠️ Deux exceptions à cette convention"
+    - `AccueilController` utilise `addFlash('info', ['type' => 'primary', 'message' => ...])` — un type de flash différent (`info` au lieu de `notice`), même structure `type`/`message`.
+    - Les contrôleurs CRUD EasyAdmin (`GroupeUtilisateurCrudController`, `PortefeuilleCrudController`, `GroupeFonctionnelCrudController`) utilisent `addFlash('danger', 'Message brut')` — type `danger` et message en simple chaîne, affichés par le layout natif d'EasyAdmin plutôt que par `_message.html.twig`.
+    - Cohérent fonctionnellement (EasyAdmin a son propre mécanisme de flash), mais hors de la convention `notice`/`type`/`message` décrite ci-dessus.
 
-La v2.0.0 **externalise** les constantes JavaScript (`assets/js/constants/messages.js`). Les messages sont désormais centralisés :
+## 🧩 Messages JS
+
+Le helper `assets/js/common/messageHelper.js` centralise l'affichage :
 
 ```javascript
-export const MSG = {
-    SUCCESS: {
-        COLLECTE_OK: "La collecte a été réalisée avec succès.",
-        VERSION_AJOUTEE: "La version a bien été ajoutée à l'historique.",
-    },
-    WARNING: {
-        SONAR_INDISPONIBLE: "Le serveur SonarQube est temporairement indisponible.",
-    },
-    ERROR: {
-        HTTP_401: "Votre session a expiré. Veuillez vous reconnecter.",
-        HTTP_404: "La ressource demandée est introuvable.",
-        HTTP_500: "Une erreur est survenue. L'incident a été tracé.",
-        HTTP_503: "Le service est momentanément indisponible. Merci de réessayer.",
-    },
-};
+import { showMessage, hideMessage } from '../../common/messageHelper.js';
+
+showMessage('success', 'La collecte a été réalisée avec succès.');
+showMessage('error', 'Une erreur est survenue.', detailsTechniquesOptionnelles);
+hideMessage();
 ```
 
-Un composant JS `notify()` centralise l'affichage :
+`showMessage(type, message, technicalDetails = null)` applique automatiquement l'icône et la classe CSS correspondant au type (repli sur `critical` si le type n'est pas reconnu), et adapte l'attribut ARIA `role` (`alert` pour les types `alert`/`error`/`critical`, `status` sinon).
 
-```javascript
-import { notify } from './services/notify.js';
-import { MSG } from './constants/messages.js';
+## 🈁 Localisation
 
-notify('success', MSG.SUCCESS.COLLECTE_OK);
-notify('danger',  MSG.ERROR.HTTP_503);
-```
+Seule la langue **française** est actuellement fournie (`translations/*.fr.yml`) — pas de traduction anglaise disponible à ce jour.
 
-## Callouts et blocs pédagogiques
+## ✅ Messages d'erreur des formulaires
 
-Pour afficher un message contextuel directement dans une page (hors flash), utilisez les **callouts** Foundation :
-
-```twig
-<div class="callout primary">
-    <h5>{{ "Bon à savoir"|trans }}</h5>
-    <p>Cette version est la version de référence pour le calcul des écarts.</p>
-</div>
-```
-
-Variantes disponibles : `primary`, `secondary`, `success`, `warning`, `alert`.
-
-## Traçabilité (v2.0.0)
-
-Les messages de niveau `danger` et `warning` sont **systématiquement** journalisés dans Monolog :
-
-```text
-[2026-02-19T14:22:18+01:00] app.WARNING: [User:john.doe] Serveur SonarQube indisponible (HTTP 503)
-```
-
-Cette trace est utilisée pour alimenter la page **Statistiques** et le dashboard EasyAdmin.
-
-## Localisation
-
-Toutes les clés passent par le composant `symfony/translation` (fichiers `translations/messages.fr.yaml` et `translations/messages.en.yaml`). Pensez à utiliser le filtre `trans` dans Twig et la méthode `translate()` côté JS.
-
-```twig
-{{ 'collecte.success'|trans }}
-```
-
-## Messages d'erreur des formulaires
-
-Les messages générés par les **Validators** Symfony sont affichés sous chaque champ de formulaire. Ils utilisent désormais la classe `is-invalid` de Foundation pour un rendu cohérent avec le reste de l'application.
+Les messages générés par les contraintes de validation Symfony (`Assert\...`) sont affichés via `form_errors(...)`, sous forme d'une simple liste sous le champ concerné — sans classe CSS dédiée (pas de `is-invalid`/`invalid-feedback` dans le projet).
 
 -**-- FIN --**-
 
