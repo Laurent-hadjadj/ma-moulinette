@@ -75,8 +75,9 @@ class RunMoulinetteCollecteCommand extends Command
             ->addOption('url',          null, InputOption::VALUE_REQUIRED, 'URL du serveur Ma-Moulinette (obligatoire).')
             ->addOption('token',        null, InputOption::VALUE_REQUIRED, "Token d'accès Ma-Moulinette (obligatoire).")
             ->addOption('flush',        null, InputOption::VALUE_OPTIONAL, 'Nombre max de traitements à envoyer.', 0)
-            ->addOption('keep-days',    null, InputOption::VALUE_OPTIONAL, 'Durée de conservation des logs (jours).', 7)
-            ->addOption('max-log-size', null, InputOption::VALUE_OPTIONAL, 'Taille max des journaux en Mo.', 10)
+            // MODIF 2026-07-21 : --keep-days/--max-log-size supprimées — déclarées
+            // mais jamais lues (aucun getOption() correspondant), et absentes de
+            // l'appel cron (docker/etc/cron/ma-moulinette) : options mortes.
             ->addOption('dry-run',      null, InputOption::VALUE_NONE,     'Simulation sans modification réelle.')
             ->addOption('debug',        null, InputOption::VALUE_NONE,     'Affiche les détails des appels API.');
     }
@@ -198,9 +199,15 @@ class RunMoulinetteCollecteCommand extends Command
      */
     private function buildSslConfig(): array
     {
+        /* MODIF 2026-07-21 : verify_peer/verify_host sont typés int non-nullables
+         * (résolus par Symfony via %env(int:MAMOUL_CLI_VERIFY_*)%, qui échoue au
+         * démarrage si la variable est absente) — un "?: 0" ici ne pouvait donc
+         * jamais retomber sur un défaut sûr, il ne faisait que réécrire la même
+         * valeur en donnant l'illusion trompeuse d'un fallback. Voir
+         * docker/.env.template pour les valeurs par défaut réellement sûres. */
         return [
-            'verify_peer' => (int) $this->mamoulCliVerifyPeer ?: 0,
-            'verify_host' => (int) $this->mamoulCliVerifyHost ?: 0,
+            'verify_peer' => $this->mamoulCliVerifyPeer,
+            'verify_host' => $this->mamoulCliVerifyHost,
             'ciphers'     => $this->mamoulCliCiphers ?: 'DEFAULT:!DH',
         ];
     }
