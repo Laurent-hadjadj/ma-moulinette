@@ -1,10 +1,10 @@
-# Tutoriel d'utilisation de Git sur le terminal
+# 🌿 Tutoriel d'utilisation de Git sur le terminal
 
-## Prérequis
+## ✅ Prérequis
 
 Un contexte sain pour utiliser Git serait que toutes les branches soient identiques au départ avant d'entamer le premier sprint.
 
-## Les premières modifications
+## 📝 Les premières modifications
 
 Vous venez de faire des modifications sur votre branche et pensez qu'un point de sauvegarde est nécessaire pour la bonne compréhension de votre avancée. Il faut faire ce qu'on appelle un commit.
 
@@ -12,94 +12,136 @@ Vous venez de faire des modifications sur votre branche et pensez qu'un point de
 
 Lorsqu'on s'attaque à Git, il faut ne plus toucher au code et travailler uniquement avec Git jusqu'à la fin du commit.
 
->git status
+```bash
+git status
+```
 
-Cette commande va nous servir à afficher tous les fichiers modifiés, ajoutés et supprimés.
+Cette commande affiche tous les fichiers modifiés, ajoutés et supprimés. Exemple avec un fichier modifié :
 
-![git](/mkDocs/docs/assets/images/git/git-status.jpg)
+```text
+On branch develop
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   src/Controller/ProjetController.php
 
-Sur cet exemple, la commande affiche la modification d'un fichier.
+no changes added to commit (use "git add" and/or "git commit -a")
+```
 
-![git](/mkDocs/docs/assets/images/git/git-status-modifier.jpg)
+Et avec un nouveau fichier non suivi :
 
-Sur cet exemple, la commande affiche l'ajout d'un nouveau fichier.
+```text
+Untracked files:
+  (use "git add <file>..." to include in what will be committed)
+        src/Service/NouveauService.php
+```
 
-![git](/mkDocs/docs/assets/images/git/git-status-fichier.jpg)
+```bash
+git add [nom du fichier]
+```
 
->git add [nom du fichier]
+Cette commande va nous servir à ajouter les fichiers que l'on veut dans le commit. Lorsqu'on ajoute un fichier avec cette commande, le `git status` nous marque en vert le ou les fichiers ajoutés grâce à celle-ci. **On dira qu'on suit les fichiers.**
 
-Cette commande va nous servir à ajouter les fichiers que l'on veut dans le commit. Lorsqu'on ajoute un fichier avec cette commande, le git status nous marque en vert le ou les fichiers ajoutés grâce à celle-ci. **On dira qu'on suit les fichiers.**
-
-![git](/mkDocs/docs/assets/images/git/git-status-add.jpg)
+```text
+Changes to be committed:
+  (use "git restore --staged <file>..." to unstage)
+        modified:   src/Controller/ProjetController.php
+```
 
 Si on ajoute un fichier par erreur, on peut l'enlever en utilisant `git restore [nom du fichier]`.
 
-Un raccourci utile avec ces deux commandes est `git add .` et `git restore .` qui va ajouter ou enlever tous les fichiers sans exception. Donc, si vous avez un ou plusieurs fichiers .old que vous ne voulez pas partager, il n'est pas possible d'utiliser `git add .`.
+Un raccourci utile avec ces deux commandes est `git add .` et `git restore .` qui va ajouter ou enlever tous les fichiers sans exception. Donc, si vous avez un ou plusieurs fichiers `.old` que vous ne voulez pas partager, il n'est pas possible d'utiliser `git add .`.
 
->git commit -m "Le message de votre commit"
+```bash
+git commit -m "Le message de votre commit"
+```
 
-Après avoir ajouté tous les fichiers que vous vouliez, on peut passer à la commande `git commit`.
+Après avoir ajouté tous les fichiers que vous vouliez, on peut passer à la commande `git commit`. Cette commande va ajouter un commit à votre branche suivi du message que vous avez mis :
 
-Cette commande va ajouter un commit à votre branche suivi du message que vous avez mis.
+```text
+[develop 3f2a91c] Le message de votre commit
+ 1 file changed, 12 insertions(+), 3 deletions(-)
+```
 
-![git](/mkDocs/docs/assets/images/git/git-commit.jpg)
+### 📤 La mise en ligne de votre travail
 
-### La mise en ligne de votre travail
+```bash
+git push
+```
 
->git push
+Cette commande va envoyer tous les commits passés sur le dépôt distant (GitHub/GitLab).
 
-Cette commande va envoyer tous les commits passés sur le dépôt en ligne de votre GitHub.
-
-![git](/mkDocs/docs/assets/images/git/git-push.jpg)
-
-## La fusion des travaux communs
+## 🔀 La fusion des travaux communs
 
 ### Mise à jour de la branche develop
 
-Pour bien commencer cette étape, il faut impérativement que la branche develop en local ait les dernières modifications du remote. Pour ce faire, on peut utiliser la commande suivante :
+Pour bien commencer cette étape, il faut impérativement que la branche `develop` en local ait les dernières modifications du remote. Pour ce faire, on peut utiliser la commande suivante :
 
->git fetch
+```bash
+git fetch
+```
 
-Cette commande va télécharger sans modifier les fichiers du projet en local.
+Cette commande va télécharger sans modifier les fichiers du projet en local. Avec la commande :
 
-Avec la commande
-
->git diff develop origin/develop
+```bash
+git diff develop origin/develop
+```
 
 On pourra voir les différences entre le local et le remote. Pour valider le fetch, il faut entrer la commande suivante :
 
->git merge origin/develop
+```bash
+git merge origin/develop
+```
 
-Après la résolution éventuelle de conflits, votre branche develop est à jour.
+Après la résolution éventuelle de conflits, votre branche `develop` est à jour.
 
 ### Début de la fusion
 
 Mettez-vous sur votre branche :
 
->git checkout [votre branche]
+```bash
+git checkout [votre branche]
+```
 
 Puis faites la commande :
 
->git merge develop
+```bash
+git merge develop
+```
 
-Il y a deux cas : soit le merge se passe sans souci parce que le develop n'a pas été changé ou parce que les modifications apportées ne créent pas de conflit, soit le merge créera des conflits qu'il faudra résoudre.
+Il y a deux cas : soit le merge se passe sans souci parce que `develop` n'a pas été changé ou parce que les modifications apportées ne créent pas de conflit, soit le merge créera des conflits qu'il faudra résoudre.
 
-Dans le cas où il y a des conflits, il faudra les résoudre puis faire l'étape de commit.
+!!! caution "⚠️ En cas de conflit"
+    Il faudra résoudre les conflits (marqueurs `<<<<<<<`/`=======`/`>>>>>>>` dans les fichiers concernés) puis faire l'étape de commit habituelle (`git add` + `git commit`).
 
 ### Fusion de votre branche
 
-Lorsque cela est fait, votre branche a vos modifications et celles de develop. Il ne vous reste plus qu'à merger votre branche develop.
+Lorsque cela est fait, votre branche a vos modifications et celles de `develop`. Il ne vous reste plus qu'à merger votre branche dans `develop`.
 
-Allez sur la branche develop `git checkout develop` et entrez merger votre branche :
+Allez sur la branche `develop` et mergez votre branche :
+
+```bash
+git checkout develop
 git merge [votre branche]
+```
 
-## Commandes pratiques
+## 🕰️ Commandes pratiques
 
->git log
+```bash
+git log
+```
 
-Cette commande sert à voir l'historique des commits de tout le dépôt. Il y aura écrit HEAD pour vous signaler votre branche. Les branches avec le suffixe **origin/** sont les branches remote. Enfin, les branches avec seulement le nom sont les branches locales que vous avez.
+Cette commande sert à voir l'historique des commits de tout le dépôt.
 
-![git](/mkDocs/docs/assets/images/git/git-log.jpg)
+```text
+commit 3f2a91c4e8b5... (HEAD -> develop, origin/develop)
+Author: Prenom Nom <email@ma-moulinette.fr>
+Date:   Mon Jul 13 10:15:22 2026 +0200
+
+    Le message de votre commit
+```
+
+`HEAD` signale votre position courante. Les branches avec le préfixe `origin/` sont les branches distantes ; celles sans préfixe sont vos branches locales.
 
 -**-- FIN --**-
 
