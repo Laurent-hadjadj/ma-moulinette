@@ -114,6 +114,16 @@
         {% if current_socle_filter %}<span class="text-muted"> — socle : <em>{{ current_socle_filter }}</em></span>{% endif %}
       </p>
 
+      {# MODIF 2026-07-22 : signale la troncature à 5000 lignes plutôt que de la laisser silencieuse. #}
+      {% if mutualisables_truncated %}
+        <div class="callout alert-callout-border warning">
+          <p class="open-sans">
+            <span aria-hidden="true">⚠️</span>
+            Cette liste est limitée à {{ total_count }} dépendances (les plus mutualisées). D'autres dépendances mutualisables existent au-delà de cette limite mais ne sont pas affichées — affinez le filtre par socle pour réduire le périmètre.
+          </p>
+        </div>
+      {% endif %}
+
       <p>
         <button id="bouton-ouvrir-methodology-jh"
                   class="button open-sans focus-light js-ouvrir-methodology-jh"
