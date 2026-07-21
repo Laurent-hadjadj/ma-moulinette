@@ -639,6 +639,7 @@ body {
 .display-flex { display: flex; }
 .flex-1 { flex: 1; }
 .flex-align-items-baseline { align-items: baseline; }
+.flex-align-items-center { align-items: center; }
 .flex-justify-content-space-between { justify-content: space-between; }
 .line-height-04 { line-height: 0.4rem; }
 .white-space-nowrap {white-space: nowrap; }
