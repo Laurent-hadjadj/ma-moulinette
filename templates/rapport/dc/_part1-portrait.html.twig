@@ -46,6 +46,12 @@
     </div>
   </header>
 
+  {% if data.findings_error is defined and data.findings_error %}
+  <div class="warning-box">
+    <strong>⚠️ Données incomplètes.</strong> La récupération des vulnérabilités a échoué au moment de la génération de ce rapport. La liste des vulnérabilités et les indicateurs qui en dépendent peuvent être incomplets ou vides.
+  </div>
+  {% endif %}
+
   <h2>Identification</h2>
   <table class="info-grid">
     <th></th>
