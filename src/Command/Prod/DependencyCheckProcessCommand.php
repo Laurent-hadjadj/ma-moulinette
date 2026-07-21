@@ -181,7 +181,13 @@ class DependencyCheckProcessCommand extends Command
 
         $this->printSummary($io, $totals);
 
-        return Command::SUCCESS;
+        /* MODIF 2026-07-21 : le code retour ignorait totals['failed'] — un rapport
+         * passé en status=failed définitif (après MAX_ATTEMPTS) ne remontait donc
+         * jamais comme échec côté cron/supervision, alors que le worker avait bien
+         * détecté et enregistré l'échec. Sans effet sur la planification (Supercronic
+         * ne fait rien de spécial sur un code non nul, il relance à la minute
+         * suivante quoi qu'il arrive) — seule la visibilité du log change. */
+        return $totals['failed'] > 0 ? Command::FAILURE : Command::SUCCESS;
     }
 
     /**
