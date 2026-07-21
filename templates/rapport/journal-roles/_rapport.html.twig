@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Journal des rôles</title>
+  <style>
+    body {
+      font-family: 'DejaVu Sans', Arial, sans-serif;
+      font-size: 9px;
+      color: #00445b;
+      margin: 0;
+    }
+    @page { margin: 20px 20px 50px 20px; size: A4 landscape; }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      border-bottom: 2px solid #00445b;
+      padding-bottom: 8px;
+    }
+    .header .logo { max-height: 30px; }
+    .header-right { text-align: right; }
+    .header-right .title { font-size: 12px; font-weight: bold; }
+    .header-right .subtitle { font-size: 9px; color: #666; }
+
+    table.journal {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 8.5px;
+    }
+    table.journal th {
+      background: #00445b;
+      color: #fff;
+      padding: 4px 5px;
+      text-align: left;
+      white-space: nowrap;
+    }
+    table.journal td {
+      padding: 3px 5px;
+      border: 1px solid #e0e0e0;
+      vertical-align: top;
+    }
+    table.journal tbody tr:nth-child(even) { background: #f9f9f9; }
+    table.journal td.nowrap { white-space: nowrap; }
+    .active-off { color: #a00a14; font-weight: bold; }
+    .active-on { color: #037505; }
+    .alert-badge {
+      display: inline-block;
+      background: #a00a14;
+      color: #fff;
+      border-radius: 2px;
+      padding: 1px 4px;
+      margin: 0 2px 2px 0;
+      font-size: 8px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <img class="logo" src="data:image/png;base64,{{ logoBase64 }}" alt="Logo">
+    <div class="header-right">
+      <div class="title">Journal des changements de rôle</div>
+      <div class="subtitle">Généré le {{ date_generation }} — {{ lignes|length }} ligne(s){{ filtre_label ? ' — ' ~ filtre_label : '' }}</div>
+    </div>
+  </div>
+
+  {% if lignes is empty %}
+    <p>Aucune ligne pour ce filtre.</p>
+  {% else %}
+
+  <table class="journal">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Compte modifié</th>
+        <th>Éditeur</th>
+        <th>Rôles avant</th>
+        <th>Rôles après</th>
+        <th>Actif avant → après</th>
+        <th>Alertes</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for ligne in lignes %}
+      <tr>
+        <td class="nowrap">{{ ligne.date }}</td>
+        <td>{{ ligne.userEmail }}</td>
+        <td>{{ ligne.editorEmail }}</td>
+        <td>{{ ligne.oldRoles|join(', ') }}</td>
+        <td>{{ ligne.newRoles|join(', ') }}</td>
+        <td class="nowrap">
+          <span class="{{ ligne.oldActive ? 'active-on' : 'active-off' }}">{{ ligne.oldActive ? 'Oui' : 'Non' }}</span>
+          →
+          <span class="{{ ligne.newActive ? 'active-on' : 'active-off' }}">{{ ligne.newActive ? 'Oui' : 'Non' }}</span>
+        </td>
+        <td>
+          {% for alerte in ligne.alerts %}
+            <span class="alert-badge">{{ alerte }}</span>
+          {% endfor %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  {% endif %}
+
+</body>
+</html>
