@@ -31,30 +31,8 @@ https://github.com/Laurent-hadjadj/ma-moulinette
         {{ include('no-script.html.twig') }}
         {# Chargement de la section header #}
         {{ include('header.html.twig') }}
-
         {# On affiche les messages JS et Flash #}
-        <header class="grid-container" role="banner">
-            {# Message d'alerte #}
-            <div id="message-box"
-                class="callout alert-callout-border callout-ombre hide"
-                role="alert"  data-closable>
-                <button class="close-button"
-                    aria-label="Close alert"
-                    type="button" data-close><span aria-hidden="true">&times;</span>
-                </button>
-                <p id="message-text"></p>
-            </div>
-
-            {# On affiche les messages #}
-            {% for message in app.flashes('notice') %}
-                <div class="callout {{message.type}} alert-callout-border callout-ombre" role="alert"  data-closable>
-                    <p class="open-sans text-justify callout-message"><strong>{{message.titre}}</strong> {{ message.message }} <br> {{message.debug|default('')}}</p>
-                    <button class="close-button" aria-label="Dismiss alert" type="button" data-close>
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            {% endfor %}
-        </header>
+        {{ include('_message.html.twig') }}
 
         <header class="grid-container margin-top-2">
             {# WCAG 2.4.8 : indication "vous êtes ici" portée par aria-label ; aria-current="page" sur l'élément courant #}
