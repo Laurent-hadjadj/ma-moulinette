@@ -37,6 +37,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use Symfony\Component\Routing\RouterInterface;
 use Twig\Environment;
 
 /**
@@ -69,6 +70,7 @@ class DependencyCheckPageControllerTest extends TestCase
     /** @var FlashBagInterface&MockObject */            private MockObject $flashBag;
     /** @var Session&MockObject */                      private MockObject $session;
     /** @var RequestStack&MockObject */                 private MockObject $requestStack;
+    /** @var RouterInterface&MockObject */               private MockObject $router;
 
     /** @var UserAgentTrackingFacade&MockObject */      private MockObject $tracking;
 
@@ -111,6 +113,9 @@ class DependencyCheckPageControllerTest extends TestCase
         $this->paginator->method('paginate')
             ->willReturn($this->createMock(PaginationInterface::class));
 
+        $this->router = $this->createMock(RouterInterface::class);
+        $this->router->method('generate')->willReturn('/dependency-check/projet/fr.ma-moulinette/ma-moulinette/1.2.3');
+
         $container = $this->createMock(ContainerInterface::class);
         $container->method('has')->willReturnCallback(
             fn(string $id): bool =>
@@ -119,6 +124,7 @@ class DependencyCheckPageControllerTest extends TestCase
                 'request_stack',
                 'security.authorization_checker',
                 'security.token_storage',
+                'router',
             ], true)
         );
         $container->method('get')->willReturnMap([
@@ -126,6 +132,7 @@ class DependencyCheckPageControllerTest extends TestCase
             ['request_stack',                    $this->requestStack],
             ['security.authorization_checker',   $this->authChecker],
             ['security.token_storage',           $this->tokenStorage],
+            ['router',                           $this->router],
         ]);
 
         $this->controller = new DependencyCheckPageController(
@@ -409,6 +416,45 @@ class DependencyCheckPageControllerTest extends TestCase
         $this->assertStringContainsString('application/pdf', $response->headers->get('Content-Type') ?? '');
     }
 
+    public function testProjetPdfRedirectsWhenNoScanFound(): void
+    {
+        $this->analyticsMode();
+        $this->scanRepo->method('findLatestForProject')->willReturn(null);
+        $this->flashBag->expects($this->once())->method('add');
+        $this->pdfService->expects($this->never())->method('generateDcPdf');
+
+        $response = $this->controller->projetPdf(
+            self::GROUP,
+            self::ARTIFACT,
+            self::VERSION,
+            Request::create('/')
+        );
+
+        $this->assertSame(302, $response->getStatusCode());
+    }
+
+    public function testProjetPdfPassesFindingsErrorFlagWhenListForScanFails(): void
+    {
+        $this->analyticsMode();
+        $scan = $this->makeDcScan();
+        $this->scanRepo->method('findLatestForProject')->willReturn($scan);
+        $this->findingRepo->method('listForScan')
+            ->willReturn(['code' => 500, 'erreur' => 'boom']);
+        $this->pdfService->expects($this->once())
+            ->method('generateDcPdf')
+            ->with($this->callback(fn(array $data) => $data['findings_error'] === true && $data['findings'] === []))
+            ->willReturn('%PDF-1.4 fake');
+
+        $response = $this->controller->projetPdf(
+            self::GROUP,
+            self::ARTIFACT,
+            self::VERSION,
+            Request::create('/')
+        );
+
+        $this->assertSame(200, $response->getStatusCode());
+    }
+
     /* =========================================================
      * executive()
      * ========================================================= */
@@ -605,5 +651,45 @@ class DependencyCheckPageControllerTest extends TestCase
         $response = $this->controller->mutualisables(Request::create('/'));
 
         $this->assertSame(200, $response->getStatusCode());
+    }
+
+    public function testMutualisablesFlagsTruncatedInRenderContext(): void
+    {
+        $this->analyticsMode();
+        $this->scanRepo->method('listLatestPerCoupleForView')
+            ->willReturn(['code' => 200, 'liste' => []]);
+        $this->depRepo->method('topMutualisableDependencies')
+            ->willReturn(['code' => 200, 'liste' => [], 'truncated' => true]);
+
+        $capturedCtx = [];
+        $this->twig->method('render')->willReturnCallback(function ($template, $ctx) use (&$capturedCtx) {
+            $capturedCtx = $ctx;
+            return '<html>ok</html>';
+        });
+
+        $response = $this->controller->mutualisables(Request::create('/'));
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertTrue($capturedCtx['mutualisables_truncated']);
+    }
+
+    public function testMutualisablesNotTruncatedByDefault(): void
+    {
+        $this->analyticsMode();
+        $this->scanRepo->method('listLatestPerCoupleForView')
+            ->willReturn(['code' => 200, 'liste' => []]);
+        $this->depRepo->method('topMutualisableDependencies')
+            ->willReturn(['code' => 200, 'liste' => []]); // pas de clé 'truncated'
+
+        $capturedCtx = [];
+        $this->twig->method('render')->willReturnCallback(function ($template, $ctx) use (&$capturedCtx) {
+            $capturedCtx = $ctx;
+            return '<html>ok</html>';
+        });
+
+        $response = $this->controller->mutualisables(Request::create('/'));
+
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertFalse($capturedCtx['mutualisables_truncated']);
     }
 }
