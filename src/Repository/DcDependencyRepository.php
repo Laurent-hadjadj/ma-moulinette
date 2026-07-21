@@ -174,7 +174,13 @@ class DcDependencyRepository extends ServiceEntityRepository
      * calcul du JH (qui depend de la repartition par sévérité).
      * Le hardLimit (défaut 200) sert de garde-fou contre les parcs très gros.
      *
-     * @return array{code: int, liste?: array<int, array<string, mixed>>, erreur?: string}
+     * MODIF 2026-07-22 : détection de troncature. On récupère hardLimit+1
+     * lignes ; si la requête en renvoie plus que hardLimit, on sait que le
+     * parc dépasse la limite et on le signale via 'truncated' (avant, la
+     * troncature était silencieuse : le tableau affichait pile hardLimit
+     * lignes sans qu'aucun signal n'indique qu'il en existe d'autres).
+     *
+     * @return array{code: int, liste?: array<int, array<string, mixed>>, erreur?: string, truncated?: bool}
      */
     public function topMutualisableDependencies(
         int $minProjects = 2,
@@ -277,7 +283,8 @@ class DcDependencyRepository extends ServiceEntityRepository
             LIMIT :lim
         SQL;
 
-        $params = ['min' => $minProjects, 'lim' => $hardLimit];
+        /* +1 pour détecter la troncature (cf. commentaire de méthode) sans requête COUNT séparée. */
+        $params = ['min' => $minProjects, 'lim' => $hardLimit + 1];
         $types  = [];
         if ($allowedMavenKeys !== null) {
             $params['keys'] = $allowedMavenKeys;
@@ -294,6 +301,11 @@ class DcDependencyRepository extends ServiceEntityRepository
                 ->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
+        }
+
+        $truncated = count($rows) > $hardLimit;
+        if ($truncated) {
+            $rows = array_slice($rows, 0, $hardLimit);
         }
 
         $liste = array_map(static function (array $r): array {
@@ -345,6 +357,6 @@ class DcDependencyRepository extends ServiceEntityRepository
             ];
         }, $rows);
 
-        return ['code' => 200, 'liste' => $liste, 'erreur' => ''];
+        return ['code' => 200, 'liste' => $liste, 'erreur' => '', 'truncated' => $truncated];
     }
 }
