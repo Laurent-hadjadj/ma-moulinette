@@ -91,8 +91,7 @@ Quelques garde-fous supplémentaires, appliqués à la fois dans le formulaire (
 
 !!! note "✅ Journal des changements de rôle désormais consultable"
     Chaque modification de rôles ou du statut Actif est auditée en base (table `user_role_log`, alimentée par `UserRoleLoggerService` à chaque `updateEntity()` — courriel de la cible et de l'éditeur, anciens/nouveaux rôles, ancien/nouveau statut actif, alertes de `SuspiciousActivityDetector`).
-    Ce journal était jusqu'ici écrit mais jamais consultable depuis l'application.
-    **Corrigé** par l'ajout d'une page dédiée : [Journal des rôles](#-journal-des-rôles).
+    Ajout d'une page dédiée : [Journal des rôles](#-journal-des-rôles).
 
 ## 📜 Journal des rôles
 
@@ -121,7 +120,8 @@ Journal des rôles (/admin/journal-roles, UserRoleLogController)
 │
 ├── 🔎 Filtres : courriel (cible ou éditeur), plage de dates (depuis / jusqu'au)
 ├── 📊 Colonnes : Date, Compte modifié, Éditeur, Rôles avant, Rôles après,
-│                  Actif avant → après, Alertes, sélection (case à cocher)
+│                  Actif avant → après (« O »/« N », infobulle "Oui"/"Non" au survol),
+│                  Alertes, sélection (case à cocher)
 └── 🔘 Actions sur la sélection : Archiver (CSV), Rapport PDF, Supprimer
 ```
 <!-- markdownlint-enable MD046 -->
@@ -130,7 +130,7 @@ Journal des rôles (/admin/journal-roles, UserRoleLogController)
 
 | Fonction | Détail |
 | --- | --- |
-| Consultation | Tableau (DataTables) chargé en Ajax, filtrable par courriel (cible ou éditeur) et par plage de dates ; tri/pagination/recherche côté client |
+| Consultation | Tableau (DataTables) chargé en Ajax, filtrable par courriel (cible ou éditeur) et par plage de dates (filtre serveur) ; tri/pagination/recherche texte côté client en complément, sur les lignes déjà chargées uniquement |
 | Archiver la sélection | Export CSV (UTF-8, séparateur `;`) des lignes cochées — **les lignes ne sont pas supprimées**, c'est une simple copie téléchargeable |
 | Rapport PDF | Export PDF (paysage) des lignes cochées, mise en page dédiée (`PdfExportService::generateUserRoleLogPdf`) |
 | Supprimer la sélection | Suppression définitive des lignes cochées, protégée par jeton CSRF et confirmation JS — **aucune sauvegarde automatique**, archiver au préalable si nécessaire |
@@ -148,7 +148,15 @@ Journal des rôles (/admin/journal-roles, UserRoleLogController)
 | `error` | Session expirée pendant un téléchargement (401/403 HTTP réel) | 🚫 Accès refusé. Veuillez vous reconnecter. |
 
 !!! caution "⚠️ Pas de pagination serveur : plafond à 1000 lignes"
-    La page charge jusqu'à 1000 lignes (les plus récentes) en une seule requête — au-delà, affiner le filtre par plage de dates pour retrouver les lignes plus anciennes. Pas de troncature silencieuse : le plafond est appliqué côté `UserRoleLogRepository::findFiltered()`, à faire évoluer vers une pagination serveur si le volume le justifie.
+    La page charge jusqu'à 1000 lignes (les plus récentes) en une seule requête — au-delà, affiner le filtre par plage de dates pour retrouver les lignes plus anciennes.
+    Pas de troncature silencieuse : le plafond est appliqué côté `UserRoleLogRepository::findFiltered()`, à faire évoluer vers une pagination serveur si le volume le justifie.
+
+!!! note "🔍 Recherche DataTables vs filtre serveur"
+    Le champ de recherche généré par DataTables ne porte que sur les lignes déjà chargées (donc au mieux les 1000 lignes les plus récentes) et ne sait pas filtrer par plage de dates — c'est une recherche texte sur ce qui est affiché, pas une requête.
+    Le filtre courriel/dates au-dessus du tableau reste donc nécessaire : c'est le seul moyen d'atteindre une ligne au-delà du plafond de 1000 lignes, et le seul à savoir filtrer par date.
+
+!!! note "✅ Retour visuel ajouté pendant Archiver/PDF/Supprimer"
+    Les 3 actions sur la sélection n'affichaient aucun indicateur avant la réponse du serveur. Un spinner et la désactivation temporaire des 3 boutons ont été ajoutés pendant l'attente.
 
 !!! note "✅ Erreur serveur sur Archiver/PDF téléchargée comme un faux fichier — corrigé"
     `downloadSelection()` (JS) force `responseType: 'blob'` pour récupérer le CSV/PDF binaire, et bloque bien l'appel réseau si aucune ligne n'est cochée.
