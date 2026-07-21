@@ -1,0 +1,102 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright © 2015-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+  /* Mobile */
+@media (width <= 20em) {  }
+
+/* Mobile */
+@media (20.025em <= width <= 22em) {  }
+
+/* Mobile */
+@media (22.025em <= width <= 30em) {  }
+
+/* Mobile */
+@media (30.025em <= width <= 40em) {  }
+
+/* tablette */
+@media (40.025em <= width <= 64em) { }
+
+/* desktop */
+@media (64.025em <= width <= 90em) { .role-log-table-wrap { margin-left: 2rem; margin-right: 2rem; } }
+
+/* desktop */
+@media (90.025em <= width <= 120em) { .role-log-table-wrap { margin-left: 2rem; margin-right: 2rem; } }
+
+/* desktop */
+@media (120.025em <= width <= 160em) { .role-log-table-wrap { margin-left: 2rem; margin-right: 2rem; } }
+
+/*************************          Global     *********************************/
+
+#bouton-archiver,
+#bouton-rapport-pdf,
+#bouton-supprimer,
+#bouton-apply-filters {
+    min-width: 9rem;
+    font-size: 0.95rem;
+    border-radius: 0.375rem;
+    margin: 0 0.25rem 0.5rem 0.25rem;
+    padding: 0.8rem 0.6rem;
+    color: #fff;
+    text-align: center;
+    background-color: #00445B;
+}
+
+#bouton-archiver:hover,
+#bouton-rapport-pdf:hover,
+#bouton-apply-filters:hover { background-color: #006182; }
+
+#bouton-supprimer { background-color: #a00a14; }
+#bouton-supprimer:hover { background-color: #c81624; }
+
+.role-log { margin-top: 1.5rem; }
+.role-log-filters { background-color: #f8f8f8; }
+.role-log-table table { margin-bottom: 0; }
+
+/* MODIF 2026-07-21 : le tableau est hors grid-container (pleine largeur, pas
+   de scroll horizontal inutile) ; marge de confort ajoutée en large only. */
+.role-log-table-wrap { margin-top: 1rem; margin-bottom: 1rem; }
+
+.role-log-table th {
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+
+.role-log-table td {
+    font-size: 0.85rem;
+    vertical-align: middle;
+}
+
+.role-log-date {
+    font-family: monospace;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.role-log-table .text-right { text-align: right; }
+.role-log-table .text-center { text-align: center; }
+
+.role-log-active-on { color: #037505; font-weight: 600; }
+.role-log-active-off { color: #a00a14; font-weight: 600; }
+
+.role-log-alert-badge {
+    display: inline-block;
+    padding: 0.15rem 0.4rem;
+    margin: 0 0.2rem 0.2rem 0;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    background: #a00a14;
+    color: #fff;
+}
+
+#role-log-table tbody tr { cursor: pointer; }
+#role-log-table tbody tr:hover { background-color: #f3f3f3; }
