@@ -631,6 +631,9 @@ body {
 
 .padding-top-03 { padding-top: 0.3rem; }
 
+.width-1 { width: 1rem; }
+.width-2 { width: 2rem; }
+
 .clear-both { clear: both; }
 
 .display-flex { display: flex; }
