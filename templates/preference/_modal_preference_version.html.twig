@@ -1,0 +1,39 @@
+{# Fenêtre modale pour la liste des versions favorites. #}
+<dialog id="modal-preference-version"
+        class="reveal large"
+        data-close-on-click="true"
+        data-animation-in="fade-in"
+        data-animation-out="fade-out"
+        data-reveal
+        aria-modal="true"
+        aria-labelledby="titre-preference-version"
+        aria-describedby="desc-preference-version">
+
+  <header>
+    <h1 id="titre-preference-version" class="h3 claire-hand"><span aria-hidden="true">ℹ️</span>Mes préférences</h1>
+    <h2 id="desc-preference-version" class="h4 claire-hand"><span aria-hidden="true">📋</span>Versions</h2>
+    <span class="show-for-sr">
+      Cette page présente la liste des versions favorites, projet par projet.
+    </span>
+  </header>
+
+  <blockquote class="text-justify">
+    Pour chaque <em>favori</em>, une ou plusieurs versions peuvent être ajoutées à la liste de suivi des projets
+    favoris. Cela permet donc d'avoir une liste des projets favoris et, pour chacun, une liste des versions.
+  </blockquote>
+
+  <p class="open-sans">La liste des versions est : <output id="js-modal-version-statut" aria-live="polite"></output></p>
+
+  <ul class="accordion js-accordion" data-accordion></ul>
+
+  {# fermeture de la fenêtre modale #}
+  <footer class="grid-x grid-margin-x align-right margin-top-2">
+    <div class="cell shrink">
+      <button id="bouton-fermer-preference-version"
+              class="button open-sans focus-light"
+              type="button"
+              aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span>Fermer
+      </button>
+    </div>
+  </footer>
+</dialog>
