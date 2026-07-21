@@ -143,6 +143,68 @@ class UpdateSonarqubeTagsCommandTest extends TestCase
         $this->assertStringContainsString('simulation', strtolower($tester->getDisplay()));
     }
 
+    public function testDryRunDoesNotWriteMappingFile(): void
+    {
+        // MODIF 2026-07-21 : régression — le fichier de mapping était écrit
+        // inconditionnellement, y compris en --dry-run.
+        $cmd = $this->getMockBuilder(UpdateSonarqubeTagsCommand::class)
+            ->setConstructorArgs([$this->logger, 0, 0, 'DEFAULT:!DH', 0, '', '', ''])
+            ->onlyMethods(['callApi', 'writeMappingFile'])
+            ->getMock();
+
+        $cmd->method('callApi')->willReturnCallback(
+            static function (string $sonarUrl, string $auth, array $ssl, array $proxy, string $endpoint): mixed {
+                if (str_contains($endpoint, 'search_projects')) {
+                    return ['components' => [['key' => 'fr.ma-moulinette:ma-moulinette']]];
+                }
+                if (str_contains($endpoint, 'permissions/groups')) {
+                    return ['groups' => []];
+                }
+                return [];
+            }
+        );
+        $cmd->expects($this->never())->method('writeMappingFile');
+
+        $tester = new CommandTester($cmd);
+        $exit   = $tester->execute([
+            '--url'     => 'https://sonar.test',
+            '--token'   => 'tok',
+            '--dry-run' => true,
+        ]);
+
+        $this->assertSame(0, $exit);
+        $this->assertStringContainsString('non écrit', $tester->getDisplay());
+    }
+
+    public function testRealRunWritesMappingFileOnce(): void
+    {
+        $cmd = $this->getMockBuilder(UpdateSonarqubeTagsCommand::class)
+            ->setConstructorArgs([$this->logger, 0, 0, 'DEFAULT:!DH', 0, '', '', ''])
+            ->onlyMethods(['callApi', 'writeMappingFile'])
+            ->getMock();
+
+        $cmd->method('callApi')->willReturnCallback(
+            static function (string $sonarUrl, string $auth, array $ssl, array $proxy, string $endpoint): mixed {
+                if (str_contains($endpoint, 'search_projects')) {
+                    return ['components' => [['key' => 'fr.ma-moulinette:ma-moulinette']]];
+                }
+                if (str_contains($endpoint, 'permissions/groups')) {
+                    return ['groups' => []];
+                }
+                return [];
+            }
+        );
+        $cmd->expects($this->once())->method('writeMappingFile');
+
+        $tester = new CommandTester($cmd);
+        $exit   = $tester->execute([
+            '--url'   => 'https://sonar.test',
+            '--token' => 'tok',
+        ]);
+
+        $this->assertSame(0, $exit);
+    }
+
     public function testArchivedProjectGetsArchiveTag(): void
     {
         $cmd = $this->getMockBuilder(UpdateSonarqubeTagsCommand::class)
@@ -173,6 +235,75 @@ class UpdateSonarqubeTagsCommandTest extends TestCase
         $this->assertSame(0, $exit);
         $output = $tester->getDisplay();
         $this->assertStringContainsString('archive', strtolower($output));
+    }
+
+    public function testDefaultGroupDescriptionMarkerIs2021(): void
+    {
+        $cmd = $this->getMockBuilder(UpdateSonarqubeTagsCommand::class)
+            ->setConstructorArgs([$this->logger, 0, 0, 'DEFAULT:!DH', 0, '', '', ''])
+            ->onlyMethods(['callApi', 'writeMappingFile'])
+            ->getMock();
+
+        $cmd->method('callApi')->willReturnCallback(
+            static function (string $sonarUrl, string $auth, array $ssl, array $proxy, string $endpoint): mixed {
+                if (str_contains($endpoint, 'search_projects')) {
+                    return ['components' => [['key' => 'fr.ma-moulinette:ma-moulinette']]];
+                }
+                if (str_contains($endpoint, 'permissions/groups')) {
+                    return ['groups' => [[
+                        'name' => 'Groupe Projet A',
+                        'permissions' => ['codeviewer', 'securityhotspotadmin', 'user'],
+                        'description' => 'Créé en 2021',
+                    ]]];
+                }
+                return [];
+            }
+        );
+
+        $tester = new CommandTester($cmd);
+        $exit   = $tester->execute(['--url' => 'https://sonar.test', '--token' => 'tok']);
+
+        $this->assertSame(0, $exit);
+        $this->assertStringContainsString('Tagué', $tester->getDisplay());
+    }
+
+    public function testCustomGroupDescriptionMarkerOverridesDefault(): void
+    {
+        // MODIF 2026-07-21 : le critère "2021" (permissions + description) est
+        // désormais injecté via config/packages/sonar_tags.yaml — ce test
+        // vérifie qu'un marqueur différent est bien pris en compte, et donc
+        // que "2021" n'est plus en dur dans le code.
+        $cmd = $this->getMockBuilder(UpdateSonarqubeTagsCommand::class)
+            ->setConstructorArgs([
+                $this->logger, 0, 0, 'DEFAULT:!DH', 0, '', '', '',
+                ['codeviewer', 'securityhotspotadmin', 'user'],
+                '2025',
+            ])
+            ->onlyMethods(['callApi', 'writeMappingFile'])
+            ->getMock();
+
+        $cmd->method('callApi')->willReturnCallback(
+            static function (string $sonarUrl, string $auth, array $ssl, array $proxy, string $endpoint): mixed {
+                if (str_contains($endpoint, 'search_projects')) {
+                    return ['components' => [['key' => 'fr.ma-moulinette:ma-moulinette']]];
+                }
+                if (str_contains($endpoint, 'permissions/groups')) {
+                    return ['groups' => [[
+                        'name' => 'Groupe Projet 2021',
+                        'permissions' => ['codeviewer', 'securityhotspotadmin', 'user'],
+                        'description' => 'Créé en 2021', // ne contient pas "2025" -> ne doit PAS matcher
+                    ]]];
+                }
+                return [];
+            }
+        );
+
+        $tester = new CommandTester($cmd);
+        $exit   = $tester->execute(['--url' => 'https://sonar.test', '--token' => 'tok']);
+
+        $this->assertSame(0, $exit);
+        // Aucun groupe ne correspond au marqueur "2025" -> tag "aucun" + warning.
+        $this->assertStringContainsString('aucun groupe valide', $tester->getDisplay());
     }
 
     public function testGetProjectsFailureReturnsFailure(): void
