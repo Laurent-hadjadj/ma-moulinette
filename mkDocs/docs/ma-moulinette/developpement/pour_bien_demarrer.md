@@ -1,106 +1,126 @@
-# Pour bien démarrer avec Ma Moulinette
+# 🚀 Pour bien démarrer avec Ma-Moulinette
 
-![Ma-Moulinette](/assets/images/home/home-000.jpg)
+Ma-Moulinette est une application open source sous licence CC BY-NC-SA 4.0. Le code source ne suffit pas à lui seul : il faut un environnement d'exécution (PHP, PostgreSQL) et, en développement, quelques outils complémentaires.
 
-## Les sources
+## 🧰 Prérequis
 
-Ma Moulinette est une application open source soumise à la licence CC 4.0 NC-BY-SA. Elle est disponible sur github et Bitbucket.
+| Composant | Développement | Production |
+| --- | --- | --- |
+| PHP | ≥ 8.4 (8.5.5 utilisé) | ≥ 8.4 |
+| PostgreSQL | 18 | 18 |
+| Symfony CLI | recommandé (serveur local) | non requis (nginx + PHP-FPM) |
+| SonarQube | 8.9.9 LTS, 9.9.4 LTS, 10 LTA, 2024, 2025 LTA ou 2026 | idem |
+| Node.js | uniquement pour les tests E2E Playwright (`tests/e2e/`), pas pour les assets applicatifs | non requis |
+| Python 3 + mkDocs Material | pour générer cette documentation | non requis |
 
-Il vous suffira de cloner les repository du projet pour obtenir l'application. Toutefois, les sources ne seront pas suffisantes pour démarrer l'application.
+!!! note "🧶 Plus de build JS/CSS séparé"
+    Depuis la migration vers **Symfony asset-mapper** (v2.0.0), il n'y a plus de compilation Webpack/Encore ni de dépendance Node.js pour builder les assets applicatifs — ils sont servis directement.
+    Node.js n'est nécessaire que pour la suite de tests End-to-End Playwright.
 
-Il vous faudra :
+## 📁 Fichiers d'environnement
 
-> Pour l'environnement de production
+| Fichier | Rôle | Suivi Git |
+| --- | --- | --- |
+| `.env` | Valeurs par défaut, communes à tous les environnements | ✅ commité |
+| `.env.local` | Surcharges locales (secrets, hosts, LDAP, tokens) | ❌ ignoré |
+| `.env.test` | Valeurs par défaut pour `tests/Integration` (placeholders non sensibles) | ❌ ignoré |
+| `.env.test.local` | Surcharges locales pour les tests (tokens de test, LDAP local) | ❌ ignoré |
+| `.env-prod` | Base pour un déploiement production (avant `composer dump-env prod`) | ✅ commité |
+| `docker/.env.template` | Gabarit des variables Docker/infra (mots de passe, tokens, Traefik) avec valeurs d'exemple `changeMe_*` | ✅ commité |
 
-- [x] L'application **symfony-cli** pour démarrer l'application et effectuer les différentes actions symfony et composer ;
-- [x] La version **PHP 8.3.0** ;
-- [x] Un serveur de base de données **PostgreSQL 15** ou plus ;
-- [x] ~~L'application **Nodejs 18.3.1** pour générer les composants javascript ;~~ sauf pour l'utilisation de Cypress ;
-- [x] Un serveur **rabbitMQ 3.13** ou plus pour gérer les traitements asynchrones ;
-- [x] Un serveur **SonarQube 8 LTS** ou **9 LTS** (la version 10 est supportée) ;
-- [x] La version **Python 3** et l'extension **mkDocs** pour la génération de la documentation markdown ;
-- [x] L'application **ma-moulinette** ;
+!!! warning "🔒 Jamais de secret dans un fichier commité"
+    `.env`, `.env.test` et `docker/.env.template` ne doivent contenir que des valeurs par défaut non sensibles ou des placeholders explicites (`changeMe_*`). Les vraies valeurs vont dans `.env.local`/`.env.test.local` (ignorés par Git) ou dans le gestionnaire de secrets de l'environnement cible.
 
-> Pour l'environnement de production
-
-- [x] Un serveur **Nginx* avec **PHP-FPM** ;
-- [x] La version **PHP 8.3.0** ;
-- [x] Un serveur de base de données **PostgreSQL 15** ou plus ;
-- [x] Un serveur **rabbitMQ 3.13** ou plus pour gérer les traitements asynchrones ;
-- [x] Un serveur **SonarQube 8 LTS** ou **9 LTS** (la version 10 est supportée) ;
-- [x] L'application **ma-moulinette** ;
-
-## Environnement de développement
-
-En fonction de votre environnement, vous pouvez avoir un fichier d'environnement ayant un nom différent.
-
-- [x] **.env** est le fichier de propriétés par défaut contenant l'ensemble des propriétés de l'application ;
-- [ ] **.env.local** est le fichier de propriétés spécifique à l'application ;
-- [ ] **.env.prod** est le fichier livré pour une mise en production de l'application ;
-- [x] **.env.test** est le fichier par défaut pour les tests unitaires de symfony ;
-- [ ] **.env.test.local** est le fichier spécifiques pour l'application ;
-
-- [x] modifiez les paramètres **APP_ENV** et **APP_DEBUG** du fichier `.env` ou des fichiers spécifiques :
-
-Pour l'environnement de développement/recette :
-
-```yaml
-APP_ENV = dev
-APP_DEBUG = 1
-```
-
-> Outils de développement pour windows
-
-Les scripts DOS sont disponibles dans le dossier **bin/** du projet.
-
-|---environnement
-----|---0_toolz
---------|---node-20.17.1 (pour cyPress)
---------|---php-8.3.0-NTS
---------|---postgresql-15.6-1
---------|---python-3.12.3-embed
---------|---rabbitmq-3.13.1
---------|---sonarqube-9.9.4.87374
---------|---symfony-cli
-----|---ma-moulinette
---------|---bin
-
-- [x] **console-cli.bat** pour lancer la console symfony et executer des commandes symfony ou composer
-- [x] ~~**encore.bat** pour lancer la compilation à la volée des ressources JS/CSS ;~~
-- [x] **mkdocs_serve.bat** pour lancer le serveur mkDocs ;
-- [x] **phpunit.bat** pour lancer les tests unitaires ;
-- [x] **rabbitmqadmin.py** pour lancer les commandes rabbitMQ en ligne de commande ;
-- [x] **symfony_start.bat** pour lancer le serveur symfony-cli ;
-- [x] **symfony_stop.bat** pour arrêter le serveur symfony-cli ;
-
-## Déploiement en production
-
-- [x] modifiez les paramètres **APP_ENV** et **APP_DEBUG** :
-
-Pour l'environnement de production :
-
-```yaml
-APP_ENV = prod
-APP_DEBUG = 0 ou 1 (si on veut avoir des logs complètes)
-```
-
-- [x] changez la clé **APP_SECRET** et **SECRET** ;
-
-- [x] supprimez les fichiers du dossier **public/build** ;
-- [x] supprimez le dossier **dev** et **prod** du dossier **var/cache** ;
-- [x] supprimez le fichier **dev.log** du dossier **var/log** ;
-- [x] lancez la commande pour compiler le fichier **.env.local** :  `composer dump-env prod`
-- [x] lancez la commande pour compiler le code PHP :
+Activer le mode développement :
 
 ```bash
+APP_ENV=dev
+APP_DEBUG=1
+```
+
+## 🖥️ Démarrer en développement
+
+Deux façons de démarrer l'environnement de développement, selon les habitudes :
+
+### Option 1 — Docker (recommandé, aligné sur la prod)
+
+Voir [Environnement d'exécution](../architecture/architecture-technique.md#-environnement-dexécution) pour le détail des 4 services (`database-ma-moulinette` — conteneur nommé `postgresql-ma-moulinette` —, `php-fpm-ma-moulinette`, `cron-ma-moulinette`, `nginx-ma-moulinette`).
+Copier `docker/.env.template` en `docker/.env`, adapter les valeurs, puis :
+
+```bash
+docker compose -f docker/docker-compose.yml up -d
+```
+
+### Option 2 — Outillage natif Windows (`bin/`)
+
+Le dossier `bin/` regroupe les scripts par outil :
+
+| Sous-dossier | Contenu |
+| --- | --- |
+| `bin/symfony/` | Démarrage/arrêt du serveur `symfony-cli`, console CLI |
+| `bin/postgresql/` | Scripts d'installation, sauvegarde/restauration, maintenance PostgreSQL 18 |
+| `bin/phpunit` | Script wrapper de lancement de PHPUnit (fichier, pas un sous-dossier) |
+| `bin/e2e/` | Scripts de préparation/exécution des tests E2E (reconstruction de base, seed, capture de fixtures) |
+| `bin/mkdocs/` | Serveur local de cette documentation |
+| `bin/cli/` | Scripts CLI de collecte/mise à jour appelés en dehors du serveur web (ex. `run_ma-moulinette_collecte_cli.php`) |
+| `bin/git/` | Utilitaires Git (réécriture d'historique) |
+| `bin/php-conf/` | `php.ini` de référence pour la version PHP utilisée |
+
+## 🎨 Assets publics des bundles tiers (`public/bundles/`)
+
+L'application sert ses propres assets (JS/CSS applicatifs) via **Symfony asset-mapper**, sans étape de build (voir la note ci-dessus). Mais certains bundles tiers — **EasyAdmin en premier lieu** — embarquent leurs propres CSS/JS déjà compilés (ex. `app.db37a8e3.css`, `app.c2478f67.js`) dans leur dossier `Resources/public/` (ou `public/` côté bundle).
+Ces fichiers ne passent **pas** par asset-mapper : ils doivent être publiés dans `public/bundles/<nom-du-bundle>/` via la commande classique Symfony :
+
+```bash
+php bin/console assets:install --symlink --relative
+```
+
+`public/bundles/` est **gitignored** et n'est jamais créé automatiquement — ni au premier clone, ni après un `composer update` qui change la version d'un bundle avec des assets publics (typiquement EasyAdmin).
+
+!!! caution "⚠️ Symptôme si oublié : pages EasyAdmin cassées (CSS absent, erreurs JS)"
+    Sans `public/bundles/easyadmin/`, le navigateur réclame des fichiers introuvables comme `http://localhost:8000/bundles/easyadmin/app.db37a8e3.css` (404) — la page `/admin` (et toutes les pages EasyAdmin : CRUD utilisateurs, groupes, portefeuilles…) s'affiche alors sans mise en forme et avec des erreurs JS bloquantes, ce qui peut ressembler à tort à un problème de cache navigateur ou d'asset-mapper.
+    Sur Windows sans privilèges pour les liens symboliques, `assets:install` bascule automatiquement sur une copie des fichiers (`--symlink` échoue silencieusement en `copy`, sans erreur bloquante) — c'est normal, il suffit de relancer la commande après chaque mise à jour du bundle.
+
+## 🧪 Base de données de développement
+
+Voir [Architecture — base de données](../architecture/architecture-base-de-donnees.md) pour le détail du schéma et [Migration PostgreSQL](guide-migration.md) pour la procédure d'installation complète d'un nouvel environnement.
+
+## 📦 Déploiement en production
+
+```bash
+# Passage en mode production
+APP_ENV=prod
+APP_DEBUG=0
+```
+
+- Changer `APP_SECRET` et `SECRET` (jamais réutiliser les valeurs de développement).
+- Nettoyer `var/cache/{dev,prod}` et `var/log/dev.log`.
+- Générer le fichier d'environnement compilé :
+
+```bash
+composer dump-env prod
 symfony composer dump-autoload --no-dev --classmap-authoritative
-```
-
-- [x] lancez la commande pour compiler les fichiers css/js :
-
-```bash
 php bin/console asset-map:compile
 ```
+
+## ✉️ Convention de rédaction des messages (logs, flash, JS)
+
+Trois canaux de message coexistent dans l'application, chacun avec ses propres règles de forme — à respecter pour tout nouveau code :
+
+| Canal | Préfixe `[TAG]` | Emoji dans le texte | Pourquoi |
+| --- | --- | --- | --- |
+| Logger (`$this->logger->info/warning/error(...)`) | ✅ Oui (ex. `[OWASP]`, `[Batch OWASP]`) | ✅ Oui | Permet de filtrer/grep les logs par origine ; rien d'autre n'affiche ce tag. |
+| Message flash serveur (`addFlash('notice', ['type' => ..., 'message' => ...])`) | ❌ Non | ✅ Oui | Le gabarit d'affichage ne peut pas injecter d'icône à partir de `type` : l'emoji doit être écrit dans le texte du message lui-même. |
+| Message JS (`showMessage(type, message)`) | ❌ Non | ❌ Non | Le type (`info`/`error`/`warning`/`critical`...) est déjà utilisé par `showMessage()` pour injecter l'icône/la couleur appropriée — un emoji écrit en dur ferait doublon. |
+
+Un même texte de message ne doit donc **jamais** être réutilisé tel quel entre un appel logger et un message utilisateur (flash ou JS) : construire deux chaînes distinctes si besoin, comme le fait `ProjetPerimetreGuard::verifierPerimetreProjet()`.
+
+## 📚 Pour aller plus loin
+
+- [Architecture technique](../architecture/architecture-technique.md) : stack, conteneurs Docker, variables d'environnement.
+- [Gestion de la sécurité](securite.md) : rôles, hôtes de confiance.
+- [Tests unitaires](test-unitaire.md) : lancer la suite de tests.
+- [Travailler à plusieurs](tuto-git.md) : conventions Git du projet.
 
 -**-- FIN --**-
 
