@@ -2,7 +2,7 @@
 
 ## 👤 Compte administrateur
 
-Un compte `admin` (`admin@ma-moulinette.fr`, rôle `ROLE_INTERNAL`) est créé par les fixtures de base (`migrations/PosgreSQL/90_fixtures/fixtures.sql`). Son mot de passe par défaut est **`eYK8k4[T;99N!em^`** (également documenté dans `README.md`).
+Un compte `admin` (`admin@ma-moulinette.fr`, rôle `ROLE_INTERNAL`) est créé par les fixtures de base (`migrations/POSTGRESQL/90_fixtures/fixtures.sql`). Son mot de passe par défaut est **`eYK8k4[T;99N!em^`** (également documenté dans `README.md`).
 
 !!! warning "🔒 Changement obligatoire avant toute mise en production"
     Ce mot de passe est un identifiant de démarrage connu et public (documenté ici et dans `README.md` volontairement), pas un secret — il **doit être changé manuellement** avant toute exposition de l'environnement au-delà d'un poste de développement local.

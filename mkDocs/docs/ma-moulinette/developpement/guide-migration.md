@@ -14,7 +14,7 @@ Ce guide décrit comment installer le schéma PostgreSQL de Ma-Moulinette sur un
 ## 🐳 Option 1 — Installation automatique (Docker)
 
 C'est le chemin recommandé, utilisé en développement comme en production (voir [Environnement d'exécution](../architecture/architecture-technique.md#-environnement-dexécution)).
-Au démarrage du conteneur `database-ma-moulinette`, `docker/scripts/postgresql/init_sql_files.sh` exécute **automatiquement** tous les fichiers `.sql` trouvés sous `migrations/PosgreSQL/` (montés sur `/docker-entrypoint-initdb.d`), triés par ordre alphabétique de chemin — c'est pourquoi les dossiers sont numérotés (`00_init/`, `10_schema/`, `20_tables/`…).
+Au démarrage du conteneur `database-ma-moulinette`, `docker/scripts/postgresql/init_sql_files.sh` exécute **automatiquement** tous les fichiers `.sql` trouvés sous `migrations/POSTGRESQL/` (montés sur `/docker-entrypoint-initdb.d`), triés par ordre alphabétique de chemin — c'est pourquoi les dossiers sont numérotés (`00_init/`, `10_schema/`, `20_tables/`…).
 
 Prérequis : définir `DB_USER_PASSWORD` (mot de passe applicatif, injecté dans `01_create_roles.sql` via la variable psql `:'db_user_password'`) — voir `docker/.env.template`.
 
@@ -24,7 +24,7 @@ docker compose -f docker/docker-compose.yml up -d database-ma-moulinette
 
 ## 🖥️ Option 2 — Installation manuelle (`psql`)
 
-Depuis le dossier `migrations/PosgreSQL/`, exécuter le script maître qui enchaîne tous les sous-dossiers dans l'ordre :
+Depuis le dossier `migrations/POSTGRESQL/`, exécuter le script maître qui enchaîne tous les sous-dossiers dans l'ordre :
 
 ```bash
 psql -U postgres -v ON_ERROR_STOP=1 -v db_user_password='<mot_de_passe>' -f 99_master_install.sql
