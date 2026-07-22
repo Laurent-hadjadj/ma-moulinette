@@ -123,7 +123,7 @@ class DcCve
      * Les requêtes du repo utilisent jsonb_array_elements_text(c.cwes) qui
      * exige le type JSONB (cf countProjectsByCwe, listTopCriticalCves...).
      * Avec une colonne JSON, la fonction échoue ou retourne vide. Le DDL
-     * d'origine (migrations/initialisation/20_tables/dc_cve.sql)
+     * d'origine (migrations/POSTGRESQL/20_tables/dc_cve.sql)
      * declare bien JSONB ; on aligne le mapping ORM. */
     /** @var array<int, string> */
     #[ORM\Column(

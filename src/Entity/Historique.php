@@ -432,7 +432,7 @@ class Historique
 
     /* MODIF 2026-05-16 : ajout propriété
      * coverageRating, oubliée dans l’entité alors qu'elle existe dans le DDL
-     * (migrations/initialisation/20_tables/historique.sql) et qu'elle
+     * (migrations/POSTGRESQL/20_tables/historique.sql) et qu'elle
      * est référencée dans HistoriqueRepository::insertHistoriqueAjoutProjet
      * (whitelist + $historiqueRatingColumns).
      * Consequence du drift : doctrine:schema:update ne creait pas la colonne
