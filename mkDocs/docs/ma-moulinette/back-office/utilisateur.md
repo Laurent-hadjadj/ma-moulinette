@@ -165,7 +165,7 @@ Journal des rôles (/admin/journal-roles, UserRoleLogController)
 
 ## 🌱 Comptes créés par défaut
 
-Les fixtures de base (`migrations/PosgreSQL/90_fixtures/fixtures.sql`) ne créent qu'un seul compte : `admin@ma-moulinette.fr` (rôle `ROLE_INTERNAL`) — voir [Gestion de la sécurité](../developpement/securite.md#-compte-administrateur) pour le mot de passe par défaut et l'avertissement associé.
+Les fixtures de base (`migrations/POSTGRESQL/90_fixtures/fixtures.sql`) ne créent qu'un seul compte : `admin@ma-moulinette.fr` (rôle `ROLE_INTERNAL`) — voir [Gestion de la sécurité](../developpement/securite.md#-compte-administrateur) pour le mot de passe par défaut et l'avertissement associé.
 
 Il n'y a pas d'autres comptes créés automatiquement en environnement de production/développement standard.
 

@@ -43,7 +43,7 @@ Manuel (`when: manual`), déclenché uniquement sur événement `web`. Récupèr
 
 1. Archive l'ancienne version côté serveur cible (`tar.gz` horodaté).
 2. Déploie la nouvelle version par SSH/SCP.
-3. Pousse les scripts SQL d'évolution (`migrations/updates/`) et les exécute côté serveur via `docker exec ... execute_sql_files.sh` sur le conteneur PostgreSQL — voir [Installation d'un environnement PostgreSQL](guide-migration.md) pour le détail de ce script.
+3. Pousse les scripts SQL d'évolution (`migrations/POSTGRESQL/updates/`) et les exécute côté serveur via `docker exec ... execute_sql_files.sh` sur le conteneur PostgreSQL — voir [Installation d'un environnement PostgreSQL](guide-migration.md) pour le détail de ce script.
 
 ## 🎛️ Paramétrage par environnement
 

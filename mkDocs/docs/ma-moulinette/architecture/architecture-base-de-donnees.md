@@ -8,7 +8,7 @@ Depuis la v2.0.0, Ma-Moulinette utilise **une seule base PostgreSQL 18**, dans u
 
 ## 📊 Vue d'ensemble chiffrée
 
-Décompte réel des objets déclarés dans `migrations/PosgreSQL/` (un fichier SQL = une définition, comptage exhaustif, pas une estimation) :
+Décompte réel des objets déclarés dans `migrations/POSTGRESQL/` (un fichier SQL = une définition, comptage exhaustif, pas une estimation) :
 
 | Type d'objet | Nombre | Source |
 | --- | :---: | --- |
@@ -23,7 +23,7 @@ Décompte réel des objets déclarés dans `migrations/PosgreSQL/` (un fichier S
 
 ## 📂 Organisation des scripts de migration
 
-Le schéma est défini par des scripts SQL bruts dans `migrations/PosgreSQL/`, organisés par type d'objet et exécutés dans un ordre précis (voir `99_master_install.sql`) :
+Le schéma est défini par des scripts SQL bruts dans `migrations/POSTGRESQL/`, organisés par type d'objet et exécutés dans un ordre précis (voir `99_master_install.sql`) :
 
 | Dossier | Contenu | Ordre |
 | --- | --- | :---: |
@@ -54,7 +54,7 @@ psql -U postgres -v ON_ERROR_STOP=1 -f 99_master_install.sql
 PostgreSQL propose un mode `UNLOGGED` pour les tables : les écritures ne passent pas par le WAL (journal de transactions), ce qui les rend plus rapides mais **non répliquées** et **non garanties après un crash ou un arrêt non propre du serveur** — leur contenu est alors automatiquement vidé (`TRUNCATE` implicite) au redémarrage.
 C'est un mécanisme PostgreSQL natif (`CREATE UNLOGGED TABLE`), différent d'une table `TEMPORARY` (qui, elle, est propre à une session/connexion et disparaît à sa fermeture).
 
-Dans `migrations/PosgreSQL/`, une seule table utilise ce mécanisme aujourd'hui :
+Dans `migrations/POSTGRESQL/`, une seule table utilise ce mécanisme aujourd'hui :
 
 | Table | Mode | Rôle |
 | --- | --- | --- |
