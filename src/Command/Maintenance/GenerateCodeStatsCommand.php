@@ -105,7 +105,17 @@ class GenerateCodeStatsCommand extends Command
 
     // ─────────────────────────────────────────────────────────────────────────────
 
-    /** @return array<string, array{fichier:int,code:int,comment:int,vide:int,total:int}>|null */
+    /**
+     * [Description for runCloc]
+     *
+     * @param SymfonyStyle $io
+     *
+     * @return array<string, array{fichier:int,code:int,comment:int,vide:int,total:int}>|null
+     *
+     * Created at: 22/07/2026 11:18:19 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     private function runCloc(SymfonyStyle $io): ?array
     {
         // Correspondance nom cloc → clé interne (insensible à la casse, sous-chaîne)
@@ -129,11 +139,14 @@ class GenerateCodeStatsCommand extends Command
             return null;
         }
 
-        // Passe 2 : scripts SQL d'initialisation
-        [, $data2] = $this->clocJson(['migrations/initialisation'], 'passe-2', $io);
+        // Passe 2 : scripts SQL d'initialisation — tout migrations/POSTGRESQL/ (récursif, capte
+        // aussi 99_master_install.sql à la racine), sauf updates/ (compté à part en passe 3).
+        // Une liste de sous-dossiers codée en dur serait
+        // silencieusement incomplète au prochain ajout/renommage (cf. correction du 2026-07-21).
+        [, $data2] = $this->clocJson(['migrations/POSTGRESQL'], 'passe-2', $io, ['--exclude-dir=updates']);
 
         // Passe 3 : scripts SQL d'updates
-        [, $data3] = $this->clocJson(['migrations/updates'], 'passe-3', $io);
+        [, $data3] = $this->clocJson(['migrations/POSTGRESQL/updates'], 'passe-3', $io);
 
         // Accumulation langages principaux (HTML + Twig fusionnés dans 'html')
         $cloc = [];
@@ -171,8 +184,19 @@ class GenerateCodeStatsCommand extends Command
         return $cloc;
     }
 
-    /** @return array{0:bool, 1:array<string, array<string, int>>} */
-    private function clocJson(array $relativePaths, string $passLabel, SymfonyStyle $io): array
+    /**
+     * [Description for clocJson]
+     *
+     * @param string[] $relativePaths
+     * @param string[] $extraArgs
+     *
+     * @return array{0:bool, 1:array<string, array<string, int>>}
+     *
+     * Created at: 22/07/2026 11:15:11 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function clocJson(array $relativePaths, string $passLabel, SymfonyStyle $io, array $extraArgs = []): array
     {
         // Vérifie l'existence via le chemin absolu, passe le chemin clsrelatif à cloc
         $existing = [];
@@ -192,7 +216,7 @@ class GenerateCodeStatsCommand extends Command
             return [true, []];
         }
 
-        $cmd     = array_merge(['cloc', '--json'], $existing);
+        $cmd     = array_merge(['cloc', '--json'], $extraArgs, $existing);
         $process = new Process($cmd);
         $process->setWorkingDirectory($this->projectDir);
         $process->setTimeout(120);
@@ -233,7 +257,18 @@ class GenerateCodeStatsCommand extends Command
         return [true, $decoded];
     }
 
-    /** Cherche n'importe quelle entrée dont le nom contient "sql" (insensible à la casse). */
+    /**
+     * [Description for extractSqlRow]
+     * Cherche n'importe quelle entrée dont le nom contient "sql" (insensible à la casse).
+     *
+     * @param array $data
+     *
+     * @return array
+     *
+     * Created at: 22/07/2026 11:15:49 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     private function extractSqlRow(array $data): array
     {
         foreach ($data as $langName => $langData) {
@@ -251,15 +286,33 @@ class GenerateCodeStatsCommand extends Command
     }
 
     /**
+     * [Description for mapLang]
      * Mappe un nom de langage cloc vers une clé interne.
+     *
      * @param array<string,string> $map
+     *
+     * @return string|null
+     *
+     * Created at: 22/07/2026 11:16:14 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private function mapLang(string $langName, array $map): ?string
     {
         return $map[strtolower($langName)] ?? null;
     }
 
-    /** @param array<string, int>|null $row */
+    /**
+     * [Description for sqlRow]
+     *
+     * @param array<string, int>|null $row
+     *
+     * @return array
+     *
+     * Created at: 22/07/2026 11:16:49 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     private function sqlRow(?array $row): array
     {
         return [
@@ -271,7 +324,17 @@ class GenerateCodeStatsCommand extends Command
         ];
     }
 
-    /** @return array<string, array{count:int|null}> */
+    /**
+     * [Description for countTests]
+     *
+     * @param SymfonyStyle $io
+     *
+     * @return array<string, array{count:int|null}>
+     *
+     * Created at: 22/07/2026 11:17:31 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
     private function countTests(SymfonyStyle $io): array
     {
         $result  = [];
