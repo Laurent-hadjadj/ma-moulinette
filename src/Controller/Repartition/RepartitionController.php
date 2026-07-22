@@ -13,7 +13,7 @@
 
 namespace App\Controller\Repartition;
 
-use App\Controller\Traits\AppUserAware;
+use App\Controller\Traits\{AppUserAware, ProjetPerimetreGuard};
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
@@ -31,8 +31,10 @@ use App\Service\UserAgent\UserAgentTrackingFacade;
 class RepartitionController extends AbstractController
 {
     use AppUserAware;
+    use ProjetPerimetreGuard;
 
     private static string $erreur400 = "❌ La requête est incorrecte (Erreur 400).";
+    private static string $infoAucunProjet = 'ℹ️ Sélectionnez un projet depuis la page Projet pour accéder à cette vue.';
     private static string $erreur403 = "🚫 Vous devez avoir le rôle COLLECTE pour réaliser cette action (Erreur 403).";
     private static string $page = 'projet/repartition-module.html.twig';
     private static string $europeParis = 'Europe/Paris';
@@ -175,12 +177,14 @@ class RepartitionController extends AbstractController
         $token = $request->query->get('token');
         $debug = '';
 
-        /** On teste si la clé est valide */
+        /* MODIF 2026-07-22 : token absent = navigation sans contexte, pas une
+         * anomalie — contrairement à un token présent mais indécodable
+         * (bloc decodeToken plus bas), qui reste une vraie erreur 400. */
         if (empty($token)) {
-            $this->logger->error('[Répartition] ❌ Requête JSON invalide ou clé maven_key absente.', [
+            $this->logger->info('[Répartition] ℹ️ Token absent, aucun projet sélectionné.', [
                 'user' => $user->getUserIdentifier(),
             ]);
-            return $this->addFlashAndRender('error', self::$erreur400, $debug, $render);
+            return $this->addFlashAndRender('info', self::$infoAucunProjet, $debug, $render);
         }
 
         /** On vérifie si l'utilisateur à un rôle Collecte ? */
@@ -196,6 +200,18 @@ class RepartitionController extends AbstractController
                 'token' => $token,
             ]);
             return $this->addFlashAndRender('error', self::$erreur400, $debug, $render);
+        }
+
+        /* MODIF 2026-07-22 : ajout du filtrage par groupe fonctionnel, aligné sur
+         * OwaspController/CosuiController/CleanCodeController — jusqu'ici seul
+         * ROLE_COLLECTE protégeait cette page, sans vérification que la
+         * maven_key décodée du token appartienne bien au périmètre de
+         * l'utilisateur authentifié. */
+        $perimetre = $this->verifierPerimetreProjet($mavenKey, '[Répartition]');
+        if ($perimetre['code'] !== 200) {
+            $message = $perimetre['message']
+                ?? "Une erreur est survenue lors de la vérification du périmètre (Erreur {$perimetre['code']}).";
+            return $this->addFlashAndRender('warning', $message, $debug, $render);
         }
 
         /** On lance la collecte des informations par type et sévérité */
