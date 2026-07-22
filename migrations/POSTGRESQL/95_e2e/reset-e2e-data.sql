@@ -9,27 +9,32 @@
 -- Reset rapide pour les tests E2E Playwright.
 --
 -- Equivalent du reset entre tests d'integration Symfony :
---   1. Vide les tables mutees par les scenarios E2E
---   2. Re-charge les 5 utilisateurs E2E dans leur etat initial
+--   1. Vide les tables mutées par les scenarios E2E
+--   2. Re-charge les 5 utilisateurs E2E dans leur état initial
 --
 -- Conserve :
---   - Les referentiels (owasp_top10, ma_moulinette versions)
+--   - Les référentiels (owasp_top10, ma_moulinette versions)
 --   - L'admin de fixtures.sql (admin@ma-moulinette.fr)
---   - Les groupes par defaut (Aucun, En attente)
+--   - Les groupes par défaut (Aucun, En attente)
 --
 -- Wipe :
 --   - 5 utilisateurs E2E (puis re-INSERT via fixtures-e2e.sql)
---   - groupes utilisateur custom (cree par scenarios)
+--   - groupes utilisateur custom (créé par scenarios)
 --   - groupes fonctionnels
 --   - portefeuilles
 --   - toutes les tables de donnees projet (collecte/peinture)
---   - tables d'activite et batch
+--   - tables d’activité et batch
 --
 -- Usage :
 --   bin/e2e/reset-e2e-data.ps1
 --   ou directement : psql -U db_user -d ma_moulinette -f reset-e2e-data.sql
 
-\c ma_moulinette db_user
+-- MODIF 2026-07-22 : le \c ma_moulinette db_user precedent écrasait
+-- silencieusement la cible réelle (psql -d $DbName deja fournie par
+-- reset-e2e-data.ps1) et faisait executer ce fichier sur la VRAIE base
+-- ma_moulinette au lieu de ma_moulinette_test — cause racine de l'incident
+-- du 2026-05-02 (marqueurs E2E retrouves en prod). Supprime : la connexion
+-- -d/-U du script appelant fait foi.
 
 BEGIN;
 
