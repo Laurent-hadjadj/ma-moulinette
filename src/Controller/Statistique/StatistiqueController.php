@@ -22,7 +22,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
+use App\Controller\Traits\AppUserAware;
 use App\Entity\Historique;
+use App\Service\MesProjets;
 use App\Service\UserAgent\{UserAgentTrackingFacade, UserAgentAnalysisService};
 
 /**
@@ -30,6 +32,7 @@ use App\Service\UserAgent\{UserAgentTrackingFacade, UserAgentAnalysisService};
  */
 class StatistiqueController extends AbstractController
 {
+    use AppUserAware;
 
     private string $logoEntreprise;
     private string $marqueEntrepriseShort;
@@ -46,7 +49,8 @@ class StatistiqueController extends AbstractController
         ParameterBagInterface $params,
         private EntityManagerInterface $em,
         private UserAgentTrackingFacade $tracking,
-        private UserAgentAnalysisService $analysis
+        private UserAgentAnalysisService $analysis,
+        private MesProjets $mesProjets
     ) {
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
@@ -154,7 +158,36 @@ class StatistiqueController extends AbstractController
     {
         $this->tracking->track('STATISTIQUES_PROJET');
 
-        $result = $this->em->getRepository(Historique::class)->selectAllProjetsDerniereSynthese();
+        /* MODIF 2026-07-22 : ajout du filtrage par groupe fonctionnel, aligné sur
+         * mes_projets/clean_code_synthese — cette page remontait jusqu'ici les
+         * métriques de TOUS les projets de la base à n'importe quel utilisateur
+         * authentifié, sans restriction de périmètre. */
+        $groupes = $this->appUser()->getListeGroupeFonctionnel();
+        if (empty($groupes)) {
+            $this->addFlash('notice', [
+                'type'    => 'warning',
+                'message' => 'Vous devez être rattaché à un groupe fonctionnel pour accéder à cette vue (Erreur 404).',
+                'trace'   => null,
+            ]);
+            return $this->render('statistique/projet.html.twig', $this->genericRender() + ['projets' => []]);
+        }
+
+        $mesProjets = $this->mesProjets->liste($groupes);
+        if ($mesProjets['code'] !== 200 || empty($mesProjets['projets'])) {
+            $this->addFlash('notice', [
+                'type'    => 'warning',
+                'message' => "Aucun projet trouvé pour votre groupe fonctionnel. Vérifiez le tag utilisé dans SonarQube (Erreur 406).",
+                'trace'   => null,
+            ]);
+            return $this->render('statistique/projet.html.twig', $this->genericRender() + ['projets' => []]);
+        }
+
+        $mavenKeys = array_values(array_map(
+            static fn(array $projet): string => (string) $projet['id'],
+            $mesProjets['projets']
+        ));
+
+        $result = $this->em->getRepository(Historique::class)->selectAllProjetsDerniereSynthese($mavenKeys);
 
         if ($result['code'] !== 200) {
             $this->addFlash('notice', [
