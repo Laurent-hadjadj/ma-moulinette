@@ -4,7 +4,7 @@
 # Usage :
 #   .\bin\e2e\seed-e2e.ps1 -File 95_e2e\seed-after-spec-02-groupes.sql
 #
-# Pratique pour replicer l'etat de fin d'une spec via SQL, plutot que rejouer
+# Pratique pour replier l'état de fin d'une spec via SQL, plutôt que rejouer
 # l'UI (equivalent fixtures Doctrine en integration Symfony).
 # ==============================================================================
 
@@ -28,14 +28,14 @@ $ErrorActionPreference = "Stop"
 # GARDE-FOU CRITIQUE : refus explicite de cibler la base de PROD
 if ($DbName -eq "ma_moulinette" -and -not $AllowProd) {
     Write-Host "[seed-e2e] REFUS : DbName='ma_moulinette' est la base de PROD." -ForegroundColor Red
-    Write-Host "[seed-e2e]        Utilisez -DbName ma_moulinette_test (defaut), ou -AllowProd pour forcer." -ForegroundColor Red
+    Write-Host "[seed-e2e]        Utilisez -DbName ma_moulinette_test (défaut), ou -AllowProd pour forcer." -ForegroundColor Red
     exit 2
 }
 
 $scriptDir     = Split-Path -Parent $MyInvocation.MyCommand.Path
 # Script in bin/e2e/ -> remonter 2 niveaux pour atteindre la racine
 $projectRoot   = Split-Path -Parent (Split-Path -Parent $scriptDir)
-$migrationsDir = Join-Path $projectRoot "migrations\PosgreSQL"
+$migrationsDir = Join-Path $projectRoot "migrations\POSTGRESQL"
 
 if (-not (Test-Path (Join-Path $migrationsDir $File))) {
     Write-Error "Introuvable : $migrationsDir\$File"

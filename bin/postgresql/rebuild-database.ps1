@@ -11,7 +11,7 @@
 #   - Un super-utilisateur PostgreSQL capable de DROP DATABASE + CREATE ROLE
 #
 # Ce script drop + recrée la base "ma_moulinette" en executant
-# migrations/initialisation/99_master_install.sql depuis son repertoire, pour que
+# migrations/POSTGRESQL/99_master_install.sql depuis son repertoire, pour que
 # les \ir (include relative) resolvent correctement.
 # ==============================================================================
 
@@ -28,7 +28,7 @@ $ErrorActionPreference = "Stop"
 # Force la console en UTF-8 pour afficher correctement les accents/emojis
 # retournes par psql (sinon affichage en CP850 = "Ã©" au lieu de "e").
 # En PowerShell 5.1, il faut a la fois [Console]::OutputEncoding ET $OutputEncoding
-# ET chcp 65001 pour etre certain.
+# ET chcp 65001 pour être certain.
 $previousOutputEncoding      = [Console]::OutputEncoding
 $previousPSOutputEncoding    = $OutputEncoding
 $previousCodePage            = (chcp) -replace '[^0-9]', ''
@@ -36,11 +36,11 @@ $previousCodePage            = (chcp) -replace '[^0-9]', ''
 $OutputEncoding              = [System.Text.Encoding]::UTF8
 chcp 65001 | Out-Null
 
-# Localise le repertoire migrations/PosgreSQL a partir de ce script
+# Localise le repertoire migrations/POSTGRESQL a partir de ce script
 # Script in var -> remonter 2 niveaux pour atteindre la racine
 $scriptDir      = Split-Path -Parent $MyInvocation.MyCommand.Path
 $projectRoot    = Split-Path -Parent $scriptDir
-$migrationsDir  = Join-Path $projectRoot "migrations/initialisation"
+$migrationsDir  = Join-Path $projectRoot "migrations/POSTGRESQL"
 $masterScript   = "99_master_install.sql"
 
 if (-not (Test-Path (Join-Path $migrationsDir $masterScript))) {
@@ -57,7 +57,7 @@ Write-Host " SuperUser  : $SuperUser"
 Write-Host " Migrations : $migrationsDir"
 Write-Host "----------------------------------------------------------------"
 
-# psql -v ON_ERROR_STOP=1 : arret a la premiere erreur SQL
+# psql -v ON_ERROR_STOP=1 : arrêt a la premiere erreur SQL
 # --set=AUTOCOMMIT=on     : chaque fichier peut faire des \c (reconnect)
 
 $psqlArgs = @(

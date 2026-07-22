@@ -1,11 +1,11 @@
 <?php
 /**
- * Genere les hashes bcrypt (cost=13) pour les utilisateurs E2E.
- * Password = courriel (convention E2E validee 2026-04-24).
+ * Génère les hashes bcrypt (cost=13) pour les utilisateurs E2E.
+ * Password = courriel (convention E2E validée 2026-04-24).
  *
  * Usage : php bin/e2e/generate-e2e-hashes.php
  *
- * La sortie est a copier dans migrations/PosgreSQL/90_fixtures/fixtures-e2e.sql
+ * La sortie est a copier dans migrations/POSTGRESQL/90_fixtures/fixtures-e2e.sql
  */
 
 // 5 users E2E (Phase K.2.b) :

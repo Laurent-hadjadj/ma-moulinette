@@ -1,5 +1,5 @@
 # ==============================================================================
-# Ma-Moulinette - Reset rapide de l'etat E2E (sans prompt password)
+# Ma-Moulinette - Reset rapide de l'état E2E (sans prompt password)
 # ==============================================================================
 # Usage :
 #   .\bin\e2e\reset-e2e-data.ps1
@@ -10,7 +10,7 @@
 #   - Pas de prompt password (utilise db_user / db_password de DATABASE_URL)
 #   - Equivalent du reset entre tests d'integration Symfony
 #
-# Conserve : referentiels OWASP, versions ma_moulinette, admin, groupes defaut
+# Conserve : référentiels OWASP, versions ma_moulinette, admin, groupes défaut
 # Wipe + reload : 5 utilisateurs E2E, donnees projet, groupes custom
 # ==============================================================================
 
@@ -34,14 +34,14 @@ $ErrorActionPreference = "Stop"
 # GARDE-FOU CRITIQUE : refus explicite de cibler la base de PROD
 if ($DbName -eq "ma_moulinette" -and -not $AllowProd) {
     Write-Host "[reset-e2e] REFUS : DbName='ma_moulinette' est la base de PROD." -ForegroundColor Red
-    Write-Host "[reset-e2e]         Utilisez -DbName ma_moulinette_test (defaut), ou -AllowProd pour forcer." -ForegroundColor Red
+    Write-Host "[reset-e2e]         Utilisez -DbName ma_moulinette_test (défaut), ou -AllowProd pour forcer." -ForegroundColor Red
     exit 2
 }
 
 $scriptDir     = Split-Path -Parent $MyInvocation.MyCommand.Path
 # Script in bin/e2e/ -> remonter 2 niveaux pour atteindre la racine
 $projectRoot   = Split-Path -Parent (Split-Path -Parent $scriptDir)
-$migrationsDir = Join-Path $projectRoot "migrations\PosgreSQL"
+$migrationsDir = Join-Path $projectRoot "migrations\POSTGRESQL"
 $resetScript   = "95_e2e\reset-e2e-data.sql"
 
 if (-not (Test-Path (Join-Path $migrationsDir $resetScript))) {
