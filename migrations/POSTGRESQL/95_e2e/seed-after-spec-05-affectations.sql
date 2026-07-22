@@ -15,7 +15,9 @@
 --
 -- Usage : appele APRES seed-after-spec-04-projet-tetris.sql.
 
-\c ma_moulinette db_user
+-- MODIF 2026-07-22 : \c ma_moulinette db_user retire — voir
+-- reset-e2e-data.sql pour le detail (écrasait la cible -d/-U réelle du
+-- script appelant, cause racine de l'incident du 2026-05-02).
 
 BEGIN;
 
