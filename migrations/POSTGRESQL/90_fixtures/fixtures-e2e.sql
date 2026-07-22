@@ -29,7 +29,7 @@
 --
 -- USAGE :
 --   psql -U postgres -d ma_moulinette -v ON_ERROR_STOP=1 \
---        -f migrations/PosgreSQL/90_fixtures/fixtures-e2e.sql
+--        -f migrations/POSTGRESQL/90_fixtures/fixtures-e2e.sql
 --
 -- Idempotent : peut etre relance sans erreur.
 

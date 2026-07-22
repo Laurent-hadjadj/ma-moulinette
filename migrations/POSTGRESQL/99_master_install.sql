@@ -3,7 +3,7 @@
 -- ## V2.0.1 - 24/04/2026
 -- ##
 -- ## USAGE : psql -U postgres -v ON_ERROR_STOP=1 -f 99_master_install.sql
--- ##         (depuis le repertoire migrations/PosgreSQL/)
+-- ##         (depuis le repertoire migrations/POSTGRESQL/)
 -- ##
 -- ## Note : \ir = include relative (relatif au fichier courant).
 -- ##        Nécessite PostgreSQL >= 9.6.
