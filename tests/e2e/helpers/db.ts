@@ -5,7 +5,7 @@ import { resolve } from 'node:path';
 // On remonte tests/e2e/helpers -> tests/e2e -> tests -> projectRoot
 const projectRoot = resolve(__dirname, '..', '..', '..');
 const resetScript = resolve(projectRoot, 'bin', 'e2e', 'reset-e2e-data.ps1');
-const seedScript  = resolve(projectRoot, 'bin', 'e2e', 'seed-e2e.ps1');
+const seedScript = resolve(projectRoot, 'bin', 'e2e', 'seed-e2e.ps1');
 
 // Base CIBLE des seeds/resets E2E. Override via env E2E_DB_NAME si besoin.
 // Les scripts ps1 refusent ma_moulinette (PROD) sauf -AllowProd explicite.
@@ -41,7 +41,7 @@ export function resetE2EData(): void {
 }
 
 /**
- * Charge un fichier SQL de seed (relatif à `migrations/PosgreSQL/`).
+ * Charge un fichier SQL de seed (relatif à `migrations/POSTGRESQL/`).
  * Utilisé pour réinjecter rapidement un état "post-spec X" sans rejouer
  * l'UI — équivalent `loadFixtures()` en intégration Symfony.
  */
