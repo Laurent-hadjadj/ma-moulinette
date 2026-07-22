@@ -1346,8 +1346,21 @@ class HistoriqueRepository extends ServiceEntityRepository
      *
      * @return array<int|string, mixed>
      */
-    public function selectAllProjetsDerniereSynthese(): array
+    /**
+     * MODIF 2026-07-22 : ajout du filtrage par $mavenKeys (périmètre groupe
+     * fonctionnel de l'utilisateur) — auparavant, tous les projets de la base
+     * étaient remontés à n'importe quel utilisateur authentifié, sans
+     * restriction de périmètre (contrairement à mes_projets/clean_code_synthese).
+     *
+     * @param string[] $mavenKeys
+     * @return array<int|string, mixed>
+     */
+    public function selectAllProjetsDerniereSynthese(array $mavenKeys): array
     {
+        if ($mavenKeys === []) {
+            return ['code' => 200, 'projets' => [], 'erreur' => ''];
+        }
+
         $sql = "SELECT DISTINCT ON (maven_key)
                     maven_key, project_name, version, date_version,
                     alert_status,
@@ -1363,11 +1376,14 @@ class HistoriqueRepository extends ServiceEntityRepository
                     minor_violations, info_violations,
                     date_enregistrement
                 FROM ma_moulinette.historique
+                WHERE maven_key IN (:maven_keys)
                 ORDER BY maven_key, date_enregistrement DESC";
         try {
-            $rows = $this->getEntityManager()->getConnection()
-                ->executeQuery(preg_replace(self::$removeReturnLine, ' ', $sql))
-                ->fetchAllAssociative();
+            $rows = $this->getEntityManager()->getConnection()->executeQuery(
+                preg_replace(self::$removeReturnLine, ' ', $sql),
+                ['maven_keys' => $mavenKeys],
+                ['maven_keys' => ArrayParameterType::STRING],
+            )->fetchAllAssociative();
         } catch (\Throwable $e) {
             return $this->handleDatabaseException($e);
         }
