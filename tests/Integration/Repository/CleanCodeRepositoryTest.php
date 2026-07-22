@@ -43,9 +43,9 @@ class CleanCodeRepositoryTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('ma_moulinette.clean_code_id_seq', 1, false);");
         }
 
-        $purger   = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new CleanCodeFixtures()]);
+        $connection->executeStatement('DELETE FROM ma_moulinette.clean_code');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new CleanCodeFixtures()], true);
     }
 
     // ─── 1. selectCleanCode : retourne 1 ligne (LIMIT 1), la plus récente ─────

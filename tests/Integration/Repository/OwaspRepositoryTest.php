@@ -68,9 +68,9 @@ class OwaspRepositoryTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new OwaspFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.owasp');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new OwaspFixtures()], true);
     }
 
     /* MODIF 2026-05-10 : tests selectOwaspVersion (utilise par

@@ -42,9 +42,9 @@ class ActivityBatchReportKernelTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new ActivityBatchReportFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.activity_batch_report');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new ActivityBatchReportFixtures()], true);
     }
 
     public function testActivityBatchReportFindOneBy(): void

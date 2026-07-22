@@ -42,9 +42,9 @@ class TodoKernelTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new TodoFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.todo');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new TodoFixtures()], true);
     }
 
     public function testTodoFindOneBy(): void

@@ -39,9 +39,9 @@ class InformationProjetKernelTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new InformationProjetFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.information_projet');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new InformationProjetFixtures()], true);
     }
 
     public function testInformationProjetFindOneBy(): void

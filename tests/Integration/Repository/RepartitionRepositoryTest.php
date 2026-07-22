@@ -45,9 +45,7 @@ class RepartitionRepositoryTest extends KernelTestCase
 
     private function purgeDatabase(): void
     {
-        $purger = new ORMPurger($this->em);
-        $purger->setPurgeMode(ORMPurger::PURGE_MODE_TRUNCATE);
-        $purger->purge();
+        $this->em->getConnection()->executeStatement('DELETE FROM ma_moulinette.repartition');
     }
 
     /**

@@ -55,9 +55,9 @@ class OwaspTop10RepositoryTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new OwaspTop10Fixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.owasp_top10');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new OwaspTop10Fixtures()], true);
     }
 
     /**

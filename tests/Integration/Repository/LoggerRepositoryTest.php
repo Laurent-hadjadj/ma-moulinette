@@ -44,9 +44,9 @@ class LoggerRepositoryTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new LoggerFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.logger');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new LoggerFixtures()], true);
     }
 
     public function testDeleteLoggerMavenKey(): void

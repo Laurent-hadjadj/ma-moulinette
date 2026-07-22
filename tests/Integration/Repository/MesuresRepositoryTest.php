@@ -43,9 +43,9 @@ class MesuresRepositoryTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new MesuresFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.mesures');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new MesuresFixtures()], true);
     }
 
     public function testSelectMesuresVersionLast(): void

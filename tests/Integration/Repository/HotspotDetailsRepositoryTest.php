@@ -44,9 +44,9 @@ class HotspotDetailsRepositoryTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new HotspotDetailsFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.hotspot_details');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new HotspotDetailsFixtures()], true);
     }
 
     public function testSelectHotspotDetailsByStatus(): void

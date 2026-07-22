@@ -43,9 +43,9 @@ class AnomalieDetailsRepositoryTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new AnomalieDetailsFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.anomalie_details');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new AnomalieDetailsFixtures()], true);
     }
 
     public function testDeleteAnomalieDetailsMavenKey(): void

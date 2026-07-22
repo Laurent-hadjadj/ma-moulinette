@@ -42,9 +42,9 @@ class ActivityHistoriqueRepositoryTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new ActivityHistoriqueFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.activity_historique');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new ActivityHistoriqueFixtures()], true);
     }
 
     public function testInsertHistoriqueActivity(): void

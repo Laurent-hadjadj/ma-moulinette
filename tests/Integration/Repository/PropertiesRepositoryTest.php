@@ -50,9 +50,9 @@ class PropertiesRepositoryTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new PropertiesFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.properties');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new PropertiesFixtures()], true);
     }
 
     public function testGetProperties(): void

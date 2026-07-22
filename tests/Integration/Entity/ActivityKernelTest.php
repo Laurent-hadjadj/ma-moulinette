@@ -42,9 +42,9 @@ class ActivityKernelTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new ActivityFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.activity');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new ActivityFixtures()], true);
     }
 
     public function testActivityFindOneBy(): void

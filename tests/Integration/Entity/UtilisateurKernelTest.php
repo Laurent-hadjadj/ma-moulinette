@@ -72,9 +72,9 @@ class UtilisateurKernelTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new UtilisateurFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.utilisateur');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new UtilisateurFixtures()], true);
     }
 
     public function testAjoutUtilisateurAvecCourrielExistant(): void

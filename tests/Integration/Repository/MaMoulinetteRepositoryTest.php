@@ -41,9 +41,9 @@ class MaMoulinetteRepositoryTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new MaMoulinetteFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.ma_moulinette');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new MaMoulinetteFixtures()], true);
     }
 
     public function testGetMaMoulinetteVersionSuccess(): void

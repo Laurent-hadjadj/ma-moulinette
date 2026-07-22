@@ -43,9 +43,9 @@ class RepartitionKernelTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new RepartitionFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.repartition');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new RepartitionFixtures()], true);
     }
 
     public function testRepartitionFindOneBy(): void

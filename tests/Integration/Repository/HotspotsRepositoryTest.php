@@ -44,9 +44,9 @@ class HotspotsRepositoryTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new HotspotsFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.hotspots');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new HotspotsFixtures()], true);
     }
 
     public function testDeleteHotspotsMavenKey(): void

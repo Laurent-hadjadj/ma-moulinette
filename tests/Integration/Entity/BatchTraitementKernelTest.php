@@ -43,9 +43,9 @@ class BatchTraitementKernelTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new BatchTraitementFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.batch_traitement');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new BatchTraitementFixtures()], true);
     }
 
     public function testBatchTraitementFindOneBy(): void

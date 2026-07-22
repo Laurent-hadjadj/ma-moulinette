@@ -42,9 +42,9 @@ class NoSonarKernelTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new NoSonarFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.no_sonar');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new NoSonarFixtures()], true);
     }
 
     public function testNoSonarFindOneBy(): void

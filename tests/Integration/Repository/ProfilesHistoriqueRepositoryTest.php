@@ -52,9 +52,9 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new ProfilesHistoriqueFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.profiles_historique');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new ProfilesHistoriqueFixtures()], true);
     }
 
     public function testInsertProfilesHistorique(): void

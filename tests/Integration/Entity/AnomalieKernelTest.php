@@ -42,9 +42,9 @@ class AnomalieKernelTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new AnomalieFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.anomalie');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new AnomalieFixtures()], true);
     }
 
     public function testAnomalieFindOneBy(): void

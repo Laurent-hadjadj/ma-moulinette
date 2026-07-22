@@ -43,9 +43,9 @@ class RepartitionTempKernelTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new RepartitionTempFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.repartition_temp');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new RepartitionTempFixtures()], true);
     }
 
     public function testRepartitionTempFindOneBy(): void

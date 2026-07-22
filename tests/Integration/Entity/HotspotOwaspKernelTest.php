@@ -42,9 +42,9 @@ class HotspotOwaspKernelTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new HotspotOwaspFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.hotspot_owasp');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new HotspotOwaspFixtures()], true);
     }
 
     public function testHotspotOwaspFindOneBy(): void

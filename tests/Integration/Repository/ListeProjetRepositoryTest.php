@@ -43,9 +43,9 @@ class ListeProjetRepositoryTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new ListeProjetFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.liste_projet');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new ListeProjetFixtures()], true);
     }
 
     public function testCountListeProjetVisibility(): void

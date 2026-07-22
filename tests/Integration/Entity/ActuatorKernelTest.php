@@ -43,9 +43,10 @@ class ActuatorKernelTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new ActuatorFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.actuator_info');
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.actuator');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new ActuatorFixtures()], true);
     }
 
     public function testActuatorFindOneBy(): void

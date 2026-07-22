@@ -39,9 +39,9 @@ class ProfilesKernelTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new ProfilesFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.profiles');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new ProfilesFixtures()], true);
     }
 
     public function testReferentialDefaultFindOneBy(): void

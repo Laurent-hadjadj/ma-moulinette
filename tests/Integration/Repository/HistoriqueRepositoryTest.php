@@ -36,9 +36,9 @@ class HistoriqueRepositoryTest extends KernelTestCase
         $entityManager = $container->get('doctrine')->getManager();
 
         // Pas de séquence, car clé composite
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new HistoriqueFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.historique');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new HistoriqueFixtures()], true);
     }
 
     public function testCountHistoriqueProjet(): void

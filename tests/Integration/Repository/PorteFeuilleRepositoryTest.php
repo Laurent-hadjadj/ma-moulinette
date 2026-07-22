@@ -43,9 +43,9 @@ class PorteFeuilleRepositoryTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
-        $purger = new ORMPurger($entityManager);
-        $executor = new ORMExecutor($entityManager, $purger);
-        $executor->execute([new PortefeuilleFixtures()]);
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.portefeuille');
+        $executor = new ORMExecutor($entityManager);
+        $executor->execute([new PortefeuilleFixtures()], true);
     }
 
     public function testSelectPortefeuille(): void
