@@ -24,7 +24,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 /**
  * MODIF 2026-07-20 : purge des lignes de batch_profiling plus anciennes que
  * N jours, via la fonction PostgreSQL ma_moulinette.purge_batch_profiling()
- * (migrations/PosgreSQL/50_functions/purge_batch_profiling.sql) — définie en
+ * (migrations/POSTGRESQL/50_functions/purge_batch_profiling.sql) — définie en
  * base mais jusqu'ici jamais appelée par le code applicatif (voir
  * back-office/profiling.md).
  *
