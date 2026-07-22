@@ -96,15 +96,18 @@ class CosuiControllerTest extends TestCase
         $this->controller->setContainer($container);
     }
 
-    public function testProjetCosuiFlashesErrorWhenTokenEmpty(): void
+    public function testProjetCosuiFlashesInfoWhenTokenEmpty(): void
     {
+        // MODIF 2026-07-22 : token absent = navigation sans contexte (pas une
+        // anomalie), distingué désormais d'un token invalide (test suivant) —
+        // message info et statut 200, plus 400.
         $this->cosuiService->expects($this->once())
             ->method('initialRender')
             ->willReturn(['maven_key' => 'NC']);
 
         $this->flashBag->expects($this->once())
             ->method('add')
-            ->with('notice', $this->callback(fn($v) => $v['type'] === 'error'));
+            ->with('notice', $this->callback(fn($v) => $v['type'] === 'info'));
 
         $this->twig->expects($this->once())
             ->method('render')
@@ -113,8 +116,7 @@ class CosuiControllerTest extends TestCase
 
         $response = $this->controller->projetCosui(new Request());
         $this->assertSame('<html>no-token</html>', $response->getContent());
-        // MODIF 2026-07-16 : le code HTTP logique (400) doit désormais être reflété dans la réponse.
-        $this->assertSame(400, $response->getStatusCode());
+        $this->assertSame(200, $response->getStatusCode());
     }
 
     public function testProjetCosuiFlashesErrorOnInvalidToken(): void
