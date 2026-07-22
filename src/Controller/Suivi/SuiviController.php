@@ -37,6 +37,7 @@ class SuiviController extends AbstractController
     /** Définition des constantes */
     private static string $page = "suivi/index.html.twig";
     private static string $erreur400 = "❌ La requête est incorrecte (Erreur 400).";
+    private static string $infoAucunProjet = 'ℹ️ Sélectionnez un projet depuis la page Projet pour accéder à cette vue.';
     private static string $erreur404 = "⚠️ Vous devez être rattaché à une équipe (Erreur 404).";
     private static string $erreur406 = "⚠️ Je n'ai pas trouvé de projets pour ton équipe. " .
         "Vérifies le nom du tag utilisé dans SonarQube (Erreur 406).";
@@ -203,14 +204,21 @@ class SuiviController extends AbstractController
     {
         $token = $request->query->get('token');
         $maven_key = null;
+        /* MODIF 2026-07-22 : distingue "token absent" (navigation sans contexte,
+         * pas une anomalie) de "token présent mais indécodable" (lien corrompu ou
+         * trafiqué, vraie erreur 400) — les deux aboutissaient jusqu'ici au même
+         * maven_key=null en session, donc au même message générique dans suivi(). */
+        $tokenInvalide = false;
 
         if (!empty($token)) {
             $maven_key = $this->decodeToken($token);
+            $tokenInvalide = (null === $maven_key);
         }
 
         // Stocker des données dans la session via l'objet Request
         $session = $request->getSession();
         $session->set('maven_key', $maven_key);
+        $session->set('suivi_token_invalide', $tokenInvalide);
         // Rediriger vers la route sans les paramètres dans l'URL
         return $this->redirectToRoute('suivi');
     }
@@ -318,6 +326,11 @@ class SuiviController extends AbstractController
 
         // Initialisation des variables
         $maven_key = $session->get('maven_key');
+        /* Ne reflète que le passage le plus récent par /suivi/set — on la
+         * consomme et on l'efface aussitôt pour ne pas fausser une visite
+         * directe et ultérieure de /suivi dans la même session. */
+        $tokenInvalide = $session->get('suivi_token_invalide', false);
+        $session->remove('suivi_token_invalide');
         $groupes = $this->appUser()->getListeGroupeFonctionnel();
         $debug = '';
 
@@ -331,8 +344,12 @@ class SuiviController extends AbstractController
 
         // Vérifications initiales
         if (empty($maven_key)) {
-            $this->logger->error('[Suivi] ❌ ' . self::$erreur400);
-            return $this->addFlashAndRender('error', self::$erreur400, $debug, $render);
+            if ($tokenInvalide) {
+                $this->logger->error('[Suivi] ❌ ' . self::$erreur400);
+                return $this->addFlashAndRender('error', self::$erreur400, $debug, $render);
+            }
+            $this->logger->info('[Suivi] ℹ️ Aucun projet sélectionné.');
+            return $this->addFlashAndRender('info', self::$infoAucunProjet, $debug, $render);
         }
 
         if (empty($groupes)) {
