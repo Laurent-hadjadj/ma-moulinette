@@ -31,7 +31,7 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
  *  - persistence + idempotence (sha256 unique)
  *
  * Contrainte : la table dc_processing_queue doit être présente dans la BDD test
- * (cf migrations/initialisation/20_tables/dc_processing_queue.sql).
+ * (cf migrations/POSTGRESQL/20_tables/dc_processing_queue.sql).
  *
  * Token utilise : test-dc-ingest-token-32chars-aaaa (cf .env.test).
  */
