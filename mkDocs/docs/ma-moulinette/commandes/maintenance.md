@@ -45,6 +45,10 @@ php bin/console app:admin:refresh-stats -v
 
 **Impact** : 🟡 Modification de fichiers locaux uniquement (aucune base de données) — écrase les 2 fichiers JSON sans confirmation.
 
+!!! note "📌 À exécuter à chaque publication de version"
+    `StatistiqueController` lit `var/admin-stats.json` en priorité, puis se rabat sur `migrations/admin-stats.json` (le seul des deux versionné, donc le seul qui survit à un déploiement qui vide `var/`).
+    Si cette commande n'est pas relancée — puis le fichier committé — avant de taguer une version, la page de statistiques de l'application continue d'afficher les métriques de la version précédente après déploiement.
+
 !!! caution "⚠️ Nécessite le binaire `cloc`"
     La commande dépend d'un outil externe non embarqué (`cloc`, installable via `winget install AlDanial.Cloc` sous Windows). En son absence, elle échoue proprement avec un message d'installation plutôt que de planter.
 
