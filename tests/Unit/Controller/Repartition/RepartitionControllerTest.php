@@ -18,8 +18,8 @@ namespace App\Tests\Unit\Controller\Repartition;
 use App\Controller\Batch\BatchCollecteRepartitionController;
 use App\Controller\Repartition\RepartitionController;
 use App\Service\UserAgent\UserAgentTrackingFacade;
-use App\Entity\Utilisateur;
-use App\Repository\RepartitionRepository;
+use App\Entity\{ListeProjet, Utilisateur};
+use App\Repository\{ListeProjetRepository, RepartitionRepository};
 use App\Service\ExtractName;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
@@ -51,6 +51,7 @@ class RepartitionControllerTest extends TestCase
     /** @var BatchCollecteRepartitionController&MockObject */  private MockObject $batchCollecte;
     /** @var LoggerInterface&MockObject */                     private MockObject $logger;
     /** @var RepartitionRepository&MockObject */               private MockObject $repo;
+    /** @var ListeProjetRepository&MockObject */                private MockObject $listeProjetRepo;
     /** @var Environment&MockObject */                         private MockObject $twig;
     /** @var FlashBag&MockObject */                            private MockObject $flashBag;
     /** @var AuthorizationCheckerInterface&MockObject */       private MockObject $authChecker;
@@ -72,6 +73,7 @@ class RepartitionControllerTest extends TestCase
         $this->batchCollecte = $this->createMock(BatchCollecteRepartitionController::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->repo = $this->createMock(RepartitionRepository::class);
+        $this->listeProjetRepo = $this->createMock(ListeProjetRepository::class);
         $this->twig = $this->createMock(Environment::class);
         $this->flashBag = $this->createMock(FlashBag::class);
         $this->authChecker = $this->createMock(AuthorizationCheckerInterface::class);
@@ -85,7 +87,12 @@ class RepartitionControllerTest extends TestCase
             ['version', '2.0.0'],
         ]);
 
-        $this->em->method('getRepository')->willReturn($this->repo);
+        $this->em->method('getRepository')->willReturnCallback(
+            fn(string $class) => match ($class) {
+                ListeProjet::class => $this->listeProjetRepo,
+                default            => $this->repo,
+            }
+        );
 
         $session = $this->createMock(Session::class);
         $session->method('getFlashBag')->willReturn($this->flashBag);
@@ -126,14 +133,17 @@ class RepartitionControllerTest extends TestCase
         $this->controller->repartition(new Request());
     }
 
-    public function testRepartitionFlashes400WhenTokenEmpty(): void
+    public function testRepartitionFlashesInfoWhenTokenEmpty(): void
     {
+        // MODIF 2026-07-22 : token absent = navigation sans contexte (pas une
+        // anomalie), distingué désormais d'un token invalide (test plus bas),
+        // qui reste une vraie erreur 400.
         $user = $this->makeUser();
         $this->token->method('getUser')->willReturn($user);
 
         $this->flashBag->expects($this->once())
             ->method('add')
-            ->with('notice', $this->callback(fn($v) => $v['type'] === 'error'));
+            ->with('notice', $this->callback(fn($v) => $v['type'] === 'info'));
 
         $this->twig->expects($this->once())
             ->method('render')
@@ -176,9 +186,36 @@ class RepartitionControllerTest extends TestCase
         $this->controller->repartition(new Request(['token' => $badToken]));
     }
 
+    public function testRepartitionFlashes406WhenProjectOutsidePerimetre(): void
+    {
+        // MODIF 2026-07-22 : verrouille le fix — un token valide décodant vers
+        // une maven_key hors du périmètre de l'utilisateur doit être rejeté,
+        // même avec ROLE_COLLECTE.
+        $user = $this->makeUser();
+        $user->setListeGroupeFonctionnel(['TeamA']);
+        $this->token->method('getUser')->willReturn($user);
+        $this->authChecker->method('isGranted')->willReturn(true);
+
+        $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
+            'code' => 200,
+            'liste' => [['id' => 'fr.ma-moulinette:autre-projet']],
+        ]);
+
+        $this->batchCollecte->expects($this->never())->method('CollecteRepartitionModule');
+
+        $this->flashBag->expects($this->once())
+            ->method('add')
+            ->with('notice', $this->callback(fn($v) => $v['type'] === 'warning'));
+
+        $this->twig->expects($this->once())->method('render')->willReturn('<html>hors-perimetre</html>');
+
+        $this->controller->repartition(new Request(['token' => $this->validToken]));
+    }
+
     public function testRepartitionFlashesAlertWhenBatchFails(): void
     {
         $user = $this->makeUser();
+        $this->authorizeMavenKey($user);
         $this->token->method('getUser')->willReturn($user);
         $this->authChecker->method('isGranted')->willReturn(true);
 
@@ -199,6 +236,7 @@ class RepartitionControllerTest extends TestCase
     public function testRepartitionHappyPath(): void
     {
         $user = $this->makeUser();
+        $this->authorizeMavenKey($user);
         $this->token->method('getUser')->willReturn($user);
         $this->authChecker->method('isGranted')->willReturn(true);
 
@@ -241,6 +279,7 @@ class RepartitionControllerTest extends TestCase
     public function testRepartitionFlashesWhenInsertFails(): void
     {
         $user = $this->makeUser();
+        $this->authorizeMavenKey($user);
         $this->token->method('getUser')->willReturn($user);
         $this->authChecker->method('isGranted')->willReturn(true);
 
@@ -270,5 +309,22 @@ class RepartitionControllerTest extends TestCase
         $u->setPrenom('User');
         $u->setNom('Test');
         return $u;
+    }
+
+    /**
+     * MODIF 2026-07-22 : configure un groupe fonctionnel sur $user et la liste
+     * de projets qui lui est associée, pour que verifierPerimetreProjet()
+     * autorise $mavenKey — nécessaire depuis l'ajout du filtrage par périmètre.
+     */
+    private function authorizeMavenKey(
+        Utilisateur $user,
+        string $mavenKey = 'fr.ma-moulinette:ma-moulinette'
+    ): void {
+        $user->setListeGroupeFonctionnel(['TeamA']);
+
+        $this->listeProjetRepo->method('selectListeProjetByGroupe')->willReturn([
+            'code' => 200,
+            'liste' => [['id' => $mavenKey]],
+        ]);
     }
 }
