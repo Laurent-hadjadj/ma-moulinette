@@ -125,9 +125,12 @@ class SuiviControllerTest extends TestCase
 
     public function testSetSessionStoresMavenKeyAndRedirects(): void
     {
-        $this->session->expects($this->once())
+        $calls = [];
+        $this->session->expects($this->exactly(2))
             ->method('set')
-            ->with('maven_key', 'fr.ma-moulinette:ma-moulinette');
+            ->willReturnCallback(function (string $key, $value) use (&$calls): void {
+                $calls[$key] = $value;
+            });
 
         $this->router->expects($this->once())
             ->method('generate')
@@ -141,15 +144,25 @@ class SuiviControllerTest extends TestCase
         $response = $this->controller->setSession($request);
 
         $this->assertSame('/suivi', $response->headers->get('Location'));
+        $this->assertSame(
+            ['maven_key' => 'fr.ma-moulinette:ma-moulinette', 'suivi_token_invalide' => false],
+            $calls
+        );
     }
 
     public function testSetSessionStoresNullMavenKeyWhenTokenMissing(): void
     {
         // MODIF 2026-07-16 : le paramètre `maven_key` en clair n'est plus lu du tout —
         // sans `token`, aucun projet n'est mémorisé en session.
-        $this->session->expects($this->once())
+        // MODIF 2026-07-22 : un second flag `suivi_token_invalide` est désormais
+        // stocké (false ici — absence de token = navigation sans contexte, pas une
+        // anomalie), pour que suivi() distingue ce cas d'un token invalide.
+        $calls = [];
+        $this->session->expects($this->exactly(2))
             ->method('set')
-            ->with('maven_key', null);
+            ->willReturnCallback(function (string $key, $value) use (&$calls): void {
+                $calls[$key] = $value;
+            });
 
         $this->router->expects($this->once())
             ->method('generate')
@@ -160,13 +173,20 @@ class SuiviControllerTest extends TestCase
         $request->setSession($this->session);
 
         $this->controller->setSession($request);
+
+        $this->assertSame(['maven_key' => null, 'suivi_token_invalide' => false], $calls);
     }
 
     public function testSetSessionStoresNullMavenKeyWhenTokenInvalid(): void
     {
-        $this->session->expects($this->once())
+        // MODIF 2026-07-22 : `suivi_token_invalide` vaut ici true — un token présent
+        // mais indécodable reste une vraie anomalie, contrairement à un token absent.
+        $calls = [];
+        $this->session->expects($this->exactly(2))
             ->method('set')
-            ->with('maven_key', null);
+            ->willReturnCallback(function (string $key, $value) use (&$calls): void {
+                $calls[$key] = $value;
+            });
 
         $this->router->expects($this->once())
             ->method('generate')
@@ -177,15 +197,50 @@ class SuiviControllerTest extends TestCase
         $request->setSession($this->session);
 
         $this->controller->setSession($request);
+
+        $this->assertSame(['maven_key' => null, 'suivi_token_invalide' => true], $calls);
     }
 
     /* ============ suivi ============ */
 
-    public function testSuiviFlashesAlertWhenMavenKeyMissing(): void
+    public function testSuiviFlashesInfoWhenNoContextAtAll(): void
     {
+        // MODIF 2026-07-22 : navigation directe sans jamais être passé par
+        // /suivi/set (donc suivi_token_invalide absent en session, défaut false) —
+        // pas une anomalie, message info plutôt qu'error.
         $request = new Request();
         $request->setSession($this->session);
-        $this->session->method('get')->willReturn(null);
+        $this->session->method('get')->willReturnMap([
+            ['maven_key', null],
+            ['suivi_token_invalide', false, false],
+        ]);
+
+        $user = $this->makeUser([]);
+        $this->token->method('getUser')->willReturn($user);
+
+        $this->flashBag->expects($this->once())
+            ->method('add')
+            ->with('notice', $this->callback(fn($v) => $v['type'] === 'info'));
+
+        $this->twig->expects($this->once())
+            ->method('render')
+            ->with('suivi/index.html.twig', $this->anything())
+            ->willReturn('<html>no-key</html>');
+
+        $this->controller->suivi($request);
+    }
+
+    public function testSuiviFlashesErrorWhenTokenWasInvalid(): void
+    {
+        // MODIF 2026-07-22 : passage récent par /suivi/set avec un token
+        // indécodable (suivi_token_invalide=true en session) — reste une vraie
+        // erreur 400, contrairement à l'absence totale de contexte ci-dessus.
+        $request = new Request();
+        $request->setSession($this->session);
+        $this->session->method('get')->willReturnMap([
+            ['maven_key', null],
+            ['suivi_token_invalide', false, true],
+        ]);
 
         $user = $this->makeUser([]);
         $this->token->method('getUser')->willReturn($user);
