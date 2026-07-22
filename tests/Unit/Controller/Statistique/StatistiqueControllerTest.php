@@ -16,6 +16,8 @@ declare(strict_types=1);
 // MODIF 2026-06-09 : déplacé depuis Admin/ — AdminMetricsController fusionné dans StatistiqueController
 namespace App\Tests\Unit\Controller\Statistique;
 use App\Controller\Statistique\StatistiqueController;
+use App\Entity\Utilisateur;
+use App\Service\MesProjets;
 use App\Service\UserAgent\UserAgentAnalysisService;
 use App\Service\UserAgent\UserAgentTrackingFacade;
 use Doctrine\DBAL\{Connection, Result, Statement};
@@ -25,8 +27,12 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\{RedirectResponse, RequestStack};
+use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Twig\Environment;
 
 #[AllowMockObjectsWithoutExpectations]
@@ -40,6 +46,10 @@ class StatistiqueControllerTest extends TestCase
     /** @var Result&MockObject */                    private MockObject $result;
     /** @var UserAgentTrackingFacade&MockObject */   private MockObject $tracking;
     /** @var UserAgentAnalysisService&MockObject */  private MockObject $analysis;
+    /** @var MesProjets&MockObject */                private MockObject $mesProjets;
+    /** @var TokenStorageInterface&MockObject */     private MockObject $tokenStorage;
+    /** @var TokenInterface&MockObject */            private MockObject $token;
+    /** @var FlashBag&MockObject */                  private MockObject $flashBag;
 
     private StatistiqueController $controller;
 
@@ -53,6 +63,11 @@ class StatistiqueControllerTest extends TestCase
         $this->result = $this->createMock(Result::class);
         $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
         $this->analysis = $this->createMock(UserAgentAnalysisService::class);
+        $this->mesProjets = $this->createMock(MesProjets::class);
+        $this->tokenStorage = $this->createMock(TokenStorageInterface::class);
+        $this->token = $this->createMock(TokenInterface::class);
+        $this->tokenStorage->method('getToken')->willReturn($this->token);
+        $this->flashBag = $this->createMock(FlashBag::class);
 
         $this->params->method('get')->willReturnMap([
             ['logo.entreprise', 'logo.png'],
@@ -69,17 +84,38 @@ class StatistiqueControllerTest extends TestCase
         $this->connection->method('prepare')->willReturn($this->statement);
         $this->statement->method('executeQuery')->willReturn($this->result);
 
+        $session = $this->createMock(Session::class);
+        $session->method('getFlashBag')->willReturn($this->flashBag);
+        $requestStack = $this->createMock(RequestStack::class);
+        $requestStack->method('getSession')->willReturn($session);
+
         $container = $this->createMock(ContainerInterface::class);
         $container->method('has')->willReturnCallback(
-            fn(string $id): bool => in_array($id, ['twig', 'parameter_bag'], true)
+            fn(string $id): bool => in_array($id, ['twig', 'parameter_bag', 'security.token_storage', 'request_stack'], true)
         );
         $container->method('get')->willReturnMap([
             ['twig', 1, $this->twig],
             ['parameter_bag', 1, $this->params],
+            ['security.token_storage', 1, $this->tokenStorage],
+            ['request_stack', 1, $requestStack],
         ]);
 
-        $this->controller = new StatistiqueController($this->params, $this->em, $this->tracking, $this->analysis);
+        $this->controller = new StatistiqueController(
+            $this->params,
+            $this->em,
+            $this->tracking,
+            $this->analysis,
+            $this->mesProjets
+        );
         $this->controller->setContainer($container);
+    }
+
+    private function makeUser(array $groupes = ['TeamA']): Utilisateur
+    {
+        $user = new Utilisateur();
+        $user->setCourriel('user@ma-moulinette.fr');
+        $user->setListeGroupeFonctionnel($groupes);
+        return $user;
     }
 
     // ===== adminDashboard() =====
@@ -259,7 +295,7 @@ class StatistiqueControllerTest extends TestCase
             ['parameter_bag', 1, $params],
         ]);
 
-        $ctrl = new StatistiqueController($params, $this->em, $this->tracking, $this->analysis);
+        $ctrl = new StatistiqueController($params, $this->em, $this->tracking, $this->analysis, $this->mesProjets);
         $ctrl->setContainer($container);
 
         $this->result->method('fetchAllAssociative')->willReturn([['version' => '16.2', 'total' => 0]]);
@@ -501,6 +537,84 @@ class StatistiqueControllerTest extends TestCase
         $this->assertSame('MM', $capturedCtx['marque_entreprise_short']);
     }
 
+    // ===== statistiquesProjet() =====
+    // MODIF 2026-07-22 : verrouille le fix de périmètre — cette page remontait
+    // jusqu'ici les métriques de TOUS les projets à n'importe quel utilisateur
+    // authentifié, sans filtrage par groupe fonctionnel.
+
+    public function testStatistiquesProjetFlashesWarningWhenNoGroupeFonctionnel(): void
+    {
+        $this->token->method('getUser')->willReturn($this->makeUser([]));
+
+        $this->mesProjets->expects($this->never())->method('liste');
+
+        $capturedCtx = [];
+        $this->twig->expects($this->once())
+            ->method('render')
+            ->with('statistique/projet.html.twig', $this->callback(function ($ctx) use (&$capturedCtx) {
+                $capturedCtx = $ctx;
+                return true;
+            }))
+            ->willReturn('<html>no-groupe</html>');
+
+        $this->controller->statistiquesProjet();
+
+        $this->assertSame([], $capturedCtx['projets']);
+    }
+
+    public function testStatistiquesProjetFlashesWarningWhenNoProjetDansLePerimetre(): void
+    {
+        $this->token->method('getUser')->willReturn($this->makeUser(['TeamA']));
+
+        $this->mesProjets->expects($this->once())
+            ->method('liste')
+            ->with(['TeamA'])
+            ->willReturn(['code' => 406, 'projets' => []]);
+
+        $this->em->expects($this->never())->method('getRepository');
+
+        $this->twig->expects($this->once())
+            ->method('render')
+            ->with('statistique/projet.html.twig', $this->callback(fn($ctx) => $ctx['projets'] === []))
+            ->willReturn('<html>no-projet</html>');
+
+        $this->controller->statistiquesProjet();
+    }
+
+    public function testStatistiquesProjetFiltersByPerimetreMavenKeys(): void
+    {
+        $this->token->method('getUser')->willReturn($this->makeUser(['TeamA']));
+
+        $this->mesProjets->expects($this->once())
+            ->method('liste')
+            ->with(['TeamA'])
+            ->willReturn([
+                'code' => 200,
+                'projets' => [['id' => 'fr.ma-moulinette:app-a'], ['id' => 'fr.ma-moulinette:app-b']],
+            ]);
+
+        $historiqueRepo = $this->createMock(\App\Repository\HistoriqueRepository::class);
+        $historiqueRepo->expects($this->once())
+            ->method('selectAllProjetsDerniereSynthese')
+            ->with(['fr.ma-moulinette:app-a', 'fr.ma-moulinette:app-b'])
+            ->willReturn(['code' => 200, 'projets' => [['maven_key' => 'fr.ma-moulinette:app-a']]]);
+
+        $this->em->method('getRepository')->willReturn($historiqueRepo);
+
+        $capturedCtx = [];
+        $this->twig->expects($this->once())
+            ->method('render')
+            ->with('statistique/projet.html.twig', $this->callback(function ($ctx) use (&$capturedCtx) {
+                $capturedCtx = $ctx;
+                return true;
+            }))
+            ->willReturn('<html>ok</html>');
+
+        $this->controller->statistiquesProjet();
+
+        $this->assertSame([['maven_key' => 'fr.ma-moulinette:app-a']], $capturedCtx['projets']);
+    }
+
     // ===== runBatchAnalysis() =====
 
     /**
@@ -523,7 +637,7 @@ class StatistiqueControllerTest extends TestCase
         ]);
 
         $ctrl = $this->getMockBuilder(StatistiqueController::class)
-            ->setConstructorArgs([$this->params, $this->em, $this->tracking, $this->analysis])
+            ->setConstructorArgs([$this->params, $this->em, $this->tracking, $this->analysis, $this->mesProjets])
             ->onlyMethods(['addFlash'])
             ->getMock();
         $ctrl->setContainer($container);
