@@ -1,7 +1,7 @@
 {% set title = "Statistiques — Ma-Moulinette" %}
 {% set description = "Ma Moulinette - Statistiques fonctionnelles SonarQube" %}
 {% set type_content = "Application Ma-Moulinette, statistiques fonctionnelles SonarQube." %}
-{% set bottom="" %}
+{% set bottom="footer-fixed" %}
 <!DOCTYPE html>
 <!--
 .  ____  _        _   _     _   _
@@ -166,14 +166,14 @@
         <div class="cell small-12 medium-6">
           <div class="card">
             <div class="card-section">
-              <canvas id="chart-anomalies" aria-label="Répartition des anomalies" role="img" height="280"></canvas>
+              <canvas id="chart-anomalies" aria-label="Répartition des anomalies" height="280"></canvas>
             </div>
           </div>
         </div>
         <div class="cell small-12 medium-6">
           <div class="card">
             <div class="card-section">
-              <canvas id="chart-projets" aria-label="Métriques SonarQube" role="img" height="280"></canvas>
+              <canvas id="chart-projets" aria-label="Métriques SonarQube" height="280"></canvas>
             </div>
           </div>
         </div>

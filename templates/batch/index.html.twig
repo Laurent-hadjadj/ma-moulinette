@@ -30,7 +30,6 @@
     {{ include('header.html.twig') }}
 
     <header class="grid-container margin-top-1">
-      {# WCAG 2.4.8 : indication "vous êtes ici" portée par aria-label ; aria-current="page" ; <ol> à la place de <ul> pour la sémantique ordonnée du fil d'Ariane #}
       <nav aria-label="Fil d'Ariane, vous êtes ici">
         <ol class="claire-hand breadcrumbs">
           <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
@@ -206,7 +205,6 @@
     {{ include('/batch/_modal_traitement_information.html.twig') }}
 
     {# Debug Monitor (affiché uniquement en mode debug) #}
-    {# WCAG 1.3.1 : ce panneau de debug utilisait un second <main> imbriqué (interdit par HTML5) ; remplacé par <section>. L'emoji du header est masqué aux lecteurs d'écran. #}
     <div id="pending-debug-monitor" class="debug-hidden">
       <header>
         <span><span aria-hidden="true">⚙️</span> Pending Worker Monitor</span>
