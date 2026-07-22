@@ -177,13 +177,16 @@ class OwaspControllerTest extends TestCase
 
     /* ============ Token : missing / invalide ============ */
 
-    public function testIndexFlashesErrorWhenTokenIsMissing(): void
+    public function testIndexFlashesInfoWhenTokenIsMissing(): void
     {
+        /* MODIF 2026-07-22 : token absent = navigation sans contexte (pas une
+         * anomalie) désormais distinguée d'un token invalide — voir le test
+         * ci-dessous testIndexFlashesErrorWhenTokenIsInvalidBase64(). */
         $this->flashBag->expects($this->once())
             ->method('add')
             ->with('notice', $this->callback(
-                fn($v) => $v['type'] === 'error'
-                    && str_contains($v['message'], 'Erreur 400')
+                fn($v) => $v['type'] === 'info'
+                    && !str_contains($v['message'], 'Erreur 400')
             ));
 
         $this->twig->expects($this->once())
