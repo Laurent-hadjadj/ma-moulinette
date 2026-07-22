@@ -32,6 +32,7 @@ class CosuiController extends AbstractController
     use AppUserAware;
 
     private static string $erreur400 = '❌ La requête est incorrecte (Erreur 400).';
+    private static string $infoAucunProjet = 'ℹ️ Sélectionnez un projet depuis la page Projet pour accéder à cette vue.';
     private static string $erreur404 = '⚠️ Vous devez être rattaché à une équipe (Erreur 404).';
     private static string $erreur406 = "⚠️ Je n'ai pas trouvé de projets pour ton équipe. " .
         "Vérifie le nom du tag utilisé dans SonarQube (Erreur 406).";
@@ -155,7 +156,7 @@ class CosuiController extends AbstractController
      */
     private function toHttpStatus(int $code): int
     {
-        return in_array($code, [400, 401, 403, 404, 406, 409, 422, 500, 503], true) ? $code : 500;
+        return in_array($code, [200, 400, 401, 403, 404, 406, 409, 422, 500, 503], true) ? $code : 500;
     }
 
     /**
@@ -220,8 +221,11 @@ class CosuiController extends AbstractController
 
         $token = $request->query->get('token');
         if (empty($token)) {
-            $this->logger->warning('[COSUI] ⚠️ Token manquant dans la requête');
-            return $this->addFlashAndRender(400, 'error', self::$erreur400, 'token', $render);
+            /* MODIF 2026-07-22 : token absent = navigation sans contexte, pas une
+             * anomalie — contrairement à un token présent mais indécodable
+             * (bloc suivant), qui reste une vraie erreur 400. */
+            $this->logger->info('[COSUI] ℹ️ Token absent, aucun projet sélectionné.');
+            return $this->addFlashAndRender(200, 'info', self::$infoAucunProjet, 'token', $render);
         }
 
         $maven_key = $this->decodeToken($token);
