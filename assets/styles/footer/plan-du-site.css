@@ -1,7 +1,7 @@
 /**
  *  Ma-Moulinette
  *  --------------
- *  Copyright (c) 2021-2024.
+ *  Copyright (c) 2021-2026.
  *  Laurent HADJADJ <laurent_h@me.com>.
  *  Licensed Creative Common  CC-BY-NC-SA 4.0.
  *  ---
@@ -41,41 +41,56 @@
 
 /* tablette */
 @media (40.025em <= width <= 64em) {
-  .timeline { width: 95%; }
+  .timeline {
+    margin: 30px auto;
+    width: 90%;
+  }
 }
 
 /* desktop */
 @media (64.025em <= width <= 90em) {
-  .timeline { width: 95%; }
+  .timeline {
+    margin: 30px auto;
+    width: 90%;
+  }
 }
 
 /* desktop */
 @media (90.025em <= width <= 120em) {
-  .timeline { width: 95%; }
+  .timeline {
+    margin: 30px auto;
+    width: 90%;
+  }
 }
 
 /* desktop 4k */
 @media (120.025em <= width <= 160em) {
-  .timeline { width: 95%; }
+  .timeline {
+    margin: 30px auto;
+    width: 90%;
+  }
 }
 
-/* desktop 8k */
-@media (width >= 160.025em) {
-  .timeline { width: 95%; }
+/* Styles pour les écrans plus larges que 160em */
+@media (min-width: 160em) {
+  .timeline {
+    margin: 30px auto;
+    width: 90%;
+  }
 }
 
- /*************************          Global     *********************************/
+/* ======================================= MAIN ======================================== */
+
 .lien {
-  margin-left: 5px;
+  margin-left: 8px;
   margin-top: 6px;
-  max-width: 28px;
+  max-width: 22px;
 }
 
 /* container */
 .timeline {
-  padding: 0 10px;
+  padding: 0 0.7rem;
   position: relative;
-  background-color: #32697B;
 }
 
 /* Définition de la barre verticale */
@@ -87,7 +102,7 @@
 }
 
 .timeline::before {
-  background: #fefefe;
+  background: #00445b;
   content: '';
   height: 100%;
   left: 1.72rem;
@@ -104,9 +119,9 @@
 }
 
 /* Gestion du lien */
-.timeline-content-liste {  color: #fefefe; }
 .marqueur-circle { list-style: circle; }
 .marqueur-square { list-style: square; }
+.marqueur-disc { list-style: disc; }
 
 .marqueur-no-bullet {
   list-style: none;
@@ -114,9 +129,9 @@
 }
 
 .timeline a {
-  color: #fefefe;
-  padding: 1px 2px;
+  color: #00445b;
   border-bottom: 1px solid;
+  line-height: 1.8;
 }
 
 .timeline a:hover {
@@ -124,14 +139,14 @@
   background-color: #ffc !important;
   border-color: #ffc;
   color: #bf1722;
-  border-radius: 4px;
+  border-radius: 0.375rem;
   padding: 1px 2px;
 }
 
 .timeline .timeline-item { position: relative; }
 
 .timeline .timeline-item .timeline-icon {
-  background: #fefefe;
+  background: #00445b;
   border-radius: 50%;
   height: 40px;
   overflow: hidden;
@@ -140,26 +155,12 @@
   width: 40px;
 }
 
-.timeline .timeline-item .timeline-icon svg {
-  position: relative;
-  left: 10px;
-  top: 10px;
-  width: 22px;
-  fill: #00445b;
-}
-
 /* container par type de page */
-.timeline .timeline-item .timeline-content {
-  padding: 0.6rem 0.4rem 0.4rem 2.8rem;
-  float: left;
-  text-align: left;
-  transition: all 0.25s ease-in;
-  width: 95%;
-  background: transparent;
+.timeline .timeline-item .timeline-content { padding: 0.6rem 0.4rem 0.4rem 2.2rem;
 }
 
 .timeline .timeline-item .timeline-content .timeline-content-titre {
-  color: #fefefe;
+  color: #00445b;
   font-size: 0.8rem;
   font-weight: bold;
   text-transform: uppercase;
@@ -170,6 +171,8 @@
 
 .cadenas {
   height:22px!important;
-  margin-left:3px;
+  margin-bottom: 0.1rem;
   vertical-align:text-bottom;
 }
+
+.cadenas-margin { margin-left: 9px; }
