@@ -37,6 +37,7 @@ class OwaspController extends AbstractController
     private static string $page = "owasp/index.html.twig";
     private static string $erreur404 = "⚠️ Les informations concernant les référentiels OWASP n'ont pas été trouvés.";
     private static string $erreur400 = '❌ La requête est incorrecte (Erreur 400).';
+    private static string $infoAucunProjet = 'ℹ️ Sélectionnez un projet depuis la page Projet pour accéder à cette vue.';
     private static string $noData = 'Pas de données';
 
     private string $logoEntreprise;
@@ -204,8 +205,12 @@ class OwaspController extends AbstractController
 
         $token = $request->query->get('token');
         if (empty($token)) {
-            $this->logger->warning('[OWASP] ⚠️ Token manquant dans la requête');
-            return $this->addFlashAndRender('error', self::$erreur400, 'token', $render);
+            /* MODIF 2026-07-22 : token absent = navigation sans contexte (lien nu,
+             * page atteinte directement) — pas une anomalie, contrairement à un
+             * token présent mais indécodable (cf. bloc suivant), qui reste une
+             * vraie erreur 400. */
+            $this->logger->info('[OWASP] ℹ️ Token absent, aucun projet sélectionné.');
+            return $this->addFlashAndRender('info', self::$infoAucunProjet, 'token', $render);
         }
 
         $maven_key = $this->decodeToken($token);
