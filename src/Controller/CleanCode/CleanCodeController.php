@@ -38,6 +38,7 @@ class CleanCodeController extends AbstractController
 
     private static string $page = 'clean-code/index.html.twig';
     private static string $erreur400 = '❌ La requête est incorrecte (Erreur 400).';
+    private static string $infoAucunProjet = 'ℹ️ Sélectionnez un projet depuis la page Projet pour accéder à cette vue.';
     private static string $erreur404 = '⚠️ Aucune donnée clean code disponible pour ce projet. Lancez une collecte depuis la page projet.';
 
     private string $logoEntreprise;
@@ -132,8 +133,11 @@ class CleanCodeController extends AbstractController
 
         $token = $request->query->get('token');
         if (empty($token)) {
-            $this->logger->warning('[Clean Code] ⚠️ Token manquant.');
-            $this->addFlash('notice', ['type' => 'error', 'message' => self::$erreur400, 'trace' => 'token']);
+            /* MODIF 2026-07-22 : token absent = navigation sans contexte, pas une
+             * anomalie — contrairement à un token présent mais indécodable
+             * (bloc suivant), qui reste une vraie erreur 400. */
+            $this->logger->info('[Clean Code] ℹ️ Token absent, aucun projet sélectionné.');
+            $this->addFlash('notice', ['type' => 'info', 'message' => self::$infoAucunProjet, 'trace' => 'token']);
             return $this->render(self::$page, $render);
         }
 
