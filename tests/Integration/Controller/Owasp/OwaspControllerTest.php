@@ -59,10 +59,12 @@ class OwaspControllerTest extends WebTestCase
 
     public function testIndexRendersRealTemplateWithoutCrashingWhenTokenIsMissing(): void
     {
+        // MODIF 2026-07-22 : token absent = navigation sans contexte, plus une
+        // erreur 400 — message info invitant à passer par la page Projet.
         $this->client->request('GET', '/owasp');
 
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('requête est incorrecte', $this->client->getResponse()->getContent());
+        $this->assertStringContainsString('Sélectionnez un projet', $this->client->getResponse()->getContent());
     }
 
     public function testIndexRendersRealTemplateWithoutCrashingWhenNoGroupeFonctionnel(): void
