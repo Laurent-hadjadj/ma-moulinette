@@ -15,7 +15,9 @@
 -- Usage : appele APRES reset-e2e-data.sql + seed-after-spec-02-groupes.sql
 -- via bin/e2e/seed-e2e.ps1.
 
-\c ma_moulinette db_user
+-- MODIF 2026-07-22 : \c ma_moulinette db_user retire — voir
+-- reset-e2e-data.sql pour le detail (écrasait la cible -d/-U réelle du
+-- script appelant, cause racine de l'incident du 2026-05-02).
 
 BEGIN;
 
