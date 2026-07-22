@@ -145,14 +145,16 @@ class CleanCodeControllerTest extends TestCase
         ]);
     }
 
-    // ─── 1. Token manquant → flash error ─────────────────────────────────────
+    // ─── 1. Token manquant → flash info (navigation sans contexte) ───────────
 
-    public function testIndexFlashesErrorWhenTokenIsMissing(): void
+    public function testIndexFlashesInfoWhenTokenIsMissing(): void
     {
+        // MODIF 2026-07-22 : token absent = pas une anomalie, distingué désormais
+        // d'un token invalide (test suivant), qui reste une vraie erreur 400.
         $this->flashBag->expects($this->once())
             ->method('add')
             ->with('notice', $this->callback(
-                fn($v) => $v['type'] === 'error' && str_contains($v['message'], 'Erreur 400')
+                fn($v) => $v['type'] === 'info' && !str_contains($v['message'], 'Erreur 400')
             ));
 
         $this->twig->expects($this->once())
