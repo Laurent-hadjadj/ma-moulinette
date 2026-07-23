@@ -9,41 +9,60 @@
 
     <p class="open-sans text-center font-size-11"><span aria-hidden="true">ℹ️</span>Cliquez sur un thème</p>
 
+    {# Ligne 1 #}
     <div class="row">
-        {% if is_granted('ROLE_INTERNAL') %}
-            <!-- LOG -->
-            <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-                <a href="{{ path('admin_logs_index') }}"
-                    class="dashboard-card card-internal">
-                        <div class="dashboard-card-top">
-                        <i class="fas fa-file-lines"></i>
-                        <h3 class="open-sans">Log</h3>
-                        </div>
-
-                        <div class="dashboard-card-bottom">
-                            <p class="open-sans font-size-1">Consulter les logs</p>
-                        </div>
-                </a>
-            </div>
-
-            <!-- Journal des rôles -->
-            <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-                <a href="{{ path('admin_user_role_log_index') }}"
-                    class="dashboard-card card-internal">
-                        <div class="dashboard-card-top">
-                        <i class="fas fa-user-shield"></i>
-                        <h3 class="open-sans">Journal des rôles</h3>
-                        </div>
-
-                        <div class="dashboard-card-bottom">
-                            <p class="open-sans font-size-1">Consulter, archiver, exporter ou purger le journal des changements de rôle</p>
-                        </div>
-                </a>
-            </div>
+        {% if is_granted('ROLE_UTILISATEUR') %}
+        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+            <a href="{{ path('preferences') }}"
+                class="dashboard-card card-account">
+                <div class="dashboard-card-top">
+                    <i class="fas fa-sliders"></i>
+                    <h3 class="open-sans">Réglages personnels</h3>
+                </div>
+                <div class="dashboard-card-bottom">
+                    <p class="open-sans font-size-1">Mes informations et mes préférences de suivi de projets.</p>
+                </div>
+            </a>
+        </div>
         {% endif %}
 
+        {% if is_granted('ROLE_INTERNAL') %}
+        {# LOG #}
+        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+            <a href="{{ path('admin_logs_index') }}"
+                class="dashboard-card card-internal">
+                    <div class="dashboard-card-top">
+                    <i class="fas fa-file-lines"></i>
+                    <h3 class="open-sans">Log</h3>
+                    </div>
+
+                    <div class="dashboard-card-bottom">
+                        <p class="open-sans font-size-1">Consulter les logs</p>
+                    </div>
+            </a>
+        </div>
+
+        {# Journal des rôles #}
+        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+            <a href="{{ path('admin_user_role_log_index') }}"
+                class="dashboard-card card-internal">
+                    <div class="dashboard-card-top">
+                    <i class="fas fa-user-shield"></i>
+                    <h3 class="open-sans">Journal des rôles</h3>
+                    </div>
+
+                    <div class="dashboard-card-bottom">
+                        <p class="open-sans font-size-1">Consulter, archiver, exporter ou purger le journal des changements de rôle</p>
+                    </div>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    {# Ligne 2 #}
+    <div class="row">
         {% if is_granted('ROLE_GESTIONNAIRE') %}
-        <!-- Utilisateurs -->
+        {# Utilisateurs #}
         <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
             <a href="{{ ea_url().setController('App\\Controller\\Admin\\UtilisateurCrudController') }}"
                 class="dashboard-card card-users">
@@ -58,7 +77,7 @@
             </a>
         </div>
 
-        <!-- Groupes -->
+        {# Groupe Utilisateur #}
         <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
             <a href="{{ ea_url().setController('App\\Controller\\Admin\\GroupeUtilisateurCrudController') }}"
                 class="dashboard-card card-groups">
@@ -72,6 +91,7 @@
                 </a>
         </div>
 
+        {# Groupe fonctionne #}
         <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
             <a href="{{ ea_url().setController('App\\Controller\\Admin\\GroupeFonctionnelCrudController') }}"
                 class="dashboard-card card-groups">
@@ -87,53 +107,54 @@
         {% endif %}
     </div>
 
-    {# Traitement #}
+    {# Ligne 3 - Traitement #}
     <div class="row">
         {% if is_granted('ROLE_BATCH') %}
-            {# Portefeuille #}
-            <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-                <a href="{{ ea_url().setController('App\\Controller\\Admin\\PortefeuilleCrudController') }}" class="dashboard-card card-wallet">
-                    <div class="dashboard-card-top">
-                        <i class="fas fa-wallet"></i>
-                        <h3 class="open-sans">Portefeuilles</h3>
-                    </div>
-                    <div class="dashboard-card-bottom">
-                        <p class="open-sans font-size-1">Gestion des portefeuilles de projets</p>
-                    </div>
-                </a>
-            </div>
+        {# Portefeuille #}
+        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+            <a href="{{ ea_url().setController('App\\Controller\\Admin\\PortefeuilleCrudController') }}" class="dashboard-card card-wallet">
+                <div class="dashboard-card-top">
+                    <i class="fas fa-wallet"></i>
+                    <h3 class="open-sans">Portefeuilles</h3>
+                </div>
+                <div class="dashboard-card-bottom">
+                    <p class="open-sans font-size-1">Gestion des portefeuilles de projets</p>
+                </div>
+            </a>
+        </div>
 
-            {# Batch #}
-            <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-                <a href="{{ ea_url().setController('App\\Controller\\Admin\\BatchCrudController') }}" class="dashboard-card card-batch">
-                    <div class="dashboard-card-top">
-                        <i class="fas fa-cogs"></i>
-                        <h3 class="open-sans">Traitements de données</h3>
-                    </div>
-                    <div class="dashboard-card-bottom">
-                            <p class="open-sans font-size-1">Gestion des traitements de données.</p>
-                    </div>
-                </a>
-            </div>
+        {# Batch #}
+        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+            <a href="{{ ea_url().setController('App\\Controller\\Admin\\BatchCrudController') }}" class="dashboard-card card-batch">
+                <div class="dashboard-card-top">
+                    <i class="fas fa-cogs"></i>
+                    <h3 class="open-sans">Traitements de données</h3>
+                </div>
+                <div class="dashboard-card-bottom">
+                        <p class="open-sans font-size-1">Gestion des traitements de données.</p>
+                </div>
+            </a>
+        </div>
 
-            {# Suivi batch #}
-            <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-                <a href="{{ path('traitement_suivi') }}"
-                    class="dashboard-card card-batch">
-                    <div class="dashboard-card-top">
-                        <i class="fas fa-tasks"></i>
-                        <h3 class="open-sans">Suivi Traitements</h3>
-                    </div>
-                    <div class="dashboard-card-bottom">
-                        <p class="open-sans font-size-1">Suivi des traitements de collecte.</p>
-                    </div>
-                </a>
-            </div>
+        {# Suivi batch #}
+        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
+            <a href="{{ path('traitement_suivi') }}"
+                class="dashboard-card card-batch">
+                <div class="dashboard-card-top">
+                    <i class="fas fa-tasks"></i>
+                    <h3 class="open-sans">Suivi Traitements</h3>
+                </div>
+                <div class="dashboard-card-bottom">
+                    <p class="open-sans font-size-1">Suivi des traitements de collecte.</p>
+                </div>
+            </a>
+        </div>
         {% endif %}
     </div>
 
-    {# Statistiques #}
+    {# Liggne 4 - Statistiques #}
     <div class="row">
+        {% if is_granted('ROLE_UTILISATEUR') %}
         <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
             <a href="{{ path('statistiques_dashboard') }}"
                 class="dashboard-card card-stats">
@@ -182,7 +203,11 @@
                 </div>
             </a>
         </div>
+        {% endif %}
+    </div>
 
+    {# Activité SonarQube #}
+    <div class="row">
         {% if is_granted('ROLE_ACTIVITY') %}
         <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
             <a href="{{ path('activity') }}"
@@ -197,22 +222,6 @@
             </a>
         </div>
         {% endif %}
-    </div>
-
-    {# Espace personnel #}
-    <div class="row">
-        <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-            <a href="{{ path('preferences') }}"
-                class="dashboard-card card-account">
-                <div class="dashboard-card-top">
-                    <i class="fas fa-sliders"></i>
-                    <h3 class="open-sans">Réglages personnels</h3>
-                </div>
-                <div class="dashboard-card-bottom">
-                    <p class="open-sans font-size-1">Mes informations et mes préférences de suivi de projets.</p>
-                </div>
-            </a>
-        </div>
 
         {% if is_granted('ROLE_ACTUATOR') %}
         <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
