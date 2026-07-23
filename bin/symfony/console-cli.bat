@@ -31,7 +31,7 @@ mode con: cols=160 lines=5000
 rem background : noir, color: blanc
 color 0f
 CHCP 65001
-set VERSION=2024-09-19 v1.12.0
+set VERSION=2026-07-23 v1.20.0
 title Laurent HADJADJ - version %VERSION%
 echo ".. __  __             __  __             _              _   _       "
 echo "  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___ "
@@ -61,29 +61,30 @@ echo projet		: [93m%PROJET%[0m
 echo env		: [93mdev[0m
 echo lecteur		: [93m%LECTEUR_PATH%[0m
 echo version		: [93m%VERSION%[0m
-echo Symfony		: [93m6.4.7[0m
-echo Symfony-cli	: [93m5.8.2[0m
-echo php		: [93m8.3.0-NTS[0m
-echo git		: [93m2.44.1[0m
-echo nodejs		: [93m20.17.0[0m
+echo Symfony		: [93m8.0.14[0m
+echo Symfony-cli	: [93m5.17.1[0m
+echo php		: [93m8.5.5-NTS[0m
+echo phploc     : [93m8.0.7[0m
+echo git		: [93m2.44.0[0m
+echo nodejs		: [93m24.12.0[0m
 echo python		: [93m3.12.3[0m
 echo maven		: [93m3.8.8[0m
 echo jdk		: [93m17[0m
-echo posgresql	: [93m15.6[0m
-echo SonarQube	: [93m9.9.4-LTS[0m
+echo PostgreSQL	: [93m18.2-1[0m
+echo SonarQube	: [93m26.7.0.124771-LTS[0m
 echo:
 
 set app=%LECTEUR%\environnement
 set SCRIPT_PATH=%app%\ma-moulinette\bin\
 set SYMFONY_PATH=%app%\0_toolz\symfony-cli\current\
-set PHP_PATH=%app%\0_toolz\php-8.3.0-NTS
-set NODEJS_PATH=%app%\0_toolz\node-20.17.1
+set PHP_PATH=%app%\0_toolz\php-8.5.5-NTS
+set PHO_LOC=%app%\0_toolz\phploc-8.0.7
+set NODEJS_PATH=%app%\0_toolz\node-24.12.0
 set PYTHON_PATH=%app%\0_toolz\python-3.12.3-embed
 set PIP_PATH=%app%\0_toolz\python-3.12.3-embed\Scripts
 set JDK_PATH=%app%\0_toolz\jdk17
 set MAVEN_PATH=%app%\0_toolz\apache-maven-3.8.8
-set POSTGRESQL_PATH=%app%\0_toolz\postgresql-15.6-1
-set RABBITMQ_PATH=%app%\0_toolz\rabbitmq-3.13.1
+set POSTGRESQL_PATH=%app%\0_toolz\postgresql-18.1-2
 set GIT_PATH=%app%\0_toolz\Git-2.44.0\bin
 
 set HTTP_PROXY=
@@ -95,7 +96,7 @@ echo HTTPS_PROXY : %HTTPS_PROXY%
 set JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF8
 set JAVA_HOME=%JDK_PATH%
 
-set PATH=%SCRIPT_PATH%;%SYMFONY_PATH%;%GIT_PATH%;%PHP_PATH%;%NODEJS_PATH%;%MAVEN_PATH%\bin;%JAVA_HOME%\bin;%POSTGRESQL_PATH%\bin;%PYTHON_PATH%;%PIP_PATH%;%RABBITMQ_PATH%/sbin;%PATH%
+set PATH=%SCRIPT_PATH%;%SYMFONY_PATH%;%GIT_PATH%;%PHP_PATH%;%PHP_LOC%;%NODEJS_PATH%;%MAVEN_PATH%\bin;%JAVA_HOME%\bin;%POSTGRESQL_PATH%\bin;%PYTHON_PATH%;%PIP_PATH%;%PATH%
 
 cd %app%\%1
 
@@ -118,3 +119,4 @@ cd %app%\%1
 @rem Laurent HADJADJ - 2024-08-28 v1.11.0 - Passage du nom du projet en paramètre
 @rem Laurent HADJADJ - 2024-09-09 v1.11.1 - Mise à jour nodejs en 20.17.1 LTS
 @rem Laurent HADJADJ - 2024-09-19 v1.12.0 - Vérification de l'existence du projet
+@rem Laurent HADJADJ - 2026-07-23 v1.20.0 - Mise à jour de versions, suppression de rabbitMQ, ajout de phpLoc
