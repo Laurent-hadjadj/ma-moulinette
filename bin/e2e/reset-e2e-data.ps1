@@ -70,6 +70,12 @@ $psqlArgs = @(
 if ($Quiet) { $psqlArgs += "-q" }
 
 Push-Location $migrationsDir
+# NB : neutralise temporairement ErrorActionPreference=Stop autour de l'appel
+# psql - un simple NOTICE stderr (inoffensif) serait sinon transforme en
+# exception fatale par PowerShell des que la sortie de ce script est elle-meme
+# redirigee/capturee par l'appelant (cf. meme fix dans rebuild-database.ps1).
+$prevErrorAction       = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
 try {
     if ($Quiet) {
         & $PsqlPath @psqlArgs | Out-Null
@@ -79,6 +85,7 @@ try {
     $exit = $LASTEXITCODE
 }
 finally {
+    $ErrorActionPreference = $prevErrorAction
     Pop-Location
     Remove-Item Env:\PGPASSWORD       -ErrorAction SilentlyContinue
     Remove-Item Env:\PGCLIENTENCODING -ErrorAction SilentlyContinue
