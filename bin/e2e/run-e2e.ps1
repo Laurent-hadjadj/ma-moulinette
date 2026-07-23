@@ -83,6 +83,28 @@ try {
         }
     }
 
+    # Symfony CLI verrouille UN SEUL daemon PAR PROJET (dossier), pas par port :
+    # si un daemon tourne deja sur un autre port pour ce meme dossier,
+    # `symfony serve --daemon --port=X` réussit silencieusement (exit 0) sans
+    # rien démarrer sur X. Sans detection en amont, ca dégénère en un timeout
+    # de ServerWaitSec sans aucune explication (vérifie en pratique le
+    # 22/07/2026 : dev server deja up sur 8000, tentative --port=8001 rendue
+    # muette, "Symfony serve injoignable... apres 30s").
+    function Get-SymfonyRunningPort {
+        $prevErrorAction        = $ErrorActionPreference
+        $ErrorActionPreference  = "Continue"
+        try {
+            $statusOutput = & symfony server:status 2>&1
+        } finally {
+            $ErrorActionPreference = $prevErrorAction
+        }
+        $listening = $statusOutput | Select-String -Pattern 'Listening on https?://[^:]+:(\d+)'
+        if ($listening) {
+            return [int] $listening.Matches[0].Groups[1].Value
+        }
+        return $null
+    }
+
     if (-not $SkipServer) {
         Write-Host ""
 
@@ -92,6 +114,20 @@ try {
             Write-Host "[2/4] Serveur deja up sur port $Port -> on le reutilise." -ForegroundColor Green
             Write-Host "      ATTENTION : verifie qu'il tourne en APP_ENV=test (sinon SonarFixtureClientService inactif)." -ForegroundColor DarkYellow
         } else {
+            $runningPort = Get-SymfonyRunningPort
+            if ($runningPort -and $runningPort -ne $Port) {
+                throw @"
+[2/4] Un daemon Symfony CLI tourne deja pour CE projet sur le port $runningPort (probablement votre serveur de dev habituel) alors que le port $Port est demande pour l'E2E.
+
+Symfony CLI n'autorise qu'UN SEUL daemon par projet, quel que soit le port demandé : relancer 'symfony serve --daemon --port=$Port' réussirait silencieusement (exit 0) sans rien démarrer sur $Port, d'ou un timeout de ${ServerWaitSec}s sans explication.
+
+Options :
+    - Réutiliser le serveur existant : relancer avec -Port $runningPort (verifier au préalable qu'il tourne en APP_ENV=test, sinon SonarFixtureClientService est inactif)
+    - Arrêter le serveur existant si vous n'en avez pas besoin : symfony server:stop
+    - Gérer vous-même un serveur de test sur $Port (ex. php -S <host>:$Port) puis relancer avec -SkipServer
+"@
+            }
+
             Write-Host "[2/4] Demarrage Symfony serve sur $baseUrl (APP_ENV=test, daemon)..." -ForegroundColor Yellow
 
             # Nettoyage des php-cgi orphelins d'une session precedente. Sur Windows,
