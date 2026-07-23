@@ -1196,12 +1196,13 @@ const dessineMoiUneBarre = function (referential, data){
  *  gestionnaires de clic plus bas (référentiels, export PDF, modales) : la
  *  page semblait chargée mais restait totalement inerte, sans message
  *  visible pour l'utilisateur (seule une erreur JS non catchable dans le
- *  flux applicatif apparaissait en console). */
+ *  flux applicatif apparaissait en console). Le repli `['', '']` reste
+ *  nécessaire pour éviter ce crash.
+ *  MODIF 2026-07-22 : le `showMessage('warning', ...)` qui accompagnait ce
+ *  repli a été retiré — il faisait doublon avec le message flash serveur
+ *  (`OwaspController::index()`, cas token absent), affiché sur la même
+ *  page pour la même raison. */
 const maven_key = sessionStorage.getItem('ma_moulinette_projet');
-
-if (!maven_key) {
-  showMessage('warning', "Aucun projet sélectionné — retournez à la page Projet pour ouvrir OWASP depuis un projet.", null);
-}
 const projet = maven_key ? maven_key.split(':') : ['', ''];
 
 /** On met à jour la page */
