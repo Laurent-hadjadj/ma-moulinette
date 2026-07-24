@@ -68,7 +68,7 @@ class Actuator
      * @var Collection<int, ActuatorInfo>
      */
     #[ORM\OneToMany(mappedBy: "actuator", targetEntity: ActuatorInfo::class, orphanRemoval: true, cascade: ["persist"])]
-    #[Assert\Count(min: 1)]
+    #[Assert\Count(min: 1, max: 15, maxMessage: "Vous ne pouvez pas déclarer plus de {{ limit }} clés.")]
     #[Assert\Valid]
     private $actuatorInfo;
 
@@ -96,7 +96,10 @@ class Actuator
 
     public function setMavenKey(string $mavenKey): static
     {
-        $this->mavenKey = $mavenKey;
+        /* Forme canonique : comparaison insensible à la casse à la collecte
+         * (ActuatorRepository::findActuatorMavenKey), donc normalisation dès
+         * l'enregistrement pour rester cohérent avec les fiches existantes. */
+        $this->mavenKey = strtolower($mavenKey);
 
         return $this;
     }
@@ -168,6 +171,12 @@ class Actuator
 
     public function setDateModification(?\DateTimeInterface $dateModification): static
     {
+        /* La colonne date_modification est typée DATETIME_MUTABLE (Doctrine attend
+         * un \DateTime, pas un \DateTimeImmutable) — même conversion défensive que
+         * Utilisateur::setDateModification(). */
+        if ($dateModification instanceof \DateTimeImmutable) {
+            $dateModification = \DateTime::createFromImmutable($dateModification);
+        }
         $this->dateModification = $dateModification;
 
         return $this;
@@ -176,7 +185,7 @@ class Actuator
     #[ORM\PreUpdate]
     public function preUpdate(): void
     {
-        $this->dateModification = new \DateTimeImmutable();
+        $this->setDateModification(new \DateTime());
     }
 
     public function getDateEnregistrement(): ?\DateTimeImmutable
