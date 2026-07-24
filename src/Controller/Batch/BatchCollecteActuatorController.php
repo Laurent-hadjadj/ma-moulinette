@@ -16,7 +16,7 @@ namespace App\Controller\Batch;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\{Actuator, ActuatorInfo};
+use App\Entity\{Actuator};
 use App\Repository\ActuatorInfoRepository;
 use App\Service\ClientService;
 
