@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create COMMENTS                      ##
-##           V3.0.0 - 28/06/2026                  ##
+##           V3.1.0 - 23/07/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -22,7 +22,8 @@
 --- 2026-05-14 : Ajout des commentaires pour logger_breakdown de la table historique et les attributs de la table logger_detail.
 --- 2026-05-17 : Ajout des commentaires pour la table clean_code et les 15 colonnes SonarQube 10+ de la table historique.
 --- 2026-06-09 : Ajout des commentaires pour user_agent_event et user_agent_analysis (intégration schéma ma_moulinette).
--- 2026-06-28 : Ajout des commentaires manquant sur les tables
+--- 2026-06-28 : Ajout des commentaires manquant sur les tables
+--- 2026-07-23 : Renommage actuator_info_value en actuator_info_cle
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette postgres;
@@ -100,7 +101,7 @@ COMMENT ON COLUMN ma_moulinette.actuator.date_enregistrement IS 'Date d’enregi
 COMMENT ON TABLE ma_moulinette.actuator_info IS 'Table des clé Actuator à parser.';
 COMMENT ON COLUMN ma_moulinette.actuator_info.id IS 'Identifiant unique de la table';
 COMMENT ON COLUMN ma_moulinette.actuator_info.actuator_info_description IS 'Description courte.';
-COMMENT ON COLUMN ma_moulinette.actuator_info.actuator_info_value IS 'Valeur de la clé actuator.';
+COMMENT ON COLUMN ma_moulinette.actuator_info.actuator_info_cle IS 'Nœud JSON à extraire de la réponse actuator/info (ex. app.version).';
 
 -- ============================================
 -- TABLE anomalie
