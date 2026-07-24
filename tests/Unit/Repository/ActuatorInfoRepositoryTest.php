@@ -60,8 +60,8 @@ class ActuatorInfoRepositoryTest extends TestCase
     public function testFindActuatorInfoByIdReturnsRows(): void
     {
         $rows = [
-            ['nom' => 'version', 'valeur' => '4.2.0'],
-            ['nom' => 'profile', 'valeur' => 'prod'],
+            ['nom' => 'version', 'cle' => 'app.version'],
+            ['nom' => 'profile', 'cle' => 'app.profile'],
         ];
         $this->connection->method('prepare')->willReturn($this->statement);
         $this->statement->expects($this->once())
