@@ -3,553 +3,555 @@
 {% set bottom="footer-fixed" %}
 <!DOCTYPE html>
 <!--
-.. __  __             __  __             _ _            _   _
-  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
-  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
-  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
-  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+.__  __             __  __             _ _            _   _
+|  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+| |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+| |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+|_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
 
-  Laurent HADJADJ
-  https://github.com/Laurent-hadjadj/ma-moulinette
-  © 2024 - CC BY-SA-NC 4.0
+Laurent HADJADJ
+https://github.com/Laurent-hadjadj/ma-moulinette
+© 2024 - CC BY-SA-NC 4.0
 -->
 <html	lang="fr">
-  {# Chargement de la section HEAD #}
-  <head>
-    <title>{{ title }}</title>
-    {{ include('head.html.twig') }}
-    {# Chargement du code javascript #}
-    {% block importmap %}{{ importmap('footer-plan-du-site') }}{% endblock %}
-  </head>
+    {# Chargement de la section HEAD #}
+    <head>
+        <title>{{ title }}</title>
+        {{ include('head.html.twig') }}
+        {# Chargement du code javascript #}
+        {% block importmap %}
+            {{ importmap('footer-plan-du-site') }}
+        {% endblock %}
+    </head>
 
-  <body>
-    {# no-script #}
-    {{ include('no-script.html.twig') }}
-    {# Chargement de la section header #}
-    {{ include('header.html.twig') }}
+    <body>
+        {# no-script #}
+        {{ include('no-script.html.twig') }}
+        {# Chargement de la section header #}
+        {{ include('header.html.twig') }}
 
-    <header class="grid-container margin-top-1">
-      <nav id="fil-ariane" aria-label="Fil d'Ariane, vous êtes ici">
-        <ol class="claire-hand breadcrumbs">
-          <li><a href="{{ path('accueil', {}) }}" alt="" class="focus-light">Accueil</a></li>
-          <li aria-current="page">Plan-du-site</li>
-        </ol>
-      </nav>
-    </header>
+        <header class="grid-container margin-top-1">
+            <nav id="fil-ariane" aria-label="Fil d'Ariane, vous êtes ici">
+                <ol class="claire-hand breadcrumbs">
+                    <li><a href="{{ path('accueil', {}) }}" alt="" class="focus-dark-light">Accueil</a></li>
+                    <li aria-current="page">Plan-du-site</li>
+                </ol>
+            </nav>
+        </header>
 
-    <main id="main-content" class="grid-container grid-x">
-      <div class="grid-x">
-        <h2 class="h3 claire-hand cell"><span aria-hidden="true">🧭</span>Légende</h2>
-        <ul class="open-sans">
-          <li class="marqueur-no-bullet"><span class="margin-left-2" aria-hidden="true">🚦</span>Habilitation nécessaire.</li>
-          <li class="marqueur-circle color-bleu"><span aria-hidden="true">📌</span> Lien vers la page.</li>
-          <li class="marqueur-square color-bleu"><span aria-hidden="true">🚀</span> Action dans la page.</li>
-          <li class="marqueur-disc color-bleu"><span aria-hidden="true">👁️</span> Information, données.</li>
-          <li class="marqueur-no-bullet color-bleu">
-            <img class="cadenas cadenas-margin" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="authentification requise">
-            La page nécessite une authentification.
-          </li>
-        </ul>
-      </div>
+        <main id="main-content" class="grid-container grid-x">
+            <div class="grid-x">
+                <h2 class="h3 claire-hand cell"><span aria-hidden="true">🧭</span>Légende</h2>
+                <ul class="open-sans">
+                    <li class="marqueur-no-bullet"><span class="margin-left-2" aria-hidden="true">🚦</span>Habilitation nécessaire.</li>
+                    <li class="marqueur-circle color-bleu"><span aria-hidden="true">📌</span> Lien vers la page.</li>
+                    <li class="marqueur-square color-bleu"><span aria-hidden="true">🚀</span> Action dans la page.</li>
+                    <li class="marqueur-disc color-bleu"><span aria-hidden="true">👁️</span> Information, données.</li>
+                    <li class="marqueur-no-bullet color-bleu">
+                        <img class="cadenas cadenas-margin" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="authentification requise">
+                        La page nécessite une authentification.
+                    </li>
+                </ul>
+            </div>
 
-      <div class="timeline">
-        {# Authentification #}
-        <div class="timeline-item">
-          <div class="timeline-icon">
-            <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
-          </div>
-          <div class="timeline-content">
-            <p class="open-sans timeline-content-titre">
-              <img class="cadenas" src="{{ asset('images/unlock-32x32.min.svg') }}" alt="">
-              <span class="show-for-sr">Section sans authentification : </span>
-              <span aria-hidden="true">🔐</span> Authentification
-            </p>
-            <ul class="open-sans timeline-content-liste">
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('login', {}) }}"><span aria-hidden="true">📌</span> Se connecter.</a>
-                <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🔘</span>Afficher le mot de passe</li>
-                <li class="timeline-content-link marqueur-square"><span aria-hidden="true">✅</span>Valider les information</li>
-            </ul>
-          </div>
-        </div>
+            <div class="timeline">
+                {# Authentification #}
+                <div class="timeline-item">
+                    <div class="timeline-icon">
+                        <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
+                    </div>
+                    <div class="timeline-content">
+                        <p class="open-sans timeline-content-titre">
+                            <img class="cadenas" src="{{ asset('images/unlock-32x32.min.svg') }}" alt="">
+                            <span class="show-for-sr">Section sans authentification : </span>
+                            <span aria-hidden="true">🔐</span> Authentification
+                        </p>
+                        <ul class="open-sans timeline-content-liste">
+                            <li class="timeline-content-link marqueur-circle">
+                                <a href="{{ path('login', {}) }}"><span aria-hidden="true">📌</span> Se connecter.</a>
+                                <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🔘</span>Afficher le mot de passe</li>
+                                <li class="timeline-content-link marqueur-square"><span aria-hidden="true">✅</span>Valider les information</li>
+                            </ul>
+                        </div>
+                    </div>
 
-        {# Menu Public #}
-        <div class="timeline-item">
-          <div class="timeline-icon">
-            <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
-          </div>
-          <div class="timeline-content">
-            <p class="open-sans timeline-content-titre">
-              <img class="cadenas" src="{{ asset('images/unlock-32x32.min.svg') }}" alt="">
-              <span class="show-for-sr">Section sans authentification : </span>
-              <span aria-hidden="true">🧰</span> Menu haut de page
-            </p>
-            <ul class="open-sans timeline-content-liste">
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('accueil', {}) }}"><span aria-hidden="true">🏠</span> Ma-Moulinette (accueil).</a>
-              </li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le logo Ma-Moulinette.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche la version de l'application.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le drapeau d'environnement (DEV, INT, REC ou PRD).</li>
-              </ul>
-          </div>
-        </div>
+                    {# Menu Public #}
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
+                        </div>
+                        <div class="timeline-content">
+                            <p class="open-sans timeline-content-titre">
+                                <img class="cadenas" src="{{ asset('images/unlock-32x32.min.svg') }}" alt="">
+                                <span class="show-for-sr">Section sans authentification : </span>
+                                <span aria-hidden="true">🧰</span> Menu haut de page
+                            </p>
+                            <ul class="open-sans timeline-content-liste">
+                                <li class="timeline-content-link marqueur-circle">
+                                    <a href="{{ path('accueil', {}) }}"><span aria-hidden="true">🏠</span> Ma-Moulinette (accueil).</a>
+                                </li>
+                                <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le logo Ma-Moulinette.</li>
+                                <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche la version de l'application.</li>
+                                <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le drapeau d'environnement (DEV, INT, REC ou PRD).</li>
+                            </ul>
+                        </div>
+                    </div>
 
-        {# Menu avec authentification #}
-        <div class="timeline-item">
-          <div class="timeline-icon">
-            <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
-          </div>
-          <div class="timeline-content">
-            <p class="open-sans timeline-content-titre">
-              <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
-              <span class="show-for-sr">Section nécessitant une authentification : </span>
-              <span aria-hidden="true">🧰</span> Menu haut de page (mode connecté).
-            </p>
-            <ul class="open-sans timeline-content-liste">
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('accueil', {}) }}"><span aria-hidden="true">🏠</span> Ma-Moulinette (accueil).</a>
-              </li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('admin', {}) }}"><span aria-hidden="true">🎛️</span> Configuration.</a>
-              </li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('logout', {}) }}"><span aria-hidden="true">⬅️</span> Se déconnecter.</a>
-              </li>
-            </ul>
-          </div>
-        </div>
+                    {# Menu avec authentification #}
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
+                        </div>
+                        <div class="timeline-content">
+                            <p class="open-sans timeline-content-titre">
+                                <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
+                                <span class="show-for-sr">Section nécessitant une authentification : </span>
+                                <span aria-hidden="true">🧰</span> Menu haut de page (mode connecté).
+                            </p>
+                            <ul class="open-sans timeline-content-liste">
+                                <li class="timeline-content-link marqueur-circle">
+                                    <a href="{{ path('accueil', {}) }}"><span aria-hidden="true">🏠</span> Ma-Moulinette (accueil).</a>
+                                </li>
+                                <li class="timeline-content-link marqueur-circle">
+                                    <a href="{{ path('admin', {}) }}"><span aria-hidden="true">🎛️</span> Configuration.</a>
+                                </li>
+                                <li class="timeline-content-link marqueur-circle">
+                                    <a href="{{ path('logout', {}) }}"><span aria-hidden="true">⬅️</span> Se déconnecter.</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
 
-        {# Accueil #}
-        <div class="timeline-item">
-          <div class="timeline-icon">
-            <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
-          </div>
-          <div class="timeline-content">
-            <p class="open-sans timeline-content-titre">
-              <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
-              <span class="show-for-sr">Section nécessitant une authentification : </span><span aria-hidden="true">🏠</span> Accueil</p>
-            <ul class="open-sans timeline-content-liste">
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('accueil', {}) }}"><span aria-hidden="true">📌</span> Page d'accueil.</a>
-              </li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('profil', {}) }}"><span aria-hidden="true">📋</span> Page profils qualités.</a>
-              </li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('projet', {}) }}"><span aria-hidden="true">📁</span> Mon projet.</a>
-              </li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Mettre à jour de la liste des projets  (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher la note d'information sur les Tags.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">👁️</span> Affiche les projets favoris.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le nombre de projet et de tags.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le nombre de projet public et privé.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche la version de SonarQube.</li>
-            </ul>
-          </div>
-        </div>
+                    {# Accueil #}
+                    <div class="timeline-item">
+                        <div class="timeline-icon">
+                            <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
+                        </div>
+                        <div class="timeline-content">
+                            <p class="open-sans timeline-content-titre">
+                                <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
+                                <span class="show-for-sr">Section nécessitant une authentification : </span><span aria-hidden="true">🏠</span> Accueil</p>
+                                <ul class="open-sans timeline-content-liste">
+                                    <li class="timeline-content-link marqueur-circle">
+                                        <a href="{{ path('accueil', {}) }}"><span aria-hidden="true">📌</span> Page d'accueil.</a>
+                                    </li>
+                                    <li class="timeline-content-link marqueur-circle">
+                                        <a href="{{ path('profil', {}) }}"><span aria-hidden="true">📋</span> Page profils qualités.</a>
+                                    </li>
+                                    <li class="timeline-content-link marqueur-circle">
+                                        <a href="{{ path('projet', {}) }}"><span aria-hidden="true">📁</span> Mon projet.</a>
+                                    </li>
+                                    <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Mettre à jour de la liste des projets  (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
+                                    <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher la note d'information sur les Tags.</li>
+                                    <li class="timeline-content-link marqueur-square"><span aria-hidden="true">👁️</span> Affiche les projets favoris.</li>
+                                    <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le nombre de projet et de tags.</li>
+                                    <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le nombre de projet public et privé.</li>
+                                    <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche la version de SonarQube.</li>
+                                </ul>
+                            </div>
+                        </div>
 
-        {# Profils SonarQube #}
-        <div class="timeline-item">
-          <div class="timeline-icon">
-            <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
-          </div>
-          <div class="timeline-content">
-            <p class="open-sans timeline-content-titre">
-              <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
-              <span class="show-for-sr">Section nécessitant une authentification : </span><span aria-hidden="true">📋</span> Profils SonarQube</p>
-            <ul class="open-sans timeline-content-liste">
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('profil', {}) }}"><span aria-hidden="true">📌</span> Profils Qualités SonarQube.</a>
-              </li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Mettre à jour des profils qualités  (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher le graphique de répartition par profil.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher la liste des autres profils disponibles.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvre la page du détail des changements du profil.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le nombre de profils qualités.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le nombre de règles.</li>
-            </ul>
-          </div>
-        </div>
+                        {# Profils SonarQube #}
+                        <div class="timeline-item">
+                            <div class="timeline-icon">
+                                <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
+                            </div>
+                            <div class="timeline-content">
+                                <p class="open-sans timeline-content-titre">
+                                    <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
+                                    <span class="show-for-sr">Section nécessitant une authentification : </span><span aria-hidden="true">📋</span> Profils SonarQube</p>
+                                    <ul class="open-sans timeline-content-liste">
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('profil', {}) }}"><span aria-hidden="true">📌</span> Profils Qualités SonarQube.</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Mettre à jour des profils qualités  (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher le graphique de répartition par profil.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher la liste des autres profils disponibles.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvre la page du détail des changements du profil.</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le nombre de profils qualités.</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le nombre de règles.</li>
+                                    </ul>
+                                </div>
+                            </div>
 
-        {# Projet #}
-        <div class="timeline-item">
-          <div class="timeline-icon">
-            <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
-          </div>
-          <div class="timeline-content">
-            <p class="open-sans timeline-content-titre">
-              <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
-              <span class="show-for-sr">Section nécessitant une authentification : </span><span aria-hidden="true">🗂️</span> Mon projet
-            </p>
-            <ul class="open-sans timeline-content-liste">
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('projet', {}) }}"><span aria-hidden="true">📌</span> Tableau de bord du projet.</a>
-              </li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('mes_projets', {}) }}"><span aria-hidden="true">🗂️</span> Mes projets.</a>
-              </li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Collecter des données SonarQube (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le journal d'execution de la collecte et de la mise peinture.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les Informations Générales.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les informations de la Version.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les informations du Projet.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les informations de Qualité.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher la répartition des versions.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher la répartition des annotations //noSonar.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher la répartition des todo par language.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher le tableau des menaces potentielles.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher la répartition des catégories de violations par sévérité.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher la répartition de la dette technique.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher la répartition des violations par sévérité.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Enregistrer les données collectées (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir la répartition des violations par module.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir le tableau de suivi.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir le tableau de bord du COSUI.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir l'analyse OWASP.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir l'analyse Owasp Check-Dependency (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir la page Code-Clean (S10+)</li>
-            </ul>
-          </div>
-        </div>
+                            {# Projet #}
+                            <div class="timeline-item">
+                                <div class="timeline-icon">
+                                    <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
+                                </div>
+                                <div class="timeline-content">
+                                    <p class="open-sans timeline-content-titre">
+                                        <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
+                                        <span class="show-for-sr">Section nécessitant une authentification : </span><span aria-hidden="true">🗂️</span> Mon projet
+                                    </p>
+                                    <ul class="open-sans timeline-content-liste">
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('projet', {}) }}"><span aria-hidden="true">📌</span> Tableau de bord du projet.</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('mes_projets', {}) }}"><span aria-hidden="true">🗂️</span> Mes projets.</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Collecter des données SonarQube (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le journal d'execution de la collecte et de la mise peinture.</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les Informations Générales.</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les informations de la Version.</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les informations du Projet.</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les informations de Qualité.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher la répartition des versions.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher la répartition des annotations //noSonar.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher la répartition des todo par language.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher le tableau des menaces potentielles.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher la répartition des catégories de violations par sévérité.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher la répartition de la dette technique.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher la répartition des violations par sévérité.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Enregistrer les données collectées (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir la répartition des violations par module.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir le tableau de suivi.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir le tableau de bord du COSUI.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir l'analyse OWASP.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir l'analyse Owasp Check-Dependency (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir la page Code-Clean (S10+)</li>
+                                    </ul>
+                                </div>
+                            </div>
 
 
-        {# Répartition des violations par frontend/backend/autre #}
-        <div class="timeline-item">
-          <div class="timeline-icon">
-            <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
-          </div>
-          <div class="timeline-content">
-            <p class="open-sans timeline-content-titre">
-              <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
-                <span class="show-for-sr">Section nécessitant une authentification : </span>
-                <span aria-hidden="true">⚖️</span>Répartition
-            </p>
-            <ul class="open-sans timeline-content-liste">
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('repartition', {}) }}"><span aria-hidden="true">📌</span> Répartition des violations par module.</a>
-              </li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir le tableau de sévérité par catégorie.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Collecter les violations pour la Fiabilité.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Collecter les violations pour la Sécurité.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Collecter les violations pour la Maintenabilité.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Lancer l'analyse des violations.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher la dernière analyse.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche l'identifiant de setup.</li>
-            </ul>
-          </div>
-        </div>
+                            {# Répartition des violations par frontend/backend/autre #}
+                            <div class="timeline-item">
+                                <div class="timeline-icon">
+                                    <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
+                                </div>
+                                <div class="timeline-content">
+                                    <p class="open-sans timeline-content-titre">
+                                        <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
+                                        <span class="show-for-sr">Section nécessitant une authentification : </span>
+                                        <span aria-hidden="true">⚖️</span>Répartition
+                                    </p>
+                                    <ul class="open-sans timeline-content-liste">
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('repartition', {}) }}"><span aria-hidden="true">📌</span> Répartition des violations par module.</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir le tableau de sévérité par catégorie.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Collecter les violations pour la Fiabilité.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Collecter les violations pour la Sécurité.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Collecter les violations pour la Maintenabilité.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Lancer l'analyse des violations.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher la dernière analyse.</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche l'identifiant de setup.</li>
+                                    </ul>
+                                </div>
+                            </div>
 
-        {# Tableau de Suivi #}
-        <div class="timeline-item">
-          <div class="timeline-icon">
-            <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
-          </div>
-          <div class="timeline-content">
-            <p class="open-sans timeline-content-titre">
-              <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
-              <span class="show-for-sr">Section nécessitant une authentification : </span><span aria-hidden="true">📉</span> Suivi
-            </p>
-            <ul class="open-sans timeline-content-liste">
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('suivi', {}) }}"><span aria-hidden="true">📌</span> Suivi des analyses.</a>
-              </li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le nom du projet à suivre.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Éditer le rapport PDF de suivi.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir la fenêtre Ajouter une analyse</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Choisir une version.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les indicateurs collectés.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ajouter l'analyse à l'historique.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir la fenêtre Modifier les paramètres.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les analyses présentes dans l'historique.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Supprimer une analyse de l'historique (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Choisir ce projet comme favori.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Choisir la version de référence (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ajouter cette version au suivi.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau Qualité.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le graphe Fiabilités/Sécurité/Maintenabilité.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau Mesures.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau Tests/Couverture de code.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau Complexité.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau Distribution/Language.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le graphe empilé pour Distribution/Language.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau Répartition par module.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau Anomalies par sévérité.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau Répartition des anomalies par type de sévérité.</li>
-            </ul>
-          </div>
-        </div>
+                            {# Tableau de Suivi #}
+                            <div class="timeline-item">
+                                <div class="timeline-icon">
+                                    <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
+                                </div>
+                                <div class="timeline-content">
+                                    <p class="open-sans timeline-content-titre">
+                                        <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
+                                        <span class="show-for-sr">Section nécessitant une authentification : </span><span aria-hidden="true">📉</span> Suivi
+                                    </p>
+                                    <ul class="open-sans timeline-content-liste">
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('suivi', {}) }}"><span aria-hidden="true">📌</span> Suivi des analyses.</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le nom du projet à suivre.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Éditer le rapport PDF de suivi.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir la fenêtre Ajouter une analyse</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Choisir une version.</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les indicateurs collectés.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ajouter l'analyse à l'historique.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir la fenêtre Modifier les paramètres.</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les analyses présentes dans l'historique.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Supprimer une analyse de l'historique (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Choisir ce projet comme favori.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Choisir la version de référence (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ajouter cette version au suivi.</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau Qualité.</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le graphe Fiabilités/Sécurité/Maintenabilité.</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau Mesures.</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau Tests/Couverture de code.</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau Complexité.</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau Distribution/Language.</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le graphe empilé pour Distribution/Language.</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau Répartition par module.</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau Anomalies par sévérité.</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau Répartition des anomalies par type de sévérité.</li>
+                                    </ul>
+                                </div>
+                            </div>
 
-      <div class="timeline-item">
-          <div class="timeline-icon">
-            <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
-          </div>
-          <div class="timeline-content">
-            <p class="open-sans timeline-content-titre">
-              <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
-              <span class="show-for-sr">Section nécessitant une authentification : </span><span aria-hidden="true">💼</span> COSUI
-            </p>
-            <ul class="open-sans timeline-content-liste">
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('projet_cosui', {}) }}"><span aria-hidden="true">📌</span> COmité de SUIvi.</a>
-              </li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le numéro de Setup.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher les variations.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau de suivi.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher les informations sur la version de référence.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche la répartition de violations par module.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le Radar des indicateurs Ref/actuel.</li>
-            </ul>
-          </div>
-        </div>
+                            <div class="timeline-item">
+                                <div class="timeline-icon">
+                                    <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
+                                </div>
+                                <div class="timeline-content">
+                                    <p class="open-sans timeline-content-titre">
+                                        <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
+                                        <span class="show-for-sr">Section nécessitant une authentification : </span><span aria-hidden="true">💼</span> COSUI
+                                    </p>
+                                    <ul class="open-sans timeline-content-liste">
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('projet_cosui', {}) }}"><span aria-hidden="true">📌</span> COmité de SUIvi.</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le numéro de Setup.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher les variations.</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau de suivi.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Afficher les informations sur la version de référence.</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche la répartition de violations par module.</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le Radar des indicateurs Ref/actuel.</li>
+                                    </ul>
+                                </div>
+                            </div>
 
-        {# Sécurité : OWASP #}
-        <div class="timeline-item">
-          <div class="timeline-icon">
-            <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
-          </div>
-          <div class="timeline-content">
-            <p class="open-sans timeline-content-titre">
-              <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
-              <span class="show-for-sr">Section nécessitant une authentification : </span>
-              <span aria-hidden="true">🛡️</span> Sécurité — OWASP
-            </p>
-            <ul class="open-sans timeline-content-liste">
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('owasp', {}) }}"><span aria-hidden="true">📌</span> Analyse OWASP du projet.</a>
-              </li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le bloc Informations (vulnérabilités, hotspots, répartition par module).</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Choisir le référentiel (2017 ou 2021 — 2025 pas encore supporté par SonarQube).</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau de synthèse par catégorie A1 à A10.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir le détail d'une catégorie (sévérité des points chauds).</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau détaillé des failles.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le graphique de répartition des menaces par catégorie.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Comparer les référentiels (2017/2021 vs 2025).</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir l'accordéon d'un référentiel (description + lien vers le détail d'une catégorie).</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Exporter le rapport OWASP au format PDF.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir Dependency-Check du projet (si un scan existe) (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
-            </ul>
-          </div>
-        </div>
+                            {# Sécurité : OWASP #}
+                            <div class="timeline-item">
+                                <div class="timeline-icon">
+                                    <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
+                                </div>
+                                <div class="timeline-content">
+                                    <p class="open-sans timeline-content-titre">
+                                        <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
+                                        <span class="show-for-sr">Section nécessitant une authentification : </span>
+                                        <span aria-hidden="true">🛡️</span> Sécurité — OWASP
+                                    </p>
+                                    <ul class="open-sans timeline-content-liste">
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('owasp', {}) }}"><span aria-hidden="true">📌</span> Analyse OWASP du projet.</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le bloc Informations (vulnérabilités, hotspots, répartition par module).</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Choisir le référentiel (2017 ou 2021 — 2025 pas encore supporté par SonarQube).</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau de synthèse par catégorie A1 à A10.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir le détail d'une catégorie (sévérité des points chauds).</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau détaillé des failles.</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le graphique de répartition des menaces par catégorie.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Comparer les référentiels (2017/2021 vs 2025).</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir l'accordéon d'un référentiel (description + lien vers le détail d'une catégorie).</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Exporter le rapport OWASP au format PDF.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir Dependency-Check du projet (si un scan existe) (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
+                                    </ul>
+                                </div>
+                            </div>
 
-        {# Clean Code #}
-        <div class="timeline-item">
-          <div class="timeline-icon">
-            <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
-          </div>
-          <div class="timeline-content">
-            <p class="open-sans timeline-content-titre">
-              <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
-              <span class="show-for-sr">Section nécessitant une authentification : </span><span aria-hidden="true">✨</span> Clean Code
-            </p>
-            <ul class="open-sans timeline-content-liste">
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('clean_code', {}) }}"><span aria-hidden="true">📌</span> Clean Code du projet.</a>
-              </li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le score de risque et son évolution.</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les graphiques (catégories d'attribut, sévérités d'impact).</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche la courbe d'évolution (si au moins 2 collectes historisées).</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les 3 cartes qualité logicielle (maintenabilité, fiabilité, sécurité).</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les indicateurs de conformité (OWASP 2021, SANS/CWE, CWE).</li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau détaillé par catégorie d'attribut.</li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('clean_code_synthese', {}) }}"><span aria-hidden="true">📊</span> Synthèse par portefeuille.</a>
-              </li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau de synthèse (une ligne par projet du périmètre).</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Exporter la synthèse au format PDF.</li>
-            </ul>
-          </div>
-        </div>
+                            {# Clean Code #}
+                            <div class="timeline-item">
+                                <div class="timeline-icon">
+                                    <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
+                                </div>
+                                <div class="timeline-content">
+                                    <p class="open-sans timeline-content-titre">
+                                        <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
+                                        <span class="show-for-sr">Section nécessitant une authentification : </span><span aria-hidden="true">✨</span> Clean Code
+                                    </p>
+                                    <ul class="open-sans timeline-content-liste">
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('clean_code', {}) }}"><span aria-hidden="true">📌</span> Clean Code du projet.</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le score de risque et son évolution.</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les graphiques (catégories d'attribut, sévérités d'impact).</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche la courbe d'évolution (si au moins 2 collectes historisées).</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les 3 cartes qualité logicielle (maintenabilité, fiabilité, sécurité).</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les indicateurs de conformité (OWASP 2021, SANS/CWE, CWE).</li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau détaillé par catégorie d'attribut.</li>
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('clean_code_synthese', {}) }}"><span aria-hidden="true">📊</span> Synthèse par portefeuille.</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau de synthèse (une ligne par projet du périmètre).</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Exporter la synthèse au format PDF.</li>
+                                    </ul>
+                                </div>
+                            </div>
 
-        {# DependencyCheck #}
-        <div class="timeline-item">
-          <div class="timeline-icon">
-            <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
-          </div>
-          <div class="timeline-content">
-            <p class="open-sans timeline-content-titre">
-              <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
-              <span class="show-for-sr">Section nécessitant une authentification : </span>
-              <span aria-hidden="true">📦</span> DependencyCheck (vulnérabilités des dépendances)
-            </p>
-            <ul class="open-sans timeline-content-liste">
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('projet', {}) }}"><span aria-hidden="true">📌</span> Liste des applications analysées.</a>
-              </li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les compteurs de vulnérabilités (CVE) par sévérité.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Consulter la fiche d'une application (détail du scan, historique, synthèse exécutive) (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Exporter le rapport PDF d'une application (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('dc_dashboard', {}) }}"><span aria-hidden="true">📊</span> Tableau de bord (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
-              </li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche la vue agrégée du parc (totaux, nouvelles CVE critiques, cartographie).</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Filtrer par socle technique ou par vue (dernière release / dernier build) (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('dc_kpi', {}) }}"><span aria-hidden="true">📐</span> Indicateurs clés (selon vos droits) (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
-              </li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le score sécurité par application et la tendance sur 90 jours.</li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('dc_comparer', {}) }}"><span aria-hidden="true">⚖️</span> Comparer deux analyses (selon vos droits) (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
-              </li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche la comparaison de 2 à 4 applications (CVE communes, écarts).</li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('dc_mutualisables', {}) }}"><span aria-hidden="true">🔗</span> Dépendances mutualisables (selon vos droits) (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
-              </li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche la liste triable des dépendances mutualisables.</li>
-            </ul>
-          </div>
-        </div>
+                            {# DependencyCheck #}
+                            <div class="timeline-item">
+                                <div class="timeline-icon">
+                                    <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
+                                </div>
+                                <div class="timeline-content">
+                                    <p class="open-sans timeline-content-titre">
+                                        <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
+                                        <span class="show-for-sr">Section nécessitant une authentification : </span>
+                                        <span aria-hidden="true">📦</span> DependencyCheck (vulnérabilités des dépendances)
+                                    </p>
+                                    <ul class="open-sans timeline-content-liste">
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('projet', {}) }}"><span aria-hidden="true">📌</span> Liste des applications analysées.</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les compteurs de vulnérabilités (CVE) par sévérité.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Consulter la fiche d'une application (détail du scan, historique, synthèse exécutive) (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Exporter le rapport PDF d'une application (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('dc_dashboard', {}) }}"><span aria-hidden="true">📊</span> Tableau de bord (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche la vue agrégée du parc (totaux, nouvelles CVE critiques, cartographie).</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Filtrer par socle technique ou par vue (dernière release / dernier build) (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('dc_kpi', {}) }}"><span aria-hidden="true">📐</span> Indicateurs clés (selon vos droits) (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le score sécurité par application et la tendance sur 90 jours.</li>
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('dc_comparer', {}) }}"><span aria-hidden="true">⚖️</span> Comparer deux analyses (selon vos droits) (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche la comparaison de 2 à 4 applications (CVE communes, écarts).</li>
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('dc_mutualisables', {}) }}"><span aria-hidden="true">🔗</span> Dépendances mutualisables (selon vos droits) (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche la liste triable des dépendances mutualisables.</li>
+                                    </ul>
+                                </div>
+                            </div>
 
-        {# Back-office #}
-        <div class="timeline-item">
-          <div class="timeline-icon">
-            <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
-          </div>
-          <div class="timeline-content">
-            <p class="open-sans timeline-content-titre">
-              <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
-              <span class="show-for-sr">Section nécessitant une authentification : </span>
-              <span aria-hidden="true">🛠️</span> Back-office
-            </p>
-            <ul class="open-sans timeline-content-liste">
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('admin', {}) }}"><span aria-hidden="true">🎛️</span> Page d'accueil du back-office.</a>
-              </li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('admin_utilisateur_index', {}) }}"><span aria-hidden="true">👤</span> Utilisateurs (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
-              </li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Créer, modifier ou supprimer un utilisateur.</li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('admin_groupe_utilisateur_index', {}) }}"><span aria-hidden="true">👥</span> Groupes utilisateur (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
-              </li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Créer ou supprimer un groupe utilisateur.</li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('admin_groupe_fonctionnel_index', {}) }}"><span aria-hidden="true">🏷️</span> Groupes fonctionnels (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
-              </li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Créer, modifier ou supprimer un groupe fonctionnel.</li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('admin_portefeuille_index', {}) }}"><span aria-hidden="true">💼</span> Portefeuilles de projets (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
-              </li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Créer, modifier ou supprimer un portefeuille.</li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('admin_batch_index', {}) }}"><span aria-hidden="true">⚙️</span> Traitements automatiques (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
-              </li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Créer, modifier ou supprimer un traitement (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('admin_logs_index', {}) }}"><span aria-hidden="true">📄</span> Journaux applicatifs (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
-              </li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('admin_user_role_log_index', {}) }}"><span aria-hidden="true">📜</span> Journal des rôles (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
-              </li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Filtrer le journal des rôles (courriel, plage de dates).</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Archiver (CSV) ou exporter (PDF) la sélection du journal des rôles.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Supprimer la sélection du journal des rôles (confirmation).</li>
-            </ul>
-          </div>
-        </div>
+                            {# Back-office #}
+                            <div class="timeline-item">
+                                <div class="timeline-icon">
+                                    <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
+                                </div>
+                                <div class="timeline-content">
+                                    <p class="open-sans timeline-content-titre">
+                                        <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
+                                        <span class="show-for-sr">Section nécessitant une authentification : </span>
+                                        <span aria-hidden="true">🛠️</span> Back-office
+                                    </p>
+                                    <ul class="open-sans timeline-content-liste">
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('admin', {}) }}"><span aria-hidden="true">🎛️</span> Page d'accueil du back-office.</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('admin_utilisateur_index', {}) }}"><span aria-hidden="true">👤</span> Utilisateurs (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Créer, modifier ou supprimer un utilisateur.</li>
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('admin_groupe_utilisateur_index', {}) }}"><span aria-hidden="true">👥</span> Groupes utilisateur (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Créer ou supprimer un groupe utilisateur.</li>
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('admin_groupe_fonctionnel_index', {}) }}"><span aria-hidden="true">🏷️</span> Groupes fonctionnels (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Créer, modifier ou supprimer un groupe fonctionnel.</li>
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('admin_portefeuille_index', {}) }}"><span aria-hidden="true">💼</span> Portefeuilles de projets (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Créer, modifier ou supprimer un portefeuille.</li>
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('admin_batch_index', {}) }}"><span aria-hidden="true">⚙️</span> Traitements automatiques (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Créer, modifier ou supprimer un traitement (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('admin_logs_index', {}) }}"><span aria-hidden="true">📄</span> Journaux applicatifs (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('admin_user_role_log_index', {}) }}"><span aria-hidden="true">📜</span> Journal des rôles (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Filtrer le journal des rôles (courriel, plage de dates).</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Archiver (CSV) ou exporter (PDF) la sélection du journal des rôles.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Supprimer la sélection du journal des rôles (confirmation).</li>
+                                    </ul>
+                                </div>
+                            </div>
 
-        {# Exploitation #}
-        <div class="timeline-item">
-          <div class="timeline-icon">
-            <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
-          </div>
-          <div class="timeline-content">
-            <p class="open-sans timeline-content-titre">
-              <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
-              <span class="show-for-sr">Section nécessitant une authentification : </span>
-              <span aria-hidden="true">📡</span> Exploitation et statistiques
-            </p>
-            <ul class="open-sans timeline-content-liste">
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('traitement_suivi', {}) }}"><span aria-hidden="true">📋</span> Suivi des traitements batch (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
-              </li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau des exécutions (statut, durée, projets traités).</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir le journal détaillé d'une exécution.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Filtrer par portefeuille, traitement, statut, mode ou période.</li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('profiling_dashboard', {}) }}"><span aria-hidden="true">📐</span> Profiling des traitements (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
-              </li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les cartes indicateur et les graphiques de temps/mémoire.</li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('activity', {}) }}"><span aria-hidden="true">📅</span> Activité SonarQube (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
-              </li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau annuel des analyses (succès, échecs, taux de réussite).</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Recalculer les statistiques d'activité.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Tracer les courbes des analyses et/ou des projets.</li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('statistiques', {}) }}"><span aria-hidden="true">📊</span> Statistiques générales.</a>
-              </li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les compteurs globaux (utilisateurs, projets, profils, anomalies).</li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('statistiques_projet', {}) }}"><span aria-hidden="true">📁</span> Statistiques par projet.</a>
-              </li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau des projets (version, Quality Gate, notes, anomalies).</li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('statistiques_utilisateur', {}) }}"><span aria-hidden="true">👤</span> Statistiques d'utilisation.</a>
-              </li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les comptes actifs, sessions, répartition OS/navigateurs/appareils.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Filtrer par période (jour, semaine, mois).</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Relancer l'analyse de navigation.</li>
-            </ul>
-          </div>
-        </div>
+                            {# Exploitation #}
+                            <div class="timeline-item">
+                                <div class="timeline-icon">
+                                    <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
+                                </div>
+                                <div class="timeline-content">
+                                    <p class="open-sans timeline-content-titre">
+                                        <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
+                                        <span class="show-for-sr">Section nécessitant une authentification : </span>
+                                        <span aria-hidden="true">📡</span> Exploitation et statistiques
+                                    </p>
+                                    <ul class="open-sans timeline-content-liste">
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('traitement_suivi', {}) }}"><span aria-hidden="true">📋</span> Suivi des traitements batch (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau des exécutions (statut, durée, projets traités).</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir le journal détaillé d'une exécution.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Filtrer par portefeuille, traitement, statut, mode ou période.</li>
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('profiling_dashboard', {}) }}"><span aria-hidden="true">📐</span> Profiling des traitements (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les cartes indicateur et les graphiques de temps/mémoire.</li>
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('activity', {}) }}"><span aria-hidden="true">📅</span> Activité SonarQube (<span aria-hidden="true">🚦</span> habilitation nécessaire).</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau annuel des analyses (succès, échecs, taux de réussite).</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Recalculer les statistiques d'activité.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Tracer les courbes des analyses et/ou des projets.</li>
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('statistiques', {}) }}"><span aria-hidden="true">📊</span> Statistiques générales.</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les compteurs globaux (utilisateurs, projets, profils, anomalies).</li>
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('statistiques_projet', {}) }}"><span aria-hidden="true">📁</span> Statistiques par projet.</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche le tableau des projets (version, Quality Gate, notes, anomalies).</li>
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('statistiques_utilisateur', {}) }}"><span aria-hidden="true">👤</span> Statistiques d'utilisation.</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche les comptes actifs, sessions, répartition OS/navigateurs/appareils.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Filtrer par période (jour, semaine, mois).</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Relancer l'analyse de navigation.</li>
+                                    </ul>
+                                </div>
+                            </div>
 
-        {# Espace personnel #}
-        <div class="timeline-item">
-          <div class="timeline-icon">
-            <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
-          </div>
-          <div class="timeline-content">
-            <p class="open-sans timeline-content-titre">
-              <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
-              <span class="show-for-sr">Section nécessitant une authentification : </span>
-              <span aria-hidden="true">🧑</span> Espace personnel
-            </p>
-            <ul class="open-sans timeline-content-liste">
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('preferences', {}) }}"><span aria-hidden="true">📌</span> Réglages personnels.</a>
-              </li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche mes informations (rôles, groupe utilisateur, groupes fonctionnels).</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Basculer un interrupteur de suivi (Projet, Favori ou Version).</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir la modale d'un interrupteur (liste des éléments concernés).</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Supprimer un favori ou une version favorite.</li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('actuator', {}) }}"><span aria-hidden="true">🌱</span> Inventaire Actuator.</a>
-              </li>
-              <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche la liste paginée des applications enregistrées (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ajouter une application.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Modifier une fiche existante.</li>
-              <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Supprimer une fiche (confirmation).</li>
-            </ul>
-          </div>
-        </div>
+                            {# Espace personnel #}
+                            <div class="timeline-item">
+                                <div class="timeline-icon">
+                                    <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
+                                </div>
+                                <div class="timeline-content">
+                                    <p class="open-sans timeline-content-titre">
+                                        <img class="cadenas" src="{{ asset('images/lock-bleu-32x32.min.svg') }}" alt="">
+                                        <span class="show-for-sr">Section nécessitant une authentification : </span>
+                                        <span aria-hidden="true">🧑</span> Espace personnel
+                                    </p>
+                                    <ul class="open-sans timeline-content-liste">
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('preferences', {}) }}"><span aria-hidden="true">📌</span> Réglages personnels.</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche mes informations (rôles, groupe utilisateur, groupes fonctionnels).</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Basculer un interrupteur de suivi (Projet, Favori ou Version).</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ouvrir la modale d'un interrupteur (liste des éléments concernés).</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Supprimer un favori ou une version favorite.</li>
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('actuator', {}) }}"><span aria-hidden="true">🌱</span> Inventaire Actuator.</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-disc"><span aria-hidden="true">👁️</span> Affiche la liste paginée des applications enregistrées (<span aria-hidden="true">🚦</span> habilitation nécessaire).</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Ajouter une application.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Modifier une fiche existante.</li>
+                                        <li class="timeline-content-link marqueur-square"><span aria-hidden="true">🚀</span> Supprimer une fiche (confirmation).</li>
+                                    </ul>
+                                </div>
+                            </div>
 
-        {# bas de page #}
-        <div class="timeline-item">
-          <div class="timeline-icon">
-            <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
-          </div>
-          <div class="timeline-content">
-            <p class="open-sans timeline-content-titre"><span aria-hidden="true">⬇️</span> Bas de page</p>
-            <ul class="open-sans timeline-content-liste">
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('plan_du_site', {}) }}"><span aria-hidden="true">🛣️</span> Plan du site.</a>
-              </li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('mention_legal', {}) }}"><span aria-hidden="true">©️</span> Mentions légales.</a>
-              </li>
-              <li class="timeline-content-link marqueur-circle">
-                <a href="{{ path('donnees_personnelles', {}) }}"><span aria-hidden="true">📓</span> Données personnelles.</a>
-              </li>
-            </ul>
-          </div>
-        </div>
+                            {# bas de page #}
+                            <div class="timeline-item">
+                                <div class="timeline-icon">
+                                    <img class="lien" src="{{ asset('images/link-32x32-white.min.svg') }}" alt="">
+                                </div>
+                                <div class="timeline-content">
+                                    <p class="open-sans timeline-content-titre"><span aria-hidden="true">⬇️</span> Bas de page</p>
+                                    <ul class="open-sans timeline-content-liste">
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('plan_du_site', {}) }}"><span aria-hidden="true">🛣️</span> Plan du site.</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('mention_legal', {}) }}"><span aria-hidden="true">©️</span> Mentions légales.</a>
+                                        </li>
+                                        <li class="timeline-content-link marqueur-circle">
+                                            <a href="{{ path('donnees_personnelles', {}) }}"><span aria-hidden="true">📓</span> Données personnelles.</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
 
-        {# Fin du bloc #}
-      </div>
-    </main>
+                            {# Fin du bloc #}
+                        </div>
+                    </main>
 
-    {# Chargement de la section footer #}
-    {{ include('footer.html.twig') }}
-  </body>
-</html>
+                    {# Chargement de la section footer #}
+                    {{ include('footer.html.twig') }}
+                </body>
+            </html>

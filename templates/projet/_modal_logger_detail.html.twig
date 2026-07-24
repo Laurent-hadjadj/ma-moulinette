@@ -1,65 +1,65 @@
 {# MODIF 2026-05-15 :
-  Modale Détail des Loggers JAVA (level x framework).
-  Source de la matrice : dataset.loggerBreakdown sur #js-affiche-logger-detail (alimenté par peinture.js).
-  Source de la liste : appel ajax /api/secure/peinture/projet/logger-details à l'ouverture. #}
+Modale Détail des Loggers JAVA (level x framework).
+Source de la matrice : dataset.loggerBreakdown sur #js-affiche-logger-detail (alimenté par peinture.js).
+Source de la liste : appel ajax /api/secure/peinture/projet/logger-details à l'ouverture. #}
 <dialog id="modal-affiche-logger-detail"
-        class="reveal large" data-reveal
-        aria-modal="true"
-        data-close-on-click="true"
-        data-animation-in="fade-in"
-        data-animation-out="fade-out"
-        aria-labelledby="titre-affiche-logger-detail"
-        aria-describedby="desc-affiche-logger-detail">
+    class="reveal large" data-reveal
+    aria-modal="true"
+    data-close-on-click="true"
+    data-animation-in="fade-in"
+    data-animation-out="fade-out"
+    aria-labelledby="titre-affiche-logger-detail"
+    aria-describedby="desc-affiche-logger-detail">
 
-  <header>
-    <h2 id="titre-affiche-logger-detail" class="h3 claire-hand"><span aria-hidden="true">ℹ️</span>Information</h2>
-    <h3 id="desc-affiche-logger-detail" class="h4 claire-hand"><span aria-hidden="true">📋</span>Détails des loggers JAVA par framework.</h3>
-    <span class="show-for-sr">
-      Cette page présente la répartition des loggers JAVA par niveau (info, warn, error, debug)
-      croisée avec le framework de logging utilisé (SLF4J, Commons Logging, etc.) ainsi que
-      la liste des fichiers concernés.
-    </span>
-  </header>
+    <header>
+        <h2 id="titre-affiche-logger-detail" class="h3 claire-hand"><span aria-hidden="true">ℹ️</span>Information</h2>
+        <h3 id="desc-affiche-logger-detail" class="h4 claire-hand"><span aria-hidden="true">📋</span>Détails des loggers JAVA par framework.</h3>
+        <span class="show-for-sr">
+            Cette page présente la répartition des loggers JAVA par niveau (info, warn, error, debug)
+            croisée avec le framework de logging utilisé (SLF4J, Commons Logging, etc.) ainsi que
+            la liste des fichiers concernés.
+        </span>
+    </header>
 
-  <table>
-    <caption class="claire-hand">Répartition par niveau et par framework.</caption>
-    <thead>
-      <tr>
-        <th scope="col" class="open-sans text-left">Niveau</th>
-        <th scope="col" class="open-sans text-center">Framework</th>
-        <th scope="col" class="open-sans text-right">Nombre</th>
-      </tr>
-    </thead>
-    <tbody id="js-tableau-logger-detail-matrix" class="open-sans">
-      <tr>
-        <td class="text-center">--</td>
-        <td class="text-center">--</td>
-        <td class="text-right">--</td>
-      </tr>
-    </tbody>
-  </table>
-  <br>
+    <table>
+        <caption class="claire-hand">Répartition par niveau et par framework.</caption>
+        <thead>
+            <tr>
+                <th scope="col" class="open-sans text-left">Niveau</th>
+                <th scope="col" class="open-sans text-center">Framework</th>
+                <th scope="col" class="open-sans text-right">Nombre</th>
+            </tr>
+        </thead>
+        <tbody id="js-tableau-logger-detail-matrix" class="open-sans">
+            <tr>
+                <td class="text-center">--</td>
+                <td class="text-center">--</td>
+                <td class="text-right">--</td>
+            </tr>
+        </tbody>
+    </table>
+    <br>
 
-  <table id="js-tableau-logger-detail" class="open-sans">
-    <caption class="claire-hand">Liste des fichiers concernés (50 premiers).</caption>
-    <thead>
-      <tr>
-        <th scope="col" class="text-left">Fichier</th>
-        <th scope="col" class="text-center">Ligne</th>
-        <th scope="col" class="text-center">Niveau</th>
-        <th scope="col" class="text-center">Framework</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+    <table id="js-tableau-logger-detail" class="open-sans">
+        <caption class="claire-hand">Liste des fichiers concernés (50 premiers).</caption>
+        <thead>
+            <tr>
+                <th scope="col" class="text-left">Fichier</th>
+                <th scope="col" class="text-center">Ligne</th>
+                <th scope="col" class="text-center">Niveau</th>
+                <th scope="col" class="text-center">Framework</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
 
-  <footer class="grid-x grid-margin-x align-right margin-top-2">
-    <div class="cell shrink">
-      <button id="bouton-fermer-logger-detail"
-              class="button open-sans focus-light"
-              type="button"
-              aria-label="Ferme modale"><span aria-hidden="true">❌</span> Fermer
-      </button>
-    </div>
-  </footer>
-</dialog>
+    <footer class="grid-x grid-margin-x align-right margin-top-2">
+        <div class="cell shrink">
+            <button id="bouton-fermer-logger-detail"
+                class="button open-sans focus-dark-light"
+                type="button"
+                aria-label="Ferme modale"><span aria-hidden="true">❌</span> Fermer
+                </button>
+            </div>
+        </footer>
+    </dialog>

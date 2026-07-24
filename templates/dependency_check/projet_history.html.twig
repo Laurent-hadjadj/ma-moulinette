@@ -3,176 +3,186 @@
 {% set bottom = 'footer-fixed' %}
 
 {# MODIF 2026-05-13 : page historique évolution CVE
-  d'une application sur tous ses scans (toutes versions confondues). #}
+d'une application sur tous ses scans (toutes versions confondues). #}
 <!DOCTYPE html>
 <!--
-.. __  __             __  __             _ _            _   _
-  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
-  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
-  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
-  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+.__  __             __  __             _ _            _   _
+|  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+| |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+| |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+|_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
 
-  Laurent HADJADJ
-  https://github.com/Laurent-hadjadj/ma-moulinette
-  © 2024 - CC BY-SA-NC 4.0
+Laurent HADJADJ
+https://github.com/Laurent-hadjadj/ma-moulinette
+© 2024 - CC BY-SA-NC 4.0
 -->
 <html lang="fr">
-  <head>
-    <title>{{ title }}</title>
-    {{ include('head.html.twig') }}
-    {% block importmap %}{{ importmap('dependency-check-history') }}{% endblock %}
-  </head>
+    <head>
+        <title>{{ title }}</title>
+        {{ include('head.html.twig') }}
+        {% block importmap %}
+            {{ importmap('dependency-check-history') }}
+        {% endblock %}
+    </head>
 
-  <body>
-    {{ include('header.html.twig') }}
+    <body>
+        {{ include('header.html.twig') }}
 
-    <header class="grid-container margin-top-1">
-      <nav aria-label="Fil d'Ariane, vous etes ici">
-        <ol class="claire-hand breadcrumbs">
-          <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
-          <li><a href="{{ path('dc_index') }}">Dependency-Check</a></li>
-          <li aria-current="page">Historique {{ project_artifact }}</li>
-        </ol>
-      </nav>
-    </header>
+        <header class="grid-container margin-top-1">
+            <nav aria-label="Fil d'Ariane, vous etes ici">
+                <ol class="claire-hand breadcrumbs">
+                    <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+                    <li><a href="{{ path('dc_index') }}">Dependency-Check</a></li>
+                    <li aria-current="page">Historique {{ project_artifact }}</li>
+                </ol>
+            </nav>
+        </header>
 
-    {{ include('_message.html.twig') }}
+        {{ include('_message.html.twig') }}
 
-    <main class="grid-container">
-      <h2 class="h4 claire-hand">
-        <span aria-hidden="true">📈</span> Historique &mdash;
-        {{ project_artifact }}
-        <span class="text-muted">({{ project_group }})</span>
-      </h2>
+        <main class="grid-container">
+            <h2 class="h4 claire-hand">
+                <span aria-hidden="true">📈</span> Historique &mdash;
+                {{ project_artifact }}
+                <span class="text-muted">({{ project_group }})</span>
+            </h2>
 
-      <div class="cell shrink margin-bottom-1">
-        <a id="bouton-ouvrir-dc-dashboard"
-          href="{{ path('dc_dashboard') }}"
-          class="button open-sans focus-light"
-          title="Retour à la vue agrégée cross-projets">
-          <span aria-hidden="true">📊</span> Dashboard
-        </a>
-        <a id="bouton-ouvrir-dc-index"
-          href="{{ path('dc_index') }}"
-          class="button open-sans focus-light"
-          title="Liste de tous les projets scannés">
-          <span aria-hidden="true">📦</span> Liste projets
-        </a>
-      </div>
-
-      {# Données JSON pour le chart, lues côté JS (cf index-dependency-check-history.js). #}
-      <script type="application/json" id="dc-history-data">{{ chart_data|json_encode|raw }}</script>
-
-      {% if nb_scans == 0 %}
-        <div class="callout alert-callout-border warning">
-          <p><span aria-hidden="true">⚠️</span> Aucun scan trouvé pour ce projet.</p>
-          <p>Vérifier que la CI a bien envoyé au moins un rapport DependencyCheck pour ce couple <code>{{ project_group }}:{{ project_artifact }}</code>.</p>
-        </div>
-      {% else %}
-
-        {# === Synthèse haut de page === #}
-        <div class="grid-x grid-margin-x margin-bottom-1">
-          <div class="cell small-12 medium-4">
-            <div class="callout alert-callout-border info">
-              <p class="open-sans"><strong>Scans cumulés</strong></p>
-              <p class="open-sans font-size-15">{{ nb_scans }}</p>
+            <div class="cell shrink margin-bottom-1">
+                <a id="bouton-ouvrir-dc-dashboard"
+                    href="{{ path('dc_dashboard') }}"
+                    class="button open-sans focus-dark-light"
+                    title="Retour à la vue agrégée cross-projets">
+                    <span aria-hidden="true">📊</span> Dashboard
+                </a>
+                <a id="bouton-ouvrir-dc-index"
+                    href="{{ path('dc_index') }}"
+                    class="button open-sans focus-dark-light"
+                    title="Liste de tous les projets scannés">
+                    <span aria-hidden="true">📦</span> Liste projets
+                </a>
             </div>
-          </div>
-          <div class="cell small-12 medium-4">
-            <div class="callout alert-callout-border info">
-              <p class="open-sans"><strong>Versions distinctes</strong></p>
-              <p class="open-sans font-size-15">{{ nb_versions }}</p>
-            </div>
-          </div>
-          <div class="cell small-12 medium-4">
-            <div class="callout alert-callout-border secondary">
-              <p class="open-sans"><strong>Période couverte</strong></p>
-              <p>Du <strong>{{ first_scan_date|date('Y-m-d') }}</strong><br>
-                au <strong>{{ last_scan_date|date('Y-m-d') }}</strong></p>
-            </div>
-          </div>
-        </div>
 
-        {# === Line chart évolution === #}
-        <h3 class="h5 claire-hand"><span aria-hidden="true">📈</span> Évolution des CVE par sévérité</h3>
-        <div class="callout alert-callout-border info margin-bottom-1">
-          <p class="open-sans font-size-085 margin-bottom-0">
-            <span aria-hidden="true">ℹ️</span> 1 point = 1 scan. L'axe X est le <strong>date de scan</strong>, l'axe Y le <strong>nombre de CVE</strong> par sévérité. Les re-scans d'une même version sont conservés (mesurent l'évolution NVD). Passez la souris sur un point pour voir la version du scan.
-          </p>
-        </div>
-        <div class="cell margin-bottom-2">
-          <div class="graph-320">
-            <canvas id="dc-history-chart"></canvas>
-          </div>
-        </div>
+            {# Données JSON pour le chart, lues côté JS (cf index-dependency-check-history.js). #}
+            <script type="application/json" id="dc-history-data">{{ chart_data|json_encode|raw }}</script>
 
-        {# === Tableau des scans avec deltas === #}
-        <h3 class="h5 claire-hand"><span aria-hidden="true">📋</span> Liste des scans (récent en premier)</h3>
-        <div class="callout alert-callout-border info margin-bottom-1">
-          <p class="open-sans font-size-085 margin-bottom-0">
-            <span aria-hidden="true">ℹ️</span> <strong>Delta</strong> = variation par rapport au scan immédiatement antérieur. <span style="color: #1a5f3f; font-weight: 600;">↓ vert</span> = baisse (CVE corrigées, bonne nouvelle). <span style="color: #cc4b37; font-weight: 600;">↑ rouge</span> = hausse (régression ou nouvelles CVE NVD). <span class="text-muted">—</span> = premier scan (pas de référence).
-          </p>
-        </div>
+            {% if nb_scans == 0 %}
+                <div class="callout alert-callout-border warning">
+                    <p><span aria-hidden="true">⚠️</span> Aucun scan trouvé pour ce projet.</p>
+                    <p>Vérifier que la CI a bien envoyé au moins un rapport DependencyCheck pour ce couple <code>{{ project_group }}:{{ project_artifact }}</code>.</p>
+                </div>
+            {% else %}
 
-        <div class="cell table-scroll margin-bottom-1">
-          <table class="open-sans">
-            <thead>
-              <tr>
-                <th>Date scan</th>
-                <th>Version</th>
-                <th class="text-right">Deps total</th>
-                <th class="text-right">Deps vuln.</th>
-                <th class="text-right">CRITICAL</th>
-                <th class="text-right">HIGH</th>
-                <th class="text-right">MEDIUM</th>
-                <th class="text-right">LOW</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for s in history %}
-              <tr>
-                <td>{{ s.scan_date|date('Y-m-d H:i') }}</td>
-                <td><strong>{{ s.project_version }}</strong></td>
-                <td class="text-right">{{ s.dep_count_total }}</td>
-                <td class="text-right">{{ s.dep_count_vulnerable }}</td>
+                {# === Synthèse haut de page === #}
+                <div class="grid-x grid-margin-x margin-bottom-1">
+                    <div class="cell small-12 medium-4">
+                        <div class="callout alert-callout-border info">
+                            <p class="open-sans"><strong>Scans cumulés</strong></p>
+                            <p class="open-sans font-size-15">{{ nb_scans }}</p>
+                        </div>
+                    </div>
+                    <div class="cell small-12 medium-4">
+                        <div class="callout alert-callout-border info">
+                            <p class="open-sans"><strong>Versions distinctes</strong></p>
+                            <p class="open-sans font-size-15">{{ nb_versions }}</p>
+                        </div>
+                    </div>
+                    <div class="cell small-12 medium-4">
+                        <div class="callout alert-callout-border secondary">
+                            <p class="open-sans"><strong>Période couverte</strong></p>
+                            <p>Du <strong>{{ first_scan_date|date('Y-m-d') }}</strong><br>
+                            au <strong>{{ last_scan_date|date('Y-m-d') }}</strong></p>
+                        </div>
+                    </div>
+                </div>
 
-                {# 4 cellules sévérité avec delta vs scan précédent. #}
-                {% for sev_key in ['critical', 'high', 'medium', 'low'] %}
-                  {% set count = s['cve_count_' ~ sev_key] %}
-                  {% set delta = s['delta_' ~ sev_key] %}
-                  <td class="text-right">
-                    {% if count > 0 %}<span class="badge-count {{ sev_key }}">{{ count }}</span>{% else %}0{% endif %}
-                    {% if delta is null %}
-                      <br><span class="text-muted font-size-085">—</span>
-                    {% elseif delta < 0 %}
-                      <br><span class="font-size-085" style="color: #1a5f3f; font-weight: 600;">↓ {{ delta|abs }}</span>
-                    {% elseif delta > 0 %}
-                      <br><span class="font-size-085" style="color: #cc4b37; font-weight: 600;">↑ +{{ delta }}</span>
-                    {% else %}
-                      <br><span class="text-muted font-size-085">=</span>
+                {# === Line chart évolution === #}
+                <h3 class="h5 claire-hand"><span aria-hidden="true">📈</span> Évolution des CVE par sévérité</h3>
+                <div class="callout alert-callout-border info margin-bottom-1">
+                    <p class="open-sans font-size-085 margin-bottom-0">
+                        <span aria-hidden="true">ℹ️</span> 1 point = 1 scan. L'axe X est le <strong>date de scan</strong>, l'axe Y le <strong>nombre de CVE</strong> par sévérité. Les re-scans d'une même version sont conservés (mesurent l'évolution NVD). Passez la souris sur un point pour voir la version du scan.
+                    </p>
+                </div>
+                <div class="cell margin-bottom-2">
+                    <div class="graph-320">
+                        <canvas id="dc-history-chart"></canvas>
+                    </div>
+                </div>
+
+                {# === Tableau des scans avec deltas === #}
+                <h3 class="h5 claire-hand"><span aria-hidden="true">📋</span> Liste des scans (récent en premier)</h3>
+                <div class="callout alert-callout-border info margin-bottom-1">
+                    <p class="open-sans font-size-085 margin-bottom-0">
+                        <span aria-hidden="true">ℹ️</span> <strong>Delta</strong> = variation par rapport au scan immédiatement antérieur. <span style="color: #1a5f3f; font-weight: 600;">↓ vert</span> = baisse (CVE corrigées, bonne nouvelle). <span style="color: #cc4b37; font-weight: 600;">↑ rouge</span> = hausse (régression ou nouvelles CVE NVD). <span class="text-muted">—</span> = premier scan (pas de référence).
+                    </p>
+                </div>
+
+                <div class="cell table-scroll margin-bottom-1">
+                    <table class="open-sans">
+                        <thead>
+                            <tr>
+                                <th>Date scan</th>
+                                <th>Version</th>
+                                <th class="text-right">Deps total</th>
+                                <th class="text-right">Deps vuln.</th>
+                                <th class="text-right">CRITICAL</th>
+                                <th class="text-right">HIGH</th>
+                                <th class="text-right">MEDIUM</th>
+                                <th class="text-right">LOW</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for s in history %}
+                                <tr>
+                                    <td>{{ s.scan_date|date('Y-m-d H:i') }}</td>
+                                    <td><strong>{{ s.project_version }}</strong></td>
+                                    <td class="text-right">{{ s.dep_count_total }}</td>
+                                    <td class="text-right">{{ s.dep_count_vulnerable }}</td>
+
+                                    {# 4 cellules sévérité avec delta vs scan précédent. #}
+                                    {% for sev_key in ['critical', 'high', 'medium', 'low'] %}
+                                        {% set count = s['cve_count_' ~ sev_key] %}
+                                        {% set delta = s['delta_' ~ sev_key] %}
+                                        <td class="text-right">
+                                            {% if count > 0 %}
+                                                <span class="badge-count
+                                                    {{ sev_key }}
+                                                    ">
+                                                    {{ count }}
+                                                </span>
+                                            {% else %}
+                                                0
+                                            {% endif %}
+                                            {% if delta is null %}
+                                                <br><span class="text-muted font-size-085">—</span>
+                                            {% elseif delta < 0 %}
+                                                <br><span class="font-size-085" style="color: #1a5f3f; font-weight: 600;">↓ {{ delta|abs }}</span>
+                                            {% elseif delta > 0 %}
+                                                <br><span class="font-size-085" style="color: #cc4b37; font-weight: 600;">↑ +{{ delta }}</span>
+                                            {% else %}
+                                                <br><span class="text-muted font-size-085">=</span>
+                                            {% endif %}
+                                        </td>
+                                    {% endfor %}
+
+                                    <td>
+                                        <a href="{{ path('dc_projet', {'group': s.project_group, 'artifact': s.project_artifact, 'version': s.project_version}) }}"
+                                            class="button tiny hollow open-sans focus-dark-light"
+                                            title="Détail du scan">Détail</a>
+                                            <a href="{{ path('dc_projet_executive', {'group': s.project_group, 'artifact': s.project_artifact, 'version': s.project_version}) }}"
+                                                class="button tiny hollow open-sans focus-dark-light"
+                                                title="Vue exécutive de ce scan">Exec</a>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
                     {% endif %}
-                  </td>
-                {% endfor %}
 
-                <td>
-                  <a href="{{ path('dc_projet', {'group': s.project_group, 'artifact': s.project_artifact, 'version': s.project_version}) }}"
-                      class="button tiny hollow open-sans focus-light"
-                      title="Détail du scan">Détail</a>
-                  <a href="{{ path('dc_projet_executive', {'group': s.project_group, 'artifact': s.project_artifact, 'version': s.project_version}) }}"
-                      class="button tiny hollow open-sans focus-light"
-                      title="Vue exécutive de ce scan">Exec</a>
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
+                </main>
 
-      {% endif %}
-
-    </main>
-
-    {{ include('footer.html.twig') }}
-  </body>
-</html>
+                {{ include('footer.html.twig') }}
+            </body>
+        </html>

@@ -1,152 +1,160 @@
 {#
-  MODIF 2026-05-12 : modale partagée par la page executive (Section 9 Plan de remédiation) et le dashboard (Fragment D Mutualisations) pour expliquer la formule de calcul JH.
+MODIF 2026-05-12 : modale partagée par la page executive (Section 9 Plan de remédiation) et le dashboard (Fragment D Mutualisations) pour expliquer la formule de calcul JH.
 
-  Attendu en contexte : variable `jh_params` (array<string, mixed>) issue de
-  DcExecutiveAnalyticsService->{getUpgradeOverhead,getSafetyMargin,getSeverityBonus,getTestEffortByFamily}().
-  #}
+Attendu en contexte : variable `jh_params` (array<string, mixed>) issue de
+DcExecutiveAnalyticsService->{getUpgradeOverhead,getSafetyMargin,getSeverityBonus,getTestEffortByFamily}().
+#}
 <dialog id="dc-jh-methodology-modal"
-        class="reveal large"
-        data-close-on-click="true"
-        data-reveal data-overlay="true"
-        aria-modal="true"
-        aria-labelledby="titre-ouvrir-methodology-jh"
-        aria-describedby="desc-ouvrir-methodology-jh">
-  <h2 id="titre-ouvrir-methodology-jh" class="h3 claire-hand"><span aria-hidden="true">ℹ️</span>Information</h2>
-  <h3 id="desc-ouvrir-methodology-jh" class="h4 claire-hand"><span aria-hidden="true">🎚️</span>Méthode de calcul du JH par dépendance</h3>
-  <span class="show-for-sr">
-    Cette page présente la méthodologie de calcul du Jour/Homme par dépendance.
-  </span>
+    class="reveal large"
+    data-close-on-click="true"
+    data-reveal data-overlay="true"
+    aria-modal="true"
+    aria-labelledby="titre-ouvrir-methodology-jh"
+    aria-describedby="desc-ouvrir-methodology-jh">
+    <h2 id="titre-ouvrir-methodology-jh" class="h3 claire-hand"><span aria-hidden="true">ℹ️</span>Information</h2>
+    <h3 id="desc-ouvrir-methodology-jh" class="h4 claire-hand"><span aria-hidden="true">🎚️</span>Méthode de calcul du JH par dépendance</h3>
+    <span class="show-for-sr">
+        Cette page présente la méthodologie de calcul du Jour/Homme par dépendance.
+    </span>
 
-  <p class="open-sans">
-    Effort estimé en jours-homme (JH) pour upgrader une dépendance vulnérable,
-    <strong>par dépendance</strong> (pas par CVE) afin de refléter la mutualisation :
-    un seul upgrade corrige souvent toutes les CVE d'une même lib. Arrondi au demi-jour.
-  </p>
-
-  <h4 class="claire-hand">Formule</h4>
-  <div class="callout alert-callout-border info" style="padding: 0.6rem;">
-    <p class="open-sans" style="margin-bottom: 0;">
-      <code><strong>JH<sub>dep</sub> = (effort_tests_famille + overhead_upgrade) × marge_sécurité + bonus_sévérité</strong></code>
+    <p class="open-sans">
+        Effort estimé en jours-homme (JH) pour upgrader une dépendance vulnérable,
+        <strong>par dépendance</strong> (pas par CVE) afin de refléter la mutualisation :
+        un seul upgrade corrige souvent toutes les CVE d'une même lib. Arrondi au demi-jour.
     </p>
-  </div>
 
-  <ul class="open-sans">
-    <li><strong>overhead_upgrade</strong> = <strong>{{ jh_params.upgrade_overhead|number_format(1, ',', ' ') }} j</strong> : effort fixe (bump version + recompile + préparation release).</li>
-    <li><strong>marge_sécurité</strong> = <strong>×{{ jh_params.safety_margin|number_format(1, ',', ' ') }}</strong> : aléas non prévus ({{ ((jh_params.safety_margin - 1) * 100)|round }} %).</li>
-    <li><strong>effort_tests_famille</strong> : effort de tests de non-régression et d'acceptance, dépend de la famille de la dépendance (cf. table ci-dessous).</li>
-    <li><strong>bonus_sévérité</strong> : escalade de validation sécurité selon la sévérité max CVE de la dépendance.</li>
-  </ul>
-
-  <h4 class="claire-hand">Effort tests par famille technologique</h4>
-  <table class="open-sans">
-    <thead>
-      <tr>
-        <th>Famille (heuristique vendor/product)</th>
-        <th class="text-right">Effort tests (j)</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for family, effort in jh_params.test_effort_by_family %}
-      <tr>
-        <td>{{ family }}</td>
-        <td class="text-right"><strong>{{ effort|number_format(1, ',', ' ') }}</strong></td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-
-  <h4 class="claire-hand">Bonus sécurité par sévérité max</h4>
-  <table class="open-sans">
-    <thead>
-      <tr>
-        <th>Sévérité max de la dépendance</th>
-        <th class="text-right">Bonus (j)</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for sev, bonus in jh_params.severity_bonus %}
-      <tr>
-        <td>
-          {% if sev == 'CRITICAL' %}<span class="badge-level critical">CRITICAL</span>
-          {% elseif sev == 'HIGH' %}<span class="badge-level high">HIGH</span>
-          {% elseif sev == 'MEDIUM' %}<span class="badge-level medium">MEDIUM</span>
-          {% elseif sev == 'LOW' %}<span class="badge-level low">LOW</span>
-          {% else %}<span class="badge-level info">{{ sev }}</span>{% endif %}
-        </td>
-        <td class="text-right"><strong>+{{ bonus|number_format(1, ',', ' ') }}</strong></td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-
-  <h4 class="claire-hand">Exemples calculés (avec les valeurs ci-dessus)</h4>
-  <table class="open-sans">
-    <thead>
-      <tr>
-        <th>Dépendance type</th>
-        <th>Famille</th>
-        <th>Sévérité max</th>
-        <th>Calcul</th>
-        <th class="text-right">JH arrondi</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>log4j-core</td>
-        <td>Log4j</td>
-        <td><span class="badge-level critical">CRITICAL</span></td>
-        <td><small>(0,5 + 0,2) × 1,2 + 0,5 = 1,34</small></td>
-        <td class="text-right"><strong>1,5</strong></td>
-      </tr>
-      <tr>
-        <td>cxf-core</td>
-        <td>Apache CXF</td>
-        <td><span class="badge-level critical">CRITICAL</span></td>
-        <td><small>(1,5 + 0,2) × 1,2 + 0,5 = 2,54</small></td>
-        <td class="text-right"><strong>2,5</strong></td>
-      </tr>
-      <tr>
-        <td>spring-core</td>
-        <td>Spring Framework</td>
-        <td><span class="badge-level critical">CRITICAL</span></td>
-        <td><small>(2,0 + 0,2) × 1,2 + 0,5 = 3,14</small></td>
-        <td class="text-right"><strong>3,0</strong></td>
-      </tr>
-      <tr>
-        <td>jackson-databind</td>
-        <td>Jackson</td>
-        <td><span class="badge-level medium">MEDIUM</span></td>
-        <td><small>(1,0 + 0,2) × 1,2 + 0,1 = 1,54</small></td>
-        <td class="text-right"><strong>1,5</strong></td>
-      </tr>
-      <tr>
-        <td>commons-text</td>
-        <td>Apache Commons</td>
-        <td><span class="badge-level low">LOW</span></td>
-        <td><small>(0,5 + 0,2) × 1,2 + 0,0 = 0,84</small></td>
-        <td class="text-right"><strong>1,0</strong></td>
-      </tr>
-    </tbody>
-  </table>
-
-  <h4 class="claire-hand">Ajuster les coefficients</h4>
-  <p class="open-sans text-muted">
-    <small>
-      Toutes les valeurs ci-dessus sont définies dans
-      <code>config/packages/dc_remediation.yaml</code> et injectées dans le service
-      <code>DcExecutiveAnalyticsService</code> via Autowire. Pour ajuster (ex : augmenter
-      l'effort Spring à 2,5 j ou ajouter une nouvelle famille technologique), éditer le YAML
-      puis <code>bin/console cache:clear</code>. Aucune modification PHP requise.
-    </small>
-  </p>
-
-  <footer class="grid-x grid-margin-x align-right margin-top-2">
-    <div class="cell shrink">
-      <button id="bouton-fermer-methodology-jh"
-              class="button open-sans focus-light"
-              type="button"
-              aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span>Fermer
-      </button>
+    <h4 class="claire-hand">Formule</h4>
+    <div class="callout alert-callout-border info" style="padding: 0.6rem;">
+        <p class="open-sans" style="margin-bottom: 0;">
+            <code><strong>JH<sub>dep</sub> = (effort_tests_famille + overhead_upgrade) × marge_sécurité + bonus_sévérité</strong></code>
+        </p>
     </div>
-  </footer>
-</dialog>
+
+    <ul class="open-sans">
+        <li><strong>overhead_upgrade</strong> = <strong>{{ jh_params.upgrade_overhead|number_format(1, ',', ' ') }} j</strong> : effort fixe (bump version + recompile + préparation release).</li>
+        <li><strong>marge_sécurité</strong> = <strong>×{{ jh_params.safety_margin|number_format(1, ',', ' ') }}</strong> : aléas non prévus ({{ ((jh_params.safety_margin - 1) * 100)|round }} %).</li>
+        <li><strong>effort_tests_famille</strong> : effort de tests de non-régression et d'acceptance, dépend de la famille de la dépendance (cf. table ci-dessous).</li>
+        <li><strong>bonus_sévérité</strong> : escalade de validation sécurité selon la sévérité max CVE de la dépendance.</li>
+    </ul>
+
+    <h4 class="claire-hand">Effort tests par famille technologique</h4>
+    <table class="open-sans">
+        <thead>
+            <tr>
+                <th>Famille (heuristique vendor/product)</th>
+                <th class="text-right">Effort tests (j)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for family, effort in jh_params.test_effort_by_family %}
+                <tr>
+                    <td>{{ family }}</td>
+                    <td class="text-right"><strong>{{ effort|number_format(1, ',', ' ') }}</strong></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h4 class="claire-hand">Bonus sécurité par sévérité max</h4>
+    <table class="open-sans">
+        <thead>
+            <tr>
+                <th>Sévérité max de la dépendance</th>
+                <th class="text-right">Bonus (j)</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sev, bonus in jh_params.severity_bonus %}
+                <tr>
+                    <td>
+                        {% if sev == 'CRITICAL' %}
+                            <span class="badge-level critical">CRITICAL</span>
+                        {% elseif sev == 'HIGH' %}
+                            <span class="badge-level high">HIGH</span>
+                        {% elseif sev == 'MEDIUM' %}
+                            <span class="badge-level medium">MEDIUM</span>
+                        {% elseif sev == 'LOW' %}
+                            <span class="badge-level low">LOW</span>
+                        {% else %}
+                            <span class="badge-level info">
+                                {{ sev }}
+                            </span>
+                        {% endif %}
+                    </td>
+                    <td class="text-right"><strong>+{{ bonus|number_format(1, ',', ' ') }}</strong></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <h4 class="claire-hand">Exemples calculés (avec les valeurs ci-dessus)</h4>
+    <table class="open-sans">
+        <thead>
+            <tr>
+                <th>Dépendance type</th>
+                <th>Famille</th>
+                <th>Sévérité max</th>
+                <th>Calcul</th>
+                <th class="text-right">JH arrondi</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>log4j-core</td>
+                <td>Log4j</td>
+                <td><span class="badge-level critical">CRITICAL</span></td>
+                <td><small>(0,5 + 0,2) × 1,2 + 0,5 = 1,34</small></td>
+                <td class="text-right"><strong>1,5</strong></td>
+            </tr>
+            <tr>
+                <td>cxf-core</td>
+                <td>Apache CXF</td>
+                <td><span class="badge-level critical">CRITICAL</span></td>
+                <td><small>(1,5 + 0,2) × 1,2 + 0,5 = 2,54</small></td>
+                <td class="text-right"><strong>2,5</strong></td>
+            </tr>
+            <tr>
+                <td>spring-core</td>
+                <td>Spring Framework</td>
+                <td><span class="badge-level critical">CRITICAL</span></td>
+                <td><small>(2,0 + 0,2) × 1,2 + 0,5 = 3,14</small></td>
+                <td class="text-right"><strong>3,0</strong></td>
+            </tr>
+            <tr>
+                <td>jackson-databind</td>
+                <td>Jackson</td>
+                <td><span class="badge-level medium">MEDIUM</span></td>
+                <td><small>(1,0 + 0,2) × 1,2 + 0,1 = 1,54</small></td>
+                <td class="text-right"><strong>1,5</strong></td>
+            </tr>
+            <tr>
+                <td>commons-text</td>
+                <td>Apache Commons</td>
+                <td><span class="badge-level low">LOW</span></td>
+                <td><small>(0,5 + 0,2) × 1,2 + 0,0 = 0,84</small></td>
+                <td class="text-right"><strong>1,0</strong></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h4 class="claire-hand">Ajuster les coefficients</h4>
+    <p class="open-sans text-muted">
+        <small>
+            Toutes les valeurs ci-dessus sont définies dans
+            <code>config/packages/dc_remediation.yaml</code> et injectées dans le service
+            <code>DcExecutiveAnalyticsService</code> via Autowire. Pour ajuster (ex : augmenter
+            l'effort Spring à 2,5 j ou ajouter une nouvelle famille technologique), éditer le YAML
+            puis <code>bin/console cache:clear</code>. Aucune modification PHP requise.
+        </small>
+    </p>
+
+    <footer class="grid-x grid-margin-x align-right margin-top-2">
+        <div class="cell shrink">
+            <button id="bouton-fermer-methodology-jh"
+                class="button open-sans focus-dark-light"
+                type="button"
+                aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span>Fermer
+                </button>
+            </div>
+        </footer>
+    </dialog>

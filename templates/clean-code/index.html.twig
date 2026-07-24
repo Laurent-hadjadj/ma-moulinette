@@ -3,339 +3,369 @@
 {% set bottom = 'footer-fixed' %}
 
 {# MODIF 2026-05-17 : mini tableau de bord des indicateurs
-  SonarQube 10+ : catégories clean code, impact sévérités/qualités, conformité. #}
+SonarQube 10+ : catégories clean code, impact sévérités/qualités, conformité. #}
 <!DOCTYPE html>
 <!--
-.. __  __             __  __             _ _            _   _
-  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
-  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
-  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
-  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+.__  __             __  __             _ _            _   _
+|  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+| |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+| |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+|_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
 
-  Laurent HADJADJ
-  https://github.com/Laurent-hadjadj/ma-moulinette
-  © 2024 - CC BY-SA-NC 4.0
+Laurent HADJADJ
+https://github.com/Laurent-hadjadj/ma-moulinette
+© 2024 - CC BY-SA-NC 4.0
 -->
 <html lang="fr">
-  <head>
-    <title>{{ title }}</title>
-    {{ include('head.html.twig') }}
-    {% block importmap %}{{ importmap('clean-code') }}{% endblock %}
-  </head>
+    <head>
+        <title>{{ title }}</title>
+        {{ include('head.html.twig') }}
+        {% block importmap %}
+            {{ importmap('clean-code') }}
+        {% endblock %}
+    </head>
 
-  <body>
-    {{ include('header.html.twig') }}
+    <body>
+        {{ include('header.html.twig') }}
 
-    <div class="grid-container margin-top-1">
-      <nav aria-label="Fil d'Ariane, vous êtes ici">
-        <ol class="claire-hand breadcrumbs">
-          <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
-          <li><a href="{{ path('projet', {}) }}">Mon projet</a></li>
-          <li aria-current="page">Clean Code Taxonomy</li>
-        </ol>
-      </nav>
-    </div>
-
-    {{ include('_message.html.twig') }}
-
-    <main class="grid-container margin-bottom-2">
-      <h2 class="h4 claire-hand">
-        <span aria-hidden="true">🧬</span> Clean Code &amp; Conformité — Taxonomie SonarQube 10+
-      </h2>
-
-      {% if data is null %}
-        <div class="callout alert-callout-border warning margin-bottom-1">
-          <p class="open-sans">
-            <span aria-hidden="true">⚠️</span>
-            Aucune donnée disponible pour ce projet. Lancez une collecte depuis la page projet.
-          </p>
-        </div>
-      {% else %}
-
-      {# Sous-titre projet #}
-      <p class="open-sans margin-bottom-05">
-        <strong>Projet :</strong> {{ project_name }}
-        <span class="text-muted">— version {{ project_version }}</span>
-        <span class="text-muted">— collecte du {{ date_collecte|date('d/m/Y à H:i') }}</span>
-        &nbsp;·&nbsp; <strong>{{ issue_total|number_format(0, ',', ' ') }}</strong> issues analysées
-      </p>
-
-      {# Callout pédagogique #}
-      <div class="callout alert-callout-border info margin-bottom-1">
-        <p class="open-sans font-size-085 margin-bottom-0">
-          <span aria-hidden="true">ℹ️</span>
-          Le modèle SonarQube 10+ remplace l'ancienne taxonomie (<em>type + sévérité</em>) par deux axes :
-          <strong>Attribut Clean Code</strong> (pourquoi c'est problématique) et
-          <strong>Impact qualité × sévérité</strong> (ce que ça affecte et à quel degré).
-          <strong>RESPONSIBLE</strong> = code non fiable / non conforme — les issues les plus critiques sur le plan gouvernance.
-        </p>
-      </div>
-
-      {# ── Ligne 1 : Score de risque + Indicateurs clés ─────────────── #}
-      <div class="grid-x grid-margin-x margin-bottom-1">
-
-        {# Score de risque global #}
-        <div class="cell small-12 medium-4">
-          <div class="callout alert-callout-border {{ risk_level }} margin-bottom-0 height-100">
-            <h3 class="h5 open-sans margin-bottom-05">
-              <span aria-hidden="true">🎯</span> Score de risque
-            </h3>
-            <p class="open-sans margin-bottom-0">
-              <span class="stat-projet" >{{ risk_score }}</span>
-              <span class="text-muted">/ 4,0</span>
-            </p>
-            <p class="open-sans font-size-085 text-muted margin-bottom-0">
-              Calculé : BLOCKER×4 + HIGH×3 + MEDIUM×2 + LOW×1 + INFO×0,5 / nb issues
-            </p>
-            <p class="open-sans margin-bottom-0">
-              <span class="badge-level {{ risk_level }}">
-                {{ risk_level|upper }}
-              </span>
-            </p>
-            {# MODIF 2026-05-19 : delta vs version précédente #}
-            {% if deltas is not null %}
-              <p class="open-sans font-size-085 margin-bottom-0">
-                {% set dv = deltas.risk_score %}
-                {% if dv > 0 %}<span class="delta-worse">▲ +{{ dv }}</span>
-                {% elseif dv < 0 %}<span class="delta-better">▼ {{ dv }}</span>
-                {% else %}<span class="text-muted">= stable</span>{% endif %}
-                <span class="text-muted">vs {{ deltas.version }}</span>
-              </p>
-            {% endif %}
-          </div>
+        <div class="grid-container margin-top-1">
+            <nav aria-label="Fil d'Ariane, vous êtes ici">
+                <ol class="claire-hand breadcrumbs">
+                    <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+                    <li><a href="{{ path('projet', {}) }}">Mon projet</a></li>
+                    <li aria-current="page">Clean Code Taxonomy</li>
+                </ol>
+            </nav>
         </div>
 
-        {# % RESPONSIBLE #}
-        <div class="cell small-12 medium-4">
-          <div class="callout alert-callout-border {{ responsible_pct > 5 ? 'error' : 'info' }} margin-bottom-0 height-100">
-            <h3 class="h5 open-sans margin-bottom-05">
-              <span aria-hidden="true">⚖️</span> Gouvernance (RESPONSIBLE)
-            </h3>
-            <p class="open-sans margin-bottom-0">
-              <span class="stat-projet">{{ responsible_pct }}%</span>
-            </p>
-            <p class="open-sans font-size-085 text-muted margin-bottom-0">
-              {{ data.cc_responsible|number_format(0, ',', ' ') }} issues RESPONSIBLE
-              {% if responsible_pct > 5 %}
-                — <strong>Attention</strong> : dépasse 5%
-              {% endif %}
-            </p>
-            {% if deltas is not null %}
-              <p class="open-sans font-size-085 margin-bottom-0">
-                {% set dv = deltas.responsible_pct %}
-                {% if dv > 0 %}<span class="delta-worse">▲ +{{ dv }}%</span>
-                {% elseif dv < 0 %}<span class="delta-better">▼ {{ dv }}%</span>
-                {% else %}<span class="text-muted">= stable</span>{% endif %}
-                <span class="text-muted">vs {{ deltas.version }}</span>
-              </p>
-            {% endif %}
-          </div>
-        </div>
+        {{ include('_message.html.twig') }}
 
-        {# % Sécurité #}
-        <div class="cell small-12 medium-4">
-          <div class="callout alert-callout-border {{ security_pct > 15 ? 'error' : (security_pct > 5 ? 'warning' : 'info') }} margin-bottom-0 height-100">
-            <h3 class="h5 open-sans margin-bottom-05">
-              <span aria-hidden="true">🔐</span> Exposition Sécurité
-            </h3>
-            <p class="open-sans margin-bottom-0">
-              <span class="stat-projet">{{ security_pct }}%</span>
-            </p>
-            <p class="open-sans font-size-085 text-muted margin-bottom-0">
-              {{ data.quality_security|number_format(0, ',', ' ') }} issues SECURITY / {{ (data.quality_maintainability + data.quality_reliability + data.quality_security)|number_format(0, ',', ' ') }} impacts qualité
-            </p>
-            {% if deltas is not null %}
-              <p class="open-sans font-size-085 margin-bottom-0">
-                {% set dv = deltas.security_pct %}
-                {% if dv > 0 %}<span class="delta-worse">▲ +{{ dv }}%</span>
-                {% elseif dv < 0 %}<span class="delta-better">▼ {{ dv }}%</span>
-                {% else %}<span class="text-muted">= stable</span>{% endif %}
-                <span class="text-muted">vs {{ deltas.version }}</span>
-              </p>
-            {% endif %}
-          </div>
-        </div>
+        <main class="grid-container margin-bottom-2">
+            <h2 class="h4 claire-hand">
+                <span aria-hidden="true">🧬</span> Clean Code &amp; Conformité — Taxonomie SonarQube 10+
+            </h2>
 
-      </div>{# fin ligne 1 #}
+            {% if data is null %}
+                <div class="callout alert-callout-border warning margin-bottom-1">
+                    <p class="open-sans">
+                        <span aria-hidden="true">⚠️</span>
+                        Aucune donnée disponible pour ce projet. Lancez une collecte depuis la page projet.
+                    </p>
+                </div>
+            {% else %}
 
-      {# ── Ligne 2 : Charts (données injectées en JSON) ──────────────── #}
-      <script type="application/json" id="clean-code-chart-data">{{ chart_data|raw }}</script>
+                {# Sous-titre projet #}
+                <p class="open-sans margin-bottom-05">
+                    <strong>Projet :</strong> {{ project_name }}
+                    <span class="text-muted">— version {{ project_version }}</span>
+                    <span class="text-muted">— collecte du {{ date_collecte|date('d/m/Y à H:i') }}</span>
+                    &nbsp;·&nbsp; <strong>{{ issue_total|number_format(0, ',', ' ') }}</strong> issues analysées
+                </p>
 
-      <div class="grid-x grid-margin-x margin-bottom-1">
-        <div class="cell small-12 medium-6">
-          <h3 class="h5 claire-hand margin-bottom-05">Attributs Clean Code</h3>
-          <div class="canvas-container">
-            <canvas id="cc-categories-chart" aria-label="Distribution des catégories clean code"></canvas>
-          </div>
-        </div>
-        <div class="cell small-12 medium-6">
-          <h3 class="h5 claire-hand margin-bottom-05">Impact Sévérités (nouveau modèle)</h3>
-          <div class="canvas-container">
-            <canvas id="cc-severities-chart" aria-label="Distribution des sévérités impact"></canvas>
-          </div>
-        </div>
-      </div>
+                {# Callout pédagogique #}
+                <div class="callout alert-callout-border info margin-bottom-1">
+                    <p class="open-sans font-size-085 margin-bottom-0">
+                        <span aria-hidden="true">ℹ️</span>
+                        Le modèle SonarQube 10+ remplace l'ancienne taxonomie (<em>type + sévérité</em>) par deux axes :
+                        <strong>Attribut Clean Code</strong> (pourquoi c'est problématique) et
+                        <strong>Impact qualité × sévérité</strong> (ce que ça affecte et à quel degré).
+                        <strong>RESPONSIBLE</strong> = code non fiable / non conforme — les issues les plus critiques sur le plan gouvernance.
+                    </p>
+                </div>
 
-      {# MODIF 2026-05-19 : graphique évolution temporelle #}
-      <div id="cc-evolution-section" class="grid-x grid-margin-x margin-bottom-1">
-        <div class="cell small-12">
-          <h3 class="h5 claire-hand margin-bottom-05">Évolution temporelle (historique des collectes)</h3>
-          <div id="cc-evolution-nodata" class="callout alert-callout-border info margin-bottom-0">
-            <p class="open-sans font-size-085 margin-bottom-0">
-              <span aria-hidden="true">ℹ️</span>
-              Données insuffisantes — au moins 2 collectes enregistrées dans l'historique sont nécessaires pour afficher l'évolution.
-            </p>
-          </div>
-          <div id="cc-evolution-canvas" class="canvas-container" hidden>
-            <canvas id="cc-evolution-chart" aria-label="Évolution du score de risque, du taux RESPONSIBLE et de l'exposition sécurité sur les dernières collectes" role="img"></canvas>
-          </div>
-        </div>
-      </div>
+                {# ── Ligne 1 : Score de risque + Indicateurs clés ─────────────── #}
+                <div class="grid-x grid-margin-x margin-bottom-1">
 
-      {# ── Ligne 3 : Impact Software Qualities ──────────────────────── #}
-      <h3 class="h5 claire-hand">Impact qualité logicielle</h3>
-      <div class="grid-x grid-margin-x margin-bottom-1">
+                    {# Score de risque global #}
+                    <div class="cell small-12 medium-4">
+                        <div class="callout alert-callout-border {{ risk_level }} margin-bottom-0 height-100">
+                            <h3 class="h5 open-sans margin-bottom-05">
+                                <span aria-hidden="true">🎯</span> Score de risque
+                            </h3>
+                            <p class="open-sans margin-bottom-0">
+                                <span class="stat-projet" >{{ risk_score }}</span>
+                                <span class="text-muted">/ 4,0</span>
+                            </p>
+                            <p class="open-sans font-size-085 text-muted margin-bottom-0">
+                                Calculé : BLOCKER×4 + HIGH×3 + MEDIUM×2 + LOW×1 + INFO×0,5 / nb issues
+                            </p>
+                            <p class="open-sans margin-bottom-0">
+                                <span class="badge-level {{ risk_level }}">
+                                    {{ risk_level|upper }}
+                                </span>
+                            </p>
+                            {# MODIF 2026-05-19 : delta vs version précédente #}
+                            {% if deltas is not null %}
+                                <p class="open-sans font-size-085 margin-bottom-0">
+                                    {% set dv = deltas.risk_score %}
+                                    {% if dv > 0 %}
+                                        <span class="delta-worse">▲ +
+                                            {{ dv }}
+                                        </span>
+                                    {% elseif dv < 0 %}
+                                        <span class="delta-better">▼
+                                            {{ dv }}
+                                        </span>
+                                    {% else %}
+                                        <span class="text-muted">= stable</span>
+                                    {% endif %}
+                                    <span class="text-muted">vs {{ deltas.version }}</span>
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
 
-        <div class="cell small-12 medium-4">
-          <div class="callout alert-callout-border info margin-bottom-0 height-100">
-            <h4 class="h6 open-sans margin-bottom-0"><span aria-hidden="true">🔧</span> MAINTENABILITÉ</h4>
-            <p class="open-sans stat-projet margin-bottom-1">
-              {{ data.quality_maintainability|number_format(0, ',', ' ') }}
-            </p>
-            <p class="open-sans font-size-085 text-muted margin-bottom-0">issues impactant la maintenabilité</p>
-          </div>
-        </div>
+                    {# % RESPONSIBLE #}
+                    <div class="cell small-12 medium-4">
+                        <div class="callout alert-callout-border {{ responsible_pct > 5 ? 'error' : 'info' }} margin-bottom-0 height-100">
+                            <h3 class="h5 open-sans margin-bottom-05">
+                                <span aria-hidden="true">⚖️</span> Gouvernance (RESPONSIBLE)
+                            </h3>
+                            <p class="open-sans margin-bottom-0">
+                                <span class="stat-projet">{{ responsible_pct }}%</span>
+                            </p>
+                            <p class="open-sans font-size-085 text-muted margin-bottom-0">
+                                {{ data.cc_responsible|number_format(0, ',', ' ') }} issues RESPONSIBLE
+                                {% if responsible_pct > 5 %}
+                                    — <strong>Attention</strong> : dépasse 5%
+                                {% endif %}
+                            </p>
+                            {% if deltas is not null %}
+                                <p class="open-sans font-size-085 margin-bottom-0">
+                                    {% set dv = deltas.responsible_pct %}
+                                    {% if dv > 0 %}
+                                        <span class="delta-worse">▲ +
+                                            {{ dv }}
+                                        %</span>
+                                    {% elseif dv < 0 %}
+                                        <span class="delta-better">▼
+                                            {{ dv }}
+                                        %</span>
+                                    {% else %}
+                                        <span class="text-muted">= stable</span>
+                                    {% endif %}
+                                    <span class="text-muted">vs {{ deltas.version }}</span>
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
 
-        <div class="cell small-12 medium-4">
-          <div class="callout alert-callout-border {{ data.quality_reliability > 0 ? 'warning' : 'info' }} margin-bottom-0 height-100">
-            <h4 class="h6 open-sans margin-bottom-0"><span aria-hidden="true">🐛</span> FIABILITÉ</h4>
-            <p class="open-sans stat-projet margin-bottom-1">
-              {{ data.quality_reliability|number_format(0, ',', ' ') }}
-            </p>
-            <p class="open-sans font-size-085 text-muted margin-bottom-0">issues impactant la fiabilité (bugs)</p>
-          </div>
-        </div>
+                    {# % Sécurité #}
+                    <div class="cell small-12 medium-4">
+                        <div class="callout alert-callout-border {{ security_pct > 15 ? 'error' : (security_pct > 5 ? 'warning' : 'info') }} margin-bottom-0 height-100">
+                            <h3 class="h5 open-sans margin-bottom-05">
+                                <span aria-hidden="true">🔐</span> Exposition Sécurité
+                            </h3>
+                            <p class="open-sans margin-bottom-0">
+                                <span class="stat-projet">{{ security_pct }}%</span>
+                            </p>
+                            <p class="open-sans font-size-085 text-muted margin-bottom-0">
+                                {{ data.quality_security|number_format(0, ',', ' ') }} issues SECURITY / {{ (data.quality_maintainability + data.quality_reliability + data.quality_security)|number_format(0, ',', ' ') }} impacts qualité
+                            </p>
+                            {% if deltas is not null %}
+                                <p class="open-sans font-size-085 margin-bottom-0">
+                                    {% set dv = deltas.security_pct %}
+                                    {% if dv > 0 %}
+                                        <span class="delta-worse">▲ +
+                                            {{ dv }}
+                                        %</span>
+                                    {% elseif dv < 0 %}
+                                        <span class="delta-better">▼
+                                            {{ dv }}
+                                        %</span>
+                                    {% else %}
+                                        <span class="text-muted">= stable</span>
+                                    {% endif %}
+                                    <span class="text-muted">vs {{ deltas.version }}</span>
+                                </p>
+                            {% endif %}
+                        </div>
+                    </div>
 
-        <div class="cell small-12 medium-4">
-          <div class="callout alert-callout-border {{ data.quality_security > 0 ? 'error' : 'info' }} margin-bottom-0 height-100">
-            <h4 class="h6 open-sans margin-bottom-0"><span aria-hidden="true">🛡️</span> SÉCURITÉ</h4>
-            <p class="open-sans stat-projet margin-bottom-1">
-              {{ data.quality_security|number_format(0, ',', ' ') }}
-            </p>
-            <p class="open-sans font-size-085 text-muted margin-bottom-0">issues impactant la sécurité</p>
-          </div>
-        </div>
+                </div>{# fin ligne 1 #}
 
-      </div>
+                {# ── Ligne 2 : Charts (données injectées en JSON) ──────────────── #}
+                <script type="application/json" id="clean-code-chart-data">{{ chart_data|raw }}</script>
 
-      {# ── Ligne 4 : Conformité ────────────────────────────────────── #}
-      <h3 class="h5 claire-hand">Conformité réglementaire</h3>
-      <div class="grid-x grid-margin-x margin-bottom-2">
+                <div class="grid-x grid-margin-x margin-bottom-1">
+                    <div class="cell small-12 medium-6">
+                        <h3 class="h5 claire-hand margin-bottom-05">Attributs Clean Code</h3>
+                        <div class="canvas-container">
+                            <canvas id="cc-categories-chart" aria-label="Distribution des catégories clean code"></canvas>
+                        </div>
+                    </div>
+                    <div class="cell small-12 medium-6">
+                        <h3 class="h5 claire-hand margin-bottom-05">Impact Sévérités (nouveau modèle)</h3>
+                        <div class="canvas-container">
+                            <canvas id="cc-severities-chart" aria-label="Distribution des sévérités impact"></canvas>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="cell small-12 medium-4">
-          <div class="callout alert-callout-border {{ data.owasp_top10 > 0 ? 'error' : 'info' }} margin-bottom-0 height-100">
-            <h4 class="h6 open-sans margin-bottom-0">OWASP Top 10 — 2021</h4>
-            <p class="open-sans stat-projet margin-bottom-1">
-              {{ data.owasp_top10|number_format(0, ',', ' ') }}
-            </p>
-            <p class="open-sans font-size-085 text-muted margin-bottom-0">issues taguées OWASP A1–A10 2021</p>
-          </div>
-        </div>
+                {# MODIF 2026-05-19 : graphique évolution temporelle #}
+                <div id="cc-evolution-section" class="grid-x grid-margin-x margin-bottom-1">
+                    <div class="cell small-12">
+                        <h3 class="h5 claire-hand margin-bottom-05">Évolution temporelle (historique des collectes)</h3>
+                        <div id="cc-evolution-nodata" class="callout alert-callout-border info margin-bottom-0">
+                            <p class="open-sans font-size-085 margin-bottom-0">
+                                <span aria-hidden="true">ℹ️</span>
+                                Données insuffisantes — au moins 2 collectes enregistrées dans l'historique sont nécessaires pour afficher l'évolution.
+                            </p>
+                        </div>
+                        <div id="cc-evolution-canvas" class="canvas-container" hidden>
+                            <canvas id="cc-evolution-chart" aria-label="Évolution du score de risque, du taux RESPONSIBLE et de l'exposition sécurité sur les dernières collectes" role="img"></canvas>
+                        </div>
+                    </div>
+                </div>
 
-        <div class="cell small-12 medium-4">
-          <div class="callout alert-callout-border {{ data.sans_top25 > 0 ? 'warning' : 'info' }} margin-bottom-0 height-100">
-            <h4 class="h6 open-sans margin-bottom-0">SANS / CWE Top 25</h4>
-            <p class="open-sans stat-projet margin-bottom-1">
-              {{ data.sans_top25|number_format(0, ',', ' ') }}
-            </p>
-            <p class="open-sans font-size-085 text-muted margin-bottom-0">faiblesses logicielles critiques (CWE-based)</p>
-          </div>
-        </div>
+                {# ── Ligne 3 : Impact Software Qualities ──────────────────────── #}
+                <h3 class="h5 claire-hand">Impact qualité logicielle</h3>
+                <div class="grid-x grid-margin-x margin-bottom-1">
 
-        <div class="cell small-12 medium-4">
-          <div class="callout alert-callout-border {{ data.cwe > 0 ? 'warning' : 'info' }} margin-bottom-0 height-100">
-            <h4 class="h6 open-sans margin-bottom-0">CWE (total références)</h4>
-            <p class="open-sans stat-projet margin-bottom-1">
-              {{ data.cwe|number_format(0, ',', ' ') }}
-            </p>
-            <p class="open-sans font-size-085 text-muted margin-bottom-0">
-              issues portant une référence CWE
-              <br><em class="text-muted">* peut cumuler plusieurs tags par issue</em>
-            </p>
-          </div>
-        </div>
+                    <div class="cell small-12 medium-4">
+                        <div class="callout alert-callout-border info margin-bottom-0 height-100">
+                            <h4 class="h6 open-sans margin-bottom-0"><span aria-hidden="true">🔧</span> MAINTENABILITÉ</h4>
+                            <p class="open-sans stat-projet margin-bottom-1">
+                                {{ data.quality_maintainability|number_format(0, ',', ' ') }}
+                            </p>
+                            <p class="open-sans font-size-085 text-muted margin-bottom-0">issues impactant la maintenabilité</p>
+                        </div>
+                    </div>
 
-      </div>
+                    <div class="cell small-12 medium-4">
+                        <div class="callout alert-callout-border {{ data.quality_reliability > 0 ? 'warning' : 'info' }} margin-bottom-0 height-100">
+                            <h4 class="h6 open-sans margin-bottom-0"><span aria-hidden="true">🐛</span> FIABILITÉ</h4>
+                            <p class="open-sans stat-projet margin-bottom-1">
+                                {{ data.quality_reliability|number_format(0, ',', ' ') }}
+                            </p>
+                            <p class="open-sans font-size-085 text-muted margin-bottom-0">issues impactant la fiabilité (bugs)</p>
+                        </div>
+                    </div>
 
-      {# ── Tableau détail Clean Code categories ─────────────────────── #}
-      <h3 id="titre-tableau-clean-code" class="h5 claire-hand">Détail des catégories Clean Code</h3>
-      <div class="margin-bottom-2">
-        <table class="open-sans" aria-labelledby="titre-tableau-clean-code">
-          <thead>
-            <tr>
-              <th>Catégorie</th>
-              <th>Signification</th>
-              <th class="text-right">Nb issues</th>
-              <th class="text-right">% du total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% set cc_total = data.cc_consistent + data.cc_intentional + data.cc_adaptable + data.cc_responsible %}
-            <tr>
-              <td><strong>CONSISTENT</strong></td>
-              <td class="text-muted">Conventions, formatage, nommage cohérents</td>
-              <td class="text-right">{{ data.cc_consistent|number_format(0, ',', ' ') }}</td>
-              <td class="text-right">{{ cc_total > 0 ? (data.cc_consistent / cc_total * 100)|round(1) : 0 }}%</td>
-            </tr>
-            <tr>
-              <td><strong>INTENTIONAL</strong></td>
-              <td class="text-muted">Code clair, logique, complet, efficace</td>
-              <td class="text-right">{{ data.cc_intentional|number_format(0, ',', ' ') }}</td>
-              <td class="text-right">{{ cc_total > 0 ? (data.cc_intentional / cc_total * 100)|round(1) : 0 }}%</td>
-            </tr>
-            <tr>
-              <td><strong>ADAPTABLE</strong></td>
-              <td class="text-muted">Code modulaire, focalisé, testable</td>
-              <td class="text-right">{{ data.cc_adaptable|number_format(0, ',', ' ') }}</td>
-              <td class="text-right">{{ cc_total > 0 ? (data.cc_adaptable / cc_total * 100)|round(1) : 0 }}%</td>
-            </tr>
-            <tr class="{{ data.cc_responsible > 0 ? 'color-rouge' : '' }}">
-              <td><strong>RESPONSIBLE</strong>{% if data.cc_responsible > 0 %}&nbsp;<span aria-hidden="true">⚠</span>{% endif %}</td>
-              <td class="text-muted">Code fiable, légal, éthique — <strong>critique gouvernance</strong></td>
-              <td class="text-right"><strong>{{ data.cc_responsible|number_format(0, ',', ' ') }}</strong></td>
-              <td class="text-right"><strong>{{ responsible_pct }}%</strong></td>
-            </tr>
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colspan="2"><strong>Total</strong></td>
-              <td class="text-right"><strong>{{ cc_total|number_format(0, ',', ' ') }}</strong></td>
-              <td class="text-right"><strong>100%</strong></td>
-            </tr>
-          </tfoot>
-        </table>
-      </div>
+                    <div class="cell small-12 medium-4">
+                        <div class="callout alert-callout-border {{ data.quality_security > 0 ? 'error' : 'info' }} margin-bottom-0 height-100">
+                            <h4 class="h6 open-sans margin-bottom-0"><span aria-hidden="true">🛡️</span> SÉCURITÉ</h4>
+                            <p class="open-sans stat-projet margin-bottom-1">
+                                {{ data.quality_security|number_format(0, ',', ' ') }}
+                            </p>
+                            <p class="open-sans font-size-085 text-muted margin-bottom-0">issues impactant la sécurité</p>
+                        </div>
+                    </div>
 
-      {% endif %}{# fin if data #}
+                </div>
 
-      <footer class="grid-x grid-margin-x align-justify margin-top-2">
-        <div class="cell shrink">
-          <a id="bouton-retour-projet"
-              href="{{ path('projet', {}) }}"
-              class="button open-sans focus-light"
-              aria-label="Retour au projet"><span aria-hidden="true">⬅️</span>Retour au projet
-          </a>
-        </div>
-        <div class="cell shrink">
-          <a id="bouton-synthese-portefeuille"
-              href="{{ path('clean_code_synthese', {}) }}"
-              class="button open-sans focus-light"
-              aria-label="Voir la synthèse portefeuille clean code"><span aria-hidden="true">📊</span>Portefeuille
-          </a>
-        </div>
-      </footer>
-    </main>
+                {# ── Ligne 4 : Conformité ────────────────────────────────────── #}
+                <h3 class="h5 claire-hand">Conformité réglementaire</h3>
+                <div class="grid-x grid-margin-x margin-bottom-2">
 
-    {{ include('footer.html.twig') }}
-  </body>
-</html>
+                    <div class="cell small-12 medium-4">
+                        <div class="callout alert-callout-border {{ data.owasp_top10 > 0 ? 'error' : 'info' }} margin-bottom-0 height-100">
+                            <h4 class="h6 open-sans margin-bottom-0">OWASP Top 10 — 2021</h4>
+                            <p class="open-sans stat-projet margin-bottom-1">
+                                {{ data.owasp_top10|number_format(0, ',', ' ') }}
+                            </p>
+                            <p class="open-sans font-size-085 text-muted margin-bottom-0">issues taguées OWASP A1–A10 2021</p>
+                        </div>
+                    </div>
+
+                    <div class="cell small-12 medium-4">
+                        <div class="callout alert-callout-border {{ data.sans_top25 > 0 ? 'warning' : 'info' }} margin-bottom-0 height-100">
+                            <h4 class="h6 open-sans margin-bottom-0">SANS / CWE Top 25</h4>
+                            <p class="open-sans stat-projet margin-bottom-1">
+                                {{ data.sans_top25|number_format(0, ',', ' ') }}
+                            </p>
+                            <p class="open-sans font-size-085 text-muted margin-bottom-0">faiblesses logicielles critiques (CWE-based)</p>
+                        </div>
+                    </div>
+
+                    <div class="cell small-12 medium-4">
+                        <div class="callout alert-callout-border {{ data.cwe > 0 ? 'warning' : 'info' }} margin-bottom-0 height-100">
+                            <h4 class="h6 open-sans margin-bottom-0">CWE (total références)</h4>
+                            <p class="open-sans stat-projet margin-bottom-1">
+                                {{ data.cwe|number_format(0, ',', ' ') }}
+                            </p>
+                            <p class="open-sans font-size-085 text-muted margin-bottom-0">
+                                issues portant une référence CWE
+                                <br><em class="text-muted">* peut cumuler plusieurs tags par issue</em>
+                            </p>
+                        </div>
+                    </div>
+
+                </div>
+
+                {# ── Tableau détail Clean Code categories ─────────────────────── #}
+                <h3 id="titre-tableau-clean-code" class="h5 claire-hand">Détail des catégories Clean Code</h3>
+                <div class="margin-bottom-2">
+                    <table class="open-sans" aria-labelledby="titre-tableau-clean-code">
+                        <thead>
+                            <tr>
+                                <th>Catégorie</th>
+                                <th>Signification</th>
+                                <th class="text-right">Nb issues</th>
+                                <th class="text-right">% du total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% set cc_total = data.cc_consistent + data.cc_intentional + data.cc_adaptable + data.cc_responsible %}
+                            <tr>
+                                <td><strong>CONSISTENT</strong></td>
+                                <td class="text-muted">Conventions, formatage, nommage cohérents</td>
+                                <td class="text-right">{{ data.cc_consistent|number_format(0, ',', ' ') }}</td>
+                                <td class="text-right">{{ cc_total > 0 ? (data.cc_consistent / cc_total * 100)|round(1) : 0 }}%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>INTENTIONAL</strong></td>
+                                <td class="text-muted">Code clair, logique, complet, efficace</td>
+                                <td class="text-right">{{ data.cc_intentional|number_format(0, ',', ' ') }}</td>
+                                <td class="text-right">{{ cc_total > 0 ? (data.cc_intentional / cc_total * 100)|round(1) : 0 }}%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>ADAPTABLE</strong></td>
+                                <td class="text-muted">Code modulaire, focalisé, testable</td>
+                                <td class="text-right">{{ data.cc_adaptable|number_format(0, ',', ' ') }}</td>
+                                <td class="text-right">{{ cc_total > 0 ? (data.cc_adaptable / cc_total * 100)|round(1) : 0 }}%</td>
+                            </tr>
+                            <tr class="{{ data.cc_responsible > 0 ? 'color-rouge' : '' }}">
+                                <td><strong>RESPONSIBLE</strong>
+                                {% if data.cc_responsible > 0 %}
+                                    &nbsp;<span aria-hidden="true">⚠</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-muted">Code fiable, légal, éthique — <strong>critique gouvernance</strong></td>
+                            <td class="text-right"><strong>{{ data.cc_responsible|number_format(0, ',', ' ') }}</strong></td>
+                            <td class="text-right"><strong>{{ responsible_pct }}%</strong></td>
+                        </tr>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="2"><strong>Total</strong></td>
+                            <td class="text-right"><strong>{{ cc_total|number_format(0, ',', ' ') }}</strong></td>
+                            <td class="text-right"><strong>100%</strong></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            {% endif %}{# fin if data #}
+
+            <footer class="grid-x grid-margin-x align-justify margin-top-2">
+                <div class="cell shrink">
+                    <a id="bouton-retour-projet"
+                        href="{{ path('projet', {}) }}"
+                        class="button open-sans focus-dark-light"
+                        aria-label="Retour au projet"><span aria-hidden="true">⬅️</span>Retour au projet
+                        </a>
+                    </div>
+                    <div class="cell shrink">
+                        <a id="bouton-synthese-portefeuille"
+                            href="{{ path('clean_code_synthese', {}) }}"
+                            class="button open-sans focus-dark-light"
+                            aria-label="Voir la synthèse portefeuille clean code"><span aria-hidden="true">📊</span>Portefeuille
+                            </a>
+                        </div>
+                    </footer>
+                </main>
+
+                {{ include('footer.html.twig') }}
+            </body>
+        </html>

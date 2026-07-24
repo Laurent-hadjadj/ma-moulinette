@@ -4,314 +4,316 @@
 {% set bottom="footer-fixed" %}
 <!DOCTYPE html>
 <!--
-.. __  __             __  __             _ _            _   _
-  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
-  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
-  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
-  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+.__  __             __  __             _ _            _   _
+|  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+| |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+| |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+|_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
 
-  Laurent HADJADJ
-  https://github.com/Laurent-hadjadj/ma-moulinette
-  © 2024 - CC BY-SA-NC 4.0
+Laurent HADJADJ
+https://github.com/Laurent-hadjadj/ma-moulinette
+© 2024 - CC BY-SA-NC 4.0
 -->
 <html lang="fr">
-  {# Chargement de la section HEAD #}
-  <head>
-    <title>{{ title }}</title>
-    {{ include('head.html.twig') }}
-    {# Chargement du code javascript #}
-    {% block importmap %}{{ importmap('register') }}{% endblock %}
-  </head>
+    {# Chargement de la section HEAD #}
+    <head>
+        <title>{{ title }}</title>
+        {{ include('head.html.twig') }}
+        {# Chargement du code javascript #}
+        {% block importmap %}
+            {{ importmap('register') }}
+        {% endblock %}
+    </head>
 
-  <body dir="ltr">
-    {# no-script #}
-    {{ include('no-script.html.twig') }}
-    {# Chargement de la section header #}
-    {{ include('header.html.twig') }}
+    <body dir="ltr">
+        {# no-script #}
+        {{ include('no-script.html.twig') }}
+        {# Chargement de la section header #}
+        {{ include('header.html.twig') }}
 
-    {# Fil d’Ariane #}
-    <header class="grid-container margin-top-1">
-      {# WCAG 2.4.8 : indication "vous êtes ici" portée par aria-label ; aria-current="page" sur l'élément courant #}
-      <nav id="fil-ariane" aria-label="Fil d'Ariane, vous êtes ici">
-        <ol class="claire-hand breadcrumbs">
-          <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
-          <li aria-current="page">Inscription</li>
-        </ol>
-      </nav>
-    </header>
+        {# Fil d’Ariane #}
+        <header class="grid-container margin-top-1">
+            {# WCAG 2.4.8 : indication "vous êtes ici" portée par aria-label ; aria-current="page" sur l'élément courant #}
+            <nav id="fil-ariane" aria-label="Fil d'Ariane, vous êtes ici">
+                <ol class="claire-hand breadcrumbs">
+                    <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+                    <li aria-current="page">Inscription</li>
+                </ol>
+            </nav>
+        </header>
 
-    {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page (celui du header) ; titre de page descendu en <h2>. aria-label redondant avec le texte retiré. Ajout de id="main-content" (cible du skip link). #}
-    <header id="main-content" class="grid-container" aria-labelledby="titre-principal">
-      <h2 id="titre-principal" class="h3 claire-hand"><span aria-hidden="true">🛠️</span>Bienvenue sur Ma-Moulinette — Formulaire d'inscription</h2>
-    </header>
+        {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page (celui du header) ; titre de page descendu en <h2>. aria-label redondant avec le texte retiré. Ajout de id="main-content" (cible du skip link). #}
+        <header id="main-content" class="grid-container" aria-labelledby="titre-principal">
+            <h2 id="titre-principal" class="h3 claire-hand"><span aria-hidden="true">🛠️</span>Bienvenue sur Ma-Moulinette — Formulaire d'inscription</h2>
+        </header>
 
-    {# Gestion des messages flash & JS #}
-    {{ include('_message.html.twig') }}
+        {# Gestion des messages flash & JS #}
+        {{ include('_message.html.twig') }}
 
-    {# WCAG 4.1.1 : role="main" redondant sur <main>, retiré. Note : id="main-content" est porté par le <header> plus haut pour cibler le titre de page #}
-    <main class="grid-container main-container margin-top-1">
-      <div class="grid-x">
-        <div class="small-12 medium-6 large-6 cell">
-          <video id="video-dessin-anime2" class="video-dessin-anime2" preload="metadata" loop autoplay muted>
-            <source src="{{ asset('video/dessin_anime_2.mp4') }}">
-            <track label="Français" kind="captions" srclang="fr" default src="{{ asset('video/dessin_anime_2_subtitles_fr.vtt') }}">
-              <track label="English" kind="captions" srclang="en" src="{{ asset('video/dessin_anime_2_subtitles_en.vtt') }}"></video>
-              <span class="open-sans float-center text-center">
-                {% set a="https://pixabay.com/fr/" %}
-                {% set b="users/u_cakf541pns-41051938/" %}
-                {% set c="?utm_source=link-attribution&amp;utm_medium=referral"%}
-                {% set d="&amp;utm_campaign=video&amp;utm_content=192283" %}
-                <a class="open-sans credit source-link" href="{{a}}{{b}}{{c}}{{d}}">u_cakf541pns</a>
-                <span id="sur">sur</span>
-                <a class="open-sans credit source-link" href="{{a}}{{c}}{{d}}">Pixabay</a>
-              </span>
-        </div>
+        {# WCAG 4.1.1 : role="main" redondant sur <main>, retiré. Note : id="main-content" est porté par le <header> plus haut pour cibler le titre de page #}
+        <main class="grid-container main-container margin-top-1">
+            <div class="grid-x">
+                <div class="small-12 medium-6 large-6 cell">
+                    <video id="video-dessin-anime2" class="video-dessin-anime2" preload="metadata" loop autoplay muted>
+                        <source src="{{ asset('video/dessin_anime_2.mp4') }}">
+                        <track label="Français" kind="captions" srclang="fr" default src="{{ asset('video/dessin_anime_2_subtitles_fr.vtt') }}">
+                        <track label="English" kind="captions" srclang="en" src="{{ asset('video/dessin_anime_2_subtitles_en.vtt') }}"></video>
+                        <span class="open-sans float-center text-center">
+                            {% set a="https://pixabay.com/fr/" %}
+                            {% set b="users/u_cakf541pns-41051938/" %}
+                            {% set c="?utm_source=link-attribution&amp;utm_medium=referral"%}
+                            {% set d="&amp;utm_campaign=video&amp;utm_content=192283" %}
+                            <a class="open-sans credit source-link" href="{{a}}{{b}}{{c}}{{d}}">u_cakf541pns</a>
+                            <span id="sur">sur</span>
+                            <a class="open-sans credit source-link" href="{{a}}{{c}}{{d}}">Pixabay</a>
+                        </span>
+                    </div>
 
-        <div class="small-12 medium-6 large-6 cell">
-          {% form_theme registrationForm 'foundation_6_layout.html.twig' %}
-          {{ form_start(registrationForm, {'method': 'POST', 'attr': {'aria-labelledby': 'titre-formulaire', 'aria-describedby': 'desc-formulaire'} }) }}
-          <div class="callout">
-            <h2 id="titre-formulaire" class="h4 claire-hand text-center"><span aria-hidden="true">📝</span>Inscription.</h1>
-            <p id="desc-formulaire" class="show-for-sr">
-              Formulaire d'inscription. Choisissez un avatar, saisissez votre nom, prénom, adresse de courriel et un mot de passe.</p>
-            <div class="grid-x cell">
-              {# Ajout de l'avatar #}
-              <div class="small-12 medium-4 large-4 cell">
-                <div class="ajouter-mon-avatar-container">
-                  <img id="ajouter-mon-avatar" src="{{ asset('avatar/personne.png') }}" alt="Mon avatar" height="52" width="52" data-theme="racine" data-image="personne">
-                </div><br>
-                <span id="bouton-changer-avatar" class="open-sans profil-bouton" data-open="mes-avatars">&nbsp;Changer&nbsp;
-                </span>
-              </div>
-              <div class="show-for-small-only cell" aria-hidden="true">&nbsp;</div>
+                    <div class="small-12 medium-6 large-6 cell">
+                        {% form_theme registrationForm 'foundation_6_layout.html.twig' %}
+                        {{ form_start(registrationForm, {'method': 'POST', 'attr': {'aria-labelledby': 'titre-formulaire', 'aria-describedby': 'desc-formulaire'} }) }}
+                        <div class="callout">
+                            <h2 id="titre-formulaire" class="h4 claire-hand text-center"><span aria-hidden="true">📝</span>Inscription.</h1>
+                            <p id="desc-formulaire" class="show-for-sr">
+                            Formulaire d'inscription. Choisissez un avatar, saisissez votre nom, prénom, adresse de courriel et un mot de passe.</p>
+                            <div class="grid-x cell">
+                                {# Ajout de l'avatar #}
+                                <div class="small-12 medium-4 large-4 cell">
+                                    <div class="ajouter-mon-avatar-container">
+                                        <img id="ajouter-mon-avatar" src="{{ asset('avatar/personne.png') }}" alt="Mon avatar" height="52" width="52" data-theme="racine" data-image="personne">
+                                        </div><br>
+                                        <span id="bouton-changer-avatar" class="open-sans profil-bouton" data-open="mes-avatars">&nbsp;Changer&nbsp;
+                                        </span>
+                                    </div>
+                                    <div class="show-for-small-only cell" aria-hidden="true">&nbsp;</div>
 
-              {# Ajout du nom #}
-              <div class="small-11 medium-7 large-7 cell">
-                <div class="floated-label-wrapper">
-                  {{ form_label(registrationForm.nom) }}
-                </div>
-                {{ form_widget(registrationForm.nom) }}
-              </div>
-              <div class="small-1 medium-1 large-1 cell">
-                <div class="container-check-password"><span id="register-info-check-nom"></span></div>
-              </div>
-              <div aria-hidden="true" class="small-12 medium-4 large-4 cell">&nbsp;</div>
+                                    {# Ajout du nom #}
+                                    <div class="small-11 medium-7 large-7 cell">
+                                        <div class="floated-label-wrapper">
+                                            {{ form_label(registrationForm.nom) }}
+                                        </div>
+                                        {{ form_widget(registrationForm.nom) }}
+                                    </div>
+                                    <div class="small-1 medium-1 large-1 cell">
+                                        <div class="container-check-password"><span id="register-info-check-nom"></span></div>
+                                    </div>
+                                    <div aria-hidden="true" class="small-12 medium-4 large-4 cell">&nbsp;</div>
 
-              {# Ajout du prénom #}
-              <div class="small-11 medium-7 large-7 cell">
-                <div class="floated-label-wrapper">
-                  {{ form_label(registrationForm.prenom) }}
-                </div>
-                {{ form_widget(registrationForm.prenom) }}
-              </div>
-              <div id="register-check-prenom" class="small-1 medium-1 large-1 cell">
-                <div class="container-check-password"><span id="register-info-check-prenom"></span></div>
-              </div>
+                                    {# Ajout du prénom #}
+                                    <div class="small-11 medium-7 large-7 cell">
+                                        <div class="floated-label-wrapper">
+                                            {{ form_label(registrationForm.prenom) }}
+                                        </div>
+                                        {{ form_widget(registrationForm.prenom) }}
+                                    </div>
+                                    <div id="register-check-prenom" class="small-1 medium-1 large-1 cell">
+                                        <div class="container-check-password"><span id="register-info-check-prenom"></span></div>
+                                    </div>
 
-              {# Ajout du courriel #}
-              <div class="small-11 medium-11 large-11 cell">
-                <div class="floated-label-wrapper">
-                  {{ form_label(registrationForm.courriel) }}
-                </div>
-                {{ form_widget(registrationForm.courriel) }}
-              </div>
-              <div class="small-1 medium-1 large-1 cell">
-                <div class="container-check-password"><span id="register-info-check-courriel"></span></div>
-              </div>
+                                    {# Ajout du courriel #}
+                                    <div class="small-11 medium-11 large-11 cell">
+                                        <div class="floated-label-wrapper">
+                                            {{ form_label(registrationForm.courriel) }}
+                                        </div>
+                                        {{ form_widget(registrationForm.courriel) }}
+                                    </div>
+                                    <div class="small-1 medium-1 large-1 cell">
+                                        <div class="container-check-password"><span id="register-info-check-courriel"></span></div>
+                                    </div>
 
-              {# Mot de passe #}
-              <div class="isolation grid-x cell">
-                <div class="small-11 medium-11 large-11 cell">
-                  <div class="floated-label-wrapper">
-                    {{ form_label(registrationForm.plainPassword.first) }}
-                  </div>
-                  {{ form_widget(registrationForm.plainPassword.first) }}
-                  <button class="unmask1" type="button" title="Affiche/masque le mot de passe">Unmask
-                  </button>
-                </div>
-                <div class="check-svg small-1 medium-1 large-1 cell">
-                  <div class="container-check-password"><span id="register-info-check-password"></span></div>
-                </div>
-              </div>
+                                    {# Mot de passe #}
+                                    <div class="isolation grid-x cell">
+                                        <div class="small-11 medium-11 large-11 cell">
+                                            <div class="floated-label-wrapper">
+                                                {{ form_label(registrationForm.plainPassword.first) }}
+                                            </div>
+                                            {{ form_widget(registrationForm.plainPassword.first) }}
+                                            <button class="unmask1" type="button" title="Affiche/masque le mot de passe">Unmask
+                                            </button>
+                                        </div>
+                                        <div class="check-svg small-1 medium-1 large-1 cell">
+                                            <div class="container-check-password"><span id="register-info-check-password"></span></div>
+                                        </div>
+                                    </div>
 
-              {# reMot de passe #}
-              <div class="isolation grid-x cell">
-                <div class="small-11 medium-11 large-11 cell check-svg">
-                  <div class="floated-label-wrapper">
-                    {{ form_label(registrationForm.plainPassword.second) }}
-                  </div>
-                  {{ form_widget(registrationForm.plainPassword.second) }}
-                  <button class="unmask2" type="button" title="Affiche/masque le mot de passe">Unmask</button>
-                </div>
-                <div class="check-svg small-1 medium-1 large-1 cell">
-                  <div class="container-check-password"><span id="register-info-check-re-password"></span></div>
-                </div>
-              </div>
+                                    {# reMot de passe #}
+                                    <div class="isolation grid-x cell">
+                                        <div class="small-11 medium-11 large-11 cell check-svg">
+                                            <div class="floated-label-wrapper">
+                                                {{ form_label(registrationForm.plainPassword.second) }}
+                                            </div>
+                                            {{ form_widget(registrationForm.plainPassword.second) }}
+                                            <button class="unmask2" type="button" title="Affiche/masque le mot de passe">Unmask</button>
+                                        </div>
+                                        <div class="check-svg small-1 medium-1 large-1 cell">
+                                            <div class="container-check-password"><span id="register-info-check-re-password"></span></div>
+                                        </div>
+                                    </div>
 
-              {# Affiche la qualité du mot de passe. #}
-              <div class="affiche-info-mot-de-passe cell"></div>
+                                    {# Affiche la qualité du mot de passe. #}
+                                    <div class="affiche-info-mot-de-passe cell"></div>
 
-              <ul class="form_erreur">
-                {# Affichage des erreurs globales #}
-                {% if registrationForm.vars.errors|length > 0 %}
-                    {% for error in registrationForm.vars.errors %}
-                        <li>{{ error.message }}</li>
-                    {% endfor %}
-                {% endif %}
+                                    <ul class="form_erreur">
+                                        {# Affichage des erreurs globales #}
+                                        {% if registrationForm.vars.errors|length > 0 %}
+                                            {% for error in registrationForm.vars.errors %}
+                                                <li>{{ error.message }}</li>
+                                            {% endfor %}
+                                        {% endif %}
 
-                  {# Affiche des messages d'erreur pour les champs #}
-                  {% if form_errors(registrationForm.nom) %}
-                  <li>Nom : {{ form_errors(registrationForm.nom) }}</li>
-                  {% endif %}
-                  {% if form_errors(registrationForm.prenom) %}
-                  <li>Prénom : {{ form_errors(registrationForm.prenom) }}</li>
-                  {% endif %}
-                  {% if form_errors(registrationForm.courriel) %}
-                  <li>Courriel : {{ form_errors(registrationForm.courriel) }}</li>
-                  {% endif %}
-                  {% if form_errors(registrationForm.plainPassword.first) %}
-                  <li>Mot de passe : {{ form_errors(registrationForm.plainPassword.first) }}</li>
-                  {% endif %}
-                  {% if form_errors(registrationForm.plainPassword.second) %}
-                  <li>Vérification : {{ form_errors(registrationForm.plainPassword.second) }}</li>
-                  {% endif %}
-                </ul>
+                                        {# Affiche des messages d'erreur pour les champs #}
+                                        {% if form_errors(registrationForm.nom) %}
+                                            <li>Nom : {{ form_errors(registrationForm.nom) }}</li>
+                                        {% endif %}
+                                        {% if form_errors(registrationForm.prenom) %}
+                                            <li>Prénom : {{ form_errors(registrationForm.prenom) }}</li>
+                                        {% endif %}
+                                        {% if form_errors(registrationForm.courriel) %}
+                                            <li>Courriel : {{ form_errors(registrationForm.courriel) }}</li>
+                                        {% endif %}
+                                        {% if form_errors(registrationForm.plainPassword.first) %}
+                                            <li>Mot de passe : {{ form_errors(registrationForm.plainPassword.first) }}</li>
+                                        {% endif %}
+                                        {% if form_errors(registrationForm.plainPassword.second) %}
+                                            <li>Vérification : {{ form_errors(registrationForm.plainPassword.second) }}</li>
+                                        {% endif %}
+                                    </ul>
 
-                {# HoneyPot #}
-                <div class="cell">
-                  <label for="registration_form_email"></label>
-                  {{ form_widget(registrationForm.email) }}
-                </div>
+                                    {# HoneyPot #}
+                                    <div class="cell">
+                                        <label for="registration_form_email"></label>
+                                        {{ form_widget(registrationForm.email) }}
+                                    </div>
 
-                {# Bouton de validation #}
-                <div class="grid-x grid-padding-x align-right cell">
-                  <div class="cell shrink">
-                    <input id="valider-formulaire-enregistrement"
-                          class="button no-select focus-dark-light"
-                          type="submit"
-                          aria-label="Valider"
-                          value="✅ Valider">
-                  </div>
-                </div>
+                                    {# Bouton de validation #}
+                                    <div class="grid-x grid-padding-x align-right cell">
+                                        <div class="cell shrink">
+                                            <input id="valider-formulaire-enregistrement"
+                                                class="button no-select focus-dark-light"
+                                                type="submit"
+                                                aria-label="Valider"
+                                                value="✅ Valider">
+                                            </div>
+                                        </div>
 
-                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-              </div>
-            </div>
-            {{ form_end(registrationForm) }}
-          </div>
-        </div>
-    </main>
+                                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                                    </div>
+                                </div>
+                                {{ form_end(registrationForm) }}
+                            </div>
+                        </div>
+                    </main>
 
 
-    {# affiche la liste des avatar #}
-    <dialog id="mes-avatars" class="grid-container large reveal" data-reveal>
-      <ul id="ajouter-mes-avatars" class="accordion" data-accordion data-multi-open="true">
-        <li class="accordion-item menu-accordion" data-accordion-item>
-          <a class="accordion-title color-bleu">
-            <span class="open-sans">
-              <strong>Chiffres</strong>
-            </span>
-            <span class="open-sans float-right avatar-chiffre">1</span>
-          </a>
-          <div class="accordion-content background-color-blanc" data-tab-content>
-            {% for i in 1..1 %}
-              {% if i<10 %}
-                <img id="ajouter-chiffre-0{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/chiffre/0' ~ i ~ '.png')}}" data-theme="chiffre" data-image="0{{i}}">
-              {% else %}
-                <img id="ajouter-chiffre-{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/chiffre/' ~ i ~ '}.png') }}" data-theme="chiffre" data-image="{{i}}">
-              {% endif %}
-            {% endfor %}
-          </div>
-        </li>
-        <li class="accordion-item menu-accordion" data-accordion-item>
-          <a class="accordion-title color-bleu">
-            <span class="open-sans">
-              <strong>Émoticônes</strong>
-            </span>
-            <span class="open-sans float-right avatar-emoticon">35</span>
-          </a>
-          <div class="accordion-content background-color-blanc" data-tab-content>
-            {% for i in 1..35 %}
-              {% if i<10 %}
-                <img id="ajouter-emoticon-0{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/emoticon/0' ~ i ~ '.png')}}" data-theme="emoticon" data-image="0{{i}}">
-              {% else %}
-                <img id="ajouter-emoticon-{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/emoticon/' ~ i ~ '.png')}}" data-theme="emoticon" data-image="{{i}}">
-              {% endif %}
-            {% endfor %}
-          </div>
-        </li>
-        <li class="accordion-item menu-accordion" data-accordion-item>
-          <a class="accordion-title color-bleu">
-            <span class="open-sans">
-              <strong>Filles (1)</strong>
-            </span>
-            <span class="open-sans float-right avatar-fille1">27</span>
-          </a>
-          <div class="accordion-content background-color-blanc" data-tab-content>
-            {% for i in 1..27 %}
-              {% if i<10 %}
-                <img id="ajouter-fille-1-0{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/fille-1/0' ~ i ~ '.png')}}" data-theme="fille-1" data-image="0{{i}}">
-              {% else %}
-                <img id="ajouter-fille-1-{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/fille-1/' ~ i ~ '.png')}}" data-theme="fille-1" data-image="{{i}}">
-              {% endif %}
-            {% endfor %}
-          </div>
-        </li>
-        <li class="accordion-item menu-accordion" data-accordion-item>
-          <a class="accordion-title color-bleu">
-            <span class="open-sans">
-              <strong>Filles (2)</strong>
-            </span>
-            <span class="open-sans float-right avatar-fille2">27</span>
-          </a>
-          <div class="accordion-content background-color-blanc" data-tab-content>
-            {% for i in 1..26 %}
-              {% if i<10 %}
-                <img id="ajouter-fille-2-0{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/fille-2/0' ~ i ~ '.png')}}" data-theme="fille-2" data-image="0{{i}}">
-              {% else %}
-                <img id="ajouter-fille-2-{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/fille-2/' ~ i ~ '.png')}}" data-theme="fille-2" data-image="{{i}}">
-              {% endif %}
-            {% endfor %}
-          </div>
-        </li>
-        <li class="accordion-item menu-accordion" data-accordion-item>
-          <a class="accordion-title color-bleu">
-            <span class="open-sans">
-              <strong>Garçon (1)</strong>
-            </span>
-            <span class="open-sans float-right avatar-garcon1">23</span>
-          </a>
-          <div class="accordion-content background-color-blanc" data-tab-content>
-            {% for i in 1..23 %}
-              {% if i<10 %}
-                <img id="ajouter-garcon-1-0{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/garcon-1/0' ~ i ~ '.png')}}" data-theme="garcon-1" data-image="0{{i}}">
-              {% else %}
-                <img id="ajouter-garcon-1-{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/garcon-1/' ~ i ~ '.png')}}" data-theme="garcon-1" data-image="{{i}}">
-              {% endif %}
-            {% endfor %}
-          </div>
-        </li>
-        <li class="accordion-item menu-accordion" data-accordion-item>
-          <a class="accordion-title color-bleu">
-            <span class="open-sans">
-              <strong>Garçon (2)</strong>
-            </span>
-            <span class="open-sans float-right avatar-garcon2">23</span>
-          </a>
-          <div class="accordion-content background-color-blanc" data-tab-content>
-            {% for i in 1..24 %}
-              {% if i<10 %}
-                <img id="ajouter-garcon-2-0{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/garcon-2/0' ~ i ~ '.png')}}" data-theme="garcon-2" data-image="0{{i}}">
-              {% else %}
-                <img id="ajouter-garcon-2-{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/garcon-2/' ~ i ~ '.png')}}" data-theme="garcon-2" data-image="{{i}}">
-              {% endif %}
-            {% endfor %}
-          </div>
-        </li>
-      </ul>
-    </dialog>
+                    {# affiche la liste des avatar #}
+                    <dialog id="mes-avatars" class="grid-container large reveal" data-reveal>
+                        <ul id="ajouter-mes-avatars" class="accordion" data-accordion data-multi-open="true">
+                            <li class="accordion-item menu-accordion" data-accordion-item>
+                                <a class="accordion-title color-bleu">
+                                    <span class="open-sans">
+                                        <strong>Chiffres</strong>
+                                    </span>
+                                    <span class="open-sans float-right avatar-chiffre">1</span>
+                                </a>
+                                <div class="accordion-content background-color-blanc" data-tab-content>
+                                    {% for i in 1..1 %}
+                                        {% if i<10 %}
+                                            <img id="ajouter-chiffre-0{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/chiffre/0' ~ i ~ '.png')}}" data-theme="chiffre" data-image="0{{i}}">
+                                        {% else %}
+                                            <img id="ajouter-chiffre-{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/chiffre/' ~ i ~ '}.png') }}" data-theme="chiffre" data-image="{{i}}">
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </li>
+                            <li class="accordion-item menu-accordion" data-accordion-item>
+                                <a class="accordion-title color-bleu">
+                                    <span class="open-sans">
+                                        <strong>Émoticônes</strong>
+                                    </span>
+                                    <span class="open-sans float-right avatar-emoticon">35</span>
+                                </a>
+                                <div class="accordion-content background-color-blanc" data-tab-content>
+                                    {% for i in 1..35 %}
+                                        {% if i<10 %}
+                                            <img id="ajouter-emoticon-0{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/emoticon/0' ~ i ~ '.png')}}" data-theme="emoticon" data-image="0{{i}}">
+                                        {% else %}
+                                            <img id="ajouter-emoticon-{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/emoticon/' ~ i ~ '.png')}}" data-theme="emoticon" data-image="{{i}}">
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </li>
+                            <li class="accordion-item menu-accordion" data-accordion-item>
+                                <a class="accordion-title color-bleu">
+                                    <span class="open-sans">
+                                        <strong>Filles (1)</strong>
+                                    </span>
+                                    <span class="open-sans float-right avatar-fille1">27</span>
+                                </a>
+                                <div class="accordion-content background-color-blanc" data-tab-content>
+                                    {% for i in 1..27 %}
+                                        {% if i<10 %}
+                                            <img id="ajouter-fille-1-0{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/fille-1/0' ~ i ~ '.png')}}" data-theme="fille-1" data-image="0{{i}}">
+                                        {% else %}
+                                            <img id="ajouter-fille-1-{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/fille-1/' ~ i ~ '.png')}}" data-theme="fille-1" data-image="{{i}}">
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </li>
+                            <li class="accordion-item menu-accordion" data-accordion-item>
+                                <a class="accordion-title color-bleu">
+                                    <span class="open-sans">
+                                        <strong>Filles (2)</strong>
+                                    </span>
+                                    <span class="open-sans float-right avatar-fille2">27</span>
+                                </a>
+                                <div class="accordion-content background-color-blanc" data-tab-content>
+                                    {% for i in 1..26 %}
+                                        {% if i<10 %}
+                                            <img id="ajouter-fille-2-0{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/fille-2/0' ~ i ~ '.png')}}" data-theme="fille-2" data-image="0{{i}}">
+                                        {% else %}
+                                            <img id="ajouter-fille-2-{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/fille-2/' ~ i ~ '.png')}}" data-theme="fille-2" data-image="{{i}}">
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </li>
+                            <li class="accordion-item menu-accordion" data-accordion-item>
+                                <a class="accordion-title color-bleu">
+                                    <span class="open-sans">
+                                        <strong>Garçon (1)</strong>
+                                    </span>
+                                    <span class="open-sans float-right avatar-garcon1">23</span>
+                                </a>
+                                <div class="accordion-content background-color-blanc" data-tab-content>
+                                    {% for i in 1..23 %}
+                                        {% if i<10 %}
+                                            <img id="ajouter-garcon-1-0{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/garcon-1/0' ~ i ~ '.png')}}" data-theme="garcon-1" data-image="0{{i}}">
+                                        {% else %}
+                                            <img id="ajouter-garcon-1-{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/garcon-1/' ~ i ~ '.png')}}" data-theme="garcon-1" data-image="{{i}}">
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </li>
+                            <li class="accordion-item menu-accordion" data-accordion-item>
+                                <a class="accordion-title color-bleu">
+                                    <span class="open-sans">
+                                        <strong>Garçon (2)</strong>
+                                    </span>
+                                    <span class="open-sans float-right avatar-garcon2">23</span>
+                                </a>
+                                <div class="accordion-content background-color-blanc" data-tab-content>
+                                    {% for i in 1..24 %}
+                                        {% if i<10 %}
+                                            <img id="ajouter-garcon-2-0{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/garcon-2/0' ~ i ~ '.png')}}" data-theme="garcon-2" data-image="0{{i}}">
+                                        {% else %}
+                                            <img id="ajouter-garcon-2-{{i}}" class="thumbnail gray-scale" alt="m0i" height="42" width="42" src="{{ asset('avatar/garcon-2/' ~ i ~ '.png')}}" data-theme="garcon-2" data-image="{{i}}">
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </li>
+                        </ul>
+                    </dialog>
 
-    {# Chargement de la section footer #}
-    {{ include('footer.html.twig') }}
-  </body>
-</html>
+                    {# Chargement de la section footer #}
+                    {{ include('footer.html.twig') }}
+                </body>
+            </html>

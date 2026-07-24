@@ -4,166 +4,168 @@
 {% set bottom="footer-fixed" %}
 <!DOCTYPE html>
 <!--
-.. __  __             __  __             _ _            _   _
-  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
-  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
-  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
-  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+.__  __             __  __             _ _            _   _
+|  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+| |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+| |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+|_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
 
-  Laurent HADJADJ
-  https://github.com/Laurent-hadjadj/ma-moulinette
-  © 2024 - CC BY-SA-NC 4.0
+Laurent HADJADJ
+https://github.com/Laurent-hadjadj/ma-moulinette
+© 2024 - CC BY-SA-NC 4.0
 -->
 <html	lang="fr">
 
-  {# Chargement de la section HEAD #}
-  <head>
-    <title>{{ title }}</title>
-    {{ include('head.html.twig') }}
-    {# Chargement des assets JS et CSS #}
-    {% block importmap %}{{ importmap('reset') }}{% endblock %}
-  </head>
+    {# Chargement de la section HEAD #}
+    <head>
+        <title>{{ title }}</title>
+        {{ include('head.html.twig') }}
+        {# Chargement des assets JS et CSS #}
+        {% block importmap %}
+            {{ importmap('reset') }}
+        {% endblock %}
+    </head>
 
-  <body>
-    {# no-script #}
-    {{ include('no-script.html.twig') }}
-    {# Chargement de la section header #}
-    {{ include('header.html.twig') }}
-    {# On ajoute les informations de l'utilisateur #}
-    {{ include('information.utilisateur.html.twig') }}
+    <body>
+        {# no-script #}
+        {{ include('no-script.html.twig') }}
+        {# Chargement de la section header #}
+        {{ include('header.html.twig') }}
+        {# On ajoute les informations de l'utilisateur #}
+        {{ include('information.utilisateur.html.twig') }}
 
-    {# Fil d’Ariane #}
-    <header class="grid-container margin-top-1">
-      {# WCAG 2.4.8 : indication "vous êtes ici" portée par aria-label ; aria-current="page" sur l'élément courant #}
-      <nav id="fil-ariane" aria-label="Fil d'Ariane, vous êtes ici">
-        <ol class="claire-hand breadcrumbs">
-          <li><a href="{{ path('accueil', {}) }}">Ma-Moulinette</a></li>
-          <li aria-current="page">Changer mon mot de passe</li>
-        </ol>
-      </nav>
-    </header>
+        {# Fil d’Ariane #}
+        <header class="grid-container margin-top-1">
+            {# WCAG 2.4.8 : indication "vous êtes ici" portée par aria-label ; aria-current="page" sur l'élément courant #}
+            <nav id="fil-ariane" aria-label="Fil d'Ariane, vous êtes ici">
+                <ol class="claire-hand breadcrumbs">
+                    <li><a href="{{ path('accueil', {}) }}">Ma-Moulinette</a></li>
+                    <li aria-current="page">Changer mon mot de passe</li>
+                </ol>
+            </nav>
+        </header>
 
-    {# Message d'information php #}
-    {{ include('_message.html.twig') }}
+        {# Message d'information php #}
+        {{ include('_message.html.twig') }}
 
-    {# WCAG 2.4.1 / 4.1.1 : id="main-content" (cible du skip link) ; retrait du role="main" redondant #}
-    <main id="main-content" class="grid-container">
-      {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page ; titre descendu en <h2> #}
-      <h2 class="h3 claire-hand"><span aria-hidden="true">🔒</span>Modification du mot de passe</h2>
-      <div class="grid-x">
-        {# Formulaire de changement de mot de passe #}
-        <div class="small-12 medium-6 large-6 cell">
-          <div class="margin-top-1125 margin-right-05">
-            {% form_theme resetPasswordForm 'foundation_6_layout.html.twig' %}
-            {{ form_start(resetPasswordForm) }}
-            <div class="callout">
-              {# WCAG 1.3.1 : descente des niveaux de titre (était h2 sous l'ancien h1 de page, devient h3 sous le nouveau h2) #}
-              <h3 class="h4 claire-hand text-center">
-                <span aria-hidden="true">✏️</span>Nouveau mot de passe sécurisé</h3>
-              {# Ajout du courriel #}
-              <div class="isolation grid-x cell">
-                <div class="small-11 medium-11 large-11 cell">
-                  <div>
-                    <label for="mel" class="affiche color-bleu">Compte utilisateur</label>
-                  </div>
-                  <input type="text" id="mel" readonly="readonly" class="color-noir" value="{{courriel}}">
-                </div>
-                <div class="small-1 medium-1 large-1 cell">
-                  <span aria-hidden>&nbsp;</span>
-                </div>
-              </div>
+        {# WCAG 2.4.1 / 4.1.1 : id="main-content" (cible du skip link) ; retrait du role="main" redondant #}
+        <main id="main-content" class="grid-container">
+            {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page ; titre descendu en <h2> #}
+            <h2 class="h3 claire-hand"><span aria-hidden="true">🔒</span>Modification du mot de passe</h2>
+            <div class="grid-x">
+                {# Formulaire de changement de mot de passe #}
+                <div class="small-12 medium-6 large-6 cell">
+                    <div class="margin-top-1125 margin-right-05">
+                        {% form_theme resetPasswordForm 'foundation_6_layout.html.twig' %}
+                        {{ form_start(resetPasswordForm) }}
+                        <div class="callout">
+                            {# WCAG 1.3.1 : descente des niveaux de titre (était h2 sous l'ancien h1 de page, devient h3 sous le nouveau h2) #}
+                            <h3 class="h4 claire-hand text-center">
+                                <span aria-hidden="true">✏️</span>Nouveau mot de passe sécurisé</h3>
+                                {# Ajout du courriel #}
+                                <div class="isolation grid-x cell">
+                                    <div class="small-11 medium-11 large-11 cell">
+                                        <div>
+                                            <label for="mel" class="affiche color-bleu">Compte utilisateur</label>
+                                        </div>
+                                        <input type="text" id="mel" readonly="readonly" class="color-noir" value="{{courriel}}">
+                                    </div>
+                                    <div class="small-1 medium-1 large-1 cell">
+                                        <span aria-hidden>&nbsp;</span>
+                                    </div>
+                                </div>
 
-              {# Ancien mot de passe #}
-              <div class="isolation grid-x cell">
-                <div class="small-11 medium-11 large-11 cell">
-                  <div class="floated-label-wrapper">
-                    {{ form_label(resetPasswordForm.ancienMotDePasse) }}
-                  </div>
-                  {{ form_widget(resetPasswordForm.ancienMotDePasse) }}
-                  <button class="unmask0 focus-dark-light"
-                          type="button"
-                          aria-pressed="false"
-                          aria-label="Afficher le mot de passe">Afficher
-                  </button>
-                </div>
-              </div>
+                                {# Ancien mot de passe #}
+                                <div class="isolation grid-x cell">
+                                    <div class="small-11 medium-11 large-11 cell">
+                                        <div class="floated-label-wrapper">
+                                            {{ form_label(resetPasswordForm.ancienMotDePasse) }}
+                                        </div>
+                                        {{ form_widget(resetPasswordForm.ancienMotDePasse) }}
+                                        <button class="unmask0 focus-dark-light"
+                                            type="button"
+                                            aria-pressed="false"
+                                            aria-label="Afficher le mot de passe">Afficher
+                                            </button>
+                                        </div>
+                                    </div>
 
-              {# nouveau Mot de passe #}
-              <div class="isolation margin-bottom-05 grid-x cell">
-                <div class="small-11 medium-11 large-11 cell">
-                  <div class="floated-label-wrapper">
-                    {{ form_label(resetPasswordForm.plainPassword.first) }}
-                  </div>
-                  {{ form_widget(resetPasswordForm.plainPassword.first) }}
-                  <button class="unmask1 focus-dark-light"
-                          type="button"
-                          aria-pressed="false"
-                          aria-label="Afficher le nouveau mot de passe">Afficher
-                  </button>
-                </div>
-                <div class="check-svg margin-top-05 text-center small-1 medium-1 large-1 cell">
-                  <span id="reset-info-check-password"></span>
-                </div>
-              </div>
+                                    {# nouveau Mot de passe #}
+                                    <div class="isolation margin-bottom-05 grid-x cell">
+                                        <div class="small-11 medium-11 large-11 cell">
+                                            <div class="floated-label-wrapper">
+                                                {{ form_label(resetPasswordForm.plainPassword.first) }}
+                                            </div>
+                                            {{ form_widget(resetPasswordForm.plainPassword.first) }}
+                                            <button class="unmask1 focus-dark-light"
+                                                type="button"
+                                                aria-pressed="false"
+                                                aria-label="Afficher le nouveau mot de passe">Afficher
+                                                </button>
+                                            </div>
+                                            <div class="check-svg margin-top-05 text-center small-1 medium-1 large-1 cell">
+                                                <span id="reset-info-check-password"></span>
+                                            </div>
+                                        </div>
 
-              {# reMot de passe #}
-              <div class="isolation grid-x cell">
-                <div class="small-11 medium-11 large-11 cell check-svg">
-                  <div class="floated-label-wrapper">
-                    {{ form_label(resetPasswordForm.plainPassword.second) }}
-                  </div>
-                  {{ form_widget(resetPasswordForm.plainPassword.second) }}
-                  <button class="unmask2 focus-dark-light"
-                          type="button"
-                          aria-pressed="false"
-                          aria-label="Afficher le nouveau mot de passe">Afficher
-                  </button>
-                </div>
-                <div class="check-svg margin-top-05 text-center small-1 medium-1 large-1 cell">
-                  <span id="reset-info-check-re-password"></span>
-                </div>
-              </div>
+                                        {# reMot de passe #}
+                                        <div class="isolation grid-x cell">
+                                            <div class="small-11 medium-11 large-11 cell check-svg">
+                                                <div class="floated-label-wrapper">
+                                                    {{ form_label(resetPasswordForm.plainPassword.second) }}
+                                                </div>
+                                                {{ form_widget(resetPasswordForm.plainPassword.second) }}
+                                                <button class="unmask2 focus-dark-light"
+                                                    type="button"
+                                                    aria-pressed="false"
+                                                    aria-label="Afficher le nouveau mot de passe">Afficher
+                                                    </button>
+                                                </div>
+                                                <div class="check-svg margin-top-05 text-center small-1 medium-1 large-1 cell">
+                                                    <span id="reset-info-check-re-password"></span>
+                                                </div>
+                                            </div>
 
-              {# Affiche la qualité du mot de passe. #}
-              <output class="affiche-info-mot-de-passe cell" role="alert"></output>
+                                            {# Affiche la qualité du mot de passe. #}
+                                            <output class="affiche-info-mot-de-passe cell" role="alert"></output>
 
-              {# Affiche des messages d'erreur pour le champ mot-de-passe et re-mot-de-passe #}
-              <output class="form_erreur" role="alert">
-                {{ form_errors(resetPasswordForm.plainPassword.first) }}
-                {{ form_errors(resetPasswordForm.plainPassword.second) }}
-              </output>
-              <output role="alert" aria-live="assertive" id="message-erreur-valider"></output>
-              {# Bouton de validation #}
-              <section class="grid-x grid-padding-x align-right margin-top-2">
-                <div class="cell shrink">
-                  <input id="valider-formulaire-reset-password"
-                  class="button disabled-custom no-select focus-dark-light"
-                  type="button" value="✅ Valider">
-                </div>
-              </section>
-            </div>
-            {{ form_end(resetPasswordForm) }}
-          </div>
-        </div>
+                                            {# Affiche des messages d'erreur pour le champ mot-de-passe et re-mot-de-passe #}
+                                            <output class="form_erreur" role="alert">
+                                                {{ form_errors(resetPasswordForm.plainPassword.first) }}
+                                                {{ form_errors(resetPasswordForm.plainPassword.second) }}
+                                            </output>
+                                            <output role="alert" aria-live="assertive" id="message-erreur-valider"></output>
+                                            {# Bouton de validation #}
+                                            <section class="grid-x grid-padding-x align-right margin-top-2">
+                                                <div class="cell shrink">
+                                                    <input id="valider-formulaire-reset-password"
+                                                        class="button disabled-custom no-select focus-dark-light"
+                                                        type="button" value="✅ Valider">
+                                                    </div>
+                                                </section>
+                                            </div>
+                                            {{ form_end(resetPasswordForm) }}
+                                        </div>
+                                    </div>
 
-        {# Information #}
-        <div class="small-12 medium-6 large-6 cell">
-          <fieldset id="container-recommandation" class="fieldset">
-            {# WCAG 1.3.1 / 2.4.6 : ancien <h1> (dupliqué sur la page) remplacé par <h3> dans la hiérarchie #}
-            <h3 class="h4 claire-hand">Recommandations.</h3>
-            <p class="open-sans text-justify">Un mot de passe fort doit être suffisamment long, complexe et inattendu pour résister aux attaques par force brute et autres techniques de piratage.</p>
-            <p class="open-sans text-justify">Voici quelques conseils pour créer un mot de passe sécurisé :</span>
-            <ol class="open-sans text-justify">
-              <li><strong>Longueur</strong> : Un mot de passe doit avoir au moins 12 caractères. Plus il est long, plus il est sécurisé.</li>
-              <li><strong>Complexité</strong> : Inclure une combinaison de minuscules, majuscules, chiffres et caractères spéciaux.</li>
-              <li><strong>Inattendu</strong> : Évitez les mots de passe basés sur des informations personnelles facilement devinables (comme des noms, dates de naissance, etc.).</li>
-            </ol>
-          </fieldset>
-        </div>
-      </div>
-    </main>
+                                    {# Information #}
+                                    <div class="small-12 medium-6 large-6 cell">
+                                        <fieldset id="container-recommandation" class="fieldset">
+                                            {# WCAG 1.3.1 / 2.4.6 : ancien <h1> (dupliqué sur la page) remplacé par <h3> dans la hiérarchie #}
+                                            <h3 class="h4 claire-hand">Recommandations.</h3>
+                                            <p class="open-sans text-justify">Un mot de passe fort doit être suffisamment long, complexe et inattendu pour résister aux attaques par force brute et autres techniques de piratage.</p>
+                                            <p class="open-sans text-justify">Voici quelques conseils pour créer un mot de passe sécurisé :</span>
+                                            <ol class="open-sans text-justify">
+                                                <li><strong>Longueur</strong> : Un mot de passe doit avoir au moins 12 caractères. Plus il est long, plus il est sécurisé.</li>
+                                                <li><strong>Complexité</strong> : Inclure une combinaison de minuscules, majuscules, chiffres et caractères spéciaux.</li>
+                                                <li><strong>Inattendu</strong> : Évitez les mots de passe basés sur des informations personnelles facilement devinables (comme des noms, dates de naissance, etc.).</li>
+                                            </ol>
+                                        </fieldset>
+                                    </div>
+                                </div>
+                            </main>
 
-    {# Chargement de la section footer #}
-    {{ include('footer.html.twig') }}
-  </body>
-</html>
+                            {# Chargement de la section footer #}
+                            {{ include('footer.html.twig') }}
+                        </body>
+                    </html>

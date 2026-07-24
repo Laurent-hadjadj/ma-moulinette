@@ -3,160 +3,162 @@
 {% set bottom="footer-fixed" %}
 <!DOCTYPE html>
 <!--
-.. __  __             __  __             _ _            _   _
-  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
-  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
-  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
-  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+.__  __             __  __             _ _            _   _
+|  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+| |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+| |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+|_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
 
-  Laurent HADJADJ
-  https://github.com/Laurent-hadjadj/ma-moulinette
-  © 2024 - CC BY-SA-NC 4.0
+Laurent HADJADJ
+https://github.com/Laurent-hadjadj/ma-moulinette
+© 2024 - CC BY-SA-NC 4.0
 -->
 <html	lang="fr">
-  {# Chargement de la section HEAD #}
-  <head>
-    <title>{{ title }}</title>
-    {{ include('head.html.twig') }}
-    {# Chargement des assets JS et CSS #}
-    {% block importmap %}{{ importmap('activity') }}{% endblock %}
+    {# Chargement de la section HEAD #}
+    <head>
+        <title>{{ title }}</title>
+        {{ include('head.html.twig') }}
+        {# Chargement des assets JS et CSS #}
+        {% block importmap %}
+            {{ importmap('activity') }}
+        {% endblock %}
 
-  </head>
+    </head>
 
-  <body>
-    {# Chargement de la section header #}
-    {{ include('header.html.twig') }}
-    <br>
-    <header class="grid-container margin-top-1">
-      <nav id="fil-ariane" aria-label="vous êtes ici :">
-        <ol class="claire-hand breadcrumbs">
-          <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
-          <li><span class="show-for-sr">vous êtes ici :</span>Activité</li>
-        </ol>
-      </nav>
-    </header>
+    <body>
+        {# Chargement de la section header #}
+        {{ include('header.html.twig') }}
+        <br>
+        <header class="grid-container margin-top-1">
+            <nav id="fil-ariane" aria-label="vous êtes ici :">
+                <ol class="claire-hand breadcrumbs">
+                    <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+                    <li><span class="show-for-sr">vous êtes ici :</span>Activité</li>
+                </ol>
+            </nav>
+        </header>
 
-    {# Message d'information php #}
-    {{ include('_message.html.twig') }}
+        {# Message d'information php #}
+        {{ include('_message.html.twig') }}
 
-    <main class="grid-container">
-      <h1 class="h2 claire-hand">Suivi des analyses SonarQube</h1>
-      <h2 class="claire-hand h4">Tableau de bord consolidé. </h2>
+        <main class="grid-container">
+            <h1 class="h2 claire-hand">Suivi des analyses SonarQube</h1>
+            <h2 class="claire-hand h4">Tableau de bord consolidé. </h2>
 
-      <p id="js-date-enregistrement" class="h4 open-sans">
-          <strong>Dernière date d'enregistrement : </strong> {{data[0]['date_enregistrement']}}
-      </p>
+            <p id="js-date-enregistrement" class="h4 open-sans">
+                <strong>Dernière date d'enregistrement : </strong> {{data[0]['date_enregistrement']}}
+            </p>
 
-      <div class="grid-x grid-margin-x align-right margin-top-2">
-        <div class="cell shrink">
-          <button id="bouton-activity-refresh"
-                  class="button open-sans focus-light js-activity-refresh"
-                  type="button"
-                  aria-label="Recalcule les statistiques d'activité."><span aria-hidden="true">🔄</span>
-                  <span class="show-for-medium open-sans color-blanc">&nbsp;Recalculer les statistiques.</span>
-                  <span class="show-for-small-only open-sans color-blanc">&nbsp;Recalculer.</span>
-            </button>
-          </div>
+            <div class="grid-x grid-margin-x align-right margin-top-2">
+                <div class="cell shrink">
+                    <button id="bouton-activity-refresh"
+                        class="button open-sans focus-dark-light js-activity-refresh"
+                        type="button"
+                        aria-label="Recalcule les statistiques d'activité."><span aria-hidden="true">🔄</span>
+                        <span class="show-for-medium open-sans color-blanc">&nbsp;Recalculer les statistiques.</span>
+                        <span class="show-for-small-only open-sans color-blanc">&nbsp;Recalculer.</span>
+                    </button>
+                </div>
+            </div>
+            <div class="spinner js-spinner" style="display: none;"></div>
         </div>
-          <div class="spinner js-spinner" style="display: none;"></div>
-        </div>
-      </div>
+    </div>
 
-      <table class="hover">
+    <table class="hover">
         <thead>
-          <tr>
-            <th class="text-center open-sans">
-              <div class="tool-tip-activity"><span class="tool-tip-activity-text-top">L'année des analyses.</span>Année</div>
-            </th>
-            <th class="text-center open-sans">
-              <span class="tool-tip-activity"><span class="tool-tip-activity-text-top">Le nombre de jours depuis la première analyse.</span>Jour</span>
-            </th>
-            <th class="text-center open-sans">
-              <span class="tool-tip-activity">Analyse
-              <span class="tool-tip-activity-text-top">Le nombre total d'analyses.</span></span>
-            </th>
-            <th class="text-center open-sans">
-              <span class="tool-tip-activity">Moyenne
-              <span class="tool-tip-activity-text-top">La moyenne des analyses par jour.</span></span>
-            </th>
-            <th class="text-center open-sans">
-              <span class="tool-tip-activity">Succès
-              <span class="tool-tip-activity-text-top">Le nombre d'analyse réussi.</span></span>
-            </th>
-            <th class="text-center open-sans">
-              <span class="tool-tip-activity">Échec
-              <span class="tool-tip-activity-text-top">Le nombre d'analyse échoué.</span></span>
-            </th>
-            <th class="text-center open-sans">
-              <span class="tool-tip-activity">Taux de réussite
-              <span class="tool-tip-activity-text-top">Le pourcentage de réussite.</span></span>
-            </th>
-            <th class="text-center open-sans">
-              <span class="tool-tip-activity">Temp Max
-              <span class="tool-tip-activity-text-top">Le temps maximum pour une analyse.</span></span>
-            </th>
-          </tr>
-        </thead>
-        <tbody id="js-tableau-stats" class="text-center open-sans">
-          {% for item in data %}
             <tr>
-              <td>{{ item.year }}</td>
-              <td>{{ item.day }}</td>
-              <td>{{ item.analyse }}</td>
-              <td>{{ item.analyse_average }}</td>
-              <td>{{ item.success }}</td>
-              <td>{{ item.failed }}</td>
-              <td>{{ item.success_rate }} %</td>
-              <td>{{ item.max_time }}</td>
-            </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+                <th class="text-center open-sans">
+                    <div class="tool-tip-activity"><span class="tool-tip-activity-text-top">L'année des analyses.</span>Année</div>
+                </th>
+                <th class="text-center open-sans">
+                    <span class="tool-tip-activity"><span class="tool-tip-activity-text-top">Le nombre de jours depuis la première analyse.</span>Jour</span>
+                </th>
+                <th class="text-center open-sans">
+                    <span class="tool-tip-activity">Analyse
+                        <span class="tool-tip-activity-text-top">Le nombre total d'analyses.</span></span>
+                    </th>
+                    <th class="text-center open-sans">
+                        <span class="tool-tip-activity">Moyenne
+                            <span class="tool-tip-activity-text-top">La moyenne des analyses par jour.</span></span>
+                        </th>
+                        <th class="text-center open-sans">
+                            <span class="tool-tip-activity">Succès
+                                <span class="tool-tip-activity-text-top">Le nombre d'analyse réussi.</span></span>
+                            </th>
+                            <th class="text-center open-sans">
+                                <span class="tool-tip-activity">Échec
+                                    <span class="tool-tip-activity-text-top">Le nombre d'analyse échoué.</span></span>
+                                </th>
+                                <th class="text-center open-sans">
+                                    <span class="tool-tip-activity">Taux de réussite
+                                        <span class="tool-tip-activity-text-top">Le pourcentage de réussite.</span></span>
+                                    </th>
+                                    <th class="text-center open-sans">
+                                        <span class="tool-tip-activity">Temp Max
+                                            <span class="tool-tip-activity-text-top">Le temps maximum pour une analyse.</span></span>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="js-tableau-stats" class="text-center open-sans">
+                                    {% for item in data %}
+                                        <tr>
+                                            <td>{{ item.year }}</td>
+                                            <td>{{ item.day }}</td>
+                                            <td>{{ item.analyse }}</td>
+                                            <td>{{ item.analyse_average }}</td>
+                                            <td>{{ item.success }}</td>
+                                            <td>{{ item.failed }}</td>
+                                            <td>{{ item.success_rate }} %</td>
+                                            <td>{{ item.max_time }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
 
-      <div class="grid-x grid-margin-x margin-top-2">
-        <div class="cell shrink">
-          <button id="bouton-courbe-analyse"
-                  class="button open-sans focus-light js-show-graph"
-                  type="button"
-                  data-type="line" data-source="analyse"
-                  aria-label="Tracer la courbe des analyses par jour.">
-                  <span aria-hidden="true">📈</span>
-                  <span class="show-for-medium open-sans color-blanc">&nbsp;Courbes des analyses</span>
-                  <span class="show-for-small-only open-sans color-blanc">&nbsp;Analyses</span>
-            </button>
-        </div>
-        <div class="cell shrink">
-            <button id="bouton-courbe-projet"
-                    class="button open-sans focus-light js-show-graph"
-                    type="button"
-                    data-type="line" data-source="projet"
-                    aria-label="Tracer la courbe des projets par jour">
-                    <span aria-hidden="true">📊</span>
-                    <span class="show-for-medium open-sans color-blanc">&nbsp;Courbes des projets</span>
-                    <span class="show-for-small-only open-sans color-blanc">&nbsp;Projets</span>
-            </button>
-        </div>
-        <div class="cell shrink">
-          <button id="bouton-courbe-analyse-projet"
-                  class="button open-sans focus-light js-show-graph"
-                  type="button"
-                  data-type="line" data-source="projet_analyse"
-                  aria-label="Tracer la courbe des analyses et des projets par jour">
-                  <span aria-hidden="true">📉</span>
-                    <span class="show-for-medium open-sans color-blanc">&nbsp;Analyses | Projets</span>
-                    <span class="show-for-small-only open-sans color-blanc">&nbsp;Comparaison</span>
-          </button>
-        </div>
-      </div>
+                            <div class="grid-x grid-margin-x margin-top-2">
+                                <div class="cell shrink">
+                                    <button id="bouton-courbe-analyse"
+                                        class="button open-sans focus-dark-light js-show-graph"
+                                        type="button"
+                                        data-type="line" data-source="analyse"
+                                        aria-label="Tracer la courbe des analyses par jour.">
+                                        <span aria-hidden="true">📈</span>
+                                        <span class="show-for-medium open-sans color-blanc">&nbsp;Courbes des analyses</span>
+                                        <span class="show-for-small-only open-sans color-blanc">&nbsp;Analyses</span>
+                                    </button>
+                                </div>
+                                <div class="cell shrink">
+                                    <button id="bouton-courbe-projet"
+                                        class="button open-sans focus-dark-light js-show-graph"
+                                        type="button"
+                                        data-type="line" data-source="projet"
+                                        aria-label="Tracer la courbe des projets par jour">
+                                        <span aria-hidden="true">📊</span>
+                                        <span class="show-for-medium open-sans color-blanc">&nbsp;Courbes des projets</span>
+                                        <span class="show-for-small-only open-sans color-blanc">&nbsp;Projets</span>
+                                    </button>
+                                </div>
+                                <div class="cell shrink">
+                                    <button id="bouton-courbe-analyse-projet"
+                                        class="button open-sans focus-dark-light js-show-graph"
+                                        type="button"
+                                        data-type="line" data-source="projet_analyse"
+                                        aria-label="Tracer la courbe des analyses et des projets par jour">
+                                        <span aria-hidden="true">📉</span>
+                                        <span class="show-for-medium open-sans color-blanc">&nbsp;Analyses | Projets</span>
+                                        <span class="show-for-small-only open-sans color-blanc">&nbsp;Comparaison</span>
+                                    </button>
+                                </div>
+                            </div>
 
 
-      <div class="float-center graphique-langage-container">
-        <canvas id="graphique-langage" aria-label="Graphique des analyses et projets par jour."></canvas>
-      </div>
+                            <div class="float-center graphique-langage-container">
+                                <canvas id="graphique-langage" aria-label="Graphique des analyses et projets par jour."></canvas>
+                            </div>
 
-    </main>
+                        </main>
 
-    {# Chargement de la section footer #}
-    {{ include('footer.html.twig') }}
-  </body>
-</html>
+                        {# Chargement de la section footer #}
+                        {{ include('footer.html.twig') }}
+                    </body>
+                </html>

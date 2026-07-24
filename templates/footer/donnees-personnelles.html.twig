@@ -3,198 +3,200 @@
 {% set bottom="footer-fixed" %}
 <!DOCTYPE html>
 <!--
-.. __  __             __  __             _ _            _   _
-  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
-  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
-  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
-  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+.__  __             __  __             _ _            _   _
+|  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+| |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+| |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+|_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
 
-  Laurent HADJADJ
-  https://github.com/Laurent-hadjadj/ma-moulinette
-  © 2024 - CC BY-SA-NC 4.0
+Laurent HADJADJ
+https://github.com/Laurent-hadjadj/ma-moulinette
+© 2024 - CC BY-SA-NC 4.0
 -->
 <html lang="fr">
-  {# Chargement de la section HEAD #}
-  <head>
-    <title>{{ title }}</title>
-    {{ include('head.html.twig') }}
-    {# Chargement du code javascript #}
-    {% block importmap %}{{ importmap('footer-donnees-personnelles') }}{% endblock %}
-  </head>
+    {# Chargement de la section HEAD #}
+    <head>
+        <title>{{ title }}</title>
+        {{ include('head.html.twig') }}
+        {# Chargement du code javascript #}
+        {% block importmap %}
+            {{ importmap('footer-donnees-personnelles') }}
+        {% endblock %}
+    </head>
 
-  <body>
-    {# Chargement de la section header #}
-    {{ include('header.html.twig') }}
-    <br>
-
-    <header class="grid-container margin-top-1">
-      <nav aria-label="Fil d'Ariane, vous êtes ici">
-        <ol class="claire-hand breadcrumbs">
-          <li>
-            <a href="{{ path('accueil') }}">Accueil</a>
-          </li>
-          <li aria-current="page">Données personnelles</li>
-        </ol>
-      </nav>
-    </header>
-    <main id="main-content" class="grid-container grid-x">
-      <h2 class="h2 claire-hand">Données personnelles et cookies</h2>
-      <hr>
-      <p class="open-sans text-justify">{{marque_entreprise_long}} s’engage à ce que la collecte et le traitement de données personnelles effectués sur {{urlSite}} soient conformes au règlement général sur la protection des données (RGPD) et à la loi Informatique et Libertés.</p>
-
-      <section class="cell">
-        <h3 class="h4 claire-hand">Exercer vos droits</h3>
-        <p id="editeur" class="open-sans text-justify">Ce site est édité par
-          {{ editeur| default("Ma Moulinette, l'équipe en charge des développements de l'application Ma-Moulinette.") }}.<br>
-        </p>
-      </section>
-
-      <section class="cell">
-        <h3 class="h4 claire-hand">À propos des cookies</h3>
-
-        <h3 class="h5 claire-hand">Qu’est-ce qu’un « cookie » ?</h3>
-        <p class="open-sans text-justify">
-          Inventé en
-          <strong>1994</strong>, le cookie est un texte constitué de paires clé-valeur échangé par le protocole de communication
-          <strong>HTTP</strong>. Créé par un serveur HTTP, le cookie est envoyé au client HTTP, i.e. déposé sur votre terminal (ordinateur, tablette, téléphone...) pour être enregistré un temps spécifié durant lequel il est renvoyé tel quel au serveur à chaque requête. La durée d'enregistrement peut s'étendre de quelques minutes à quelques années.
-        </p>
-        <p class="open-sans text-justify">
-          Les cookies ont de multiples utilités&nbsp;: par exemple ils mémorisent vos choix de personnalisation, des informations pour vous éviter de les ressaisir, un identifiant (anonyme) pour suivre votre navigation à des fins statistiques et d’amélioration d’un service, le contenu de votre panier d’achat dans le cas d’un site marchand…
-        </p>
-
-        <h3 class="h5 claire-hand">Cadre légale</h3>
-        <h4 class="h6 claire-hand">Directive 2002/58 sur la vie privée.</h4>
-
-        <p class="open-sans text-justify">
-          <span class="lead">La directive 2002/58 vie privée et communications électroniques</span>, contient des règles sur l'utilisation des cookies. En particulier, <strong>l'article 5, paragraphe 3</strong> de cette directive exige que le stockage des données (comme les cookies) sur l'ordinateur de l'utilisateur puisse seulement être fait si :</p>
-
-        <ul class="open-sans">
-          <li>l'utilisateur est informé de la façon dont les données sont utilisées,</li>
-          <li>il est donné à l'utilisateur la possibilité de refuser cette opération de stockage. Cependant, cet article statue aussi que le stockage de données pour raisons techniques est exempté de cette loi.</li>
-        </ul>
-
-        <h4 class="h6 claire-hand">Directive 2009/136/CE.</h4>
-
-        <p class="open-sans text-justify">
-          <span class="lead">La directive 2009/136/CE datée du 25 novembre 2009</span>
-          indique que le «&nbsp;stockage d'informations, ou l'obtention de l'accès à des informations déjà stockées, dans l'équipement terminal d'un abonné ou d'un utilisateur n'est permis qu'à condition que l'abonné ou l'utilisateur ait donné son accord, après avoir reçu, dans le respect de la directive 95/46/CE, une information claire et complète, entre autres sur les finalités du traitement&nbsp;».<br>
-          La nouvelle directive renforce donc les obligations préalables au placement de cookies sur l'ordinateur de l'internaute.</p>
-
-        <h4 class="h6 claire-hand">Exceptions.</h4>
-
-        <p class="open-sans text-justify">Parmi les traceurs non soumis au consentement, on peut évoquer&nbsp;:</p>
-        <ul class="open-sans">
-          <li>les traceurs conservant le choix exprimé par les utilisateurs sur le dépôt de traceurs&nbsp;;</li>
-          <li>les traceurs destinés à l’authentification auprès d’un service, y compris ceux visant à assurer la sécurité du mécanisme d’authentification, par exemple en limitant les tentatives d’accès robotisées ou inattendues&nbsp;;</li>
-          <li>les traceurs destinés à garder en mémoire le contenu d’un panier d’achat sur un site marchand ou à facturer, à l’utilisateur, le(s) produit(s) et/ou service(s) acheté(s)&nbsp;;</li>
-          <li>les traceurs de personnalisation de l'interface utilisateur (par exemple, pour le choix de la langue ou de la présentation d’un service), lorsqu’une telle personnalisation constitue un élément intrinsèque et attendu du service&nbsp;;</li>
-          <li>les traceurs permettant l'équilibrage de la charge des équipements concourant à un service de communication&nbsp;;</li>
-          <li>les traceurs permettant aux sites payants de limiter l’accès gratuit à un échantillon de contenu demandé par les utilisateurs (quantité prédéfinie et/ou sur une période limitée)&nbsp;;</li>
-          <li>certains traceurs de mesure d’audience dès lors qu’ils respectent certaines conditions.</li>
-        </ul>
-      </section>
-
-      <section class="cell">
-        <h3 class="h5 claire-hand">Les cookies et autres traceurs utilisés sur Ma-Moulinette.</h3>
-        <p class="open-sans text-justify">
-          <span class="lead">Sur {{urlSite}}</span>, nous utilisons différents cookies pour améliorer votre expérience et nos services.
-        </p>
-        <h4 class="h6 claire-hand">Cookies strictement nécessaires au fonctionnement du site.</h4>
-        <p class="open-sans text-justify">
-          Ces cookies permettent au site de fonctionner correctement et de manière optimale. Conformément à la loi, ces cookies étant nécessaires au bon fonctionnement du site, ils ne sont pas paramétrables sur notre site. Si toutefois vous souhaitiez bloquer ces cookies, il reste possible de le faire depuis les paramètres de votre navigateur, cependant votre expérience utilisateur risquerait alors d’être dégradée. Le tableau ci-dessous détaille les cookies de ce type qui peuvent être déposés, avec leur nom technique.
-        </p>
-
-        <table>
-          <caption class="h4 open-sans">Cookies techniques</caption>
-          <thead>
-            <tr>
-              <th scope="col" id="data1">Cookie lié au service&nbsp;:</th>
-              <th scope="col" id="data2">Nom technique du cookie</th>
-              <th scope="col" id="data3">Finalité</th>
-              <th scope="col" id="data4">Durée de conservation</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td headers="data1">Browser Update</td>
-              <td headers="data2">browserupdateorg</td>
-              <td headers="data3">Sauvegarde vos choix en matière de rappel sur la mise à jour de votre navigateur.</td>
-              <td headers="data4">7 jours</td>
-            </tr>
-          </tbody>
-        </table>
+    <body>
+        {# Chargement de la section header #}
+        {{ include('header.html.twig') }}
         <br>
-        <table>
-          <caption class="h4 open-sans">Cookie de mesures d'audience.</caption>
-          <thead>
-            <tr>
-              <th scope="col" id="data5">Cookie lié au service&nbsp;:</th>
-              <th scope="col" id="data6">Nom technique du cookie</th>
-              <th scope="col" id="data7">Finalité</th>
-              <th scope="col" id="data8">Durée de conservation</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </section>
 
-      <section class="cell">
-        <h3 class="h5 claire-hand">Cookies tiers, destinés à fournir des contenus du site.</h3>
-        <p class="open-sans text-justify">
-          <span class="lead">Ma-moulinette</span> ne s’appuie sur aucun des services proposés par des sites tiers.
-        </p>
-      </section>
+        <header class="grid-container margin-top-1">
+            <nav aria-label="Fil d'Ariane, vous êtes ici">
+                <ol class="claire-hand breadcrumbs">
+                    <li>
+                        <a href="{{ path('accueil') }}">Accueil</a>
+                    </li>
+                    <li aria-current="page">Données personnelles</li>
+                </ol>
+            </nav>
+        </header>
+        <main id="main-content" class="grid-container grid-x">
+            <h2 class="h2 claire-hand">Données personnelles et cookies</h2>
+            <hr>
+            <p class="open-sans text-justify">{{marque_entreprise_long}} s’engage à ce que la collecte et le traitement de données personnelles effectués sur {{urlSite}} soient conformes au règlement général sur la protection des données (RGPD) et à la loi Informatique et Libertés.</p>
 
-      <section class="cell">
-        <h3 class="h5 claire-hand">Moyens d’opposition au dépôt des cookies via votre navigateur</h3>
-        <p class="open-sans text-justify">
-          Vous pouvez à tout moment choisir de désactiver l’ensemble des cookies, même ceux nécessaires au fonctionnement du site. Cependant votre expérience utilisateur risque d’être dégradée.
-        </p>
+            <section class="cell">
+                <h3 class="h4 claire-hand">Exercer vos droits</h3>
+                <p id="editeur" class="open-sans text-justify">Ce site est édité par
+                    {{ editeur| default("Ma Moulinette, l'équipe en charge des développements de l'application Ma-Moulinette.") }}.<br>
+                </p>
+            </section>
 
-        <p class="open-sans text-justify">
-          Voici les procédures pour bloquer toute création de cookies à partir des options de votre navigateur&nbsp;:
-        </p>
+            <section class="cell">
+                <h3 class="h4 claire-hand">À propos des cookies</h3>
 
-        <ul class="open-sans">
-          <li>
-            <a class="source-link" href="https://support.mozilla.org/fr/kb/activer-desactiver-cookies" title="Firefox - Lien externe">Firefox
-            </a>
-          </li>
-          <li>
-            <a class="source-link" href="https://support.google.com/chrome/answer/95647?hl=fr" title="Chrome - Lien externe">Chrome
-            </a>
-          </li>
-          <li>
-            <a class="source-link" href="http://windows.microsoft.com/fr-FR/internet-explorer/delete-manage-cookies" title="Edge - Lien externe">Explorer
-            </a>
-          </li>
-          <li>
-            <a class="source-link" href="http://support.apple.com/kb/PH17191?viewlocale=fr_FR" title="Safari - Lien externe">Safari
-            </a>
-          </li>
-          <li>
-            <a class="source-link" href="http://help.opera.com/Windows/10.20/fr/cookies.html" title="Opera - Lien externe">Opera
-            </a>
-          </li>
-        </ul>
+                <h3 class="h5 claire-hand">Qu’est-ce qu’un « cookie » ?</h3>
+                <p class="open-sans text-justify">
+                    Inventé en
+                    <strong>1994</strong>, le cookie est un texte constitué de paires clé-valeur échangé par le protocole de communication
+                    <strong>HTTP</strong>. Créé par un serveur HTTP, le cookie est envoyé au client HTTP, i.e. déposé sur votre terminal (ordinateur, tablette, téléphone...) pour être enregistré un temps spécifié durant lequel il est renvoyé tel quel au serveur à chaque requête. La durée d'enregistrement peut s'étendre de quelques minutes à quelques années.
+                </p>
+                <p class="open-sans text-justify">
+                    Les cookies ont de multiples utilités&nbsp;: par exemple ils mémorisent vos choix de personnalisation, des informations pour vous éviter de les ressaisir, un identifiant (anonyme) pour suivre votre navigation à des fins statistiques et d’amélioration d’un service, le contenu de votre panier d’achat dans le cas d’un site marchand…
+                </p>
 
-      </section>
+                <h3 class="h5 claire-hand">Cadre légale</h3>
+                <h4 class="h6 claire-hand">Directive 2002/58 sur la vie privée.</h4>
 
-      <section>
-      <h3 class="h5 claire-hand">Liens utiles</h3>
+                <p class="open-sans text-justify">
+                    <span class="lead">La directive 2002/58 vie privée et communications électroniques</span>, contient des règles sur l'utilisation des cookies. En particulier, <strong>l'article 5, paragraphe 3</strong> de cette directive exige que le stockage des données (comme les cookies) sur l'ordinateur de l'utilisateur puisse seulement être fait si :</p>
 
-      <ul>
-        <li><a class="source-link" href="https://www.cnil.fr/fr/cookies-et-autres-traceurs">Cookies et autres traceurs.</a></li>
-        <li><a class="source-link" href="https://www.cnil.fr/sites/cnil/files/atoms/files/recommandation-cookies-et-autres-traceurs.pdf">Recommandations sur les Cookies et autres traceurs.</a></li>
-        <li><a class="source-link" href="https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre2#Article5">RGPD - Article 5 - Principes relatifs au traitement des données à caractère personnel.</a></li>
-        <li><a class="source-link" href="https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre2#Article6">RGPD - Article 6 - Licéité du traitement.</a></li>
-        <li><a class="source-link" href="https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre2#Article7">RGPD - Article 7 - Conditions applicables au consentement.</a></li>
-        <li><a class="source-link" href="https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre2#Article11">RGPD - Article 11 - Traitement ne nécessitant pas l'identification.</a></li>
-        <br>
-      </section>
-    </main>
+                    <ul class="open-sans">
+                        <li>l'utilisateur est informé de la façon dont les données sont utilisées,</li>
+                        <li>il est donné à l'utilisateur la possibilité de refuser cette opération de stockage. Cependant, cet article statue aussi que le stockage de données pour raisons techniques est exempté de cette loi.</li>
+                    </ul>
 
-    {# Chargement de la section footer #}
-    {{ include('footer.html.twig') }}
-  </body>
-</html>
+                    <h4 class="h6 claire-hand">Directive 2009/136/CE.</h4>
+
+                    <p class="open-sans text-justify">
+                        <span class="lead">La directive 2009/136/CE datée du 25 novembre 2009</span>
+                        indique que le «&nbsp;stockage d'informations, ou l'obtention de l'accès à des informations déjà stockées, dans l'équipement terminal d'un abonné ou d'un utilisateur n'est permis qu'à condition que l'abonné ou l'utilisateur ait donné son accord, après avoir reçu, dans le respect de la directive 95/46/CE, une information claire et complète, entre autres sur les finalités du traitement&nbsp;».<br>
+                    La nouvelle directive renforce donc les obligations préalables au placement de cookies sur l'ordinateur de l'internaute.</p>
+
+                    <h4 class="h6 claire-hand">Exceptions.</h4>
+
+                    <p class="open-sans text-justify">Parmi les traceurs non soumis au consentement, on peut évoquer&nbsp;:</p>
+                    <ul class="open-sans">
+                        <li>les traceurs conservant le choix exprimé par les utilisateurs sur le dépôt de traceurs&nbsp;;</li>
+                        <li>les traceurs destinés à l’authentification auprès d’un service, y compris ceux visant à assurer la sécurité du mécanisme d’authentification, par exemple en limitant les tentatives d’accès robotisées ou inattendues&nbsp;;</li>
+                        <li>les traceurs destinés à garder en mémoire le contenu d’un panier d’achat sur un site marchand ou à facturer, à l’utilisateur, le(s) produit(s) et/ou service(s) acheté(s)&nbsp;;</li>
+                        <li>les traceurs de personnalisation de l'interface utilisateur (par exemple, pour le choix de la langue ou de la présentation d’un service), lorsqu’une telle personnalisation constitue un élément intrinsèque et attendu du service&nbsp;;</li>
+                        <li>les traceurs permettant l'équilibrage de la charge des équipements concourant à un service de communication&nbsp;;</li>
+                        <li>les traceurs permettant aux sites payants de limiter l’accès gratuit à un échantillon de contenu demandé par les utilisateurs (quantité prédéfinie et/ou sur une période limitée)&nbsp;;</li>
+                        <li>certains traceurs de mesure d’audience dès lors qu’ils respectent certaines conditions.</li>
+                    </ul>
+                </section>
+
+                <section class="cell">
+                    <h3 class="h5 claire-hand">Les cookies et autres traceurs utilisés sur Ma-Moulinette.</h3>
+                    <p class="open-sans text-justify">
+                        <span class="lead">Sur {{urlSite}}</span>, nous utilisons différents cookies pour améliorer votre expérience et nos services.
+                    </p>
+                    <h4 class="h6 claire-hand">Cookies strictement nécessaires au fonctionnement du site.</h4>
+                    <p class="open-sans text-justify">
+                        Ces cookies permettent au site de fonctionner correctement et de manière optimale. Conformément à la loi, ces cookies étant nécessaires au bon fonctionnement du site, ils ne sont pas paramétrables sur notre site. Si toutefois vous souhaitiez bloquer ces cookies, il reste possible de le faire depuis les paramètres de votre navigateur, cependant votre expérience utilisateur risquerait alors d’être dégradée. Le tableau ci-dessous détaille les cookies de ce type qui peuvent être déposés, avec leur nom technique.
+                    </p>
+
+                    <table>
+                        <caption class="h4 open-sans">Cookies techniques</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col" id="data1">Cookie lié au service&nbsp;:</th>
+                                <th scope="col" id="data2">Nom technique du cookie</th>
+                                <th scope="col" id="data3">Finalité</th>
+                                <th scope="col" id="data4">Durée de conservation</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td headers="data1">Browser Update</td>
+                                <td headers="data2">browserupdateorg</td>
+                                <td headers="data3">Sauvegarde vos choix en matière de rappel sur la mise à jour de votre navigateur.</td>
+                                <td headers="data4">7 jours</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <br>
+                    <table>
+                        <caption class="h4 open-sans">Cookie de mesures d'audience.</caption>
+                        <thead>
+                            <tr>
+                                <th scope="col" id="data5">Cookie lié au service&nbsp;:</th>
+                                <th scope="col" id="data6">Nom technique du cookie</th>
+                                <th scope="col" id="data7">Finalité</th>
+                                <th scope="col" id="data8">Durée de conservation</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </section>
+
+                <section class="cell">
+                    <h3 class="h5 claire-hand">Cookies tiers, destinés à fournir des contenus du site.</h3>
+                    <p class="open-sans text-justify">
+                        <span class="lead">Ma-moulinette</span> ne s’appuie sur aucun des services proposés par des sites tiers.
+                    </p>
+                </section>
+
+                <section class="cell">
+                    <h3 class="h5 claire-hand">Moyens d’opposition au dépôt des cookies via votre navigateur</h3>
+                    <p class="open-sans text-justify">
+                        Vous pouvez à tout moment choisir de désactiver l’ensemble des cookies, même ceux nécessaires au fonctionnement du site. Cependant votre expérience utilisateur risque d’être dégradée.
+                    </p>
+
+                    <p class="open-sans text-justify">
+                        Voici les procédures pour bloquer toute création de cookies à partir des options de votre navigateur&nbsp;:
+                    </p>
+
+                    <ul class="open-sans">
+                        <li>
+                            <a class="source-link" href="https://support.mozilla.org/fr/kb/activer-desactiver-cookies" title="Firefox - Lien externe">Firefox
+                            </a>
+                        </li>
+                        <li>
+                            <a class="source-link" href="https://support.google.com/chrome/answer/95647?hl=fr" title="Chrome - Lien externe">Chrome
+                            </a>
+                        </li>
+                        <li>
+                            <a class="source-link" href="http://windows.microsoft.com/fr-FR/internet-explorer/delete-manage-cookies" title="Edge - Lien externe">Explorer
+                            </a>
+                        </li>
+                        <li>
+                            <a class="source-link" href="http://support.apple.com/kb/PH17191?viewlocale=fr_FR" title="Safari - Lien externe">Safari
+                            </a>
+                        </li>
+                        <li>
+                            <a class="source-link" href="http://help.opera.com/Windows/10.20/fr/cookies.html" title="Opera - Lien externe">Opera
+                            </a>
+                        </li>
+                    </ul>
+
+                </section>
+
+                <section>
+                    <h3 class="h5 claire-hand">Liens utiles</h3>
+
+                    <ul>
+                        <li><a class="source-link" href="https://www.cnil.fr/fr/cookies-et-autres-traceurs">Cookies et autres traceurs.</a></li>
+                        <li><a class="source-link" href="https://www.cnil.fr/sites/cnil/files/atoms/files/recommandation-cookies-et-autres-traceurs.pdf">Recommandations sur les Cookies et autres traceurs.</a></li>
+                        <li><a class="source-link" href="https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre2#Article5">RGPD - Article 5 - Principes relatifs au traitement des données à caractère personnel.</a></li>
+                        <li><a class="source-link" href="https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre2#Article6">RGPD - Article 6 - Licéité du traitement.</a></li>
+                        <li><a class="source-link" href="https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre2#Article7">RGPD - Article 7 - Conditions applicables au consentement.</a></li>
+                        <li><a class="source-link" href="https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre2#Article11">RGPD - Article 11 - Traitement ne nécessitant pas l'identification.</a></li>
+                        <br>
+                    </section>
+                </main>
+
+                {# Chargement de la section footer #}
+                {{ include('footer.html.twig') }}
+            </body>
+        </html>

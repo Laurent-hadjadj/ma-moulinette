@@ -34,7 +34,7 @@ appel SonarQube : c'est de la documentation déjà chargée par le contrôleur. 
 
 <!DOCTYPE html>
 <!--
-.. __  __             __  __             _ _            _   _
+.__  __             __  __             _ _            _   _
 |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
 | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
 | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
@@ -45,562 +45,562 @@ https://github.com/Laurent-hadjadj/ma-moulinette
 © 2024 - CC BY-SA-NC 4.0
 -->
 <html lang="fr">
-{# Chargement de la section HEAD #}
+    {# Chargement de la section HEAD #}
 
-<head>
-    <title>{{ title }}</title>
-    {{ include('head.html.twig') }}
-    {% block importmap %}
-    {{ importmap('owasp') }}
-    {% endblock %}
-</head>
+    <head>
+        <title>{{ title }}</title>
+        {{ include('head.html.twig') }}
+        {% block importmap %}
+            {{ importmap('owasp') }}
+        {% endblock %}
+    </head>
 
-<body>
-    {# Chargement de la section header #}
-    {{ include('header.html.twig') }}
+    <body>
+        {# Chargement de la section header #}
+        {{ include('header.html.twig') }}
 
-    <header class="grid-container margin-top-1">
-        <nav aria-label="Fil d'Ariane, vous êtes ici">
-            <ol class="claire-hand breadcrumbs">
-                <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
-                <li><a href="{{ path('projet', {}) }}">Projet</a></li>
-                <li><a href="{{ path('owasp', {}) }}">Owasp</a></li>
-                <li aria-current="page">{{application}}-{{application_version}}</li>
-            </ol>
-        </nav>
-    </header>
-
-    {# Message d'information php #}
-    {{ include('_message.html.twig') }}
-
-    <main class="grid-container">
-        <h2 class="h3 claire-hand"><span aria-hidden="true">🛡️</span> Vulnérabilités OWASP et points chauds.</h2>
-        <div id="js-serveur" class="cell" data-serveur="{{ serveur|default('none') }}">
-            <p class="open-sans font-size-11">
-                <span aria-hidden="true">📁</span> Application :
-                <span id="js-application" class="color-noir"></span>&nbsp;
-                <span id="js-application-version" class="color-noir"></span>
-            </p>
-        </div>
-
-        <div class="callout callout-information cell">
-            <div class="callout-body">
-                <p class="open-sans">
-                    <span aria-hidden="true">ℹ️</span>
-                    Les compteurs de ce tableau viennent normalement de la classification officielle
-                    OWASP calculée par SonarQube lui-même (<strong>« OWASP (facet) »</strong>).<br>
-                    Quand SonarQube ne classe aucune faille dans un référentiel donné,
-                    l'application recherche en secours les failles marquées par un tag
-                    <code>owasp-aXX</code> (<strong>« OWASP (tag) »</strong>) — un marquage manuel ou
-                    posé par un scanner, moins fiable que la classification officielle.
-                    <br>La source utilisée est indiquée à côté du référentiel actif, sous le titre.
-                    Si les deux sont vides, c'est que SonarQube ne rattache aucune faille de ce projet à ce référentiel
-                    OWASP (par exemple parce qu'il les classe uniquement par CWE).
-                </p>
-            </div>
-        </div>
-
-        <header>
-            <div class="cell shrink">
-                <button id="bouton-choisir-owasp-2017" class="button open-sans focus-light {{referential_2017}}"
-                    type="button"><span aria-hidden="true">🗂️</span> OWASP 2017
-                </button>
-                <button id="bouton-choisir-owasp-2021" class="button open-sans focus-light {{referential_2021}}"
-                    type="button"><span aria-hidden="true">🗂️</span> OWASP 2021
-                </button>
-                <button id="bouton-choisir-owasp-2025" class="button open-sans focus-light {{referential_2025}}"
-                    type="button"><span aria-hidden="true">🗂️</span> OWASP 2025
-                </button>
-                {# Bouton Export PDF — récupère maven_key + référentiel courant via JS #}
-                <button id="bouton-ouvrir-rapport-owasp" class="button open-sans focus-light" type="button"
-                    title="Exporter le rapport OWASP au format PDF" aria-label="Export PDF"><span
-                        aria-hidden="true">📄</span>Export PDF
-                </button>
-                {# lien project-scoped (group/artifact/version).
-                bouton totalement decouple du breadcrumb OWASP Sonar (qui peut être vide). On utilise `dc_link_*`
-                calcules dans le controller depuis le dernier scan DC pour ce maven_key. Le bouton apparaît dès qu'un
-                scan DC existe, peu importe l'état de la table `owasp`. #}
-                {% if is_granted('ROLE_SECURITY') and has_dc_scan %}
-                <a id="bouton-ouvrir-rapport-dependency-check"
-                    href="{{ path('dc_projet', {group: dc_link_group, artifact: dc_link_artifact, version: dc_link_version}) }}"
-                    class="button open-sans focus-light"
-                    title="Vulnérabilités CVE des composants tiers (OWASP DependencyCheck) — {{ dc_link_group }}:{{ dc_link_artifact }}:{{ dc_link_version }}"
-                    aria-label="Ouvrir le rapport Dependency-Check">
-                    <span aria-hidden="true">📦</span> Dependency-Check
-                </a>
-                {% endif %}
-            </div>
+        <header class="grid-container margin-top-1">
+            <nav aria-label="Fil d'Ariane, vous êtes ici">
+                <ol class="claire-hand breadcrumbs">
+                    <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+                    <li><a href="{{ path('projet', {}) }}">Projet</a></li>
+                    <li><a href="{{ path('owasp', {}) }}">Owasp</a></li>
+                    <li aria-current="page">{{application}}-{{application_version}}</li>
+                </ol>
+            </nav>
         </header>
 
-        <section id="main information" class="grid-x">
-            {# Affiche la version du référentiel owasp disponible #}
-            <p id="owasp-version" class="open-sans cell"></p>
-            <fieldset class="fieldset cell">
-                <legend>Informations.</legend>
-                <p class="open-sans">Le tableau ci-dessous liste <strong>uniquement</strong> les vulnérabilités de type
-                    OWASP et les hotspots OWASP.</p>
-                {# Vulnérabilité OWASP #}
-                <p class="ligne open-sans">
-                    <strong>Vulnérabilité</strong>&nbsp;:
-                    <span id="nombre-faille-owasp" class="stat result"></span>
-                </p>
-                <p class="ligne open-sans owasp-padding-left">Bloquante&nbsp;:
-                    <span id="nombre-faille-bloquant" class="stat-owasp result light"></span>
-                </p>
-                <p class="ligne open-sans owasp-padding-left">Critique&nbsp;:
-                    <span id="nombre-faille-critique" class="stat-owasp result light"></span>
-                </p>
-                <p class="ligne open-sans owasp-padding-left">Majeure&nbsp;:
-                    <span id="nombre-faille-majeur" class="stat-owasp result light"></span>
-                </p>
-                <p class="ligne open-sans owasp-padding-left">Mineure&nbsp;:
-                    <span id="nombre-faille-mineur" class="stat-owasp result light"></span>
-                </p>
+        {# Message d'information php #}
+        {{ include('_message.html.twig') }}
 
-                {# Vulnérabilité Hotspot #}
-                <p class="ligne open-sans margin-top-1"><strong>Hotspot</strong>&nbsp;:
-                    <span id="hotspot-total" class="stat result"></span>
+        <main class="grid-container">
+            <h2 class="h3 claire-hand"><span aria-hidden="true">🛡️</span> Vulnérabilités OWASP et points chauds.</h2>
+            <div id="js-serveur" class="cell" data-serveur="{{ serveur|default('none') }}">
+                <p class="open-sans font-size-11">
+                    <span aria-hidden="true">📁</span> Application :
+                    <span id="js-application" class="color-noir"></span>&nbsp;
+                    <span id="js-application-version" class="color-noir"></span>
                 </p>
-                <p class="ligne open-sans owasp-padding-left">HIGH&nbsp;:
-                    <span id="nombre-hotspot-high" class="stat-owasp result light"></span>
-                </p>
-                <p class="ligne open-sans owasp-padding-left">MEDIUM&nbsp;:
-                    <span id="nombre-hotspot-medium" class="stat-owasp result light"></span>
-                </p>
-                <p class="ligne open-sans owasp-padding-left">LOW&nbsp;:
-                    <span id="nombre-hotspot-low" class="stat-owasp result light"></span>
-                </p>
-                <p class="ligne open-sans">Examiné&nbsp;:
-                    <span id="hotspot-reviewed" class="stat-owasp result light"></span>
-                </p>
-                <p class="ligne open-sans">A vérifier&nbsp;:
-                    <span id="hotspot-to-review" class="stat-owasp result light"></span>
-                </p>
-                <p class="ligne open-sans">Note&nbsp;:
-                    <span id="note-hotspot" class="stat-note result"></span>
-                </p>
-
-                {# Répartition par module #}
-                <p class="ligne open-sans margin-top-1"><strong>Module</strong>&nbsp;:</p>
-                <p class="ligne open-sans owasp-padding-left">Frontend&nbsp;:
-                    <span id="frontend" class="result"></span>
-                </p>
-                <p class="ligne open-sans owasp-padding-left">Backend&nbsp;:
-                    <span id="backend" class="result"></span>
-                </p>
-                <p class="ligne open-sans owasp-padding-left">Autres&nbsp;:
-                    <span id="autre" class="result"></span>
-                </p>
-            </fieldset>
-
-            <fieldset class="fieldset cell">
-                <legend>Synthèse.</legend>
-                <div class="table-scroll">
-                    <table>
-                        <caption>Liste des vulnérabilités OWASP et des Hotspots SonarQube.</caption>
-                        <thead>
-                            <tr class="open-sans">
-                                <th scope="col"></th>
-                                <th scope="col" class="show-for-small-only">Cat.</th>
-                                <th scope="col" class="show-for-medium">Catégorie</th>
-                                <th scope="col" class="show-for-small-only text-center">Faille</th>
-                                <th scope="col" class="show-for-medium text-center">Vulnérabilité</th>
-                                <th scope="col" class="show-for-small-only text-center">Hotspot</th>
-                                <th scope="col" class="show-for-medium text-center">Hotspot Review</th>
-                            </tr>
-                        </thead>
-                        <tbody class="open-sans">
-                            <tr>
-                                {# details #}
-                                <td>
-                                    <svg id="js-a1" version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%"
-                                        height="100%" viewbox="0 0 32 32" class="js-details voir-details-svg">
-                                        <title>Icône pour le bouton OWASP A1</title>
-                                        <desc>Affiche le détail pour la catégorie A1.</desc>
-                                        <path
-                                            d="M15.014 4.86c-1.846.24-3.262.65-4.77 1.381-3.461 1.671-7.01 5.073-9.541 9.145-.617.993-.617 1.221 0 2.214a27.64 27.64 0 003.086 4.086c3.28 3.624 6.623 5.663 10.383 6.327.96.168 3.093.168 4.053 0 3.76-.664 7.102-2.703 10.382-6.327a27.64 27.64 0 003.087-4.086c.617-.993.617-1.22 0-2.214a27.64 27.64 0 00-3.087-4.086c-3.23-3.569-6.547-5.615-10.195-6.286-.723-.135-2.825-.228-3.398-.155zm2.294 2.314c2.55.295 5.026 1.47 7.558 3.576 1.328 1.1 3.691 3.804 4.714 5.388l.23.355-.242.376c-.406.638-1.478 2.04-2.14 2.805-3.142 3.63-6.628 5.75-10.113 6.145-3.193.363-6.504-.852-9.784-3.582-1.328-1.1-3.692-3.805-4.714-5.388l-.231-.356.243-.375c.412-.644 1.472-2.04 2.139-2.805 1.908-2.2 3.928-3.851 5.992-4.87 2.19-1.088 4.297-1.51 6.348-1.269z" />
-                                        <path
-                                            d="M14.92 8.892c-2.918.563-5.282 3.14-5.793 6.293-.673 4.16 1.977 8.192 5.855 8.917 4.347.818 8.387-2.852 8.387-7.609 0-3.737-2.531-6.97-5.955-7.608-.686-.128-1.82-.128-2.494.007zm2.089 2.24c1.79.31 3.349 1.725 3.953 3.59.643 1.973.187 4.086-1.21 5.596-1.995 2.153-5.113 2.153-7.108 0a5.622 5.622 0 010-7.649c1.172-1.261 2.75-1.818 4.365-1.536z" />
-                                        <path
-                                            d="M15.512 13.642c-.929.248-1.72 1.094-1.964 2.113-.492 2.053 1.16 3.992 3.1 3.637 1.87-.349 2.861-2.563 1.945-4.334-.599-1.154-1.865-1.731-3.08-1.416z" />
-                                    </svg>
-                                </td>
-                                {# Catégorie #}
-                                <td class="show-for-small-only">A1</td>
-                                <td id="label-a1" class="show-for-medium">A1 - Attaques d'injection</td>
-                                {# Faille #}
-                                <td id="a1" class="text-center"></td>
-                                {# Hotspot #}
-                                <td id="h1" class="text-right"></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <svg id="js-a2" version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%"
-                                        height="100%" viewbox="0 0 32 32" class="js-details voir-details-svg">
-                                        <title>Icône pour le bouton OWASP A2</title>
-                                        <desc>Affiche le détail pour la catégorie A2.</desc>
-                                        <path
-                                            d="M15.014 4.86c-1.846.24-3.262.65-4.77 1.381-3.461 1.671-7.01 5.073-9.541 9.145-.617.993-.617 1.221 0 2.214a27.64 27.64 0 003.086 4.086c3.28 3.624 6.623 5.663 10.383 6.327.96.168 3.093.168 4.053 0 3.76-.664 7.102-2.703 10.382-6.327a27.64 27.64 0 003.087-4.086c.617-.993.617-1.22 0-2.214a27.64 27.64 0 00-3.087-4.086c-3.23-3.569-6.547-5.615-10.195-6.286-.723-.135-2.825-.228-3.398-.155zm2.294 2.314c2.55.295 5.026 1.47 7.558 3.576 1.328 1.1 3.691 3.804 4.714 5.388l.23.355-.242.376c-.406.638-1.478 2.04-2.14 2.805-3.142 3.63-6.628 5.75-10.113 6.145-3.193.363-6.504-.852-9.784-3.582-1.328-1.1-3.692-3.805-4.714-5.388l-.231-.356.243-.375c.412-.644 1.472-2.04 2.139-2.805 1.908-2.2 3.928-3.851 5.992-4.87 2.19-1.088 4.297-1.51 6.348-1.269z" />
-                                        <path
-                                            d="M14.92 8.892c-2.918.563-5.282 3.14-5.793 6.293-.673 4.16 1.977 8.192 5.855 8.917 4.347.818 8.387-2.852 8.387-7.609 0-3.737-2.531-6.97-5.955-7.608-.686-.128-1.82-.128-2.494.007zm2.089 2.24c1.79.31 3.349 1.725 3.953 3.59.643 1.973.187 4.086-1.21 5.596-1.995 2.153-5.113 2.153-7.108 0a5.622 5.622 0 010-7.649c1.172-1.261 2.75-1.818 4.365-1.536z" />
-                                        <path
-                                            d="M15.512 13.642c-.929.248-1.72 1.094-1.964 2.113-.492 2.053 1.16 3.992 3.1 3.637 1.87-.349 2.861-2.563 1.945-4.334-.599-1.154-1.865-1.731-3.08-1.416z" />
-                                    </svg>
-                                <td class="show-for-small-only">A2</td>
-                                <td id="label-a2" class="show-for-medium">A2 - Authentification défaillante</td>
-                                <td id="a2" class="text-center"></td>
-                                <td id="h2" class="text-right"></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <svg id="js-a3" version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%"
-                                        height="100%" viewbox="0 0 32 32" class="js-details voir-details-svg">
-                                        <title>Icône pour le bouton OWASP A3</title>
-                                        <desc>Affiche le détail pour la catégorie A3.</desc>
-                                        <path
-                                            d="M15.014 4.86c-1.846.24-3.262.65-4.77 1.381-3.461 1.671-7.01 5.073-9.541 9.145-.617.993-.617 1.221 0 2.214a27.64 27.64 0 003.086 4.086c3.28 3.624 6.623 5.663 10.383 6.327.96.168 3.093.168 4.053 0 3.76-.664 7.102-2.703 10.382-6.327a27.64 27.64 0 003.087-4.086c.617-.993.617-1.22 0-2.214a27.64 27.64 0 00-3.087-4.086c-3.23-3.569-6.547-5.615-10.195-6.286-.723-.135-2.825-.228-3.398-.155zm2.294 2.314c2.55.295 5.026 1.47 7.558 3.576 1.328 1.1 3.691 3.804 4.714 5.388l.23.355-.242.376c-.406.638-1.478 2.04-2.14 2.805-3.142 3.63-6.628 5.75-10.113 6.145-3.193.363-6.504-.852-9.784-3.582-1.328-1.1-3.692-3.805-4.714-5.388l-.231-.356.243-.375c.412-.644 1.472-2.04 2.139-2.805 1.908-2.2 3.928-3.851 5.992-4.87 2.19-1.088 4.297-1.51 6.348-1.269z" />
-                                        <path
-                                            d="M14.92 8.892c-2.918.563-5.282 3.14-5.793 6.293-.673 4.16 1.977 8.192 5.855 8.917 4.347.818 8.387-2.852 8.387-7.609 0-3.737-2.531-6.97-5.955-7.608-.686-.128-1.82-.128-2.494.007zm2.089 2.24c1.79.31 3.349 1.725 3.953 3.59.643 1.973.187 4.086-1.21 5.596-1.995 2.153-5.113 2.153-7.108 0a5.622 5.622 0 010-7.649c1.172-1.261 2.75-1.818 4.365-1.536z" />
-                                        <path
-                                            d="M15.512 13.642c-.929.248-1.72 1.094-1.964 2.113-.492 2.053 1.16 3.992 3.1 3.637 1.87-.349 2.861-2.563 1.945-4.334-.599-1.154-1.865-1.731-3.08-1.416z" />
-                                    </svg>
-                                </td>
-                                <td class="show-for-small-only">A3</td>
-                                <td id="label-a3" class="show-for-medium">A3 - Fuites de données sensibles</td>
-                                <td id="a3" class="text-center"></td>
-                                <td id="h3" class="text-right"></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <svg id="js-a4" version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%"
-                                        height="100%" viewbox="0 0 32 32" class="js-details voir-details-svg">
-                                        <title>Icône pour le bouton OWASP A4</title>
-                                        <desc>Affiche le détail pour la catégorie A4.</desc>
-                                        <path
-                                            d="M15.014 4.86c-1.846.24-3.262.65-4.77 1.381-3.461 1.671-7.01 5.073-9.541 9.145-.617.993-.617 1.221 0 2.214a27.64 27.64 0 003.086 4.086c3.28 3.624 6.623 5.663 10.383 6.327.96.168 3.093.168 4.053 0 3.76-.664 7.102-2.703 10.382-6.327a27.64 27.64 0 003.087-4.086c.617-.993.617-1.22 0-2.214a27.64 27.64 0 00-3.087-4.086c-3.23-3.569-6.547-5.615-10.195-6.286-.723-.135-2.825-.228-3.398-.155zm2.294 2.314c2.55.295 5.026 1.47 7.558 3.576 1.328 1.1 3.691 3.804 4.714 5.388l.23.355-.242.376c-.406.638-1.478 2.04-2.14 2.805-3.142 3.63-6.628 5.75-10.113 6.145-3.193.363-6.504-.852-9.784-3.582-1.328-1.1-3.692-3.805-4.714-5.388l-.231-.356.243-.375c.412-.644 1.472-2.04 2.139-2.805 1.908-2.2 3.928-3.851 5.992-4.87 2.19-1.088 4.297-1.51 6.348-1.269z" />
-                                        <path
-                                            d="M14.92 8.892c-2.918.563-5.282 3.14-5.793 6.293-.673 4.16 1.977 8.192 5.855 8.917 4.347.818 8.387-2.852 8.387-7.609 0-3.737-2.531-6.97-5.955-7.608-.686-.128-1.82-.128-2.494.007zm2.089 2.24c1.79.31 3.349 1.725 3.953 3.59.643 1.973.187 4.086-1.21 5.596-1.995 2.153-5.113 2.153-7.108 0a5.622 5.622 0 010-7.649c1.172-1.261 2.75-1.818 4.365-1.536z" />
-                                        <path
-                                            d="M15.512 13.642c-.929.248-1.72 1.094-1.964 2.113-.492 2.053 1.16 3.992 3.1 3.637 1.87-.349 2.861-2.563 1.945-4.334-.599-1.154-1.865-1.731-3.08-1.416z" />
-                                    </svg>
-                                </td>
-                                <td class="show-for-small-only">A4</td>
-                                <td id="label-a4" class="show-for-medium">A4 - Entités externes XML (XXE)</td>
-                                <td id="a4" class="text-center"></td>
-                                <td id="h4" class="text-right"></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <svg id="js-a5" version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%"
-                                        height="100%" viewbox="0 0 32 32" class="js-details voir-details-svg">
-                                        <title>Icône pour le bouton OWASP A5</title>
-                                        <desc>Affiche le détail pour la catégorie A5.</desc>
-                                        <path
-                                            d="M15.014 4.86c-1.846.24-3.262.65-4.77 1.381-3.461 1.671-7.01 5.073-9.541 9.145-.617.993-.617 1.221 0 2.214a27.64 27.64 0 003.086 4.086c3.28 3.624 6.623 5.663 10.383 6.327.96.168 3.093.168 4.053 0 3.76-.664 7.102-2.703 10.382-6.327a27.64 27.64 0 003.087-4.086c.617-.993.617-1.22 0-2.214a27.64 27.64 0 00-3.087-4.086c-3.23-3.569-6.547-5.615-10.195-6.286-.723-.135-2.825-.228-3.398-.155zm2.294 2.314c2.55.295 5.026 1.47 7.558 3.576 1.328 1.1 3.691 3.804 4.714 5.388l.23.355-.242.376c-.406.638-1.478 2.04-2.14 2.805-3.142 3.63-6.628 5.75-10.113 6.145-3.193.363-6.504-.852-9.784-3.582-1.328-1.1-3.692-3.805-4.714-5.388l-.231-.356.243-.375c.412-.644 1.472-2.04 2.139-2.805 1.908-2.2 3.928-3.851 5.992-4.87 2.19-1.088 4.297-1.51 6.348-1.269z" />
-                                        <path
-                                            d="M14.92 8.892c-2.918.563-5.282 3.14-5.793 6.293-.673 4.16 1.977 8.192 5.855 8.917 4.347.818 8.387-2.852 8.387-7.609 0-3.737-2.531-6.97-5.955-7.608-.686-.128-1.82-.128-2.494.007zm2.089 2.24c1.79.31 3.349 1.725 3.953 3.59.643 1.973.187 4.086-1.21 5.596-1.995 2.153-5.113 2.153-7.108 0a5.622 5.622 0 010-7.649c1.172-1.261 2.75-1.818 4.365-1.536z" />
-                                        <path
-                                            d="M15.512 13.642c-.929.248-1.72 1.094-1.964 2.113-.492 2.053 1.16 3.992 3.1 3.637 1.87-.349 2.861-2.563 1.945-4.334-.599-1.154-1.865-1.731-3.08-1.416z" />
-                                    </svg>
-                                </td>
-                                <td class="show-for-small-only">A5</td>
-                                <td id="label-a5" class="show-for-medium">A5 - Contrôle d'accès défaillant</td>
-                                <td id="a5" class="text-center"></td>
-                                <td id="h5" class="text-right"></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <svg id="js-a6" version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%"
-                                        height="100%" viewbox="0 0 32 32" class="js-details voir-details-svg">
-                                        <title>Icône pour le bouton OWASP A6</title>
-                                        <desc>Affiche le détail pour la catégorie A6.</desc>
-                                        <path
-                                            d="M15.014 4.86c-1.846.24-3.262.65-4.77 1.381-3.461 1.671-7.01 5.073-9.541 9.145-.617.993-.617 1.221 0 2.214a27.64 27.64 0 003.086 4.086c3.28 3.624 6.623 5.663 10.383 6.327.96.168 3.093.168 4.053 0 3.76-.664 7.102-2.703 10.382-6.327a27.64 27.64 0 003.087-4.086c.617-.993.617-1.22 0-2.214a27.64 27.64 0 00-3.087-4.086c-3.23-3.569-6.547-5.615-10.195-6.286-.723-.135-2.825-.228-3.398-.155zm2.294 2.314c2.55.295 5.026 1.47 7.558 3.576 1.328 1.1 3.691 3.804 4.714 5.388l.23.355-.242.376c-.406.638-1.478 2.04-2.14 2.805-3.142 3.63-6.628 5.75-10.113 6.145-3.193.363-6.504-.852-9.784-3.582-1.328-1.1-3.692-3.805-4.714-5.388l-.231-.356.243-.375c.412-.644 1.472-2.04 2.139-2.805 1.908-2.2 3.928-3.851 5.992-4.87 2.19-1.088 4.297-1.51 6.348-1.269z" />
-                                        <path
-                                            d="M14.92 8.892c-2.918.563-5.282 3.14-5.793 6.293-.673 4.16 1.977 8.192 5.855 8.917 4.347.818 8.387-2.852 8.387-7.609 0-3.737-2.531-6.97-5.955-7.608-.686-.128-1.82-.128-2.494.007zm2.089 2.24c1.79.31 3.349 1.725 3.953 3.59.643 1.973.187 4.086-1.21 5.596-1.995 2.153-5.113 2.153-7.108 0a5.622 5.622 0 010-7.649c1.172-1.261 2.75-1.818 4.365-1.536z" />
-                                        <path
-                                            d="M15.512 13.642c-.929.248-1.72 1.094-1.964 2.113-.492 2.053 1.16 3.992 3.1 3.637 1.87-.349 2.861-2.563 1.945-4.334-.599-1.154-1.865-1.731-3.08-1.416z" />
-                                    </svg>
-                                </td>
-                                <td class="show-for-small-only">A6</td>
-                                <td id="label-a6" class="show-for-medium">A6 - Configurations défaillantes</td>
-                                <td id="a6" class="text-center"></td>
-                                <td id="h6" class="text-right"></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <svg id="js-a7" version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%"
-                                        height="100%" viewbox="0 0 32 32" class="js-details voir-details-svg">
-                                        <title>Icône pour le bouton OWASP A7</title>
-                                        <desc>Affiche le détail pour la catégorie A7.</desc>
-                                        <path
-                                            d="M15.014 4.86c-1.846.24-3.262.65-4.77 1.381-3.461 1.671-7.01 5.073-9.541 9.145-.617.993-.617 1.221 0 2.214a27.64 27.64 0 003.086 4.086c3.28 3.624 6.623 5.663 10.383 6.327.96.168 3.093.168 4.053 0 3.76-.664 7.102-2.703 10.382-6.327a27.64 27.64 0 003.087-4.086c.617-.993.617-1.22 0-2.214a27.64 27.64 0 00-3.087-4.086c-3.23-3.569-6.547-5.615-10.195-6.286-.723-.135-2.825-.228-3.398-.155zm2.294 2.314c2.55.295 5.026 1.47 7.558 3.576 1.328 1.1 3.691 3.804 4.714 5.388l.23.355-.242.376c-.406.638-1.478 2.04-2.14 2.805-3.142 3.63-6.628 5.75-10.113 6.145-3.193.363-6.504-.852-9.784-3.582-1.328-1.1-3.692-3.805-4.714-5.388l-.231-.356.243-.375c.412-.644 1.472-2.04 2.139-2.805 1.908-2.2 3.928-3.851 5.992-4.87 2.19-1.088 4.297-1.51 6.348-1.269z" />
-                                        <path
-                                            d="M14.92 8.892c-2.918.563-5.282 3.14-5.793 6.293-.673 4.16 1.977 8.192 5.855 8.917 4.347.818 8.387-2.852 8.387-7.609 0-3.737-2.531-6.97-5.955-7.608-.686-.128-1.82-.128-2.494.007zm2.089 2.24c1.79.31 3.349 1.725 3.953 3.59.643 1.973.187 4.086-1.21 5.596-1.995 2.153-5.113 2.153-7.108 0a5.622 5.622 0 010-7.649c1.172-1.261 2.75-1.818 4.365-1.536z" />
-                                        <path
-                                            d="M15.512 13.642c-.929.248-1.72 1.094-1.964 2.113-.492 2.053 1.16 3.992 3.1 3.637 1.87-.349 2.861-2.563 1.945-4.334-.599-1.154-1.865-1.731-3.08-1.416z" />
-                                    </svg>
-                                </td>
-                                <td class="show-for-small-only">A7</td>
-                                <td id="label-a7" class="show-for-medium">A7 - Attaques cross-site scripting (XSS)</td>
-                                <td id="a7" class="text-center"></td>
-                                <td id="h7" class="text-right"></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <svg id="js-a8" version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%"
-                                        height="100%" viewbox="0 0 32 32" class="js-details voir-details-svg">
-                                        <title>Icône pour le bouton OWASP A8</title>
-                                        <desc>Affiche le détail pour la catégorie A8.</desc>
-                                        <path
-                                            d="M15.014 4.86c-1.846.24-3.262.65-4.77 1.381-3.461 1.671-7.01 5.073-9.541 9.145-.617.993-.617 1.221 0 2.214a27.64 27.64 0 003.086 4.086c3.28 3.624 6.623 5.663 10.383 6.327.96.168 3.093.168 4.053 0 3.76-.664 7.102-2.703 10.382-6.327a27.64 27.64 0 003.087-4.086c.617-.993.617-1.22 0-2.214a27.64 27.64 0 00-3.087-4.086c-3.23-3.569-6.547-5.615-10.195-6.286-.723-.135-2.825-.228-3.398-.155zm2.294 2.314c2.55.295 5.026 1.47 7.558 3.576 1.328 1.1 3.691 3.804 4.714 5.388l.23.355-.242.376c-.406.638-1.478 2.04-2.14 2.805-3.142 3.63-6.628 5.75-10.113 6.145-3.193.363-6.504-.852-9.784-3.582-1.328-1.1-3.692-3.805-4.714-5.388l-.231-.356.243-.375c.412-.644 1.472-2.04 2.139-2.805 1.908-2.2 3.928-3.851 5.992-4.87 2.19-1.088 4.297-1.51 6.348-1.269z" />
-                                        <path
-                                            d="M14.92 8.892c-2.918.563-5.282 3.14-5.793 6.293-.673 4.16 1.977 8.192 5.855 8.917 4.347.818 8.387-2.852 8.387-7.609 0-3.737-2.531-6.97-5.955-7.608-.686-.128-1.82-.128-2.494.007zm2.089 2.24c1.79.31 3.349 1.725 3.953 3.59.643 1.973.187 4.086-1.21 5.596-1.995 2.153-5.113 2.153-7.108 0a5.622 5.622 0 010-7.649c1.172-1.261 2.75-1.818 4.365-1.536z" />
-                                        <path
-                                            d="M15.512 13.642c-.929.248-1.72 1.094-1.964 2.113-.492 2.053 1.16 3.992 3.1 3.637 1.87-.349 2.861-2.563 1.945-4.334-.599-1.154-1.865-1.731-3.08-1.416z" />
-                                    </svg>
-                                </td>
-                                <td class="show-for-small-only">A8</td>
-                                <td id="label-a8" class="show-for-medium">A8 - Désérialisation sans validation</td>
-                                <td id="a8" class="text-center"></td>
-                                <td id="h8" class="text-right"></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <svg id="js-a9" version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%"
-                                        height="100%" viewbox="0 0 32 32" class="js-details voir-details-svg">
-                                        <title>Icône pour le bouton OWASP A9</title>
-                                        <desc>Affiche le détail pour la catégorie A9.</desc>
-                                        <path
-                                            d="M15.014 4.86c-1.846.24-3.262.65-4.77 1.381-3.461 1.671-7.01 5.073-9.541 9.145-.617.993-.617 1.221 0 2.214a27.64 27.64 0 003.086 4.086c3.28 3.624 6.623 5.663 10.383 6.327.96.168 3.093.168 4.053 0 3.76-.664 7.102-2.703 10.382-6.327a27.64 27.64 0 003.087-4.086c.617-.993.617-1.22 0-2.214a27.64 27.64 0 00-3.087-4.086c-3.23-3.569-6.547-5.615-10.195-6.286-.723-.135-2.825-.228-3.398-.155zm2.294 2.314c2.55.295 5.026 1.47 7.558 3.576 1.328 1.1 3.691 3.804 4.714 5.388l.23.355-.242.376c-.406.638-1.478 2.04-2.14 2.805-3.142 3.63-6.628 5.75-10.113 6.145-3.193.363-6.504-.852-9.784-3.582-1.328-1.1-3.692-3.805-4.714-5.388l-.231-.356.243-.375c.412-.644 1.472-2.04 2.139-2.805 1.908-2.2 3.928-3.851 5.992-4.87 2.19-1.088 4.297-1.51 6.348-1.269z" />
-                                        <path
-                                            d="M14.92 8.892c-2.918.563-5.282 3.14-5.793 6.293-.673 4.16 1.977 8.192 5.855 8.917 4.347.818 8.387-2.852 8.387-7.609 0-3.737-2.531-6.97-5.955-7.608-.686-.128-1.82-.128-2.494.007zm2.089 2.24c1.79.31 3.349 1.725 3.953 3.59.643 1.973.187 4.086-1.21 5.596-1.995 2.153-5.113 2.153-7.108 0a5.622 5.622 0 010-7.649c1.172-1.261 2.75-1.818 4.365-1.536z" />
-                                        <path
-                                            d="M15.512 13.642c-.929.248-1.72 1.094-1.964 2.113-.492 2.053 1.16 3.992 3.1 3.637 1.87-.349 2.861-2.563 1.945-4.334-.599-1.154-1.865-1.731-3.08-1.416z" />
-                                    </svg>
-                                </td>
-                                <td class="show-for-small-only">A9</td>
-                                <td id="label-a9" class="show-for-medium">A9 - Composants tiers vulnérables</td>
-                                <td id="a9" class="text-center"></td>
-                                <td id="h9" class="text-right"></td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <svg id="js-a10" version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%"
-                                        height="100%" viewbox="0 0 32 32" class="js-details voir-details-svg">
-                                        <title>Icône pour le bouton OWASP A10</title>
-                                        <desc>Affiche le détail pour la catégorie A10.</desc>
-                                        <path
-                                            d="M15.014 4.86c-1.846.24-3.262.65-4.77 1.381-3.461 1.671-7.01 5.073-9.541 9.145-.617.993-.617 1.221 0 2.214a27.64 27.64 0 003.086 4.086c3.28 3.624 6.623 5.663 10.383 6.327.96.168 3.093.168 4.053 0 3.76-.664 7.102-2.703 10.382-6.327a27.64 27.64 0 003.087-4.086c.617-.993.617-1.22 0-2.214a27.64 27.64 0 00-3.087-4.086c-3.23-3.569-6.547-5.615-10.195-6.286-.723-.135-2.825-.228-3.398-.155zm2.294 2.314c2.55.295 5.026 1.47 7.558 3.576 1.328 1.1 3.691 3.804 4.714 5.388l.23.355-.242.376c-.406.638-1.478 2.04-2.14 2.805-3.142 3.63-6.628 5.75-10.113 6.145-3.193.363-6.504-.852-9.784-3.582-1.328-1.1-3.692-3.805-4.714-5.388l-.231-.356.243-.375c.412-.644 1.472-2.04 2.139-2.805 1.908-2.2 3.928-3.851 5.992-4.87 2.19-1.088 4.297-1.51 6.348-1.269z" />
-                                        <path
-                                            d="M14.92 8.892c-2.918.563-5.282 3.14-5.793 6.293-.673 4.16 1.977 8.192 5.855 8.917 4.347.818 8.387-2.852 8.387-7.609 0-3.737-2.531-6.97-5.955-7.608-.686-.128-1.82-.128-2.494.007zm2.089 2.24c1.79.31 3.349 1.725 3.953 3.59.643 1.973.187 4.086-1.21 5.596-1.995 2.153-5.113 2.153-7.108 0a5.622 5.622 0 010-7.649c1.172-1.261 2.75-1.818 4.365-1.536z" />
-                                        <path
-                                            d="M15.512 13.642c-.929.248-1.72 1.094-1.964 2.113-.492 2.053 1.16 3.992 3.1 3.637 1.87-.349 2.861-2.563 1.945-4.334-.599-1.154-1.865-1.731-3.08-1.416z" />
-                                    </svg>
-                                </td>
-                                <td class="show-for-small-only">A10</td>
-                                <td id="label-a10" class="show-for-medium">A10 - Journalisation et surveillance insuffisantes</td>
-                                <td id="a10" class="text-center"></td>
-                                <td id="h10" class="text-right"></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </fieldset>
-        </section>
-
-        {# Tableau détaillé des failles de sécurité #}
-        <section id="failles de sécurité" class="grid-x">
-            <h2 class="h4 claire-hand"><span aria-hidden="true">🗒️</span> Liste des failles de sécurité.</h3>
-                <div class="detail">
-                    <div class="table-scroll">
-                        <table>
-                            <caption>Liste détaillée des vulnérabilités détectées.</caption>
-                            <thead>
-                                <tr class="open-sans">
-                                    <th class="text-center" scope="col">N°</th>
-                                    <th class="text-center" id="rule" scope="col">Règle</th>
-                                    <th class="text-center" id="severity" scope="col">Sévérité</th>
-                                    <th class="text-center" id="component" scope="col">Component</th>
-                                    <th class="text-center" id="ligne" scope="col">Ligne</th>
-                                    <th class="text-center" id="message-details" scope="col">Message</th>
-                                    <th class="text-center" id="status" scope="col">Status</th>
-                                </tr>
-                            </thead>
-                            <tbody id="tbody"></tbody>
-                        </table>
-                    </div>
-                </div>
-        </section>
-
-        {# Conteneur pour le diagramme en baton #}
-        <section id="repartition-des-failles" class="margin-top-1">
-            <h2 class="h4 claire-hand"><span aria-hidden="true">📊</span>Répartition des failles Owasp.</h3>
-                <div id="owasp-bar-chart-container" class="owasp-bar-chart-container">
-                    <canvas id="owasp-bar-chart"></canvas>
-                </div>
-        </section>
-
-        {# Comparaison OWASP #}
-        <section id="comparaison-owasp">
-            <h2 class="h4 claire-hand"><span aria-hidden="true">📋</span> Comparaison des référentiels OWASP</h3>
-                <!-- Bouton pour comparer les référentiels -->
-                <button id="bouton-ouvrir-comparaison-owasp" class="button open-sans focus-light" type="button"><span
-                        aria-hidden="true">🔎</span> OWASP 2017/2021/2025
-                </button>
-        </section>
-
-        {# Référentiel OWASP 2017, 2021 et 2025 - Doc #}
-        <section id="referential-owasp" class="margin-top-1">
-            <h2 class="h4 claire-hand"><span aria-hidden="true">📘</span> Référentiel OWASP</h3>
-                <div class="grid-x">
-                    <div class="small-12 medium-6 large-6 cell">
-                        <label for="js-owasp-select">Choisis ton référentiel :</label>
-                        {# MODIF 2026-07-18 : `selected` aligné sur referentiel_affiche_defaut —
-                        sans ça, le select montrait toujours "2017" par défaut même quand
-                        l'accordéon affichait 2021/2025, un état incohérent entre les deux. #}
-                        <select id="js-owasp-select" name="owasp" data-tags="true"
-                            data-placeholder='Cliquez pour ouvrir la liste' data-language='fr'>
-                            <option value="2017" {{ referentiel_affiche_defaut == '2017' ? 'selected' : '' }}>OWASP 2017</option>
-                            <option value="2021" {{ referentiel_affiche_defaut == '2021' ? 'selected' : '' }}>OWASP 2021</option>
-                            <option value="2025" {{ referentiel_affiche_defaut == '2025' ? 'selected' : '' }}>OWASP 2025</option>
-                        </select>
-                    </div>
-                </div>
-        </section>
-
-        {# Référentiel OWASP 2017 #}
-        <section id="owasp-2017" class="grid-container owasp-content {{ display_off_2017 }} margin-bottom-2">
-            <legend class="container-owasp-description open-sans color-noir font-size-1">Documentation Owasp 2017
-            </legend>
-            <ul class="vertical menu accordion-menu" data-accordion-menu>
-                {% if owasp_2017 is defined and owasp_2017['liste']|length >0 %}
-                {% for item in owasp_2017['liste'] %}
-                <li id="o{{ loop.index }}" class="referential-owasp-menu">
-                    <a class="claire-hand referential-owasp-titre">{{ item.category }}</a>
-                    <ul class="menu vertical owasp-padding-left-right">
-                        <li>
-                            <p class="open-sans text-justify">{{ item.description }}</p>
-                            <footer class="grid-x grid-margin-x align-right margin-top-2">
-                                <div class="cell shrink">
-                                    <a class="bouton-ouvrir-details open-sans focus-light"
-                                        href="{{ path('owasp_detail', { id: item.id }) }}"
-                                        aria-label="Plus de détails...">
-                                        <span aria-hidden="true">🔎</span> Plus de détails...
-                                    </a>
-                                </div>
-                            </footer>
-                        </li>
-                    </ul>
-                </li>
-                {% endfor %}
-                {% endif %}
-            </ul>
-        </section>
-
-        {# Référentiel OWASP 2021 #}
-        <section id="owasp-2021" class="grid-container owasp-content {{ display_off_2021 }} margin-bottom-2">
-            <legend class="container-owasp-description open-sans color-noir font-size-1">Documentation Owasp 2021
-            </legend>
-            <ul class="vertical menu accordion-menu" data-accordion-menu>
-                {% if owasp_2021 is defined and owasp_2021['liste']|length >0 %}
-                {% for item in owasp_2021['liste'] %}
-                <li id="o{{ loop.index }}" class="referential-owasp-menu">
-                    <a class="claire-hand referential-owasp-titre" href="#">{{ item.category }}</a>
-                    <ul class="menu vertical owasp-padding-left-right">
-                        <li>
-                            <p class="open-sans text-justify">{{ item.description }}</p>
-                            <footer class="grid-x grid-margin-x align-right margin-top-2">
-                                <div class="cell shrink">
-                                    <a class="bouton-ouvrir-details open-sans focus-light"
-                                        href="{{ path('owasp_detail', { id: item.id }) }}"
-                                        aria-label="Plus de détails...">
-                                        <span aria-hidden="true">🔎</span> Plus de détails...
-                                    </a>
-                                </div>
-                            </footer>
-                        </li>
-                    </ul>
-                </li>
-                {% endfor %}
-                {% endif %}
-            </ul>
-        </section>
-
-        {# Référentiel OWASP 2025 #}
-        <section id="owasp-2025" class="grid-container owasp-content {{ display_off_2025 }} margin-bottom-2">
-            <legend class="container-owasp-description open-sans color-noir font-size-1">Documentation Owasp 2025
-            </legend>
-            <ul class="vertical menu accordion-menu" data-accordion-menu>
-                {% if owasp_2025 is defined and owasp_2025['liste']|length >0 %}
-                {% for item in owasp_2025['liste'] %}
-                <li id="o{{ loop.index }}" class="referential-owasp-menu">
-                    <a class="claire-hand referential-owasp-titre" href="#">{{ item.category }}</a>
-                    <ul class="menu vertical owasp-padding-left-right">
-                        <li>
-                            <p class="open-sans text-justify">{{ item.description }}</p>
-                            <footer class="grid-x grid-margin-x align-right margin-top-2">
-                                <div class="cell shrink">
-                                    <a class="bouton-ouvrir-details open-sans focus-light"
-                                        href="{{ path('owasp_detail', { id: item.id }) }}"
-                                        aria-label="Plus de détails...">
-                                        <span aria-hidden="true">🔎</span> Plus de détails...
-                                    </a>
-                                </div>
-                            </footer>
-                        </li>
-                    </ul>
-                </li>
-                {% endfor %}
-                {% endif %}
-            </ul>
-        </section>
-    </main>
-
-    {# Modal Owasp et points chauds #}
-    <dialog class="reveal" id="details" data-reveal data-close-on-click="true" data-animation-in="fade-in">
-        <h2 class="h3 open-sans">Owasp et Points chauds.</h2>
-        <p class="lead details-titre"></p>
-        <ul class="stat-list">
-            <li>
-                <span class="stat-list-label note-e stat-detail">Élevée</span>
-                <span id="detail-haut" class="stat stat-list-bleu">0</span>
-            </li>
-            <li>
-                <span class="stat-list-label note-d stat-detail">Moyenne</span>
-                <span id="detail-moyen" class="stat stat-list-bleu">0</span>
-            </li>
-            <li>
-                <span class="stat-list-label note-c stat-detail">Faible</span>
-                <span id="detail-faible" class="stat stat-list-bleu">0</span>
-            </li>
-        </ul>
-        <footer class="grid-x grid-margin-x align-right margin-top-2">
-            <div class="cell shrink">
-                <button id="bouton-fermer-details-owasp" class="button open-sans focus-light" type="button"
-                    aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span>Fermer
-                </button>
             </div>
-        </footer>
-    </dialog>
 
-    {# Modal comparaison owasp 2017/2021 #}
-    <dialog class="reveal large" id="compare-owasp-modal" data-reveal>
-        <h2 class="claire-hand h4">OWASP 2017/2021 VS OWASP 2025</h2>
-        <img class="by" src="{{ asset('images/comparaison_owasp_2017-2025-811-501.svg') }}"
-            alt="Comparaison des référentiels 2017/2025">
-
-        <footer class="grid-x grid-margin-x align-right margin-top-2">
-            <div class="cell shrink">
-                <button id="bouton-fermer-comparaison-owasp" class="button open-sans focus-light" type="button"
-                    aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span>Fermer
-                </button>
+            <div class="callout callout-information cell">
+                <div class="callout-body">
+                    <p class="open-sans">
+                        <span aria-hidden="true">ℹ️</span>
+                        Les compteurs de ce tableau viennent normalement de la classification officielle
+                        OWASP calculée par SonarQube lui-même (<strong>« OWASP (facet) »</strong>).<br>
+                        Quand SonarQube ne classe aucune faille dans un référentiel donné,
+                        l'application recherche en secours les failles marquées par un tag
+                        <code>owasp-aXX</code> (<strong>« OWASP (tag) »</strong>) — un marquage manuel ou
+                        posé par un scanner, moins fiable que la classification officielle.
+                        <br>La source utilisée est indiquée à côté du référentiel actif, sous le titre.
+                        Si les deux sont vides, c'est que SonarQube ne rattache aucune faille de ce projet à ce référentiel
+                        OWASP (par exemple parce qu'il les classe uniquement par CWE).
+                    </p>
+                </div>
             </div>
-        </footer>
-    </dialog>
 
-    <div class="margin-bottom-1">&nbsp;</div>
-    {{ include('footer.html.twig') }}
-</body>
+            <header>
+                <div class="cell shrink">
+                    <button id="bouton-choisir-owasp-2017" class="button open-sans focus-dark-light {{referential_2017}}"
+                        type="button"><span aria-hidden="true">🗂️</span> OWASP 2017
+                        </button>
+                        <button id="bouton-choisir-owasp-2021" class="button open-sans focus-dark-light {{referential_2021}}"
+                            type="button"><span aria-hidden="true">🗂️</span> OWASP 2021
+                            </button>
+                            <button id="bouton-choisir-owasp-2025" class="button open-sans focus-dark-light {{referential_2025}}"
+                                type="button"><span aria-hidden="true">🗂️</span> OWASP 2025
+                                </button>
+                                {# Bouton Export PDF — récupère maven_key + référentiel courant via JS #}
+                                <button id="bouton-ouvrir-rapport-owasp" class="button open-sans focus-dark-light" type="button"
+                                    title="Exporter le rapport OWASP au format PDF" aria-label="Export PDF"><span
+                                    aria-hidden="true">📄</span>Export PDF
+                                    </button>
+                                    {# lien project-scoped (group/artifact/version).
+                                    bouton totalement decouple du breadcrumb OWASP Sonar (qui peut être vide). On utilise `dc_link_*`
+                                    calcules dans le controller depuis le dernier scan DC pour ce maven_key. Le bouton apparaît dès qu'un
+                                    scan DC existe, peu importe l'état de la table `owasp`. #}
+                                    {% if is_granted('ROLE_SECURITY') and has_dc_scan %}
+                                        <a id="bouton-ouvrir-rapport-dependency-check"
+                                            href="{{ path('dc_projet', {group: dc_link_group, artifact: dc_link_artifact, version: dc_link_version}) }}"
+                                            class="button open-sans focus-dark-light"
+                                            title="Vulnérabilités CVE des composants tiers (OWASP DependencyCheck) — {{ dc_link_group }}:{{ dc_link_artifact }}:{{ dc_link_version }}"
+                                            aria-label="Ouvrir le rapport Dependency-Check">
+                                            <span aria-hidden="true">📦</span> Dependency-Check
+                                        </a>
+                                    {% endif %}
+                                </div>
+                            </header>
 
-</html>
+                            <section id="main information" class="grid-x">
+                                {# Affiche la version du référentiel owasp disponible #}
+                                <p id="owasp-version" class="open-sans cell"></p>
+                                <fieldset class="fieldset cell">
+                                    <legend>Informations.</legend>
+                                    <p class="open-sans">Le tableau ci-dessous liste <strong>uniquement</strong> les vulnérabilités de type
+                                OWASP et les hotspots OWASP.</p>
+                                {# Vulnérabilité OWASP #}
+                                <p class="ligne open-sans">
+                                    <strong>Vulnérabilité</strong>&nbsp;:
+                                    <span id="nombre-faille-owasp" class="stat result"></span>
+                                </p>
+                                <p class="ligne open-sans owasp-padding-left">Bloquante&nbsp;:
+                                    <span id="nombre-faille-bloquant" class="stat-owasp result light"></span>
+                                </p>
+                                <p class="ligne open-sans owasp-padding-left">Critique&nbsp;:
+                                    <span id="nombre-faille-critique" class="stat-owasp result light"></span>
+                                </p>
+                                <p class="ligne open-sans owasp-padding-left">Majeure&nbsp;:
+                                    <span id="nombre-faille-majeur" class="stat-owasp result light"></span>
+                                </p>
+                                <p class="ligne open-sans owasp-padding-left">Mineure&nbsp;:
+                                    <span id="nombre-faille-mineur" class="stat-owasp result light"></span>
+                                </p>
+
+                                {# Vulnérabilité Hotspot #}
+                                <p class="ligne open-sans margin-top-1"><strong>Hotspot</strong>&nbsp;:
+                                <span id="hotspot-total" class="stat result"></span>
+                            </p>
+                            <p class="ligne open-sans owasp-padding-left">HIGH&nbsp;:
+                                <span id="nombre-hotspot-high" class="stat-owasp result light"></span>
+                            </p>
+                            <p class="ligne open-sans owasp-padding-left">MEDIUM&nbsp;:
+                                <span id="nombre-hotspot-medium" class="stat-owasp result light"></span>
+                            </p>
+                            <p class="ligne open-sans owasp-padding-left">LOW&nbsp;:
+                                <span id="nombre-hotspot-low" class="stat-owasp result light"></span>
+                            </p>
+                            <p class="ligne open-sans">Examiné&nbsp;:
+                                <span id="hotspot-reviewed" class="stat-owasp result light"></span>
+                            </p>
+                            <p class="ligne open-sans">A vérifier&nbsp;:
+                                <span id="hotspot-to-review" class="stat-owasp result light"></span>
+                            </p>
+                            <p class="ligne open-sans">Note&nbsp;:
+                                <span id="note-hotspot" class="stat-note result"></span>
+                            </p>
+
+                            {# Répartition par module #}
+                            <p class="ligne open-sans margin-top-1"><strong>Module</strong>&nbsp;:</p>
+                            <p class="ligne open-sans owasp-padding-left">Frontend&nbsp;:
+                                <span id="frontend" class="result"></span>
+                            </p>
+                            <p class="ligne open-sans owasp-padding-left">Backend&nbsp;:
+                                <span id="backend" class="result"></span>
+                            </p>
+                            <p class="ligne open-sans owasp-padding-left">Autres&nbsp;:
+                                <span id="autre" class="result"></span>
+                            </p>
+                        </fieldset>
+
+                        <fieldset class="fieldset cell">
+                            <legend>Synthèse.</legend>
+                            <div class="table-scroll">
+                                <table>
+                                    <caption>Liste des vulnérabilités OWASP et des Hotspots SonarQube.</caption>
+                                    <thead>
+                                        <tr class="open-sans">
+                                            <th scope="col"></th>
+                                            <th scope="col" class="show-for-small-only">Cat.</th>
+                                            <th scope="col" class="show-for-medium">Catégorie</th>
+                                            <th scope="col" class="show-for-small-only text-center">Faille</th>
+                                            <th scope="col" class="show-for-medium text-center">Vulnérabilité</th>
+                                            <th scope="col" class="show-for-small-only text-center">Hotspot</th>
+                                            <th scope="col" class="show-for-medium text-center">Hotspot Review</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="open-sans">
+                                        <tr>
+                                            {# details #}
+                                            <td>
+                                                <svg id="js-a1" version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%"
+                                                    height="100%" viewbox="0 0 32 32" class="js-details voir-details-svg">
+                                                    <title>Icône pour le bouton OWASP A1</title>
+                                                    <desc>Affiche le détail pour la catégorie A1.</desc>
+                                                    <path
+                                                    d="M15.014 4.86c-1.846.24-3.262.65-4.77 1.381-3.461 1.671-7.01 5.073-9.541 9.145-.617.993-.617 1.221 0 2.214a27.64 27.64 0 003.086 4.086c3.28 3.624 6.623 5.663 10.383 6.327.96.168 3.093.168 4.053 0 3.76-.664 7.102-2.703 10.382-6.327a27.64 27.64 0 003.087-4.086c.617-.993.617-1.22 0-2.214a27.64 27.64 0 00-3.087-4.086c-3.23-3.569-6.547-5.615-10.195-6.286-.723-.135-2.825-.228-3.398-.155zm2.294 2.314c2.55.295 5.026 1.47 7.558 3.576 1.328 1.1 3.691 3.804 4.714 5.388l.23.355-.242.376c-.406.638-1.478 2.04-2.14 2.805-3.142 3.63-6.628 5.75-10.113 6.145-3.193.363-6.504-.852-9.784-3.582-1.328-1.1-3.692-3.805-4.714-5.388l-.231-.356.243-.375c.412-.644 1.472-2.04 2.139-2.805 1.908-2.2 3.928-3.851 5.992-4.87 2.19-1.088 4.297-1.51 6.348-1.269z" />
+                                                    <path
+                                                    d="M14.92 8.892c-2.918.563-5.282 3.14-5.793 6.293-.673 4.16 1.977 8.192 5.855 8.917 4.347.818 8.387-2.852 8.387-7.609 0-3.737-2.531-6.97-5.955-7.608-.686-.128-1.82-.128-2.494.007zm2.089 2.24c1.79.31 3.349 1.725 3.953 3.59.643 1.973.187 4.086-1.21 5.596-1.995 2.153-5.113 2.153-7.108 0a5.622 5.622 0 010-7.649c1.172-1.261 2.75-1.818 4.365-1.536z" />
+                                                    <path
+                                                    d="M15.512 13.642c-.929.248-1.72 1.094-1.964 2.113-.492 2.053 1.16 3.992 3.1 3.637 1.87-.349 2.861-2.563 1.945-4.334-.599-1.154-1.865-1.731-3.08-1.416z" />
+                                                </svg>
+                                            </td>
+                                            {# Catégorie #}
+                                            <td class="show-for-small-only">A1</td>
+                                            <td id="label-a1" class="show-for-medium">A1 - Attaques d'injection</td>
+                                            {# Faille #}
+                                            <td id="a1" class="text-center"></td>
+                                            {# Hotspot #}
+                                            <td id="h1" class="text-right"></td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <svg id="js-a2" version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%"
+                                                    height="100%" viewbox="0 0 32 32" class="js-details voir-details-svg">
+                                                    <title>Icône pour le bouton OWASP A2</title>
+                                                    <desc>Affiche le détail pour la catégorie A2.</desc>
+                                                    <path
+                                                    d="M15.014 4.86c-1.846.24-3.262.65-4.77 1.381-3.461 1.671-7.01 5.073-9.541 9.145-.617.993-.617 1.221 0 2.214a27.64 27.64 0 003.086 4.086c3.28 3.624 6.623 5.663 10.383 6.327.96.168 3.093.168 4.053 0 3.76-.664 7.102-2.703 10.382-6.327a27.64 27.64 0 003.087-4.086c.617-.993.617-1.22 0-2.214a27.64 27.64 0 00-3.087-4.086c-3.23-3.569-6.547-5.615-10.195-6.286-.723-.135-2.825-.228-3.398-.155zm2.294 2.314c2.55.295 5.026 1.47 7.558 3.576 1.328 1.1 3.691 3.804 4.714 5.388l.23.355-.242.376c-.406.638-1.478 2.04-2.14 2.805-3.142 3.63-6.628 5.75-10.113 6.145-3.193.363-6.504-.852-9.784-3.582-1.328-1.1-3.692-3.805-4.714-5.388l-.231-.356.243-.375c.412-.644 1.472-2.04 2.139-2.805 1.908-2.2 3.928-3.851 5.992-4.87 2.19-1.088 4.297-1.51 6.348-1.269z" />
+                                                    <path
+                                                    d="M14.92 8.892c-2.918.563-5.282 3.14-5.793 6.293-.673 4.16 1.977 8.192 5.855 8.917 4.347.818 8.387-2.852 8.387-7.609 0-3.737-2.531-6.97-5.955-7.608-.686-.128-1.82-.128-2.494.007zm2.089 2.24c1.79.31 3.349 1.725 3.953 3.59.643 1.973.187 4.086-1.21 5.596-1.995 2.153-5.113 2.153-7.108 0a5.622 5.622 0 010-7.649c1.172-1.261 2.75-1.818 4.365-1.536z" />
+                                                    <path
+                                                    d="M15.512 13.642c-.929.248-1.72 1.094-1.964 2.113-.492 2.053 1.16 3.992 3.1 3.637 1.87-.349 2.861-2.563 1.945-4.334-.599-1.154-1.865-1.731-3.08-1.416z" />
+                                                </svg>
+                                                <td class="show-for-small-only">A2</td>
+                                                <td id="label-a2" class="show-for-medium">A2 - Authentification défaillante</td>
+                                                <td id="a2" class="text-center"></td>
+                                                <td id="h2" class="text-right"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <svg id="js-a3" version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%"
+                                                        height="100%" viewbox="0 0 32 32" class="js-details voir-details-svg">
+                                                        <title>Icône pour le bouton OWASP A3</title>
+                                                        <desc>Affiche le détail pour la catégorie A3.</desc>
+                                                        <path
+                                                        d="M15.014 4.86c-1.846.24-3.262.65-4.77 1.381-3.461 1.671-7.01 5.073-9.541 9.145-.617.993-.617 1.221 0 2.214a27.64 27.64 0 003.086 4.086c3.28 3.624 6.623 5.663 10.383 6.327.96.168 3.093.168 4.053 0 3.76-.664 7.102-2.703 10.382-6.327a27.64 27.64 0 003.087-4.086c.617-.993.617-1.22 0-2.214a27.64 27.64 0 00-3.087-4.086c-3.23-3.569-6.547-5.615-10.195-6.286-.723-.135-2.825-.228-3.398-.155zm2.294 2.314c2.55.295 5.026 1.47 7.558 3.576 1.328 1.1 3.691 3.804 4.714 5.388l.23.355-.242.376c-.406.638-1.478 2.04-2.14 2.805-3.142 3.63-6.628 5.75-10.113 6.145-3.193.363-6.504-.852-9.784-3.582-1.328-1.1-3.692-3.805-4.714-5.388l-.231-.356.243-.375c.412-.644 1.472-2.04 2.139-2.805 1.908-2.2 3.928-3.851 5.992-4.87 2.19-1.088 4.297-1.51 6.348-1.269z" />
+                                                        <path
+                                                        d="M14.92 8.892c-2.918.563-5.282 3.14-5.793 6.293-.673 4.16 1.977 8.192 5.855 8.917 4.347.818 8.387-2.852 8.387-7.609 0-3.737-2.531-6.97-5.955-7.608-.686-.128-1.82-.128-2.494.007zm2.089 2.24c1.79.31 3.349 1.725 3.953 3.59.643 1.973.187 4.086-1.21 5.596-1.995 2.153-5.113 2.153-7.108 0a5.622 5.622 0 010-7.649c1.172-1.261 2.75-1.818 4.365-1.536z" />
+                                                        <path
+                                                        d="M15.512 13.642c-.929.248-1.72 1.094-1.964 2.113-.492 2.053 1.16 3.992 3.1 3.637 1.87-.349 2.861-2.563 1.945-4.334-.599-1.154-1.865-1.731-3.08-1.416z" />
+                                                    </svg>
+                                                </td>
+                                                <td class="show-for-small-only">A3</td>
+                                                <td id="label-a3" class="show-for-medium">A3 - Fuites de données sensibles</td>
+                                                <td id="a3" class="text-center"></td>
+                                                <td id="h3" class="text-right"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <svg id="js-a4" version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%"
+                                                        height="100%" viewbox="0 0 32 32" class="js-details voir-details-svg">
+                                                        <title>Icône pour le bouton OWASP A4</title>
+                                                        <desc>Affiche le détail pour la catégorie A4.</desc>
+                                                        <path
+                                                        d="M15.014 4.86c-1.846.24-3.262.65-4.77 1.381-3.461 1.671-7.01 5.073-9.541 9.145-.617.993-.617 1.221 0 2.214a27.64 27.64 0 003.086 4.086c3.28 3.624 6.623 5.663 10.383 6.327.96.168 3.093.168 4.053 0 3.76-.664 7.102-2.703 10.382-6.327a27.64 27.64 0 003.087-4.086c.617-.993.617-1.22 0-2.214a27.64 27.64 0 00-3.087-4.086c-3.23-3.569-6.547-5.615-10.195-6.286-.723-.135-2.825-.228-3.398-.155zm2.294 2.314c2.55.295 5.026 1.47 7.558 3.576 1.328 1.1 3.691 3.804 4.714 5.388l.23.355-.242.376c-.406.638-1.478 2.04-2.14 2.805-3.142 3.63-6.628 5.75-10.113 6.145-3.193.363-6.504-.852-9.784-3.582-1.328-1.1-3.692-3.805-4.714-5.388l-.231-.356.243-.375c.412-.644 1.472-2.04 2.139-2.805 1.908-2.2 3.928-3.851 5.992-4.87 2.19-1.088 4.297-1.51 6.348-1.269z" />
+                                                        <path
+                                                        d="M14.92 8.892c-2.918.563-5.282 3.14-5.793 6.293-.673 4.16 1.977 8.192 5.855 8.917 4.347.818 8.387-2.852 8.387-7.609 0-3.737-2.531-6.97-5.955-7.608-.686-.128-1.82-.128-2.494.007zm2.089 2.24c1.79.31 3.349 1.725 3.953 3.59.643 1.973.187 4.086-1.21 5.596-1.995 2.153-5.113 2.153-7.108 0a5.622 5.622 0 010-7.649c1.172-1.261 2.75-1.818 4.365-1.536z" />
+                                                        <path
+                                                        d="M15.512 13.642c-.929.248-1.72 1.094-1.964 2.113-.492 2.053 1.16 3.992 3.1 3.637 1.87-.349 2.861-2.563 1.945-4.334-.599-1.154-1.865-1.731-3.08-1.416z" />
+                                                    </svg>
+                                                </td>
+                                                <td class="show-for-small-only">A4</td>
+                                                <td id="label-a4" class="show-for-medium">A4 - Entités externes XML (XXE)</td>
+                                                <td id="a4" class="text-center"></td>
+                                                <td id="h4" class="text-right"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <svg id="js-a5" version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%"
+                                                        height="100%" viewbox="0 0 32 32" class="js-details voir-details-svg">
+                                                        <title>Icône pour le bouton OWASP A5</title>
+                                                        <desc>Affiche le détail pour la catégorie A5.</desc>
+                                                        <path
+                                                        d="M15.014 4.86c-1.846.24-3.262.65-4.77 1.381-3.461 1.671-7.01 5.073-9.541 9.145-.617.993-.617 1.221 0 2.214a27.64 27.64 0 003.086 4.086c3.28 3.624 6.623 5.663 10.383 6.327.96.168 3.093.168 4.053 0 3.76-.664 7.102-2.703 10.382-6.327a27.64 27.64 0 003.087-4.086c.617-.993.617-1.22 0-2.214a27.64 27.64 0 00-3.087-4.086c-3.23-3.569-6.547-5.615-10.195-6.286-.723-.135-2.825-.228-3.398-.155zm2.294 2.314c2.55.295 5.026 1.47 7.558 3.576 1.328 1.1 3.691 3.804 4.714 5.388l.23.355-.242.376c-.406.638-1.478 2.04-2.14 2.805-3.142 3.63-6.628 5.75-10.113 6.145-3.193.363-6.504-.852-9.784-3.582-1.328-1.1-3.692-3.805-4.714-5.388l-.231-.356.243-.375c.412-.644 1.472-2.04 2.139-2.805 1.908-2.2 3.928-3.851 5.992-4.87 2.19-1.088 4.297-1.51 6.348-1.269z" />
+                                                        <path
+                                                        d="M14.92 8.892c-2.918.563-5.282 3.14-5.793 6.293-.673 4.16 1.977 8.192 5.855 8.917 4.347.818 8.387-2.852 8.387-7.609 0-3.737-2.531-6.97-5.955-7.608-.686-.128-1.82-.128-2.494.007zm2.089 2.24c1.79.31 3.349 1.725 3.953 3.59.643 1.973.187 4.086-1.21 5.596-1.995 2.153-5.113 2.153-7.108 0a5.622 5.622 0 010-7.649c1.172-1.261 2.75-1.818 4.365-1.536z" />
+                                                        <path
+                                                        d="M15.512 13.642c-.929.248-1.72 1.094-1.964 2.113-.492 2.053 1.16 3.992 3.1 3.637 1.87-.349 2.861-2.563 1.945-4.334-.599-1.154-1.865-1.731-3.08-1.416z" />
+                                                    </svg>
+                                                </td>
+                                                <td class="show-for-small-only">A5</td>
+                                                <td id="label-a5" class="show-for-medium">A5 - Contrôle d'accès défaillant</td>
+                                                <td id="a5" class="text-center"></td>
+                                                <td id="h5" class="text-right"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <svg id="js-a6" version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%"
+                                                        height="100%" viewbox="0 0 32 32" class="js-details voir-details-svg">
+                                                        <title>Icône pour le bouton OWASP A6</title>
+                                                        <desc>Affiche le détail pour la catégorie A6.</desc>
+                                                        <path
+                                                        d="M15.014 4.86c-1.846.24-3.262.65-4.77 1.381-3.461 1.671-7.01 5.073-9.541 9.145-.617.993-.617 1.221 0 2.214a27.64 27.64 0 003.086 4.086c3.28 3.624 6.623 5.663 10.383 6.327.96.168 3.093.168 4.053 0 3.76-.664 7.102-2.703 10.382-6.327a27.64 27.64 0 003.087-4.086c.617-.993.617-1.22 0-2.214a27.64 27.64 0 00-3.087-4.086c-3.23-3.569-6.547-5.615-10.195-6.286-.723-.135-2.825-.228-3.398-.155zm2.294 2.314c2.55.295 5.026 1.47 7.558 3.576 1.328 1.1 3.691 3.804 4.714 5.388l.23.355-.242.376c-.406.638-1.478 2.04-2.14 2.805-3.142 3.63-6.628 5.75-10.113 6.145-3.193.363-6.504-.852-9.784-3.582-1.328-1.1-3.692-3.805-4.714-5.388l-.231-.356.243-.375c.412-.644 1.472-2.04 2.139-2.805 1.908-2.2 3.928-3.851 5.992-4.87 2.19-1.088 4.297-1.51 6.348-1.269z" />
+                                                        <path
+                                                        d="M14.92 8.892c-2.918.563-5.282 3.14-5.793 6.293-.673 4.16 1.977 8.192 5.855 8.917 4.347.818 8.387-2.852 8.387-7.609 0-3.737-2.531-6.97-5.955-7.608-.686-.128-1.82-.128-2.494.007zm2.089 2.24c1.79.31 3.349 1.725 3.953 3.59.643 1.973.187 4.086-1.21 5.596-1.995 2.153-5.113 2.153-7.108 0a5.622 5.622 0 010-7.649c1.172-1.261 2.75-1.818 4.365-1.536z" />
+                                                        <path
+                                                        d="M15.512 13.642c-.929.248-1.72 1.094-1.964 2.113-.492 2.053 1.16 3.992 3.1 3.637 1.87-.349 2.861-2.563 1.945-4.334-.599-1.154-1.865-1.731-3.08-1.416z" />
+                                                    </svg>
+                                                </td>
+                                                <td class="show-for-small-only">A6</td>
+                                                <td id="label-a6" class="show-for-medium">A6 - Configurations défaillantes</td>
+                                                <td id="a6" class="text-center"></td>
+                                                <td id="h6" class="text-right"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <svg id="js-a7" version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%"
+                                                        height="100%" viewbox="0 0 32 32" class="js-details voir-details-svg">
+                                                        <title>Icône pour le bouton OWASP A7</title>
+                                                        <desc>Affiche le détail pour la catégorie A7.</desc>
+                                                        <path
+                                                        d="M15.014 4.86c-1.846.24-3.262.65-4.77 1.381-3.461 1.671-7.01 5.073-9.541 9.145-.617.993-.617 1.221 0 2.214a27.64 27.64 0 003.086 4.086c3.28 3.624 6.623 5.663 10.383 6.327.96.168 3.093.168 4.053 0 3.76-.664 7.102-2.703 10.382-6.327a27.64 27.64 0 003.087-4.086c.617-.993.617-1.22 0-2.214a27.64 27.64 0 00-3.087-4.086c-3.23-3.569-6.547-5.615-10.195-6.286-.723-.135-2.825-.228-3.398-.155zm2.294 2.314c2.55.295 5.026 1.47 7.558 3.576 1.328 1.1 3.691 3.804 4.714 5.388l.23.355-.242.376c-.406.638-1.478 2.04-2.14 2.805-3.142 3.63-6.628 5.75-10.113 6.145-3.193.363-6.504-.852-9.784-3.582-1.328-1.1-3.692-3.805-4.714-5.388l-.231-.356.243-.375c.412-.644 1.472-2.04 2.139-2.805 1.908-2.2 3.928-3.851 5.992-4.87 2.19-1.088 4.297-1.51 6.348-1.269z" />
+                                                        <path
+                                                        d="M14.92 8.892c-2.918.563-5.282 3.14-5.793 6.293-.673 4.16 1.977 8.192 5.855 8.917 4.347.818 8.387-2.852 8.387-7.609 0-3.737-2.531-6.97-5.955-7.608-.686-.128-1.82-.128-2.494.007zm2.089 2.24c1.79.31 3.349 1.725 3.953 3.59.643 1.973.187 4.086-1.21 5.596-1.995 2.153-5.113 2.153-7.108 0a5.622 5.622 0 010-7.649c1.172-1.261 2.75-1.818 4.365-1.536z" />
+                                                        <path
+                                                        d="M15.512 13.642c-.929.248-1.72 1.094-1.964 2.113-.492 2.053 1.16 3.992 3.1 3.637 1.87-.349 2.861-2.563 1.945-4.334-.599-1.154-1.865-1.731-3.08-1.416z" />
+                                                    </svg>
+                                                </td>
+                                                <td class="show-for-small-only">A7</td>
+                                                <td id="label-a7" class="show-for-medium">A7 - Attaques cross-site scripting (XSS)</td>
+                                                <td id="a7" class="text-center"></td>
+                                                <td id="h7" class="text-right"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <svg id="js-a8" version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%"
+                                                        height="100%" viewbox="0 0 32 32" class="js-details voir-details-svg">
+                                                        <title>Icône pour le bouton OWASP A8</title>
+                                                        <desc>Affiche le détail pour la catégorie A8.</desc>
+                                                        <path
+                                                        d="M15.014 4.86c-1.846.24-3.262.65-4.77 1.381-3.461 1.671-7.01 5.073-9.541 9.145-.617.993-.617 1.221 0 2.214a27.64 27.64 0 003.086 4.086c3.28 3.624 6.623 5.663 10.383 6.327.96.168 3.093.168 4.053 0 3.76-.664 7.102-2.703 10.382-6.327a27.64 27.64 0 003.087-4.086c.617-.993.617-1.22 0-2.214a27.64 27.64 0 00-3.087-4.086c-3.23-3.569-6.547-5.615-10.195-6.286-.723-.135-2.825-.228-3.398-.155zm2.294 2.314c2.55.295 5.026 1.47 7.558 3.576 1.328 1.1 3.691 3.804 4.714 5.388l.23.355-.242.376c-.406.638-1.478 2.04-2.14 2.805-3.142 3.63-6.628 5.75-10.113 6.145-3.193.363-6.504-.852-9.784-3.582-1.328-1.1-3.692-3.805-4.714-5.388l-.231-.356.243-.375c.412-.644 1.472-2.04 2.139-2.805 1.908-2.2 3.928-3.851 5.992-4.87 2.19-1.088 4.297-1.51 6.348-1.269z" />
+                                                        <path
+                                                        d="M14.92 8.892c-2.918.563-5.282 3.14-5.793 6.293-.673 4.16 1.977 8.192 5.855 8.917 4.347.818 8.387-2.852 8.387-7.609 0-3.737-2.531-6.97-5.955-7.608-.686-.128-1.82-.128-2.494.007zm2.089 2.24c1.79.31 3.349 1.725 3.953 3.59.643 1.973.187 4.086-1.21 5.596-1.995 2.153-5.113 2.153-7.108 0a5.622 5.622 0 010-7.649c1.172-1.261 2.75-1.818 4.365-1.536z" />
+                                                        <path
+                                                        d="M15.512 13.642c-.929.248-1.72 1.094-1.964 2.113-.492 2.053 1.16 3.992 3.1 3.637 1.87-.349 2.861-2.563 1.945-4.334-.599-1.154-1.865-1.731-3.08-1.416z" />
+                                                    </svg>
+                                                </td>
+                                                <td class="show-for-small-only">A8</td>
+                                                <td id="label-a8" class="show-for-medium">A8 - Désérialisation sans validation</td>
+                                                <td id="a8" class="text-center"></td>
+                                                <td id="h8" class="text-right"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <svg id="js-a9" version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%"
+                                                        height="100%" viewbox="0 0 32 32" class="js-details voir-details-svg">
+                                                        <title>Icône pour le bouton OWASP A9</title>
+                                                        <desc>Affiche le détail pour la catégorie A9.</desc>
+                                                        <path
+                                                        d="M15.014 4.86c-1.846.24-3.262.65-4.77 1.381-3.461 1.671-7.01 5.073-9.541 9.145-.617.993-.617 1.221 0 2.214a27.64 27.64 0 003.086 4.086c3.28 3.624 6.623 5.663 10.383 6.327.96.168 3.093.168 4.053 0 3.76-.664 7.102-2.703 10.382-6.327a27.64 27.64 0 003.087-4.086c.617-.993.617-1.22 0-2.214a27.64 27.64 0 00-3.087-4.086c-3.23-3.569-6.547-5.615-10.195-6.286-.723-.135-2.825-.228-3.398-.155zm2.294 2.314c2.55.295 5.026 1.47 7.558 3.576 1.328 1.1 3.691 3.804 4.714 5.388l.23.355-.242.376c-.406.638-1.478 2.04-2.14 2.805-3.142 3.63-6.628 5.75-10.113 6.145-3.193.363-6.504-.852-9.784-3.582-1.328-1.1-3.692-3.805-4.714-5.388l-.231-.356.243-.375c.412-.644 1.472-2.04 2.139-2.805 1.908-2.2 3.928-3.851 5.992-4.87 2.19-1.088 4.297-1.51 6.348-1.269z" />
+                                                        <path
+                                                        d="M14.92 8.892c-2.918.563-5.282 3.14-5.793 6.293-.673 4.16 1.977 8.192 5.855 8.917 4.347.818 8.387-2.852 8.387-7.609 0-3.737-2.531-6.97-5.955-7.608-.686-.128-1.82-.128-2.494.007zm2.089 2.24c1.79.31 3.349 1.725 3.953 3.59.643 1.973.187 4.086-1.21 5.596-1.995 2.153-5.113 2.153-7.108 0a5.622 5.622 0 010-7.649c1.172-1.261 2.75-1.818 4.365-1.536z" />
+                                                        <path
+                                                        d="M15.512 13.642c-.929.248-1.72 1.094-1.964 2.113-.492 2.053 1.16 3.992 3.1 3.637 1.87-.349 2.861-2.563 1.945-4.334-.599-1.154-1.865-1.731-3.08-1.416z" />
+                                                    </svg>
+                                                </td>
+                                                <td class="show-for-small-only">A9</td>
+                                                <td id="label-a9" class="show-for-medium">A9 - Composants tiers vulnérables</td>
+                                                <td id="a9" class="text-center"></td>
+                                                <td id="h9" class="text-right"></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <svg id="js-a10" version="1.1" xmlns="http://www.w3.org/2000/svg" width="100%"
+                                                        height="100%" viewbox="0 0 32 32" class="js-details voir-details-svg">
+                                                        <title>Icône pour le bouton OWASP A10</title>
+                                                        <desc>Affiche le détail pour la catégorie A10.</desc>
+                                                        <path
+                                                        d="M15.014 4.86c-1.846.24-3.262.65-4.77 1.381-3.461 1.671-7.01 5.073-9.541 9.145-.617.993-.617 1.221 0 2.214a27.64 27.64 0 003.086 4.086c3.28 3.624 6.623 5.663 10.383 6.327.96.168 3.093.168 4.053 0 3.76-.664 7.102-2.703 10.382-6.327a27.64 27.64 0 003.087-4.086c.617-.993.617-1.22 0-2.214a27.64 27.64 0 00-3.087-4.086c-3.23-3.569-6.547-5.615-10.195-6.286-.723-.135-2.825-.228-3.398-.155zm2.294 2.314c2.55.295 5.026 1.47 7.558 3.576 1.328 1.1 3.691 3.804 4.714 5.388l.23.355-.242.376c-.406.638-1.478 2.04-2.14 2.805-3.142 3.63-6.628 5.75-10.113 6.145-3.193.363-6.504-.852-9.784-3.582-1.328-1.1-3.692-3.805-4.714-5.388l-.231-.356.243-.375c.412-.644 1.472-2.04 2.139-2.805 1.908-2.2 3.928-3.851 5.992-4.87 2.19-1.088 4.297-1.51 6.348-1.269z" />
+                                                        <path
+                                                        d="M14.92 8.892c-2.918.563-5.282 3.14-5.793 6.293-.673 4.16 1.977 8.192 5.855 8.917 4.347.818 8.387-2.852 8.387-7.609 0-3.737-2.531-6.97-5.955-7.608-.686-.128-1.82-.128-2.494.007zm2.089 2.24c1.79.31 3.349 1.725 3.953 3.59.643 1.973.187 4.086-1.21 5.596-1.995 2.153-5.113 2.153-7.108 0a5.622 5.622 0 010-7.649c1.172-1.261 2.75-1.818 4.365-1.536z" />
+                                                        <path
+                                                        d="M15.512 13.642c-.929.248-1.72 1.094-1.964 2.113-.492 2.053 1.16 3.992 3.1 3.637 1.87-.349 2.861-2.563 1.945-4.334-.599-1.154-1.865-1.731-3.08-1.416z" />
+                                                    </svg>
+                                                </td>
+                                                <td class="show-for-small-only">A10</td>
+                                                <td id="label-a10" class="show-for-medium">A10 - Journalisation et surveillance insuffisantes</td>
+                                                <td id="a10" class="text-center"></td>
+                                                <td id="h10" class="text-right"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </fieldset>
+                        </section>
+
+                        {# Tableau détaillé des failles de sécurité #}
+                        <section id="failles de sécurité" class="grid-x">
+                            <h2 class="h4 claire-hand"><span aria-hidden="true">🗒️</span> Liste des failles de sécurité.</h3>
+                            <div class="detail">
+                                <div class="table-scroll">
+                                    <table>
+                                        <caption>Liste détaillée des vulnérabilités détectées.</caption>
+                                        <thead>
+                                            <tr class="open-sans">
+                                                <th class="text-center" scope="col">N°</th>
+                                                <th class="text-center" id="rule" scope="col">Règle</th>
+                                                <th class="text-center" id="severity" scope="col">Sévérité</th>
+                                                <th class="text-center" id="component" scope="col">Component</th>
+                                                <th class="text-center" id="ligne" scope="col">Ligne</th>
+                                                <th class="text-center" id="message-details" scope="col">Message</th>
+                                                <th class="text-center" id="status" scope="col">Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tbody"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </section>
+
+                        {# Conteneur pour le diagramme en baton #}
+                        <section id="repartition-des-failles" class="margin-top-1">
+                            <h2 class="h4 claire-hand"><span aria-hidden="true">📊</span>Répartition des failles Owasp.</h3>
+                            <div id="owasp-bar-chart-container" class="owasp-bar-chart-container">
+                                <canvas id="owasp-bar-chart"></canvas>
+                            </div>
+                        </section>
+
+                        {# Comparaison OWASP #}
+                        <section id="comparaison-owasp">
+                            <h2 class="h4 claire-hand"><span aria-hidden="true">📋</span> Comparaison des référentiels OWASP</h3>
+                            <!-- Bouton pour comparer les référentiels -->
+                            <button id="bouton-ouvrir-comparaison-owasp" class="button open-sans focus-dark-light" type="button"><span
+                            aria-hidden="true">🔎</span> OWASP 2017/2021/2025
+                        </button>
+                    </section>
+
+                    {# Référentiel OWASP 2017, 2021 et 2025 - Doc #}
+                    <section id="referential-owasp" class="margin-top-1">
+                        <h2 class="h4 claire-hand"><span aria-hidden="true">📘</span> Référentiel OWASP</h3>
+                        <div class="grid-x">
+                            <div class="small-12 medium-6 large-6 cell">
+                                <label for="js-owasp-select">Choisis ton référentiel :</label>
+                                {# MODIF 2026-07-18 : `selected` aligné sur referentiel_affiche_defaut —
+                                sans ça, le select montrait toujours "2017" par défaut même quand
+                                l'accordéon affichait 2021/2025, un état incohérent entre les deux. #}
+                                <select id="js-owasp-select" name="owasp" data-tags="true"
+                                    data-placeholder='Cliquez pour ouvrir la liste' data-language='fr'>
+                                    <option value="2017" {{ referentiel_affiche_defaut == '2017' ? 'selected' : '' }}>OWASP 2017</option>
+                                    <option value="2021" {{ referentiel_affiche_defaut == '2021' ? 'selected' : '' }}>OWASP 2021</option>
+                                    <option value="2025" {{ referentiel_affiche_defaut == '2025' ? 'selected' : '' }}>OWASP 2025</option>
+                                </select>
+                            </div>
+                        </div>
+                    </section>
+
+                    {# Référentiel OWASP 2017 #}
+                    <section id="owasp-2017" class="grid-container owasp-content {{ display_off_2017 }} margin-bottom-2">
+                        <legend class="container-owasp-description open-sans color-noir font-size-1">Documentation Owasp 2017
+                        </legend>
+                        <ul class="vertical menu accordion-menu" data-accordion-menu>
+                            {% if owasp_2017 is defined and owasp_2017['liste']|length >0 %}
+                                {% for item in owasp_2017['liste'] %}
+                                    <li id="o{{ loop.index }}" class="referential-owasp-menu">
+                                        <a class="claire-hand referential-owasp-titre">{{ item.category }}</a>
+                                        <ul class="menu vertical owasp-padding-left-right">
+                                            <li>
+                                                <p class="open-sans text-justify">{{ item.description }}</p>
+                                                <footer class="grid-x grid-margin-x align-right margin-top-2">
+                                                    <div class="cell shrink">
+                                                        <a class="bouton-ouvrir-details open-sans focus-dark-light"
+                                                            href="{{ path('owasp_detail', { id: item.id }) }}"
+                                                            aria-label="Plus de détails...">
+                                                            <span aria-hidden="true">🔎</span> Plus de détails...
+                                                        </a>
+                                                    </div>
+                                                </footer>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                {% endfor %}
+                            {% endif %}
+                        </ul>
+                    </section>
+
+                    {# Référentiel OWASP 2021 #}
+                    <section id="owasp-2021" class="grid-container owasp-content {{ display_off_2021 }} margin-bottom-2">
+                        <legend class="container-owasp-description open-sans color-noir font-size-1">Documentation Owasp 2021
+                        </legend>
+                        <ul class="vertical menu accordion-menu" data-accordion-menu>
+                            {% if owasp_2021 is defined and owasp_2021['liste']|length >0 %}
+                                {% for item in owasp_2021['liste'] %}
+                                    <li id="o{{ loop.index }}" class="referential-owasp-menu">
+                                        <a class="claire-hand referential-owasp-titre" href="#">{{ item.category }}</a>
+                                        <ul class="menu vertical owasp-padding-left-right">
+                                            <li>
+                                                <p class="open-sans text-justify">{{ item.description }}</p>
+                                                <footer class="grid-x grid-margin-x align-right margin-top-2">
+                                                    <div class="cell shrink">
+                                                        <a class="bouton-ouvrir-details open-sans focus-dark-light"
+                                                            href="{{ path('owasp_detail', { id: item.id }) }}"
+                                                            aria-label="Plus de détails...">
+                                                            <span aria-hidden="true">🔎</span> Plus de détails...
+                                                        </a>
+                                                    </div>
+                                                </footer>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                {% endfor %}
+                            {% endif %}
+                        </ul>
+                    </section>
+
+                    {# Référentiel OWASP 2025 #}
+                    <section id="owasp-2025" class="grid-container owasp-content {{ display_off_2025 }} margin-bottom-2">
+                        <legend class="container-owasp-description open-sans color-noir font-size-1">Documentation Owasp 2025
+                        </legend>
+                        <ul class="vertical menu accordion-menu" data-accordion-menu>
+                            {% if owasp_2025 is defined and owasp_2025['liste']|length >0 %}
+                                {% for item in owasp_2025['liste'] %}
+                                    <li id="o{{ loop.index }}" class="referential-owasp-menu">
+                                        <a class="claire-hand referential-owasp-titre" href="#">{{ item.category }}</a>
+                                        <ul class="menu vertical owasp-padding-left-right">
+                                            <li>
+                                                <p class="open-sans text-justify">{{ item.description }}</p>
+                                                <footer class="grid-x grid-margin-x align-right margin-top-2">
+                                                    <div class="cell shrink">
+                                                        <a class="bouton-ouvrir-details open-sans focus-dark-light"
+                                                            href="{{ path('owasp_detail', { id: item.id }) }}"
+                                                            aria-label="Plus de détails...">
+                                                            <span aria-hidden="true">🔎</span> Plus de détails...
+                                                        </a>
+                                                    </div>
+                                                </footer>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                {% endfor %}
+                            {% endif %}
+                        </ul>
+                    </section>
+                </main>
+
+                {# Modal Owasp et points chauds #}
+                <dialog class="reveal" id="details" data-reveal data-close-on-click="true" data-animation-in="fade-in">
+                    <h2 class="h3 open-sans">Owasp et Points chauds.</h2>
+                    <p class="lead details-titre"></p>
+                    <ul class="stat-list">
+                        <li>
+                            <span class="stat-list-label note-e stat-detail">Élevée</span>
+                            <span id="detail-haut" class="stat stat-list-bleu">0</span>
+                        </li>
+                        <li>
+                            <span class="stat-list-label note-d stat-detail">Moyenne</span>
+                            <span id="detail-moyen" class="stat stat-list-bleu">0</span>
+                        </li>
+                        <li>
+                            <span class="stat-list-label note-c stat-detail">Faible</span>
+                            <span id="detail-faible" class="stat stat-list-bleu">0</span>
+                        </li>
+                    </ul>
+                    <footer class="grid-x grid-margin-x align-right margin-top-2">
+                        <div class="cell shrink">
+                            <button id="bouton-fermer-details-owasp" class="button open-sans focus-dark-light" type="button"
+                                aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span>Fermer
+                                </button>
+                            </div>
+                        </footer>
+                    </dialog>
+
+                    {# Modal comparaison owasp 2017/2021 #}
+                    <dialog class="reveal large" id="compare-owasp-modal" data-reveal>
+                        <h2 class="claire-hand h4">OWASP 2017/2021 VS OWASP 2025</h2>
+                        <img class="by" src="{{ asset('images/comparaison_owasp_2017-2025-811-501.svg') }}"
+                            alt="Comparaison des référentiels 2017/2025">
+
+                            <footer class="grid-x grid-margin-x align-right margin-top-2">
+                                <div class="cell shrink">
+                                    <button id="bouton-fermer-comparaison-owasp" class="button open-sans focus-dark-light" type="button"
+                                        aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span>Fermer
+                                        </button>
+                                    </div>
+                                </footer>
+                            </dialog>
+
+                            <div class="margin-bottom-1">&nbsp;</div>
+                            {{ include('footer.html.twig') }}
+                        </body>
+
+                    </html>

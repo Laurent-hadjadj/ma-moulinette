@@ -4,396 +4,398 @@
 {% set bottom = "footer-fixed" %}
 <!DOCTYPE html>
 <!--
-.. __  __             __  __             _ _            _   _
-  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
-  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
-  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
-  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+.__  __             __  __             _ _            _   _
+|  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+| |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+| |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+|_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
 
-  Laurent HADJADJ
-  https://github.com/Laurent-hadjadj/ma-moulinette
-  © 2024 - CC BY-SA-NC 4.0
+Laurent HADJADJ
+https://github.com/Laurent-hadjadj/ma-moulinette
+© 2024 - CC BY-SA-NC 4.0
 -->
 <html lang="fr">
-  {# Chargement de la section HEAD #}
-  <head>
-    <title>{{ title }}</title>
-    {{ include('head.html.twig') }}
-    {# Chargement des assets JS et CSS #}
-    {% block importmap %}{{ importmap('repartition-module') }}{% endblock %}
-  </head>
+    {# Chargement de la section HEAD #}
+    <head>
+        <title>{{ title }}</title>
+        {{ include('head.html.twig') }}
+        {# Chargement des assets JS et CSS #}
+        {% block importmap %}
+            {{ importmap('repartition-module') }}
+        {% endblock %}
+    </head>
 
-  <body dir="ltr">
-    {# no-script #}
-    {{ include('no-script.html.twig') }}
-    {# Chargement de la section header #}
-    {{ include('header.html.twig') }}
-    {# Chargement du bloc de messages #}
-    {{ include('_message.html.twig') }}
+    <body dir="ltr">
+        {# no-script #}
+        {{ include('no-script.html.twig') }}
+        {# Chargement de la section header #}
+        {{ include('header.html.twig') }}
+        {# Chargement du bloc de messages #}
+        {{ include('_message.html.twig') }}
 
-    <header class="grid-container margin-top-1">
-      <nav aria-label="Fil d'Ariane, vous êtes ici">
-        <ol class="claire-hand breadcrumbs">
-          <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
-          <li><a href="{{ path('projet', {}) }}">Projet</a></li>
-          <li aria-current="page">Répartition</li>
-        </ol>
-      </nav>
-    </header>
+        <header class="grid-container margin-top-1">
+            <nav aria-label="Fil d'Ariane, vous êtes ici">
+                <ol class="claire-hand breadcrumbs">
+                    <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+                    <li><a href="{{ path('projet', {}) }}">Projet</a></li>
+                    <li aria-current="page">Répartition</li>
+                </ol>
+            </nav>
+        </header>
 
-    <header id="main-content" class="grid-container"
+        <header id="main-content" class="grid-container"
             aria-labelledby="titre-repartition">
-      <h2 id="titre-repartition"
-          class="h3 claire-hand"
-          data-application="{{maven_key}}">
-          <span aria-hidden="true">🧩</span> Répartition des anomalies pour {{mon_application}}
-      </h2>
-      <div class="show-for-sr">Sur cette page, vous pouvez collecter et analyser les anomalies SonarQube, par type, sévérité et par module.</div>
-    </header>
+            <h2 id="titre-repartition"
+                class="h3 claire-hand"
+                data-application="{{maven_key}}">
+                <span aria-hidden="true">🧩</span> Répartition des anomalies pour {{mon_application}}
+            </h2>
+            <div class="show-for-sr">Sur cette page, vous pouvez collecter et analyser les anomalies SonarQube, par type, sévérité et par module.</div>
+        </header>
 
-    <main class="grid-container">
-      <p class="open-sans">
-        <span>Setup : </span>
-        <span id="js-setup" class="open-sans color-noir" data-statut={{statut}}>{{setup}}</span>
-      </p>
+        <main class="grid-container">
+            <p class="open-sans">
+                <span>Setup : </span>
+                <span id="js-setup" class="open-sans color-noir" data-statut={{statut}}>{{setup}}</span>
+            </p>
 
-      <ul class="vertical menu accordion-menu" data-accordion-menu>
-        <li>
-          <a class="callout open-sans">Tableau des sévérités par catégorie.</a>
-          <ul class="menu vertical">
-            <fieldset class="fieldset open-sans">
-              <legend><strong>Pour les anomalies ouvertes, confirmées et ré-ouvertes.</strong></legend>
-              <br>
-              <p class="ligne">
-                <strong>Fiabilité</strong>&nbsp;:
-                <span id="nombre-bug" class="stat result" data-nombre-bug="{{information['BUG']['total']}}">
-                      {{information['BUG']['total']|number_format(0, '.', ' ')}}</span>
-              </p>
-              <ul class="stats-list">
+            <ul class="vertical menu accordion-menu" data-accordion-menu>
                 <li>
-                  <span class="show-for-small-only stats-list-label">Bloquant</span>
-                  <span class="show-for-medium stats-list-label tool-tip-repartition">B
-                    <span class="tool-tip-text-repartition">Bloquant.</span></span>
-                  <span id="bug-bloquant" class="stats-list-rouge-intense"
-                        data-nombre-bug-blocker="{{information['BUG']['blocker']}}">
-                        {{information['BUG']['blocker']|number_format(0, '.', ' ')}}</span>
-                </li>
-                <li>
-                  <span class="show-for-small-only stats-list-label">Critique</span>
-                  <span class="show-for-medium stats-list-label tool-tip-repartition">C
-                    <span class="tool-tip-text-repartition">Critique.</span></span>
-                  <span id="bug-critique" class="stats-list-rouge-claire"
-                        data-nombre-bug-critical="{{information['BUG']['critical']}}">
-                        {{information['BUG']['critical']|number_format(0, '.', ' ')}}</span>
-                </li>
-                <li>
-                  <span class="show-for-small-only stats-list-label">Majeur</span>
-                  <span class="show-for-medium stats-list-label tool-tip-repartition">M
-                  <span class="tool-tip-text-repartition">Majeur.</span></span>
-                  <span id="bug-majeur" class="stats-list-orange"
-                        data-nombre-bug-major="{{information['BUG']['major']}}">
-                        {{information['BUG']['major']|number_format(0, '.', ' ')}}</span>
-                </li>
-                <li>
-                  <span class="show-for-small-only stats-list-label">Mineur</span>
-                  <span class="show-for-medium stats-list-label tool-tip-repartition">m
-                    <span class="tool-tip-text-repartition">Mineur.</span></span>
-                  <span id="bug-mineur" class="stats-list-vert"
-                        data-nombre-bug-minor="{{information['BUG']['minor']}}">
-                        {{information['BUG']['minor']|number_format(0, '.', ' ')}}</span>
-                </li>
-                <li>
-                  <span class="show-for-small-only stats-list-label">Info</span>
-                  <span class="show-for-medium stats-list-label tool-tip-repartition">I
-                    <span class="tool-tip-text-repartition">Info.</span></span>
-                  <span id="bug-info" class="stats-list-bleu"
-                        data-nombre-bug-info="{{information['BUG']['info']}}">
-                        {{information['BUG']['info']|number_format(0, '.', ' ')}}</span>
-                </li>
-              </ul>
+                    <a class="callout open-sans">Tableau des sévérités par catégorie.</a>
+                    <ul class="menu vertical">
+                        <fieldset class="fieldset open-sans">
+                            <legend><strong>Pour les anomalies ouvertes, confirmées et ré-ouvertes.</strong></legend>
+                            <br>
+                            <p class="ligne">
+                                <strong>Fiabilité</strong>&nbsp;:
+                                <span id="nombre-bug" class="stat result" data-nombre-bug="{{information['BUG']['total']}}">
+                                {{information['BUG']['total']|number_format(0, '.', ' ')}}</span>
+                            </p>
+                            <ul class="stats-list">
+                                <li>
+                                    <span class="show-for-small-only stats-list-label">Bloquant</span>
+                                    <span class="show-for-medium stats-list-label tool-tip-repartition">B
+                                        <span class="tool-tip-text-repartition">Bloquant.</span></span>
+                                        <span id="bug-bloquant" class="stats-list-rouge-intense"
+                                            data-nombre-bug-blocker="{{information['BUG']['blocker']}}">
+                                        {{information['BUG']['blocker']|number_format(0, '.', ' ')}}</span>
+                                    </li>
+                                    <li>
+                                        <span class="show-for-small-only stats-list-label">Critique</span>
+                                        <span class="show-for-medium stats-list-label tool-tip-repartition">C
+                                            <span class="tool-tip-text-repartition">Critique.</span></span>
+                                            <span id="bug-critique" class="stats-list-rouge-claire"
+                                                data-nombre-bug-critical="{{information['BUG']['critical']}}">
+                                            {{information['BUG']['critical']|number_format(0, '.', ' ')}}</span>
+                                        </li>
+                                        <li>
+                                            <span class="show-for-small-only stats-list-label">Majeur</span>
+                                            <span class="show-for-medium stats-list-label tool-tip-repartition">M
+                                                <span class="tool-tip-text-repartition">Majeur.</span></span>
+                                                <span id="bug-majeur" class="stats-list-orange"
+                                                    data-nombre-bug-major="{{information['BUG']['major']}}">
+                                                {{information['BUG']['major']|number_format(0, '.', ' ')}}</span>
+                                            </li>
+                                            <li>
+                                                <span class="show-for-small-only stats-list-label">Mineur</span>
+                                                <span class="show-for-medium stats-list-label tool-tip-repartition">m
+                                                    <span class="tool-tip-text-repartition">Mineur.</span></span>
+                                                    <span id="bug-mineur" class="stats-list-vert"
+                                                        data-nombre-bug-minor="{{information['BUG']['minor']}}">
+                                                    {{information['BUG']['minor']|number_format(0, '.', ' ')}}</span>
+                                                </li>
+                                                <li>
+                                                    <span class="show-for-small-only stats-list-label">Info</span>
+                                                    <span class="show-for-medium stats-list-label tool-tip-repartition">I
+                                                        <span class="tool-tip-text-repartition">Info.</span></span>
+                                                        <span id="bug-info" class="stats-list-bleu"
+                                                            data-nombre-bug-info="{{information['BUG']['info']}}">
+                                                        {{information['BUG']['info']|number_format(0, '.', ' ')}}</span>
+                                                    </li>
+                                                </ul>
 
-              <p class="ligne">
-                <strong>Sécurité</strong>&nbsp;:
-                <span id="nombre-vulnerability" class="stat result"
-                  data-nombre-vulnerability="{{information['VULNERABILITY']['total']}}">
-                  {{information['VULNERABILITY']['total']|number_format(0, '.', ' ')}}</span>
-              </p>
-              <ul class="stats-list">
-                <li>
-                  <span class="show-for-small-only stats-list-label">Bloquant</span>
-                  <span class="show-for-medium stats-list-label tool-tip-repartition">B
-                    <span class="tool-tip-text-repartition">Bloquant.</span></span>
-                  <span id="vulnerability-bloquant" class="stats-list-rouge-intense"
-                        data-nombre-vulnerability-blocker="{{information['VULNERABILITY']['blocker']}}">
-                        {{information['VULNERABILITY']['blocker']|number_format(0, '.', ' ')}}</span>
-                </li>
-                <li>
-                  <span class="show-for-small-only stats-list-label">Critique</span>
-                  <span class="show-for-medium stats-list-label tool-tip-repartition">C
-                    <span class="tool-tip-text-repartition">Critique.</span></span>
-                  <span id="vulnerability-critique" class="stats-list-rouge-claire"
-                        data-nombre-vulnerability-critical="{{information['VULNERABILITY']['critical']}}">
-                        {{information['VULNERABILITY']['critical']|number_format(0, '.', ' ')}}</span>
-                </li>
-                <li>
-                  <span class="show-for-small-only stats-list-label">Majeur</span>
-                  <span class="show-for-medium stats-list-label tool-tip-repartition">M
-                    <span class="tool-tip-text-repartition">Majeur.</span></span>
-                  <span id="vulnerability-majeur" class="stats-list-orange"
-                        data-nombre-vulnerability-major="{{information['VULNERABILITY']['major']}}">
-                        {{information['VULNERABILITY']['major']|number_format(0, '.', ' ')}}</span>
-                </li>
-                <li>
-                  <span class="show-for-small-only stats-list-label">Mineur</span>
-                  <span class="show-for-medium stats-list-label tool-tip-repartition">m
-                    <span class="tool-tip-text-repartition">Mineur.</span></span>
-                  <span id="vulnerability-mineur" class=" stats-list-vert"
-                        data-nombre-vulnerability-minor="{{information['VULNERABILITY']['minor']}}">
-                        {{information['VULNERABILITY']['minor']|number_format(0, '.', ' ')}}</span>
-                </li>
-                <li>
-                <span class="show-for-small-only stats-list-label">Info</span>
-                  <span class="show-for-medium stats-list-label tool-tip-repartition">I
-                    <span class="tool-tip-text-repartition">Info.</span></span>
-                  <span id="vulnerability-info" class="stats-list-bleu"
-                        data-nombre-vulnerability-info="{{information['VULNERABILITY']['info']}}">
-                        {{information['VULNERABILITY']['info']|number_format(0, '.', ' ')}}</span>
-                </li>
-              </ul>
+                                                <p class="ligne">
+                                                    <strong>Sécurité</strong>&nbsp;:
+                                                    <span id="nombre-vulnerability" class="stat result"
+                                                        data-nombre-vulnerability="{{information['VULNERABILITY']['total']}}">
+                                                    {{information['VULNERABILITY']['total']|number_format(0, '.', ' ')}}</span>
+                                                </p>
+                                                <ul class="stats-list">
+                                                    <li>
+                                                        <span class="show-for-small-only stats-list-label">Bloquant</span>
+                                                        <span class="show-for-medium stats-list-label tool-tip-repartition">B
+                                                            <span class="tool-tip-text-repartition">Bloquant.</span></span>
+                                                            <span id="vulnerability-bloquant" class="stats-list-rouge-intense"
+                                                                data-nombre-vulnerability-blocker="{{information['VULNERABILITY']['blocker']}}">
+                                                            {{information['VULNERABILITY']['blocker']|number_format(0, '.', ' ')}}</span>
+                                                        </li>
+                                                        <li>
+                                                            <span class="show-for-small-only stats-list-label">Critique</span>
+                                                            <span class="show-for-medium stats-list-label tool-tip-repartition">C
+                                                                <span class="tool-tip-text-repartition">Critique.</span></span>
+                                                                <span id="vulnerability-critique" class="stats-list-rouge-claire"
+                                                                    data-nombre-vulnerability-critical="{{information['VULNERABILITY']['critical']}}">
+                                                                {{information['VULNERABILITY']['critical']|number_format(0, '.', ' ')}}</span>
+                                                            </li>
+                                                            <li>
+                                                                <span class="show-for-small-only stats-list-label">Majeur</span>
+                                                                <span class="show-for-medium stats-list-label tool-tip-repartition">M
+                                                                    <span class="tool-tip-text-repartition">Majeur.</span></span>
+                                                                    <span id="vulnerability-majeur" class="stats-list-orange"
+                                                                        data-nombre-vulnerability-major="{{information['VULNERABILITY']['major']}}">
+                                                                    {{information['VULNERABILITY']['major']|number_format(0, '.', ' ')}}</span>
+                                                                </li>
+                                                                <li>
+                                                                    <span class="show-for-small-only stats-list-label">Mineur</span>
+                                                                    <span class="show-for-medium stats-list-label tool-tip-repartition">m
+                                                                        <span class="tool-tip-text-repartition">Mineur.</span></span>
+                                                                        <span id="vulnerability-mineur" class=" stats-list-vert"
+                                                                            data-nombre-vulnerability-minor="{{information['VULNERABILITY']['minor']}}">
+                                                                        {{information['VULNERABILITY']['minor']|number_format(0, '.', ' ')}}</span>
+                                                                    </li>
+                                                                    <li>
+                                                                        <span class="show-for-small-only stats-list-label">Info</span>
+                                                                        <span class="show-for-medium stats-list-label tool-tip-repartition">I
+                                                                            <span class="tool-tip-text-repartition">Info.</span></span>
+                                                                            <span id="vulnerability-info" class="stats-list-bleu"
+                                                                                data-nombre-vulnerability-info="{{information['VULNERABILITY']['info']}}">
+                                                                            {{information['VULNERABILITY']['info']|number_format(0, '.', ' ')}}</span>
+                                                                        </li>
+                                                                    </ul>
 
-              <p class="ligne">
-                <strong>Maintenabilité</strong>&nbsp;:
-                <span id="nombre-code-smell" class="stat result"
-                      data-nombre-code-smell="{{information['CODE_SMELL']['total']}}">{{information['CODE_SMELL']['total']|number_format(0, '.', ' ')}}</span>
-              </p>
-              <ul class="stats-list">
-                <li>
-                  <span class="show-for-small-only stats-list-label">Bloquant</span>
-                  <span class="show-for-medium stats-list-label tool-tip-repartition">B
-                    <span class="tool-tip-text-repartition">Bloquante.</span></span>
-                  <span id="code-smell-bloquant" class="stats-list-rouge-intense"
-                        data-nombre-code-smell-blocker="{{information['CODE_SMELL']['blocker']}}">
-                        {{information['CODE_SMELL']['blocker']|number_format(0, '.', ' ')}}</span>
-                </li>
-                <li>
-                  <span class="show-for-small-only stats-list-label">Critique</span>
-                  <span class="show-for-medium stats-list-label tool-tip-repartition">C
-                    <span class="tool-tip-text-repartition">Critique.</span></span>
-                  <span id="code-smell-critique" class="stats-list-rouge-claire"
-                        data-nombre-code-smell-critical="{{information['CODE_SMELL']['critical']}}">
-                        {{information['CODE_SMELL']['critical']|number_format(0, '.', ' ')}}</span>
-                </li>
-                <li>
-                  <span class="show-for-small-only stats-list-label">Majeur</span>
-                  <span class="show-for-medium stats-list-label tool-tip-repartition">M
-                    <span class="tool-tip-text-repartition">Majeure.</span></span>
-                  <span id="code-smell-majeur" class="stats-list-orange"
-                        data-nombre-code-smell-major="{{information['CODE_SMELL']['major']}}">
-                        {{information['CODE_SMELL']['major']|number_format(0, '.', ' ')}}</span>
-                </li>
-                <li>
-                  <span class="show-for-small-only stats-list-label">Mineur</span>
-                  <span class="show-for-medium stats-list-label tool-tip-repartition">m
-                    <span class="tool-tip-text-repartition">Mineure.</span></span>
-                  <span id="code-smell-mineur" class="stats-list-vert"
-                        data-nombre-code-smell-minor="{{information['CODE_SMELL']['minor']}}">
-                        {{information['CODE_SMELL']['minor']|number_format(0, '.', ' ')}}</span>
-                </li>
-                <li>
-                  <span class="show-for-small-only stats-list-label">Info</span>
-                  <span class="show-for-medium stats-list-label tool-tip-repartition">I
-                    <span class="tool-tip-text-repartition">Info.</span></span>
-                  <span id="code-smell-info" class="stats-list-bleu"
-                        data-nombre-code-smell-info="{{information['CODE_SMELL']['info']}}">
-                        {{information['CODE_SMELL']['info']|number_format(0, '.', ' ')}}</span>
-                </li>
-              </ul>
-            </fieldset>
-          </ul>
-        </li>
-      </ul>
+                                                                    <p class="ligne">
+                                                                        <strong>Maintenabilité</strong>&nbsp;:
+                                                                        <span id="nombre-code-smell" class="stat result"
+                                                                            data-nombre-code-smell="{{information['CODE_SMELL']['total']}}">{{information['CODE_SMELL']['total']|number_format(0, '.', ' ')}}</span>
+                                                                        </p>
+                                                                        <ul class="stats-list">
+                                                                            <li>
+                                                                                <span class="show-for-small-only stats-list-label">Bloquant</span>
+                                                                                <span class="show-for-medium stats-list-label tool-tip-repartition">B
+                                                                                    <span class="tool-tip-text-repartition">Bloquante.</span></span>
+                                                                                    <span id="code-smell-bloquant" class="stats-list-rouge-intense"
+                                                                                        data-nombre-code-smell-blocker="{{information['CODE_SMELL']['blocker']}}">
+                                                                                    {{information['CODE_SMELL']['blocker']|number_format(0, '.', ' ')}}</span>
+                                                                                </li>
+                                                                                <li>
+                                                                                    <span class="show-for-small-only stats-list-label">Critique</span>
+                                                                                    <span class="show-for-medium stats-list-label tool-tip-repartition">C
+                                                                                        <span class="tool-tip-text-repartition">Critique.</span></span>
+                                                                                        <span id="code-smell-critique" class="stats-list-rouge-claire"
+                                                                                            data-nombre-code-smell-critical="{{information['CODE_SMELL']['critical']}}">
+                                                                                        {{information['CODE_SMELL']['critical']|number_format(0, '.', ' ')}}</span>
+                                                                                    </li>
+                                                                                    <li>
+                                                                                        <span class="show-for-small-only stats-list-label">Majeur</span>
+                                                                                        <span class="show-for-medium stats-list-label tool-tip-repartition">M
+                                                                                            <span class="tool-tip-text-repartition">Majeure.</span></span>
+                                                                                            <span id="code-smell-majeur" class="stats-list-orange"
+                                                                                                data-nombre-code-smell-major="{{information['CODE_SMELL']['major']}}">
+                                                                                            {{information['CODE_SMELL']['major']|number_format(0, '.', ' ')}}</span>
+                                                                                        </li>
+                                                                                        <li>
+                                                                                            <span class="show-for-small-only stats-list-label">Mineur</span>
+                                                                                            <span class="show-for-medium stats-list-label tool-tip-repartition">m
+                                                                                                <span class="tool-tip-text-repartition">Mineure.</span></span>
+                                                                                                <span id="code-smell-mineur" class="stats-list-vert"
+                                                                                                    data-nombre-code-smell-minor="{{information['CODE_SMELL']['minor']}}">
+                                                                                                {{information['CODE_SMELL']['minor']|number_format(0, '.', ' ')}}</span>
+                                                                                            </li>
+                                                                                            <li>
+                                                                                                <span class="show-for-small-only stats-list-label">Info</span>
+                                                                                                <span class="show-for-medium stats-list-label tool-tip-repartition">I
+                                                                                                    <span class="tool-tip-text-repartition">Info.</span></span>
+                                                                                                    <span id="code-smell-info" class="stats-list-bleu"
+                                                                                                        data-nombre-code-smell-info="{{information['CODE_SMELL']['info']}}">
+                                                                                                    {{information['CODE_SMELL']['info']|number_format(0, '.', ' ')}}</span>
+                                                                                                </li>
+                                                                                            </ul>
+                                                                                        </fieldset>
+                                                                                    </ul>
+                                                                                </li>
+                                                                            </ul>
 
-      {# Boutons de collecte #}
-      <h2 id="titre-collecte"
-          class="h4 claire-hand margin-top-1"
-          aria-label="Étape 2 : Collecte des données.">
-            <span aria-hidden="true">📥</span>1 - Collecte
-              <span class="tool-tip-repartition">ℹ️
-                <span class="tool-tip-text-repartition open-sans">Lance la collecte.</span>
-              </span>
-            <output id="spinner-collecte-annonce" aria-live="polite">
-              <div id="collecte-animation1" class="sp"></div>
-              <span class="show-for-sr">Analyse en cours...</span>
-            </output>
-      </h2>
+                                                                            {# Boutons de collecte #}
+                                                                            <h2 id="titre-collecte"
+                                                                                class="h4 claire-hand margin-top-1"
+                                                                                aria-label="Étape 2 : Collecte des données.">
+                                                                                <span aria-hidden="true">📥</span>1 - Collecte
+                                                                                <span class="tool-tip-repartition">ℹ️
+                                                                                    <span class="tool-tip-text-repartition open-sans">Lance la collecte.</span>
+                                                                                </span>
+                                                                                <output id="spinner-collecte-annonce" aria-live="polite">
+                                                                                    <div id="collecte-animation1" class="sp"></div>
+                                                                                    <span class="show-for-sr">Analyse en cours...</span>
+                                                                                </output>
+                                                                            </h2>
 
-      {# Processus de collecte par type (bug, security, code_smell) #}
-      <div id="collecte">
-        <div class="grid-x cell">
-          <div class="grid-x show-for-medium etape cell">
-            <div class="medium-4 large-4 cell">
-              <div id="etape-1" class="stat-mini text-center open-sans">1</div>
-            </div>
-            <div class="medium-4 large-4 cell">
-              <div id="etape-2" class="stat-mini text-center open-sans">2</div>
-            </div>
-            <div class="medium-4 large-4 cell">
-              <div id="etape-3" class="stat-mini text-center open-sans">3</div>
-            </div>
-          </div>
+                                                                            {# Processus de collecte par type (bug, security, code_smell) #}
+                                                                            <div id="collecte">
+                                                                                <div class="grid-x cell">
+                                                                                    <div class="grid-x show-for-medium etape cell">
+                                                                                        <div class="medium-4 large-4 cell">
+                                                                                            <div id="etape-1" class="stat-mini text-center open-sans">1</div>
+                                                                                        </div>
+                                                                                        <div class="medium-4 large-4 cell">
+                                                                                            <div id="etape-2" class="stat-mini text-center open-sans">2</div>
+                                                                                        </div>
+                                                                                        <div class="medium-4 large-4 cell">
+                                                                                            <div id="etape-3" class="stat-mini text-center open-sans">3</div>
+                                                                                        </div>
+                                                                                    </div>
 
-          <div class="small-12 medium-4 large-4 cell">
-            <div id="js-collecte-bug" class="container-bouton">
-              <button id="bouton-collecte-bug"
-                      class="button expanded open-sans focus-light"
-                      type="button"
-                      aria-label="Lance la collecte des anomalies SonarQube de type fiabilité.">
-                <span class="show-for-small-only stat-mini">1 - </span><span aria-hidden="true">🛡️</span>Fiabilité
-              </button>
-            </div>
-          </div>
-          <div class="small-12 medium-4 large-4 cell">
-            <div id="js-collecte-vulnerability" class="container-bouton">
-              <button id="bouton-collecte-vulnerability"
-                      class="button expanded open-sans focus-light"
-                      type="button"
-                      aria-label="Lance la collecte des anomalies SonarQube de type sécurité.">
-                <span class="show-for-small-only stat-mini">2 - </span><span aria-hidden="true">🔐</span>Sécurité
-              </button>
-            </div>
-          </div>
-          <div class="small-12 medium-4 large-4 cell">
-            <div id="js-collecte-code-smell" class="container-bouton">
-              <button id="bouton-collecte-code-smell"
-                      class="button expanded open-sans focus-light"
-                      type="button"
-                      aria-label="Lance la collecte des anomalies SonarQube de type maintenabilité.">
-                <span class="show-for-small-only stat-mini">3 - </span><span aria-hidden="true">🚫</span>Maintenabilité
-              </button>
-            </div>
-          </div>
-        </div>
+                                                                                    <div class="small-12 medium-4 large-4 cell">
+                                                                                        <div id="js-collecte-bug" class="container-bouton">
+                                                                                            <button id="bouton-collecte-bug"
+                                                                                                class="button expanded open-sans focus-dark-light"
+                                                                                                type="button"
+                                                                                                aria-label="Lance la collecte des anomalies SonarQube de type fiabilité.">
+                                                                                                <span class="show-for-small-only stat-mini">1 - </span><span aria-hidden="true">🛡️</span>Fiabilité
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="small-12 medium-4 large-4 cell">
+                                                                                        <div id="js-collecte-vulnerability" class="container-bouton">
+                                                                                            <button id="bouton-collecte-vulnerability"
+                                                                                                class="button expanded open-sans focus-dark-light"
+                                                                                                type="button"
+                                                                                                aria-label="Lance la collecte des anomalies SonarQube de type sécurité.">
+                                                                                                <span class="show-for-small-only stat-mini">2 - </span><span aria-hidden="true">🔐</span>Sécurité
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="small-12 medium-4 large-4 cell">
+                                                                                        <div id="js-collecte-code-smell" class="container-bouton">
+                                                                                            <button id="bouton-collecte-code-smell"
+                                                                                                class="button expanded open-sans focus-dark-light"
+                                                                                                type="button"
+                                                                                                aria-label="Lance la collecte des anomalies SonarQube de type maintenabilité.">
+                                                                                                <span class="show-for-small-only stat-mini">3 - </span><span aria-hidden="true">🚫</span>Maintenabilité
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
 
-        {# Temps passé #}
-        <div class="grid-x cell">
-          <div id="collecte-bug-time" class="text-center small-12 medium-4 large-4 cell">
-            <div class="show-for-medium"
-                  aria-live="polite"
-                  aria-atomic="true">
-              <span id="js-bug-time" class="stat-mini">0.0</span>
-              <span>min</span>
-            </div>
-          </div>
-          <div id="collecte-vulnerability-time" class="text-center small-12 medium-4 large-4 cell">
-            <div class="show-for-medium"
-                  aria-live="polite"
-                  aria-atomic="true">
-              <span id="js-vulnerability-time" class="stat-mini">0.0</span>
-              <span>min</span>
-            </div>
-          </div>
-          <div id="collecte-code-smell-time" class="text-center small-12 medium-4 large-4 cell">
-            <div class="show-for-medium"
-                  aria-live="polite"
-                  aria-atomic="true">
-              <span id="js-code-smell-time" class="stat-mini">0.0</span>
-              <span>min</span>
-            </div>
-          </div>
-        </div>
-      </div>
+                                                                                {# Temps passé #}
+                                                                                <div class="grid-x cell">
+                                                                                    <div id="collecte-bug-time" class="text-center small-12 medium-4 large-4 cell">
+                                                                                        <div class="show-for-medium"
+                                                                                            aria-live="polite"
+                                                                                            aria-atomic="true">
+                                                                                            <span id="js-bug-time" class="stat-mini">0.0</span>
+                                                                                            <span>min</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div id="collecte-vulnerability-time" class="text-center small-12 medium-4 large-4 cell">
+                                                                                        <div class="show-for-medium"
+                                                                                            aria-live="polite"
+                                                                                            aria-atomic="true">
+                                                                                            <span id="js-vulnerability-time" class="stat-mini">0.0</span>
+                                                                                            <span>min</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div id="collecte-code-smell-time" class="text-center small-12 medium-4 large-4 cell">
+                                                                                        <div class="show-for-medium"
+                                                                                            aria-live="polite"
+                                                                                            aria-atomic="true">
+                                                                                            <span id="js-code-smell-time" class="stat-mini">0.0</span>
+                                                                                            <span>min</span>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
 
-      {# Analyse #}
-      <h2 id="titre-analyse"
-          class="h4 claire-hand margin-top-1"
-          aria-label="Étape 2 : Analyse des données.">
-        <span aria-hidden="true">⚙️</span>2 - Analyse
-          <span class="tool-tip-repartition">ℹ️
-            <span class="tool-tip-text-repartition open-sans">Lance le calcul et la répartition par module ou affiche les derniers résultats.</span>
-          </span>
-        </span>
-        <output id="spinner-analyse-annonce" aria-live="polite">
-          <div id="analyse-animation" class="sp"></div>
-          <span class="show-for-sr">Analyse en cours...</span>
-        </output>
-      </h2>
+                                                                            {# Analyse #}
+                                                                            <h2 id="titre-analyse"
+                                                                                class="h4 claire-hand margin-top-1"
+                                                                                aria-label="Étape 2 : Analyse des données.">
+                                                                                <span aria-hidden="true">⚙️</span>2 - Analyse
+                                                                                <span class="tool-tip-repartition">ℹ️
+                                                                                    <span class="tool-tip-text-repartition open-sans">Lance le calcul et la répartition par module ou affiche les derniers résultats.</span>
+                                                                                </span>
+                                                                            </span>
+                                                                            <output id="spinner-analyse-annonce" aria-live="polite">
+                                                                                <div id="analyse-animation" class="sp"></div>
+                                                                                <span class="show-for-sr">Analyse en cours...</span>
+                                                                            </output>
+                                                                        </h2>
 
-      {# Affichage des résultats #}
-      <div id="Analyse-container" class="margin-top-1 margin-bottom-3">
-        <div class="grid-x cell">
-          <div class="small-12 medium-4 large-4 cell">
-            <div class="container-bouton">
-              <button id="bouton-analyse"
-                      class="button expanded open-sans focus-light"
-                      type="button"
-                      aria-label="Analyse et répartition des anomalies."><span aria-hidden="true">🗂️</span>Répartition
-              </button>
-            </div>
-          </div>
-          <div class="small-12 medium-4 large-4 cell">
-            <div class="container-bouton">
-              <button id="bouton-historique"
-                      class="button expanded open-sans focus-light"
-                      type="button"
-                      aria-label="Affiche la dernière analyse."><span aria-hidden="true">📈</span>Historique
-              </button>
-            </div>
-          </div>
-          <div class="small-12 medium-4 large-4 cell"></div>
-        </div>
+                                                                        {# Affichage des résultats #}
+                                                                        <div id="Analyse-container" class="margin-top-1 margin-bottom-3">
+                                                                            <div class="grid-x cell">
+                                                                                <div class="small-12 medium-4 large-4 cell">
+                                                                                    <div class="container-bouton">
+                                                                                        <button id="bouton-analyse"
+                                                                                            class="button expanded open-sans focus-dark-light"
+                                                                                            type="button"
+                                                                                            aria-label="Analyse et répartition des anomalies."><span aria-hidden="true">🗂️</span>Répartition
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="small-12 medium-4 large-4 cell">
+                                                                                        <div class="container-bouton">
+                                                                                            <button id="bouton-historique"
+                                                                                                class="button expanded open-sans focus-dark-light"
+                                                                                                type="button"
+                                                                                                aria-label="Affiche la dernière analyse."><span aria-hidden="true">📈</span>Historique
+                                                                                                </button>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                        <div class="small-12 medium-4 large-4 cell"></div>
+                                                                                    </div>
 
-        {# Global #}
-        <p class="open-sans">mode : <span id="js-analyse-mode" class="color-noir">---</span>
-        <p class="open-sans">setup : <span id="js-analyse-setup" class="color-noir">---</span>
-        <p class="open-sans">date : <span id="js-analyse-date" class="color-noir">---</span>
+                                                                                    {# Global #}
+                                                                                    <p class="open-sans">mode : <span id="js-analyse-mode" class="color-noir">---</span>
+                                                                                    <p class="open-sans">setup : <span id="js-analyse-setup" class="color-noir">---</span>
+                                                                                    <p class="open-sans">date : <span id="js-analyse-date" class="color-noir">---</span>
 
-        <div id="tableau-0" class="table-scroll fieldset background-color-gris-claire hide">
-          <table>
-            <caption class="claire-hand">Tableau de synthèse</caption>
-            <thead id="mon-bo-tableau-thead-0" class="open-sans">
-            </thead>
-            <tbody id="mon-bo-tableau-0" class="open-sans">
-              <th>---</th>
-            </tbody>
-          </table>
-        </div>
+                                                                                    <div id="tableau-0" class="table-scroll fieldset background-color-gris-claire hide">
+                                                                                        <table>
+                                                                                            <caption class="claire-hand">Tableau de synthèse</caption>
+                                                                                            <thead id="mon-bo-tableau-thead-0" class="open-sans">
+                                                                                            </thead>
+                                                                                            <tbody id="mon-bo-tableau-0" class="open-sans">
+                                                                                                <th>---</th>
+                                                                                            </tbody>
+                                                                                        </table>
+                                                                                    </div>
 
-        {# Bug #}
-        <div id="tableau-1" class="table-scroll fieldset background-color-gris-claire hide">
-          <table>
-            <caption class="claire-hand">Fiabilité</caption>
-            <thead id="mon-bo-tableau-thead-1" class="open-sans"></thead>
-            <tbody id="mon-bo-tableau-1" class="open-sans">
-              <th>---</th>
-            </tbody>
-          </table>
-        </div>
+                                                                                    {# Bug #}
+                                                                                    <div id="tableau-1" class="table-scroll fieldset background-color-gris-claire hide">
+                                                                                        <table>
+                                                                                            <caption class="claire-hand">Fiabilité</caption>
+                                                                                            <thead id="mon-bo-tableau-thead-1" class="open-sans"></thead>
+                                                                                            <tbody id="mon-bo-tableau-1" class="open-sans">
+                                                                                                <th>---</th>
+                                                                                            </tbody>
+                                                                                        </table>
+                                                                                    </div>
 
-        {# Vulnerability #}
-        <div id="tableau-2" class="table-scroll fieldset background-color-gris-claire hide margin-bottom-1">
-          <table>
-            <caption class="claire-hand">Sécurité</caption>
-            <thead id="mon-bo-tableau-thead-2" class="open-sans"></thead>
-            <tbody id="mon-bo-tableau-2" class="open-sans">
-              <th>---</th>
-            </tbody>
-          </table>
-        </div>
+                                                                                    {# Vulnerability #}
+                                                                                    <div id="tableau-2" class="table-scroll fieldset background-color-gris-claire hide margin-bottom-1">
+                                                                                        <table>
+                                                                                            <caption class="claire-hand">Sécurité</caption>
+                                                                                            <thead id="mon-bo-tableau-thead-2" class="open-sans"></thead>
+                                                                                            <tbody id="mon-bo-tableau-2" class="open-sans">
+                                                                                                <th>---</th>
+                                                                                            </tbody>
+                                                                                        </table>
+                                                                                    </div>
 
-        {# Code Smell #}
-        <div id="tableau-3" class="table-scroll fieldset background-color-gris-claire hide margin-bottom-1">
-          <table>
-            <caption class="claire-hand">Maintenabilité</caption>
-            <thead id="mon-bo-tableau-thead-3" class="open-sans"></thead>
-            <tbody id="mon-bo-tableau-3" class="open-sans">
-              <th>---</th>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </main>
+                                                                                    {# Code Smell #}
+                                                                                    <div id="tableau-3" class="table-scroll fieldset background-color-gris-claire hide margin-bottom-1">
+                                                                                        <table>
+                                                                                            <caption class="claire-hand">Maintenabilité</caption>
+                                                                                            <thead id="mon-bo-tableau-thead-3" class="open-sans"></thead>
+                                                                                            <tbody id="mon-bo-tableau-3" class="open-sans">
+                                                                                                <th>---</th>
+                                                                                            </tbody>
+                                                                                        </table>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </main>
 
-    {# Chargement de la section footer #}
-    {{ include('footer.html.twig') }}
-  </body>
-</html>
+                                                                            {# Chargement de la section footer #}
+                                                                            {{ include('footer.html.twig') }}
+                                                                        </body>
+                                                                    </html>

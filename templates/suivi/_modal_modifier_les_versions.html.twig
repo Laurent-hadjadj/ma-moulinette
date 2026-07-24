@@ -1,50 +1,50 @@
 {# Formulaire - Modifier les versions #}
 <dialog id="modal-modifier-analyse"
-        class="reveal large" data-reveal
-        aria-modal="true"
-        data-close-on-click="true"
-        data-animation-in="fade-in"
-        data-animation-out="fade-out"
-        aria-labelledby="titre-modifier-version"
-        aria-describedby="desc-modifier-version">
+    class="reveal large" data-reveal
+    aria-modal="true"
+    data-close-on-click="true"
+    data-animation-in="fade-in"
+    data-animation-out="fade-out"
+    aria-labelledby="titre-modifier-version"
+    aria-describedby="desc-modifier-version">
 
-  <header>
-    <h1 id="titre-modifier-version" class="h3 claire-hand"><span aria-hidden="true">ℹ️</span>Suivi des versions</h1>
-    <h2 id="desc-modifier-version" class="h4 claire-hand"><span aria-hidden="true">📋</span>Modifier les paramètres d'une version</h2>
-    <span class="show-for-sr">
-      Cette page présente la listes des version présentes dans l'historique de suivi.
-    </span>
-  </header>
+    <header>
+        <h1 id="titre-modifier-version" class="h3 claire-hand"><span aria-hidden="true">ℹ️</span>Suivi des versions</h1>
+        <h2 id="desc-modifier-version" class="h4 claire-hand"><span aria-hidden="true">📋</span>Modifier les paramètres d'une version</h2>
+        <span class="show-for-sr">
+            Cette page présente la listes des version présentes dans l'historique de suivi.
+        </span>
+    </header>
 
-  <div class="table-scroll">
-    <table class="hover">
-      <caption class="claire-hand">Modifier les propriétés d'une version.</caption>
-      <thead>
-        {# MODIF 2026-06-11 : colonne Suivi + compteur 0/15 #}
-        <tr class="open-sans text-center">
-          <th id="action" scope="col">Action</th>
-          <th id="modifier-date" scope="col">Date</th>
-          <th id="modifier-version" scope="col">Version</th>
-          <th id="modifier-favori" scope="col">Favori</th>
-          <th id="modifier-reference" scope="col">Référence</th>
-          <th id="modifier-suivi" scope="col">Suivi&nbsp;<small id="compteur-suivi" class="open-sans">(0/15)</small></th>
-        </tr>
-      </thead>
-      <tbody id="tableau-liste-version" class="open-sans">
-        {# On ajoute des lignes vides pour éviter d'avoir une erreur W3C #}
-        <tr><td>&nbsp;</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  {# fermeture de la fenêtre modale #}
-  <footer class="grid-x grid-margin-x align-right margin-top-2">
-    <div class="cell shrink">
-      <button id="bouton-fermer-modifier-analyse"
-              class="button open-sans focus-light"
-              type="button"
-              aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span>Fermer
-      </button>
+    <div class="table-scroll">
+        <table class="hover">
+            <caption class="claire-hand">Modifier les propriétés d'une version.</caption>
+            <thead>
+                {# MODIF 2026-06-11 : colonne Suivi + compteur 0/15 #}
+                <tr class="open-sans text-center">
+                    <th id="action" scope="col">Action</th>
+                    <th id="modifier-date" scope="col">Date</th>
+                    <th id="modifier-version" scope="col">Version</th>
+                    <th id="modifier-favori" scope="col">Favori</th>
+                    <th id="modifier-reference" scope="col">Référence</th>
+                    <th id="modifier-suivi" scope="col">Suivi&nbsp;<small id="compteur-suivi" class="open-sans">(0/15)</small></th>
+                </tr>
+            </thead>
+            <tbody id="tableau-liste-version" class="open-sans">
+                {# On ajoute des lignes vides pour éviter d'avoir une erreur W3C #}
+                <tr><td>&nbsp;</td></tr>
+            </tbody>
+        </table>
     </div>
-  </footer>
-</dialog>
+
+    {# fermeture de la fenêtre modale #}
+    <footer class="grid-x grid-margin-x align-right margin-top-2">
+        <div class="cell shrink">
+            <button id="bouton-fermer-modifier-analyse"
+                class="button open-sans focus-dark-light"
+                type="button"
+                aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span>Fermer
+                </button>
+            </div>
+        </footer>
+    </dialog>

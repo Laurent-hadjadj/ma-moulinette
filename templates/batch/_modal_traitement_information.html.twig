@@ -1,114 +1,114 @@
 {# ────────────────────────────────────────
-  Affichage des informations du traitement.
-  ------------------------------------------------
-  BLOC : header   → titre + bouton de fermeture
-  BLOC : body     → contenu principal
-  BLOC : footer   → actions / bouton fermer
-  ------------------------------------------------
+Affichage des informations du traitement.
+------------------------------------------------
+BLOC : header   → titre + bouton de fermeture
+BLOC : body     → contenu principal
+BLOC : footer   → actions / bouton fermer
+------------------------------------------------
 #}
 <dialog id="modal-traitement-information"
-        class="reveal large" data-reveal
-        aria-modal="true"
-        data-close-on-click="true"
-        data-animation-in="fade-in"
-        data-animation-out="fade-out"
-        aria-label="Information sur le traitement">
+    class="reveal large" data-reveal
+    aria-modal="true"
+    data-close-on-click="true"
+    data-animation-in="fade-in"
+    data-animation-out="fade-out"
+    aria-label="Information sur le traitement">
 
-  {# ------- Header (titre) ------- #}
-  <header>
-      <h2 class="h3 claire-hand header-h1">
-      <span aria-hidden="true">ℹ️</span>Information
-    </h2>
-    <h3 class="h4 claire-hand header-h2">
-      <span aria-hidden="true">📌</span>
-      <span class="js-nom-traitement"></span>
-    </h3>
-  </header>
+    {# ------- Header (titre) ------- #}
+    <header>
+        <h2 class="h3 claire-hand header-h1">
+            <span aria-hidden="true">ℹ️</span>Information
+        </h2>
+        <h3 class="h4 claire-hand header-h2">
+            <span aria-hidden="true">📌</span>
+            <span class="js-nom-traitement"></span>
+        </h3>
+    </header>
 
-  <section>
-    <div class="batch-info grid-x grid-margin-x">
-      <div class="small-12 cell">
-        <p class="open-sans"><strong>Référence :</strong> <span class="js-reference color-noir">--</span></p>
-        <p class="open-sans"><strong>Portefeuille :</strong> <span class="js-portefeuille color-noir">--</span></p>
-      </div>
-      <div class="small-12 medium-8 large-6 cell">
-        <p class="open-sans"><strong>Nombre de projets :</strong> <span class="js-nombre-projet badge secondary">--</span></p>
-        <p class="open-sans"><strong>Mode de collecte :</strong> <span class="js-mode-collecte badge warning">--</span></p>
-        <p><strong>Durée  :</strong> <span class="js-time-elapse badge">--</span></p>
-      </div>
-      <div class="small-12 medium-4 large-6 cell">
-          <p><strong>Résultat :</strong> <span class="js-statut badge">--</span></p>
-          <p><strong>Activé :</strong> <span class="js-activated badge">--</span></p>
-      </div>
-      <div class="small-12 timeline-container cell">
-        <h4 class="h5 claire-hand"><span aria-hidden="true">⏱️</span> Timeline</h4>
-        <div class="timeline">
-          <div class="timeline-start"><span class="js-start-at">--</span></div>
-          <div class="timeline-bar"><div class="timeline-progress"></div></div>
-          <div class="timeline-end"><span class="js-end-at">--</span></div>
+    <section>
+        <div class="batch-info grid-x grid-margin-x">
+            <div class="small-12 cell">
+                <p class="open-sans"><strong>Référence :</strong> <span class="js-reference color-noir">--</span></p>
+                <p class="open-sans"><strong>Portefeuille :</strong> <span class="js-portefeuille color-noir">--</span></p>
+            </div>
+            <div class="small-12 medium-8 large-6 cell">
+                <p class="open-sans"><strong>Nombre de projets :</strong> <span class="js-nombre-projet badge secondary">--</span></p>
+                <p class="open-sans"><strong>Mode de collecte :</strong> <span class="js-mode-collecte badge warning">--</span></p>
+                <p><strong>Durée  :</strong> <span class="js-time-elapse badge">--</span></p>
+            </div>
+            <div class="small-12 medium-4 large-6 cell">
+                <p><strong>Résultat :</strong> <span class="js-statut badge">--</span></p>
+                <p><strong>Activé :</strong> <span class="js-activated badge">--</span></p>
+            </div>
+            <div class="small-12 timeline-container cell">
+                <h4 class="h5 claire-hand"><span aria-hidden="true">⏱️</span> Timeline</h4>
+                <div class="timeline">
+                    <div class="timeline-start"><span class="js-start-at">--</span></div>
+                    <div class="timeline-bar"><div class="timeline-progress"></div></div>
+                    <div class="timeline-end"><span class="js-end-at">--</span></div>
+                </div>
+                <div class="timeline-summary">
+                    <span class="text-success">✔️ <span class="js-nb-ok"></span></span> /
+                    <span class="text-error">❌ <span class="js-nb-ko"></span></span> /
+                    <span class="text-error">⁉️ <span class="js-nb-oko"></span></span>
+                </div>
+            </div>
         </div>
-        <div class="timeline-summary">
-          <span class="text-success">✔️ <span class="js-nb-ok"></span></span> /
-          <span class="text-error">❌ <span class="js-nb-ko"></span></span> /
-          <span class="text-error">⁉️ <span class="js-nb-oko"></span></span>
-        </div>
-      </div>
-    </div>
-  </section>
+    </section>
 
 
     <section>
-    <div class="journal-selector-container margin-top-2">
-      <h4 class="h5 claire-hand">
-        <span aria-hidden="true">📘</span> Consulter un journal d'exécution
-      </h4>
+        <div class="journal-selector-container margin-top-2">
+            <h4 class="h5 claire-hand">
+                <span aria-hidden="true">📘</span> Consulter un journal d'exécution
+            </h4>
 
-      <label for="select-journal" class="open-sans">Choisir un projet :</label>
-      <select id="select-journal" class="js-select-journal" style="width: 100%;">
-        <option value="">-- Sélectionner un projet --</option>
-      </select>
-    </div>
+            <label for="select-journal" class="open-sans">Choisir un projet :</label>
+            <select id="select-journal" class="js-select-journal" style="width: 100%;">
+                <option value="">-- Sélectionner un projet --</option>
+            </select>
+        </div>
 
-  </section>
+    </section>
 
-  <footer class="grid-x grid-margin-x align-right margin-top-2">
-    <div class="cell shrink">
-      <button id="bouton-fermer-information"
-              class="button open-sans focus-light"
-              type="button"
-              aria-label="Ferme la fenêtre"><span aria-hidden="true">❌</span> Fermer
-      </button>
-    </div>
-  </footer>
-</dialog>
+    <footer class="grid-x grid-margin-x align-right margin-top-2">
+        <div class="cell shrink">
+            <button id="bouton-fermer-information"
+                class="button open-sans focus-dark-light"
+                type="button"
+                aria-label="Ferme la fenêtre"><span aria-hidden="true">❌</span> Fermer
+                </button>
+            </div>
+        </footer>
+    </dialog>
 
-{# Deuxième modale, pour le contenu du journal.
+    {# Deuxième modale, pour le contenu du journal.
     Déclarée en dehors de #modal-traitement-information : Foundation Reveal ne gère pas
     une modale imbriquée dans une autre. #}
-<dialog id="modal-journal"
+    <dialog id="modal-journal"
         class="reveal large" data-reveal
         aria-modal="true"
         data-close-on-click="true"
         aria-label="Journal d'exécution">
-  <header>
-    <h3 class="h4 claire-hand">
-      <span aria-hidden="true">📓</span>
-      Journal d'exécution – <span class="js-journal-nom"></span>
-    </h3>
-  </header>
+        <header>
+            <h3 class="h4 claire-hand">
+                <span aria-hidden="true">📓</span>
+                Journal d'exécution – <span class="js-journal-nom"></span>
+            </h3>
+        </header>
 
-  <section class="journal-content js-journal-content open-sans"
-          style="max-height:70vh; overflow-y:auto; background:#fafafa; border-radius:8px; padding:1rem;">
-    <p class="text-center text-muted">Aucun journal chargé.</p>
-  </section>
+        <section class="journal-content js-journal-content open-sans"
+            style="max-height:70vh; overflow-y:auto; background:#fafafa; border-radius:8px; padding:1rem;">
+            <p class="text-center text-muted">Aucun journal chargé.</p>
+        </section>
 
-  <footer class="grid-x grid-margin-x align-right margin-top-2">
-    <div class="cell shrink">
-      <button id="bouton-fermer-journal"
-              class="button secondary open-sans focus-light"
-              type="button"
-              aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span> Fermer
-      </button>
-    </div>
-  </footer>
-</dialog>
+        <footer class="grid-x grid-margin-x align-right margin-top-2">
+            <div class="cell shrink">
+                <button id="bouton-fermer-journal"
+                    class="button secondary open-sans focus-dark-light"
+                    type="button"
+                    aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span> Fermer
+                    </button>
+                </div>
+            </footer>
+        </dialog>

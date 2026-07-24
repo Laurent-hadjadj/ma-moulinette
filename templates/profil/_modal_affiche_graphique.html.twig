@@ -1,30 +1,30 @@
 <dialog class="reveal small"
-        id="modal-affiche-graphique"
-        data-reveal
-        aria-modal="true"
-        aria-labelledby="titre-affiche-graphique"
-        aria-describedby="desc-affiche-graphique">
+    id="modal-affiche-graphique"
+    data-reveal
+    aria-modal="true"
+    aria-labelledby="titre-affiche-graphique"
+    aria-describedby="desc-affiche-graphique">
 
-      <h2 id="titre-affiche-graphique" class="h3 claire-hand" tabindex="-1"><span aria-hidden="true">🧑‍💻</span>Profils</h2>
-      <h3 id="desc-affiche-graphique" class="h4 open-sans"><span aria-hidden="true">📊</span>Répartition du nombre de règles par langage</h3>
-      <span class="show-for-sr">
+    <h2 id="titre-affiche-graphique" class="h3 claire-hand" tabindex="-1"><span aria-hidden="true">🧑‍💻</span>Profils</h2>
+    <h3 id="desc-affiche-graphique" class="h4 open-sans"><span aria-hidden="true">📊</span>Répartition du nombre de règles par langage</h3>
+    <span class="show-for-sr">
         Ce graphique présente la quantité de règles actives pour chaque langage détecté dans les profils qualité SonarQube.
-      </span>
+    </span>
 
-      {# affiche Graphique #}
-      <div class="chart-container-donuts">
+    {# affiche Graphique #}
+    <div class="chart-container-donuts">
         <canvas id="graphique-langage" aria-label="Distribution des langages">
-          Graphique non disponible sans JavaScript ou données manquantes.
+            Graphique non disponible sans JavaScript ou données manquantes.
         </canvas>
         <div class="chart-empty-message">Aucune donnée disponible pour ce graphique.</div>
-      </div>
+    </div>
 
-      <footer class="grid-x grid-margin-x align-right margin-top-2">
+    <footer class="grid-x grid-margin-x align-right margin-top-2">
         <div class="cell shrink">
-          <button id="bouton-fermer-affiche-graphique"
-                  class="button open-sans focus-light"
-                  type="button"
-                  aria-label="Fermer la fenêtre Répartition du nombre de règles par langage"><span aria-hidden="true">❌</span> Fermer
-          </button>
-      </footer>
-    </dialog>
+            <button id="bouton-fermer-affiche-graphique"
+                class="button open-sans focus-dark-light"
+                type="button"
+                aria-label="Fermer la fenêtre Répartition du nombre de règles par langage"><span aria-hidden="true">❌</span> Fermer
+                </button>
+            </footer>
+        </dialog>

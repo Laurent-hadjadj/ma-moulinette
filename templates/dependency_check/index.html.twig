@@ -4,148 +4,166 @@
 
 <!DOCTYPE html>
 <!--
-.. __  __             __  __             _ _            _   _
-  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
-  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
-  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
-  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+.__  __             __  __             _ _            _   _
+|  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+| |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+| |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+|_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
 
-  Laurent HADJADJ
-  https://github.com/Laurent-hadjadj/ma-moulinette
-  © 2024 - CC BY-SA-NC 4.0
+Laurent HADJADJ
+https://github.com/Laurent-hadjadj/ma-moulinette
+© 2024 - CC BY-SA-NC 4.0
 -->
 <html lang="fr">
-  <head>
-    <title>{{ title }}</title>
-    {{ include('head.html.twig') }}
-    {% block importmap %}{{ importmap('dependency-check') }}{% endblock %}
-  </head>
+    <head>
+        <title>{{ title }}</title>
+        {{ include('head.html.twig') }}
+        {% block importmap %}
+            {{ importmap('dependency-check') }}
+        {% endblock %}
+    </head>
 
-  <body>
-    {{ include('header.html.twig') }}
+    <body>
+        {{ include('header.html.twig') }}
 
-    <header class="grid-container margin-top-1">
-      <nav aria-label="Fil d'Ariane, vous etes ici">
-        <ol class="claire-hand breadcrumbs">
-          <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
-          <li aria-current="page">Dependency-Check</li>
-        </ol>
-      </nav>
-    </header>
+        <header class="grid-container margin-top-1">
+            <nav aria-label="Fil d'Ariane, vous etes ici">
+                <ol class="claire-hand breadcrumbs">
+                    <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+                    <li aria-current="page">Dependency-Check</li>
+                </ol>
+            </nav>
+        </header>
 
-    {{ include('_message.html.twig') }}
+        {{ include('_message.html.twig') }}
 
-    <main class="grid-container margin-bottom-2">
-      <h2 class="h4 claire-hand">
-        <span aria-hidden="true">📦</span> OWASP Dependency-Check &mdash; Projets scannes
-      </h2>
+        <main class="grid-container margin-bottom-2">
+            <h2 class="h4 claire-hand">
+                <span aria-hidden="true">📦</span> OWASP Dependency-Check &mdash; Projets scannes
+            </h2>
 
-      <div class="cell margin-bottom-1">
-        <a id="bouton-ouvrir-dc-dashboard" href="{{ path('dc_dashboard') }}" class="button open-sans focus-light">
-          <span aria-hidden="true">📊</span> Vue agrégée (dashboard)
-        </a>
-        <a id="bouton-ouvrir-dc-mutualisables" href="{{ path('dc_mutualisables') }}" class="button open-sans focus-light"
-          title="Liste complète des dépendances présentes dans plusieurs projets du périmètre">
-          <span aria-hidden="true">🔗</span> Mutualisables
-        </a>
-        {# MODIF 2026-05-13 : entrée vers la page KPI / pilotage SLA. #}
-        <a id="bouton-ouvrir-dc-kpi" href="{{ path('dc_kpi') }}" class="button open-sans focus-light"
-          title="Pilotage SLA : score sécu moyen, % zéro CRITICAL, tendance 90j, top 5 risque/sain">
-          <span aria-hidden="true">📈</span> KPIs
-        </a>
-        {# MODIF 2026-05-13 : entrée vers la page de comparaison
-          multi-apps (2 à 4 apps side-by-side + CVE communes). #}
-        <a id="bouton-ouvrir-dc-comparer" href="{{ path('dc_comparer') }}" class="button open-sans focus-light"
-          title="Comparer 2 à 4 applications side-by-side + identifier les CVE communes">
-          <span aria-hidden="true">⚖️</span> Comparer
-        </a>
-        <a id="bouton-ouvrir-owasp" href="{{ path('owasp', {}) }}" class="button open-sans focus-light"
-          title="Retour à l'analyse OWASP (vulnérabilités code + hotspots)">
-          <span aria-hidden="true">🛡️</span> Analyse OWASP
-        </a>
-      </div>
+            <div class="cell margin-bottom-1">
+                <a id="bouton-ouvrir-dc-dashboard" href="{{ path('dc_dashboard') }}" class="button open-sans focus-dark-light">
+                    <span aria-hidden="true">📊</span> Vue agrégée (dashboard)
+                </a>
+                <a id="bouton-ouvrir-dc-mutualisables" href="{{ path('dc_mutualisables') }}" class="button open-sans focus-dark-light"
+                    title="Liste complète des dépendances présentes dans plusieurs projets du périmètre">
+                    <span aria-hidden="true">🔗</span> Mutualisables
+                </a>
+                {# MODIF 2026-05-13 : entrée vers la page KPI / pilotage SLA. #}
+                <a id="bouton-ouvrir-dc-kpi" href="{{ path('dc_kpi') }}" class="button open-sans focus-dark-light"
+                    title="Pilotage SLA : score sécu moyen, % zéro CRITICAL, tendance 90j, top 5 risque/sain">
+                    <span aria-hidden="true">📈</span> KPIs
+                </a>
+                {# MODIF 2026-05-13 : entrée vers la page de comparaison
+                multi-apps (2 à 4 apps side-by-side + CVE communes). #}
+                <a id="bouton-ouvrir-dc-comparer" href="{{ path('dc_comparer') }}" class="button open-sans focus-dark-light"
+                    title="Comparer 2 à 4 applications side-by-side + identifier les CVE communes">
+                    <span aria-hidden="true">⚖️</span> Comparer
+                </a>
+                <a id="bouton-ouvrir-owasp" href="{{ path('owasp', {}) }}" class="button open-sans focus-dark-light"
+                    title="Retour à l'analyse OWASP (vulnérabilités code + hotspots)">
+                    <span aria-hidden="true">🛡️</span> Analyse OWASP
+                </a>
+            </div>
 
-      {# MODIF 2026-05-14  : toggle Pilotage/Suivi.
-          Permissif sur cette page : un projet sans release ingérée apparaît
-          quand meme avec un badge "❓ Pas de release ingérée". #}
-      {{ include('dependency_check/_vue_toggle.html.twig', {
-        'current_vue':  vue|default('prod'),
-        'route_name':   'dc_index',
-        'route_params': {},
-      }) }}
+            {# MODIF 2026-05-14  : toggle Pilotage/Suivi.
+            Permissif sur cette page : un projet sans release ingérée apparaît
+            quand meme avec un badge "❓ Pas de release ingérée". #}
+            {{ include('dependency_check/_vue_toggle.html.twig', {
+            'current_vue':  vue|default('prod'),
+            'route_name':   'dc_index',
+            'route_params': {},
+            }) }}
 
-      {% if projets is empty %}
-        <div class="callout alert-callout-border info">
-          <p><span aria-hidden="true">ℹ️</span> Aucun projet n'a encore ete scanné.</p>
-          <p>Les rapports DependencyCheck sont postes par la CI sur <code>POST /api/secure/dependency-check/upload</code>.</p>
-        </div>
-      {% else %}
-        <div class="cell table-scroll">
-          <table class="open-sans">
-            <thead>
-              <tr>
-                <th>Projet</th>
-                <th>Version</th>
-                <th class="text-right">Deps total</th>
-                <th class="text-right">Deps vuln.</th>
-                <th class="text-right">CRITICAL</th>
-                <th class="text-right">HIGH</th>
-                <th class="text-right">MEDIUM</th>
-                <th class="text-right">LOW</th>
-                <th>Scan date</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {# MODIF 2026-05-14 : en mode prod
-                  permissif, les couples sans release ingérée apparaissent
-                  avec un badge d'avertissement. La version affichée est
-                  alors la dernière version overall (SNAPSHOT/RC), préfixée
-                  du badge "❓ Pas de release ingérée". #}
-              {% for p in projets %}
-              <tr>
-                <td><strong>{{ p.project_artifact }}</strong> <span class="text-muted">({{ p.project_group }})</span></td>
-                <td>
-                  {{ p.project_version }}
-                  {# MODIF 2026-05-14 : badge "Pas de release"
-                    uniquement pertinent en mode prod permissif. En mode dev (Option C),
-                    l'app peut avoir une release ancienne — le badge serait trompeur. #}
-                  {% if vue|default('prod') == 'prod' and not p.has_release %}
-                    <br><span class="badge-level low" style="font-size: 0.75rem;" title="Cette application n'a pas de scan d'une version release ingéré. Le dernier scan ingéré est une version dev (SNAPSHOT/RC).">❓ Pas de release ingérée</span>
-                  {% endif %}
-                </td>
-                <td class="text-right">{{ p.dep_count_total }}</td>
-                <td class="text-right">{{ p.dep_count_vulnerable }}</td>
-                <td class="text-right">
-                  {% if p.cve_count_critical > 0 %}<span class="badge-count critical">{{ p.cve_count_critical }}</span>{% endif %}
-                </td>
-                <td class="text-right">
-                  {% if p.cve_count_high > 0 %}<span class="badge-count high">{{ p.cve_count_high }}</span>{% endif %}
-                </td>
-                <td class="text-right">
-                  {% if p.cve_count_medium > 0 %}<span class="badge-count medium">{{ p.cve_count_medium }}</span>{% endif %}
-                </td>
-                <td class="text-right">
-                  {% if p.cve_count_low > 0 %}<span class="badge-count low">{{ p.cve_count_low }}</span>{% endif %}
-                </td>
-                <td>{{ p.scan_date|date('Y-m-d H:i') }}</td>
-                <td>
-                  <a href="{{ path('dc_projet', {
-                    'group': p.project_group,
-                    'artifact': p.project_artifact,
-                    'version': p.project_version
-                  }) }}" class="button tiny hollow open-sans focus-light">
-                    Detail
-                  </a>
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      {% endif %}
-    </main>
+            {% if projets is empty %}
+                <div class="callout alert-callout-border info">
+                    <p><span aria-hidden="true">ℹ️</span> Aucun projet n'a encore ete scanné.</p>
+                    <p>Les rapports DependencyCheck sont postes par la CI sur <code>POST /api/secure/dependency-check/upload</code>.</p>
+                </div>
+            {% else %}
+                <div class="cell table-scroll">
+                    <table class="open-sans">
+                        <thead>
+                            <tr>
+                                <th>Projet</th>
+                                <th>Version</th>
+                                <th class="text-right">Deps total</th>
+                                <th class="text-right">Deps vuln.</th>
+                                <th class="text-right">CRITICAL</th>
+                                <th class="text-right">HIGH</th>
+                                <th class="text-right">MEDIUM</th>
+                                <th class="text-right">LOW</th>
+                                <th>Scan date</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {# MODIF 2026-05-14 : en mode prod
+                            permissif, les couples sans release ingérée apparaissent
+                            avec un badge d'avertissement. La version affichée est
+                            alors la dernière version overall (SNAPSHOT/RC), préfixée
+                            du badge "❓ Pas de release ingérée". #}
+                            {% for p in projets %}
+                                <tr>
+                                    <td><strong>{{ p.project_artifact }}</strong> <span class="text-muted">({{ p.project_group }})</span></td>
+                                    <td>
+                                        {{ p.project_version }}
+                                        {# MODIF 2026-05-14 : badge "Pas de release"
+                                        uniquement pertinent en mode prod permissif. En mode dev (Option C),
+                                        l'app peut avoir une release ancienne — le badge serait trompeur. #}
+                                        {% if vue|default('prod') == 'prod' and not p.has_release %}
+                                            <br><span class="badge-level low" style="font-size: 0.75rem;" title="Cette application n'a pas de scan d'une version release ingéré. Le dernier scan ingéré est une version dev (SNAPSHOT/RC).">❓ Pas de release ingérée</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-right">{{ p.dep_count_total }}</td>
+                                    <td class="text-right">{{ p.dep_count_vulnerable }}</td>
+                                    <td class="text-right">
+                                        {% if p.cve_count_critical > 0 %}
+                                            <span class="badge-count critical">
+                                                {{ p.cve_count_critical }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-right">
+                                        {% if p.cve_count_high > 0 %}
+                                            <span class="badge-count high">
+                                                {{ p.cve_count_high }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-right">
+                                        {% if p.cve_count_medium > 0 %}
+                                            <span class="badge-count medium">
+                                                {{ p.cve_count_medium }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-right">
+                                        {% if p.cve_count_low > 0 %}
+                                            <span class="badge-count low">
+                                                {{ p.cve_count_low }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ p.scan_date|date('Y-m-d H:i') }}</td>
+                                    <td>
+                                        <a href="{{ path('dc_projet', {
+                                            'group': p.project_group,
+                                            'artifact': p.project_artifact,
+                                            'version': p.project_version
+                                            }) }}" class="button tiny hollow open-sans focus-dark-light">
+                                            Detail
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+        </main>
 
-    {{ include('footer.html.twig') }}
-  </body>
+        {{ include('footer.html.twig') }}
+    </body>
 </html>

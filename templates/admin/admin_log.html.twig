@@ -4,7 +4,7 @@
 {% set bottom="footer-fixed footer-fixed-small" %}
 <!DOCTYPE html>
 <!--
-.. __  __             __  __             _ _            _   _
+.__  __             __  __             _ _            _   _
 |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
 | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
 | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
@@ -73,81 +73,81 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                                             <input id="filter-main" type="checkbox" class="filter-type" value="main"> Main
                                         </label>
                                     </div>
-                                <div class="cell small-6 medium-4">
-                                    <label for="filter-application">
-                                        <input id="filter-application" type="checkbox" class="filter-type" value="application"> Application
-                                    </label>
+                                    <div class="cell small-6 medium-4">
+                                        <label for="filter-application">
+                                            <input id="filter-application" type="checkbox" class="filter-type" value="application"> Application
+                                        </label>
+                                    </div>
+                                    <div class="cell small-6 medium-4">
+                                        <label for="filter-request">
+                                            <input id="filter-request" type="checkbox" class="filter-type" value="request"> Request
+                                        </label>
+                                    </div>
+                                    <div class="cell small-6 medium-4">
+                                        <label for="filter-messenger">
+                                            <input id="filter-messenger" type="checkbox" class="filter-type" value="messenger"> Messenger
+                                        </label>
+                                    </div>
+                                    <div class="cell small-6 medium-4">
+                                        <label for="filter-deprecation">
+                                            <input id="filter-deprecation" type="checkbox" class="filter-type" value="deprecation"> Deprecation
+                                        </label>
+                                    </div>
                                 </div>
-                                <div class="cell small-6 medium-4">
-                                    <label for="filter-request">
-                                        <input id="filter-request" type="checkbox" class="filter-type" value="request"> Request
-                                    </label>
-                                </div>
-                                <div class="cell small-6 medium-4">
-                                    <label for="filter-messenger">
-                                        <input id="filter-messenger" type="checkbox" class="filter-type" value="messenger"> Messenger
-                                    </label>
-                                </div>
-                                <div class="cell small-6 medium-4">
-                                    <label for="filter-deprecation">
-                                        <input id="filter-deprecation" type="checkbox" class="filter-type" value="deprecation"> Deprecation
-                                    </label>
+                            </div>
+
+                            <div class="cell medium-3 align-self-bottom">
+                                <button id="bouton-apply-filters"
+                                    type="button"
+                                    class="button open-sans focus-dark-light"
+                                    data-close
+                                    aria-label="Appliquer les filtres"><span aria-hidden="true">🛠️</span> Appliquer les filtres
+                                    </button>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="cell medium-3 align-self-bottom">
-                            <button id="bouton-apply-filters"
-                                type="button"
-                                class="button open-sans focus-dark-light"
-                                data-close
-                                aria-label="Appliquer les filtres"><span aria-hidden="true">🛠️</span> Appliquer les filtres
-                                </button>
-                            </div>
+                        <div id="logs-loading" class="callout primary hide">
+                            Chargement des logs…
+                        </div>
+
+                        {# Table #}
+                        <div class="callout admin-log-table">
+                            <table id="logs-table" class="hover stack">
+                                <thead>
+                                    <tr>
+                                        <th>Nom</th>
+                                        <th>Env</th>
+                                        <th>Type</th>
+                                        <th class="text-right">Taille</th>
+                                        <th>Modifié</th>
+                                        <th class="text-center">
+                                            <label for="select-all" class="sr-only">Sélectionner tous</label>
+                                            <input type="checkbox" id="select-all">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody></tbody>
+                            </table>
                         </div>
                     </div>
 
-                    <div id="logs-loading" class="callout primary hide">
-                        Chargement des logs…
-                    </div>
+                    {# Actions #}
+                    {% if is_granted('ROLE_INTERNAL') %}
+                        <footer class="grid-x grid-padding-x align-right margin-top-2">
+                            <div class="cell shrink">
+                                <button id="bouton-download-zip"
+                                    type="button"
+                                    class="button open-sans focus-dark-light"
+                                    data-close
+                                    aria-label="Télécharger la sélection"><span aria-hidden="true">⚙️</span> Télécharger la sélection
+                                    </button>
+                                </div>
+                            </footer>
+                        {% endif %}
+                    </main>
 
-                    {# Table #}
-                    <div class="callout admin-log-table">
-                        <table id="logs-table" class="hover stack">
-                            <thead>
-                                <tr>
-                                    <th>Nom</th>
-                                    <th>Env</th>
-                                    <th>Type</th>
-                                    <th class="text-right">Taille</th>
-                                    <th>Modifié</th>
-                                    <th class="text-center">
-                                        <label for="select-all" class="sr-only">Sélectionner tous</label>
-                                        <input type="checkbox" id="select-all">
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody></tbody>
-                        </table>
-                    </div>
-                </div>
-
-                {# Actions #}
-                {% if is_granted('ROLE_INTERNAL') %}
-                    <footer class="grid-x grid-padding-x align-right margin-top-2">
-                        <div class="cell shrink">
-                            <button id="bouton-download-zip"
-                                type="button"
-                                class="button open-sans focus-dark-light"
-                                data-close
-                                aria-label="Télécharger la sélection"><span aria-hidden="true">⚙️</span> Télécharger la sélection
-                                </button>
-                            </div>
-                        </footer>
-                    {% endif %}
-                </main>
-
-                {# Chargement de la section footer #}
-                {{ include('footer.html.twig') }}
-            </body>
-        </html>
+                    {# Chargement de la section footer #}
+                    {{ include('footer.html.twig') }}
+                </body>
+            </html>

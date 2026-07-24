@@ -3,124 +3,126 @@
 {% set bottom="footer-fixed" %}
 <!DOCTYPE html>
 <!--
-.. __  __             __  __             _ _            _   _
-  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
-  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
-  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
-  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+.__  __             __  __             _ _            _   _
+|  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+| |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+| |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+|_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
 
-  Laurent HADJADJ
-  https://github.com/Laurent-hadjadj/ma-moulinette
-  © 2024 - CC BY-SA-NC 4.0
+Laurent HADJADJ
+https://github.com/Laurent-hadjadj/ma-moulinette
+© 2024 - CC BY-SA-NC 4.0
 -->
 <html lang="fr">
 
-  {# Chargement de la section HEAD #}
-  <head>
-    <title>{{ title }}</title>
-    {{ include('head.html.twig') }}
-    {# Chargement des assets JS et CSS #}
-    {% block importmap %}{{ importmap('actuator') }}{% endblock %}
-    {% if pagination is not empty %}
-      {{ knp_pagination_rel_links(pagination) }}
-    {% endif %}
-  </head>
-
-  <body dir="ltr">
-    {# Chargement de la section header #}
-    {{ include('header.html.twig') }}
-    {# Message d'information php #}
-    {{ include('_message.html.twig') }}
-
-    <header class="grid-container margin-top-1">
-      <nav id="fil-ariane" aria-label="Fil d'Ariane, vous êtes ici">
-        <ol class="claire-hand breadcrumbs">
-          <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
-          <li aria-current="page">Actuator</li>
-        </ol>
-      </nav>
-    </header>
-
-    <main id="main-content" class="grid-container">
-      <h2 class="h3 claire-hand"><span aria-hidden="true">🪴</span>Actuator</h2>
-
-      <div class="small-12 cell">
-        <div class="callout alert-callout-border warning text-justify" role="alert">
-          <span aria-hidden="true">⚠️</span>
-          <strong>Bonnes pratiques :</strong> le mot de passe du compte Actuator est obligatoire à la création
-          d'un point d'accès.<br>
-          N'exposez jamais un endpoint Actuator d'une application de <strong>production</strong>
-          sans protection (authentification, restriction réseau) — ce module est prévu pour des environnements
-          maîtrisés (dev, recette, démonstration).
-        </div>
-
-        <div class="grid-x grid-margin-x align-right margin-top-1">
-          <div class="cell shrink">
-            <a id="bouton-ajouter-une-application"
-              href="{{ path('actuator_info') }}"
-              class="button open-sans focus-light">
-              <span aria-hidden="true">➕</span> Ajouter une application
-            </a>
-          </div>
-        </div>
-
-        <div class="callout alert-callout-border info">
-          <div class="filtre-container">
-            <h3 class="h4 claire-hand"><span aria-hidden="true">🎛️</span> Filtres d'affichage.</h3>
-            {% if pagination is not empty %}
-              {{ knp_pagination_sortable(pagination, 'Application', 'nom_application', {}, {}, '/actuator/_zf6_fa_sortable_link.html.twig') }}
-              {{ knp_pagination_sortable(pagination, 'URL','url', {}, {}, '/actuator/_zf6_fa_sortable_link.html.twig') }}
-              {{ knp_pagination_sortable(pagination, 'Personne', 'personne', {}, {}, '/actuator/_zf6_fa_sortable_link.html.twig') }}
-              {{ knp_pagination_sortable(pagination, 'Date', 'date_modification', {}, {}, '/actuator/_zf6_fa_sortable_link.html.twig') }}
-            {% endif %}
-            <span class="open-sans">Nombre Total :
-              <span class="stat">{{ pagination.getTotalItemCount }}</span>
-            </span>
-          </div>
-        </div>
-
+    {# Chargement de la section HEAD #}
+    <head>
+        <title>{{ title }}</title>
+        {{ include('head.html.twig') }}
+        {# Chargement des assets JS et CSS #}
+        {% block importmap %}
+            {{ importmap('actuator') }}
+        {% endblock %}
         {% if pagination is not empty %}
-          {% for actuator in pagination %}
-            <div class="callout callout-custom">
-              <span class="open-sans"><strong>Application</strong> :  <span>{{ actuator.nom_application }}</span></span><br>
-              <span class="open-sans"><strong>Point d'accès Actuator</strong> : <span>{{ actuator.url }}</span></span><br>
-              <span class="open-sans"><strong>Responsable</strong> : <span>{{ actuator.personne }}</span></span><br>
-              <span class="open-sans"><strong>Date de modification</strong> :
-                <span>{{ actuator.date_modification ? actuator.date_modification|date('Y-m-d H:i:s') : '---' }}</span></span><br>
-              <span class="open-sans"><strong>Date de création</strong> : <span>{{ actuator.date_enregistrement|date('Y-m-d H:i:s') }}</span></span>
-
-              <form method="post" action="{{ path('actuator_supprimer', {id: actuator.id}) }}"
-                    class="inline-block" onsubmit="return confirm('Supprimer définitivement cette fiche Actuator ?');">
-                <input type="hidden" name="_token" value="{{ csrf_token('actuator_supprimer' ~ actuator.id) }}">
-                <div class="grid-x grid-margin-x align-right margin-top-1">
-                  <div class="cell shrink">
-                    <button class="button js-bouton-supprimer open-sans focus-light"
-                            type="submit"
-                            aria-label="Supprimer"><span aria-hidden="true">🗑️</span> Supprimer
-                    </button>
-                  </div>
-                  <div class="cell shrink">
-                    <a  href="{{ path('actuator_modifier', {id: actuator.id}) }}"
-                        class="button js-bouton-modifier open-sans focus-light"
-                        title="Modifier"><span aria-hidden="true">✏️</span> Modifier
-                    </a>
-                  </div>
-                </div>
-              </form>
-            </div>
-          {% endfor %}
-        {% else %}
-          <p class="open-sans text-center color-rouge" aria-label="couleur rouge">Aucun résultat trouvé</p>
+            {{ knp_pagination_rel_links(pagination) }}
         {% endif %}
+    </head>
 
-      {# display navigation #}
-      {% if pagination is not empty %}
-        {{ knp_pagination_render(pagination, '/actuator/_zf6_pagination.html.twig') }}
-      {% endif %}
-      </div>
-    </main>
+    <body dir="ltr">
+        {# Chargement de la section header #}
+        {{ include('header.html.twig') }}
+        {# Message d'information php #}
+        {{ include('_message.html.twig') }}
 
-    {# Chargement de la section footer #}
-    {{ include('footer.html.twig') }}
-  </body>
-</html>
+        <header class="grid-container margin-top-1">
+            <nav id="fil-ariane" aria-label="Fil d'Ariane, vous êtes ici">
+                <ol class="claire-hand breadcrumbs">
+                    <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+                    <li aria-current="page">Actuator</li>
+                </ol>
+            </nav>
+        </header>
+
+        <main id="main-content" class="grid-container">
+            <h2 class="h3 claire-hand"><span aria-hidden="true">🪴</span>Actuator</h2>
+
+            <div class="small-12 cell">
+                <div class="callout alert-callout-border warning text-justify" role="alert">
+                    <span aria-hidden="true">⚠️</span>
+                    <strong>Bonnes pratiques :</strong> le mot de passe du compte Actuator est obligatoire à la création
+                    d'un point d'accès.<br>
+                    N'exposez jamais un endpoint Actuator d'une application de <strong>production</strong>
+                    sans protection (authentification, restriction réseau) — ce module est prévu pour des environnements
+                    maîtrisés (dev, recette, démonstration).
+                </div>
+
+                <div class="grid-x grid-margin-x align-right margin-top-1">
+                    <div class="cell shrink">
+                        <a id="bouton-ajouter-une-application"
+                            href="{{ path('actuator_info') }}"
+                            class="button open-sans focus-dark-light">
+                            <span aria-hidden="true">➕</span> Ajouter une application
+                        </a>
+                    </div>
+                </div>
+
+                <div class="callout alert-callout-border info">
+                    <div class="filtre-container">
+                        <h3 class="h4 claire-hand"><span aria-hidden="true">🎛️</span> Filtres d'affichage.</h3>
+                        {% if pagination is not empty %}
+                            {{ knp_pagination_sortable(pagination, 'Application', 'nom_application', {}, {}, '/actuator/_zf6_fa_sortable_link.html.twig') }}
+                            {{ knp_pagination_sortable(pagination, 'URL','url', {}, {}, '/actuator/_zf6_fa_sortable_link.html.twig') }}
+                            {{ knp_pagination_sortable(pagination, 'Personne', 'personne', {}, {}, '/actuator/_zf6_fa_sortable_link.html.twig') }}
+                            {{ knp_pagination_sortable(pagination, 'Date', 'date_modification', {}, {}, '/actuator/_zf6_fa_sortable_link.html.twig') }}
+                        {% endif %}
+                        <span class="open-sans">Nombre Total :
+                            <span class="stat">{{ pagination.getTotalItemCount }}</span>
+                        </span>
+                    </div>
+                </div>
+
+                {% if pagination is not empty %}
+                    {% for actuator in pagination %}
+                        <div class="callout callout-custom">
+                            <span class="open-sans"><strong>Application</strong> :  <span>{{ actuator.nom_application }}</span></span><br>
+                            <span class="open-sans"><strong>Point d'accès Actuator</strong> : <span>{{ actuator.url }}</span></span><br>
+                            <span class="open-sans"><strong>Responsable</strong> : <span>{{ actuator.personne }}</span></span><br>
+                            <span class="open-sans"><strong>Date de modification</strong> :
+                            <span>{{ actuator.date_modification ? actuator.date_modification|date('Y-m-d H:i:s') : '---' }}</span></span><br>
+                            <span class="open-sans"><strong>Date de création</strong> : <span>{{ actuator.date_enregistrement|date('Y-m-d H:i:s') }}</span></span>
+
+                            <form method="post" action="{{ path('actuator_supprimer', {id: actuator.id}) }}"
+                                class="inline-block" onsubmit="return confirm('Supprimer définitivement cette fiche Actuator ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('actuator_supprimer' ~ actuator.id) }}">
+                                <div class="grid-x grid-margin-x align-right margin-top-1">
+                                    <div class="cell shrink">
+                                        <button class="button js-bouton-supprimer open-sans focus-dark-light"
+                                            type="submit"
+                                            aria-label="Supprimer"><span aria-hidden="true">🗑️</span> Supprimer
+                                            </button>
+                                        </div>
+                                        <div class="cell shrink">
+                                            <a  href="{{ path('actuator_modifier', {id: actuator.id}) }}"
+                                                class="button js-bouton-modifier open-sans focus-dark-light"
+                                                title="Modifier"><span aria-hidden="true">✏️</span> Modifier
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="open-sans text-center color-rouge" aria-label="couleur rouge">Aucun résultat trouvé</p>
+                        {% endif %}
+
+                        {# display navigation #}
+                        {% if pagination is not empty %}
+                            {{ knp_pagination_render(pagination, '/actuator/_zf6_pagination.html.twig') }}
+                        {% endif %}
+                    </div>
+                </main>
+
+                {# Chargement de la section footer #}
+                {{ include('footer.html.twig') }}
+            </body>
+        </html>

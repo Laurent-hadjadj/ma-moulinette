@@ -1,80 +1,80 @@
 <dialog id="modal-affiche-liste-logger"
-        class="reveal large" data-reveal
-        aria-modal="true"
-        data-close-on-click="true"
-        data-animation-in="fade-in"
-        data-animation-out="fade-out"
-        aria-labelledby="titre-affiche-liste-logger"
-        aria-describedby="desc-affiche-liste-logger">
+    class="reveal large" data-reveal
+    aria-modal="true"
+    data-close-on-click="true"
+    data-animation-in="fade-in"
+    data-animation-out="fade-out"
+    aria-labelledby="titre-affiche-liste-logger"
+    aria-describedby="desc-affiche-liste-logger">
 
-  <header>
-      <h2 id="titre-affiche-liste-logger" class="h3 claire-hand"><span aria-hidden="true">ℹ️</span>Information</h2>
-    <h3 id="desc-affiche-liste-logger" class="h4 claire-hand"><span aria-hidden="true">📋</span>Répartition des loggers JAVA</h3>
-    <span class="show-for-sr">
-      Cette page présente la répartition des loggers pour les applications JAVA.
-    </span>
-  </header>
+    <header>
+        <h2 id="titre-affiche-liste-logger" class="h3 claire-hand"><span aria-hidden="true">ℹ️</span>Information</h2>
+        <h3 id="desc-affiche-liste-logger" class="h4 claire-hand"><span aria-hidden="true">📋</span>Répartition des loggers JAVA</h3>
+        <span class="show-for-sr">
+            Cette page présente la répartition des loggers pour les applications JAVA.
+        </span>
+    </header>
 
     <p class="open-sans font-size-1">
-      <span id="js-logger-total">--</span> Logger Java trouvé <span class="s"></span>
+        <span id="js-logger-total">--</span> Logger Java trouvé <span class="s"></span>
     </p>
 
-  <table>
-    <caption class="claire-hand">Répartition des Loggers JAVA par type.</caption>
-    <thead>
-      <tr>
-        <th scope="col" class="open-sans text-center">Type</th>
-        <th scope="col" class="open-sans text-center">Nombre</th>
-        <th scope="col" class="open-sans text-center">Pourcentage</th>
-      </tr>
-    </thead>
-    <tbody id="tableau-liste-logger" class="open-sans">
-      <tr>
-        <td><strong>info</strong></td>
-        <td id="js-logger-info" class="text-right stat">--</td>
-        <td class="stats-percent-cell">
-          <span id="js-logger-info-pct" class="open-sans stats-percent-value">-- %</span>
-          <span id="js-logger-info-bar" class="stats-percent-bar"
-                aria-hidden="true"></span>
-        </td>
+    <table>
+        <caption class="claire-hand">Répartition des Loggers JAVA par type.</caption>
+        <thead>
+            <tr>
+                <th scope="col" class="open-sans text-center">Type</th>
+                <th scope="col" class="open-sans text-center">Nombre</th>
+                <th scope="col" class="open-sans text-center">Pourcentage</th>
+            </tr>
+        </thead>
+        <tbody id="tableau-liste-logger" class="open-sans">
+            <tr>
+                <td><strong>info</strong></td>
+                <td id="js-logger-info" class="text-right stat">--</td>
+                <td class="stats-percent-cell">
+                    <span id="js-logger-info-pct" class="open-sans stats-percent-value">-- %</span>
+                    <span id="js-logger-info-bar" class="stats-percent-bar"
+                        aria-hidden="true"></span>
+                    </td>
 
-      </tr>
-      <tr>
-        <td><strong>warn</strong></td>
-        <td id="js-logger-warn" class="text-right stat">--</td>
-        <td class="stats-percent-cell">
-          <span id="js-logger-warn-pct" class="open-sans stats-percent-value">-- %</span>
-          <span id="js-logger-warn-bar" class="stats-percent-bar"
-                aria-hidden="true"></span>
-        </td>
-      </tr>
-      <tr>
-        <td><strong>error</strong></td>
-        <td id="js-logger-error" class="text-right stat">--</td>
-        <td class="stats-percent-cell">
-          <span id="js-logger-error-pct" class="open-sans stats-percent-value">-- %</span>
-          <span id="js-logger-error-bar" class="stats-percent-bar"
-                aria-hidden="true"></span>
-        </td>
-      </tr>
-      <tr>
-        <td><strong>debug</strong></td>
-        <td id="js-logger-debug" class="text-right stat">--</td>
-        <td class="stats-percent-cell">
-          <span id="js-logger-debug-pct" class="open-sans stats-percent-value">-- %</span>
-          <span id="js-logger-debug-bar" class="stats-percent-bar"
-                aria-hidden="true"></span>
-        </td>
-      </tr>
-    </tbody>
-  </table>
-  <footer class="grid-x grid-margin-x align-right margin-top-2">
-    <div class="cell shrink">
-      <button id="bouton-fermer-liste-logger"
-              class="button open-sans focus-light"
-              type="button"
-              aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span>Fermer
-      </button>
-    </div>
-  </footer>
-</dialog>
+                </tr>
+                <tr>
+                    <td><strong>warn</strong></td>
+                    <td id="js-logger-warn" class="text-right stat">--</td>
+                    <td class="stats-percent-cell">
+                        <span id="js-logger-warn-pct" class="open-sans stats-percent-value">-- %</span>
+                        <span id="js-logger-warn-bar" class="stats-percent-bar"
+                            aria-hidden="true"></span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>error</strong></td>
+                        <td id="js-logger-error" class="text-right stat">--</td>
+                        <td class="stats-percent-cell">
+                            <span id="js-logger-error-pct" class="open-sans stats-percent-value">-- %</span>
+                            <span id="js-logger-error-bar" class="stats-percent-bar"
+                                aria-hidden="true"></span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>debug</strong></td>
+                            <td id="js-logger-debug" class="text-right stat">--</td>
+                            <td class="stats-percent-cell">
+                                <span id="js-logger-debug-pct" class="open-sans stats-percent-value">-- %</span>
+                                <span id="js-logger-debug-bar" class="stats-percent-bar"
+                                    aria-hidden="true"></span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <footer class="grid-x grid-margin-x align-right margin-top-2">
+                        <div class="cell shrink">
+                            <button id="bouton-fermer-liste-logger"
+                                class="button open-sans focus-dark-light"
+                                type="button"
+                                aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span>Fermer
+                                </button>
+                            </div>
+                        </footer>
+                    </dialog>

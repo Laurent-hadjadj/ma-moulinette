@@ -1,48 +1,48 @@
 ﻿{# MODIF 2026-05-14 : composant partagé pour
-  les pages agrégées Dependency-Check. Affiche un radio prod/dev + un
-  callout adaptatif expliquant le mode courant.
+les pages agrégées Dependency-Check. Affiche un radio prod/dev + un
+callout adaptatif expliquant le mode courant.
 
-  Usage :
-      include('dependency_check/_vue_toggle.html.twig', {
-        current_vue:  vue,             -- 'prod' ou 'dev'
-        route_name:   'dc_dashboard',  -- route a régénérer
-        route_params: { socle: socle, groupe: groupe },  -- paramètres à préserver hors 'vue'
-    })
+Usage :
+include('dependency_check/_vue_toggle.html.twig', {
+current_vue:  vue,             -- 'prod' ou 'dev'
+route_name:   'dc_dashboard',  -- route a régénérer
+route_params: { socle: socle, groupe: groupe },  -- paramètres à préserver hors 'vue'
+})
 #}
 {% set base_params = route_params|default({}) %}
 {% set is_prod = current_vue is not defined or current_vue != 'dev' %}
 
 <div class="cell text-right margin-bottom-05">
-  <a href="{{ path(route_name, base_params|merge({'vue': 'prod'})) }}"
-      id="bouton-vue-prod"
-      class="button open-sans focus-light"
-      title="Vue Pilotage : dernière version release stable par application (vision RSSI / DSI)">
-    <span aria-hidden="true">{{ is_prod ? '●' : '○' }}</span> Pilotage (prod)
-  </a>
-  <a href="{{ path(route_name, base_params|merge({'vue': 'dev'})) }}"
-      id="bouton-vue-dev"
-      class="button open-sans focus-light"
-      title="Vue Suivi : dernière version ingérée par application (SNAPSHOTs inclus)">
-    <span aria-hidden="true">{{ is_prod ? '○' : '●' }}</span> Suivi (dev)
-  </a>
+    <a href="{{ path(route_name, base_params|merge({'vue': 'prod'})) }}"
+        id="bouton-vue-prod"
+        class="button open-sans focus-dark-light"
+        title="Vue Pilotage : dernière version release stable par application (vision RSSI / DSI)">
+        <span aria-hidden="true">{{ is_prod ? '●' : '○' }}</span> Pilotage (prod)
+    </a>
+    <a href="{{ path(route_name, base_params|merge({'vue': 'dev'})) }}"
+        id="bouton-vue-dev"
+        class="button open-sans focus-dark-light"
+        title="Vue Suivi : dernière version ingérée par application (SNAPSHOTs inclus)">
+        <span aria-hidden="true">{{ is_prod ? '○' : '●' }}</span> Suivi (dev)
+    </a>
 </div>
 
 <div class="callout alert-callout-border info margin-bottom-1">
-  <p class="open-sans font-size-085 margin-bottom-0">
-    <span aria-hidden="true">ℹ️</span>
-    {% if is_prod %}
-      Mode <strong>Pilotage prod</strong> : 1 ligne par application = sa dernière
-      <strong>version release stable</strong> (sans suffixe
-      <code>-SNAPSHOT / -RC / -ALPHA / -BETA / -M*</code>). Vision RSSI / DSI :
-      état de ce qui tourne en prod. Les applications sans release ingérée
-      n'apparaissent pas dans les agrégats.
-    {% else %}
-      Mode <strong>Suivi dev</strong> : applications <strong>en mouvement</strong>
-      uniquement, c'est-a-dire celles dont la dernière version ingérée n'est PAS
-      une release stable (SNAPSHOT / RC / ALPHA / BETA / M*) — ou qui n'ont
-      aucune release ingérée. Les applications dont la dernière version est deja
-      une release (= "rien en cours") sont masquées. Vision lead dev :
-      qu'est-ce que mes équipes ont en cours dont les CVE m'intéressent ?
-    {% endif %}
-  </p>
+    <p class="open-sans font-size-085 margin-bottom-0">
+        <span aria-hidden="true">ℹ️</span>
+        {% if is_prod %}
+            Mode <strong>Pilotage prod</strong> : 1 ligne par application = sa dernière
+            <strong>version release stable</strong> (sans suffixe
+            <code>-SNAPSHOT / -RC / -ALPHA / -BETA / -M*</code>). Vision RSSI / DSI :
+            état de ce qui tourne en prod. Les applications sans release ingérée
+            n'apparaissent pas dans les agrégats.
+        {% else %}
+            Mode <strong>Suivi dev</strong> : applications <strong>en mouvement</strong>
+            uniquement, c'est-a-dire celles dont la dernière version ingérée n'est PAS
+            une release stable (SNAPSHOT / RC / ALPHA / BETA / M*) — ou qui n'ont
+            aucune release ingérée. Les applications dont la dernière version est deja
+            une release (= "rien en cours") sont masquées. Vision lead dev :
+            qu'est-ce que mes équipes ont en cours dont les CVE m'intéressent ?
+        {% endif %}
+    </p>
 </div>

@@ -3,224 +3,246 @@
 {% set bottom = 'footer-fixed' %}
 
 {# MODIF 2026-05-13 : page complète des dépendances
-  mutualisables. Version exhaustive du Fragment D du dashboard. Filtre socle +
-  filtre "Masquer Via socle" + tri cliquable + pagination Knp 25/page. #}
+mutualisables. Version exhaustive du Fragment D du dashboard. Filtre socle +
+filtre "Masquer Via socle" + tri cliquable + pagination Knp 25/page. #}
 <!DOCTYPE html>
 <!--
-.. __  __             __  __             _ _            _   _
-  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
-  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
-  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
-  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+.__  __             __  __             _ _            _   _
+|  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+| |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+| |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+|_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
 
-  Laurent HADJADJ
-  https://github.com/Laurent-hadjadj/ma-moulinette
-  © 2024 - CC BY-SA-NC 4.0
+Laurent HADJADJ
+https://github.com/Laurent-hadjadj/ma-moulinette
+© 2024 - CC BY-SA-NC 4.0
 -->
 <html lang="fr">
-  <head>
-    <title>{{ title }}</title>
-    {{ include('head.html.twig') }}
-    {# MODIF 2026-05-16 : entrée dédiée (DataTables + Foundation). #}
-    {% block importmap %}{{ importmap('dependency-check-mutualisables') }}{% endblock %}
-  </head>
+    <head>
+        <title>{{ title }}</title>
+        {{ include('head.html.twig') }}
+        {# MODIF 2026-05-16 : entrée dédiée (DataTables + Foundation). #}
+        {% block importmap %}
+            {{ importmap('dependency-check-mutualisables') }}
+        {% endblock %}
+    </head>
 
-  <body>
-    {{ include('header.html.twig') }}
+    <body>
+        {{ include('header.html.twig') }}
 
-    <header class="grid-container margin-top-1">
-      <nav aria-label="Fil d'Ariane, vous etes ici">
-        <ol class="claire-hand breadcrumbs">
-          <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
-          <li><a href="{{ path('dc_index') }}">Dependency-Check</a></li>
-          <li><a href="{{ path('dc_dashboard') }}">Dashboard</a></li>
-          <li aria-current="page">Mutualisables</li>
-        </ol>
-      </nav>
-    </header>
+        <header class="grid-container margin-top-1">
+            <nav aria-label="Fil d'Ariane, vous etes ici">
+                <ol class="claire-hand breadcrumbs">
+                    <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+                    <li><a href="{{ path('dc_index') }}">Dependency-Check</a></li>
+                    <li><a href="{{ path('dc_dashboard') }}">Dashboard</a></li>
+                    <li aria-current="page">Mutualisables</li>
+                </ol>
+            </nav>
+        </header>
 
-    {{ include('_message.html.twig') }}
+        {{ include('_message.html.twig') }}
 
-    {# MODIF 2026-05-16 : sort_link supprimé, tri délégué à DataTables. #}
-    {% set base_qs = {
-      'socle':          current_socle_filter,
-      'hide_via_socle': hide_via_socle ? '1' : null,
-      'vue':            vue|default('prod'),
-    }|filter(v => v is not null) %}
+        {# MODIF 2026-05-16 : sort_link supprimé, tri délégué à DataTables. #}
+        {% set base_qs = {
+            'socle':          current_socle_filter,
+            'hide_via_socle': hide_via_socle ? '1' : null,
+            'vue':            vue|default('prod'),
+        }|filter(v => v is not null) %}
 
-    <main class="grid-container">
-      <h2 class="h4 claire-hand">
-        <span aria-hidden="true">🔗</span> Mutualisations possibles — liste complète
-      </h2>
+        <main class="grid-container">
+            <h2 class="h4 claire-hand">
+                <span aria-hidden="true">🔗</span> Mutualisations possibles — liste complète
+            </h2>
 
-      <p class="margin-bottom-1">
-        <span class="badge-scope {{ analytics_mode ? 'global' : 'filtered' }}"
-              title="{{ analytics_mode ? 'Accès analytics : visibilité sur tous les projets scannes' : 'Accès filtré par vos groupes_fonctionnels' }}">
-          {{ scope_label }}
-        </span>
-      </p>
+            <p class="margin-bottom-1">
+                <span class="badge-scope {{ analytics_mode ? 'global' : 'filtered' }}"
+                    title="{{ analytics_mode ? 'Accès analytics : visibilité sur tous les projets scannes' : 'Accès filtré par vos groupes_fonctionnels' }}">
+                    {{ scope_label }}
+                </span>
+            </p>
 
-      {{ include('dependency_check/_vue_toggle.html.twig', {
-        'current_vue':  vue|default('prod'),
-        'route_name':   'dc_mutualisables',
-        'route_params': (current_socle_filter ? {'socle': current_socle_filter} : {})
-                          |merge(hide_via_socle ? {'hide_via_socle': '1'} : {}),
-      }) }}
+            {{ include('dependency_check/_vue_toggle.html.twig', {
+            'current_vue':  vue|default('prod'),
+            'route_name':   'dc_mutualisables',
+            'route_params': (current_socle_filter ? {'socle': current_socle_filter} : {})
+            |merge(hide_via_socle ? {'hide_via_socle': '1'} : {}),
+            }) }}
 
-      {{ _self.info_callout('Liste exhaustive des dépendances présentes dans <strong>≥ 2 projets</strong> du périmètre. <strong>Type</strong> : <span class="badge-level convergence">CONVERGENCE</span> = apps héritent de socles différents — <strong>vraie opportunité</strong>. <span class="badge-level unknown">VIA SOCLE</span> = toutes les apps héritent du même socle — <strong>déjà mutualisée par héritage</strong> (case « Masquer Via socle » pour ne voir que les vraies opportunités). <strong>JH unit.</strong> = effort upgrade selon famille technologique + bonus sévérité. <strong>Gain mutu.</strong> = JH unit. × (nb_projets − 1) = effort économisé.') }}
+            {{ _self.info_callout('Liste exhaustive des dépendances présentes dans <strong>≥ 2 projets</strong> du périmètre. <strong>Type</strong> : <span class="badge-level convergence">CONVERGENCE</span> = apps héritent de socles différents — <strong>vraie opportunité</strong>. <span class="badge-level unknown">VIA SOCLE</span> = toutes les apps héritent du même socle — <strong>déjà mutualisée par héritage</strong> (case « Masquer Via socle » pour ne voir que les vraies opportunités). <strong>JH unit.</strong> = effort upgrade selon famille technologique + bonus sévérité. <strong>Gain mutu.</strong> = JH unit. × (nb_projets − 1) = effort économisé.') }}
 
-      {# === Filtres === #}
-      <form method="GET" action="{{ path('dc_mutualisables') }}" class="margin-bottom-1">
-        <div class="grid-x grid-margin-x">
-          <div class="cell small-12 medium-6">
-            <label for="socle-filter" class="open-sans"><strong>Filtrer par socle</strong></label>
-            <div style="display: flex; gap: 0.5rem; align-items: center;">
-              <select name="socle" id="socle-filter" onchange="this.form.submit()" class="open-sans flex-1 margin-bottom-0">
-                <option value="all"{% if current_socle_filter is null %} selected{% endif %}>— Tous les socles —</option>
-                {% for socle in available_socles %}
-                  <option value="{{ socle }}"{% if current_socle_filter == socle %} selected{% endif %}>{{ socle }}</option>
-                {% endfor %}
-              </select>
-              {% if current_socle_filter %}
-                <a href="{{ path('dc_mutualisables',
-                    { 'hide_via_socle': hide_via_socle ? '1' : null, 'vue': vue|default('prod') }
-                      |filter(v => v is not null)) }}"
-                    class="button tiny secondary hollow open-sans focus-light margin-bottom-0 white-space-nowrap" title="Effacer le filtre socle">Effacer</a>
-              {% endif %}
-            </div>
-          </div>
+            {# === Filtres === #}
+            <form method="GET" action="{{ path('dc_mutualisables') }}" class="margin-bottom-1">
+                <div class="grid-x grid-margin-x">
+                    <div class="cell small-12 medium-6">
+                        <label for="socle-filter" class="open-sans"><strong>Filtrer par socle</strong></label>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <select name="socle" id="socle-filter" onchange="this.form.submit()" class="open-sans flex-1 margin-bottom-0">
+                                <option value="all"{% if current_socle_filter is null %} selected{% endif %}>— Tous les socles —</option>
+                                {% for socle in available_socles %}
+                                    <option value="{{ socle }}"{% if current_socle_filter == socle %} selected{% endif %}>{{ socle }}</option>
+                                {% endfor %}
+                            </select>
+                            {% if current_socle_filter %}
+                                <a href="{{ path('dc_mutualisables',
+                                    { 'hide_via_socle': hide_via_socle ? '1' : null, 'vue': vue|default('prod') }
+                                    |filter(v => v is not null)) }}"
+                                    class="button tiny secondary hollow open-sans focus-dark-light margin-bottom-0 white-space-nowrap" title="Effacer le filtre socle">Effacer</a>
+                                {% endif %}
+                            </div>
+                        </div>
 
-          <div class="cell small-12 medium-6">
-            <div class="open-sans"><strong>Affichage</strong></div>
-            <div style="display: flex; gap: 0.5rem; align-items: center; height: 2.4375rem;">
-              <input type="hidden" name="socle" value="{{ current_socle_filter ?: 'all' }}">
-              <input type="hidden" name="vue" value="{{ vue|default('prod') }}">
-              <input type="checkbox" id="hide-via-socle" name="hide_via_socle" value="1"
-                {{ hide_via_socle ? 'checked' : '' }}
-                onchange="this.form.submit()" style="margin-bottom: 0;">
-              <label for="hide-via-socle" class="open-sans margin-bottom-0" style="cursor: pointer;">
-                Masquer <span class="badge-level unknown">VIA SOCLE</span>
-                <span class="text-muted">(déjà mutualisées par héritage)</span>
-              </label>
-            </div>
-          </div>
-        </div>
-      </form>
+                        <div class="cell small-12 medium-6">
+                            <div class="open-sans"><strong>Affichage</strong></div>
+                            <div style="display: flex; gap: 0.5rem; align-items: center; height: 2.4375rem;">
+                                <input type="hidden" name="socle" value="{{ current_socle_filter ?: 'all' }}">
+                                <input type="hidden" name="vue" value="{{ vue|default('prod') }}">
+                                <input type="checkbox" id="hide-via-socle" name="hide_via_socle" value="1"
+                                    {{ hide_via_socle ? 'checked' : '' }}
+                                    onchange="this.form.submit()" style="margin-bottom: 0;">
+                                    <label for="hide-via-socle" class="open-sans margin-bottom-0" style="cursor: pointer;">
+                                        Masquer <span class="badge-level unknown">VIA SOCLE</span>
+                                        <span class="text-muted">(déjà mutualisées par héritage)</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
 
-      {# MODIF 2026-05-16 : info pagination retirée (DataTables gère). #}
-      <p class="open-sans">
-        <strong>{{ total_count }}</strong> dépendance{{ total_count > 1 ? 's' }} mutualisable{{ total_count > 1 ? 's' }}
-        {% if hide_via_socle %}<span class="text-muted"> (« Via socle » masquées)</span>{% endif %}
-        {% if current_socle_filter %}<span class="text-muted"> — socle : <em>{{ current_socle_filter }}</em></span>{% endif %}
-      </p>
+                    {# MODIF 2026-05-16 : info pagination retirée (DataTables gère). #}
+                    <p class="open-sans">
+                        <strong>{{ total_count }}</strong> dépendance{{ total_count > 1 ? 's' }} mutualisable{{ total_count > 1 ? 's' }}
+                        {% if hide_via_socle %}
+                            <span class="text-muted"> (« Via socle » masquées)</span>
+                        {% endif %}
+                        {% if current_socle_filter %}
+                            <span class="text-muted"> — socle : <em>
+                                {{ current_socle_filter }}
+                            </em></span>
+                        {% endif %}
+                    </p>
 
-      {# MODIF 2026-07-22 : signale la troncature à 5000 lignes plutôt que de la laisser silencieuse. #}
-      {% if mutualisables_truncated %}
-        <div class="callout alert-callout-border warning">
-          <p class="open-sans">
-            <span aria-hidden="true">⚠️</span>
-            Cette liste est limitée à {{ total_count }} dépendances (les plus mutualisées). D'autres dépendances mutualisables existent au-delà de cette limite mais ne sont pas affichées — affinez le filtre par socle pour réduire le périmètre.
-          </p>
-        </div>
-      {% endif %}
-
-      <p>
-        <button id="bouton-ouvrir-methodology-jh"
-                  class="button open-sans focus-light js-ouvrir-methodology-jh"
-                  type="button"
-                  aria-label="Méthode de calcul du JH">
-                  <span aria-hidden="true">🗒️</span> Méthode de calcul du JH
-          </button>
-      </p>
-
-      {# MODIF 2026-05-16 : table DataTables, tri client-side.
-        data-order sur les colonnes numériques pour tri correct. #}
-      {% if mutualisables|length == 0 %}
-        <div class="callout alert-callout-border info">
-          <p class="open-sans"><em>Aucune dépendance mutualisable dans le périmètre actuel.</em></p>
-        </div>
-      {% else %}
-        <div class="margin-left-1 margin-right-1 margin-bottom-1">
-          <table id="table-mutualisables" class="open-sans">
-            <thead>
-              <tr>
-                <th>Dépendance</th>
-                <th>Sévérité max</th>
-                <th>Type</th>
-                <th class="text-right">Nb projets</th>
-                <th class="text-right">Nb CVE</th>
-                <th class="text-right">JH unit.</th>
-                <th class="text-right">Gain mutu.</th>
-                <th>Utilisée par</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for d in mutualisables %}
-              <tr>
-                <td>
-                  <strong>{{ d.product ?: d.file_name }}</strong>
-                  {% if d.version %}<span class="text-muted">— v{{ d.version }}</span>{% endif %}
-                  {% if d.vendor %}<br><span class="text-muted">{{ d.vendor }}</span>{% endif %}
-                </td>
-                <td data-order="{{ d.severity_rank }}">
-                  {% if d.nb_critical > 0 %}<span class="badge-level critical">CRITICAL</span>
-                  {% elseif d.nb_high   > 0 %}<span class="badge-level high">HIGH</span>
-                  {% elseif d.nb_medium > 0 %}<span class="badge-level medium">MEDIUM</span>
-                  {% elseif d.nb_low    > 0 %}<span class="badge-level low">LOW</span>
-                  {% else %}<span class="badge-level info">NONE</span>{% endif %}
-                </td>
-                <td>
-                  {% if d.is_via_archetype %}
-                    <span class="badge-level unknown" title="Toutes les apps utilisatrices héritent du même socle — déjà mutualisée par héritage.">VIA SOCLE</span>
-                  {% else %}
-                    <span class="badge-level convergence" title="Apps héritent de socles différents (ou mix socle + standalone) — vraie opportunité de mutualisation.">CONVERGENCE</span>
-                  {% endif %}
-                </td>
-                <td class="text-right" data-order="{{ d.nb_projets }}"><strong>{{ d.nb_projets }}</strong></td>
-                <td class="text-right" data-order="{{ d.nb_cves }}">{{ d.nb_cves }}</td>
-                <td class="text-right" data-order="{{ d.jh_unit }}">{{ d.jh_unit|number_format(1, ',', ' ') }}</td>
-                <td class="text-right" data-order="{{ d.jh_gain }}"><strong>{{ d.jh_gain|number_format(1, ',', ' ') }}</strong></td>
-                <td>
-                  {% for p in d.using_projects|slice(0, 5) %}
-                    {% if p.is_accessible %}
-                      <a  class="app-authorized" href="{{ path('dc_projet', {'group': p.group, 'artifact': p.artifact, 'version': p.version}) }}"
-                          title="{{ p.group }}:{{ p.artifact }} v{{ p.version }}">{{ p.artifact }} v{{ p.version }}</span></a>
-                    {% else %}
-                      <span class="app-unauthorized"
-                            title="{{ p.group }}:{{ p.artifact }} v{{ p.version }} — hors périmètre de votre groupe fonctionnel">{{ p.artifact }} <span>v{{ p.version }}</span></span>
+                    {# MODIF 2026-07-22 : signale la troncature à 5000 lignes plutôt que de la laisser silencieuse. #}
+                    {% if mutualisables_truncated %}
+                        <div class="callout alert-callout-border warning">
+                            <p class="open-sans">
+                                <span aria-hidden="true">⚠️</span>
+                                Cette liste est limitée à {{ total_count }} dépendances (les plus mutualisées). D'autres dépendances mutualisables existent au-delà de cette limite mais ne sont pas affichées — affinez le filtre par socle pour réduire le périmètre.
+                            </p>
+                        </div>
                     {% endif %}
-                  {% endfor %}
-                  {% if d.using_projects|length > 5 %}
-                    <span class="text-muted">+ {{ d.using_projects|length - 5 }} autre{{ (d.using_projects|length - 5) > 1 ? 's' }}</span>
-                  {% endif %}
-                </td>
-              </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
 
-      {% endif %}
+                    <p>
+                        <button id="bouton-ouvrir-methodology-jh"
+                            class="button open-sans focus-dark-light js-ouvrir-methodology-jh"
+                            type="button"
+                            aria-label="Méthode de calcul du JH">
+                            <span aria-hidden="true">🗒️</span> Méthode de calcul du JH
+                        </button>
+                    </p>
 
-      <p class="margin-top-2 margin-bottom-2">
-        <a id="bouton-retour-dashboard"
-            href="{{ path('dc_dashboard', base_qs) }}"
-            class="button open-sans focus-light"
-            aria-label="Retour au dashboard"><span aria-hidden="true">⬅️</span>Retour au dashboard
-        </a>
-      </p>
+                    {# MODIF 2026-05-16 : table DataTables, tri client-side.
+                    data-order sur les colonnes numériques pour tri correct. #}
+                    {% if mutualisables|length == 0 %}
+                        <div class="callout alert-callout-border info">
+                            <p class="open-sans"><em>Aucune dépendance mutualisable dans le périmètre actuel.</em></p>
+                        </div>
+                    {% else %}
+                        <div class="margin-left-1 margin-right-1 margin-bottom-1">
+                            <table id="table-mutualisables" class="open-sans">
+                                <thead>
+                                    <tr>
+                                        <th>Dépendance</th>
+                                        <th>Sévérité max</th>
+                                        <th>Type</th>
+                                        <th class="text-right">Nb projets</th>
+                                        <th class="text-right">Nb CVE</th>
+                                        <th class="text-right">JH unit.</th>
+                                        <th class="text-right">Gain mutu.</th>
+                                        <th>Utilisée par</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for d in mutualisables %}
+                                        <tr>
+                                            <td>
+                                                <strong>{{ d.product ?: d.file_name }}</strong>
+                                                {% if d.version %}
+                                                    <span class="text-muted">— v
+                                                        {{ d.version }}
+                                                    </span>
+                                                {% endif %}
+                                                {% if d.vendor %}
+                                                    <br><span class="text-muted">
+                                                    {{ d.vendor }}
+                                                </span>
+                                            {% endif %}
+                                        </td>
+                                        <td data-order="{{ d.severity_rank }}">
+                                            {% if d.nb_critical > 0 %}
+                                                <span class="badge-level critical">CRITICAL</span>
+                                            {% elseif d.nb_high   > 0 %}
+                                                <span class="badge-level high">HIGH</span>
+                                            {% elseif d.nb_medium > 0 %}
+                                                <span class="badge-level medium">MEDIUM</span>
+                                            {% elseif d.nb_low    > 0 %}
+                                                <span class="badge-level low">LOW</span>
+                                            {% else %}
+                                                <span class="badge-level info">NONE</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if d.is_via_archetype %}
+                                                <span class="badge-level unknown" title="Toutes les apps utilisatrices héritent du même socle — déjà mutualisée par héritage.">VIA SOCLE</span>
+                                            {% else %}
+                                                <span class="badge-level convergence" title="Apps héritent de socles différents (ou mix socle + standalone) — vraie opportunité de mutualisation.">CONVERGENCE</span>
+                                            {% endif %}
+                                        </td>
+                                        <td class="text-right" data-order="{{ d.nb_projets }}"><strong>{{ d.nb_projets }}</strong></td>
+                                        <td class="text-right" data-order="{{ d.nb_cves }}">{{ d.nb_cves }}</td>
+                                        <td class="text-right" data-order="{{ d.jh_unit }}">{{ d.jh_unit|number_format(1, ',', ' ') }}</td>
+                                        <td class="text-right" data-order="{{ d.jh_gain }}"><strong>{{ d.jh_gain|number_format(1, ',', ' ') }}</strong></td>
+                                        <td>
+                                            {% for p in d.using_projects|slice(0, 5) %}
+                                                {% if p.is_accessible %}
+                                                    <a  class="app-authorized" href="{{ path('dc_projet', {'group': p.group, 'artifact': p.artifact, 'version': p.version}) }}"
+                                                        title="{{ p.group }}:{{ p.artifact }} v{{ p.version }}">{{ p.artifact }} v{{ p.version }}</span></a>
+                                                    {% else %}
+                                                        <span class="app-unauthorized"
+                                                            title="{{ p.group }}:{{ p.artifact }} v{{ p.version }} — hors périmètre de votre groupe fonctionnel">{{ p.artifact }} <span>v{{ p.version }}</span></span>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                    {% if d.using_projects|length > 5 %}
+                                                        <span class="text-muted">+ {{ d.using_projects|length - 5 }} autre{{ (d.using_projects|length - 5) > 1 ? 's' }}</span>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
 
-      {{ include('dependency_check/_dc_jh_methodology_modal.html.twig') }}
+                        {% endif %}
 
-      {% macro info_callout(text) %}
-        <div class="callout alert-callout-border info margin-bottom-1 clear-both">
-          <p class="open-sans font-size-085 margin-bottom-0">
-            <span aria-hidden="true">ℹ️</span> {{ text|raw }}
-          </p>
-        </div>
-      {% endmacro %}
-    </main>
+                        <p class="margin-top-2 margin-bottom-2">
+                            <a id="bouton-retour-dashboard"
+                                href="{{ path('dc_dashboard', base_qs) }}"
+                                class="button open-sans focus-dark-light"
+                                aria-label="Retour au dashboard"><span aria-hidden="true">⬅️</span>Retour au dashboard
+                                </a>
+                            </p>
 
-    {{ include('footer.html.twig') }}
-  </body>
-</html>
+                            {{ include('dependency_check/_dc_jh_methodology_modal.html.twig') }}
+
+                            {% macro info_callout(text) %}
+                                <div class="callout alert-callout-border info margin-bottom-1 clear-both">
+                                    <p class="open-sans font-size-085 margin-bottom-0">
+                                        <span aria-hidden="true">ℹ️</span> {{ text|raw }}
+                                    </p>
+                                </div>
+                            {% endmacro %}
+                        </main>
+
+                        {{ include('footer.html.twig') }}
+                    </body>
+                </html>

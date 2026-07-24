@@ -1,139 +1,139 @@
 <dialog id="modal-information-complexity"
-        class="reveal large" data-reveal
-        aria-modal="true"
-        data-close-on-click="true"
-        data-animation-in="fade-in"
-        data-animation-out="fade-out"
-        aria-labelledby="titre-information-complexity"
-        aria-describedby="desc-information-complexity">
+    class="reveal large" data-reveal
+    aria-modal="true"
+    data-close-on-click="true"
+    data-animation-in="fade-in"
+    data-animation-out="fade-out"
+    aria-labelledby="titre-information-complexity"
+    aria-describedby="desc-information-complexity">
 
-  <header>
-      <h2 id="titre-information-complexity" class="h3 claire-hand"><span aria-hidden="true">ℹ️</span>Information</h2>
-    <h3 id="desc-information-complexity" class="h4 claire-hand"><span aria-hidden="true">📋</span>Complexité cyclomatique & cognitive</h3>
-    <span class="show-for-sr">
-      Cette page présente les modalités de calcul de la complexité cyclomatique et cognitive.
-    </span>
-  </header>
+    <header>
+        <h2 id="titre-information-complexity" class="h3 claire-hand"><span aria-hidden="true">ℹ️</span>Information</h2>
+        <h3 id="desc-information-complexity" class="h4 claire-hand"><span aria-hidden="true">📋</span>Complexité cyclomatique & cognitive</h3>
+        <span class="show-for-sr">
+            Cette page présente les modalités de calcul de la complexité cyclomatique et cognitive.
+        </span>
+    </header>
 
-  <section>
-    <p class="open-sans">
-      La complexité cyclomatique et la complexité cognitive sont deux mesures utilisées pour évaluer la qualité du code et identifier les zones qui pourraient nécessiter une refactorisation. Ces mesures sont souvent utilisées pour évaluer la maintenabilité du code et identifier les zones qui pourraient nécessiter une attention particulière.
-      <br>
-      Les métriques complexity et cognitive_complexity dans SonarQube mesurent toutes les deux la complexité du code, mais elles ne signifient pas la même chose. Elles ont été conçues pour répondre à deux problématiques différentes.
-    </p>
+    <section>
+        <p class="open-sans">
+            La complexité cyclomatique et la complexité cognitive sont deux mesures utilisées pour évaluer la qualité du code et identifier les zones qui pourraient nécessiter une refactorisation. Ces mesures sont souvent utilisées pour évaluer la maintenabilité du code et identifier les zones qui pourraient nécessiter une attention particulière.
+            <br>
+            Les métriques complexity et cognitive_complexity dans SonarQube mesurent toutes les deux la complexité du code, mais elles ne signifient pas la même chose. Elles ont été conçues pour répondre à deux problématiques différentes.
+        </p>
 
-    <h4 class="h4 claire-hand"><span aria-hidden="true">🔍</span>Complexité cyclomatique</h4>
-    <p class="open-sans">
-      La complexité cyclomatique introduite par <em>Thomas J. McCabe</em> est une mesure de la complexité d'un programme informatique. Elle est calculée en comptant le nombre de chemins linéairement indépendants à travers un programme. Chaque point de décision ajoute +1. Plus la complexité cyclomatique est élevée, plus le code est complexe et potentiellement plus difficile à maintenir.
-    </p>
+        <h4 class="h4 claire-hand"><span aria-hidden="true">🔍</span>Complexité cyclomatique</h4>
+        <p class="open-sans">
+            La complexité cyclomatique introduite par <em>Thomas J. McCabe</em> est une mesure de la complexité d'un programme informatique. Elle est calculée en comptant le nombre de chemins linéairement indépendants à travers un programme. Chaque point de décision ajoute +1. Plus la complexité cyclomatique est élevée, plus le code est complexe et potentiellement plus difficile à maintenir.
+        </p>
 
-    <p class="open-sans">
-      La complexité cyclomatique est souvent utilisée pour évaluer la qualité du code et identifier les zones qui pourraient nécessiter une refactorisation. Un code avec une complexité cyclomatique élevée peut être plus sujet aux erreurs et plus difficile à tester.
-    </p>
-    <p class="open-sans">
-      En général, une complexité cyclomatique inférieure à 10 est considérée comme acceptable, tandis qu'une complexité supérieure à 20 peut indiquer un code qui nécessite une attention particulière.
-    </p>
-    <table>
-      <thead>
-          <tr>
-              <th scope="col">Complexity</th>
-              <th scope="col">Signification</th>
-          </tr>
-      </thead>
-        <tbody>
-            <tr>
-                <th scope="row">1-5</th>
-                <td>simple</td>
-            </tr>
-            <tr>
-                <th scope="row">6-10</th>
-                <td>modérée</td>
-            </tr>
-            <tr>
-                <th scope="row">11-20</th>
-                <td>complexe</td>
-            </tr>
-            <tr>
-                <th scope="row">&gt;20</th>
-                <td>très difficile à maintenir</td>
-            </tr>
-        </tbody>
-    </table>
+        <p class="open-sans">
+            La complexité cyclomatique est souvent utilisée pour évaluer la qualité du code et identifier les zones qui pourraient nécessiter une refactorisation. Un code avec une complexité cyclomatique élevée peut être plus sujet aux erreurs et plus difficile à tester.
+        </p>
+        <p class="open-sans">
+            En général, une complexité cyclomatique inférieure à 10 est considérée comme acceptable, tandis qu'une complexité supérieure à 20 peut indiquer un code qui nécessite une attention particulière.
+        </p>
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">Complexity</th>
+                    <th scope="col">Signification</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">1-5</th>
+                    <td>simple</td>
+                </tr>
+                <tr>
+                    <th scope="row">6-10</th>
+                    <td>modérée</td>
+                </tr>
+                <tr>
+                    <th scope="row">11-20</th>
+                    <td>complexe</td>
+                </tr>
+                <tr>
+                    <th scope="row">&gt;20</th>
+                    <td>très difficile à maintenir</td>
+                </tr>
+            </tbody>
+        </table>
 
-    <h4 class="h4 claire-hand"><span aria-hidden="true">🧠</span>Complexité cognitive</h4>
-    <p class="open-sans">
-      La complexité cognitive est une mesure de la difficulté de compréhension d'un programme informatique. Elle est calculée en tenant compte de la charge mentale requise pour suivre le flux de contrôle et comprendre la logique du programme. Plus la complexité cognitive est élevée, plus le code est difficile à lire et à maintenir.
-    </p>
-    <p class="open-sans">
-      La complexité cognitive est souvent utilisée pour évaluer la qualité du code et identifier les zones qui pourraient nécessiter une refactorisation. Un code avec une complexité cognitive élevée peut être plus difficile à comprendre et à maintenir, même s'il a une complexité cyclomatique relativement faible.
-    </p>
-    <p class="open-sans">
-      En général, une complexité cognitive inférieure à 15 est considérée comme acceptable, tandis qu'une complexité supérieure à 30 peut indiquer un code qui nécessite une attention particulière.
-    </p>
-    <table>
-      <thead>
-          <tr>
-              <th scope="col">Complexity</th>
-              <th scope="col">Signification</th>
-          </tr>
-      </thead>
-      <tbody>
-          <tr>
-              <th scope="row">1-15</th>
-              <td>acceptable</td>
-          </tr>
-          <tr>
-              <th scope="row">16-30</th>
-              <td>complexe</td>
-          </tr>
-          <tr>
-              <th scope="row">&gt;30</th>
-              <td>très difficile à maintenir</td>
-          </tr>
-      </tbody>
-  </table>
-</section>
+        <h4 class="h4 claire-hand"><span aria-hidden="true">🧠</span>Complexité cognitive</h4>
+        <p class="open-sans">
+            La complexité cognitive est une mesure de la difficulté de compréhension d'un programme informatique. Elle est calculée en tenant compte de la charge mentale requise pour suivre le flux de contrôle et comprendre la logique du programme. Plus la complexité cognitive est élevée, plus le code est difficile à lire et à maintenir.
+        </p>
+        <p class="open-sans">
+            La complexité cognitive est souvent utilisée pour évaluer la qualité du code et identifier les zones qui pourraient nécessiter une refactorisation. Un code avec une complexité cognitive élevée peut être plus difficile à comprendre et à maintenir, même s'il a une complexité cyclomatique relativement faible.
+        </p>
+        <p class="open-sans">
+            En général, une complexité cognitive inférieure à 15 est considérée comme acceptable, tandis qu'une complexité supérieure à 30 peut indiquer un code qui nécessite une attention particulière.
+        </p>
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">Complexity</th>
+                    <th scope="col">Signification</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope="row">1-15</th>
+                    <td>acceptable</td>
+                </tr>
+                <tr>
+                    <th scope="row">16-30</th>
+                    <td>complexe</td>
+                </tr>
+                <tr>
+                    <th scope="row">&gt;30</th>
+                    <td>très difficile à maintenir</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
 
-<section>
-    <p class="open-sans">
-      Pour calculer la complexité cyclomatique et cognitive, SonarQube utilise des règles spécifiques qui analysent le code source et identifient les points de décision, les structures de contrôle, et les éléments qui contribuent à la charge mentale. Ces règles sont basées sur des meilleures pratiques de développement et sont régulièrement mises à jour pour refléter les évolutions du langage de programmation et des méthodologies de développement.
-    </p>
+    <section>
+        <p class="open-sans">
+            Pour calculer la complexité cyclomatique et cognitive, SonarQube utilise des règles spécifiques qui analysent le code source et identifient les points de décision, les structures de contrôle, et les éléments qui contribuent à la charge mentale. Ces règles sont basées sur des meilleures pratiques de développement et sont régulièrement mises à jour pour refléter les évolutions du langage de programmation et des méthodologies de développement.
+        </p>
 
-    <p class="open-sans">
-      En utilisant ces métriques, les développeurs peuvent identifier les zones du code qui pourraient bénéficier d'une refactorisation pour améliorer la lisibilité, la maintenabilité et la qualité globale du code.
-    </p>
+        <p class="open-sans">
+            En utilisant ces métriques, les développeurs peuvent identifier les zones du code qui pourraient bénéficier d'une refactorisation pour améliorer la lisibilité, la maintenabilité et la qualité globale du code.
+        </p>
 
-    <h4 class="h4 claire-hand"><span aria-hidden="true">🧮</span>Comment Ma-Moulinette calcule le ratio et la note affichés</h4>
-    <p class="open-sans">
-      SonarQube expose la complexité cyclomatique et cognitive sous forme de <strong>compteurs bruts</strong> (nombre total de points de décision pour l'ensemble du projet). Ma-Moulinette calcule ensuite, pour chacun des deux compteurs, un <strong>ratio</strong> en divisant le nombre de lignes de code (<code>ncloc</code>) par ce compteur : <code>ratio = ncloc ÷ complexité</code>. Un ratio élevé signifie donc plus de lignes de code pour un même nombre de points de complexité ; un ratio faible signifie une concentration plus forte de points de complexité sur peu de lignes.
-    </p>
-    <p class="open-sans">
-      Ce ratio est ensuite converti en note A à E selon les seuils suivants (identiques pour la complexité cyclomatique et cognitive) :
-    </p>
-    <table>
-      <thead>
-        <tr>
-          <th scope="col">Ratio (ncloc ÷ complexité)</th>
-          <th scope="col">Note</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><th scope="row">≤ 3</th><td>A</td></tr>
-        <tr><th scope="row">] 3 ; 7 ]</th><td>B</td></tr>
-        <tr><th scope="row">] 7 ; 12 ]</th><td>C</td></tr>
-        <tr><th scope="row">] 12 ; 18 ]</th><td>D</td></tr>
-        <tr><th scope="row">&gt; 18</th><td>E</td></tr>
-      </tbody>
-    </table>
-</section>
+        <h4 class="h4 claire-hand"><span aria-hidden="true">🧮</span>Comment Ma-Moulinette calcule le ratio et la note affichés</h4>
+        <p class="open-sans">
+            SonarQube expose la complexité cyclomatique et cognitive sous forme de <strong>compteurs bruts</strong> (nombre total de points de décision pour l'ensemble du projet). Ma-Moulinette calcule ensuite, pour chacun des deux compteurs, un <strong>ratio</strong> en divisant le nombre de lignes de code (<code>ncloc</code>) par ce compteur : <code>ratio = ncloc ÷ complexité</code>. Un ratio élevé signifie donc plus de lignes de code pour un même nombre de points de complexité ; un ratio faible signifie une concentration plus forte de points de complexité sur peu de lignes.
+        </p>
+        <p class="open-sans">
+            Ce ratio est ensuite converti en note A à E selon les seuils suivants (identiques pour la complexité cyclomatique et cognitive) :
+        </p>
+        <table>
+            <thead>
+                <tr>
+                    <th scope="col">Ratio (ncloc ÷ complexité)</th>
+                    <th scope="col">Note</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><th scope="row">≤ 3</th><td>A</td></tr>
+                <tr><th scope="row">] 3 ; 7 ]</th><td>B</td></tr>
+                <tr><th scope="row">] 7 ; 12 ]</th><td>C</td></tr>
+                <tr><th scope="row">] 12 ; 18 ]</th><td>D</td></tr>
+                <tr><th scope="row">&gt; 18</th><td>E</td></tr>
+            </tbody>
+        </table>
+    </section>
 
-  <footer class="grid-x grid-margin-x align-right margin-top-2">
-    <div class="cell shrink">
-      <button id="bouton-fermer-information-complexity"
-              class="button open-sans focus-light"
-              type="button"
-              aria-label="Ferme modale"><span aria-hidden="true">❌</span> Fermer
-      </button>
-    </div>
-  </footer>
-</dialog>
+    <footer class="grid-x grid-margin-x align-right margin-top-2">
+        <div class="cell shrink">
+            <button id="bouton-fermer-information-complexity"
+                class="button open-sans focus-dark-light"
+                type="button"
+                aria-label="Ferme modale"><span aria-hidden="true">❌</span> Fermer
+                </button>
+            </div>
+        </footer>
+    </dialog>

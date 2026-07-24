@@ -4,117 +4,119 @@
 {% set bottom="footer-fixed" %}
 <!DOCTYPE html>
 <!--
-.. __  __             __  __             _ _            _   _
-  |  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
-  | |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
-  | |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
-  |_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
+.__  __             __  __             _ _            _   _
+|  \/  | __ _      |  \/  | ___  _   _| (_)_ __   ___| |_| |_ ___
+| |\/| |/ _` |_____| |\/| |/ _ \| | | | | | '_ \ / _ \ __| __/ _ \
+| |  | | (_| |_____| |  | | (_) | |_| | | | | | |  __/ |_| ||  __/
+|_|  |_|\__,_|     |_|  |_|\___/ \__,_|_|_|_| |_|\___|\__|\__\___|
 
-  Laurent HADJADJ
-  https://github.com/Laurent-hadjadj/ma-moulinette
-  © 2024 - CC BY-SA-NC 4.0
+Laurent HADJADJ
+https://github.com/Laurent-hadjadj/ma-moulinette
+© 2024 - CC BY-SA-NC 4.0
 -->
 <html	lang="fr">
-  {# Chargement de la section HEAD #}
-  <head>
-    <title>{{ title }}</title>
-    {{ include('head.html.twig') }}
-    {# Chargement des assets JS et CSS #}
-    {% block importmap %}{{ importmap('login') }}{% endblock %}
-  </head>
+    {# Chargement de la section HEAD #}
+    <head>
+        <title>{{ title }}</title>
+        {{ include('head.html.twig') }}
+        {# Chargement des assets JS et CSS #}
+        {% block importmap %}
+            {{ importmap('login') }}
+        {% endblock %}
+    </head>
 
-  <body>
-    {# no-script #}
-    {{ include('no-script.html.twig') }}
-    {# Chargement de la section header #}
-    {{ include('header.html.twig') }}
+    <body>
+        {# no-script #}
+        {{ include('no-script.html.twig') }}
+        {# Chargement de la section header #}
+        {{ include('header.html.twig') }}
 
-    {# Fil d’Ariane #}
-    <header class="grid-container margin-top-1">
-      <nav id="fil-ariane" aria-label="vous êtes ici :">
-        <ol class="claire-hand breadcrumbs">
-          <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
-          <li aria-current="page">Authentification</li>
-        </ol>
-      </nav>
-    </header>
+        {# Fil d’Ariane #}
+        <header class="grid-container margin-top-1">
+            <nav id="fil-ariane" aria-label="vous êtes ici :">
+                <ol class="claire-hand breadcrumbs">
+                    <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+                    <li aria-current="page">Authentification</li>
+                </ol>
+            </nav>
+        </header>
 
-    <main id="main-content" class="grid-container main-container">
-      <h2 class="h3 claire-hand"><span aria-hidden="true">🛠️</span>Bienvenue sur Ma-Moulinette</h2>
-      <div class="grid-x">
-        <div class="small-12 medium-6 large-6 cell">
-          <video id="video-dessin-anime" class="video-dessin-anime" preload="metadata" loop autoplay muted>
-            <source src="{{ asset('video/dessin_anime.mp4') }}">
-            <track label="Français" kind="captions" srclang="fr" default src="{{ asset('video/dessin_anime_subtitles_fr.vtt') }}">
-              <track label="English" kind="captions" srclang="en" src="{{ asset('video/dessin_anime_subtitles_en.vtt') }}"></video>
+        <main id="main-content" class="grid-container main-container">
+            <h2 class="h3 claire-hand"><span aria-hidden="true">🛠️</span>Bienvenue sur Ma-Moulinette</h2>
+            <div class="grid-x">
+                <div class="small-12 medium-6 large-6 cell">
+                    <video id="video-dessin-anime" class="video-dessin-anime" preload="metadata" loop autoplay muted>
+                        <source src="{{ asset('video/dessin_anime.mp4') }}">
+                        <track label="Français" kind="captions" srclang="fr" default src="{{ asset('video/dessin_anime_subtitles_fr.vtt') }}">
+                        <track label="English" kind="captions" srclang="en" src="{{ asset('video/dessin_anime_subtitles_en.vtt') }}"></video>
 
-            <span class="open-sans float-center text-center">
-                {% set a="https://pixabay.com/fr/" %}
-                {% set b="users/u_cakf541pns-41051938/" %}
-                {% set c="?utm_source=link-attribution&amp;utm_medium=referral"%}
-                {% set d="&amp;utm_campaign=video&amp;utm_content=191860" %}
-                <a class="open-sans credit source-link" href="{{a}}{{b}}{{c}}{{d}}">u_cakf541pns</a>
-                <span id="sur">sur</span>
-                <a class="open-sans credit source-link" href="{{a}}{{c}}{{d}}">Pixabay</a>
-            </span>
-        </div>
-        <div class="small-12 medium-6 large-6 cell">
-          <form class="callout" method="post"
-                aria-labelledby="titre-formulaire"
-                aria-describedby="desc-formulaire">
-            <h2 id="titre-formulaire" class="h4 claire-hand text-center"><span aria-hidden="true">🔐</span>Authentification.</h2>
-            <p id="desc-formulaire" class="show-for-sr">
-              Formulaire d'authentification. Utiliser votre adresse mèl et saisissez votre mot de passe.</p>
-            <div class="floated-label-wrapper">
-              <label for="login">Courriel</label>
-              <input id="login"
-                    class="open-sans"
-                    type="text"
-                    name="login"
-                    placeholder="prenom.nom ou email@domaine.fr"
-                    required aria-required="true"
-                    autofocus autocomplete="username"
-                    inputmode="email">
-                    {# ne fonctionne pas pour une adresse UNP : pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$"#}
-            </div>
+                        <span class="open-sans float-center text-center">
+                            {% set a="https://pixabay.com/fr/" %}
+                            {% set b="users/u_cakf541pns-41051938/" %}
+                            {% set c="?utm_source=link-attribution&amp;utm_medium=referral"%}
+                            {% set d="&amp;utm_campaign=video&amp;utm_content=191860" %}
+                            <a class="open-sans credit source-link" href="{{a}}{{b}}{{c}}{{d}}">u_cakf541pns</a>
+                            <span id="sur">sur</span>
+                            <a class="open-sans credit source-link" href="{{a}}{{c}}{{d}}">Pixabay</a>
+                        </span>
+                    </div>
+                    <div class="small-12 medium-6 large-6 cell">
+                        <form class="callout" method="post"
+                            aria-labelledby="titre-formulaire"
+                            aria-describedby="desc-formulaire">
+                            <h2 id="titre-formulaire" class="h4 claire-hand text-center"><span aria-hidden="true">🔐</span>Authentification.</h2>
+                            <p id="desc-formulaire" class="show-for-sr">
+                            Formulaire d'authentification. Utiliser votre adresse mèl et saisissez votre mot de passe.</p>
+                            <div class="floated-label-wrapper">
+                                <label for="login">Courriel</label>
+                                <input id="login"
+                                    class="open-sans"
+                                    type="text"
+                                    name="login"
+                                    placeholder="prenom.nom ou email@domaine.fr"
+                                    required aria-required="true"
+                                    autofocus autocomplete="username"
+                                    inputmode="email">
+                                    {# ne fonctionne pas pour une adresse UNP : pattern="[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$"#}
+                                </div>
 
-            <div class="floated-label-wrapper">
-              <label for="mot-de-passe">Mot de passe</label>
-              <input id="mot-de-passe"
-                      class="open-sans"
-                      type="password"
-                      name="password"
-                      placeholder="Mot de passe"
-                      required aria-required="true"
-                      autocomplete="current-password">
-              <button id="afficher-masquer-mot-de-passe"
-                      class="afficher-masquer focus-dark"
-                      type="button"
-                      aria-pressed="false"
-                      aria-label="Afficher le mot de passe">Afficher
-              </button>
-            </div>
-            <div class="grid-x grid-padding-x align-right margin-top-2">
-              <div class="cell shrink">
-                <input id="valider-formulaire-login"
-                      class="button no-select focus-dark-light"
-                      type="submit"
-                      aria-label="Valider"
-                      value="✅ Valider">
-              </div>
-            </div>
-            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
-          </form>
-          {% if error %}
-            <output class="label alert" role="alert">{{ error.messageKey }}
-            </output>
-          {% endif %}
-        </div>
-        <div class="small-1 medium-3 large-3 cell">&nbsp;</div>
-      </div>
-    </main>
+                                <div class="floated-label-wrapper">
+                                    <label for="mot-de-passe">Mot de passe</label>
+                                    <input id="mot-de-passe"
+                                        class="open-sans"
+                                        type="password"
+                                        name="password"
+                                        placeholder="Mot de passe"
+                                        required aria-required="true"
+                                        autocomplete="current-password">
+                                        <button id="afficher-masquer-mot-de-passe"
+                                            class="afficher-masquer focus-dark"
+                                            type="button"
+                                            aria-pressed="false"
+                                            aria-label="Afficher le mot de passe">Afficher
+                                            </button>
+                                        </div>
+                                        <div class="grid-x grid-padding-x align-right margin-top-2">
+                                            <div class="cell shrink">
+                                                <input id="valider-formulaire-login"
+                                                    class="button no-select focus-dark-light"
+                                                    type="submit"
+                                                    aria-label="Valider"
+                                                    value="✅ Valider">
+                                                </div>
+                                            </div>
+                                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                                        </form>
+                                        {% if error %}
+                                            <output class="label alert" role="alert">{{ error.messageKey }}
+                                            </output>
+                                        {% endif %}
+                                    </div>
+                                    <div class="small-1 medium-3 large-3 cell">&nbsp;</div>
+                                </div>
+                            </main>
 
-    {# Chargement de la section footer #}
-    {{ include('footer.html.twig') }}
-  </body>
-</html>
+                            {# Chargement de la section footer #}
+                            {{ include('footer.html.twig') }}
+                        </body>
+                    </html>
