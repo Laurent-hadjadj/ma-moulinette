@@ -27,7 +27,7 @@ use Doctrine\Persistence\ObjectManager;
  *  - testActuatorInfoCount     : findAll = 4.
  *
  * MODIF 2026-05-16 : setval rendu CONDITIONNEL.
- * Pourquoi : ActuatorFixtures s'execute AVANT (ordre alphabetique) sur
+ * Pourquoi : ActuatorFixtures s'execute AVANT (ordre alphabétique) sur
  * doctrine:fixtures:load complet, et insère 4 Actuators (ids 1-4). Le
  * setval(1, false) inconditionnel d'origine provoquait alors une collision
  * PK (id=1 reste a créer par le SERIAL).
@@ -69,16 +69,16 @@ class ActuatorInfoFixtures extends Fixture
 
         // 4 ActuatorInfos : liens vers les Actuators d'id 1, 2, 3 et 5.
         $infoSpecs = [
-            1 => ['Version application 01', '1.0.1'],
-            2 => ['Version application 02', '1.0.2'],
-            3 => ['Version application 03', '1.0.3'],
-            5 => ['Version application 05', '1.0.5'],
+            1 => ['Version application 01', 'app.version'],
+            2 => ['Version application 02', 'app.version'],
+            3 => ['Version application 03', 'app.version'],
+            5 => ['Version application 05', 'app.version'],
         ];
 
-        foreach ($infoSpecs as $actuatorIndex => [$desc, $value]) {
+        foreach ($infoSpecs as $actuatorIndex => [$desc, $cle]) {
             $info = new ActuatorInfo();
             $info->setActuatorInfoDescription($desc);
-            $info->setActuatorInfoValue($value);
+            $info->setActuatorInfoCle($cle);
             $actuators[$actuatorIndex]->addActuatorInfo($info);
             $manager->persist($info);
         }

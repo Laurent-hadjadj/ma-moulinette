@@ -45,7 +45,7 @@ class ActuatorFixtures extends Fixture
             // Au moins un info par actuator (cascade persist depuis Actuator).
             $info = new \App\Entity\ActuatorInfo();
             $info->setActuatorInfoDescription('Version application ' . $suffix);
-            $info->setActuatorInfoValue('1.0.' . $i);
+            $info->setActuatorInfoCle('app.version');
             $actuator->addActuatorInfo($info);
 
             $manager->persist($actuator);
