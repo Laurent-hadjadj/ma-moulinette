@@ -17,9 +17,9 @@ namespace App\Tests\Unit\Controller\Batch;
 
 use App\Controller\Batch\BatchCollecteActuatorController;
 use App\Entity\Actuator;
+use App\Repository\ActuatorInfoRepository;
 use App\Repository\ActuatorRepository;
 use App\Service\ClientService;
-use App\Service\UrlBuilderService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -27,11 +27,26 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
+/* MODIF 2026-07-23 : réécriture pour couvrir le nouveau contrat de
+ * BatchCollecteActuatorInfo (remise à niveau du module Actuator) :
+ *  - toutes les branches renvoient désormais une clé 'json' (array), jamais
+ *    absente, destinée à être stockée telle quelle dans historique.actuator_info ;
+ *  - seule l'erreur de recherche en base (DB Ma-Moulinette) porte 'fatal' => true ;
+ *  - extraction effective des clés déclarées (ActuatorInfoRepository::findActuatorInfoById)
+ *    par nœud JSON à points (ex. app.version) ;
+ *  - l'URL enregistrée est appelée TELLE QUELLE (plus de UrlBuilderService ici,
+ *    qui dupliquait le suffixe /actuator/info + ajoutait un ?project= sans objet
+ *    pour un endpoint Actuator — bug réel trouvé en test manuel) ;
+ *  - une erreur HTTP se signale par l'ABSENCE de la clé 'json' dans le retour de
+ *    ClientService::httpActuator (pas par un 'code' embarqué dans le JSON décodé,
+ *    qui était du code mort : ClientService catch déjà ces cas en interne).
+ */
 #[AllowMockObjectsWithoutExpectations]
 class BatchCollecteActuatorControllerTest extends TestCase
 {
     private const MAVEN_KEY = 'fr.ma-moulinette:ma-moulinette';
-    private const BUILT_URL = 'http://app.example.com/actuator/info?project=fr.ma-moulinette:ma-moulinette';
+    private const URL = 'http://app.example.com/actuator/info';
+    private const ACTUATOR_ID = 7;
 
     /** @var EntityManagerInterface&MockObject */
     private MockObject $em;
@@ -39,11 +54,11 @@ class BatchCollecteActuatorControllerTest extends TestCase
     /** @var ActuatorRepository&MockObject */
     private MockObject $repository;
 
+    /** @var ActuatorInfoRepository&MockObject */
+    private MockObject $infoRepository;
+
     /** @var ClientService&MockObject */
     private MockObject $client;
-
-    /** @var UrlBuilderService&MockObject */
-    private MockObject $urlBuilder;
 
     /** @var LoggerInterface&MockObject */
     private MockObject $logger;
@@ -54,8 +69,8 @@ class BatchCollecteActuatorControllerTest extends TestCase
     {
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->repository = $this->createMock(ActuatorRepository::class);
+        $this->infoRepository = $this->createMock(ActuatorInfoRepository::class);
         $this->client = $this->createMock(ClientService::class);
-        $this->urlBuilder = $this->createMock(UrlBuilderService::class);
         $this->logger = $this->createMock(LoggerInterface::class);
 
         $this->em->expects($this->atLeastOnce())
@@ -66,17 +81,17 @@ class BatchCollecteActuatorControllerTest extends TestCase
         $this->controller = new BatchCollecteActuatorController(
             $this->em,
             $this->client,
-            $this->urlBuilder,
+            $this->infoRepository,
             $this->logger
         );
     }
 
     /**
-     * Quand la recherche de l'endpoint Actuator renvoie un code en erreur DB/HTTP,
-     * on propage l'erreur telle quelle (pas d'appel httpActuator).
+     * Erreur de recherche du point d'accès en base (DB Ma-Moulinette elle-même) :
+     * seul cas encore marqué 'fatal' => true (stoppe la collecte du projet).
      */
     #[DataProvider('repositoryErrorCodesProvider')]
-    public function testBatchCollecteActuatorInfoReturnsErrorWhenEndpointLookupFails(int $code): void
+    public function testBatchCollecteActuatorInfoReturnsFatalErrorWhenEndpointLookupFails(int $code): void
     {
         $this->repository->expects($this->once())
             ->method('findActuatorMavenKey')
@@ -84,12 +99,13 @@ class BatchCollecteActuatorControllerTest extends TestCase
             ->willReturn(['code' => $code, 'erreur' => 'Some DB error']);
 
         $this->client->expects($this->never())->method('httpActuator');
-        $this->urlBuilder->expects($this->never())->method('build');
 
-        $this->assertSame(
-            ['code' => $code, 'erreur' => 'Some DB error'],
-            $this->controller->BatchCollecteActuatorInfo(self::MAVEN_KEY)
-        );
+        $result = $this->controller->BatchCollecteActuatorInfo(self::MAVEN_KEY);
+
+        $this->assertSame($code, $result['code']);
+        $this->assertSame('Some DB error', $result['erreur']);
+        $this->assertSame([], $result['json']);
+        $this->assertTrue($result['fatal']);
     }
 
     public static function repositoryErrorCodesProvider(): array
@@ -102,7 +118,7 @@ class BatchCollecteActuatorControllerTest extends TestCase
         ];
     }
 
-    public function testBatchCollecteActuatorInfoReturns404WhenNoEndpointIsDefined(): void
+    public function testBatchCollecteActuatorInfoReturns404WithEmptyJsonWhenNoEndpointIsDefined(): void
     {
         $this->repository->expects($this->once())
             ->method('findActuatorMavenKey')
@@ -119,71 +135,113 @@ class BatchCollecteActuatorControllerTest extends TestCase
         $this->assertSame(404, $result['code']);
         $this->assertSame('warning', $result['type']);
         $this->assertStringContainsString("point-d'accès", $result['message']);
+        $this->assertSame([], $result['json']);
+        $this->assertArrayNotHasKey('fatal', $result);
     }
 
-    public function testBatchCollecteActuatorInfoReturnsDataJsonOnSuccess(): void
+    public function testBatchCollecteActuatorInfoCallsStoredUrlAsIs(): void
     {
-        /* MODIF 2026-05-08 : ajout de la cle 'code' (happy path).
-         * Why: BatchCollecteActuatorInfo:74 fait `$actuatorEndpoint['code'] === 404` sans coalesce.
-         * Sans cette cle, warning "Undefined array key 'code'".
-         */
         $this->repository->expects($this->once())
             ->method('findActuatorMavenKey')
             ->willReturn([
                 'code' => 200,
                 'user' => 'actuator-user',
                 'password' => 'actuator-pass',
-                'url' => 'http://app.example.com',
+                'url' => self::URL,
+                'id' => self::ACTUATOR_ID,
             ]);
 
-        $this->urlBuilder->expects($this->once())
-            ->method('build')
-            ->with(
-                'http://app.example.com',
-                'actuator/info',
-                ['project' => self::MAVEN_KEY]
-            )
-            ->willReturn(self::BUILT_URL);
-
-        $dataJson = ['build' => ['version' => '2.0.0'], 'git' => ['branch' => 'main']];
+        $dataJson = ['app' => ['version' => '2.0.0'], 'git' => ['branch' => 'main']];
         $this->client->expects($this->once())
             ->method('httpActuator')
-            ->with(self::BUILT_URL, 'actuator-user', 'actuator-pass')
+            // MODIF 2026-07-23 : plus de suffixe/paramètre rajouté, l'URL stockée
+            // (déjà complète) est appelée telle quelle.
+            ->with(self::URL, 'actuator-user', 'actuator-pass')
             ->willReturn(['code' => 200, 'json' => $dataJson]);
+
+        $this->infoRepository->method('findActuatorInfoById')->willReturn(['code' => 200, 'liste' => []]);
+
+        $result = $this->controller->BatchCollecteActuatorInfo(self::MAVEN_KEY);
+
+        $this->assertSame(200, $result['code']);
+    }
+
+    public function testBatchCollecteActuatorInfoExtractsRequestedKeysOnSuccess(): void
+    {
+        $this->repository->expects($this->once())
+            ->method('findActuatorMavenKey')
+            ->willReturn([
+                'code' => 200,
+                'user' => 'actuator-user',
+                'password' => 'actuator-pass',
+                'url' => self::URL,
+                'id' => self::ACTUATOR_ID,
+            ]);
+
+        $dataJson = ['app' => ['version' => '2.0.0'], 'git' => ['branch' => 'main']];
+        $this->client->expects($this->once())
+            ->method('httpActuator')
+            ->with(self::URL, 'actuator-user', 'actuator-pass')
+            ->willReturn(['code' => 200, 'json' => $dataJson]);
+
+        $this->infoRepository->expects($this->once())
+            ->method('findActuatorInfoById')
+            ->with(['actuator_id' => self::ACTUATOR_ID])
+            ->willReturn([
+                'code' => 200,
+                'liste' => [
+                    ['nom' => 'Version', 'cle' => 'app.version'],
+                    ['nom' => 'Branche', 'cle' => 'git.branch'],
+                    ['nom' => 'Absente', 'cle' => 'app.inconnu'],
+                ],
+            ]);
 
         $result = $this->controller->BatchCollecteActuatorInfo(self::MAVEN_KEY);
 
         $this->assertSame(200, $result['code']);
         $this->assertSame($dataJson, $result['dataJson']);
-        $this->assertStringContainsString('collecte', $result['message']);
+
+        $json = $result['json'];
+        $this->assertSame(200, $json['code']);
+        $this->assertArrayHasKey('date_extraction', $json);
+        $this->assertSame('2.0.0', $json['app.version']);
+        $this->assertSame('main', $json['git.branch']);
+        $this->assertNull($json['app.inconnu']);
     }
 
+    /**
+     * ClientService::httpActuator() catch déjà les erreurs HTTP en interne et
+     * renvoie {code, erreur} SANS clé 'json' — c'est ce signal (pas un 'code'
+     * dans un JSON décodé, qui n'arrive jamais dans ce cas) qui doit déclencher
+     * la construction du JSON d'échec.
+     */
     #[DataProvider('httpErrorCodesProvider')]
-    public function testBatchCollecteActuatorInfoPropagatesHttpErrorWhenJsonPayloadCarriesErrorCode(int $code): void
+    public function testBatchCollecteActuatorInfoBuildsFailureJsonWhenClientReturnsNoJson(int $code): void
     {
         $this->repository->expects($this->once())
             ->method('findActuatorMavenKey')
             ->willReturn([
-                'code' => 200, 'user' => 'u', 'password' => 'p', 'url' => 'http://app.example.com',
+                'code' => 200, 'user' => 'u', 'password' => 'p', 'url' => self::URL, 'id' => self::ACTUATOR_ID,
             ]);
-
-        $this->urlBuilder->method('build')->willReturn(self::BUILT_URL);
 
         $this->client->expects($this->once())
             ->method('httpActuator')
-            ->willReturn([
-                'code' => 200,
-                'json' => ['code' => $code, 'erreur' => "HTTP $code error"],
-            ]);
+            ->willReturn(['code' => $code, 'erreur' => "HTTP $code error"]);
+
+        $this->infoRepository->expects($this->never())->method('findActuatorInfoById');
 
         $this->logger->expects($this->once())
             ->method('error')
             ->with($this->stringContains('Erreur HTTP'));
 
-        $this->assertSame(
-            ['code' => $code, 'erreur' => "HTTP $code error"],
-            $this->controller->BatchCollecteActuatorInfo(self::MAVEN_KEY)
-        );
+        $result = $this->controller->BatchCollecteActuatorInfo(self::MAVEN_KEY);
+
+        $this->assertSame($code, $result['code']);
+        $this->assertSame("HTTP $code error", $result['erreur']);
+        $this->assertArrayNotHasKey('fatal', $result);
+        $this->assertSame($code, $result['json']['code']);
+        $this->assertStringContainsString((string) $code, $result['json']['message']);
+        $this->assertArrayHasKey('date_extraction', $result['json']);
     }
 
     public static function httpErrorCodesProvider(): array
@@ -194,15 +252,13 @@ class BatchCollecteActuatorControllerTest extends TestCase
         ];
     }
 
-    public function testBatchCollecteActuatorInfoCatchesExceptionFromHttpClient(): void
+    public function testBatchCollecteActuatorInfoBuildsFailureJsonWhenHttpClientThrows(): void
     {
         $this->repository->expects($this->once())
             ->method('findActuatorMavenKey')
             ->willReturn([
-                'code' => 200, 'user' => 'u', 'password' => 'p', 'url' => 'http://app.example.com',
+                'code' => 200, 'user' => 'u', 'password' => 'p', 'url' => self::URL, 'id' => self::ACTUATOR_ID,
             ]);
-
-        $this->urlBuilder->method('build')->willReturn(self::BUILT_URL);
 
         $this->client->expects($this->once())
             ->method('httpActuator')
@@ -217,6 +273,36 @@ class BatchCollecteActuatorControllerTest extends TestCase
         $this->assertSame(500, $result['code']);
         $this->assertSame('error', $result['type']);
         $this->assertStringContainsString('Connection refused', $result['erreur'][0]);
+        $this->assertArrayNotHasKey('fatal', $result);
+        $this->assertSame(500, $result['json']['code']);
+        $this->assertStringContainsString('Connection refused', $result['json']['message']);
+    }
+
+    public function testBatchCollecteActuatorInfoIgnoresKeysWithBlankCle(): void
+    {
+        $this->repository->expects($this->once())
+            ->method('findActuatorMavenKey')
+            ->willReturn([
+                'code' => 200, 'user' => 'u', 'password' => 'p', 'url' => self::URL, 'id' => self::ACTUATOR_ID,
+            ]);
+
+        $dataJson = ['app' => ['version' => '2.0.0']];
+        $this->client->expects($this->once())
+            ->method('httpActuator')
+            ->willReturn(['code' => 200, 'json' => $dataJson]);
+
+        $this->infoRepository->method('findActuatorInfoById')->willReturn([
+            'code' => 200,
+            'liste' => [['nom' => 'Sans clé', 'cle' => null]],
+        ]);
+
+        $result = $this->controller->BatchCollecteActuatorInfo(self::MAVEN_KEY);
+
+        $this->assertSame(200, $result['code']);
+        $this->assertSame(
+            ['date_extraction', 'code', 'message'],
+            array_keys($result['json'])
+        );
     }
 
     public function testBatchCollecteActuatorInfoSanitizesMavenKey(): void
