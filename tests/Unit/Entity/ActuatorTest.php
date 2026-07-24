@@ -102,10 +102,23 @@ class ActuatorTest extends TestCase
 
     public function testSetGetDateModification(): void
     {
+        /* MODIF 2026-07-23 : date_modification est DATETIME_MUTABLE côté Doctrine —
+         * un \DateTimeImmutable passé au setter est converti en \DateTime (bug réel
+         * trouvé en test manuel : "Could not convert PHP value of type
+         * DateTimeImmutable to type Doctrine\DBAL\Types\DateTimeType"). */
         $dt = new \DateTimeImmutable('2026-01-01');
         $a = new Actuator();
         $result = $a->setDateModification($dt);
         $this->assertInstanceOf(Actuator::class, $result);
+        $this->assertInstanceOf(\DateTime::class, $a->getDateModification());
+        $this->assertSame('2026-01-01', $a->getDateModification()->format('Y-m-d'));
+    }
+
+    public function testSetGetDateModificationAcceptsMutableDateTimeUnchanged(): void
+    {
+        $dt = new \DateTime('2026-01-01');
+        $a = new Actuator();
+        $a->setDateModification($dt);
         $this->assertSame($dt, $a->getDateModification());
     }
 
@@ -120,7 +133,7 @@ class ActuatorTest extends TestCase
     {
         $a = new Actuator();
         $a->preUpdate();
-        $this->assertInstanceOf(\DateTimeImmutable::class, $a->getDateModification());
+        $this->assertInstanceOf(\DateTime::class, $a->getDateModification());
     }
 
     public function testSetGetDateEnregistrement(): void
