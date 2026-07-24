@@ -44,14 +44,14 @@ class ActuatorInfo
     private ?string $actuatorInfoDescription = null;
 
     #[ORM\Column(
-        name: 'actuator_info_value',
+        name: 'actuator_info_cle',
         type: Types::STRING,
         length: 128,
         nullable: true,
-        options: ['comment' => "Valeur de la clé actuator."]
+        options: ['comment' => "Nœud JSON à extraire de la réponse actuator/info (ex. app.version)."]
     )]
-    #[Assert\NotBlank]
-    private ?string $actuatorInfoValue = null;
+    #[Assert\NotBlank(message: "Entrez le nom de la clé (nœud JSON, ex. app.version).")]
+    private ?string $actuatorInfoCle = null;
 
     #[ORM\ManyToOne(targetEntity: Actuator::class, inversedBy: "actuatorInfo")]
     #[ORM\JoinColumn(name: "actuator_id", referencedColumnName: "id", nullable: false)]
@@ -91,14 +91,14 @@ class ActuatorInfo
         return $this;
     }
 
-    public function getActuatorInfoValue(): ?string
+    public function getActuatorInfoCle(): ?string
     {
-        return $this->actuatorInfoValue;
+        return $this->actuatorInfoCle;
     }
 
-    public function setActuatorInfoValue(?string $actuatorInfoValue): static
+    public function setActuatorInfoCle(?string $actuatorInfoCle): static
     {
-        $this->actuatorInfoValue = $actuatorInfoValue;
+        $this->actuatorInfoCle = $actuatorInfoCle;
 
         return $this;
     }
