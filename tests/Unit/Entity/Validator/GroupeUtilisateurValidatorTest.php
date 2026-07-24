@@ -20,10 +20,20 @@ use Symfony\Component\Validator\ConstraintViolation;
 /**
  * [Description GroupeUtilisateurValidatorTest]
  *
- * Note : la contrainte UniqueEntity nécessite la base de donnees, non testee ici.
+ * Note : la contrainte UniqueEntity est bien active ici (elle interroge la
+ * base réelle). Le groupe 'admin' utilisé par getEntity() est donc purgé
+ * avant chaque test pour ne pas dépendre d'un éventuel résidu en base
+ * (ex. laissé par une session de test manuelle contre la même base de test).
  */
 class GroupeUtilisateurValidatorTest extends KernelTestCase
 {
+    protected function setUp(): void
+    {
+        self::bootKernel();
+        static::getContainer()->get('doctrine')->getManager()->getConnection()
+            ->executeStatement("DELETE FROM ma_moulinette.groupe_utilisateur WHERE groupe_utilisateur = 'admin'");
+    }
+
     private function getEntity(): GroupeUtilisateur
     {
         return (new GroupeUtilisateur())
@@ -34,7 +44,6 @@ class GroupeUtilisateurValidatorTest extends KernelTestCase
 
     public function assertHasErrors(GroupeUtilisateur $entity, int $number = 0): void
     {
-        self::bootKernel();
         $errors = static::getContainer()->get('validator')->validate($entity);
         $messages = [];
         /** @var ConstraintViolation $error */
