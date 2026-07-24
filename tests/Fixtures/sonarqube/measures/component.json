@@ -1,267 +1,267 @@
 ﻿{
-    "component":  {
-                      "key":  "tetris:TetrisGame",
-                      "name":  "TetrisGame",
-                      "qualifier":  "TRK",
-                      "measures":  [
-                                       {
-                                           "metric":  "duplicated_lines_density",
-                                           "value":  "3.0",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "functions",
-                                           "value":  "92"
-                                       },
-                                       {
-                                           "metric":  "security_remediation_effort",
-                                           "value":  "0",
-                                           "bestValue":  true
-                                       },
-                                       {
-                                           "metric":  "sqale_rating",
-                                           "value":  "1.0",
-                                           "bestValue":  true
-                                       },
-                                       {
-                                           "metric":  "blocker_violations",
-                                           "value":  "1",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "test_execution_time",
-                                           "value":  "15"
-                                       },
-                                       {
-                                           "metric":  "test_failures",
-                                           "value":  "0",
-                                           "bestValue":  true
-                                       },
-                                       {
-                                           "metric":  "major_violations",
-                                           "value":  "25",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "high_impact_accepted_issues",
-                                           "value":  "0",
-                                           "bestValue":  true
-                                       },
-                                       {
-                                           "metric":  "duplicated_files",
-                                           "value":  "3",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "software_quality_info_issues",
-                                           "value":  "0",
-                                           "bestValue":  true
-                                       },
-                                       {
-                                           "metric":  "line_coverage",
-                                           "value":  "0.0",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "software_quality_medium_issues",
-                                           "value":  "25",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "test_errors",
-                                           "value":  "0",
-                                           "bestValue":  true
-                                       },
-                                       {
-                                           "metric":  "security_rating",
-                                           "value":  "1.0",
-                                           "bestValue":  true
-                                       },
-                                       {
-                                           "metric":  "violations",
-                                           "value":  "132",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "critical_violations",
-                                           "value":  "37",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "alert_status",
-                                           "value":  "OK"
-                                       },
-                                       {
-                                           "metric":  "info_violations",
-                                           "value":  "0",
-                                           "bestValue":  true
-                                       },
-                                       {
-                                           "metric":  "tests",
-                                           "value":  "1"
-                                       },
-                                       {
-                                           "metric":  "comment_lines",
-                                           "value":  "0"
-                                       },
-                                       {
-                                           "metric":  "confirmed_issues",
-                                           "value":  "0",
-                                           "bestValue":  true
-                                       },
-                                       {
-                                           "metric":  "files",
-                                           "value":  "17"
-                                       },
-                                       {
-                                           "metric":  "skipped_tests",
-                                           "value":  "0",
-                                           "bestValue":  true
-                                       },
-                                       {
-                                           "metric":  "complexity",
-                                           "value":  "229"
-                                       },
-                                       {
-                                           "metric":  "minor_violations",
-                                           "value":  "69",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "duplicated_lines",
-                                           "value":  "42",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "classes",
-                                           "value":  "17"
-                                       },
-                                       {
-                                           "metric":  "security_hotspots_reviewed",
-                                           "value":  "0.0",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "statements",
-                                           "value":  "703"
-                                       },
-                                       {
-                                           "metric":  "software_quality_high_issues",
-                                           "value":  "37",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "accepted_issues",
-                                           "value":  "0",
-                                           "bestValue":  true
-                                       },
-                                       {
-                                           "metric":  "sqale_index",
-                                           "value":  "1445",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "bugs",
-                                           "value":  "1",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "lines_to_cover",
-                                           "value":  "762"
-                                       },
-                                       {
-                                           "metric":  "software_quality_low_issues",
-                                           "value":  "69",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "ncloc",
-                                           "value":  "1200"
-                                       },
-                                       {
-                                           "metric":  "reliability_remediation_effort",
-                                           "value":  "10",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "software_quality_blocker_issues",
-                                           "value":  "1",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "false_positive_issues",
-                                           "value":  "0",
-                                           "bestValue":  true
-                                       },
-                                       {
-                                           "metric":  "lines",
-                                           "value":  "1404"
-                                       },
-                                       {
-                                           "metric":  "reopened_issues",
-                                           "value":  "0",
-                                           "bestValue":  true
-                                       },
-                                       {
-                                           "metric":  "coverage",
-                                           "value":  "0.0",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "reliability_rating",
-                                           "value":  "3.0",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "code_smells",
-                                           "value":  "131",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "sqale_debt_ratio",
-                                           "value":  "4.0",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "comment_lines_density",
-                                           "value":  "0.0",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "security_hotspots",
-                                           "value":  "2",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "security_review_rating",
-                                           "value":  "5.0",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "test_success_density",
-                                           "value":  "100.0",
-                                           "bestValue":  true
-                                       },
-                                       {
-                                           "metric":  "cognitive_complexity",
-                                           "value":  "179",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "duplicated_blocks",
-                                           "value":  "3",
-                                           "bestValue":  false
-                                       },
-                                       {
-                                           "metric":  "vulnerabilities",
-                                           "value":  "0",
-                                           "bestValue":  true
-                                       },
-                                       {
-                                           "metric":  "open_issues",
-                                           "value":  "132",
-                                           "bestValue":  false
-                                       }
-                                   ]
-                  }
+    "component": {
+        "key": "tetris:TetrisGame",
+        "name": "TetrisGame",
+        "qualifier": "TRK",
+        "measures": [
+            {
+                "metric": "duplicated_lines_density",
+                "value": "3.0",
+                "bestValue": false
+            },
+            {
+                "metric": "functions",
+                "value": "92"
+            },
+            {
+                "metric": "security_remediation_effort",
+                "value": "0",
+                "bestValue": true
+            },
+            {
+                "metric": "sqale_rating",
+                "value": "1.0",
+                "bestValue": true
+            },
+            {
+                "metric": "blocker_violations",
+                "value": "1",
+                "bestValue": false
+            },
+            {
+                "metric": "test_execution_time",
+                "value": "15"
+            },
+            {
+                "metric": "test_failures",
+                "value": "0",
+                "bestValue": true
+            },
+            {
+                "metric": "major_violations",
+                "value": "25",
+                "bestValue": false
+            },
+            {
+                "metric": "high_impact_accepted_issues",
+                "value": "0",
+                "bestValue": true
+            },
+            {
+                "metric": "duplicated_files",
+                "value": "3",
+                "bestValue": false
+            },
+            {
+                "metric": "software_quality_info_issues",
+                "value": "0",
+                "bestValue": true
+            },
+            {
+                "metric": "line_coverage",
+                "value": "0.0",
+                "bestValue": false
+            },
+            {
+                "metric": "software_quality_medium_issues",
+                "value": "25",
+                "bestValue": false
+            },
+            {
+                "metric": "test_errors",
+                "value": "0",
+                "bestValue": true
+            },
+            {
+                "metric": "security_rating",
+                "value": "1.0",
+                "bestValue": true
+            },
+            {
+                "metric": "violations",
+                "value": "132",
+                "bestValue": false
+            },
+            {
+                "metric": "critical_violations",
+                "value": "37",
+                "bestValue": false
+            },
+            {
+                "metric": "alert_status",
+                "value": "OK"
+            },
+            {
+                "metric": "info_violations",
+                "value": "0",
+                "bestValue": true
+            },
+            {
+                "metric": "tests",
+                "value": "1"
+            },
+            {
+                "metric": "comment_lines",
+                "value": "0"
+            },
+            {
+                "metric": "confirmed_issues",
+                "value": "0",
+                "bestValue": true
+            },
+            {
+                "metric": "files",
+                "value": "17"
+            },
+            {
+                "metric": "skipped_tests",
+                "value": "0",
+                "bestValue": true
+            },
+            {
+                "metric": "complexity",
+                "value": "229"
+            },
+            {
+                "metric": "minor_violations",
+                "value": "69",
+                "bestValue": false
+            },
+            {
+                "metric": "duplicated_lines",
+                "value": "42",
+                "bestValue": false
+            },
+            {
+                "metric": "classes",
+                "value": "17"
+            },
+            {
+                "metric": "security_hotspots_reviewed",
+                "value": "0.0",
+                "bestValue": false
+            },
+            {
+                "metric": "statements",
+                "value": "703"
+            },
+            {
+                "metric": "software_quality_high_issues",
+                "value": "37",
+                "bestValue": false
+            },
+            {
+                "metric": "accepted_issues",
+                "value": "0",
+                "bestValue": true
+            },
+            {
+                "metric": "sqale_index",
+                "value": "1445",
+                "bestValue": false
+            },
+            {
+                "metric": "bugs",
+                "value": "1",
+                "bestValue": false
+            },
+            {
+                "metric": "lines_to_cover",
+                "value": "762"
+            },
+            {
+                "metric": "software_quality_low_issues",
+                "value": "69",
+                "bestValue": false
+            },
+            {
+                "metric": "ncloc",
+                "value": "1200"
+            },
+            {
+                "metric": "reliability_remediation_effort",
+                "value": "10",
+                "bestValue": false
+            },
+            {
+                "metric": "software_quality_blocker_issues",
+                "value": "1",
+                "bestValue": false
+            },
+            {
+                "metric": "false_positive_issues",
+                "value": "0",
+                "bestValue": true
+            },
+            {
+                "metric": "lines",
+                "value": "1404"
+            },
+            {
+                "metric": "reopened_issues",
+                "value": "0",
+                "bestValue": true
+            },
+            {
+                "metric": "coverage",
+                "value": "0.0",
+                "bestValue": false
+            },
+            {
+                "metric": "reliability_rating",
+                "value": "3.0",
+                "bestValue": false
+            },
+            {
+                "metric": "code_smells",
+                "value": "131",
+                "bestValue": false
+            },
+            {
+                "metric": "sqale_debt_ratio",
+                "value": "4.0",
+                "bestValue": false
+            },
+            {
+                "metric": "comment_lines_density",
+                "value": "0.0",
+                "bestValue": false
+            },
+            {
+                "metric": "security_hotspots",
+                "value": "2",
+                "bestValue": false
+            },
+            {
+                "metric": "security_review_rating",
+                "value": "5.0",
+                "bestValue": false
+            },
+            {
+                "metric": "test_success_density",
+                "value": "100.0",
+                "bestValue": true
+            },
+            {
+                "metric": "cognitive_complexity",
+                "value": "179",
+                "bestValue": false
+            },
+            {
+                "metric": "duplicated_blocks",
+                "value": "3",
+                "bestValue": false
+            },
+            {
+                "metric": "vulnerabilities",
+                "value": "0",
+                "bestValue": true
+            },
+            {
+                "metric": "open_issues",
+                "value": "132",
+                "bestValue": false
+            }
+        ]
+    }
 }
