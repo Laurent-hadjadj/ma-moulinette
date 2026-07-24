@@ -37,7 +37,7 @@ class ActuatorInfoRepository extends ServiceEntityRepository
     public function findActuatorInfoById(array $map): array
     {
         try {
-                $sql = "SELECT actuator_info_description AS nom, actuator_info_value as valeur
+                $sql = "SELECT actuator_info_description AS nom, actuator_info_cle as cle
                         FROM ma_moulinette.actuator_info
                         WHERE actuator_id= :actuator_id";
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
