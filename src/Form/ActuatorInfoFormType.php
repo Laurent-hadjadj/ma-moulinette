@@ -27,23 +27,23 @@ class ActuatorInfoFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('actuatorInfoValue', TextType::class,
+            ->add('actuatorInfoCle', TextType::class,
             [
                 'required' => true,
-                'label' => 'label.actuator.info.value',
+                'label' => 'label.actuator.info.cle',
                 'label_attr' => [
                     'class' => 'color-bleu open-sans font-size-08 margin-left-05',
                 ],
                 'trim' => true,
-                'attr' => [ 'placeholder' => 'placeholder.actuator.info.value',
+                'attr' => [ 'placeholder' => 'placeholder.actuator.info.cle',
                             'class' => 'color-bleu open-sans margin-left-05' ],
                 'constraints' => [
-                    new NotBlank(message : "Entrez la valeur de la clé."),
+                    new NotBlank(message : "Entrez le nom de la clé (nœud JSON)."),
                     new Length(
                         min: 2,
                         max: 255,
-                        minMessage: "La valeur de la clé doit comporter au moins {{ limit }} caractères.",
-                        maxMessage: "La valeur de la clé ne doit pas comporter plus de {{ limit }} caractères.",
+                        minMessage: "Le nom de la clé doit comporter au moins {{ limit }} caractères.",
+                        maxMessage: "Le nom de la clé ne doit pas comporter plus de {{ limit }} caractères.",
                     ), ],
             ])
             ->add('actuatorInfoDescription', TextType::class,
