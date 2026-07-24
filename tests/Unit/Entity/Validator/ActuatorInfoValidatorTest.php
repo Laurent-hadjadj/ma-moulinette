@@ -25,7 +25,7 @@ class ActuatorInfoValidatorTest extends KernelTestCase
 {
   private static int $actuatorId = 1;
   private static string $actuatorInfoDescription = '[SOCLE][ARCHETYPE]';
-  private static string $actuatorInfoValue = 'socle.archetype';
+  private static string $actuatorInfoCle = 'socle.archetype';
 
 private function getEntity(): ActuatorInfo
 {
@@ -35,7 +35,7 @@ private function getEntity(): ActuatorInfo
   $actuatorInfo = new ActuatorInfo();
   $actuatorInfo->setActuator($actuator)
               ->setActuatorInfoDescription(self::$actuatorInfoDescription)
-              ->setActuatorInfoValue(self::$actuatorInfoValue);
+              ->setActuatorInfoCle(self::$actuatorInfoCle);
   return $actuatorInfo;
 }
 
@@ -60,7 +60,7 @@ private function getEntity(): ActuatorInfo
   public function testInvalidBlankEntity(): void
   {
     $this->assertHasErrors($this->getEntity()->setActuatorInfoDescription(''), 1);
-    $this->assertHasErrors($this->getEntity()->setActuatorInfoValue(''), 1);
+    $this->assertHasErrors($this->getEntity()->setActuatorInfoCle(''), 1);
   }
 
   public function testCountAttribut(): void
