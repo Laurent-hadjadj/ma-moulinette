@@ -395,9 +395,12 @@ class ClientService
             $verify_host = $this->params->get(self::$verifyHost);
             $verify_peer =$this->params->get(self::$verifyPeer);
 
-            /** Options sans Auth_http_basic */
+            /** Options sans Auth_http_basic.
+             * Timeout court (3s, au lieu des 45s génériques) : un point d'accès
+             * Actuator est un appel "best effort" annexe à la collecte projet,
+             * il ne doit jamais ralentir significativement le reste du batch. */
             $options=[
-                'timeout' => 45,
+                'timeout' => 3,
                 'headers' => $this->genericHeaders(),
                 # Définition des ciphers TLS1.3
                 'ciphers' => $ciphers,
