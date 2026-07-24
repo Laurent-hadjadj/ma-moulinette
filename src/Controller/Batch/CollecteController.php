@@ -854,12 +854,12 @@ class CollecteController extends AbstractController
 
         $actuatorInfo = $this->batchCollecteActuator->BatchCollecteActuatorInfo($maven_key);
 
-        if ($actuatorInfo['code'] === 200 || $actuatorInfo['code'] === 404){
-            $collecte[] = '<p>'. $actuatorInfo['message'] .'</p>';
-
-            /** Information a joindre dans l'historique */
-            $json = \json_decode($actuatorInfo['dataJson']['json'] ?? '[]', true);
-        } else {
+        /* MODIF 2026-07-23 : Actuator est "best effort" — seule une erreur interne
+         * Ma-Moulinette (recherche du point d'accès en base, clé 'fatal') stoppe la
+         * collecte du projet, comme les autres étapes. Un point d'accès injoignable
+         * ou en erreur HTTP ne bloque plus rien : le JSON d'échec est stocké tel quel
+         * dans l'historique (pastille rouge côté page Projet) et la collecte continue. */
+        if (!empty($actuatorInfo['fatal'])) {
                 $this->logger->error('[Batch] ❌ Erreur lors du traitement des informations actuator du projet.', [
                         'code' => $actuatorInfo['code'],
                         'message' => $actuatorInfo['message'] ?? self::$noMessage,
@@ -880,6 +880,11 @@ class CollecteController extends AbstractController
                     'code' => $actuatorInfo['code'],
                     'compte_rendu' => $compte_rendu];
         }
+
+        $collecte[] = '<p>'. ($actuatorInfo['message'] ?? self::$noMessage) .'</p>';
+
+        /** Information a joindre dans l'historique ([] si pas de point d'accès déclaré) */
+        $json = $actuatorInfo['json'];
 
         /** Logger dans le projet (info, warn, error, debug) */
         $this->logger->info('[Batch] ℹ️ Démarrage de la collecte des Logger Java pour le projet.');
