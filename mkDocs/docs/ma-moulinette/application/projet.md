@@ -105,6 +105,9 @@ Trois blocs (« triptyque ») plus un bandeau, tous initialement vides et rempli
 
 Identité SonarQube du projet : nom, clé d'analyse, clé Maven, distribution des langages détectés. Purement informatif.
 
+!!! note "✅ Ajout 2026-07-23 : pastille Actuator"
+    Une pastille ronde à côté du libellé « Actuator » (⚪ grise / 🟢 verte / 🔴 rouge, voir [module Actuator](actuator.md#️-affichage-sur-la-page-projet)) ouvre une fenêtre modale listant les clés/valeurs de la dernière collecte du point d'accès Actuator déclaré pour ce projet (aucune donnée si aucun point d'accès n'est déclaré).
+
 ### 🏀 Bloc « Version »
 
 - Version analysée, date de version, nombre de versions Release / Snapshot / Autres (bouton vers la modale *Répartition des versions*) ;
@@ -193,7 +196,7 @@ sequenceDiagram
     `BatchCollecteInformationProjetController::controlVersionProjet()` n'anticipait que 3 codes d'erreur (401/404/503) : tout autre code (ex. `403 Insufficient privileges`) tombait dans une branche générique qui **remplaçait le vrai code/message par un « 500 » opaque**.
     Corrigé : le 403 est désormais géré explicitement, et le fallback générique **relaie le vrai code/message** de SonarQube au lieu de le masquer.
     `ApiCollecteController` envoyait aussi un texte placeholder (« Pas de données disponible. ») à la place d'une trace technique absente, ce qui affichait à tort un bouton « détails techniques » vide côté JS — corrigé pour envoyer `null`.
-
+    .
     Ce genre de 403 vient le plus souvent d'un `SONAR_TOKEN` du **mauvais type** (jeton d'analyse au lieu de jeton personnel) — voir [Jetons d'authentification SonarQube](../developpement/securite.md#-jetons-dauthentification-sonarqube).
 
 ## ⚠️ Messages remontés par la page
