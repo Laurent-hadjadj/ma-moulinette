@@ -674,7 +674,7 @@ body {
   margin-bottom: 1rem;
 }
 /* ==== WCAG : focus sur les éléments  ==== */
-.focus-light:focus {
+.focus-light-red:focus {
   outline: 3px dashed #007acc;
   outline-offset: 3px;
   border-radius: 6px;
