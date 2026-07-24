@@ -367,12 +367,16 @@ class CollecteControllerTest extends TestCase
         $this->assertSame(500, $result['code']);
     }
 
-    public function testCollecteStopsWhenActuatorFails(): void
+    /**
+     * Seule une erreur interne Ma-Moulinette (recherche du point d'accès en base,
+     * clé 'fatal' à true) stoppe encore la collecte du projet à l'étape Actuator.
+     */
+    public function testCollecteStopsWhenActuatorHasFatalError(): void
     {
         $this->stubAllBatchesHappy();
         $this->batchActuator = $this->createMock(\App\Controller\Batch\BatchCollecteActuatorController::class);
         $this->batchActuator->method('BatchCollecteActuatorInfo')
-            ->willReturn(['code' => 500, 'message' => 'actuator fail', 'erreur' => 'e']);
+            ->willReturn(['code' => 500, 'message' => 'actuator fail', 'erreur' => 'e', 'json' => [], 'fatal' => true]);
 
         $this->controller = new CollecteController(
             $this->em, $this->logger, $this->batchInfo, $this->batchMesure,
@@ -384,6 +388,37 @@ class CollecteControllerTest extends TestCase
         $result = $this->controller->collecte(self::PORTEFEUILLE, self::MAVEN_KEY, self::MODE, self::USER);
 
         $this->assertSame(500, $result['code']);
+    }
+
+    /**
+     * MODIF 2026-07-23 : Actuator est "best effort" — un échec non fatal (endpoint
+     * distant injoignable, erreur HTTP, timeout) ne stoppe plus la collecte du
+     * projet : le JSON d'échec est simplement transmis à l'historique (pastille
+     * rouge côté page Projet) et le reste de la collecte se termine normalement.
+     */
+    public function testCollecteContinuesWhenActuatorFailsNonFatally(): void
+    {
+        $this->stubAllBatchesHappy();
+        $this->batchActuator = $this->createMock(\App\Controller\Batch\BatchCollecteActuatorController::class);
+        $failureJson = ['date_extraction' => '2026-07-23 00:00:00', 'code' => 500, 'message' => 'Timeout.'];
+        $this->batchActuator->method('BatchCollecteActuatorInfo')
+            ->willReturn(['code' => 500, 'erreur' => ['Timeout.'], 'json' => $failureJson]);
+
+        $this->historiqueRepo->expects($this->once())
+            ->method('insertHistoriqueAjoutProjet')
+            ->with($this->anything(), $failureJson)
+            ->willReturn(['code' => 200]);
+
+        $this->controller = new CollecteController(
+            $this->em, $this->logger, $this->batchInfo, $this->batchMesure,
+            $this->batchOwasp, $this->batchHotspot, $this->batchAnomalie,
+            $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
+            $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
+        );
+
+        $result = $this->controller->collecte(self::PORTEFEUILLE, self::MAVEN_KEY, self::MODE, self::USER);
+
+        $this->assertSame(200, $result['code']);
     }
 
     public function testCollecteStopsWhenLoggerFails(): void
@@ -465,7 +500,8 @@ class CollecteControllerTest extends TestCase
         ]);
         $this->batchActuator->method('BatchCollecteActuatorInfo')->willReturn([
             'code' => 200, 'message' => 'actuator ok',
-            'dataJson' => ['json' => json_encode(['build' => []])],
+            'dataJson' => ['build' => []],
+            'json' => ['date_extraction' => '2026-07-23 00:00:00', 'code' => 200, 'message' => 'actuator ok'],
         ]);
         $this->batchLogger->method('BatchCollecteLogger')->willReturn([
             'code' => 200, 'message' => 'logger ok',
