@@ -60,7 +60,7 @@ placeholder.actuator.url: http://ma-moulinette.fr
 placeholder.actuator.user: actuator
 placeholder.actuator.password: change-me
 label.actuator.info.description: Description courte
-label.actuator.info.value: Valeur de la clé
-placeholder.actuator.info.description: Valeur de la clé dans le JSON [app][version][jdk]
-placeholder.actuator.info.value: app.version.jdk
+label.actuator.info.cle: Nom de la clé (nœud JSON)
+placeholder.actuator.info.description: Version du JDK
+placeholder.actuator.info.cle: app.version.jdk
 ...
