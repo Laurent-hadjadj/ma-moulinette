@@ -46,19 +46,19 @@ class ActuatorInfoTest extends TestCase
         $this->assertNull($a->getActuatorInfoDescription());
     }
 
-    public function testSetGetActuatorInfoValue(): void
+    public function testSetGetActuatorInfoCle(): void
     {
         $a = new ActuatorInfo();
-        $result = $a->setActuatorInfoValue('17.0.12');
+        $result = $a->setActuatorInfoCle('app.version');
         $this->assertInstanceOf(ActuatorInfo::class, $result);
-        $this->assertSame('17.0.12', $a->getActuatorInfoValue());
+        $this->assertSame('app.version', $a->getActuatorInfoCle());
     }
 
-    public function testSetGetActuatorInfoValueNull(): void
+    public function testSetGetActuatorInfoCleNull(): void
     {
         $a = new ActuatorInfo();
-        $a->setActuatorInfoValue(null);
-        $this->assertNull($a->getActuatorInfoValue());
+        $a->setActuatorInfoCle(null);
+        $this->assertNull($a->getActuatorInfoCle());
     }
 
     public function testSetGetActuator(): void
