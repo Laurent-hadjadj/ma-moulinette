@@ -110,7 +110,18 @@ class ApiEnregistrementController extends AbstractController
         $cc = (!empty($cleanCodeResult['liste'])) ? $cleanCodeResult['liste'][0] : [];
 
         try {
+            /* MODIF 2026-07-23 : $json valait auparavant toujours [] — actuator_info
+             * n'était donc jamais persisté par ce chemin d'enregistrement interactif
+             * (seul le batch/cron CollecteController écrivait réellement dans cette
+             * colonne). Même pattern de décodage que logger_breakdown ci-dessous. */
             $json = [];
+            if (property_exists($data, 'actuator_info') && is_object($data->actuator_info)) {
+                $json = json_decode(json_encode($data->actuator_info), true);
+            } elseif (property_exists($data, 'actuator_info') && is_array($data->actuator_info)) {
+                $json = $data->actuator_info;
+            } else {
+                $this->logger->debug('[Enregistrement] 🔍 actuator_info absent ou null (pas de point d\'accès déclaré, ou collecte non lancée).');
+            }
             $map = [
                 'maven_key' => $data->maven_key,
                 'analyse_key' => $data->analyse_key,
