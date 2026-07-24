@@ -19,9 +19,8 @@
   <head>
     <title>{{ title }}</title>
     {{ include('head.html.twig') }}
-    {% block stylesheets %}
-      {{ encore_entry_link_tags('actuator') }}
-    {% endblock %}
+    {# Chargement des assets JS et CSS #}
+    {% block importmap %}{{ importmap('actuator') }}{% endblock %}
     {% if pagination is not empty %}
       {{ knp_pagination_rel_links(pagination) }}
     {% endif %}
@@ -30,80 +29,98 @@
   <body dir="ltr">
     {# Chargement de la section header #}
     {{ include('header.html.twig') }}
+    {# Message d'information php #}
+    {{ include('_message.html.twig') }}
 
     <header class="grid-container margin-top-1">
-      {# WCAG 2.4.8 : indication "vous êtes ici" portée par aria-label ; aria-current="page" sur l'élément courant #}
       <nav id="fil-ariane" aria-label="Fil d'Ariane, vous êtes ici">
         <ol class="claire-hand breadcrumbs">
-          <li>
-            <a href="{{ path('accueil', {}) }}">Accueil</a>
-          </li>
+          <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
           <li aria-current="page">Actuator</li>
         </ol>
       </nav>
     </header>
 
-    {# Message d'information php #}
-    {{ include('_message.html.twig') }}
-
-    {# WCAG 2.4.1 : id="main-content" (cible du skip link) #}
     <main id="main-content" class="grid-container">
-      {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page ; descente d'un niveau des titres de section #}
-      <h2 class="h4 claire-hand">Actuator</h2>
+      <h2 class="h3 claire-hand"><span aria-hidden="true">🪴</span>Actuator</h2>
+
       <div class="small-12 cell">
-        <div class="callout">
-          <h3 class="h5 claire-hand">Filtres d'affichage.</h3>
-          {% if pagination is not empty %}
-            {{ knp_pagination_sortable(pagination, 'Application', 'nom_application', {}, {}, '/actuator/_zf6_fa_sortable_link.html.twig') }}
-            {{ knp_pagination_sortable(pagination, 'URL','url', {}, {}, '/actuator/_zf6_fa_sortable_link.html.twig') }}
-            {{ knp_pagination_sortable(pagination, 'Personne', 'personne', {}, {}, '/actuator/_zf6_fa_sortable_link.html.twig') }}
-            {{ knp_pagination_sortable(pagination, 'Date', 'date_modification', {}, {}, '/actuator/_zf6_fa_sortable_link.html.twig') }}
-          {% endif %}
-          <span class="float-right open-sans">Nombre Total :
-            <span class="stat">{{ pagination.getTotalItemCount }}</span>
-          </span>
+        <div class="callout alert-callout-border warning text-justify" role="alert">
+          <span aria-hidden="true">⚠️</span>
+          <strong>Bonnes pratiques :</strong> le mot de passe du compte Actuator est obligatoire à la création
+          d'un point d'accès.<br>
+          N'exposez jamais un endpoint Actuator d'une application de <strong>production</strong>
+          sans protection (authentification, restriction réseau) — ce module est prévu pour des environnements
+          maîtrisés (dev, recette, démonstration).
+        </div>
+
+        <div class="grid-x grid-margin-x align-right margin-top-1">
+          <div class="cell shrink">
+            <a id="bouton-ajouter-une-application"
+              href="{{ path('actuator_info') }}"
+              class="button open-sans focus-light">
+              <span aria-hidden="true">➕</span> Ajouter une application
+            </a>
+          </div>
+        </div>
+
+        <div class="callout alert-callout-border info">
+          <div class="filtre-container">
+            <h3 class="h4 claire-hand"><span aria-hidden="true">🎛️</span> Filtres d'affichage.</h3>
+            {% if pagination is not empty %}
+              {{ knp_pagination_sortable(pagination, 'Application', 'nom_application', {}, {}, '/actuator/_zf6_fa_sortable_link.html.twig') }}
+              {{ knp_pagination_sortable(pagination, 'URL','url', {}, {}, '/actuator/_zf6_fa_sortable_link.html.twig') }}
+              {{ knp_pagination_sortable(pagination, 'Personne', 'personne', {}, {}, '/actuator/_zf6_fa_sortable_link.html.twig') }}
+              {{ knp_pagination_sortable(pagination, 'Date', 'date_modification', {}, {}, '/actuator/_zf6_fa_sortable_link.html.twig') }}
+            {% endif %}
+            <span class="open-sans">Nombre Total :
+              <span class="stat">{{ pagination.getTotalItemCount }}</span>
+            </span>
+          </div>
         </div>
 
         {% if pagination is not empty %}
           {% for actuator in pagination %}
             <div class="callout callout-custom">
-              <p class="open-sans">
-                <strong>Application</strong>
-                :
-                <span>{{ actuator.nom_application }}</span>
-                <br>
-                <strong>Point d'accès Actuator</strong>
-                :
-                <span>{{ actuator.url }}</span><br>
-                <strong>Responsable</strong>
-                :
-                <span>{{ actuator.personne }}</span><br>
-                <strong>Date de modification</strong>
-                :
-                <span>{{ actuator.date_modification ? actuator.date_modification|date('Y-m-d H:i:s') : '-' }}</span>.
-                <span class="show-for-small-only"><br></span>
-                <strong>Date de création</strong>
-                :
-                <span>{{ actuator.date_enregistrement|date('Y-m-d H:i:s') }}</span>
-              </p>
+              <span class="open-sans"><strong>Application</strong> :  <span>{{ actuator.nom_application }}</span></span><br>
+              <span class="open-sans"><strong>Point d'accès Actuator</strong> : <span>{{ actuator.url }}</span></span><br>
+              <span class="open-sans"><strong>Responsable</strong> : <span>{{ actuator.personne }}</span></span><br>
+              <span class="open-sans"><strong>Date de modification</strong> :
+                <span>{{ actuator.date_modification ? actuator.date_modification|date('Y-m-d H:i:s') : '---' }}</span></span><br>
+              <span class="open-sans"><strong>Date de création</strong> : <span>{{ actuator.date_enregistrement|date('Y-m-d H:i:s') }}</span></span>
+
+              <form method="post" action="{{ path('actuator_supprimer', {id: actuator.id}) }}"
+                    class="inline-block" onsubmit="return confirm('Supprimer définitivement cette fiche Actuator ?');">
+                <input type="hidden" name="_token" value="{{ csrf_token('actuator_supprimer' ~ actuator.id) }}">
+                <div class="grid-x grid-margin-x align-right margin-top-1">
+                  <div class="cell shrink">
+                    <button class="button js-bouton-supprimer open-sans focus-light"
+                            type="submit"
+                            aria-label="Supprimer"><span aria-hidden="true">🗑️</span> Supprimer
+                    </button>
+                  </div>
+                  <div class="cell shrink">
+                    <a  href="{{ path('actuator_modifier', {id: actuator.id}) }}"
+                        class="button js-bouton-modifier open-sans focus-light"
+                        title="Modifier"><span aria-hidden="true">✏️</span> Modifier
+                    </a>
+                  </div>
+                </div>
+              </form>
             </div>
           {% endfor %}
         {% else %}
-          <p class="open-sans text-center color-rouge" aria-label="couleur rouge">
-            <strong>Aucun résultat trouvé</strong></p>
-          {% endif %}
+          <p class="open-sans text-center color-rouge" aria-label="couleur rouge">Aucun résultat trouvé</p>
+        {% endif %}
 
-          {# display navigation #}
-          {% if pagination is not empty %}
-            {{ knp_pagination_render(pagination, '/actuator/_zf6_pagination.html.twig') }}
-          {% endif %}
-        </main>
+      {# display navigation #}
+      {% if pagination is not empty %}
+        {{ knp_pagination_render(pagination, '/actuator/_zf6_pagination.html.twig') }}
+      {% endif %}
+      </div>
+    </main>
 
-        {# Chargement de la section footer #}
-        {{ include('footer.html.twig') }}
-        {# Chargement du code javascript #}
-        {% block javascripts %}
-          {{ encore_entry_script_tags('actuator') }}
-        {% endblock %}
-      </body>
+    {# Chargement de la section footer #}
+    {{ include('footer.html.twig') }}
+  </body>
 </html>
