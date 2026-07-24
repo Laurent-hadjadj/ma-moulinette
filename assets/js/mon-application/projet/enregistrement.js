@@ -125,6 +125,21 @@ export const enregistrement = async function(maven_key) {
     }
   }
 
+  /* MODIF 2026-07-23 : récupération du JSON Actuator déposé sur le dataset de
+   * #js-actuator-pastille (par projetActuator() en collecte, ou par le bloc
+   * Actuator de peinture.js en lecture historique) — [] si absent (pas de
+   * point d'accès déclaré, ou peinture jamais lancée), persisté tel quel dans
+   * historique.actuator_info. */
+  let actuatorInfo = [];
+  const jsActuatorPastille = document.getElementById('js-actuator-pastille');
+  if (jsActuatorPastille && jsActuatorPastille.dataset.actuatorJson) {
+    try {
+      actuatorInfo = JSON.parse(jsActuatorPastille.dataset.actuatorJson);
+    } catch (e) {
+      actuatorInfo = [];
+    }
+  }
+
   /**
    * On récupère les informations du projet :
    * lignes, coverage fonctionnelle, duplication, tests unitaires et
@@ -264,6 +279,8 @@ export const enregistrement = async function(maven_key) {
     'logger_debug': loggerDebug,
     // MODIF 2026-05-15  : breakdown level × framework
     'logger_breakdown': loggerBreakdown,
+    // MODIF 2026-07-23  : JSON Actuator (voir lecture dataset ci-dessus)
+    'actuator_info': actuatorInfo,
     'ncloc': nombreLigneDeCode, 'lines': nombreLigne,
     'files': nombreFichier, 'classes': nombreClasse, 'functions': nombreFonction,
     coverage, duplicated_lines_density,
