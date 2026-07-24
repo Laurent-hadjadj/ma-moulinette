@@ -6,9 +6,9 @@
 ##                                                ##
 ####################################################*/
 
--- Fixtures dediees aux tests End-to-End (Playwright, Phase K).
+-- Fixtures dédiées aux tests End-to-End (Playwright, Phase K).
 --
--- Modele "onboarding sequentiel" :
+-- Modèle "onboarding séquentiel" :
 --   1 user ROLE_INTERNAL actif (bootstrap admin E2E)
 --   4 users ROLE_NONE disabled (actives + assignes en cours de scenario)
 --
@@ -20,20 +20,25 @@
 --   - Aurelie -> ROLE_GESTIONNAIRE
 --
 -- Aucun groupe utilisateur ni groupe fonctionnel attribue au depart :
--- groupe='Aucun' (defaut), liste_groupe_fonctionnel=[]. Les groupes
+-- groupe='Aucun' (défaut), liste_groupe_fonctionnel=[]. Les groupes
 -- (ADMIN, CONSULTATION, COLLECTE, GESTIONNAIRE METIER, GESTIONNAIRE
--- APPLICATIF) sont crees par l'internal en cours de scenario via l'UI.
+-- APPLICATIF) sont crées par l'internal en cours de scenario via l'UI.
 --
 -- CONVENTION : password = courriel (bcrypt cost 13)
--- Genere via bin/e2e/generate-e2e-hashes.php
+-- Généré via bin/e2e/generate-e2e-hashes.php
 --
 -- USAGE :
 --   psql -U postgres -d ma_moulinette -v ON_ERROR_STOP=1 \
 --        -f migrations/POSTGRESQL/90_fixtures/fixtures-e2e.sql
 --
--- Idempotent : peut etre relance sans erreur.
+-- Idempotent : peut être relance sans erreur.
 
-\c ma_moulinette db_user
+-- MODIF 2026-07-22 : \c ma_moulinette db_user remplacé par \c - db_user
+-- (conserve la base courante, ne change que le rôle) — le nom de base en dur
+-- écrasait silencieusement la cible -d réelle de l'appelant quand ce fichier
+-- est tiré depuis un script pointant sur une AUTRE base (ex. reset-e2e-data.ps1
+-- sur ma_moulinette_test).
+\c - db_user
 
 BEGIN;
 
@@ -42,8 +47,8 @@ BEGIN;
 -- ============================================================================
 INSERT INTO ma_moulinette.utilisateur
 (preference, reset_password, courriel, roles, password, prenom, nom,
- date_enregistrement, actif, avatar, liste_groupe_fonctionnel,
- groupe_utilisateur, groupe_id)
+    date_enregistrement, actif, avatar, liste_groupe_fonctionnel,
+    groupe_utilisateur, groupe_id)
 VALUES (
     '{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false},"suivi_projet":[],"favori_projet":[],"favori_version":[]}'::json,
     false,
@@ -62,8 +67,8 @@ ON CONFLICT (courriel) DO NOTHING;
 -- ============================================================================
 INSERT INTO ma_moulinette.utilisateur
 (preference, reset_password, courriel, roles, password, prenom, nom,
- date_enregistrement, actif, avatar, liste_groupe_fonctionnel,
- groupe_utilisateur, groupe_id)
+    date_enregistrement, actif, avatar, liste_groupe_fonctionnel,
+    groupe_utilisateur, groupe_id)
 VALUES (
     '{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false},"suivi_projet":[],"favori_projet":[],"favori_version":[]}'::json,
     false,
@@ -82,8 +87,8 @@ ON CONFLICT (courriel) DO NOTHING;
 -- ============================================================================
 INSERT INTO ma_moulinette.utilisateur
 (preference, reset_password, courriel, roles, password, prenom, nom,
- date_enregistrement, actif, avatar, liste_groupe_fonctionnel,
- groupe_utilisateur, groupe_id)
+    date_enregistrement, actif, avatar, liste_groupe_fonctionnel,
+    groupe_utilisateur, groupe_id)
 VALUES (
     '{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false},"suivi_projet":[],"favori_projet":[],"favori_version":[]}'::json,
     false,
@@ -102,8 +107,8 @@ ON CONFLICT (courriel) DO NOTHING;
 -- ============================================================================
 INSERT INTO ma_moulinette.utilisateur
 (preference, reset_password, courriel, roles, password, prenom, nom,
- date_enregistrement, actif, avatar, liste_groupe_fonctionnel,
- groupe_utilisateur, groupe_id)
+    date_enregistrement, actif, avatar, liste_groupe_fonctionnel,
+    groupe_utilisateur, groupe_id)
 VALUES (
     '{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false},"suivi_projet":[],"favori_projet":[],"favori_version":[]}'::json,
     false,
@@ -125,8 +130,8 @@ ON CONFLICT (courriel) DO NOTHING;
 -- ============================================================================
 INSERT INTO ma_moulinette.utilisateur
 (preference, reset_password, courriel, roles, password, prenom, nom,
- date_enregistrement, actif, avatar, liste_groupe_fonctionnel,
- groupe_utilisateur, groupe_id)
+    date_enregistrement, actif, avatar, liste_groupe_fonctionnel,
+    groupe_utilisateur, groupe_id)
 VALUES (
     '{"statut":{"suivi_projet":false,"favori_projet":false,"favori_version":false},"suivi_projet":[],"favori_projet":[],"favori_version":[]}'::json,
     false,
