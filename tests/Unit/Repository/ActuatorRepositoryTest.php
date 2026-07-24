@@ -17,6 +17,7 @@ namespace App\Tests\Unit\Repository;
 
 use App\Entity\Actuator;
 use App\Repository\ActuatorRepository;
+use App\Service\ActuatorCredentialCipher;
 use Doctrine\DBAL\Exception as DBALException;
 use Doctrine\DBAL\Exception\{ConnectionException, NotNullConstraintViolationException,UniqueConstraintViolationException};
 use Doctrine\DBAL\{Connection, Result, Statement};
@@ -39,6 +40,7 @@ class ActuatorRepositoryTest extends TestCase
     /** @var Connection&MockObject */             private MockObject $connection;
     /** @var Statement&MockObject */              private MockObject $statement;
     /** @var Result&MockObject */                 private MockObject $result;
+    /** @var ActuatorCredentialCipher&MockObject */ private MockObject $cipher;
 
     private ActuatorRepository $repo;
 
@@ -48,6 +50,7 @@ class ActuatorRepositoryTest extends TestCase
         $this->connection = $this->createMock(Connection::class);
         $this->statement  = $this->createMock(Statement::class);
         $this->result     = $this->createMock(Result::class);
+        $this->cipher     = $this->createMock(ActuatorCredentialCipher::class);
 
         $classMetadata = new ClassMetadata(Actuator::class);
         $this->em->method('getClassMetadata')->willReturn($classMetadata);
@@ -56,7 +59,7 @@ class ActuatorRepositoryTest extends TestCase
         $registry = $this->createMock(ManagerRegistry::class);
         $registry->method('getManagerForClass')->willReturn($this->em);
 
-        $this->repo = new ActuatorRepository($registry);
+        $this->repo = new ActuatorRepository($registry, $this->cipher);
     }
 
     /* ============ handleDatabaseException ============ */
@@ -232,6 +235,7 @@ class ActuatorRepositoryTest extends TestCase
 
     public function testFindActuatorMavenKeyReturnsRow(): void
     {
+        $this->cipher->method('decrypt')->willReturnArgument(0);
         $this->connection->method('prepare')->willReturn($this->statement);
         $this->statement->expects($this->once())->method('bindValue')->with(':maven_key', 'fr.ma-moulinette:ma-moulinette');
         $this->statement->method('executeQuery')->willReturn($this->result);
@@ -265,6 +269,7 @@ class ActuatorRepositoryTest extends TestCase
 
     public function testFindActuatorMavenKeyTreatsMissingUserPasswordAsNull(): void
     {
+        $this->cipher->method('decrypt')->willReturnArgument(0);
         $this->connection->method('prepare')->willReturn($this->statement);
         $this->statement->method('executeQuery')->willReturn($this->result);
         $this->result->method('fetchAllAssociative')->willReturn([[
@@ -279,6 +284,27 @@ class ActuatorRepositoryTest extends TestCase
         $this->assertSame(200, $response['code']);
         $this->assertNull($response['user']);
         $this->assertNull($response['password']);
+    }
+
+    public function testFindActuatorMavenKeyDecryptsStoredPassword(): void
+    {
+        $this->connection->method('prepare')->willReturn($this->statement);
+        $this->statement->method('executeQuery')->willReturn($this->result);
+        $this->result->method('fetchAllAssociative')->willReturn([[
+            'id' => 1,
+            'url' => 'http://host',
+            'actuator_user' => 'admin',
+            'actuator_password' => 'enc_v1:ciphertext',
+        ]]);
+
+        $this->cipher->expects($this->once())
+            ->method('decrypt')
+            ->with('enc_v1:ciphertext')
+            ->willReturn('mot-de-passe-en-clair');
+
+        $response = $this->repo->findActuatorMavenKey(['maven_key' => 'k']);
+
+        $this->assertSame('mot-de-passe-en-clair', $response['password']);
     }
 
     public function testFindActuatorMavenKeyReturnsErrorOnException(): void
