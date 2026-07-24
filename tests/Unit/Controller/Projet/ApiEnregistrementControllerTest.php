@@ -208,6 +208,54 @@ class ApiEnregistrementControllerTest extends TestCase
         return new Request([], [], [], [], [], [], $content);
     }
 
+    /**
+     * MODIF 2026-07-23 : actuator_info valait auparavant toujours [] (jamais
+     * persisté par ce chemin interactif) — vérifie que le JSON envoyé par le
+     * front (objet décodé depuis json_decode($request->getContent())) est
+     * bien transmis tel quel à insertHistoriqueAjoutProjet.
+     */
+    public function testEnregistrementPropagatesActuatorInfoToHistorique(): void
+    {
+        $this->authChecker->method('isGranted')->willReturn(true);
+        $this->token->method('getUser')->willReturn($this->makeUser());
+
+        $expectedActuatorInfo = [
+            'date_extraction' => '2026-07-23 20:00:26',
+            'code' => 200,
+            'message' => 'OK',
+            'app.version' => '1.9.1',
+        ];
+
+        $this->historiqueRepo->expects($this->once())
+            ->method('insertHistoriqueAjoutProjet')
+            ->with($this->anything(), $expectedActuatorInfo, $this->anything())
+            ->willReturn(['code' => 200]);
+
+        $payload = $this->buildPayload();
+        $payload['actuator_info'] = $expectedActuatorInfo;
+
+        $response = $this->controller->enregistrement($this->jsonRequest($payload));
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertSame(200, $data['code']);
+    }
+
+    public function testEnregistrementSendsEmptyActuatorInfoWhenAbsent(): void
+    {
+        $this->authChecker->method('isGranted')->willReturn(true);
+        $this->token->method('getUser')->willReturn($this->makeUser());
+
+        $this->historiqueRepo->expects($this->once())
+            ->method('insertHistoriqueAjoutProjet')
+            ->with($this->anything(), [], $this->anything())
+            ->willReturn(['code' => 200]);
+
+        $response = $this->controller->enregistrement($this->jsonRequest($this->buildPayload()));
+        $data = json_decode($response->getContent(), true);
+
+        $this->assertSame(200, $data['code']);
+    }
+
     private function makeUser(): Utilisateur
     {
         $u = new Utilisateur();
