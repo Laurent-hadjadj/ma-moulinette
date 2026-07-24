@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\{JsonResponse, Response, Request};
 use \Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\{InformationProjet, Anomalie, AnomalieDetails, Mesures, NoSonar, Hotspots, Todo, Logger, LoggerDetail};
+use App\Entity\{InformationProjet, Anomalie, AnomalieDetails, Mesures, NoSonar, Hotspots, Todo, Logger, LoggerDetail, Historique};
 use App\Service\IsValideMavenKey;
 
 /**
@@ -1493,6 +1493,92 @@ class ApiPeintureController extends AbstractController
             'logger_warn_pct' => $loggerWarnPct,
             'logger_error_pct' => $loggerErrorPct,
             'logger_debug_pct' => $loggerDebugPct
+        ], Response::HTTP_OK);
+    }
+
+    /**
+     * Lit le dernier JSON actuator_info connu (colonne historique.actuator_info)
+     * pour peindre la pastille + la modale Actuator de la page Projet.
+     *
+     * Contrairement aux autres blocs peints ici (qui relisent une table "état
+     * courant" dédiée mise à jour pendant la collecte), Actuator n'a pas
+     * d'équivalent : sa seule trace persistée est ce JSON, écrit soit par le
+     * batch/cron (CollecteController), soit par un "Enregistrer" manuel sur
+     * cette page. Statut retourné :
+     *  - 'grise' : aucune ligne historique, ou actuator_info vide/null (pas de
+     *    point d'accès déclaré, ou jamais collecté) ;
+     *  - 'verte' : dernière collecte réussie (code 200) ;
+     *  - 'rouge' : dernière collecte en échec (tout autre code).
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     *
+     * Created at: 23/07/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    #[Route('/api/secure/peinture/projet/actuator', name: 'peinture_projet_actuator', methods: ['POST'])]
+    public function peintureProjetActuator(Request $request): JsonResponse
+    {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/actuator");
+
+        $historiqueRepos = $this->em->getRepository(Historique::class);
+
+        $data = json_decode($request->getContent());
+        if ($data === null || !property_exists($data, 'maven_key')) {
+            $this->logger->error(self::$loggerE400, ['payload' => $data ?? self::$noData]);
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'error',
+                'message' => self::$erreur400,
+                'trace' => null
+            ], Response::HTTP_OK);
+        }
+
+        $maven_key = htmlspecialchars($data->maven_key, ENT_QUOTES, 'UTF-8');
+
+        $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
+        if ($isValide['code'] === 404) {
+            $this->logger->warning(self::$loggerE404, ['maven_key' => $maven_key]);
+            return new JsonResponse([
+                'code' => 404,
+                'type' => 'warning',
+                'message' => self::$erreur404,
+                'trace' => null
+            ], Response::HTTP_OK);
+        }
+
+        $resultat = $historiqueRepos->selectHistoriqueActuatorInfo(['maven_key' => $maven_key]);
+        if ($resultat['code'] !== 200) {
+            $this->logger->error('[Collecte-Peinture] ❌ Échec de la requête selectHistoriqueActuatorInfo.', [
+                'code' => $resultat['code'],
+                'erreur' => $resultat['erreur'] ?? self::$noData,
+                'maven_key' => $maven_key,
+            ]);
+            return new JsonResponse([
+                'code' => $resultat['code'],
+                'type' => 'error',
+                'message' => "❌ La récupération des données Actuator a échoué (Erreur {$resultat['code']}).",
+                'trace' => $resultat['erreur'] ?? self::$noData,
+            ], Response::HTTP_OK);
+        }
+
+        $actuatorInfo = $resultat['actuator_info'];
+        if (empty($actuatorInfo)) {
+            return new JsonResponse([
+                'code' => 200,
+                'statut' => 'grise',
+                'data' => null,
+            ], Response::HTTP_OK);
+        }
+
+        $statut = (($actuatorInfo['code'] ?? null) === 200) ? 'verte' : 'rouge';
+
+        return new JsonResponse([
+            'code' => 200,
+            'statut' => $statut,
+            'data' => $actuatorInfo,
         ], Response::HTTP_OK);
     }
 
