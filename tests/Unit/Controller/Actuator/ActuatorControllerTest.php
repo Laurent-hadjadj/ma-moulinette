@@ -17,6 +17,7 @@ namespace App\Tests\Unit\Controller\Actuator;
 
 use App\Controller\Actuator\ActuatorController;
 use App\Entity\Actuator;
+use App\Service\{ActuatorCredentialCipher, ClientService};
 use App\Service\UserAgent\UserAgentTrackingFacade;
 use App\Repository\ActuatorRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -28,8 +29,7 @@ use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\{Request, RequestStack};
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -48,6 +48,9 @@ class ActuatorControllerTest extends TestCase
     /** @var FlashBag&MockObject */                       private MockObject $flashBag;
 
     /** @var UserAgentTrackingFacade&MockObject */        private MockObject $tracking;
+    /** @var ActuatorCredentialCipher&MockObject */       private MockObject $cipher;
+    /** @var ClientService&MockObject */                  private MockObject $client;
+    /** @var \Symfony\Component\Security\Csrf\CsrfTokenManagerInterface&MockObject */ private MockObject $csrfTokenManager;
 
     private ActuatorController $controller;
 
@@ -62,6 +65,9 @@ class ActuatorControllerTest extends TestCase
         $this->twig = $this->createMock(Environment::class);
         $this->flashBag = $this->createMock(FlashBag::class);
         $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
+        $this->cipher = $this->createMock(ActuatorCredentialCipher::class);
+        $this->client = $this->createMock(ClientService::class);
+        $this->csrfTokenManager = $this->createMock(\Symfony\Component\Security\Csrf\CsrfTokenManagerInterface::class);
 
         $this->params->method('get')->willReturnMap([
             ['logo.entreprise', 'logo.png'],
@@ -78,18 +84,25 @@ class ActuatorControllerTest extends TestCase
         $requestStack = $this->createMock(RequestStack::class);
         $requestStack->method('getSession')->willReturn($session);
 
+        $router = $this->createMock(\Symfony\Component\Routing\RouterInterface::class);
+        $router->method('generate')->willReturn('/actuator');
+
         $container = $this->createMock(ContainerInterface::class);
         $container->method('has')->willReturnMap([
             ['twig', true],
             ['security.authorization_checker', true],
             ['request_stack', true],
             ['parameter_bag', true],
+            ['security.csrf.token_manager', true],
+            ['router', true],
         ]);
         $container->method('get')->willReturnMap([
             ['twig', 1, $this->twig],
             ['security.authorization_checker', 1, $this->authChecker],
             ['request_stack', 1, $requestStack],
             ['parameter_bag', 1, $this->params],
+            ['security.csrf.token_manager', 1, $this->csrfTokenManager],
+            ['router', 1, $router],
         ]);
 
         $this->controller = new ActuatorController(
@@ -97,7 +110,9 @@ class ActuatorControllerTest extends TestCase
             $this->paginator,
             $this->params,
             $this->logger,
-            $this->tracking
+            $this->tracking,
+            $this->cipher,
+            $this->client
         );
         $this->controller->setContainer($container);
     }
@@ -211,5 +226,151 @@ class ActuatorControllerTest extends TestCase
         $response = $this->controller->actuatorInfo(new Request());
 
         $this->assertSame('<html>403</html>', $response->getContent());
+    }
+
+    /* ============ actuatorModifier ============ */
+
+    public function testActuatorModifierRedirectsWithout403Role(): void
+    {
+        $this->authChecker->method('isGranted')->willReturn(false);
+
+        $this->repo->expects($this->never())->method('find');
+
+        $response = $this->controller->actuatorModifier(1, new Request());
+
+        $this->assertInstanceOf(\Symfony\Component\HttpFoundation\RedirectResponse::class, $response);
+    }
+
+    public function testActuatorModifierRedirectsWhenNotFound(): void
+    {
+        $this->authChecker->method('isGranted')->willReturn(true);
+        $this->repo->expects($this->once())->method('find')->with(999)->willReturn(null);
+
+        $response = $this->controller->actuatorModifier(999, new Request());
+
+        $this->assertInstanceOf(\Symfony\Component\HttpFoundation\RedirectResponse::class, $response);
+    }
+
+    /* ============ actuatorSupprimer ============ */
+
+    public function testActuatorSupprimerRedirectsWithout403Role(): void
+    {
+        $this->authChecker->method('isGranted')->willReturn(false);
+
+        $this->repo->expects($this->never())->method('find');
+
+        $response = $this->controller->actuatorSupprimer(1, new Request());
+
+        $this->assertInstanceOf(\Symfony\Component\HttpFoundation\RedirectResponse::class, $response);
+    }
+
+    public function testActuatorSupprimerRedirectsOnInvalidCsrfToken(): void
+    {
+        $this->authChecker->method('isGranted')->willReturn(true);
+        $this->csrfTokenManager->method('isTokenValid')->willReturn(false);
+
+        $this->repo->expects($this->never())->method('find');
+        $this->em->expects($this->never())->method('remove');
+
+        $response = $this->controller->actuatorSupprimer(1, new Request([], ['_token' => 'bad']));
+
+        $this->assertInstanceOf(\Symfony\Component\HttpFoundation\RedirectResponse::class, $response);
+    }
+
+    public function testActuatorSupprimerRedirectsWhenNotFound(): void
+    {
+        $this->authChecker->method('isGranted')->willReturn(true);
+        $this->csrfTokenManager->method('isTokenValid')->willReturn(true);
+        $this->repo->expects($this->once())->method('find')->with(999)->willReturn(null);
+
+        $response = $this->controller->actuatorSupprimer(999, new Request([], ['_token' => 'ok']));
+
+        $this->assertInstanceOf(\Symfony\Component\HttpFoundation\RedirectResponse::class, $response);
+    }
+
+    public function testActuatorSupprimerRemovesEntityAndRedirectsOnSuccess(): void
+    {
+        $this->authChecker->method('isGranted')->willReturn(true);
+        $this->csrfTokenManager->method('isTokenValid')->willReturn(true);
+        $entity = new Actuator();
+        $this->repo->expects($this->once())->method('find')->with(5)->willReturn($entity);
+
+        $this->em->expects($this->once())->method('remove')->with($entity);
+        $this->em->expects($this->once())->method('flush');
+
+        $this->flashBag->expects($this->once())
+            ->method('add')
+            ->with('notice', $this->callback(fn($v) => $v['type'] === 'success'));
+
+        $response = $this->controller->actuatorSupprimer(5, new Request([], ['_token' => 'ok']));
+
+        $this->assertInstanceOf(\Symfony\Component\HttpFoundation\RedirectResponse::class, $response);
+    }
+
+    /* ============ completerUrlActuator / urlActuatorEstJoignable ============ */
+
+    private function invokePrivateMethod(string $methodName, array $parameters = []): mixed
+    {
+        $reflection = new \ReflectionMethod(ActuatorController::class, $methodName);
+        return $reflection->invokeArgs($this->controller, $parameters);
+    }
+
+    public function testCompleterUrlActuatorAddsSuffixWhenMissing(): void
+    {
+        $this->assertSame(
+            'http://localhost/monapplication/actuator/info',
+            $this->invokePrivateMethod('completerUrlActuator', ['http://localhost/monapplication'])
+        );
+    }
+
+    public function testCompleterUrlActuatorAddsSuffixWhenMissingWithTrailingSlash(): void
+    {
+        $this->assertSame(
+            'http://localhost/monapplication/actuator/info',
+            $this->invokePrivateMethod('completerUrlActuator', ['http://localhost/monapplication/'])
+        );
+    }
+
+    public function testCompleterUrlActuatorLeavesCompleteUrlUnchanged(): void
+    {
+        $url = 'http://localhost/monapplication/actuator/info';
+        $this->assertSame($url, $this->invokePrivateMethod('completerUrlActuator', [$url]));
+    }
+
+    #[\PHPUnit\Framework\Attributes\DataProvider('joignableCodesProvider')]
+    public function testUrlActuatorEstJoignableForRealHttpResponses(int $code): void
+    {
+        $this->client->method('httpActuator')->willReturn(['code' => $code]);
+
+        $this->assertTrue($this->invokePrivateMethod('urlActuatorEstJoignable', ['http://app/actuator/info']));
+    }
+
+    public static function joignableCodesProvider(): array
+    {
+        return [
+            'succès'          => [200],
+            'non authentifié' => [401],
+            'interdit'        => [403],
+            'introuvable'     => [404],
+            'erreur serveur distant' => [500],
+        ];
+    }
+
+    #[\PHPUnit\Framework\Attributes\DataProvider('injoignableCodesProvider')]
+    public function testUrlActuatorEstInjoignableForTransportFailures(int $code): void
+    {
+        $this->client->method('httpActuator')->willReturn(['code' => $code, 'erreur' => 'Timeout.']);
+
+        $this->logger->expects($this->once())->method('warning');
+
+        $this->assertFalse($this->invokePrivateMethod('urlActuatorEstJoignable', ['http://app/actuator/info']));
+    }
+
+    public static function injoignableCodesProvider(): array
+    {
+        return [
+            'timeout (504)'          => [504],
+            'transport indisponible (503)' => [503],
+        ];
     }
 }
