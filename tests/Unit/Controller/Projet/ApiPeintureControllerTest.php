@@ -16,9 +16,9 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Controller\Projet;
 
 use App\Controller\Projet\ApiPeintureController;
-use App\Entity\{Anomalie, AnomalieDetails, Hotspots, InformationProjet, LoggerDetail, Mesures, NoSonar, Todo};
+use App\Entity\{Anomalie, AnomalieDetails, Historique, Hotspots, InformationProjet, LoggerDetail, Mesures, NoSonar, Todo};
 use App\Entity\Logger as LoggerEntity;
-use App\Repository\{AnomalieDetailsRepository, AnomalieRepository, HotspotsRepository, InformationProjetRepository, LoggerDetailRepository, LoggerRepository, MesuresRepository, NoSonarRepository, TodoRepository};
+use App\Repository\{AnomalieDetailsRepository, AnomalieRepository, HistoriqueRepository, HotspotsRepository, InformationProjetRepository, LoggerDetailRepository, LoggerRepository, MesuresRepository, NoSonarRepository, TodoRepository};
 use App\Service\IsValideMavenKey;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\{AllowMockObjectsWithoutExpectations, DataProvider};
@@ -53,6 +53,7 @@ class ApiPeintureControllerTest extends TestCase
     /** @var TodoRepository&MockObject */            private MockObject $todoRepo;
     /** @var LoggerRepository&MockObject */          private MockObject $loggerRepo;
     /** @var LoggerDetailRepository&MockObject */    private MockObject $loggerDetailRepo;
+    /** @var HistoriqueRepository&MockObject */      private MockObject $historiqueRepo;
 
     private ApiPeintureController $controller;
 
@@ -71,6 +72,7 @@ class ApiPeintureControllerTest extends TestCase
         $this->todoRepo = $this->createMock(TodoRepository::class);
         $this->loggerRepo = $this->createMock(LoggerRepository::class);
         $this->loggerDetailRepo = $this->createMock(LoggerDetailRepository::class);
+        $this->historiqueRepo = $this->createMock(HistoriqueRepository::class);
 
         $this->em->method('getRepository')->willReturnMap([
             [Anomalie::class, $this->anomalieRepo],
@@ -82,6 +84,7 @@ class ApiPeintureControllerTest extends TestCase
             [Todo::class, $this->todoRepo],
             [LoggerEntity::class, $this->loggerRepo],
             [LoggerDetail::class, $this->loggerDetailRepo],
+            [Historique::class, $this->historiqueRepo],
         ]);
 
         // appUser() (trait AppUserAware) appelle AbstractController::getUser() qui interroge security.token_storage
@@ -735,6 +738,7 @@ class ApiPeintureControllerTest extends TestCase
             'no_sonar'         => ['peintureProjetNoSonar',         'error'],
             'todo'             => ['peintureProjetTodo',            'error'],
             'logger'           => ['peintureProjetLogger',          'error'],
+            'actuator'         => ['peintureProjetActuator',        'error'],
         ];
     }
 
@@ -777,6 +781,90 @@ class ApiPeintureControllerTest extends TestCase
         $this->assertSame(200, $payload['code']);
         $this->assertNull($payload['total']);
         $this->assertNull($payload['logger_info']);
+    }
+
+    // ═══════════════════════ peintureProjetActuator ═════════════════════════
+
+    public function testPeintureProjetActuatorReturnsGriseWhenNoHistoriqueRow(): void
+    {
+        $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
+        $this->historiqueRepo->expects($this->once())
+            ->method('selectHistoriqueActuatorInfo')
+            ->with(['maven_key' => self::MAVEN_KEY])
+            ->willReturn(['code' => 200, 'actuator_info' => null, 'erreur' => '']);
+
+        $payload = $this->decode($this->controller->peintureProjetActuator($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+        ])));
+
+        $this->assertSame(200, $payload['code']);
+        $this->assertSame('grise', $payload['statut']);
+        $this->assertNull($payload['data']);
+    }
+
+    public function testPeintureProjetActuatorReturnsGriseWhenEmptyJson(): void
+    {
+        $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
+        $this->historiqueRepo->method('selectHistoriqueActuatorInfo')
+            ->willReturn(['code' => 200, 'actuator_info' => [], 'erreur' => '']);
+
+        $payload = $this->decode($this->controller->peintureProjetActuator($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+        ])));
+
+        $this->assertSame('grise', $payload['statut']);
+    }
+
+    public function testPeintureProjetActuatorReturnsVerteOnSuccessfulCollecte(): void
+    {
+        $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
+        $actuatorInfo = [
+            'date_extraction' => '2026-07-23 20:00:26',
+            'code' => 200,
+            'message' => 'OK',
+            'app.version' => '1.9.1',
+        ];
+        $this->historiqueRepo->method('selectHistoriqueActuatorInfo')
+            ->willReturn(['code' => 200, 'actuator_info' => $actuatorInfo, 'erreur' => '']);
+
+        $payload = $this->decode($this->controller->peintureProjetActuator($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+        ])));
+
+        $this->assertSame(200, $payload['code']);
+        $this->assertSame('verte', $payload['statut']);
+        $this->assertSame($actuatorInfo, $payload['data']);
+    }
+
+    public function testPeintureProjetActuatorReturnsRougeOnFailedCollecte(): void
+    {
+        $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
+        $actuatorInfo = [
+            'date_extraction' => '2026-07-23 20:00:26',
+            'code' => 500,
+            'message' => 'Timeout.',
+        ];
+        $this->historiqueRepo->method('selectHistoriqueActuatorInfo')
+            ->willReturn(['code' => 200, 'actuator_info' => $actuatorInfo, 'erreur' => '']);
+
+        $payload = $this->decode($this->controller->peintureProjetActuator($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+        ])));
+
+        $this->assertSame('rouge', $payload['statut']);
+    }
+
+    public function testPeintureProjetActuatorPropagatesRepoError(): void
+    {
+        $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
+        $this->historiqueRepo->method('selectHistoriqueActuatorInfo')
+            ->willReturn(['code' => 500, 'erreur' => 'fail']);
+
+        $payload = $this->decode($this->controller->peintureProjetActuator($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+        ])));
+
+        $this->assertSame(500, $payload['code']);
     }
 
     // ═══════════════════════ helpers ═══════════════════════════════════════
