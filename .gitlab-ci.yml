@@ -236,7 +236,7 @@ deploy_ma_moulinette_job:
         echo "$SSH_PRIVATE_KEY_PASSWORD" | ssh-add ~/.ssh/id_rsa
         scp -o "StrictHostKeyChecking no" -o "UserKnownHostsFile=/dev/null" artifacts.zip $DEPLOY_SERVER:$DEPLOY_PATH
         ssh -o "StrictHostKeyChecking no" -o "UserKnownHostsFile=/dev/null" $DEPLOY_SERVER "echo 'Executing commands on the remote server...' ; export MY_PATH='$DEPLOY_PATH'; echo \$MY_PATH; cd \"\$MY_PATH\"; pwd; ls -l; echo \"\$MY_PATH/archives/prod_ma_moulinette-\$(date +'%Y%m%d_%H%M%S').tar.gz\"; tar -czf \"\$MY_PATH/archives/prod_ma_moulinette-\$(date +'%Y%m%d_%H%M%S').tar.gz\" prod_ma_moulinette; rm -rf prod_ma_moulinette; unzip artifacts.zip -d prod_ma_moulinette; ls -l; ls -la prod_ma_moulinette; rm artifacts.zip; ls -lathr; ls -lathr archives; chmod -R 777  \"\${MY_PATH}prod_ma_moulinette/var/cache\" ; chmod -R 777  \"\${MY_PATH}prod_ma_moulinette/var/log\" "
-        scp -o "StrictHostKeyChecking no" -o "UserKnownHostsFile=/dev/null" migrations/updates/* $DEPLOY_SERVER:$SSH_DEPLOY_SQL
+        scp -o "StrictHostKeyChecking no" -o "UserKnownHostsFile=/dev/null" migrations/POSTGRESQL/updates/* $DEPLOY_SERVER:$SSH_DEPLOY_SQL
         ssh -o "StrictHostKeyChecking no" -o "UserKnownHostsFile=/dev/null" $DEPLOY_SERVER "echo 'Executing commands on the remote server...' ; export MY_PATH='$SSH_DEPLOY_SQL'; echo \$MY_PATH; cd \"\$MY_PATH\"; pwd; ls -l; docker exec -i postgresql-ma-moulinette ls -lathr /data/sql/update ; docker exec -i postgresql-ma-moulinette /scripts/postgresql/execute_sql_files.sh"
         #
       else
