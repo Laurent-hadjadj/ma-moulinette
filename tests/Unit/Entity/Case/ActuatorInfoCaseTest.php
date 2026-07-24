@@ -26,7 +26,7 @@ class ActuatorInfoCaseTest extends TestCase
 
     private static int $actuatorId = 1;
     private static string $actuatorInfoDescription = '[SOCLE][ARCHETYPE]';
-    private static string $actuatorInfoValue = 'socle.archetype';
+    private static string $actuatorInfoCle = 'socle.archetype';
 
     private function getEntity(): ActuatorInfo
     {
@@ -37,7 +37,7 @@ class ActuatorInfoCaseTest extends TestCase
         $actuatorInfo = new ActuatorInfo();
         $actuatorInfo->setActuator($actuator)
                     ->setActuatorInfoDescription(self::$actuatorInfoDescription)
-                    ->setActuatorInfoValue(self::$actuatorInfoValue);
+                    ->setActuatorInfoCle(self::$actuatorInfoCle);
     return $actuatorInfo;
 }
 
@@ -59,10 +59,10 @@ class ActuatorInfoCaseTest extends TestCase
         $this->assertEquals(self::$actuatorInfoDescription, $this->actuatorInfo->getActuatorInfoDescription());
     }
 
-    public function testSettingAndGettingActuatorInfoValue(): void
+    public function testSettingAndGettingActuatorInfoCle(): void
     {
-        $this->actuatorInfo->setActuatorInfoValue(self::$actuatorInfoValue);
-        $this->assertEquals(self::$actuatorInfoValue, $this->actuatorInfo->getActuatorInfoValue());
+        $this->actuatorInfo->setActuatorInfoCle(self::$actuatorInfoCle);
+        $this->assertEquals(self::$actuatorInfoCle, $this->actuatorInfo->getActuatorInfoCle());
     }
 
 }
