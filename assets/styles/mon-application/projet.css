@@ -405,7 +405,9 @@ textarea[readonly] {
 #bouton-fermer-liste-nosonar,
 #bouton-fermer-logger-detail,
 #bouton-fermer-logger-graphique,
-#bouton-fermer-information-complexity {
+#bouton-fermer-information-complexity,
+#bouton-ouvrir-actuator-config,
+#bouton-fermer-actuator {
   min-width: 9rem;
   font-size: 0.95rem;
   border-radius: 0.375rem;
@@ -437,7 +439,9 @@ textarea[readonly] {
 #bouton-ouvrir-clean-code:hover,
 #bouton-fermer-logger-detail:hover,
 #bouton-fermer-logger-graphique:hover,
-#bouton-fermer-information-complexity:hover { background-color: #006182; }
+#bouton-fermer-information-complexity:hover,
+#bouton-ouvrir-actuator-config:hover,
+#bouton-fermer-actuator:hover { background-color: #006182; }
 
 /* select2 custom
  *  placeholder
@@ -452,9 +456,7 @@ textarea[readonly] {
 
 /* Couleur du placeholder */
 .select2-container--default .select2-selection--single .select2-selection__placeholder,
-.select2-container--default .selection .select2-selection--single .select2-selection__placeholder {
-  color: #99b4bd;
-}
+.select2-container--default .selection .select2-selection--single .select2-selection__placeholder { color: #99b4bd; }
 
 /* taille de la barre de sélection */
 .select2-container--default .select2-selection--single,
@@ -601,6 +603,29 @@ textarea[readonly] {
   border: solid 1px #00445b;
   border-radius: 0.2rem;
 }
+
+/* MODIF 2026-07-23 : pastille de statut Actuator (grise/verte/rouge).
+   Voir mkDocs/docs/ma-moulinette/application/actuator.md pour la sémantique. */
+#js-affiche-actuator {
+  border: none;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+  vertical-align: middle;
+}
+
+.pastille {
+  display: inline-block;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
+  border: solid 1px #00445b;
+  vertical-align: middle;
+}
+
+.pastille-grise { background-color: #9a9a9a; }
+.pastille-verte { background-color: #0a0; }
+.pastille-rouge { background-color: #d4333f; }
 
 /** Information projet et statut */
 .information-statut { font-size: 1.2rem; }
