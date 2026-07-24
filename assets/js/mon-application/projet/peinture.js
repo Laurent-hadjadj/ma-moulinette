@@ -542,6 +542,111 @@ export const remplissage = async function(maven_key) {
   }
 
   /**
+   * Actuator : pastille + modale.
+   * MODIF 2026-07-23 : contrairement aux autres blocs, Actuator n'a pas de
+   * table "état courant" dédiée — on privilégie donc les données fraîches
+   * d'une collecte tout juste lancée dans CETTE page (même maven_key, posées
+   * en data-attribute par projetActuator() dans index-projet.js) ; sinon on
+   * relit le dernier JSON connu (historique.actuator_info) côté serveur.
+   */
+  const $actuatorPastille = $('#js-actuator-pastille');
+  let actuatorJson = null;
+  let actuatorStatut = 'grise';
+
+  if ($actuatorPastille.attr('data-actuator-maven-key') === maven_key && $actuatorPastille.attr('data-actuator-json')) {
+    try {
+      actuatorJson = JSON.parse($actuatorPastille.attr('data-actuator-json'));
+      actuatorStatut = (actuatorJson && actuatorJson.code === 200) ? 'verte' : 'rouge';
+    } catch (e) {
+      actuatorJson = null;
+    }
+  }
+
+  if (actuatorJson === null) {
+    const optionsActuator = {
+      url: `${serveur()}/api/secure/peinture/projet/actuator`,
+      type: 'POST',
+      dataType: 'json',
+      data: JSON.stringify(data),
+      contentType: content_type,
+      headers: {
+        'X-API-Custom-403': 'true',
+        'X-Internal-Front': 'front-app'
+      },
+    };
+
+    try {
+      const t = await $.ajax(optionsActuator);
+      const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+      if (errorCodes.includes(t.code)) {
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
+        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations Actuator.');
+        if (t.code === http_404) {
+          log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
+          enableButtonAnalyse();
+        } else {
+          log(' - ❌ [Peinture] Affichage des informations Actuator en échec.');
+        }
+        return;
+      }
+
+      actuatorStatut = t.statut ?? 'grise';
+      actuatorJson = t.data ?? null;
+      $actuatorPastille.attr('data-actuator-maven-key', maven_key);
+      if (actuatorJson) {
+        $actuatorPastille.attr('data-actuator-json', JSON.stringify(actuatorJson));
+      } else {
+        $actuatorPastille.removeAttr('data-actuator-json');
+      }
+    } catch (error) {
+      ErrorButtonAffiche();
+      const trace = prepareTechnicalDetails(error);
+      const message = "Une erreur inattendue s'est produite lors l'affichage des informations Actuator (Erreur 500).";
+      showMessage('critical', message, trace);
+      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Actuator.');
+      log(' - 🔴 [Peinture] Affichage des informations Actuator en échec.');
+      return;
+    }
+  }
+
+  $actuatorPastille
+    .removeClass('pastille-grise pastille-verte pastille-rouge')
+    .addClass(`pastille-${actuatorStatut}`);
+
+  const actuatorLibelles = {
+    grise: 'Aucune collecte Actuator (pas de point d\'accès déclaré, ou jamais collecté).',
+    verte: 'Données Actuator disponibles.',
+    rouge: 'Une erreur est survenue lors de la dernière collecte Actuator.',
+  };
+  $actuatorPastille.attr('aria-label', actuatorLibelles[actuatorStatut] ?? actuatorLibelles.grise);
+  $actuatorPastille.attr('title', actuatorLibelles[actuatorStatut] ?? actuatorLibelles.grise);
+
+  const $actuatorMessage = $('#js-actuator-message');
+  const $actuatorTableau = $('#tableau-actuator');
+  $actuatorTableau.empty();
+
+  const echapper = (valeur) => $('<div>').text(valeur).html();
+
+  if (actuatorJson) {
+    $actuatorMessage.text(actuatorJson.message ?? '--');
+    const cles = Object.keys(actuatorJson).filter((k) => !['date_extraction', 'code', 'message'].includes(k));
+    if (cles.length === 0) {
+      $actuatorTableau.append('<tr><td colspan="2" class="text-center">Aucune clé déclarée.</td></tr>');
+    } else {
+      cles.forEach((cle) => {
+        const valeur = (actuatorJson[cle] === null || actuatorJson[cle] === undefined) ? '—' : actuatorJson[cle];
+        $actuatorTableau.append(`<tr><td>${echapper(cle)}</td><td>${echapper(String(valeur))}</td></tr>`);
+      });
+    }
+    log(' - 🎨 [Peinture] Affichage des informations Actuator.');
+  } else {
+    $actuatorMessage.text(`Aucun point d'accès Actuator déclaré pour ce projet.`);
+    $actuatorTableau.append('<tr><td colspan="2" class="text-center">Aucune donnée.</td></tr>');
+  }
+
+  /**
    * On récupère les mesures :
    * lignes, coverage fonctionnelle, ration de dette technique, duplication, tests unitaires et le nombre de défaut.
    */
