@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Actuator;
+use App\Service\ActuatorCredentialCipher;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -19,8 +20,10 @@ class ActuatorRepository extends ServiceEntityRepository
     private static string $removeReturnLine = "/\s+/u";
     private static string $noDataBase = 'La connexion à la base de données a échoué.';
 
-  public function __construct(ManagerRegistry $registry)
-  {
+  public function __construct(
+      ManagerRegistry $registry,
+      private ActuatorCredentialCipher $cipher
+  ) {
       parent::__construct($registry, Actuator::class);
   }
 
@@ -173,7 +176,7 @@ class ActuatorRepository extends ServiceEntityRepository
   {
     $sql = "SELECT id, url, actuator_user, actuator_password
             FROM ma_moulinette.actuator
-            WHERE maven_key = :maven_key";
+            WHERE LOWER(maven_key) = LOWER(:maven_key)";
     try {
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             $stmt->bindValue(':maven_key', $map['maven_key']);
@@ -188,7 +191,7 @@ class ActuatorRepository extends ServiceEntityRepository
         $id = $liste[0]['id'];
         $url = $liste[0]['url'];
         $user = $liste[0]['actuator_user'] ?? null;
-        $password = $liste[0]['actuator_password'] ?? null;
+        $password = $this->cipher->decrypt($liste[0]['actuator_password'] ?? null);
 
       return ['code' => 200, 'erreur' => ''] + compact('url', 'user', 'password', 'id');
   }
