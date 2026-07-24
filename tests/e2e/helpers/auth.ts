@@ -2,14 +2,27 @@ import { Page, expect } from '@playwright/test';
 import type { E2EUser } from './users';
 
 /**
+ * /login sert une vidéo décorative en autoplay/loop (dessin_anime.mp4 +
+ * sous-titres .vtt) que Playwright n'a jamais besoin de charger. Sous un
+ * serveur PHP mono-requête (ex. `php -S` en secours quand `symfony serve`
+ * est indisponible), cette connexion de streaming reste ouverte et bloque
+ * toutes les requêtes suivantes (assets, voire la navigation elle-même).
+ * On l'intercepte systématiquement avant toute visite de /login.
+ */
+async function blockDecorativeVideo(page: Page): Promise<void> {
+  await page.route('**/*.{mp4,vtt}', (route) => route.abort());
+}
+
+/**
  * Login d'un utilisateur via le formulaire /login.
  *
  * @param page    Page Playwright
  * @param user    Utilisateur E2E (depuis ./users.ts)
- * @param password Surchage optionnelle du password (utile pour tester un new
+ * @param password Surcharge optionnelle du password (utile pour tester un new
  *                 password après reset)
  */
 export async function login(page: Page, user: E2EUser, password?: string): Promise<void> {
+  await blockDecorativeVideo(page);
   await page.goto('/login');
   await page.fill('input[name="login"]', user.email);
   await page.fill('input[name="password"]', password ?? user.password);
@@ -23,6 +36,7 @@ export async function login(page: Page, user: E2EUser, password?: string): Promi
  * Reste sur /login et vérifie qu'un message d'erreur s'affiche.
  */
 export async function loginExpectFailure(page: Page, email: string, password: string): Promise<void> {
+  await blockDecorativeVideo(page);
   await page.goto('/login');
   await page.fill('input[name="login"]', email);
   await page.fill('input[name="password"]', password);
@@ -34,6 +48,9 @@ export async function loginExpectFailure(page: Page, email: string, password: st
  * Logout via la route /logout.
  */
 export async function logout(page: Page): Promise<void> {
+  // /logout redirige vers /login (donc vers la vidéo décorative) : même
+  // garde qu'en login()/loginExpectFailure().
+  await blockDecorativeVideo(page);
   await page.goto('/logout');
   await expect(page).toHaveURL(/\/login/);
 }
