@@ -1169,6 +1169,82 @@ const projetLogger = async function (maven_key) {
 };
 
 /**
+ * [Description for projetActuator]
+ * Collecte les informations Actuator (endpoint /actuator/info déclaré pour le projet).
+ * http://{url}/api/secure/collecte/actuator/info
+ *
+ * Phase 14 — "best effort" : l'absence de point d'accès déclaré (404) n'est pas
+ * une erreur (même traitement que le 404 de projetLogger ci-dessus), juste un
+ * log informatif. Le résultat est stocké en data-attribute (avec la maven_key
+ * associée) pour que peinture.js puisse peindre la pastille sans re-collecter,
+ * et que enregistrement.js puisse le persister dans historique.actuator_info.
+ *
+ * @param string maven_key
+ * @return response
+ *
+ * Created at: 23/07/2026 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ */
+const projetActuator = async function (maven_key) {
+  /** On vérifie s'il n'y a pas d'erreur lors du traitement */
+  const collecte = sessionStorage.getItem('ma_moulinette_collecte');
+  if (!collecte || collecte != 'Tout va bien!') {
+    return;
+  }
+
+  const data = { maven_key };
+  const options = {
+    url: `${serveur()}/api/secure/collecte/actuator/info`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType: content_type,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
+
+  const $actuatorPastille = $('#js-actuator-pastille');
+
+  /* MODIF 2026-07-23 : Actuator est "best effort" côté backend (un échec ne
+   * stoppe pas la collecte projet, cf. BatchCollecteActuatorController) — ça
+   * doit être vrai aussi côté JS. Un endpoint Actuator injoignable (ex. 503
+   * serveur de test éteint, constaté en test manuel) ne doit ni afficher de
+   * message d'erreur bloquant, ni marquer sessionStorage.ma_moulinette_collecte
+   * en échec (ce qui interromprait toute étape suivante), ni désactiver le
+   * bouton de collecte : on se contente de refléter l'échec dans la pastille
+   * (rouge) et de logger, quel que soit le code retourné. */
+  try {
+    const t = await $.ajax(options);
+    $actuatorPastille.attr('data-actuator-maven-key', maven_key);
+
+    if (t.code === http_200) {
+      log(' - ℹ️ (13) Collecte des informations Actuator.');
+      $actuatorPastille.attr('data-actuator-json', JSON.stringify(t.json ?? {}));
+    } else if (t.code === http_404) {
+      log(` - 📌 (13) Aucun point d'accès Actuator déclaré pour ce projet.`);
+      $actuatorPastille.removeAttr('data-actuator-json');
+    } else {
+      log(` - ⚠️ (13) Collecte des informations Actuator en échec (Erreur ${t.code}) — non bloquant.`);
+      $actuatorPastille.attr('data-actuator-json', JSON.stringify({
+        code: t.code,
+        message: t.message ?? 'Erreur lors de la collecte Actuator.',
+        date_extraction: new Date().toISOString(),
+      }));
+    }
+  } catch (error) {
+    log(' - ⚠️ (13) Collecte des informations Actuator en échec (exception) — non bloquant.');
+    $actuatorPastille.attr('data-actuator-maven-key', maven_key);
+    $actuatorPastille.attr('data-actuator-json', JSON.stringify({
+      code: 500,
+      message: "Une erreur inattendue s'est produite lors de la collecte Actuator.",
+      date_extraction: new Date().toISOString(),
+    }));
+  }
+};
+
+/**
  * [Description for finCollecte]
  * Affiche un message de fin de collecte
  *
@@ -1184,7 +1260,7 @@ const finCollecte = function (maven_key) {
   const aria_label = 'Lancer la collecte des indicateurs SonarQube';
 
   if (collecte === 'Tout va bien!') {
-    log(` - ℹ️ (13) La collecte des données est terminée.`);
+    log(` - ℹ️ (14) La collecte des données est terminée.`);
     showMessage('success', `<strong>${collecte}</strong> Le processus de collecte a été réalisé avec success pour le projet ${maven_key} !`);
     setTimeout(() => { hideMessage(); }, troisMille);
     enableButton($boutonCollecteIndicateur, aria_label);
@@ -1407,6 +1483,9 @@ $('.js-analyse').on('click', function () {
 
     /* Récupération des signalements Logger (logger_info, logger_warn, logger_error_, logger_debug). */
     await projetLogger(idProject);                /*(12)*/
+
+    /* Collecte des informations Actuator (best effort, cf. Phase 14). */
+    await projetActuator(idProject);              /*(13)*/
 
     /* Renvoie le statut de fin */
     finCollecte(idProject);
@@ -1717,6 +1796,21 @@ $('#js-affiche-logger').on('click', function () {
 });
 $('#bouton-fermer-liste-logger').on('click', function () {
     modalSafe.close('#modal-affiche-liste-logger');
+});
+
+/**
+ * description
+ * On affiche la fenêtre modale Actuator (pastille grise/verte/rouge).
+ */
+$('#js-affiche-actuator').on('click', function () {
+  if ($('select[name="projet"]').val() === '' || $('select[name="projet"]').val() === 'TheID') {
+    showMessage('warning', 'Aucune donnée disponible. Relancez une collecte ou afficher les derniers résultats.', null);
+    return;
+  }
+  modalSafe.open('#modal-affiche-actuator');
+});
+$('#bouton-fermer-actuator').on('click', function () {
+    modalSafe.close('#modal-affiche-actuator');
 });
 
 
