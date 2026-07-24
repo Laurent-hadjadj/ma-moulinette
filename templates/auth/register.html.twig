@@ -42,7 +42,6 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             </nav>
         </header>
 
-        {# WCAG 1.3.1 / 2.4.6 : un seul <h1> par page (celui du header) ; titre de page descendu en <h2>. aria-label redondant avec le texte retiré. Ajout de id="main-content" (cible du skip link). #}
         <header id="main-content" class="grid-container" aria-labelledby="titre-principal">
             <h2 id="titre-principal" class="h3 claire-hand"><span aria-hidden="true">🛠️</span>Bienvenue sur Ma-Moulinette — Formulaire d'inscription</h2>
         </header>
@@ -50,7 +49,6 @@ https://github.com/Laurent-hadjadj/ma-moulinette
         {# Gestion des messages flash & JS #}
         {{ include('_message.html.twig') }}
 
-        {# WCAG 4.1.1 : role="main" redondant sur <main>, retiré. Note : id="main-content" est porté par le <header> plus haut pour cibler le titre de page #}
         <main class="grid-container main-container margin-top-1">
             <div class="grid-x">
                 <div class="small-12 medium-6 large-6 cell">
