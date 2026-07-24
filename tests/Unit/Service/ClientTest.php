@@ -356,6 +356,29 @@ class ClientTest extends TestCase
         $this->assertSame($data, $result['json']);
     }
 
+    /**
+     * MODIF 2026-07-23 : timeout dédié court (3s, au lieu des 45s génériques) —
+     * Actuator est un appel "best effort" annexe à la collecte projet.
+     */
+    public function testHttpActuatorUsesShortDedicatedTimeout(): void
+    {
+        $url = 'https://ma-moulinette.ma-petite-entreprise.fr/actuator/info';
+
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getContent')->willReturn('{}');
+        $response->method('getStatusCode')->willReturn(200);
+        $response->method('getInfo')->willReturnMap([
+            ['http_method', 'GET'], ['http_code', 200], ['total_time', 0.1], ['url', $url],
+        ]);
+
+        $this->httpClient->expects($this->once())
+            ->method('request')
+            ->with('GET', $url, $this->callback(fn ($opts) => ($opts['timeout'] ?? null) === 3))
+            ->willReturn($response);
+
+        $this->client->httpActuator($url, 'user', 'pass');
+    }
+
     /* ============ 401 : token + user vides ============ */
 
     public function testHttpSonarQubeReturns401WhenTokenAndUserMissing(): void
