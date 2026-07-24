@@ -1074,6 +1074,45 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
+    /**
+     * Dernier JSON actuator_info connu pour un projet (colonne JSONB), pour la
+     * pastille + modale Actuator de la page Projet — voir ApiPeintureController::peintureProjetActuator.
+     * `null` si aucune ligne historique n'existe encore pour ce maven_key.
+     *
+     * @param array<int|string, mixed> $map
+     *
+     * @return array<int|string, mixed>
+     *
+     * Created at: 23/07/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function selectHistoriqueActuatorInfo(array $map): array
+    {
+        $sql = "SELECT actuator_info
+                FROM ma_moulinette.historique
+                WHERE maven_key = :maven_key
+                ORDER BY date_version DESC LIMIT 1";
+
+        try {
+            $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
+            $stmt->bindValue(self::$mavenKey, $map['maven_key']);
+            $ligne = $stmt->executeQuery()->fetchAssociative();
+        } catch (\Throwable $e) {
+            return $this->handleDatabaseException($e);
+        }
+
+        if ($ligne === false) {
+            return ['code' => 200, 'actuator_info' => null, 'erreur' => ''];
+        }
+
+        $actuatorInfo = $ligne['actuator_info'] !== null
+            ? json_decode((string) $ligne['actuator_info'], true)
+            : null;
+
+        return ['code' => 200, 'actuator_info' => $actuatorInfo, 'erreur' => ''];
+    }
+
     public function selectHistoriqueProjetLast(array $map): array
     {
         /** On prépare la requête */
