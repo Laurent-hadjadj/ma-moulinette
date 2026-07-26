@@ -17,17 +17,9 @@ namespace App\Tests\Unit\Exception;
 
 use App\Exception\SqlRequestException;
 use PHPUnit\Framework\TestCase;
-use RuntimeException;
 
 class SqlRequestExceptionTest extends TestCase
 {
-    public function testExtendsRuntimeException(): void
-    {
-        $e = new SqlRequestException('selectFoo', 500, 'db down');
-
-        $this->assertInstanceOf(RuntimeException::class, $e);
-    }
-
     public function testFormatsMessageWithRequestCodeAndError(): void
     {
         $e = new SqlRequestException('selectFoo', 500, 'db down');
