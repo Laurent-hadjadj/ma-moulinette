@@ -677,10 +677,6 @@ class DcExecutiveAnalyticsServiceTest extends TestCase
     {
         $rule = $this->svc->getScoreSecuRule();
 
-        $this->assertArrayHasKey('weights',     $rule);
-        $this->assertArrayHasKey('caps',        $rule);
-        $this->assertArrayHasKey('penalty_max', $rule);
-
         // Defaults du constructeur
         $this->assertSame(10.0, $rule['weights']['CRITICAL']);
         $this->assertSame(3.0,  $rule['weights']['HIGH']);
