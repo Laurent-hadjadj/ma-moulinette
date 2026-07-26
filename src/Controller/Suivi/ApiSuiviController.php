@@ -547,10 +547,10 @@ class ApiSuiviController extends AbstractController
      * [Description for getFavoriVersions]
      * Fonction pour récupérer les versions d'une application spécifique
      *
-     * @param array $version
+     * @param array<int, array<string, array<int, string>>> $version
      * @param string $app_key
      *
-     * @return array<int|string, mixed>
+     * @return array<int, string>
      *
      * Created at: 26/07/2024 11:34:08 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

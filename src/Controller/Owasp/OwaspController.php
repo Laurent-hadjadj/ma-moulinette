@@ -98,7 +98,7 @@ class OwaspController extends AbstractController
      * @param string $type
      * @param string $message
      * @param string|null $trace
-     * @param array $render
+     * @param array<string, mixed> $render
      *
      * @return Response
      *
@@ -677,7 +677,7 @@ class OwaspController extends AbstractController
      * Rating A-E d'une catégorie OWASP basé sur la severity breakdown.
      * Reproduit la logique du JS remplissageOwaspInfo (seuil > 1 par sévérité).
      *
-     * @param array $sev
+     * @param array{blocker: int, critical: int, major: int, minor: int} $sev
      *
      * @return string
      *

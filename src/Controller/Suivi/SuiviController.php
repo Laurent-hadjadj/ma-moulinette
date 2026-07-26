@@ -99,7 +99,7 @@ class SuiviController extends AbstractController
      * [Description for listeProjet]
      *
      * @param $maven_key array
-     * @param $groupes array
+     * @param array<int|string, mixed> $groupes
      *
      * @return array<int|string, mixed>
      *

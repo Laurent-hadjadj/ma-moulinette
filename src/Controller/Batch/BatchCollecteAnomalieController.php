@@ -55,7 +55,7 @@ class BatchCollecteAnomalieController extends AbstractController
      * Calcule la répartition des anomalies par module
      *
      * @param string $maven_key
-     * @param array $facet
+     * @param array{property: string, values: array<int, array{val: string, count: int}>} $facet
      *
      * @return array<int|string, mixed>
      *

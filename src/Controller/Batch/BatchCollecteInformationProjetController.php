@@ -186,7 +186,7 @@ class BatchCollecteInformationProjetController extends AbstractController
     /**
      * [Description for calculRepartitionProjet]
      *
-     * @param array $analyses
+     * @param array<int, array<string, mixed>> $analyses
      *
      * @return array<int|string, mixed>
      *

@@ -15,6 +15,7 @@ namespace App\Controller\Admin;
 
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Config\{Action, Actions, Crud, Filters};
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Field\{FormField, TextField, DateTimeField};
 use Symfony\Component\Uid\{Ulid};
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -129,7 +130,7 @@ class GroupeUtilisateurCrudController extends AbstractCrudController
      *
      * @param string $pageName
      *
-     * @return iterable
+     * @return iterable<FieldInterface>
      *
      * Created at: 02/01/2023, 18:35:41 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>

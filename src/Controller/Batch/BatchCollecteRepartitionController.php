@@ -54,7 +54,8 @@ class BatchCollecteRepartitionController extends AbstractController
      * [Description for batchAnalyseAnomalie]
      * Analyse le path et détermine le type de module
      *
-     * @param array $elements
+     * @param array<int, array<string, mixed>> $elements  lignes issues de
+     *        RepartitionTempRepository::selectRepartitionByTypeAndSeverity() (clé `component` au minimum)
      *
      * @return array<string, mixed>
      *

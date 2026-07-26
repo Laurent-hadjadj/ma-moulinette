@@ -99,7 +99,7 @@ class ApiProfilController extends AbstractController
      * @param string $language
      * @param string $tri
      *
-     * @return array|null
+     * @return array{date: string}|null
      *
      * Created at: 19/10/2025 10:49:26 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

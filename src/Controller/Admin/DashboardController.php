@@ -135,7 +135,7 @@ class DashboardController extends AbstractDashboardController
     /**
      * [Description for configureMenuItems]
      *
-     * @return iterable
+     * @return iterable<MenuItem>
      *
      * Created at: 02/01/2023, 18:34:47 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>

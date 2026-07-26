@@ -1711,9 +1711,8 @@ class DependencyCheckPageController extends AbstractController
      * helper pour le pattern repository {code/liste/erreur}.
      *
      * @param array<string, mixed> $result
-     * @return array<int, mixed>
      *
-     * @return array
+     * @return array<int, array<string, mixed>>
      *
      * Created at: 10/05/2026 17:02:56 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

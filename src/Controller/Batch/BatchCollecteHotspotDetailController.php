@@ -68,6 +68,7 @@ class BatchCollecteHotspotDetailController extends AbstractController
     /**
      * [Description for vulnerabilityProbabilityListe]
      *
+     * @param array<int, array{niveau: string, hotspot: string}> $niveaux
      *
      * @return array<int|string, mixed>
      *

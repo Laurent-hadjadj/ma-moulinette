@@ -65,7 +65,7 @@ class CleanCodeController extends AbstractController
     /**
      * [Description for genericRender]
      *
-     * @return array
+     * @return array{type_footer: null, logo_entreprise: string, marque_entreprise_short: string, marque_entreprise_long: string, env: string, version: string, date_copyright: string}
      *
      * Created at: 17/05/2026 12:33:50 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

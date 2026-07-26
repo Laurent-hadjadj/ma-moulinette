@@ -68,6 +68,17 @@ class BatchController extends AbstractController
         $this->dateCopyright = \date('Y');
     }
 
+    /**
+     * @return array{
+     *     type_footer: null,
+     *     logo_entreprise: string,
+     *     marque_entreprise_short: string,
+     *     marque_entreprise_long: string,
+     *     env: string,
+     *     version: string,
+     *     date_copyright: string
+     * }
+     */
     private function genericRender(): array
     {
         return [

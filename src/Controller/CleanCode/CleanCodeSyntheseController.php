@@ -66,7 +66,15 @@ class CleanCodeSyntheseController extends AbstractController
     /**
      * [Description for genericRender]
      *
-     * @return array
+     * @return array{
+     *     type_footer: null,
+     *     logo_entreprise: string,
+     *     marque_entreprise_short: string,
+     *     marque_entreprise_long: string,
+     *     env: string,
+     *     version: string,
+     *     date_copyright: string,
+     * }
      *
      * Created at: 19/05/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -128,7 +136,7 @@ class CleanCodeSyntheseController extends AbstractController
      * MODIF 2026-05-19 : factorise le calcul
      * des projets pour éviter la duplication entre index() et pdf().
      *
-     * @return array{code: int, scope_label: string, projets: array}
+     * @return array{code: int, scope_label: string, projets: array<int, array<string, mixed>>}
      *
      * Created at: 19/05/2026 09:23:22 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

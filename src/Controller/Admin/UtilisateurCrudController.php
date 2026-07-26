@@ -115,7 +115,7 @@ class UtilisateurCrudController extends AbstractCrudController
      *
      * @param string $pageName
      *
-     * @return iterable
+     * @return iterable<\EasyCorp\Bundle\EasyAdminBundle\Contracts\Field\FieldInterface>
      *
      * Created at: 02/01/2023, 18:37:34 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>
