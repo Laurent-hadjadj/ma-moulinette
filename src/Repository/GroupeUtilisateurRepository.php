@@ -21,9 +21,9 @@ use Doctrine\Persistence\ManagerRegistry;
  * @extends ServiceEntityRepository<GroupeUtilisateur>
  *
  * @method GroupeUtilisateur|null find($id, $lockMode = null, $lockVersion = null)
- * @method GroupeUtilisateur|null findOneBy(array $criteria, array $orderBy = null)
+ * @method GroupeUtilisateur|null findOneBy(array<string, mixed> $criteria, array<string, string>|null $orderBy = null)
  * @method GroupeUtilisateur[]    findAll()
- * @method GroupeUtilisateur[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method GroupeUtilisateur[]    findBy(array<string, mixed> $criteria, array<string, string>|null $orderBy = null, $limit = null, $offset = null)
  */
 class GroupeUtilisateurRepository extends ServiceEntityRepository
 {

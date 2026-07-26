@@ -127,6 +127,7 @@ class TodoRepository extends ServiceEntityRepository
    * [Description for selectTodoComponentOrderByRule]
    * On retourne la liste des règle et du détail pour le projet.
    *
+   * @param array<int|string, mixed> $map
    *
    * @return array<int|string, mixed>
    *
@@ -153,6 +154,9 @@ class TodoRepository extends ServiceEntityRepository
   /**
    * [Description for insertTodo]
    *
+   * @param list<array{maven_key: string, rule: string, component: string, line: int,
+   *              mode_collecte: string, utilisateur_collecte: string,
+   *              date_enregistrement: \DateTimeInterface}> $map
    *
    * @return array<int|string, mixed>
    *

@@ -127,6 +127,13 @@ class HotspotDetailsRepository extends ServiceEntityRepository
   /**
    * [Description for insertHotspotDetails]
    *
+   * @param array<int, array{maven_key: mixed, version: mixed, date_version: \DateTimeInterface,
+   *                          security_category: mixed, rule_key: mixed, rule_name: mixed,
+   *                          severity: mixed, status: mixed, resolution: mixed, niveau: mixed,
+   *                          frontend: mixed, backend: mixed, autre: mixed, file_name: mixed,
+   *                          file_path: mixed, line: mixed, message: mixed, hotspot_key: mixed,
+   *                          mode_collecte: mixed, utilisateur_collecte: mixed,
+   *                          date_enregistrement: \DateTimeInterface}> $map
    *
      * @return array<int|string, mixed>
    *

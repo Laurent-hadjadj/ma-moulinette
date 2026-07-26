@@ -75,6 +75,8 @@ class DcDependencyRepository extends ServiceEntityRepository
      * Vue agrégée : top des dépendances vulnérables les plus répandues.
      *
      * @param int $limit
+     * @param array<int, string>|null $allowedMavenKeys
+     * @param array<int, int>|null    $allowedScanIds
      *
      * @return array{code: int, liste?: array<int, array<string, mixed>>, erreur?: string}
      *
@@ -179,6 +181,9 @@ class DcDependencyRepository extends ServiceEntityRepository
      * parc dépasse la limite et on le signale via 'truncated' (avant, la
      * troncature était silencieuse : le tableau affichait pile hardLimit
      * lignes sans qu'aucun signal n'indique qu'il en existe d'autres).
+     *
+     * @param array<int, string>|null $allowedMavenKeys
+     * @param array<int, int>|null    $allowedScanIds
      *
      * @return array{code: int, liste?: array<int, array<string, mixed>>, erreur?: string, truncated?: bool}
      */

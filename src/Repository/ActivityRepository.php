@@ -32,6 +32,9 @@ class ActivityRepository extends ServiceEntityRepository
         parent::__construct($registry, Activity::class);
     }
 
+    /**
+     * @return array<int|string, mixed>
+     */
     public function handleDatabaseException(\Throwable $e): array
     {
         $message = $e->getMessage();
@@ -82,6 +85,11 @@ class ActivityRepository extends ServiceEntityRepository
     /**
      * [Description for insertActivity]
      * On insère la liste de toute les activités qui sont envoyé
+     *
+     * @param array<int, array{maven_key: mixed, project_name: mixed, analyse_id: mixed,
+     *                          status: mixed, submitter_login: mixed,
+     *                          submitted_at: \DateTimeInterface, started_at: \DateTimeInterface,
+     *                          executed_at: \DateTimeInterface, execution_time: mixed}> $data
      *
      * @return array<int|string, mixed>
      *

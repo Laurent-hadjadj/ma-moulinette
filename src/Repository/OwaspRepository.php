@@ -133,6 +133,7 @@ class OwaspRepository extends ServiceEntityRepository
    * [Description for deleteOwaspMavenKey]
    * Supprime les données de la version courante (i.e. correspondant à la maven_key)
    *
+   * @param array<string, mixed> $map
    *
    * @return array<int|string, mixed>
    *

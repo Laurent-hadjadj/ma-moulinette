@@ -215,6 +215,8 @@ class ProfilesRepository extends ServiceEntityRepository
    * [Description for insertProfiles]
    * Ajout les référentiels de règles
    *
+   * @param array{profiles: array<int, array<string, mixed>>, date_enregistrement: \DateTimeImmutable} $map
+   *
    * @return array<int|string, mixed>
    *
    * Created at: 07/11/2024 14:01:38 (Europe/Paris)

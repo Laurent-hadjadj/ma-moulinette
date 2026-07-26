@@ -99,6 +99,7 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
    * [Description for selectAnomalieDetailsMavenKey]
    * Retourne la liste du détails des anomalies pour un projet.
    *
+   * @param array<string, mixed> $map
    *
    * @return array<int|string, mixed>
    *
@@ -124,6 +125,7 @@ class AnomalieDetailsRepository extends ServiceEntityRepository
   /**
    * [Description for insertAnomalieDetail]
    *
+   * @param array<string, mixed> $map
    *
    * @return array<int|string, mixed>
    *

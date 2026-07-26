@@ -95,6 +95,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
    * [Description for countOwaspStatus]
    * On récupère le nombre de hotspot owasp par niveau de sévérité potentiel.
    *
+     * @param array<int|string, mixed> $map
      * @return array<int|string, mixed>
    *
    * Created at: 02/03/2024 23:37:22 (Europe/Paris)
@@ -183,6 +184,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
    * [Description for deleteHotpotOwaspMavenKey]
    * Supprime les hotspots de type owasp pour la version courante (i.e. correspondant à la maven_key)
    *
+     * @param array<int|string, mixed> $map
      * @return array<int|string, mixed>
    *
    * Created at: 14/03/2024 08:21:10 (Europe/Paris)
@@ -211,6 +213,7 @@ class HotspotOwaspRepository extends ServiceEntityRepository
    * [Description for insertHotspotOwasp]
    *
    *
+     * @param array<int, array<string, mixed>> $map
      * @return array<int|string, mixed>
    *
    * Created at: 30/05/2024 15:54:30 (Europe/Paris)

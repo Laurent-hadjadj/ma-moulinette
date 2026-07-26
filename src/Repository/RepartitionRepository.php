@@ -10,9 +10,9 @@ use Doctrine\Persistence\ManagerRegistry;
  * @extends ServiceEntityRepository<Repartition>
  *
  * @method Repartition|null find($id, $lockMode = null, $lockVersion = null)
- * @method Repartition|null findOneBy(array $criteria, array $orderBy = null)
+ * @method Repartition|null findOneBy(array<string, mixed> $criteria, array<string, string>|null $orderBy = null)
  * @method Repartition[]    findAll()
- * @method Repartition[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method Repartition[]    findBy(array<string, mixed> $criteria, array<string, string>|null $orderBy = null, $limit = null, $offset = null)
  */
 class RepartitionRepository extends ServiceEntityRepository
 {

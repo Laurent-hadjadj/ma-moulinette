@@ -32,6 +32,9 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
         parent::__construct($registry, ActivityHistorique::class);
     }
 
+    /**
+     * @return array{code: int, erreur: string}
+     */
     public function handleDatabaseException(\Throwable $e): array
     {
         $message = $e->getMessage();
@@ -57,6 +60,10 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
     /**
      * [Description for insertHistoriqueActivity]
      * On insère la liste de toutes les activités qui sont envoyé
+     *
+     * @param array<int, array{day: int, analyse: int, analyse_average: int|float, success: int,
+     *              failed: int, success_rate: float, max_time: int,
+     *              date_enregistrement: \DateTimeInterface}> $data
      *
      * @return array<int|string, mixed>
      *
@@ -98,6 +105,10 @@ class ActivityHistoriqueRepository extends ServiceEntityRepository
     /**
      * [Description for updateHistoriqueActivity]
      * On insérer la liste de toute les activities qui sont envoyé
+     *
+     * @param array<int, array{day: int, analyse: int, analyse_average: int|float, success: int,
+     *              failed: int, success_rate: float, max_time: int,
+     *              date_enregistrement: \DateTimeInterface}> $data
      *
      * @return array<int|string, mixed>
      *

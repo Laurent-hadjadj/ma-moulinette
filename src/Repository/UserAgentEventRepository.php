@@ -35,7 +35,7 @@ class UserAgentEventRepository extends ServiceEntityRepository
      *
      * @param \Throwable $e
      *
-     * @return array
+     * @return array{code: int, erreur: string}
      *
      * Created at: 14/12/2025 18:04:58 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -67,9 +67,11 @@ class UserAgentEventRepository extends ServiceEntityRepository
      * [Description for insertUserAgentEvent]
      * Insertion d'un événement User-Agent (collecte brute)
      *
-     * @param array $map
+     * @param array{event_type: string, url: string, user_agent: string, session_id: string|null,
+     *              user_id: int|null, visitor_id: string, auth_state: string,
+     *              processing_status: string, ip_hash: string, created_at: \DateTimeImmutable} $map
      *
-     * @return array
+     * @return array{code: int, erreur: string}
      *
      * Created at: 14/12/2025 18:05:15 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -117,7 +119,7 @@ class UserAgentEventRepository extends ServiceEntityRepository
      *
      * @param int $limit
      *
-     * @return array
+     * @return array{code: int, liste: array<int, array<string, mixed>>, erreur: string}|array{code: int, erreur: string}
      *
      * Created at: 14/12/2025 18:05:31 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -152,7 +154,7 @@ class UserAgentEventRepository extends ServiceEntityRepository
      * @param string $status
      * @param \DateTimeImmutable|null $processedAt
      *
-     * @return array
+     * @return array{code: int, erreur: string}
      *
      * Created at: 14/12/2025 18:05:54 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

@@ -175,6 +175,17 @@ class BatchExecutionJournalRepository extends ServiceEntityRepository
     ];
   }
 
+  /**
+   * [Description for selectBatchExecutionJournalByJob]
+   *
+   * @param array<string, mixed> $map
+   *
+   * @return array<int|string, mixed>
+   *
+   * Created at: 11/11/2025 13:27:34 (Europe/Paris)
+   * @author     Laurent HADJADJ <laurent_h@me.com>
+   * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+   */
   public function selectBatchExecutionJournalByJob(array $map): array
   {
     $sql = "SELECT compte_rendu

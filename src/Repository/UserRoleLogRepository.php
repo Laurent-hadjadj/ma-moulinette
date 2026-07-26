@@ -23,9 +23,9 @@ use Doctrine\Persistence\ManagerRegistry;
  * @extends ServiceEntityRepository<UserRoleLog>
  *
  * @method UserRoleLog|null find($id, $lockMode = null, $lockVersion = null)
- * @method UserRoleLog|null findOneBy(array $criteria, array $orderBy = null)
+ * @method UserRoleLog|null findOneBy(array<string, mixed> $criteria, array<string, string>|null $orderBy = null)
  * @method UserRoleLog[]    findAll()
- * @method UserRoleLog[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method UserRoleLog[]    findBy(array<string, mixed> $criteria, array<string, string>|null $orderBy = null, $limit = null, $offset = null)
  */
 class UserRoleLogRepository extends ServiceEntityRepository
 {

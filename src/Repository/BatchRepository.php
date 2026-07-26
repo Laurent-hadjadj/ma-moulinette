@@ -90,6 +90,7 @@ class BatchRepository extends ServiceEntityRepository
   /**
    * [Description for updatePortefeuille]
    *
+   * @param array{portefeuille: string, nombre_projet: int} $map
    *
    * @return array<int|string, mixed>
    *

@@ -40,7 +40,7 @@ class UserAgentStatsRepository extends ServiceEntityRepository
      *
      * @param \Throwable $e
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 14/12/2025 18:24:19 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -72,7 +72,7 @@ class UserAgentStatsRepository extends ServiceEntityRepository
      * [Description for selectDeviceTypeStats]
      * Répartition des types d'appareils
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 14/12/2025 18:25:19 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -110,7 +110,7 @@ class UserAgentStatsRepository extends ServiceEntityRepository
      * @param \DateTimeInterface $start
      * @param \DateTimeInterface $end
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 17/12/2025 14:11:15 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -147,7 +147,7 @@ class UserAgentStatsRepository extends ServiceEntityRepository
      * @param \DateTimeInterface $start
      * @param \DateTimeInterface $end
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 17/12/2025 14:36:50 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -183,7 +183,7 @@ class UserAgentStatsRepository extends ServiceEntityRepository
      * @param \DateTimeInterface $start
      * @param \DateTimeInterface $end
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 21/12/2025 12:42:20 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -230,7 +230,7 @@ class UserAgentStatsRepository extends ServiceEntityRepository
     /**
      * [Description for selectAvgSessionDurationStats]
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 21/12/2025 18:36:41 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -285,7 +285,7 @@ class UserAgentStatsRepository extends ServiceEntityRepository
     /**
      * [Description for selectUniqueSessionStats]
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 22/12/2025 08:04:35 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -324,7 +324,7 @@ class UserAgentStatsRepository extends ServiceEntityRepository
     /**
      * [Description for selectSessionDurationByCategoryStats]
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 22/12/2025 10:20:01 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -388,7 +388,7 @@ class UserAgentStatsRepository extends ServiceEntityRepository
      * @param \DateTimeInterface $start
      * @param \DateTimeInterface $end
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 22/12/2025 11:22:32 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -461,7 +461,7 @@ class UserAgentStatsRepository extends ServiceEntityRepository
      * @param \DateTimeInterface $start
      * @param \DateTimeInterface $end
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 22/12/2025 12:11:37 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

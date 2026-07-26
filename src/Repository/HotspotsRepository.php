@@ -69,6 +69,8 @@ class HotspotsRepository extends ServiceEntityRepository
    * [Description for deleteHotspotsMavenKey]
    * Supprime les hotspots pour la version courante (i.e. correspondant à la maven_key)
    *
+   * @param array<int|string, mixed> $map
+   *
    * @return array<int|string, mixed>
    *
    * Created at: 12/03/2024 21:49:02 (Europe/Paris)

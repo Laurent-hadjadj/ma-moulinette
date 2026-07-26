@@ -82,6 +82,9 @@ class DcCveRepository extends ServiceEntityRepository
      * [Description for countProjectsByCwe]
      * Vue agrégée : combien de projets touches par chaque CWE, avec la liste des projets concernés. Tri par nb de projets desc puis cwe asc.
      *
+     * @param array<int, string>|null $allowedMavenKeys
+     * @param array<int, int>|null    $allowedScanIds
+     *
      * @return array{code: int, liste?: array<int, array{cwe: string, nb_projets: int, projets: array<int, string>}>, erreur?: string}
      *
      * Created at: 08/05/2026 18:27:49 (Europe/Paris)
@@ -150,9 +153,10 @@ class DcCveRepository extends ServiceEntityRepository
      * [Description for findCriticalCvesAcrossProjects]
      * CVE critiques touchant plusieurs projets.
      *
-     *  @return array<int, array<string, mixed>>
+     * @param array<int, string>|null $allowedMavenKeys
+     * @param array<int, int>|null    $allowedScanIds
      *
-     * @return array
+     * @return array{code: int, liste?: array<int, array<string, mixed>>, erreur?: string}
      *
      * Created at: 08/05/2026 18:28:31 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -234,6 +238,9 @@ class DcCveRepository extends ServiceEntityRepository
      *   - sévérité stricte 'CRITICAL' (pas HIGH)
      *   - LIMIT applique cote SQL
      * Utilisée par le fragment "Mon périmètre" du dashboard.
+     *
+     * @param array<int, string>|null $allowedMavenKeys
+     * @param array<int, int>|null    $allowedScanIds
      *
      * @return array{code: int, liste?: array<int, array<string, mixed>>, erreur?: string}
      */
@@ -326,6 +333,8 @@ class DcCveRepository extends ServiceEntityRepository
      *
      * Retourne une ligne PAR finding (pas dédup par CVE), pour afficher
      * la dépendance concernée. Tri scan_date desc puis cvss desc.
+     *
+     * @param array<int, string>|null $allowedMavenKeys
      *
      * @return array{code: int, liste?: array<int, array<string, mixed>>, erreur?: string}
      */
@@ -664,7 +673,7 @@ class DcCveRepository extends ServiceEntityRepository
      *
      * @param string|null $raw
      *
-     * @return array
+     * @return array<int, string>
      *
      * Created at: 13/07/2026 09:11:43 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

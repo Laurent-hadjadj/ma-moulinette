@@ -66,7 +66,7 @@ class OwaspTop10Repository extends ServiceEntityRepository
   /**
    * [Description for selectTop10OwaspReferential]
    *
-   * @param mixed $map
+   * @param array<string, mixed> $map  attend `referential_version`
    *
    * @return array<int|string, mixed>
    *
@@ -93,7 +93,7 @@ class OwaspTop10Repository extends ServiceEntityRepository
   /**
    * [Description for selectOwaspTop10Details]
    *
-   * @param mixed $map
+   * @param array<string, mixed> $map  attend `menace`
    *
    * @return array<int|string, mixed>
    *

@@ -35,7 +35,7 @@ class UserAgentAnalysisRepository extends ServiceEntityRepository
      *
      * @param \Throwable $e
      *
-     * @return array
+     * @return array{code: int, erreur: string}
      *
      * Created at: 14/12/2025 18:11:47 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -67,9 +67,23 @@ class UserAgentAnalysisRepository extends ServiceEntityRepository
      * [Description for insertUserAgentAnalysis]
      * Insertion du résultat d'analyse Matomo
      *
-     * @param array $map
+     * @param array{
+     *     event_type: string,
+     *     url: string,
+     *     session_id: string,
+     *     user_id: string,
+     *     visitor_id: string,
+     *     device_type: string|null,
+     *     os_name: string|null,
+     *     os_version: string|null,
+     *     browser_name: string|null,
+     *     browser_version: string|null,
+     *     is_bot: bool,
+     *     detector_version: string,
+     *     created_at: \DateTimeInterface,
+     * } $map
      *
-     * @return array
+     * @return array{code: int, erreur: string}
      *
      * Created at: 14/12/2025 18:12:01 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

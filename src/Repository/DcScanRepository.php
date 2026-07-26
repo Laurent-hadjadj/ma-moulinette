@@ -677,7 +677,9 @@ class DcScanRepository extends ServiceEntityRepository
      * Liste des projets distincts ayant au moins 1 scan, avec leur dernier scan.
      * Pour le dashboard "vue d'ensemble par projet".
      *
-     * @return array
+     * @param array<int, string>|null $allowedMavenKeys
+     *
+     * @return array{code: int, liste?: array<int, array{id: int, maven_key: string, project_group: string, project_artifact: string, project_version: string, scan_date: \DateTimeImmutable, dep_count_total: int, dep_count_vulnerable: int, cve_count_total: int, cve_count_critical: int, cve_count_high: int, cve_count_medium: int, cve_count_low: int, parent_label: string|null, parent_version: string|null, archetype_version: string|null}>, erreur?: string}
      *
      * Created at: 08/05/2026 18:40:38 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -759,6 +761,8 @@ class DcScanRepository extends ServiceEntityRepository
      * scanne plusieurs fois le meme jour, ses CVE sont comptées plusieurs
      * fois. Acceptable pour une tendance visuelle, a affiner plus tard
      * via window function si besoin (dernier scan par projet par jour).
+     *
+     * @param array<int, string>|null $allowedMavenKeys
      *
      * @return array{code: int, liste?: array<int, array{day: string, critical: int, high: int, medium: int, low: int}>, erreur?: string}
      */

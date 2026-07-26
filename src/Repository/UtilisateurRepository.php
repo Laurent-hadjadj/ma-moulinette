@@ -207,6 +207,9 @@ class UtilisateurRepository extends ServiceEntityRepository
    * Met à jour pour le projet le statut de favori - true ou false
    * Utilisé par le contrôleur PROJET
    *
+   * @param array<string, mixed> $preference attend `statut`, `suivi_projet`, `favori_projet`,
+   *                                          `favori_version` et `suivi_version` (arrays)
+   * @param array<string, mixed> $map        attend `maven_key` et `courriel`
    *
    * @return array<int|string, mixed>
    *
@@ -481,6 +484,12 @@ class UtilisateurRepository extends ServiceEntityRepository
     return ['code' => 200, 'total' => (int) ($result['total'] ?? 0), 'erreur' => ''];
   }
 
+  /**
+   * @param array<string, mixed> $map attend `reset_password`, `courriel`
+   *                                  et `date_modification` (\DateTimeInterface)
+   *
+   * @return array<int|string, mixed>
+   */
   public function updateUtilisateurResetPassword(array $map): array
   {
     $sql = "UPDATE ma_moulinette.utilisateur

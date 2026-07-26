@@ -211,6 +211,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
   /**
    * [Description for updateBatchTraitementPending]
    *
+   * @param array<int|string, mixed> $map
    *
    * @return array<int|string, mixed>
    *
@@ -291,6 +292,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
   /**
    * [Description for insertBatchTraitement]
    *
+   * @param array<int|string, mixed> $map
    *
    * @return array<int|string, mixed>
    *
@@ -377,6 +379,7 @@ class BatchTraitementRepository extends ServiceEntityRepository
   /**
    * [Description for updatePortefeuille]
    *
+   * @param array<int|string, mixed> $map
    *
    * @return array<int|string, mixed>
    *
