@@ -261,9 +261,9 @@ class GenerateCodeStatsCommand extends Command
      * [Description for extractSqlRow]
      * Cherche n'importe quelle entrée dont le nom contient "sql" (insensible à la casse).
      *
-     * @param array $data
+     * @param array<int|string, array<string, mixed>> $data
      *
-     * @return array
+     * @return array{fichier: int, code: int, comment: int, vide: int, total: int}
      *
      * Created at: 22/07/2026 11:15:49 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -307,7 +307,7 @@ class GenerateCodeStatsCommand extends Command
      *
      * @param array<string, int>|null $row
      *
-     * @return array
+     * @return array{fichier: int, code: int, comment: int, vide: int, total: int}
      *
      * Created at: 22/07/2026 11:16:49 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

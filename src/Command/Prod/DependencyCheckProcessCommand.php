@@ -414,7 +414,7 @@ class DependencyCheckProcessCommand extends Command
      * [Description for printSummary]
      *
      * @param SymfonyStyle $io
-     * @param array $totals
+     * @param array{done: int, failed: int, requeued: int} $totals
      *
      * @return void
      *

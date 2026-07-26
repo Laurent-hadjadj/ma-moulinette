@@ -246,7 +246,7 @@ class CompareSonarMetricsCommand extends Command
      *
      * @param string $file
      *
-     * @return array
+     * @return array<string, array<string, mixed>>
      *
      * Created at: 25/03/2026 14:34:55 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -267,9 +267,9 @@ class CompareSonarMetricsCommand extends Command
     /**
      * [Description for computeStats]
      *
-     * @param array $metrics
+     * @param array<string, array<string, mixed>> $metrics
      *
-     * @return array
+     * @return array{total: int, public: int, hidden: int}
      *
      * Created at: 25/03/2026 14:34:57 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -317,11 +317,11 @@ class CompareSonarMetricsCommand extends Command
     /**
      * [Description for compareMetric]
      *
-     * @param array $m1
-     * @param array $m2
+     * @param array<string, mixed> $m1
+     * @param array<string, mixed> $m2
      * @param bool $ignoreId
      *
-     * @return array
+     * @return array<string, array{v1: mixed, v2: mixed}>
      *
      * Created at: 25/03/2026 14:35:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -363,7 +363,7 @@ class CompareSonarMetricsCommand extends Command
      * [Description for computeImpact]
      *
      * @param string $metricKey
-     * @param array $diff
+     * @param array<string, array{v1: mixed, v2: mixed}> $diff
      *
      * @return int
      *
@@ -462,7 +462,7 @@ class CompareSonarMetricsCommand extends Command
     /**
      * [Description for printLegacyMapping]
      *
-     * @param array $removed
+     * @param array<int, string> $removed
      * @param OutputInterface $output
      *
      * @return void
@@ -499,11 +499,11 @@ class CompareSonarMetricsCommand extends Command
     /**
      * [Description for computeDiff]
      *
-     * @param array $v1
-     * @param array $v2
+     * @param array<string, array<string, mixed>> $v1
+     * @param array<string, array<string, mixed>> $v2
      * @param bool $ignoreId
      *
-     * @return array
+     * @return array{added: array<int, string>, removed: array<int, string>, modified: array<string, array{diff: array<string, array{v1: mixed, v2: mixed}>, impact: int}>, impactScore: int}
      *
      * Created at: 25/03/2026 14:35:06 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -567,10 +567,10 @@ class CompareSonarMetricsCommand extends Command
     /**
      * [Description for filterAndSort]
      *
-     * @param array $modified
+     * @param array<string, array{diff: array<string, array{v1: mixed, v2: mixed}>, impact: int}> $modified
      * @param int $minImpact
      *
-     * @return array
+     * @return array<string, array{diff: array<string, array{v1: mixed, v2: mixed}>, impact: int}>
      *
      * Created at: 25/03/2026 14:35:10 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -626,7 +626,7 @@ class CompareSonarMetricsCommand extends Command
      * [Description for printSummary]
      *
      * @param SymfonyStyle $io
-     * @param array $result
+     * @param array{added: array<int, string>, removed: array<int, string>, modified: array<string, array{diff: array<string, array{v1: mixed, v2: mixed}>, impact: int}>, impactScore: int} $result
      *
      * @return void
      *
@@ -651,8 +651,8 @@ class CompareSonarMetricsCommand extends Command
      * [Description for printAdded]
      *
      * @param SymfonyStyle $io
-     * @param array $added
-     * @param array $metricsV2
+     * @param array<int, string> $added
+     * @param array<string, array<string, mixed>> $metricsV2
      *
      * @return void
      *
@@ -682,7 +682,7 @@ class CompareSonarMetricsCommand extends Command
      * [Description for printRemoved]
      *
      * @param SymfonyStyle $io
-     * @param array $removed
+     * @param array<int, string> $removed
      *
      * @return void
      *
@@ -702,7 +702,7 @@ class CompareSonarMetricsCommand extends Command
      * [Description for printModified]
      *
      * @param SymfonyStyle $io
-     * @param array $modified
+     * @param array<string, array{diff: array<string, array{v1: mixed, v2: mixed}>, impact: int}> $modified
      *
      * @return void
      *
@@ -813,7 +813,7 @@ class CompareSonarMetricsCommand extends Command
     /**
      * [Description for renderStaticSummary]
      *
-     * @param array $data
+     * @param array{source: string, target: string, stats1: array{total: int, public: int, hidden: int}, stats2: array{total: int, public: int, hidden: int}, added: int, removed: int, modified: int, impactScore: int} $data
      *
      * @return string
      *
@@ -874,7 +874,7 @@ MD;
     /**
      * [Description for renderJsonSummary]
      *
-     * @param array $data
+     * @param array{source: string, target: string, stats1: array{total: int, public: int, hidden: int}, stats2: array{total: int, public: int, hidden: int}, added: int, removed: int, modified: int, impactScore: int} $data
      *
      * @return string
      *
@@ -953,7 +953,7 @@ MD;
     /**
      * [Description for renderHtmlSummary]
      *
-     * @param array $data
+     * @param array{source: string, target: string, stats1: array{total: int, public: int, hidden: int}, stats2: array{total: int, public: int, hidden: int}, added: int, removed: int, modified: int, impactScore: int} $data
      *
      * @return string
      *
@@ -1042,7 +1042,7 @@ HTML;
      * [Description for printApiQueries]
      *
      * @param SymfonyStyle $io
-     * @param array $domains
+     * @param array<string, array<int, string>> $domains
      * @param mixed $sonarProjectKey
      *
      * @return void
@@ -1072,7 +1072,7 @@ HTML;
      * [Description for printMetricsByDomain]
      *
      * @param SymfonyStyle $io
-     * @param array $domains
+     * @param array<string, array<int, string>> $domains
      *
      * @return void
      *
@@ -1099,9 +1099,9 @@ HTML;
     /**
      * [Description for extractPublicMetricsByDomain]
      *
-     * @param array $metrics
+     * @param array<string, array<string, mixed>> $metrics
      *
-     * @return array
+     * @return array<string, array<int, string>>
      *
      * Created at: 25/03/2026 14:36:24 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

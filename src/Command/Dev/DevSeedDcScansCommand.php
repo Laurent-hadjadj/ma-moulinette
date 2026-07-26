@@ -277,8 +277,6 @@ class DevSeedDcScansCommand extends Command
      * @param ListeProjet[] $allProjets
      * @return ListeProjet[]
      *
-     * @return array
-     *
      * Created at: 11/05/2026 09:32:15 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.

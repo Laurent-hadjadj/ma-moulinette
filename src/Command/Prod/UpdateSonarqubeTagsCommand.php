@@ -481,6 +481,16 @@ class UpdateSonarqubeTagsCommand extends Command
     }
 
     /**
+     * Écriture du fichier de mapping — méthode protégée pour permettre le mock en tests.
+     *
+     * @param array<int, array<string, string>> $mapping
+     */
+    protected function writeMappingFile(string $path, array $mapping): void
+    {
+        file_put_contents($path, json_encode($mapping, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
+    }
+
+    /**
      * [Description for isArchivedProject]
      *
      * @param string $sonarUrl
@@ -497,16 +507,6 @@ class UpdateSonarqubeTagsCommand extends Command
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    /**
-     * Écriture du fichier de mapping — méthode protégée pour permettre le mock en tests.
-     *
-     * @param array<int, array<string, string>> $mapping
-     */
-    protected function writeMappingFile(string $path, array $mapping): void
-    {
-        file_put_contents($path, json_encode($mapping, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE));
-    }
-
     private function isArchivedProject(
         string $sonarUrl,
         string $auth,
