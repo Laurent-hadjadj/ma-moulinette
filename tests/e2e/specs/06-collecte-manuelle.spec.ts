@@ -53,10 +53,13 @@ test.describe('06 — Collecte manuelle', () => {
     await expect(collecteBtn).not.toHaveClass(/disabled-bouton/);
     await collecteBtn.click();
 
-    // La collecte enchaîne ~13 phases. JS log dans <textarea id="log"> via
+    // La collecte enchaîne ~14 phases. JS log dans <textarea id="log"> via
     // textarea.value += ... → on doit utiliser toHaveValue (textContent reste
     // vide pour les textareas, seule la propriété .value contient le log).
-    await expect(page.locator('#log')).toHaveValue(/\(13\) La collecte des données est terminée/, {
+    // Le numéro de phase n'est volontairement pas figé dans le pattern : il a
+    // déjà changé une fois (13 → 14 avec l'ajout de la collecte Actuator) et
+    // ce n'est pas ce que ce test vérifie.
+    await expect(page.locator('#log')).toHaveValue(/\(\d+\) La collecte des données est terminée/, {
       timeout: 90_000,
     });
 
