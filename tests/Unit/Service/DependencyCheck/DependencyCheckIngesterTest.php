@@ -127,7 +127,6 @@ class DependencyCheckIngesterTest extends TestCase
         $queue = $this->buildQueue($report);
         $scan = $this->ingester->ingest($queue);
 
-        $this->assertInstanceOf(DcScan::class, $scan);
         $this->assertSame('fr.ma-moulinette:ma-moulinette', $scan->getMavenKey());
         $this->assertSame('1.0', $scan->getProjectVersion());
         $this->assertSame(1, $scan->getDepCountTotal());
