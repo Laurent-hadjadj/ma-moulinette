@@ -70,7 +70,7 @@ class MaskSensitiveDataProcessor implements ProcessorInterface
      * [Description for maskSensitiveData]
      *
      * @param string $data
-     * @param array $patterns
+     * @param array<int, string> $patterns
      *
      * @return string
      *
@@ -91,10 +91,10 @@ class MaskSensitiveDataProcessor implements ProcessorInterface
     /**
      * [Description for maskSensitiveDataArray]
      *
-     * @param array $data
-     * @param array $patterns
+     * @param array<string, mixed> $data
+     * @param array<int, string> $patterns
      *
-     * @return array
+     * @return array<string, mixed>
      *
      * Created at: 05/02/2026 14:56:20 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

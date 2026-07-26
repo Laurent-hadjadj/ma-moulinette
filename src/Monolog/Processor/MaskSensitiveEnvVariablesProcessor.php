@@ -55,10 +55,10 @@ class MaskSensitiveEnvVariablesProcessor implements ProcessorInterface
     /**
      * [Description for maskSensitiveData]
      *
-     * @param array $data
-     * @param array $sensitivePrefixes
+     * @param array<int|string, mixed> $data
+     * @param array<int, string> $sensitivePrefixes
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 05/02/2026 14:56:36 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -80,7 +80,7 @@ class MaskSensitiveEnvVariablesProcessor implements ProcessorInterface
      * [Description for maskSensitiveMessage]
      *
      * @param string $message
-     * @param array $sensitivePrefixes
+     * @param array<int, string> $sensitivePrefixes
      *
      * @return string
      *
