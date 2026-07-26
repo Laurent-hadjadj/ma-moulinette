@@ -278,7 +278,7 @@ function setProjectTag(string $project_key, string $tag_value) {
  *
  * @param string $project_key
  *
- * @return array|null
+ * @return array{name: string, permissions: array<int, string>}|null
  *
  * Created at: 05/11/2025 10:24:56 (Europe/Paris)
  * @author     Laurent HADJADJ <laurent_h@me.com>
