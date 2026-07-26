@@ -97,6 +97,11 @@ class UserAgentEventRepositoryTest extends TestCase
 
     // ──── insertUserAgentEvent ────────────────────────────────────────────────
 
+    /**
+     * @return array{event_type: string, url: string, user_agent: string, session_id: string|null,
+     *              user_id: int|null, visitor_id: string, auth_state: string,
+     *              processing_status: string, ip_hash: string, created_at: \DateTimeImmutable}
+     */
     private function buildEventMap(): array
     {
         return [

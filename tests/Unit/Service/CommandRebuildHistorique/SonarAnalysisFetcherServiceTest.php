@@ -135,6 +135,9 @@ class SonarAnalysisFetcherServiceTest extends TestCase
         $this->assertSame([], $this->service->fetchAnalyses('fr.ma-moulinette:ma-moulinette'));
     }
 
+    /**
+     * @param array{key: string, date: string, projectVersion?: string, events?: array<int, array{category: string, name: string}>} $analysis
+     */
     #[DataProvider('versionExtractionProvider')]
     public function testFetchAnalysesExtractsVersionFromVariousSources(array $analysis, string $expectedVersion): void
     {
@@ -153,6 +156,9 @@ class SonarAnalysisFetcherServiceTest extends TestCase
         $this->assertSame($expectedVersion, $result[0]['version']);
     }
 
+    /**
+     * @return array<string, array{0: array{key: string, date: string, projectVersion?: string, events?: array<int, array{category: string, name: string}>}, 1: string}>
+     */
     public static function versionExtractionProvider(): array
     {
         return [
@@ -213,6 +219,10 @@ class SonarAnalysisFetcherServiceTest extends TestCase
         $this->assertNotContains('A_old_v1', $keys);
     }
 
+    /**
+     * @param array<int, array{version: string, date: string}>          $analyses
+     * @param array<int, array{release: int, snapshot: int, autre: int}> $expected
+     */
     #[DataProvider('versionTypeProvider')]
     public function testComputeVersionCountersTagsAnalysesByDetectedType(array $analyses, array $expected): void
     {
@@ -232,6 +242,9 @@ class SonarAnalysisFetcherServiceTest extends TestCase
         }
     }
 
+    /**
+     * @return array<string, array{0: array<int, array{version: string, date: string}>, 1: array<int, array{release: int, snapshot: int, autre: int}>}>
+     */
     public static function versionTypeProvider(): array
     {
         // Entrée : 1 release, 1 snapshot, 1 rc (autre), 1 sans suffixe (release)

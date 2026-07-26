@@ -161,7 +161,11 @@ class DependencyCheckPageControllerTest extends TestCase
             ->willReturnCallback(fn(string $attr): bool => $attr === 'ROLE_SECURITY_ANALYTICS');
     }
 
-    /** Stub un utilisateur non-analytics avec des groupes fonctionnels donnés. */
+    /**
+     * Stub un utilisateur non-analytics avec des groupes fonctionnels donnés.
+     *
+     * @param array<int, string> $groupes
+     */
     private function stubUser(array $groupes = []): void
     {
         $user = $this->createMock(Utilisateur::class);
@@ -176,6 +180,8 @@ class DependencyCheckPageControllerTest extends TestCase
      * dashboard() appelle appUser() (L601) avant la garde isAnalyticsMode(),
      * donc les deux doivent être stubés ensemble pour éviter le conflit sur
      * authChecker->isGranted().
+     *
+     * @param array<int, string> $groupes
      */
     private function stubAnalyticsWithUser(array $groupes = []): void
     {
@@ -187,7 +193,27 @@ class DependencyCheckPageControllerTest extends TestCase
             ->willReturnCallback(fn(string $attr): bool => $attr === 'ROLE_SECURITY_ANALYTICS');
     }
 
-    /** Retourne un mock DcScan avec les compteurs standards. */
+    /**
+     * Retourne un mock DcScan avec les compteurs standards.
+     *
+     * @param array{
+     *     id?: int,
+     *     group?: string,
+     *     artifact?: string,
+     *     version?: string,
+     *     scan_date?: \DateTimeImmutable,
+     *     parent_label?: ?string,
+     *     parent_version?: ?string,
+     *     archetype_version?: ?string,
+     *     dep_count_total?: int,
+     *     dep_count_vulnerable?: int,
+     *     cve_count_total?: int,
+     *     cve_count_critical?: int,
+     *     cve_count_high?: int,
+     *     cve_count_medium?: int,
+     *     cve_count_low?: int
+     * } $opts
+     */
     private function makeDcScan(array $opts = []): DcScan&MockObject
     {
         $scan = $this->createMock(DcScan::class);

@@ -35,6 +35,8 @@ class MesuresCaseTest extends TestCase
     /**
      * Liste des [setter/getter suffix, valeur a injecter] pour 104 attributs simples
      * (id, dateEnregistrement testes separement ci-dessous).
+     *
+     * @return iterable<string, array{0: string, 1: int|float|string}>
      */
     public static function attributesProvider(): iterable
     {

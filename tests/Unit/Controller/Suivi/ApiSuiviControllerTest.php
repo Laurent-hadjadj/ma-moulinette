@@ -873,6 +873,9 @@ class ApiSuiviControllerTest extends TestCase
         $this->tokenStorage->method('getToken')->willReturn($token);
     }
 
+    /**
+     * @param array<string, mixed>|string $body
+     */
     private function jsonRequest(array|string $body): Request
     {
         if (is_string($body)) {
@@ -885,6 +888,9 @@ class ApiSuiviControllerTest extends TestCase
         return new Request([], [], [], [], [], [], $content);
     }
 
+    /**
+     * @return array<string, string|int|float>
+     */
     private function buildSuiviPayload(): array
     {
         // Payload aligné sur les clés SonarQube (= colonnes DB historique).

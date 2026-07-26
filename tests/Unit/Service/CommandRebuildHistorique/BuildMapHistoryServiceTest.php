@@ -240,6 +240,9 @@ class BuildMapHistoryServiceTest extends TestCase
         $this->assertSame($expected, $result['coverage_rating']);
     }
 
+    /**
+     * @return array<string, array{0: ?float, 1: ?string}>
+     */
     public static function coverageRatingProvider(): array
     {
         return [
@@ -266,6 +269,9 @@ class BuildMapHistoryServiceTest extends TestCase
         $this->assertSame($expected, $result['duplicated_lines_rating']);
     }
 
+    /**
+     * @return array<string, array{0: ?float, 1: ?string}>
+     */
     public static function duplicationRatingProvider(): array
     {
         return [
@@ -290,6 +296,9 @@ class BuildMapHistoryServiceTest extends TestCase
         $this->assertSame($expected, $result['comment_lines_rating']);
     }
 
+    /**
+     * @return array<string, array{0: float, 1: string}>
+     */
     public static function commentDensityRatingProvider(): array
     {
         return [
@@ -315,6 +324,9 @@ class BuildMapHistoryServiceTest extends TestCase
         $this->assertSame($expected, $result['complexity_rating']);
     }
 
+    /**
+     * @return array<string, array{0: int, 1: int, 2: string}>
+     */
     public static function complexityRatingProvider(): array
     {
         // ratio = ncloc / complexity : un ratio FAIBLE = complexité dense (mauvais → E),
@@ -352,6 +364,9 @@ class BuildMapHistoryServiceTest extends TestCase
         $this->assertSame($expected, $result['reliability_rating']);
     }
 
+    /**
+     * @return array<string, array{0: string, 1: ?string}>
+     */
     public static function ratingToLetterProvider(): array
     {
         return [

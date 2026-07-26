@@ -206,6 +206,10 @@ class UtilisateurCrudControllerTest extends TestCase
         $this->controller->updateEntity($this->em, $user);
     }
 
+    /**
+     * @param array<int, array{groupe_utilisateur: string, description: string}> $groupesUtilisateur
+     * @param array<int, array{groupe_fonctionnel: string, description: string}> $groupesFonctionnels
+     */
     private function stubGroupesQueries(array $groupesUtilisateur = [], array $groupesFonctionnels = []): void
     {
         $statement = $this->createMock(Statement::class);

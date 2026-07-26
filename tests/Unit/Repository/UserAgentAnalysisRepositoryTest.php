@@ -94,6 +94,9 @@ class UserAgentAnalysisRepositoryTest extends TestCase
 
     // ──── insertUserAgentAnalysis ─────────────────────────────────────────────
 
+    /**
+     * @return array<string, mixed>
+     */
     private function buildAnalysisMap(bool $isBot = false): array
     {
         return [

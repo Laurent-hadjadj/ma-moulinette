@@ -120,6 +120,9 @@ class CleanCodeSyntheseControllerTest extends TestCase
 
     // ─── helpers ─────────────────────────────────────────────────────────────
 
+    /**
+     * @param array<int, string> $groupes
+     */
     private function makeUser(array $groupes): Utilisateur
     {
         $u = new Utilisateur();
@@ -128,6 +131,9 @@ class CleanCodeSyntheseControllerTest extends TestCase
         return $u;
     }
 
+    /**
+     * @return array{maven_key: string, project_name: string, version: string, date_enregistrement: string, alert_status: string, note_mnt: string, note_fia: string, note_sec: string, note_hsp: string, note_cpx: string, note_cpx_cog: string, violations: int, bugs: int, vulnerabilities: int, coverage: string, duplicated_lines_density: string, cc_consistent: int, cc_intentional: int, cc_adaptable: int, cc_responsible: int, impact_blocker: int, impact_high: int, impact_medium: int, impact_low: int, impact_info: int, owasp_top10: int}
+     */
     private function buildRow(string $mavenKey = 'fr.ma-moulinette:ma-moulinette'): array
     {
         return [

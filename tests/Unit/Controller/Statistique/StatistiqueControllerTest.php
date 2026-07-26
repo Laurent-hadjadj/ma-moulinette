@@ -110,6 +110,9 @@ class StatistiqueControllerTest extends TestCase
         $this->controller->setContainer($container);
     }
 
+    /**
+     * @param array<int, string> $groupes
+     */
     private function makeUser(array $groupes = ['TeamA']): Utilisateur
     {
         $user = new Utilisateur();
@@ -338,6 +341,9 @@ class StatistiqueControllerTest extends TestCase
 
     // ===== adminStats() =====
 
+    /**
+     * @param array<string, array<int, array{total: int}>> $overrides
+     */
     private function stubStatsQueries(array $overrides = []): void
     {
         $defaults = [

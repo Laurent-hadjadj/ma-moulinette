@@ -45,6 +45,9 @@ class UserAgentTrackerServiceTest extends TestCase
         );
     }
 
+    /**
+     * @param array<string, string> $cookies
+     */
     private function makeRequest(array $cookies = []): Request
     {
         $request = Request::create('/test', 'GET', [], $cookies);

@@ -80,6 +80,9 @@ class ClientTest extends TestCase
         ]);
     }
 
+    /**
+     * @param array<int, mixed> $parameters
+     */
     private function invokePrivateMethod(string $methodName, array $parameters = []): mixed
     {
         $reflection = new \ReflectionMethod(ClientService::class, $methodName);
@@ -200,6 +203,9 @@ class ClientTest extends TestCase
         $this->assertSame(self::${$expectedKey}, $result['erreur']);
     }
 
+    /**
+     * @return iterable<string, array{0: int, 1: string}>
+     */
     public static function clientExceptionCodesProvider(): iterable
     {
         yield '400' => [400, 'erreur400'];
@@ -236,6 +242,9 @@ class ClientTest extends TestCase
         $this->assertSame(self::${$expectedKey}, $result['erreur']);
     }
 
+    /**
+     * @return iterable<string, array{0: int, 1: string}>
+     */
     public static function serverExceptionCodesProvider(): iterable
     {
         yield '500' => [500, 'erreur500'];

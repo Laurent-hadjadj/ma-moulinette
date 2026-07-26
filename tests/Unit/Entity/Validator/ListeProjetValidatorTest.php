@@ -25,6 +25,7 @@ class ListeProjetValidatorTest extends KernelTestCase
 
   private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
   private static string $name = 'Ma-Moulinette';
+  /** @var array<int, string> */
   private static array $tags = ['ma-moulinette', '2048'];
   private static string $visibility = 'private';
   private static string $dateEnregistrement = '2024-04-12 16:23:11';

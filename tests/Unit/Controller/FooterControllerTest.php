@@ -100,6 +100,9 @@ class FooterControllerTest extends TestCase
         $this->assertSame('<html>' . $template . '</html>', $response->getContent());
     }
 
+    /**
+     * @return array<string, array{0: string, 1: string}>
+     */
     public static function routeProvider(): array
     {
         return [

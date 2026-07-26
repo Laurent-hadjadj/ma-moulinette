@@ -96,6 +96,10 @@ class UserRoleLogControllerTest extends TestCase
         $this->controller->setContainer($container);
     }
 
+    /**
+     * @return array{id: int, user_email: string, editor_email: string, old_roles: string,
+     *     new_roles: string, old_active: bool, new_active: bool, alerts: string, created_at: string}
+     */
     private function ligneBrute(int $id = 1): array
     {
         return [

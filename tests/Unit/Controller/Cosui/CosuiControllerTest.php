@@ -274,6 +274,9 @@ class CosuiControllerTest extends TestCase
         $this->controller->projetCosui(new Request(['token' => $this->validToken]));
     }
 
+    /**
+     * @param array<int, string> $groupes
+     */
     private function makeUser(array $groupes): Utilisateur
     {
         $u = new Utilisateur();

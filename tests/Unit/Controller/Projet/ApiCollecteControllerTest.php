@@ -173,6 +173,9 @@ class ApiCollecteControllerTest extends TestCase
         $this->assertJsonStatus($response, 403, 'warning');
     }
 
+    /**
+     * @return array<string, array{0: string}>
+     */
     public static function endpointsProvider(): array
     {
         return [
@@ -571,11 +574,17 @@ class ApiCollecteControllerTest extends TestCase
 
     // ═════════════ helpers ═════════════════════════════════════════════════
 
+    /**
+     * @param array<string, string> $body
+     */
     private function jsonRequest(array $body): Request
     {
         return new Request([], [], [], [], [], [], json_encode($body, JSON_FORCE_OBJECT));
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function decode(JsonResponse $response): array
     {
         return json_decode($response->getContent(), true);

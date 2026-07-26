@@ -203,6 +203,9 @@ class ProjetControllerTest extends TestCase
         $this->assertSame('App', $capturedCtx['liste_projet'][0]['nom']);
     }
 
+    /**
+     * @param array<int, string> $groupes
+     */
     private function makeUser(array $groupes): Utilisateur
     {
         $u = new Utilisateur();

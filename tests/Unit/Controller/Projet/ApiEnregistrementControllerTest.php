@@ -196,6 +196,9 @@ class ApiEnregistrementControllerTest extends TestCase
 
     /* ============ helpers ============ */
 
+    /**
+     * @param array<string, mixed>|string $body
+     */
     private function jsonRequest(array|string $body): Request
     {
         if (is_string($body)) {
@@ -263,6 +266,9 @@ class ApiEnregistrementControllerTest extends TestCase
         return $u;
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function buildPayload(): array
     {
         // Payload aligné sur les clés SonarQube (= colonnes DB historique).

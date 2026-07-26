@@ -354,6 +354,9 @@ class ApiRepartitionControllerTest extends TestCase
 
     /* ============ helper ============ */
 
+    /**
+     * @param array<int|string, mixed>|string $body
+     */
     private function jsonRequest(array|string $body): Request
     {
         if (is_string($body)) {

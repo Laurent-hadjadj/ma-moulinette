@@ -603,6 +603,9 @@ class ApiOwaspPeintureControllerTest extends TestCase
 
     // ═══════════════════════ helpers ═══════════════════════════════════════
 
+    /**
+     * @param array<string, mixed> $body
+     */
     private function jsonRequest(array $body): Request
     {
         // JSON_FORCE_OBJECT assure que $body vide => "{}" et non "[]",
@@ -610,6 +613,9 @@ class ApiOwaspPeintureControllerTest extends TestCase
         return new Request([], [], [], [], [], [], json_encode($body, JSON_FORCE_OBJECT));
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function decode(JsonResponse $response): array
     {
         return json_decode($response->getContent(), true);
@@ -627,6 +633,8 @@ class ApiOwaspPeintureControllerTest extends TestCase
     /**
      * Ligne OWASP complète avec a1..a10 = 1..10,
      * severity suffixes _blocker=1, _critical=2, _major=3, _minor=4.
+     *
+     * @return array<string, int|string>
      */
     private function buildOwaspRow(): array
     {

@@ -61,6 +61,10 @@ final class ListeProjetRepositoryStaticTest extends TestCase
         self::assertSame(['team-a'], $result);
     }
 
+    /**
+     * @param array<int|string, mixed> $input
+     * @param array<int, string>       $expected
+     */
     #[DataProvider('mixedInputProvider')]
     public function testNormalizesMixedInputs(array $input, array $expected): void
     {

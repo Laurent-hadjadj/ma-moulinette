@@ -423,6 +423,9 @@ class PdfExportServiceTest extends TestCase
         $this->assertGreaterThan(1000, strlen($pdf));
     }
 
+    /**
+     * @param array<int, BatchExecutionJournal> $collectes
+     */
     private function buildBatchExecutionMock(
         array $collectes = [],
         int $id = 1,

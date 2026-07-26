@@ -529,6 +529,9 @@ class SuiviControllerTest extends TestCase
         $this->assertSame('%PDF-1.4 contenu factice', $response->getContent());
     }
 
+    /**
+     * @param array<int, string> $groupes
+     */
     private function makeUser(array $groupes): Utilisateur
     {
         $u = new Utilisateur();

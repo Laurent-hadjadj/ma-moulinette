@@ -224,6 +224,9 @@ class ApiProjetControllerTest extends TestCase
 
     /* ============ helpers ============ */
 
+    /**
+     * @param array<string, mixed>|string $body
+     */
     private function jsonRequest(array|string $body): Request
     {
         if (is_string($body)) {
@@ -236,6 +239,9 @@ class ApiProjetControllerTest extends TestCase
         return new Request([], [], [], [], [], [], $content);
     }
 
+    /**
+     * @param array<int, string> $groupes
+     */
     private function makeUser(string $courriel, array $groupes): Utilisateur
     {
         $u = new Utilisateur();

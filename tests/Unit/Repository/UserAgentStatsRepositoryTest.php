@@ -34,7 +34,11 @@ use PHPUnit\Framework\TestCase;
 #[AllowMockObjectsWithoutExpectations]
 class UserAgentStatsRepositoryTest extends TestCase
 {
-    /** Crée un repo dont prepare() renvoie toujours la même réponse (1 seul prepare). */
+    /**
+     * Crée un repo dont prepare() renvoie toujours la même réponse (1 seul prepare).
+     *
+     * @param array<int, array<string, mixed>>|\Throwable $rowsOrException
+     */
     private function buildRepo(array|\Throwable $rowsOrException): UserAgentStatsRepository
     {
         $connection = $this->createStub(Connection::class);
@@ -59,7 +63,12 @@ class UserAgentStatsRepositoryTest extends TestCase
         return new UserAgentStatsRepository($registry);
     }
 
-    /** Crée un repo avec deux résultats distincts pour deux prepare() consécutifs. */
+    /**
+     * Crée un repo avec deux résultats distincts pour deux prepare() consécutifs.
+     *
+     * @param array<int|string, mixed> $firstResult   ligne unique (fetchAssociative) si $firstIsAssoc, sinon liste de lignes (fetchAllAssociative)
+     * @param array<int, array<string, mixed>> $secondResult liste de lignes (fetchAllAssociative)
+     */
     private function buildRepoTwoPrepares(
         array $firstResult,
         bool $firstIsAssoc,
@@ -92,6 +101,9 @@ class UserAgentStatsRepositoryTest extends TestCase
         return new UserAgentStatsRepository($registry);
     }
 
+    /**
+     * @return array{0: \DateTimeImmutable, 1: \DateTimeImmutable}
+     */
     private function makeDates(): array
     {
         return [

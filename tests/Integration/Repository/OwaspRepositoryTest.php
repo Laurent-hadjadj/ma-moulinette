@@ -32,11 +32,23 @@ class OwaspRepositoryTest extends KernelTestCase
     private static string $version = '1.2.0-RELEASE';
     private static string $dateVersion = '2024-07-10 15:26:07+02';
     private static int $effortTotal = 0;
+
+    /** @var array<int, int> */
     private static array $a = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+    /** @var array<int, int> */
     private static array $aBlocker = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+    /** @var array<int, int> */
     private static array $aCritical = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+    /** @var array<int, int> */
     private static array $aMajor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+    /** @var array<int, int> */
     private static array $aInfo = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+
+    /** @var array<int, int> */
     private static array $aMinor = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     private static string $modeCollecte = 'TRAITEMENT MANUEL';
     private static string $utilisateurCollecte = 'laurent.hadjadj@ma-moulinette.fr';

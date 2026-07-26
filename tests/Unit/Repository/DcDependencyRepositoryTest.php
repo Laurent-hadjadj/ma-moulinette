@@ -260,6 +260,11 @@ class DcDependencyRepositoryTest extends TestCase
     /* MODIF 2026-07-22 : régression troncature silencieuse — la requête
      * demande hardLimit+1 lignes pour détecter si le parc dépasse la limite. */
 
+    /**
+     * @return array{pkg_coordinates: string, file_name: string, vendor: string, product: string,
+     *     version: string, nb_projets: string, nb_cves: string, nb_critical: string,
+     *     nb_high: string, nb_medium: string, nb_low: string, nb_archetypes_distincts: string}
+     */
     private function buildDependencyRow(string $product): array
     {
         return [

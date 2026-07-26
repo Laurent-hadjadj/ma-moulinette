@@ -198,6 +198,9 @@ class ResetPasswordControllerTest extends TestCase
 
     /* ============ helpers ============ */
 
+    /**
+     * @param array<int|string, mixed>|string $body
+     */
     private function jsonRequest(array|string $body): Request
     {
         if (is_string($body)) {

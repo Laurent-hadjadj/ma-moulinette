@@ -530,6 +530,9 @@ class BatchControllerTest extends TestCase
         return $j;
     }
 
+    /**
+     * @param array<string, mixed>|string $body
+     */
     private function jsonRequest(array|string $body): Request
     {
         $content = is_string($body) ? $body : json_encode($body, JSON_FORCE_OBJECT);

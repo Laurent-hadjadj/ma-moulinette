@@ -425,11 +425,22 @@ class PreferenceControllerTest extends TestCase
 
     // ═════════════════════ helpers ═════════════════════════════════════════
 
+    /**
+     * @param array<string, mixed> $body
+     */
     private function jsonRequest(array $body): Request
     {
         return new Request([], [], [], [], [], [], json_encode($body, JSON_FORCE_OBJECT));
     }
 
+    /**
+     * @return array{
+     *     statut: array{suivi_projet: string, favori_projet: string, favori_version: string},
+     *     suivi_projet: array<int, mixed>,
+     *     favori_projet: array<int, mixed>,
+     *     favori_version: array<int, mixed>,
+     * }
+     */
     private function buildBasePreferences(): array
     {
         // Note : 'bookmark' retiré des préférences (refacto 2026-04, impact entité Utilisateur + fixtures)

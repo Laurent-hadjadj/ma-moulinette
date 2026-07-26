@@ -728,6 +728,9 @@ class ApiPeintureControllerTest extends TestCase
     /* MODIF 2026-05-24 : migration terminée — toutes les méthodes
      * retournent désormais 'error' (plus de 'alert'). Colonne expectedType400 unifiée.
      */
+    /**
+     * @return array<string, array{0: string, 1: string}>
+     */
     public static function methodsWithValidation(): array
     {
         return [
@@ -869,11 +872,17 @@ class ApiPeintureControllerTest extends TestCase
 
     // ═══════════════════════ helpers ═══════════════════════════════════════
 
+    /**
+     * @param array<string, string> $body
+     */
     private function jsonRequest(array $body): Request
     {
         return new Request([], [], [], [], [], [], json_encode($body, JSON_FORCE_OBJECT));
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     private function decode(JsonResponse $response): array
     {
         return json_decode($response->getContent(), true);

@@ -323,6 +323,9 @@ class UtilisateurRepositoryTest extends TestCase
 
     /* ============ helpers ============ */
 
+    /**
+     * @return array<string, mixed>
+     */
     private function buildValidPreference(): array
     {
         return [

@@ -27,6 +27,8 @@ class HistoriqueCaseTest extends TestCase
     /**
      * Liste des [setter/getter suffix, valeur a injecter] pour 131 attributs simples.
      * `initial` (bool) et `dateEnregistrement` (DateTimeImmutable) sont testes a part.
+     *
+     * @return iterable<string, array{0: string, 1: mixed}>
      */
     public static function attributesProvider(): iterable
     {

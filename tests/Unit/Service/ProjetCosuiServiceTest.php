@@ -376,6 +376,16 @@ class ProjetCosuiServiceTest extends TestCase
 
     // ─────────────────────────── fixtures ───────────────────────────
 
+    /**
+     * @return array{
+     *     name: string, version: string, date_version: string,
+     *     note_reliability: string, note_security: string, note_hotspot: string, note_sqale: string,
+     *     bug_blocker: int, bug_critical: int, bug_major: int,
+     *     vulnerability_blocker: int, vulnerability_critical: int, vulnerability_major: int,
+     *     code_smell_blocker: int, code_smell_critical: int, code_smell_major: int,
+     *     nombre_hotspot: int, coverage: int, sqale_debt_ratio: int
+     * }
+     */
     private function sampleNotesRow(): array
     {
         return [
@@ -401,6 +411,16 @@ class ProjetCosuiServiceTest extends TestCase
         ];
     }
 
+    /**
+     * @return array{
+     *     version: string, date_version: string,
+     *     note_reliability: string, note_security: string, note_hotspot: string, note_sqale: string,
+     *     bug_blocker: int, bug_critical: int, bug_major: int,
+     *     vulnerability_blocker: int, vulnerability_critical: int, vulnerability_major: int,
+     *     code_smell_blocker: int, code_smell_critical: int, code_smell_major: int,
+     *     nombre_hotspot: int, coverage: int, sqale_debt_ratio: int
+     * }
+     */
     private function sampleReferenceRow(): array
     {
         return [

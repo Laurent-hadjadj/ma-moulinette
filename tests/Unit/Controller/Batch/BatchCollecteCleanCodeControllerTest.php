@@ -269,6 +269,16 @@ class BatchCollecteCleanCodeControllerTest extends TestCase
 
     // ─── helpers ─────────────────────────────────────────────────────────────
 
+    /**
+     * @param array<int, array{val: string, count: int}> $ccCounts
+     * @param array<int, array{val: string, count: int}> $severityCounts
+     * @param array<int, array{val: string, count: int}> $qualityCounts
+     *
+     * @return array{
+     *     paging: array{total: int},
+     *     facets: array<int, array{property: string, values: array<int, array{val: string, count: int}>}>,
+     * }
+     */
     private function buildMainFacetsPayload(
         int $total = 10,
         array $ccCounts = [],

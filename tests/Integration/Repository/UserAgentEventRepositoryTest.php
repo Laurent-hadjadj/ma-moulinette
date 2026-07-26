@@ -63,6 +63,20 @@ class UserAgentEventRepositoryTest extends KernelTestCase
         return $this->em->getRepository(UserAgentEvent::class);
     }
 
+    /**
+     * @return array{
+     *     event_type: string,
+     *     url: string,
+     *     user_agent: string,
+     *     session_id: string,
+     *     user_id: int,
+     *     visitor_id: string,
+     *     auth_state: string,
+     *     processing_status: string,
+     *     ip_hash: string,
+     *     created_at: \DateTimeImmutable,
+     * }
+     */
     private function buildEventMap(): array
     {
         return [

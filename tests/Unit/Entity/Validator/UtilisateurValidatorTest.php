@@ -33,10 +33,13 @@ class UtilisateurValidatorTest extends KernelTestCase
     public static string $courriel = 'laurent.hadjadj@ma-moulinette.fr';
     public static string $pass = '$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K';
     public static bool $actif = true;
+    /** @var array<int, string> */
     public static array $roles = ["ROLE_GESTIONNAIRE"];
     public static string $groupeUtilisateur = 'admin';
     public static string $groupeId = '01HK7XMKQGM3F5XZJ4S6T7VWE2';
+    /** @var array<int, string> */
     public static array $listeGroupeFonctionnel = [];
+    /** @var array<int, string> */
     public static array $preference = ['{
         "statut":{"projet":false,"favori":false,"version":false},
         "projet":[],"favori":[],"version":[]}'];
@@ -63,6 +66,9 @@ class UtilisateurValidatorTest extends KernelTestCase
             ->setDateEnregistrement(new \DateTimeImmutable(self::$dateEnregistrement));
     }
 
+    /**
+     * @param array<int, string>|null $groups
+     */
     public function assertHasErrors(Utilisateur $entity, int $number = 0, ?array $groups = ['default']): void
     {
         self::bootKernel();

@@ -80,7 +80,7 @@ class RepartitionRepositoryTest extends KernelTestCase
     /**
      * [Description for buildCompleteMap]
      *
-     * @return array
+     * @return array<string, mixed>
      *
      * Created at: 06/07/2025 12:07:16 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

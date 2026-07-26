@@ -22,6 +22,7 @@ class PortefeuilleValidatorTest extends KernelTestCase
 
   private static string $portefeuille = 'MES PROJETS';
   private static string $groupeFonctionnel = 'MA PETITE ENTREPRISE';
+  /** @var array<int, string> */
   private static array $liste =  ['fr.ma-moulinette:ma-moulinette'];
   private static string $dateModification = '2024-03-26 14:46:38+01';
   private static string $dateEnregistrement = '2024-03-25 12:26:58+01';

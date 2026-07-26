@@ -309,6 +309,9 @@ class ActuatorControllerTest extends TestCase
 
     /* ============ completerUrlActuator / urlActuatorEstJoignable ============ */
 
+    /**
+     * @param array<int, mixed> $parameters
+     */
     private function invokePrivateMethod(string $methodName, array $parameters = []): mixed
     {
         $reflection = new \ReflectionMethod(ActuatorController::class, $methodName);
@@ -345,6 +348,9 @@ class ActuatorControllerTest extends TestCase
         $this->assertTrue($this->invokePrivateMethod('urlActuatorEstJoignable', ['http://app/actuator/info']));
     }
 
+    /**
+     * @return array<string, array{0: int}>
+     */
     public static function joignableCodesProvider(): array
     {
         return [
@@ -366,6 +372,9 @@ class ActuatorControllerTest extends TestCase
         $this->assertFalse($this->invokePrivateMethod('urlActuatorEstJoignable', ['http://app/actuator/info']));
     }
 
+    /**
+     * @return array<string, array{0: int}>
+     */
     public static function injoignableCodesProvider(): array
     {
         return [

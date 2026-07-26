@@ -43,6 +43,9 @@ class RepartitionCaseTest extends TestCase
         return $names;
     }
 
+    /**
+     * @return iterable<string, array{0: string, 1: int|string}>
+     */
     public static function attributesProvider(): iterable
     {
         // Identification

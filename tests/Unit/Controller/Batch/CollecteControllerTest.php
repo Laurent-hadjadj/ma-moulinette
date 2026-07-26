@@ -526,6 +526,20 @@ class CollecteControllerTest extends TestCase
         ]);
     }
 
+    /**
+     * @return array{
+     *     code: int,
+     *     message: string,
+     *     historique: array{
+     *         analyse_key: string,
+     *         version: string,
+     *         date_version: string,
+     *         version_release: int, version_snapshot: int, version_autre: int,
+     *         version_release_sonar: int, version_snapshot_sonar: int,
+     *         version_autre_sonar: int, version_sonar: int,
+     *     },
+     * }
+     */
     private function stubInfoHappy(): array
     {
         return [
@@ -543,6 +557,14 @@ class CollecteControllerTest extends TestCase
     }
 
     // MODIF 2026-06-07 : historique complété (~80 clés lues par CollecteController:305-385)
+    /**
+     * @return array{
+     *     code: int,
+     *     message: string,
+     *     data: array{maven_key: string},
+     *     historique: array<string, int|float|string>,
+     * }
+     */
     private function stubMesureHappy(): array
     {
         return [
@@ -601,6 +623,14 @@ class CollecteControllerTest extends TestCase
         ];
     }
 
+    /**
+     * @return array{
+     *     code: int,
+     *     message: string,
+     *     data: array<string, int|string>,
+     *     historique: array<string, int>,
+     * }
+     */
     private function stubAnomalieHappy(): array
     {
         return [
@@ -618,6 +648,9 @@ class CollecteControllerTest extends TestCase
         ];
     }
 
+    /**
+     * @return array{code: int, message: string, historique: array<string, int>}
+     */
     private function stubAnomalieDetailHappy(): array
     {
         $historique = [];
@@ -632,6 +665,9 @@ class CollecteControllerTest extends TestCase
         ];
     }
 
+    /**
+     * @return array{code: int, message: string, historique: array{hotspot_high: int, hotspot_medium: int, hotspot_low: int, nombre_hotspot: int}}
+     */
     private function stubHotspotHappy(): array
     {
         return [
@@ -644,6 +680,22 @@ class CollecteControllerTest extends TestCase
     }
 
     // MODIF 2026-06-07 : renommage review_→to_review_ (CollecteController:604-608)
+    /**
+     * @return array{
+     *     code: int,
+     *     message: string,
+     *     nombre: int,
+     *     historique: array{
+     *         menace_potentielle_totale: int,
+     *         menace_potentielle_to_review_high: int,
+     *         menace_potentielle_to_review_medium: int,
+     *         menace_potentielle_to_review_low: int,
+     *         menace_potentielle_reviewed_high: int,
+     *         menace_potentielle_reviewed_medium: int,
+     *         menace_potentielle_reviewed_low: int,
+     *     },
+     * }
+     */
     private function stubHotspotDetailHappy(): array
     {
         return [

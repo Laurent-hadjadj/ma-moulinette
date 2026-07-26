@@ -179,6 +179,9 @@ class ChangeMeControllerTest extends TestCase
 
     /* ============ helpers ============ */
 
+    /**
+     * @param array<string, mixed>|string $body
+     */
     private function jsonRequest(array|string $body): Request
     {
         if (is_string($body)) {

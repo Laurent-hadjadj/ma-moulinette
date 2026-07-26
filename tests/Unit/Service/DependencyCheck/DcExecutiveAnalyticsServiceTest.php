@@ -37,6 +37,8 @@ class DcExecutiveAnalyticsServiceTest extends TestCase
     /**
      * Builder de finding pour réduire le bruit dans les tests.
      *
+     * @param array<string, mixed> $overrides
+     *
      * @return array<string, mixed>
      */
     private function f(array $overrides = []): array

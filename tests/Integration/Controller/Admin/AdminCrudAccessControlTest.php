@@ -42,6 +42,9 @@ class AdminCrudAccessControlTest extends WebTestCase
         $this->em     = static::getContainer()->get(EntityManagerInterface::class);
     }
 
+    /**
+     * @param array<int, string> $roles
+     */
     private function loginWithRoles(array $roles): Utilisateur
     {
         $user = $this->em->getRepository(Utilisateur::class)->findOneBy(['courriel' => self::MEL]);

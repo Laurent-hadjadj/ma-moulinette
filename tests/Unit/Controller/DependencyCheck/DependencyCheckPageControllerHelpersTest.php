@@ -85,6 +85,9 @@ class DependencyCheckPageControllerHelpersTest extends TestCase
         );
     }
 
+    /**
+     * @param array<int, mixed> $args
+     */
     private function callPrivate(string $method, array $args = []): mixed
     {
         return (new ReflectionMethod($this->controller, $method))

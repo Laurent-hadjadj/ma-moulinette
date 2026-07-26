@@ -108,6 +108,9 @@ class BatchCollecteActuatorControllerTest extends TestCase
         $this->assertTrue($result['fatal']);
     }
 
+    /**
+     * @return array<string, array{0: int}>
+     */
     public static function repositoryErrorCodesProvider(): array
     {
         return [
@@ -244,6 +247,9 @@ class BatchCollecteActuatorControllerTest extends TestCase
         $this->assertArrayHasKey('date_extraction', $result['json']);
     }
 
+    /**
+     * @return array<int, array{0: int}>
+     */
     public static function httpErrorCodesProvider(): array
     {
         return [

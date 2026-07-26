@@ -62,6 +62,23 @@ class UserAgentAnalysisRepositoryTest extends KernelTestCase
         return $this->em->getRepository(UserAgentAnalysis::class);
     }
 
+    /**
+     * @return array{
+     *     event_type: string,
+     *     url: string,
+     *     session_id: string,
+     *     user_id: int,
+     *     visitor_id: string,
+     *     device_type: string,
+     *     os_name: string,
+     *     os_version: string,
+     *     browser_name: string,
+     *     browser_version: string,
+     *     is_bot: bool,
+     *     detector_version: string,
+     *     created_at: \DateTimeImmutable
+     * }
+     */
     private function buildAnalysisMap(bool $isBot = false): array
     {
         return [

@@ -27,6 +27,8 @@ class OwaspCaseTest extends TestCase
     /**
      * Liste des [setter/getter suffix, valeur a injecter] pour 65 attributs simples.
      * id, referentialOwasp, dateVersion, dateEnregistrement testes a part.
+     *
+     * @return iterable<string, array{0: string, 1: string|int}>
      */
     public static function attributesProvider(): iterable
     {

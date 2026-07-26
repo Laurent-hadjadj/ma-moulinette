@@ -267,6 +267,9 @@ class ProfilingApiControllerTest extends TestCase
 
     /* ============ helper ============ */
 
+    /**
+     * @param array<string, string>|string $body
+     */
     private function jsonRequest(array|string $body): Request
     {
         $content = is_string($body) ? $body : json_encode($body, JSON_FORCE_OBJECT);

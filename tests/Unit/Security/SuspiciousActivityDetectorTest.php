@@ -241,6 +241,9 @@ class SuspiciousActivityDetectorTest extends TestCase
         );
     }
 
+    /**
+     * @param array<int, string> $roles
+     */
     private function makeUser(string $courriel, array $roles): Utilisateur
     {
         $u = new Utilisateur();

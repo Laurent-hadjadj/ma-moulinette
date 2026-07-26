@@ -125,6 +125,9 @@ class BatchCollecteOwaspControllerTest extends TestCase
         $this->assertSame(['code' => $httpCode, 'erreur' => "HTTP $httpCode"], $result);
     }
 
+    /**
+     * @return array<int, array{0: int}>
+     */
     public static function httpErrorCodesProvider(): array
     {
         return [[400], [401], [500], [503]];
@@ -575,6 +578,11 @@ class BatchCollecteOwaspControllerTest extends TestCase
     /**
      * Construit un payload SonarQube /api/issues/search minimal exploitable
      * par le controller.
+     *
+     * @param array<int, array{val: string, count: int}>                       $facets
+     * @param array<int, array{status: string, severity: string, tags: array<int, string>}> $issues
+     *
+     * @return array{total: int, effortTotal: int, facets: array<int, array{values: array<int, array{val: string, count: int}>}>, issues: array<int, array{status: string, severity: string, tags: array<int, string>}>}
      */
     private function buildOwaspPayload(int $total = 0, array $facets = [], array $issues = []): array
     {

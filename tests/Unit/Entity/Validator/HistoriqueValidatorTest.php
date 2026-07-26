@@ -80,6 +80,8 @@ class HistoriqueValidatorTest extends KernelTestCase
 
     /**
      * Liste des setters int contraints par PositiveOrZero (>= 0).
+     *
+     * @return iterable<string, array{0: string}>
      */
     public static function positiveOrZeroIntProvider(): iterable
     {
@@ -210,6 +212,8 @@ class HistoriqueValidatorTest extends KernelTestCase
 
     /**
      * Floats contraints par PositiveOrZero (>= 0).
+     *
+     * @return iterable<string, array{0: string}>
      */
     public static function positiveOrZeroFloatProvider(): iterable
     {
@@ -235,6 +239,8 @@ class HistoriqueValidatorTest extends KernelTestCase
 
     /**
      * Floats contraints par Range(0, 100).
+     *
+     * @return iterable<string, array{0: string}>
      */
     public static function rangeFloatProvider(): iterable
     {
@@ -268,6 +274,8 @@ class HistoriqueValidatorTest extends KernelTestCase
 
     /**
      * Strings contraints par Choice(A..E).
+     *
+     * @return iterable<string, array{0: string}>
      */
     public static function choiceRatingProvider(): iterable
     {
