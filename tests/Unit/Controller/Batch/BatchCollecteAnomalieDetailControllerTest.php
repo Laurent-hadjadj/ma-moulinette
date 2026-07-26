@@ -180,6 +180,31 @@ class BatchCollecteAnomalieDetailControllerTest extends TestCase
         $this->assertSame(2, $capturedInsert['bug_blocker']);
     }
 
+    // ─── facets structurellement absent alors que paging.total > 0 (MODIF 2026-07-26) ─
+    // Cas réel observé en e2e : total > 0 mais facets: [] (pas même de facets[0]).
+    // Avant fix : $results['BUG']['facets'][0] plantait (Undefined array key 0 →
+    // ErrorException fatale).
+    public function testDoesNotCrashWhenFacetsArrayIsStructurallyEmpty(): void
+    {
+        $this->client->expects($this->exactly(3))
+            ->method('httpSonarQube')
+            ->willReturn([
+                'code' => 200,
+                'json' => ['paging' => ['total' => 132], 'facets' => []],
+            ]);
+
+        $this->repo->method('deleteAnomalieDetailsMavenKey')->willReturn(['code' => 200]);
+        $this->repo->expects($this->once())
+            ->method('insertAnomalieDetail')
+            ->willReturn(['code' => 200]);
+
+        $result = $this->controller->BatchCollecteAnomalieDetail(self::MAVEN_KEY, 'auto', 'u');
+
+        $this->assertSame(200, $result['code']);
+        $this->assertSame(0, $result['historique']['bug_blocker']);
+        $this->assertSame(0, $result['historique']['code_smell_info']);
+    }
+
     public function testReturnsErrorWhenInsertFails(): void
     {
         $this->client->method('httpSonarQube')->willReturn([
