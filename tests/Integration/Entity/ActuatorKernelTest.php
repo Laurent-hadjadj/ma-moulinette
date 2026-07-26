@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Entity;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use App\DataFixtures\ActuatorFixtures;
 use App\Entity\Actuator;
@@ -32,7 +33,7 @@ class ActuatorKernelTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Réinitialiser la séquence
         $connection = $entityManager->getConnection();
@@ -53,19 +54,19 @@ class ActuatorKernelTest extends KernelTestCase
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $actuatorRepository = $entityManager->getRepository(Actuator::class);
         $response = $actuatorRepository->findOneBy(['mavenKey' => self::$mavenKey, 'nomApplication' => self::$nomApplication]);
 
-        $this->assertCount(1, [$response], 'Maven_Key: Aucune réponse trouvée');
+        $this->assertNotNull($response, 'Maven_Key: Aucune réponse trouvée');
     }
 
     public function testActuatorCount(): void
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $actuatorRepository = $entityManager->getRepository(Actuator::class);
         $response = $actuatorRepository->findAll();

@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Entity;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use App\DataFixtures\MaMoulinetteFixtures;
 use App\Entity\MaMoulinette;
@@ -31,7 +32,7 @@ class MaMoulinetteKernelTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Réinitialiser la séquence
         $connection = $entityManager->getConnection();
@@ -51,11 +52,11 @@ class MaMoulinetteKernelTest extends KernelTestCase
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $maMoulinetteRepository = $entityManager->getRepository(MaMoulinette::class);
         $response = $maMoulinetteRepository->findOneBy(['version' => self::$version]);
 
-        $this->assertCount(1, [$response], 'VERSION: Aucune réponse trouvée');
+        $this->assertNotNull($response, 'VERSION: Aucune réponse trouvée');
     }
 }

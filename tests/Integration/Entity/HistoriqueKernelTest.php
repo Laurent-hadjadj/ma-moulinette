@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Entity;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use App\DataFixtures\HistoriqueFixtures;
 use App\Entity\Historique;
@@ -31,7 +32,7 @@ class HistoriqueKernelTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Il n'y a pas de séquence pour cette table car on utilise une clé composite
 
@@ -44,19 +45,19 @@ class HistoriqueKernelTest extends KernelTestCase
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $historiqueRepository = $entityManager->getRepository(Historique::class);
         $response = $historiqueRepository->findOneBy(['mavenKey' => self::$mavenKey]);
 
-        $this->assertCount(1, [$response], 'Maven_key: Aucune réponse trouvée');
+        $this->assertNotNull($response, 'Maven_key: Aucune réponse trouvée');
     }
 
     public function testHistoriqueCount(): void
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $historiqueRepository = $entityManager->getRepository(Historique::class);
         $response = $historiqueRepository->findBy(['mavenKey' => self::$mavenKey]);

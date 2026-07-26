@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Entity;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use App\DataFixtures\BatchTraitementFixtures;
 use App\Entity\BatchTraitement;
@@ -32,7 +33,7 @@ class BatchTraitementKernelTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Réinitialiser la séquence
         $connection = $entityManager->getConnection();
@@ -52,19 +53,19 @@ class BatchTraitementKernelTest extends KernelTestCase
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $batchTraitementRepository = $entityManager->getRepository(BatchTraitement::class);
         $response = $batchTraitementRepository->findOneBy(['modeCollecte' => self::$modeCollecte]);
 
-        $this->assertCount(1, [$response], 'MODE_COLLECTE: Aucune réponse trouvée');
+        $this->assertNotNull($response, 'MODE_COLLECTE: Aucune réponse trouvée');
     }
 
     public function testBatchTraitementCountOne(): void
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $batchTraitementRepository = $entityManager->getRepository(BatchTraitement::class);
         $response = $batchTraitementRepository->findBy(['modeCollecte' => self::$modeCollecte]);
@@ -76,7 +77,7 @@ class BatchTraitementKernelTest extends KernelTestCase
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $batchTraitementRepository = $entityManager->getRepository(BatchTraitement::class);
         $response = $batchTraitementRepository->findBy(['success' => self::$success]);

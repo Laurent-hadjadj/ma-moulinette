@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Entity;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use App\DataFixtures\PropertiesFixtures;
 use App\Entity\Properties;
@@ -32,7 +33,7 @@ class PropertiesKernelTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Réinitialiser la séquence
         $connection = $entityManager->getConnection();
@@ -52,11 +53,11 @@ class PropertiesKernelTest extends KernelTestCase
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $propertiesRepository = $entityManager->getRepository(Properties::class);
         $response = $propertiesRepository->findOneBy(['type' => self::$type]);
 
-        $this->assertCount(1, [$response], 'TYPE: Aucune réponse trouvée');
+        $this->assertNotNull($response, 'TYPE: Aucune réponse trouvée');
     }
 }

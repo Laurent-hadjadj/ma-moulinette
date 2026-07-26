@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Entity;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use App\DataFixtures\ActivityBatchReportFixtures;
 use App\Entity\ActivityBatchReport;
@@ -31,7 +32,7 @@ class ActivityBatchReportKernelTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Réinitialiser la séquence
         $connection = $entityManager->getConnection();
@@ -51,19 +52,19 @@ class ActivityBatchReportKernelTest extends KernelTestCase
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $activityBatchReportRepository = $entityManager->getRepository(ActivityBatchReport::class);
         $response = $activityBatchReportRepository->findOneBy(['taskCount' => self::$taskCount]);
 
-        $this->assertCount(1, [$response], 'TASK_COUNT: Aucune réponse trouvée');
+        $this->assertNotNull($response, 'TASK_COUNT: Aucune réponse trouvée');
     }
 
     public function testActivityBatchReportCount(): void
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $activityBatchReportRepository = $entityManager->getRepository(ActivityBatchReport::class);
         $response = $activityBatchReportRepository->findBy(['taskDone' => self::$taskDone]);

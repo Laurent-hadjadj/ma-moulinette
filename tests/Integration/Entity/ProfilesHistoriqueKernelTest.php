@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Entity;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use App\DataFixtures\ProfilesHistoriqueFixtures;
 use App\Entity\ProfilesHistorique;
@@ -31,7 +32,7 @@ class ProfilesHistoriqueKernelTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Réinitialiser la séquence
         $connection = $entityManager->getConnection();
@@ -51,11 +52,11 @@ class ProfilesHistoriqueKernelTest extends KernelTestCase
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $informationProjetRepository = $entityManager->getRepository(ProfilesHistorique::class);
         $response = $informationProjetRepository->findOneBy(['language' => self::$language]);
 
-        $this->assertCount(1, [$response], 'LANGUAGE: Aucune réponse trouvée');
+        $this->assertNotNull($response, 'LANGUAGE: Aucune réponse trouvée');
     }
 }

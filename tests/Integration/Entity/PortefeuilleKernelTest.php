@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Entity;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use App\DataFixtures\PortefeuilleFixtures;
 use App\Entity\Portefeuille;
@@ -31,7 +32,7 @@ class PortefeuilleKernelTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Réinitialiser la séquence
         $connection = $entityManager->getConnection();
@@ -51,11 +52,11 @@ class PortefeuilleKernelTest extends KernelTestCase
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $groupeRepository = $entityManager->getRepository(Portefeuille::class);
         $response = $groupeRepository->findOneBy(['portefeuille' => self::$titre]);
 
-        $this->assertCount(1, [$response], 'PORTEFEUILLE: Aucune réponse trouvée');
+        $this->assertNotNull($response, 'PORTEFEUILLE: Aucune réponse trouvée');
     }
 }

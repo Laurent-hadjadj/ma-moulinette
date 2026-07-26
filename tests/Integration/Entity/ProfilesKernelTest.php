@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Entity;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use App\DataFixtures\ProfilesFixtures;
 use App\Entity\Profiles;
@@ -28,7 +29,7 @@ class ProfilesKernelTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Réinitialiser la séquence
         $connection = $entityManager->getConnection();
@@ -48,14 +49,13 @@ class ProfilesKernelTest extends KernelTestCase
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $profilesRepository = $entityManager->getRepository(Profiles::class);
         $languageName = $profilesRepository->findOneBy(['languageName' => 'css']);
         $default = $profilesRepository->findOneBy(['referentialDefault' => true]);
 
-        $this->assertNotNull($languageName, 'Aucune entité a été trouvée');
-        $this->assertCount(1, [$languageName], 'LANGUAGE NAME : Aucune réponse');
-        $this->assertCount(1, [$default], 'RÉFÉRENTIEL DEFAULT : Aucune réponse');
+        $this->assertNotNull($languageName, 'LANGUAGE NAME : Aucune réponse');
+        $this->assertNotNull($default, 'RÉFÉRENTIEL DEFAULT : Aucune réponse');
     }
 }

@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Entity;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use App\DataFixtures\BatchFixtures;
 use App\Entity\Batch;
@@ -40,7 +41,7 @@ class BatchKernelTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Réinitialiser la séquence
         $connection = $entityManager->getConnection();
@@ -60,19 +61,19 @@ class BatchKernelTest extends KernelTestCase
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $batchRepository = $entityManager->getRepository(Batch::class);
         $response = $batchRepository->findOneBy(['responsable' => self::$responsable]);
 
-        $this->assertCount(1, [$response], 'RESPONSABLE: Aucune réponse trouvée');
+        $this->assertNotNull($response, 'RESPONSABLE: Aucune réponse trouvée');
     }
 
     public function testBatchCount(): void
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $batchRepository = $entityManager->getRepository(Batch::class);
         $response = $batchRepository->findBy(['responsable' => self::$responsable]);

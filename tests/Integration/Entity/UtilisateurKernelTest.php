@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Entity;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use App\DataFixtures\UtilisateurFixtures;
 use App\Entity\Utilisateur;
@@ -61,7 +62,7 @@ class UtilisateurKernelTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Réinitialiser la séquence
         $connection = $entityManager->getConnection();
@@ -87,7 +88,7 @@ class UtilisateurKernelTest extends KernelTestCase
 
         /* Tentative de persistance de l'utilisateur */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $entityManager->persist($utilisateur);
         $entityManager->flush();
@@ -97,7 +98,7 @@ class UtilisateurKernelTest extends KernelTestCase
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         /* On compte le nombre d'utilisateur non actif */
         $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
@@ -109,7 +110,7 @@ class UtilisateurKernelTest extends KernelTestCase
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         /* On compte le nombre d'utilisateur non actif */
         $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
@@ -119,11 +120,11 @@ class UtilisateurKernelTest extends KernelTestCase
         $josh = $utilisateurRepository->findOneBy(['prenom' => 'Josh']);
         $nathan = $utilisateurRepository->findOneBy(['prenom' => 'Nathan']);
 
-        $this->assertCount(1, [$admin]);
-        $this->assertCount(1, [$aurelie]);
-        $this->assertCount(1, [$emma]);
-        $this->assertCount(1, [$josh]);
-        $this->assertCount(1, [$nathan]);
+        $this->assertNotNull($admin);
+        $this->assertNotNull($aurelie);
+        $this->assertNotNull($emma);
+        $this->assertNotNull($josh);
+        $this->assertNotNull($nathan);
 
   }
 }

@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Entity;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use App\DataFixtures\ActivityFixtures;
 use App\Entity\Activity;
@@ -31,7 +32,7 @@ class ActivityKernelTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Réinitialiser la séquence
         $connection = $entityManager->getConnection();
@@ -51,19 +52,19 @@ class ActivityKernelTest extends KernelTestCase
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $activityRepository = $entityManager->getRepository(Activity::class);
         $response = $activityRepository->findOneBy(['mavenKey' => self::$mavenKey]);
 
-        $this->assertCount(1, [$response], 'maven_key Aucune réponse trouvée');
+        $this->assertNotNull($response, 'maven_key Aucune réponse trouvée');
     }
 
     public function testActivityCount(): void
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $activityRepository = $entityManager->getRepository(Activity::class);
         $response = $activityRepository->findBy(['mavenKey' => self::$mavenKey]);

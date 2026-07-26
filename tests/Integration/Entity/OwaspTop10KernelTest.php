@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Entity;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use App\DataFixtures\OwaspTop10Fixtures;
 use App\Entity\OwaspTop10;
@@ -32,7 +33,7 @@ class OwaspTop10KernelTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Réinitialiser la séquence
         $connection = $entityManager->getConnection();
@@ -52,19 +53,19 @@ class OwaspTop10KernelTest extends KernelTestCase
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $owaspRepository = $entityManager->getRepository(OwaspTop10::class);
         $response = $owaspRepository->findOneBy(['category' => self::$category]);
 
-        $this->assertCount(1, [$response], 'CATEGORY: Aucune réponse trouvée');
+        $this->assertNotNull($response, 'CATEGORY: Aucune réponse trouvée');
     }
 
     public function testOwaspCount(): void
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $owaspRepository = $entityManager->getRepository(OwaspTop10::class);
         $response = $owaspRepository->findBy(['year' => self::$year]);

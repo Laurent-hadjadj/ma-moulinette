@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Entity;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use App\DataFixtures\ActivityHistoriqueFixtures;
 use App\Entity\ActivityHistorique;
@@ -31,7 +32,7 @@ class ActivityHistoriqueKernelTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Réinitialiser la séquence
         $connection = $entityManager->getConnection();
@@ -51,12 +52,12 @@ class ActivityHistoriqueKernelTest extends KernelTestCase
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $activityHistoriqueRepository = $entityManager->getRepository(ActivityHistorique::class);
         $response = $activityHistoriqueRepository->findOneBy(['year' => self::$year]);
 
-        $this->assertCount(1, [$response], 'ANNÉE: Aucune réponse trouvée');
+        $this->assertNotNull($response, 'ANNÉE: Aucune réponse trouvée');
     }
 
 }

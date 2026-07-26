@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Entity;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use App\DataFixtures\LoggerFixtures;
 use App\Entity\Logger;
@@ -31,7 +32,7 @@ class LoggerKernelTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Réinitialiser la séquence
         $connection = $entityManager->getConnection();
@@ -51,19 +52,19 @@ class LoggerKernelTest extends KernelTestCase
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $loggerRepository = $entityManager->getRepository(Logger::class);
         $response = $loggerRepository->findOneBy(['mavenKey' => self::$mavenKey]);
 
-        $this->assertCount(1, [$response], 'maven_key Aucune réponse trouvée');
+        $this->assertNotNull($response, 'maven_key Aucune réponse trouvée');
     }
 
     public function testLoggerCount(): void
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $loggerRepository = $entityManager->getRepository(Logger::class);
         $response = $loggerRepository->findBy(['mavenKey' => self::$mavenKey]);

@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Entity;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use App\DataFixtures\RepartitionTempFixtures;
 use App\Entity\RepartitionTemp;
@@ -32,7 +33,7 @@ class RepartitionTempKernelTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Réinitialiser la séquence
         $connection = $entityManager->getConnection();
@@ -52,19 +53,19 @@ class RepartitionTempKernelTest extends KernelTestCase
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $repartitionTempRepository = $entityManager->getRepository(RepartitionTemp::class);
         $response = $repartitionTempRepository->findOneBy(['mavenKey' => self::$mavenKey, 'setup' => self::$setup]);
 
-        $this->assertCount(1, [$response], 'MavenKey & Setup: Aucune réponse trouvée');
+        $this->assertNotNull($response, 'MavenKey & Setup: Aucune réponse trouvée');
     }
 
     public function testRepartitionTempCount(): void
     {
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $repartitionTempRepository = $entityManager->getRepository(RepartitionTemp::class);
         $response = $repartitionTempRepository->findBy(['setup' => self::$setup]);
