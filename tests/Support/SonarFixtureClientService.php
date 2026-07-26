@@ -35,6 +35,7 @@ class SonarFixtureClientService extends ClientService
         '#/api/components/app\b#'             => 'components/app.json',
         '#/api/measures/component\b#'         => 'measures/component.json',
         '#/api/qualityprofiles/search\b#'     => 'qualityprofiles/search.json',
+        '#/api/server/version\b#'             => 'server/version.json',
     ];
 
     public function httpSonarQube(string $url): array
@@ -58,7 +59,7 @@ class SonarFixtureClientService extends ClientService
             }
 
             $raw = file_get_contents($fixturePath);
-            // Les fixtures generees via PowerShell 5.1 `Set-Content -Encoding UTF8`
+            // Les fixtures générées via PowerShell 5.1 `Set-Content -Encoding UTF8`
             // portent un BOM UTF-8 (EF BB BF) qui casse json_decode.
             if (str_starts_with($raw, "\xEF\xBB\xBF")) {
                 $raw = substr($raw, 3);
@@ -77,7 +78,7 @@ class SonarFixtureClientService extends ClientService
             'code' => 404,
             'message' => "[GET] - 404 - unmapped url",
             'json' => null,
-            'erreur' => "URL SonarQube non mappee dans les fixtures : $url",
+            'erreur' => "URL SonarQube non mappée dans les fixtures : $url",
         ];
     }
 }
