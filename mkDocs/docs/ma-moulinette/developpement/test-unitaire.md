@@ -1,167 +1,153 @@
-# Tests Unitaires
+# 🧪 Tests unitaires et d'intégration
 
-![Ma-Moulinette](/assets/images/home/home-000.jpg)
+## 📈 État des suites (relevé du 26/07/2026)
 
-## Nombre de tests unitaires
+| Suite | Tests | Assertions | Nature |
+| --- | ---: | ---: | --- |
+| `unit` (`tests/Unit`) | 3 133 | 8 635 | Unitaires purs (mocks, aucune base réelle) |
+| `integration` (`tests/Integration`) | 600 | 1 345 | `KernelTestCase`/`WebTestCase` sur PostgreSQL de test |
+| **Total** | **3 733** | **9 980** | |
 
-- [x] Entity Case........ **289** tests, **356** vérifications.
-- [x] Entity Kernel...... **43** tests, ***90** vérifications.
-- [x] Entity Validator... **109** tests, **359** vérifications.
-- [x] Entity Repository.. **100** tests, **243** vérifications.
-- [x] Entity Performance. **1** tests, **1001** vérifications/
+**Couverture de code** (suites `unit` + `integration` cumulées, via pcov) :
 
-> Total : **542** tests, **2049** vérifications.
+| Granularité | Couverture |
+| --- | --- |
+| Lignes | **80,01 %** (20 650 / 25 810) |
+| Méthodes | 84,65 % (2 393 / 2 827) |
+| Classes | 51,50 % (120 / 233) |
 
-## Les différents tests unitaires
+**Analyse statique** : **PHPStan niveau 6**, 150 erreurs résiduelles (voir [Analyse statique](#-analyse-statique-phpstan) plus bas).
 
-> Tests unitaires
+!!! note "🔄 Chiffres à réactualiser"
+    Ces valeurs sont un relevé manuel, pas une sortie de CI : elles se périment à chaque campagne de tests.
+    Les régénérer avec `composer test` (compteurs), `composer test:coverage` (couverture) et `vendor/bin/phpstan analyse` (erreurs résiduelles).
+    Deux tests sont `skipped` : ils dépendent d'un échantillon `dependency-check-report.json` absent de `var/`, ce qui est nominal hors environnement d'ingestion DependencyCheck.
 
-Ces tests permettent de s’assurer que les tests unitaires basés sur du code source (par exemple une classe, une méthode, une condition) se comportent comme prévu.
+## 📦 Suites de tests
 
-> Tests d’intégration
+`phpunit.xml.dist` déclare trois suites :
 
-Ces tests vérifient une combinaison de classes et interagissent généralement avec un Conteneur de service de Symfony. Ces tests ne couvrent pas encore l’ensemble de l'application.
+| Suite | Répertoire | Nature |
+| --- | --- | --- |
+| `unit` | `tests/Unit/` | Tests unitaires purs (mocks, pas de base de données réelle) |
+| `integration` | `tests/Integration/` | Tests bout-en-bout via `KernelTestCase`/`WebTestCase`, base PostgreSQL de test réelle |
+| `functional` | `tests/Functional/` | Vide actuellement (voir note ci-dessous) |
 
-> Tests d’application
+!!! note "🎭 Functional remplacé par Playwright"
+    La suite `tests/Functional` a été vidée en 2026 (tous les tests restants étaient redondants avec la couverture Unit).
+    Les parcours utilisateur bout-en-bout (JS, charts, rendu Twig dynamique) sont couverts séparément par une suite **Playwright** (`tests/e2e/`, projet Node.js distinct) — voir [Tests End-to-End](test-e2e.md).
 
-Les tests d’application testent le comportement d’une application complète. Ils font appelles à des requêtes HTTP (réelles et simulées) pour tester que le La réponse est conforme aux attentes.
+## ▶️ Exécuter les tests
 
-## Bonnes pratiques
-
-Il existes trois (3) façon de mettre en place les tests unitaires :
-
-1. On ne fait rien moi au début des développement de l'application ;
-2. On développe tous les tests avant de démarrer les développement (TDD), moi il y a un (1) an ;
-3. On développent les tests et le code en même temps (Test First), moi maintenant ;
-
-## Les tests unitaires
-
-L’écriture de tests unitaires dans une application Symfony n’est pas différente de l’écriture de tests unitaires PHPUnit standard.
-
-Par convention, le répertoire doit répliquer le répertoire de l'application pour les tests unitaires. Il est recommandé de différencier les tests unitaires des tests fonctionnels.
-
-Pour exécuter des tests, il est nécessaire de d'utiliser la commande : `./bin/phpunit`
-
-### Les prérequis
-
-Executer les commandes suivantes :
-
-- `symfony composer require --dev symfony/test-pack`
-- `symfony composer require --dev orm-fixtures`
-
-### Configuration : PHPUnit.xmldist et PHPUnit.xml
-
-La versions **9.6**  de phpunit doit être utilisée pour symfony 6 et PHP 8.
-
-Le fichier de configuration pour PHPUnit par défaut est `phpunit.xml.dist`. Ce fichier est écrasé à chaque mise à jour de la recipe symfony, il convient donc de créer un fichier `phpunit.xml` qui contiendra la configuration pour l'application.
-
-### Configuration : .env.test et .env.test.local
-
-Le fichier `.env.test` contient les paramètres spécifiques aux tests, i.e. les paramètres utilises du fichier `.env`. Il est propre à symfony et vient surcharger le fichier PHPUnit.xml.
-
-Attention, tout comme le fichier `PHPUnit.xml.dist`, le fichier `.env.test` est écrasé par la recipe symfony lors des mises à jour. Il faudra enregistrer les informations dans un dossier `.env.test.local`.
-
-Exemple de paramètres utilises :
-
-```properties
-SYMFONY_PHPUNIT_LOCALE="fr_FR"
-SYMFONY_DEPRECATIONS_HELPER='max[total]=10&max[self]=10&max[direct]=10&verbose=10'
-
-#DATABASE_URL="sqlite:///%kernel.project_dir%/var/data-test.db"
-DATABASE_URL='postgresql://db_user:db_password@localhost:5432/ma_moulinette?serveurVersion=15&charset=utf8'
-```
-
-### Création de la base de données de tests
-
-Si la base de données n'a pas été créé, il suffit d'executer les commandes sql dans un terminal psql :
-
-```sql
---- si on c'est connecté avec l'utilisateur db_user
-ALTER ROLE db_user CREATEDB;
--- si on c'est connecté avec l'utilisateur postgres
-CREATE DATABASE ma_moulinette_test WITH
-    OWNER = db_user
-    ENCODING = 'UTF8'
-    LC_COLLATE = 'fr_FR.UTF-8'
-    LC_CTYPE = 'fr_FR.UTF-8'
-    LOCALE_PROVIDER = 'libc'
-    TABLESPACE = pg_default
-    CONNECTION LIMIT = -1
-    IS_TEMPLATE = False;
-
-COMMENT ON DATABASE ma_moulinette_test IS 'Base de données Ma-Moulinette de Tests';
-
-ALTER ROLE db_user IN DATABASE ma_moulinette_test SET search_path TO ma_moulinette_test;
-ALTER DATABASE ma_moulinette_test SET search_path TO ma_moulinette_test;
-GRANT TEMPORARY, CONNECT ON DATABASE ma_moulinette_test TO PUBLIC;
-GRANT ALL ON DATABASE ma_moulinette_test TO db_user;
-```
-
-### Préparation de la base de données de test
-
-Les tests unitaires sont exécutés sur une base de données SQLite.
-
-La création de la base de données de tests est relativement facile à mettre en place. Il suffit de taper la commande suivante depuis le dossier du projet :
-
-- `php bin/console --env=test doctrine:database:drop --force`
-- `php bin/console --env=test doctrine:database:create --if-not-exists`
-- `php bin/console --env=test doctrine:schema:update --force`
-- `php bin/console --env=test doctrine:migrations:migrate -n`
-
-```dos
-c:\environnement\ma-moulinette>php bin/console --env=test doctrine:database:drop --force
-Dropped database "ma_moulinette_test" for connection named default
-
-c:\environnement\ma-moulinette>php bin/console --env=test doctrine:database:create --if-not-exists
-Created database "ma_moulinette_test" for connection named default
-
-c:\environnement\ma-moulinette>php bin/console --env=test doctrine:schema:update --force
- Updating database schema...
-
-     433 queries were executed
-
- [OK] Database schema updated successfully!
-```
-
-`note :` Il faut que l'utilisateur ait les droits de création. Vous pouvez ajouter le droit **CREATEDB** à l'utilisateur **db_user**.
-
-### Chargement des fixtures
-
-Pour charger les fixtures dans la base de données de TESTs, il suffit d’exécuter cette commande :
+Commandes définies dans `composer.json` :
 
 ```bash
-symfony console doctrine:fixtures:load --env=test
+composer test              # toute la suite (unit + integration + functional)
+composer test:unit         # tests/Unit uniquement
+composer test:integration  # tests/Integration uniquement
+composer test:coverage     # couverture de code (texte + HTML) via pcov
 ```
 
-### Execution des tests unitaires
-
-Il est possible d'executer tous les tests avec la commande suivante :
-
-- `php bin\console phpunit`
-
-Ou d’exécuter simplement un test en particulier :
-
-- `php ./bin/phpunit ./tests/Unit/Repository/UtilisateurRepositoryTest.php`
-
-Ou  d’exécuter un ensemble de tests :
-
-- `php ./bin/phpunit --filter CaseTest`
-
-### Couverture de code
-
-> prérequis.
-
-Il faudra ajouter le dépendances suivantes au fichier php.ini.
-
-- [x] zend_extension=xdebug;
-- [x] extension=pcov
-- [x] pcov.enabled=1
-
-Cette commande permet de générer automatiquement le rapport de couverture des tests pour le format clover.
+Équivalent direct (utile pour filtrer un test précis) :
 
 ```bash
-php vendor/bin/phpunit --coverage-clover=build/logs/clover.xml --coverage-html=build/coverage-report --coverage-text
+php -d xdebug.mode=off vendor/bin/phpunit tests/Unit
+php -d xdebug.mode=off vendor/bin/phpunit --filter testNomDuTest tests/Unit/Chemin/MonTest.php
 ```
+
+!!! caution "⚠️ Ne jamais lancer deux process PHPUnit en parallèle"
+    `tests/Integration` partage une base PostgreSQL réelle (`ma_moulinette_test`).
+    Deux exécutions simultanées (même sur des sous-dossiers différents) se marchent dessus : fixtures remises à zéro pendant qu'un autre run teste, ce qui produit des cascades d'échecs qui ressemblent à de vraies régressions mais ne sont que de la contention.
+    Toujours vérifier qu'aucun autre process `phpunit`/`composer test*` ne tourne (y compris dans un terminal externe) avant de lancer une suite.
+
+## 🗄️ Base de données de test
+
+`tests/Integration` s'exécute contre une vraie base PostgreSQL (`.env.test` + `.env.test.local`), pas SQLite. Mise en place / réinitialisation complète :
+
+```bash
+php bin/console --env=test doctrine:database:drop --force
+php bin/console --env=test doctrine:database:create
+php bin/console --env=test doctrine:schema:update --force
+php bin/console --env=test doctrine:fixtures:load --no-interaction
+```
+
+`doctrine:schema:update --force` construit le schéma directement depuis le mapping des entités (`#[ORM\Column]`) — voir [Architecture — base de données](../architecture/architecture-base-de-donnees.md) pour la mise en garde sur la cohérence entité ↔ colonne SQL.
+
+## 🔑 Variables d'environnement requises
+
+Un certain nombre de variables `%env(...)%` référencées par `config/services.yaml` doivent être définies pour que le kernel de test démarre (sinon `EnvNotFoundException`).
+Certaines (`DC_INGEST_TOKEN`) sont forcées directement dans `phpunit.xml.dist` ; les autres (`APP_CLIENT_TOKEN`, `APP_ALLOWED_ORIGINS`, tokens Sonar, placeholders LDAP…) sont dans `.env.test`/`.env.test.local`.
+Une variable manquante se traduit typiquement par des dizaines d'erreurs identiques `EnvNotFoundException` à travers toute la suite `tests/Integration` — un seul ajout dans `.env.test.local` suffit à toutes les résoudre.
+
+## 🌱 Fixtures de test
+
+Les fixtures Doctrine (`src/DataFixtures/`) suivent une convention de nommage normalisée pour rester anonymes et cohérentes : clé maven canonique `fr.ma-moulinette:ma-moulinette`, domaine email `@ma-moulinette.fr`.
+Les 5 utilisateurs nommés de `UtilisateurFixtures.php` (mot de passe fixture commun `test`, même hash que le compte `admin` — voir [Gestion de la sécurité](securite.md)) sont des jeux de données légitimes à conserver tels quels.
+
+Dans les tests `tests/Unit` (mocks, sans lien avec `src/DataFixtures/`), une convention distincte est utilisée pour désigner plusieurs projets fictifs dans un même test : `projet-a`/`projet-b`/`projet-c`, et la sentinelle `projet-inconnu` pour les cas négatifs (projet absent du périmètre).
+
+## 📊 Couverture de code
+
+Prérequis `php.ini` :
+
+```ini
+zend_extension=xdebug
+extension=pcov
+pcov.enabled=1
+```
+
+```bash
+composer test:coverage
+```
+
+Génère un rapport texte (`var/coverage/coverage.txt`), HTML (`var/coverage/coverage-html/`) et Clover (`var/coverage/clover.xml`).
+Les chemins texte/HTML sont fixés par les options passées en ligne de commande dans le script `composer.json` (elles priment sur la configuration `<coverage>` de `phpunit.xml.dist`) ; seul le chemin Clover vient de `phpunit.xml.dist`.
+
+## 🔎 Analyse statique (PHPStan)
+
+L'analyse statique complète les tests : elle ne vérifie pas le comportement mais la **cohérence des types** — un tableau dont on ignore le contenu, une méthode appelée sur une valeur qui peut être `null`, un `??` posé sur une expression qui ne l'est jamais.
+
+Configuration : `phpstan.dist.neon` (extensions Doctrine et Symfony activées, analyse de `bin/`, `config/`, `public/`, `src/`, `tests/`).
+
+```bash
+vendor/bin/phpstan analyse                       # tout le projet
+vendor/bin/phpstan analyse src/Service/Xxx.php   # un fichier
+vendor/bin/phpstan analyse src/ --level=8        # au-delà du niveau cible
+```
+
+### 🎚️ Niveau retenu : 6
+
+PHPStan propose 11 niveaux (0 à 10), chacun ajoutant ses vérifications à celles du précédent :
+
+| Niveau | Ce qui est vérifié en plus |
+| --- | --- |
+| 0–2 | Méthodes et variables inconnues, arguments surnuméraires |
+| 3–4 | Types de retour incohérents, code mort, conditions toujours vraies ou fausses |
+| 5 | Types des arguments passés aux appels |
+| **6** | **Types manquants : tout `array` non détaillé, tout paramètre ou retour non typé** |
+| 7 | Unions traitées partiellement (un `?Foo` utilisé sans vérifier le `null`) |
+| 8 | Appels sur des valeurs potentiellement `null` |
+| 9–10 | `mixed` strict, puis exhaustivité des types de PHP |
+
+Le **niveau 6** est la cible du projet : il exige que tout soit typé, sans imposer la discipline du `mixed` strict — inatteignable à coût raisonnable ici, où les données viennent de requêtes SQL brutes (`array<string, mixed>`) et de payloads JSON.
+
+!!! note "📉 Campagne de réduction en cours"
+    La dette a été ramenée de **4 820 à 150 erreurs** (relevé du 26/07/2026).
+    La quasi-totalité du `missingType.iterableValue` (355 occurrences, des `array` déclarés sans préciser leur contenu) a été résorbée le 26/07/2026 en typant précisément chaque tableau d'après son usage réel.
+    Le reliquat actuel (`method.notFound` sur des mocks, `argument.type`, `missingType.property`…) est plus hétérogène et se traite au cas par cas.
+
+!!! caution "🚫 Ne pas masquer une erreur"
+    Une erreur PHPStan signale presque toujours un vrai problème de type.
+    Corriger la cause, jamais le symptôme : pas de `@phpstan-ignore`, pas d'entrée de baseline, pas de `assert()` ni de cast ajouté uniquement pour faire taire l'analyse, pas d'élargissement d'un type de paramètre ou de retour.
+    Exemple vécu : un `count($exec['erreurs']) ?? 0` signalé comme « expression jamais nulle » cachait en réalité un `count()` sur une clé absente du tableau — donc une `TypeError` fatale en PHP 8 dès que la branche d'erreur était empruntée.
+
+Un fichier peut être durci au-delà du niveau du projet : `RapportInsightService` est ainsi vérifié au **niveau 8**, ce qui garantit réellement le contrat d'union littérale (`'up'|'down'|'flat'|'na'`) publié à ses appelants.
+
+## 📚 Pour aller plus loin
+
+- [Tests End-to-End](test-e2e.md) : suite Playwright.
+- [Architecture — base de données](../architecture/architecture-base-de-donnees.md) : schéma PostgreSQL et pilotage via `doctrine:schema:update`.
+- [Checklist statistiques (release)](checklist-release.md) : liste des pages à rafraîchir avant de taguer une version, et de celles à ne pas toucher.
 
 -**-- FIN --**-
 
