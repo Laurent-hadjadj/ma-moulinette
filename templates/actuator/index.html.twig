@@ -76,7 +76,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                             {{ knp_pagination_sortable(pagination, 'Date', 'date_modification', {}, {}, '/actuator/_zf6_fa_sortable_link.html.twig') }}
                         {% endif %}
                         <span class="open-sans">Nombre Total :
-                            <span class="stat">{{ pagination.getTotalItemCount }}</span>
+                            <span class="stat">{{ pagination is not empty ? pagination.getTotalItemCount : 0 }}</span>
                         </span>
                     </div>
                 </div>
