@@ -16,7 +16,9 @@ import { USERS } from '../helpers/users';
  *      → orchestration de plusieurs API calls : measures, issues, hotspots, etc.
  *      → tous résolus via SonarFixtureClientService (fixtures JSON locales)
  *   5. Clique #bouton-affiche-indicateur (affiche résultats peinture)
+ *      → vérifie le code HTTP 200 de chaque appel /api/secure/peinture/projet/*
  *   6. Clique #bouton-enregistrement-indicateur (enregistre en DB)
+ *      → vérifie le code HTTP 200 de POST /api/secure/enregistrement
  *
  * Pré-requis : seed-after-spec-05 (groupe fonctionnel tetris-game créé,
  *   Nathan affecté à ce groupe, projet tetris en liste_projet).
@@ -63,24 +65,42 @@ test.describe('06 — Collecte manuelle', () => {
       timeout: 90_000,
     });
 
-    // ---------- 4. Afficher les résultats ----------
-    // Le bouton click déclenche `remplissage()` qui peint le DOM, puis
-    // `showMessage()` affiche un toast qui disparaît après 3s (flaky à
-    // asserter). On attend juste que l'AJAX settle.
+    // ---------- 4. Afficher les résultats (peinture) ----------
+    // Le clic déclenche `remplissage()` (peinture.js) qui enchaîne ~11 appels
+    // GET/POST vers /api/secure/peinture/projet/* (version, mesures, anomalie,
+    // hotspots, nosonar, todo, logger, actuator...), puis
+    // `afficheHotspotDetails()` si nécessaire. On capture toutes les réponses
+    // de ce préfixe et on vérifie leur code HTTP plutôt que de se contenter de
+    // l'absence de crash visible.
+    const peintureResponses: number[] = [];
+    const onPeintureResponse = (response: import('@playwright/test').Response) => {
+      if (response.url().includes('/api/secure/peinture/')) {
+        peintureResponses.push(response.status());
+      }
+    };
+    page.on('response', onPeintureResponse);
+
     const afficheBtn = page.locator('#bouton-affiche-indicateur');
     await expect(afficheBtn).toBeVisible();
     await afficheBtn.click();
     await page.waitForTimeout(5_000);
+    page.off('response', onPeintureResponse);
+
+    expect(peintureResponses.length, 'aucun appel /api/secure/peinture/* capturé').toBeGreaterThan(0);
+    for (const status of peintureResponses) {
+      expect(status, `un appel peinture a répondu ${status}`).toBe(200);
+    }
 
     // ---------- 5. Enregistrer ----------
+    // Un seul appel POST /api/secure/enregistrement — on attend explicitement
+    // sa réponse plutôt qu'un timeout arbitraire, et on vérifie son code.
     const enregistreBtn = page.locator('#bouton-enregistrement-indicateur');
     await expect(enregistreBtn).toBeVisible();
-    await enregistreBtn.click();
-    await page.waitForTimeout(3_000);
 
-    // Pas d'assertion DOM finale stricte : la simple absence d'erreur valide
-    // que les 3 actions (collecte → affichage → enregistrement) se sont
-    // déroulées sans 500. On affinera quand on aura les sélecteurs des
-    // indicateurs de succès (toast / compteur en peinture).
+    const [enregistrementResponse] = await Promise.all([
+      page.waitForResponse((r) => r.url().includes('/api/secure/enregistrement'), { timeout: 10_000 }),
+      enregistreBtn.click(),
+    ]);
+    expect(enregistrementResponse.status()).toBe(200);
   });
 });

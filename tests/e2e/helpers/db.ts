@@ -107,3 +107,15 @@ export function resetAndSeedAfterSpec08(): void {
   resetAndSeedAfterSpec03();
   seedSql('95_e2e\\seed-after-spec-08-roles-transverses.sql');
 }
+
+/**
+ * Reset + seed pour les specs CRUD Batch/Portefeuille/Actuator (ROLE_BATCH,
+ * ROLE_ACTUATOR) : état post-spec 05 (groupe fonctionnel "tetris-test"
+ * existant — nécessaire pour peupler le ChoiceField groupeFonctionnel du
+ * formulaire Portefeuille) + rôles transverses cumulés sur Nathan (même
+ * seed que le spec 08, réappliqué sur une base différente).
+ */
+export function resetAndSeedForCrudTransverse(): void {
+  resetAndSeedAfterSpec05();
+  seedSql('95_e2e\\seed-after-spec-08-roles-transverses.sql');
+}

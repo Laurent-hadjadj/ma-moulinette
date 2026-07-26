@@ -103,6 +103,19 @@ class SonarFixtureClientServiceKernelTest extends KernelTestCase
         $this->assertNotSame('', $result['json']['texte']);
     }
 
+    public function testHttpActuatorReturnsFixedSuccessWithoutRealNetworkCall(): void
+    {
+        // Contrairement à httpSonarQube (mapping par URL), httpActuator renvoie
+        // toujours un succès fixe : voir tests/e2e/specs/10-crud-actuator.spec.ts
+        // pour le detail (self-deadlock du serveur e2e mono-worker si on pingait
+        // reellement l'URL saisie par l'utilisateur).
+        $result = $this->client->httpActuator('http://une-url-quelconque.invalid:1234/app', '', '');
+
+        $this->assertSame(200, $result['code']);
+        $this->assertIsArray($result['json']);
+        $this->assertSame('17.0.1', $result['json']['app']['version']['jdk']);
+    }
+
     public function testUnmappedUrlReturns404(): void
     {
         $result = $this->client->httpSonarQube(
@@ -111,6 +124,6 @@ class SonarFixtureClientServiceKernelTest extends KernelTestCase
 
         $this->assertSame(404, $result['code']);
         $this->assertNull($result['json']);
-        $this->assertStringContainsString('non mappee', $result['erreur']);
+        $this->assertStringContainsString('non mappée', $result['erreur']);
     }
 }

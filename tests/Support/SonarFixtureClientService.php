@@ -38,6 +38,26 @@ class SonarFixtureClientService extends ClientService
         '#/api/server/version\b#'             => 'server/version.json',
     ];
 
+    /**
+     * Double de test pour {@see ClientService::httpActuator()}.
+     *
+     * Le serveur de dev e2e n'a qu'un seul worker PHP-CGI : un ping réel vers
+     * l'URL du serveur lui-même (cas des tests e2e Actuator, qui pointent
+     * volontairement sur ce serveur pour éviter une dépendance réseau
+     * externe) se bloque tant que la requête en cours n'est pas terminée —
+     * auto-deadlock jusqu'au timeout (3s), classé "injoignable" à tort.
+     * On court-circuite donc l'appel réseau ici, comme pour httpSonarQube().
+     */
+    public function httpActuator(string $url, string $user, string $password): array
+    {
+        return [
+            'code' => 200,
+            'message' => '[GET] - 200 - fixture:actuator/info.json',
+            'json' => ['app' => ['version' => ['jdk' => '17.0.1']]],
+            'erreur' => null,
+        ];
+    }
+
     public function httpSonarQube(string $url): array
     {
         $fixturesDir = dirname(__DIR__) . '/fixtures/sonarqube';
