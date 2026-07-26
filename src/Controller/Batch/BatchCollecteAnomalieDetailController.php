@@ -215,10 +215,12 @@ class BatchCollecteAnomalieDetailController extends AbstractController
             ];
         }
 
-        /** On bind les résultats */
-        $bugSeverities = self::mapSeverities($results['BUG']['facets'][0]);
-        $vulnerabilitySeverities = self::mapSeverities($results['VULNERABILITY']['facets'][0]);
-        $codeSmellSeverities = self::mapSeverities($results['CODE_SMELL']['facets'][0]);
+        /** On bind les résultats (facets peut être structurellement vide côté
+         * SonarQube même quand paging.total > 0 — cf. BatchCollecteOwaspController
+         * pour le même cas observé, MODIF 2026-07-26). */
+        $bugSeverities = self::mapSeverities($results['BUG']['facets'][0] ?? []);
+        $vulnerabilitySeverities = self::mapSeverities($results['VULNERABILITY']['facets'][0] ?? []);
+        $codeSmellSeverities = self::mapSeverities($results['CODE_SMELL']['facets'][0] ?? []);
 
         /** On prépare les données */
         $mapData = [
