@@ -36,7 +36,7 @@ class UserAgentTrackerService
      *
      * @param string $eventType Type fonctionnel de l'événement (LOGIN_PAGE_VIEW, LOGIN_SUCCESS_REDIRECT, LOGOUT)
      *
-     * @return array ['code'=>200,'erreur'=>null] ou erreur
+     * @return array{code: int, erreur: string} ['code'=>200,'erreur'=>null] ou erreur
      */
     public function track(string $eventType): array
     {

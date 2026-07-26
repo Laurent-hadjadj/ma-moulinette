@@ -22,7 +22,7 @@ class SonarMetricsCatalogService
     /**
      * [Description for metricsDefinition]
      *
-     * @return array
+     * @return array<string, array{domaine: string, version: int|null, type: string, description: string}>
      *
      * Created at: 19/03/2026 17:29:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

@@ -35,6 +35,7 @@ class UserRoleLoggerService
      * @param array<int|string, mixed> $newRoles
      * @param bool $oldActive
      * @param bool $newActive
+     * @param array<int, string> $alerts
      *
      * @return void
      *

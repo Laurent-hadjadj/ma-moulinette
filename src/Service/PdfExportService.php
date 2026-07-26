@@ -376,7 +376,7 @@ class PdfExportService
     /**
      * [Description for generateOwaspPdf]
      *
-     * @param array $data
+     * @param array<string, mixed> $data
      * @param string|null $document_type
      *
      * @return string

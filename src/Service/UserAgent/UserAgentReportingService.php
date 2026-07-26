@@ -63,7 +63,7 @@ class UserAgentReportingService
      * @param \DateTimeImmutable $now
      * @param \DateTimeZone $tz
      *
-     * @return array
+     * @return array{start: \DateTimeImmutable, end: \DateTimeImmutable, label: string}
      *
      * Created at: 22/12/2025 16:24:24 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -107,7 +107,7 @@ class UserAgentReportingService
      * @param \DateTimeImmutable $now
      * @param \DateTimeZone $tz
      *
-     * @return array
+     * @return array{start: \DateTimeImmutable, end: \DateTimeImmutable, label: string}
      *
      * Created at: 22/12/2025 16:24:51 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -145,7 +145,7 @@ class UserAgentReportingService
      * @param string|null $week
      * @param string|null $month
      *
-     * @return array
+     * @return array{start: \DateTimeImmutable, end: \DateTimeImmutable, label: string}
      *
      * Created at: 22/12/2025 16:23:30 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -170,10 +170,10 @@ class UserAgentReportingService
     /**
      * [Description for normalizeStats]
      *
-     * @param array $rows
+     * @param array<int, array<string, mixed>> $rows
      * @param int $top
      *
-     * @return array
+     * @return array{total: int|float, items: array<int, array<string, mixed>>}
      *
      * Created at: 17/12/2025 14:14:57 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -216,7 +216,7 @@ class UserAgentReportingService
     /**
      * [Description for getEventAggregate]
      *
-     * @return array
+     * @return array<string, mixed>
      *
      * Created at: 28/12/2025 10:33:59 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -276,7 +276,7 @@ class UserAgentReportingService
      * @param \DateTimeInterface $end
      * @param string $label
      *
-     * @return array
+     * @return array<string, mixed>
      *
      * Created at: 17/12/2025 14:16:14 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -305,7 +305,7 @@ class UserAgentReportingService
      * @param \DateTimeInterface $end
      * @param string $label
      *
-     * @return array
+     * @return array<string, mixed>
      *
      * Created at: 17/12/2025 14:44:32 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -335,7 +335,7 @@ class UserAgentReportingService
      * @param \DateTimeInterface $end
      * @param string $label
      *
-     * @return array
+     * @return array<string, mixed>
      *
      * Created at: 17/12/2025 14:45:02 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -365,7 +365,7 @@ class UserAgentReportingService
      * @param \DateTimeInterface $end
      * @param string $label
      *
-     * @return array
+     * @return array<string, mixed>
      *
      * Created at: 21/12/2025 12:47:46 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -424,7 +424,7 @@ class UserAgentReportingService
     /**
      * [Description for getAvgSessionDurationReport]
      *
-     * @return array
+     * @return array<string, mixed>
      *
      * Created at: 22/12/2025 08:05:13 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -463,7 +463,7 @@ class UserAgentReportingService
     /**
      * [Description for getUniqueSessionReport]
      *
-     * @return array
+     * @return array<string, mixed>
      *
      * Created at: 22/12/2025 08:07:36 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -503,7 +503,7 @@ class UserAgentReportingService
     /**
      * [Description for getUniqueSessionReport]
      *
-     * @return array
+     * @return array<string, mixed>
      *
      * Created at: 22/12/2025 08:07:36 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -556,7 +556,7 @@ class UserAgentReportingService
      * @param \DateTimeInterface $end
      * @param string $label
      *
-     * @return array
+     * @return array<string, mixed>
      *
      * Created at: 22/12/2025 11:32:40 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -606,7 +606,7 @@ class UserAgentReportingService
      * @param \DateTimeInterface $end
      * @param string $label
      *
-     * @return array
+     * @return array<string, mixed>
      *
      * Created at: 22/12/2025 14:46:59 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

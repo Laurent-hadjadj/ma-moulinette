@@ -32,7 +32,7 @@ class BuildMapHistoryService
      * métriques que l'on souhaite historiser
      * pour éviter de faire des appels API inutiles et de stocker des données non pertinentes, on définit une liste de métriques à récupérer pour chaque analyse.
      *
-     * @var array
+     * @var array<int, string>
      */
 
     //Quality Gate
@@ -377,10 +377,10 @@ class BuildMapHistoryService
      * [Description for generateKeys]
      * Générateur générique
      *
-     * @param array $prefixes
-     * @param array $suffixes
+     * @param array<int, string> $prefixes
+     * @param array<int, string> $suffixes
      *
-     * @return array
+     * @return array<string, null>
      *
      * Created at: 25/03/2026 18:14:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -399,9 +399,10 @@ class BuildMapHistoryService
     /**
      * [Description for metricsRebuild]
      *
-     * @param array $measures
+     * @param array<string, string|int> $measures
+     * @param array{analysisKey: string|null, date: string|null, version: string|null, version_release?: int, version_snapshot?: int, version_autre?: int} $analysis
      *
-     * @return array
+     * @return array<string, mixed>
      *
      * Created at: 19/03/2026 19:25:24 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

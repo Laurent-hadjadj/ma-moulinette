@@ -54,6 +54,8 @@ final class DcExecutiveAnalyticsService
      * @param float $safetyMargin     coefficient multiplicateur (typiquement 1.2 = +20%)
      * @param array<string, float> $severityBonus     bonus par sévérité max (CRITICAL/HIGH/MEDIUM/LOW/INFO -> float)
      * @param array<string, float> $testEffortByFamily  effort tests non-regression par famille (cf. guessFamily)
+     * @param array<string, float> $scoreSecuWeights    poids par sévérité pour computeScoreSecu (CRITICAL/HIGH/MEDIUM/LOW -> float)
+     * @param array<string, int>   $scoreSecuCaps       plafond de comptage par sévérité pour computeScoreSecu
      */
     public function __construct(
         #[Autowire(param: 'dc.remediation.upgrade_overhead')]
@@ -265,8 +267,6 @@ final class DcExecutiveAnalyticsService
      * @param array<int, array<string, mixed>> $findings
      * @return array<int, array{cwe: string, nb: int}>
      *
-     * @return array
-     *
      * Created at: 10/05/2026 23:46:58 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
@@ -296,8 +296,6 @@ final class DcExecutiveAnalyticsService
      * @param array<int, array<string, mixed>> $findings
      * @return array<int, array{family: string, nb_cves: int}>
      *
-     * @return array
-     *
      * Created at: 10/05/2026 23:47:39 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
@@ -326,12 +324,10 @@ final class DcExecutiveAnalyticsService
      *
      * @param array<int, array<string, mixed>> $findings
      * @return array<int, array{
-     *   product: string, version: ?string, nb_cves: int,
+     *   product: string, vendor: mixed, version: mixed, nb_cves: int,
      *   nb_critical: int, nb_high: int, nb_medium: int, nb_low: int,
      *   sev_max: string,
      * }>
-     *
-     * @return array
      *
      * Created at: 10/05/2026 23:48:22 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -382,8 +378,6 @@ final class DcExecutiveAnalyticsService
      *
      * @param array<int, array<string, mixed>> $findings
      * @return array<int, array{cve_id: string, severity: string, cvss: ?float, product: string, description: ?string}>
-     *
-     * @return array
      *
      * Created at: 10/05/2026 23:53:22 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -533,9 +527,16 @@ final class DcExecutiveAnalyticsService
      * de la formule paramétrable injectée depuis dc_remediation.yaml et
      * exposée via computeDepJh($family, $sevMax). Voir constructeur du service.
      *
-     * @param array $findings
+     * @param array<int, array<string, mixed>> $findings
      *
-     * @return array
+     * @return array{
+     *   par_dependance: array<int, array{
+     *     product: string, version: ?string, family: string,
+     *     nb_critical: int, nb_high: int, nb_medium: int, nb_low: int,
+     *     jh: float, sev_max: string,
+     *   }>,
+     *   total_jh: float,
+     * }
      *
      * Created at: 15/05/2026 10:17:28 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -574,8 +575,6 @@ final class DcExecutiveAnalyticsService
      *
      * @param array<int, array<string, mixed>> $findings
      * @return array<int, array{product: string, version: ?string, sev_max: string, nb_cves: int, jh: float}>
-     *
-     * @return array
      *
      * Created at: 10/05/2026 23:57:37 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -623,10 +622,14 @@ final class DcExecutiveAnalyticsService
     /**
      * [Description for computeScanDiff]
      *
-     * @param array $previousFindings
-     * @param array $currentFindings
+     * @param array<int, array<string, mixed>> $previousFindings
+     * @param array<int, array<string, mixed>> $currentFindings
      *
-     * @return array
+     * @return array{
+     *   new: array<int, array{cve_id: string, product: string, dep_version: mixed, severity: string}>,
+     *   fixed: array<int, array{cve_id: string, product: string, dep_version: mixed, severity: string}>,
+     *   unchanged_count: int,
+     * }
      *
      * Created at: 15/05/2026 10:18:40 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

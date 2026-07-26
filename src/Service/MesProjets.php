@@ -24,7 +24,7 @@ class MesProjets
     /**
      * [Description for listeProjet]
      *
-     * @param array $groupe
+     * @param array<int, string> $groupes
      *
      * @return array<int|string, mixed>
      *

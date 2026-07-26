@@ -41,7 +41,12 @@ class UserAgentAnalysisService
      *
      * @param int $limit
      *
-     * @return array
+     * @return array{
+     *     code: int,
+     *     erreur?: string,
+     *     processed?: int,
+     *     erreurs?: array<int, array{event_id: int|string, erreur: string}>
+     * }
      *
      * Created at: 13/03/2026 13:01:18 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -133,7 +138,14 @@ class UserAgentAnalysisService
      *
      * @param string $userAgent
      *
-     * @return array
+     * @return array{
+     *     device_type: string,
+     *     os_name: string|null,
+     *     os_version: string|null,
+     *     browser_name: string|null,
+     *     browser_version: string|null,
+     *     is_bot: bool
+     * }
      *
      * Created at: 13/03/2026 12:58:45 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

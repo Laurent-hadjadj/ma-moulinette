@@ -53,6 +53,9 @@ class IsValideMavenKey
         return ['code' => $request['code'], 'request'=>$request['is_valide'] ?? $request['erreur']];
     }
 
+    /**
+     * @return array<int|string, mixed>
+     */
     public function isValideHistorique(string $mavenKey): array
     {
         /** On instancie l'entityRepository */

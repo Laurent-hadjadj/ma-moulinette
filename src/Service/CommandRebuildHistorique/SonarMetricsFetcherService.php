@@ -42,7 +42,7 @@ class SonarMetricsFetcherService
      *
      * @param string $project_key
      *
-     * @return array
+     * @return array<string, string|int>
      *
      * Created at: 17/03/2026 04:05:23 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

@@ -18,9 +18,13 @@ namespace App\Service\CommandRebuildHistorique;
  */
 class SonarQualityScorer
 {
+    /** @var array<string, int|float|string> */
     private array $metrics;
     private int $score = 100;
 
+    /**
+     * @param array<string, int|float|string> $metrics
+     */
     public function __construct(array $metrics)
     {
         $this->metrics = $metrics;
@@ -29,7 +33,7 @@ class SonarQualityScorer
     /**
      * [Description for calculate]
      *
-     * @return array
+     * @return array{score: int, rating: string}
      *
      * Created at: 23/03/2026 02:52:06 (America/Costa_Rica)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -179,7 +183,7 @@ class SonarQualityScorer
      * [Description for calculateStrict]
      * 🚨 MODE STRICT
      *
-     * @return array
+     * @return array{score: int, rating: string}
      *
      * Created at: 23/03/2026 02:52:36 (America/Costa_Rica)
      * @author     Laurent HADJADJ <laurent_h@me.com>

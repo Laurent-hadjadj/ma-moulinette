@@ -35,7 +35,7 @@ class SonarAnalysisFetcherService
      * [Description for extractVersion]
      * Extraction robuste de la version
      *
-     * @param array $analysis
+     * @param array<string, mixed> $analysis
      *
      * @return string
      *
@@ -68,7 +68,7 @@ class SonarAnalysisFetcherService
      *
      * @param string $project_key
      *
-     * @return array
+     * @return array<int, array<string, mixed>>
      *
      * Created at: 17/03/2026 17:00:45 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -146,7 +146,7 @@ class SonarAnalysisFetcherService
      *
      * @param string $project_key
      *
-     * @return array
+     * @return array<int, array<string, mixed>>
      *
      * Created at: 17/03/2026 16:39:37 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -210,9 +210,9 @@ class SonarAnalysisFetcherService
     /**
      * [Description for computeVersionCounters]
      *
-     * @param array $analyses
+     * @param array<int, array<string, mixed>> $analyses
      *
-     * @return array
+     * @return array<int, array<string, mixed>>
      *
      * Created at: 17/03/2026 23:36:04 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
