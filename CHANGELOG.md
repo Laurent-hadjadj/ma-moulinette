@@ -1,6 +1,6 @@
 # Liste des évolutions et défauts corrigés
 
-## v2.0.0 - 01/08/2026 - WiP
+## v2.0.0 - 02/08/2026 - WiP
 
 ### Framework
 

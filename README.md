@@ -15,7 +15,7 @@
 ┃┃┃┃┃┃━━┃┃━━┃┗━┛┃\
 ┃┗┛┗┛┃━━┃┃━━┃┏━━┛\
 ┗┓┏┓┏┛━┏┫┣┓━┃┃\
-━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.0.0 Release on July 2026 !
+━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.0.0 Release on August 2026 !
 
 **Ma-Moulinette** est une application web open-source dont l’objectif est de **simplifier la consultation et le suivi des indicateurs de qualité logicielle** collectés depuis un serveur **SonarQube**.
 
@@ -29,7 +29,7 @@ Elle s’appuie sur les **API publiques** de SonarQube et est **compatible** ave
 - SonarQube **2026LTA**
 
 > [!NOTE]
-> L'application est compatible pour la version 8 et 9 avec l'extension track-logger-method-1.4.0-RELEASE et avec la version track-logger-method-2.0.0-RELEASE pour sonarQube 10 , 2024, 2025 et 2026.
+> L'application est compatible pour la version 8 et 9 avec l'extension track-logger-method-1.4.0-RELEASE et avec la version track-logger-method-2.0.0-RELEASE pour SonarQube 10 , 2024, 2025 et 2026.
 
 ## 💡 Philosophie du projet
 
