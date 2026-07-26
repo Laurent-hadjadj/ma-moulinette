@@ -9,11 +9,6 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<Actuator>
- *
- * @method Actuator|null find($id, $lockMode = null, $lockVersion = null)
- * @method Actuator|null findOneBy(array $criteria, array $orderBy = null)
- * @method Actuator[]    findAll()
- * @method Actuator[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class ActuatorRepository extends ServiceEntityRepository
 {
@@ -65,6 +60,7 @@ class ActuatorRepository extends ServiceEntityRepository
   /**
    * [Description for deleteActuatorUrl]
    *
+   * @param array<string, mixed> $map
    *
      * @return array<int|string, mixed>
    *
@@ -165,6 +161,7 @@ class ActuatorRepository extends ServiceEntityRepository
   /**
    * [Description for findActuatorMavenKey]
    *
+   * @param array<string, mixed> $map
    *
      * @return array<int|string, mixed>
    *

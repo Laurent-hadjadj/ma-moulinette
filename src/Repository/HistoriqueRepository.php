@@ -434,7 +434,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * [Description for selectUnionHistoriqueMesure]
      * On remonte les mesures pour les projets du suivi
      *
-     * @param array $map
+     * @param array<string, mixed> $map
      *
      * @return array<int|string, mixed>
      *
@@ -849,6 +849,8 @@ class HistoriqueRepository extends ServiceEntityRepository
      * clés SonarQube (= sortie BuildMapHistoryService::metricsRebuild). Toute
      * nouvelle métrique se câble en 1 ligne ici. `actuator_info` est exclu car
      * il est inséré comme littéral JSON encodé dans la SQL (pas un bind param).
+     *
+     * @var array<int, string>
      */
     private static array $historiqueColumns = [
         // Identité projet / version
@@ -943,6 +945,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * SonarQube. Convention SonarQube : 1.0=A, 2.0=B, 3.0=C, 4.0=D, 5.0=E. La collecte
      * recoit parfois la valeur numerique brute ("0"/"1.0"/...), parfois la lettre.
      * On normalise au moment de l'INSERT pour avoir toujours A-E ou null en base. */
+    /** @var array<int, string> */
     private static array $historiqueRatingColumns = [
         'comment_lines_rating', 'coverage_rating', 'duplicated_lines_rating',
         'complexity_rating', 'cognitive_complexity_rating',
@@ -984,6 +987,8 @@ class HistoriqueRepository extends ServiceEntityRepository
      * @param array<int|string, mixed>      $map
      * @param array<int|string, mixed>      $json
      * @param array<int|string, mixed>|null $loggerBreakdown
+     *
+     * @return array<int|string, mixed>
      */
     public function insertHistoriqueAjoutProjet(array $map, array $json, ?array $loggerBreakdown = null): array
     {
@@ -1113,6 +1118,11 @@ class HistoriqueRepository extends ServiceEntityRepository
         return ['code' => 200, 'actuator_info' => $actuatorInfo, 'erreur' => ''];
     }
 
+    /**
+     * @param array<string, mixed> $map
+     *
+     * @return array<int|string, mixed>
+     */
     public function selectHistoriqueProjetLast(array $map): array
     {
         /** On prépare la requête */
@@ -1237,6 +1247,7 @@ class HistoriqueRepository extends ServiceEntityRepository
     /**
      * [Description for selectHistoriqueIsValide]
      *
+     * @param array<string, mixed> $map
      *
      * @return array<int|string, mixed>
      *
@@ -1323,9 +1334,9 @@ class HistoriqueRepository extends ServiceEntityRepository
      * [Description for selectHistoriqueCleanCodeSynthese]
      * Retourne la dernière collecte clean code par projet pour la vue synthèse multi-projets.
      *
-     * @param array $mavenKeys
+     * @param array<int, string> $mavenKeys
      *
-     * @return array
+     * @return array<int|string, mixed>
      *
      * Created at: 19/05/2026 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

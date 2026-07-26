@@ -89,6 +89,8 @@ class ApiPeintureController extends AbstractController
     /**
      * [Description for vulnerabilityProbability]
      *
+     * @param array<int, array{niveau: string, hotspot: mixed}> $niveaux
+     *
      * @return array<int|string, mixed>
      *
      * Created at: 05/02/2025 08:09:44 (Europe/Paris)
@@ -1168,31 +1170,29 @@ class ApiPeintureController extends AbstractController
 
         $suppressWarning = $noPmd = $checkStyle = 0;
         $javaNoSonar = $pythonNoSonar = $phpNoSonar = 0;
-        if (!empty($rules)) {
-            foreach ($rules['liste'] as $rule) {
-                switch ($rule['rule']) {
-                    case 'java:S1309':
-                        $suppressWarning = (int) $rule['total'];
-                        break;
-                    case 'java:S1310':
-                        $noPmd = (int) $rule['total'];
-                        break;
-                    case 'java:S1315':
-                        $checkStyle = (int) $rule['total'];
-                        break;
-                    case 'java:NoSonar':
-                        $javaNoSonar = (int) $rule['total'];
-                        break;
-                    case 'python:NoSonar':
-                        $pythonNoSonar = (int) $rule['total'];
-                        break;
-                    case 'php:NoSonar':
-                        $phpNoSonar = (int) $rule['total'];
-                        break;
-                    default:
-                        $this->logger->critical("[SWITCH-NOSONAR] 🔴 On ne devrait pas arriver dans le default du switch.", ['case' => $rule['rule'] ?? self::$noData]);
-                        break;
-                }
+        foreach ($rules['liste'] as $rule) {
+            switch ($rule['rule']) {
+                case 'java:S1309':
+                    $suppressWarning = (int) $rule['total'];
+                    break;
+                case 'java:S1310':
+                    $noPmd = (int) $rule['total'];
+                    break;
+                case 'java:S1315':
+                    $checkStyle = (int) $rule['total'];
+                    break;
+                case 'java:NoSonar':
+                    $javaNoSonar = (int) $rule['total'];
+                    break;
+                case 'python:NoSonar':
+                    $pythonNoSonar = (int) $rule['total'];
+                    break;
+                case 'php:NoSonar':
+                    $phpNoSonar = (int) $rule['total'];
+                    break;
+                default:
+                    $this->logger->critical("[SWITCH-NOSONAR] 🔴 On ne devrait pas arriver dans le default du switch.", ['case' => $rule['rule'] ?? self::$noData]);
+                    break;
             }
         }
         $totalNoSonar = $javaNoSonar + $pythonNoSonar + $phpNoSonar;
@@ -1312,44 +1312,42 @@ class ApiPeintureController extends AbstractController
         $todo = $java = $javascript = $typescript = $html = $xml = 0;
         $python = $php = $ruby = 0;
 
-        if (!empty($rules)) {
-            /** On récupère le nombre total de To do par langage. strtolower car
-             *  Sonar renvoie parfois `php:s1135` minuscule, parfois `Web:S1135`. */
-            foreach ($rules['liste'] as $rule) {
-                $r = strtolower((string) ($rule['rule'] ?? ''));
-                $total = (int) ($rule['total'] ?? 0);
-                switch ($r) {
-                    case 'java:s1135':
-                        $java = $total;
-                        break;
-                    case 'javascript:s1135':
-                        $javascript = $total;
-                        break;
-                    case 'typescript:s1135':
-                        $typescript = $total;
-                        break;
-                    case 'web:s1135':
-                        $html = $total;
-                        break;
-                    case 'xml:s1135':
-                        $xml = $total;
-                        break;
-                    case 'python:s1135':
-                        $python = $total;
-                        break;
-                    case 'php:s1135':
-                        $php = $total;
-                        break;
-                    case 'ruby:s1135':
-                        $ruby = $total;
-                        break;
-                    default:
-                        $this->logger->critical("[SWITCH-TODO] 🔴 On ne devrait pas arriver dans le default du switch.", ['case' => $r]);
-                        break;
-                }
+        /** On récupère le nombre total de To do par langage. strtolower car
+         *  Sonar renvoie parfois `php:s1135` minuscule, parfois `Web:S1135`. */
+        foreach ($rules['liste'] as $rule) {
+            $r = strtolower((string) ($rule['rule'] ?? ''));
+            $total = (int) ($rule['total'] ?? 0);
+            switch ($r) {
+                case 'java:s1135':
+                    $java = $total;
+                    break;
+                case 'javascript:s1135':
+                    $javascript = $total;
+                    break;
+                case 'typescript:s1135':
+                    $typescript = $total;
+                    break;
+                case 'web:s1135':
+                    $html = $total;
+                    break;
+                case 'xml:s1135':
+                    $xml = $total;
+                    break;
+                case 'python:s1135':
+                    $python = $total;
+                    break;
+                case 'php:s1135':
+                    $php = $total;
+                    break;
+                case 'ruby:s1135':
+                    $ruby = $total;
+                    break;
+                default:
+                    $this->logger->critical("[SWITCH-TODO] 🔴 On ne devrait pas arriver dans le default du switch.", ['case' => $r]);
+                    break;
             }
-            $todo = $java + $javascript + $typescript + $html + $xml + $python + $php + $ruby;
         }
+        $todo = $java + $javascript + $typescript + $html + $xml + $python + $php + $ruby;
 
         /** On récupère la liste détaillée. */
         $map = ['maven_key' => $maven_key];

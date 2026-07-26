@@ -8,11 +8,6 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<ActuatorInfo>
- *
- * @method ActuatorInfo|null find($id, $lockMode = null, $lockVersion = null)
- * @method ActuatorInfo|null findOneBy(array $criteria, array $orderBy = null)
- * @method ActuatorInfo[]    findAll()
- * @method ActuatorInfo[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class ActuatorInfoRepository extends ServiceEntityRepository
 {
