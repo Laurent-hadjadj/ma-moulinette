@@ -71,7 +71,7 @@ La **version 2.0.0** est actuellement en développement et apporte de nombreuses
 - [x] **Historisation** des résultats et métriques en base pour les versions SonarQube **8, 9, 10, 2024, 2025 et 2026** ;
 - [x] Tableaux de bord et **visualisation** des indicateurs (projet, profil, OWASP 2017/2021/2025, Clean Code, COSUI, répartition, activité, statistiques) ;
 - [x] Back-office **EasyAdmin 5** avec CRUD dédiés pour groupes, portefeuilles et traitements ;
-- [x] **Playwright** pour les tests End-to-End (voir [Tests End-to-End](ma-moulinette/developpement/test-e2e.md)) ;
+- [x] **Playwright** pour les tests End-to-End (voir [Tests End-to-End](ma-moulinette/developpement/test-e2e.md.old)) ;
 - [x] Déploiement conteneurisé via **docker-compose** ;
 - [x] Nouveau système de **documentation** avec **MkDocs** (thème Material).
 
@@ -98,6 +98,5 @@ Liste des évolutions restantes :
 - [x] ~~Ajout de nouveaux **indicateurs SonarQube 2026** ;~~
 - [x] ~~Développement du support multi-projet filtré par groupe fonctionnel ;~~
 - [ ] Améliorer la couverture des tests e2e;
-
 
 -**-- FIN --**-
