@@ -47,7 +47,7 @@ class UserRoleLogTest extends TestCase
         $this->assertTrue($log->isOldActive());
         $this->assertFalse($log->isNewActive());
         $this->assertSame(['CHANGEMENT_MASSIF_ROLES'], $log->getAlerts());
-        $this->assertInstanceOf(\DateTimeImmutable::class, $log->getCreatedAt());
+        $this->assertLessThanOrEqual(new \DateTimeImmutable(), $log->getCreatedAt());
     }
 
     /* MODIF 2026-05-05 : le constructor exige 7 args

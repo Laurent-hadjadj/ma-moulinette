@@ -81,12 +81,14 @@ class PortefeuilleCrudControllerTest extends TestCase
 
     public function testConfigureCrudReturnsCrud(): void
     {
-        $this->assertInstanceOf(Crud::class, $this->controller->configureCrud(Crud::new()));
+        $crud = $this->controller->configureCrud(Crud::new());
+        $this->assertNotNull($crud->getAsDto()->getCustomPageTitle(Crud::PAGE_INDEX));
     }
 
     public function testConfigureFiltersReturnsFilters(): void
     {
-        $this->assertInstanceOf(Filters::class, $this->controller->configureFilters(Filters::new()));
+        $filters = $this->controller->configureFilters(Filters::new());
+        $this->assertNotNull($filters->getAsDto()->getFilter('portefeuille'));
     }
 
     public function testPersistEntityIgnoresNonMatching(): void
@@ -220,7 +222,8 @@ class PortefeuilleCrudControllerTest extends TestCase
 
     public function testConfigureAssetsReturnsAssets(): void
     {
-        $this->assertInstanceOf(Assets::class, $this->controller->configureAssets(Assets::new()));
+        $assets = $this->controller->configureAssets(Assets::new());
+        $this->assertNotEmpty($assets->getAsDto()->getBodyContents());
     }
 
 }

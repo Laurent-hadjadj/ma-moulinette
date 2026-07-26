@@ -53,7 +53,6 @@ class WellKnownSubscriberTest extends TestCase
 
         $this->assertTrue($event->hasResponse());
         $response = $event->getResponse();
-        $this->assertInstanceOf(Response::class, $response);
         $this->assertSame(Response::HTTP_NO_CONTENT, $response->getStatusCode());
         $this->assertSame('', $response->getContent());
     }

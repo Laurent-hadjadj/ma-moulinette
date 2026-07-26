@@ -42,7 +42,7 @@ class ActuatorTest extends TestCase
     {
         $a = new Actuator();
         $result = $a->setMavenKey('fr.ma-moulinette:ma-moulinette');
-        $this->assertInstanceOf(Actuator::class, $result);
+        $this->assertSame($a, $result);
         $this->assertSame('fr.ma-moulinette:ma-moulinette', $a->getMavenKey());
     }
 
@@ -50,7 +50,7 @@ class ActuatorTest extends TestCase
     {
         $a = new Actuator();
         $result = $a->setNomApplication('Mon Application');
-        $this->assertInstanceOf(Actuator::class, $result);
+        $this->assertSame($a, $result);
         $this->assertSame('Mon Application', $a->getNomApplication());
     }
 
@@ -58,7 +58,7 @@ class ActuatorTest extends TestCase
     {
         $a = new Actuator();
         $result = $a->setUrl('http://localhost:8080');
-        $this->assertInstanceOf(Actuator::class, $result);
+        $this->assertSame($a, $result);
         $this->assertSame('http://localhost:8080', $a->getUrl());
     }
 
@@ -66,7 +66,7 @@ class ActuatorTest extends TestCase
     {
         $a = new Actuator();
         $result = $a->setActuatorUser('admin');
-        $this->assertInstanceOf(Actuator::class, $result);
+        $this->assertSame($a, $result);
         $this->assertSame('admin', $a->getActuatorUser());
     }
 
@@ -81,7 +81,7 @@ class ActuatorTest extends TestCase
     {
         $a = new Actuator();
         $result = $a->setActuatorPassword('secret');
-        $this->assertInstanceOf(Actuator::class, $result);
+        $this->assertSame($a, $result);
         $this->assertSame('secret', $a->getActuatorPassword());
     }
 
@@ -96,7 +96,7 @@ class ActuatorTest extends TestCase
     {
         $a = new Actuator();
         $result = $a->setPersonne('Jean Dupont');
-        $this->assertInstanceOf(Actuator::class, $result);
+        $this->assertSame($a, $result);
         $this->assertSame('Jean Dupont', $a->getPersonne());
     }
 
@@ -109,7 +109,7 @@ class ActuatorTest extends TestCase
         $dt = new \DateTimeImmutable('2026-01-01');
         $a = new Actuator();
         $result = $a->setDateModification($dt);
-        $this->assertInstanceOf(Actuator::class, $result);
+        $this->assertSame($a, $result);
         $this->assertInstanceOf(\DateTime::class, $a->getDateModification());
         $this->assertSame('2026-01-01', $a->getDateModification()->format('Y-m-d'));
     }

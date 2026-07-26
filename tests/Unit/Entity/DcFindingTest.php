@@ -26,7 +26,7 @@ class DcFindingTest extends TestCase
     public function testConstructorInitializesCreatedAt(): void
     {
         $f = new DcFinding();
-        $this->assertInstanceOf(\DateTimeImmutable::class, $f->getCreatedAt());
+        $this->assertLessThanOrEqual(new \DateTimeImmutable(), $f->getCreatedAt());
     }
 
     public function testGetIdReturnsNullByDefault(): void

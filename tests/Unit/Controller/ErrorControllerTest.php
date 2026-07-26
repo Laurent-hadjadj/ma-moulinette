@@ -83,7 +83,6 @@ class ErrorControllerTest extends TestCase
 
         $response = $this->controller->show($exception, $this->twig);
 
-        $this->assertInstanceOf(Response::class, $response);
         $this->assertSame('<html>404 page</html>', $response->getContent());
     }
 

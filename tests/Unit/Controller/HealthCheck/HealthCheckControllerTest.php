@@ -84,7 +84,6 @@ class HealthCheckControllerTest extends TestCase
 
         $response = $this->controller->status($this->buildRequest('127.0.0.1'));
 
-        $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame(
             ['codeRetour' => 'OK', 'listMessage' => []],

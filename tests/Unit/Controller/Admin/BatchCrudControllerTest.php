@@ -76,12 +76,16 @@ class BatchCrudControllerTest extends TestCase
             ->add(Crud::PAGE_INDEX, \EasyCorp\Bundle\EasyAdminBundle\Config\Action::new(\EasyCorp\Bundle\EasyAdminBundle\Config\Action::DETAIL)
                 ->linkToCrudAction(\EasyCorp\Bundle\EasyAdminBundle\Config\Action::DETAIL));
 
-        $this->assertInstanceOf(Actions::class, $this->controller->configureActions($actions));
+        $result = $this->controller->configureActions($actions);
+
+        $this->assertNull($result->getAsDto(Crud::PAGE_INDEX)->getAction(Crud::PAGE_INDEX, \EasyCorp\Bundle\EasyAdminBundle\Config\Action::DETAIL));
     }
 
     public function testConfigureFiltersReturnsFilters(): void
     {
-        $this->assertInstanceOf(Filters::class, $this->controller->configureFilters(Filters::new()));
+        $result = $this->controller->configureFilters(Filters::new());
+
+        $this->assertNotNull($result->getAsDto()->getFilter('titre'));
     }
 
     public function testConfigureFieldsYieldsFieldsWhenPortefeuillesExist(): void

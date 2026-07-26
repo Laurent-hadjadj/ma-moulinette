@@ -18,7 +18,6 @@ namespace App\Tests\Unit\Controller\Admin;
 use App\Controller\Admin\DashboardController;
 use App\Service\ClientService;
 use App\Service\UserAgent\UserAgentTrackingFacade;
-use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -107,7 +106,7 @@ class DashboardControllerTest extends TestCase
 
         $dashboard = $this->controller->configureDashboard();
 
-        $this->assertInstanceOf(Dashboard::class, $dashboard);
+        $this->assertStringContainsString('Ma Moulinette', $dashboard->getAsDto()->getTitle());
     }
 
     public function testConfigureMenuItemsYieldsExpectedSections(): void
@@ -131,14 +130,18 @@ class DashboardControllerTest extends TestCase
     {
         $actions = $this->controller->configureActions();
 
-        $this->assertInstanceOf(\EasyCorp\Bundle\EasyAdminBundle\Config\Actions::class, $actions);
+        $this->assertNotNull($actions->getAsDto(\EasyCorp\Bundle\EasyAdminBundle\Config\Crud::PAGE_INDEX)->getAction(
+            \EasyCorp\Bundle\EasyAdminBundle\Config\Crud::PAGE_INDEX,
+            \EasyCorp\Bundle\EasyAdminBundle\Config\Action::DETAIL
+        ));
     }
 
     public function testConfigureAssetsAddsEntriesAndContent(): void
     {
         $assets = $this->controller->configureAssets();
 
-        $this->assertInstanceOf(\EasyCorp\Bundle\EasyAdminBundle\Config\Assets::class, $assets);
+        $this->assertNotEmpty($assets->getAsDto()->getAssetMapperAssets());
+        $this->assertNotEmpty($assets->getAsDto()->getBodyContents());
     }
 
     public function testSonarHealthDelegatesToClientService(): void

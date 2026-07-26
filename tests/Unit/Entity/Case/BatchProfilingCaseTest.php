@@ -49,7 +49,7 @@ class BatchProfilingCaseTest extends TestCase
         $this->assertSame(96.2, $entity->getMemoireMoyenne());
         $this->assertSame('admin@ma-moulinette.fr', $entity->getUtilisateur());
         $this->assertSame('01HK7XMKQGM3F5XZJ4S6T7VWE2', $entity->getExecutionReference());
-        $this->assertInstanceOf(\DateTimeImmutable::class, $entity->getDateExecution());
+        $this->assertLessThanOrEqual(new \DateTimeImmutable(), $entity->getDateExecution());
     }
 
     public function testExecutionReferenceCanBeNull(): void

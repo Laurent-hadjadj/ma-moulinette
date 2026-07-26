@@ -82,7 +82,9 @@ class GroupeFonctionnelCrudControllerTest extends TestCase
 
     public function testConfigureCrudReturnsCrud(): void
     {
-        $this->assertInstanceOf(Crud::class, $this->controller->configureCrud(Crud::new()));
+        $result = $this->controller->configureCrud(Crud::new());
+
+        $this->assertNotNull($result->getAsDto()->getCustomPageTitle(Crud::PAGE_INDEX));
     }
 
     public function testConfigureActionsReturnsActions(): void
@@ -91,17 +93,27 @@ class GroupeFonctionnelCrudControllerTest extends TestCase
             ->add(Crud::PAGE_INDEX, \EasyCorp\Bundle\EasyAdminBundle\Config\Action::new(\EasyCorp\Bundle\EasyAdminBundle\Config\Action::DETAIL)
                 ->linkToCrudAction(\EasyCorp\Bundle\EasyAdminBundle\Config\Action::DETAIL));
 
-        $this->assertInstanceOf(Actions::class, $this->controller->configureActions($actions));
+        $result = $this->controller->configureActions($actions);
+
+        $this->assertNull($result->getAsDto(Crud::PAGE_INDEX)->getAction(Crud::PAGE_INDEX, \EasyCorp\Bundle\EasyAdminBundle\Config\Action::DETAIL));
     }
 
     public function testConfigureFiltersReturnsFilters(): void
     {
-        $this->assertInstanceOf(Filters::class, $this->controller->configureFilters(Filters::new()));
+        $result = $this->controller->configureFilters(Filters::new());
+
+        $this->assertNotNull($result->getAsDto()->getFilter('groupeFonctionnel'));
     }
 
     public function testConfigureAssetsAddsJsFile(): void
     {
-        $this->assertInstanceOf(Assets::class, $this->controller->configureAssets(Assets::new()));
+        $result = $this->controller->configureAssets(Assets::new());
+
+        $jsPaths = array_map(
+            static fn ($asset) => $asset->getValue(),
+            $result->getAsDto()->getJsAssets()
+        );
+        $this->assertContains('js/easy-admin/groupe-fonctionnel.js', $jsPaths);
     }
 
     public function testConfigureFieldsYieldsExpectedFields(): void
@@ -158,7 +170,6 @@ class GroupeFonctionnelCrudControllerTest extends TestCase
         $before = new \DateTimeImmutable();
         $this->controller->persistEntity($this->em, $groupe);
 
-        $this->assertInstanceOf(\DateTimeImmutable::class, $groupe->getDateEnregistrement());
         $this->assertGreaterThanOrEqual($before, $groupe->getDateEnregistrement());
     }
 

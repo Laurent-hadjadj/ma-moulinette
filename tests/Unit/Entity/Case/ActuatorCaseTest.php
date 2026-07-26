@@ -109,7 +109,6 @@ class ActuatorCaseTest extends TestCase
 
     public function testGetActuatorInfoReturnsCollection(): void
     {
-        $this->assertInstanceOf(\Doctrine\Common\Collections\Collection::class, $this->actuator->getActuatorInfo());
         $this->assertCount(0, $this->actuator->getActuatorInfo());
     }
 

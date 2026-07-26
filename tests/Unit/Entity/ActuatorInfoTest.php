@@ -35,7 +35,7 @@ class ActuatorInfoTest extends TestCase
     {
         $a = new ActuatorInfo();
         $result = $a->setActuatorInfoDescription('Version Java');
-        $this->assertInstanceOf(ActuatorInfo::class, $result);
+        $this->assertSame($a, $result);
         $this->assertSame('Version Java', $a->getActuatorInfoDescription());
     }
 
@@ -50,7 +50,7 @@ class ActuatorInfoTest extends TestCase
     {
         $a = new ActuatorInfo();
         $result = $a->setActuatorInfoCle('app.version');
-        $this->assertInstanceOf(ActuatorInfo::class, $result);
+        $this->assertSame($a, $result);
         $this->assertSame('app.version', $a->getActuatorInfoCle());
     }
 

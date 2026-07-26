@@ -24,9 +24,8 @@ class DcCveTest extends TestCase
     public function testConstructorInitializesDates(): void
     {
         $c = new DcCve();
-        $this->assertInstanceOf(\DateTimeImmutable::class, $c->getFirstSeenAt());
-        $this->assertInstanceOf(\DateTimeImmutable::class, $c->getLastSeenAt());
-        $this->assertInstanceOf(\DateTimeImmutable::class, $c->getUpdatedAt());
+        $this->assertEquals($c->getFirstSeenAt(), $c->getLastSeenAt());
+        $this->assertEquals($c->getFirstSeenAt(), $c->getUpdatedAt());
     }
 
     public function testGetIdReturnsNullByDefault(): void

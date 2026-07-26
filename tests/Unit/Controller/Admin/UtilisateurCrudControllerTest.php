@@ -93,12 +93,14 @@ class UtilisateurCrudControllerTest extends TestCase
 
     public function testConfigureCrudReturnsCrud(): void
     {
-        $this->assertInstanceOf(Crud::class, $this->controller->configureCrud(Crud::new()));
+        $crud = $this->controller->configureCrud(Crud::new());
+        $this->assertNotNull($crud->getAsDto()->getCustomPageTitle(Crud::PAGE_INDEX));
     }
 
     public function testConfigureFiltersReturnsFilters(): void
     {
-        $this->assertInstanceOf(Filters::class, $this->controller->configureFilters(Filters::new()));
+        $filters = $this->controller->configureFilters(Filters::new());
+        $this->assertNotNull($filters->getAsDto()->getFilter('courriel'));
     }
 
     public function testPersistEntityIgnoresNonUtilisateur(): void

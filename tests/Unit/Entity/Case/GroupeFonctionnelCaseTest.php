@@ -70,7 +70,7 @@ class GroupeFonctionnelCaseTest extends TestCase
     public function testConstructorInitialisesDateEnregistrement(): void
     {
         $entity = new GroupeFonctionnel();
-        $this->assertInstanceOf(\DateTimeImmutable::class, $entity->getDateEnregistrement());
+        $this->assertLessThanOrEqual(new \DateTimeImmutable(), $entity->getDateEnregistrement());
     }
 
     public function testSettingAndGettingDateEnregistrement(): void

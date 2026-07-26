@@ -25,7 +25,7 @@ class DcProcessingQueueTest extends TestCase
     public function testConstructorInitializesCreatedAt(): void
     {
         $q = new DcProcessingQueue();
-        $this->assertInstanceOf(\DateTimeImmutable::class, $q->getCreatedAt());
+        $this->assertLessThanOrEqual(new \DateTimeImmutable(), $q->getCreatedAt());
     }
 
     public function testGetIdReturnsNullByDefault(): void

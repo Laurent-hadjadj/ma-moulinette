@@ -24,8 +24,7 @@ class DcDependencyTest extends TestCase
     public function testConstructorInitializesDates(): void
     {
         $d = new DcDependency();
-        $this->assertInstanceOf(\DateTimeImmutable::class, $d->getFirstSeenAt());
-        $this->assertInstanceOf(\DateTimeImmutable::class, $d->getLastSeenAt());
+        $this->assertEquals($d->getFirstSeenAt(), $d->getLastSeenAt());
     }
 
     public function testGetIdReturnsNullByDefault(): void

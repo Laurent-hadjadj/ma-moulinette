@@ -69,7 +69,7 @@ class GroupeUtilisateurCrudControllerTest extends TestCase
     public function testConfigureCrudReturnsCrud(): void
     {
         $crud = $this->controller->configureCrud(Crud::new());
-        $this->assertInstanceOf(Crud::class, $crud);
+        $this->assertNotNull($crud->getAsDto()->getCustomPageTitle(Crud::PAGE_INDEX));
     }
 
     public function testConfigureActionsRemovesEditAndDetail(): void
@@ -78,7 +78,9 @@ class GroupeUtilisateurCrudControllerTest extends TestCase
 
         $result = $this->controller->configureActions($actions);
 
-        $this->assertInstanceOf(Actions::class, $result);
+        $dto = $result->getAsDto(Crud::PAGE_INDEX);
+        $this->assertNull($dto->getAction(Crud::PAGE_INDEX, \EasyCorp\Bundle\EasyAdminBundle\Config\Action::EDIT));
+        $this->assertNull($dto->getAction(Crud::PAGE_INDEX, \EasyCorp\Bundle\EasyAdminBundle\Config\Action::DETAIL));
     }
 
     private function buildActionsWithDefaults(): Actions
@@ -93,7 +95,7 @@ class GroupeUtilisateurCrudControllerTest extends TestCase
     public function testConfigureFiltersAddsGroupeUtilisateur(): void
     {
         $filters = $this->controller->configureFilters(Filters::new());
-        $this->assertInstanceOf(Filters::class, $filters);
+        $this->assertNotNull($filters->getAsDto()->getFilter('groupeUtilisateur'));
     }
 
     public function testConfigureFieldsYieldsAllExpectedFields(): void

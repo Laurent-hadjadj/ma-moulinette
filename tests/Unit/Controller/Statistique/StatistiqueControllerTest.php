@@ -653,7 +653,6 @@ class StatistiqueControllerTest extends TestCase
 
         $response = $ctrl->runBatchAnalysis();
 
-        $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertSame('/statistiques/utilisateur', $response->getTargetUrl());
     }
 
@@ -670,7 +669,6 @@ class StatistiqueControllerTest extends TestCase
 
         $response = $ctrl->runBatchAnalysis();
 
-        $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertSame('/statistiques/utilisateur', $response->getTargetUrl());
     }
 
@@ -686,7 +684,6 @@ class StatistiqueControllerTest extends TestCase
 
         $response = $ctrl->runBatchAnalysis();
 
-        $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertSame('/statistiques/utilisateur', $response->getTargetUrl());
     }
 

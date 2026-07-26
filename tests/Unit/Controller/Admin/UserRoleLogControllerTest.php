@@ -138,7 +138,6 @@ class UserRoleLogControllerTest extends TestCase
 
         $response = $this->controller->list(new Request());
 
-        $this->assertInstanceOf(JsonResponse::class, $response);
         $data = json_decode($response->getContent(), true);
         $this->assertSame(200, $data['code']);
         $this->assertSame(1, $data['count']);

@@ -27,7 +27,7 @@ class DcScanTest extends TestCase
     public function testConstructorInitializesCreatedAt(): void
     {
         $s = new DcScan();
-        $this->assertInstanceOf(\DateTimeImmutable::class, $s->getCreatedAt());
+        $this->assertLessThanOrEqual(new \DateTimeImmutable(), $s->getCreatedAt());
     }
 
     public function testGetIdReturnsNullByDefault(): void
