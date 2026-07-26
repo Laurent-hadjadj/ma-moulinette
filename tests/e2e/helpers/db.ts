@@ -94,3 +94,16 @@ export function resetAndSeedAfterSpec05(): void {
   resetAndSeedAfterSpec04();
   seedSql('95_e2e\\seed-after-spec-05-affectations.sql');
 }
+
+/**
+ * Reset + seed pour le spec 08 (contrôle d'accès), indépendant du scénario
+ * d'onboarding 01-07 :
+ *   - état post-spec 03 (Josh/Nathan/Sophie/Aurélie actifs, rôles de base)
+ *   - Nathan cumule en plus ROLE_SECURITY, ROLE_ACTIVITY, ROLE_BATCH,
+ *     ROLE_ACTUATOR (rôles transverses qu'aucun user n'a nativement dans
+ *     le scénario narratif) pour servir de cas positif
+ */
+export function resetAndSeedAfterSpec08(): void {
+  resetAndSeedAfterSpec03();
+  seedSql('95_e2e\\seed-after-spec-08-roles-transverses.sql');
+}
