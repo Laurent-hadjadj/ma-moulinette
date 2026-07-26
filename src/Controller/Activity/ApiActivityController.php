@@ -161,7 +161,7 @@ class ApiActivityController extends AbstractController
 
         // On NE masque plus un échec d'écriture (sinon le front affiche « Aucune donnée »
         // sans raison). Si l'insert/update échoue, on remonte l'erreur explicitement.
-        if (is_array($ecriture) && ($ecriture['code'] ?? 200) !== 200) {
+        if (($ecriture['code'] ?? 200) !== 200) {
             $this->logger->error('[API] ❌ Échec écriture activity_historique.', $ecriture);
             return new JsonResponse([
                 'code'    => 500,
