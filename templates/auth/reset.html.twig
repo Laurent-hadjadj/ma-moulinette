@@ -68,7 +68,12 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                                         <div>
                                             <label for="mel" class="affiche color-bleu">Compte utilisateur</label>
                                         </div>
-                                        <input type="text" id="mel" readonly="readonly" class="color-noir" value="{{courriel}}">
+                                        {# autocomplete="username" : sans ce marquage explicite, Chrome peut
+                                           associer à tort ce champ en lecture seule au champ password suivant
+                                           et y injecter l'email au lieu du mot de passe saisi (incident e2e du
+                                           2026-07-26) — cf. recommandation officielle Chrome pour les champs
+                                           identifiant précédant un champ password. #}
+                                        <input type="text" id="mel" readonly="readonly" class="color-noir" value="{{courriel}}" autocomplete="username">
                                     </div>
                                     <div class="small-1 medium-1 large-1 cell">
                                         <span aria-hidden>&nbsp;</span>

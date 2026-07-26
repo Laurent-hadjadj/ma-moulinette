@@ -38,7 +38,13 @@ class ResetPasswordFormType extends AbstractType
             'attr' => [
                 'placeholder' => 'placeholder.ancien.motdepasse',
                 'class' => 'color-bleu',
-                'autocomplete' => 'off',
+                // Chrome ignore délibérément autocomplete="off" sur les champs
+                // password (comportement documenté depuis 2014). La valeur
+                // sémantique "current-password" est celle que Chrome respecte
+                // réellement — sans elle, l'autofill peut substituer une autre
+                // valeur (ex. l'identifiant du compte) dans ce champ après la
+                // saisie, avant la soumission (incident e2e du 2026-07-26).
+                'autocomplete' => 'current-password',
                 'aria-label'=>'Ancien mot de passe',
                 'aria-describedby'=>'reset_password_form_ancienMotDePasse',
             ],
@@ -57,7 +63,8 @@ class ResetPasswordFormType extends AbstractType
                 'attr' => [
                     'placeholder' => 'placeholder.nouveau.motdepasse',
                     'class' => 'color-bleu margin-bottom-05',
-                    'autocomplete' => 'off',
+                    // cf. commentaire sur ancienMotDePasse ci-dessus.
+                    'autocomplete' => 'new-password',
                     'aria-label'=>'Nouveau mot de passe',
                     'aria-describedby'=>'reset_password_form_plainPassword_first'],
             ],
@@ -66,7 +73,7 @@ class ResetPasswordFormType extends AbstractType
                 'attr' => [
                     'placeholder' => 'placeholder.remotdepasse',
                     'class' => 'color-bleu',
-                    'autocomplete' => 'off',
+                    'autocomplete' => 'new-password',
                     'aria-label'=>'Vérification mot de passe',
                     'aria-describedby'=>'reset_password_form_plainPassword_second' ],
             ],

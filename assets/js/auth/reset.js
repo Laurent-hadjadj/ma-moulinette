@@ -114,7 +114,7 @@ $('#reset_password_form_plainPassword_second').on('focus', function(){
 });
 
   /** Vérification des informations du formulaire */
-$('#valider-formulaire-reset-password').on('click', async ()=>{
+$('#valider-formulaire-reset-password').on('click', ()=>{
   const initialPasswordLength = $('#reset_password_form_ancienMotDePasse').val().length;
   const passwordLength = $('#reset_password_form_plainPassword_first').val().length;
   const rePasswordLength = $('#reset_password_form_plainPassword_second').val().length;
@@ -124,9 +124,13 @@ $('#valider-formulaire-reset-password').on('click', async ()=>{
 if ( initialPasswordLength > 0 && passwordLength >= 8 && rePasswordLength >= 8 &&
     passwordValue === rePasswordValue) {
       $('#message-erreur-valider').html('');
-      $('#valider-formulaire-reset-password').attr('type', 'submit');
-      const link = document.getElementById('valider-formulaire-reset-password');
-      link.click()
+      // Soumission directe du <form> englobant. L'ancienne version changeait le
+      // type du bouton en "submit" puis rappelait .click() sur ce même élément
+      // depuis son propre handler de clic : un click() imbriqué sur le même
+      // élément peut être avalé par le flag anti-réentrance du spec HTML
+      // (silencieux, ni erreur ni soumission — cf. incident e2e du 2026-07-26).
+      // requestSubmit() soumet le formulaire directement, sans ce détour fragile.
+      document.getElementById('valider-formulaire-reset-password').closest('form').requestSubmit();
   } else {
     const message='<ul><li>[001] - Le formulaire contient des erreurs !!!</li></ul>';
     $('#message-erreur-valider').html(message);
