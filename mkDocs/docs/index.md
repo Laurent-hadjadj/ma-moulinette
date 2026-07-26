@@ -67,7 +67,7 @@ La **version 2.0.0** est actuellement en développement et apporte de nombreuses
 - [x] **Hiérarchie de rôles** étendue : `COLLECTE`, `SUIVI`, `BATCH`, `ACTUATOR`, `SECURITY`, `SECURITY_ANALYTICS`, `GESTIONNAIRE`, `INTERNAL` (+ `ACTIVITY`, utilisé mais hors hiérarchie — voir [Gestion de la sécurité](ma-moulinette/developpement/securite.md)) ;
 - [x] **Collecte** manuelle (boucle synchrone + polling JS) ou automatique (commande console planifiée par cron) — voir [Traitement](ma-moulinette/back-office/traitement.md) ;
 - [x] Module **OWASP DependencyCheck** : ingestion asynchrone des rapports CI, dashboard cross-projets, mutualisation des CVE (voir [DependencyCheck](ma-moulinette/dependency-check/architecture.md)) ;
-- [x] Support **Actuator** (inventaire manuel) et collecte de la **répartition des LOGGER Java** pour les applications Spring Boot ;
+- [x] Support **Actuator** : déclaration de points d'accès `/actuator/info`, collecte automatique des clés JSON déclarées à chaque analyse de projet, affichage (pastille + modale) sur la page Projet ; et collecte de la **répartition des LOGGER Java** pour les applications Spring Boot ;
 - [x] **Historisation** des résultats et métriques en base pour les versions SonarQube **8, 9, 10, 2024, 2025 et 2026** ;
 - [x] Tableaux de bord et **visualisation** des indicateurs (projet, profil, OWASP 2017/2021/2025, Clean Code, COSUI, répartition, activité, statistiques) ;
 - [x] Back-office **EasyAdmin 5** avec CRUD dédiés pour groupes, portefeuilles et traitements ;
@@ -77,22 +77,27 @@ La **version 2.0.0** est actuellement en développement et apporte de nombreuses
 
 ### 📊 Qualité du code
 
-Relevé du 14/07/2026 — voir [Tests unitaires et d'intégration](ma-moulinette/developpement/test-unitaire.md) pour le détail et la procédure de mise à jour.
+Relevé du 26/07/2026 — voir [Tests unitaires et d'intégration](ma-moulinette/developpement/test-unitaire.md) pour le détail et la procédure de mise à jour.
 
 | Indicateur | Valeur |
 | --- | --- |
-| Tests unitaires | **2 976** (8 095 assertions) |
-| Tests d'intégration | **562** (1 255 assertions) |
-| **Total** | **3 538** tests / **9 350** assertions |
-| Couverture de code (lignes) | **77,92 %** |
-| Analyse statique | **PHPStan niveau 6** (673 erreurs résiduelles) |
+| Tests unitaires | **3 133** (8 635 assertions) |
+| Tests d'intégration | **600** (1 345 assertions) |
+| **Total** | **3 733** tests / **9 980** assertions |
+| Couverture de code (lignes) | **80,01 %** |
+| Analyse statique | **PHPStan niveau 6** (150 erreurs résiduelles) |
 
 ### 🧱 Fonctionnalités en cours de finalisation
 
+Liste des évolutions restantes :
+
 - [x] ~~Finalisation de la refonte des **tests unitaires** et de la couverture ;~~
-- [x] ~~Complétion de la documentation **FR / EN** ;~~
+- [x] ~~Alignement et complétion de la documentation sur a version 2.0.0 ;~~
 - [x] ~~Polissage de la **gestion des préférences utilisateurs** ;~~
-- [x] ~~Finalisation de la récupération "j'ai oublié mon mot de passe" ;~~
-- [x] ~~Ajout de nouveaux **indicateurs SonarQube 2026**.~~
+- [ ] Finalisation de la récupération "j'ai oublié mon mot de passe" ;
+- [x] ~~Ajout de nouveaux **indicateurs SonarQube 2026** ;~~
+- [x] ~~Développement du support multi-projet filtré par groupe fonctionnel ;~~
+- [ ] Améliorer la couverture des tests e2e;
+
 
 -**-- FIN --**-
