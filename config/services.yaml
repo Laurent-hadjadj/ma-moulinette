@@ -174,7 +174,11 @@ services:
                     protocol_version: 3
                     referrals: false
                     network_timeout: 3
-                    x_tls_require_cert: '%env(LDAP_X_TLS_REQUIRE_CERT)%'
+                    # ldap_set_option() exige un int pour cette option (LDAP_OPT_X_TLS_*) ;
+                    # cast explicite pour ne pas dépendre de la forme déjà numérique de la
+                    # variable d'env (incident du 26/07/2026 : une valeur "never" en chaîne
+                    # faisait planter le fallback LDAP de CustomAuthenticator).
+                    x_tls_require_cert: '%env(int:LDAP_X_TLS_REQUIRE_CERT)%'
 
     # Domaine de repli LDAP injecté explicitement (plus aucune valeur codée en dur
     # dans CustomAuthenticator) — voir env(LDAP_UPN_SUFFIX) ci-dessus.
