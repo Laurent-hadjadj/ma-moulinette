@@ -573,6 +573,64 @@ class BatchCollecteOwaspControllerTest extends TestCase
         $this->assertSame('facet', $capturedList[0]['source']);
     }
 
+    // ─── 11. facets structurellement absent alors que total > 0 (MODIF 2026-07-26) ─
+    // Cas réel observé : SonarQube peut renvoyer total > 0 avec facets: [] (pas
+    // même de facets[0]) quand la requête ne demande pas explicitement la
+    // facette owaspTop10 — ce que fait le double d'e2e SonarFixtureClientService,
+    // qui réutilise le même fixture issues/search.json pour tous les endpoints
+    // /api/issues/search. Avant fix : facets[0]['values'] plantait (Undefined
+    // array key 0 → ErrorException fatale, cf. BatchCollecteOwaspControllerTest
+    // ne le couvrait pas car buildOwaspPayload() garantit toujours facets[0]).
+    public function testFallsBackToTagCountWhenFacetsArrayIsStructurallyEmpty(): void
+    {
+        $this->parameterBag->method('get')->willReturnMap([
+            ['sonar.url', self::SONAR_URL],
+            ['sonar.version', '8'],
+        ]);
+
+        $this->client->expects($this->exactly(2))
+            ->method('httpSonarQube')
+            ->willReturnCallback(function (string $url) {
+                if ($url === self::BUILT_URL_TAG_FALLBACK) {
+                    return ['code' => 200, 'json' => [
+                        'total' => 1,
+                        'effortTotal' => 5,
+                        'issues' => [
+                            ['status' => 'OPEN', 'severity' => 'MAJOR', 'tags' => ['owasp-a07']],
+                        ],
+                    ]];
+                }
+                // total > 0 mais facets structurellement vide (pas de facets[0]).
+                return ['code' => 200, 'json' => [
+                    'total' => 132,
+                    'effortTotal' => 40,
+                    'facets' => [],
+                    'issues' => [],
+                ]];
+            });
+
+        $this->infoRepo->method('selectInformationProjetVersion')->willReturn(['code' => 200, 'info' => [
+            'date' => '2026-04-22', 'version' => '1.0',
+        ]]);
+        $this->owaspRepo->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
+
+        $capturedList = [];
+        $this->owaspRepo->expects($this->once())
+            ->method('insertOwasp')
+            ->with($this->callback(function (array $list) use (&$capturedList) {
+                $capturedList = $list;
+                return true;
+            }))
+            ->willReturn(['code' => 200]);
+
+        $result = $this->controller->BatchCollecteOwasp(self::MAVEN_KEY, 'manual', 'admin');
+
+        $this->assertSame(200, $result['code']);
+        $this->assertSame('tag', $capturedList[0]['source']);
+        $this->assertSame(1, $capturedList[0]['a7']);
+        $this->assertSame(1, $capturedList[0]['a7_major']);
+    }
+
     // ─── helpers ─────────────────────────────────────────────────────────────
 
     /**
