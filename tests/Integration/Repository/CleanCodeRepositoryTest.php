@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Repository;
 
+use Doctrine\ORM\EntityManagerInterface;
 /* MODIF 2026-05-17 : tests d'intégration pour
  * CleanCodeRepository (delete / select / insert) — 3 scénarios
  * compatibles avec le contrat défini dans CleanCodeFixtures.php :
@@ -34,7 +35,7 @@ class CleanCodeRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container     = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
         $connection    = $entityManager->getConnection();
 
         // Réinitialisation de la séquence PostgreSQL
@@ -54,7 +55,7 @@ class CleanCodeRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container     = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $repository = $entityManager->getRepository(CleanCode::class);
         $r = $repository->selectCleanCode(['maven_key' => self::$mavenKey]);
@@ -74,7 +75,7 @@ class CleanCodeRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container     = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $repository = $entityManager->getRepository(CleanCode::class);
         $r = $repository->selectCleanCode(['maven_key' => 'fr.ma-moulinette:projet-inconnu']);
@@ -90,7 +91,7 @@ class CleanCodeRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container     = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $repository = $entityManager->getRepository(CleanCode::class);
         $r = $repository->deleteCleanCodeMavenKey(['maven_key' => self::$mavenKey]);
@@ -109,7 +110,7 @@ class CleanCodeRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container     = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $repository = $entityManager->getRepository(CleanCode::class);
 
@@ -159,7 +160,7 @@ class CleanCodeRepositoryTest extends KernelTestCase
         parent::tearDown();
 
         $container     = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
         $entityManager->close();
     }
 }

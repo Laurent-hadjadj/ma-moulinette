@@ -48,7 +48,7 @@ class DcScanRepositoryFindArchetypeScansBatchTest extends KernelTestCase
         self::bootKernel();
         $container   = static::getContainer();
         /** @var \Doctrine\ORM\EntityManagerInterface $em */
-        $em = $container->get('doctrine')->getManager();
+        $em = $container->get(EntityManagerInterface::class);
         $this->em    = $em;
         $this->repo  = $this->em->getRepository(DcScan::class);
 
@@ -145,7 +145,6 @@ class DcScanRepositoryFindArchetypeScansBatchTest extends KernelTestCase
         $this->assertCount(1, $result);
         $this->assertArrayHasKey(self::SPRING_BOOT_FAM_CONFIG, $result);
         $scan = $result[self::SPRING_BOOT_FAM_CONFIG];
-        $this->assertInstanceOf(DcScan::class, $scan);
         $this->assertSame('springboot-socle-config', $scan->getProjectArtifact());
         $this->assertSame(self::VERSION_RELEASE,         $scan->getProjectVersion());
     }

@@ -34,7 +34,7 @@ class UserAgentEventRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         /** @var EntityManagerInterface $em */
-        $em       = self::getContainer()->get('doctrine')->getManager();
+        $em       = self::getContainer()->get(EntityManagerInterface::class);
         $this->em = $em;
         $this->purgeDatabase();
         $this->loadFixtures();

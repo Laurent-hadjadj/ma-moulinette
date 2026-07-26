@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Repository;
 
+use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Logger;
 use App\DataFixtures\LoggerFixtures;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
@@ -33,11 +34,11 @@ class LoggerRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Réinitialiser la séquence
         $connection = $entityManager->getConnection();
-        $platform = $connection->getDatabasePlatform('SET search_path TO ma_moulinette_test');
+        $platform = $connection->getDatabasePlatform();
 
         if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSQLPlatform) {
             $sequence = 'ma_moulinette.logger_id_seq';
@@ -55,7 +56,7 @@ class LoggerRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Appel de la méthode
         $map = ['maven_key' => self::$mavenKey];
@@ -74,7 +75,7 @@ class LoggerRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Appel de la méthode
         $map = ['maven_key' => self::$mavenKey];
@@ -93,7 +94,7 @@ class LoggerRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = [
             'maven_key' => self::$mavenKey,
@@ -121,7 +122,7 @@ class LoggerRepositoryTest extends KernelTestCase
 
         // On se déconnecte pour éviter des problèmes de mémoires
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
         $entityManager->close();
         $entityManager = null;
     }

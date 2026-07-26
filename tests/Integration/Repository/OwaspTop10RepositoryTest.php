@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Repository;
 
+use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\OwaspTop10;
 use App\DataFixtures\OwaspTop10Fixtures;
 use DateTimeImmutable;
@@ -44,11 +45,11 @@ class OwaspTop10RepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Réinitialiser la séquence
         $connection = $entityManager->getConnection();
-        $platform = $connection->getDatabasePlatform('SET search_path TO ma_moulinette_test');
+        $platform = $connection->getDatabasePlatform();
 
         if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSQLPlatform) {
             $sequence = 'ma_moulinette.owasp_top10_id_seq';
@@ -75,7 +76,7 @@ class OwaspTop10RepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = [ 'referential_version' => 2017 ];
 
@@ -102,7 +103,7 @@ class OwaspTop10RepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = [ 'menace' => 1 ];
 

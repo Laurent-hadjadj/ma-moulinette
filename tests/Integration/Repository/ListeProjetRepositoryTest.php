@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Repository;
 
+use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\ListeProjet;
 use App\DataFixtures\ListeProjetFixtures;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
@@ -32,11 +33,11 @@ class ListeProjetRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Réinitialiser la séquence
         $connection = $entityManager->getConnection();
-        $platform = $connection->getDatabasePlatform('SET search_path TO ma_moulinette_test');
+        $platform = $connection->getDatabasePlatform();
 
         if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSQLPlatform) {
             $sequence = 'ma_moulinette.liste_projet_id_seq';
@@ -54,7 +55,7 @@ class ListeProjetRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Appel de la méthode
         $notesRepository = $entityManager->getRepository(ListeProjet::class);
@@ -71,7 +72,7 @@ class ListeProjetRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Appel de la méthode
         $listeProjetRepository = $entityManager->getRepository(ListeProjet::class);
@@ -88,7 +89,7 @@ class ListeProjetRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Appel de la méthode
         $listeProjetRepository = $entityManager->getRepository(ListeProjet::class);
@@ -105,7 +106,7 @@ class ListeProjetRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = ['clause_where'=>"tag LIKE 'ma-moulinette%' OR tag LIKE '2048%'" ];
 
@@ -124,7 +125,7 @@ class ListeProjetRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Appel de la méthode
         $listeProjetRepository = $entityManager->getRepository(ListeProjet::class);
@@ -141,7 +142,7 @@ class ListeProjetRepositoryTest extends KernelTestCase
 
         // On se déconnecte pour éviter des problèmes de mémoires
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
         $entityManager->close();
         $entityManager = null;
     }

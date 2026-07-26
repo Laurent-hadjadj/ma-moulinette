@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Repository;
 
+use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\MaMoulinette;
 use App\DataFixtures\MaMoulinetteFixtures;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
@@ -30,11 +31,11 @@ class MaMoulinetteRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Réinitialiser la séquence
         $connection = $entityManager->getConnection();
-        $platform = $connection->getDatabasePlatform('SET search_path TO ma_moulinette_test');
+        $platform = $connection->getDatabasePlatform();
 
         if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSQLPlatform) {
             $sequence = 'ma_moulinette.ma_moulinette_id_seq';
@@ -52,7 +53,7 @@ class MaMoulinetteRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Appel de la méthode
         $maMoulinetteRepository = $entityManager->getRepository(MaMoulinette::class);
@@ -69,7 +70,7 @@ class MaMoulinetteRepositoryTest extends KernelTestCase
 
         // On se déconnecte pour éviter des problèmes de mémoires
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
         $entityManager->close();
         $entityManager = null;
     }

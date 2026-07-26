@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Repository;
 
+use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Utilisateur;
 use App\DataFixtures\UtilisateurFixtures;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
@@ -46,11 +47,11 @@ class UtilisateurRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Réinitialiser la séquence
         $connection = $entityManager->getConnection();
-        $platform = $connection->getDatabasePlatform('SET search_path TO ma_moulinette_test');
+        $platform = $connection->getDatabasePlatform();
 
         if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSQLPlatform) {
             $sequence = 'ma_moulinette.utilisateur_id_seq';
@@ -67,7 +68,7 @@ class UtilisateurRepositoryTest extends KernelTestCase
         // Connexion à la base de données
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Récupère un utilisateur de test depuis les fixtures
         $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
@@ -114,7 +115,7 @@ class UtilisateurRepositoryTest extends KernelTestCase
         // Connexion à la base de données
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Récupère un utilisateur de test depuis les fixtures
         $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
@@ -160,7 +161,7 @@ class UtilisateurRepositoryTest extends KernelTestCase
         // Connexion à la base de données
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Récupère un utilisateur de test depuis les fixtures
         $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
@@ -221,7 +222,7 @@ class UtilisateurRepositoryTest extends KernelTestCase
         // Connexion à la base de données
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Récupère un utilisateur de test depuis les fixtures
         $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
@@ -245,7 +246,7 @@ class UtilisateurRepositoryTest extends KernelTestCase
         // Connexion à la base de données
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Récupère un utilisateur de test depuis les fixtures
         $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
@@ -274,7 +275,7 @@ class UtilisateurRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
         $utilisateur = $utilisateurRepository->findOneBy(['courriel' => self::$courriel]);
@@ -303,7 +304,7 @@ class UtilisateurRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
         $utilisateur = $utilisateurRepository->findOneBy(['courriel' => self::$courriel]);
@@ -332,7 +333,7 @@ class UtilisateurRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $utilisateurRepository = $entityManager->getRepository(Utilisateur::class);
         $utilisateur = $utilisateurRepository->findOneBy(['courriel' => self::$courriel]);
@@ -372,7 +373,7 @@ class UtilisateurRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = [
             'reset_password' => 1,
@@ -395,7 +396,7 @@ class UtilisateurRepositoryTest extends KernelTestCase
 
         // On se déconnecte pour éviter des problèmes de mémoires
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
         $entityManager->close();
         $entityManager = null;
     }

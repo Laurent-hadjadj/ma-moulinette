@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Repository;
 
+use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\ProfilesHistorique;
 use App\DataFixtures\ProfilesHistoriqueFixtures;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
@@ -41,11 +42,11 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Réinitialiser la séquence
         $connection = $entityManager->getConnection();
-        $platform = $connection->getDatabasePlatform('SET search_path TO ma_moulinette_test');
+        $platform = $connection->getDatabasePlatform();
 
         if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSQLPlatform) {
             $sequence = 'ma_moulinette.profiles_historique_id_seq';
@@ -63,7 +64,7 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         /* MODIF 2026-07-19 : (date/rule) distincts de ProfilesHistoriqueFixtures — sinon
          * la contrainte d'unicité (language, date, rule, action) rejette l'insertion. */
@@ -89,7 +90,7 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
          * une seconde insertion du même événement SonarQube. */
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map=[  'date_courte'=>self::$dateCourte, 'language'=>self::$language,
                 'date'=>self::$date, 'action'=>self::$action, 'auteur'=>self::$auteur,
@@ -110,7 +111,7 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map=[ 'language' => self::$language, 'action' => self::$action];
 
@@ -129,7 +130,7 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = ['language' => self::$language, 'tri' => 'ASC', 'limit' => 1];
 
@@ -148,7 +149,7 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = ['language' => self::$language];
 
@@ -167,7 +168,7 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = ['language' => self::$language, 'date_courte' => self::$dateCourte];
 
@@ -186,7 +187,7 @@ class ProfilesHistoriqueRepositoryTest extends KernelTestCase
 
         // On se déconnecte pour éviter des problèmes de mémoires
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
         $entityManager->close();
         $entityManager = null;
     }

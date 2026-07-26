@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Repository;
 
+use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Historique;
 use App\DataFixtures\HistoriqueFixtures;
 
@@ -33,7 +34,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Pas de séquence, car clé composite
         $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.historique');
@@ -47,7 +48,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Appel de la méthode
         $map = ['maven_key' => self::$mavenKey];
@@ -66,7 +67,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         /* MODIF 2026-05-07 : signature getProjetFavori a change
          * (string $mavenKey, array $versions). L'ancien WHERE concatène n'existe plus.
@@ -85,7 +86,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = [
             'maven_key' => self::$mavenKey,
@@ -109,7 +110,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = [
             'maven_key' => self::$mavenKey,
@@ -132,7 +133,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = [
             'maven_key' => self::$mavenKey,
@@ -154,7 +155,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = [
             'maven_key' => self::$mavenKey,
@@ -176,7 +177,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = [
             'maven_key' => self::$mavenKey,
@@ -198,7 +199,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = [
             'maven_key' => self::$mavenKey,
@@ -220,7 +221,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = [
             'maven_key' => self::$mavenKey,
@@ -242,7 +243,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = [
             'maven_key' => self::$mavenKey,
@@ -336,7 +337,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = ['maven_key' => self::$mavenKey];
 
@@ -355,7 +356,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = ['maven_key' => self::$mavenKey];
 
@@ -374,7 +375,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = ['maven_key' => self::$mavenKey];
 
@@ -393,7 +394,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = ['liste_projet' => "'" . self::$mavenKey . "'", 'nombre_projet_favori' => 5];
 
@@ -412,7 +413,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = ['maven_key' => self::$mavenKey];
 
@@ -431,7 +432,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
         /* MODIF 2026-05-07 : signature selectHistoriqueIndicateurs
          * attend `array $mavenKeys` (était une chaîne quotée pour SQL IN). Bind par
          * placeholder cote Repository depuis MODIF 2026-05-04.
@@ -453,7 +454,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = ['maven_key' => self::$mavenKey, 'versions' => ['1.3.0-RELEASE']];
 
@@ -468,7 +469,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = ['maven_key' => self::$mavenKey, 'versions' => ['1.3.0-RELEASE']];
 
@@ -483,7 +484,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = ['maven_key' => self::$mavenKey, 'versions' => ['1.3.0-RELEASE']];
 
@@ -498,7 +499,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = ['maven_key' => self::$mavenKey, 'versions' => ['1.3.0-RELEASE']];
 
@@ -517,7 +518,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = ['maven_key' => self::$mavenKey, 'versions' => ['1.3.0-RELEASE']];
 
@@ -534,7 +535,7 @@ class HistoriqueRepositoryTest extends KernelTestCase
 
         // On se déconnecte pour éviter des problèmes de mémoires
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
         $entityManager->close();
         $entityManager = null;
     }

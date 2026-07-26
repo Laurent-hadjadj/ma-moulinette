@@ -13,6 +13,7 @@
 
 namespace App\Tests\Integration\Repository;
 
+use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Properties;
 use App\DataFixtures\PropertiesFixtures;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
@@ -39,11 +40,11 @@ class PropertiesRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Réinitialiser la séquence
         $connection = $entityManager->getConnection();
-        $platform = $connection->getDatabasePlatform('SET search_path TO ma_moulinette_test');
+        $platform = $connection->getDatabasePlatform();
 
         if ($platform instanceof \Doctrine\DBAL\Platforms\PostgreSQLPlatform) {
             $sequence = 'ma_moulinette.properties_id_seq';
@@ -61,7 +62,7 @@ class PropertiesRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         // Appel de la méthode
         $propertiesRepository = $entityManager->getRepository(Properties::class);
@@ -78,7 +79,7 @@ class PropertiesRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
         $d1 = new \DateTimeImmutable(self::$dateModificationProjet);
         $d2 = new \DateTimeImmutable(self::$dateModificationProfil);
         $d0 = new \DateTimeImmutable(self::$dateCreation);
@@ -105,7 +106,7 @@ class PropertiesRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = ['projet_bd' => self::$projetBd,
                 'projet_sonar'=> self::$projetSonar,
@@ -127,7 +128,7 @@ class PropertiesRepositoryTest extends KernelTestCase
         self::bootKernel();
         /* On se connecte à la base de tests */
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
 
         $map = ['profil_bd' => self::$profilBd,
                 'profil_sonar'=> self::$profilSonar,
@@ -149,7 +150,7 @@ class PropertiesRepositoryTest extends KernelTestCase
 
         // On se déconnecte pour éviter des problèmes de mémoires
         $container = static::getContainer();
-        $entityManager = $container->get('doctrine')->getManager();
+        $entityManager = $container->get(EntityManagerInterface::class);
         $entityManager->close();
         $entityManager = null;
     }
