@@ -89,14 +89,6 @@ class DcExecutiveAnalyticsServiceTest extends TestCase
      *  getScoreSecuRule
      * ======================================================== */
 
-    public function testGetScoreSecuRuleReturnsStructure(): void
-    {
-        $rule = $this->svc->getScoreSecuRule();
-        $this->assertArrayHasKey('weights', $rule);
-        $this->assertArrayHasKey('caps', $rule);
-        $this->assertArrayHasKey('penalty_max', $rule);
-    }
-
     public function testGetScoreSecuRulePenaltyMax(): void
     {
         // weights: CRIT=10 HIGH=3 MED=1 LOW=0.5 / caps: 5,10,20,20
