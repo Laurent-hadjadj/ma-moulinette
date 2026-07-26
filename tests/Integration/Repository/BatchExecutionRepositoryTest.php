@@ -64,7 +64,7 @@ class BatchExecutionRepositoryTest extends KernelTestCase
             new Ulid(),
             $traitementId,
             'admin@ma-moulinette.fr',
-            '[COLLECTE]'
+            'COLLECTE'
         );
         $execution->setDateEnregistrement($dateEnregistrement);
 

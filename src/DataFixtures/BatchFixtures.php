@@ -42,7 +42,7 @@ class BatchFixtures extends Fixture
             ->setResponsableShort(self::RESPONSABLE_SHORT)
             ->setPortefeuille('MES PROJETS')
             ->setNombreProjet(2)
-            ->setExecution('OK');
+            ->setExecution('ON');
         $manager->persist($batch1);
 
         $batch2 = (new Batch())
@@ -54,7 +54,7 @@ class BatchFixtures extends Fixture
             ->setResponsableShort(self::RESPONSABLE_SHORT)
             ->setPortefeuille('PROJETS LEGACY')
             ->setNombreProjet(1)
-            ->setExecution('KO');
+            ->setExecution('OFF');
         $manager->persist($batch2);
 
         $batch3 = (new Batch())

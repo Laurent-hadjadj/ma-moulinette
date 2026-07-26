@@ -4,9 +4,9 @@
 
 | Suite | Tests | Assertions | Nature |
 | --- | ---: | ---: | --- |
-| `unit` (`tests/Unit`) | 3 133 | 8 635 | Unitaires purs (mocks, aucune base réelle) |
-| `integration` (`tests/Integration`) | 600 | 1 345 | `KernelTestCase`/`WebTestCase` sur PostgreSQL de test |
-| **Total** | **3 733** | **9 980** | |
+| `unit` (`tests/Unit`) | 3 135 | 8 649 | Unitaires purs (mocks, aucune base réelle) |
+| `integration` (`tests/Integration`) | 602 | 1 351 | `KernelTestCase`/`WebTestCase` sur PostgreSQL de test (2 skips volontaires — sample DC optionnel absent) |
+| **Total** | **3 737** | **10 000** | |
 
 **Couverture de code** (suites `unit` + `integration` cumulées, via pcov) :
 

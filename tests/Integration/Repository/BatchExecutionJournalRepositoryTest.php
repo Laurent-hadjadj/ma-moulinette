@@ -47,7 +47,7 @@ class BatchExecutionJournalRepositoryTest extends KernelTestCase
             new Ulid(),
             new Ulid(),
             'admin@ma-moulinette.fr',
-            '[COLLECTE]'
+            'COLLECTE'
         );
         $this->em->persist($this->job);
         $this->em->flush();

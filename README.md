@@ -82,9 +82,9 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 
 | Indicateur | Valeur |
 | --- | --- |
-| Tests unitaires (`tests/Unit`) | **3 133** tests / 8 635 assertions |
-| Tests d'intégration (`tests/Integration`) | **600** tests / 1 345 assertions |
-| **Total** | **3 733** tests / **9 980** assertions |
+| Tests unitaires (`tests/Unit`) | **3 135** tests / 8 649 assertions |
+| Tests d'intégration (`tests/Integration`) | **602** tests / 1 351 assertions (2 skips volontaires) |
+| **Total** | **3 737** tests / **10 000** assertions |
 | Couverture — lignes | **80,01 %** (20 650 / 25 810) |
 | Couverture — méthodes | 84,65 % (2 393 / 2 827) |
 | Couverture — classes | 51,50 % (120 / 233) |

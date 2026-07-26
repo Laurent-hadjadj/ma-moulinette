@@ -81,9 +81,9 @@ Relevé du 26/07/2026 — voir [Tests unitaires et d'intégration](ma-moulinette
 
 | Indicateur | Valeur |
 | --- | --- |
-| Tests unitaires | **3 133** (8 635 assertions) |
-| Tests d'intégration | **600** (1 345 assertions) |
-| **Total** | **3 733** tests / **9 980** assertions |
+| Tests unitaires | **3 135** (8 649 assertions) |
+| Tests d'intégration | **602** (1 351 assertions, 2 skips volontaires) |
+| **Total** | **3 737** tests / **10 000** assertions |
 | Couverture de code (lignes) | **80,01 %** |
 | Analyse statique | **PHPStan niveau 6** (150 erreurs résiduelles) |
 

@@ -166,7 +166,7 @@ class BatchTraitement
 
     /* MODIF 2026-05-07 : retrait Assert\NotNull (incohérent avec nullable=true en BDD). */
     #[ORM\Column(
-        name: 'date_traitement',
+        name: 'debut_traitement',
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: true,
         options: ['comment' => 'Date et heure de début du traitement']

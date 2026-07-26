@@ -41,7 +41,15 @@ class ActuatorInfoKernelTest extends KernelTestCase
             $connection->executeQuery("SELECT setval('$sequence', 1, false);");
         }
 
+        // MODIF 2026-07-26 : purge aussi `actuator` (pas seulement `actuator_info`).
+        // ActuatorInfoFixtures suppose une table `actuator` vide pour reset sa
+        // séquence et réutiliser les ids 1-5 (cf. commentaire de la fixture) —
+        // sans ce DELETE, setUp() laisse les Actuator du run précédent en place
+        // à chaque nouvelle méthode de test de cette classe (setUp() s'exécute
+        // avant CHAQUE méthode), et la fixture retente les mêmes URL fixes
+        // (uq_actuator_url) : collision dès la 2e méthode de la classe.
         $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.actuator_info');
+        $entityManager->getConnection()->executeStatement('DELETE FROM ma_moulinette.actuator');
         $executor = new ORMExecutor($entityManager);
         $executor->execute([new ActuatorInfoFixtures()], true);
     }
