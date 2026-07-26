@@ -1,15 +1,16 @@
 # Liste des évolutions et défauts corrigés
 
-## v2.0.0 - 01/12/2025 - WiP
+## v2.0.0 - 01/08/2026 - WiP
 
 ### Framework
 
-* Migration PHP 8.3.0 NTS ;
+* Migration PHP 8.5.5 NTS ;
 * Migration symfony/core 6.4 (6.4.8) ;
 * Migration symfony/core 6.4 vers 7.1 (7.1.6) ;
 * Migration Symfony/core 7.1 vers 7.2 (7.2.1) ;
 * Migration Symfony/core 7.2 vers 7.3 (7.3.3) ;
-* Migration de la base SQLite vers PostgreSQL ;
+* Migration Symfony/core 7.3 vers 8.1 (8.1.0) ;
+* Migration de la base SQLite vers PostgreSQL 18;
 * Migration : La documentation au format markdown utilise mkDocs pour la consultation ;
 * Mise à jour Twig 3 (3.21.3) ;
 * Mise à jour doctrine/dbal 4 (4.3.22) ;
@@ -70,7 +71,7 @@
 
 * [EasyAdmin] Ajout d'un **listener** pour afficher les messages utilisateurs pour les événements des class **equipe**, **portefeuille** et **batch** ;
 * [EasyAdmin] ~~Ajout d'un **Validator** pour la contrainte d'unicité sur l'attribut `titre`~~ ;
-* [EasyAdmin] Ajout d'un controller CRUD pour gérer les **équipes** ;
+* [EasyAdmin] Ajout d'un controller CRUD pour gérer les **groupes fonctionnels** et **groupes utilisateur** ;
 * [EasyAdmin] Ajout d'un controller CRUD pour gérer les **portefeuilles** de projets ;
 * [EasyAdmin] Ajout d'un controller CRUD pour gérer les **batch** ;
 
@@ -158,19 +159,61 @@
 
 > Tests Unitaires
 
-* [TU] Mise à jour des TU (Entity, EntityRepository).
-  * [ ] Entity : 334 case de tests, 411 assertions ;
-    * [ ] Kernel : 54 cas de tests, 112 assertions ;
-    * [ ] Performance : 1 cas de tests, 1000 assertions ;
-    * [ ] Validators : 109 cas de tests, 363 assertions ;
-  * [ ] Repository : 98 cas de tests; 239 assertions ;
-  * [ ] Handler : 4 cas de tests, 5 assertions ;
-  * [ ] Messenger : 10 case de tests, 37 assertions ;
-  * [ ] Service : 4+6+15+4+23+3 case de tests, 18+6+25+4+73+11 assertions ;
-  * [ ] Controller : 157 cas de tests, 733 assertions ;
-  * [ ] Validators : 5+5+9 cas de tests, 6+6+11 assertions ;
-* [TU] OK (822+1 cas de tests, 3038+1000 assertions) ;
-* [TF] Mise en place de Cypress ;
+* [TU] Mise à jour des TU et de TI (cf. document [test-unitaire.md](/mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)) ;
+
+> Commandes console
+
+* [Documentation] Nouveau domaine mkDocs **Commandes** : les 19 commandes console (`Prod`, `Maintenance`, `Dev`) sont désormais documentées (objectif, options, exemple d'invocation, classification d'impact lecture seule/modification/destructive/hybride, fréquence cron) ;
+* [app:historique:rebuild] Suppression d'un appel de débogage bloquant et d'un appel à une méthode de repository inexistante ; l'insertion utilise désormais la méthode réelle `HistoriqueRepository::insertHistoriqueAjoutProjet()`, ligne par ligne, avec compteur d'échecs et code de sortie cohérent ;
+* [app:sonar:compare-metrics] Correction du nom de commande : un `setName()` interne rendait `app:sonar:compare-metrics-v1` seul actif malgré l'attribut `#[AsCommand]` annonçant `app:sonar:compare-metrics` ;
+* [app:ldap:test] Ajout d'un garde-fou d'environnement (réservée à `env=dev`, cohérent avec les autres commandes de développement) et correction du code de sortie (retournait toujours un succès, y compris en cas d'échec de connexion LDAP) ;
+* [app:dependency-check:process] Le code de sortie reflète désormais les rapports ayant échoué définitivement après 3 tentatives (sans effet sur la planification cron, uniquement sur la visibilité du journal) ;
+* [app:sonar:update-tags] Le fichier `var/mapping_projets_groupes.json` n'est plus écrit en mode `--dry-run` ; le critère de détection du groupe SonarQube (permissions + marqueur de description) est désormais paramétrable via `config/packages/sonar_tags.yaml` au lieu d'être en dur dans le code ;
+* [Configuration] Documentation et valeurs par défaut sûres (vérification TLS activée) pour les 7 variables `MAMOUL_CLI_*` dans `docker/.env.template`, jusqu'ici absentes de tout fichier versionné ;
+
+> Documentation (mkDocs)
+
+* [mkDocs] Poursuite de la relecture de la documentation technique face au code réel : domaines Développement, DependencyCheck (dont 4 nouvelles pages détaillant chaque page applicative) et Gestion des erreurs ;
+* [mkDocs] Suppression de `erreur/erreurs.md`, obsolète (décrivait un export PDF via jsPDF qui n'est plus utilisé) ;
+* [mkDocs] `dependency-check/exploitation.md` : ajout d'une section sur l'envoi des métadonnées socle/archétype par la CI (extraction depuis le `pom.xml`, en-têtes HTTP optionnels) ;
+
+> DependencyCheck
+
+* [Page_DC_Projet] L'export PDF d'un scan absent redirige désormais vers la liste avec un message flash, au lieu de générer un PDF quasi vide sans signal visible ;
+* [Page_DC_Projet] Ajout d'un bandeau d'avertissement dans le PDF quand la récupération des findings échoue en cours de génération ;
+* [Page_DC_Mutualisables] Ajout d'un avertissement d'interface quand la liste des dépendances mutualisables dépasse 5 000 lignes (troncature jusqu'ici silencieuse) ;
+
+> Journal des rôles (back-office)
+
+* [Page_Journal_Rôles] Nouvelle page `/admin/journal-roles` (consultation, archive CSV/PDF, suppression du journal des rôles, `ROLE_INTERNAL`) ;
+* [Page_Journal_Rôles] Tableau contenu dans un conteneur à défilement horizontal dédié (`table-scroll`) au lieu de déborder de la page ;
+* [Page_Journal_Rôles] Correction du bouton "sélectionner tout", qui ne fonctionnait pas (délégation d'événement, robuste à la reconstruction du `<thead>` par DataTables) ;
+* [Page_Journal_Rôles] Ajout d'un retour visuel (spinner, boutons désactivés) pendant les actions d'archivage/téléchargement/suppression ;
+
+> Actuator
+
+* [Actuator] Ajout du champ "nom de la clé" (nœud JSON à extraire, ex. `app.version`) sur les points d'accès, en remplacement d'une "valeur" jusqu'ici saisie à la main sans lien avec la collecte réelle ;
+* [Actuator] Le workflow de collecte extrait désormais réellement les clés déclarées depuis la réponse `/actuator/info` et construit un JSON structuré (`date_extraction`, `code`, `message`, clés/valeurs), stocké dans `historique.actuator_info` ; auparavant le JSON brut de la réponse distante était ignoré et rien n'était réellement extrait ;
+* [Actuator] La collecte est "best effort" : un point d'accès injoignable, en timeout ou en erreur HTTP n'interrompt plus le reste de la collecte du projet (seule une erreur interne Ma-Moulinette le fait encore, comme les autres étapes) ;
+* [Actuator] Timeout HTTP dédié de 3 secondes (au lieu des 45 secondes génériques), comparaison de la clé Maven insensible à la casse, limite de 15 clés par point d'accès (serveur + JavaScript) ;
+* [Actuator] Mot de passe du compte Actuator rendu obligatoire à la création d'un point d'accès ;
+* [Actuator] Validation de l'URL à l'enregistrement : format contrôlé (`http`/`https` obligatoire), complétion automatique du suffixe `/actuator/info` si absent, et test de joignabilité (ping) avant enregistrement ;
+* [Actuator] Correction du bouton "Ajouter clé" du formulaire, qui ne faisait rien (logique JavaScript câblée dans le mauvais bundle) ;
+* [Actuator] Ajout d'une bannière de bonnes pratiques sur la page d'inventaire (mot de passe obligatoire, ne jamais exposer un point d'accès de production sans protection) ;
+* [Actuator] Correction d'une exception non gérée lors de la modification d'un point d'accès existant (type de date incompatible avec la colonne `date_modification`) ;
+* [Page_Projet] Ajout d'une pastille de statut (grise/verte/rouge) et d'une fenêtre modale Actuator dans le bloc "Informations générales", avec une nouvelle étape de collecte interactive et son endpoint de lecture dédié (aucun affichage n'existait auparavant) ;
+
+> Corrections transverses
+
+* [Templates] Correction d'un bloc d'affichage des messages flash copié-collé et buggé (clé `message.titre` inexistante) dans 5 templates (`admin/admin_log.html.twig`, `admin/user_role_log.html.twig`, `actuator/ajouter.html.twig`, `auth/register.html.twig`, `projet/mes-projets.html.twig`), remplacé par l'inclusion standard `_message.html.twig` ;
+* [Maintenance] `app:admin:refresh-stats` : les scripts SQL sous `migrations/POSTGRESQL/` étaient comptés via une liste de sous-dossiers codée en dur pointant vers un ancien chemin, ce qui affichait systématiquement 0 ; corrigé et étendu à un scan récursif du dossier ;
+* [Tests] `tests/Integration` : 54 tests (`Entity/*KernelTest`, `Repository/*RepositoryTest`) purgeaient toute la base de test via `ORMPurger` sans restriction puis ne rechargeaient que leur propre fixture, vidant silencieusement les données globales (utilisateurs, groupes, scans DependencyCheck) attendues par 3 autres classes de test plus loin dans la suite (49 échecs). Corrigé en scopant chaque purge à la seule table testée ;
+* [Page_Actuator] Formulaire d'ajout/modification : conteneurs de grille sans gouttière (`grid-margin-x` manquant) faisant se toucher les champs, ligne "Nom du responsable"/"URL" réorganisée sur une même ligne, ratio de colonnes de la première clé JSON désaligné de celui des clés ajoutées dynamiquement, balise `</div>` surnuméraire dans le prototype JS (cassait la structure DOM à chaque ajout de clé), classes `small-12,` invalides (virgule parasite) et `<div class="small-12 cell">` non fermée sur la page d'inventaire ;
+* [Tests] `GroupeUtilisateurValidatorTest` : la contrainte `UniqueEntity` interroge réellement la base de test ; le test dépendait donc silencieusement de l'absence d'un groupe `admin` résiduel en base. Le test purge désormais explicitement ce groupe avant chaque exécution, au lieu de supposer une base vierge ;
+* [PHPStan] Poursuite de la campagne de réduction (675 → 661 erreurs) : suppression des blocs `@method find/findBy/findOneBy/findAll` redondants (et mal typés) sur `ActuatorRepository`/`ActuatorInfoRepository` — l'`@extends ServiceEntityRepository<T>` suffit déjà, pattern déjà utilisé par les autres repositories ; ajout des types de tableaux manquants sur plusieurs méthodes de `HistoriqueRepository` et `ApiPeintureController` ; suppression de 2 conditions mortes (`if (!empty($rules))` toujours vraies) dans `ApiPeintureController`.
+* [PHPStan] Nouvelle étape de la campagne de réduction (661 → 150 erreurs) : extension `phpstan/phpstan-phpunit` installée (typage correct des mocks PHPUnit) ; pattern `$container->get('doctrine')->getManager()` (typé `ObjectManager`, générique) remplacé par `$container->get(EntityManagerInterface::class)` sur 60 fichiers de tests ; les 355 erreurs `missingType.iterableValue` restantes corrigées en typant précisément chaque tableau (`array{clé: type, ...}`) d'après son usage réel plutôt qu'un `mixed` générique ;
+* [Tests] L'extension `phpstan/phpstan-phpunit` a mis en évidence plusieurs assertions de test toujours vraies (donc ne testant rien) : `assertCount(1, [$response], ...)` sur 30 tests d'intégration ne détectait jamais une entité manquante (`[null]` a aussi un `count()` de 1, corrigé en `assertNotNull($response, ...)`) ; `GroupeUtilisateurCrudControllerTest::testConfigureActionsRemovesEditAndDetail` ne vérifiait en réalité aucune des deux suppressions promises par son nom ; `ApiActivityController` contenait un `is_array()` toujours vrai sur un retour de méthode déjà typé `array` ; 21 tests d'intégration de repository appelaient `getDatabasePlatform()` avec un argument SQL (`'SET search_path TO ...'`) jamais exécuté, cette méthode n'acceptant aucun paramètre ;
+* [Tests] Ajout de tests unitaires et d'intégration ciblés pour dépasser les 80 % de couverture de lignes (`SonarQualityScorer`, entité `LoggerDetail`, `LoggerDetailRepository`, `BatchExecutionRepository`, `BatchExecutionJournalRepository`, jusqu'ici non couverts).
 
 ## v1.6.0 - 30/11/2022 - Release
 
