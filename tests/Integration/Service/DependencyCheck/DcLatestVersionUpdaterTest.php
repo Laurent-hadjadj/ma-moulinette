@@ -50,7 +50,7 @@ class DcLatestVersionUpdaterTest extends KernelTestCase
         self::bootKernel();
         $container     = static::getContainer();
         /** @var \Doctrine\ORM\EntityManagerInterface $em */
-        $em = $container->get('doctrine')->getManager();
+        $em = $container->get(EntityManagerInterface::class);
         $this->em      = $em;
         // Instanciation directe : le service est inline par le container tant
         // qu'aucun consumer ne l'injecte. On testera l'autowiring en bout de

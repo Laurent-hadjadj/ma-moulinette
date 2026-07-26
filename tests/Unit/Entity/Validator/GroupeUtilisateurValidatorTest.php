@@ -13,6 +13,7 @@
 
 namespace App\Tests\Unit\Entity\Validator;
 
+use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\GroupeUtilisateur;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Validator\ConstraintViolation;
@@ -30,7 +31,7 @@ class GroupeUtilisateurValidatorTest extends KernelTestCase
     protected function setUp(): void
     {
         self::bootKernel();
-        static::getContainer()->get('doctrine')->getManager()->getConnection()
+        static::getContainer()->get(EntityManagerInterface::class)->getConnection()
             ->executeStatement("DELETE FROM ma_moulinette.groupe_utilisateur WHERE groupe_utilisateur = 'admin'");
     }
 
