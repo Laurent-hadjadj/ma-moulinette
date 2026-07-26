@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from '../helpers/fixtures';
 import { login, logout } from '../helpers/auth';
 import { gotoCrudIndex, gotoCrudNew } from '../helpers/admin';
 import { resetE2EData } from '../helpers/db';
