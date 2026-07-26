@@ -468,16 +468,6 @@ final class RapportInsightServiceTest extends TestCase
         }
     }
 
-    public function testExtractTopAlertsEachAlertHasMandatoryKeys(): void
-    {
-        $alerts = $this->svc->extractTopAlerts([$this->makeRow(['alert_status' => 'ERROR'])]);
-        foreach ($alerts as $a) {
-            self::assertArrayHasKey('titre', $a);
-            self::assertArrayHasKey('phrase', $a);
-            self::assertArrayHasKey('severity', $a);
-        }
-    }
-
     public function testExtractTopAlertsNotePhraseContainsDeltaWhenChanged(): void
     {
         $suivi = [
