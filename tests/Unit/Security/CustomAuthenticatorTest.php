@@ -32,7 +32,6 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\{AuthenticationException,CustomUserMessageAuthenticationException};
-use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 
 /**
  * MODIF 2026-05-15 : tests Unit pour CustomAuthenticator.
@@ -218,7 +217,7 @@ class CustomAuthenticatorTest extends TestCase
 
         $passport = $this->authenticator->authenticate($request);
 
-        $this->assertInstanceOf(Passport::class, $passport);
+        $this->assertSame('alice@ma-moulinette.fr', $passport->getUser()->getUserIdentifier());
     }
 
     public function testAuthenticateLocalUserUpgradesLegacyHash(): void
@@ -251,7 +250,6 @@ class CustomAuthenticatorTest extends TestCase
 
         $passport = $this->authenticator->authenticate($request);
 
-        $this->assertInstanceOf(Passport::class, $passport);
         $this->assertSame('hashed-correct', $user->getPassword());
         $this->assertCount(1, $flashBag->get('notice'));
     }
