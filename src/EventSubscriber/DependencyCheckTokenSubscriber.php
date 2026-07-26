@@ -48,7 +48,7 @@ class DependencyCheckTokenSubscriber implements EventSubscriberInterface
     /**
      * [Description for getSubscribedEvents]
      *
-     * @return array
+     * @return array<class-string, array{0: string, 1: int}>
      *
      * Created at: 13/07/2026 07:40:12 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

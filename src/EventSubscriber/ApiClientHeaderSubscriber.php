@@ -24,6 +24,8 @@ use Psr\Log\LoggerInterface;
 class ApiClientHeaderSubscriber implements EventSubscriberInterface
 {
     private string $appClientToken;
+
+    /** @var array<int, string> */
     private array $allowedOrigins;
     private string $internalHeaderName;
     private string $internalHeaderValue;
