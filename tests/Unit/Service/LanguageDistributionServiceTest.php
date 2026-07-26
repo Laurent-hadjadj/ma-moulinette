@@ -58,7 +58,6 @@ final class LanguageDistributionServiceTest extends TestCase
     public function testParseJsonFormatValuesAreIntegers(): void
     {
         $result = $this->svc->parse('{"java":"99"}');
-        self::assertIsInt($result['java']);
         self::assertSame(99, $result['java']);
     }
 
@@ -89,7 +88,6 @@ final class LanguageDistributionServiceTest extends TestCase
     public function testParseReturnsIntegerValues(): void
     {
         $result = $this->svc->parse('java=99');
-        self::assertIsInt($result['java']);
         self::assertSame(99, $result['java']);
     }
 
