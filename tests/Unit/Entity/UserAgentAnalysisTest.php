@@ -108,7 +108,6 @@ class UserAgentAnalysisTest extends TestCase
         $result = $a->setVisitorId($uuid);
         $this->assertSame($a, $result);
         $this->assertSame($uuid, $a->getVisitorId());
-        $this->assertSame(36, strlen($uuid));
     }
 
     public function testSetGetVisitorIdNull(): void
