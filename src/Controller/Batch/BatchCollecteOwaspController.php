@@ -191,9 +191,11 @@ class BatchCollecteOwaspController extends AbstractController
                 ['blocker', 'critical', 'major', 'info', 'minor'], 0));
             $effort_total = (int) ($referential['effortTotal'] ?? 0);
 
-            if ((int) ($referential['total'] ?? 0) !== 0) {
+            $facetValues = $referential['facets'][0]['values'] ?? null;
+
+            if ($facetValues !== null && (int) ($referential['total'] ?? 0) !== 0) {
                 /** Classification officielle SonarQube (facette owaspTop10/owaspTop10-2021) */
-                foreach ($referential['facets'][0]['values'] as $value) {
+                foreach ($facetValues as $value) {
                     $index = substr($value['val'], 1);
                     $nombre[$index] = $value['count'];
                 }
@@ -216,7 +218,12 @@ class BatchCollecteOwaspController extends AbstractController
                  * (cf. owasp.md, note "Pourquoi le tableau de synthèse peut
                  * sembler incohérent..."). Le tag n'étant pas spécifique à
                  * une année de référentiel, le comptage obtenu ici vaudra
-                 * aussi bien pour 2017 que pour 2021. */
+                 * aussi bien pour 2017 que pour 2021.
+                 * MODIF 2026-07-26 : la classification officielle peut aussi
+                 * être structurellement absente (facets vide alors que total
+                 * > 0 — cas réel observé, pas seulement en test) ; on bascule
+                 * alors sur le même secours plutôt que de planter sur un accès
+                 * facets[0] inexistant. */
                 $fallback = $fetchTagFallback();
                 $effort_total = (int) ($fallback['effortTotal'] ?? $effort_total);
                 foreach ($fallback['issues'] ?? [] as $issue) {
