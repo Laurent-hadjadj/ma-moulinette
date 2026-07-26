@@ -56,6 +56,9 @@ class ListeProjet
     #[Assert\NotBlank]
     private string $name;
 
+    /**
+     * @var array<int, string>|null
+     */
     #[ORM\Column(
         name: 'tags',
         type: Types::JSON,
@@ -85,6 +88,9 @@ class ListeProjet
     private \DateTimeImmutable $dateEnregistrement;
 
     /* MODIF 2026-05-07  : ajout constructeur (positionnel). */
+    /**
+     * @param array<int, string> $tags
+     */
     public function __construct(
         string $mavenKey = '',
         string $name = '',
@@ -132,11 +138,17 @@ class ListeProjet
         return $this;
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function getTags(): array
     {
         return $this->tags;
     }
 
+    /**
+     * @param array<int, string> $tags
+     */
     public function setTags(array $tags): static
     {
         $this->tags = $tags;

@@ -45,6 +45,9 @@ class ActivityBatchReport
     #[ORM\Column(name: 'page', type: Types::INTEGER, nullable: false, options: ['default' => 0])]
     private int $page = 0;
 
+    /**
+     * @var array<int|string, mixed>
+     */
     #[ORM\Column(name: 'last_error', type: Types::JSON, nullable: true, options: ['comment' => "Liste des erreurs du traitement."])]
     private array $lastError = [];
 
@@ -124,11 +127,17 @@ class ActivityBatchReport
         return $this;
     }
 
+    /**
+     * @return array<int|string, mixed>
+     */
     public function getLastError(): array
     {
         return $this->lastError;
     }
 
+    /**
+     * @param array<int|string, mixed> $lastError
+     */
     public function setLastError(array $lastError): self
     {
         $this->lastError = $lastError;

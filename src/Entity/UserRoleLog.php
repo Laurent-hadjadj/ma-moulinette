@@ -46,12 +46,18 @@ class UserRoleLog
         options: ['comment' => "Adresse de courriel de l'éditeur ayant modifié les rôles de l'utilisateur"])]
     private string $editorEmail;
 
+    /**
+     * @var array<int, string>
+     */
     #[ORM\Column(
         name: "old_roles",
         type: 'json',
         options: ['comment' => "Rôles anciens de l'utilisateur"])]
     private array $oldRoles = [];
 
+    /**
+     * @var array<int, string>
+     */
     #[ORM\Column(
         name: "new_roles",
         type: 'json',
@@ -70,6 +76,9 @@ class UserRoleLog
         options: ['comment' => "Nouveau statut actif de l'utilisateur"])]
     private bool $newActive;
 
+    /**
+     * @var array<int, string>
+     */
     #[ORM\Column(
         name: "alerts",
         type: 'json',
@@ -127,19 +136,31 @@ class UserRoleLog
         $this->editorEmail = $editorEmail;
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function getOldRoles(): array
     {
         return $this->oldRoles;
     }
+    /**
+     * @param array<int, string> $oldRoles
+     */
     public function setOldRoles(array $oldRoles): void
     {
         $this->oldRoles = $oldRoles;
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function getNewRoles(): array
     {
         return $this->newRoles;
     }
+    /**
+     * @param array<int, string> $newRoles
+     */
     public function setNewRoles(array $newRoles): void
     {
         $this->newRoles = $newRoles;
@@ -163,10 +184,16 @@ class UserRoleLog
         $this->newActive = $newActive;
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function getAlerts(): array
     {
         return $this->alerts;
     }
+    /**
+     * @param array<int, string> $alerts
+     */
     public function setAlerts(array $alerts): void
     {
         $this->alerts = $alerts;

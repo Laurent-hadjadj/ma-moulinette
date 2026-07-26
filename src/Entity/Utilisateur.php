@@ -77,6 +77,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Email(groups: ['form', 'default'])]
     private ?string $courriel = null;
 
+    /** @var array<int, string> */
     #[ORM\Column(
         name: 'roles',
         type: Types::JSON,
@@ -102,6 +103,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Length(max: 26, maxMessage: "L'identifiant du groupe utilisateur ne doit pas dépasser 26 caractères.")]
     private ?string $groupeId = null;
 
+    /** @var array<int, string> */
     #[ORM\Column(
         name: 'liste_groupe_fonctionnel',
         type: Types::JSON,
@@ -123,6 +125,7 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     private bool $actif = false;
 
     # Préférences de l'utilisateur
+    /** @var array<int|string, mixed> */
     #[ORM\Column(
         name: 'preference',
         type: Types::JSON,
@@ -578,11 +581,17 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
         return sprintf('/avatar/%s', $this->avatar);
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function getListeGroupeFonctionnel(): array
     {
         return $this->listeGroupeFonctionnel;
     }
 
+    /**
+     * @param array<int, string> $listeGroupeFonctionnel
+     */
     public function setListeGroupeFonctionnel(array $listeGroupeFonctionnel): \App\Entity\Utilisateur
     {
         $this->listeGroupeFonctionnel = $listeGroupeFonctionnel;

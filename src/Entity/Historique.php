@@ -1302,6 +1302,7 @@ class Historique
     // -------------------------
     // Actuator info
     // -------------------------
+    /** @var array<string, mixed>|null */
     #[ORM\Column(
         name: 'actuator_info',
         type: Types::JSON,
@@ -1315,6 +1316,7 @@ class Historique
     // Format : {info: {SLF4J: N, "Commons Logging": M, "—": K}, warn: {...}, error: {...}, debug: {...}}.
     // Null si plugin track-logger-method désactivé ou non collecté.
     // -------------------------
+    /** @var array<string, array<string, int>>|null */
     #[ORM\Column(
         name: 'logger_breakdown',
         type: Types::JSON,
@@ -3019,11 +3021,17 @@ class Historique
     // -------------------------
     // Actuator info
     // -------------------------
+    /**
+     * @return array<string, mixed>|null
+     */
     public function getActuatorInfo(): ?array
     {
         return $this->actuatorInfo;
     }
 
+    /**
+     * @param array<string, mixed>|null $actuatorInfo
+     */
     public function setActuatorInfo(?array $actuatorInfo): self
     {
         $this->actuatorInfo = $actuatorInfo;
@@ -3033,11 +3041,17 @@ class Historique
     // -------------------------
     // Logger breakdown (level × framework) — 2026-05-15 [logger-details]
     // -------------------------
+    /**
+     * @return array<string, array<string, int>>|null
+     */
     public function getLoggerBreakdown(): ?array
     {
         return $this->loggerBreakdown;
     }
 
+    /**
+     * @param array<string, array<string, int>>|null $loggerBreakdown
+     */
     public function setLoggerBreakdown(?array $loggerBreakdown): self
     {
         $this->loggerBreakdown = $loggerBreakdown;

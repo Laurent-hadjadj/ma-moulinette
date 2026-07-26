@@ -63,6 +63,7 @@ class Portefeuille
     private string $groupeFonctionnel = '';
 
     /* MODIF 2026-05-05 : alignement entité ↔ DDL. */
+    /** @var array<int, string> */
     #[ORM\Column(
         name: 'liste',
         type: 'json',
@@ -121,11 +122,17 @@ class Portefeuille
         return $this;
     }
 
+    /**
+     * @return array<int, string>
+     */
     public function getListe(): array
     {
         return $this->liste;
     }
 
+    /**
+     * @param array<int, string> $liste
+     */
     public function setListe(array $liste): static
     {
         $this->liste = $liste;
