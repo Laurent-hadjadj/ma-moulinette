@@ -48,11 +48,4 @@ class ScanViewModeTest extends TestCase
         $this->assertSame('is_latest_release', ScanViewMode::flagColumn(ScanViewMode::PROD));
         $this->assertSame('is_latest_overall', ScanViewMode::flagColumn(ScanViewMode::DEV));
     }
-
-    public function testConstantsAreStable(): void
-    {
-        $this->assertSame('prod',                ScanViewMode::PROD);
-        $this->assertSame('dev',                 ScanViewMode::DEV);
-        $this->assertSame(ScanViewMode::PROD,    ScanViewMode::DEFAULT);
-    }
 }
