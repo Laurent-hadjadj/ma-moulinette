@@ -41,7 +41,7 @@ class DcScanRepositoryFindArchetypeScansBatchTest extends KernelTestCase
     private DcScanRepository $repo;
     private const DELETE_QUERY = 'DELETE FROM ';
     private const VERSION_RELEASE = '4.2.0-RELEASE';
-    private const SPRING_BOOT_FAM_CONFIG = 'springboot-socle-config@4.2.0-RELEASE';
+    private const SPRING_BOOT_SOCLE_CONFIG = 'springboot-socle-config@4.2.0-RELEASE';
 
     protected function setUp(): void
     {
@@ -143,8 +143,8 @@ class DcScanRepositoryFindArchetypeScansBatchTest extends KernelTestCase
         ]);
 
         $this->assertCount(1, $result);
-        $this->assertArrayHasKey(self::SPRING_BOOT_FAM_CONFIG, $result);
-        $scan = $result[self::SPRING_BOOT_FAM_CONFIG];
+        $this->assertArrayHasKey(self::SPRING_BOOT_SOCLE_CONFIG, $result);
+        $scan = $result[self::SPRING_BOOT_SOCLE_CONFIG];
         $this->assertSame('springboot-socle-config', $scan->getProjectArtifact());
         $this->assertSame(self::VERSION_RELEASE,         $scan->getProjectVersion());
     }
@@ -171,7 +171,7 @@ class DcScanRepositoryFindArchetypeScansBatchTest extends KernelTestCase
         ]);
 
         $this->assertCount(3, $result);
-        $this->assertArrayHasKey(self::SPRING_BOOT_FAM_CONFIG,    $result);
+        $this->assertArrayHasKey(self::SPRING_BOOT_SOCLE_CONFIG,    $result);
         $this->assertArrayHasKey('fr.ma-moulinette:projet-config@4.2.0-RELEASE',      $result);
         $this->assertArrayHasKey('fr.ma-moulinette:projet-parent@3.0.0-RELEASE',  $result);
     }
@@ -185,7 +185,7 @@ class DcScanRepositoryFindArchetypeScansBatchTest extends KernelTestCase
         ]);
 
         $this->assertCount(1, $result);
-        $this->assertArrayHasKey(self::SPRING_BOOT_FAM_CONFIG, $result);
+        $this->assertArrayHasKey(self::SPRING_BOOT_SOCLE_CONFIG, $result);
         $this->assertArrayNotHasKey('unknown-socle@1.0.0-RELEASE',      $result);
         $this->assertArrayNotHasKey('fr.ma-moulinette:projet-inconnu@2.0.0-RELEASE',     $result);
     }
@@ -199,7 +199,7 @@ class DcScanRepositoryFindArchetypeScansBatchTest extends KernelTestCase
         ]);
 
         $this->assertCount(1, $result);
-        $this->assertArrayHasKey(self::SPRING_BOOT_FAM_CONFIG, $result);
+        $this->assertArrayHasKey(self::SPRING_BOOT_SOCLE_CONFIG, $result);
     }
 
     public function testReturnsTwoDistinctEntriesForTwoVersionsOfSameArtifact(): void
@@ -210,10 +210,10 @@ class DcScanRepositoryFindArchetypeScansBatchTest extends KernelTestCase
         ]);
 
         $this->assertCount(2, $result);
-        $this->assertArrayHasKey(self::SPRING_BOOT_FAM_CONFIG, $result);
+        $this->assertArrayHasKey(self::SPRING_BOOT_SOCLE_CONFIG, $result);
         $this->assertArrayHasKey('springboot-socle-config@4.1.0-RC1',     $result);
         $this->assertNotSame(
-            $result[self::SPRING_BOOT_FAM_CONFIG]->getProjectVersion(),
+            $result[self::SPRING_BOOT_SOCLE_CONFIG]->getProjectVersion(),
             $result['springboot-socle-config@4.1.0-RC1']->getProjectVersion()
         );
     }
