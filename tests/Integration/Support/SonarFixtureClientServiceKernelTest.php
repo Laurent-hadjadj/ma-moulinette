@@ -94,6 +94,15 @@ class SonarFixtureClientServiceKernelTest extends KernelTestCase
         $this->assertArrayHasKey('measures', $result['json']['component']);
     }
 
+    public function testServerVersionReturnsFixturePayload(): void
+    {
+        $result = $this->client->httpSonarQube(self::SONAR_BASE . '/api/server/version');
+
+        $this->assertSame(200, $result['code']);
+        $this->assertArrayHasKey('texte', $result['json']);
+        $this->assertNotSame('', $result['json']['texte']);
+    }
+
     public function testUnmappedUrlReturns404(): void
     {
         $result = $this->client->httpSonarQube(
