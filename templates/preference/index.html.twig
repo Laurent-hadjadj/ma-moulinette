@@ -14,7 +14,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
 © 2024 - CC BY-SA-NC 4.0
 -->
 
-<html	lang="fr">
+<html lang="fr">
 
     {# Chargement de la section HEAD #}
     <head>
@@ -42,7 +42,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
         {# Message d'information php #}
         {{ include('_message.html.twig') }}
 
-        <main id="main-content" class="grid-container margin-bottom-2">
+        <main id="main-content" class="grid-container margin-bottom-3">
             <h2 class="h4 claire-hand"><span aria-hidden="true">🎛️</span>Mes Informations personnelles.</h2>
             <div class="callout alert-callout-border info">
                 <p class="opens-sans text-justify">ℹ️ Cette page affiche les informations et préférences personnelles de l'utilisateur.</p>
@@ -148,9 +148,13 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             </div>
 
             {% if peut_voir_actuator %}
-                <div class="grid-x">
-                    <div class="small-12 cell">
-                        <a href="{{ path('actuator', {}) }}" class="button open-sans">Accéder à l'inventaire Actuator</a>
+                <div class="grid-x grid-margin-x align-right margin-top-2">
+                    <div class="cell shrink">
+                        <a  id="bouton-ouvrir-actuator"
+                            href="{{ path('actuator', {}) }}"
+                            class="button open-sans focus-dark-light"
+                            type="button"
+                            aria-label="Accéder à Actuator"><span aria-hidden="true">🪴</span>Accéder à Actuator</a>
                     </div>
                 </div>
             {% endif %}
