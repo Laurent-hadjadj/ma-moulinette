@@ -90,8 +90,11 @@ Le bouton **Historique** relit la **dernière analyse strictement complète** (1
 
 ## 🔬 Deux indicateurs de complétude à ne pas confondre
 
-- **IdC (indice de confiance)** — calculé côté JavaScript, un par (catégorie, sévérité) : `nombre de signalements classés ÷ total annoncé par la facette` (le compteur du tableau en accordéon, voir plus haut). 100 % = tout le volume attendu a été classé ; en dessous, une partie des signalements n'a jamais été récupérée — typiquement parce que le plafond des 20 pages a été atteint avant d'avoir tout collecté pour cette sévérité.
+- **IdC (indice de confiance)** — calculé côté JavaScript, un par (catégorie, sévérité), **uniquement pendant le cycle Collecte → Analyse en direct** : `nombre de signalements classés ÷ total annoncé par la facette` (le compteur du tableau en accordéon, voir plus haut, figé au chargement de la page). 100 % = tout le volume attendu a été classé ; en dessous, une partie des signalements n'a jamais été récupérée — typiquement parce que le plafond des 20 pages a été atteint avant d'avoir tout collecté pour cette sévérité.
 - **`control`** — champ discret stocké dans la table `repartition`, calculé côté serveur : `complet (100 %)`, `partiel (66 %)`, `partiel (33 %)` ou `inconnue`, selon le nombre de catégories (sur 3) ayant reçu exactement leurs 5 lignes de sévérité. C'est ce champ — et non l'IdC — que lit le bouton **Historique** pour ne proposer que des analyses réellement complètes.
+
+!!! note "✅ IdC non recalculé en mode Historique (corrigé le 2026-07-28)"
+    Le mode **Historique** réutilisait jusqu'ici le même calcul d'IdC que l'analyse en direct, en divisant le total **historisé** par les compteurs **live** du DOM (figés au chargement de la page courante, donc décorrélés du moment où l'analyse historisée avait été produite) — l'IdC affiché n'avait alors aucun sens (signalé par un utilisateur en usage réel). Puisqu'une ligne relue par **Historique** est par construction déjà `control = 'complet (100 %)'`, l'IdC n'apporte aucune information supplémentaire : il n'est donc plus recalculé dans ce mode, la colonne affiche `---` (déjà le comportement par défaut prévu côté template pour un IdC absent).
 
 ## 🔄 Le flux Collecte → Analyse → Historique
 

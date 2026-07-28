@@ -136,35 +136,23 @@ const buildTabHistorique = function(css, severity, frontend, backend, autre, inc
 }
 
 /**
- * [Description for calculateIdc]
- *
- * @param mixed data
- * @param mixed category
- * @param mixed severity
- * @param mixed elements
- *
- * @return number
- *
- * Created at: 29/08/2025 16:01:49 (Europe/Paris)
- * @author     Laurent HADJADJ <laurent_h@me.com>
- * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
- */
-const calculateIdc = (data, category, severity, elements) => {
-    const customCategory = (category !== 'code_smell') ? category : 'codeSmell';
-
-    const total = Number(data[`frontend_${category}_${severity}`]) + Number(data[`backend_${category}_${severity}`]) +
-                    Number(data[`autre_${category}_${severity}`]) + Number(data[`inconnu_${category}_${severity}`]);
-    return total !== 0 ? Number(total) / Number(elements[category.toUpperCase()][severity.toUpperCase()].dataset[`nombre${customCategory.charAt(0).toUpperCase() + customCategory.slice(1)}${severity.charAt(0).toUpperCase() + severity.slice(1)}`]) : 0;
-}
-
-/**
  * [Description for generateTableRow]
+ *
+ * MODIF 2026-07-28 : cette fonction n'est utilisée que par historique()
+ * (affichage d'une analyse déjà complète, control='complet (100%)'). L'IdC
+ * (Indice de Confiance) y était jusqu'ici calculé en divisant le total
+ * historisé par les compteurs *live* du DOM (`elements[...].dataset`, figés
+ * au chargement de la page, donc reflétant SonarQube à l'instant présent —
+ * pas au moment de l'analyse historisée) : les deux instantanés n'ont
+ * aucune raison de correspondre, ce qui produisait un IdC incohérent
+ * (données réelles trouvées incohérentes en usage réel). Une analyse déjà
+ * marquée complète n'a pas besoin d'IdC recalculé : `buildTabHistorique()`
+ * affiche déjà "---" quand `calculIdc` vaut 0.
  *
  * @param mixed css
  * @param mixed category
  * @param mixed severity
  * @param mixed data
- * @param mixed elements
  *
  * @return string
  *
@@ -172,11 +160,10 @@ const calculateIdc = (data, category, severity, elements) => {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
-const generateTableRow = (css, category, severity, data, elements) => {
-    const calculIdc = calculateIdc(data, category, severity, elements);
+const generateTableRow = (css, category, severity, data) => {
     return buildTabHistorique(css, severity.toUpperCase(), data[`frontend_${category}_${severity}`],
                               data[`backend_${category}_${severity}`], data[`autre_${category}_${severity}`],
-                              data[`inconnu_${category}_${severity}`], calculIdc);
+                              data[`inconnu_${category}_${severity}`], 0);
 }
 
 /**
@@ -392,7 +379,7 @@ const historique = async function (maven_key) {
 
   r = '';
   severities.forEach(sev => {
-    r += generateTableRow(sev.css, 'bug', sev.severity, t.data, elements);
+    r += generateTableRow(sev.css, 'bug', sev.severity, t.data);
   });
   $(`#mon-bo-tableau-1`).html(r);
 
@@ -403,7 +390,7 @@ const historique = async function (maven_key) {
 
   r = '';
   severities.forEach(sev => {
-    r += generateTableRow(sev.css, 'vulnerability', sev.severity, t.data, elements);
+    r += generateTableRow(sev.css, 'vulnerability', sev.severity, t.data);
   });
   $(`#mon-bo-tableau-2`).html(r);
 
@@ -414,7 +401,7 @@ const historique = async function (maven_key) {
 
   r = '';
   severities.forEach(sev => {
-    r += generateTableRow(sev.css, 'code_smell', sev.severity, t.data, elements);
+    r += generateTableRow(sev.css, 'code_smell', sev.severity, t.data);
   });
   $(`#mon-bo-tableau-3`).html(r);
 

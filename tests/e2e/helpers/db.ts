@@ -153,3 +153,15 @@ export function resetAndSeedForCosui(): void {
   resetAndSeedAfterSpec05();
   seedSql('95_e2e\\seed-after-spec-14-cosui-tetris.sql');
 }
+
+/**
+ * Reset + seed pour le spec 15 (page Répartition, bouton "Historique") :
+ * état post-spec 05 + 1 ligne repartition control='complet (100%)' pour
+ * tetris:TetrisGame, avec des compteurs granulaires réels — insérée
+ * directement en base (la fixture SonarQube partagée ne fournit pas la
+ * facette 'severities' attendue par le cycle collecte→analyse réel).
+ */
+export function resetAndSeedForRepartition(): void {
+  resetAndSeedAfterSpec05();
+  seedSql('95_e2e\\seed-after-spec-15-repartition-tetris.sql');
+}
