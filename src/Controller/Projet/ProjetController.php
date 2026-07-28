@@ -128,7 +128,7 @@ class ProjetController extends AbstractController
         $groupes = $this->appUser()->getListeGroupeFonctionnel();
         $debug = '';
 
-        /** Si l'utilisateur n'est pas rattaché à une équipe on ne charge rien */
+        /** Si l'utilisateur n'est pas rattaché à un groupe fonctionnel on ne charge rien */
         if (empty($groupes)) {
             /** On envoi un message à l'utilisateur */
             $render['liste_projet'] = [];
@@ -168,6 +168,7 @@ class ProjetController extends AbstractController
         }
 
         $render['liste_projet'] = $liste['indicateur'];
+        $render['liste_groupe_fonctionnel'] = $groupes;
         return $this->render(self::$page, $render);
     }
 }

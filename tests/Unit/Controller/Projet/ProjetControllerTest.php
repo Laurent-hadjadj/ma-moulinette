@@ -201,6 +201,7 @@ class ProjetControllerTest extends TestCase
 
         $this->assertCount(1, $capturedCtx['liste_projet']);
         $this->assertSame('App', $capturedCtx['liste_projet'][0]['nom']);
+        $this->assertSame(['TeamA'], $capturedCtx['liste_groupe_fonctionnel']);
     }
 
     /**

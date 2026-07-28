@@ -43,6 +43,7 @@
 @media (120.025em <= width <= 160em) { .pleine-page { margin: 2rem; } }
 
 /*************************          Global     *********************************/
+
 .result-note {
   padding-left: 0.5rem;
   color: #333;

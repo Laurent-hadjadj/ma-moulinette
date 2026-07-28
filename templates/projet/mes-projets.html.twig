@@ -54,6 +54,10 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                 <h3 class="h4 claire-hand"><span aria-hidden="true">🚥</span>Suivi des principaux indicateurs.</h3>
             </div>
 
+            <section class="grid-container">
+                {{ include('_tags_groupe_fonctionnel.html.twig', {'groupes': liste_groupe_fonctionnel}) }}
+            </section>
+
             <div class="table-scroll pleine-page">
                 <table id="table-mes-projets" class="hover striped" aria-label="Métriques par projet">
                     <caption class="show-for-sr">Tableau récapitulatif des projets : application, version, lignes de code, notes SonarQube (fiabilité, sécurité, hotspots, maintenabilité), violations, composants, qualité du code, journalisation et tests.</caption>

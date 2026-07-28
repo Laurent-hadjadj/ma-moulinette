@@ -67,6 +67,8 @@ L'icône ⭐ à côté du titre bascule le projet actuellement sélectionné en 
 
 Le bouton **Mes projets** ouvre directement la page dédiée `/projet/mes-projets` (route `mes_projets`) : un **tableau complet** (volumétrie, notes A-E, violations, composants, qualité du code, loggers, tests) pour tous les projets du **groupe fonctionnel** de l'utilisateur — pas seulement ses favoris.
 
+Au-dessus du tableau, un badge 🎯 rappelle chaque groupe fonctionnel auquel l'utilisateur est rattaché (un utilisateur peut appartenir à plusieurs groupes) — utile pour situer immédiatement le périmètre du tableau affiché.
+
 !!! note "✅ Modale supprimée, fonctionnalités unifiées"
     Le bouton ouvrait auparavant une **modale** limitée aux projets favoris, avec des raccourcis d'action (bulles **V / R / S / C / O / RM**) déjà simplifiés une première fois (raccourcis retirés) le même jour.
     Cette modale faisait doublon avec la page `/projet/mes-projets` (jusque-là accessible uniquement depuis le plan du site) : les deux portaient le même nom pour des listes différentes (favoris vs groupe fonctionnel entier).
