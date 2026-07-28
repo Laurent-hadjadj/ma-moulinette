@@ -119,3 +119,15 @@ export function resetAndSeedForCrudTransverse(): void {
   resetAndSeedAfterSpec05();
   seedSql('95_e2e\\seed-after-spec-08-roles-transverses.sql');
 }
+
+/**
+ * Reset + seed pour l'extension du spec 07 (page Suivi — suppression
+ * d'historique, définition de la version de référence) : état post-spec 05
+ * + 2 lignes d'historique pour tetris:TetrisGame insérées directement en
+ * base (pas via une vraie collecte — le fixture SonarQube project_analyses
+ * n'a qu'une seule entrée, insuffisant pour produire 2 versions distinctes).
+ */
+export function resetAndSeedForSuiviHistorique(): void {
+  resetAndSeedAfterSpec05();
+  seedSql('95_e2e\\seed-after-spec-07-historique-tetris.sql');
+}
