@@ -1,0 +1,55 @@
+{
+    "generated_at": "2026-07-28T09:41:54+00:00",
+    "cloc": {
+        "php": {
+            "fichier": 277,
+            "code": 49373,
+            "comment": 20883,
+            "vide": 9107,
+            "total": 79363
+        },
+        "html": {
+            "fichier": 148,
+            "code": 23334,
+            "comment": 957,
+            "vide": 1611,
+            "total": 25902
+        },
+        "js": {
+            "fichier": 92,
+            "code": 10195,
+            "comment": 4181,
+            "vide": 1693,
+            "total": 16069
+        },
+        "css": {
+            "fichier": 38,
+            "code": 6051,
+            "comment": 1113,
+            "vide": 1295,
+            "total": 8459
+        },
+        "sql": {
+            "fichier": 73,
+            "code": 2905,
+            "comment": 1416,
+            "vide": 660,
+            "total": 4981
+        },
+        "migration": {
+            "fichier": 1,
+            "code": 1,
+            "comment": 6,
+            "vide": 1,
+            "total": 8
+        }
+    },
+    "tests": {
+        "unit": {
+            "count": 3135
+        },
+        "integration": {
+            "count": 602
+        }
+    }
+}

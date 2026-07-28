@@ -24,6 +24,9 @@ flowchart TD
 
 Versions PHP/Symfony/PostgreSQL, mémoire utilisée, nombre de tables du schéma, statistiques `pg_stat_activity`/`pg_stat_statements` (si les extensions PostgreSQL correspondantes sont installées), statistiques de code et de couverture de tests (générées par une commande dédiée, `var/admin-stats.json` — un message invite à la relancer si absente).
 
+!!! note "✅ Comptage des tables corrigé"
+    La requête de comptage des tables (`SELECT count(*) FROM ma_moulinette.pg_catalog.pg_tables ...`) faisait une référence à 3 parties (base.schéma.table) que PostgreSQL ne supporte pas — `pg_catalog` est un schéma système, jamais imbriqué sous le schéma applicatif `ma_moulinette`. La page renvoyait une erreur 500. Corrigé en interrogeant directement `pg_catalog.pg_tables` (accessible depuis n'importe quel schéma courant).
+
 ## 📈 Ma-Moulinette
 
 Compteurs globaux : utilisateurs, projets, profils, règles actives, entrées d'historique, total bugs/vulnérabilités/mauvaises pratiques sur l'ensemble du parc. Deux graphiques (anomalies par type, volumétrie du référentiel).

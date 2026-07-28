@@ -253,7 +253,7 @@ class StatistiqueController extends AbstractController
         foreach ([
             'postgres_version'    => "SELECT current_setting('server_version') AS version",
             'ma_moulinette_count' => "SELECT count(*) as total FROM ma_moulinette.ma_moulinette",
-            'table_count'         => "SELECT count(*) as total FROM ma_moulinette.pg_catalog.pg_tables WHERE schemaname = 'ma_moulinette'",
+            'table_count'         => "SELECT count(*) as total FROM pg_catalog.pg_tables WHERE schemaname = 'ma_moulinette'",
         ] as $key => $sql) {
             $results[$key] = $conn->prepare($sql)->executeQuery()->fetchAllAssociative();
         }

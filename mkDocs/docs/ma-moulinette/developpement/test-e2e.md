@@ -92,6 +92,7 @@ graph TB
 | 13 | `13-clean-code` | nathan | collecte générale puis consultation du dashboard Clean Code (1 projet) et de la synthèse portefeuille |
 | 14 | `14-cosui` | nathan | Comité de Suivi (notes référence/courante, répartition des défauts, radar), seed direct en base |
 | 15 | `15-repartition` | nathan | Répartition — bouton Historique (lecture d'une analyse déjà complète), seed direct en base |
+| 16 | `16-statistiques` | nathan | 5 pages du module Statistiques (index, dashboard, sonar report, projets, utilisateur) |
 
 **Conséquences** :
 
@@ -678,6 +679,46 @@ sequenceDiagram
 
 !!! caution "🐛 Bug réel trouvé et corrigé (signalé par l'utilisateur) : IdC incohérent en mode Historique"
     Le mode Historique réutilisait `generateTableRow()`/`calculateIdc()` (`assets/js/mon-application/repartition-module/index-repartition-module.js`), qui divise le total **historisé** par les compteurs **live** du DOM (`elements[...].dataset`, figés au chargement de la page courante — donc les chiffres SonarQube du moment présent, pas ceux qui étaient vrais quand l'analyse historique a été enregistrée). Les deux instantanés n'ayant aucune raison de correspondre, l'IdC affiché en mode Historique n'avait pas de sens. `calculateIdc()` n'avait d'ailleurs qu'un seul appelant dans tout le fichier : c'est bien tout le calcul qui était inadapté à son usage réel, pas une erreur de bord. Corrigé en supprimant l'appel à `calculateIdc()` dans `generateTableRow()` (fonction elle-même utilisée uniquement par `historique()`) : la colonne IdC affiche désormais `---` pour ce mode, un `control = 'complet (100%)'` garantissant déjà la complétude par construction. Ce spec vérifie explicitement ce `---` sur les 3 tableaux détaillés (Fiabilité/Sécurité/Maintenabilité).
+
+### Spec 16 — Statistiques
+
+Nathan (`ROLE_COLLECTE`, groupe tetris-game). Aucune des 5 pages du module n'exige de rôle spécifique (seul `ROLE_UTILISATEUR` implicite) — seul le bouton "Analyse UserAgent"/"Relancer l'analyse" (route `runBatchAnalysis`) exige `ROLE_INTERNAL`, absent du DOM pour Nathan (`{% if is_granted('ROLE_INTERNAL') %}` côté template, pas juste masqué en CSS).
+
+```mermaid
+sequenceDiagram
+    actor PW as Playwright (Nathan)
+    participant Idx as /statistiques
+    participant Dash as /statistiques/dashboard
+    participant Sonar as /statistiques/ma-moulinette
+    participant Proj as /statistiques/projet
+    participant User as /statistiques/utilisateur
+
+    PW->>Idx: goto /statistiques
+    Idx-->>PW: 4 cartes visibles, bouton batch absent
+
+    PW->>Dash: click carte Dashboard
+    Dash-->>PW: page technique (PHP/Symfony/PostgreSQL/RAM) + vraies stats cloc/phpunit
+
+    PW->>Sonar: goto /statistiques/ma-moulinette
+    Sonar-->>PW: 2 canvas Chart.js + données JSON
+
+    PW->>Proj: goto /statistiques/projet
+    Proj-->>PW: ligne TetrisGame (seed spec 07 réutilisé)
+
+    PW->>User: goto /statistiques/utilisateur
+    User-->>PW: canvas présents (masqués sans activité trackée), bouton batch absent
+```
+
+**Seed réutilisé, pas de nouveau seed dédié** : `/statistiques/projet` lit `historique` sans jointure (`HistoriqueRepository::selectAllProjetsDerniereSynthese()`) — le seed déjà existant du spec 07 (`resetAndSeedForSuiviHistorique()`, 2 lignes historique minimales pour tetris:TetrisGame) suffit à y afficher une ligne, sans relancer une vraie collecte (~180s). Les colonnes non peuplées par ce seed minimal (notes, coverage…) s'affichent en `–`, sans bloquer la page.
+
+!!! caution "🐛 Bug réel trouvé et corrigé : /statistiques/dashboard plantait en 500"
+    `StatistiqueController::adminDashboard()` exécutait `SELECT count(*) FROM ma_moulinette.pg_catalog.pg_tables WHERE schemaname = 'ma_moulinette'` — un adressage à 3 parties (`base.schéma.table`) que PostgreSQL ne supporte pas : les références entre bases de données ne sont pas implémentées nativement, et `pg_catalog` est un schéma système accessible directement, jamais imbriqué sous un autre schéma applicatif.
+    Corrigé en retirant le préfixe `ma_moulinette.` erroné (`FROM pg_catalog.pg_tables`). Aucun test unitaire existant ne couvrait ce cas (connexion mockée) — seul un vrai appel PostgreSQL via e2e pouvait le révéler.
+
+**Chemin « vraies données » exercé, pas seulement le repli** : `/statistiques/dashboard` lit `var/admin-stats.json` (gitignoré) puis `migrations/admin-stats.json` en repli — les deux sont absents par défaut, la page affichant alors un bandeau "données figées". Le seed du spec appelle désormais `refreshAdminStats()` (helper `tests/e2e/helpers/stats.ts`, invoque `php bin/console app:admin:refresh-stats --env=test` via `bin/e2e/refresh-admin-stats.ps1`, même convention que `processDcQueue()` du spec 12) avant la visite de la page, pour que le bandeau "Données générées le…" s'affiche réellement. Aucune assertion n'est figée sur les chiffres cloc eux-mêmes (non reproductibles selon l'environnement) — seulement sur l'absence du bandeau de repli et la présence des 7 lignes du tableau de code.
+    Prérequis : `cloc` installé et sur le `PATH` du processus PowerShell (`winget install AlDanial.Cloc`) — sur ce poste, `cloc.exe` est fourni avec la distribution PHP dans `0_toolz\php-8.5.5-NTS\`.
+
+**Canvas masqués sans activité utilisateur trackée** : sur `/statistiques/utilisateur`, `#chart-avg-session-duration`/`#chart-nb-session-unique` restent masqués côté JS tant que leurs `data-*` sont vides (`"[]"`, aucune session Nathan trackée sur ce seed minimal) — comportement attendu, vérifié en présence (`toBeAttached()`), pas en visibilité.
 
 ## Reset rapide entre runs (≈ 3s, sans prompt password)
 
