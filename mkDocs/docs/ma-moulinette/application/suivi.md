@@ -138,8 +138,8 @@ Bouton « Éditer en PDF » — accessible sans rôle spécifique, ouvre le rapp
 | Sévérité | Déclencheur | Message |
 | --- | --- | --- |
 | `error` | `maven_key` absente de la session (token manquant/invalide, ou accès direct à `/suivi`) | ❌ La requête est incorrecte (Erreur 400). |
-| `warning` | Utilisateur sans groupe fonctionnel | ⚠️ Vous devez être rattaché à une équipe (Erreur 404). |
-| `warning` | Projet absent de la liste filtrée par groupe fonctionnel (`listeProjet()`) | ⚠️ Je n'ai pas trouvé de projets pour ton équipe / le projet n'est pas dans ta liste. |
+| `warning` | Utilisateur sans groupe fonctionnel | ⚠️ Vous devez être rattaché à un groupe fonctionnel (Erreur 404). |
+| `warning` | Projet absent de la liste filtrée par groupe fonctionnel (`listeProjet()`) | ⚠️ Je n'ai pas trouvé de projets pour ton groupe fonctionnel / le projet n'est pas dans ta liste. |
 | `warning` | Aucune version enregistrée dans `historique` pour ce projet | ⚠️ Le projet n'a pas été sauvegardé dans l'historique (Erreur 500). |
 | `error` | Exception pendant la récupération des données (`FetchDataException`) | Message relayé, avec trace technique en `debug`. |
 

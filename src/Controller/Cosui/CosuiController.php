@@ -33,8 +33,8 @@ class CosuiController extends AbstractController
 
     private static string $erreur400 = '❌ La requête est incorrecte (Erreur 400).';
     private static string $infoAucunProjet = 'ℹ️ Sélectionnez un projet depuis la page Projet pour accéder à cette vue.';
-    private static string $erreur404 = '⚠️ Vous devez être rattaché à une équipe (Erreur 404).';
-    private static string $erreur406 = "⚠️ Je n'ai pas trouvé de projets pour ton équipe. " .
+    private static string $erreur404 = '⚠️ Vous devez être rattaché à un groupe fonctionnel (Erreur 404).';
+    private static string $erreur406 = "⚠️ Je n'ai pas trouvé de projets pour ton groupe fonctionnel. " .
         "Vérifie le nom du tag utilisé dans SonarQube (Erreur 406).";
     private static string $page = 'projet/cosui.html.twig';
 

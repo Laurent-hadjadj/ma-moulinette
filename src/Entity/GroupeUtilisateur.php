@@ -30,7 +30,7 @@ class GroupeUtilisateur
         name: 'id',
         type: Types::INTEGER,
         nullable: false,
-        options: ['comment' => 'Identifiant unique pour la table équipe']
+        options: ['comment' => 'Identifiant unique pour la table groupe utilisateur']
     )]
     private int $id;
 
@@ -71,7 +71,7 @@ class GroupeUtilisateur
         name: 'date_modification',
         type: Types::DATETIME_MUTABLE,
         nullable: true,
-        options: ['comment' => 'Date de la dernière modification de l’équipe']
+        options: ['comment' => 'Date de la dernière modification du groupe utilisateur']
     )]
     private ?\DateTimeInterface $dateModification = null;
 
@@ -79,7 +79,7 @@ class GroupeUtilisateur
         name: 'date_enregistrement',
         type: Types::DATETIMETZ_IMMUTABLE,
         nullable: false,
-        options: ['comment' => 'Date d’enregistrement de l’équipe']
+        options: ['comment' => 'Date d’enregistrement du groupe utilisateur']
     )]
     ## on ne peut pas ajouter la contrainte  notBlank ici
     private \DateTimeImmutable $dateEnregistrement;

@@ -36,8 +36,8 @@ class CleanCodeSyntheseController extends AbstractController
     use AppUserAware;
 
     private static string $page     = 'clean-code/synthese.html.twig';
-    private static string $erreur404 = '⚠️ Vous devez être rattaché à une équipe pour accéder à cette vue (Erreur 404).';
-    private static string $erreur406 = '⚠️ Aucun projet trouvé pour votre équipe — vérifiez le tag SonarQube (Erreur 406).';
+    private static string $erreur404 = '⚠️ Vous devez être rattaché à un groupe fonctionnel pour accéder à cette vue (Erreur 404).';
+    private static string $erreur406 = '⚠️ Aucun projet trouvé pour votre groupe fonctionnel — vérifiez le tag SonarQube (Erreur 406).';
     private static string $erreur503 = '⚠️ Aucun projet du portefeuille ne dispose encore de données clean code dans l\'historique.';
 
     private string $logoEntreprise;
@@ -115,7 +115,7 @@ class CleanCodeSyntheseController extends AbstractController
         $render['projets']     = $data['projets'];
 
         if ($data['code'] === 404) {
-            $this->logger->warning('[CleanCode Synthèse] ⚠️ Utilisateur sans équipe rattachée.');
+            $this->logger->warning('[CleanCode Synthèse] ⚠️ Utilisateur sans groupe fonctionnel rattachée.');
             $this->addFlash('notice', ['type' => 'warning', 'message' => self::$erreur404, 'trace' => null]);
         } elseif ($data['code'] === 406) {
             $this->logger->warning('[CleanCode Synthèse] ⚠️ Aucun projet dans le portefeuille.');

@@ -33,8 +33,8 @@ class ProjetController extends AbstractController
     use AppUserAware;
 
     private static string $page = "projet/mes-projets.html.twig";
-    private static string $erreur404 = "⚠️ Tu dois être rattaché à une équipe (Erreur 404).";
-    private static string $erreur406 = "⚠️ Je n'ai pas trouvé de projets pour ton équipe. Vérifie le nom du tag utilisé dans SonarQube (Erreur 406).";
+    private static string $erreur404 = "⚠️ Tu dois être rattaché à un groupe fonctionnel (Erreur 404).";
+    private static string $erreur406 = "⚠️ Je n'ai pas trouvé de projets pour ton groupe fonctionnel. Vérifie le nom du tag utilisé dans SonarQube (Erreur 406).";
 
     private string $logoEntreprise;
     private string $marqueEntrepriseShort;

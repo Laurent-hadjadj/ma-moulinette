@@ -119,8 +119,8 @@ Table `clean_code` (voir [Architecture — base de données](../architecture/arc
 
 | Sévérité | Déclencheur | Message |
 | --- | --- | --- |
-| `warning` | Utilisateur sans groupe fonctionnel rattaché | ⚠️ Vous devez être rattaché à une équipe pour accéder à cette vue (Erreur 404). |
-| `warning` | Aucun projet dans le périmètre de l'utilisateur | ⚠️ Aucun projet trouvé pour votre équipe — vérifiez le tag SonarQube (Erreur 406). |
+| `warning` | Utilisateur sans groupe fonctionnel rattaché | ⚠️ Vous devez être rattaché à un groupe fonctionnel pour accéder à cette vue (Erreur 404). |
+| `warning` | Aucun projet dans le périmètre de l'utilisateur | ⚠️ Aucun projet trouvé pour votre groupe fonctionnel — vérifiez le tag SonarQube (Erreur 406). |
 | `warning` | Aucun projet du périmètre ne dispose de données clean code dans l'historique | ⚠️ Aucun projet du portefeuille ne dispose encore de données clean code dans l'historique. |
 
 ## 📚 Pour aller plus loin

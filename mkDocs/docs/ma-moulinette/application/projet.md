@@ -223,9 +223,9 @@ La page `/projet/mes-projets` a ses propres messages Flash, distincts de la page
 
 | Sévérité | Déclencheur | Message |
 | --- | --- | --- |
-| `warning` | Utilisateur sans groupe fonctionnel | ⚠️ Tu dois être rattaché à une équipe (Erreur 404). |
-| `warning` | Aucun projet trouvé pour le groupe fonctionnel | ⚠️ Je n'ai pas trouvé de projets pour ton équipe. Vérifie le nom du tag utilisé dans SonarQube (Erreur 406). |
-| `error` | Échec de la lecture de l'historique | ⚠️ Tu dois être rattaché à une équipe (Erreur 404). *(message générique réutilisé, trace technique en `debug`)* |
+| `warning` | Utilisateur sans groupe fonctionnel | ⚠️ Tu dois être rattaché à un groupe fonctionnel (Erreur 404). |
+| `warning` | Aucun projet trouvé pour le groupe fonctionnel | ⚠️ Je n'ai pas trouvé de projets pour ton groupe fonctionnel. Vérifie le nom du tag utilisé dans SonarQube (Erreur 406). |
+| `error` | Échec de la lecture de l'historique | ⚠️ Tu dois être rattaché à un groupe fonctionnel (Erreur 404). *(message générique réutilisé, trace technique en `debug`)* |
 
 ## 📚 Pour aller plus loin
 

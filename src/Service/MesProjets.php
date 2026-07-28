@@ -13,7 +13,7 @@ use Doctrine\ORM\EntityManagerInterface;
  */
 class MesProjets
 {
-    public static string $erreur406 = "Je n'ai pas trouvé de projets pour ton équipe. ".
+    public static string $erreur406 = "Je n'ai pas trouvé de projets pour ton groupe fonctionnel. ".
                                 "Vérifies le nom du tag utilisé dans SonarQube (erreur 406).";
 
     public function __construct(

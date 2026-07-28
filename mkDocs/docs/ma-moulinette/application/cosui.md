@@ -86,8 +86,8 @@ COSUI n'utilise jamais `showMessage()` côté JavaScript (`index-cosui.js` ne co
 | --- | --- | --- |
 | `error` | Paramètre `token` absent de l'URL | ❌ La requête est incorrecte (Erreur 400). |
 | `error` | Décodage du token en échec (base64/format invalide) | ❌ La requête est incorrecte (Erreur 400). |
-| `warning` | Utilisateur sans groupe fonctionnel | ⚠️ Vous devez être rattaché à une équipe (Erreur 404). |
-| `warning` | Projet absent de la liste filtrée par groupe fonctionnel (`listeProjet()`) | ⚠️ Je n'ai pas trouvé de projets pour ton équipe / le projet n'est pas dans ta liste (Erreur 406). |
+| `warning` | Utilisateur sans groupe fonctionnel | ⚠️ Vous devez être rattaché à un groupe fonctionnel (Erreur 404). |
+| `warning` | Projet absent de la liste filtrée par groupe fonctionnel (`listeProjet()`) | ⚠️ Je n'ai pas trouvé de projets pour ton groupe fonctionnel / le projet n'est pas dans ta liste (Erreur 406). |
 | *(dynamique, relayé du service)* | `ProjetCosuiService::generateRender()` retourne un code ≠ 200 (ex. aucune donnée de référence en base, échec de lecture du `setup`) | Le type et le message renvoyés par le service sont affichés tels quels (préfixés ❌) |
 | `critical` | Exception `RuntimeException` inattendue pendant la génération | 🔴 Erreur lors de la génération COSUI. |
 
