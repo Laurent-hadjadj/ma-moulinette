@@ -83,11 +83,15 @@ graph TB
 | 04 | `04-gestionnaire-init` | aurelie | **A.** reset password (`test.fixme`, flaky — voir plus bas) · **B.** update projets + collecte profils (seedé indépendamment de A) |
 | 05 | `05-affectation-groupes` | aurelie | crée groupe fonctionnel + assigne users aux groupes |
 | 06 | `06-collecte-manuelle` | nathan | collecte sur tetris:TetrisGame → enregistre |
-| 07 | `07-suivi` | sophie | navigation projet → page suivi |
+| 07 | `07-suivi` | sophie | navigation projet → page suivi, définit une version de référence, supprime une version |
 | 08 | `08-controle-acces` | josh, nathan, sophie, aurélie, interne | contrôle d'accès par rôle (indépendant du build-up, propre reset) |
 | 09 | `09-crud-batch-portefeuille` | nathan (+ ROLE_BATCH transverse) | crée un portefeuille puis un batch qui le référence (EasyAdmin) |
 | 10 | `10-crud-actuator` | nathan (+ ROLE_ACTUATOR transverse) | ajoute un point d'accès Actuator (contrôleur custom, pas EasyAdmin) |
 | 11 | `11-owasp` | nathan | collecte générale puis consultation du dashboard OWASP |
+| 12 | `12-dependency-check` | nathan (+ ROLE_SECURITY transverse) | upload CI d'un rapport OWASP DependencyCheck, traitement du worker, consultation liste/détail/dashboard |
+| 13 | `13-clean-code` | nathan | collecte générale puis consultation du dashboard Clean Code (1 projet) et de la synthèse portefeuille |
+| 14 | `14-cosui` | nathan | Comité de Suivi (notes référence/courante, répartition des défauts, radar), seed direct en base |
+| 15 | `15-repartition` | nathan | Répartition — bouton Historique (lecture d'une analyse déjà complète), seed direct en base |
 
 **Conséquences** :
 
@@ -361,7 +365,7 @@ sequenceDiagram
 
 ### Spec 07 — Suivi
 
-Sophie (COLLECTE+SUIVI) navigue vers la page de suivi.
+Sophie (COLLECTE+SUIVI) navigue vers la page de suivi, puis modifie l'historique du projet (version de référence, suppression d'une version) depuis la modale "Modifier les paramètres".
 
 ```mermaid
 sequenceDiagram
@@ -369,6 +373,7 @@ sequenceDiagram
     participant Projet as /projet
     participant SuiviSet as /suivi/set
     participant Suivi as /suivi
+    participant Api as /api/secure/suivi/version/*
 
     PW->>Projet: GET /projet
     PW->>Projet: select tetris:TetrisGame
@@ -380,15 +385,37 @@ sequenceDiagram
     SuiviSet-->>Suivi: redirect /suivi
     Suivi-->>PW: page de suivi
 
-    Note over PW: Extension prévue (pas encore implémentée) :<br/>suppression d'une ligne d'historique,<br/>changement de version par défaut.
+    Note over PW,Suivi: Sur historique seedé (2 versions, pas une vraie collecte)
+    PW->>Suivi: click .js-modifier-analyse
+    Suivi->>Api: POST version/liste
+    Api-->>Suivi: modale ouverte, tableau des versions
+
+    PW->>Api: PUT version/reference (switch)
+    Api-->>PW: 200, version de référence changée
+    PW->>Suivi: reload + réouvre la modale
+    Suivi-->>PW: switch coché = persistance confirmée
+
+    PW->>Api: PUT version/poubelle (icône poubelle)
+    Api-->>PW: 200, ligne masquée
+    PW->>Suivi: reload + réouvre la modale
+    Suivi-->>PW: version absente = suppression confirmée
 ```
 
-**Extension prévue — suppression d'historique et version par défaut** (recherche faite, implémentation à venir) :
+**Suppression d'historique et version de référence** (implémenté) :
 
-- **Suppression** : `PUT /api/secure/suivi/version/poubelle` (`ApiSuiviController.php:799`), déclenché par le clic sur `[id^=poubelle-]` dans la modale "Modifier les paramètres" (`.js-modifier-analyse`). Succès (200) → la ligne est **masquée** (`$('#ligne-N').hide()`), pas retirée du DOM : asserter `toBeHidden()`, pas l'absence de l'élément. Aucune confirmation JS (`confirm()`) à gérer.
-- **Version par défaut** ("référence", à ne pas confondre avec "Favori" ou "Suivi") : `PUT /api/secure/suivi/version/reference` (`ApiSuiviController.php:658`), switch `#switch-reference-{ligne}`, exclusion mutuelle gérée côté JS.
-- Rôle requis : `ROLE_SUIVI` seul (Sophie convient, pas besoin de rôle transverse supplémentaire).
-- **Bloquant à lever avant d'écrire ces tests** : `tests/fixtures/sonarqube/project_analyses/search-page1.json` ne contient qu'**une seule analyse** — sans plusieurs lignes d'historique, rien à supprimer ni à comparer pour "version par défaut". Il faut enrichir cette fixture (versions/dates distinctes) avant d'implémenter ce scénario. Voir aussi la limite équivalente notée sur le spec 06 ci-dessus (même fixture).
+- **Suppression** : `PUT /api/secure/suivi/version/poubelle` (`ApiSuiviController.php:799`), déclenché par le clic sur `[id^=poubelle-]` dans la modale "Modifier les paramètres" (`.js-modifier-analyse`). Succès (200) → la ligne est **masquée** (`$('#ligne-N').hide()`), pas retirée du DOM à l'instant du clic (mais bien supprimée en base — vérifié par un `page.reload()` qui montre la version disparue de la liste).
+- **Version de référence** ("Référence", à ne pas confondre avec "Favori" ou "Suivi") : `PUT /api/secure/suivi/version/reference` (`ApiSuiviController.php:658`), switch `#switch-reference-{ligne}`, exclusion mutuelle gérée côté JS (une seule case cochée à la fois) et confirmée en base par `page.reload()`.
+- Rôle requis : `ROLE_SUIVI` seul (Sophie convient).
+- Messages de succès/erreur affichés via `#message-box`/`#message-text` (JS pur, cf. `messageHelper.js`), **pas** le flash serveur `.js-flash-box` utilisé par les autres specs — ces deux actions sont de l'AJAX sans rechargement de page.
+
+!!! note "🗄️ Contournement de la limite fixture SonarQube (une seule analyse)"
+    `tests/fixtures/sonarqube/project_analyses/search-page1.json` n'a qu'une seule entrée : une vraie collecte ne peut donc produire qu'**une seule** ligne d'historique, insuffisant pour tester suppression/changement de référence (il faut au moins 2 versions).
+    Contournement : `migrations/POSTGRESQL/95_e2e/seed-after-spec-07-historique-tetris.sql` insère directement 2 lignes dans `historique` pour `tetris:TetrisGame` (via `resetAndSeedForSuiviHistorique()` dans `helpers/db.ts`), sans passer par une collecte réelle. Ce seed ne teste que les actions de la page Suivi, pas le mécanisme de collecte lui-même (déjà couvert par le spec 06).
+
+!!! caution "🐛 Deux bugs de test réels trouvés en écrivant ce scénario"
+    - **Course entre le rendu Twig et le binding jQuery** : `.js-modifier-analyse` est rendu côté serveur mais son handler de clic n'est attaché qu'une fois le module ES `index-suivi.js` chargé/exécuté (import asynchrone). Cliquer trop tôt ne déclenche ni requête réseau ni erreur JS — juste un clic silencieusement perdu. Corrigé par un `page.waitForFunction()` qui attend explicitement que jQuery ait bien un handler `click` enregistré sur l'élément avant de cliquer.
+    - **Label de switch qui intercepte le clic** : `#switch-reference-N` est un `<input type="checkbox">` cliqué au sens propre par l'utilisateur via son `<label class="switch-paddle">` (le rendu visuel du switch), qui le recouvre. Cliquer l'input directement échoue (Playwright : *"intercepts pointer events"*) ; corrigé en ciblant `label[for="switch-reference-N"]`, ce qui correspond aussi au geste réel de l'utilisateur.
+    - Par ailleurs, le serveur de dev mono-worker sert les nombreux modules ES (importmap) séquentiellement : un `page.reload()` peut dépasser 60s en attendant l'événement `load` complet. Contourné avec `waitUntil: 'domcontentloaded'` (on n'a pas besoin des sous-ressources pour vérifier l'état persisté) et un timeout de spec relevé à 90s.
 
 ### Spec 08 — Contrôle d'accès par rôle
 
@@ -529,6 +556,129 @@ sequenceDiagram
 
 **Canvas Chart.js non testable** : `#owasp-bar-chart` est un `<canvas>` — son contenu (rendu pixel) n'est pas inspectable via le DOM par Playwright. Le test vérifie sa présence/visibilité, jamais son contenu, et cible plutôt les données adjacentes (résumé chiffré, tableau `#a1`-`#a10`, tableau détaillé `#tbody`).
 
+### Spec 12 — Dependency-Check
+
+Nathan (`ROLE_SECURITY`, cumulé via `resetAndSeedForDependencyCheck()` — module transverse comme spec 08/09/10, aucun des 5 users n'a ce rôle nativement dans le récit d'onboarding).
+
+```mermaid
+sequenceDiagram
+    actor PW as Playwright (simulateur CI)
+    participant Api as /api/secure/dependency-check/upload
+    participant Worker as app:dependency-check:process
+    actor Nathan as Playwright (Nathan)
+    participant Index as /dependency-check
+    participant Detail as /dependency-check/projet/...
+    participant Dash as /dependency-check/dashboard
+
+    Note over PW,Api: 1. Upload (PUBLIC_ACCESS, header X-DependencyCheck-Token, pas de session)
+    PW->>Api: POST rapport JSON (tetris:TetrisGame, 1 dep, 1 CVE HIGH)
+    Api-->>PW: 202, ulid, status=queued
+
+    Note over PW,Worker: 2. Traitement (aucun cron en e2e — invoqué explicitement)
+    PW->>Worker: processDcQueue() (bin/e2e/process-dc-queue.ps1, APP_ENV=test)
+    Worker-->>Worker: dc_processing_queue → dc_scan/dc_finding/dc_dependency/dc_cve
+
+    Note over Nathan,Index: 3. Consultation
+    Nathan->>Index: GET /dependency-check
+    Index-->>Nathan: ligne TetrisGame (tetris), badge HIGH=1
+    Nathan->>Detail: click "Detail"
+    Detail-->>Nathan: CVE-2023-46120 visible
+    Nathan->>Dash: GET /dependency-check/dashboard
+    Dash-->>Nathan: badge-scope "tetris-game"
+```
+
+**Ingestion asynchrone en 2 étapes, pas un simple POST** : `POST /api/secure/dependency-check/upload` ne fait qu'enqueuer le rapport (`dc_processing_queue`, statut `queued`) — un worker séparé (`bin/console app:dependency-check:process`) doit ensuite tourner pour produire les `dc_scan`/`dc_finding`/`dc_dependency`/`dc_cve` que les pages lisent réellement. Aucun cron ne tourne dans la stack e2e (contrairement à la prod) : le spec invoque le worker directement via `processDcQueue()` (`tests/e2e/helpers/dc.ts` → `bin/e2e/process-dc-queue.ps1`, `APP_ENV=test`).
+
+**Pas d'équivalent `SonarFixtureClientService` nécessaire** : l'ingestion est un appel **entrant** (POST reçu par l'appli, simulateur CI), pas un appel sortant à mocker — le POST direct via `page.request` est donc un test fidèle du vrai flux CI, avec le vrai header `X-DependencyCheck-Token` (`DC_INGEST_TOKEN` en `.env.test`).
+
+!!! caution "🐛 Bug réel trouvé : reset e2e incomplet"
+    `migrations/POSTGRESQL/95_e2e/reset-e2e-data.sql` ne purgeait aucune des 5 tables `dc_*` (contrairement à `historique`, `actuator`, etc.). Rejouer ce spec (ou la suite complète) une seconde fois sans rebuild complet de la base laissait le rapport précédent en base : l'upload retombait alors sur la branche idempotence de `ApiDependencyCheckUploadController` (sha256 déjà vu → 200 "Rapport déjà reçu" au lieu de 202 "queued"), un faux échec qui n'avait rien à voir avec le code testé. Corrigé en ajoutant `dc_finding`, `dc_dependency`, `dc_cve`, `dc_scan`, `dc_processing_queue` au `TRUNCATE ... CASCADE`.
+
+### Spec 13 — Clean Code
+
+Nathan (`ROLE_COLLECTE`, aucun rôle transverse — même périmètre tetris-game que spec 06/11).
+
+```mermaid
+sequenceDiagram
+    actor PW as Playwright (Nathan)
+    participant Projet as /projet
+    participant CC as /clean-code
+    participant Synth as /clean-code/synthese
+
+    Note over PW,Projet: 1. Collecte + affichage + enregistrement (identique spec 06)
+    PW->>Projet: collecte complète sur tetris:TetrisGame, "Enregistrer"
+
+    Note over PW,CC: 2. Dashboard 1 projet (bouton masqué en e2e → token reconstruit)
+    PW->>CC: goto /clean-code?token=buildProjetToken(mavenKey)
+    CC-->>PW: score de risque "medium", gouvernance RESPONSIBLE >5%, 2 canvas Chart.js
+
+    Note over PW,Synth: 3. Synthèse portefeuille
+    PW->>Synth: click #bouton-synthese-portefeuille
+    Synth-->>PW: tag "tetris-game", ligne TetrisGame + badge de risque
+```
+
+**Bouton masqué en e2e, token reconstruit côté test** : le bouton "Clean Code" sur `/projet` n'apparaît que si `version_serveur_sonar != 8` (`templates/projet/index.html.twig`), or `SONAR_VERSION` vaut `8` en `.env.test.local`. Changer cette valeur globalement pour révéler le bouton risquait de perturber d'autres specs qui dépendent implicitement du comportement v8 — plus sûr de reconstruire le token côté test. Le token est un `rot13(base64("salt|maven_key"))` où `salt` est un hash "sdbm" (`hash*65599 + charCode`, calculé avec les opérateurs bitwise JS natifs) — **le salt n'est en réalité jamais vérifié côté serveur** (`decodeToken()` ne lit que la 2e partie après le `|`), donc sa valeur exacte importe peu tant que le format est respecté. Reproduit dans `tests/e2e/helpers/token.ts::buildProjetToken()`, réutilisable pour toute future spec sur Suivi/OWASP/Répartition/COSUI qui voudrait éviter de cliquer le bouton correspondant.
+
+!!! caution "🐛 Fixture SonarQube enrichie : facettes vides = indicateurs à zéro"
+    `tests/fixtures/sonarqube/issues/search.json` (déjà utilisée par les specs 06/11) avait `"facets": []` — insuffisant pour produire des indicateurs Clean Code exploitables : `BatchCollecteCleanCodeController::extractFacetCounts()` retournait un tableau vide, donc toutes les colonnes `cc_*`/`quality_*`/`impact_*` étaient insérées à 0 après collecte (score de risque, % RESPONSIBLE, % sécurité systématiquement nuls, aucune carte/graphique testable pour de vrai).
+    Enrichi avec les 3 facettes `cleanCodeAttributeCategories`/`impactSeverities`/`impactSoftwareQualities` (valeurs produisant un niveau de risque `medium`, une gouvernance RESPONSIBLE à 9,1 % et une exposition sécurité à 12,9 %), **sans toucher `paging.total`** (132) dont dépendent déjà `owasp_top10`/`sans_top25` sur les specs existantes — aucune régression, uniquement additif.
+
+**Page `/clean-code/synthese` — risque calculé différemment de `/clean-code`** : le dashboard 1-projet calcule le score de risque sur `clean_code.issue_total`, alors que la synthèse portefeuille le calcule sur `historique.violations` (cf. commentaire du template : *"Risque CC calculé sur violations (total issues)"*) — deux dénominateurs différents pour la même formule pondérée. Le spec ne prédit donc pas le niveau exact sur la page synthèse (juste la présence d'un badge `.badge-level` valide), pour ne pas dupliquer une hypothèse de calcul non vérifiée.
+
+### Spec 14 — COSUI
+
+Nathan (`ROLE_COLLECTE`, aucun rôle transverse — même périmètre tetris-game que spec 06/11/13). Token de navigation réutilisé tel quel depuis `buildProjetToken()` (spec 13).
+
+```mermaid
+sequenceDiagram
+    actor PW as Playwright (Nathan)
+    participant Cosui as /projet/cosui
+
+    Note over PW,Cosui: seed direct : 2 lignes historique (référence + courante,<br/>notes/compteurs réels) + 1 ligne repartition control='complet (100%)'
+    PW->>Cosui: goto /projet/cosui?token=buildProjetToken(mavenKey)
+    Cosui-->>PW: setup 100%, notes courantes, tableau répartition, radar
+
+    PW->>Cosui: click #affiche-projet-reference
+    Cosui-->>PW: modale — notes de la version de référence (plus mauvaises)
+```
+
+!!! caution "🐛 Prérequis de données : le flux spec 06 ne suffit pas"
+    Contrairement à Clean Code, `/projet/cosui` a deux prérequis que la collecte manuelle standard ne produit jamais :
+
+    - une ligne `historique` avec `initial = true` (« version de référence ») — la fixture SonarQube (`project_analyses`) ne produit qu'**une seule analyse**, donc jamais de 2e version à marquer comme référence ;
+    - une ligne `repartition` avec `control <> 'initial'` — le flux spec 06 ne déclenche jamais l'action « Répartition par module ».
+
+    Sans ces deux prérequis, la page reste en mode « valeurs par défaut » (pas d'erreur bloquante, mais rien d'intéressant à vérifier). Seed dédié : `migrations/POSTGRESQL/95_e2e/seed-after-spec-14-cosui-tetris.sql` (2 lignes historique avec notes/compteurs réels + 1 ligne repartition `control='complet (100%)'`), via `resetAndSeedForCosui()`.
+
+!!! caution "🐛 Bug réel trouvé et corrigé : colonne Fiabilité du tableau Répartition toujours à 0"
+    `ProjetCosuiService::generateRender()` construit la clé de variable de rendu à partir du même identifiant interne (`bug`) que celui utilisé pour retrouver la colonne Doctrine (`frontendBugBlocker`, etc.) — mais le template attend `nombre_metier_reliability_*`/`nombre_presentation_reliability_*` (label « Fiabilité »). Sans correspondance entre `bug` et `reliability`, cette colonne affichait toujours 0 quelle que soit la donnée réelle en base — un test unitaire existant ne couvrait que le cas par défaut (`'--'`), jamais le cas peuplé. Corrigé par une table de correspondance dédiée (`$prefixLabels`) juste avant l'injection dans le rendu ; les colonnes Vulnérabilité/Maintenabilité n'étaient pas concernées (leur identifiant interne correspond déjà au label attendu).
+
+**Bug connu documenté, non corrigé (hors périmètre)** : `HistoriqueRepository::selectHistoriqueProjetLast/Reference` sélectionne `menace_potentielle_totale` sans alias `AS nombre_hotspot` — le compteur Hotspot (`#hotspot-01`) affiche donc toujours 0 quelle que soit la donnée en base (la note lettre `#note-04`, elle, fonctionne correctement — alimentée par `security_review_rating AS note_hotspot`, un alias distinct). Non asserté à une valeur non nulle dans ce spec.
+
+### Spec 15 — Répartition
+
+Nathan (`ROLE_COLLECTE`, aucun rôle transverse — même périmètre tetris-game que spec 06/11/13/14). Token identique aux autres pages signées.
+
+```mermaid
+sequenceDiagram
+    actor PW as Playwright (Nathan)
+    participant Repart as /repartition
+
+    Note over PW,Repart: seed direct : 1 ligne repartition control='complet (100%)'<br/>avec compteurs granulaires par module × catégorie × sévérité
+    PW->>Repart: goto /repartition?token=buildProjetToken(mavenKey)
+    Repart-->>PW: page chargée (écrit aussi une ligne "initiale" pour le setup courant)
+
+    PW->>Repart: click #bouton-historique
+    Repart-->>PW: mode=Historique, setup seedé, 4 tableaux (synthèse + Fiabilité/Sécurité/Maintenabilité)
+    Note over PW,Repart: IdC = "---" sur chaque ligne (bug corrigé, voir ci-dessous)
+```
+
+!!! caution "🐛 Cycle Collecte → Analyse non jouable avec les fixtures actuelles"
+    Comme COSUI, le cycle réel (collecte → analyse) ne peut pas produire de données exploitables avec les fixtures e2e actuelles : `BatchCollecteRepartitionController` attend une facette `severities` que `tests/fixtures/sonarqube/issues/search.json` ne fournit pas (enrichie pour le spec 13 avec `cleanCodeAttributeCategories`, pas `severities`) — le total lu au chargement de la page est donc toujours 0, et chaque bouton de collecte affiche juste « pas de données à collecter » sans jamais appeler l'API. Ce spec teste uniquement le bouton **Historique** (lecture pure d'une ligne déjà complète), via un seed direct en base (`seed-after-spec-15-repartition-tetris.sql`, `resetAndSeedForRepartition()`) — pas le cycle collecte/analyse en direct.
+
+!!! caution "🐛 Bug réel trouvé et corrigé (signalé par l'utilisateur) : IdC incohérent en mode Historique"
+    Le mode Historique réutilisait `generateTableRow()`/`calculateIdc()` (`assets/js/mon-application/repartition-module/index-repartition-module.js`), qui divise le total **historisé** par les compteurs **live** du DOM (`elements[...].dataset`, figés au chargement de la page courante — donc les chiffres SonarQube du moment présent, pas ceux qui étaient vrais quand l'analyse historique a été enregistrée). Les deux instantanés n'ayant aucune raison de correspondre, l'IdC affiché en mode Historique n'avait pas de sens. `calculateIdc()` n'avait d'ailleurs qu'un seul appelant dans tout le fichier : c'est bien tout le calcul qui était inadapté à son usage réel, pas une erreur de bord. Corrigé en supprimant l'appel à `calculateIdc()` dans `generateTableRow()` (fonction elle-même utilisée uniquement par `historique()`) : la colonne IdC affiche désormais `---` pour ce mode, un `control = 'complet (100%)'` garantissant déjà la complétude par construction. Ce spec vérifie explicitement ce `---` sur les 3 tableaux détaillés (Fiabilité/Sécurité/Maintenabilité).
+
 ## Reset rapide entre runs (≈ 3s, sans prompt password)
 
 Pour itérer rapidement sur une spec qui mute la DB, chaque spec mutante appelle `resetE2EData()` (et éventuellement `resetAndSeedAfterSpec0X()`) dans son `test.beforeAll()`.
@@ -554,7 +704,7 @@ test.describe('06 — Collecte manuelle', () => {
   - TRUNCATE toutes les tables de données projet (mesures, anomalie, hotspots, etc.)
   - DELETE les groupes/portefeuilles custom (garde "Aucun" + "En attente")
   - DELETE les 5 users E2E + reload `fixtures-e2e.sql`
-- `migrations/PosgreSQL/95_e2e/seed-after-spec-0X-…sql` : replicat de l'état de fin de chaque spec via SQL pour permettre l'isolation au debug (dont `seed-after-spec-08-roles-transverses.sql`, indépendant du récit d'onboarding — cumule sur Nathan les rôles `ROLE_SECURITY`/`ROLE_ACTIVITY`/`ROLE_BATCH`/`ROLE_ACTUATOR`, réutilisé par `resetAndSeedAfterSpec08()` (spec 08) ET `resetAndSeedForCrudTransverse()` (specs 09/10, qui ont en plus besoin d'un groupe fonctionnel existant, donc chaînent depuis `resetAndSeedAfterSpec05()` plutôt que `resetAndSeedAfterSpec03()`))
+- `migrations/PosgreSQL/95_e2e/seed-after-spec-0X-…sql` : replicat de l'état de fin de chaque spec via SQL pour permettre l'isolation au debug (dont `seed-after-spec-08-roles-transverses.sql`, indépendant du récit d'onboarding — cumule sur Nathan les rôles `ROLE_SECURITY`/`ROLE_ACTIVITY`/`ROLE_BATCH`/`ROLE_ACTUATOR`, réutilisé par `resetAndSeedAfterSpec08()` (spec 08) ET `resetAndSeedForCrudTransverse()` (specs 09/10, qui ont en plus besoin d'un groupe fonctionnel existant, donc chaînent depuis `resetAndSeedAfterSpec05()` plutôt que `resetAndSeedAfterSpec03()`) ; ainsi que `seed-after-spec-07-historique-tetris.sql`, qui insère 2 lignes d'historique directement en base pour tester suppression/référence sur la page Suivi sans dépendre d'une vraie collecte, réutilisé par `resetAndSeedForSuiviHistorique()` ; et `resetAndSeedForDependencyCheck()` (spec 12, alias sémantique de `resetAndSeedForCrudTransverse()` — le rôle `ROLE_SECURITY` y est déjà inclus) ; ainsi que `seed-after-spec-14-cosui-tetris.sql`, qui insère 2 lignes historique (notes/compteurs réels) + 1 ligne repartition `control='complet (100%)'` pour tester COSUI sans dépendre d'une vraie collecte ni d'une analyse de répartition, réutilisé par `resetAndSeedForCosui()` ; ainsi que `seed-after-spec-15-repartition-tetris.sql`, qui insère 1 ligne repartition control='complet (100%)' pour tester le bouton Historique de la page Répartition sans dépendre d'un cycle collecte/analyse en direct, réutilisé par `resetAndSeedForRepartition()`)
 - Conserve : référentiels OWASP, versions ma_moulinette, admin de prod, groupes par défaut
 
 ### Quand utiliser quoi
@@ -709,6 +859,14 @@ Préférer dans cet ordre :
 - **Reset password** : le bouton est `type="button"` initialement ; `reset.js` valide les champs puis appelle `form.requestSubmit()` sur le `<form>` englobant (pas d'AJAX, vraie navigation POST). Voir [Cas A mis de côté](#cas-a-reset-password-mis-de-côté--testfixme) pour l'historique des correctifs et la flakiness résiduelle non résolue.
 - **HTML5 pattern v-flag** : Chrome 132+ rejette `[a-zA-Z0-9._@-]` car `@-]` est ambigu. Utiliser `[-a-zA-Z0-9._@]` (hyphen en début).
 - **Autofill Chrome sur formulaires multi-password** : `autocomplete="off"` est ignoré par Chrome sur les champs `type="password"` depuis 2014 — utiliser les valeurs sémantiques `current-password`/`new-password`. Un champ identifiant en lecture seule précédant un champ password doit porter `autocomplete="username"` explicitement, sinon Chrome peut l'associer à tort au champ suivant.
+- **Bouton rendu côté serveur, handler attaché en JS async** : un bouton présent dans le HTML Twig peut ne pas encore avoir son event listener jQuery attaché (module ES chargé de façon asynchrone) — cliquer trop tôt ne produit ni requête réseau ni erreur, juste un clic perdu. Si un clic sur un élément JS-driven semble ne rien faire, attendre explicitement le binding avant de cliquer plutôt que d'ajouter un `waitForTimeout` :
+  ```typescript
+  await page.waitForFunction(() => {
+    const el = document.querySelector('.ma-classe');
+    return !!(window as any).jQuery?._data(el, 'events')?.click?.length;
+  });
+  ```
+- **Switch (checkbox stylé en toggle)** : cliquer l'`<input type="checkbox">` directement échoue souvent (*"intercepts pointer events"*) car son `<label class="switch-paddle">` le recouvre visuellement. Cibler `label[for="id-du-switch"]` — c'est aussi le geste réel de l'utilisateur.
 
 ## Debug
 
@@ -721,7 +879,6 @@ Préférer dans cet ordre :
 ## Prochaines étapes
 
 - **Cas A (reset password) : mis de côté définitivement** (décision du 2026-08-02, pas juste en attente) — dans un déploiement LDAP, le changement de mot de passe ne passe pas par l'application, ce parcours devient secondaire. `test.fixme` reste en place, pas de reprise prévue sauf besoin métier nouveau.
-- **Spec 07 étendue** : suppression d'historique + version par défaut — recherche faite et documentée dans la section spec 07 ci-dessus, implémentation bloquée sur l'enrichissement de la fixture `project_analyses/search-page1.json` (une seule analyse actuellement)
 - **Bug avatar** : URL `/assets/avatar/chiffre/02.png` ne se résout pas (à investiguer côté AssetMapper / `getAvatarUrl()`)
 - **`actuatorUser` non réellement optionnel** : `ActuatorFormType` ne force pas `'required' => false`, le widget HTML5 bloque une soumission avec ce champ vide alors qu'aucune contrainte Symfony ne l'exige (cf. spec 10)
 - **Cypress-style isolation** (option future) : si on veut chaque spec totalement auto-suffisante, snapshoter la DB après chaque spec pour restauration rapide
