@@ -58,6 +58,27 @@ class SonarFixtureClientService extends ClientService
         ];
     }
 
+    /**
+     * Double de test pour {@see ClientService::httpActivity()}.
+     *
+     * En environnement `test`, `SONAR_ACTIVITY_TOKEN`/`SONAR_ACTIVITY_USER`
+     * sont vides (`.env.test.local`) : le vrai `httpActivity()` court-circuite
+     * avant tout appel réseau et renvoie 401 ("La clé n'est pas correcte"),
+     * empêchant la page Activité d'atteindre sa logique base de données.
+     * Date fixée loin dans le passé pour ne jamais dépasser les dates
+     * seedées par les specs e2e (évite un flash de comparaison de fraîcheur
+     * superflu, qu'aucune donnée d'historique agrégé n'existe encore ou non).
+     */
+    public function httpActivity(string $url): array
+    {
+        return [
+            'code' => 200,
+            'message' => '[GET] - 200 - fixture:activity/ce-activity.json',
+            'json' => ['tasks' => [['executedAt' => '2020-01-01T00:00:00+0100']]],
+            'erreur' => null,
+        ];
+    }
+
     public function httpSonarQube(string $url): array
     {
         $fixturesDir = dirname(__DIR__) . '/fixtures/sonarqube';

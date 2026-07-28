@@ -165,3 +165,15 @@ export function resetAndSeedForRepartition(): void {
   resetAndSeedAfterSpec05();
   seedSql('95_e2e\\seed-after-spec-15-repartition-tetris.sql');
 }
+
+/**
+ * Reset + seed pour le spec 17 (page Activité) : état post-spec 08 (Nathan
+ * porte ROLE_ACTIVITY, seul rôle requis pour /activity) + 3 lignes `activity`
+ * (2 SUCCESS, 1 FAILED) pour tetris:TetrisGame sur l'année en cours — la
+ * table n'est alimentée que par le cron `app:activity:collecte` en usage
+ * réel, jamais par le flux de collecte manuelle des autres specs.
+ */
+export function resetAndSeedForActivity(): void {
+  resetAndSeedAfterSpec08();
+  seedSql('95_e2e\\seed-after-spec-17-activity-tetris.sql');
+}

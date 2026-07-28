@@ -93,6 +93,7 @@ graph TB
 | 14 | `14-cosui` | nathan | Comité de Suivi (notes référence/courante, répartition des défauts, radar), seed direct en base |
 | 15 | `15-repartition` | nathan | Répartition — bouton Historique (lecture d'une analyse déjà complète), seed direct en base |
 | 16 | `16-statistiques` | nathan | 5 pages du module Statistiques (index, dashboard, sonar report, projets, utilisateur) |
+| 17 | `17-activite` | nathan (+ ROLE_ACTIVITY transverse) | page Activité — recalcul réel activity → activity_historique, 3 boutons de tracé |
 
 **Conséquences** :
 
@@ -719,6 +720,37 @@ sequenceDiagram
     Prérequis : `cloc` installé et sur le `PATH` du processus PowerShell (`winget install AlDanial.Cloc`) — sur ce poste, `cloc.exe` est fourni avec la distribution PHP dans `0_toolz\php-8.5.5-NTS\`.
 
 **Canvas masqués sans activité utilisateur trackée** : sur `/statistiques/utilisateur`, `#chart-avg-session-duration`/`#chart-nb-session-unique` restent masqués côté JS tant que leurs `data-*` sont vides (`"[]"`, aucune session Nathan trackée sur ce seed minimal) — comportement attendu, vérifié en présence (`toBeAttached()`), pas en visibilité.
+
+### Spec 17 — Activité
+
+Nathan (rôle transverse `ROLE_ACTIVITY`, cumulé par le seed spec 08 — aucun user du parcours narratif ne le porte nativement). Le contrôle d'accès négatif (403 pour un user sans ce rôle) est déjà couvert par le spec 08, non reproduit ici : ce spec exerce le workflow fonctionnel réel de la page.
+
+```mermaid
+sequenceDiagram
+    actor PW as Playwright (Nathan)
+    participant Page as /activity
+    participant Api as /api/secure/activity/*
+
+    PW->>Page: goto /activity
+    Page-->>PW: flash "Aucune statistique n'a encore été générée" (activity_historique vide)
+
+    PW->>Api: click "Recalculer les statistiques" (POST /sauvegarde)
+    Api-->>PW: agrégation réelle activity -> activity_historique (analyse=3, succès=2, échec=1, taux=66.7%)
+
+    PW->>Page: reload
+    Page-->>PW: tableau relu depuis activity_historique (persistance confirmée)
+
+    PW->>Api: click 3 boutons de tracé (POST /dessin)
+    Api-->>PW: pas d'erreur (canvas Chart.js redessiné)
+```
+
+**Seed direct en base, pas de collecte** : depuis la migration de mai 2026, `activity` n'est plus alimentée que par le cron `app:activity:collecte` — ni l'UI, ni le flux de collecte manuelle du spec 06 ne l'alimentent. Le seed insère directement 3 lignes (2 SUCCESS, 1 FAILED, dates construites via `CURRENT_DATE` plutôt que figées, pour rester valides indéfiniment) pour tetris:TetrisGame, sans peupler `activity_historique` : la page démarre donc en état "pas encore de statistiques", et le clic sur "Recalculer" exerce la vraie agrégation (`ApiActivityController::sauvegardeHistorique()`), pas un simple mock de lecture.
+
+**Valeurs assertées, valeurs volontairement non assertées** : `analyse` (3), `success` (2), `failed` (1), `success_rate` (`round(2/3*100, 1)` = 66,7 %) et `max_time` (`gmdate('H:i:s', 120)` = 00:02:00) sont déterministes et vérifiés explicitement. `day` (écart entre la 1ère analyse de l'année et l'instant du test) et `analyse_average` qui en dépend ne le sont pas — ils varient selon la date réelle d'exécution du test.
+
+!!! caution "🐛 Lacune de mock trouvée et corrigée : `ActivityController::index()` faisait un vrai appel réseau non mocké"
+    Contrairement aux autres pages qui appellent `ClientService::httpSonarQube()`/`httpActuator()` (tous deux interceptés en environnement `test` par `SonarFixtureClientService`, qui renvoie des fixtures JSON sans jamais toucher le réseau), la page Activité appelle `ClientService::httpActivity()` — une méthode dédiée, jusqu'ici non mockée. En e2e, `SONAR_ACTIVITY_TOKEN`/`SONAR_ACTIVITY_USER` sont vides (`.env.test.local`), ce qui fait échouer un garde-fou interne de `httpActivity()` avant tout appel réseau (401 "La clé n'est pas correcte") — la page affichait donc systématiquement une erreur, sans jamais atteindre sa logique base de données.
+    Corrigé en ajoutant un override `httpActivity()` dans `SonarFixtureClientService` (même convention que `httpActuator()`), renvoyant une tâche fixe très ancienne (2020) pour ne jamais dépasser les dates seedées par les specs e2e et éviter un flash de comparaison de fraîcheur superflu.
 
 ## Reset rapide entre runs (≈ 3s, sans prompt password)
 
