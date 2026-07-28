@@ -81,7 +81,7 @@ Page Clean Code — Synthèse
 │
 ├── 🧵 Fil d'Ariane : Accueil › Clean Code — Synthèse
 ├── 🔔 Zone de messages (flash serveur uniquement)
-├── 🏷️ Badge de périmètre ("Périmètre : {groupes}" ou "Aucun périmètre")
+├── 🎯 Tags — un par groupe fonctionnel de l'utilisateur (composant partagé avec Mes projets/Statistiques)
 │
 ├── 📊 Tableau 15 colonnes (1 ligne par projet du périmètre, trié par risque)
 │
@@ -91,7 +91,7 @@ Page Clean Code — Synthèse
 
 ## 📊 Page `/clean-code/synthese` — blocs détaillés
 
-- Badge de périmètre ("Périmètre : {groupes}" ou "Aucun périmètre").
+- Un tag 🎯 par groupe fonctionnel de l'utilisateur (rien affiché si aucun groupe — le flash serveur couvre déjà ce cas), composant partagé (`templates/_tags_groupe_fonctionnel.html.twig`) avec les pages Mes projets et Statistiques › Projets.
 - Cas d'absence de données, dans l'ordre de vérification : aucun groupe fonctionnel rattaché → inviter à contacter un gestionnaire ; aucun projet dans le périmètre → callout dédié ; aucune donnée Clean Code sur les projets du périmètre → callout dédié.
 - **Tableau 15 colonnes**, trié par niveau de risque (critique→faible) puis nom de projet : Projet/Version, Quality Gate, notes A-E (maintenabilité/fiabilité/sécurité/complexité/complexité cognitive), niveau de risque Clean Code, % RESPONSIBLE, nb bugs, nb vulnérabilités, % couverture, % duplication, nb OWASP — chaque colonne numérique affiche « — » si la donnée est absente plutôt qu'un zéro trompeur.
 

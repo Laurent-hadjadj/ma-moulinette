@@ -55,6 +55,8 @@
       <section class="grid-container">
         <h2 class="h4 claire-hand"><span aria-hidden="true"></span>Métriques par projet</h2>
 
+        {{ include('_tags_groupe_fonctionnel.html.twig', {'groupes': liste_groupe_fonctionnel}) }}
+
         {# Compteur #}
         <p class="open-sans margin-bottom-05">
           <strong>{{ projets|length }}</strong> projet{{ projets|length > 1 ? 's' : '' }} — dernière analyse connue par projet.

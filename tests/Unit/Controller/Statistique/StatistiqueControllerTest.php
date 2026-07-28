@@ -619,6 +619,7 @@ class StatistiqueControllerTest extends TestCase
         $this->controller->statistiquesProjet();
 
         $this->assertSame([['maven_key' => 'fr.ma-moulinette:app-a']], $capturedCtx['projets']);
+        $this->assertSame(['TeamA'], $capturedCtx['liste_groupe_fonctionnel']);
     }
 
     // ===== runBatchAnalysis() =====

@@ -1318,6 +1318,30 @@ input:checked ~ .switch-paddle-identifiant { background-color: #00445b; }
   }
 }
 
+/* ==== Tags — groupe(s) fonctionnel(s) de l'utilisateur ==== */
+/* Composant partagé (voir templates/_tags_groupe_fonctionnel.html.twig), utilisé
+ * sur toutes les pages listant plusieurs applications, pour rappeler le
+ * périmètre affiché sans avoir à relire un texte ("Périmètre : a, b, c"). */
+.tags-groupe-fonctionnel {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.tag-groupe-fonctionnel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #00445b;
+  border: 1px solid #a9c1cb;
+  border-radius: 999px;
+  padding: 0.3rem 0.75rem;
+  background-color: #eef4f7;
+  letter-spacing: 0.2px;
+}
+
 /* ======= formatage d'une liste (rapport de collecte) ======= */
 .data-list {
 		list-style-type: none;

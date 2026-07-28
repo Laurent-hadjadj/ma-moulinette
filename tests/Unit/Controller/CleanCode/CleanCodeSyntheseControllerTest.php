@@ -265,6 +265,7 @@ class CleanCodeSyntheseControllerTest extends TestCase
         $this->assertSame('Mon App', $capturedCtx['projets'][0]['project_name']);
         $this->assertSame('A', $capturedCtx['projets'][0]['note_mnt']);
         $this->assertSame('Périmètre : TeamA', $capturedCtx['scope_label']);
+        $this->assertSame(['TeamA'], $capturedCtx['liste_groupe_fonctionnel']);
         $this->assertIsFloat($capturedCtx['projets'][0]['risk_score']);
         $this->assertContains($capturedCtx['projets'][0]['risk_level'], ['critical', 'high', 'medium', 'low']);
     }

@@ -169,7 +169,9 @@ class StatistiqueController extends AbstractController
                 'message' => 'Vous devez être rattaché à un groupe fonctionnel pour accéder à cette vue (Erreur 404).',
                 'trace'   => null,
             ]);
-            return $this->render('statistique/projet.html.twig', $this->genericRender() + ['projets' => []]);
+            return $this->render('statistique/projet.html.twig', $this->genericRender() + [
+                'projets' => [], 'liste_groupe_fonctionnel' => $groupes,
+            ]);
         }
 
         $mesProjets = $this->mesProjets->liste($groupes);
@@ -179,7 +181,9 @@ class StatistiqueController extends AbstractController
                 'message' => "Aucun projet trouvé pour votre groupe fonctionnel. Vérifiez le tag utilisé dans SonarQube (Erreur 406).",
                 'trace'   => null,
             ]);
-            return $this->render('statistique/projet.html.twig', $this->genericRender() + ['projets' => []]);
+            return $this->render('statistique/projet.html.twig', $this->genericRender() + [
+                'projets' => [], 'liste_groupe_fonctionnel' => $groupes,
+            ]);
         }
 
         $mavenKeys = array_values(array_map(
@@ -195,11 +199,14 @@ class StatistiqueController extends AbstractController
                 'message' => 'Erreur lors de la récupération des métriques projets.',
                 'trace'   => $result['erreur'] ?? null,
             ]);
-            return $this->render('statistique/projet.html.twig', $this->genericRender() + ['projets' => []]);
+            return $this->render('statistique/projet.html.twig', $this->genericRender() + [
+                'projets' => [], 'liste_groupe_fonctionnel' => $groupes,
+            ]);
         }
 
         return $this->render('statistique/projet.html.twig', $this->genericRender() + [
             'projets' => $result['projets'],
+            'liste_groupe_fonctionnel' => $groupes,
         ]);
     }
 

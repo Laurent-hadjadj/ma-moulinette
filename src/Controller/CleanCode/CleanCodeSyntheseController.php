@@ -113,6 +113,7 @@ class CleanCodeSyntheseController extends AbstractController
 
         $render['scope_label'] = $data['scope_label'];
         $render['projets']     = $data['projets'];
+        $render['liste_groupe_fonctionnel'] = $data['groupes'];
 
         if ($data['code'] === 404) {
             $this->logger->warning('[CleanCode Synthèse] ⚠️ Utilisateur sans groupe fonctionnel rattachée.');
@@ -136,7 +137,7 @@ class CleanCodeSyntheseController extends AbstractController
      * MODIF 2026-05-19 : factorise le calcul
      * des projets pour éviter la duplication entre index() et pdf().
      *
-     * @return array{code: int, scope_label: string, projets: array<int, array<string, mixed>>}
+     * @return array{code: int, scope_label: string, groupes: array<int, string>, projets: array<int, array<string, mixed>>}
      *
      * Created at: 19/05/2026 09:23:22 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -150,12 +151,12 @@ class CleanCodeSyntheseController extends AbstractController
             : 'Périmètre : ' . implode(', ', $groupes);
 
         if (empty($groupes)) {
-            return ['code' => 404, 'scope_label' => $scopeLabel, 'projets' => []];
+            return ['code' => 404, 'scope_label' => $scopeLabel, 'groupes' => $groupes, 'projets' => []];
         }
 
         $mesProjets = $this->mesProjets->liste($groupes);
         if ($mesProjets['code'] !== 200 || empty($mesProjets['projets'])) {
-            return ['code' => 406, 'scope_label' => $scopeLabel, 'projets' => []];
+            return ['code' => 406, 'scope_label' => $scopeLabel, 'groupes' => $groupes, 'projets' => []];
         }
 
         $mavenKeys = array_values(array_map(
@@ -167,7 +168,7 @@ class CleanCodeSyntheseController extends AbstractController
             ->selectHistoriqueCleanCodeSynthese($mavenKeys);
 
         if ($result['code'] !== 200 || empty($result['liste'])) {
-            return ['code' => 503, 'scope_label' => $scopeLabel, 'projets' => []];
+            return ['code' => 503, 'scope_label' => $scopeLabel, 'groupes' => $groupes, 'projets' => []];
         }
 
         $ratingMap = ['1' => 'A', '2' => 'B', '3' => 'C', '4' => 'D', '5' => 'E'];
@@ -228,7 +229,7 @@ class CleanCodeSyntheseController extends AbstractController
             return $diff !== 0 ? $diff : strcmp($a['project_name'], $b['project_name']);
         });
 
-        return ['code' => 200, 'scope_label' => $scopeLabel, 'projets' => $projets];
+        return ['code' => 200, 'scope_label' => $scopeLabel, 'groupes' => $groupes, 'projets' => $projets];
     }
 
     /**

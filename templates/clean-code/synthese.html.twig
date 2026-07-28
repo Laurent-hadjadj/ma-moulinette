@@ -43,12 +43,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                 <span aria-hidden="true">🧬</span> Clean Code — Synthèse portefeuille
             </h2>
 
-            {# MODIF 2026-05-19 : badge périmètre utilisateur #}
-            <p class="margin-bottom-1">
-                <span class="badge-scope filtered" title="Accès filtré par vos groupes fonctionnels">
-                    {{ scope_label }}
-                </span>
-            </p>
+            {{ include('_tags_groupe_fonctionnel.html.twig', {'groupes': liste_groupe_fonctionnel}) }}
 
             {% if projets is empty %}
                 <div class="callout alert-callout-border info margin-bottom-1">
