@@ -39,7 +39,7 @@
 BEGIN;
 
 -- ============================================================================
--- 1. Donnees de collecte/peinture (TRUNCATE rapide, CASCADE pour FK)
+-- 1. Données de collecte/peinture (TRUNCATE rapide, CASCADE pour FK)
 -- ============================================================================
 TRUNCATE TABLE
     ma_moulinette.information_projet,
@@ -70,11 +70,16 @@ TRUNCATE TABLE
     ma_moulinette.user_agent_event,
     ma_moulinette.user_agent_analysis,
     ma_moulinette.user_role_log,
-    ma_moulinette.portefeuille_historique
+    ma_moulinette.portefeuille_historique,
+    ma_moulinette.dc_finding,
+    ma_moulinette.dc_dependency,
+    ma_moulinette.dc_cve,
+    ma_moulinette.dc_scan,
+    ma_moulinette.dc_processing_queue
 RESTART IDENTITY CASCADE;
 
 -- ============================================================================
--- 2. Metadonnees mutees par les scenarios E2E
+-- 2. Métadonnées mutées par les scenarios E2E
 -- ============================================================================
 DELETE FROM ma_moulinette.groupe_fonctionnel;
 DELETE FROM ma_moulinette.portefeuille;
@@ -97,7 +102,7 @@ WHERE courriel IN (
 COMMIT;
 
 -- ============================================================================
--- 4. Re-charge les 5 utilisateurs E2E dans leur etat initial (idempotent)
+-- 4. Re-charge les 5 utilisateurs E2E dans leur état initial (idempotent)
 -- ============================================================================
 \ir ../90_fixtures/fixtures-e2e.sql
 

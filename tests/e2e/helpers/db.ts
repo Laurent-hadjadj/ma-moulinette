@@ -131,3 +131,13 @@ export function resetAndSeedForSuiviHistorique(): void {
   resetAndSeedAfterSpec05();
   seedSql('95_e2e\\seed-after-spec-07-historique-tetris.sql');
 }
+
+/**
+ * Reset + seed pour le spec 12 (Dependency-Check) : alias sémantique de
+ * resetAndSeedForCrudTransverse() — même état (tetris-game + rôles
+ * transverses cumulés sur Nathan, dont ROLE_SECURITY, requis pour
+ * `/dependency-check`).
+ */
+export function resetAndSeedForDependencyCheck(): void {
+  resetAndSeedForCrudTransverse();
+}
