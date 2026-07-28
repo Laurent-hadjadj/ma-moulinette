@@ -5254,5 +5254,33 @@
             "path": "src/main/java/tetris/Input.java"
         }
     ],
-    "facets": []
+    "facets": [
+        {
+            "property": "cleanCodeAttributeCategories",
+            "values": [
+                { "val": "CONSISTENT", "count": 40 },
+                { "val": "INTENTIONAL", "count": 50 },
+                { "val": "ADAPTABLE", "count": 30 },
+                { "val": "RESPONSIBLE", "count": 12 }
+            ]
+        },
+        {
+            "property": "impactSeverities",
+            "values": [
+                { "val": "BLOCKER", "count": 5 },
+                { "val": "HIGH", "count": 20 },
+                { "val": "MEDIUM", "count": 60 },
+                { "val": "LOW", "count": 40 },
+                { "val": "INFO", "count": 7 }
+            ]
+        },
+        {
+            "property": "impactSoftwareQualities",
+            "values": [
+                { "val": "MAINTAINABILITY", "count": 90 },
+                { "val": "RELIABILITY", "count": 25 },
+                { "val": "SECURITY", "count": 17 }
+            ]
+        }
+    ]
 }
