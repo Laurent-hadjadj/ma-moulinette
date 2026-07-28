@@ -142,6 +142,15 @@ class ProjetCosuiService
             : null;
 
         // 4. Traitement des anomalies
+        /* MODIF 2026-07-28 : le préfixe 'bug' sert à construire le nom de
+         * propriété Doctrine (frontendBugBlocker, cf. traitement()), mais la
+         * clé de rendu attendue par le template (et par
+         * initializeEvolutionRender(), qui utilise déjà 'reliability') est
+         * nombre_metier_reliability_* / nombre_presentation_reliability_* —
+         * sans cette table de correspondance, la colonne "Fiabilité" du
+         * tableau Répartition affichait toujours 0 quelle que soit la
+         * donnée réelle en base (bug trouvé en écrivant le spec e2e 14). */
+        $prefixLabels = ['bug' => 'reliability', 'vulnerability' => 'vulnerability', 'code_smell' => 'code_smell'];
         try {
             foreach (['frontend', 'backend'] as $module) {
                 foreach (['bug', 'vulnerability', 'code_smell'] as $prefix) {
@@ -155,7 +164,7 @@ class ProjetCosuiService
                         // Création du tableau map avec les données nécessaires
                         $map = [
                                 'module' => $bloc,
-                                'prefix' => $prefix,
+                                'prefix' => $prefixLabels[$prefix],
                                 'severity' => strtolower($severity),
                                 'data' => $result[0]['value'] ?? 0
                             ];

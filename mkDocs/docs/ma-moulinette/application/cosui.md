@@ -70,6 +70,9 @@ Un interrupteur **« Afficher les variations ? »** affiche/masque, purement cô
 
 Tableau croisé Maintenabilité/Fiabilité/Vulnérabilité × Présentation/Métier × Bloquant/Critique/Majeur — **pour la version courante uniquement** (pas de comparaison référence/courante ici, contrairement au tableau du dessus), alimenté par le dernier cycle de la page [Répartition par module](repartition_details.md).
 
+!!! note "✅ Colonne Fiabilité corrigée (2026-07-28)"
+    `ProjetCosuiService::generateRender()` construit la clé de variable de rendu à partir du même identifiant interne (`bug`/`vulnerability`/`code_smell`) que celui utilisé pour retrouver la colonne en base (`frontendBugBlocker`, etc.). Le template attend cependant `nombre_metier_reliability_*`/`nombre_presentation_reliability_*` (label affiché : Fiabilité) — sans correspondance entre `bug` et `reliability`, la colonne Fiabilité du tableau affichait toujours **0**, quelle que soit la donnée réellement en base. Corrigé par une table de correspondance dédiée à la construction de la clé de rendu ; les colonnes Vulnérabilité/Maintenabilité n'étaient pas concernées (leur identifiant interne correspond déjà au label attendu). Trouvé en écrivant la couverture e2e du module.
+
 ## 🕸️ Graphique radar
 
 Compare visuellement référence et version courante sur 6 axes : fiabilité, vulnérabilité, hotspots, maintenabilité, couverture de tests, dette technique (ratio inversé). Les notes lettres sont converties en points sur 100 pour permettre le tracé (`note2point()` côté serveur).

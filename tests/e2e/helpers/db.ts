@@ -141,3 +141,15 @@ export function resetAndSeedForSuiviHistorique(): void {
 export function resetAndSeedForDependencyCheck(): void {
   resetAndSeedForCrudTransverse();
 }
+
+/**
+ * Reset + seed pour le spec 14 (page COSUI) : état post-spec 05 + 2 lignes
+ * d'historique (notes/compteurs réels, une "référence" initial=true + une
+ * courante) et 1 ligne repartition control='complet (100%)' pour
+ * tetris:TetrisGame — insérées directement en base (ni la fixture SonarQube
+ * ni le flux spec 06 ne produisent ces deux prérequis).
+ */
+export function resetAndSeedForCosui(): void {
+  resetAndSeedAfterSpec05();
+  seedSql('95_e2e\\seed-after-spec-14-cosui-tetris.sql');
+}
