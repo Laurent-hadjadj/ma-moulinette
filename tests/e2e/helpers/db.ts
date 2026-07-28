@@ -177,3 +177,15 @@ export function resetAndSeedForActivity(): void {
   resetAndSeedAfterSpec08();
   seedSql('95_e2e\\seed-after-spec-17-activity-tetris.sql');
 }
+
+/**
+ * Reset + seed pour le spec 18 (page Préférences) : état post-spec 05 +
+ * préférences de Nathan peuplées pour tetris:TetrisGame sur les 3 catégories
+ * (suivi_projet, favori_projet, favori_version avec 2 versions) — les 5
+ * users e2e démarrent sinon tous avec des listes vides, rendant les 3
+ * modales triviales à vérifier.
+ */
+export function resetAndSeedForPreferences(): void {
+  resetAndSeedAfterSpec05();
+  seedSql('95_e2e\\seed-after-spec-18-preferences-tetris.sql');
+}

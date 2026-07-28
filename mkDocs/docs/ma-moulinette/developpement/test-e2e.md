@@ -94,6 +94,7 @@ graph TB
 | 15 | `15-repartition` | nathan | Répartition — bouton Historique (lecture d'une analyse déjà complète), seed direct en base |
 | 16 | `16-statistiques` | nathan | 5 pages du module Statistiques (index, dashboard, sonar report, projets, utilisateur) |
 | 17 | `17-activite` | nathan (+ ROLE_ACTIVITY transverse) | page Activité — recalcul réel activity → activity_historique, 3 boutons de tracé |
+| 18 | `18-preferences` | nathan | page Préférences — 3 interrupteurs, 3 modales (Projets/Favoris/Versions), suppressions |
 
 **Conséquences** :
 
@@ -751,6 +752,38 @@ sequenceDiagram
 !!! caution "🐛 Lacune de mock trouvée et corrigée : `ActivityController::index()` faisait un vrai appel réseau non mocké"
     Contrairement aux autres pages qui appellent `ClientService::httpSonarQube()`/`httpActuator()` (tous deux interceptés en environnement `test` par `SonarFixtureClientService`, qui renvoie des fixtures JSON sans jamais toucher le réseau), la page Activité appelle `ClientService::httpActivity()` — une méthode dédiée, jusqu'ici non mockée. En e2e, `SONAR_ACTIVITY_TOKEN`/`SONAR_ACTIVITY_USER` sont vides (`.env.test.local`), ce qui fait échouer un garde-fou interne de `httpActivity()` avant tout appel réseau (401 "La clé n'est pas correcte") — la page affichait donc systématiquement une erreur, sans jamais atteindre sa logique base de données.
     Corrigé en ajoutant un override `httpActivity()` dans `SonarFixtureClientService` (même convention que `httpActuator()`), renvoyant une tâche fixe très ancienne (2020) pour ne jamais dépasser les dates seedées par les specs e2e et éviter un flash de comparaison de fraîcheur superflu.
+
+### Spec 18 — Préférences
+
+Nathan (`ROLE_UTILISATEUR` implicite, aucun rôle spécifique requis). Le seed peuple ses préférences pour tetris:TetrisGame sur les 3 catégories (`suivi_projet`, `favori_projet`, `favori_version` avec 2 versions) — sans ce seed, les 5 users e2e démarrent tous avec des listes vides, rendant les 3 modales triviales à vérifier (rien à afficher ni à supprimer).
+
+```mermaid
+sequenceDiagram
+    actor PW as Playwright (Nathan)
+    participant Page as /preferences
+    participant Api as /api/secure/preference/*
+
+    PW->>Page: goto /preferences
+    Page-->>PW: 3 interrupteurs activés, lien Actuator absent (ROLE_ACTUATOR)
+
+    PW->>Api: click ℹ️ Projets (GET /category?category=suivi_projet)
+    Api-->>PW: modale lecture seule, tetris:TetrisGame
+
+    PW->>Api: click ℹ️ Favoris → poubelle (POST /favori/delete)
+    Api-->>PW: ligne masquée, reload confirme la suppression persistée
+
+    PW->>Api: click ℹ️ Versions → déplie l'accordéon → poubelle (POST /version/delete)
+    Api-->>PW: ligne masquée, reload confirme la version supprimée persistée
+
+    PW->>Api: bascule interrupteur Projet (POST /statut)
+    Api-->>PW: reload confirme l'état désactivé persisté
+```
+
+**Modales Foundation Reveal, pas `<dialog>` natif** : `modalSafe.open()`/`close()` (`assets/js/common/safeModal.js`) pilotent `$(modal).foundation('open'|'close')` — `.toBeVisible()`/`.toBeHidden()` suffisent (même mécanisme observé et validé au spec 07), pas besoin de vérifier l'attribut `open` du DOM.
+
+**Accordéon fermé par défaut** : la modale Versions construit un accordéon Foundation (une entrée par `mavenKey`) initialisé via `.foundation('_init')` — son contenu (les lignes de version, et donc les boutons de suppression) reste masqué tant que le titre (`.accordion-custom`) n'a pas été cliqué. Sélecteur volontairement scopé à `.accordion-custom` (pas `.accordion-title`, utilisé aussi par d'autres accordéons de la page comme le menu d'aide).
+
+**`window.$`, pas `window.jQuery`** : contrairement à d'autres bundles de l'application (`select2`, page de changement de mot de passe), le bundle Préférences n'expose que `window.$ = $` — une attente de binding jQuery calquée sur celle du spec 07 (`w.jQuery._data(...)`) reste bloquée indéfiniment sur cette page ; il faut vérifier `w.$._data(...)`.
 
 ## Reset rapide entre runs (≈ 3s, sans prompt password)
 
