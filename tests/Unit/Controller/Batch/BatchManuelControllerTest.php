@@ -327,6 +327,49 @@ class BatchManuelControllerTest extends TestCase
         $this->assertArrayHasKey('reference', $data);
     }
 
+    public function testTraitementManuelPersistsExactlyOneBatchExecutionAndUpdatesTwice(): void
+    {
+        // Régression : le code créait et persistait autrefois DEUX BatchExecution
+        // identiques (bloc dupliqué) avant la boucle de collecte, avec deux appels
+        // à updateBatchTraitement — la première ligne devenait orpheline (jamais
+        // rattachée au journal), rendant selectBatchExecutionLastTraitementId()
+        // (ORDER BY date_enregistrement DESC LIMIT 1) instable en cas d'égalité de
+        // timestamp. Un seul appel à chaque avant la boucle, un de plus après.
+        $this->authChecker->method('isGranted')->willReturn(true);
+        $this->batchTraitementRepo->method('findBy')->willReturn([]);
+        $this->listeProjetService->method('listeProjet')->willReturn([
+            'code' => 200,
+            'liste' => ['fr.ma-moulinette:ma-moulinette'],
+        ]);
+
+        $user = new Utilisateur();
+        $user->setCourriel('u@ma-moulinette.fr');
+        $this->token->method('getUser')->willReturn($user);
+
+        $this->batchTraitementRepo->expects($this->exactly(2))
+            ->method('updateBatchTraitement')
+            ->willReturn(['code' => 200]);
+
+        $persistedBatchExecutions = 0;
+        $this->em->method('persist')->willReturnCallback(
+            function ($entity) use (&$persistedBatchExecutions) {
+                if ($entity instanceof \App\Entity\BatchExecution) {
+                    $persistedBatchExecutions++;
+                }
+            }
+        );
+
+        $this->collecte->method('collecte')->willReturn(['code' => 200, 'compte_rendu' => 'ok']);
+
+        $this->controller->traitementManuel($this->jsonRequest([
+            'traitement_id' => '01HK0000000000000000000000',
+            'titre_portefeuille' => 'T',
+            'portefeuille' => 'P',
+        ]));
+
+        $this->assertSame(1, $persistedBatchExecutions, 'Un seul BatchExecution doit être créé/persisté par traitement.');
+    }
+
     public function testTraitementManuelReturnsErrorWhenFinalUpdateFails(): void
     {
         $this->authChecker->method('isGranted')->willReturn(true);
