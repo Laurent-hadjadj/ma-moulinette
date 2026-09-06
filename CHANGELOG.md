@@ -1,231 +1,47 @@
-# Liste des évolutions et défauts corrigés
+# Changelog
 
-## v2.0.0 - 02/08/2026 - WiP
+Toutes les évolutions notables de Ma-Moulinette sont documentées dans ce fichier.
 
-### Framework
+Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), et ce projet adhère (au mieux, l'historique antérieur à cette convention restant dans son style d'origine) au [Semantic Versioning](https://semver.org/lang/fr/).
 
-* Migration PHP 8.5.5 NTS ;
-* Migration symfony/core 6.4 (6.4.8) ;
-* Migration symfony/core 6.4 vers 7.1 (7.1.6) ;
-* Migration Symfony/core 7.1 vers 7.2 (7.2.1) ;
-* Migration Symfony/core 7.2 vers 7.3 (7.3.3) ;
-* Migration Symfony/core 7.3 vers 8.1 (8.1.0) ;
-* Migration de la base SQLite vers PostgreSQL 18;
-* Migration : La documentation au format markdown utilise mkDocs pour la consultation ;
-* Mise à jour Twig 3 (3.21.3) ;
-* Mise à jour doctrine/dbal 4 (4.3.22) ;
-* Mise à jour doctrine/orm 3 (3.2.3) ;
-* Mise à jour easycorp/easyadmin-bundle 4 (4.24.9) ;
-* Mise à jour de phpstan/phpstan 1.12 (1.12.28) ;
-* Mise à jour de phpunit/phpunit 9.6 (9.6.25) ;
-* ~~Intégration de php-amqplib/php-amqplib 3.7 (3.7.1)~~ ;
-* Intégration de knplabs/knp-paginator-bundle 6 (6.9.1) ;
+## [Non publié] — développement de la v2.0.0
 
-### Transverse
+Reprise complète du projet initial (Symfony 5.4 / SQLite) vers une architecture Symfony 8 / PostgreSQL 18. Périmètre couvert depuis `v1.6.0`.
 
-* Décommissionnement de SQLite ;
-* Décommissionnement du 'mode' Test. Utilisation d'une base de données pour les tests ;
-* Décommissionnement de webpack pour asset-mapper ;
-* Redimensionnement de toutes les images SVG à leur taille nominale (512 -> 92/72/64/32...) ;
-* Intégration des Emoji en substitution des SVG ;
-* Normalisation des messages flash ;
-* Normalisation des messages JS ;
-* Refactor : mises à jour des commentaires ;
-* Refactor : regroupement des classes dans des packages ;
-* Refactor : réécritures des processus de Collecte. Suppression de la duplication de code. Processus commun pour les batch et la collecte utilisateur ;
-* Refactor : Catch et traitement des erreurs (HTTP et SQL) ;
-* Refactor : Externalisation des constantes JS ;
-* Refactor : réduction de la complexité des classes PHP et JS ;
-* Refactor : Déplacement et des requêtes présentent dans les contrôleurs PHP vers les EntityRepository ;
-* Refactor : Bind et cast des paramètres avant injection dans les requêtes ;
-* Refactor : Mise en place du rollback sur les requêtes de type INSERT, DELETE et UPDATE ;
-* Refactor : Ajout d'une exception en cas d'absence de la BD sur toutes les requêtes SQL ;
-* Refactor : Ajout de traces lors des appel HTTP 200, 400, 401,404, 500 et 503 ;
-* Refactor : Définition de la timezone [Europe/Paris] pour la gestion des dates ;
-* Refactor : Utilisation de DATETIME_IMMUTABLE à la place de DATETIME ;
-* Refactor : Réécriture de la classe Client ;
-* Refactor : Ajout des logs applicatives dans toutes les classes ;
-* Code Clean W3C & SonarQube ;
+### Ajouté
 
-### Composants
+* **Framework** : intégration de `knplabs/knp-paginator-bundle` ;
+* **Docker** : stack `docker-compose.yml` complète (base de données, PHP-FPM, cron, NGINX), crontab planifiant les jobs `OWASP DependencyCheck`, `clean-tags`, `collecte` et `activity` via un sidecar Supercronic ;
+* **Base de données** : table `Actuator`, colonnes `tags`/`visibilité` sur `liste_projet`, colonnes `mode_collecte`/`utilisateur_collecte` sur la quasi-totalité des tables, tables `batch_traitement`/`batch_profiling` ;
+* **Sécurité** : rôles étendus (`COLLECTE`, `BATCH`, `ACTUATOR`, `SUPER_ADMIN`, `INTERNAL`…) ; authentification **LDAP** (OpenLDAP, Microsoft AD) en complément du local, avec provisioning automatique ; honeypot anti-bot sur l'inscription ;
+* **Back-office EasyAdmin** : CRUD dédiés groupes fonctionnels/utilisateur, portefeuilles de projets et batch ; nouvelle page **Journal des rôles** (consultation, archive CSV/PDF) ; nouvelle page **Logs applicatifs** ;
+* **Traitement & Profiling** : nouveau module de file de traitement (déclenchement manuel/automatique de la collecte, files distinctes, identifiants Ulid, journal d'exécution) et nouvelle page de mesure des performances des traitements ;
+* **Actuator** : nouveau module de collecte pour applications Java (déclaration de points d'accès, extraction des clés JSON à chaque analyse, pastille et modale sur la page Projet) ;
+* **Pages applicatives** : refonte ou enrichissement de Accueil (vues Projet/Version/Vide), Profil (suivi des référentiels), Activité (nouvelle page), Projet (dette technique, LOGGER Java, répartition par langage, NoSonar), Suivi (tableau des mesures), OWASP (référentiels 2017/2021), Préférences (versions favorites multiples) ;
+* **Authentification** : indicateur de qualité du mot de passe à l'inscription, changement de mot de passe forcé à la première connexion admin, option « voir mon mot de passe » ;
+* **Accessibilité (RGAA)** : mise en conformité progressive de l'application (sémantique HTML, ARIA, sous-titres) ;
+* **Tests** : suite **Playwright End-to-End** (22 suites, `tests/e2e/`) couvrant les parcours applicatifs et back-office critiques — voir [Tests End-to-End](mkDocs/docs/ma-moulinette/developpement/test-e2e.md) ; couverture unitaire/intégration portée à 80 % (`tests/Unit` + `tests/Integration`).
 
-> Docker
+### Modifié
 
-* [Docker] Ajout du fichier docker-compose.yml ;
+* **Framework** : migration PHP 8.5.5 NTS, Symfony 6.4 → 8.0, PostgreSQL 18 (depuis SQLite), Twig 3, Doctrine DBAL 4/ORM 3, EasyAdmin 4, PHPStan/PHPUnit ;
+* **Documentation** : migration vers **mkDocs** (Material) ;
+* **Transverse** : décommissionnement de Webpack au profit de **Symfony asset-mapper** ; réécriture des processus de collecte (suppression de la duplication batch/utilisateur) ; normalisation des messages (flash, JS, logs) ; centralisation du traitement des erreurs HTTP/SQL ;
+* **Actuator** : collecte **best effort** (un point d'accès en échec n'interrompt plus la collecte du projet) ;
+* **Analyse statique** : campagne de réduction PHPStan, dette ramenée de 4 820 à 150 erreurs résiduelles (niveau 6 retenu comme cible du projet).
 
-> Base de données ;
+### Supprimé
 
-* [BD] Suppression de la table `tags` ;
-* [BD] Ajout des "tags" et de la "visibilité" dans la table `liste_projet` ;
-* [BD] Ajout de de la table Actuator ;
-* [BD] Ajout des informations `mode_collecte` et `utilisateur_collecte` sur toutes tables (en fin presque) ;
+* Table `tags` (remplacée par les colonnes `tags`/`visibilité` de `liste_projet`) ;
+* Bookmark de préférence en base de données (remplacé par `sessionStorage`) ;
+* Suite `tests/Functional` (remplacée par la suite Playwright End-to-End) ;
+* « Mode Test » applicatif (remplacé par une vraie base de données de test).
 
-> Gestion des accès et des rôles.
+### Sécurité
 
-* [Security] Ajout du ROLE_COLLECTE pour autoriser la collecte manuelle ;
-* [Security] Ajout du ROLE_BATCH pour gérer les traitements manuels ou automatiques ;
-* [Security] Ajout du ROLE_ACTUATOR pour gérer les applications JAVA utilisant Actuator ;
-* [Security] Ajout du ROLE_SUPER_ADMIN pour l'accès aux données de gestion SonarQube ;
-
-> Gestion BackOffice
-
-* [EasyAdmin] Ajout d'un **listener** pour afficher les messages utilisateurs pour les événements des class **equipe**, **portefeuille** et **batch** ;
-* [EasyAdmin] ~~Ajout d'un **Validator** pour la contrainte d'unicité sur l'attribut `titre`~~ ;
-* [EasyAdmin] Ajout d'un controller CRUD pour gérer les **groupes fonctionnels** et **groupes utilisateur** ;
-* [EasyAdmin] Ajout d'un controller CRUD pour gérer les **portefeuilles** de projets ;
-* [EasyAdmin] Ajout d'un controller CRUD pour gérer les **batch** ;
-
-* [Page_Portefeuille] Initialise la liste des projets à "Aucun projet" quand la table des projets est vide ;
-* [Page_Traitement] Ajout de la page de suivi des traitements automatique ;
-* [Page_Traitement] Ajout d'un processus automatique et manuel pour la collecte des indicateurs SonarQube ;
-* [Page_Traitement] Ajout d'un bouton d'affichage du journal d'execution du batch ;
-
-* [Page_Préférence] Ajout du support des versions de projet en favoris ;
-* [Page_Préférence] Ajout du support de la version des projets favoris ou des versions du projet favoris ;
-* [Page_Préférence] Suppression du bookmark en préférence pour l'utilisation dans la sessionStorage.
-
-> Templates
-
-* [Header] Ajout d'un lien pour l'accès à la page de suivi des batch ;
-* [Footer] Refonte du footer pour prendre en compte les liens |Plan du site | accessibilité | Mentions légales | Données personnelles.
-
-> Page d'accueil
-
-* [Page_Home] Correction de l'affichage NaN pour les projets de type privé quand la table est vide ;
-* [Page_Home] Ajout de la vue **Projet** pour l'affichage des projets favoris, de la vue **Version** pour l'affichage des versions favorites et de vue **Vide** utilisée quand l'utilisateur a désactivé l'affichage des favoris ;
-* [Page_Home] Ajout du nombre de projet avec un tag et sans tags ;
-* [Page_Home] Vérification des droits pour mettre à jour la table des projets et celles des profils qualités.
-* [Page_Home] Affiche par défaut la version la plus récente du projet favori ;
-* [Page_Home] Ajout d'une page pour les différentes versions d'un projet favori ;
-
-* [Composant_Menu] Ajout du nom de l'utilisateur ;
-* [Composant_Menu] Ajout des informations utiles de l'utilisateur ;
-
-* [Page_Profil] Prise en compte du rôle `Gestionnaire` pour mettre à jour la liste des référentiels ;
-* [Page_Profil] Refonte de la page (Quentin). Affichage des profils actifs et ceux disponibles ;
-* [Page_Profil] Consultation des changements par profil ;
-* [Page_Profil_Details] Affichage des changements sur les règles des profils qualités ;
-
-* [Page_Activité] Ajout de la page de suivi de l'activité SonarQube (Quentin) ;
-
-> Authentification
-
-* [Page_Inscription] Renforcement de la sécurité. Ajout de la propriété hash_property_path.
-* [Page_Inscription] Ajout du contrôle de la saisie du mot de passe.
-* [Page_Inscription] Ajout de l'indicateur de qualité du mot de passe.
-
-* [Page_Login] Ajout de l'option voir mon mot de passe ;
-* [Page_Login] Ajout, je veux changer mon mot de passe ;
-* [Page_Login] Force le changement du mot de passe pour la première connexion avec l'utilisateur **admin** ;
-* [Page_Login] TODO : Ajout, j'ai oublié mon mot de passe, aidez-moi :)
-
-> Page Projet
-
-* [Page_Projet] Lors de la collecte des données, le ratio de dette technique est récupéré (table mesure) ;
-* [Page_Projet] Lors de la collecte des données, les données de la version courante est conservée.
-* [Page_Projet] Refactoring des traitements de collecte (message, catch des erreurs).
-* [Page_Projet] Si une erreur est détectée lors de la collecte, on arrête la collecte (i.e on ne lance pas les autres traitements).
-* [Page_Projet] Lors de la collecte, on récupère les données actuator et les données du Logger Java ;
-* [Page_projet] Réorganisation de la page avec un bloc centrale horizontal et trois colonnes
-* [Page_Projet] Ajout du nombre de version de type "autre" ;
-* [Page_Projet] Suppression de l'icône animée lors de la collecte ;
-* [Page_Projet] Correction alignement de la colone type du tableau de présentation de la dette technique ;
-* [Page_Projet] Ajout du projet par défaut dans localStorage en marque page ;
-* [Page_Projet] Limite la liste des projets affichés aux seuls projets d'une équipe ;
-* [Page_Projet] Collecte des TODO ;
-* [Page_Projet] Collecte des résultats Actuator (pour JAVA SpringBoot) ;
-* [Page_Projet] Collecte de la répartition des appels au LOGGER JAVA ;
-* [Page_Projet] Collecte de la répartition par langage ;
-* [Page_Projet] Ajout d'un tool-tip sur les langage avec ne nombre de ligne et la part en %.
-* [Page_Projet] Coverage -> Ajout des indicateurs suivants : skipped_tests,test_errors,test_failures,test_success_density;
-* [Page_Projet] Size -> Ajout des indicateurs suivants : classes,comment_lines comment_lines_density,files,functions;
-* [Page_projet] Utilisation d'un bookmark de session pour conserver le dernier projet sélectionnée ;
-* [Page_Projet] Ajout d'un tableau des noSonar avec le détails.
-
-> Page de suivi des indicateurs
-
-* [Page_Suivi] Lors de l'intégration d'une version dans l'historique, le ratio de dette technique est récupéré depuis le serveur ;
-* [Page_Suivi] Ajout du tableau des mesures (fichier, lignes, code, classe, méthode) ;
-* [Page_Suivi_Modification] Une seule version de référence pour un projet.
-* [Page_Suivi_Modification] Changer la version de référence nécessite le role GESTIONNAIRE (i.e. impact sur les calcul).
-* [Page_Suivi_Modification] Un utilisateur peut avoir une ou plusieurs versions du même projet en favori (impact Accueil)
-
-> Page OWASP
-
-* [Page_OWASP] Refonte de la page (Zakaria).
-* [Page_OWASP] Support des référentiels 2017 et 2021 ;
-* [Page_OWASP] Affichage des informations concernant une menace OWASP ;
-* [Page_OWASP] Affichage d'un tableau comparatif concernant les menaces 2017 et 2021 ;
-
-> Tests Unitaires
-
-* [TU] Mise à jour des TU et de TI (cf. document [test-unitaire.md](/mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)) ;
-
-> Commandes console
-
-* [Documentation] Nouveau domaine mkDocs **Commandes** : les 19 commandes console (`Prod`, `Maintenance`, `Dev`) sont désormais documentées (objectif, options, exemple d'invocation, classification d'impact lecture seule/modification/destructive/hybride, fréquence cron) ;
-* [app:historique:rebuild] Suppression d'un appel de débogage bloquant et d'un appel à une méthode de repository inexistante ; l'insertion utilise désormais la méthode réelle `HistoriqueRepository::insertHistoriqueAjoutProjet()`, ligne par ligne, avec compteur d'échecs et code de sortie cohérent ;
-* [app:sonar:compare-metrics] Correction du nom de commande : un `setName()` interne rendait `app:sonar:compare-metrics-v1` seul actif malgré l'attribut `#[AsCommand]` annonçant `app:sonar:compare-metrics` ;
-* [app:ldap:test] Ajout d'un garde-fou d'environnement (réservée à `env=dev`, cohérent avec les autres commandes de développement) et correction du code de sortie (retournait toujours un succès, y compris en cas d'échec de connexion LDAP) ;
-* [app:dependency-check:process] Le code de sortie reflète désormais les rapports ayant échoué définitivement après 3 tentatives (sans effet sur la planification cron, uniquement sur la visibilité du journal) ;
-* [app:sonar:update-tags] Le fichier `var/mapping_projets_groupes.json` n'est plus écrit en mode `--dry-run` ; le critère de détection du groupe SonarQube (permissions + marqueur de description) est désormais paramétrable via `config/packages/sonar_tags.yaml` au lieu d'être en dur dans le code ;
-* [Configuration] Documentation et valeurs par défaut sûres (vérification TLS activée) pour les 7 variables `MAMOUL_CLI_*` dans `docker/.env.template`, jusqu'ici absentes de tout fichier versionné ;
-
-> Documentation (mkDocs)
-
-* [mkDocs] Poursuite de la relecture de la documentation technique face au code réel : domaines Développement, DependencyCheck (dont 4 nouvelles pages détaillant chaque page applicative) et Gestion des erreurs ;
-* [mkDocs] Suppression de `erreur/erreurs.md`, obsolète (décrivait un export PDF via jsPDF qui n'est plus utilisé) ;
-* [mkDocs] `dependency-check/exploitation.md` : ajout d'une section sur l'envoi des métadonnées socle/archétype par la CI (extraction depuis le `pom.xml`, en-têtes HTTP optionnels) ;
-
-> DependencyCheck
-
-* [Page_DC_Projet] L'export PDF d'un scan absent redirige désormais vers la liste avec un message flash, au lieu de générer un PDF quasi vide sans signal visible ;
-* [Page_DC_Projet] Ajout d'un bandeau d'avertissement dans le PDF quand la récupération des findings échoue en cours de génération ;
-* [Page_DC_Mutualisables] Ajout d'un avertissement d'interface quand la liste des dépendances mutualisables dépasse 5 000 lignes (troncature jusqu'ici silencieuse) ;
-
-> Journal des rôles (back-office)
-
-* [Page_Journal_Rôles] Nouvelle page `/admin/journal-roles` (consultation, archive CSV/PDF, suppression du journal des rôles, `ROLE_INTERNAL`) ;
-* [Page_Journal_Rôles] Tableau contenu dans un conteneur à défilement horizontal dédié (`table-scroll`) au lieu de déborder de la page ;
-* [Page_Journal_Rôles] Correction du bouton "sélectionner tout", qui ne fonctionnait pas (délégation d'événement, robuste à la reconstruction du `<thead>` par DataTables) ;
-* [Page_Journal_Rôles] Ajout d'un retour visuel (spinner, boutons désactivés) pendant les actions d'archivage/téléchargement/suppression ;
-
-> Actuator
-
-* [Actuator] Ajout du champ "nom de la clé" (nœud JSON à extraire, ex. `app.version`) sur les points d'accès, en remplacement d'une "valeur" jusqu'ici saisie à la main sans lien avec la collecte réelle ;
-* [Actuator] Le workflow de collecte extrait désormais réellement les clés déclarées depuis la réponse `/actuator/info` et construit un JSON structuré (`date_extraction`, `code`, `message`, clés/valeurs), stocké dans `historique.actuator_info` ; auparavant le JSON brut de la réponse distante était ignoré et rien n'était réellement extrait ;
-* [Actuator] La collecte est "best effort" : un point d'accès injoignable, en timeout ou en erreur HTTP n'interrompt plus le reste de la collecte du projet (seule une erreur interne Ma-Moulinette le fait encore, comme les autres étapes) ;
-* [Actuator] Timeout HTTP dédié de 3 secondes (au lieu des 45 secondes génériques), comparaison de la clé Maven insensible à la casse, limite de 15 clés par point d'accès (serveur + JavaScript) ;
-* [Actuator] Mot de passe du compte Actuator rendu obligatoire à la création d'un point d'accès ;
-* [Actuator] Validation de l'URL à l'enregistrement : format contrôlé (`http`/`https` obligatoire), complétion automatique du suffixe `/actuator/info` si absent, et test de joignabilité (ping) avant enregistrement ;
-* [Actuator] Correction du bouton "Ajouter clé" du formulaire, qui ne faisait rien (logique JavaScript câblée dans le mauvais bundle) ;
-* [Actuator] Ajout d'une bannière de bonnes pratiques sur la page d'inventaire (mot de passe obligatoire, ne jamais exposer un point d'accès de production sans protection) ;
-* [Actuator] Correction d'une exception non gérée lors de la modification d'un point d'accès existant (type de date incompatible avec la colonne `date_modification`) ;
-* [Page_Projet] Ajout d'une pastille de statut (grise/verte/rouge) et d'une fenêtre modale Actuator dans le bloc "Informations générales", avec une nouvelle étape de collecte interactive et son endpoint de lecture dédié (aucun affichage n'existait auparavant) ;
-* [Page_Mes_Projets] Ajout d'un badge par groupe fonctionnel de l'utilisateur au-dessus du tableau, pour situer immédiatement le périmètre affiché ;
-* [Templates] Généralisation de ce badge (composant partagé `_tags_groupe_fonctionnel.html.twig`, style `.tag-groupe-fonctionnel` dans `common.css`) aux pages `/clean-code/synthese` et `/statistiques/projet` — sur la première, il remplace l'ancien badge texte unique ("Périmètre : a, b, c") par un tag par groupe ; sur la seconde, qui n'affichait jusqu'ici aucun rappel du périmètre bien qu'elle filtre déjà les projets par groupe fonctionnel, il est ajouté ;
-
-> Corrections transverses
-
-* [Templates] Correction d'un bloc d'affichage des messages flash copié-collé et buggé (clé `message.titre` inexistante) dans 5 templates (`admin/admin_log.html.twig`, `admin/user_role_log.html.twig`, `actuator/ajouter.html.twig`, `auth/register.html.twig`, `projet/mes-projets.html.twig`), remplacé par l'inclusion standard `_message.html.twig` ;
-* [Maintenance] `app:admin:refresh-stats` : les scripts SQL sous `migrations/POSTGRESQL/` étaient comptés via une liste de sous-dossiers codée en dur pointant vers un ancien chemin, ce qui affichait systématiquement 0 ; corrigé et étendu à un scan récursif du dossier ;
-* [Tests] `tests/Integration` : 54 tests (`Entity/*KernelTest`, `Repository/*RepositoryTest`) purgeaient toute la base de test via `ORMPurger` sans restriction puis ne rechargeaient que leur propre fixture, vidant silencieusement les données globales (utilisateurs, groupes, scans DependencyCheck) attendues par 3 autres classes de test plus loin dans la suite (49 échecs). Corrigé en scopant chaque purge à la seule table testée ;
-* [Page_Actuator] Formulaire d'ajout/modification : conteneurs de grille sans gouttière (`grid-margin-x` manquant) faisant se toucher les champs, ligne "Nom du responsable"/"URL" réorganisée sur une même ligne, ratio de colonnes de la première clé JSON désaligné de celui des clés ajoutées dynamiquement, balise `</div>` surnuméraire dans le prototype JS (cassait la structure DOM à chaque ajout de clé), classes `small-12,` invalides (virgule parasite) et `<div class="small-12 cell">` non fermée sur la page d'inventaire ;
-* [Tests] `GroupeUtilisateurValidatorTest` : la contrainte `UniqueEntity` interroge réellement la base de test ; le test dépendait donc silencieusement de l'absence d'un groupe `admin` résiduel en base. Le test purge désormais explicitement ce groupe avant chaque exécution, au lieu de supposer une base vierge ;
-* [PHPStan] Poursuite de la campagne de réduction (675 → 661 erreurs) : suppression des blocs `@method find/findBy/findOneBy/findAll` redondants (et mal typés) sur `ActuatorRepository`/`ActuatorInfoRepository` — l'`@extends ServiceEntityRepository<T>` suffit déjà, pattern déjà utilisé par les autres repositories ; ajout des types de tableaux manquants sur plusieurs méthodes de `HistoriqueRepository` et `ApiPeintureController` ; suppression de 2 conditions mortes (`if (!empty($rules))` toujours vraies) dans `ApiPeintureController`.
-* [PHPStan] Nouvelle étape de la campagne de réduction (661 → 150 erreurs) : extension `phpstan/phpstan-phpunit` installée (typage correct des mocks PHPUnit) ; pattern `$container->get('doctrine')->getManager()` (typé `ObjectManager`, générique) remplacé par `$container->get(EntityManagerInterface::class)` sur 60 fichiers de tests ; les 355 erreurs `missingType.iterableValue` restantes corrigées en typant précisément chaque tableau (`array{clé: type, ...}`) d'après son usage réel plutôt qu'un `mixed` générique ;
-* [Tests] L'extension `phpstan/phpstan-phpunit` a mis en évidence plusieurs assertions de test toujours vraies (donc ne testant rien) : `assertCount(1, [$response], ...)` sur 30 tests d'intégration ne détectait jamais une entité manquante (`[null]` a aussi un `count()` de 1, corrigé en `assertNotNull($response, ...)`) ; `GroupeUtilisateurCrudControllerTest::testConfigureActionsRemovesEditAndDetail` ne vérifiait en réalité aucune des deux suppressions promises par son nom ; `ApiActivityController` contenait un `is_array()` toujours vrai sur un retour de méthode déjà typé `array` ; 21 tests d'intégration de repository appelaient `getDatabasePlatform()` avec un argument SQL (`'SET search_path TO ...'`) jamais exécuté, cette méthode n'acceptant aucun paramètre ;
-* [Tests] Ajout de tests unitaires et d'intégration ciblés pour dépasser les 80 % de couverture de lignes (`SonarQualityScorer`, entité `LoggerDetail`, `LoggerDetailRepository`, `BatchExecutionRepository`, `BatchExecutionJournalRepository`, jusqu'ici non couverts).
-* [Tests] Extension e2e Playwright : nouveaux specs contrôle d'accès par rôle, CRUD Batch/Portefeuille/Actuator, module OWASP ; renforcement du spec de collecte manuelle (vérification explicite des codes HTTP 200, plus de simple délai d'attente).
-* [BatchTraitement] `debutTraitement` était mappé sur une colonne `date_traitement` inexistante en base (au lieu de `debut_traitement`) — corrigé.
-* [Tests] `BatchFixtures` enregistrait un état `execution` (`OK`/`KO`) hors du domaine attendu par la contrainte de la table (`ON`/`OFF`) — corrigé. Deux tests d'intégration (`BatchExecutionJournalRepositoryTest`, `BatchExecutionRepositoryTest`) construisaient un `BatchExecution` avec un mode de collecte littéral `'[COLLECTE]'` au lieu de `'COLLECTE'` — corrigé. `ActuatorInfoKernelTest` ne purgeait que sa propre table entre deux méthodes de test, pas la table `actuator` dont dépend sa fixture — collision de clé unique dès la 2e méthode, corrigée.
-* [Tests] Extension e2e Playwright : spec 07 (page Suivi) complété avec suppression d'historique et changement de version de référence, via un seed direct en base pour contourner la fixture SonarQube limitée à une seule analyse ; nouveau spec 12 couvrant l'ingestion asynchrone OWASP DependencyCheck de bout en bout (upload CI réel avec token, traitement du worker `app:dependency-check:process`, consultation liste/détail/dashboard). Bug de test réel trouvé : `reset-e2e-data.sql` ne purgeait aucune des tables `dc_*`, faisant retomber un second upload du même rapport sur la branche idempotence (200 au lieu de 202) — corrigé.
-* [Tests] Nouveau spec 13 couvrant le module Clean Code (dashboard 1 projet + synthèse portefeuille), avec reconstruction côté test du token de navigation (`buildProjetToken()`, réutilisable pour Suivi/OWASP/Répartition/COSUI) pour éviter de modifier `SONAR_VERSION` globalement. Fixture SonarQube enrichie (`issues/search.json`, facettes clean code jusque-là vides → indicateurs systématiquement nuls) sans toucher aux compteurs déjà utilisés par d'autres specs.
-* [Cosui] `ProjetCosuiService::generateRender()` construisait la clé de rendu du tableau « Répartition des défauts » à partir du même identifiant interne (`bug`) que celui utilisé pour la colonne Doctrine, alors que le template attend le label `reliability` — la colonne Fiabilité affichait donc toujours 0, quelle que soit la donnée réelle en base (aucun test unitaire existant ne couvrait le cas peuplé, seulement la valeur par défaut). Corrigé par une table de correspondance dédiée. Trouvé en écrivant le nouveau spec e2e 14 (module COSUI), qui nécessite aussi un seed direct en base (2 lignes historique + 1 ligne repartition) faute de prérequis produits par le flux de collecte standard.
-* [Répartition] Les données affichées par le bouton **Historique** de la page Répartition n'étaient pas cohérentes. Cause trouvée : l'IdC (Indice de Confiance) de ce mode divisait le total **historisé** par les compteurs **live** du DOM (figés au chargement de la page courante, donc décorrélés du moment de l'analyse historisée) — deux instantanés temporels différents comparés à tort. Corrigé en supprimant ce calcul pour le mode Historique (`index-repartition-module.js`), qui affiche désormais `---` (une ligne relue par Historique est par construction déjà `control='complet (100%)'`, l'IdC n'y apporte aucune information). Nouveau spec e2e 15 qui couvre ce mode et vérifie explicitement ce correctif.
-* [Statistiques] `/statistiques/dashboard` renvoyait une erreur 500 : la requête de comptage des tables faisait une référence à 3 parties (`ma_moulinette.pg_catalog.pg_tables`) que PostgreSQL ne supporte pas — `pg_catalog` est un schéma système, jamais imbriqué sous le schéma applicatif.Corrigé en interrogeant directement `pg_catalog.pg_tables`. Trouvé en écrivant le nouveau spec e2e 16, qui couvre les 5 pages du module Statistiques (index, dashboard, sonar report, projets, utilisateur) pour l'utilisateur Nathan. Le seed du spec invoque désormais aussi `app:admin:refresh-stats` pour exercer le chemin « vraies données » du dashboard, pas seulement son repli sur des valeurs figées.
-* [Tests] Nouveau spec e2e 17 couvrant la page Activité (recalcul réel `activity` → `activity_historique`, 3 boutons de tracé), via un seed direct en base (le cron `app:activity:collecte` est la seule source réelle de la table `activity`). Lacune de mock : `ActivityController::index()` appelle `ClientService::httpActivity()`, une méthode jusque-là non interceptée par `SonarFixtureClientService` (contrairement à `httpSonarQube()`/`httpActuator()`) — la page échouait donc systématiquement en environnement e2e (401, jetons `SONAR_ACTIVITY_TOKEN`/`SONAR_ACTIVITY_USER` vides). Corrigé en ajoutant l'override manquant.
-* [Tests] Nouveau spec e2e 18 couvrant la page Préférences (3 interrupteurs, 3 modales Projets/Favoris/Versions, suppressions), via un seed direct des préférences de Nathan pour tetris:TetrisGame (les 5 users e2e démarrent sinon avec des listes vides).
+* Durcissement des contrôles d'accès serveur sur les CRUD EasyAdmin (Utilisateur, Groupes, Portefeuille, Batch), jusque-là protégés par le seul pare-feu ;
+* Filtrage par groupe fonctionnel sur les endpoints Suivi/COSUI (périmètre applicatif, pas seulement l'authentification) ;
+* Limitation de débit (`symfony/rate-limiter`) sur l'endpoint public de healthcheck.
 
 ## v1.6.0 - 30/11/2022 - Release
 
