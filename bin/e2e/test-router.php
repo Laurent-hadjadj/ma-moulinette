@@ -31,4 +31,17 @@
 $_SERVER['APP_ENV'] = getenv('APP_ENV') ?: 'dev';
 $_ENV['APP_ENV'] = $_SERVER['APP_ENV'];
 
-return require dirname(__DIR__, 2) . '/public/index.php';
+// Sert directement les vrais fichiers statiques (assets, bundles EasyAdmin...)
+// sans repasser par le kernel Symfony — comportement standard recommandé pour
+// un routeur `php -S` (https://www.php.net/manual/fr/features.commandline.webserver.php).
+// Sans ce garde-fou, CHAQUE requête d'asset (des dizaines par page) rebootait
+// Symfony inutilement et provoquait, sous charge, des erreurs fatales
+// aléatoires ("Invalid return value: callable object expected, 'int' returned
+// from .../field-boolean.js") — constaté le 06/09/2026 en écrivant le spec 21.
+$docRoot = dirname(__DIR__, 2) . '/public';
+$requestedFile = $docRoot . parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
+if ($requestedFile !== $docRoot . '/index.php' && is_file($requestedFile)) {
+    return false;
+}
+
+return require $docRoot . '/index.php';
