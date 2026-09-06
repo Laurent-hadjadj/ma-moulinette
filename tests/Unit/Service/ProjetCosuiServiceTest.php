@@ -258,6 +258,14 @@ class ProjetCosuiServiceTest extends TestCase
         // Les initial_* se retrouvent en modal_initial_* via injectNotesReference
         $this->assertSame(10, $result['modal_initial_bug_blocker']);
 
+        // Régression : le hotspot courant est renommé 'hotspot' (pas 'nombre_hotspot')
+        // par injectNotesActuelles(), mais reference() garde 'initial_nombre_hotspot' —
+        // la boucle générique produirait modal_initial_nombre_hotspot, alors que le
+        // template de la modale attend modal_initial_hotspot.
+        $this->assertSame(4, $result['hotspot']);
+        $this->assertSame(6, $result['initial_nombre_hotspot']);
+        $this->assertSame(6, $result['modal_initial_hotspot']);
+
         // setup → 'NaN'
         $this->assertSame('NaN', $result['setup']);
 
