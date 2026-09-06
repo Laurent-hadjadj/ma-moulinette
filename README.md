@@ -4,9 +4,9 @@
 [![PHP](https://img.shields.io/badge/PHP-%E2%89%A5%208.4-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Symfony](https://img.shields.io/badge/Symfony-8.0-000000?logo=symfony&logoColor=white)](https://symfony.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![Tests](https://img.shields.io/badge/tests-3733%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![Assertions](https://img.shields.io/badge/assertions-9980-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![Coverage](https://img.shields.io/badge/coverage-80.01%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Tests](https://img.shields.io/badge/tests-3740%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Assertions](https://img.shields.io/badge/assertions-10023-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Coverage](https://img.shields.io/badge/coverage-80.03%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%206-blueviolet?logo=php&logoColor=white)](https://phpstan.org/)
 [![Licence](https://img.shields.io/badge/licence-CC%20BY--NC--SA%204.0-lightgrey)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
@@ -15,7 +15,7 @@
 ┃┃┃┃┃┃━━┃┃━━┃┗━┛┃\
 ┃┗┛┗┛┃━━┃┃━━┃┏━━┛\
 ┗┓┏┓┏┛━┏┫┣┓━┃┃\
-━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.0.0 Release on August 2026 !
+━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.0.0 Release on September 2026 !
 
 **Ma-Moulinette** est une application web open-source dont l’objectif est de **simplifier la consultation et le suivi des indicateurs de qualité logicielle** collectés depuis un serveur **SonarQube**.
 
@@ -78,15 +78,16 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 > Nombre de classe: 275
 > Nombre de méthode : 2863
 
-### 📊 Qualité du code (relevé du 26/07/2026)
+### 📊 Qualité du code (relevé du 06/09/2026)
 
 | Indicateur | Valeur |
 | --- | --- |
-| Tests unitaires (`tests/Unit`) | **3 135** tests / 8 649 assertions |
-| Tests d'intégration (`tests/Integration`) | **602** tests / 1 351 assertions (2 skips volontaires) |
-| **Total** | **3 737** tests / **10 000** assertions |
-| Couverture — lignes | **80,01 %** (20 650 / 25 810) |
-| Couverture — méthodes | 84,65 % (2 393 / 2 827) |
+| Tests unitaires (`tests/Unit`) | **3 138** tests / 8 670 assertions |
+| Tests d'intégration (`tests/Integration`) | **602** tests / 1 353 assertions (2 skips volontaires) |
+| **Total** | **3 740** tests / **10 023** assertions |
+| Tests End-to-End (`tests/e2e`) | **22** suites Playwright |
+| Couverture — lignes | **80,03 %** (20 642 / 25 790) |
+| Couverture — méthodes | 84,64 % (2 393 / 2 827) |
 | Couverture — classes | 51,50 % (120 / 233) |
 | Analyse statique | **PHPStan niveau 6** (150 erreurs résiduelles, campagne en cours) |
 
@@ -117,7 +118,7 @@ La **version 2.0.0** est actuellement en développement et apporte de nombreuses
 - [x] Publication de rapports d’analyse au format PDF pour les projets suivis, les portefeuilles et les groupes fonctionnels, les rapports incluent les indicateurs SonarQube et OWASP Dependency-Check ;
 - [x] Amélioration des logs (traces plus détaillé, gestion des erreurs, etc.) et consultation des logs via l’interface web ;
 - [x] Nouveau système de **documentation** avec **MkDocs**.
-- [x] Ajout des tests unitaires et des tests d’intégration pour les composants critiques de l’application (3 733 tests, 9 980 assertions — voir le tableau « Qualité du code » ci-dessus) ;
+- [x] Ajout des tests unitaires et des tests d’intégration pour les composants critiques de l’application (3 740 tests, 10 023 assertions — voir le tableau « Qualité du code » ci-dessus) ;
 - [x] Mise sous contrôle de l’**analyse statique** avec PHPStan (niveau 6).
 
 ### 🧱 Fonctionnalités en cours de finalisation
@@ -132,7 +133,7 @@ Liste des évolutions restantes :
 - [ ] Finalisation de la récupération "j'ai oublié mon mot de passe" ;
 - [x] ~~Ajout de nouveaux **indicateurs SonarQube 2026** ;~~
 - [x] ~~Développement du support multi-projet filtré par groupe fonctionnel ;~~
-- [ ] Améliorer la couverture des tests e2e;
+- [x] ~~Améliorer la couverture des tests e2e;~~
 
 ## 🔐 Compte administrateur
 
