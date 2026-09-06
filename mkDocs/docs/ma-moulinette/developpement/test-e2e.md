@@ -26,10 +26,14 @@ tests/e2e/
 │   ├── auth.ts               # login() / loginExpectFailure() / logout()
 │   ├── admin.ts              # gotoCrudIndex() / gotoCrudNew() (EasyAdmin v4)
 │   ├── db.ts                 # resetE2EData() + resetAndSeedAfterSpec0X()
-│   └── fixtures.ts           # test étendu : bloque les requêtes d'images
-│                              # (avatars, icônes — purement cosmétiques,
-│                              # non vérifiées) pour réduire la charge sur
-│                              # le serveur Symfony de dev et accélérer les runs
+│   ├── fixtures.ts           # test étendu : bloque les requêtes d'images
+│   │                          # (avatars, icônes — purement cosmétiques,
+│   │                          # non vérifiées) pour réduire la charge sur
+│   │                          # le serveur Symfony de dev et accélérer les runs
+│   ├── token.ts               # buildProjetToken() — token signé pour Suivi/OWASP/Répartition/COSUI/Clean Code
+│   ├── dc.ts                  # processDcQueue() — invoque le worker Dependency-Check (spec 12)
+│   ├── stats.ts               # refreshAdminStats() — invoque app:admin:refresh-stats (spec 16)
+│   └── logs.ts                # seedAdminLogFiles()/cleanupAdminLogFiles() — fichiers de log synthétiques (spec 19)
 └── specs/
     ├── 01-smoke.spec.ts
     ├── 02-bootstrap-groupes.spec.ts
@@ -41,7 +45,18 @@ tests/e2e/
     ├── 08-controle-acces.spec.ts
     ├── 09-crud-batch-portefeuille.spec.ts
     ├── 10-crud-actuator.spec.ts
-    └── 11-owasp.spec.ts
+    ├── 11-owasp.spec.ts
+    ├── 12-dependency-check.spec.ts
+    ├── 13-clean-code.spec.ts
+    ├── 14-cosui.spec.ts
+    ├── 15-repartition.spec.ts
+    ├── 16-statistiques.spec.ts
+    ├── 17-activite.spec.ts
+    ├── 18-preferences.spec.ts
+    ├── 19-admin-logs.spec.ts
+    ├── 20-journal-roles.spec.ts
+    ├── 21-traitement-profiling.spec.ts
+    └── 22-healthcheck.spec.ts
 ```
 
 ## Stratégie : scénario d'onboarding séquentiel
@@ -97,6 +112,8 @@ graph TB
 | 18 | `18-preferences` | nathan | page Préférences — 3 interrupteurs, 3 modales (Projets/Favoris/Versions), suppressions |
 | 19 | `19-admin-logs` | interne (`ROLE_INTERNAL`) | Admin Logs — filtres env/type, sélection de lignes, téléchargement ZIP ; fichiers de log seedés directement sur le filesystem |
 | 20 | `20-journal-roles` | interne (`ROLE_INTERNAL`) | Journal des rôles — 2 éditions EasyAdmin réelles génèrent les lignes du journal, puis filtres, export CSV/PDF, suppression avec `confirm()`+CSRF |
+| 21 | `21-traitement-profiling` | Nathan (+ ROLE_BATCH transverse) | Traitement (file de collecte portefeuille) — vrai déclenchement synchrone via EasyAdmin + `/traitement/suivi`, puis dashboard Profiling |
+| 22 | `22-healthcheck` | aucun (endpoint public) | Healthcheck — statut nominal (DB accessible) et rate limiting (10 req/min/IP) |
 
 **Conséquences** :
 
@@ -109,7 +126,7 @@ graph TB
 
 ### Spec 01 — Smoke
 
-Quatre canaris pour valider l'infrastructure (Symfony serve up + APP_ENV=test + fixtures-e2e.sql chargées).
+Quatre séquences pour valider l'infrastructure (Symfony serve up + APP_ENV=test + fixtures-e2e.sql chargées).
 
 ```mermaid
 sequenceDiagram
@@ -260,15 +277,15 @@ sequenceDiagram
 
 #### Cas A (reset password) mis de côté — `test.fixme`
 
-Deux bugs applicatifs réels ont été trouvés et corrigés au passage (conservés indépendamment du statut du test) :
+Deux bugs applicatifs ont été trouvés et corrigés (conservés indépendamment du statut du test) :
 
-- **`assets/js/auth/reset.js`** : le bouton "Valider" changeait son propre `type` en `submit` puis rappelait `.click()` sur lui-même, depuis son propre handler de clic, pour forcer la soumission — un `click()` imbriqué sur le même élément peut être avalé par le flag anti-réentrance du spec HTML (clic sans effet visible, ni erreur ni navigation). Remplacé par `form.requestSubmit()` sur le `<form>` englobant.
+- **`assets/js/auth/reset.js`** : le bouton "Valider" changeait son propre `type` en `submit` puis rappelait `.click()` sur lui-même, depuis son propre handler de clic, pour forcer la soumission — un `click()` imbriqué sur le même élément peut être avalé par le flag anti-réentrance de la spec HTML (clic sans effet visible, ni erreur ni navigation). Remplacé par `form.requestSubmit()` sur le `<form>` englobant.
 - **`src/Form/ResetPasswordFormType.php`** : `autocomplete="off"` sur les 3 champs password — Chrome ignore délibérément cette valeur sur les champs de type password depuis 2014. Remplacé par les valeurs sémantiques `current-password` / `new-password`, que Chrome respecte réellement.
 - **`templates/auth/reset.html.twig`** : `autocomplete="username"` ajouté au champ email en lecture seule qui précède les champs password, pour éviter que Chrome ne l'associe à tort au champ password suivant.
 
 Malgré ces trois correctifs, environ un run sur deux voit encore le champ "Ancien mot de passe" écrasé par l'email du compte entre la saisie (vérifiée correcte via `toHaveValue` juste après frappe) et le clic sur "Valider". Cause exacte non identifiée à ce jour. Le test est mis de côté via `test.fixme()` plutôt que laissé flaky en CI ; la collecte projets/profils (cas B) reste couverte séparément puisqu'elle n'en dépend pas.
 
-**Décision du 2026-08-02** : ce cas reste mis de côté définitivement, pas juste en pause. Dans un déploiement s'appuyant sur LDAP pour l'authentification, le changement de mot de passe ne passe pas par ce formulaire applicatif (géré côté annuaire) — le parcours "reset password interne" devient un cas secondaire, pas le chemin nominal. Pas de reprise prévue sauf besoin métier nouveau qui le remettrait au premier plan.
+**Décision du 2026-08-02** : ce cas reste mis de côté définitivement, pas juste en pause. Dans un déploiement s'appuyant sur LDAP pour l'authentification, le changement de mot de passe ne passe pas par ce formulaire applicatif (géré côté annuaire) — le parcours "reset password interne" devient un cas secondaire, pas le chemin nominal.
 
 ### Spec 05 — Affectation des groupes
 
@@ -364,9 +381,9 @@ sequenceDiagram
 
 **Sentinel de fin** : on attend `(13) La collecte des données est terminée.` dans `<textarea id="log">.value` (timeout 90s).
 
-**Vérification renforcée (2026-07-26)** : les étapes peinture et enregistrement ne se contentaient auparavant que d'un `waitForTimeout` (absence de crash visible, pas de vérification réelle). Le spec capture désormais les réponses réseau et vérifie explicitement le code HTTP 200 de chaque appel `/api/secure/peinture/projet/*` et de `POST /api/secure/enregistrement`.
+**Vérification renforcée (2026-07-26)** : les étapes peinture et enregistrement ne se contentaient auparavant que d'un `waitForTimeout` (absence de crash visible, pas de vérification réelle). La spec capture désormais les réponses réseau et vérifie explicitement le code HTTP 200 de chaque appel `/api/secure/peinture/projet/*` et de `POST /api/secure/enregistrement`.
 
-**Limite connue** : ce spec ne produit qu'**une seule ligne d'historique** par run, car `tests/fixtures/sonarqube/project_analyses/search-page1.json` ne contient qu'une seule analyse (`projectVersion: "1.1.0-RELEASE"`). C'est suffisant pour valider le pipeline de collecte/peinture/enregistrement, mais **insuffisant** pour tester des scénarios qui nécessitent plusieurs versions historiques côte à côte (suppression d'une ligne, changement de version par défaut — cf. spec 07 étendue ci-dessous). Enrichir cette fixture avec des entrées supplémentaires est un pré-requis pour ces scénarios.
+**Limite connue** : cette spec ne produit qu'**une seule ligne d'historique** par run, car `tests/fixtures/sonarqube/project_analyses/search-page1.json` ne contient qu'une seule analyse (`projectVersion: "1.1.0-RELEASE"`). C'est suffisant pour valider le pipeline de collecte/peinture/enregistrement, mais **insuffisant** pour tester des scénarios qui nécessitent plusieurs versions historiques côte à côte (suppression d'une ligne, changement de version par défaut — cf. spec 07 étendue ci-dessous). Enrichir cette fixture avec des entrées supplémentaires est un pré-requis pour ces scénarios.
 
 ### Spec 07 — Suivi
 
@@ -415,12 +432,12 @@ sequenceDiagram
 
 !!! note "🗄️ Contournement de la limite fixture SonarQube (une seule analyse)"
     `tests/fixtures/sonarqube/project_analyses/search-page1.json` n'a qu'une seule entrée : une vraie collecte ne peut donc produire qu'**une seule** ligne d'historique, insuffisant pour tester suppression/changement de référence (il faut au moins 2 versions).
-    Contournement : `migrations/POSTGRESQL/95_e2e/seed-after-spec-07-historique-tetris.sql` insère directement 2 lignes dans `historique` pour `tetris:TetrisGame` (via `resetAndSeedForSuiviHistorique()` dans `helpers/db.ts`), sans passer par une collecte réelle. Ce seed ne teste que les actions de la page Suivi, pas le mécanisme de collecte lui-même (déjà couvert par le spec 06).
+    Contournement : `migrations/POSTGRESQL/95_e2e/seed-after-spec-07-historique-tetris.sql` insère directement 2 lignes dans `historique` pour `tetris:TetrisGame` (via `resetAndSeedForSuiviHistorique()` dans `helpers/db.ts`), sans passer par une collecte réelle. Ce seed ne teste que les actions de la page Suivi, pas le mécanisme de collecte lui-même (déjà couvert par la spec 06).
 
-!!! caution "🐛 Deux bugs de test réels trouvés en écrivant ce scénario"
+!!! caution "🐛 Deux bugs de test trouvés"
     - **Course entre le rendu Twig et le binding jQuery** : `.js-modifier-analyse` est rendu côté serveur mais son handler de clic n'est attaché qu'une fois le module ES `index-suivi.js` chargé/exécuté (import asynchrone). Cliquer trop tôt ne déclenche ni requête réseau ni erreur JS — juste un clic silencieusement perdu. Corrigé par un `page.waitForFunction()` qui attend explicitement que jQuery ait bien un handler `click` enregistré sur l'élément avant de cliquer.
     - **Label de switch qui intercepte le clic** : `#switch-reference-N` est un `<input type="checkbox">` cliqué au sens propre par l'utilisateur via son `<label class="switch-paddle">` (le rendu visuel du switch), qui le recouvre. Cliquer l'input directement échoue (Playwright : *"intercepts pointer events"*) ; corrigé en ciblant `label[for="switch-reference-N"]`, ce qui correspond aussi au geste réel de l'utilisateur.
-    - Par ailleurs, le serveur de dev mono-worker sert les nombreux modules ES (importmap) séquentiellement : un `page.reload()` peut dépasser 60s en attendant l'événement `load` complet. Contourné avec `waitUntil: 'domcontentloaded'` (on n'a pas besoin des sous-ressources pour vérifier l'état persisté) et un timeout de spec relevé à 90s.
+    - Par ailleurs, le serveur de dev mono-worker sert les nombreux modules ES (importmap) séquentiellement : un `page.reload()` peut dépasser 60s en attendant l'événement `load` complet. Contourné avec `waitUntil: 'domcontentloaded'` (on n'a pas besoin des sous-ressources pour vérifier l'état persisté) et un timeout pour la spec relevé à 90s.
 
 ### Spec 08 — Contrôle d'accès par rôle
 
@@ -468,7 +485,7 @@ Sélecteur du flash pour le contrôle souple : `.js-flash-box .callout-message` 
 
 **Rôles transverses** : `ROLE_SECURITY`, `ROLE_ACTIVITY`, `ROLE_BATCH` et `ROLE_ACTUATOR` ne sont portés nativement par aucun des 5 users du scénario d'onboarding (modules indépendants du récit 01-07). Un seed dédié (`resetAndSeedAfterSpec08()` → `95_e2e/seed-after-spec-08-roles-transverses.sql`) les cumule tous sur Nathan pour couvrir le cas positif de chacun.
 
-**Piège `page.request.post()` sur `/api/secure/*`** : `App\EventSubscriber\ApiClientHeaderSubscriber` bloque en 403 toute requête sans un `Origin`/`Referer` autorisé **et** le header `X-Internal-Front: front-app`, avant même d'atteindre le contrôleur/`IsGranted`. Un vrai `fetch()` déclenché depuis la page les ajoute automatiquement ; `page.request.post()` non — sans ces en-têtes explicites, le test obtient un 403 pour **tous** les users (bon rôle ou pas), ce qui ne teste rien du tout. Voir `INTERNAL_FRONT_HEADERS` dans `08-controle-acces.spec.ts`.
+**Problème `page.request.post()` sur `/api/secure/*`** : `App\EventSubscriber\ApiClientHeaderSubscriber` bloque en 403 toute requête sans un `Origin`/`Referer` autorisé **et** le header `X-Internal-Front: front-app`, avant même d'atteindre le contrôleur/`IsGranted`. Un vrai `fetch()` déclenché depuis la page les ajoute automatiquement ; `page.request.post()` non — sans ces en-têtes explicites, le test obtient un 403 pour **tous** les users (bon rôle ou pas), ce qui ne teste rien du tout. Voir `INTERNAL_FRONT_HEADERS` dans `08-controle-acces.spec.ts`.
 
 **Bug applicatif trouvé et corrigé** : `templates/actuator/index.html.twig:79` appelait `pagination.getTotalItemCount` sans garde — un vrai `Twig\Error\RuntimeError` (500) pour tout utilisateur sans `ROLE_ACTUATOR`, car le contrôleur retourne `pagination = null` avant même d'atteindre le check de rôle. Corrigé par `pagination is not empty ? pagination.getTotalItemCount : 0`.
 
@@ -498,11 +515,9 @@ sequenceDiagram
     BCRUD->>DB: INSERT batch
 ```
 
-**Ordre imposé par une dépendance de données réelle** : le `ChoiceField` "portefeuille" du formulaire Batch est peuplé depuis `SELECT groupe_fonctionnel FROM ma_moulinette.portefeuille` — sans Portefeuille existant, seul le placeholder "Aucun" est disponible. D'où l'ordre Portefeuille → Batch.
+**Ordre imposé par une dépendance de données** : le `ChoiceField` "portefeuille" du formulaire Batch est peuplé depuis `SELECT groupe_fonctionnel FROM ma_moulinette.portefeuille` — sans Portefeuille existant, seul le placeholder "Aucun" est disponible. D'où l'ordre Portefeuille → Batch.
 
-**Piège de valeur** : les deux `ChoiceField` ("groupeFonctionnel" côté Portefeuille, "portefeuille" côté Batch) stockent en réalité le **tag/groupe_fonctionnel** ("tetris-game"), pas le nom d'affichage saisi par l'utilisateur ("tetris-test" ou "tetris-test-quotidien"). Toujours vérifier la valeur réelle des `<option>` dans le DOM avant d'écrire `selectOption(...)`, ne pas supposer que c'est le libellé visible.
-
-**Bug historique déjà corrigé** (non régressé, vérifié en documentant ce spec) : `BatchCrudController::updateEntity()` référençait autrefois une colonne `titre` fantôme sur la table `portefeuille`.
+**Problème de valeur** : les deux `ChoiceField` ("groupeFonctionnel" côté Portefeuille, "portefeuille" côté Batch) stockent en réalité le **tag/groupe_fonctionnel** ("tetris-game"), pas le nom d'affichage saisi par l'utilisateur ("tetris-test" ou "tetris-test-quotidien"). Toujours vérifier la valeur réelle des `<option>` dans le DOM avant d'écrire `selectOption(...)`, ne pas supposer que c'est le libellé visible.
 
 ### Spec 10 — CRUD Actuator
 
@@ -526,7 +541,7 @@ sequenceDiagram
     Info-->>PW: redirect /actuator + flash succès
 ```
 
-**Pièges réels rencontrés en écrivant ce test** (pas des artefacts Playwright — de vrais comportements applicatifs) :
+**Problèmes rencontrés** :
 
 - **Auto-deadlock réseau** : la création fait un vrai ping HTTP (`ActuatorController::urlActuatorEstJoignable()`) avant d'enregistrer. Pointer cette URL vers le serveur e2e lui-même échoue systématiquement : ce serveur n'a qu'**un seul worker PHP-CGI**, occupé par la requête `actuator/info` en cours — il ne peut pas répondre à sa propre requête de ping avant le timeout (3s), classée "injoignable" à tort. **Fix retenu** : `SonarFixtureClientService` (déjà le double de test pour SonarQube) surcharge maintenant aussi `httpActuator()` pour renvoyer un succès fixe sans appel réseau — cohérent avec le principe déjà appliqué à `httpSonarQube()`. L'URL saisie dans le test n'a donc plus besoin d'être réellement joignable, juste de respecter le format `Assert\Url` (schéma http/https, ≥12 caractères).
 - **Champ `actuatorUser` "optionnel" mais bloquant** : `ActuatorFormType` ne définit pas `'required' => false` sur ce champ (pourtant sans contrainte `NotBlank` côté validation Symfony) — le widget rendu porte donc l'attribut HTML5 `required` par défaut. Vide, il bloque silencieusement la soumission native (tooltip navigateur "Please fill out this field", pas d'erreur serveur visible). Le test le remplit systématiquement ; à corriger côté formulaire si on veut un champ réellement optionnel de bout en bout.
@@ -543,7 +558,7 @@ sequenceDiagram
     participant Projet as /projet
     participant Owasp as /owasp
 
-    Note over PW,Projet: 1. Collecte générale — identique au spec 06
+    Note over PW,Projet: 1. Collecte générale — identique à la spec 06
     PW->>Projet: collecte complète sur tetris:TetrisGame
 
     Note over PW,Owasp: 2. Navigation (pas de collecte OWASP isolée)
@@ -555,7 +570,7 @@ sequenceDiagram
     PW->>Owasp: assert #nombre-faille-owasp, #a1..#a10, #tbody visibles
 ```
 
-**Point clé découvert avant d'écrire ce test** : il n'existe **aucun déclenchement OWASP isolé** côté UI. Le bouton `#bouton-analyse-owasp` sur `/projet` ne fait que naviguer vers `/owasp?token=...` (token = ROT13+base64 de `salt|maven_key`, généré côté template) — la collecte OWASP fait partie de l'orchestration unique de collecte générale (mêmes phases que le spec 06 : "Collecte des menaces OWASP" / "...potentielles"). Ce test rejoue donc le flux complet de spec 06 avant de vérifier `/owasp`, ce qui le rend aussi long (~1-2 min).
+**Point clé** : il n'existe **aucun déclenchement OWASP isolé** côté UI. Le bouton `#bouton-analyse-owasp` sur `/projet` ne fait que naviguer vers `/owasp?token=...` (token = ROT13+base64 de `salt|maven_key`, généré côté template) — la collecte OWASP fait partie de l'orchestration unique de collecte générale (mêmes phases que la spec 06 : "Collecte des menaces OWASP" / "...potentielles"). Ce test rejoue donc le flux complet de la spec 06 avant de vérifier `/owasp`, ce qui le rend aussi long (~1-2 min).
 
 `OwaspController` utilise le même trait `ProjetPerimetreGuard` que `/projet` et `/suivi` (mêmes messages "Erreur 404"/"Erreur 406") — non re-testé ici, déjà couvert par les messages génériques du trait sur les autres specs.
 
@@ -563,7 +578,7 @@ sequenceDiagram
 
 ### Spec 12 — Dependency-Check
 
-Nathan (`ROLE_SECURITY`, cumulé via `resetAndSeedForDependencyCheck()` — module transverse comme spec 08/09/10, aucun des 5 users n'a ce rôle nativement dans le récit d'onboarding).
+Nathan (`ROLE_SECURITY`, cumulé via `resetAndSeedForDependencyCheck()` — module transverse comme dans les spec 08/09/10, aucun des 5 users n'a ce rôle nativement dans le récit d'onboarding).
 
 ```mermaid
 sequenceDiagram
@@ -592,16 +607,16 @@ sequenceDiagram
     Dash-->>Nathan: badge-scope "tetris-game"
 ```
 
-**Ingestion asynchrone en 2 étapes, pas un simple POST** : `POST /api/secure/dependency-check/upload` ne fait qu'enqueuer le rapport (`dc_processing_queue`, statut `queued`) — un worker séparé (`bin/console app:dependency-check:process`) doit ensuite tourner pour produire les `dc_scan`/`dc_finding`/`dc_dependency`/`dc_cve` que les pages lisent réellement. Aucun cron ne tourne dans la stack e2e (contrairement à la prod) : le spec invoque le worker directement via `processDcQueue()` (`tests/e2e/helpers/dc.ts` → `bin/e2e/process-dc-queue.ps1`, `APP_ENV=test`).
+**Ingestion asynchrone en 2 étapes, pas un simple POST** : `POST /api/secure/dependency-check/upload` ne fait qu'enqueuer le rapport (`dc_processing_queue`, statut `queued`) — un worker séparé (`bin/console app:dependency-check:process`) doit ensuite tourner pour produire les `dc_scan`/`dc_finding`/`dc_dependency`/`dc_cve` que les pages lisent réellement. Aucun cron ne tourne dans la stack e2e (contrairement à la prod) : la spec invoque le worker directement via `processDcQueue()` (`tests/e2e/helpers/dc.ts` → `bin/e2e/process-dc-queue.ps1`, `APP_ENV=test`).
 
 **Pas d'équivalent `SonarFixtureClientService` nécessaire** : l'ingestion est un appel **entrant** (POST reçu par l'appli, simulateur CI), pas un appel sortant à mocker — le POST direct via `page.request` est donc un test fidèle du vrai flux CI, avec le vrai header `X-DependencyCheck-Token` (`DC_INGEST_TOKEN` en `.env.test`).
 
-!!! caution "🐛 Bug réel trouvé : reset e2e incomplet"
-    `migrations/POSTGRESQL/95_e2e/reset-e2e-data.sql` ne purgeait aucune des 5 tables `dc_*` (contrairement à `historique`, `actuator`, etc.). Rejouer ce spec (ou la suite complète) une seconde fois sans rebuild complet de la base laissait le rapport précédent en base : l'upload retombait alors sur la branche idempotence de `ApiDependencyCheckUploadController` (sha256 déjà vu → 200 "Rapport déjà reçu" au lieu de 202 "queued"), un faux échec qui n'avait rien à voir avec le code testé. Corrigé en ajoutant `dc_finding`, `dc_dependency`, `dc_cve`, `dc_scan`, `dc_processing_queue` au `TRUNCATE ... CASCADE`.
+!!! caution "🐛 Bug trouvé : reset e2e incomplet"
+    `migrations/POSTGRESQL/95_e2e/reset-e2e-data.sql` ne purgeait aucune des 5 tables `dc_*` (contrairement à `historique`, `actuator`, etc.). Rejouer cette spec (ou la suite complète) une seconde fois sans rebuild complet de la base laissait le rapport précédent en base : l'upload retombait alors sur la branche idempotence de `ApiDependencyCheckUploadController` (sha256 déjà vu → 200 "Rapport déjà reçu" au lieu de 202 "queued"), un faux échec qui n'avait rien à voir avec le code testé. Corrigé en ajoutant `dc_finding`, `dc_dependency`, `dc_cve`, `dc_scan`, `dc_processing_queue` au `TRUNCATE ... CASCADE`.
 
 ### Spec 13 — Clean Code
 
-Nathan (`ROLE_COLLECTE`, aucun rôle transverse — même périmètre tetris-game que spec 06/11).
+Nathan (`ROLE_COLLECTE`, aucun rôle transverse — même périmètre tetris-game que pour la spec 06/11).
 
 ```mermaid
 sequenceDiagram
@@ -610,7 +625,7 @@ sequenceDiagram
     participant CC as /clean-code
     participant Synth as /clean-code/synthese
 
-    Note over PW,Projet: 1. Collecte + affichage + enregistrement (identique spec 06)
+    Note over PW,Projet: 1. Collecte + affichage + enregistrement (identique à laspec 06)
     PW->>Projet: collecte complète sur tetris:TetrisGame, "Enregistrer"
 
     Note over PW,CC: 2. Dashboard 1 projet (bouton masqué en e2e → token reconstruit)
@@ -625,14 +640,14 @@ sequenceDiagram
 **Bouton masqué en e2e, token reconstruit côté test** : le bouton "Clean Code" sur `/projet` n'apparaît que si `version_serveur_sonar != 8` (`templates/projet/index.html.twig`), or `SONAR_VERSION` vaut `8` en `.env.test.local`. Changer cette valeur globalement pour révéler le bouton risquait de perturber d'autres specs qui dépendent implicitement du comportement v8 — plus sûr de reconstruire le token côté test. Le token est un `rot13(base64("salt|maven_key"))` où `salt` est un hash "sdbm" (`hash*65599 + charCode`, calculé avec les opérateurs bitwise JS natifs) — **le salt n'est en réalité jamais vérifié côté serveur** (`decodeToken()` ne lit que la 2e partie après le `|`), donc sa valeur exacte importe peu tant que le format est respecté. Reproduit dans `tests/e2e/helpers/token.ts::buildProjetToken()`, réutilisable pour toute future spec sur Suivi/OWASP/Répartition/COSUI qui voudrait éviter de cliquer le bouton correspondant.
 
 !!! caution "🐛 Fixture SonarQube enrichie : facettes vides = indicateurs à zéro"
-    `tests/fixtures/sonarqube/issues/search.json` (déjà utilisée par les specs 06/11) avait `"facets": []` — insuffisant pour produire des indicateurs Clean Code exploitables : `BatchCollecteCleanCodeController::extractFacetCounts()` retournait un tableau vide, donc toutes les colonnes `cc_*`/`quality_*`/`impact_*` étaient insérées à 0 après collecte (score de risque, % RESPONSIBLE, % sécurité systématiquement nuls, aucune carte/graphique testable pour de vrai).
+    `tests/fixtures/sonarqube/issues/search.json` (déjà utilisée par les specs 06/11) avait `"facets": []` — insuffisant pour produire des indicateurs Clean Code exploitables : `BatchCollecteCleanCodeController::extractFacetCounts()` retournait un tableau vide, donc toutes les colonnes `cc_*`/`quality_*`/`impact_*` étaient insérées à 0 après collecte (score de risque, % RESPONSIBLE, % sécurité systématiquement nuls, aucune carte/graphique testable).\
     Enrichi avec les 3 facettes `cleanCodeAttributeCategories`/`impactSeverities`/`impactSoftwareQualities` (valeurs produisant un niveau de risque `medium`, une gouvernance RESPONSIBLE à 9,1 % et une exposition sécurité à 12,9 %), **sans toucher `paging.total`** (132) dont dépendent déjà `owasp_top10`/`sans_top25` sur les specs existantes — aucune régression, uniquement additif.
 
-**Page `/clean-code/synthese` — risque calculé différemment de `/clean-code`** : le dashboard 1-projet calcule le score de risque sur `clean_code.issue_total`, alors que la synthèse portefeuille le calcule sur `historique.violations` (cf. commentaire du template : *"Risque CC calculé sur violations (total issues)"*) — deux dénominateurs différents pour la même formule pondérée. Le spec ne prédit donc pas le niveau exact sur la page synthèse (juste la présence d'un badge `.badge-level` valide), pour ne pas dupliquer une hypothèse de calcul non vérifiée.
+**Page `/clean-code/synthese` — risque calculé différemment de `/clean-code`** : le dashboard 1-projet calcule le score de risque sur `clean_code.issue_total`, alors que la synthèse portefeuille le calcule sur `historique.violations` (cf. commentaire du template : *"Risque CC calculé sur violations (total issues)"*) — deux dénominateurs différents pour la même formule pondérée. La spec ne prédit donc pas le niveau exact sur la page synthèse (juste la présence d'un badge `.badge-level` valide), pour ne pas dupliquer une hypothèse de calcul non vérifiée.
 
 ### Spec 14 — COSUI
 
-Nathan (`ROLE_COLLECTE`, aucun rôle transverse — même périmètre tetris-game que spec 06/11/13). Token de navigation réutilisé tel quel depuis `buildProjetToken()` (spec 13).
+Nathan (`ROLE_COLLECTE`, aucun rôle transverse — même périmètre tetris-game que pour la spec 06/11/13). Token de navigation réutilisé tel quel depuis `buildProjetToken()` (spec 13).
 
 ```mermaid
 sequenceDiagram
@@ -650,19 +665,22 @@ sequenceDiagram
 !!! caution "🐛 Prérequis de données : le flux spec 06 ne suffit pas"
     Contrairement à Clean Code, `/projet/cosui` a deux prérequis que la collecte manuelle standard ne produit jamais :
 
-    - une ligne `historique` avec `initial = true` (« version de référence ») — la fixture SonarQube (`project_analyses`) ne produit qu'**une seule analyse**, donc jamais de 2e version à marquer comme référence ;
-    - une ligne `repartition` avec `control <> 'initial'` — le flux spec 06 ne déclenche jamais l'action « Répartition par module ».
+    - une ligne `historique` avec `initial = true` (« version de référence ») — la fixture SonarQube (`project_analyses`) ne produit qu'__une seule analyse__, donc jamais de 2e version à marquer comme référence ;
+    - une ligne `repartition` avec `control <> 'initial'` — le flux de la spec 06 ne déclenche jamais l'action « Répartition par module ».
 
     Sans ces deux prérequis, la page reste en mode « valeurs par défaut » (pas d'erreur bloquante, mais rien d'intéressant à vérifier). Seed dédié : `migrations/POSTGRESQL/95_e2e/seed-after-spec-14-cosui-tetris.sql` (2 lignes historique avec notes/compteurs réels + 1 ligne repartition `control='complet (100%)'`), via `resetAndSeedForCosui()`.
 
-!!! caution "🐛 Bug réel trouvé et corrigé : colonne Fiabilité du tableau Répartition toujours à 0"
+!!! caution "🐛 Bug trouvé et corrigé : colonne Fiabilité du tableau Répartition toujours à 0"
     `ProjetCosuiService::generateRender()` construit la clé de variable de rendu à partir du même identifiant interne (`bug`) que celui utilisé pour retrouver la colonne Doctrine (`frontendBugBlocker`, etc.) — mais le template attend `nombre_metier_reliability_*`/`nombre_presentation_reliability_*` (label « Fiabilité »). Sans correspondance entre `bug` et `reliability`, cette colonne affichait toujours 0 quelle que soit la donnée réelle en base — un test unitaire existant ne couvrait que le cas par défaut (`'--'`), jamais le cas peuplé. Corrigé par une table de correspondance dédiée (`$prefixLabels`) juste avant l'injection dans le rendu ; les colonnes Vulnérabilité/Maintenabilité n'étaient pas concernées (leur identifiant interne correspond déjà au label attendu).
 
-**Bug connu documenté, non corrigé (hors périmètre)** : `HistoriqueRepository::selectHistoriqueProjetLast/Reference` sélectionne `menace_potentielle_totale` sans alias `AS nombre_hotspot` — le compteur Hotspot (`#hotspot-01`) affiche donc toujours 0 quelle que soit la donnée en base (la note lettre `#note-04`, elle, fonctionne correctement — alimentée par `security_review_rating AS note_hotspot`, un alias distinct). Non asserté à une valeur non nulle dans ce spec.
+!!! caution "🐛 Bug réel trouvé et corrigé : compteur Hotspot toujours à 0"
+    `HistoriqueRepository::selectHistoriqueProjetLast/Reference` sélectionnait `menace_potentielle_totale` sans alias `AS nombre_hotspot` — le compteur Hotspot (`#hotspot-01`) affichait donc toujours 0 quelle que soit la donnée en base (la note lettre `#note-04`, elle, fonctionnait correctement — alimentée par `security_review_rating AS note_hotspot`, un alias distinct). Corrigé en ajoutant l'alias aux deux requêtes ; couvert par deux assertions `assertArrayHasKey('nombre_hotspot', ...)` dans `HistoriqueRepositoryTest`.
+
+    Un second bug, distinct, est apparu en corrigeant le premier : le compteur Hotspot de la **modale** "Version de référence" (`#initial_hotspot-01`) restait lui aussi à 0. `ProjetCosuiService::injectNotesReference()` duplique génériquement chaque clé `initial_*` en `modal_initial_*`, mais la donnée de référence garde la clé `initial_nombre_hotspot` (nécessaire telle quelle pour le calcul `evolution_hotspot`), alors que le template de la modale attend `modal_initial_hotspot` (la donnée courante, elle, est déjà renommée en simplement `hotspot`). Corrigé par une affectation explicite dans `injectNotesReference()` ; couvert par `ProjetCosuiServiceTest::testGenerateRenderHappyPathWhenSetupIsNaN()`.
 
 ### Spec 15 — Répartition
 
-Nathan (`ROLE_COLLECTE`, aucun rôle transverse — même périmètre tetris-game que spec 06/11/13/14). Token identique aux autres pages signées.
+Nathan (`ROLE_COLLECTE`, aucun rôle transverse — même périmètre tetris-game que pour la spec 06/11/13/14). Token identique aux autres pages signées.
 
 ```mermaid
 sequenceDiagram
@@ -679,10 +697,10 @@ sequenceDiagram
 ```
 
 !!! caution "🐛 Cycle Collecte → Analyse non jouable avec les fixtures actuelles"
-    Comme COSUI, le cycle réel (collecte → analyse) ne peut pas produire de données exploitables avec les fixtures e2e actuelles : `BatchCollecteRepartitionController` attend une facette `severities` que `tests/fixtures/sonarqube/issues/search.json` ne fournit pas (enrichie pour le spec 13 avec `cleanCodeAttributeCategories`, pas `severities`) — le total lu au chargement de la page est donc toujours 0, et chaque bouton de collecte affiche juste « pas de données à collecter » sans jamais appeler l'API. Ce spec teste uniquement le bouton **Historique** (lecture pure d'une ligne déjà complète), via un seed direct en base (`seed-after-spec-15-repartition-tetris.sql`, `resetAndSeedForRepartition()`) — pas le cycle collecte/analyse en direct.
+    Comme COSUI, le cycle réel (collecte → analyse) ne peut pas produire de données exploitables avec les fixtures e2e actuelles : `BatchCollecteRepartitionController` attend une facette `severities` que `tests/fixtures/sonarqube/issues/search.json` ne fournit pas (enrichie pour le spec 13 avec `cleanCodeAttributeCategories`, pas `severities`) — le total lu au chargement de la page est donc toujours 0, et chaque bouton de collecte affiche juste « pas de données à collecter » sans jamais appeler l'API. Cette spec teste uniquement le bouton **Historique** (lecture pure d'une ligne déjà complète), via un seed direct en base (`seed-after-spec-15-repartition-tetris.sql`, `resetAndSeedForRepartition()`) — pas le cycle collecte/analyse en direct.
 
-!!! caution "🐛 Bug réel trouvé et corrigé (signalé par l'utilisateur) : IdC incohérent en mode Historique"
-    Le mode Historique réutilisait `generateTableRow()`/`calculateIdc()` (`assets/js/mon-application/repartition-module/index-repartition-module.js`), qui divise le total **historisé** par les compteurs **live** du DOM (`elements[...].dataset`, figés au chargement de la page courante — donc les chiffres SonarQube du moment présent, pas ceux qui étaient vrais quand l'analyse historique a été enregistrée). Les deux instantanés n'ayant aucune raison de correspondre, l'IdC affiché en mode Historique n'avait pas de sens. `calculateIdc()` n'avait d'ailleurs qu'un seul appelant dans tout le fichier : c'est bien tout le calcul qui était inadapté à son usage réel, pas une erreur de bord. Corrigé en supprimant l'appel à `calculateIdc()` dans `generateTableRow()` (fonction elle-même utilisée uniquement par `historique()`) : la colonne IdC affiche désormais `---` pour ce mode, un `control = 'complet (100%)'` garantissant déjà la complétude par construction. Ce spec vérifie explicitement ce `---` sur les 3 tableaux détaillés (Fiabilité/Sécurité/Maintenabilité).
+!!! caution "🐛 Bug trouvé et corrigé : IdC incohérent en mode Historique"
+    Le mode Historique réutilisait `generateTableRow()`/`calculateIdc()` (`assets/js/mon-application/repartition-module/index-repartition-module.js`), qui divise le total **historisé** par les compteurs **live** du DOM (`elements[...].dataset`, figés au chargement de la page courante — donc les chiffres SonarQube du moment présent, pas ceux qui étaient vrais quand l'analyse historique a été enregistrée). Les deux instantanés n'ayant aucune raison de correspondre, l'IdC affiché en mode Historique n'avait pas de sens. `calculateIdc()` n'avait d'ailleurs qu'un seul appelant dans tout le fichier : c'est bien tout le calcul qui était inadapté à son usage réel, pas une erreur de bord. Corrigé en supprimant l'appel à `calculateIdc()` dans `generateTableRow()` (fonction elle-même utilisée uniquement par `historique()`) : la colonne IdC affiche désormais `---` pour ce mode, un `control = 'complet (100%)'` garantissant déjà la complétude par construction. Cette spec vérifie explicitement ce pattern `---` sur les 3 tableaux détaillés (Fiabilité/Sécurité/Maintenabilité).
 
 ### Spec 16 — Statistiques
 
@@ -713,20 +731,20 @@ sequenceDiagram
     User-->>PW: canvas présents (masqués sans activité trackée), bouton batch absent
 ```
 
-**Seed réutilisé, pas de nouveau seed dédié** : `/statistiques/projet` lit `historique` sans jointure (`HistoriqueRepository::selectAllProjetsDerniereSynthese()`) — le seed déjà existant du spec 07 (`resetAndSeedForSuiviHistorique()`, 2 lignes historique minimales pour tetris:TetrisGame) suffit à y afficher une ligne, sans relancer une vraie collecte (~180s). Les colonnes non peuplées par ce seed minimal (notes, coverage…) s'affichent en `–`, sans bloquer la page.
+**Seed réutilisé, pas de nouveau seed dédié** : `/statistiques/projet` lit `historique` sans jointure (`HistoriqueRepository::selectAllProjetsDerniereSynthese()`) — le seed déjà existant pour la spec 07 (`resetAndSeedForSuiviHistorique()`, 2 lignes historique minimales pour tetris:TetrisGame) suffit à y afficher une ligne, sans relancer une vraie collecte (~180s). Les colonnes non peuplées par ce seed minimal (notes, coverage…) s'affichent en `–`, sans bloquer la page.
 
-!!! caution "🐛 Bug réel trouvé et corrigé : /statistiques/dashboard plantait en 500"
+!!! caution "🐛 Bug trouvé et corrigé : /statistiques/dashboard plantait en 500"
     `StatistiqueController::adminDashboard()` exécutait `SELECT count(*) FROM ma_moulinette.pg_catalog.pg_tables WHERE schemaname = 'ma_moulinette'` — un adressage à 3 parties (`base.schéma.table`) que PostgreSQL ne supporte pas : les références entre bases de données ne sont pas implémentées nativement, et `pg_catalog` est un schéma système accessible directement, jamais imbriqué sous un autre schéma applicatif.
     Corrigé en retirant le préfixe `ma_moulinette.` erroné (`FROM pg_catalog.pg_tables`). Aucun test unitaire existant ne couvrait ce cas (connexion mockée) — seul un vrai appel PostgreSQL via e2e pouvait le révéler.
 
-**Chemin « vraies données » exercé, pas seulement le repli** : `/statistiques/dashboard` lit `var/admin-stats.json` (gitignoré) puis `migrations/admin-stats.json` en repli — les deux sont absents par défaut, la page affichant alors un bandeau "données figées". Le seed du spec appelle désormais `refreshAdminStats()` (helper `tests/e2e/helpers/stats.ts`, invoque `php bin/console app:admin:refresh-stats --env=test` via `bin/e2e/refresh-admin-stats.ps1`, même convention que `processDcQueue()` du spec 12) avant la visite de la page, pour que le bandeau "Données générées le…" s'affiche réellement. Aucune assertion n'est figée sur les chiffres cloc eux-mêmes (non reproductibles selon l'environnement) — seulement sur l'absence du bandeau de repli et la présence des 7 lignes du tableau de code.
+**Chemin « vraies données » exercé, pas seulement le repli** : `/statistiques/dashboard` lit `var/admin-stats.json` (gitignoré) puis `migrations/admin-stats.json` en repli — les deux sont absents par défaut, la page affichant alors un bandeau "données figées". Le seed de la spec appelle désormais `refreshAdminStats()` (helper `tests/e2e/helpers/stats.ts`, invoque `php bin/console app:admin:refresh-stats --env=test` via `bin/e2e/refresh-admin-stats.ps1`, même convention que `processDcQueue()` pour la spec 12) avant la visite de la page, pour que le bandeau "Données générées le…" s'affiche réellement. Aucune assertion n'est figée sur les chiffres cloc eux-mêmes (non reproductibles selon l'environnement) — seulement sur l'absence du bandeau de repli et la présence des 7 lignes du tableau de code.
     Prérequis : `cloc` installé et sur le `PATH` du processus PowerShell (`winget install AlDanial.Cloc`) — sur ce poste, `cloc.exe` est fourni avec la distribution PHP dans `0_toolz\php-8.5.5-NTS\`.
 
 **Canvas masqués sans activité utilisateur trackée** : sur `/statistiques/utilisateur`, `#chart-avg-session-duration`/`#chart-nb-session-unique` restent masqués côté JS tant que leurs `data-*` sont vides (`"[]"`, aucune session Nathan trackée sur ce seed minimal) — comportement attendu, vérifié en présence (`toBeAttached()`), pas en visibilité.
 
 ### Spec 17 — Activité
 
-Nathan (rôle transverse `ROLE_ACTIVITY`, cumulé par le seed spec 08 — aucun user du parcours narratif ne le porte nativement). Le contrôle d'accès négatif (403 pour un user sans ce rôle) est déjà couvert par le spec 08, non reproduit ici : ce spec exerce le workflow fonctionnel réel de la page.
+Nathan (rôle transverse `ROLE_ACTIVITY`, cumulé par le seed de la spec 08 — aucun user du parcours narratif ne le porte nativement). Le contrôle d'accès négatif (403 pour un user sans ce rôle) est déjà couvert par la spec 08, non reproduit ici : cette spec exerce le workflow fonctionnel réel de la page.
 
 ```mermaid
 sequenceDiagram
@@ -747,7 +765,7 @@ sequenceDiagram
     Api-->>PW: pas d'erreur (canvas Chart.js redessiné)
 ```
 
-**Seed direct en base, pas de collecte** : depuis la migration de mai 2026, `activity` n'est plus alimentée que par le cron `app:activity:collecte` — ni l'UI, ni le flux de collecte manuelle du spec 06 ne l'alimentent. Le seed insère directement 3 lignes (2 SUCCESS, 1 FAILED, dates construites via `CURRENT_DATE` plutôt que figées, pour rester valides indéfiniment) pour tetris:TetrisGame, sans peupler `activity_historique` : la page démarre donc en état "pas encore de statistiques", et le clic sur "Recalculer" exerce la vraie agrégation (`ApiActivityController::sauvegardeHistorique()`), pas un simple mock de lecture.
+**Seed direct en base, pas de collecte** : depuis la migration de mai 2026, `activity` n'est plus alimentée que par le cron `app:activity:collecte` — ni l'UI, ni le flux de collecte manuelle de la spec 06 ne l'alimentent. Le seed insère directement 3 lignes (2 SUCCESS, 1 FAILED, dates construites via `CURRENT_DATE` plutôt que figées, pour rester valides indéfiniment) pour tetris:TetrisGame, sans peupler `activity_historique` : la page démarre donc en état "pas encore de statistiques", et le clic sur "Recalculer" exerce la vraie agrégation (`ApiActivityController::sauvegardeHistorique()`), pas un simple mock de lecture.
 
 **Valeurs assertées, valeurs volontairement non assertées** : `analyse` (3), `success` (2), `failed` (1), `success_rate` (`round(2/3*100, 1)` = 66,7 %) et `max_time` (`gmdate('H:i:s', 120)` = 00:02:00) sont déterministes et vérifiés explicitement. `day` (écart entre la 1ère analyse de l'année et l'instant du test) et `analyse_average` qui en dépend ne le sont pas — ils varient selon la date réelle d'exécution du test.
 
@@ -781,15 +799,15 @@ sequenceDiagram
     Api-->>PW: reload confirme l'état désactivé persisté
 ```
 
-**Modales Foundation Reveal, pas `<dialog>` natif** : `modalSafe.open()`/`close()` (`assets/js/common/safeModal.js`) pilotent `$(modal).foundation('open'|'close')` — `.toBeVisible()`/`.toBeHidden()` suffisent (même mécanisme observé et validé au spec 07), pas besoin de vérifier l'attribut `open` du DOM.
+**Modales Foundation Reveal, pas `<dialog>` natif** : `modalSafe.open()`/`close()` (`assets/js/common/safeModal.js`) pilotent `$(modal).foundation('open'|'close')` — `.toBeVisible()`/`.toBeHidden()` suffisent (même mécanisme observé et validé pour la spec 07), pas besoin de vérifier l'attribut `open` du DOM.
 
 **Accordéon fermé par défaut** : la modale Versions construit un accordéon Foundation (une entrée par `mavenKey`) initialisé via `.foundation('_init')` — son contenu (les lignes de version, et donc les boutons de suppression) reste masqué tant que le titre (`.accordion-custom`) n'a pas été cliqué. Sélecteur volontairement scopé à `.accordion-custom` (pas `.accordion-title`, utilisé aussi par d'autres accordéons de la page comme le menu d'aide).
 
-**`window.$`, pas `window.jQuery`** : contrairement à d'autres bundles de l'application (`select2`, page de changement de mot de passe), le bundle Préférences n'expose que `window.$ = $` — une attente de binding jQuery calquée sur celle du spec 07 (`w.jQuery._data(...)`) reste bloquée indéfiniment sur cette page ; il faut vérifier `w.$._data(...)`.
+**`window.$`, pas `window.jQuery`** : contrairement à d'autres bundles de l'application (`select2`, page de changement de mot de passe), le bundle Préférences n'expose que `window.$ = $` — une attente de binding jQuery calquée sur celle de la spec 07 (`w.jQuery._data(...)`) reste bloquée indéfiniment sur cette page ; il faut vérifier `w.$._data(...)`.
 
 ### Spec 19 — Admin Logs
 
-Interne (`ROLE_INTERNAL`, actif nativement dans `fixtures-e2e.sql` — pas de seed dédié au-delà d'un reset, même approche que le spec 01). Le contrôle d'accès négatif (403 sans `ROLE_INTERNAL`) est déjà couvert par le spec 08 : ce spec exerce le fonctionnement réel de la page.
+Interne (`ROLE_INTERNAL`, actif nativement dans `fixtures-e2e.sql` — pas de seed dédié au-delà d'un reset, même approche que pour la spec 01). Le contrôle d'accès négatif (403 sans `ROLE_INTERNAL`) est déjà couvert par la spec 08 : cette spec exerce le fonctionnement réel de la page.
 
 ```mermaid
 sequenceDiagram
@@ -818,13 +836,13 @@ sequenceDiagram
 !!! caution "🐛 Bug trouvé et corrigé : les filtres Deprecation/Request/Messenger/Application (prod) ne matchaient jamais un vrai fichier"
     `LogArchiveService::resolveType()` ne typait `deprecation`/`request`/`messenger`/`application` un fichier que s'il commençait par `deprecations-`/`request-`/`messenger-`/`app-` (avec un tiret). Or `monolog.yaml` écrit ces logs sous un nom **statique sans suffixe d'environnement** : `deprecations.log`, `request.log`, `messenger.log` (tous trois identiques quel que soit l'environnement), et `app.log` en prod (sans tiret, contrairement à `app-dev.log`). Un vrai fichier `deprecations.log`/`request.log`/`messenger.log`/`app.log` était donc systématiquement classé `main` (ou `main` au lieu d'`application` pour `app.log`) par `resolveType()` — les cases à cocher correspondantes du filtre ne pouvaient matcher aucun fichier réel produit par l'application. Corrigé en ajoutant le nom exact sans tiret comme alternative à chaque branche du `match()` (`$filename === 'app.log'`, etc.), couvert par `LogArchiveServiceTest::testListLogsResolvesTypesForRealUnsuffixedFilenames()`. Cette spec seedait déjà des noms synthétiques avec tiret (`deprecations-test.log`/`request-dev.log`) pour exercer la logique de filtrage elle-même, indépendamment de ce décalage — toujours valides après correction, puisque les deux formes (avec et sans tiret) sont maintenant reconnues.
 
-**Piège Playwright — `window.confirm()` avant le téléchargement** : `downloadSelection()` (`app-admin-log.js`) appelle `confirm(...)` avant d'envoyer la requête. Sans `page.once('dialog', d => d.accept())` enregistré avant le clic, Playwright rejette (dismiss) les dialogues par défaut : `confirm()` renverrait `false`, et la fonction s'arrêterait avant le `$.post`, sans jamais déclencher de téléchargement — un faux échec silencieux (pas d'erreur, juste rien qui se passe).
+**Problème Playwright — `window.confirm()` avant le téléchargement** : `downloadSelection()` (`app-admin-log.js`) appelle `confirm(...)` avant d'envoyer la requête. Sans `page.once('dialog', d => d.accept())` enregistré avant le clic, Playwright rejette (dismiss) les dialogues par défaut : `confirm()` renverrait `false`, et la fonction s'arrêterait avant le `$.post`, sans jamais déclencher de téléchargement — un faux échec silencieux (pas d'erreur, juste rien qui se passe).
 
 **Nom de fichier téléchargé fixé côté client** : le serveur nomme l'archive avec un horodatage (`logs_YYYYMMDD_His.zip`, `Content-Disposition`), mais le JS écrase ce nom via `a.download = 'logs_selectionnes.zip'` sur le lien de téléchargement généré depuis le blob reçu — comportement normal du navigateur sur une Blob URL créée en JS (le nom du serveur n'est jamais visible côté utilisateur), pas un bug. `download.suggestedFilename()` vaut donc toujours `logs_selectionnes.zip`.
 
 ### Spec 20 — Journal des rôles
 
-Interne (`ROLE_INTERNAL`). Le contrôle d'accès négatif (403 sans `ROLE_INTERNAL`) est déjà couvert par le spec 08.
+Interne (`ROLE_INTERNAL`). Le contrôle d'accès négatif (403 sans `ROLE_INTERNAL`) est déjà couvert par la spec 08.
 
 ```mermaid
 sequenceDiagram
@@ -833,7 +851,7 @@ sequenceDiagram
     participant Page as /admin/journal-roles
     participant Api as /api/secure/admin/journal-roles/*
 
-    Note over PW,Crud: 1. Deux vraies éditions EasyAdmin (comme spec 03)
+    Note over PW,Crud: 1. Deux vraies éditions EasyAdmin (comme pour la spec 03)
     PW->>Crud: édite Josh — ROLE_UTILISATEUR → ROLE_COLLECTE (reste actif)
     PW->>Crud: édite Nathan — décoche Actif (rôles inchangés)
     Note over Crud,Api: UtilisateurCrudController::updateEntity() détecte le<br/>changement (rôles OU actif) et appelle UserRoleLoggerService
@@ -850,13 +868,87 @@ sequenceDiagram
     PW->>Api: supprimer la ligne de Nathan → confirm() + CSRF → 200, ligne disparue
 ```
 
-**Pas de seed direct — données produites par de vraies éditions UI** : `user_role_log` n'est alimentée que par un vrai passage dans `UtilisateurCrudController::updateEntity()` (via `UserRoleLoggerService`), et seulement si les rôles OU le statut actif changent réellement. Les seeds SQL directs (`seed-after-spec-0X-*.sql`) ne font que des `UPDATE` bruts sur `utilisateur`, sans jamais passer par ce contrôleur — `resetAndSeedAfterSpec05()` seul laisse donc `user_role_log` vide. Contrairement aux specs 14/15/19, ce spec ne seed rien directement : il exécute deux vraies éditions via l'UI EasyAdmin (même idiome que le spec 03 — `roleCheckbox()`, extraction du href d'édition) pour produire lui-même les deux lignes qu'il consulte ensuite, ce qui a l'avantage de tester aussi, en creux, que `UserRoleLoggerService` capture bien les deux types de transition (changement de rôle pur, et bascule Actif pure).
+**Pas de seed direct — données produites par de vraies éditions UI** : `user_role_log` n'est alimentée que par un vrai passage dans `UtilisateurCrudController::updateEntity()` (via `UserRoleLoggerService`), et seulement si les rôles OU le statut actif changent réellement. Les seeds SQL directs (`seed-after-spec-0X-*.sql`) ne font que des `UPDATE` bruts sur `utilisateur`, sans jamais passer par ce contrôleur — `resetAndSeedAfterSpec05()` seul laisse donc `user_role_log` vide. Contrairement aux specs 14/15/19, cette spec ne seed rien directement : elle exécute deux vraies éditions via l'UI EasyAdmin (même idiome que la spec 03 — `roleCheckbox()`, extraction du href d'édition) pour produire elle-même les deux lignes qu'il consulte ensuite, ce qui a l'avantage de tester aussi, en creux, que `UserRoleLoggerService` capture bien les deux types de transition (changement de rôle pur, et bascule Actif pure).
 
-**Filtre courriel = `ILIKE` sur cible OU éditeur** : `UserRoleLogRepository::findFiltered()` matche `user_email` et `editor_email` avec le même terme. Le spec le vérifie sous ses deux angles : filtrer sur l'email de Nathan (cible) ne retourne que sa ligne, filtrer sur l'email d'interne (éditeur des deux éditions) retourne les deux lignes.
+**Filtre courriel = `ILIKE` sur cible OU éditeur** : `UserRoleLogRepository::findFiltered()` matche `user_email` et `editor_email` avec le même terme. La spec la vérifie sous ses deux angles : filtrer sur l'email de Nathan (cible) ne retourne que sa ligne, filtrer sur l'email d'interne (éditeur des deux éditions) retourne les deux lignes.
 
-**DataTables, pas un tableau HTML statique** : contrairement aux pages Admin Logs (19)/Suivi (07), cette page utilise `datatables.net-zf` (pagination/tri/recherche côté client). Le code source porte déjà sa propre note de correction (MODIF 2026-07-21) : la case `#select-all` du `<thead>` est reconstruite par DataTables à l'initialisation, donc un binding jQuery classique posé au chargement du script se retrouverait sur un nœud remplacé — fixé par une liaison déléguée depuis `document`. Ce spec s'appuie donc sur un comportement déjà corrigé, pas sur une découverte propre.
+**DataTables, pas un tableau HTML statique** : contrairement aux pages Admin Logs (19)/Suivi (07), cette page utilise `datatables.net-zf` (pagination/tri/recherche côté client). Le code source porte déjà sa propre note de correction (MODIF 2026-07-21) : la case `#select-all` du `<thead>` est reconstruite par DataTables à l'initialisation, donc un binding jQuery classique posé au chargement du script se retrouverait sur un nœud remplacé — fixé par une liaison déléguée depuis `document`. Cette spec s'appuie donc sur un comportement déjà corrigé, pas sur une découverte propre.
 
-**Téléchargements et suppression, mêmes pièges Playwright que le spec 19 (Admin Logs)** : noms de fichiers fixés côté client (`journal_roles.csv`/`journal_roles.pdf`, indépendants de l'horodatage serveur), et `window.confirm()` avant la suppression nécessitant `page.once('dialog', d => d.accept())` (sans quoi Playwright rejette le dialogue par défaut et la suppression n'a jamais lieu).
+**Téléchargements et suppression, mêmes pièges Playwright que pour la spec 19 (Admin Logs)** : noms de fichiers fixés côté client (`journal_roles.csv`/`journal_roles.pdf`, indépendants de l'horodatage serveur), et `window.confirm()` avant la suppression nécessitant `page.once('dialog', d => d.accept())` (sans quoi Playwright rejette le dialogue par défaut et la suppression n'a jamais lieu).
+
+### Spec 21 — Traitement (file de collecte portefeuille) & Profiling
+
+Nathan (`ROLE_COLLECTE` natif + `ROLE_BATCH` cumulé via `resetAndSeedForCrudTransverse()`, groupe fonctionnel "tetris-game" déjà existant). Le contrôle d'accès négatif sur `/traitement/profiling` (Sophie, sans `ROLE_BATCH`) est testé ici pour la première fois — la spec 08 ne couvrait que `/traitement/suivi` et `/actuator`.
+
+```mermaid
+sequenceDiagram
+    actor PW as Playwright (Nathan)
+    participant Crud as EasyAdmin (Portefeuille/Batch)
+    participant Suivi as /traitement/suivi
+    participant Api as /api/secure/traitement/*
+    participant Profiling as /traitement/profiling
+
+    PW->>Crud: crée Portefeuille (tetris-game) + Batch coché "Activé"
+    Note over Crud: Batch.activated=false par défaut (spec 09 ne le coche jamais)<br/>→ sans ce clic, aucune ligne visible sur /traitement/suivi
+
+    PW->>Suivi: goto — ligne MANUEL visible (bouton "I am human")
+    PW->>Api: clic → POST /api/secure/traitement/start (synchrone)
+    Note over Api: BatchManuelController::traitementManuel() boucle sur les<br/>projets du portefeuille et appelle CollecteController::collecte()<br/>— même orchestration que pour la spec 06, jamais déclenchée avant cette spec
+
+    Api-->>Suivi: Succès, résultat/temps mis à jour
+    PW->>Suivi: ouvre la modale Information (détails + sélection journal)
+    PW->>Profiling: goto — dashboard alimenté par la ligne batch_profiling produite
+```
+
+**Contexte** : `/traitement/suivi` n'est PAS la collecte testée par la spec 06 (bouton `/projet`, un seul projet, `ApiCollecteController`). C'est un système séparé, à l'échelle du **portefeuille** : `BatchManuelController::traitementManuel()` (`POST /api/secure/traitement/start`) boucle sur tous les projets d'un Portefeuille et appelle en interne le même `CollecteController::collecte()` — de façon **synchrone**, malgré la présence de `pendingWorker.js` (qui ne sert qu'à mettre une 2ᵉ demande en file d'attente si un traitement tourne déjà, pas à paralléliser). C'est cette exécution qui produit les lignes `batch_profiling` que le dashboard Profiling consulte — jamais exercée avant cette spec (seul son accès 403/flash souple était couvert, spec 08).
+
+**Pas de seed direct** : contrairement à COSUI/Répartition, le flux réel (créer un Portefeuille + un Batch coché "Activé" via EasyAdmin, cliquer "Lancer" sur `/traitement/suivi`) est praticable et donne un test bout-en-bout plus fidèle.
+
+!!! caution "🐛 problème de données : `Batch.activated` vaut `false` par défaut"
+    La spec 09 (CRUD Batch/Portefeuille) ne coche jamais "Activé" — son Batch n'apparaît donc jamais sur `/traitement/suivi`, filtré par `WHERE activated = true` (`BatchTraitementRepository::selectBatchTraitementActivated()`). Cette spec coche explicitement "Activé" (en laissant "Automatique ?" décoché, pour rester en mode Manuel et garder le bouton de déclenchement cliquable) pour obtenir une ligne visible.
+
+!!! caution "🐛 Bug trouvé et corrigé : le bouton de déclenchement manuel n'a jamais fonctionné"
+    `workInProgress()` (`assets/js/mon-application/batch/index-batch.js`) construisait son objet d'options `$.ajax` avec la propriété raccourcie `contentType,` — qui référence une variable `contentType` inexistante dans le scope du module (l'import s'appelle `content_type`, avec underscore, comme utilisé correctement à tous les autres appels `$.ajax` du même fichier). `ReferenceError` synchrone à chaque clic sur le bouton "I am human", capturé silencieusement par le `try/catch` englobant de `lancerTraitementSiPossible()` (message "Erreur de lancement traitement" affiché, aucune requête réseau jamais envoyée). Ce bouton ne fonctionnait donc pour aucun utilisateur avant ce correctif — non détecté jusqu'ici car seul l'accès à la page était testé (spec 08), jamais le déclenchement. Corrigé en `contentType: content_type,`.
+
+!!! caution "🐛 Bug trouvé et corrigé : double création de BatchExecution"
+    `BatchManuelController::traitementManuel()` créait et persistait deux `BatchExecution` identiques (bloc de code dupliqué, même `$execution_id`, deux appels à `updateBatchTraitement()`) avant même de démarrer la boucle de collecte. La première ligne restait orpheline (jamais rattachée au journal des projets), rendant `selectBatchExecutionLastTraitementId()` (`ORDER BY date_enregistrement DESC LIMIT 1`) instable en cas d'égalité de timestamp — la modale Information pouvait tirer la mauvaise ligne, dont le select2 "Consulter un journal d'exécution" restait vide ("Aucun résultat trouvé"). Corrigé en supprimant le premier bloc dupliqué ; couvert par `BatchManuelControllerTest::testTraitementManuelPersistsExactlyOneBatchExecutionAndUpdatesTwice()`.
+
+**Select2, pas un `<select>` HTML natif** : la modale Information peuple `.js-select-journal` via Select2 — le `<select>` réel est masqué et l'interaction passe par la boîte cliquable générée (`#select2-select-journal-container`) puis par l'option affichée dans la liste déroulante. Un simple `selectOption()` sur le `<select>` caché ne déclenche pas l'événement custom `select2:select` auquel le JS de la page est abonné.
+
+**Dashboard Profiling — présence, pas contenu exact** : comme pour OWASP, les canvas Chart.js ne sont vérifiés qu'en présence (`toBeAttached()`), jamais en contenu pixel. Les 6 cartes d'indicateurs (`granularite`/`periode`/`utilisateur`/`portefeuille`/`exec`/`execution`) sont vérifiées en présence d'au moins une carte chacune : `vw_batch_profiling_summary` agrège une seule exécution réelle sous 3 granularités (Hebdomadaire/Mensuel/Global), rendant le nombre exact de cartes par indicateur dépendant de détails d'agrégation SQL non essentiels à valider ici.
+
+### Spec 22 — Healthcheck
+
+Endpoint public (`/api/public/healthcheck/status`, aucun firewall authentifié) : pas de login, appels directs via `page.request` plutôt qu'une navigation.
+
+```mermaid
+sequenceDiagram
+    actor PW as Playwright
+    participant Health as /api/public/healthcheck/status
+    participant Limiter as limiter.healthcheck
+    participant Svc as HealthCheckService
+
+    PW->>Health: GET (1re requête)
+    Health->>Limiter: consume() — fixed_window, 10/minute par IP
+    Limiter-->>Health: accepté
+    Health->>Svc: check() — SELECT 1 + tablesExist(['ma_moulinette'])
+    Svc-->>Health: [] (aucune erreur)
+    Health-->>PW: 200 {codeRetour: "OK", listMessage: []}
+
+    loop Jusqu'à 15 requêtes supplémentaires
+        PW->>Health: GET
+        Health->>Limiter: consume()
+    end
+    Limiter-->>Health: refusé (quota dépassé)
+    Health-->>PW: 429 {codeRetour: "KO", listMessage: [...]}
+```
+
+**`HealthCheckService::check()`** vérifie deux choses, résultat mis en cache 5 secondes (`cache.get('healthcheck_result', ...)`) :
+
+- Connexion DB (`SELECT 1`)
+- Existence de la table `ma_moulinette.ma_moulinette` — la table de version applicative (`id`/`version`/`date_version`), pas le schéma du même nom
+
+**Rate limiting** (`config/packages/rate_limiter.yaml`, `healthcheck` : `fixed_window`, 10 requêtes/minute, clé = IP cliente) : la spec boucle jusqu'à 15 requêtes plutôt que de viser exactement la 11ᵉ, pour rester robuste si une requête antérieure du run a déjà partiellement consommé le quota dans la même fenêtre.
 
 ## Reset rapide entre runs (≈ 3s, sans prompt password)
 
@@ -938,18 +1030,24 @@ Script PowerShell qui enchaîne tout :
 # Depuis la racine du projet
 .\bin\e2e\run-e2e.ps1                     # tous les specs, headless
 .\bin\e2e\run-e2e.ps1 -Headed             # avec navigateur visible
-.\bin\e2e\run-e2e.ps1 -Spec "01-smoke"    # un spec en particulier (substring match)
+.\bin\e2e\run-e2e.ps1 -Spec "01-smoke"    # une spec en particulier (substring match)
 .\bin\e2e\run-e2e.ps1 -SkipRebuild        # garder la DB existante (debug)
 .\bin\e2e\run-e2e.ps1 -SkipServer         # ne pas démarrer Symfony serve (déjà up ailleurs)
+.\bin\e2e\run-e2e.ps1 -UseBuiltinServer   # secours php -S si symfony serve échoue (voir plus bas)
 ```
 
 Le script :
 
 1. Rebuild la DB `ma_moulinette` (sauf si `-SkipRebuild`)
-2. Démarre Symfony serve avec `APP_ENV=test` en daemon (port 8000) si pas déjà up
+2. Démarre Symfony serve avec `APP_ENV=test` en daemon (port 8000) si pas déjà up (ou `php -S` + `bin/e2e/test-router.php` si `-UseBuiltinServer`)
 3. Warmup le cache test (évite les 502 sur les assets)
 4. Lance `npx playwright test` depuis `tests/e2e/`
-5. Stoppe le daemon Symfony à la fin (uniquement si on l'a démarré)
+5. Stoppe le serveur à la fin (uniquement si on l'a démarré)
+
+!!! caution "🐛 `symfony serve --daemon` peut échouer sur un verrou transitoire Windows"
+    Sous Windows, `symfony serve --daemon` peut échouer avec `log\<hash>.log: The process cannot access the file because it is being used by another process.` — un verrou interne à `symfony-cli` lui-même, sans lien avec un process applicatif. Contournement : `-UseBuiltinServer`, qui bascule sur le serveur web intégré de PHP (`php -S`) piloté par `bin/e2e/test-router.php`.
+
+    Ce routeur est **obligatoire**, pas un simple confort : `php -S` ne recopie pas les variables d'environnement du shell dans `$_SERVER`/`$_ENV` (contrairement au SAPI CLI) — seul `getenv()` les voit. Or Symfony résout `APP_ENV` via `$_SERVER`, jamais via `getenv()` : sans ce pont, `$env:APP_ENV='test'; php -S ...` démarre un process où `getenv('APP_ENV')` vaut `'test'`, mais Symfony charge quand même `.env`/`.env.local` (`APP_ENV=dev`) et se connecte à la **vraie base de dev** (`ma_moulinette`) au lieu de `ma_moulinette_test`, silencieusement. `bin/console --env=test` n'est pas affecté (le flag `--env` force l'environnement indépendamment de `$_SERVER`). `test-router.php` fait le pont explicitement (`$_SERVER['APP_ENV'] = getenv('APP_ENV')`) avant de charger `public/index.php`, et sert directement les fichiers statiques existants sans repasser par le kernel Symfony (sinon chaque asset re-démarre inutilement le kernel).
 
 ### Méthode manuelle (debug fin)
 
@@ -960,6 +1058,8 @@ Le script :
 # Terminal 2 : Symfony en env test
 $env:APP_ENV = "test"
 symfony serve --no-tls --port=8000
+# Si symfony serve échoue (verrou log symfony-cli, voir plus bas) :
+# php -S 127.0.0.1:8000 -t public bin/e2e/test-router.php
 
 # Terminal 3 : Playwright
 cd tests\e2e
@@ -1005,6 +1105,10 @@ Les fixtures sont dans `tests/fixtures/sonarqube/`. Endpoints couverts (Phase I 
 - **`db.resetE2EData()`** : reset DB sans prompt
 - **`db.resetAndSeedAfterSpec0X()`** : reset + seed à l'état de fin de la spec X
 - **`db.resetAndSeedForCrudTransverse()`** : état post-spec-05 + rôles transverses (`ROLE_SECURITY`/`ROLE_ACTIVITY`/`ROLE_BATCH`/`ROLE_ACTUATOR`) cumulés sur Nathan — utilisé par les specs 09/10 (CRUD Batch/Portefeuille/Actuator)
+- **`token.buildProjetToken(mavenKey)`** : reconstruit le token signé des pages Suivi/OWASP/Répartition/COSUI/Clean Code sans passer par le bouton de navigation
+- **`dc.processDcQueue()`** : invoque le worker Dependency-Check (`bin/e2e/process-dc-queue.ps1`, spec 12)
+- **`stats.refreshAdminStats()`** : invoque `app:admin:refresh-stats` (`bin/e2e/refresh-admin-stats.ps1`, spec 16)
+- **`logs.seedAdminLogFiles()` / `cleanupAdminLogFiles()`** : écrit/supprime des fichiers de log synthétiques sur le filesystem (spec 19)
 
 ### Locators
 
@@ -1039,12 +1143,14 @@ Préférer dans cet ordre :
 - **HTML5 pattern v-flag** : Chrome 132+ rejette `[a-zA-Z0-9._@-]` car `@-]` est ambigu. Utiliser `[-a-zA-Z0-9._@]` (hyphen en début).
 - **Autofill Chrome sur formulaires multi-password** : `autocomplete="off"` est ignoré par Chrome sur les champs `type="password"` depuis 2014 — utiliser les valeurs sémantiques `current-password`/`new-password`. Un champ identifiant en lecture seule précédant un champ password doit porter `autocomplete="username"` explicitement, sinon Chrome peut l'associer à tort au champ suivant.
 - **Bouton rendu côté serveur, handler attaché en JS async** : un bouton présent dans le HTML Twig peut ne pas encore avoir son event listener jQuery attaché (module ES chargé de façon asynchrone) — cliquer trop tôt ne produit ni requête réseau ni erreur, juste un clic perdu. Si un clic sur un élément JS-driven semble ne rien faire, attendre explicitement le binding avant de cliquer plutôt que d'ajouter un `waitForTimeout` :
-  ```typescript
+
+```typescript
   await page.waitForFunction(() => {
     const el = document.querySelector('.ma-classe');
     return !!(window as any).jQuery?._data(el, 'events')?.click?.length;
   });
-  ```
+```
+
 - **Switch (checkbox stylé en toggle)** : cliquer l'`<input type="checkbox">` directement échoue souvent (*"intercepts pointer events"*) car son `<label class="switch-paddle">` le recouvre visuellement. Cibler `label[for="id-du-switch"]` — c'est aussi le geste réel de l'utilisateur.
 
 ## Debug
@@ -1057,9 +1163,10 @@ Préférer dans cet ordre :
 
 ## Prochaines étapes
 
-- **Cas A (reset password) : mis de côté définitivement** (décision du 2026-08-02, pas juste en attente) — dans un déploiement LDAP, le changement de mot de passe ne passe pas par l'application, ce parcours devient secondaire. `test.fixme` reste en place, pas de reprise prévue sauf besoin métier nouveau.
+- **reset password : mis de côté définitivement** (décision du 2026-08-02) — dans un déploiement LDAP, le changement de mot de passe ne passe pas par l'application, ce parcours devient secondaire. `test.fixme` reste en place, pas de reprise prévue sauf besoin métier nouveau.
 - **Bug avatar** : URL `/assets/avatar/chiffre/02.png` ne se résout pas (à investiguer côté AssetMapper / `getAvatarUrl()`)
 - **`actuatorUser` non réellement optionnel** : `ActuatorFormType` ne force pas `'required' => false`, le widget HTML5 bloque une soumission avec ce champ vide alors qu'aucune contrainte Symfony ne l'exige (cf. spec 10)
 - **Cypress-style isolation** (option future) : si on veut chaque spec totalement auto-suffisante, snapshoter la DB après chaque spec pour restauration rapide
 
-> Cette doc est complétée au fur et à mesure (sections debug, patterns récurrents, gotchas) — pensez à enrichir au fil des évolutions.
+> [!INFO]
+> Cette doc est complétée au fur et à mesure (sections debug, patterns récurrents, pièges à éviter).
