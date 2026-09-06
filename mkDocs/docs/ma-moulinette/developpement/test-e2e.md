@@ -95,6 +95,8 @@ graph TB
 | 16 | `16-statistiques` | nathan | 5 pages du module Statistiques (index, dashboard, sonar report, projets, utilisateur) |
 | 17 | `17-activite` | nathan (+ ROLE_ACTIVITY transverse) | page Activité — recalcul réel activity → activity_historique, 3 boutons de tracé |
 | 18 | `18-preferences` | nathan | page Préférences — 3 interrupteurs, 3 modales (Projets/Favoris/Versions), suppressions |
+| 19 | `19-admin-logs` | interne (`ROLE_INTERNAL`) | Admin Logs — filtres env/type, sélection de lignes, téléchargement ZIP ; fichiers de log seedés directement sur le filesystem |
+| 20 | `20-journal-roles` | interne (`ROLE_INTERNAL`) | Journal des rôles — 2 éditions EasyAdmin réelles génèrent les lignes du journal, puis filtres, export CSV/PDF, suppression avec `confirm()`+CSRF |
 
 **Conséquences** :
 
@@ -784,6 +786,77 @@ sequenceDiagram
 **Accordéon fermé par défaut** : la modale Versions construit un accordéon Foundation (une entrée par `mavenKey`) initialisé via `.foundation('_init')` — son contenu (les lignes de version, et donc les boutons de suppression) reste masqué tant que le titre (`.accordion-custom`) n'a pas été cliqué. Sélecteur volontairement scopé à `.accordion-custom` (pas `.accordion-title`, utilisé aussi par d'autres accordéons de la page comme le menu d'aide).
 
 **`window.$`, pas `window.jQuery`** : contrairement à d'autres bundles de l'application (`select2`, page de changement de mot de passe), le bundle Préférences n'expose que `window.$ = $` — une attente de binding jQuery calquée sur celle du spec 07 (`w.jQuery._data(...)`) reste bloquée indéfiniment sur cette page ; il faut vérifier `w.$._data(...)`.
+
+### Spec 19 — Admin Logs
+
+Interne (`ROLE_INTERNAL`, actif nativement dans `fixtures-e2e.sql` — pas de seed dédié au-delà d'un reset, même approche que le spec 01). Le contrôle d'accès négatif (403 sans `ROLE_INTERNAL`) est déjà couvert par le spec 08 : ce spec exerce le fonctionnement réel de la page.
+
+```mermaid
+sequenceDiagram
+    actor PW as Playwright (interne)
+    participant Page as /admin/logs
+    participant Api as /api/secure/admin/logs/*
+    participant FS as var/log (filesystem)
+
+    Note over PW,FS: seed direct : 5 fichiers de log synthétiques écrits sur le<br/>filesystem (app-test.log, request-dev.log, messenger-dev.log,<br/>deprecations-test.log, prod.log)
+    PW->>Page: goto /admin/logs
+    Page->>Api: GET list (chargement initial, sans filtre)
+    Api-->>Page: env par défaut = environnement courant (test)
+
+    PW->>Api: filtre env=dev → seules les fixtures dev visibles
+    PW->>Api: filtre type=application → seule app-test.log visible (même env)
+
+    PW->>Page: "tout cocher" / "tout décocher" (#select-all)
+    PW->>Page: clic sur une ligne (hors case) → coche sa checkbox
+
+    PW->>Api: téléchargement sans sélection → avertissement, pas de requête
+    PW->>Api: téléchargement avec sélection → confirm() + POST → ZIP réel
+```
+
+**Seed direct sur le filesystem, pas en base** : `AdminLogController`/`LogArchiveService::listLogs()` lisent `var/log/` via `scandir()`, sans table DB. Aucun flux applicatif ne produit ces fichiers de façon fiable en e2e : le handler `main` de `when@test` (`monolog.yaml`) est un `fingers_crossed` qui ne flushe que sur une vraie erreur Doctrine, et les handlers `request`/`messenger`/`deprecation`/`application` n'existent même pas sous `when@test`. `helpers/logs.ts` écrit directement 5 fichiers sur le filesystem avant le test (`seedAdminLogFiles()`) et les supprime après (`cleanupAdminLogFiles()`), avec des noms garantis synthétiques (jamais produits par la vraie config Monolog de l'appli, cf. commentaire du helper) pour ne jamais interférer avec de vrais fichiers de log.
+
+!!! caution "🐛 Bug trouvé et corrigé : les filtres Deprecation/Request/Messenger/Application (prod) ne matchaient jamais un vrai fichier"
+    `LogArchiveService::resolveType()` ne typait `deprecation`/`request`/`messenger`/`application` un fichier que s'il commençait par `deprecations-`/`request-`/`messenger-`/`app-` (avec un tiret). Or `monolog.yaml` écrit ces logs sous un nom **statique sans suffixe d'environnement** : `deprecations.log`, `request.log`, `messenger.log` (tous trois identiques quel que soit l'environnement), et `app.log` en prod (sans tiret, contrairement à `app-dev.log`). Un vrai fichier `deprecations.log`/`request.log`/`messenger.log`/`app.log` était donc systématiquement classé `main` (ou `main` au lieu d'`application` pour `app.log`) par `resolveType()` — les cases à cocher correspondantes du filtre ne pouvaient matcher aucun fichier réel produit par l'application. Corrigé en ajoutant le nom exact sans tiret comme alternative à chaque branche du `match()` (`$filename === 'app.log'`, etc.), couvert par `LogArchiveServiceTest::testListLogsResolvesTypesForRealUnsuffixedFilenames()`. Cette spec seedait déjà des noms synthétiques avec tiret (`deprecations-test.log`/`request-dev.log`) pour exercer la logique de filtrage elle-même, indépendamment de ce décalage — toujours valides après correction, puisque les deux formes (avec et sans tiret) sont maintenant reconnues.
+
+**Piège Playwright — `window.confirm()` avant le téléchargement** : `downloadSelection()` (`app-admin-log.js`) appelle `confirm(...)` avant d'envoyer la requête. Sans `page.once('dialog', d => d.accept())` enregistré avant le clic, Playwright rejette (dismiss) les dialogues par défaut : `confirm()` renverrait `false`, et la fonction s'arrêterait avant le `$.post`, sans jamais déclencher de téléchargement — un faux échec silencieux (pas d'erreur, juste rien qui se passe).
+
+**Nom de fichier téléchargé fixé côté client** : le serveur nomme l'archive avec un horodatage (`logs_YYYYMMDD_His.zip`, `Content-Disposition`), mais le JS écrase ce nom via `a.download = 'logs_selectionnes.zip'` sur le lien de téléchargement généré depuis le blob reçu — comportement normal du navigateur sur une Blob URL créée en JS (le nom du serveur n'est jamais visible côté utilisateur), pas un bug. `download.suggestedFilename()` vaut donc toujours `logs_selectionnes.zip`.
+
+### Spec 20 — Journal des rôles
+
+Interne (`ROLE_INTERNAL`). Le contrôle d'accès négatif (403 sans `ROLE_INTERNAL`) est déjà couvert par le spec 08.
+
+```mermaid
+sequenceDiagram
+    actor PW as Playwright (interne)
+    participant Crud as /admin/utilisateur
+    participant Page as /admin/journal-roles
+    participant Api as /api/secure/admin/journal-roles/*
+
+    Note over PW,Crud: 1. Deux vraies éditions EasyAdmin (comme spec 03)
+    PW->>Crud: édite Josh — ROLE_UTILISATEUR → ROLE_COLLECTE (reste actif)
+    PW->>Crud: édite Nathan — décoche Actif (rôles inchangés)
+    Note over Crud,Api: UtilisateurCrudController::updateEntity() détecte le<br/>changement (rôles OU actif) et appelle UserRoleLoggerService
+
+    PW->>Page: goto /admin/journal-roles
+    Page->>Api: GET list (2 lignes réelles)
+
+    PW->>Api: filtre courriel = cible (Nathan) → 1 ligne
+    PW->>Api: filtre courriel = éditeur (interne) → 2 lignes (colonne OR)
+    PW->>Api: filtre date "Depuis le" = demain → 0 ligne
+
+    PW->>Api: archiver la ligne de Josh → CSV réel
+    PW->>Api: rapport PDF de la ligne de Nathan → PDF réel
+    PW->>Api: supprimer la ligne de Nathan → confirm() + CSRF → 200, ligne disparue
+```
+
+**Pas de seed direct — données produites par de vraies éditions UI** : `user_role_log` n'est alimentée que par un vrai passage dans `UtilisateurCrudController::updateEntity()` (via `UserRoleLoggerService`), et seulement si les rôles OU le statut actif changent réellement. Les seeds SQL directs (`seed-after-spec-0X-*.sql`) ne font que des `UPDATE` bruts sur `utilisateur`, sans jamais passer par ce contrôleur — `resetAndSeedAfterSpec05()` seul laisse donc `user_role_log` vide. Contrairement aux specs 14/15/19, ce spec ne seed rien directement : il exécute deux vraies éditions via l'UI EasyAdmin (même idiome que le spec 03 — `roleCheckbox()`, extraction du href d'édition) pour produire lui-même les deux lignes qu'il consulte ensuite, ce qui a l'avantage de tester aussi, en creux, que `UserRoleLoggerService` capture bien les deux types de transition (changement de rôle pur, et bascule Actif pure).
+
+**Filtre courriel = `ILIKE` sur cible OU éditeur** : `UserRoleLogRepository::findFiltered()` matche `user_email` et `editor_email` avec le même terme. Le spec le vérifie sous ses deux angles : filtrer sur l'email de Nathan (cible) ne retourne que sa ligne, filtrer sur l'email d'interne (éditeur des deux éditions) retourne les deux lignes.
+
+**DataTables, pas un tableau HTML statique** : contrairement aux pages Admin Logs (19)/Suivi (07), cette page utilise `datatables.net-zf` (pagination/tri/recherche côté client). Le code source porte déjà sa propre note de correction (MODIF 2026-07-21) : la case `#select-all` du `<thead>` est reconstruite par DataTables à l'initialisation, donc un binding jQuery classique posé au chargement du script se retrouverait sur un nœud remplacé — fixé par une liaison déléguée depuis `document`. Ce spec s'appuie donc sur un comportement déjà corrigé, pas sur une découverte propre.
+
+**Téléchargements et suppression, mêmes pièges Playwright que le spec 19 (Admin Logs)** : noms de fichiers fixés côté client (`journal_roles.csv`/`journal_roles.pdf`, indépendants de l'horodatage serveur), et `window.confirm()` avant la suppression nécessitant `page.once('dialog', d => d.accept())` (sans quoi Playwright rejette le dialogue par défaut et la suppression n'a jamais lieu).
 
 ## Reset rapide entre runs (≈ 3s, sans prompt password)
 
