@@ -158,11 +158,11 @@ class UtilisateurCrudControllerTest extends TestCase
         $user->setActif(true);
         $user->setGroupeUtilisateur('default');
 
-        // current roles from DB = same as entity
-        $this->connection->method('fetchOne')->willReturnOnConsecutiveCalls(
-            json_encode(['ROLE_UTILISATEUR']), // select roles
-            'group-ulid', // select groupe_id
+        // current roles + actif from DB = same as entity soumise (aucun changement)
+        $this->connection->method('fetchAssociative')->willReturn(
+            ['roles' => json_encode(['ROLE_UTILISATEUR']), 'actif' => true]
         );
+        $this->connection->method('fetchOne')->willReturn('group-ulid'); // select groupe_id
 
         $this->roleManager->method('normalize')->willReturn(['ROLE_UTILISATEUR']);
         $this->detector->method('analyze')->willReturn([]);
@@ -186,16 +186,58 @@ class UtilisateurCrudControllerTest extends TestCase
         $user->setActif(true);
         $user->setGroupeUtilisateur('default');
 
-        // old roles from DB
-        $this->connection->method('fetchOne')->willReturnOnConsecutiveCalls(
-            json_encode(['ROLE_UTILISATEUR']),
-            'group-ulid',
+        // old roles from DB (actif inchangé)
+        $this->connection->method('fetchAssociative')->willReturn(
+            ['roles' => json_encode(['ROLE_UTILISATEUR']), 'actif' => true]
         );
+        $this->connection->method('fetchOne')->willReturn('group-ulid'); // select groupe_id
 
         $this->roleManager->method('normalize')->willReturn(['ROLE_COLLECTE']);
         $this->detector->method('analyze')->willReturn(['CHANGEMENT_MASSIF_ROLES']);
 
         $this->roleLogger->expects($this->once())->method('log');
+
+        $editor = new Utilisateur();
+        $editor->setCourriel('admin@x');
+        $editor->setRoles(['ROLE_INTERNAL']);
+        $this->tokenStorage->method('getToken')
+            ->willReturn(new UsernamePasswordToken($editor, 'main', ['ROLE_INTERNAL']));
+
+        $this->controller->updateEntity($this->em, $user);
+    }
+
+    public function testUpdateEntityLogsTrueOldActiveWhenOnlyActifChanged(): void
+    {
+        // Régression : $oldActive était auparavant lu sur $entityInstance (déjà lié
+        // au formulaire soumis, donc déjà à la NOUVELLE valeur), rendant oldActive
+        // toujours égal à newActive pour ce champ. Doit désormais venir d'un SELECT
+        // frais, comme les rôles.
+        $user = new Utilisateur();
+        $user->setCourriel('u@ma-moulinette.fr');
+        $user->setRoles(['ROLE_COLLECTE']);
+        $user->setActif(false); // valeur SOUMISE par le formulaire (désactivation)
+        $user->setGroupeUtilisateur('default');
+
+        // avant édition : actif=true en base, mêmes rôles
+        $this->connection->method('fetchAssociative')->willReturn(
+            ['roles' => json_encode(['ROLE_COLLECTE']), 'actif' => true]
+        );
+        $this->connection->method('fetchOne')->willReturn('group-ulid');
+
+        $this->roleManager->method('normalize')->willReturn(['ROLE_COLLECTE']);
+        $this->detector->method('analyze')->willReturn([]);
+
+        $this->roleLogger->expects($this->once())
+            ->method('log')
+            ->with(
+                $this->anything(),
+                $this->anything(),
+                $this->anything(),
+                $this->anything(),
+                true,  // oldActive : vraie valeur avant édition, pas la valeur soumise
+                false, // newActive
+                $this->anything(),
+            );
 
         $editor = new Utilisateur();
         $editor->setCourriel('admin@x');
