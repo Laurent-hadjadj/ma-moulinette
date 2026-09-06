@@ -55,6 +55,11 @@ test.describe('20 — Journal des rôles', () => {
   test.setTimeout(120_000);
 
   test('interne consulte, filtre, exporte et purge le journal des rôles', async ({ page }) => {
+    // Même piège que specs 10/19 : le footer fixe (.footer-fixed.footer-fixed-small)
+    // chevauche les boutons d'action (Archiver/Rapport PDF/Supprimer) à la
+    // hauteur de viewport par défaut de Playwright.
+    await page.setViewportSize({ width: 1280, height: 1400 });
+
     await login(page, USERS.interne);
 
     await test.step("1. Génère deux transitions réelles via l'UI EasyAdmin", async () => {
