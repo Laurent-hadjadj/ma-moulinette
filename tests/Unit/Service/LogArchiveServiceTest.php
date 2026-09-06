@@ -153,6 +153,30 @@ class LogArchiveServiceTest extends TestCase
         $this->assertSame('deprecation', $byName['deprecations-prod.log']);
     }
 
+    /**
+     * monolog.yaml écrit "request"/"messenger"/"deprecations" toujours sans
+     * suffixe d'environnement (chemin statique, jamais `%kernel.environment%`),
+     * et "app.log" (application, when@prod) sans tiret non plus. Ce sont les
+     * seuls noms que l'appli produit réellement pour ces 4 types — contrairement
+     * aux variantes "<prefix>-<env>.log" du test ci-dessus, qui ne
+     * correspondent à aucun fichier jamais généré en pratique.
+     */
+    public function testListLogsResolvesTypesForRealUnsuffixedFilenames(): void
+    {
+        $this->touch('app.log');
+        $this->touch('request.log');
+        $this->touch('messenger.log');
+        $this->touch('deprecations.log');
+
+        $logs = $this->service->listLogs();
+        $byName = array_column($logs, 'type', 'name');
+
+        $this->assertSame('application', $byName['app.log']);
+        $this->assertSame('request',     $byName['request.log']);
+        $this->assertSame('messenger',   $byName['messenger.log']);
+        $this->assertSame('deprecation', $byName['deprecations.log']);
+    }
+
     public function testListLogsResolvesEnvFromFilename(): void
     {
         $this->touch('prod.log');
