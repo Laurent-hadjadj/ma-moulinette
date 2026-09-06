@@ -501,6 +501,17 @@ class ProjetCosuiService
                 $render['modal_' . $key] = $value;
             }
         }
+
+        // Cas particulier : la donnée courante renomme 'nombre_hotspot' en
+        // simplement 'hotspot' (injectNotesActuelles()), mais reference()
+        // garde la clé 'initial_nombre_hotspot' — nécessaire telle quelle pour
+        // evolution_hotspot = variation(initial_nombre_hotspot, hotspot). La
+        // boucle générique ci-dessus produit donc 'modal_initial_nombre_hotspot',
+        // alors que le template de la modale attend 'modal_initial_hotspot'
+        // (bug trouvé en corrigeant le compteur Hotspot #hotspot-01).
+        if (array_key_exists('initial_nombre_hotspot', $nn)) {
+            $render['modal_initial_hotspot'] = $nn['initial_nombre_hotspot'];
+        }
     }
 
     /**
