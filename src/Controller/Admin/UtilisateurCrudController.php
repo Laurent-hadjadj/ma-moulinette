@@ -412,17 +412,20 @@ class UtilisateurCrudController extends AbstractCrudController
         $conn = $this->emm->getConnection();
 
         /** Récupération sécurisée */
-        // On récupère les rôles actuels de l’utilisateur depuis la base de données pour éviter les manipulations malveillantes
-        $result = $conn->fetchOne(
-            "SELECT roles FROM ma_moulinette.utilisateur WHERE courriel = :courriel LIMIT 1",
+        // On récupère les rôles ET le statut actif actuels de l'utilisateur depuis la base
+        // de données (pas depuis $entityInstance, qui reflète déjà les valeurs soumises par
+        // le formulaire à ce stade) pour éviter les manipulations malveillantes ET pour que
+        // le journal des rôles conserve les vraies valeurs "avant".
+        $result = $conn->fetchAssociative(
+            "SELECT roles, actif FROM ma_moulinette.utilisateur WHERE courriel = :courriel LIMIT 1",
             ['courriel' => $entityInstance->getCourriel()]
         );
 
         // Si l’utilisateur n’existe pas ou n’a pas de rôles, on considère qu’il n’a que ROLE_NONE
-        $currentRoles = json_decode($result, true) ?: [];
+        $currentRoles = json_decode($result['roles'] ?? '', true) ?: [];
 
         $oldRoles = $currentRoles;
-        $oldActive = $entityInstance->isActif();
+        $oldActive = (bool) ($result['actif'] ?? false);
 
         /** NORMALISATION CENTRALISÉE */
         $newRoles = $this->roleManager->normalize(
