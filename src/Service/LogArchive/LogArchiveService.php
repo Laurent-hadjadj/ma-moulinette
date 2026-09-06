@@ -228,10 +228,10 @@ class LogArchiveService
     private function resolveType(string $filename): string
     {
         return match (true) {
-            str_starts_with($filename, 'app-') => 'application',
-            str_starts_with($filename, 'request-') => 'request',
-            str_starts_with($filename, 'messenger-') => 'messenger',
-            str_starts_with($filename, 'deprecations-') => 'deprecation',
+            str_starts_with($filename, 'app-'), $filename === 'app.log' => 'application',
+            str_starts_with($filename, 'request-'), $filename === 'request.log' => 'request',
+            str_starts_with($filename, 'messenger-'), $filename === 'messenger.log' => 'messenger',
+            str_starts_with($filename, 'deprecations-'), $filename === 'deprecations.log' => 'deprecation',
             default => 'main',
         };
     }
