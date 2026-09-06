@@ -367,6 +367,11 @@ class HistoriqueRepositoryTest extends KernelTestCase
         // Assert
         $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
+
+        // Régression : menace_potentielle_totale doit être un alias AS nombre_hotspot
+        // (sans quoi ProjetCosuiService::traitement() retombe silencieusement sur le
+        // fallback `?? 0` — le compteur Hotspot #hotspot-01 affichait toujours 0).
+        $this->assertArrayHasKey('nombre_hotspot', $r['infos'][0], 'menace_potentielle_totale doit être aliasé AS nombre_hotspot');
     }
 
     public function testSelectHistoriqueProjetReference(): void
@@ -386,6 +391,9 @@ class HistoriqueRepositoryTest extends KernelTestCase
         // Assert
         $this->assertEquals(200, $r['code'], self::$erreurCode200);
         $this->assertEmpty($r['erreur'], $r['erreur']);
+
+        // Régression : voir testSelectHistoriqueProjetLast().
+        $this->assertArrayHasKey('nombre_hotspot', $r['reference'][0], 'menace_potentielle_totale doit être aliasé AS nombre_hotspot');
     }
 
     public function testSelectHistoriqueProjetFavori(): void
