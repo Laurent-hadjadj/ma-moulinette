@@ -1132,7 +1132,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         bug_blocker, bug_critical, bug_major,
                         vulnerability_blocker, vulnerability_critical, vulnerability_major,
                         code_smell_blocker, code_smell_critical, code_smell_major,
-                        menace_potentielle_totale, coverage, sqale_debt_ratio
+                        menace_potentielle_totale AS nombre_hotspot, coverage, sqale_debt_ratio
                 FROM ma_moulinette.historique
                 WHERE maven_key = :maven_key
                 ORDER BY date_version DESC LIMIT 1";
@@ -1168,7 +1168,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         bug_blocker, bug_critical, bug_major,
                         vulnerability_blocker, vulnerability_critical, vulnerability_major,
                         code_smell_blocker, code_smell_critical, code_smell_major,
-                        menace_potentielle_totale, coverage, sqale_debt_ratio
+                        menace_potentielle_totale AS nombre_hotspot, coverage, sqale_debt_ratio
                 FROM ma_moulinette.historique
                 WHERE maven_key=:maven_key AND initial=true";
 
