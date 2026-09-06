@@ -143,6 +143,29 @@ Date:   Mon Jul 13 10:15:22 2026 +0200
 
 `HEAD` signale votre position courante. Les branches avec le préfixe `origin/` sont les branches distantes ; celles sans préfixe sont vos branches locales.
 
+### 🔤 Accents mal affichés sous Windows (é, à, ê...)
+
+Sous Windows, `git log` (sans redirection) passe par le pager `less.exe` fourni avec Git for Windows. Si la variable d'environnement `LESSCHARSET` n'est pas définie, `less` ne sait pas que le flux est en UTF-8 et affiche chaque caractère accentué sous forme d'octets bruts, par exemple :
+
+```text
+Doc: Mise <C3><A0> jour de la documentation
+```
+
+Pour vérifier que le problème vient bien du pager, comparez avec :
+
+```powershell
+git --no-pager log -5 --format="%s"
+```
+
+Si les accents s'affichent correctement sans le pager, les messages de commit sont sains — seul l'affichage est en cause. Correction définitive (variable d'environnement utilisateur, à définir une seule fois) :
+
+```powershell
+setx LESSCHARSET utf-8
+```
+
+!!! note
+    `setx` ne s'applique qu'aux nouvelles fenêtres PowerShell/cmd ouvertes après la commande ; fermez et rouvrez votre terminal pour que le changement prenne effet.
+
 -**-- FIN --**-
 
 [Retour au menu principal](/index.html)
