@@ -81,6 +81,17 @@ php bin/console assets:install --symlink --relative
     Sans `public/bundles/easyadmin/`, le navigateur réclame des fichiers introuvables comme `http://localhost:8000/bundles/easyadmin/app.db37a8e3.css` (404) — la page `/admin` (et toutes les pages EasyAdmin : CRUD utilisateurs, groupes, portefeuilles…) s'affiche alors sans mise en forme et avec des erreurs JS bloquantes, ce qui peut ressembler à tort à un problème de cache navigateur ou d'asset-mapper.
     Sur Windows sans privilèges pour les liens symboliques, `assets:install` bascule automatiquement sur une copie des fichiers (`--symlink` échoue silencieusement en `copy`, sans erreur bloquante) — c'est normal, il suffit de relancer la commande après chaque mise à jour du bundle.
 
+## 🔑 Fichier JS local `secrets.local.js`
+
+Trois entrées JS (`accueil/index-accueil.js`, `profil/index-profil.js`, `projet/peinture.js`) importent dynamiquement `assets/js/common/secrets.local.js`, un fichier personnel non commité (`**/secrets.local.js` dans `.gitignore`). Après un premier clone, copier le gabarit fourni :
+
+```bash
+cp assets/js/common/secrets.local.js.dist assets/js/common/secrets.local.js
+```
+
+!!! caution "⚠️ Symptôme si oublié : erreur 500 sur toutes les pages"
+    Le code JS gère bien l'absence de ce module au chargement dans le navigateur (`.catch()`), mais Symfony **AssetMapper** analyse statiquement l'`importmap` au rendu de la page côté serveur et lève une exception fatale si le fichier n'existe pas physiquement sur le disque — indépendamment de ce `.catch()`. Sans ce fichier, toute page utilisant le layout de base (donc la quasi-totalité de l'application, y compris `tests/Integration`) répond en 500.
+
 ## 🧪 Base de données de développement
 
 Voir [Architecture — base de données](../architecture/architecture-base-de-donnees.md) pour le détail du schéma et [Migration PostgreSQL](guide-migration.md) pour la procédure d'installation complète d'un nouvel environnement.
