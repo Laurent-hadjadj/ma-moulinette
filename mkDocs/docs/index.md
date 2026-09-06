@@ -77,14 +77,15 @@ La **version 2.0.0** est actuellement en développement et apporte de nombreuses
 
 ### 📊 Qualité du code
 
-Relevé du 26/07/2026 — voir [Tests unitaires et d'intégration](ma-moulinette/developpement/test-unitaire.md) pour le détail et la procédure de mise à jour.
+Relevé du 06/09/2026 — voir [Tests unitaires et d'intégration](ma-moulinette/developpement/test-unitaire.md) pour le détail et la procédure de mise à jour.
 
 | Indicateur | Valeur |
 | --- | --- |
-| Tests unitaires | **3 135** (8 649 assertions) |
-| Tests d'intégration | **602** (1 351 assertions, 2 skips volontaires) |
-| **Total** | **3 737** tests / **10 000** assertions |
-| Couverture de code (lignes) | **80,01 %** |
+| Tests unitaires | **3 138** (8 670 assertions) |
+| Tests d'intégration | **602** (1 353 assertions, 2 skips volontaires) |
+| **Total** | **3 740** tests / **10 023** assertions |
+| Tests End-to-End | **22** suites Playwright (voir [Tests End-to-End](ma-moulinette/developpement/test-e2e.md)) |
+| Couverture de code (lignes) | **80,03 %** |
 | Analyse statique | **PHPStan niveau 6** (150 erreurs résiduelles) |
 
 ### 🧱 Fonctionnalités en cours de finalisation
