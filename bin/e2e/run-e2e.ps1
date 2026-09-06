@@ -8,13 +8,16 @@
 #   .\bin\e2e\run-e2e.ps1 -SkipRebuild          # garder la DB existante (debug)
 #   .\bin\e2e\run-e2e.ps1 -SkipServer           # ne pas demarrer Symfony serve (deja up ailleurs)
 #   .\bin\e2e\run-e2e.ps1 -Port 8080            # port custom (defaut 8000)
+#   .\bin\e2e\run-e2e.ps1 -UseBuiltinServer     # secours php -S si symfony serve échoue
+#                                                 (verrou transitoire log symfony-cli)
 #
 # Workflow :
 #   1. Rebuild DB ma_moulinette (sauf -SkipRebuild)
 #   2. set APP_ENV=test puis demarre Symfony serve en background
+#      (ou php -S + bin/e2e/test-router.php si -UseBuiltinServer)
 #   3. Attend que le serveur reponde sur /login
 #   4. Lance npx playwright test depuis tests/e2e/
-#   5. Stoppe Symfony serve a la fin (meme en cas d'echec)
+#   5. Stoppe le serveur a la fin (meme en cas d'echec)
 # ==============================================================================
 
 [CmdletBinding()]
@@ -24,7 +27,14 @@ param(
     [switch] $Headed,
     [switch] $SkipRebuild,
     [switch] $SkipServer,
-    [int]    $ServerWaitSec = 30
+    [int]    $ServerWaitSec = 30,
+    # Secours quand `symfony serve --daemon` echoue (ex. verrou transitoire sur
+    # le log symfony-cli, deja observe sous Windows : "log\<hash>.log: The
+    # process cannot access the file because it is being used by another
+    # process."). Utilise le serveur web intégré de PHP + bin/e2e/test-router.php
+    # (obligatoire : sans lui, APP_ENV ne serait pas resolu correctement par
+    # Symfony sous php -S — voir l'en-tête de ce script pour le detail).
+    [switch] $UseBuiltinServer
 )
 
 $ErrorActionPreference = "Stop"
@@ -37,8 +47,9 @@ $OutputEncoding           = [System.Text.Encoding]::UTF8
 $projectRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
 Push-Location $projectRoot
 
-$script:StartedDaemon = $false
-$exitCode             = 0
+$script:StartedDaemon       = $false
+$script:BuiltinServerProc   = $null
+$exitCode                   = 0
 
 try {
     Write-Host "================================================================" -ForegroundColor Cyan
@@ -49,6 +60,7 @@ try {
     Write-Host " Headed      : $Headed"
     Write-Host " SkipRebuild : $SkipRebuild"
     Write-Host " SkipServer  : $SkipServer"
+    Write-Host " Serveur     : $(if ($UseBuiltinServer) { 'php -S (secours)' } else { 'symfony serve' })"
     Write-Host "----------------------------------------------------------------"
 
     # ----------------------------------------------------------------------------
@@ -128,46 +140,80 @@ Options :
 "@
             }
 
-            Write-Host "[2/4] Demarrage Symfony serve sur $baseUrl (APP_ENV=test, daemon)..." -ForegroundColor Yellow
+            if ($UseBuiltinServer) {
+                # ------------------------------------------------------------
+                # Secours : serveur web intégré de PHP (php -S), pilote via
+                # bin/e2e/test-router.php.
+                #
+                # OBLIGATOIRE d'utiliser ce routeur, pas public/index.php
+                # directement : php -S ne recopie PAS les variables
+                # d'environnement du shell dans $_SERVER/$_ENV (contrairement
+                # au SAPI CLI) — seul getenv() les voit. Symfony resout
+                # APP_ENV via $_SERVER, jamais via getenv() : sans le pont du
+                # routeur, Symfony chargerait quand meme .env/.env.local
+                # (APP_ENV=dev) malgré `$env:APP_ENV='test'`, et se
+                # connecterait a la VRAIE base de dev au lieu de
+                # ma_moulinette_test.
+                # ------------------------------------------------------------
+                Write-Host "[2/4] Demarrage serveur PHP integre sur $baseUrl (APP_ENV=test, secours)..." -ForegroundColor Yellow
 
-            # Nettoyage des php-cgi orphelins d'une session precedente. Sur Windows,
-            # quand on tue brutalement symfony serve, son worker php-cgi peut survivre
-            # et garder le fichier .symfony5/log/<hash>.log verrouille -> daemon refuse
-            # de demarrer ("file is being used by another process").
-            $orphans = Get-Process php-cgi -ErrorAction SilentlyContinue
-            if ($orphans) {
-                Write-Host "      Nettoyage de $($orphans.Count) php-cgi orphelin(s)..." -ForegroundColor DarkYellow
-                $orphans | Stop-Process -Force -ErrorAction SilentlyContinue
-                Start-Sleep -Milliseconds 500
-            }
-
-            # symfony serve --daemon = mode daemon gere par Symfony CLI lui-meme.
-            # On capture la sortie pour pouvoir la dump en cas d'echec.
-            # NB : PS 5.1 wrap stderr en ErrorRecord avec 2>&1 + ErrorActionPreference=Stop
-            #      -> on bascule en Continue le temps de la capture.
-            $prevErrorAction        = $ErrorActionPreference
-            $ErrorActionPreference  = "Continue"
-            $env:APP_ENV            = "test"
-            try {
-                $serveOutput = & symfony serve --daemon --no-tls --port=$Port 2>&1
-                $exitServe   = $LASTEXITCODE
-            } finally {
-                $ErrorActionPreference = $prevErrorAction
-                Remove-Item Env:\APP_ENV -ErrorAction SilentlyContinue
-            }
-
-            if ($exitServe -ne 0) {
-                Write-Host "      Output symfony :" -ForegroundColor Red
-                if ($serveOutput) {
-                    $serveOutput | ForEach-Object { Write-Host "        $_" -ForegroundColor DarkRed }
-                } else {
-                    Write-Host "        (aucune sortie)" -ForegroundColor DarkRed
+                $env:APP_ENV = "test"
+                try {
+                    $script:BuiltinServerProc = Start-Process -FilePath "php" `
+                        -ArgumentList "-S", "127.0.0.1:$Port", "-t", "public", "bin\e2e\test-router.php" `
+                        -WorkingDirectory $projectRoot `
+                        -WindowStyle Hidden -PassThru
+                } finally {
+                    Remove-Item Env:\APP_ENV -ErrorAction SilentlyContinue
                 }
-                throw "symfony serve --daemon a echoue (exit $exitServe)"
-            }
+            } else {
+                Write-Host "[2/4] Demarrage Symfony serve sur $baseUrl (APP_ENV=test, daemon)..." -ForegroundColor Yellow
 
-            # Marqueur pour stopper le daemon en finally (uniquement si on l'a demarre)
-            $script:StartedDaemon = $true
+                # Nettoyage des php-cgi orphelins d'une session precedente. Sur Windows,
+                # quand on tue brutalement symfony serve, son worker php-cgi peut survivre
+                # et garder le fichier .symfony5/log/<hash>.log verrouille -> daemon refuse
+                # de demarrer ("file is being used by another process").
+                $orphans = Get-Process php-cgi -ErrorAction SilentlyContinue
+                if ($orphans) {
+                    Write-Host "      Nettoyage de $($orphans.Count) php-cgi orphelin(s)..." -ForegroundColor DarkYellow
+                    $orphans | Stop-Process -Force -ErrorAction SilentlyContinue
+                    Start-Sleep -Milliseconds 500
+                }
+
+                # symfony serve --daemon = mode daemon gere par Symfony CLI lui-meme.
+                # On capture la sortie pour pouvoir la dump en cas d'echec.
+                # NB : PS 5.1 wrap stderr en ErrorRecord avec 2>&1 + ErrorActionPreference=Stop
+                #      -> on bascule en Continue le temps de la capture.
+                #
+                # Si cette etape échoué avec "log\<hash>.log: The process cannot
+                # access the file because it is being used by another process."
+                # (verrou transitoire cote symfony-cli, deja observe sous Windows,
+                # indépendant de tout process applicatif) : relancer avec
+                # -UseBuiltinServer pour contourner via php -S.
+                $prevErrorAction        = $ErrorActionPreference
+                $ErrorActionPreference  = "Continue"
+                $env:APP_ENV            = "test"
+                try {
+                    $serveOutput = & symfony serve --daemon --no-tls --port=$Port 2>&1
+                    $exitServe   = $LASTEXITCODE
+                } finally {
+                    $ErrorActionPreference = $prevErrorAction
+                    Remove-Item Env:\APP_ENV -ErrorAction SilentlyContinue
+                }
+
+                if ($exitServe -ne 0) {
+                    Write-Host "      Output symfony :" -ForegroundColor Red
+                    if ($serveOutput) {
+                        $serveOutput | ForEach-Object { Write-Host "        $_" -ForegroundColor DarkRed }
+                    } else {
+                        Write-Host "        (aucune sortie)" -ForegroundColor DarkRed
+                    }
+                    throw "symfony serve --daemon a echoue (exit $exitServe). Essayez -UseBuiltinServer en secours."
+                }
+
+                # Marqueur pour stopper le daemon en finally (uniquement si on l'a demarre)
+                $script:StartedDaemon = $true
+            }
 
             # Attente que le port soit ouvert
             Write-Host "      Attente du serveur (max ${ServerWaitSec}s)..." -ForegroundColor DarkGray
@@ -179,7 +225,7 @@ Options :
             }
 
             if (-not $ready) {
-                throw "Symfony serve injoignable sur port $Port apres ${ServerWaitSec}s"
+                throw "Serveur injoignable sur port $Port apres ${ServerWaitSec}s"
             }
             Write-Host "      OK serveur pret." -ForegroundColor Green
         }
@@ -251,6 +297,15 @@ finally {
             & symfony server:stop 2>&1 | Out-Null
         } catch {
             Write-Host "  (warning : symfony server:stop a echoue)" -ForegroundColor DarkYellow
+        }
+    }
+    if ($script:BuiltinServerProc) {
+        Write-Host ""
+        Write-Host "Arret serveur PHP integre (secours)..." -ForegroundColor DarkGray
+        try {
+            Stop-Process -Id $script:BuiltinServerProc.Id -Force -ErrorAction SilentlyContinue
+        } catch {
+            Write-Host "  (warning : arret du serveur PHP integre a echoue)" -ForegroundColor DarkYellow
         }
     }
     Pop-Location
