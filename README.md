@@ -97,7 +97,7 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 
 Aujourd’hui, **Ma-Moulinette** est une application stable et évolutive, utilisée dans différents contextes (formation, évaluation continue, démonstration).
 
-La **version 2.0.0** est actuellement en développement et apporte de nombreuses améliorations.
+La **version 2.0.0** est publiée et apporte de nombreuses améliorations.
 
 ### ✅ Fonctionnalités disponibles
 

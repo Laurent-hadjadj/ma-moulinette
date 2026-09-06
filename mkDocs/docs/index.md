@@ -5,7 +5,7 @@
 ┃┃┃┃┃┃━━┃┃━━┃┗━┛┃
 ┃┗┛┗┛┃━━┃┃━━┃┏━━┛
 ┗┓┏┓┏┛━┏┫┣┓━┃┃
-━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.0.0 — Work in Progress (cible August 2026) !
+━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.0.0 Release on September 2026 !
 
 **Ma-Moulinette** est une application web open-source dont l'objectif est de **simplifier la consultation et le suivi des indicateurs de qualité logicielle** collectés depuis un serveur **SonarQube**.
 
@@ -56,7 +56,7 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 
 Aujourd’hui, **Ma-Moulinette** est une application stable et évolutive, utilisée dans différents contextes (formation, évaluation continue, démonstration).
 
-La **version 2.0.0** est actuellement en développement et apporte de nombreuses améliorations.
+La **version 2.0.0** est publiée et apporte de nombreuses améliorations.
 
 ### ✅ Fonctionnalités disponibles
 

@@ -4,7 +4,7 @@ Toutes les évolutions notables de Ma-Moulinette sont documentées dans ce fichi
 
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), et ce projet adhère (au mieux, l'historique antérieur à cette convention restant dans son style d'origine) au [Semantic Versioning](https://semver.org/lang/fr/).
 
-## [Non publié] — développement de la v2.0.0
+## [2.0.0] - 2026-09-06
 
 Reprise complète du projet initial (Symfony 5.4 / SQLite) vers une architecture Symfony 8 / PostgreSQL 18. Périmètre couvert depuis `v1.6.0`.
 
