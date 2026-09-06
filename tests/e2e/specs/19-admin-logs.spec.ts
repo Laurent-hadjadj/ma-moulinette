@@ -30,6 +30,12 @@ test.describe('19 — Admin Logs', () => {
   });
 
   test('interne consulte, filtre et télécharge une sélection de logs', async ({ page }) => {
+    // Le footer fixe (.footer-fixed.footer-fixed-small) chevauche
+    // #bouton-download-zip à la hauteur de viewport par défaut de Playwright
+    // — même piège que le spec 10 (Actuator). On agrandit le viewport avant
+    // toute interaction avec le formulaire.
+    await page.setViewportSize({ width: 1280, height: 1400 });
+
     await login(page, USERS.interne);
     await page.goto('/admin/logs');
     await expect(page).toHaveURL(/\/admin\/logs$/);
