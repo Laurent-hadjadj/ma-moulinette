@@ -273,50 +273,6 @@ class BatchManuelController extends AbstractController
             self::$traitementManuel
         );
 
-        $this->em->persist($batchExecution);
-
-        $debut_traitement = new \DateTime('now', new \DateTimeZone(self::$europeParis));
-
-        /** On met à jour la table des traitements */
-        $map = [
-            'debut_traitement' => $debut_traitement->format(self::$dateFormat),
-            'fin_traitement' => null,
-            'success' => null,
-            'in_progress' => true,
-            'pending' => null,
-            'traitement_id' => $data->traitement_id
-        ];
-
-        $update = $batchTraitementRepos->updateBatchTraitement($map);
-
-        if ($update['code'] !== 200) {
-            $this->logger->error(self::$loggerUpdateBatchTraitement, [
-                'code' => $update['code'],
-                'message' => $update['message'] ?? self::$noMessage,
-                'erreur' => $update['erreur'] ?? self::$noError,
-                'id' => $data->projet_id ?? 'inconnu',
-                'wip' => 'in_progress = true'
-            ]);
-
-            return new JsonResponse([
-                'code' => $update['code'],
-                'type' => 'error',
-                'message' => "Il n'est pas possible de mettre à jour le traitement (Erreur {$update['code']}).",
-                'erreur' =>  $update['erreur'] ?? self::$noError
-            ], Response::HTTP_OK);
-        }
-
-        /** =============================
-         *  Création du job principal
-         *  ============================= */
-        $batchExecution = new BatchExecution(
-            'Collecte du ' . date('d/m/Y H:i'),
-            $execution_id,
-            Ulid::fromString($data->traitement_id),
-            $utilisateur_collecte,
-            self::$traitementManuel
-        );
-
         // On enregistre le job immédiatement pour obtenir sa PK (id int)
         $this->em->persist($batchExecution);
 
