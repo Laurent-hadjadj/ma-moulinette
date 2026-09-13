@@ -1,7 +1,7 @@
 {# On reconstruit l'URL de la page sans le contexte #}
 {% set absolute_url = app.request.scheme ~ '://' ~ app.request.host %}
 {% if app.request.port != 80 and app.request.port != 443 %}
-    {% set absolute_url = absolute_url ~ ':' ~ app.request.port %}
+{% set absolute_url = absolute_url ~ ':' ~ app.request.port %}
 {% endif %}
 
 {# On utilise plus x-Subpath-Location: marche pas #}

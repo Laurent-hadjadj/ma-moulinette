@@ -9,26 +9,26 @@
       <tr>
         <th scope="col"></th>
         {% if suivi is not empty %}
-          {% for i in 0..suivi|length-1 %}
-            {% if suivi[i]['initial']==1 %}
-              {% set reference="reference" %}
-            {% else %}
-              {% set reference="null" %}
-            {% endif %}
-            {# MODIF 2026-05-06 : marqueur visuel
+        {% for i in 0..suivi|length-1 %}
+        {% if suivi[i]['initial']==1 %}
+        {% set reference="reference" %}
+        {% else %}
+        {% set reference="null" %}
+        {% endif %}
+        {# MODIF 2026-05-06 : marqueur visuel
               sous chaque version. (reconstitué) en orange = donnees partielles via
               SonarQube search_history ; (collecte) neutre = donnees completes via
               BatchCollecte/Peinture. Le label collecte sert aussi a aligner verticalement
-              les en-tetes (sinon le `<br>` du REBUILD décale les colonnes). #}
-            <th scope="col" class="open-sans text-right {{reference}}">
-              {{suivi[i]['version']}}
-              {% if suivi[i]['mode_collecte'] == 'REBUILD' %}
-                <br><small class="text-orange open-sans">(reconstitué)</small>
-              {% else %}
-                <br><small class="text-noir open-sans">(collecte)</small>
-              {% endif %}
-            </th>
-          {% endfor %}
+              les en-têtes (sinon le `<br>` du REBUILD décale les colonnes). #}
+        <th scope="col" class="open-sans text-right {{reference}}">
+          {{suivi[i]['version']}}
+          {% if suivi[i]['mode_collecte'] == 'REBUILD' %}
+          <br><small class="text-orange open-sans">(reconstitué)</small>
+          {% else %}
+          <br><small class="text-noir open-sans">(collecte)</small>
+          {% endif %}
+        </th>
+        {% endfor %}
         {% endif %}
       </tr>
     </thead>
@@ -37,11 +37,11 @@
       <tr class="open-sans">
         <td class="text-left text-noir">Date</td>
         {% if suivi is not empty %}
-          {% for i in 0..suivi|length-1 %}
-            <td class="text-right">
-              <span>{{suivi[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
-            </td>
-          {% endfor %}
+        {% for i in 0..suivi|length-1 %}
+        <td class="text-right">
+          <span>{{suivi[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
+        </td>
+        {% endfor %}
         {% endif %}
       </tr>
 
@@ -49,17 +49,17 @@
       <tr class="open-sans">
         <td class="text-left text-noir">Quality Gate</td>
         {% if suivi is not empty %}
-          {% for i in 0..suivi|length-1 %}
-            <td class="text-right">
-              {% if suivi[i]['alert_status'] is not null and suivi[i]['alert_status']|trim != '' %}
-                {% set qg = suivi[i]['alert_status']|upper %}
-                {% set qgClass = qg == 'OK' ? 'ok' : (qg == 'WARN' ? 'warn' : 'error') %}
-                <span class="qg-{{qgClass}}">{{qg}}</span>
-              {% else %}
-                <span>&nbsp;-&nbsp;</span>
-              {% endif %}
-            </td>
-          {% endfor %}
+        {% for i in 0..suivi|length-1 %}
+        <td class="text-right">
+          {% if suivi[i]['alert_status'] is not null and suivi[i]['alert_status']|trim != '' %}
+          {% set qg = suivi[i]['alert_status']|upper %}
+          {% set qgClass = qg == 'OK' ? 'ok' : (qg == 'WARN' ? 'warn' : 'error') %}
+          <span class="qg-{{qgClass}}">{{qg}}</span>
+          {% else %}
+          <span>&nbsp;-&nbsp;</span>
+          {% endif %}
+        </td>
+        {% endfor %}
         {% endif %}
       </tr>
 
@@ -69,21 +69,21 @@
       <tr class="open-sans">
         <td class="text-left text-noir">Fiabilité <small>(legacy / S10)</small></td>
         {% if suivi is not empty %}
-          {% for i in 0..suivi|length-1 %}
-            <td class="text-right">
-              {% if suivi[i]['s10_reliability'] %}
-                <span>–</span>
-                <span>/</span>
-                <span class="note note-{{suivi[i]['s10_reliability']|lower}}">{{suivi[i]['s10_reliability']}}</span>
-              {% else %}
-                {% if suivi[i]['reliability'] %}
-                  <span class="note note-{{suivi[i]['reliability']|lower}}">{{suivi[i]['reliability']}}</span>
-                {% else %}<span>–</span>{% endif %}
-                <span>/</span>
-                <span>–</span>
-              {% endif %}
-            </td>
-          {% endfor %}
+        {% for i in 0..suivi|length-1 %}
+        <td class="text-right">
+          {% if suivi[i]['s10_reliability'] %}
+          <span>–</span>
+          <span>/</span>
+          <span class="note note-{{suivi[i]['s10_reliability']|lower}}">{{suivi[i]['s10_reliability']}}</span>
+          {% else %}
+          {% if suivi[i]['reliability'] %}
+          <span class="note note-{{suivi[i]['reliability']|lower}}">{{suivi[i]['reliability']}}</span>
+          {% else %}<span>–</span>{% endif %}
+          <span>/</span>
+          <span>–</span>
+          {% endif %}
+        </td>
+        {% endfor %}
         {% endif %}
       </tr>
 
@@ -92,21 +92,21 @@
       <tr class="open-sans">
         <td class="text-left text-noir">Sécurité <small>(legacy / S10)</small></td>
         {% if suivi is not empty %}
-          {% for i in 0..suivi|length-1 %}
-            <td class="text-right">
-              {% if suivi[i]['s10_security'] %}
-                <span>–</span>
-                <span>/</span>
-                <span class="note note-{{suivi[i]['s10_security']|lower}}">{{suivi[i]['s10_security']}}</span>
-              {% else %}
-                {% if suivi[i]['security'] %}
-                  <span class="note note-{{suivi[i]['security']|lower}}">{{suivi[i]['security']}}</span>
-                {% else %}<span>–</span>{% endif %}
-                <span>/</span>
-                <span>–</span>
-              {% endif %}
-            </td>
-          {% endfor %}
+        {% for i in 0..suivi|length-1 %}
+        <td class="text-right">
+          {% if suivi[i]['s10_security'] %}
+          <span>–</span>
+          <span>/</span>
+          <span class="note note-{{suivi[i]['s10_security']|lower}}">{{suivi[i]['s10_security']}}</span>
+          {% else %}
+          {% if suivi[i]['security'] %}
+          <span class="note note-{{suivi[i]['security']|lower}}">{{suivi[i]['security']}}</span>
+          {% else %}<span>–</span>{% endif %}
+          <span>/</span>
+          <span>–</span>
+          {% endif %}
+        </td>
+        {% endfor %}
         {% endif %}
       </tr>
 
@@ -115,21 +115,21 @@
       <tr class="open-sans">
         <td class="text-left text-noir">Maintenabilité <small>(legacy / S10)</small></td>
         {% if suivi is not empty %}
-          {% for i in 0..suivi|length-1 %}
-            <td class="text-right">
-              {% if suivi[i]['s10_maintainability'] %}
-                <span>–</span>
-                <span>/</span>
-                <span class="note note-{{suivi[i]['s10_maintainability']|lower}}">{{suivi[i]['s10_maintainability']}}</span>
-              {% else %}
-                {% if suivi[i]['maintainability'] %}
-                  <span class="note note-{{suivi[i]['maintainability']|lower}}">{{suivi[i]['maintainability']}}</span>
-                {% else %}<span>–</span>{% endif %}
-                <span>/</span>
-                <span>–</span>
-              {% endif %}
-            </td>
-          {% endfor %}
+        {% for i in 0..suivi|length-1 %}
+        <td class="text-right">
+          {% if suivi[i]['s10_maintainability'] %}
+          <span>–</span>
+          <span>/</span>
+          <span class="note note-{{suivi[i]['s10_maintainability']|lower}}">{{suivi[i]['s10_maintainability']}}</span>
+          {% else %}
+          {% if suivi[i]['maintainability'] %}
+          <span class="note note-{{suivi[i]['maintainability']|lower}}">{{suivi[i]['maintainability']}}</span>
+          {% else %}<span>–</span>{% endif %}
+          <span>/</span>
+          <span>–</span>
+          {% endif %}
+        </td>
+        {% endfor %}
         {% endif %}
       </tr>
 
@@ -137,13 +137,13 @@
       <tr class="open-sans">
         <td class="text-left text-noir">Review Hotspots</td>
         {% if suivi is not empty %}
-          {% for i in 0..suivi|length-1 %}
-            <td class="text-right">
-              {% if suivi[i]['note_hotspot'] %}
-                <span class="note note-{{suivi[i]['note_hotspot']|lower}}">{{suivi[i]['note_hotspot']}}</span>
-              {% else %}<span>–</span>{% endif %}
-            </td>
-          {% endfor %}
+        {% for i in 0..suivi|length-1 %}
+        <td class="text-right">
+          {% if suivi[i]['note_hotspot'] %}
+          <span class="note note-{{suivi[i]['note_hotspot']|lower}}">{{suivi[i]['note_hotspot']}}</span>
+          {% else %}<span>–</span>{% endif %}
+        </td>
+        {% endfor %}
         {% endif %}
       </tr>
 
@@ -151,13 +151,13 @@
       <tr class="open-sans">
         <td class="text-left text-noir">Commentaires</td>
         {% if suivi is not empty %}
-          {% for i in 0..suivi|length-1 %}
-            <td class="text-right">
-              {% if suivi[i]['note_comment'] %}
-                <span class="note note-{{suivi[i]['note_comment']|lower}}">{{suivi[i]['note_comment']}}</span>
-              {% else %}<span>–</span>{% endif %}
-            </td>
-          {% endfor %}
+        {% for i in 0..suivi|length-1 %}
+        <td class="text-right">
+          {% if suivi[i]['note_comment'] %}
+          <span class="note note-{{suivi[i]['note_comment']|lower}}">{{suivi[i]['note_comment']}}</span>
+          {% else %}<span>–</span>{% endif %}
+        </td>
+        {% endfor %}
         {% endif %}
       </tr>
 
@@ -165,13 +165,13 @@
       <tr class="open-sans">
         <td class="text-left text-noir">Complexité cyclomatique</td>
         {% if suivi is not empty %}
-          {% for i in 0..suivi|length-1 %}
-            <td class="text-right">
-              {% if suivi[i]['note_complexity'] %}
-                <span class="note note-{{suivi[i]['note_complexity']|lower}}">{{suivi[i]['note_complexity']}}</span>
-              {% else %}<span>–</span>{% endif %}
-            </td>
-          {% endfor %}
+        {% for i in 0..suivi|length-1 %}
+        <td class="text-right">
+          {% if suivi[i]['note_complexity'] %}
+          <span class="note note-{{suivi[i]['note_complexity']|lower}}">{{suivi[i]['note_complexity']}}</span>
+          {% else %}<span>–</span>{% endif %}
+        </td>
+        {% endfor %}
         {% endif %}
       </tr>
 
@@ -179,13 +179,13 @@
       <tr class="open-sans">
         <td class="text-left text-noir">Complexité cognitive</td>
         {% if suivi is not empty %}
-          {% for i in 0..suivi|length-1 %}
-            <td class="text-right">
-              {% if suivi[i]['note_cognitive'] %}
-                <span class="note note-{{suivi[i]['note_cognitive']|lower}}">{{suivi[i]['note_cognitive']}}</span>
-              {% else %}<span>–</span>{% endif %}
-            </td>
-          {% endfor %}
+        {% for i in 0..suivi|length-1 %}
+        <td class="text-right">
+          {% if suivi[i]['note_cognitive'] %}
+          <span class="note note-{{suivi[i]['note_cognitive']|lower}}">{{suivi[i]['note_cognitive']}}</span>
+          {% else %}<span>–</span>{% endif %}
+        </td>
+        {% endfor %}
         {% endif %}
       </tr>
     </tbody>

@@ -1,4 +1,4 @@
-﻿{% set title = 'OWASP Dependency-Check - KPIs' %}
+{% set title = 'OWASP Dependency-Check - KPIs' %}
 {% set description = 'Ma Moulinette - KPIs et pilotage SLA du module DependencyCheck.' %}
 {% set bottom = 'footer-fixed' %}
 
@@ -17,7 +17,8 @@ https://github.com/Laurent-hadjadj/ma-moulinette
 © 2024 - CC BY-SA-NC 4.0
 -->
 
-<html lang="fr">
+<html lang="fr" dir="ltr">
+
     <head>
         <title>{{ title }}</title>
         {{ include('head.html.twig') }}
@@ -55,16 +56,12 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             </p>
 
             <div class="cell shrink">
-                <a id="bouton-ouvrir-dc-dashboard"
-                    href="{{ path('dc_dashboard') }}"
-                    class="button open-sans focus-dark-light"
-                    title="Vue agrégée cross-projets">
+                <a id="bouton-ouvrir-dc-dashboard" href="{{ path('dc_dashboard') }}"
+                    class="button open-sans focus-dark-light" title="Vue agrégée cross-projets">
                     <span aria-hidden="true">📊</span> Dashboard
                 </a>
-                <a id="bouton-ouvrir-dc-mutualisables"
-                    href="{{ path('dc_mutualisables') }}"
-                    class="button open-sans focus-dark-light"
-                    title="Liste complète des dépendances mutualisables">
+                <a id="bouton-ouvrir-dc-mutualisables" href="{{ path('dc_mutualisables') }}"
+                    class="button open-sans focus-dark-light" title="Liste complète des dépendances mutualisables">
                     <span aria-hidden="true">🔗</span> Mutualisables
                 </a>
             </div>
@@ -84,16 +81,24 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             {% else %}
                 <div class="callout alert-callout-border info margin-bottom-1">
                     <p class="open-sans font-size-085 margin-bottom-0">
-                        <span aria-hidden="true">ℹ️</span> <strong>Méthodo du score sécu (0 = parc à risque, 100 = parc sain)</strong> :
-                        <code>Score = 100 − Σ&nbsp;(poids[sév] × min(nb_CVE[sév], plafond[sév]))</code>, capé à 0.
-                        <br>
-                        Pondérations :
-                        {% for sev, w in score_secu_rule.weights %}
-                            <span class="badge-level {{ sev|lower }}">{{ sev }}</span> −{{ w|number_format(w == w|round ? 0 : 1, ',', ' ') }}/CVE (plafond {{ score_secu_rule.caps[sev] }} CVE){% if not loop.last %},{% endif %}
-                        {% endfor %}
-                        .
-                        <br>
-                        <span class="text-muted">Pénalité max cumulée si toutes les sévérités atteignent leur plafond : {{ score_secu_rule.penalty_max|number_format(0, ',', ' ') }} (capée à 100 = score plancher 0). Formule modifiable dans <code>config/packages/dc_remediation.yaml</code>.</span>
+                        <span aria-hidden="true">ℹ️</span> <strong>Méthodo du score sécu (0 = parc à risque, 100 = parc
+                    sain)</strong> :
+                    <code>Score = 100 − Σ&nbsp;(poids[sév] × min(nb_CVE[sév], plafond[sév]))</code>, capé à 0.
+                    <br>
+                    Pondérations :
+                    {% for sev, w in score_secu_rule.weights %}
+                        <span class="badge-level {{ sev|lower }}">{{ sev }}</span>
+                        −{{ w|number_format(w == w|round ? 0 : 1, ',', ' ') }}/CVE (plafond {{ score_secu_rule.caps[sev] }}
+                        CVE)
+                        {% if not loop.last %}
+                            ,
+                        {% endif %}
+                    {% endfor %}
+                    .
+                    <br>
+                    <span class="text-muted">Pénalité max cumulée si toutes les sévérités atteignent leur plafond :
+                        {{ score_secu_rule.penalty_max|number_format(0, ',', ' ') }} (capée à 100 = score plancher 0).
+                        Formule modifiable dans <code>config/packages/dc_remediation.yaml</code>.</span>
                     </p>
                 </div>
 
@@ -103,21 +108,26 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                         <div class="callout alert-callout-border secondary" style="flex: 1 1 auto;">
                             <p class="open-sans"><strong>Score sécu moyen</strong></p>
                             <p class="open-sans font-size-15">{{ score_secu_moyen }} <span class="text-muted">/ 100</span></p>
-                            <p class="text-muted font-size-085 margin-bottom-0">Moyenne pondérée sur {{ nb_scans }} app{{ nb_scans > 1 ? 's' }}</p>
+                            <p class="text-muted font-size-085 margin-bottom-0">Moyenne pondérée sur {{ nb_scans }}
+                            app{{ nb_scans > 1 ? 's' }}</p>
                         </div>
                     </div>
                     <div class="cell small-12 medium-3" style="display: flex; flex-direction: column;">
-                        <div class="callout alert-callout-border {{ pct_zero_critical >= 80 ? 'secondary' : (pct_zero_critical >= 50 ? 'warning' : 'critical') }}" style="flex: 1 1 auto;">
+                        <div class="callout alert-callout-border {{ pct_zero_critical >= 80 ? 'secondary' : (pct_zero_critical >= 50 ? 'warning' : 'critical') }}"
+                            style="flex: 1 1 auto;">
                             <p class="open-sans"><strong>% apps « zéro CRITICAL »</strong></p>
                             <p class="open-sans font-size-15">{{ pct_zero_critical }} %</p>
-                            <p class="text-muted font-size-085 margin-bottom-0">{{ nb_zero_critical }} / {{ nb_scans }} app{{ nb_scans > 1 ? 's' }}</p>
+                            <p class="text-muted font-size-085 margin-bottom-0">{{ nb_zero_critical }} / {{ nb_scans }}
+                            app{{ nb_scans > 1 ? 's' }}</p>
                         </div>
                     </div>
                     <div class="cell small-12 medium-3" style="display: flex; flex-direction: column;">
-                        <div class="callout alert-callout-border {{ pct_scans_recent >= 80 ? 'secondary' : (pct_scans_recent >= 50 ? 'warning' : 'error') }}" style="flex: 1 1 auto;">
+                        <div class="callout alert-callout-border {{ pct_scans_recent >= 80 ? 'secondary' : (pct_scans_recent >= 50 ? 'warning' : 'error') }}"
+                            style="flex: 1 1 auto;">
                             <p class="open-sans"><strong>% scans &lt; 30 jours</strong></p>
                             <p class="open-sans font-size-15">{{ pct_scans_recent }} %</p>
-                            <p class="text-muted font-size-085 margin-bottom-0">{{ nb_scans_recent }} / {{ nb_scans }} fraîcheur</p>
+                            <p class="text-muted font-size-085 margin-bottom-0">{{ nb_scans_recent }} / {{ nb_scans }} fraîcheur
+                            </p>
                         </div>
                     </div>
                     <div class="cell small-12 medium-3" style="display: flex; flex-direction: column;">
@@ -133,7 +143,9 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                 <h3 class="h5 claire-hand"><span aria-hidden="true">📈</span> Tendance CVE sur 90 jours</h3>
                 <div class="callout alert-callout-border info margin-bottom-1">
                     <p class="open-sans font-size-085 margin-bottom-0">
-                        <span aria-hidden="true">ℹ️</span> Agrégation par jour des compteurs CVE de tous les scans visibles sur les 90 derniers jours. Un projet scanné plusieurs fois le même jour compte plusieurs fois (tendance brute, pas dé-dupliquée).
+                        <span aria-hidden="true">ℹ️</span> Agrégation par jour des compteurs CVE de tous les scans visibles sur
+                        les 90 derniers jours. Un projet scanné plusieurs fois le même jour compte plusieurs fois (tendance
+                        brute, pas dé-dupliquée).
                     </p>
                 </div>
                 <div class="cell margin-bottom-2">
@@ -148,7 +160,8 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                         <h3 class="h5 claire-hand"><span aria-hidden="true">🔥</span> Top 5 apps les plus à risque</h3>
                         <div class="callout alert-callout-border info margin-bottom-1">
                             <p class="open-sans font-size-085 margin-bottom-0">
-                                <span aria-hidden="true">ℹ️</span> Score sécurité le plus bas. Tie-breaker : nb total CVE décroissant.
+                                <span aria-hidden="true">ℹ️</span> Score sécurité le plus bas. Tie-breaker : nb total CVE
+                                décroissant.
                             </p>
                         </div>
                         <div class="cell table-scroll margin-bottom-1">
@@ -165,93 +178,101 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                                     {% for s in top_risque %}
                                         <tr>
                                             <td>
-                                                <a href="{{ path('dc_projet', {'group': s.project_group, 'artifact': s.project_artifact, 'version': s.project_version}) }}">
-                                                    <strong>{{ s.project_artifact }}</strong>
-                                                </a>
-                                                <span class="text-muted">v{{ s.project_version }}</span>
-                                            </td>
-                                            <td class="text-right"><strong style="color: #cc4b37;">{{ s.score_secu|number_format(1, ',', ' ') }}</strong></td>
-                                            <td class="text-right">
-                                                {% if s.cve_count_critical > 0 %}
-                                                    <span class="badge-count critical">
-                                                        {{ s.cve_count_critical }}
-                                                    </span>
-                                                {% else %}
-                                                    —
-                                                {% endif %}
-                                            </td>
-                                            <td class="text-right">
-                                                {% if s.cve_count_high > 0 %}
-                                                    <span class="badge-count high">
-                                                        {{ s.cve_count_high }}
-                                                    </span>
-                                                {% else %}
-                                                    —
-                                                {% endif %}
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-
-                    <div class="cell small-12 medium-6">
-                        <h3 class="h5 claire-hand"><span aria-hidden="true">✅</span> Top 5 apps les plus saines</h3>
-                        <div class="callout alert-callout-border info margin-bottom-1">
-                            <p class="open-sans font-size-085 margin-bottom-0">
-                                <span aria-hidden="true">ℹ️</span> Score de sécurité le plus haut. Tie-breaker : nb total CVE croissant.
-                            </p>
-                        </div>
-                        <div class="cell table-scroll margin-bottom-1">
-                            <table class="open-sans">
-                                <thead>
-                                    <tr>
-                                        <th>Projet</th>
-                                        <th class="text-right">Score</th>
-                                        <th class="text-right">CRIT</th>
-                                        <th class="text-right">HIGH</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for s in top_sain %}
-                                        <tr>
-                                            <td>
-                                                <a href="{{ path('dc_projet', {'group': s.project_group, 'artifact': s.project_artifact, 'version': s.project_version}) }}">
-                                                    <strong>{{ s.project_artifact }}</strong>
-                                                </a>
-                                                <span class="text-muted">v{{ s.project_version }}</span>
-                                            </td>
-                                            <td class="text-right"><strong style="color: #1a5f3f;">{{ s.score_secu|number_format(1, ',', ' ') }}</strong></td>
-                                            <td class="text-right">
-                                                {% if s.cve_count_critical > 0 %}
-                                                    <span class="badge-count critical">
-                                                        {{ s.cve_count_critical }}
-                                                    </span>
-                                                {% else %}
-                                                    —
-                                                {% endif %}
-                                            </td>
-                                            <td class="text-right">
-                                                {% if s.cve_count_high > 0 %}
-                                                    <span class="badge-count high">
-                                                        {{ s.cve_count_high }}
-                                                    </span>
-                                                {% else %}
-                                                    —
-                                                {% endif %}
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                                                <a
+                                                href="{{ path('dc_projet', {'group': s.project_group, 'artifact': s.project_artifact, 'version': s.project_version}) }}">
+                                                <strong>{{ s.project_artifact }}</strong>
+                                            </a>
+                                            <span class="text-muted">v{{ s.project_version }}</span>
+                                        </td>
+                                        <td class="text-right"><strong
+                                        style="color: #cc4b37;">{{ s.score_secu|number_format(1, ',', ' ') }}</strong>
+                                    </td>
+                                    <td class="text-right">
+                                        {% if s.cve_count_critical > 0 %}
+                                            <span class="badge-count critical">
+                                                {{ s.cve_count_critical }}
+                                            </span>
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-right">
+                                        {% if s.cve_count_high > 0 %}
+                                            <span class="badge-count high">
+                                                {{ s.cve_count_high }}
+                                            </span>
+                                        {% else %}
+                                            —
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
+            </div>
 
-            {% endif %}
-        </main>
+            <div class="cell small-12 medium-6">
+                <h3 class="h5 claire-hand"><span aria-hidden="true">✅</span> Top 5 apps les plus saines</h3>
+                <div class="callout alert-callout-border info margin-bottom-1">
+                    <p class="open-sans font-size-085 margin-bottom-0">
+                        <span aria-hidden="true">ℹ️</span> Score de sécurité le plus haut. Tie-breaker : nb total CVE
+                        croissant.
+                    </p>
+                </div>
+                <div class="cell table-scroll margin-bottom-1">
+                    <table class="open-sans">
+                        <thead>
+                            <tr>
+                                <th>Projet</th>
+                                <th class="text-right">Score</th>
+                                <th class="text-right">CRIT</th>
+                                <th class="text-right">HIGH</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for s in top_sain %}
+                                <tr>
+                                    <td>
+                                        <a
+                                        href="{{ path('dc_projet', {'group': s.project_group, 'artifact': s.project_artifact, 'version': s.project_version}) }}">
+                                        <strong>{{ s.project_artifact }}</strong>
+                                    </a>
+                                    <span class="text-muted">v{{ s.project_version }}</span>
+                                </td>
+                                <td class="text-right"><strong
+                                style="color: #1a5f3f;">{{ s.score_secu|number_format(1, ',', ' ') }}</strong>
+                            </td>
+                            <td class="text-right">
+                                {% if s.cve_count_critical > 0 %}
+                                    <span class="badge-count critical">
+                                        {{ s.cve_count_critical }}
+                                    </span>
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                            <td class="text-right">
+                                {% if s.cve_count_high > 0 %}
+                                    <span class="badge-count high">
+                                        {{ s.cve_count_high }}
+                                    </span>
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
 
-        {{ include('footer.html.twig') }}
-    </body>
+{% endif %}
+</main>
+
+{{ include('footer.html.twig') }}
+</body>
+
 </html>

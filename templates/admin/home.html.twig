@@ -13,8 +13,7 @@
     <div class="row">
         {% if is_granted('ROLE_UTILISATEUR') %}
         <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-            <a href="{{ path('preferences') }}"
-                class="dashboard-card card-account">
+            <a href="{{ path('preferences') }}" class="dashboard-card card-account">
                 <div class="dashboard-card-top">
                     <i class="fas fa-sliders"></i>
                     <h3 class="open-sans">Réglages personnels</h3>
@@ -29,31 +28,30 @@
         {% if is_granted('ROLE_INTERNAL') %}
         {# LOG #}
         <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-            <a href="{{ path('admin_logs_index') }}"
-                class="dashboard-card card-internal">
-                    <div class="dashboard-card-top">
+            <a href="{{ path('admin_logs_index') }}" class="dashboard-card card-internal">
+                <div class="dashboard-card-top">
                     <i class="fas fa-file-lines"></i>
                     <h3 class="open-sans">Log</h3>
-                    </div>
+                </div>
 
-                    <div class="dashboard-card-bottom">
-                        <p class="open-sans font-size-1">Consulter les logs</p>
-                    </div>
+                <div class="dashboard-card-bottom">
+                    <p class="open-sans font-size-1">Consulter les logs</p>
+                </div>
             </a>
         </div>
 
         {# Journal des rôles #}
         <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-            <a href="{{ path('admin_user_role_log_index') }}"
-                class="dashboard-card card-internal">
-                    <div class="dashboard-card-top">
+            <a href="{{ path('admin_user_role_log_index') }}" class="dashboard-card card-internal">
+                <div class="dashboard-card-top">
                     <i class="fas fa-user-shield"></i>
                     <h3 class="open-sans">Journal des rôles</h3>
-                    </div>
+                </div>
 
-                    <div class="dashboard-card-bottom">
-                        <p class="open-sans font-size-1">Consulter, archiver, exporter ou purger le journal des changements de rôle</p>
-                    </div>
+                <div class="dashboard-card-bottom">
+                    <p class="open-sans font-size-1">Consulter, archiver, exporter ou purger le journal des changements
+                        de rôle</p>
+                </div>
             </a>
         </div>
         {% endif %}
@@ -66,14 +64,14 @@
         <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
             <a href="{{ ea_url().setController('App\\Controller\\Admin\\UtilisateurCrudController') }}"
                 class="dashboard-card card-users">
-                    <div class="dashboard-card-top">
+                <div class="dashboard-card-top">
                     <i class="fas fa-user"></i>
                     <h3 class="open-sans">Utilisateurs</h3>
-                    </div>
+                </div>
 
-                    <div class="dashboard-card-bottom">
-                        <p class="open-sans font-size-1">Création, modification et suppression d'utilisateurs.</p>
-                    </div>
+                <div class="dashboard-card-bottom">
+                    <p class="open-sans font-size-1">Création, modification et suppression d'utilisateurs.</p>
+                </div>
             </a>
         </div>
 
@@ -88,7 +86,7 @@
                 <div class="dashboard-card-bottom">
                     <p class="open-sans font-size-1">Gérer les groupes utilisateurs de l'application.</p>
                 </div>
-                </a>
+            </a>
         </div>
 
         {# Groupe fonctionne #}
@@ -102,7 +100,7 @@
                 <div class="dashboard-card-bottom">
                     <p class="open-sans font-size-1">Gérer les groupes fonctionnels liés aux tags SonarQube.</p>
                 </div>
-                </a>
+            </a>
         </div>
         {% endif %}
     </div>
@@ -112,7 +110,8 @@
         {% if is_granted('ROLE_BATCH') %}
         {# Portefeuille #}
         <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-            <a href="{{ ea_url().setController('App\\Controller\\Admin\\PortefeuilleCrudController') }}" class="dashboard-card card-wallet">
+            <a href="{{ ea_url().setController('App\\Controller\\Admin\\PortefeuilleCrudController') }}"
+                class="dashboard-card card-wallet">
                 <div class="dashboard-card-top">
                     <i class="fas fa-wallet"></i>
                     <h3 class="open-sans">Portefeuilles</h3>
@@ -125,21 +124,21 @@
 
         {# Batch #}
         <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-            <a href="{{ ea_url().setController('App\\Controller\\Admin\\BatchCrudController') }}" class="dashboard-card card-batch">
+            <a href="{{ ea_url().setController('App\\Controller\\Admin\\BatchCrudController') }}"
+                class="dashboard-card card-batch">
                 <div class="dashboard-card-top">
                     <i class="fas fa-cogs"></i>
                     <h3 class="open-sans">Traitements de données</h3>
                 </div>
                 <div class="dashboard-card-bottom">
-                        <p class="open-sans font-size-1">Gestion des traitements de données.</p>
+                    <p class="open-sans font-size-1">Gestion des traitements de données.</p>
                 </div>
             </a>
         </div>
 
         {# Suivi batch #}
         <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-            <a href="{{ path('traitement_suivi') }}"
-                class="dashboard-card card-batch">
+            <a href="{{ path('traitement_suivi') }}" class="dashboard-card card-batch">
                 <div class="dashboard-card-top">
                     <i class="fas fa-tasks"></i>
                     <h3 class="open-sans">Suivi Traitements</h3>
@@ -152,12 +151,11 @@
         {% endif %}
     </div>
 
-    {# Liggne 4 - Statistiques #}
+    {# Ligne 4 - Statistiques #}
     <div class="row">
         {% if is_granted('ROLE_UTILISATEUR') %}
         <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-            <a href="{{ path('statistiques_dashboard') }}"
-                class="dashboard-card card-stats">
+            <a href="{{ path('statistiques_dashboard') }}" class="dashboard-card card-stats">
                 <div class="dashboard-card-top">
                     <i class="fas fa-chart-bar"></i>
                     <h3 class="open-sans">Dashboard</h3>
@@ -168,8 +166,7 @@
             </a>
         </div>
         <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-            <a href="{{ path('statistiques_sonar_report') }}"
-                class="dashboard-card card-stats">
+            <a href="{{ path('statistiques_sonar_report') }}" class="dashboard-card card-stats">
                 <div class="dashboard-card-top">
                     <i class="fas fa-chart-pie"></i>
                     <h3 class="open-sans">Ma-Moulinette</h3>
@@ -180,8 +177,7 @@
             </a>
         </div>
         <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-            <a href="{{ path('statistiques_projet') }}"
-                class="dashboard-card card-stats">
+            <a href="{{ path('statistiques_projet') }}" class="dashboard-card card-stats">
                 <div class="dashboard-card-top">
                     <i class="fas fa-th-list"></i>
                     <h3 class="open-sans">Projets</h3>
@@ -192,8 +188,7 @@
             </a>
         </div>
         <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-            <a href="{{ path('statistiques_utilisateur') }}"
-                class="dashboard-card card-stats">
+            <a href="{{ path('statistiques_utilisateur') }}" class="dashboard-card card-stats">
                 <div class="dashboard-card-top">
                     <i class="fas fa-chart-line"></i>
                     <h3 class="open-sans">Activité utilisateur</h3>
@@ -210,8 +205,7 @@
     <div class="row">
         {% if is_granted('ROLE_ACTIVITY') %}
         <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-            <a href="{{ path('activity') }}"
-                class="dashboard-card card-stats">
+            <a href="{{ path('activity') }}" class="dashboard-card card-stats">
                 <div class="dashboard-card-top">
                     <i class="fas fa-clock-rotate-left"></i>
                     <h3 class="open-sans">Activité SonarQube</h3>
@@ -225,8 +219,7 @@
 
         {% if is_granted('ROLE_ACTUATOR') %}
         <div class="col-sm-12 col-md-6 col-lg-4 col-xl-3 mb-4">
-            <a href="{{ path('actuator') }}"
-                class="dashboard-card card-actuator">
+            <a href="{{ path('actuator') }}" class="dashboard-card card-actuator">
                 <div class="dashboard-card-top">
                     <i class="fas fa-seedling"></i>
                     <h3 class="open-sans">Actuator</h3>
@@ -243,14 +236,14 @@
 
 {% block configured_body_contents %}
 <footer class="raw footer">
-        <div class="footer-padding">
-            <div class="d-flex justify-content-between mb-3">
-                <div class="copyright">©
+    <div class="footer-padding">
+        <div class="d-flex justify-content-between mb-3">
+            <div class="copyright">©
                 {{dateCopyright}}
                 - CC BY-SA-NC 4.0</div>
-                <div class="null"></div>
-                <div class="auteur color-blanc">Laurent HADJADJ</div>
-            </div>
+            <div class="null"></div>
+            <div class="auteur color-blanc">Laurent HADJADJ</div>
         </div>
+    </div>
 </footer>
 {% endblock %}

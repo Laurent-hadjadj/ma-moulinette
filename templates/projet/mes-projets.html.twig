@@ -21,49 +21,51 @@ https://github.com/Laurent-hadjadj/ma-moulinette
 © 2024 - CC BY-SA-NC 4.0
 #}
 
-<html lang="fr">
-    {# Chargement de la section HEAD #}
-    <head>
-        <title>{{ title }}</title>
-        {{ include('head.html.twig') }}
-        {# Chargement des assets JS et CSS #}
-        {% block importmap %}
-            {{ importmap('mes-projets') }}
-        {% endblock %}
-    </head>
+<html lang="fr" dir="ltr">
+{# Chargement de la section HEAD #}
 
-    <body>
-        {# Chargement de la section header #}
-        {{ include('header.html.twig') }}
-        {# On affiche les messages #}
-        {{ include('_message.html.twig') }}
+<head>
+    <title>{{ title }}</title>
+    {{ include('head.html.twig') }}
+    {# Chargement des assets JS et CSS #}
+    {% block importmap %}
+    {{ importmap('mes-projets') }}
+    {% endblock %}
+</head>
 
-        <header class="grid-container margin-top-1">
-            <nav aria-label="Fil d'Ariane, vous êtes ici">
-                <ol class="claire-hand breadcrumbs">
-                    <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
-                    <li><a href="{{ path('projet', {}) }}">Projet</a></li>
-                    <li aria-current="page">Mes-Projets</li>
-                </ol>
-            </nav>
-        </header>
+<body>
+    {# Chargement de la section header #}
+    {{ include('header.html.twig') }}
+    {# On affiche les messages #}
+    {{ include('_message.html.twig') }}
 
-        <main id="main-content" class="margin-bottom-2">
-            <div class="grid-container">
-                <h2 class="h3 claire-hand"><span aria-hidden="true">🗂️</span>Mes Projets</h2>
-                <h3 class="h4 claire-hand"><span aria-hidden="true">🚥</span>Suivi des principaux indicateurs.</h3>
-            </div>
+    <header class="grid-container margin-top-1">
+        <nav aria-label="Fil d'Ariane, vous êtes ici">
+            <ol class="claire-hand breadcrumbs">
+                <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+                <li><a href="{{ path('projet', {}) }}">Projet</a></li>
+                <li aria-current="page">Mes-Projets</li>
+            </ol>
+        </nav>
+    </header>
 
-            <section class="grid-container">
-                {{ include('_tags_groupe_fonctionnel.html.twig', {'groupes': liste_groupe_fonctionnel}) }}
-            </section>
+    <main id="main-content" class="margin-bottom-2">
+        <div class="grid-container">
+            <h2 class="h3 claire-hand"><span aria-hidden="true">🗂️</span>Mes Projets</h2>
+            <h3 class="h4 claire-hand"><span aria-hidden="true">🚥</span>Suivi des principaux indicateurs.</h3>
+        </div>
 
-            <div class="table-scroll pleine-page">
-                <table id="table-mes-projets" class="hover striped" aria-label="Métriques par projet">
-                    <caption class="show-for-sr">Tableau récapitulatif des projets : application, version, lignes de code, notes SonarQube (fiabilité, sécurité, hotspots, maintenabilité), violations, composants, qualité du code, journalisation et tests.</caption>
-                    <thead>
-                        <tr
-                        class="open-sans">
+        <section class="grid-container">
+            {{ include('_tags_groupe_fonctionnel.html.twig', {'groupes': liste_groupe_fonctionnel}) }}
+        </section>
+
+        <div class="table-scroll pleine-page">
+            <table id="table-mes-projets" class="hover striped" aria-label="Métriques par projet">
+                <caption class="show-for-sr">Tableau récapitulatif des projets : application, version, lignes de code,
+                    notes SonarQube (fiabilité, sécurité, hotspots, maintenabilité), violations, composants, qualité du
+                    code, journalisation et tests.</caption>
+                <thead>
+                    <tr class="open-sans">
                         {# En-têtes avec les attributs scope #}
                         <th rowspan="1" scope="col" class="text-center">Application</th>
                         <th rowspan="1" scope="col" class="text-center">Version</th>
@@ -105,84 +107,91 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                 </thead>
                 <tbody id="mon-bo-tableau" class="open-sans">
                     {% if liste_projet is not empty %}
-                        {% for projet in liste_projet %}
-                            <tr
-                            class="open-sans">
-                            {# Application et version #}
-                            <td class="text-left">
-                                <span>{{ projet['project_name'] }}</span>
-                            </td>
-                            <td class="text-left">
-                                <span>{{ projet['version'] }}</span>
-                            </td>
+                    {% for projet in liste_projet %}
+                    <tr class="open-sans">
+                        {# Application et version #}
+                        <td class="text-left">
+                            <span>{{ projet['project_name'] }}</span>
+                        </td>
+                        <td class="text-left">
+                            <span>{{ projet['version'] }}</span>
+                        </td>
 
-                            {# Lignes #}
-                            <td class="text-right">
-                                <span>{{ projet['nombre_ligne']|format_number(locale='fr') }}</span>
-                            </td>
-                            <td class="text-right">
-                                <span>{{ projet['nombre_ligne_code']|format_number(locale='fr') }}</span>
-                            </td>
+                        {# Lignes #}
+                        <td class="text-right">
+                            <span>{{ projet['nombre_ligne']|format_number(locale='fr') }}</span>
+                        </td>
+                        <td class="text-right">
+                            <span>{{ projet['nombre_ligne_code']|format_number(locale='fr') }}</span>
+                        </td>
 
-                            {# Notes avec icônes et couleurs #}
-                            <td class="text-center">
-                                <span class="note note-{{ projet['note_reliability']|lower }}" aria-label="Fiabilité : note {{ note_labels[projet['note_reliability']] ?? projet['note_reliability'] }}">{{ projet['note_reliability'] }}</span>
-                            </td>
-                            <td class="text-center">
-                                <span class="note note-{{ projet['note_security']|lower }}" aria-label="Sécurité : note {{ note_labels[projet['note_security']] ?? projet['note_security'] }}">{{ projet['note_security'] }}</span>
-                            </td>
-                            <td class="text-center">
-                                <span class="note note-{{ projet['note_hotspot']|lower }}" aria-label="Hotspot : note {{ note_labels[projet['note_hotspot']] ?? projet['note_hotspot'] }}">{{ projet['note_hotspot'] }}</span>
-                            </td>
-                            <td class="text-center">
-                                <span class="note note-{{ projet['note_sqale']|lower }}" aria-label="Maintenabilité : note {{ note_labels[projet['note_sqale']] ?? projet['note_sqale'] }}">{{ projet['note_sqale'] }}</span>
-                            </td>
+                        {# Notes avec icônes et couleurs #}
+                        <td class="text-center">
+                            <span class="note note-{{ projet['note_reliability']|lower }}"
+                                aria-label="Fiabilité : note {{ note_labels[projet['note_reliability']] ?? projet['note_reliability'] }}">{{ projet['note_reliability'] }}</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="note note-{{ projet['note_security']|lower }}"
+                                aria-label="Sécurité : note {{ note_labels[projet['note_security']] ?? projet['note_security'] }}">{{ projet['note_security'] }}</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="note note-{{ projet['note_hotspot']|lower }}"
+                                aria-label="Hotspot : note {{ note_labels[projet['note_hotspot']] ?? projet['note_hotspot'] }}">{{ projet['note_hotspot'] }}</span>
+                        </td>
+                        <td class="text-center">
+                            <span class="note note-{{ projet['note_sqale']|lower }}"
+                                aria-label="Maintenabilité : note {{ note_labels[projet['note_sqale']] ?? projet['note_sqale'] }}">{{ projet['note_sqale'] }}</span>
+                        </td>
 
-                            {# Violations avec formatage en fonction des valeurs #}
-                            <td class="text-right">
-                                <span class="{{ projet['nombre_bug'] > 0 ? 'label alert' : 'label success' }}" aria-label="{{ projet['nombre_bug'] > 0 ? projet['nombre_bug'] ~ ' bugs détectés' : 'Aucun bug' }}">{{ projet['nombre_bug']|format_number(locale='fr') }}</span>
-                            </td>
-                            <td class="text-right">
-                                <span class="{{ projet['nombre_vulnerability'] > 0 ? 'label alert' : 'label success' }}" aria-label="{{ projet['nombre_vulnerability'] > 0 ? projet['nombre_vulnerability'] ~ ' vulnérabilités détectées' : 'Aucune vulnérabilité' }}">{{ projet['nombre_vulnerability']|format_number(locale='fr') }}</span>
-                            </td>
-                            <td class="text-right">
-                                <span class="{{ projet['nombre_code_smell'] > 50 ? 'label warning' : 'label success' }}" aria-label="{{ projet['nombre_code_smell'] > 50 ? projet['nombre_code_smell'] ~ ' code smells (au-delà du seuil)' : projet['nombre_code_smell'] ~ ' code smells' }}">{{ projet['nombre_code_smell']|format_number(locale='fr') }}</span>
-                            </td>
-                            <td class="text-right">
-                                <span>{{ projet['violations']|format_number(locale='fr') }}</span>
-                            </td>
+                        {# Violations avec formatage en fonction des valeurs #}
+                        <td class="text-right">
+                            <span class="{{ projet['nombre_bug'] > 0 ? 'label alert' : 'label success' }}"
+                                aria-label="{{ projet['nombre_bug'] > 0 ? projet['nombre_bug'] ~ ' bugs détectés' : 'Aucun bug' }}">{{ projet['nombre_bug']|format_number(locale='fr') }}</span>
+                        </td>
+                        <td class="text-right">
+                            <span class="{{ projet['nombre_vulnerability'] > 0 ? 'label alert' : 'label success' }}"
+                                aria-label="{{ projet['nombre_vulnerability'] > 0 ? projet['nombre_vulnerability'] ~ ' vulnérabilités détectées' : 'Aucune vulnérabilité' }}">{{ projet['nombre_vulnerability']|format_number(locale='fr') }}</span>
+                        </td>
+                        <td class="text-right">
+                            <span class="{{ projet['nombre_code_smell'] > 50 ? 'label warning' : 'label success' }}"
+                                aria-label="{{ projet['nombre_code_smell'] > 50 ? projet['nombre_code_smell'] ~ ' code smells (au-delà du seuil)' : projet['nombre_code_smell'] ~ ' code smells' }}">{{ projet['nombre_code_smell']|format_number(locale='fr') }}</span>
+                        </td>
+                        <td class="text-right">
+                            <span>{{ projet['violations']|format_number(locale='fr') }}</span>
+                        </td>
 
-                            {# Composants #}
-                            <td class="text-right">{{ projet['frontend']|format_number(locale='fr') }}</td>
-                            <td class="text-right">{{ projet['backend']|format_number(locale='fr') }}</td>
-                            <td class="text-right">{{ projet['autre']|format_number(locale='fr') }}</td>
+                        {# Composants #}
+                        <td class="text-right">{{ projet['frontend']|format_number(locale='fr') }}</td>
+                        <td class="text-right">{{ projet['backend']|format_number(locale='fr') }}</td>
+                        <td class="text-right">{{ projet['autre']|format_number(locale='fr') }}</td>
 
-                            {# Qualité du Code #}
-                            <td class="text-right">{{ projet['suppress_warning']|format_number(locale='fr') }}</td>
-                            <td class="text-right">{{ projet['no_sonar']|format_number(locale='fr') }}</td>
-                            <td class="text-right">{{ projet['todo']|format_number(locale='fr') }}</td>
+                        {# Qualité du Code #}
+                        <td class="text-right">{{ projet['suppress_warning']|format_number(locale='fr') }}</td>
+                        <td class="text-right">{{ projet['no_sonar']|format_number(locale='fr') }}</td>
+                        <td class="text-right">{{ projet['todo']|format_number(locale='fr') }}</td>
 
-                            {# Loggers #}
-                            <td class="text-right">{{ projet['logger_info']|format_number(locale='fr') }}</td>
-                            <td class="text-right">{{ projet['logger_warn']|format_number(locale='fr') }}</td>
-                            <td class="text-right">{{ projet['logger_error']|format_number(locale='fr') }}</td>
-                            <td class="text-right">{{ projet['logger_debug']|format_number(locale='fr') }}</td>
+                        {# Loggers #}
+                        <td class="text-right">{{ projet['logger_info']|format_number(locale='fr') }}</td>
+                        <td class="text-right">{{ projet['logger_warn']|format_number(locale='fr') }}</td>
+                        <td class="text-right">{{ projet['logger_error']|format_number(locale='fr') }}</td>
+                        <td class="text-right">{{ projet['logger_debug']|format_number(locale='fr') }}</td>
 
-                            {# Tests #}
-                            <td class="text-right">{{ projet['tests']|format_number(locale='fr') }}</td>
-                            {# Application et version #}
-                            <td class="text-left">
-                                <span>{{ projet['project_name'] }}</span>
-                            </td>
-                        </tr>
+                        {# Tests #}
+                        <td class="text-right">{{ projet['tests']|format_number(locale='fr') }}</td>
+                        {# Application et version #}
+                        <td class="text-left">
+                            <span>{{ projet['project_name'] }}</span>
+                        </td>
+                    </tr>
                     {% endfor %}
-                {% endif %}
-            </tbody>
-        </table>
-    </div>
-</main>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </main>
 
-{# Chargement de la section footer #}
-{{ include('footer.html.twig') }}
+    {# Chargement de la section footer #}
+    {{ include('footer.html.twig') }}
 </body>
+
 </html>

@@ -4,15 +4,11 @@ MODIF 2026-05-12 : modale partagée par la page executive (Section 9 Plan de rem
 Attendu en contexte : variable `jh_params` (array<string, mixed>) issue de
 DcExecutiveAnalyticsService->{getUpgradeOverhead,getSafetyMargin,getSeverityBonus,getTestEffortByFamily}().
 #}
-<dialog id="dc-jh-methodology-modal"
-    class="reveal large"
-    data-close-on-click="true"
-    data-reveal data-overlay="true"
-    aria-modal="true"
-    aria-labelledby="titre-ouvrir-methodology-jh"
-    aria-describedby="desc-ouvrir-methodology-jh">
+<dialog id="dc-jh-methodology-modal" class="reveal large" data-close-on-click="true" data-reveal data-overlay="true"
+    aria-modal="true" aria-labelledby="titre-ouvrir-methodology-jh" aria-describedby="desc-ouvrir-methodology-jh">
     <h2 id="titre-ouvrir-methodology-jh" class="h3 claire-hand"><span aria-hidden="true">ℹ️</span>Information</h2>
-    <h3 id="desc-ouvrir-methodology-jh" class="h4 claire-hand"><span aria-hidden="true">🎚️</span>Méthode de calcul du JH par dépendance</h3>
+    <h3 id="desc-ouvrir-methodology-jh" class="h4 claire-hand"><span aria-hidden="true">🎚️</span>Méthode de calcul du
+        JH par dépendance</h3>
     <span class="show-for-sr">
         Cette page présente la méthodologie de calcul du Jour/Homme par dépendance.
     </span>
@@ -26,15 +22,20 @@ DcExecutiveAnalyticsService->{getUpgradeOverhead,getSafetyMargin,getSeverityBonu
     <h4 class="claire-hand">Formule</h4>
     <div class="callout alert-callout-border info" style="padding: 0.6rem;">
         <p class="open-sans" style="margin-bottom: 0;">
-            <code><strong>JH<sub>dep</sub> = (effort_tests_famille + overhead_upgrade) × marge_sécurité + bonus_sévérité</strong></code>
+            <code><strong>JH<sub>dep</sub> = (effort_tests_famille + overhead_upgrade) × marge_sécurité +
+                    bonus_sévérité</strong></code>
         </p>
     </div>
 
     <ul class="open-sans">
-        <li><strong>overhead_upgrade</strong> = <strong>{{ jh_params.upgrade_overhead|number_format(1, ',', ' ') }} j</strong> : effort fixe (bump version + recompile + préparation release).</li>
-        <li><strong>marge_sécurité</strong> = <strong>×{{ jh_params.safety_margin|number_format(1, ',', ' ') }}</strong> : aléas non prévus ({{ ((jh_params.safety_margin - 1) * 100)|round }} %).</li>
-        <li><strong>effort_tests_famille</strong> : effort de tests de non-régression et d'acceptance, dépend de la famille de la dépendance (cf. table ci-dessous).</li>
-        <li><strong>bonus_sévérité</strong> : escalade de validation sécurité selon la sévérité max CVE de la dépendance.</li>
+        <li><strong>overhead_upgrade</strong> = <strong>{{ jh_params.upgrade_overhead|number_format(1, ',', ' ') }}
+                j</strong> : effort fixe (bump version + recompile + préparation release).</li>
+        <li><strong>marge_sécurité</strong> = <strong>×{{ jh_params.safety_margin|number_format(1, ',', ' ') }}</strong>
+            : aléas non prévus ({{ ((jh_params.safety_margin - 1) * 100)|round }} %).</li>
+        <li><strong>effort_tests_famille</strong> : effort de tests de non-régression et d'acceptance, dépend de la
+            famille de la dépendance (cf. table ci-dessous).</li>
+        <li><strong>bonus_sévérité</strong> : escalade de validation sécurité selon la sévérité max CVE de la
+            dépendance.</li>
     </ul>
 
     <h4 class="claire-hand">Effort tests par famille technologique</h4>
@@ -47,10 +48,10 @@ DcExecutiveAnalyticsService->{getUpgradeOverhead,getSafetyMargin,getSeverityBonu
         </thead>
         <tbody>
             {% for family, effort in jh_params.test_effort_by_family %}
-                <tr>
-                    <td>{{ family }}</td>
-                    <td class="text-right"><strong>{{ effort|number_format(1, ',', ' ') }}</strong></td>
-                </tr>
+            <tr>
+                <td>{{ family }}</td>
+                <td class="text-right"><strong>{{ effort|number_format(1, ',', ' ') }}</strong></td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
@@ -65,24 +66,24 @@ DcExecutiveAnalyticsService->{getUpgradeOverhead,getSafetyMargin,getSeverityBonu
         </thead>
         <tbody>
             {% for sev, bonus in jh_params.severity_bonus %}
-                <tr>
-                    <td>
-                        {% if sev == 'CRITICAL' %}
-                            <span class="badge-level critical">CRITICAL</span>
-                        {% elseif sev == 'HIGH' %}
-                            <span class="badge-level high">HIGH</span>
-                        {% elseif sev == 'MEDIUM' %}
-                            <span class="badge-level medium">MEDIUM</span>
-                        {% elseif sev == 'LOW' %}
-                            <span class="badge-level low">LOW</span>
-                        {% else %}
-                            <span class="badge-level info">
-                                {{ sev }}
-                            </span>
-                        {% endif %}
-                    </td>
-                    <td class="text-right"><strong>+{{ bonus|number_format(1, ',', ' ') }}</strong></td>
-                </tr>
+            <tr>
+                <td>
+                    {% if sev == 'CRITICAL' %}
+                    <span class="badge-level critical">CRITICAL</span>
+                    {% elseif sev == 'HIGH' %}
+                    <span class="badge-level high">HIGH</span>
+                    {% elseif sev == 'MEDIUM' %}
+                    <span class="badge-level medium">MEDIUM</span>
+                    {% elseif sev == 'LOW' %}
+                    <span class="badge-level low">LOW</span>
+                    {% else %}
+                    <span class="badge-level info">
+                        {{ sev }}
+                    </span>
+                    {% endif %}
+                </td>
+                <td class="text-right"><strong>+{{ bonus|number_format(1, ',', ' ') }}</strong></td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>
@@ -150,11 +151,9 @@ DcExecutiveAnalyticsService->{getUpgradeOverhead,getSafetyMargin,getSeverityBonu
 
     <footer class="grid-x grid-margin-x align-right margin-top-2">
         <div class="cell shrink">
-            <button id="bouton-fermer-methodology-jh"
-                class="button open-sans focus-dark-light"
-                type="button"
+            <button id="bouton-fermer-methodology-jh" class="button open-sans focus-dark-light" type="button"
                 aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span>Fermer
-                </button>
-            </div>
-        </footer>
-    </dialog>
+            </button>
+        </div>
+    </footer>
+</dialog>
