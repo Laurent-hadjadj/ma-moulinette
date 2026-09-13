@@ -980,7 +980,7 @@ MD;
 
     return <<<HTML
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <title>SonarQube Metrics Comparison</title>
