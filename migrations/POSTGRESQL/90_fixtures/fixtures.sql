@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##         Données d'initialisation du projet     ##
-##               V1.5.0 - 28/06/2026              ##
+##               V1.6.0 - 13/09/2026              ##
 ##                                                ##
 ####################################################*/
 
@@ -16,6 +16,7 @@
 --- 2026-04-05 : Laurent HADJADJ - Ajout de la colonne groupe_id et liste_groupe_fonctionnel dans la table utilisateur.
 --- 2026-04-13 : Ajout du support pour OWASP 2025.
 --- 2026-06-28 : Mise à jour de la table des version.
+--- 2026-09-13 : Mise à jour de la table des version.
 
 -- MODIF 2026-07-22 : \c ma_moulinette db_user remplacé par \c - db_user
 -- (conserve la base courante, ne change que le rôle) — le nom de base en dur
@@ -40,7 +41,8 @@ VALUES
 ('1.4.0', '2022-07-06', NOW()),
 ('1.5.0', '2022-10-12', NOW()),
 ('1.6.0', '2022-11-29', NOW()),
-('2.0.0', '2026-09-06', NOW());
+('2.0.0', '2026-09-06', NOW()),
+('2.0.1', '2026-09-13', NOW());
 
 -- =====================================================================
 -- Table : ma_moulinette.utilisateur
