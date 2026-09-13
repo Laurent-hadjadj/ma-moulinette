@@ -44,92 +44,149 @@
   * Created at: 13/12/2022, 12:59:18 (Europe/Paris)
   * @author     Laurent HADJADJ <laurent_h@me.com>
   */
+  /* MODIF 2026-09-13 : la quasi-totalité des
+   * sélecteurs ci-dessous ciblait les anciens IDs (sans préfixe js-),
+   * retirés lors du renommage des IDs du 2026-05-18. clean_screen() ne
+   * nettoyait donc quasiment plus rien à l'écran : chaque $('#...')
+   * matchait un ensemble jQuery vide, sans erreur JS (no-op silencieux).
+   * Réalignement complet sur les IDs réels (templates/projet/*.html.twig)
+   * et les data-attributes posés par peinture.js (remplissage /
+   * afficheHotspotDetails). */
   export const clean_screen = function(type) {
-  $('#nom-projet').text('').removeAttr('data-nom-projet');
-  $('#key-analyse').text('').removeAttr('data-analyse-key');
-  $('#clef-projet').text('').removeAttr('data-clef-projet');
-  $('#distribution-langage').text('');
+  /** Bloc information générale */
+  $('#js-nom-projet').text('');
+  $('#js-key-analyse').text('').removeAttr('data-analyse-key');
+  $('#js-clef-projet').text('');
+  $('#js-version-release').text('').removeAttr('data-release');
+  $('#js-version-snapshot').text('').removeAttr('data-snapshot');
+  $('#js-version-autre').text('').removeAttr('data-autre data-label data-dataset');
+  $('#js-version').text('');
+  $('#js-date-version').text('').removeAttr('data-date-version');
 
-  $('#version-release').text('').removeAttr('data-release');
-  $('#version-snapshot').text('').removeAttr('data-snapshot');
-  $('#version-autre').text('').removeAttr('data-autre');
+  /** NoSonar / SuppressWarning / no-pmd / check-style */
+  $('#js-no-sonar-total').text('')
+    .removeAttr('data-s1309 data-nosonar data-no-pmd data-check-style data-java-no-sonar data-python-no-sonar data-php-no-sonar');
+  $('#js-suppress-warning-modale').text('');
+  $('#js-no-pmd-modale').text('');
+  $('#js-check-style-modale').text('');
+  $('#js-no-sonar-java-modale').text('');
+  $('#js-no-sonar-python-modale').text('');
+  $('#js-no-sonar-php-modale').text('');
+  $('#tableau-liste-nosonar-detail').html('');
 
-  $('#date-version').text('').removeAttr('data-date-version');
-  $('#suppress-warning').text('').removeAttr('data-s1309');
-  $('#no-sonar').text('').removeAttr('data-nosonar');
-  $('#no-pmd').text('');
-  $('#check-style').text('');
-  $('#no-sonar-python').text('');
-  $('#no-sonar-php').text('');
-  $('#todo-liste').text('').removeAttr('data-todo');
+  /** To do */
+  $('#js-todo-liste').text('').removeAttr('data-todo');
+  $('#js-java').text('').removeAttr('data-java');
+  $('#js-javascript').text('').removeAttr('data-javascript');
+  $('#js-typescript').text('').removeAttr('data-typescript');
+  $('#js-php').text('').removeAttr('data-php');
+  $('#js-python').text('').removeAttr('data-python');
+  $('#js-ruby').text('').removeAttr('data-ruby');
+  $('#js-html').text('').removeAttr('data-html');
+  $('#js-xml').text('').removeAttr('data-xml');
+  $('#tableau-liste-detail').html('').removeAttr('data-liste-fichier');
 
-  $('#logger-liste').text('').removeAttr('data-logger-liste');
+  /** Logger */
+  $('#js-logger-liste').text('');
+  $('#js-logger-total').text('');
   $('#js-logger-info').text('').removeAttr('data-logger-info');
   $('#js-logger-warn').text('').removeAttr('data-logger-warn');
   $('#js-logger-error').text('').removeAttr('data-logger-error');
   $('#js-logger-debug').text('').removeAttr('data-logger-debug');
+  $('#js-logger-info-pct').text('');
+  $('#js-logger-warn-pct').text('');
+  $('#js-logger-error-pct').text('');
+  $('#js-logger-debug-pct').text('');
+  $('#js-logger-info-bar').removeAttr('style');
+  $('#js-logger-warn-bar').removeAttr('style');
+  $('#js-logger-error-bar').removeAttr('style');
+  $('#js-logger-debug-bar').removeAttr('style');
+  $('#js-affiche-logger-detail').removeAttr('data-logger-breakdown data-logger-details');
 
-  $('#nombre-ligne').text('').removeAttr('data-nombre-ligne');
-  $('#nombre-ligne-de-code').text('').removeAttr('data-nombre-ligne-de-code');
-  $('#nombre-fichier').text('').removeAttr('data-nombre-fichier');
-  $('#nombre-classe').text('').removeAttr('data-nombre-classe');
-  $('#nombre-fonction').text('').removeAttr('data-nombre-fonction');
-  $('#nombre-statement').text('');
+  /** Actuator */
+  $('#js-actuator-pastille')
+    .removeClass('pastille-grise pastille-verte pastille-rouge')
+    .addClass('pastille-grise')
+    .removeAttr('data-actuator-maven-key data-actuator-json aria-label title');
+  $('#js-actuator-message').text('');
+  $('#tableau-actuator').html('');
 
-  /** Complexité (Phase L.6) */
-  $('#complexity-ratio').text('');
-  $('#cognitive-complexity-ratio').text('');
-  $('#note-complexity').text('');
-  $('#note-cognitive-complexity').text('');
+  /** Distribution langage + mesures */
+  $('#js-distribution-langage').html('');
+  $('#js-nombre-ligne').text('').removeAttr('data-nombre-ligne');
+  $('#js-nombre-ligne-de-code').text('').removeAttr('data-nombre-ligne-de-code');
+  $('#js-nombre-fichier').text('').removeAttr('data-nombre-fichier');
+  $('#js-nombre-classe').text('').removeAttr('data-nombre-classe');
+  $('#js-nombre-fonction').text('').removeAttr('data-nombre-fonction');
+  $('#js-nombre-statement').text('');
 
-  $('#coverage').text('').removeAttr('data-coverage');
-  $('#ratio-dette-technique').text('').removeAttr('data-sqale-debt-ratio');
-  $('#duplicated-lines-density').text('').removeAttr('data-duplicated-lines-density');
-  $('#tests').text('').removeAttr('data-tests');
-  $('#violations').text('').removeAttr('data-violations');
+  /** Complexité */
+  $('#js-complexity-ratio').text('');
+  $('#js-cognitive-complexity-ratio').text('');
+  $('#js-note-complexity').text('');
+  $('#js-note-cognitive-complexity').text('');
+
+  $('#js-coverage').text('').removeAttr('data-coverage');
+  $('#js-ratio-dette-technique').text('')
+    .removeClass('couleur-vert couleur-orange couleur-rouge couleur-bordeaux')
+    .removeAttr('data-sqale-debt-ratio');
+  $('#js-duplicated-lines-density').text('').removeAttr('data-duplicated-lines-density');
+  $('#js-tests').text('').removeAttr('data-tests');
+  $('#js-violations').text('').removeAttr('data-violations');
   $('#js-dette').text('').removeAttr('data-dette-minute');
+  $('#js-dette-reliability').text('');
+  $('#js-dette-vulnerability').text('');
+  $('#js-dette-code-smell').text('');
 
-  $('#nombre-bug').text('').removeAttr('data-nombre-bug');
-  $('#nombre-vulnerability').text('').removeAttr('data-nombre-vulnerability');
-  $('#nombre-mauvaise-pratique').text('').removeAttr('data-nombre-code-smell');
+  $('#js-nombre-bug-total').text('').removeAttr('data-nombre-bug');
+  $('#js-nombre-bug-real').text('');
+  $('#js-separator-bug').text('');
+  $('#js-nombre-vulnerability').text('').removeAttr('data-nombre-vulnerability');
+  $('#js-nombre-mauvaise-pratique').text('')
+    .removeClass('couleur-rouge')
+    .removeAttr('data-nombre-code-smell');
+  $('#js-separator-code-smell').text('');
+  $('#js-nombre-mauvaise-pratique-real').text('');
 
-  $('#nombre-frontend').text('').removeAttr('data-nombre-frontend');
-  $('#nombre-backend').text('').removeAttr('data-nombre-backend');
-  $('#nombre-autre').text('').removeAttr('data-nombre-autre');
-  $('#nombre-inconnu').text('').removeAttr('data-nombre-inconnu');
+  $('#js-nombre-frontend').text('').removeAttr('data-nombre-frontend');
+  $('#js-nombre-frontend-percent').text('');
+  $('#js-nombre-backend').text('').removeAttr('data-nombre-backend');
+  $('#js-nombre-backend-percent').text('');
+  $('#js-nombre-autre').text('').removeAttr('data-nombre-autre');
+  $('#js-nombre-autre-percent').text('');
+  $('#js-nombre-inconnu').text('').removeAttr('data-nombre-inconnu');
+  $('#js-nombre-inconnu-percent').text('');
 
-  $('#nombre-anomalie-bloquant').text('').removeAttr('data-nombre-anomalie-bloquant');
-  $('#nombre-anomalie-critique').text('').removeAttr('data-nombre-anomalie-critique');
-  $('#nombre-anomalie-info').text('').removeAttr('data-nombre-anomalie-info');
-  $('#nombre-anomalie-majeur').text('').removeAttr('data-nombre-anomalie-majeur');
-  $('#nombre-anomalie-mineur').text('').removeAttr('data-nombre-anomalie-mineur');
+  $('#js-nombre-violation-bloquant').text('').removeAttr('data-nombre-violations-bloquant');
+  $('#js-nombre-violation-critique').text('').removeAttr('data-nombre-violations-critique');
+  $('#js-nombre-violation-info').text('').removeAttr('data-nombre-violations-info');
+  $('#js-nombre-violation-majeur').text('').removeAttr('data-nombre-violations-majeur');
+  $('#js-nombre-violation-mineur').text('').removeAttr('data-nombre-violations-mineur');
 
-  $('#note-reliability').text('').removeAttr('data-note-reliability');
-  $('#note-security').text('').removeAttr('data-note-security');
-  $('#note-sqale').text('').removeAttr('data-note-sqale');
-  $('#note-menace-potentielle').text('').removeAttr('data-note-menace-potentielle');
+  $('#js-note-reliability').text('');
+  $('#js-note-security').text('');
+  $('#js-note-sqale').text('');
+  $('#js-note-menace-potentielle').text('');
 
   /** Phase L.7 — 6 indicateurs supplémentaires */
-  $('#alert-status').text('');
-  $('#note-coverage').text('');
-  $('#note-duplication').text('');
-  $('#comment-lines').text('');
-  $('#comment-lines-density').text('');
-  $('#note-comment-lines').text('');
-  $('#test-errors').text('');
-  $('#test-failures').text('');
-  $('#skipped-tests').text('');
-  $('#test-success-density').text('');
-  $('#accepted-issues').text('');
-  $('#false-positive-issues').text('');
+  $('#js-alert-status').text('');
+  $('#js-note-coverage').text('');
+  $('#js-note-duplication').text('');
+  $('#js-comment-lines').text('');
+  $('#js-comment-lines-density').text('');
+  $('#js-note-comment-lines').text('');
+  $('#js-test-errors').text('');
+  $('#js-test-failures').text('');
+  $('#js-skipped-tests').text('');
+  $('#js-test-success-density').text('');
+  $('#js-accepted-issues').text('');
+  $('#js-false-positive-issues').text('');
 
-  $('#menace-potentielle-to-review-high').text('').removeAttr('data-menace-potentielle-to-review-high');
-  $('#menace-potentielle-to-review-medium').text('').removeAttr('data-nombre-anomalie-critique');
-  $('#menace-potentielle-to-review-low').text('').removeAttr('data-menace-potentielle-to-review-low');
-  $('#menace-potentielle-reviewed-high').text('').removeAttr('data-menace-potentielle-reviewed-high');
-  $('#menace-potentielle-reviewed-medium').text('').removeAttr('data-menace-potentielle-reviewed-medium');
-  $('#menace-potentielle-reviewed-low').text('').removeAttr('data-menace-potentielle-reviewed-low');
-  $('#menace-potentielle-totale').text('').removeAttr('data-menace-potentielle-totale');
+  /** Menaces potentielles (hotspots) — le conteneur est vidé/reconstruit par
+   * afficheHotspotDetails(), les cellules to-review/reviewed n'ont donc pas
+   * besoin d'être ciblées individuellement. */
+  $('#js-tableau-menace-potentielle').html('');
+  $('#js-menace-potentielle-totale').text('').removeAttr('data-menace-potentielle-totale');
 
   $('#js-bug-blocker').text('').removeAttr('data-bug-blocker');
   $('#js-bug-critical').text('').removeAttr('data-bug-critical');
