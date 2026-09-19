@@ -48,7 +48,6 @@ https://github.com/Laurent-hadjadj/ma-moulinette
 -->
 <html lang="fr">
     {# Chargement de la section HEAD #}
-
     <head>
         <title>{{ title }}</title>
         {{ include('head.html.twig') }}
@@ -135,8 +134,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
 </button>
 {# lien project-scoped (group/artifact/version).
 bouton totalement decouple du breadcrumb OWASP Sonar (qui peut être vide). On utilise `dc_link_*`
-calcules dans le controller depuis le dernier scan DC pour ce maven_key. Le bouton apparaît dès qu'un
-scan DC existe, peu importe l'état de la table `owasp`. #}
+calcules dans le controller depuis le dernier scan DC pour ce maven_key. Le bouton apparaît dès qu'un scan DC existe, peu importe l'état de la table `owasp`. #}
 {% if is_granted('ROLE_SECURITY') and has_dc_scan %}
     <a
     id="bouton-ouvrir-rapport-dependency-check"
@@ -607,10 +605,10 @@ scan DC existe, peu importe l'état de la table `owasp`. #}
                     <ul class="menu vertical owasp-padding-left-right">
                         <li>
                             <p class="open-sans text-justify">{{ item.description }}</p>
-                            <footer class="grid-x grid-margin-x align-right margin-top-2">
-                                <div class="cell shrink">
+                            <footer class="grid-x grid-margin-x align-right margin-top-1">
+                                <div class="cell shrink margin-bottom-05">
                                     <a
-                                    class="bouton-ouvrir-details open-sans focus-dark-light"
+                                    class="bouton-ouvrir-details open-sans focus-light-red margin-bottom-05"
                                     href="{{ path('owasp_detail', {id: item.id}) }}"
                                     aria-label="Plus de détails..."
                                     >
@@ -659,7 +657,8 @@ scan DC existe, peu importe l'état de la table `owasp`. #}
 
 {# Référentiel OWASP 2025 #}
 <section id="owasp-2025" class="grid-container owasp-content {{ display_off_2025 }} margin-bottom-2">
-    <legend class="container-owasp-description open-sans color-noir font-size-1">Documentation Owasp 2025
+    <legend class="container-owasp-description open-sans color-noir font-size-1">
+        Documentation Owasp 2025
     </legend>
     <ul class="vertical menu accordion-menu" data-accordion-menu>
         {% if owasp_2025 is defined and owasp_2025['liste']|length > 0 %}
