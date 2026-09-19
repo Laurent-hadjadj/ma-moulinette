@@ -14,16 +14,18 @@
 --- 2025-02-03 : Laurent HADJADJ - Ajout du nom du schema en préfixe des tables.
 --- 2025-07-22 : Laurent HADJADJ - Utilisation de true/false au lieu de 0/1 pour reset_password.
 --- 2026-04-05 : Laurent HADJADJ - Ajout de la colonne groupe_id et liste_groupe_fonctionnel dans la table utilisateur.
---- 2026-04-13 : Ajout du support pour OWASP 2025.
---- 2026-06-28 : Mise à jour de la table des version.
---- 2026-09-13 : Mise à jour de la table des version.
+--- 2026-04-13 : Laurent HADJADJ - Ajout du support pour OWASP 2025.
+--- 2026-06-28 : Laurent HADJADJ - Mise à jour de la table des versions.
+--- 2026-09-13 : Laurent HADJADJ - Mise à jour de la table des versions.
+--- 2026-09-19 : Laurent HADJADJ - Mise à jour de la table des versions.
 
 -- MODIF 2026-07-22 : \c ma_moulinette db_user remplacé par \c - db_user
 -- (conserve la base courante, ne change que le rôle) — le nom de base en dur
 -- écrasait silencieusement la cible -d réelle de l'appelant quand ce fichier
 -- est tiré depuis un script pointant sur une AUTRE base (ex. reset-e2e-data.ps1
 -- sur ma_moulinette_test).
-\c - db_user
+
+\c - db_user;
 
 BEGIN;
 
@@ -42,7 +44,8 @@ VALUES
 ('1.5.0', '2022-10-12', NOW()),
 ('1.6.0', '2022-11-29', NOW()),
 ('2.0.0', '2026-09-06', NOW()),
-('2.0.1', '2026-09-13', NOW());
+('2.0.1', '2026-09-13', NOW()),
+('2.0.2', '2026-09-19', NOW());
 
 -- =====================================================================
 -- Table : ma_moulinette.utilisateur
