@@ -1,3 +1,4 @@
+{# MODIF 2026-09-14 : correction <h2>...</h3> -> <h2>...</h2> (rupture de structure introduite lors du reformat des templates) #}
 <div class="grid-container">
     <section class="container-detail-titre">
         <div class="small-4 medium-4 large-4">
@@ -9,14 +10,14 @@
     </section>
 
     <section>
-        <h2 class="h4 claire-hand"><span aria-hidden="true">📄</span><strong>Résumé</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📄</span><strong>Résumé</strong></h2>
         <div class="callout open-sans font-size-11 text-justify">
             {{ owasp.description }}
         </div>
     </section>
 
     <section>
-        <h2 class="h4 claire-hand"><strong>Facteurs de Menace/Vecteurs d'Attaque</strong></h3>
+        <h2 class="h4 claire-hand"><strong>Facteurs de Menace/Vecteurs d'Attaque</strong></h2>
         <div class="table-scroll">
             <table class="responsive-card-table unstriped">
                 <thead>
@@ -60,7 +61,7 @@
     </section>
 
     <section>
-        <h2 class="h4 claire-hand"><strong>L'application est-elle vulnérable&nbsp;?</strong></h3>
+        <h2 class="h4 claire-hand"><strong>L'application est-elle vulnérable&nbsp;?</strong></h2>
         <p class="open-sans font-size-11 text-justify">Les contrôles d'accès appliquent une politique assurant que les utilisateurs respectent leurs permissions. Une faille entraînera généralement des fuites d'informations, des corruptions ou destructions de données, ou permettra des actions en dehors des autorisations de l'utilisateur. Les vulnérabilités de contrôle d'accès consistent généralement&nbsp;:</p>
         <ul class="open-sans font-size-11 margin-left-2">
             <li>A contourner les contrôles d'accès en modifiant l'URL, l'état interne de l'application, ou la page HTML ; ou simplement en utilisant un outil dédié d'attaque d'API.</li>
@@ -73,7 +74,7 @@
     </section>
 
     <section>
-        <h2 class="h4 claire-hand"><strong>Comment s'en prémunir&nbsp;?</strong></h3>
+        <h2 class="h4 claire-hand"><strong>Comment s'en prémunir&nbsp;?</strong></h2>
         <p class="open-sans font-size-11 text-justify">Les contrôles d'accès ne sont efficaces que s'ils sont appliqués dans du code de confiance côté serveur ou dans des API server-less, là ou un attaquant ne peut pas modifier les vérifications des contrôles ni les meta-données.</p>
         <ul class="open-sans font-size-11 margin-left-2">
             <li>A l'exception des ressources publiques, tout doit être bloqué par défaut.</li>
@@ -89,7 +90,7 @@
     </section>
 
     <section>
-        <h2 class="h4 claire-hand"><strong>Exemple de scénarios d'attaques</strong></h3>
+        <h2 class="h4 claire-hand"><strong>Exemple de scénarios d'attaques</strong></h2>
         <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 1</strong>&nbsp;: L'application utilise des données non vérifiées dans un appel SQL qui accède aux informations d'un compte&nbsp;:</p>
         <pre>
             <code class="code-block source-code">
@@ -119,7 +120,7 @@
     </section>
 
     <section>
-        <h2 class="h4 claire-hand"><span aria-hidden="true">📘</span><strong>Références</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📘</span><strong>Références</strong></h2>
         <h4 class="h5 claire-hand">OWASP</h4>
         <ul class="open-sans font-size-11 margin-left-2">
             <li>
@@ -148,27 +149,27 @@
         <ul class="open-sans font-size-11 margin-left-2">
             <li>
                 <a href="https://cwe.mitre.org/data/definitions/22.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')">
-                    CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-22: Improper Limitation of a Pathname to a Restricted Directory ('Path Traversal')</span>
                 </a>
             </li>
             <li>
                 <a href="https://cwe.mitre.org/data/definitions/284.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-284: Improper Access Control (Authorization)">
-                    CWE-284: Improper Access Control (Authorization)
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-284: Improper Access Control (Authorization)</span>
                 </a>
             </li>
             <li>
                 <a href="https://cwe.mitre.org/data/definitions/285.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-285: Improper Authorization">
-                    CWE-285: Improper Authorization
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-285: Improper Authorization</span>
                 </a>
             </li>
             <li>
                 <a href="https://cwe.mitre.org/data/definitions/639.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-639: Authorization Bypass Through User-Controlled Key">
-                    CWE-639: Authorization Bypass Through User-Controlled Key
+                    <span class="source-link"><span aria-hidden="true">📌</span>CWE-639: Authorization Bypass Through User-Controlled Key</span>
                 </a>
             </li>
             <li>
                 <a href="https://portswigger.net/blog/exploiting-cors-misconfigurations-for-bitcoins-and-bounties" target="_blank" rel="noopener noreferrer" aria-label="PortSwigger: Exploiting CORS misconfiguration">
-                    PortSwigger: Exploiting CORS misconfiguration
+                    <span class="source-link"><span aria-hidden="true">🔗</span>PortSwigger: Exploiting CORS misconfiguration</span>
                 </a>
             </li>
         </ul>

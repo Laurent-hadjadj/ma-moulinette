@@ -1,3 +1,5 @@
+{# MODIF 2026-09-14 : correction de balises HTML cassées par le reformat (li/ul/section/span non fermées ou mal formes) #}
+{# MODIF 2026-09-14 : correction <h2>...</h3> -> <h2>...</h2> (rupture de structure introduite lors du reformat des templates) #}
 <div class="grid-container">
     <section class="container-detail-titre">
         <div class="small-4 medium-4 large-4">
@@ -9,14 +11,14 @@
     </section>
 
     <section>
-        <h2 class="h4 claire-hand"><span aria-hidden="true">📄</span><strong>Résumé</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📄</span><strong>Résumé</strong></h2>
         <div class="callout open-sans font-size-11 text-justify">
             {{ owasp.description }}
         </div>
     </section>
 
     <section>
-        <h2 class="h4 claire-hand"><strong>Facteurs de Menace/Vecteurs d'Attaque</strong></h3>
+        <h2 class="h4 claire-hand"><strong>Facteurs de Menace/Vecteurs d'Attaque</strong></h2>
         <div class="table-scroll">
             <table class="responsive-card-table unstriped">
                 <thead>
@@ -59,30 +61,30 @@
     </section>
 
     <section>
-        <h2 class="h4 claire-hand"><strong>Suis-je vulnérable&nbsp;?</strong></h3>
+        <h2 class="h4 claire-hand"><strong>Suis-je vulnérable&nbsp;?</strong></h2>
         <p class="open-sans font-size-11 text-justify">Déterminer d’abord quelles données doivent bénéficier d’une protection chiffrée (mots de passe, données patient, numéros de cartes, données personnelles, etc.), lors de leur transfert et/ou leur stockage.</p>
         <p class="open-sans font-size-11 text-justify">Pour chacune de ces données&nbsp;:</p>
         <ul class="open-sans font-size-11 margin-left-2">
             <li>Les données circulent-elles en clair&nbsp;? Ceci concerne les protocoles tels que HTTP, SMTP, et FTP. Le trafic externe sur internet est particulièrement dangereux. Vérifiez tout le réseau interne, par exemple entre les équilibreurs de charge, les serveurs Web, ou les systèmes backend.</li>
             <li>Des algorithmes faibles ou désuets sont-ils utilisés, soit par défaut, soit dans le code source existant&nbsp;?</li>
             <li>Est-ce que des clefs de chiffrement par défaut sont utilisées&nbsp;? Des clefs de chiffrement faibles sont-elles générées ou réutilisées&nbsp;? Leur gestion et rotation sont-elles prises en charge&nbsp;?</li>
-            <li>Les réponses transmises au navigateur incluent-elles les directives/en-têtes de sécurité adéquats&nbsp;?
-                <li>Est-ce que l'agent utilisateur (l'application ou le client mail, par exemple) vérifie que le certificat envoyé par le serveur est valide&nbsp;?</li>
-            </ul>
+            <li>Les réponses transmises au navigateur incluent-elles les directives/en-têtes de sécurité adéquats&nbsp;?</li>
+            <li>Est-ce que l'agent utilisateur (l'application ou le client mail, par exemple) vérifie que le certificat envoyé par le serveur est valide&nbsp;?</li>
+        </ul>
 
-            <p class="open-sans font-size-11 text-justify">Pour une liste complète de contrôles, se référer à l’ASVS&nbsp;:</p>
-            <ul class="open-sans font-size-11 margin-left-2">
-                <a href="https://www.owasp.org/index.php/ASVS_V7_Cryptography" target="_blank" rel="noopener noreferrer" aria-label="ASVS V7 Cryptography"><span class="source-link"><span aria-hidden="true">🔗</span>Crypto (V7)</span>
-            </a>,
-            <a href="https://www.owasp.org/index.php/ASVS_V9_Data_Protection" target="_blank" rel="noopener noreferrer" aria-label="ASVS V9 Data Protection"><span class="source-link"><span aria-hidden="true">🔗</span>Data Protection (V9)</span>
-        </a> et
-        <a href="https://www.owasp.org/index.php/ASVS_V10_Communications" target="_blank" rel="noopener noreferrer" aria-label="ASVS V10 SSL/TLS Communications"><span class="source-link"><span aria-hidden="true">🔗</span>SSL/TLS (V10)</span>
-    </a>.
+        <p class="open-sans font-size-11 text-justify">Pour une liste complète de contrôles, se référer à l’ASVS&nbsp;:</p>
+        <ul class="open-sans font-size-11 margin-left-2">
+            <a href="https://www.owasp.org/index.php/ASVS_V7_Cryptography" target="_blank" rel="noopener noreferrer" aria-label="ASVS V7 Cryptography"><span class="source-link"><span aria-hidden="true">🔗</span>Crypto (V7)</span>
+        </a>,
+        <a href="https://www.owasp.org/index.php/ASVS_V9_Data_Protection" target="_blank" rel="noopener noreferrer" aria-label="ASVS V9 Data Protection"><span class="source-link"><span aria-hidden="true">🔗</span>Data Protection (V9)</span>
+    </a> et
+    <a href="https://www.owasp.org/index.php/ASVS_V10_Communications" target="_blank" rel="noopener noreferrer" aria-label="ASVS V10 SSL/TLS Communications"><span class="source-link"><span aria-hidden="true">🔗</span>SSL/TLS (V10)</span>
+</a>.
 </ul>
 </section>
 
 <section>
-    <h2 class="h4 claire-hand"><strong>Comment s'en prémunir&nbsp;?</strong></h3>
+    <h2 class="h4 claire-hand"><strong>Comment s'en prémunir&nbsp;?</strong></h2>
     <p class="open-sans font-size-11 text-justify">On veillera au minimum à suivre les recommandations suivantes, mais il reste nécessaire de consulter les références.</p>
     <ul class="open-sans font-size-11 margin-left-2">
         <li>Classifier les données traitées, stockées ou transmises par l'application. Identifier quelles données sont sensibles selon les lois concernant la protection de la vie privée, les exigences réglementaires, ou les besoins métier.</li>
@@ -102,7 +104,7 @@
     </section>
 
     <section>
-        <h2 class="h4 claire-hand"><strong>Exemple de scénarios d'attaques</strong></h3>
+        <h2 class="h4 claire-hand"><strong>Exemple de scénarios d'attaques</strong></h2>
         <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 1</strong>&nbsp;: Une application chiffre des numéros de cartes de crédit dans une base de données utilisant un chiffrement en base automatique. Cependant, ces données sont automatiquement déchiffrées lorsqu'elles sont récupérées, permettant, à une injection SQL de récupérer des numéros de carte de crédit en clair.</p>
 
         <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 2</strong>&nbsp;: Un site n'utilise pas ou ne force pas l'utilisation de TLS sur toutes les pages, ou supporte des protocoles de chiffrement faibles. Un attaquant surveille le trafic réseau (par exemple sur un réseau sans fil non sécurisé), dégrade les connexions de HTTPS à HTTP, intercepte les requêtes, et vole le cookie de session d'un utilisateur. L'attaquant réutilise alors ce cookie et détourne la session de l'utilisateur (authentifié), pouvant ainsi accéder aux données privées de l'utilisateur ou les modifier. Un attaquant pourrait également modifier toutes les données en transit, par exemple le destinataire d'un virement d'argent.</p>
@@ -111,7 +113,7 @@
     </section>
 
     <section>
-        <h2 class="h4 claire-hand"><span aria-hidden="true">📘</span><strong>Références</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📘</span><strong>Références</strong></h2>
 
         <h4 class="h5 claire-hand">OWASP</h4>
         <ul class="open-sans font-size-11 margin-left-2">
@@ -178,6 +180,8 @@
                 <a href="https://cwe.mitre.org/data/definitions/310.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-310: Cryptographic Issues">
                     <span class="source-link"><span aria-hidden="true">📌</span>CWE-310: Cryptographic Issues</span>
                 </a>;
+            </li>
+            <li>
                 <a href="https://cwe.mitre.org/data/definitions/311.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-311: Missing Encryption">
                     <span class="source-link"><span aria-hidden="true">📌</span>CWE-311: Missing Encryption</span>
                 </a>
@@ -196,6 +200,8 @@
                 <a href="https://cwe.mitre.org/data/definitions/326.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-326: Weak Encryption">
                     <span class="source-link"><span aria-hidden="true">📌</span>CWE-326: Weak Encryption</span>
                 </a>;
+            </li>
+            <li>
                 <a href="https://cwe.mitre.org/data/definitions/327.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-327: Broken/Risky Cryptography">
                     <span class="source-link"><span aria-hidden="true">📌</span>CWE-327: Broken/Risky Cryptography</span>
                 </a>

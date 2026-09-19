@@ -1,3 +1,4 @@
+{# MODIF 2026-09-14 : <div> -> </div> (typo, balise jamais fermée) #}
 {% set title = 'OWASP Dependency-Check - ' ~ project_artifact %}
 {% set description = 'Ma Moulinette - detail scan DependencyCheck.' %}
 {% set bottom = 'footer-fixed' %}
@@ -53,33 +54,43 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                 ajouté pour permettre de remonter à la vue cross-projets sans passer
                 par le breadcrumb (Accueil → Dependency-Check → Dashboard). #}
                 <div class="cell shrink margin-bottom-1">
-                    <a id="bouton-ouvrir-vue-executive"
+                    <a
+                        id="bouton-ouvrir-vue-executive"
                         href="{{ path('dc_projet_executive', {
                         'group': project_group,
                         'artifact': project_artifact,
                         'version': project_version}) }}"
-                        class="button open-sans focus-dark-light">
+                        class="button open-sans focus-dark-light"
+                    >
                         <span aria-hidden="true">🎯</span> Vue exécutive
                     </a>
-                    <a id="bouton-ouvrir-rapport-PDF"
+                    <a
+                        id="bouton-ouvrir-rapport-PDF"
                         href="{{ path('dc_projet_pdf', {
                         'group': project_group,
                         'artifact': project_artifact,
                         'version': project_version}) }}"
-                        class="button open-sans focus-dark-light" target="_blank" rel="noopener">
+                        class="button open-sans focus-dark-light"
+                        target="_blank"
+                        rel="noopener"
+                    >
                         <span aria-hidden="true">📄</span> Rapport PDF
                     </a>
-                    <a id="bouton-ouvrir-dc-dashboard"
+                    <a
+                        id="bouton-ouvrir-dc-dashboard"
                         href="{{ path('dc_dashboard') }}"
                         class="button open-sans focus-dark-light"
-                        title="Retour à la vue agrégée cross-projets">
+                        title="Retour à la vue agrégée cross-projets"
+                    >
                         <span aria-hidden="true">📊</span> Dashboard
                     </a>
                     {# MODIF 2026-05-13 : bouton vers la page d'historique de l'application (line chart + scans cumulés). #}
-                    <a id="bouton-ouvrir-dc-history"
+                    <a
+                        id="bouton-ouvrir-dc-history"
                         href="{{ path('dc_projet_history', {'group': project_group, 'artifact': project_artifact}) }}"
                         class="button open-sans focus-dark-light"
-                        title="Évolution temporelle des CVE de cette application">
+                        title="Évolution temporelle des CVE de cette application"
+                    >
                         <span aria-hidden="true">📈</span> Historique
                     </a>
                     {# MODIF 2026-05-13 : bouton vers
@@ -87,30 +98,32 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                     projet si renseigné. Si le projet est standalone (pas de socle),
                     le bouton mène à la page sans filtre. #}
                     {% set has_socle = scan.parentLabel is not null and scan.parentVersion is not null %}
-                    <a id="bouton-ouvrir-dc-mutualisables"
+                    <a
+                        id="bouton-ouvrir-dc-mutualisables"
                         href="{{ has_socle
                         ? path('dc_mutualisables', {'socle': scan.parentLabel ~ '@' ~ scan.parentVersion})
                         : path('dc_mutualisables') }}"
                         class="button open-sans focus-dark-light"
                         title="{{ has_socle
                         ? 'Dépendances mutualisables avec les autres projets utilisant le socle ' ~ scan.parentLabel ~ ' v' ~ scan.parentVersion
-                        : 'Toutes les dépendances mutualisables du périmètre' }}">
+                        : 'Toutes les dépendances mutualisables du périmètre' }}"
+                    >
                         <span aria-hidden="true">🔗</span> Mutualisables{{ has_socle ? ' (socle)' : '' }}
                     </a>
                 </div>
             {% endif %}
 
             {# Variables pre-calculées : valeur réelle si scan disponible, '---' sinon. #}
-            {% set v_scan_date    = scan ? scan.scanDate|date('Y-m-d H:i')           : '---' %}
-            {% set v_engine       = scan and scan.engineVersion ? scan.engineVersion : '---' %}
-            {% set v_dep_total    = scan ? scan.depCountTotal                        : '---' %}
-            {% set v_dep_vuln     = scan ? scan.depCountVulnerable                   : '---' %}
-            {% set v_cve_total    = scan ? scan.cveCountTotal                        : '---' %}
-            {% set v_cve_critical = scan ? scan.cveCountCritical                     : '---' %}
-            {% set v_cve_high     = scan ? scan.cveCountHigh                         : '---' %}
-            {% set v_cve_medium   = scan ? scan.cveCountMedium                       : '---' %}
-            {% set v_cve_low      = scan ? scan.cveCountLow                          : '---' %}
-            {% set v_cve_info     = scan ? scan.cveCountInfo                         : '---' %}
+            {% set v_scan_date = scan ? scan.scanDate|date('Y-m-d H:i') : '---' %}
+            {% set v_engine = scan and scan.engineVersion ? scan.engineVersion : '---' %}
+            {% set v_dep_total = scan ? scan.depCountTotal : '---' %}
+            {% set v_dep_vuln = scan ? scan.depCountVulnerable : '---' %}
+            {% set v_cve_total = scan ? scan.cveCountTotal : '---' %}
+            {% set v_cve_critical = scan ? scan.cveCountCritical : '---' %}
+            {% set v_cve_high = scan ? scan.cveCountHigh : '---' %}
+            {% set v_cve_medium = scan ? scan.cveCountMedium : '---' %}
+            {% set v_cve_low = scan ? scan.cveCountLow : '---' %}
+            {% set v_cve_info = scan ? scan.cveCountInfo : '---' %}
 
             {# Synthèse chiffrée — toujours rendue, '---' si pas de scan. #}
             <div class="grid-x grid-margin-x margin-bottom-1">
@@ -223,9 +236,9 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                     {% endif %}
                 {% endfor %}
             {% endif %}
-            <div class="margin-bottom-2" aria-hidden="true">&nbsp;<div>
-            </main>
+            <div class="margin-bottom-2" aria-hidden="true">&nbsp;</div>
+        </main>
 
-            {{ include('footer.html.twig') }}
-        </body>
-    </html>
+        {{ include('footer.html.twig') }}
+    </body>
+</html>

@@ -1,3 +1,5 @@
+{# MODIF 2026-09-14 : correction de balises HTML cassées par le reformat (li/ul/section/span non fermées ou mal formés) #}
+{# MODIF 2026-09-14 : correction <h2>...</h3> -> <h2>...</h2> (rupture de structure introduite lors du reformat des templates) #}
 <div class="grid-container">
     <section class="container-detail-titre">
         <div class="small-4 medium-4 large-4">
@@ -9,14 +11,14 @@
     </section>
 
     <section>
-        <h2 class="h4 claire-hand"><span aria-hidden="true">📄</span><strong>Résumé</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📄</span><strong>Résumé</strong></h2>
         <div class="callout open-sans font-size-11 text-justify">
             {{ owasp.description }}
         </div>
     </section>
 
     <section>
-        <h2 class="h4 claire-hand"><strong>Facteurs de Menace/Vecteurs d'Attaque</strong></h3>
+        <h2 class="h4 claire-hand"><strong>Facteurs de Menace/Vecteurs d'Attaque</strong></h2>
         <div class="table-scroll">
             <table class="responsive-card-table unstriped">
                 <thead>
@@ -59,7 +61,7 @@
     </section>
 
     <section>
-        <h2 class="h4 claire-hand"><strong>Suis-je Vulnérable&nbsp;?</strong></h3>
+        <h2 class="h4 claire-hand"><strong>Suis-je Vulnérable&nbsp;?</strong></h2>
         <p class="open-sans font-size-11 text-justify">L'insuffisance de journalisation, de détection, de supervision et de réaction aux incidents est avérée si&nbsp;:</p>
         <ul class="open-sans font-size-11 margin-left-2">
             <li>Les traces d’audit, telles que les accès réussis ou échoués et les transactions sensibles, ne sont pas enregistrées.</li>
@@ -74,28 +76,28 @@
     </section>
 
     <section>
-        <h2 class="h4 claire-hand"><strong>Comment l'empêcher&nbsp;?</strong></h3>
+        <h2 class="h4 claire-hand"><strong>Comment l'empêcher&nbsp;?</strong></h2>
         <p class="open-sans font-size-11 text-justify">Conformément aux risques évalués sur les données stockées ou gérées par l'application&nbsp;:</p>
         <ul class="open-sans font-size-11 margin-left-2">
             <li>S'assurer que toutes les authentifications, les erreurs de contrôle d'accès et de contrôle des entrées côté serveur sont enregistrées, avec un contexte utilisateur suffisant pour identifier les comptes suspects ou malveillants, et conservées suffisamment longtemps pour permettre une analyse légale différée.</li>
             <li>S'assurer que les enregistrements des journaux sont dans un format standard pour permettre de les intégrer facilement à une solution de gestion de logs centralisée.</li>
             <li>S'assurer que les transactions à haute valeur ajoutée ont une piste d'audit, avec un contrôle d'intégrité, pour éviter la modification ou la suppression, comme des tables de bases de données en ajout seul ou équivalent.</li>
             <li>Mettre en place une supervision et une gestion d'alertes efficaces pour détecter et réagir aux actions suspectes en temps opportun.</li>
-            <li>Définir ou adopter un plan de réaction et de reprise sur incident, comme celui du <a href="https://csrc.nist.gov/publications/detail/sp/800-61/rev-2/final" target="_blank" rel="noopener noreferrer" aria-label="Consulter le NIST 800-61 rev 2"><span class="source-link"><span aria-hidden="true">🔗</span>NIST 800-61 rev 2</span></a>ou ultérieur.
+            <li>Définir ou adopter un plan de réaction et de reprise sur incident, comme celui du <a href="https://csrc.nist.gov/publications/detail/sp/800-61/rev-2/final" target="_blank" rel="noopener noreferrer" aria-label="Consulter le NIST 800-61 rev 2"><span class="source-link"><span aria-hidden="true">🔗</span>NIST 800-61 rev 2</span></a> ou ultérieur.</li>
         </ul>
 
         <p class="open-sans font-size-11 text-justify">On trouve des logiciels, commerciaux ou open source, de protection d'applications tel que <a href="https://www.owasp.org/index.php/OWASP_AppSensor_Project" target="_blank" rel="noopener noreferrer" aria-label="Consulter le projet OWASP AppSensor"><span class="source-link"><span aria-hidden="true">🔗</span>OWASP AppSensor</span></a>, de pare-feux d'application web (WAF) tel que <a href="https://www.owasp.org/index.php/Category:OWASP_ModSecurity_Core_Rule_Set_Project" target="_blank" rel="noopener noreferrer" aria-label="Consulter le projet OWASP ModSecurity Core Rule Set"><span class="source-link"><span aria-hidden="true">🔗</span>ModSecurity with the OWASP ModSecurity Core Rule Set</span></a> et de logiciels de corrélation de journaux avec des tableaux de bord et d'alertes configurables.</p>
     </section>
 
     <section>
-        <h2 class="h4 claire-hand"><strong>Exemple de scénarios d'attaques</strong></h3>
+        <h2 class="h4 claire-hand"><strong>Exemple de scénarios d'attaques</strong></h2>
         <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 1</strong>&nbsp;: Un forum, pour un projet de développement open source d’une petite équipe, a été piraté à cause d’une faille logicielle. Les attaquants ont effacé le dépôt du code source de la future version et tout le contenu du forum. Bien que le code ait pu être récupéré, le manque de supervision, de journalisation et d’alertes ont conduit à une atteinte bien plus grave. Le résultat étant que le projet a été arrêté.</p>
         <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 2</strong>&nbsp;: Un attaquant teste des accès utilisateurs avec un mot de passe commun. Il pourra accéder à tous les comptes ayant ce mot de passe. Pour tous les autres utilisateurs, ce test ne laisse qu'une trace de tentative d'accès échoué. Quelques jours après, ce test peut être réalisé avec un autre mot de passe.</p>
         <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 3</strong>&nbsp;: Un grand distributeur américain a rapporté qu'une sandbox d’analyse de malware de fichiers attachés, aurait détecté un logiciel suspect, mais que personne n'a réagi à cette détection. Il y a eu plusieurs alertes avant que la brèche ne soit découverte par une banque externe à cause d'une transaction par carte frauduleuse.</p>
     </section>
 
     <section>
-        <h2 class="h4 claire-hand"><span aria-hidden="true">📘</span><strong>Références</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📘</span><strong>Références</strong></h2>
         <h4 class="h5 claire-hand">OWASP</h4>
         <ul class="open-sans font-size-11 margin-left-2">
             <li><a href="https://www.owasp.org/index.php/OWASP_Proactive_Controls#8:_Implement_Logging_and_Intrusion_Detection" target="_blank" rel="noopener noreferrer" aria-label="Consulter OWASP Proactive Controls: Implement Logging and Intrusion Detection"><span class="source-link"><span aria-hidden="true">🔗</span>OWASP Proactive Controls: Implement Logging and Intrusion Detection</span></a></li>

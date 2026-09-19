@@ -4,6 +4,32 @@ Toutes les évolutions notables de Ma-Moulinette sont documentées dans ce fichi
 
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), et ce projet adhère (au mieux, l'historique antérieur à cette convention restant dans son style d'origine) au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [2.0.2] - 2026-09-19
+
+Corrections mineures.
+
+### Ajouté
+
+**Avatar** : Ajout du focus sur lors de la selection de l'avatar.
+
+### Modifié
+
+* **Code-Clean** : Correction des balises fermantes dans les templates Twig (erreurs de parsing) ;
+
+### Corrigé
+
+* **Avatar** : Correction du contentType du script details.js qui bloquait l'appel Ajax sur le choix de l'avatar.
+
+## [2.0.1] - 2026-09-13
+
+Corrections mineures.
+
+### Modifié
+
+* **projet** : Correction du nettoyage des valeurs quand on relance une collecte sur un projet déjà collecté et affiché ;
+* **code-clean** : Correction des balises fermantes dans les templates Twig (erreurs de parsing) ;
+* **formatage** : Conversion de certains fichiers en UTF-8 BOM (Windows) vers UTF-8 (Linux) pour éviter les erreurs de parsing Twig, remplacement du formateur twig par html dans vscode et reformatage de tous les fichiers Twig ;
+
 ## [2.0.0] - 2026-09-06
 
 Reprise complète du projet initial (Symfony 5.4 / SQLite) vers une architecture Symfony 8 / PostgreSQL 18. Périmètre couvert depuis `v1.6.0`.

@@ -1,3 +1,5 @@
+{# MODIF 2026-09-14 : correction de balises HTML cassées par le reformat (li/ul/section/span non fermées ou mal formés) #}
+{# MODIF 2026-09-14 : correction <h2>...</h3> -> <h2>...</h2> (rupture de structure introduite lors du reformat des templates) #}
 <div class="grid-container">
     <section class="container-detail-titre">
         <div class="small-4 medium-4 large-4">
@@ -9,14 +11,14 @@
     </section>
 
     <section>
-        <h2 class="h4 claire-hand"><span aria-hidden="true">📄</span><strong>Résumé</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📄</span><strong>Résumé</strong></h2>
         <div class="callout open-sans font-size-11 text-justify">
             {{ owasp.description }}
         </div>
     </section>
 
     <section>
-        <h2 class="h4 claire-hand"><span aria-hidden="true">📊</span><strong>Facteurs</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">📊</span><strong>Facteurs</strong></h2>
         <div class="table-scroll">
             <table class="responsive-card-table unstriped">
                 <thead>
@@ -50,7 +52,7 @@
     </section>
 
     <section>
-        <h2 class="h4 claire-hand"><span aria-hidden="true">🔍 </span><strong>Aperçu</strong></h3>
+        <h2 class="h4 claire-hand"><span aria-hidden="true">🔍 </span><strong>Aperçu</strong></h2>
         <p class="open-sans font-size-11 text-justify">La catégorie «&nbsp;Échecs d'authentification&nbsp;» conserve sa 7<sup>e</sup> place, avec un léger changement de nom visant à refléter plus fidèlement les 36 CWE qu'elle regroupe. Malgré les avantages offerts par les cadres normalisés, cette catégorie a conservé son classement de 2021.<br>
     Parmi les faiblesses notables (CWE – Common Weakness Enumerations), on trouve&nbsp;:</p>
     <ul class="open-sans font-size-11 margin-left-2">
@@ -63,7 +65,7 @@
 </section>
 
 <section>
-    <h2 class="h4 claire-hand"><span aria-hidden="true">🏷️</span><strong>Description</strong></h3>
+    <h2 class="h4 claire-hand"><span aria-hidden="true">🏷️</span><strong>Description</strong></h2>
     <p class="open-sans font-size-11 text-justify">Lorsqu’un attaquant parvient à tromper un système pour qu’il reconnaisse comme légitime un utilisateur invalide ou incorrect, cette vulnérabilité est présente. Des faiblesses d’authentification peuvent exister si l’application :&nbsp;:</p>
     <ul class="open-sans font-size-11 margin-left-2">
         <li>Autorise des attaques automatisées telles que le credential stuffing, où l’attaquant dispose d’une liste compromise de noms d’utilisateur et de mots de passe valides. Plus récemment, ce type d’attaque s’est étendu pour inclure des attaques hybrides (également appelées password spray), où l’attaquant utilise des variations ou des incréments d’identifiants divulgués pour obtenir un accès, par exemple en essayant « Password1! », « Password2! », « Password3! », etc.</li>
@@ -82,7 +84,7 @@
 </section>
 
 <section>
-    <h2 class="h4 claire-hand"><span aria-hidden="true">🛟</span><strong>Comment s'en prémunir</strong></h3>
+    <h2 class="h4 claire-hand"><span aria-hidden="true">🛟</span><strong>Comment s'en prémunir</strong></h2>
     <ul class="open-sans font-size-11 margin-left-2">
         <li>Dans la mesure du possible, implémentez et imposez l’utilisation de l’authentification multifacteur afin de prévenir les attaques automatisées telles que le credential stuffing, les attaques par force brute et la réutilisation d’identifiants volés.</li>
         <li>Dans la mesure du possible, encouragez et permettez l’utilisation de gestionnaires de mots de passe afin d’aider les utilisateurs à faire de meilleurs choix.</li>
@@ -100,7 +102,7 @@
 </section>
 
 <section>
-    <h2 class="h4 claire-hand"><span aria-hidden="true">☠️</span><strong>Exemple de scénarios d'attaque</strong></h3>
+    <h2 class="h4 claire-hand"><span aria-hidden="true">☠️</span><strong>Exemple de scénarios d'attaque</strong></h2>
     <p class="open-sans font-size-11 text-justify"><span aria-hidden="true">🤫</span><strong>Scénario 1</strong>&nbsp;: Le credential stuffing, c’est-à-dire l’utilisation de listes connues de combinaisons de noms d’utilisateur et de mots de passe, est aujourd’hui une attaque très courante. Plus récemment, on a observé que des attaquants « incrémentent » ou ajustent les mots de passe en se basant sur des comportements humains fréquents. Par exemple, modifier « Winter2025 » en « Winter2026 », ou « ILoveMyDog6 » en « ILoveMyDog7 » ou « ILoveMyDog5 ».<br>
     Cet ajustement des tentatives de mots de passe est appelé une attaque hybride de credential stuffing ou une attaque de type password spray, et elles peuvent être encore plus efficaces que la version traditionnelle.<br>
 Si une application ne met pas en place de défenses contre les menaces automatisées (force brute, scripts ou bots) ou contre le credential stuffing, elle peut être utilisée comme un oracle de mots de passe pour déterminer si des identifiants sont valides et ainsi permettre un accès non autorisé.</p>
@@ -115,7 +117,7 @@ Le même problème peut survenir dans les bureaux et les entreprises lorsqu’un
 </section>
 
 <section>
-    <h2 class="h4 claire-hand"><span aria-hidden="true">📘</span><strong>Références</strong></h3>
+    <h2 class="h4 claire-hand"><span aria-hidden="true">📘</span><strong>Références</strong></h2>
     <ul class="open-sans font-size-11 margin-left-2">
         <li>
             <a href="https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html" target="_blank" rel="noopener noreferrer" aria-label="OWASP Authentication Cheat Sheet">
@@ -131,7 +133,7 @@ Le même problème peut survenir dans les bureaux et les entreprises lorsqu’un
 </section>
 
 <section>
-    <h2 class="h4 claire-hand"><span aria-hidden="true">📋</span><strong>Liste des CWEs associées</strong></h3>
+    <h2 class="h4 claire-hand"><span aria-hidden="true">📋</span><strong>Liste des CWEs associées</strong></h2>
     <ul class="open-sans font-size-11 margin-left-2">
         <li>
             <a href="https://cwe.mitre.org/data/definitions/258.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-258 Empty Password in Configuration File">
@@ -250,7 +252,7 @@ Le même problème peut survenir dans les bureaux et les entreprises lorsqu’un
         </li>
         <li>
             <a href="https://cwe.mitre.org/data/definitions/350.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-350 Reliance on Reverse DNS Resolution for a Security-Critical Action">
-                <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-350 Reliance on Reverse DNS Resolution for a Security-Critical Action/span>
+                <span class="source-link"><span aria-hidden="true">📌 🆕</span>CWE-350 Reliance on Reverse DNS Resolution for a Security-Critical Action</span>
             </a>
         </li>
         <li>

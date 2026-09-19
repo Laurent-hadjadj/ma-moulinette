@@ -108,6 +108,13 @@ $('#js-reset-password').on('click', async function () {
  * @author     Laurent HADJADJ <laurent_h@me.com>
  * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
  */
+/* MODIF 2026-09-14 : `contentType,` (raccourci ES6)
+ * référençait une variable inexistante (seul `content_type` est importe) :
+ * ReferenceError immédiat, hors du try/catch, a chaque clic sur un avatar
+ * -> aucune requête envoyée, aucun changement visuel. Meme bug que celui
+ * corrige le 2026-07-19 sur le handler mot-de-passe : `$.ajax()` sans
+ * `await`. Le bloc catch référençait en plus `t`/`trace`/`erreur` hors de
+ * portée ou jamais déclarés. */
 const changeMe = async function(avatar){
   const data = { avatar };
   const options = {
@@ -115,7 +122,7 @@ const changeMe = async function(avatar){
     method: 'POST',
     dataType: 'json',
     data: JSON.stringify(data),
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
@@ -123,9 +130,9 @@ const changeMe = async function(avatar){
   };
 
   try {
-    const t = $.ajax(options);
+    const t = await $.ajax(options);
 
-    if (t.code !== http_200){
+    if (Number(t.code) !== http_200){
       const hasTrace = !!t.trace;
       const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
       showMessage(t.type, t.message, trace);
@@ -144,16 +151,11 @@ const changeMe = async function(avatar){
     }
 
     // Gestion d'erreurs génériques
+    const trace = prepareTechnicalDetails(error);
     const message = `Une erreur inattendue est survenue (Erreur 500).`;
-    showMessage(t.type, t.message, trace);
-    modalSafe.close('#mes-avatars');
-    modalSafe.open('#modal-information-utilisateur');
-
-    const trace = prepareTechnicalDetails(erreur);
     showMessage('critical', message, trace);
     modalSafe.close('#mes-avatars');
     modalSafe.open('#modal-information-utilisateur');
-    return;
   }
 }
 
@@ -177,13 +179,27 @@ $('#bouton-fermer-mes-avatars').on('click', function () {
   modalSafe.close('#mes-avatars');
 });
 
-/** Validation du choix de l'avatar */
-$('.thumbnail').on('click', function(){
-  const id = $(this).attr('id');
-  const theme = $(`#${id}`).data('theme');
-  const image = $(`#${id}`).data('image');
-  const src = $(`#${id}`).attr('src');
+/**
+ * [Description for selectAvatar]
+ * Validation du choix de l'avatar (souris ET clavier).
+ *
+ * MODIF 2026-09-14 : les vignettes ne recevaient
+ * aucun retour visuel au clic/focus (cf. common.css .thumbnail.selected).
+ * On pose ici la classe et l'attribut aria-pressed sur la vignette choisie.
+ *
+ * @param {HTMLElement} el
+ * @return void
+ */
+const selectAvatar = function(el){
+  const $el = $(el);
+  const id = $el.attr('id');
+  const theme = $el.data('theme');
+  const image = $el.data('image');
+  const src = $el.attr('src');
   const assets = `${theme}/${image}`;
+
+  $('.thumbnail').removeClass('selected').attr('aria-pressed', 'false');
+  $el.addClass('selected').attr('aria-pressed', 'true');
 
   $('#ajouter-mon-avatar').prop('src', src);
   const data = document.getElementById('ajouter-mon-avatar');
@@ -191,5 +207,18 @@ $('.thumbnail').on('click', function(){
   data.dataset.image = image;
   $('#registration_form_avatar').val(assets);
 
-  const t = changeMe(assets);
+  changeMe(assets);
+};
+
+$('.thumbnail').on('click', function(){
+  selectAvatar(this);
+});
+
+/** Activation clavier (Entrée / Espace) : un <img role="button"> n'active pas
+ * nativement au clavier, contrairement à un vrai <button>. */
+$('.thumbnail').on('keydown', function(event){
+  if (event.key === 'Enter' || event.key === ' ' || event.key === 'Spacebar') {
+    event.preventDefault();
+    selectAvatar(this);
+  }
 });

@@ -100,42 +100,86 @@
             </code>
         </pre>
 
-        <p class="open-sans font-size-11 text-justify">Dans les deux cas, l'attaquant modifie le paramètre <span class="code-inline">‘id’</span> dans son navigateur en : <span class="code-inline">UNION SELECT SLEEP(10);</span>. Par exemple&nbsp;:
+        <p class="open-sans font-size-11 text-justify">Dans les deux cas, l'attaquant modifie le paramètre <span class="code-inline">‘id’</span> dans son navigateur en : <span class="code-inline">UNION SELECT SLEEP(10);</span>. Par exemple&nbsp;:</p>
 
-        <pre>
+            <pre>
             <code class="code-block source-code">
                 http://example.com/app/accountView?id=' UNION SELECT SLEEP(10);--
             </code>
         </pre>
 
-        <p class="open-sans font-size-11 text-justify">Ceci change le sens de chacune des requêtes pour récupérer tous les enregistrements de la table des comptes. Dans le pire des cas, l’attaquant exploite cette faiblesse pour modifier ou détruire des données, ou appeler des procédures stockées de la base de données.</p>
+            <p class="open-sans font-size-11 text-justify">Ceci change le sens de chacune des requêtes pour récupérer tous les enregistrements de la table des comptes. Dans le pire des cas, l’attaquant exploite cette faiblesse pour modifier ou détruire des données, ou appeler des procédures stockées de la base de données.</p>
     </section>
 
     <section>
         <h2 class="h4 claire-hand"><span aria-hidden="true">📘</span><strong>Références</strong></h2>
         <h4 class="h5 claire-hand">OWASP</h4>
         <ul class="open-sans font-size-11 margin-left-2">
-            <li><a href="https://www.owasp.org/index.php/OWASP_Proactive_Controls#2:_Parameterize_Queries" target="_blank" rel="noopener noreferrer" aria-label="OWASP Proactive Controls: Parameterize Queries"><span class="source-link"><span aria-hidden="true">🔗</span>OWASP Proactive Controls: Parameterize Queries</a></li>
-            <li><a href="https://www.owasp.org/index.php/ASVS_V5_Input_validation_and_output_encoding" target="_blank" rel="noopener noreferrer" aria-label="OWASP ASVS: V5 Input Validation and Encoding"><span class="source-link"><span aria-hidden="true">🔗</span>OWASP ASVS: V5 Input Validation and Encoding</span></a></li>
+            <li><a href="https://www.owasp.org/index.php/OWASP_Proactive_Controls#2:_Parameterize_Queries" target="_blank"
+                    rel="noopener noreferrer" aria-label="OWASP Proactive Controls: Parameterize Queries"><span
+                        class="source-link"><span aria-hidden="true">🔗</span>OWASP Proactive Controls: Parameterize
+                        Queries</span></a></li>
+            <li><a href="https://www.owasp.org/index.php/ASVS_V5_Input_validation_and_output_encoding" target="_blank"
+                    rel="noopener noreferrer" aria-label="OWASP ASVS: V5 Input Validation and Encoding"><span
+                        class="source-link"><span aria-hidden="true">🔗</span>OWASP ASVS: V5 Input Validation and
+                        Encoding</span></a></li>
             <li>OWASP Testing Guide:
-                <a href="https://www.owasp.org/index.php/Testing_for_SQL_Injection_(OTG-INPVAL-005)" target="_blank" rel="noopener noreferrer" aria-label="SQL Injection"><span class="source-link"><span aria-hidden="true">🔗</span>SQL Injection</a>,
-                <a href="https://www.owasp.org/index.php/Testing_for_Command_Injection_(OTG-INPVAL-013)" target="_blank" rel="noopener noreferrer" aria-label="Command Injection"><span class="source-link"><span aria-hidden="true">🔗</span>Command Injection</span></a>,
-                <a href="https://www.owasp.org/index.php/Testing_for_ORM_Injection_(OTG-INPVAL-007)" target="_blank" rel="noopener noreferrer" aria-label="ORM Injection"><span class="source-link"><span aria-hidden="true">🔗</span>ORM Injection</span></a>
+                <a href="https://www.owasp.org/index.php/Testing_for_SQL_Injection_(OTG-INPVAL-005)" target="_blank"
+                    rel="noopener noreferrer" aria-label="SQL Injection"><span class="source-link"><span
+                            aria-hidden="true">🔗</span>SQL Injection</span></a>,
+                <a href="https://www.owasp.org/index.php/Testing_for_Command_Injection_(OTG-INPVAL-013)" target="_blank"
+                    rel="noopener noreferrer" aria-label="Command Injection"><span class="source-link"><span
+                            aria-hidden="true">🔗</span>Command Injection</span></a>,
+                <a href="https://www.owasp.org/index.php/Testing_for_ORM_Injection_(OTG-INPVAL-007)" target="_blank"
+                    rel="noopener noreferrer" aria-label="ORM Injection"><span class="source-link"><span
+                            aria-hidden="true">🔗</span>ORM Injection</span></a>
             </li>
-            <li><span class="source-link"><span aria-hidden="true">🔗</span><a href="https://www.owasp.org/index.php/Injection_Prevention_Cheat_Sheet" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Injection Prevention"><span class="source-link"><span aria-hidden="true">🔗</span>OWASP Cheat Sheet: Injection Prevention</span></a></li>
-            <li><span class="source-link"><span aria-hidden="true">🔗</span><a href="https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: SQL Injection Prevention"><span class="source-link"><span aria-hidden="true">🔗</span>OWASP Cheat Sheet: SQL Injection Prevention</span></a></li>
-            <li><span class="source-link"><span aria-hidden="true">🔗</span><a href="https://www.owasp.org/index.php/Injection_Prevention_Cheat_Sheet_in_Java" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Injection Prevention in Java"><span class="source-link"><span aria-hidden="true">🔗</span>OWASP Cheat Sheet: Injection Prevention in Java</span></a></li>
-            <li><span class="source-link"><span aria-hidden="true">🔗</span><a href="https://www.owasp.org/index.php/Query_Parameterization_Cheat_Sheet" target="_blank" rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Query Parameterization"><span class="source-link"><span aria-hidden="true">🔗</span>OWASP Cheat Sheet: Query Parameterization</span></a></li>
-            <li><span class="source-link"><span aria-hidden="true">🔗</span><a href="https://www.owasp.org/index.php/OWASP_Automated_Threats_to_Web_Applications" target="_blank" rel="noopener noreferrer" aria-label="OWASP Automated Threats to Web Applications – OAT-014"><span class="source-link"><span aria-hidden="true">🔗</span>OWASP Automated Threats to Web Applications – OAT-014</span></a></li>
+            <li>
+                <a href="https://www.owasp.org/index.php/Injection_Prevention_Cheat_Sheet"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="OWASP Cheat Sheet: Injection Prevention">
+                        <span class="source-link">
+                            <span aria-hidden="true">🔗</span>OWASP Cheat Sheet: Injection Prevention
+                        </span>
+                </a>
+            </li>
+            <li><a href="https://www.owasp.org/index.php/SQL_Injection_Prevention_Cheat_Sheet" target="_blank"
+                    rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: SQL Injection Prevention"><span
+                    class="source-link"><span aria-hidden="true">🔗</span>OWASP Cheat Sheet: SQL Injection
+                    Prevention</span></a></li>
+            <li><a href="https://www.owasp.org/index.php/Injection_Prevention_Cheat_Sheet_in_Java" target="_blank"
+                    rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Injection Prevention in Java"><span
+                    class="source-link"><span aria-hidden="true">🔗</span>OWASP Cheat Sheet: Injection Prevention in
+                    Java</span></a></li>
+            <li><a href="https://www.owasp.org/index.php/Query_Parameterization_Cheat_Sheet" target="_blank"
+                    rel="noopener noreferrer" aria-label="OWASP Cheat Sheet: Query Parameterization"><span
+                    class="source-link"><span aria-hidden="true">🔗</span>OWASP Cheat Sheet: Query
+                    Parameterization</span></a></li>
+            <li><a href="https://www.owasp.org/index.php/OWASP_Automated_Threats_to_Web_Applications" target="_blank"
+                    rel="noopener noreferrer" aria-label="OWASP Automated Threats to Web Applications – OAT-014"><span
+                    class="source-link"><span aria-hidden="true">🔗</span>OWASP Automated Threats to Web Applications –
+                    OAT-014</span></a></li>
         </ul>
 
         <h4 class="h5 claire-hand">Externes</h4>
         <ul class="open-sans font-size-11 margin-left-2">
-            <li><a href="https://cwe.mitre.org/data/definitions/77.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-77: Command Injection"><span class="source-link"><span aria-hidden="true">📌</span>CWE-77: Command Injection</span></a></li>
-            <li><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-89: SQL Injection"><span class="source-link"><span aria-hidden="true">📌</span>CWE-89: SQL Injection</span></a></li>
-            <li><a href="https://cwe.mitre.org/data/definitions/564.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-564: Hibernate Injection"><span class="source-link"><span aria-hidden="true">📌</span>CWE-564: Hibernate Injection</span></a></li>
-            <li><a href="https://cwe.mitre.org/data/definitions/917.html" target="_blank" rel="noopener noreferrer" aria-label="CWE-917: Expression Language Injection"><span class="source-link"><span aria-hidden="true">📌</span>CWE-917: Expression Language Injection</span></a></li>
-            <li><a href="https://portswigger.net/kb/issues/00101080_serversidetemplateinjection" target="_blank" rel="noopener noreferrer" aria-label="PortSwigger: Server-side template injection"><span class="source-link"><span aria-hidden="true">🔗</span>PortSwigger: Server-side template injection</span></a></li>
+            <li><a href="https://cwe.mitre.org/data/definitions/77.html" target="_blank" rel="noopener noreferrer"
+                    aria-label="CWE-77: Command Injection"><span class="source-link"><span
+                            aria-hidden="true">📌</span>CWE-77: Command Injection</span></a></li>
+            <li><a href="https://cwe.mitre.org/data/definitions/89.html" target="_blank" rel="noopener noreferrer"
+                    aria-label="CWE-89: SQL Injection"><span class="source-link"><span
+                            aria-hidden="true">📌</span>CWE-89: SQL Injection</span></a></li>
+            <li><a href="https://cwe.mitre.org/data/definitions/564.html" target="_blank" rel="noopener noreferrer"
+                    aria-label="CWE-564: Hibernate Injection"><span class="source-link"><span
+                            aria-hidden="true">📌</span>CWE-564: Hibernate Injection</span></a></li>
+            <li><a href="https://cwe.mitre.org/data/definitions/917.html" target="_blank" rel="noopener noreferrer"
+                    aria-label="CWE-917: Expression Language Injection"><span class="source-link"><span
+                            aria-hidden="true">📌</span>CWE-917: Expression Language Injection</span></a></li>
+            <li><a href="https://portswigger.net/kb/issues/00101080_serversidetemplateinjection" target="_blank"
+                    rel="noopener noreferrer" aria-label="PortSwigger: Server-side template injection"><span
+                        class="source-link"><span aria-hidden="true">🔗</span>PortSwigger: Server-side template
+                        injection</span></a></li>
         </ul>
     </section>
 </div>

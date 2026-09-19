@@ -1,7 +1,8 @@
+{# MODIF 2026-09-14 : </fieldset> manquant #}
 {% set title = "Admin-Log" %}
 {% set description = "Consultation des journaux de traces" %}
 {% set type_content = "Application Ma-Moulinette, consultation des traces." %}
-{% set bottom="footer-fixed footer-fixed-small" %}
+{% set bottom = "footer-fixed footer-fixed-small" %}
 <!DOCTYPE html>
 <!--
 .__  __             __  __             _ _            _   _
@@ -15,7 +16,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
 © 2024 - CC BY-SA-NC 4.0
 -->
 
-<html	lang="fr">
+<html lang="fr">
     {# Chargement de la section HEAD #}
     <head>
         <title>{{ title }}</title>
@@ -94,60 +95,65 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                                         </label>
                                     </div>
                                 </div>
-                            </div>
-
-                            <div class="cell medium-3 align-self-bottom">
-                                <button id="bouton-apply-filters"
-                                    type="button"
-                                    class="button open-sans focus-dark-light"
-                                    data-close
-                                    aria-label="Appliquer les filtres"><span aria-hidden="true">🛠️</span> Appliquer les filtres
-                                    </button>
-                                </div>
-                            </div>
+                            </fieldset>
                         </div>
 
-                        <div id="logs-loading" class="callout primary hide">
-                            Chargement des logs…
-                        </div>
-
-                        {# Table #}
-                        <div class="callout admin-log-table">
-                            <table id="logs-table" class="hover stack">
-                                <thead>
-                                    <tr>
-                                        <th>Nom</th>
-                                        <th>Env</th>
-                                        <th>Type</th>
-                                        <th class="text-right">Taille</th>
-                                        <th>Modifié</th>
-                                        <th class="text-center">
-                                            <label for="select-all" class="sr-only">Sélectionner tous</label>
-                                            <input type="checkbox" id="select-all">
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
+                        <div class="cell medium-3 align-self-bottom">
+                            <button
+                                id="bouton-apply-filters"
+                                type="button"
+                                class="button open-sans focus-dark-light"
+                                data-close
+                                aria-label="Appliquer les filtres"
+                            ><span aria-hidden="true">🛠️</span> Appliquer les filtres
+                            </button>
                         </div>
                     </div>
+                </div>
 
-                    {# Actions #}
-                    {% if is_granted('ROLE_INTERNAL') %}
-                        <footer class="grid-x grid-padding-x align-right margin-top-2">
-                            <div class="cell shrink">
-                                <button id="bouton-download-zip"
-                                    type="button"
-                                    class="button open-sans focus-dark-light"
-                                    data-close
-                                    aria-label="Télécharger la sélection"><span aria-hidden="true">⚙️</span> Télécharger la sélection
-                                    </button>
-                                </div>
-                            </footer>
-                        {% endif %}
-                    </main>
+                <div id="logs-loading" class="callout primary hide">
+                    Chargement des logs…
+                </div>
 
-                    {# Chargement de la section footer #}
-                    {{ include('footer.html.twig') }}
-                </body>
-            </html>
+                {# Table #}
+                <div class="callout admin-log-table">
+                    <table id="logs-table" class="hover stack">
+                        <thead>
+                            <tr>
+                                <th>Nom</th>
+                                <th>Env</th>
+                                <th>Type</th>
+                                <th class="text-right">Taille</th>
+                                <th>Modifié</th>
+                                <th class="text-center">
+                                    <label for="select-all" class="sr-only">Sélectionner tous</label>
+                                    <input type="checkbox" id="select-all">
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </div>
+
+            {# Actions #}
+            {% if is_granted('ROLE_INTERNAL') %}
+                <footer class="grid-x grid-padding-x align-right margin-top-2">
+                    <div class="cell shrink">
+                        <button
+                            id="bouton-download-zip"
+                            type="button"
+                            class="button open-sans focus-dark-light"
+                            data-close
+                            aria-label="Télécharger la sélection"
+                        ><span aria-hidden="true">⚙️</span> Télécharger la sélection
+                        </button>
+                    </div>
+                </footer>
+            {% endif %}
+        </main>
+
+        {# Chargement de la section footer #}
+        {{ include('footer.html.twig') }}
+    </body>
+</html>

@@ -569,6 +569,7 @@ body {
 /* désactive la selection de texte sur un élément */
 .no-select {
   -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* iOS Safari */
   user-select: none;           /* Non-prefixed version, currently
                                   supported by Chrome, Edge, Opera and Firefox */
 }
@@ -1053,6 +1054,22 @@ button.identifiant-titre {
 .sepia:hover { filter: sepia(1); }
 .gray-scale { filter: grayscale(1); }
 .gray-scale:hover { filter: grayscale(0); }
+
+/* MODIF 2026-09-14 : focus clavier + état "sélectionné"
+ * pour les vignettes avatar (templates/information.avatar.html.twig) —
+ * jusqu'ici aucun retour visuel au clic/focus, seul le survol souris
+ * changeait la teinte (.gray-scale:hover). Reprend l'outline WCAG déjà
+ * utilisé ailleurs (.focus-dark-light, .focus-light-red). */
+.thumbnail { cursor: pointer; border-radius: 6px; }
+.thumbnail:focus {
+  outline: 3px dashed #007acc;
+  outline-offset: 3px;
+}
+.thumbnail.selected {
+  outline: 3px solid #007acc;
+  outline-offset: 2px;
+  filter: grayscale(0);
+}
 
 /* Accordion */
 .menu-accordion {

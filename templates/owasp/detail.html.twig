@@ -14,45 +14,45 @@ Laurent HADJADJ
 https://github.com/Laurent-hadjadj/ma-moulinette
 © 2024 - CC BY-SA-NC 4.0
 -->
-<html lang="fr">
-    {# Chargement de la section HEAD #}
-    <head>
-        <title>{{ title }}</title>
-        {{ include('head.html.twig') }}
-        {% block importmap %}
-            {{ importmap('owasp') }}
-        {% endblock %}
-    </head>
-    <body>
-        {{ include('header.html.twig') }}
+<html lang="fr" dir="ltr">
+{# Chargement de la section HEAD #}
 
-        <header class="grid-container margin-top-1">
-            <nav aria-label="Fil d'Ariane, vous êtes ici">
-                <ol class="claire-hand breadcrumbs">
-                    <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
-                    <li><a href="{{ path('projet', {}) }}">Projet</a></li>
-                    <li><a href="{{ path('owasp', {}) }}">Owasp</a></li>
-                    <li aria-current="page">{{ owasp.category }}</li>
-                </ol>
-            </nav>
-        </header>
+<head>
+    <title>{{ title }}</title>
+    {{ include('head.html.twig') }}
+    {% block importmap %}
+    {{ importmap('owasp') }}
+    {% endblock %}
+</head>
 
-        <main id="main-content">
-            {{ include('owasp/' ~ owasp.lien) }}
+<body>
+    {{ include('header.html.twig') }}
 
-            <footer class="grid-x grid-margin-x align-justify margin-left-1 margin-top-2 margin-bottom-2">
-                <div class="cell shrink">
-                    <a id="bouton-retour-precedent"
-                        href="{{ path('owasp', {}) }}"
-                        onclick="history.back(); return false;"
-                        class="button open-sans focus-dark-light"
-                        aria-label="Retour à la page précédente">
-                        <span aria-hidden="true">⬅️</span>Retour
-                    </a>
-                </div>
-            </footer>
-        </main>
+    <header class="grid-container margin-top-1">
+        <nav aria-label="Fil d'Ariane, vous êtes ici">
+            <ol class="claire-hand breadcrumbs">
+                <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+                <li><a href="{{ path('projet', {}) }}">Projet</a></li>
+                <li><a href="{{ path('owasp', {}) }}">Owasp</a></li>
+                <li aria-current="page">{{ owasp.category }}</li>
+            </ol>
+        </nav>
+    </header>
 
-        {{ include('footer.html.twig') }}
-    </body>
+    <main id="main-content">
+        {{ include('owasp/' ~ owasp.lien) }}
+
+        <footer class="grid-x grid-margin-x align-justify margin-left-1 margin-top-2 margin-bottom-2">
+            <div class="cell shrink">
+                <a id="bouton-retour-precedent" href="{{ path('owasp', {}) }}" onclick="history.back(); return false;"
+                    class="button open-sans focus-dark-light" aria-label="Retour à la page précédente">
+                    <span aria-hidden="true">⬅️</span>Retour
+                </a>
+            </div>
+        </footer>
+    </main>
+
+    {{ include('footer.html.twig') }}
+</body>
+
 </html>

@@ -1,19 +1,18 @@
 <div class="small-12 medium-7 large-7 cell">
-        <div class="grid-x">{{ form_label(form.actuatorInfoDescription) }} <span class="color-rouge">&nbsp;*</span></div>
-        {{ form_widget(form.actuatorInfoDescription) }}
-    </div>
-    <div class="small-12 medium-5 large-5 cell">
-        <div class="grid-x">{{ form_label(form.actuatorInfoCle) }} <span class="color-rouge">&nbsp;*</span></div>
-        {{ form_widget(form.actuatorInfoCle) }}
-    </div>
+    <div class="grid-x">{{ form_label(form.actuatorInfoDescription) }} <span class="color-rouge">&nbsp;*</span></div>
+    {{ form_widget(form.actuatorInfoDescription) }}
+</div>
+<div class="small-12 medium-5 large-5 cell">
+    <div class="grid-x">{{ form_label(form.actuatorInfoCle) }} <span class="color-rouge">&nbsp;*</span></div>
+    {{ form_widget(form.actuatorInfoCle) }}
+</div>
 
 <div class="form-group">
     <footer class="grid-x grid-margin-x align-right">
         <div class="cell shrink">
             <button id="valider-formulaire-enregistrement"
-                    class="button open-sans bouton-supprimer js-bouton-supprimer focus-dark-light"
-                    type="button"
-                    aria-label="Supprimer clé"><span aria-hidden="true">🗑️</span> Supprimer
+                class="button open-sans bouton-supprimer js-bouton-supprimer focus-dark-light" type="button"
+                aria-label="Supprimer clé"><span aria-hidden="true">🗑️</span> Supprimer
             </button>
         </div>
     </footer>

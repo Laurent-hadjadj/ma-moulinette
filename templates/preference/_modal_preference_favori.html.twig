@@ -1,11 +1,5 @@
-<dialog id="modal-preference-favori"
-    class="reveal large"
-    data-close-on-click="true"
-    data-animation-in="fade-in"
-    data-animation-out="fade-out"
-    data-reveal
-    aria-modal="true"
-    aria-labelledby="titre-modifier-favori"
+<dialog id="modal-preference-favori" class="reveal large" data-close-on-click="true" data-animation-in="fade-in"
+    data-animation-out="fade-out" data-reveal aria-modal="true" aria-labelledby="titre-modifier-favori"
     aria-describedby="desc-modifier-favori">
 
     <header>
@@ -18,7 +12,8 @@
 
     <blockquote class="text-justify">
         Mettre en <em>favori</em>
-        (petit-coeur) un projet permet son ajout à la liste des projets qui seront affichés sur la page d'accueil. Il est possible d'afficher jusqu'à dix (recommandé) projets.
+        (petit-coeur) un projet permet son ajout à la liste des projets qui seront affichés sur la page d'accueil. Il
+        est possible d'afficher jusqu'à dix (recommandé) projets.
     </blockquote>
 
     <p class="open-sans">La liste des favoris est : <output id="js-modal-favori-statut" aria-live="polite"></output></p>
@@ -45,11 +40,9 @@
     {# fermeture de la fenêtre modale #}
     <footer class="grid-x grid-margin-x align-right margin-top-2">
         <div class="cell shrink">
-            <button id="bouton-fermer-preference-favori"
-                class="button open-sans focus-dark-light"
-                type="button"
+            <button id="bouton-fermer-preference-favori" class="button open-sans focus-dark-light" type="button"
                 aria-label="Fermer la fenêtre"><span aria-hidden="true">❌</span>Fermer
-                </button>
-            </div>
-        </footer>
-    </dialog>
+            </button>
+        </div>
+    </footer>
+</dialog>

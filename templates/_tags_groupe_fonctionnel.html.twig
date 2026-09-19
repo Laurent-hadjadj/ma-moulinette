@@ -5,9 +5,9 @@
     est déjà porté par le flash serveur de la page appelante).
 #}
 {% if groupes is defined and groupes is not empty %}
-    <div class="tags-groupe-fonctionnel margin-bottom-1">
-        {% for groupe in groupes %}
-            <span class="tag-groupe-fonctionnel open-sans"><span aria-hidden="true">🎯</span> {{ groupe }}</span>
-        {% endfor %}
-    </div>
+<div class="tags-groupe-fonctionnel margin-bottom-1">
+    {% for groupe in groupes %}
+    <span class="tag-groupe-fonctionnel open-sans"><span aria-hidden="true">🎯</span> {{ groupe }}</span>
+    {% endfor %}
+</div>
 {% endif %}

@@ -7,17 +7,17 @@
       <tr>
         <th scope="col"></th>
         {% if suivi is not empty %}
-          {% for i in 0..suivi|length-1 %}
-            {# 0 = FALSE, 1 = TRUE  #}
-            {% if suivi[i]["initial"]==1 %}
-              {% set reference="reference" %}
-            {% else %}
-              {% set reference="null" %}
-            {% endif %}
-            <th scope="col" class="open-sans text-right {{reference}}">
-              {{suivi[i]["version"]}}
-            </th>
-          {% endfor %}
+        {% for i in 0..suivi|length-1 %}
+        {# 0 = FALSE, 1 = TRUE  #}
+        {% if suivi[i]["initial"]==1 %}
+        {% set reference="reference" %}
+        {% else %}
+        {% set reference="null" %}
+        {% endif %}
+        <th scope="col" class="open-sans text-right {{reference}}">
+          {{suivi[i]["version"]}}
+        </th>
+        {% endfor %}
         {% endif %}
       </tr>
     </thead>
@@ -25,67 +25,67 @@
       <tr class="open-sans">
         <td class="text-left text-noir">Date</td>
         {% if suivi is not empty %}
-          {% for i in 0..suivi|length-1 %}
-            <td class="text-right">
-              <span>{{suivi[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
-            </td>
-          {% endfor %}
+        {% for i in 0..suivi|length-1 %}
+        <td class="text-right">
+          <span>{{suivi[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
+        </td>
+        {% endfor %}
         {% endif %}
       </tr>
       <tr>
         <td class="text-left text-noir">Présentation</td>
         {% if suivi is not empty %}
-          {% for i in 0..suivi|length-1 %}
-            <td class="text-right">
-              {% if suivi[i]["presentation"]!=-1 %}
-                <span>{{suivi[i]["presentation"]|format_number(locale='fr')}}</span>
-              {% else %}
-                <span>&nbsp;-&nbsp;</span>
-              {% endif %}
-            </td>
-          {% endfor %}
+        {% for i in 0..suivi|length-1 %}
+        <td class="text-right">
+          {% if suivi[i]["presentation"]!=-1 %}
+          <span>{{suivi[i]["presentation"]|format_number(locale='fr')}}</span>
+          {% else %}
+          <span>&nbsp;-&nbsp;</span>
+          {% endif %}
+        </td>
+        {% endfor %}
         {% endif %}
       </tr>
       <tr>
         <td class="text-left text-noir">Métier</td>
         {% if suivi is not empty %}
-          {% for i in 0..suivi|length-1 %}
-            <td class="text-right">
-              {% if suivi[i]["metier"]!=-1 %}
-                <span>{{suivi[i]["metier"]|format_number(locale='fr')}}</span>
-              {% else %}
-                <span>&nbsp;-&nbsp;</span>
-              {% endif %}
-            {% endfor %}
+        {% for i in 0..suivi|length-1 %}
+        <td class="text-right">
+          {% if suivi[i]["metier"]!=-1 %}
+          <span>{{suivi[i]["metier"]|format_number(locale='fr')}}</span>
+          {% else %}
+          <span>&nbsp;-&nbsp;</span>
+          {% endif %}
+          {% endfor %}
           {% endif %}
         </td>
       </tr>
       <tr>
         <td class="text-left text-noir">Autre</td>
         {% if suivi is not empty %}
-          {% for i in 0..suivi|length-1 %}
-            <td class="text-right">
-              {% if suivi[i]["autre"] != -1 %}
-                <span>{{suivi[i]["autre"]|format_number(locale='fr')}}</span>
-              {% else %}
-                <span>&nbsp;-&nbsp;</span>
-              {% endif %}
-            </td>
-          {% endfor %}
+        {% for i in 0..suivi|length-1 %}
+        <td class="text-right">
+          {% if suivi[i]["autre"] != -1 %}
+          <span>{{suivi[i]["autre"]|format_number(locale='fr')}}</span>
+          {% else %}
+          <span>&nbsp;-&nbsp;</span>
+          {% endif %}
+        </td>
+        {% endfor %}
         {% endif %}
       </tr>
       <tr>
         <td class="text-left text-noir">Inconnu</td>
         {% if suivi is not empty %}
-          {% for i in 0..suivi|length-1 %}
-            <td class="text-right">
-              {% if suivi[i]["inconnu"] != -1 %}
-                <span>{{suivi[i]["inconnu"]|format_number(locale='fr')}}</span>
-              {% else %}
-                <span>&nbsp;-&nbsp;</span>
-              {% endif %}
-            </td>
-          {% endfor %}
+        {% for i in 0..suivi|length-1 %}
+        <td class="text-right">
+          {% if suivi[i]["inconnu"] != -1 %}
+          <span>{{suivi[i]["inconnu"]|format_number(locale='fr')}}</span>
+          {% else %}
+          <span>&nbsp;-&nbsp;</span>
+          {% endif %}
+        </td>
+        {% endfor %}
         {% endif %}
       </tr>
     </tbody>

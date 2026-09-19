@@ -7,24 +7,24 @@
       <tr>
         <th scope="col"></th>
         {% if suivi is not empty %}
-          {% for i in 0..suivi|length-1 %}
-            {# 0 = FALSE, 1 = TRUE  #}
-            {% if suivi[i]["initial"]==1 %}
-              {% set reference="reference" %}
-            {% else %}
-              {% set reference="null" %}
-            {% endif %}
-            {# MODIF 2026-05-06 : marqueur visuel sous
+        {% for i in 0..suivi|length-1 %}
+        {# 0 = FALSE, 1 = TRUE  #}
+        {% if suivi[i]["initial"]==1 %}
+        {% set reference="reference" %}
+        {% else %}
+        {% set reference="null" %}
+        {% endif %}
+        {# MODIF 2026-05-06 : marqueur visuel sous
               chaque version (reconstitué / collecte) pour distinguer + aligner les colonnes. #}
-            <th scope="col" class="open-sans text-right {{reference}}">
-              {{suivi[i]["version"]}}
-              {% if suivi[i]["mode_collecte"] == "REBUILD" %}
-                <br><small class="text-orange open-sans">(reconstitué)</small>
-              {% else %}
-                <br><small class="text-noir open-sans">(collecte)</small>
-              {% endif %}
-            </th>
-          {% endfor %}
+        <th scope="col" class="open-sans text-right {{reference}}">
+          {{suivi[i]["version"]}}
+          {% if suivi[i]["mode_collecte"] == "REBUILD" %}
+          <br><small class="text-orange open-sans">(reconstitué)</small>
+          {% else %}
+          <br><small class="text-noir open-sans">(collecte)</small>
+          {% endif %}
+        </th>
+        {% endfor %}
         {% endif %}
       </tr>
     </thead>
@@ -32,33 +32,33 @@
       <tr class="open-sans">
         <td class="text-left text-noir">Date</td>
         {% if suivi is not empty %}
-          {% for i in 0..suivi|length-1 %}
-            <td class="text-right">
-              <span>{{suivi[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
-            </td>
-          {% endfor %}
+        {% for i in 0..suivi|length-1 %}
+        <td class="text-right">
+          <span>{{suivi[i]["date"]|date("d/m/Y", "Europe/Paris")}}</span>
+        </td>
+        {% endfor %}
         {% endif %}
       </tr>
       <tr class="open-sans">
         <td class="text-left text-noir">Fiabilité</td>
         {% if suivi is not empty %}
-          {% for i in 0..suivi|length-1 %}
-            <td class="text-right">
-              <span>{{suivi[i]["bug"]|format_number(locale='fr')}}</span>
-              <span class="note note-{{suivi[i]['reliability']|lower}}">{{suivi[i]["reliability"]}}</span>
-            </td>
-          {% endfor %}
+        {% for i in 0..suivi|length-1 %}
+        <td class="text-right">
+          <span>{{suivi[i]["bug"]|format_number(locale='fr')}}</span>
+          <span class="note note-{{suivi[i]['reliability']|lower}}">{{suivi[i]["reliability"]}}</span>
+        </td>
+        {% endfor %}
         {% endif %}
       </tr>
       <tr class="open-sans">
         <td class="text-left text-noir">Sécurité</td>
         {% if suivi is not empty %}
-          {% for i in 0..suivi|length-1 %}
-            <td class="text-right">
-              <span>{{suivi[i]["faille"]|format_number(locale='fr')}}</span>
-              <span class="note note-{{suivi[i]['security']|lower}}">{{suivi[i]["security"]}}</span>
-            </td>
-          {% endfor %}
+        {% for i in 0..suivi|length-1 %}
+        <td class="text-right">
+          <span>{{suivi[i]["faille"]|format_number(locale='fr')}}</span>
+          <span class="note note-{{suivi[i]['security']|lower}}">{{suivi[i]["security"]}}</span>
+        </td>
+        {% endfor %}
         {% endif %}
       </tr>
       {# MODIF 2026-05-06 : `!= -1` ne capture pas null
@@ -67,55 +67,55 @@
       <tr class="open-sans">
         <td class="text-left text-noir">Hotspot</td>
         {% if suivi is not empty %}
-          {% for i in 0..suivi|length-1 %}
-            <td class="text-right">
-              {% if suivi[i]["menace_potentielle_totale"] is not null and suivi[i]["menace_potentielle_totale"]!=-1 %}
-                <span>{{suivi[i]["menace_potentielle_totale"]|format_number(locale='fr')}}</span>
-              {% else %}
-                <span>&nbsp;-&nbsp;</span>
-              {% endif %}
-              <span class="note note-{{suivi[i]['note_hotspot']|lower}}">{{suivi[i]["note_hotspot"]}}</span>
-            </td>
-          {% endfor %}
+        {% for i in 0..suivi|length-1 %}
+        <td class="text-right">
+          {% if suivi[i]["menace_potentielle_totale"] is not null and suivi[i]["menace_potentielle_totale"]!=-1 %}
+          <span>{{suivi[i]["menace_potentielle_totale"]|format_number(locale='fr')}}</span>
+          {% else %}
+          <span>&nbsp;-&nbsp;</span>
+          {% endif %}
+          <span class="note note-{{suivi[i]['note_hotspot']|lower}}">{{suivi[i]["note_hotspot"]}}</span>
+        </td>
+        {% endfor %}
         {% endif %}
       </tr>
       <tr class="open-sans">
         <td class="text-left text-noir">Maintenabilité</td>
         {% if suivi is not empty %}
-          {% for i in 0..suivi|length-1 %}
-            <td class="text-right">
-              <span>{{suivi[i]["mauvaise_pratique"]|format_number(locale='fr')}}</span>
-              <span class="note note-{{suivi[i]['maintainability']|lower}}">{{suivi[i]["maintainability"]}}</span>
-            </td>
-          {% endfor %}
+        {% for i in 0..suivi|length-1 %}
+        <td class="text-right">
+          <span>{{suivi[i]["mauvaise_pratique"]|format_number(locale='fr')}}</span>
+          <span class="note note-{{suivi[i]['maintainability']|lower}}">{{suivi[i]["maintainability"]}}</span>
+        </td>
+        {% endfor %}
         {% endif %}
       </tr>
       <tr class="open-sans">
         <td class="text-left text-noir">SuppressWarning</td>
         {% if suivi is not empty %}
-          {% for i in 0..suivi|length-1 %}
-            <td class="text-right">
-              {% if suivi[i]["suppress_warning"] is not null and suivi[i]["suppress_warning"]!=-1 %}
-                {{suivi[i]["suppress_warning"]|format_number(locale='fr')}}
-              {% else %}
-                <span>&nbsp;-&nbsp;</span>
-              {% endif %}
-            </td>
-          {% endfor %}
+        {% for i in 0..suivi|length-1 %}
+        <td class="text-right">
+          {% if suivi[i]["suppress_warning"] is not null and suivi[i]["suppress_warning"]!=-1 %}
+          {{suivi[i]["suppress_warning"]|format_number(locale='fr')}}
+          {% else %}
+          <span>&nbsp;-&nbsp;</span>
+          {% endif %}
+        </td>
+        {% endfor %}
         {% endif %}
       </tr>
       <tr class="open-sans">
         <td class="text-left text-noir">No Sonar</td>
         {% if suivi is not empty %}
-          {% for i in 0..suivi|length-1 %}
-            <td class="text-right">
-              {% if suivi[i]["no_sonar"] is not null and suivi[i]["no_sonar"]!=-1 %}
-                {{suivi[i]["no_sonar"]|format_number(locale='fr')}}
-              {% else %}
-                <span>&nbsp;-&nbsp;</span>
-              {% endif %}
-            </td>
-          {% endfor %}
+        {% for i in 0..suivi|length-1 %}
+        <td class="text-right">
+          {% if suivi[i]["no_sonar"] is not null and suivi[i]["no_sonar"]!=-1 %}
+          {{suivi[i]["no_sonar"]|format_number(locale='fr')}}
+          {% else %}
+          <span>&nbsp;-&nbsp;</span>
+          {% endif %}
+        </td>
+        {% endfor %}
         {% endif %}
       </tr>
     </tbody>

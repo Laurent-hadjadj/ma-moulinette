@@ -13,142 +13,140 @@ Laurent HADJADJ
 https://github.com/Laurent-hadjadj/ma-moulinette
 © 2024 - CC BY-SA-NC 4.0
 -->
-<html lang="fr">
+<html lang="fr" dir="ltr">
 
-    {# Chargement de la section HEAD #}
-    <head>
-        <title>{{ title }}</title>
-        {{ include('head.html.twig') }}
-        {# Chargement des assets JS et CSS #}
-        {% block importmap %}
-            {{ importmap('actuator-ajouter') }}
-        {% endblock %}
-    </head>
+{# Chargement de la section HEAD #}
 
-    <body dir="ltr">
-        {# Chargement de la section header #}
-        {{ include('header.html.twig') }}
+<head>
+    <title>{{ title }}</title>
+    {{ include('head.html.twig') }}
+    {# Chargement des assets JS et CSS #}
+    {% block importmap %}
+    {{ importmap('actuator-ajouter') }}
+    {% endblock %}
+</head>
 
-        <header class="grid-container margin-top-1">
-            <nav id="fil-ariane" aria-label="Fil d'Ariane, vous êtes ici">
-                <ol class="claire-hand breadcrumbs">
-                    <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
-                    <li><a href="{{ path('actuator', {}) }}">Actuator</a></li>
-                    <li aria-current="page">{{ mode|default('ajouter') == 'modifier' ? 'Modification' : 'Ajout' }}</li>
-                </ol>
-            </nav>
-        </header>
+<body dir="ltr">
+    {# Chargement de la section header #}
+    {{ include('header.html.twig') }}
 
-        <main id="main-content" class="grid-container">
-            {{ include('_message.html.twig') }}
+    <header class="grid-container margin-top-1">
+        <nav id="fil-ariane" aria-label="Fil d'Ariane, vous êtes ici">
+            <ol class="claire-hand breadcrumbs">
+                <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
+                <li><a href="{{ path('actuator', {}) }}">Actuator</a></li>
+                <li aria-current="page">{{ mode|default('ajouter') == 'modifier' ? 'Modification' : 'Ajout' }}</li>
+            </ol>
+        </nav>
+    </header>
 
-            <h2 class="h3 claire-hand"><span aria-hidden="true">🪴</span>Actuator</h2>
-            <h3 class="h4 claire-hand"><span aria-hidden="true">✏️</span> {{ mode|default('ajouter') == 'modifier' ? 'Modifier une application.' : 'Ajouter une application.' }}</h3>
+    <main id="main-content" class="grid-container">
+        {{ include('_message.html.twig') }}
 
+        <h2 class="h3 claire-hand"><span aria-hidden="true">🪴</span>Actuator</h2>
+        <h3 class="h4 claire-hand"><span aria-hidden="true">✏️</span>
+            {{ mode|default('ajouter') == 'modifier' ? 'Modifier une application.' : 'Ajouter une application.' }}</h3>
 
-                {% form_theme form 'foundation_6_layout.html.twig' %}
-                {{ form_start(form) }}
-                {{ form_widget(form._token) }}
-                <div class="callout">
-                    <div class="grid-x grid-margin-x cell">
-                        <div class="small-12 medium-6 large-6 cell">
-                            <div class="grid-x">{{ form_label(form.nomApplication) }}
-                                <span class="color-rouge">&nbsp;*</span>
-                            </div>
-                            {{ form_widget(form.nomApplication) }}
-                        </div>
-                        <div class="small-12 medium-6 large-6 cell">
-                            <div class="grid-x">{{ form_label(form.mavenKey) }}
-                                <span class="color-rouge">&nbsp;*</span>
-                            </div>
-                            {{ form_widget(form.mavenKey) }}
-                        </div>
-                        <div class="small-12 medium-4 large-4 cell">
-                            <div class="grid-x">{{ form_label(form.personne) }}
-                                <span class="color-rouge">&nbsp;*</span>
-                            </div>
-                            {{ form_widget(form.personne) }}
-                        </div>
-                        <div class="small-12 medium-8 large-8 cell">
-                            <div class="grid-x">{{ form_label(form.url) }}
-                                <span class="color-rouge">&nbsp;*</span>
-                            </div>
-                            {{ form_widget(form.url) }}
-                        </div>
-                        <div class="small-12 medium-6 large-6 cell">
-                            {{ form_label(form.actuatorUser) }}
-                            {{ form_widget(form.actuatorUser) }}
-                        </div>
-                        <div class="small-11 medium-6 large-6 cell">
-                            {{ form_label(form.actuatorPassword) }}
-                            {{ form_widget(form.actuatorPassword) }}
-                            {% if mode|default('ajouter') == 'modifier' %}
-                                <p class="open-sans font-size-09">Laisser vide pour conserver le mot de passe actuellement enregistré.</p>
-                            {% endif %}
-                        </div>
+        {% form_theme form 'foundation_6_layout.html.twig' %}
+        {{ form_start(form) }}
+        {{ form_widget(form._token) }}
+        <div class="callout">
+            <div class="grid-x grid-margin-x cell">
+                <div class="small-12 medium-6 large-6 cell">
+                    <div class="grid-x">{{ form_label(form.nomApplication) }}
+                        <span class="color-rouge">&nbsp;*</span>
                     </div>
+                    {{ form_widget(form.nomApplication) }}
                 </div>
-
-                <div class="callout margin-top-1">
-                    <div id="bars"
-                        class="grid-x"
-                        data-prototype="{{ include("actuator/_info.html.twig", {form: form.actuatorInfo.vars.prototype})|e("html_attr_relaxed") }}" data-index="{{ form.actuatorInfo|length > 0 ? form.actuatorInfo|last.vars.name + 1 : 0 }}">
-                        {% for item in form.actuatorInfo %}
-                            <div class="small-12 medium-7 large-7 cell">
-                                <div class="grid-x">{{ form_label(item.actuatorInfoDescription) }}
-                                    <span class="color-rouge">&nbsp;*</span>
-                                </div>
-                                {{ form_widget(item.actuatorInfoDescription) }}
-                            </div>
-                            <div class="small-12 medium-5 large-5 cell">
-                                <div class="grid-x">{{ form_label(item.actuatorInfoCle) }}
-                                    <span class="color-rouge">&nbsp;*</span>
-                                </div>
-                                {{ form_widget(item.actuatorInfoCle) }}
-                            </div>
-                        {% endfor %}
+                <div class="small-12 medium-6 large-6 cell">
+                    <div class="grid-x">{{ form_label(form.mavenKey) }}
+                        <span class="color-rouge">&nbsp;*</span>
                     </div>
+                    {{ form_widget(form.mavenKey) }}
                 </div>
-                <button type="button"
-                        class="button bouton-ajouter js-bouton-ajouter focus-dark-light"
-                        data-collection="#bars"><span aria-hidden="true">➕</span>Ajouter clé
+                <div class="small-12 medium-4 large-4 cell">
+                    <div class="grid-x">{{ form_label(form.personne) }}
+                        <span class="color-rouge">&nbsp;*</span>
+                    </div>
+                    {{ form_widget(form.personne) }}
+                </div>
+                <div class="small-12 medium-8 large-8 cell">
+                    <div class="grid-x">{{ form_label(form.url) }}
+                        <span class="color-rouge">&nbsp;*</span>
+                    </div>
+                    {{ form_widget(form.url) }}
+                </div>
+                <div class="small-12 medium-6 large-6 cell">
+                    {{ form_label(form.actuatorUser) }}
+                    {{ form_widget(form.actuatorUser) }}
+                </div>
+                <div class="small-11 medium-6 large-6 cell">
+                    {{ form_label(form.actuatorPassword) }}
+                    {{ form_widget(form.actuatorPassword) }}
+                    {% if mode|default('ajouter') == 'modifier' %}
+                    <p class="open-sans font-size-09">Laisser vide pour conserver le mot de passe actuellement
+                        enregistré.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="callout margin-top-1">
+            <div id="bars" class="grid-x"
+                data-prototype="{{ include("actuator/_info.html.twig", {form: form.actuatorInfo.vars.prototype})|e("html_attr_relaxed") }}"
+                data-index="{{ form.actuatorInfo|length > 0 ? form.actuatorInfo|last.vars.name + 1 : 0 }}">
+                {% for item in form.actuatorInfo %}
+                <div class="small-12 medium-7 large-7 cell">
+                    <div class="grid-x">{{ form_label(item.actuatorInfoDescription) }}
+                        <span class="color-rouge">&nbsp;*</span>
+                    </div>
+                    {{ form_widget(item.actuatorInfoDescription) }}
+                </div>
+                <div class="small-12 medium-5 large-5 cell">
+                    <div class="grid-x">{{ form_label(item.actuatorInfoCle) }}
+                        <span class="color-rouge">&nbsp;*</span>
+                    </div>
+                    {{ form_widget(item.actuatorInfoCle) }}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <button type="button" class="button bouton-ajouter js-bouton-ajouter focus-dark-light"
+            data-collection="#bars"><span aria-hidden="true">➕</span>Ajouter clé
+        </button>
+
+        <div class="form_erreur margin-top-1">
+            {{ form_errors(form.nomApplication) }}
+            {{ form_errors(form.mavenKey) }}
+            {{ form_errors(form.personne) }}
+            {{ form_errors(form.url) }}
+            {{ form_errors(form.actuatorUser) }}
+            {{ form_errors(form.actuatorPassword) }}
+            {% for actuatorInfoForm in form.actuatorInfo %}
+            {{ form_errors(actuatorInfoForm.actuatorInfoDescription) }}
+            {{ form_errors(actuatorInfoForm.actuatorInfoCle) }}
+            {% endfor %}
+        </div>
+
+        <footer class="grid-x grid-margin-x align-right margin-top-1">
+            <div class="cell shrink">
+                <a id="bouton-ouvrir-actuator" href="{{ path('actuator') }}" class="button open-sans focus-dark-light"
+                    title="Retour à la page actuators">
+                    <span aria-hidden="true">↩️</span> Retour
+                </a>
+            </div>
+            <div class="cell shrink">
+                <button id="valider-formulaire-enregistrement" class="button open-sans focus-dark-light" type="submit"
+                    aria-label="Enregistrer"><span aria-hidden="true">💾</span>Enregistrer
                 </button>
+            </div>
+        </footer>
+        {{ form_end(form, {render_rest: false}) }}
+    </main>
 
-                <div class="form_erreur margin-top-1">
-                    {{ form_errors(form.nomApplication) }}
-                    {{ form_errors(form.mavenKey) }}
-                    {{ form_errors(form.personne) }}
-                    {{ form_errors(form.url) }}
-                    {{ form_errors(form.actuatorUser) }}
-                    {{ form_errors(form.actuatorPassword) }}
-                    {% for actuatorInfoForm in form.actuatorInfo %}
-                        {{ form_errors(actuatorInfoForm.actuatorInfoDescription) }}
-                        {{ form_errors(actuatorInfoForm.actuatorInfoCle) }}
-                    {% endfor %}
-                </div>
+    {# Chargement de la section footer #}
+    {{ include('footer.html.twig') }}
+</body>
 
-                <footer class="grid-x grid-margin-x align-right margin-top-1">
-                    <div class="cell shrink">
-                        <a id="bouton-ouvrir-actuator"
-                            href="{{ path('actuator') }}"
-                            class="button open-sans focus-dark-light"
-                            title="Retour à la page actuators">
-                            <span aria-hidden="true">↩️</span> Retour
-                        </a>
-                    </div>
-                    <div class="cell shrink">
-                        <button id="valider-formulaire-enregistrement"
-                            class="button open-sans focus-dark-light"
-                            type="submit"
-                            aria-label="Enregistrer"><span aria-hidden="true">💾</span>Enregistrer
-                        </button>
-                    </div>
-                </footer>
-                {{ form_end(form, {render_rest: false}) }}
-
-        </main>
-
-        {# Chargement de la section footer #}
-        {{ include('footer.html.twig') }}
-    </body>
 </html>

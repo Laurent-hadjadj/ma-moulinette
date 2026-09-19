@@ -76,6 +76,7 @@ import { clean_screen } from './clean-screen.js';
 /***************************************************************************/
 /**
  * [Description for clean]
+ * Nettoyage de l'écran
  *
  * @return void
  *
