@@ -106,3 +106,4 @@ phpstan.neon
 ###> claude ###
 .claude/
 ###< claude ###
+config/reference.php
