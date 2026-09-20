@@ -23,7 +23,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\Historique;
 use App\Service\{MesProjets};
-use App\Service\UserAgent\UserAgentTrackingFacade;
+use App\Service\UserAgent\{UserAgentTrackingFacade, UserAgentAnalysisService};
 
 /**
  * [Description ProjetController]
@@ -49,7 +49,8 @@ class ProjetController extends AbstractController
         private EntityManagerInterface $em,
         ParameterBagInterface $params,
         private LoggerInterface $logger,
-        private UserAgentTrackingFacade $tracking
+        private UserAgentTrackingFacade $tracking,
+        private UserAgentAnalysisService $analysis
     ) {
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
@@ -96,10 +97,23 @@ class ProjetController extends AbstractController
     public function index(): Response
     {
         $this->tracking->track('PROJET');
+
+        $exec = $this->analysis->runBatch(50);
+
+        // On remonte une erreur si l'analyse a échoué, mais on ne bloque pas l'ouverture
+        if ($exec['code'] !== 200) {
+            $this->addFlash('notice', [
+                'type'    => 'error',
+                'message' => "Une erreur s'est produite pendant l'analyse des données UserAgent ({$exec['code']})",
+                'trace'   => $exec['erreur'] ?? null,
+            ]);
+        }
+        $this->logger->info("[BATCH-ANALYSIS] ⁉️ Collecte terminée : {$exec['processed']} collecté.");
+
         $render = $this->genericRender();
 
         /** On récupère la version du serveur SonarQube */
-        /** MODIF 12/07/2026 : getenv ne fonctionne pas toujours, on utilise la mtéhode de récupération des paramètres depuis service.yml */
+        /** MODIF 12/07/2026 : getenv ne fonctionne pas toujours, on utilise la méthode de récupération des paramètres depuis service.yml */
         $sonar_version = (int)  ($this->sonarVersion ?: 0);
         $render['version_serveur_sonar'] = ($sonar_version != 0) ? $sonar_version : 8;
 
