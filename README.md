@@ -70,13 +70,17 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 
 ## 🚀 État actuel
 
-> [!NOTE] Information sur le projet (relevé du 22/07/2026)
+> [!NOTE] Information sur le projet (relevé du 20/09/2026)
 >
-> Nombre de fichiers : 275
-> Nombre de lignes : 78221
-> Nombre de lignes de codes : 48798
-> Nombre de classe: 275
-> Nombre de méthode : 2863
+
+| Langage   | Fichiers  | Code   | Commentaires | Vides | Total |
+| --------- | --------: | -----: | -----------: | ----: | ----: |
+| PHP       |  277      | 49357  | 20890        | 9105  | 79352 |
+| HTML      |  148      | 26652  |  1004        | 1931  | 29587 |
+| JS        |  92       | 10242  |  4212        | 1695  | 16149 |
+| CSS       |  38       | 6062   |  1118        | 1296  | 8476  |
+| SQL       |  75       | 2945   |  1471        | 671   | 5087  |
+| MIGRATION |  2        | 38     | 18           | 7     | 63    |
 
 ### 📊 Qualité du code (relevé du 06/09/2026)
 
