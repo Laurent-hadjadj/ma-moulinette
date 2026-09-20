@@ -1,47 +1,47 @@
 {
-    "generated_at": "2026-09-06T11:38:38+00:00",
+    "generated_at": "2026-09-20T13:30:41+00:00",
     "cloc": {
         "php": {
             "fichier": 277,
-            "code": 49340,
-            "comment": 20882,
-            "vide": 9100,
-            "total": 79322
+            "code": 49357,
+            "comment": 20890,
+            "vide": 9105,
+            "total": 79352
         },
         "html": {
             "fichier": 148,
-            "code": 23334,
-            "comment": 957,
-            "vide": 1611,
-            "total": 25902
+            "code": 26652,
+            "comment": 1004,
+            "vide": 1931,
+            "total": 29587
         },
         "js": {
             "fichier": 92,
-            "code": 10195,
-            "comment": 4181,
-            "vide": 1693,
-            "total": 16069
+            "code": 10242,
+            "comment": 4212,
+            "vide": 1695,
+            "total": 16149
         },
         "css": {
             "fichier": 38,
-            "code": 6051,
-            "comment": 1113,
-            "vide": 1295,
-            "total": 8459
+            "code": 6062,
+            "comment": 1118,
+            "vide": 1296,
+            "total": 8476
         },
         "sql": {
             "fichier": 75,
-            "code": 2942,
-            "comment": 1469,
-            "vide": 670,
-            "total": 5081
+            "code": 2945,
+            "comment": 1471,
+            "vide": 671,
+            "total": 5087
         },
         "migration": {
-            "fichier": 1,
-            "code": 1,
-            "comment": 6,
-            "vide": 1,
-            "total": 8
+            "fichier": 2,
+            "code": 38,
+            "comment": 18,
+            "vide": 7,
+            "total": 63
         }
     },
     "tests": {
