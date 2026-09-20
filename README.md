@@ -1,6 +1,6 @@
 # 🧩 Ma-Moulinette
 
-[![Version](https://img.shields.io/badge/version-2.0.2-blue)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-2.1.0-blue)](CHANGELOG.md)
 [![PHP](https://img.shields.io/badge/PHP-%E2%89%A5%208.5-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Symfony](https://img.shields.io/badge/Symfony-8.1.6-000000?logo=symfony&logoColor=white)](https://symfony.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
@@ -15,7 +15,7 @@
 ┃┃┃┃┃┃━━┃┃━━┃┗━┛┃\
 ┃┗┛┗┛┃━━┃┃━━┃┏━━┛\
 ┗┓┏┓┏┛━┏┫┣┓━┃┃\
-━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.0.2 Release on September 2026 !
+━┗┛┗┛━━┗━━┛━┗┛  NeXt 2.1.0 Release on September 2026 !
 
 **Ma-Moulinette** est une application web open-source dont l’objectif est de **simplifier la consultation et le suivi des indicateurs de qualité logicielle** collectés depuis un serveur **SonarQube**.
 
@@ -70,13 +70,17 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 
 ## 🚀 État actuel
 
-> [!NOTE] Information sur le projet (relevé du 22/07/2026)
+> [!NOTE] Information sur le projet (relevé du 20/09/2026)
 >
-> Nombre de fichiers : 275
-> Nombre de lignes : 78221
-> Nombre de lignes de codes : 48798
-> Nombre de classe: 275
-> Nombre de méthode : 2863
+
+| Langage   | Fichiers  | Code   | Commentaires | Vides | Total |
+| --------- | --------: | -----: | -----------: | ----: | ----: |
+| PHP       |  277      | 49357  | 20890        | 9105  | 79352 |
+| HTML      |  148      | 26652  |  1004        | 1931  | 29587 |
+| JS        |  92       | 10242  |  4212        | 1695  | 16149 |
+| CSS       |  38       | 6062   |  1118        | 1296  | 8476  |
+| SQL       |  75       | 2945   |  1471        | 671   | 5087  |
+| MIGRATION |  2        | 38     | 18           | 7     | 63    |
 
 ### 📊 Qualité du code (relevé du 06/09/2026)
 
@@ -97,7 +101,7 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 
 Aujourd’hui, **Ma-Moulinette** est une application stable et évolutive, utilisée dans différents contextes (formation, évaluation continue, démonstration).
 
-La **version 2.0.2** est publiée et apporte de nombreuses améliorations.
+La **version 2.1.0** est publiée et apporte de nombreuses améliorations.
 
 ### ✅ Fonctionnalités disponibles
 

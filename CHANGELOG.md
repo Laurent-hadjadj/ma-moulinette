@@ -4,13 +4,29 @@ Toutes les évolutions notables de Ma-Moulinette sont documentées dans ce fichi
 
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), et ce projet adhère (au mieux, l'historique antérieur à cette convention restant dans son style d'origine) au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [2.1.0] - 20-09-2026
+
+Ajout de nouvelles fonctionnalités à l'application. Mise à jour des dépendances symfony et des statistiques du projet.
+
+### Ajouté
+
+**Statistiques** : Ajout de l'analyse automatique des statistiques d'utilisation de l'application à l'ouverture de la page projet.
+**Markdown** : Ajout des règles d'exclusion légitimes (MD024).
+**SQL**: Ajout du script d'update automatique de la table ma_moulinette (mise à jour des version 2.0.0 vers 2.1.0).
+
+### Modifié
+
+* **Code-Clean** : Ajout d'une private static pour remplacer un string littéral dans la page `StatistiqueController` ;
+* **Symfony** : Migration 8.0.15 en 8.1.7 ;
+* **README** : Nouveau tableau sur l'état du projet ;
+
 ## [2.0.2] - 2026-09-19
 
 Corrections mineures.
 
 ### Ajouté
 
-**Avatar** : Ajout du focus lors de la sélection de l'avatar sur l'évenemnt 'change-me'.
+**Avatar** : Ajout du focus lors de la sélection de l'avatar sur l’événement 'change-me'.
 
 ### Modifié
 

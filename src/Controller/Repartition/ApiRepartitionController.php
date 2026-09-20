@@ -43,7 +43,7 @@ class ApiRepartitionController extends AbstractController
         private EntityManagerInterface $em,
         private BatchCollecteRepartitionController $batchCollecteRepartition,
         private LoggerInterface $logger,
-        private Security $security,
+        private Security $security
     ) {
     }
 

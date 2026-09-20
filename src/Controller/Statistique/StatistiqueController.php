@@ -23,6 +23,7 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Controller\Traits\AppUserAware;
+use Psr\Log\LoggerInterface;
 use App\Entity\Historique;
 use App\Service\MesProjets;
 use App\Service\UserAgent\{UserAgentTrackingFacade, UserAgentAnalysisService};
@@ -41,6 +42,8 @@ class StatistiqueController extends AbstractController
     private string $version;
     private string $dateCopyright;
 
+    private static string $page = 'statistique/projet.html.twig';
+
     // MODIF 2026-06-08 : chemin vers var/admin-stats.json
     private string $statsFile;
     private string $fallbackStatsFile;
@@ -50,7 +53,8 @@ class StatistiqueController extends AbstractController
         private EntityManagerInterface $em,
         private UserAgentTrackingFacade $tracking,
         private UserAgentAnalysisService $analysis,
-        private MesProjets $mesProjets
+        private MesProjets $mesProjets,
+        private LoggerInterface $logger
     ) {
         $this->logoEntreprise = $params->get('logo.entreprise');
         $this->marqueEntrepriseShort = $params->get('marque.entreprise.short');
@@ -121,7 +125,7 @@ class StatistiqueController extends AbstractController
         // MODIF 2026-06-09 : redirect après batch → statistiques_utilisateur
         $this->tracking->track('STATISTIQUES_BATCH');
 
-        $exec = $this->analysis->runBatch(100);
+        $exec = $this->analysis->runBatch(200);
 
         /* En cas d'échec, runBatch() relaie la réponse du repository : elle porte 'erreur'
            (le message, au singulier) et non 'erreurs' (la liste du cas nominal). */
@@ -140,6 +144,7 @@ class StatistiqueController extends AbstractController
             'message' => "Collecte terminée : {$exec['processed']} collecté, {$erreur} erreurs.",
             'trace'   => null,
         ]);
+        $this->logger->info("[BATCH-ANALYSIS] Collecte terminée : {$exec['processed']} collecté, {$erreur} erreurs.");
         return $this->redirectToRoute('statistiques_utilisateur');
     }
 
@@ -169,7 +174,7 @@ class StatistiqueController extends AbstractController
                 'message' => 'Vous devez être rattaché à un groupe fonctionnel pour accéder à cette vue (Erreur 404).',
                 'trace'   => null,
             ]);
-            return $this->render('statistique/projet.html.twig', $this->genericRender() + [
+            return $this->render(self::$page, $this->genericRender() + [
                 'projets' => [], 'liste_groupe_fonctionnel' => $groupes,
             ]);
         }
@@ -181,7 +186,7 @@ class StatistiqueController extends AbstractController
                 'message' => "Aucun projet trouvé pour votre groupe fonctionnel. Vérifiez le tag utilisé dans SonarQube (Erreur 406).",
                 'trace'   => null,
             ]);
-            return $this->render('statistique/projet.html.twig', $this->genericRender() + [
+            return $this->render(self::$page, $this->genericRender() + [
                 'projets' => [], 'liste_groupe_fonctionnel' => $groupes,
             ]);
         }
@@ -199,12 +204,12 @@ class StatistiqueController extends AbstractController
                 'message' => 'Erreur lors de la récupération des métriques projets.',
                 'trace'   => $result['erreur'] ?? null,
             ]);
-            return $this->render('statistique/projet.html.twig', $this->genericRender() + [
+            return $this->render(self::$page, $this->genericRender() + [
                 'projets' => [], 'liste_groupe_fonctionnel' => $groupes,
             ]);
         }
 
-        return $this->render('statistique/projet.html.twig', $this->genericRender() + [
+        return $this->render(self::$page, $this->genericRender() + [
             'projets' => $result['projets'],
             'liste_groupe_fonctionnel' => $groupes,
         ]);
