@@ -31,11 +31,14 @@ class BuildMapHistoryService
      * METRICS
      * métriques que l'on souhaite historiser
      * pour éviter de faire des appels API inutiles et de stocker des données non pertinentes, on définit une liste de métriques à récupérer pour chaque analyse.
-     *
-     * @var array<int, string>
-     */
+    */
 
-    //Quality Gate
+    private const RCI_WEIGHT = [10,5,3,1,0];
+
+    /**
+     * @var array<int, string>
+     * Quality Gate
+     */
     private const QUALITY_GATE_CORE = [
         'alert_status',
     ];
@@ -326,6 +329,52 @@ class BuildMapHistoryService
     }
 
     /**
+     * [Description for getRCIRating]
+     *
+     * @param float|null $rci
+     *
+     * @return string|null
+     *
+     * Created at: 24/09/2026 18:54:33 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function getRCIRating(?float $rci): ?string
+    {
+        if ($rci === null) {
+            return null;
+        }
+
+        if ($rci >= 97) { return 'A'; }
+        if ($rci >= 92) { return 'B'; }
+        if ($rci >= 85) { return 'C'; }
+        if ($rci <= 75) { return 'D'; }
+        return 'E';
+    }
+
+    /**
+     * [Description for calculateRCI]
+     * Calculate RCI value.
+     *
+     * @param float $issueWeight  Total weighted issues.
+     * @param int   $linesOfCode  Total lines of code.
+     * @return float RCI value.
+     *
+     * Created at: 24/09/2026 18:54:43 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function calculateRCI(float $issueWeight, int $linesOfCode): float {
+        if ($linesOfCode <= 0) {
+            throw new \InvalidArgumentException("Lines of code must be greater than zero.");
+        }
+
+        $rci = 100 - ($issueWeight / $linesOfCode) * 100;
+        // Ensure RCI is not negative
+        return max($rci, 0.0);
+    }
+
+    /**
      * [Description for getCoverageRating]
      *
      * @param float|null $coverage
@@ -519,7 +568,36 @@ class BuildMapHistoryService
             'software_quality_medium_issues' => isset($measures['software_quality_medium_issues']) ? (int) $measures['software_quality_medium_issues'] : null,
         ];
 
-        // On calcul les ratos de complexité
+        // On calcul le Rules Compliance Index (RCI)
+        (int) $issue_core_weight =  $issues_core['blocker_violations']  * (int) self::RCI_WEIGHT[0] +
+                                    $issues_core['critical_violations'] * (int) self::RCI_WEIGHT[1] +
+                                    $issues_core['major_violations']    * (int) self::RCI_WEIGHT[2] +
+                                    $issues_core['minor_violations']    * (int) self::RCI_WEIGHT[3] +
+                                    $issues_core['info_violations']     * (int) self::RCI_WEIGHT[4];
+        (int) $issue_2024_weight =  $issues_2024['software_quality_blocker_issues'] *
+                                    (int) self::RCI_WEIGHT[0] +
+                                    $issues_2024['software_quality_high_issues'] *
+                                    (int) self::RCI_WEIGHT[1] +
+                                    $issues_2024['software_quality_medium_issues'] *
+                                    (int) self::RCI_WEIGHT[2] +
+                                    $issues_2024['software_quality_low_issues'] *
+                                    (int) self::RCI_WEIGHT[3] +
+                                    $issues_2024['software_quality_info_issues'] *
+                                    (int) self::RCI_WEIGHT[4];
+        // On calcul le RCI
+        (float) $rci_core_indicator = self::calculateRCI($issue_core_weight, $size_core['ncloc']);
+        (float) $rci_2024_indicator = self::calculateRCI($issue_2024_weight, $size_core['ncloc']);
+
+        $rci_core = [
+                        'rci_core_indicator' => $rci_core_indicator,
+                        'rci_core_rating' => self::getRCIRating($rci_core_indicator)
+                    ];
+        $rci_2024 = [
+                        'rci_2024_indicator' => $rci_2024_indicator,
+                        'rci_2024_rating' => self::getRCIRating($rci_2024_indicator)
+                    ];
+
+        // On calcul les ratios de complexité
         $complexity = isset($measures['complexity']) ? (int) $measures['complexity'] : null;
         $cognitive_complexity = isset($measures['cognitive_complexity']) ? (int) $measures['cognitive_complexity'] : null;
         $ncloc = isset($measures['ncloc']) ? (int) $measures['ncloc'] : null;
@@ -621,6 +699,8 @@ class BuildMapHistoryService
             $issues_status_10,
             $issues_core,
             $issues_2024,
+            $rci_core,
+            $rci_2024,
             $complexity_core,
             $maintainability_core,
             $maintainability_10,
