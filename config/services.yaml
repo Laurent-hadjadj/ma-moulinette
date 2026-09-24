@@ -68,6 +68,10 @@ parameters:
     path.audit: '%env(PATH_AUDIT)%'
     environnement: '%env(ENVIRONNEMENT)%'
 
+    # Nombre de traitement USER_AGENT
+    user.agent.batch.manuel: '%env(USER_AGENT_BATCH_MANUEL)%'
+    user.agent.batch.automatique: '%env(USER_AGENT_BATCH_AUTOMATIQUE)%'
+
     # MODIF 2026-05-06
     # Mode du filigrane sur les rapports PDF :
     #   - always       : tous les documents
