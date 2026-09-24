@@ -4,8 +4,8 @@
 
 | Suite | Tests | Assertions | Nature |
 | --- | ---: | ---: | --- |
-| `unit` (`tests/Unit`) | 3 138 | 8 670 | Unitaires purs (mocks, aucune base réelle) |
-| `integration` (`tests/Integration`) | 602 | 1 353 | `KernelTestCase`/`WebTestCase` sur PostgreSQL de test (2 skips volontaires — sample DC optionnel absent) |
+| `unit` (`tests/Unit`) | 3 143 | 8 682 | Unitaires purs (mocks, aucune base réelle) |
+| `integration` (`tests/Integration`) | 602 | 1 369 | `KernelTestCase`/`WebTestCase` sur PostgreSQL de test |
 | **Total** | **3 740** | **10 023** | |
 | `e2e` (`tests/e2e`) | 22 suites | — | Playwright, hors PHPUnit — voir [Tests End-to-End](test-e2e.md) |
 
@@ -22,7 +22,6 @@
 !!! note "🔄 Chiffres à réactualiser"
     Ces valeurs sont un relevé manuel, pas une sortie de CI : elles se périment à chaque campagne de tests.
     Les régénérer avec `composer test` (compteurs), `composer test:coverage` (couverture) et `vendor/bin/phpstan analyse` (erreurs résiduelles).
-    Deux tests sont `skipped` : ils dépendent d'un échantillon `dependency-check-report.json` absent de `var/`, ce qui est nominal hors environnement d'ingestion DependencyCheck.
 
 ## 📦 Suites de tests
 
