@@ -54,9 +54,9 @@ class DependencyCheckIngesterIntegrationTest extends KernelTestCase
 
     public function testIngestRealSamplePopulatesExpectedCounts(): void
     {
-        $samplePath = __DIR__ . '/../../../../var/dependency-check-report.json';
+        $samplePath = __DIR__ . '/../../../../tests/Fixtures/dc-json/2048-1.0-SNAPSHOT.json';
         if (!file_exists($samplePath)) {
-            $this->markTestSkipped('Sample dependency-check-report.json absent dans var/');
+            $this->markTestSkipped('Sample 2048-1.0-SNAPSHOT.json absent dans /tests/Fixtures/dc-json/');
         }
 
         $queue = $this->insertQueueFromSample($samplePath);
@@ -67,27 +67,27 @@ class DependencyCheckIngesterIntegrationTest extends KernelTestCase
         // Recharge depuis la BDD
         $scan = $this->em->getRepository(DcScan::class)->find($scan->getId());
 
-        $this->assertSame('fr.ma-moulinette:ma-moulinette', $scan->getMavenKey());
-        $this->assertSame('4.2.2-RELEASE', $scan->getProjectVersion());
+        $this->assertSame('de.merv:2048', $scan->getMavenKey());
+        $this->assertSame('1.0-SNAPSHOT', $scan->getProjectVersion());
         $this->assertSame('12.2.0', $scan->getEngineVersion());
 
-        // Comptages attendus pour le sample reel (validés en lot 2.3)
-        $this->assertSame(201, $scan->getDepCountTotal());
-        $this->assertSame(28, $scan->getDepCountVulnerable());
-        $this->assertSame(96, $scan->getCveCountTotal());
+        // Comptages attendus pour le sample réel
+        $this->assertSame(35, $scan->getDepCountTotal());
+        $this->assertSame(6, $scan->getDepCountVulnerable());
+        $this->assertSame(18, $scan->getCveCountTotal());
 
         // Repartition par severity
         $this->assertGreaterThan(0, $scan->getCveCountCritical());
         $this->assertGreaterThan(0, $scan->getCveCountHigh());
         $this->assertGreaterThan(0, $scan->getCveCountMedium());
 
-        // Tables peuplees correctement
-        $this->assertSame(28, (int) $this->em->getConnection()
+        // Tables peuplées correctement
+        $this->assertSame(6, (int) $this->em->getConnection()
             ->executeQuery('SELECT COUNT(*) FROM ma_moulinette.dc_dependency')->fetchOne());
-        $this->assertSame(96, (int) $this->em->getConnection()
+        $this->assertSame(18, (int) $this->em->getConnection()
             ->executeQuery('SELECT COUNT(*) FROM ma_moulinette.dc_finding')->fetchOne());
 
-        // Sanity check : 4 severites distinctes presentes en CVE
+        // Sanity check : 4 sévérités distinctes présentes en CVE
         $severities = $this->em->getConnection()
             ->executeQuery("SELECT DISTINCT severity FROM ma_moulinette.dc_cve ORDER BY severity")
             ->fetchFirstColumn();
@@ -98,12 +98,12 @@ class DependencyCheckIngesterIntegrationTest extends KernelTestCase
 
     public function testIngestSampleTwiceIsIdempotent(): void
     {
-        $samplePath = __DIR__ . '/../../../../var/dependency-check-report.json';
+        $samplePath = __DIR__ . '/../../../../tests/Fixtures/dc-json/2048-1.0-SNAPSHOT.json';
         if (!file_exists($samplePath)) {
-            $this->markTestSkipped('Sample dependency-check-report.json absent dans var/');
+            $this->markTestSkipped('Sample 2048-1.0-SNAPSHOT.json absent dans /tests/Fixtures/dc-json/');
         }
 
-        // 1ere ingestion : le scan est cree
+        // 1ere ingestion : le scan est crée
         $queue1 = $this->insertQueueFromSample($samplePath);
         $scan1 = $this->ingester->ingest($queue1);
         $scanId1 = $scan1->getId();
@@ -122,7 +122,7 @@ class DependencyCheckIngesterIntegrationTest extends KernelTestCase
     }
 
     /**
-     * Insere une row queue avec le payload du sample.
+     * Insère une row queue avec le payload du sample.
      */
     private function insertQueueFromSample(string $samplePath, bool $distinct = false): DcProcessingQueue
     {
@@ -139,9 +139,9 @@ class DependencyCheckIngesterIntegrationTest extends KernelTestCase
             ->setPayloadSha256($sha)
             ->setPayloadSize(strlen($jsonString))
             ->setContentType(DcProcessingQueue::CONTENT_JSON)
-            ->setProjectGroup('fr.ma-moulinette')
-            ->setProjectArtifact('ma-moulinette')
-            ->setProjectVersion('4.2.2-RELEASE');
+            ->setProjectGroup('de.merv')
+            ->setProjectArtifact('2048')
+            ->setProjectVersion('1.0-SNAPSHOT');
 
         $this->em->persist($queue);
         $this->em->flush();
