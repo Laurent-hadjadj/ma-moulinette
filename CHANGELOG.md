@@ -4,6 +4,23 @@ Toutes les évolutions notables de Ma-Moulinette sont documentées dans ce fichi
 
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/), et ce projet adhère (au mieux, l'historique antérieur à cette convention restant dans son style d'origine) au [Semantic Versioning](https://semver.org/lang/fr/).
 
+## [2.2.0] - non défini
+
+Ajout de nouvelles fonctionnalités à l'application.
+
+### Ajouté
+
+**USER_AGENT** : Personnalisation du nombre de `USER_AGENT` traité par le batch automatique (page PROJET) et manuel (index). Attention, deux nouvelles propriétés doivent être ajoutées.
+**Tests** : Ajout des tests unitaires pour couvrir les paramètres du nombre de tracements à réaliser en manuel ou automatique ;
+**RCI** : Intégration de l'indicateur RCI aux indicateurs standards.
+
+### Modifié
+
+**Code-Clean** : Suppression du style inline sur la page (dashboard) ;
+**Statistiques** : Ajustement de la taille du titre (index) ;
+**Tests** : Utilisation de la fixture dc-json 2048-1.0-SNAPSHOT dans les deux tests "skipped" par faute de trouver un rapport dans /var ;
+**Doc** Mise à jour du document test-unitaire.md
+
 ## [2.1.0] - 20-09-2026
 
 Ajout de nouvelles fonctionnalités à l'application. Mise à jour des dépendances symfony et des statistiques du projet.
