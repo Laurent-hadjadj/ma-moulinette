@@ -42,6 +42,8 @@ class StatistiqueController extends AbstractController
     private string $version;
     private string $dateCopyright;
 
+    private int $userAgentBatch;
+
     private static string $page = 'statistique/projet.html.twig';
 
     // MODIF 2026-06-08 : chemin vers var/admin-stats.json
@@ -62,6 +64,9 @@ class StatistiqueController extends AbstractController
         $this->environnement = $params->get('environnement');
         $this->version = $params->get('version');
         $this->dateCopyright = \date('Y');
+
+        $batchValue = $params->get('user.agent.batch.manuel');
+        $this->userAgentBatch = ($batchValue === null || $batchValue === '') ? 0 : (int) $batchValue;
 
         $this->statsFile = $params->get('kernel.project_dir') . '/var/admin-stats.json';
         $this->fallbackStatsFile = $params->get('kernel.project_dir') . '/migrations/admin-stats.json';
@@ -125,7 +130,7 @@ class StatistiqueController extends AbstractController
         // MODIF 2026-06-09 : redirect après batch → statistiques_utilisateur
         $this->tracking->track('STATISTIQUES_BATCH');
 
-        $exec = $this->analysis->runBatch(200);
+        $exec = $this->analysis->runBatch($this->userAgentBatch);
 
         /* En cas d'échec, runBatch() relaie la réponse du repository : elle porte 'erreur'
            (le message, au singulier) et non 'erreurs' (la liste du cas nominal). */

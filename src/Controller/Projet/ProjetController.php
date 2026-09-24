@@ -42,6 +42,8 @@ class ProjetController extends AbstractController
     private string $environnement;
     private string $version;
     private string $dateCopyright;
+
+    private int $userAgentBatch;
     private int $sonarVersion;
 
     public function __construct(
@@ -59,6 +61,9 @@ class ProjetController extends AbstractController
         $this->version = $params->get('version');
         $this->dateCopyright = \date('Y');
         $this->sonarVersion = (int) $params->get('sonar.version');
+
+        $batchValue = $params->get('user.agent.batch.automatique');
+        $this->userAgentBatch = ($batchValue === null || $batchValue === '') ? 0 : (int) $batchValue;
     }
 
     /**
@@ -98,7 +103,7 @@ class ProjetController extends AbstractController
     {
         $this->tracking->track('PROJET');
 
-        $exec = $this->analysis->runBatch(50);
+        $exec = $this->analysis->runBatch($this->userAgentBatch);
 
         // On remonte une erreur si l'analyse a échoué, mais on ne bloque pas l'ouverture
         if ($exec['code'] !== 200) {
