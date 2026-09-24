@@ -4,8 +4,8 @@
 [![PHP](https://img.shields.io/badge/PHP-%E2%89%A5%208.5-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Symfony](https://img.shields.io/badge/Symfony-8.1.6-000000?logo=symfony&logoColor=white)](https://symfony.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![Tests](https://img.shields.io/badge/tests-3740%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![Assertions](https://img.shields.io/badge/assertions-10023-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Tests](https://img.shields.io/badge/tests-3745%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Assertions](https://img.shields.io/badge/assertions-10051-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
 [![Coverage](https://img.shields.io/badge/coverage-80.03%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%206-blueviolet?logo=php&logoColor=white)](https://phpstan.org/)
 [![Licence](https://img.shields.io/badge/licence-CC%20BY--NC--SA%204.0-lightgrey)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
@@ -86,9 +86,9 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 
 | Indicateur | Valeur |
 | --- | --- |
-| Tests unitaires (`tests/Unit`) | **3 138** tests / 8 670 assertions |
-| Tests d'intégration (`tests/Integration`) | **602** tests / 1 353 assertions (2 skips volontaires) |
-| **Total** | **3 740** tests / **10 023** assertions |
+| Tests unitaires (`tests/Unit`) | **3 143** tests / 8 682 assertions |
+| Tests d'intégration (`tests/Integration`) | **602** tests / 1 369 assertions |
+| **Total** | **3 745** tests / **10 051** assertions |
 | Tests End-to-End (`tests/e2e`) | **22** suites Playwright |
 | Couverture — lignes | **80,03 %** (20 642 / 25 790) |
 | Couverture — méthodes | 84,64 % (2 393 / 2 827) |
