@@ -15,16 +15,13 @@ declare(strict_types=1);
 
 // MODIF 2026-06-09 : déplacé depuis Admin/ — AdminMetricsController fusionné dans StatistiqueController
 namespace App\Tests\Unit\Controller\Statistique;
+
 use App\Controller\Statistique\StatistiqueController;
 use App\Entity\Utilisateur;
 use App\Service\MesProjets;
-use App\Service\UserAgent\UserAgentAnalysisService;
-use App\Service\UserAgent\UserAgentTrackingFacade;
+use App\Service\UserAgent\{UserAgentAnalysisService, UserAgentTrackingFacade};
 use Doctrine\DBAL\{Connection, Result, Statement};
 use Doctrine\ORM\EntityManagerInterface;
-use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
-use PHPUnit\Framework\MockObject\MockObject;
-use PHPUnit\Framework\TestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\{RedirectResponse, RequestStack};
@@ -33,7 +30,12 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Psr\Log\LoggerInterface;
 use Twig\Environment;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 #[AllowMockObjectsWithoutExpectations]
 class StatistiqueControllerTest extends TestCase
@@ -50,6 +52,8 @@ class StatistiqueControllerTest extends TestCase
     /** @var TokenStorageInterface&MockObject */     private MockObject $tokenStorage;
     /** @var TokenInterface&MockObject */            private MockObject $token;
     /** @var FlashBag&MockObject */                  private MockObject $flashBag;
+
+    /** @var LoggerInterface&MockObject */           private MockObject $logger;
 
     private StatistiqueController $controller;
 
@@ -84,6 +88,8 @@ class StatistiqueControllerTest extends TestCase
         $this->connection->method('prepare')->willReturn($this->statement);
         $this->statement->method('executeQuery')->willReturn($this->result);
 
+        $this->logger = $this->createMock(LoggerInterface::class);
+
         $session = $this->createMock(Session::class);
         $session->method('getFlashBag')->willReturn($this->flashBag);
         $requestStack = $this->createMock(RequestStack::class);
@@ -105,7 +111,8 @@ class StatistiqueControllerTest extends TestCase
             $this->em,
             $this->tracking,
             $this->analysis,
-            $this->mesProjets
+            $this->mesProjets,
+            $this->logger,
         );
         $this->controller->setContainer($container);
     }
@@ -298,7 +305,7 @@ class StatistiqueControllerTest extends TestCase
             ['parameter_bag', 1, $params],
         ]);
 
-        $ctrl = new StatistiqueController($params, $this->em, $this->tracking, $this->analysis, $this->mesProjets);
+        $ctrl = new StatistiqueController($params, $this->em, $this->tracking, $this->analysis, $this->mesProjets, $this->logger);
         $ctrl->setContainer($container);
 
         $this->result->method('fetchAllAssociative')->willReturn([['version' => '16.2', 'total' => 0]]);
@@ -644,7 +651,7 @@ class StatistiqueControllerTest extends TestCase
         ]);
 
         $ctrl = $this->getMockBuilder(StatistiqueController::class)
-            ->setConstructorArgs([$this->params, $this->em, $this->tracking, $this->analysis, $this->mesProjets])
+            ->setConstructorArgs([$this->params, $this->em, $this->tracking, $this->analysis, $this->mesProjets, $this->logger])
             ->onlyMethods(['addFlash'])
             ->getMock();
         $ctrl->setContainer($container);
@@ -704,12 +711,82 @@ class StatistiqueControllerTest extends TestCase
         $ctrl->runBatchAnalysis();
     }
 
-    public function testRunBatchCallsAnalysisWith100(): void
+    public static function batchManuelValuesProvider(): array
     {
-        $ctrl = $this->buildControllerForBatch();
-        $this->analysis->expects($this->once())->method('runBatch')->with(100)
-            ->willReturn(['code' => 200, 'processed' => 0, 'erreurs' => []]);
+            return [
+                    'Valeur par défaut (100)' => [100, 100],
+                    'Valeur null' => [null, 0],
+                    'Chaîne vide' => ['', 0],
+            ];
+    }
 
-        $ctrl->runBatchAnalysis();
+    /**
+     * [Description for testRunBatchCallsAnalysisWithVariousProperties]
+     *
+     * @param int|string|null $propertyValue
+     * @param int $expectedValue
+     *
+     * @return void
+     *
+     * Created at: 22/09/2026 11:04:46 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    #[DataProvider('batchManuelValuesProvider')]
+    public function testRunBatchCallsAnalysisWithVariousManuelProperties(int|string|null $propertyValue, int $expectedValue): void
+    {
+            // 1. Mock du ParameterBag
+            $paramsMock = $this->createMock(ParameterBagInterface::class);
+            $paramsMock->method('get')->willReturnCallback(function ($key) use ($propertyValue) {
+                    return match ($key) {
+                            'user.agent.batch.manuel' => $propertyValue,
+                            'logo.entreprise' => 'logo.png',
+                            'marque.entreprise.short' => 'MM',
+                            'marque.entreprise.long' => 'Ma-Moulinette',
+                            'environnement' => 'dev',
+                            'version' => '2.0.0-RELEASE',
+                            'date' => '2026-04-23',
+                            'kernel.project_dir' => sys_get_temp_dir() . '/mm-test-no-stats',
+                            default => null,
+                    };
+            });
+
+            // 2. Mock du Router
+            $routerMock = $this->createMock(RouterInterface::class);
+            $routerMock->method('generate')->willReturn('/statistiques/utilisateur');
+
+            // 3. Création du contrôleur
+            $ctrl = $this->getMockBuilder(StatistiqueController::class)
+                    ->setConstructorArgs([
+                            $paramsMock,
+                            $this->em,
+                            $this->tracking,
+                            $this->analysis,
+                            $this->mesProjets,
+                            $this->logger,
+                    ])
+                    ->onlyMethods(['addFlash'])
+                    ->getMock();
+
+            // 4. Configuration du container
+            $container = $this->createMock(ContainerInterface::class);
+            $container->method('has')->willReturnCallback(
+                    fn(string $id): bool => in_array($id, ['twig', 'parameter_bag', 'router'], true)
+            );
+            $container->method('get')->willReturnMap([
+                    ['twig', 1, $this->twig],
+                    ['parameter_bag', 1, $paramsMock],
+                    ['router', 1, $routerMock],
+            ]);
+            $ctrl->setContainer($container);
+
+            // 5. Configuration du mock de analysis
+            $this->analysis->expects($this->once())
+                    ->method('runBatch')
+                    ->with($expectedValue)
+                    ->willReturn(['code' => 200, 'processed' => $expectedValue, 'erreurs' => []]);
+
+            // 6. Exécution du test
+            $ctrl->runBatchAnalysis();
     }
 }

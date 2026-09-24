@@ -17,7 +17,7 @@ namespace App\Tests\Unit\Controller\Projet;
 
 use App\Controller\Projet\ProjetController;
 use App\Entity\Utilisateur;
-use App\Service\UserAgent\UserAgentTrackingFacade;
+use App\Service\UserAgent\{UserAgentAnalysisService, UserAgentTrackingFacade};
 use App\Repository\HistoriqueRepository;
 use App\Service\MesProjets;
 use Doctrine\ORM\EntityManagerInterface;
@@ -33,11 +33,12 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Flash\FlashBag;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Twig\Environment;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 #[AllowMockObjectsWithoutExpectations]
 /* MODIF 2026-05-05 : retrait des mocks
  * pointant vers UserAgentTrackingFacade / UserAgentReportingService /
- * LogArchiveService (classes supprimees de src/). */
+ * LogArchiveService (classes supprimées de src/). */
 class ProjetControllerTest extends TestCase
 {
     /** @var MesProjets&MockObject */                private MockObject $mesProjets;
@@ -51,6 +52,7 @@ class ProjetControllerTest extends TestCase
     /** @var FlashBag&MockObject */                  private MockObject $flashBag;
 
     /** @var UserAgentTrackingFacade&MockObject */   private MockObject $tracking;
+    /** @var UserAgentAnalysisService&MockObject */  private MockObject $analysis;
 
     private ProjetController $controller;
 
@@ -67,6 +69,7 @@ class ProjetControllerTest extends TestCase
         $this->twig = $this->createMock(Environment::class);
         $this->flashBag = $this->createMock(FlashBag::class);
         $this->tracking = $this->createMock(UserAgentTrackingFacade::class);
+        $this->analysis = $this->createMock(UserAgentAnalysisService::class);
 
         $this->params->method('get')->willReturnMap([
             ['logo.entreprise', 'logo.png'],
@@ -78,6 +81,7 @@ class ProjetControllerTest extends TestCase
         ]);
 
         $this->em->method('getRepository')->willReturn($this->historiqueRepo);
+        $this->logger = $this->createMock(LoggerInterface::class);
 
         $session = $this->createMock(Session::class);
         $session->method('getFlashBag')->willReturn($this->flashBag);
@@ -98,13 +102,19 @@ class ProjetControllerTest extends TestCase
         ]);
 
         $this->controller = new ProjetController(
-            $this->mesProjets, $this->em, $this->params, $this->logger, $this->tracking
+            $this->mesProjets, $this->em, $this->params, $this->logger, $this->tracking, $this->analysis,
         );
         $this->controller->setContainer($container);
     }
 
     public function testIndexRendersProjetPage(): void
     {
+        // 1. Configuration du mock de analysis
+        $this->analysis->expects($this->once())
+                ->method('runBatch')
+                ->with($this->anything())
+                ->willReturn(['code' => 200, 'processed' => 50, 'erreurs' => []]);
+
         $this->twig->expects($this->once())
             ->method('render')
             ->with('projet/index.html.twig', $this->anything())
@@ -213,5 +223,78 @@ class ProjetControllerTest extends TestCase
         $u->setCourriel('u@x');
         $u->setListeGroupeFonctionnel($groupes);
         return $u;
+    }
+
+    public static function batchAutomatiqueValuesProvider(): array
+    {
+        return [
+                'Valeur par défaut (50)' => [50, 50],
+                'Valeur null' => [null, 0],
+                'Chaîne vide' => ['', 0],
+        ];
+    }
+
+    /**
+     * [Description for testRunBatchCallsAnalysisWithVariousProperties]
+     *
+     * @param int|string|null $propertyValue
+     * @param int $expectedValue
+     *
+     * @return void
+     *
+     * Created at: 22/09/2026 11:04:46 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    #[DataProvider('batchAutomatiqueValuesProvider')]
+    public function testRunBatchCallsAnalysisWithVariousAutomatiqueProperties(int|string|null $propertyValue, int $expectedValue): void
+    {
+            // 1. Mock du ParameterBag
+            $paramsMock = $this->createMock(ParameterBagInterface::class);
+            $paramsMock->method('get')->willReturnCallback(function ($key) use ($propertyValue) {
+                    return match ($key) {
+                            'user.agent.batch.automatique' => $propertyValue,
+                            'logo.entreprise' => 'logo.png',
+                            'marque.entreprise.short' => 'MM',
+                            'marque.entreprise.long' => 'Ma-Moulinette',
+                            'environnement' => 'test',
+                            'version' => '2.0.0',
+                            'sonar.version' => '10',
+                            default => null
+                    };
+            });
+
+            // 2. Création du contrôleur
+            $ctrl = $this->getMockBuilder(ProjetController::class)
+                    ->setConstructorArgs([
+                            $this->mesProjets,
+                            $this->em,
+                            $paramsMock,
+                            $this->logger,
+                            $this->tracking,
+                            $this->analysis
+                    ])
+                    ->onlyMethods(['addFlash'])
+                    ->getMock();
+
+            // 3. Configuration du container
+            $container = $this->createMock(ContainerInterface::class);
+            $container->method('has')->willReturnCallback(
+                    fn(string $id): bool => in_array($id, ['twig', 'parameter_bag'], true)
+            );
+            $container->method('get')->willReturnMap([
+                    ['twig', 1, $this->twig],
+                    ['parameter_bag', 1, $paramsMock],
+            ]);
+            $ctrl->setContainer($container);
+
+            // 4. Configuration du mock de analysis
+            $this->analysis->expects($this->once())
+                    ->method('runBatch')
+                    ->with($expectedValue)
+                    ->willReturn(['code' => 200, 'processed' => $expectedValue, 'erreurs' => []]);
+
+            // 5. Exécution du test
+            $ctrl->index();
     }
 }
