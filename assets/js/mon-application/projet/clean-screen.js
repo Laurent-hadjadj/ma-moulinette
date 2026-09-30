@@ -45,13 +45,11 @@
   * @author     Laurent HADJADJ <laurent_h@me.com>
   */
   /* MODIF 2026-09-13 : la quasi-totalité des
-   * sélecteurs ci-dessous ciblait les anciens IDs (sans préfixe js-),
-   * retirés lors du renommage des IDs du 2026-05-18. clean_screen() ne
-   * nettoyait donc quasiment plus rien à l'écran : chaque $('#...')
-   * matchait un ensemble jQuery vide, sans erreur JS (no-op silencieux).
-   * Réalignement complet sur les IDs réels (templates/projet/*.html.twig)
-   * et les data-attributes posés par peinture.js (remplissage /
-   * afficheHotspotDetails). */
+   * Les sélecteurs ciblaient les anciens IDs (sans préfixe js-), retirés lors du renommage des IDs du 2026-05-18.
+   * clean_screen() ne nettoyait donc quasiment plus rien à l'écran : chaque $('#...') matchait un ensemble jQuery
+   * vide, sans erreur JS (no-op silencieux).
+   * Réalignement complet sur les IDs réels (templates/projet/*.html.twig) et les data-attributes posés par peinture.js
+   * (remplissage / afficheHotspotDetails). */
   export const clean_screen = function(type) {
   /** Bloc information générale */
   $('#js-nom-projet').text('');
@@ -168,8 +166,16 @@
   $('#js-note-sqale').text('');
   $('#js-note-menace-potentielle').text('');
 
-  /** Phase L.7 — 6 indicateurs supplémentaires */
-  $('#js-alert-status').text('');
+  /** 6 indicateurs supplémentaires */
+  /* MODIF 2026-09-29 : id renommé js-alert-status -> js-qg-alert-status
+   * (ajout de la ligne RCI à côté de Quality Gate dans _bloc_projet.html.twig). */
+  $('#js-qg-alert-status').text('');
+  $('#js-rci-alert-status').text('').removeAttr('data-rci-mesures-json data-rci-maven-key');
+  ['global', 'frontend', 'backend', 'autre', 'inconnu'].forEach((suffixe) => {
+    $(`#js-rci-${suffixe}-indicator`).text('--');
+    $(`#js-rci-${suffixe}-dette`).text('--');
+    $(`#js-rci-${suffixe}-rating`).text('--');
+  });
   $('#js-note-coverage').text('');
   $('#js-note-duplication').text('');
   $('#js-comment-lines').text('');
