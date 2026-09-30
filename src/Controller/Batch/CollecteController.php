@@ -59,7 +59,8 @@ class CollecteController extends AbstractController
         private BatchCollecteNoSonarController $batchCollecteNoSonar,
         private BatchCollecteTodoController $batchCollecteTodo,
         private BatchCollecteActuatorController $batchCollecteActuator,
-        private BatchCollecteLoggerController $batchCollecteLogger
+        private BatchCollecteLoggerController $batchCollecteLogger,
+        private BatchCollecteRciController $batchCollecteRci
     ) {
     }
 
@@ -948,6 +949,45 @@ class CollecteController extends AbstractController
             'utilisateur_collecte' => $utilisateur_collecte,
             'date_enregistrement' => $date_historique]
         );
+
+        /* MODIF 2026-09-25 : RCI global + par module (frontend/backend/autre/inconnu).
+         * MODIF 2026-09-28 : BatchCollecteRciController::buildRciMeasures()
+         * calcule ET persiste (delete puis insert) dans la table rci — plus
+         * besoin d'appeler RciRepository ici, seul le report des indicateurs
+         * dans historique reste à faire.
+         * Échec non bloquant : les colonnes rci_* restent null plutôt que de
+         * faire échouer toute la collecte pour un indicateur secondaire. */
+        $rciMeasures = $this->batchCollecteRci->buildRciMeasures($maven_key, $mode_collecte, $utilisateur_collecte);
+        if (($rciMeasures['code'] ?? null) === 200) {
+            $item = $rciMeasures['historique'];
+            $mergeHistorique = array_merge($mergeHistorique, [
+                'rci_indicator' => $item['indicator'],
+                'rci_rating' => $item['rating'],
+                'rci_ncloc' => $item['ncloc'],
+                'rci_weight' => $item['weight'],
+                'rci_frontend_indicator' => $item['frontend_indicator'],
+                'rci_frontend_rating' => $item['frontend_rating'],
+                'rci_frontend_ncloc' => $item['frontend_ncloc'],
+                'rci_frontend_weight' => $item['frontend_weight'],
+                'rci_backend_indicator' => $item['backend_indicator'],
+                'rci_backend_rating' => $item['backend_rating'],
+                'rci_backend_ncloc' => $item['backend_ncloc'],
+                'rci_backend_weight' => $item['backend_weight'],
+                'rci_autre_indicator' => $item['autre_indicator'],
+                'rci_autre_rating' => $item['autre_rating'],
+                'rci_autre_ncloc' => $item['autre_ncloc'],
+                'rci_autre_weight' => $item['autre_weight'],
+                'rci_inconnu_indicator' => $item['inconnu_indicator'],
+                'rci_inconnu_rating' => $item['inconnu_rating'],
+                'rci_inconnu_ncloc' => $item['inconnu_ncloc'],
+                'rci_inconnu_weight' => $item['inconnu_weight'],
+            ]);
+        } else {
+            $this->logger->warning('[Batch] ⚠️ Échec du calcul RCI, colonnes rci_* laissées à null.', [
+                'maven_key' => $maven_key,
+                'erreur' => $rciMeasures['erreur'] ?? self::$noError,
+            ]);
+        }
 
         $this->logger->info('[Batch] ℹ️ Mise à jour de la table Collecte.');
 
