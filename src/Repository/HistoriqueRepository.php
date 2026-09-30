@@ -355,9 +355,9 @@ class HistoriqueRepository extends ServiceEntityRepository
 
     /* MODIF 2026-05-06 :
      * Variante de selectUnionHistoriqueProjet pour le rapport PDF Suivi.
-     * Limite aux N dernieres versions (LIMIT :limit, defaut 10 cote appelant)
+     * Limite aux N dernières versions (LIMIT :limit, défaut 10 cote appelant)
      * et trie ASC sur date pour l'affichage. Pas d'UNION avec la version `initial=1` :
-     * elle n'a pas sa place dans un rapport "N dernieres".
+     * elle n'a pas sa place dans un rapport "N dernières".
      *
      * NB : on a essaye un filtre `version_release > 0` pour ne garder que les
      * releases — abandonne car version_release est un compteur cumule, pas un flag
@@ -365,7 +365,7 @@ class HistoriqueRepository extends ServiceEntityRepository
      * et c'est l'utilisateur qui choisira ses versions a l'usage. */
     /**
      * [Description for selectHistoriqueProjetForRapport]
-     * Remonte les N dernieres versions du projet pour le rapport PDF.
+     * Remonte les N dernières versions du projet pour le rapport PDF.
      * @param array<int|string, mixed> $map  attend `maven_key` et `limit`
      *
      * @return array<int|string, mixed>
@@ -937,6 +937,13 @@ class HistoriqueRepository extends ServiceEntityRepository
         'quality_maintainability', 'quality_reliability', 'quality_security',
         'impact_blocker', 'impact_high', 'impact_medium', 'impact_low', 'impact_info',
         'owasp_top10', 'sans_top25', 'cwe',
+        // MODIF 2026-09-25 : RCI (Risk Criticality Index, plugin sonar-rci porté en PHP)
+        // MODIF 2026-09-29 : ncloc/weight bruts (global + par module), en plus de l'indicateur/note
+        'rci_indicator', 'rci_rating', 'rci_ncloc', 'rci_weight',
+        'rci_frontend_indicator', 'rci_frontend_rating', 'rci_frontend_ncloc', 'rci_frontend_weight',
+        'rci_backend_indicator', 'rci_backend_rating', 'rci_backend_ncloc', 'rci_backend_weight',
+        'rci_autre_indicator', 'rci_autre_rating', 'rci_autre_ncloc', 'rci_autre_weight',
+        'rci_inconnu_indicator', 'rci_inconnu_rating', 'rci_inconnu_ncloc', 'rci_inconnu_weight',
         // Méta enregistrement
         'initial', 'mode_collecte', 'utilisateur_collecte', 'date_enregistrement',
     ];
@@ -953,6 +960,8 @@ class HistoriqueRepository extends ServiceEntityRepository
         'reliability_rating', 'software_quality_reliability_rating',
         'security_rating', 'software_quality_security_rating',
         'security_review_rating',
+        'rci_rating', 'rci_frontend_rating',
+        'rci_backend_rating', 'rci_autre_rating', 'rci_inconnu_rating',
     ];
 
     /**

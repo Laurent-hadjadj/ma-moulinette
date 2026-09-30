@@ -1410,6 +1410,74 @@ class Historique
     private ?int $cwe = null;
 
     // -------------------------
+    // RCI (Risk Criticality Index)
+    // -------------------------
+    #[ORM\Column(name: 'rci_indicator', type: Types::FLOAT, nullable: true, options: ['comment' => 'RCI global (Risk Criticality Index)'])]
+    private ?float $rciIndicator = null;
+
+    #[ORM\Column(name: 'rci_rating', type: Types::STRING, length: 4, nullable: true, options: ['comment' => 'Note A-E dérivée de rci_indicator'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
+    private ?string $rciRating = null;
+
+    #[ORM\Column(name: 'rci_ncloc', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre de lignes de code pris en compte pour le RCI global'])]
+    private ?int $rciNcloc = null;
+
+    #[ORM\Column(name: 'rci_weight', type: Types::INTEGER, nullable: true, options: ['comment' => 'Poids pondéré des anomalies pour le RCI global'])]
+    private ?int $rciWeight = null;
+
+    #[ORM\Column(name: 'rci_frontend_indicator', type: Types::FLOAT, nullable: true, options: ['comment' => 'RCI du module frontend'])]
+    private ?float $rciFrontendIndicator = null;
+
+    #[ORM\Column(name: 'rci_frontend_rating', type: Types::STRING, length: 4, nullable: true, options: ['comment' => 'Note A-E dérivée de rci_frontend_indicator'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
+    private ?string $rciFrontendRating = null;
+
+    #[ORM\Column(name: 'rci_frontend_ncloc', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre de lignes de code du module frontend'])]
+    private ?int $rciFrontendNcloc = null;
+
+    #[ORM\Column(name: 'rci_frontend_weight', type: Types::INTEGER, nullable: true, options: ['comment' => 'Poids pondéré des anomalies du module frontend'])]
+    private ?int $rciFrontendWeight = null;
+
+    #[ORM\Column(name: 'rci_backend_indicator', type: Types::FLOAT, nullable: true, options: ['comment' => 'RCI du module backend'])]
+    private ?float $rciBackendIndicator = null;
+
+    #[ORM\Column(name: 'rci_backend_rating', type: Types::STRING, length: 4, nullable: true, options: ['comment' => 'Note A-E dérivée de rci_backend_indicator'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
+    private ?string $rciBackendRating = null;
+
+    #[ORM\Column(name: 'rci_backend_ncloc', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre de lignes de code du module backend'])]
+    private ?int $rciBackendNcloc = null;
+
+    #[ORM\Column(name: 'rci_backend_weight', type: Types::INTEGER, nullable: true, options: ['comment' => 'Poids pondéré des anomalies du module backend'])]
+    private ?int $rciBackendWeight = null;
+
+    #[ORM\Column(name: 'rci_autre_indicator', type: Types::FLOAT, nullable: true, options: ['comment' => 'RCI du module autre'])]
+    private ?float $rciAutreIndicator = null;
+
+    #[ORM\Column(name: 'rci_autre_rating', type: Types::STRING, length: 4, nullable: true, options: ['comment' => 'Note A-E dérivée de rci_autre_indicator'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
+    private ?string $rciAutreRating = null;
+
+    #[ORM\Column(name: 'rci_autre_ncloc', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre de lignes de code du module autre'])]
+    private ?int $rciAutreNcloc = null;
+
+    #[ORM\Column(name: 'rci_autre_weight', type: Types::INTEGER, nullable: true, options: ['comment' => 'Poids pondéré des anomalies du module autre'])]
+    private ?int $rciAutreWeight = null;
+
+    #[ORM\Column(name: 'rci_inconnu_indicator', type: Types::FLOAT, nullable: true, options: ['comment' => 'RCI des fichiers non classés'])]
+    private ?float $rciInconnuIndicator = null;
+
+    #[ORM\Column(name: 'rci_inconnu_rating', type: Types::STRING, length: 4, nullable: true, options: ['comment' => 'Note A-E dérivée de rci_inconnu_indicator'])]
+    #[Assert\Choice(choices: ['A', 'B', 'C', 'D', 'E'])]
+    private ?string $rciInconnuRating = null;
+
+    #[ORM\Column(name: 'rci_inconnu_ncloc', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre de lignes de code des fichiers non classés'])]
+    private ?int $rciInconnuNcloc = null;
+
+    #[ORM\Column(name: 'rci_inconnu_weight', type: Types::INTEGER, nullable: true, options: ['comment' => 'Poids pondéré des anomalies des fichiers non classés'])]
+    private ?int $rciInconnuWeight = null;
+
+    // -------------------------
     // Initialisation du projet
     // -------------------------
     #[ORM\Column(
@@ -1497,6 +1565,46 @@ class Historique
     public function setSansTop25(?int $v): static { $this->sansTop25 = $v; return $this; }
     public function getCwe(): ?int { return $this->cwe; }
     public function setCwe(?int $v): static { $this->cwe = $v; return $this; }
+    public function getRciIndicator(): ?float { return $this->rciIndicator; }
+    public function setRciIndicator(?float $v): static { $this->rciIndicator = $v; return $this; }
+    public function getRciRating(): ?string { return $this->rciRating; }
+    public function setRciRating(?string $v): static { $this->rciRating = $v; return $this; }
+    public function getRciNcloc(): ?int { return $this->rciNcloc; }
+    public function setRciNcloc(?int $v): static { $this->rciNcloc = $v; return $this; }
+    public function getRciWeight(): ?int { return $this->rciWeight; }
+    public function setRciWeight(?int $v): static { $this->rciWeight = $v; return $this; }
+    public function getRciFrontendIndicator(): ?float { return $this->rciFrontendIndicator; }
+    public function setRciFrontendIndicator(?float $v): static { $this->rciFrontendIndicator = $v; return $this; }
+    public function getRciFrontendRating(): ?string { return $this->rciFrontendRating; }
+    public function setRciFrontendRating(?string $v): static { $this->rciFrontendRating = $v; return $this; }
+    public function getRciFrontendNcloc(): ?int { return $this->rciFrontendNcloc; }
+    public function setRciFrontendNcloc(?int $v): static { $this->rciFrontendNcloc = $v; return $this; }
+    public function getRciFrontendWeight(): ?int { return $this->rciFrontendWeight; }
+    public function setRciFrontendWeight(?int $v): static { $this->rciFrontendWeight = $v; return $this; }
+    public function getRciBackendIndicator(): ?float { return $this->rciBackendIndicator; }
+    public function setRciBackendIndicator(?float $v): static { $this->rciBackendIndicator = $v; return $this; }
+    public function getRciBackendRating(): ?string { return $this->rciBackendRating; }
+    public function setRciBackendRating(?string $v): static { $this->rciBackendRating = $v; return $this; }
+    public function getRciBackendNcloc(): ?int { return $this->rciBackendNcloc; }
+    public function setRciBackendNcloc(?int $v): static { $this->rciBackendNcloc = $v; return $this; }
+    public function getRciBackendWeight(): ?int { return $this->rciBackendWeight; }
+    public function setRciBackendWeight(?int $v): static { $this->rciBackendWeight = $v; return $this; }
+    public function getRciAutreIndicator(): ?float { return $this->rciAutreIndicator; }
+    public function setRciAutreIndicator(?float $v): static { $this->rciAutreIndicator = $v; return $this; }
+    public function getRciAutreRating(): ?string { return $this->rciAutreRating; }
+    public function setRciAutreRating(?string $v): static { $this->rciAutreRating = $v; return $this; }
+    public function getRciAutreNcloc(): ?int { return $this->rciAutreNcloc; }
+    public function setRciAutreNcloc(?int $v): static { $this->rciAutreNcloc = $v; return $this; }
+    public function getRciAutreWeight(): ?int { return $this->rciAutreWeight; }
+    public function setRciAutreWeight(?int $v): static { $this->rciAutreWeight = $v; return $this; }
+    public function getRciInconnuIndicator(): ?float { return $this->rciInconnuIndicator; }
+    public function setRciInconnuIndicator(?float $v): static { $this->rciInconnuIndicator = $v; return $this; }
+    public function getRciInconnuRating(): ?string { return $this->rciInconnuRating; }
+    public function setRciInconnuRating(?string $v): static { $this->rciInconnuRating = $v; return $this; }
+    public function getRciInconnuNcloc(): ?int { return $this->rciInconnuNcloc; }
+    public function setRciInconnuNcloc(?int $v): static { $this->rciInconnuNcloc = $v; return $this; }
+    public function getRciInconnuWeight(): ?int { return $this->rciInconnuWeight; }
+    public function setRciInconnuWeight(?int $v): static { $this->rciInconnuWeight = $v; return $this; }
 
     public function __construct()
     {
