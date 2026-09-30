@@ -985,12 +985,12 @@ const projetNoSonar = async function (maven_key) {
     if (t.code === http_200 && t.nombre !== 0) {
       const s = t.nombre > 1 ? 's' : '';
       log(` -     ⚠️ J'ai trouvé ${t.nombre} exclusion${s}.`);
-      log(`           📌 NoSonar Java   : ${t.historique.java_no_sonar}`);
-      log(`           📌 NoSonar Python : ${t.historique.python_no_sonar}`);
-      log(`           📌 NoSonar PHP    : ${t.historique.php_no_sonar}`);
-      log(`           📌 @SuppressWarnings : ${t.historique.suppress_warning}`);
-      log(`           📌 Checkstyle (S1315) : ${t.historique.check_style}`);
-      log(`           📌 PMD (S1310)        : ${t.historique.no_pmd}`);
+      log(`           📌 NoSonar Java               : ${t.historique.java_no_sonar}`);
+      log(`           📌 NoSonar Python          : ${t.historique.python_no_sonar}`);
+      log(`           📌 NoSonar PHP               : ${t.historique.php_no_sonar}`);
+      log(`           📌 @SuppressWarnings  : ${t.historique.suppress_warning}`);
+      log(`           📌 Checkstyle (S1315)      : ${t.historique.check_style}`);
+      log(`           📌 PMD (S1310)                : ${t.historique.no_pmd}`);
     } else {
       log(` -     ✅ Bravo !!! ${t.nombre} exclusion NoSonar trouvée.`);
     }
@@ -1089,7 +1089,7 @@ const projetTodo = async function (maven_key) {
  * On récupère la liste des Logger
  * http://{url}/api/secure/collecte/logger
  *
- * Phase 13
+ * Phase 12
  * {maven_key} = clé du projet
  *
  * @param string maven_key
@@ -1174,7 +1174,7 @@ const projetLogger = async function (maven_key) {
  * Collecte les informations Actuator (endpoint /actuator/info déclaré pour le projet).
  * http://{url}/api/secure/collecte/actuator/info
  *
- * Phase 14 — "best effort" : l'absence de point d'accès déclaré (404) n'est pas
+ * Phase 13 — "best effort" : l'absence de point d'accès déclaré (404) n'est pas
  * une erreur (même traitement que le 404 de projetLogger ci-dessus), juste un
  * log informatif. Le résultat est stocké en data-attribute (avec la maven_key
  * associée) pour que peinture.js puisse peindre la pastille sans re-collecter,
@@ -1242,6 +1242,83 @@ const projetActuator = async function (maven_key) {
       message: "Une erreur inattendue s'est produite lors de la collecte Actuator.",
       date_extraction: new Date().toISOString(),
     }));
+  }
+};
+
+/**
+ * [Description for projetRCI]
+ * Collecte les mesures RCI.
+ * http://{url}/api/secure/collecte/rci
+ *
+ * Phase 14
+ *
+ * @param string maven_key
+ * @return response
+ *
+ * Created at: 28/09/2026 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ */
+const projetRCI = async function (maven_key) {
+  /** On vérifie s'il n'y a pas d'erreur lors du traitement */
+  const collecte = sessionStorage.getItem('ma_moulinette_collecte');
+  if (!collecte || collecte != 'Tout va bien!') {
+    return;
+  }
+
+  const data = { maven_key };
+  const options = {
+    url: `${serveur()}/api/secure/collecte/rci`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType: content_type,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
+
+  const $boutonCollecteIndicateur = $('.js-analyse');
+  const aria_label = 'La collecte est interrompue.';
+
+  try {
+    const t = await $.ajax(options);
+    // 📌 Vérification des erreurs
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+    if (errorCodes.includes(t.code)) {
+      const hasTrace = !!t.trace;
+      const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+      showMessage(t.type, t.message, trace);
+      sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 12');
+      errorButton($boutonCollecteIndicateur, aria_label);
+      return;
+    }
+
+    const isNullish = (v) => v === null || v === undefined || (typeof v === 'number' && Number.isNaN(v));
+    const a = isNullish(t.message.rating) ? '--' : t.message.rating;
+    const b = isNullish(t.message.frontend_rating) ? '--' : t.message.frontend_rating;
+    const c = isNullish(t.message.backend_rating) ? '--' : t.message.backend_rating;
+    const d = isNullish(t.message.autre_rating) ? '--' : t.message.autre_rating;
+    const e = isNullish(t.message.inconnu_rating) ? '--' : t.message.inconnu_rating;
+
+    if (t.code === http_200) {
+      log(' - ℹ️ (14) Collecte des mesures RCI.');
+      log(` -     ✅ Mesures RCI de l'application      : ${a}`);
+      log(` -     ✅ Mesures RCI module frontend  : ${b}`);
+      log(` -     ✅ Mesures RCI module backend   : ${c}`);
+      log(` -     ✅ Mesures RCI module autre        : ${d}`);
+      log(` -     ✅ Mesures RCI module inconnu   : ${e}`);
+    } else {
+      log(` - ❌ (14) Collecte des mesures RCI en échec (Erreur ${t.code}).`);
+    }
+  } catch (error) {
+    const trace = prepareTechnicalDetails(error);
+    const message = "Une erreur inattendue s'est produite lors de la phase 14.";
+    showMessage('critical', message, trace);
+    sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 14');
+    log(` - ❌ (14) Collecte des mesures RCI en échec.`);
+    errorButton($boutonCollecteIndicateur, aria_label);
+    return;
   }
 };
 
@@ -1487,6 +1564,9 @@ $('.js-analyse').on('click', function () {
 
     /* Collecte des informations Actuator (best effort, cf. Phase 14). */
     await projetActuator(idProject);              /*(13)*/
+
+    /* Collecte des mesures RCI pour le projet */
+    await projetRCI(idProject);                  /*(14)*/
 
     /* Renvoie le statut de fin */
     finCollecte(idProject);
@@ -1812,6 +1892,108 @@ $('#js-affiche-actuator').on('click', function () {
 });
 $('#bouton-fermer-actuator').on('click', function () {
     modalSafe.close('#modal-affiche-actuator');
+});
+
+/* Graphique RCI (bar empilé RCI% + Dette% = 100%, un empilement par
+ * colonne : global, frontend, backend, autre, inconnu). Même source que le
+ * tableau (dataset.rciMesuresJson posé par peinture.js sur #js-rci-alert-status).
+ * Canvas ré-instancié à chaque ouverture (destroy puis new) pour éviter les
+ * fuites Chart.js entre projets, comme le graphique Logger ci-dessous. */
+let rciBarChartInstance = null;
+
+const readRciMesures = function () {
+  const el = document.getElementById('js-rci-alert-status');
+  if (!el || !el.dataset || !el.dataset.rciMesuresJson) { return null; }
+  try {
+    return JSON.parse(el.dataset.rciMesuresJson);
+  } catch (e) {
+    log(' - 🔴 [Mesures RCI] JSON invalide sur dataset.rciMesuresJson.');
+    return null;
+  }
+};
+
+/**
+ * description
+ * On affiche la fenêtre modale du détail des mesures RCI par module.
+ */
+$('#js-affiche-modal-mesures-rci').on('click', function () {
+  if ($('select[name="projet"]').val() === '' || $('select[name="projet"]').val() === 'TheID') {
+    showMessage('warning', 'Aucune donnée disponible. Relancez une collecte ou afficher les derniers résultats.', null);
+    return;
+  }
+
+  const rciMesures = readRciMesures() ?? {};
+  const rciColonnes = [
+    { label: 'Global', prefixe: '' },
+    { label: 'Frontend', prefixe: 'frontend_' },
+    { label: 'Backend', prefixe: 'backend_' },
+    { label: 'Autre', prefixe: 'autre_' },
+    { label: 'Inconnu', prefixe: 'inconnu_' },
+  ];
+  const rciData = rciColonnes.map(c => rciMesures[`${c.prefixe}indicator`] ?? null);
+  const detteData = rciData.map(v => (v === null ? null : 100 - v));
+
+  if (rciBarChartInstance) {
+    rciBarChartInstance.destroy();
+    rciBarChartInstance = null;
+  }
+
+  modalSafe.open('#modal-affiche-mesures-rci');
+  /* tick suivant : le canvas doit être visible pour que Chart.js mesure sa taille */
+  setTimeout(() => {
+    const canvas = document.getElementById('rci-bar-chart');
+    if (!canvas) { return; }
+    rciBarChartInstance = new Chart(canvas.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: rciColonnes.map(c => c.label),
+        datasets: [
+          {
+            /* MODIF 2026-09-29 : couleurs pleines (pas de transparence) reprises
+             * de la palette .note-vert1/.note-rouge déjà utilisée pour les notes
+             * A-E — plus de contraste que les rgba(...,0.7) initiaux. */
+            label: 'RCI (%)',
+            data: rciData,
+            backgroundColor: '#0a0',
+            borderColor: '#00445b',
+            borderWidth: 1,
+          },
+          {
+            label: 'Dette (%)',
+            data: detteData,
+            backgroundColor: '#d4333f',
+            borderColor: '#00445b',
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', labels: { font: { size: 14 } } },
+          datalabels: {
+            display: ctx => ctx.dataset.data[ctx.dataIndex] !== null,
+            color: '#fff',
+            font: { weight: 'bold' },
+            formatter: v => `${Math.round(v)}%`,
+          },
+          tooltip: {
+            callbacks: {
+              label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y}%`
+            }
+          }
+        },
+        scales: {
+          x: { stacked: true },
+          y: { stacked: true, beginAtZero: true, max: 100, ticks: { precision: 0 } }
+        }
+      }
+    });
+  }, 50);
+});
+$('#bouton-fermer-mesures-rci').on('click', function () {
+    modalSafe.close('#modal-affiche-mesures-rci');
 });
 
 
