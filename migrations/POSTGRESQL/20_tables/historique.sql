@@ -205,6 +205,28 @@ CREATE TABLE ma_moulinette.historique
     sans_top25 INT,
     cwe INT,
 
+    /* MODIF 2026-09-25 : RCI (Risk Criticality Index, plugin sonar-rci porté en PHP) */
+    rci_ncloc INT,
+    rci_weight INT,
+    rci_indicator DOUBLE PRECISION,
+    rci_rating VARCHAR(4),
+    rci_frontend_indicator DOUBLE PRECISION,
+    rci_frontend_rating VARCHAR(4),
+    rci_frontend_ncloc INT,
+    rci_frontend_weight INT,
+    rci_backend_indicator DOUBLE PRECISION,
+    rci_backend_rating VARCHAR(4),
+    rci_backend_ncloc INT,
+    rci_backend_weight INT,
+    rci_autre_indicator DOUBLE PRECISION,
+    rci_autre_rating VARCHAR(4),
+    rci_autre_ncloc INT,
+    rci_autre_weight INT,
+    rci_inconnu_indicator DOUBLE PRECISION,
+    rci_inconnu_rating VARCHAR(4),
+    rci_inconnu_ncloc INT,
+    rci_inconnu_weight INT,
+
     initial BOOLEAN NOT NULL,
 
     mode_collecte VARCHAR(32),
