@@ -1,6 +1,6 @@
 -- ############################################################################
 -- ## MASTER INSTALL Ma-Moulinette
--- ## V2.0.1 - 24/04/2026
+-- ## V2.1.0 - 25/09/2026
 -- ##
 -- ## USAGE : psql -U postgres -v ON_ERROR_STOP=1 -f 99_master_install.sql
 -- ##         (depuis le repertoire migrations/POSTGRESQL/)
@@ -79,6 +79,7 @@
 \ir 20_tables/profiles.sql
 \ir 20_tables/profiles_historique.sql
 \ir 20_tables/properties.sql
+\ir 20_tables/rci.sql
 \ir 20_tables/repartition.sql
 \ir 20_tables/repartition_temp.sql
 \ir 20_tables/todo.sql
