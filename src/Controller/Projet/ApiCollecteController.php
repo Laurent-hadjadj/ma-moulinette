@@ -21,7 +21,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Psr\Log\LoggerInterface;
 
 /** Gestion de accès aux API */
-use App\Controller\Batch\{BatchCollecteInformationProjetController, BatchCollecteMesureController, BatchCollecteOwaspController, BatchCollecteHotspotController,BatchCollecteAnomalieController, BatchCollecteAnomalieDetailController, BatchCollecteHotspotOwaspController,BatchCollecteHotspotDetailController, BatchCollecteNoSonarController, BatchCollecteTodoController,BatchCollecteActuatorController, BatchCollecteLoggerController, BatchCollecteCleanCodeController};
+use App\Controller\Batch\{BatchCollecteInformationProjetController, BatchCollecteMesureController, BatchCollecteOwaspController, BatchCollecteHotspotController,BatchCollecteAnomalieController, BatchCollecteAnomalieDetailController, BatchCollecteHotspotOwaspController,BatchCollecteHotspotDetailController, BatchCollecteNoSonarController, BatchCollecteTodoController,BatchCollecteActuatorController, BatchCollecteLoggerController, BatchCollecteCleanCodeController, BatchCollecteRciController};
 
 /**
  * [Description ApiMesureController]
@@ -54,6 +54,8 @@ class ApiCollecteController extends AbstractController
         private BatchCollecteLoggerController $batchCollecteLogger,
         /* MODIF 2026-05-15 : indicateurs SonarQube 10+. */
         private BatchCollecteCleanCodeController $batchCollecteCleanCode,
+        /** MODIF 2026-09-27 : Calcul du RCI */
+        private BatchCollecteRciController $batchCollecteRci,
         private Security $security,
         private LoggerInterface $logger,
     ) {}
@@ -258,6 +260,108 @@ class ApiCollecteController extends AbstractController
         return new JsonResponse([
             'code' => 200,
             'message' => $mesure['data']
+        ], Response::HTTP_OK);
+    }
+
+    /**
+     * [Description for apiCollecteRci]
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     *
+     * Created at: 28/09/2026 18:51:41 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    #[Route('/api/secure/collecte/rci', name: 'api_collecte_rci', methods: ['POST'])]
+    public function apiCollecteRci(Request $request): JsonResponse
+    {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/rci");
+
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On teste si la clé est valide */
+        if (!is_object($data) || !property_exists($data, 'maven_key')) {
+            $this->logger->error(self::$loggerE400, [
+                'payload' => $data ?? self::$noData
+            ]);
+
+            return new JsonResponse(
+                [
+                    'code' => 400,
+                    'type' => 'error',
+                    'message' => self::$erreur400,
+                    'trace' => null
+                ],
+                Response::HTTP_OK
+            );
+        }
+
+        /** On vérifie si l'utilisateur à un rôle Collecte ? */
+        if (!$this->isGranted('ROLE_COLLECTE')) {
+            $this->logger->warning(self::$loggerE403, [
+                'maven_key' => $data->maven_key,
+                'utilisateur' => $this->security->getUser()?->getUserIdentifier()
+            ]);
+
+            return new JsonResponse(
+                [
+                    'code' => 403,
+                    'type' => 'warning',
+                    'message' => self::$erreur403,
+                    'trace' => null
+                ],
+                Response::HTTP_OK
+            );
+        }
+
+        /** On contrôle le mode d'utilisation */
+        $utilisateur_collecte = $this->appUser()->getCourriel() ?? 'null';
+        $this->logger->info('[Collecte] ℹ️ Début de collecte des indicateurs RCI du projet.', [
+            'maven_key' => $data->maven_key,
+            'utilisateur' => $utilisateur_collecte
+        ]);
+
+        $rci_measures = $this->batchCollecteRci->buildRciMeasures(
+            $data->maven_key,
+            'COLLECTE',
+            $utilisateur_collecte
+        );
+
+        if (($rci_measures['code'] ?? 500) !== 200) {
+            $this->logger->error('[Collecte] ❌ Échec de la collecte des mesures RCI.', [
+                'maven_key' => $data->maven_key,
+                'code' => $rci_measures['code'] ?? 'inconnu',
+                'message' => $rci_measures['message'] ?? 'absent',
+                'trace' => $rci_measures['erreur'] ?? $rci_measures['trace'] ?? 'non fournie'
+            ]);
+
+            $message = 'Collecte des mesures RCI du projet.';
+            return new JsonResponse([
+                'code' => $rci_measures['code'],
+                'type' => 'error',
+                'message' => $rci_measures['message'] ?? $message,
+                'trace' => $rci_measures['erreur'] ?? $rci_measures['trace'] ?? null
+            ], Response::HTTP_OK);
+        }
+
+        $this->logger->info('[Collecte] ℹ️ Indicateurs RCI collectées avec succès.', [
+            'maven_key' => $data->maven_key,
+            'rating' => $rci_measures['historique']['rating'],
+            'frontend_rating' => $rci_measures['historique']['frontend_rating'],
+            'backend_rating' => $rci_measures['historique']['backend_rating'],
+            'autre_rating' => $rci_measures['historique']['autre_rating'],
+            'inconnu_rating' => $rci_measures['historique']['inconnu_rating']
+        ]);
+
+        /** On renvoie toutes les clés du dataset mesures pour que la vue
+         *  puisse afficher les valeurs actuelles ET pré-remplir les data-*
+         *  avant l'enregistrement dans historique. */
+        return new JsonResponse([
+            'code' => 200,
+            'message' => $rci_measures['historique']
         ], Response::HTTP_OK);
     }
 
