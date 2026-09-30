@@ -378,4 +378,9 @@ class BuildMapHistoryServiceTest extends TestCase
             '9 → --' => ['9', '--'],
         ];
     }
+
+    /* MODIF 2026-09-28 : getRCIRating() (et tout le calcul RCI) a été retiré
+     * de BuildMapHistoryService et extrait dans BuildMeasuresRciService — la
+     * couverture équivalente vit désormais dans BuildMeasuresRciServiceTest
+     * (testGetRciRatingReturnsNullWhenRciIsNull / testGetRciRatingAppliesSqaleBandsOnDebtRatio). */
 }
