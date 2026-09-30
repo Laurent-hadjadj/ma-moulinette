@@ -646,6 +646,86 @@ export const remplissage = async function(maven_key) {
     $actuatorTableau.append('<tr><td colspan="2" class="text-center">Aucune donnée.</td></tr>');
   }
 
+    /**
+   * On récupère les mesures RCI :
+   * ncloc, weight, indicator, rating + les mesures pour frontend, backend, autre et inconnu.
+   */
+  const optionsMesuresRci = {
+    url: `${serveur()}/api/secure/peinture/projet/rci`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType: content_type,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
+
+  try {
+    const t = await $.ajax(optionsMesuresRci);
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+    if (errorCodes.includes(t.code)){
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
+        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération des informations sur les mesures RCI.');
+        if (t.code === http_404){
+            log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
+            enableButtonAnalyse();
+        } else {
+            log(' - ❌ [Peinture] Affichage des informations sur les mesures RCI en échec.');
+        }
+        return;
+      }
+
+      const colorByRating = {
+        'A': 'note-vert1',
+        'B': 'note-vert2',
+        'C': 'note-jaune',
+        'D': 'note-orange',
+        'E': 'note-rouge'
+      };
+      const rciClass = colorByRating[t.alert_status] ?? '';
+      $('#js-rci-alert-status').html(`<span class="stat-note stat-note-width ${rciClass}">${displayValue(t.alert_status)}</span>`);
+
+      const rci_mesures = document.getElementById('js-rci-alert-status');
+      rci_mesures.dataset.rciMavenKey = maven_key;
+      rci_mesures.dataset.rciMesuresJson = JSON.stringify(t.rci_mesures_json || []);
+
+      /**
+       * Tableau détaillé de la modale (#modal-affiche-mesures-rci) : RCI, taux
+       * de dette (100 - RCI) et note, pour le global et chaque module.
+       */
+      const rciMesures = t.rci_mesures_json ?? {};
+      const remplitColonneRci = (suffixe, prefixe) => {
+        const indicator = rciMesures[`${prefixe}indicator`];
+        const dette = (indicator === null || indicator === undefined) ? null : 100 - indicator;
+        const rating = rciMesures[`${prefixe}rating`];
+
+        $(`#js-rci-${suffixe}-indicator`).text(displayPercent(indicator));
+        $(`#js-rci-${suffixe}-dette`).text(displayPercent(dette));
+        $(`#js-rci-${suffixe}-rating`).html(
+          `<span class="stat-note ${colorByRating[rating] ?? ''}">${displayValue(rating)}</span>`
+        );
+      };
+      remplitColonneRci('global', '');
+      remplitColonneRci('frontend', 'frontend_');
+      remplitColonneRci('backend', 'backend_');
+      remplitColonneRci('autre', 'autre_');
+      remplitColonneRci('inconnu', 'inconnu_');
+
+      log(' - 🎨 [Peinture] Affichage des informations sur les mesures RCI.');
+  } catch(error) {
+      ErrorButtonAffiche();
+      const trace = prepareTechnicalDetails(error);
+      const message = "Une erreur inattendue s'est produite lors l'affichage des informations sur les mesures RCI (Erreur 500).";
+      showMessage('critical', message, trace);
+      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Mesures RCI.');
+      log(' - 🔴 [Peinture] Affichage des informations sur les Mesures RCI en échec.');
+      return;
+  }
+
   /**
    * On récupère les mesures :
    * lignes, coverage fonctionnelle, ration de dette technique, duplication, tests unitaires et le nombre de défaut.
@@ -685,8 +765,8 @@ export const remplissage = async function(maven_key) {
      * a poser un dataset DOM par valeur. */
     window.peintureData = t;
 
-        /** On affiche les langages supportés */
-    const jsonObject=t.ncloc_language_distribution;
+    /** On affiche les langages supportés */
+    const jsonObject = t.ncloc_language_distribution;
     let i=0;
     let total=0;
 
@@ -785,7 +865,8 @@ export const remplissage = async function(maven_key) {
       'ERROR': 'note-rouge'
     };
     const qgClass = colorByQualityGate[t.alert_status] ?? '';
-    $('#js-alert-status').html(`<span class="stat-note stat-note-qg ${qgClass}">${displayValue(t.alert_status)}</span>`);
+    $('#js-qg-alert-status').html(`<span class="stat-note stat-note-qg ${qgClass}">${displayValue(t.alert_status)}</span>`);
+
 
     /** Documentation */
     $('#js-comment-lines').html(displayNumber(t.comment_lines));
