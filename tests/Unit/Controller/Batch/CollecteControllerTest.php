@@ -15,7 +15,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Batch;
 
-use App\Controller\Batch\{BatchCollecteActuatorController, BatchCollecteAnomalieController,BatchCollecteAnomalieDetailController, BatchCollecteHotspotController, BatchCollecteHotspotDetailController, BatchCollecteHotspotOwaspController, BatchCollecteInformationProjetController, BatchCollecteLoggerController,BatchCollecteMesureController, BatchCollecteNoSonarController, BatchCollecteOwaspController, BatchCollecteTodoController, CollecteController};
+use App\Controller\Batch\{BatchCollecteActuatorController, BatchCollecteAnomalieController,BatchCollecteAnomalieDetailController, BatchCollecteHotspotController, BatchCollecteHotspotDetailController, BatchCollecteHotspotOwaspController, BatchCollecteInformationProjetController, BatchCollecteLoggerController,BatchCollecteMesureController, BatchCollecteNoSonarController, BatchCollecteOwaspController, BatchCollecteRciController, BatchCollecteTodoController, CollecteController};
 use App\Entity\Historique;
 use App\Repository\HistoriqueRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -65,6 +65,8 @@ class CollecteControllerTest extends TestCase
     private MockObject $batchActuator;
     /** @var BatchCollecteLoggerController&MockObject */
     private MockObject $batchLogger;
+    /** @var BatchCollecteRciController&MockObject */
+    private MockObject $batchRci;
 
     private CollecteController $controller;
 
@@ -73,10 +75,10 @@ class CollecteControllerTest extends TestCase
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->historiqueRepo = $this->createMock(HistoriqueRepository::class);
         $this->logger = $this->createMock(LoggerInterface::class);
-        $this->em->expects($this->atLeastOnce())
-            ->method('getRepository')
-            ->with(Historique::class)
-            ->willReturn($this->historiqueRepo);
+        $this->em->method('getRepository')
+            ->willReturnMap([
+                [Historique::class, $this->historiqueRepo],
+            ]);
 
         $this->batchInfo = $this->createMock(BatchCollecteInformationProjetController::class);
         $this->batchMesure = $this->createMock(BatchCollecteMesureController::class);
@@ -90,6 +92,8 @@ class CollecteControllerTest extends TestCase
         $this->batchTodo = $this->createMock(BatchCollecteTodoController::class);
         $this->batchActuator = $this->createMock(BatchCollecteActuatorController::class);
         $this->batchLogger = $this->createMock(BatchCollecteLoggerController::class);
+        $this->batchRci = $this->createMock(BatchCollecteRciController::class);
+        $this->batchRci->method('buildRciMeasures')->willReturn(['code' => 500, 'erreur' => 'non simulé']);
 
         $this->controller = new CollecteController(
             $this->em,
@@ -106,6 +110,7 @@ class CollecteControllerTest extends TestCase
             $this->batchTodo,
             $this->batchActuator,
             $this->batchLogger,
+            $this->batchRci,
         );
     }
 
@@ -126,6 +131,85 @@ class CollecteControllerTest extends TestCase
         $this->assertStringContainsString('collecte et la mise à jour', $result['message']);
         $this->assertIsArray($result['historique']);
         $this->assertSame('', $result['compte_rendu']);
+    }
+
+    public function testCollecteHappyPathMergesRciMeasuresIntoHistorique(): void
+    {
+        // MODIF 2026-09-28 : BatchCollecteRciController::buildRciMeasures()
+        // calcule ET persiste dans la table rci de façon autonome — CollecteController
+        // se contente désormais de reporter les indicateurs déjà calculés dans
+        // le $map transmis à insertHistoriqueAjoutProjet().
+        $this->stubAllBatchesHappy();
+
+        $rciResult = [
+            'code' => 200,
+            'historique' => [
+                'ncloc' => 28188, 'weight' => 16732, 'indicator' => 40.6, 'rating' => 'E',
+                'frontend_ncloc' => 16590, 'frontend_weight' => 3725, 'frontend_indicator' => 77.55, 'frontend_rating' => 'D',
+                'backend_ncloc' => 11330, 'backend_weight' => 12995, 'backend_indicator' => 0.0, 'backend_rating' => 'E',
+                'autre_ncloc' => 0, 'autre_weight' => 0, 'autre_indicator' => null, 'autre_rating' => null,
+                'inconnu_ncloc' => 268, 'inconnu_weight' => 12, 'inconnu_indicator' => 95.52, 'inconnu_rating' => 'A',
+                'maven_key' => self::MAVEN_KEY,
+            ],
+        ];
+        $this->batchRci = $this->createMock(BatchCollecteRciController::class);
+        $this->batchRci->expects($this->once())->method('buildRciMeasures')
+            ->with(self::MAVEN_KEY, 'collecte', self::USER)
+            ->willReturn($rciResult);
+        $this->controller = new CollecteController(
+            $this->em, $this->logger, $this->batchInfo, $this->batchMesure,
+            $this->batchOwasp, $this->batchHotspot, $this->batchAnomalie,
+            $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
+            $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
+            $this->batchRci,
+        );
+
+        $this->historiqueRepo->expects($this->once())
+            ->method('insertHistoriqueAjoutProjet')
+            ->with($this->callback(function (array $map): bool {
+                return $map['rci_indicator'] === 40.6
+                    && $map['rci_rating'] === 'E'
+                    && $map['rci_ncloc'] === 28188
+                    && $map['rci_weight'] === 16732
+                    && $map['rci_frontend_indicator'] === 77.55
+                    && $map['rci_frontend_rating'] === 'D'
+                    && $map['rci_frontend_ncloc'] === 16590
+                    && $map['rci_frontend_weight'] === 3725
+                    && $map['rci_backend_rating'] === 'E'
+                    && $map['rci_autre_indicator'] === null
+                    && $map['rci_autre_ncloc'] === 0
+                    && $map['rci_inconnu_rating'] === 'A'
+                    && $map['rci_inconnu_weight'] === 12;
+            }))
+            ->willReturn(['code' => 200]);
+
+        $result = $this->controller->collecte(self::PORTEFEUILLE, self::MAVEN_KEY, 'collecte', self::USER);
+
+        $this->assertSame(200, $result['code']);
+    }
+
+    public function testCollecteHappyPathLeavesRciColumnsNullWhenBuildRciMeasuresFails(): void
+    {
+        $this->stubAllBatchesHappy();
+
+        $this->batchRci = $this->createMock(BatchCollecteRciController::class);
+        $this->batchRci->method('buildRciMeasures')->willReturn(['code' => 500, 'erreur' => 'Erreur SonarQube']);
+        $this->controller = new CollecteController(
+            $this->em, $this->logger, $this->batchInfo, $this->batchMesure,
+            $this->batchOwasp, $this->batchHotspot, $this->batchAnomalie,
+            $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
+            $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
+            $this->batchRci,
+        );
+
+        $this->historiqueRepo->expects($this->once())
+            ->method('insertHistoriqueAjoutProjet')
+            ->with($this->callback(fn (array $map): bool => !array_key_exists('rci_indicator', $map)))
+            ->willReturn(['code' => 200]);
+
+        $result = $this->controller->collecte(self::PORTEFEUILLE, self::MAVEN_KEY, 'collecte', self::USER);
+
+        $this->assertSame(200, $result['code']);
     }
 
     public function testCollecteHappyPathInManualModeReturnsCompteRenduNotHistorique(): void
@@ -321,6 +405,7 @@ class CollecteControllerTest extends TestCase
             $this->batchOwasp, $this->batchHotspot, $this->batchAnomalie,
             $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
             $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
+            $this->batchRci,
         );
 
         $result = $this->controller->collecte(self::PORTEFEUILLE, self::MAVEN_KEY, self::MODE, self::USER);
@@ -341,6 +426,7 @@ class CollecteControllerTest extends TestCase
             $this->batchOwasp, $this->batchHotspot, $this->batchAnomalie,
             $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
             $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
+            $this->batchRci,
         );
 
         $result = $this->controller->collecte(self::PORTEFEUILLE, self::MAVEN_KEY, self::MODE, self::USER);
@@ -360,6 +446,7 @@ class CollecteControllerTest extends TestCase
             $this->batchOwasp, $this->batchHotspot, $this->batchAnomalie,
             $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
             $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
+            $this->batchRci,
         );
 
         $result = $this->controller->collecte(self::PORTEFEUILLE, self::MAVEN_KEY, self::MODE, self::USER);
@@ -383,6 +470,7 @@ class CollecteControllerTest extends TestCase
             $this->batchOwasp, $this->batchHotspot, $this->batchAnomalie,
             $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
             $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
+            $this->batchRci,
         );
 
         $result = $this->controller->collecte(self::PORTEFEUILLE, self::MAVEN_KEY, self::MODE, self::USER);
@@ -414,6 +502,7 @@ class CollecteControllerTest extends TestCase
             $this->batchOwasp, $this->batchHotspot, $this->batchAnomalie,
             $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
             $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
+            $this->batchRci,
         );
 
         $result = $this->controller->collecte(self::PORTEFEUILLE, self::MAVEN_KEY, self::MODE, self::USER);
@@ -433,6 +522,7 @@ class CollecteControllerTest extends TestCase
             $this->batchOwasp, $this->batchHotspot, $this->batchAnomalie,
             $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
             $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
+            $this->batchRci,
         );
 
         $result = $this->controller->collecte(self::PORTEFEUILLE, self::MAVEN_KEY, self::MODE, self::USER);
