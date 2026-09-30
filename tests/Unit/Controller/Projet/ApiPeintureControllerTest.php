@@ -16,9 +16,9 @@ declare(strict_types=1);
 namespace App\Tests\Unit\Controller\Projet;
 
 use App\Controller\Projet\ApiPeintureController;
-use App\Entity\{Anomalie, AnomalieDetails, Historique, Hotspots, InformationProjet, LoggerDetail, Mesures, NoSonar, Todo};
+use App\Entity\{Anomalie, AnomalieDetails, Historique, Hotspots, InformationProjet, LoggerDetail, Mesures, NoSonar, Rci, Todo};
 use App\Entity\Logger as LoggerEntity;
-use App\Repository\{AnomalieDetailsRepository, AnomalieRepository, HistoriqueRepository, HotspotsRepository, InformationProjetRepository, LoggerDetailRepository, LoggerRepository, MesuresRepository, NoSonarRepository, TodoRepository};
+use App\Repository\{AnomalieDetailsRepository, AnomalieRepository, HistoriqueRepository, HotspotsRepository, InformationProjetRepository, LoggerDetailRepository, LoggerRepository, MesuresRepository, NoSonarRepository, RciRepository, TodoRepository};
 use App\Service\IsValideMavenKey;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\{AllowMockObjectsWithoutExpectations, DataProvider};
@@ -54,6 +54,7 @@ class ApiPeintureControllerTest extends TestCase
     /** @var LoggerRepository&MockObject */          private MockObject $loggerRepo;
     /** @var LoggerDetailRepository&MockObject */    private MockObject $loggerDetailRepo;
     /** @var HistoriqueRepository&MockObject */      private MockObject $historiqueRepo;
+    /** @var RciRepository&MockObject */              private MockObject $rciRepo;
 
     private ApiPeintureController $controller;
 
@@ -73,6 +74,7 @@ class ApiPeintureControllerTest extends TestCase
         $this->loggerRepo = $this->createMock(LoggerRepository::class);
         $this->loggerDetailRepo = $this->createMock(LoggerDetailRepository::class);
         $this->historiqueRepo = $this->createMock(HistoriqueRepository::class);
+        $this->rciRepo = $this->createMock(RciRepository::class);
 
         $this->em->method('getRepository')->willReturnMap([
             [Anomalie::class, $this->anomalieRepo],
@@ -85,6 +87,7 @@ class ApiPeintureControllerTest extends TestCase
             [LoggerEntity::class, $this->loggerRepo],
             [LoggerDetail::class, $this->loggerDetailRepo],
             [Historique::class, $this->historiqueRepo],
+            [Rci::class, $this->rciRepo],
         ]);
 
         // appUser() (trait AppUserAware) appelle AbstractController::getUser() qui interroge security.token_storage
@@ -204,6 +207,79 @@ class ApiPeintureControllerTest extends TestCase
         $this->assertSame('App', $payload['name']);
         $this->assertSame(['java' => 100], $payload['ncloc_language_distribution']);
         $this->assertSame(2, $payload['bugs']);
+    }
+
+    // ═══════════════════════ peintureProjetRci ═════════════════════════════
+
+    public function testPeintureProjetRciReturns400WhenMavenKeyMissing(): void
+    {
+        $response = $this->controller->peintureProjetRci($this->jsonRequest([]));
+
+        $this->assertJsonStatus($response, 400, 'error');
+    }
+
+    public function testPeintureProjetRciReturns404WhenProjectInvalid(): void
+    {
+        $this->isValide->method('isValideInformation')->willReturn(['code' => 404]);
+
+        $response = $this->controller->peintureProjetRci($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+        ]));
+
+        $this->assertJsonStatus($response, 404, 'warning');
+    }
+
+    public function testPeintureProjetRciReturnsErrorWhenRepoFails(): void
+    {
+        $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
+        $this->rciRepo->method('selectMesuresRci')->willReturn([
+            'code' => 500, 'erreur' => 'db',
+        ]);
+
+        $payload = $this->decode($this->controller->peintureProjetRci($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+        ])));
+
+        $this->assertSame(500, $payload['code']);
+    }
+
+    public function testPeintureProjetRciReturnsGlobalRatingAndFullDataset(): void
+    {
+        $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
+        $this->rciRepo->expects($this->once())
+            ->method('selectMesuresRci')
+            ->willReturn(['code' => 200, 'liste' => [
+                'ncloc' => 28188, 'weight' => 16732, 'indicator' => 40.6, 'rating' => 'E',
+                'frontend_ncloc' => 16590, 'frontend_weight' => 3725, 'frontend_indicator' => 77.55, 'frontend_rating' => 'D',
+                'backend_ncloc' => 11330, 'backend_weight' => 12995, 'backend_indicator' => 0.0, 'backend_rating' => 'E',
+                'autre_ncloc' => 0, 'autre_weight' => 0, 'autre_indicator' => null, 'autre_rating' => null,
+                'inconnu_ncloc' => 268, 'inconnu_weight' => 12, 'inconnu_indicator' => 95.52, 'inconnu_rating' => 'A',
+            ]]);
+
+        $payload = $this->decode($this->controller->peintureProjetRci($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+        ])));
+
+        $this->assertSame(200, $payload['code']);
+        $this->assertSame('E', $payload['alert_status']);
+        $this->assertSame(40.6, $payload['rci_mesures_json']['indicator']);
+        $this->assertSame(77.55, $payload['rci_mesures_json']['frontend_indicator']);
+        $this->assertSame('D', $payload['rci_mesures_json']['frontend_rating']);
+        $this->assertNull($payload['rci_mesures_json']['autre_indicator']);
+    }
+
+    public function testPeintureProjetRciReturnsDefaultsWhenNoRciRowYet(): void
+    {
+        $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
+        $this->rciRepo->method('selectMesuresRci')->willReturn(['code' => 200, 'liste' => false]);
+
+        $payload = $this->decode($this->controller->peintureProjetRci($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+        ])));
+
+        $this->assertSame(200, $payload['code']);
+        $this->assertSame('--', $payload['alert_status']);
+        $this->assertNull($payload['rci_mesures_json']['indicator']);
     }
 
     // ═══════════════════════ peintureProjetAnomalie ════════════════════════
