@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create COMMENTS                      ##
-##           V3.1.0 - 23/07/2026                  ##
+##           V3.2.0 - 28/09/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -24,6 +24,7 @@
 --- 2026-06-09 : Ajout des commentaires pour user_agent_event et user_agent_analysis (intégration schéma ma_moulinette).
 --- 2026-06-28 : Ajout des commentaires manquant sur les tables
 --- 2026-07-23 : Renommage actuator_info_value en actuator_info_cle
+--- 2026-09-28 : Ajout des commentaires pour les mesures RCI sur la table Historique. Ajout des commentaires pour la table RCI.
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette postgres;
@@ -450,6 +451,26 @@ COMMENT ON COLUMN ma_moulinette.historique.owasp_top10 IS '[COMPLIANCE] Issues t
 COMMENT ON COLUMN ma_moulinette.historique.sans_top25 IS '[COMPLIANCE] Issues taggées SANS/CWE Top 25. Null si collecte clean code non réalisée.';
 COMMENT ON COLUMN ma_moulinette.historique.cwe IS '[COMPLIANCE] Total occurrences CWE (approximation). Null si collecte clean code non réalisée.';
 COMMENT ON COLUMN ma_moulinette.historique.logger_breakdown IS '[MA-MOULINETTE] Breakdown loggers par level × framework au moment de la version. Format JSONB : {info: {SLF4J: N, "Commons Logging": M, "—": K}, warn: {...}, error: {...}, debug: {...}}. Null si plugin track-logger-method désactivé ou non collecté.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_indicator IS '[MA-MOULINETTE] RCI (Risk Criticality Index) global. 100 - (poids pondéré des anomalies / ncloc) * 100, borné à 0. Taxonomie de sévérité sélectionnée selon sonar.version (8/9 ou Clean Code 2024+). Null si non calculé.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_rating IS '[MA-MOULINETTE] Note A-E dérivée de rci_indicator. Null si non calculé.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_ncloc IS '[MA-MOULINETTE] Nombre de lignes de code pris en compte pour le RCI global. Null si non calculé.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_weight IS '[MA-MOULINETTE] Poids pondéré des anomalies (BLOCKER=10, CRITICAL=5, MAJOR=3, MINOR=1, INFO=0) pour le RCI global. Null si non calculé.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_frontend_indicator IS '[MA-MOULINETTE] RCI du module frontend (classification par mots-clés module.frontend). Marge d''erreur : classification approximative, voir doc test-e2e/suivi. Null si non calculé ou module vide.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_frontend_rating IS '[MA-MOULINETTE] Note A-E dérivée de rci_frontend_indicator. Null si non calculé ou module vide.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_frontend_ncloc IS '[MA-MOULINETTE] Nombre de lignes de code du module frontend. Null si non calculé ou module vide.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_frontend_weight IS '[MA-MOULINETTE] Poids pondéré des anomalies du module frontend. Null si non calculé ou module vide.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_backend_indicator IS '[MA-MOULINETTE] RCI du module backend (classification par mots-clés module.backend). Marge d''erreur : classification approximative. Null si non calculé ou module vide.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_backend_rating IS '[MA-MOULINETTE] Note A-E dérivée de rci_backend_indicator. Null si non calculé ou module vide.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_backend_ncloc IS '[MA-MOULINETTE] Nombre de lignes de code du module backend. Null si non calculé ou module vide.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_backend_weight IS '[MA-MOULINETTE] Poids pondéré des anomalies du module backend. Null si non calculé ou module vide.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_autre_indicator IS '[MA-MOULINETTE] RCI du module autre (classification par mots-clés module.autre). Marge d''erreur : classification approximative. Null si non calculé ou module vide.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_autre_rating IS '[MA-MOULINETTE] Note A-E dérivée de rci_autre_indicator. Null si non calculé ou module vide.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_autre_ncloc IS '[MA-MOULINETTE] Nombre de lignes de code du module autre. Null si non calculé ou module vide.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_autre_weight IS '[MA-MOULINETTE] Poids pondéré des anomalies du module autre. Null si non calculé ou module vide.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_inconnu_indicator IS '[MA-MOULINETTE] RCI des fichiers non classés (ni frontend, ni backend, ni autre). Null si non calculé ou aucun fichier non classé.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_inconnu_rating IS '[MA-MOULINETTE] Note A-E dérivée de rci_inconnu_indicator. Null si non calculé ou aucun fichier non classé.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_inconnu_ncloc IS '[MA-MOULINETTE] Nombre de lignes de code des fichiers non classés. Null si non calculé ou aucun fichier non classé.';
+COMMENT ON COLUMN ma_moulinette.historique.rci_inconnu_weight IS '[MA-MOULINETTE] Poids pondéré des anomalies des fichiers non classés. Null si non calculé ou aucun fichier non classé.';
 COMMENT ON COLUMN ma_moulinette.historique.initial IS '[MA-MOULINETTE] Indique si c’est la version de référence. Permet de suivre l’évolution du projet à partir d’un point de départ.';
 COMMENT ON COLUMN ma_moulinette.historique.mode_collecte IS '[MA-MOULINETTE] Type de collecte : REBUILD | COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE.';
 COMMENT ON COLUMN ma_moulinette.historique.utilisateur_collecte IS '[MA-MOULINETTE] Auteur de la collecte de données.';
@@ -821,6 +842,37 @@ COMMENT ON COLUMN ma_moulinette.properties.profil_sonar IS 'Identifiant du profi
 COMMENT ON COLUMN ma_moulinette.properties.date_creation IS 'Date de création de la propriété';
 COMMENT ON COLUMN ma_moulinette.properties.date_modification_projet IS 'Date de la dernière modification du projet';
 COMMENT ON COLUMN ma_moulinette.properties.date_modification_profil IS 'Date de la dernière modification du profil';
+
+-- ============================================
+-- TABLE rci
+-- ============================================
+
+COMMENT ON TABLE ma_moulinette.rci IS 'RCI (Risk Criticality Index, plugin sonar-rci porté en PHP) : mesure globale et détail par module (frontend/backend/autre/inconnu) — snapshot courant, une ligne par maven_key.';
+COMMENT ON COLUMN ma_moulinette.rci.id IS 'Identifiant unique auto-incrémenté.';
+COMMENT ON COLUMN ma_moulinette.rci.maven_key IS 'Clé unique du projet SonarQube.';
+COMMENT ON COLUMN ma_moulinette.rci.ncloc IS 'Ncloc global de l''application.';
+COMMENT ON COLUMN ma_moulinette.rci.weight IS 'Poids global pondéré des anomalies de l''application (blocker×10, critical×5, major×3, minor×1, info×0).';
+COMMENT ON COLUMN ma_moulinette.rci.indicator IS 'RCI global de l''application : 100 - (weight / ncloc) * 100, borné à 0. Null si vide.';
+COMMENT ON COLUMN ma_moulinette.rci.rating IS 'Note A-E dérivée de indicator. Null si vide.';
+COMMENT ON COLUMN ma_moulinette.rci.frontend_ncloc IS 'Ncloc du module frontend (classification par mots-clés module.frontend).';
+COMMENT ON COLUMN ma_moulinette.rci.frontend_weight IS 'Poids pondéré des anomalies du module frontend (blocker×10, critical×5, major×3, minor×1, info×0).';
+COMMENT ON COLUMN ma_moulinette.rci.frontend_indicator IS 'RCI du module frontend : 100 - (frontend_weight / frontend_ncloc) * 100, borné à 0. Null si module vide.';
+COMMENT ON COLUMN ma_moulinette.rci.frontend_rating IS 'Note A-E dérivée de frontend_indicator. Null si module vide.';
+COMMENT ON COLUMN ma_moulinette.rci.backend_ncloc IS 'Ncloc du module backend (classification par mots-clés module.backend).';
+COMMENT ON COLUMN ma_moulinette.rci.backend_weight IS 'Poids pondéré des anomalies du module backend.';
+COMMENT ON COLUMN ma_moulinette.rci.backend_indicator IS 'RCI du module backend. Null si module vide.';
+COMMENT ON COLUMN ma_moulinette.rci.backend_rating IS 'Note A-E dérivée de backend_indicator. Null si module vide.';
+COMMENT ON COLUMN ma_moulinette.rci.autre_ncloc IS 'Ncloc du module autre (classification par mots-clés module.autre).';
+COMMENT ON COLUMN ma_moulinette.rci.autre_weight IS 'Poids pondéré des anomalies du module autre.';
+COMMENT ON COLUMN ma_moulinette.rci.autre_indicator IS 'RCI du module autre. Null si module vide.';
+COMMENT ON COLUMN ma_moulinette.rci.autre_rating IS 'Note A-E dérivée de autre_indicator. Null si module vide.';
+COMMENT ON COLUMN ma_moulinette.rci.inconnu_ncloc IS 'Ncloc des fichiers non classés (ni frontend, ni backend, ni autre).';
+COMMENT ON COLUMN ma_moulinette.rci.inconnu_weight IS 'Poids pondéré des anomalies des fichiers non classés.';
+COMMENT ON COLUMN ma_moulinette.rci.inconnu_indicator IS 'RCI des fichiers non classés. Null si aucun fichier non classé.';
+COMMENT ON COLUMN ma_moulinette.rci.inconnu_rating IS 'Note A-E dérivée de inconnu_indicator. Null si aucun fichier non classé.';
+COMMENT ON COLUMN ma_moulinette.rci.mode_collecte IS 'Type de collecte : REBUILD | COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE.';
+COMMENT ON COLUMN ma_moulinette.rci.utilisateur_collecte IS 'Compte de l''utilisateur qui a réalisé la collecte.';
+COMMENT ON COLUMN ma_moulinette.rci.date_enregistrement IS 'Date d''enregistrement de la ligne.';
 
 -- ============================================
 -- TABLE repartition_temp

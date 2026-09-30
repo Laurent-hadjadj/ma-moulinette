@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create INDEXES                       ##
-##           V2.6.0 - 09/06/2026                  ##
+##           V2.7.0 - 25/06/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -21,6 +21,7 @@
 --- 2026-05-14 : Ajout des indexes pour dc_scan (projet, récents, latest_overall/release)
 --- 2026-05-17 : Ajout des indexes pour clean_code
 --- 2026-06-09 : Réintégration des indexes user_agent_event et user_agent_analysis (schéma ma_moulinette)
+--- 2026-09-25 : Ajout des indexes pour la table RCI
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette postgres;
@@ -88,6 +89,10 @@ CREATE INDEX IF NOT EXISTS idx_batch_activated ON ma_moulinette.batch(activated)
 -- clean_code — MODIF 2026-05-17
 CREATE INDEX IF NOT EXISTS idx_clean_code_maven_key ON ma_moulinette.clean_code (maven_key);
 CREATE INDEX IF NOT EXISTS idx_clean_code_date ON ma_moulinette.clean_code (date_enregistrement);
+
+-- rci — MODIF 2026-09-25
+CREATE INDEX IF NOT EXISTS idx_rci_maven_key ON ma_moulinette.rci (maven_key);
+CREATE INDEX IF NOT EXISTS idx_rci_date ON ma_moulinette.rci (date_enregistrement);
 
 -- groupe utilisateur
 CREATE INDEX IF NOT EXISTS idx_groupe_groupe_utilisateur ON ma_moulinette.groupe_utilisateur (groupe_utilisateur);
