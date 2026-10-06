@@ -19,8 +19,7 @@ use Symfony\Component\HttpFoundation\{JsonResponse, Response, Request};
 use Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\Historique;
-use App\Entity\CleanCode;
+use App\Entity\{Historique, CleanCode};
 
 /**
  * [Description ApiEnregistrementController]
@@ -294,6 +293,30 @@ class ApiEnregistrementController extends AbstractController
                 'owasp_top10' => isset($cc['owasp_top10']) ? (int) $cc['owasp_top10'] : null,
                 'sans_top25' => isset($cc['sans_top25']) ? (int) $cc['sans_top25'] : null,
                 'cwe' => isset($cc['cwe']) ? (int) $cc['cwe'] : null,
+                /* MODIF 2026-10-06 : RCI suit le même flux que les autres indicateurs
+                 * (todo, anomalie, nosonar, mesures...) — les valeurs sont chargées dans
+                 * le DOM par peinture.js, puis enregistrement.js les relit et les envoie
+                 * dans le payload. */
+                'rci_indicator' => $data->rci_indicator ?? null,
+                'rci_rating' => $data->rci_rating ?? null,
+                'rci_ncloc' => $data->rci_ncloc ?? null,
+                'rci_weight' => $data->rci_weight ?? null,
+                'rci_frontend_indicator' => $data->rci_frontend_indicator ?? null,
+                'rci_frontend_rating' => $data->rci_frontend_rating ?? null,
+                'rci_frontend_ncloc' => $data->rci_frontend_ncloc ?? null,
+                'rci_frontend_weight' => $data->rci_frontend_weight ?? null,
+                'rci_backend_indicator' => $data->rci_backend_indicator ?? null,
+                'rci_backend_rating' => $data->rci_backend_rating ?? null,
+                'rci_backend_ncloc' => $data->rci_backend_ncloc ?? null,
+                'rci_backend_weight' => $data->rci_backend_weight ?? null,
+                'rci_autre_indicator' => $data->rci_autre_indicator ?? null,
+                'rci_autre_rating' => $data->rci_autre_rating ?? null,
+                'rci_autre_ncloc' => $data->rci_autre_ncloc ?? null,
+                'rci_autre_weight' => $data->rci_autre_weight ?? null,
+                'rci_inconnu_indicator' => $data->rci_inconnu_indicator ?? null,
+                'rci_inconnu_rating' => $data->rci_inconnu_rating ?? null,
+                'rci_inconnu_ncloc' => $data->rci_inconnu_ncloc ?? null,
+                'rci_inconnu_weight' => $data->rci_inconnu_weight ?? null,
                 'mode_collecte' => 'COLLECTE',
                 'utilisateur_collecte' => $utilisateur_collecte,
                 'date_enregistrement' => $dateEnregistrement
