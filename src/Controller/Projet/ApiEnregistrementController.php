@@ -294,9 +294,8 @@ class ApiEnregistrementController extends AbstractController
                 'sans_top25' => isset($cc['sans_top25']) ? (int) $cc['sans_top25'] : null,
                 'cwe' => isset($cc['cwe']) ? (int) $cc['cwe'] : null,
                 /* MODIF 2026-10-06 : RCI suit le même flux que les autres indicateurs
-                 * (todo, anomalie, nosonar, mesures...) — les valeurs sont chargées dans
-                 * le DOM par peinture.js, puis enregistrement.js les relit et les envoie
-                 * dans le payload. */
+                 * (anomalie, nosonar, mesures...) — les valeurs sont chargées dans le DOM par peinture.js,
+                 * puis enregistrement.js les relit et les envoie dans le payload. */
                 'rci_indicator' => $data->rci_indicator ?? null,
                 'rci_rating' => $data->rci_rating ?? null,
                 'rci_ncloc' => $data->rci_ncloc ?? null,
