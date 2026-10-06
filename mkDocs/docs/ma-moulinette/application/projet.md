@@ -122,11 +122,16 @@ Identité SonarQube du projet : nom, clé d'analyse, clé Maven, distribution de
 
 ### 🏀 Bloc « Projet » (volumétrie + qualité interne)
 
-- Statut de la **Quality Gate** SonarQube (badge coloré) ;
+- Statut de la **Quality Gate** SonarQube (badge coloré), et juste à côté la note **RCI** (Risk Criticality Index) ;
 - Volumétrie : nombre de lignes, lignes de code, commentaires, fichiers, classes, méthodes, déclarations ;
 - 5 indicateurs notés A-E : complexité cyclomatique, complexité cognitive, couverture de tests, densité de duplication, densité de commentaires ;
 - Tests unitaires : nombre total, erreurs, échecs, ignorés, taux de succès ;
 - Violations acceptées / faux positifs (marquées comme telles après revue).
+
+!!! note "✅ 2026-09-29 : note RCI et détail par module"
+    Une note A-E **RCI** (Risk Criticality Index, plugin `sonar-rci` porté en PHP) s'affiche désormais à côté de la Quality Gate. Un bouton ouvre une fenêtre modale avec le détail : un tableau (RCI, taux de dette, note) pour le global **et** pour chaque module (frontend/backend/autre/inconnu), plus un graphique en barres empilées RCI/Dette par colonne.
+
+    Le détail par module repose sur une classification par mots-clés (chemins de fichiers) — marge d'erreur à prendre en compte, en particulier sur des projets au référentiel de règles ou à l'arborescence atypiques (bandeau d'avertissement affiché dans la modale).
 
 !!! note "✅ Aide branchée sur la complexité"
     Un bouton **ℹ️** (« Aide ») a été ajouté au titre du bloc « Projet », ouvrant `_modal_complexity.html.twig` : une page pédagogique qui explique la complexité cyclomatique et cognitive (concepts SonarQube), **et** la formule réellement utilisée par Ma-Moulinette pour la note A-E affichée (`ratio = ncloc ÷ complexité`, seuils `≤3→E … >18→A`).
@@ -167,11 +172,11 @@ sequenceDiagram
 
     U->>JS: Sélectionne un projet
     U->>JS: Clique « Collecte »
-    JS->>Col: 20 appels POST séquentiels (ROLE_COLLECTE)
+    JS->>Col: 23 appels POST séquentiels (ROLE_COLLECTE)
     Col->>DB: DELETE puis INSERT par indicateur
     Note over Col,DB: Une erreur à l'étape N stoppe<br/>les appels réseau suivants (cascade silencieuse)
     U->>JS: Clique « Afficher »
-    JS->>Pein: 9 appels POST séquentiels (aucun rôle requis)
+    JS->>Pein: 12 appels POST séquentiels (aucun rôle requis)
     Pein->>DB: SELECT sur les tables brutes
     Pein-->>JS: Données à peindre dans le DOM
     U->>JS: Clique « Enregistrer »
@@ -200,6 +205,45 @@ sequenceDiagram
     `ApiCollecteController` envoyait aussi un texte placeholder (« Pas de données disponible. ») à la place d'une trace technique absente, ce qui affichait à tort un bouton « détails techniques » vide côté JS — corrigé pour envoyer `null`.
     .
     Ce genre de 403 vient le plus souvent d'un `SONAR_TOKEN` du **mauvais type** (jeton d'analyse au lieu de jeton personnel) — voir [Jetons d'authentification SonarQube](../developpement/securite.md#-jetons-dauthentification-sonarqube).
+
+## 🤖 Deux pipelines de collecte : interactif et batch/cron
+
+Le schéma « Collecte → Peinture → Sauvegarde » ci-dessus ne décrit que le **pipeline interactif** (bouton « Collecte » de la page Projet, piloté par `ApiCollecteController`). Il existe un **second pipeline**, totalement séparé, pour la collecte automatique/manuelle en masse (cron nocturne, file de traitement) — les deux s'appuient sur les **mêmes classes métier** (`Batch*Controller`), mais via des orchestrateurs et des chemins de persistance différents.
+
+### 🚦 Qui déclenche quoi
+
+```mermaid
+flowchart LR
+    U["🖱️ Utilisateur<br/>page Projet"] -->|clic Collecte| ACC["ApiCollecteController"]
+
+    Cron["⏱️ Cron nocturne<br/>(Supercronic)"] --> BAC["BatchAutoController"]
+    Trait["🖱️ Traitement manuel<br/>(file de traitement)"] --> BMC["BatchManuelController"]
+    Console["⌨️ app:collecte:run-one<br/>(dev)"] --> CRC["CollecteRunOneCommand"]
+
+    BAC --> CC["CollecteController::collecte()"]
+    BMC --> CC
+    CRC --> CC
+```
+
+- **Pipeline interactif** : `ApiCollecteController` expose une méthode par indicateur (`apiCollecteRci()`, `apiCollecteOwasp()`, …), appelées une à une en séquence par `index-projet.js` — c'est la seule voie qui peut être suivie visuellement, indicateur par indicateur, dans le navigateur.
+- **Pipeline batch/cron** : trois déclencheurs différents (cron, file de traitement, commande console de dev) convergent tous vers **une seule méthode**, `CollecteController::collecte()`, qui enchaîne elle-même tous les indicateurs dans un seul appel serveur.
+
+### 🔗 Une seule logique métier, deux points d'entrée
+
+```mermaid
+flowchart LR
+    ACC["ApiCollecteController<br/>apiCollecteRci()"] --> BCRC["BatchCollecteRciController<br/>buildRciMeasures()"]
+    CC["CollecteController<br/>collecte()"] --> BCRC
+
+    BCRC -->|DELETE puis INSERT| RCI[("table rci")]
+```
+
+`BatchCollecteRciController::buildRciMeasures()` calcule **et** persiste le RCI de façon autonome (elle ne dépend d'aucune autre collecte préalable) — c'est pour cela qu'elle peut être appelée indifféremment par l'un ou l'autre pipeline, avec un résultat identique.
+
+### 🗄️ Où atterrit `historique` selon le pipeline
+
+- **Interactif** : `CollecteController` n'intervient pas — les indicateurs sont écrits dans les tables brutes (dont `rci`) un par un. Pour la plupart des indicateurs (dont RCI), le clic **« Enregistrer »** ne relit rien côté serveur : `enregistrement.js` reprend les valeurs déjà chargées dans le DOM par la peinture et les envoie dans le payload à `ApiEnregistrementController`, qui se contente de les reporter dans `historique`. `clean_code` est l'exception : son contrôleur relit directement sa table en base à cet instant. Voir « Cas à connaître » plus haut : sans le clic Enregistrer, `historique` reste inchangé dans tous les cas.
+- **Batch/cron** : `CollecteController::collecte()` écrit dans les tables brutes **et** dans `historique` au sein du même appel — pas d'étape « Enregistrer » séparée, la collecte automatique est toujours historisée.
 
 ## ⚠️ Messages remontés par la page
 
