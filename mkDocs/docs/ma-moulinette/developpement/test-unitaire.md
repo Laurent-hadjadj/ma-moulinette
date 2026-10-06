@@ -1,23 +1,23 @@
 # 🧪 Tests unitaires et d'intégration
 
-## 📈 État des suites (relevé du 06/09/2026)
+## 📈 État des suites (relevé du 29/09/2026)
 
 | Suite | Tests | Assertions | Nature |
 | --- | ---: | ---: | --- |
-| `unit` (`tests/Unit`) | 3 143 | 8 682 | Unitaires purs (mocks, aucune base réelle) |
-| `integration` (`tests/Integration`) | 602 | 1 369 | `KernelTestCase`/`WebTestCase` sur PostgreSQL de test |
-| **Total** | **3 740** | **10 023** | |
+| `unit` (`tests/Unit`) | 3 185 | 8 764 | Unitaires purs (mocks, aucune base réelle) |
+| `integration` (`tests/Integration`) | 606 | 1 388 | `KernelTestCase`/`WebTestCase` sur PostgreSQL de test |
+| **Total** | **3 791** | **10 152** | |
 | `e2e` (`tests/e2e`) | 22 suites | — | Playwright, hors PHPUnit — voir [Tests End-to-End](test-e2e.md) |
 
-**Couverture de code** (suites `unit` + `integration` cumulées, via pcov) :
+**Couverture de code** (suites `unit` + `integration` cumulées, via pcov) — **non réactualisée depuis le 25/09**, cf. note ci-dessous :
 
 | Granularité | Couverture |
 | --- | --- |
-| Lignes | **80,03 %** (20 642 / 25 790) |
-| Méthodes | 84,64 % (2 393 / 2 827) |
-| Classes | 51,50 % (120 / 233) |
+| Lignes | **79,62 %** (20 839 / 26 172) |
+| Méthodes | 83,09 % (2 419 / 2 911) |
+| Classes | 50,21 % (119 / 237) |
 
-**Analyse statique** : **PHPStan niveau 6**, 150 erreurs résiduelles (voir [Analyse statique](#-analyse-statique-phpstan) plus bas).
+**Analyse statique** : **PHPStan niveau 6**, 153 erreurs résiduelles (voir [Analyse statique](#-analyse-statique-phpstan) plus bas).
 
 !!! note "🔄 Chiffres à réactualiser"
     Ces valeurs sont un relevé manuel, pas une sortie de CI : elles se périment à chaque campagne de tests.
