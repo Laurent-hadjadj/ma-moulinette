@@ -328,8 +328,10 @@ class HistoriqueValidatorTest extends KernelTestCase
          * MODIF 2026-05-17 : 138 → 153 (+15 colonnes
          * cc_*, quality_*, impact_*, owasp_top10, sans_top25, cwe).
          * MODIF 2026-09-29 : 163 → 173 (+10 colonnes ncloc/weight brutes,
-         * global + par module, en plus de l'indicateur/note RCI déjà présents). */
+         * global + par module, en plus de l'indicateur/note RCI déjà présents).
+         * MODIF 2026-10-06 : 173 → 181 (+8 colonnes de répartition par portée
+         * SonarQube MAIN/TEST, globale et par catégorie). */
         $reflectionClass = new \ReflectionClass(new Historique());
-        $this->assertEquals(173, count($reflectionClass->getProperties()));
+        $this->assertEquals(181, count($reflectionClass->getProperties()));
     }
 }

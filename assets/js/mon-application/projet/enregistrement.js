@@ -186,6 +186,10 @@ export const enregistrement = async function(maven_key) {
   /* Dette technique */
   const t12 = document.getElementById('js-dette');
   const dette=t12.dataset.detteMinute;
+  /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST) globale,
+   * posée par peinture.js sur le même élément que detteMinute ci-dessus. */
+  const scopeMain = t12.dataset.scopeMain;
+  const scopeTest = t12.dataset.scopeTest;
 
   /* Nombre d'anomalie par type */
   const t13 = document.getElementById('js-nombre-bug-total');
@@ -194,6 +198,13 @@ export const enregistrement = async function(maven_key) {
   const nombreBug = t13.dataset.nombreBug;
   const nombreVulnerability = t14.dataset.nombreVulnerability;
   const nombreCodeSmell = t15.dataset.nombreCodeSmell;
+  /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST) par catégorie. */
+  const bugScopeMain = t13.dataset.bugScopeMain;
+  const bugScopeTest = t13.dataset.bugScopeTest;
+  const vulnerabilityScopeMain = t14.dataset.vulnerabilityScopeMain;
+  const vulnerabilityScopeTest = t14.dataset.vulnerabilityScopeTest;
+  const codeSmellScopeMain = t15.dataset.codeSmellScopeMain;
+  const codeSmellScopeTest = t15.dataset.codeSmellScopeTest;
 
   /* répartition des anomalies par module */
   const t16 = document.getElementById('js-nombre-frontend');
@@ -324,6 +335,11 @@ export const enregistrement = async function(maven_key) {
     'violations': violations, 'sqale_index': dette,
     'bugs': nombreBug, 'vulnerabilities': nombreVulnerability,
     'code_smells': nombreCodeSmell,
+    // MODIF 2026-10-06 : répartition par portée SonarQube (voir lecture dataset ci-dessus)
+    'scope_main': scopeMain, 'scope_test': scopeTest,
+    'bug_scope_main': bugScopeMain, 'bug_scope_test': bugScopeTest,
+    'vulnerability_scope_main': vulnerabilityScopeMain, 'vulnerability_scope_test': vulnerabilityScopeTest,
+    'code_smell_scope_main': codeSmellScopeMain, 'code_smell_scope_test': codeSmellScopeTest,
     'repartition_frontend': frontend, 'repartition_backend': backend,
     'repartition_autre': autre, 'repartition_inconnu': inconnu,
     'blocker_violations': nombreViolationsBloquant,

@@ -753,6 +753,17 @@ class ApiPeintureController extends AbstractController
         $autre = $anomalie['liste'][0]['autre'] ?? 0;
         $inconnu = $anomalie['liste'][0]['inconnu'] ?? 0;
 
+        /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST),
+         * globale et par catégorie. */
+        $scopeMain = $anomalie['liste'][0]['scope_main'] ?? 0;
+        $scopeTest = $anomalie['liste'][0]['scope_test'] ?? 0;
+        $bugScopeMain = $anomalie['liste'][0]['bug_scope_main'] ?? 0;
+        $bugScopeTest = $anomalie['liste'][0]['bug_scope_test'] ?? 0;
+        $vulnerabilityScopeMain = $anomalie['liste'][0]['vulnerability_scope_main'] ?? 0;
+        $vulnerabilityScopeTest = $anomalie['liste'][0]['vulnerability_scope_test'] ?? 0;
+        $codeSmellScopeMain = $anomalie['liste'][0]['code_smell_scope_main'] ?? 0;
+        $codeSmellScopeTest = $anomalie['liste'][0]['code_smell_scope_test'] ?? 0;
+
         return new JsonResponse([
             'code' => 200,
             'dette' => $dette,
@@ -775,6 +786,14 @@ class ApiPeintureController extends AbstractController
             'backend' => $backend,
             'autre' => $autre,
             'inconnu' => $inconnu,
+            'scope_main' => $scopeMain,
+            'scope_test' => $scopeTest,
+            'bug_scope_main' => $bugScopeMain,
+            'bug_scope_test' => $bugScopeTest,
+            'vulnerability_scope_main' => $vulnerabilityScopeMain,
+            'vulnerability_scope_test' => $vulnerabilityScopeTest,
+            'code_smell_scope_main' => $codeSmellScopeMain,
+            'code_smell_scope_test' => $codeSmellScopeTest,
         ], Response::HTTP_OK);
     }
 

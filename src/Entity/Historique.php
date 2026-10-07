@@ -779,6 +779,40 @@ class Historique
     #[Assert\PositiveOrZero]
     private ?int $infoViolations = null;
 
+    /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN = code source,
+     * TEST = code de test), globale et par catégorie d'anomalie. */
+    #[ORM\Column(name: 'scope_main', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre total de problèmes sur le code source (scope MAIN)'])]
+    #[Assert\PositiveOrZero]
+    private ?int $scopeMain = null;
+
+    #[ORM\Column(name: 'scope_test', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre total de problèmes sur le code de test (scope TEST)'])]
+    #[Assert\PositiveOrZero]
+    private ?int $scopeTest = null;
+
+    #[ORM\Column(name: 'bug_scope_main', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre de bugs sur le code source (scope MAIN)'])]
+    #[Assert\PositiveOrZero]
+    private ?int $bugScopeMain = null;
+
+    #[ORM\Column(name: 'bug_scope_test', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre de bugs sur le code de test (scope TEST)'])]
+    #[Assert\PositiveOrZero]
+    private ?int $bugScopeTest = null;
+
+    #[ORM\Column(name: 'vulnerability_scope_main', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre de vulnérabilités sur le code source (scope MAIN)'])]
+    #[Assert\PositiveOrZero]
+    private ?int $vulnerabilityScopeMain = null;
+
+    #[ORM\Column(name: 'vulnerability_scope_test', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre de vulnérabilités sur le code de test (scope TEST)'])]
+    #[Assert\PositiveOrZero]
+    private ?int $vulnerabilityScopeTest = null;
+
+    #[ORM\Column(name: 'code_smell_scope_main', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre de mauvaises pratiques sur le code source (scope MAIN)'])]
+    #[Assert\PositiveOrZero]
+    private ?int $codeSmellScopeMain = null;
+
+    #[ORM\Column(name: 'code_smell_scope_test', type: Types::INTEGER, nullable: true, options: ['comment' => 'Nombre de mauvaises pratiques sur le code de test (scope TEST)'])]
+    #[Assert\PositiveOrZero]
+    private ?int $codeSmellScopeTest = null;
+
     #[ORM\Column(
         name: 'software_quality_blocker_issues',
         type: Types::INTEGER,
@@ -2515,6 +2549,23 @@ class Historique
         $this->infoViolations = $infoViolations;
         return $this;
     }
+
+    public function getScopeMain(): ?int { return $this->scopeMain; }
+    public function setScopeMain(?int $v): static { $this->scopeMain = $v; return $this; }
+    public function getScopeTest(): ?int { return $this->scopeTest; }
+    public function setScopeTest(?int $v): static { $this->scopeTest = $v; return $this; }
+    public function getBugScopeMain(): ?int { return $this->bugScopeMain; }
+    public function setBugScopeMain(?int $v): static { $this->bugScopeMain = $v; return $this; }
+    public function getBugScopeTest(): ?int { return $this->bugScopeTest; }
+    public function setBugScopeTest(?int $v): static { $this->bugScopeTest = $v; return $this; }
+    public function getVulnerabilityScopeMain(): ?int { return $this->vulnerabilityScopeMain; }
+    public function setVulnerabilityScopeMain(?int $v): static { $this->vulnerabilityScopeMain = $v; return $this; }
+    public function getVulnerabilityScopeTest(): ?int { return $this->vulnerabilityScopeTest; }
+    public function setVulnerabilityScopeTest(?int $v): static { $this->vulnerabilityScopeTest = $v; return $this; }
+    public function getCodeSmellScopeMain(): ?int { return $this->codeSmellScopeMain; }
+    public function setCodeSmellScopeMain(?int $v): static { $this->codeSmellScopeMain = $v; return $this; }
+    public function getCodeSmellScopeTest(): ?int { return $this->codeSmellScopeTest; }
+    public function setCodeSmellScopeTest(?int $v): static { $this->codeSmellScopeTest = $v; return $this; }
 
     public function getSoftwareQualityBlockerIssues(): ?int
     {

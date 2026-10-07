@@ -321,6 +321,68 @@ class ApiEnregistrementControllerTest extends TestCase
         $this->assertSame(12, $capturedMap['rci_inconnu_weight']);
     }
 
+    /**
+     * MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST), globale
+     * et par catégorie — même flux DOM -> payload que RCI et les autres
+     * indicateurs.
+     */
+    public function testEnregistrementMergesScopeMainTestIndicatorsFromPayload(): void
+    {
+        $this->authChecker->method('isGranted')->willReturn(true);
+        $this->token->method('getUser')->willReturn($this->makeUser());
+
+        $capturedMap = [];
+        $this->historiqueRepo->expects($this->once())
+            ->method('insertHistoriqueAjoutProjet')
+            ->with($this->callback(function (array $map) use (&$capturedMap): bool {
+                $capturedMap = $map;
+                return true;
+            }))
+            ->willReturn(['code' => 200]);
+
+        $payload = $this->buildPayload();
+        $payload['scope_main'] = 1500;
+        $payload['scope_test'] = 456;
+        $payload['bug_scope_main'] = 300;
+        $payload['bug_scope_test'] = 50;
+        $payload['vulnerability_scope_main'] = 600;
+        $payload['vulnerability_scope_test'] = 5;
+        $payload['code_smell_scope_main'] = 600;
+        $payload['code_smell_scope_test'] = 401;
+
+        $this->controller->enregistrement($this->jsonRequest($payload));
+
+        $this->assertSame(1500, $capturedMap['scope_main']);
+        $this->assertSame(456, $capturedMap['scope_test']);
+        $this->assertSame(300, $capturedMap['bug_scope_main']);
+        $this->assertSame(50, $capturedMap['bug_scope_test']);
+        $this->assertSame(600, $capturedMap['vulnerability_scope_main']);
+        $this->assertSame(5, $capturedMap['vulnerability_scope_test']);
+        $this->assertSame(600, $capturedMap['code_smell_scope_main']);
+        $this->assertSame(401, $capturedMap['code_smell_scope_test']);
+    }
+
+    public function testEnregistrementLeavesScopeColumnsNullWhenAbsentFromPayload(): void
+    {
+        $this->authChecker->method('isGranted')->willReturn(true);
+        $this->token->method('getUser')->willReturn($this->makeUser());
+
+        // buildPayload() ne porte aucune clé scope_* (projet jamais collecté côté scopes).
+        $capturedMap = [];
+        $this->historiqueRepo->expects($this->once())
+            ->method('insertHistoriqueAjoutProjet')
+            ->with($this->callback(function (array $map) use (&$capturedMap): bool {
+                $capturedMap = $map;
+                return true;
+            }))
+            ->willReturn(['code' => 200]);
+
+        $this->controller->enregistrement($this->jsonRequest($this->buildPayload()));
+
+        $this->assertNull($capturedMap['scope_main']);
+        $this->assertNull($capturedMap['bug_scope_main']);
+    }
+
     public function testEnregistrementLeavesRciColumnsNullWhenAbsentFromPayload(): void
     {
         $this->authChecker->method('isGranted')->willReturn(true);

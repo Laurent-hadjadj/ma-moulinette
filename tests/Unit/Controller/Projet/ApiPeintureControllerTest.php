@@ -297,6 +297,10 @@ class ApiPeintureControllerTest extends TestCase
                 'bug' => 2, 'vulnerability' => 3, 'code_smell' => 5,
                 'blocker' => 1, 'critical' => 2, 'major' => 3, 'info' => 1, 'minor' => 3,
                 'frontend' => 4, 'backend' => 3, 'autre' => 2, 'inconnu' => 1,
+                'scope_main' => 8, 'scope_test' => 2,
+                'bug_scope_main' => 1, 'bug_scope_test' => 1,
+                'vulnerability_scope_main' => 3, 'vulnerability_scope_test' => 0,
+                'code_smell_scope_main' => 4, 'code_smell_scope_test' => 1,
             ]]]);
 
         $payload = $this->decode($this->controller->peintureProjetAnomalie($this->jsonRequest([
@@ -307,6 +311,12 @@ class ApiPeintureControllerTest extends TestCase
         $this->assertSame('1h', $payload['dette']);
         $this->assertSame(2, $payload['bug_total']);
         $this->assertSame(4, $payload['frontend']);
+        $this->assertSame(8, $payload['scope_main']);
+        $this->assertSame(2, $payload['scope_test']);
+        $this->assertSame(1, $payload['bug_scope_main']);
+        $this->assertSame(1, $payload['bug_scope_test']);
+        $this->assertSame(3, $payload['vulnerability_scope_main']);
+        $this->assertSame(4, $payload['code_smell_scope_main']);
     }
 
     public function testPeintureProjetAnomalieReturnsLargeBugCount(): void

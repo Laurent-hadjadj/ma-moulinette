@@ -111,6 +111,7 @@ class BatchCollecteRepartitionControllerTest extends TestCase
             ->willReturn([
                 'code' => 200,
                 'json' => ['facets' => [[
+                    'property' => 'severities',
                     'values' => [
                         ['val' => 'INFO',     'count' => 1],
                         ['val' => 'MINOR',    'count' => 2],
@@ -127,6 +128,43 @@ class BatchCollecteRepartitionControllerTest extends TestCase
         $this->assertSame('BUG', $result['category']);
         $this->assertSame(15, $result['total']);
         $this->assertSame(1, $result['info']);
+        $this->assertSame(5, $result['blocker']);
+    }
+
+    /**
+     * MODIF 2026-09-28 : batchCollecteInformation() demande désormais
+     * 'severities,scopes' (préparation d'un futur détail main/test), et
+     * renvoie toutes les facettes plutôt que la première. La sélection de
+     * 'severities' doit fonctionner quelle que soit sa position, et le
+     * facet 'scopes' (non exploité pour l'instant) ne doit rien casser.
+     */
+    public function testCollecteRepartitionModuleSelectsSeveritiesFacetByNameRegardlessOfOrder(): void
+    {
+        $this->client->expects($this->once())
+            ->method('httpSonarQube')
+            ->willReturn([
+                'code' => 200,
+                'json' => ['facets' => [
+                    [
+                        'property' => 'scopes',
+                        'values' => [
+                            ['val' => 'MAIN', 'count' => 12],
+                            ['val' => 'TEST', 'count' => 3],
+                        ],
+                    ],
+                    [
+                        'property' => 'severities',
+                        'values' => [
+                            ['val' => 'BLOCKER', 'count' => 5],
+                        ],
+                    ],
+                ]],
+            ]);
+
+        $result = $this->controller->collecteRepartitionModule(self::MAVEN_KEY, 'BUG');
+
+        $this->assertSame(200, $result['code']);
+        $this->assertSame(5, $result['total']);
         $this->assertSame(5, $result['blocker']);
     }
 

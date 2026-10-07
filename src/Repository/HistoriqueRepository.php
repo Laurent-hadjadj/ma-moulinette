@@ -897,6 +897,12 @@ class HistoriqueRepository extends ServiceEntityRepository
         // Violations (Core severity breakdown)
         'violations', 'blocker_violations', 'critical_violations',
         'major_violations', 'minor_violations', 'info_violations',
+        // MODIF 2026-10-06 : répartition par portée SonarQube (MAIN = code
+        // source, TEST = code de test), globale et par catégorie d'anomalie.
+        'scope_main', 'scope_test',
+        'bug_scope_main', 'bug_scope_test',
+        'vulnerability_scope_main', 'vulnerability_scope_test',
+        'code_smell_scope_main', 'code_smell_scope_test',
         // Software quality issues (LTA24/26 severity breakdown)
         'software_quality_blocker_issues', 'software_quality_high_issues',
         'software_quality_medium_issues', 'software_quality_low_issues',

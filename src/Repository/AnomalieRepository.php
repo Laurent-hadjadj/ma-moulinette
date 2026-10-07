@@ -159,9 +159,9 @@ class AnomalieRepository extends ServiceEntityRepository
   public function insertAnomalie(array $map): array
   {
     $sql = "INSERT INTO ma_moulinette.anomalie
-              (maven_key, project_name, anomalie_total, dette_minute, dette_reliability_minute, dette_vulnerability_minute, dette_code_smell_minute, dette, dette_reliability, dette_vulnerability, dette_code_smell, frontend, backend, autre, inconnu, blocker, critical, major, info, minor, bug, vulnerability, code_smell, mode_collecte, utilisateur_collecte, date_enregistrement)
+              (maven_key, project_name, anomalie_total, dette_minute, dette_reliability_minute, dette_vulnerability_minute, dette_code_smell_minute, dette, dette_reliability, dette_vulnerability, dette_code_smell, frontend, backend, autre, inconnu, blocker, critical, major, info, minor, bug, vulnerability, code_smell, scope_main, scope_test, bug_scope_main, bug_scope_test, vulnerability_scope_main, vulnerability_scope_test, code_smell_scope_main, code_smell_scope_test, mode_collecte, utilisateur_collecte, date_enregistrement)
             VALUES
-              (:maven_key, :project_name, :anomalie_total, :dette_minute, :dette_reliability_minute, :dette_vulnerability_minute, :dette_code_smell_minute, :dette, :dette_reliability, :dette_vulnerability, :dette_code_smell, :frontend, :backend, :autre, :inconnu, :blocker, :critical, :major, :info, :minor, :bug, :vulnerability, :code_smell, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
+              (:maven_key, :project_name, :anomalie_total, :dette_minute, :dette_reliability_minute, :dette_vulnerability_minute, :dette_code_smell_minute, :dette, :dette_reliability, :dette_vulnerability, :dette_code_smell, :frontend, :backend, :autre, :inconnu, :blocker, :critical, :major, :info, :minor, :bug, :vulnerability, :code_smell, :scope_main, :scope_test, :bug_scope_main, :bug_scope_test, :vulnerability_scope_main, :vulnerability_scope_test, :code_smell_scope_main, :code_smell_scope_test, :mode_collecte, :utilisateur_collecte, :date_enregistrement)";
     try {
           $this->getEntityManager()->getConnection()->beginTransaction();
 
@@ -189,6 +189,14 @@ class AnomalieRepository extends ServiceEntityRepository
               $stmt->bindValue(':bug', $map['bug']);
               $stmt->bindValue(':vulnerability', $map['vulnerability']);
               $stmt->bindValue(':code_smell', $map['code_smell']);
+              $stmt->bindValue(':scope_main', $map['scope_main']);
+              $stmt->bindValue(':scope_test', $map['scope_test']);
+              $stmt->bindValue(':bug_scope_main', $map['bug_scope_main']);
+              $stmt->bindValue(':bug_scope_test', $map['bug_scope_test']);
+              $stmt->bindValue(':vulnerability_scope_main', $map['vulnerability_scope_main']);
+              $stmt->bindValue(':vulnerability_scope_test', $map['vulnerability_scope_test']);
+              $stmt->bindValue(':code_smell_scope_main', $map['code_smell_scope_main']);
+              $stmt->bindValue(':code_smell_scope_test', $map['code_smell_scope_test']);
               $stmt->bindValue(':mode_collecte', $map['mode_collecte']);
               $stmt->bindValue(':utilisateur_collecte', $map['utilisateur_collecte']);
               /** on formate la date avant de l'enregistrer */

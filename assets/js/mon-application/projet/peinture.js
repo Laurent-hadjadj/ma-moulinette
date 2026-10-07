@@ -957,6 +957,10 @@ export const remplissage = async function(maven_key) {
       /** Historique */
       const t13 = document.getElementById('js-dette');
       t13.dataset.detteMinute=t.detteMinute;
+      /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST) globale,
+       * relue par enregistrement.js — même pattern que detteMinute ci-dessus. */
+      t13.dataset.scopeMain = t.scope_main;
+      t13.dataset.scopeTest = t.scope_test;
 
       /* Nombre d'anomalie */
       $('#js-nombre-bug-total').html(displayNumber(t.bug_total));
@@ -976,6 +980,13 @@ export const remplissage = async function(maven_key) {
       t14.dataset.nombreBug = (t.bug_total);
       t15.dataset.nombreVulnerability = (t.vulnerability);
       t16.dataset.nombreCodeSmell = (t.code_smell_total);
+      /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST) par catégorie. */
+      t14.dataset.bugScopeMain = t.bug_scope_main;
+      t14.dataset.bugScopeTest = t.bug_scope_test;
+      t15.dataset.vulnerabilityScopeMain = t.vulnerability_scope_main;
+      t15.dataset.vulnerabilityScopeTest = t.vulnerability_scope_test;
+      t16.dataset.codeSmellScopeMain = t.code_smell_scope_main;
+      t16.dataset.codeSmellScopeTest = t.code_smell_scope_test;
 
       /* Répartition modules */
       const totalModule = Number(t.frontend + t.backend + t.autre + t.inconnu);

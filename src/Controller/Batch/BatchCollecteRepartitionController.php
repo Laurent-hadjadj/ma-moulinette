@@ -239,7 +239,7 @@ class BatchCollecteRepartitionController extends AbstractController
                 'componentKeys' => $maven_key,
                 'statuses' => 'OPEN,CONFIRMED,REOPENED',
                 'types' => $category,
-                'facets' => 'severities',
+                'facets' => 'severities,scopes',
                 'p' => 1,
                 'ps' => 1
             ]
@@ -260,10 +260,36 @@ class BatchCollecteRepartitionController extends AbstractController
         }
 
         $this->logger->info('[Batch Répartition] ℹ️ Résultat reçu dans batchCollecteInformation', [
-            'facets' => $result['json']['facets'][0] ?? []
+            'facets' => $result['json']['facets'] ?? []
         ]);
 
-        return $result['json']['facets'][0];
+        return $result['json']['facets'] ?? [];
+    }
+
+    /**
+     * [Description for extractFacetValues]
+     * Extrait le tableau 'values' de la facette dont la propriété correspond,
+     * depuis un tableau de facettes API SonarQube (plusieurs facettes
+     * peuvent être demandées ensemble, ex. 'severities,scopes' — on ne peut
+     * plus supposer que 'severities' est toujours en première position).
+     *
+     * @param array<int|string, mixed> $facets
+     * @param string $property
+     *
+     * @return array<int, array<string, mixed>>
+     *
+     * Created at: 28/09/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function extractFacetValues(array $facets, string $property): array
+    {
+        foreach ($facets as $facet) {
+            if (($facet['property'] ?? '') === $property) {
+                return $facet['values'] ?? [];
+            }
+        }
+        return [];
     }
 
     /**
@@ -305,14 +331,18 @@ class BatchCollecteRepartitionController extends AbstractController
         }
         /** On traite les données */
         $info = $minor = $major = $critical = $blocker = 0;
-        if (isset($result['values'])){
+        // MODIF 2026-09-28 : batchCollecteInformation() renvoie désormais toutes
+        // les facettes demandées (severities,scopes) — on sélectionne 'severities'
+        // par son nom plutôt que de supposer qu'elle est en première position.
+        $severityValues = $this->extractFacetValues($result, 'severities');
+        if (!empty($severityValues)){
             $this->logger->debug('[Batch Répartition Module] 🛠️ Informations disponibles dans les facets : ', [
                     'maven_key' => $maven_key,
                     'category' => $category,
                     'response' => $result
             ]);
 
-            foreach($result['values'] as $value){
+            foreach($severityValues as $value){
                 if ($value['val'] === 'INFO') {
                     $info = $value['count'] ?? 0;
                 }

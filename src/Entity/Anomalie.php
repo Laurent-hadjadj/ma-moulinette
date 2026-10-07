@@ -253,6 +253,80 @@ class Anomalie
     #[Assert\PositiveOrZero]
     private int $codeSmell;
 
+    /* MODIF 2026-10-06 : répartition par scope (MAIN = code source, TEST = code
+     * de test), globale et par catégorie — facet 'scopes' de l'API SonarQube. */
+    #[ORM\Column(
+        name: 'scope_main',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre total de problèmes sur le code source (scope MAIN)']
+    )]
+    #[Assert\PositiveOrZero]
+    private int $scopeMain;
+
+    #[ORM\Column(
+        name: 'scope_test',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre total de problèmes sur le code de test (scope TEST)']
+    )]
+    #[Assert\PositiveOrZero]
+    private int $scopeTest;
+
+    #[ORM\Column(
+        name: 'bug_scope_main',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre de bugs sur le code source (scope MAIN)']
+    )]
+    #[Assert\PositiveOrZero]
+    private int $bugScopeMain;
+
+    #[ORM\Column(
+        name: 'bug_scope_test',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre de bugs sur le code de test (scope TEST)']
+    )]
+    #[Assert\PositiveOrZero]
+    private int $bugScopeTest;
+
+    #[ORM\Column(
+        name: 'vulnerability_scope_main',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre de vulnérabilités sur le code source (scope MAIN)']
+    )]
+    #[Assert\PositiveOrZero]
+    private int $vulnerabilityScopeMain;
+
+    #[ORM\Column(
+        name: 'vulnerability_scope_test',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre de vulnérabilités sur le code de test (scope TEST)']
+    )]
+    #[Assert\PositiveOrZero]
+    private int $vulnerabilityScopeTest;
+
+    #[ORM\Column(
+        name: 'code_smell_scope_main',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre de mauvaises pratiques sur le code source (scope MAIN)']
+    )]
+    #[Assert\PositiveOrZero]
+    private int $codeSmellScopeMain;
+
+    #[ORM\Column(
+        name: 'code_smell_scope_test',
+        type: Types::INTEGER,
+        nullable: false,
+        options: ['comment' => 'Nombre de mauvaises pratiques sur le code de test (scope TEST)']
+    )]
+    #[Assert\PositiveOrZero]
+    private int $codeSmellScopeTest;
+
     #[ORM\Column(
         name: 'mode_collecte',
         type: Types::STRING,
@@ -570,6 +644,102 @@ class Anomalie
     public function setCodeSmell(int $codeSmell): static
     {
         $this->codeSmell = $codeSmell;
+
+        return $this;
+    }
+
+    public function getScopeMain(): ?int
+    {
+        return $this->scopeMain;
+    }
+
+    public function setScopeMain(int $scopeMain): static
+    {
+        $this->scopeMain = $scopeMain;
+
+        return $this;
+    }
+
+    public function getScopeTest(): ?int
+    {
+        return $this->scopeTest;
+    }
+
+    public function setScopeTest(int $scopeTest): static
+    {
+        $this->scopeTest = $scopeTest;
+
+        return $this;
+    }
+
+    public function getBugScopeMain(): ?int
+    {
+        return $this->bugScopeMain;
+    }
+
+    public function setBugScopeMain(int $bugScopeMain): static
+    {
+        $this->bugScopeMain = $bugScopeMain;
+
+        return $this;
+    }
+
+    public function getBugScopeTest(): ?int
+    {
+        return $this->bugScopeTest;
+    }
+
+    public function setBugScopeTest(int $bugScopeTest): static
+    {
+        $this->bugScopeTest = $bugScopeTest;
+
+        return $this;
+    }
+
+    public function getVulnerabilityScopeMain(): ?int
+    {
+        return $this->vulnerabilityScopeMain;
+    }
+
+    public function setVulnerabilityScopeMain(int $vulnerabilityScopeMain): static
+    {
+        $this->vulnerabilityScopeMain = $vulnerabilityScopeMain;
+
+        return $this;
+    }
+
+    public function getVulnerabilityScopeTest(): ?int
+    {
+        return $this->vulnerabilityScopeTest;
+    }
+
+    public function setVulnerabilityScopeTest(int $vulnerabilityScopeTest): static
+    {
+        $this->vulnerabilityScopeTest = $vulnerabilityScopeTest;
+
+        return $this;
+    }
+
+    public function getCodeSmellScopeMain(): ?int
+    {
+        return $this->codeSmellScopeMain;
+    }
+
+    public function setCodeSmellScopeMain(int $codeSmellScopeMain): static
+    {
+        $this->codeSmellScopeMain = $codeSmellScopeMain;
+
+        return $this;
+    }
+
+    public function getCodeSmellScopeTest(): ?int
+    {
+        return $this->codeSmellScopeTest;
+    }
+
+    public function setCodeSmellScopeTest(int $codeSmellScopeTest): static
+    {
+        $this->codeSmellScopeTest = $codeSmellScopeTest;
 
         return $this;
     }
