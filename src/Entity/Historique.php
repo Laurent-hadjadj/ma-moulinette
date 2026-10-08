@@ -65,14 +65,32 @@ class Historique
         type: Types::STRING,
         length: 128,
         nullable: false,
-        options: ['comment' => 'Date de la version du projet']
+        options: ['comment' => 'Date de la dernière analyse SonarQube']
     )]
     #[Assert\NotBlank]
     #[Assert\Length(
         max: 128,
-        maxMessage: 'La date de la version ne doit pas dépasser 128 caractères.'
+        maxMessage: 'La date de la dernière analyse ne doit pas dépasser 128 caractères.'
     )]
     private string $dateVersion;
+
+    // -------------------------
+    // Version du serveur SonarQube
+    // -------------------------
+    /* MODIF 2026-10-08 : nommée 'sonarqube_server_version', pas 'version_sonar' */
+    #[ORM\Column(
+        name: 'sonarqube_server_version',
+        type: Types::STRING,
+        length: 32,
+        nullable: false,
+        options: ['comment' => 'Version du serveur SonarQube']
+    )]
+    #[Assert\NotBlank]
+    #[Assert\Length(
+        max: 32,
+        maxMessage: 'La version du serveur SonarQube ne doit pas dépasser 32 caractères.'
+    )]
+    private string $sonarqubeServerVersion;
 
     // -------------------------
     // Informations sur le projet
@@ -1754,6 +1772,38 @@ class Historique
     public function getDateVersion(): ?string
     {
         return $this->dateVersion;
+    }
+
+    /**
+     * [Description for getSonarqubeServerVersion]
+     *
+     * @return string
+     *
+     * Created at: 08/10/2026 17:43:40 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function getSonarqubeServerVersion(): string
+    {
+        return $this->sonarqubeServerVersion;
+    }
+
+    /**
+     * [Description for setSonarqubeServerVersion]
+     *
+     * @param string $sonarqubeServerVersion
+     *
+     * @return static
+     *
+     * Created at: 08/10/2026 17:45:23 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function setSonarqubeServerVersion(string $sonarqubeServerVersion): static
+    {
+        $this->sonarqubeServerVersion = $sonarqubeServerVersion;
+
+        return $this;
     }
 
     /**
