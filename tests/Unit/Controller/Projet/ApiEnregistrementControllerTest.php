@@ -18,6 +18,7 @@ namespace App\Tests\Unit\Controller\Projet;
 use App\Controller\Projet\ApiEnregistrementController;
 use App\Entity\{CleanCode, Historique, Utilisateur};
 use App\Repository\{CleanCodeRepository, HistoriqueRepository};
+use App\Service\GetSonarVersionService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -39,6 +40,7 @@ class ApiEnregistrementControllerTest extends TestCase
     /** @var HistoriqueRepository&MockObject */            private MockObject $historiqueRepo;
     /** @var CleanCodeRepository&MockObject */              private MockObject $cleanCodeRepo;
     /** @var AuthorizationCheckerInterface&MockObject */   private MockObject $authChecker;
+    /** @var GetSonarVersionService&MockObject */          private MockObject $getSonarVersionService;
 
     private ApiEnregistrementController $controller;
 
@@ -52,6 +54,11 @@ class ApiEnregistrementControllerTest extends TestCase
         $this->historiqueRepo = $this->createMock(HistoriqueRepository::class);
         $this->cleanCodeRepo = $this->createMock(CleanCodeRepository::class);
         $this->authChecker = $this->createMock(AuthorizationCheckerInterface::class);
+        // MODIF 2026-10-08 : pas de stub par défaut ici — un mock non configuré
+        // renvoie déjà null (-> 'inconnu' côté contrôleur), et un défaut posé en
+        // setUp() primerait sur le willReturn() spécifique d'un test (cf.
+        // conventions/php.md « PHPUnit : doubles »).
+        $this->getSonarVersionService = $this->createMock(GetSonarVersionService::class);
 
         // MODIF 2026-09-28 : routage par classe (CleanCode avait auparavant le
         // mock HistoriqueRepository en retour pour toute classe, ce qui masquait
@@ -84,7 +91,7 @@ class ApiEnregistrementControllerTest extends TestCase
         $defaultUser->setCourriel('default@test');
         $this->token->method('getUser')->willReturn($defaultUser);
 
-        $this->controller = new ApiEnregistrementController($this->em, $this->logger);
+        $this->controller = new ApiEnregistrementController($this->em, $this->logger, $this->getSonarVersionService);
         $this->controller->setContainer($container);
     }
 
@@ -144,15 +151,50 @@ class ApiEnregistrementControllerTest extends TestCase
     {
         $this->authChecker->method('isGranted')->willReturn(true);
         $this->token->method('getUser')->willReturn($this->makeUser());
+        $this->getSonarVersionService->method('getSonarQubeVersion')->willReturn('10.4.1');
 
+        $capturedMap = [];
         $this->historiqueRepo->expects($this->once())
             ->method('insertHistoriqueAjoutProjet')
+            ->with($this->callback(function (array $map) use (&$capturedMap): bool {
+                $capturedMap = $map;
+                return true;
+            }))
             ->willReturn(['code' => 200]);
 
         $response = $this->controller->enregistrement($this->jsonRequest($this->buildPayload()));
         $data = json_decode($response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
+        // MODIF 2026-10-08 : marqueur version du serveur SonarQube, pas d'UI associée.
+        $this->assertSame('10.4.1', $capturedMap['sonarqube_server_version']);
+    }
+
+    /**
+     * MODIF 2026-10-08 : GetSonarVersionService::getSonarQubeVersion() renvoie
+     * un tableau d'erreur (pas une chaîne) en cas d'échec HTTP — le marqueur
+     * doit retomber sur 'inconnu' plutôt que de propager le tableau brut.
+     */
+    public function testEnregistrementFallsBackToInconnuWhenSonarVersionLookupFails(): void
+    {
+        $this->authChecker->method('isGranted')->willReturn(true);
+        $this->token->method('getUser')->willReturn($this->makeUser());
+        $this->getSonarVersionService->method('getSonarQubeVersion')->willReturn([
+            'code' => 503, 'erreur' => 'Service indisponible',
+        ]);
+
+        $capturedMap = [];
+        $this->historiqueRepo->expects($this->once())
+            ->method('insertHistoriqueAjoutProjet')
+            ->with($this->callback(function (array $map) use (&$capturedMap): bool {
+                $capturedMap = $map;
+                return true;
+            }))
+            ->willReturn(['code' => 200]);
+
+        $this->controller->enregistrement($this->jsonRequest($this->buildPayload()));
+
+        $this->assertSame('inconnu', $capturedMap['sonarqube_server_version']);
     }
 
     public function testEnregistrementReturns500OnException(): void
