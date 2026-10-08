@@ -7,7 +7,7 @@ use Symfony\Contracts\HttpClient\ResponseInterface;
 
 class TestClientException extends \Exception implements HttpExceptionInterface
 {
-    private $response;
+    private ResponseInterface $response;
 
     public function __construct(int $code, ResponseInterface $response, string $message = "")
     {

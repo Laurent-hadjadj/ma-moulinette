@@ -16,7 +16,7 @@ namespace App\Controller\Suivi;
 use App\Controller\Traits\AppUserAware;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\HttpFoundation\{Request, Response};
+use Symfony\Component\HttpFoundation\{RedirectResponse, Request, Response};
 use Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
@@ -200,7 +200,7 @@ class SuiviController extends AbstractController
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     #[Route('/suivi/set', name: 'suivi_set', methods: ['GET'])]
-    public function setSession(Request $request)
+    public function setSession(Request $request): RedirectResponse
     {
         $token = $request->query->get('token');
         $maven_key = null;

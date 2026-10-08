@@ -163,6 +163,7 @@ class CustomAuthenticatorTest extends TestCase
 
         $response = $this->authenticator->onAuthenticationSuccess(Request::create('/'), $token, 'main');
 
+        $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertSame('/accueil', $response->getTargetUrl());
     }
 
@@ -173,6 +174,7 @@ class CustomAuthenticatorTest extends TestCase
 
         $response = $this->authenticator->onAuthenticationSuccess(Request::create('/'), $token, 'main');
 
+        $this->assertInstanceOf(RedirectResponse::class, $response);
         $this->assertSame('/accueil', $response->getTargetUrl());
     }
 
