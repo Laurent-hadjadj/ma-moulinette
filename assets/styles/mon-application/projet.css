@@ -209,6 +209,7 @@ textarea[readonly] {
 .container-logger,
 .container-projet,
 .container-quality,
+.container-scope,
 .container-owasp,
 .container-repartition-module,
 .container-cosui,
@@ -408,7 +409,8 @@ textarea[readonly] {
 #bouton-fermer-information-complexity,
 #bouton-ouvrir-actuator-config,
 #bouton-fermer-actuator,
-#bouton-fermer-mesures-rci {
+#bouton-fermer-mesures-rci,
+#bouton-fermer-scope {
   min-width: 9rem;
   font-size: 0.95rem;
   border-radius: 0.375rem;
@@ -435,7 +437,7 @@ textarea[readonly] {
 #bouton-fermer-dette-technique:hover,
 #bouton-fermer-menace-potentielle:hover,
 #bouton-fermer-liste-severity:hover,
-#bouton-fermer-liste-projet:hover
+#bouton-fermer-liste-projet:hover,
 #bouton-fermer-liste-nosonar:hover,
 #bouton-ouvrir-clean-code:hover,
 #bouton-fermer-logger-detail:hover,
@@ -443,7 +445,8 @@ textarea[readonly] {
 #bouton-fermer-information-complexity:hover,
 #bouton-ouvrir-actuator-config:hover,
 #bouton-fermer-actuator:hover,
-#bouton-fermer-mesures-rci:hover { background-color: #006182; }
+#bouton-fermer-mesures-rci:hover,
+#bouton-fermer-scope:hover { background-color: #006182; }
 
 /* select2 custom
  *  placeholder
@@ -709,6 +712,19 @@ textarea[readonly] {
 }
 
 #rci-bar-chart {
+  height: 300px !important;
+}
+
+/* MODIF 2026-10-08 : graphique Scopes (modale _modal_repartition_scope.html.twig),
+  même contrainte de dimensionnement que le graphique RCI ci-dessus. */
+.chart-container-scope {
+  width: 100%;
+  height: 300px;
+  position: relative;
+  margin-top: 1rem;
+}
+
+#scope-bar-chart {
   height: 300px !important;
 }
 

@@ -962,6 +962,42 @@ export const remplissage = async function(maven_key) {
       t13.dataset.scopeMain = t.scope_main;
       t13.dataset.scopeTest = t.scope_test;
 
+      /* MODIF 2026-10-08 : résumé "Scope Main/Test" affiché sur la page Projet —
+       * part respective du code source (MAIN) et du code de test (TEST) parmi
+       * les anomalies. Les deux pourcentages sont affichés côte à côte pour
+       * éviter qu'un "0 %" isolé ne soit lu comme une erreur plutôt qu'une
+       * vraie absence d'anomalie côté test. */
+      const scopeTotal = Number(t.scope_main) + Number(t.scope_test);
+      const scopeMainPercent = scopeTotal > 0 ? (Number(t.scope_main) / scopeTotal) * cent : null;
+      const scopeTestPercent = scopeTotal > 0 ? (Number(t.scope_test) / scopeTotal) * cent : null;
+      $('#js-scope-main-percent').html(displayPercent(scopeMainPercent));
+      $('#js-scope-separator').html('/');
+      $('#js-scope-test-percent').html(displayPercent(scopeTestPercent));
+
+      /* MODIF 2026-10-08 : tableau détaillé de la modale (#modal-affiche-scope) —
+       * nombre d'anomalies MAIN/TEST et part du scope TEST, global et par
+       * catégorie. Même pattern que remplitColonneRci (lignes ~701 plus haut). */
+      const remplitColonneScope = (suffixe, main, test) => {
+        const total = Number(main) + Number(test);
+        const testPercent = total > 0 ? (Number(test) / total) * cent : null;
+        $(`#js-scope-${suffixe}-main`).text(displayNumber(main));
+        $(`#js-scope-${suffixe}-test`).text(displayNumber(test));
+        $(`#js-scope-${suffixe}-test-percent`).text(displayPercent(testPercent));
+      };
+      remplitColonneScope('global', t.scope_main, t.scope_test);
+      remplitColonneScope('bug', t.bug_scope_main, t.bug_scope_test);
+      remplitColonneScope('vulnerability', t.vulnerability_scope_main, t.vulnerability_scope_test);
+      remplitColonneScope('code-smell', t.code_smell_scope_main, t.code_smell_scope_test);
+
+      /* MODIF 2026-10-08 : JSON brut relu par index-projet.js pour construire
+       * le graphique de la modale (même pattern que dataset.rciMesuresJson). */
+      t13.dataset.scopeMesuresJson = JSON.stringify({
+        global_main: t.scope_main, global_test: t.scope_test,
+        bug_main: t.bug_scope_main, bug_test: t.bug_scope_test,
+        vulnerability_main: t.vulnerability_scope_main, vulnerability_test: t.vulnerability_scope_test,
+        code_smell_main: t.code_smell_scope_main, code_smell_test: t.code_smell_scope_test,
+      });
+
       /* Nombre d'anomalie */
       $('#js-nombre-bug-total').html(displayNumber(t.bug_total));
       $('#js-separator-bug').html('|');

@@ -1996,6 +1996,102 @@ $('#bouton-fermer-mesures-rci').on('click', function () {
     modalSafe.close('#modal-affiche-mesures-rci');
 });
 
+/* MODIF 2026-10-08 : modale détail Scopes (répartition MAIN/TEST).
+ * Même pattern que la modale RCI ci-dessus : canvas ré-instancié à chaque
+ * ouverture (destroy puis new) pour éviter les fuites Chart.js entre projets. */
+let scopeBarChartInstance = null;
+
+const readScopeMesures = function () {
+  const el = document.getElementById('js-dette');
+  if (!el || !el.dataset || !el.dataset.scopeMesuresJson) { return null; }
+  try {
+    return JSON.parse(el.dataset.scopeMesuresJson);
+  } catch (e) {
+    log(' - 🔴 [Scopes] JSON invalide sur dataset.scopeMesuresJson.');
+    return null;
+  }
+};
+
+$('#js-affiche-modal-scope').on('click', function () {
+  if ($('select[name="projet"]').val() === '' || $('select[name="projet"]').val() === 'TheID') {
+    showMessage('warning', 'Aucune donnée disponible. Relancez une collecte ou afficher les derniers résultats.', null);
+    return;
+  }
+
+  const scopeMesures = readScopeMesures() ?? {};
+  const scopeColonnes = [
+    { label: 'Global', prefixe: 'global_' },
+    { label: 'Bug', prefixe: 'bug_' },
+    { label: 'Vulnérabilité', prefixe: 'vulnerability_' },
+    { label: 'Mauvaise pratique', prefixe: 'code_smell_' },
+  ];
+  const testPercentData = scopeColonnes.map(c => {
+    const main = Number(scopeMesures[`${c.prefixe}main`] ?? 0);
+    const test = Number(scopeMesures[`${c.prefixe}test`] ?? 0);
+    const total = main + test;
+    return total > 0 ? (test / total) * 100 : null;
+  });
+  const mainPercentData = testPercentData.map(v => (v === null ? null : 100 - v));
+
+  if (scopeBarChartInstance) {
+    scopeBarChartInstance.destroy();
+    scopeBarChartInstance = null;
+  }
+
+  modalSafe.open('#modal-affiche-scope');
+  /* tick suivant : le canvas doit être visible pour que Chart.js mesure sa taille */
+  setTimeout(() => {
+    const canvas = document.getElementById('scope-bar-chart');
+    if (!canvas) { return; }
+    scopeBarChartInstance = new Chart(canvas.getContext('2d'), {
+      type: 'bar',
+      data: {
+        labels: scopeColonnes.map(c => c.label),
+        datasets: [
+          {
+            label: 'Main (%)',
+            data: mainPercentData,
+            backgroundColor: '#3690eb',
+            borderColor: '#00445b',
+            borderWidth: 1,
+          },
+          {
+            label: 'Test (%)',
+            data: testPercentData,
+            backgroundColor: '#ff9f40',
+            borderColor: '#00445b',
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: 'top', labels: { font: { size: 14 } } },
+          datalabels: {
+            display: ctx => ctx.dataset.data[ctx.dataIndex] !== null,
+            color: '#fff',
+            font: { weight: 'bold' },
+            formatter: v => `${Math.round(v)}%`,
+          },
+          tooltip: {
+            callbacks: {
+              label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y}%`
+            }
+          }
+        },
+        scales: {
+          x: { stacked: true },
+          y: { stacked: true, beginAtZero: true, max: 100, ticks: { precision: 0 } }
+        }
+      }
+    });
+  }, 50);
+});
+$('#bouton-fermer-scope').on('click', function () {
+    modalSafe.close('#modal-affiche-scope');
+});
 
 /* MODIF 2026-05-25  :
  * Modale Détail Logger (matrix level × framework + liste fichiers paginée) +
