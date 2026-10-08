@@ -17,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Historique;
+use App\Service\GetSonarVersionService;
 
 /** Class API Batch */
 use App\Controller\Batch\{BatchCollecteInformationProjetController, BatchCollecteMesureController, BatchCollecteOwaspController, BatchCollecteHotspotController,BatchCollecteAnomalieController, BatchCollecteAnomalieDetailController, BatchCollecteHotspotOwaspController, BatchCollecteHotspotDetailController, BatchCollecteNoSonarController, BatchCollecteTodoController,BatchCollecteActuatorController};
@@ -60,7 +61,8 @@ class CollecteController extends AbstractController
         private BatchCollecteTodoController $batchCollecteTodo,
         private BatchCollecteActuatorController $batchCollecteActuator,
         private BatchCollecteLoggerController $batchCollecteLogger,
-        private BatchCollecteRciController $batchCollecteRci
+        private BatchCollecteRciController $batchCollecteRci,
+        private GetSonarVersionService $getSonarVersionService
     ) {
     }
 
@@ -171,6 +173,8 @@ class CollecteController extends AbstractController
         /** On nettoie les variables du POST */
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
         $mode_collecte = htmlspecialchars($mode_collecte, ENT_QUOTES, 'UTF-8');
+        $getVersionSonar = $this->getSonarVersionService->getSonarVersion();
+        $version_sonar = (empty($getVersionSonar) || is_array($getVersionSonar)) ? 'inconnu' : $getVersionSonar;
 
         /** On démarre la mesure du traitement */
         $debutTraitement = new \DateTime('now', new \DateTimeZone(self::$europeParis));
@@ -182,6 +186,7 @@ class CollecteController extends AbstractController
                 <div class="callout alert-callout-border secondary">
                     <ul>
                         <li><span>Portefeuille : </span>'. $portefeuille . '</li>
+                        <li><span>Serveur SonarQube : </span>' . $version_sonar . '</li>
                         <li><span>Projet : </span>' . $maven_key . '</li>
                         <li><span>Mode : </span>' . $mode_collecte .'</li>
                         <li><span>Date : </span>' . $debutTraitement->format(self::$dateFormat) .'</li>
@@ -224,7 +229,7 @@ class CollecteController extends AbstractController
             $mergeHistorique = array_merge($mergeHistorique, $informationProjet['historique']);
         }
 
-        /** Le projet existe déjà, il est à jour, on arrête la collecte ou pn met à jour les informations. */
+        /** Le projet existe déjà, il est à jour, on arrête la collecte ou on met à jour les informations. */
         if ($informationProjet['code'] === 100){
             $this->logger->info('[Batch] ℹ️ Mise à jour pour le projet inutile.');
             /** Pas de mise à jour local = historique = SonarQube */
@@ -944,6 +949,7 @@ class CollecteController extends AbstractController
         /** Consolidation des données */
         $mergeHistorique = array_merge($mergeHistorique, [
             'maven_key' => $maven_key,
+            'version_sonar' => $version_sonar,
             'initial' => false,
             'mode_collecte' => $mode_collecte,
             'utilisateur_collecte' => $utilisateur_collecte,
