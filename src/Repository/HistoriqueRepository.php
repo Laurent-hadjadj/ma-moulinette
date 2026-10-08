@@ -14,6 +14,7 @@
 namespace App\Repository;
 
 use App\Entity\Historique;
+use App\Util\MavenVersionComparator;
 use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\ParameterType;
 use Doctrine\Persistence\ManagerRegistry;
@@ -855,6 +856,8 @@ class HistoriqueRepository extends ServiceEntityRepository
     private static array $historiqueColumns = [
         // Identité projet / version
         'maven_key', 'analyse_key', 'version', 'date_version', 'project_name',
+        // MODIF 2026-10-08 : Version du serveur SonarQube
+        'sonarqube_server_version',
         // Version typée par parser ma-moulinette
         'version_release', 'version_snapshot', 'version_autre',
         // Répartition langages (parser ma-moulinette)
@@ -956,7 +959,7 @@ class HistoriqueRepository extends ServiceEntityRepository
 
     /* MODIF 2026-05-06 : liste des colonnes ratings
      * SonarQube. Convention SonarQube : 1.0=A, 2.0=B, 3.0=C, 4.0=D, 5.0=E. La collecte
-     * recoit parfois la valeur numerique brute ("0"/"1.0"/...), parfois la lettre.
+     * reçoit parfois la valeur numérique brute ("0"/"1.0"/...), parfois la lettre.
      * On normalise au moment de l'INSERT pour avoir toujours A-E ou null en base. */
     /** @var array<int, string> */
     private static array $historiqueRatingColumns = [
@@ -1007,6 +1010,34 @@ class HistoriqueRepository extends ServiceEntityRepository
      */
     public function insertHistoriqueAjoutProjet(array $map, array $json, ?array $loggerBreakdown = null): array
     {
+        /* MODIF 2026-10-08 : upsert par (maven_key, version) —
+         *SAUF pour les versions SNAPSHOT. Le flux batch/cron
+         * protège déjà contre les doublons via l'analyse_key SonarQube
+         * (BatchCollecteInformationProjetController), mais le flux interactif
+         * ("Enregistrer") ne s'appuyait que sur la clé primaire
+         * (maven_key, version, date_version) : une ré-analyse de la même
+         * version RELEASE/RC/BETA/ALPHA créait une nouvelle ligne au lieu de
+         * remplacer l'ancienne, alors qu'une seule doit survivre (la plus
+         * récente). Exception volontaire pour SNAPSHOT : le numéro de version
+         * n'incrémente pas entre deux commits (ex. 1.2.3-SNAPSHOT peut être
+         * analysé 15 fois le même jour en dev agile) — on garde chaque analyse
+         * (comportement inchangé, seule la clé primaire protège contre un
+         * doublon à la date exactement identique). Une version non parsable
+         * (format inattendu) est traitée comme SNAPSHOT par prudence : on ne
+         * supprime jamais de données sur une classification incertaine. */
+        $qualifier = MavenVersionComparator::parse((string) ($map['version'] ?? ''))['qualifier'] ?? 'SNAPSHOT';
+        $estSnapshot = ($qualifier === 'SNAPSHOT');
+        $existing = null;
+        if (!$estSnapshot) {
+            $existing = $this->selectLatestDateVersionForVersion((string) ($map['maven_key'] ?? ''), (string) ($map['version'] ?? ''));
+            if ($existing !== null) {
+                $comparaison = $this->comparerDateVersion($existing, (string) ($map['date_version'] ?? ''));
+                if ($comparaison >= 0) {
+                    return ['code' => 23505, 'erreur' => 'Les informations existent déjà.'];
+                }
+            }
+        }
+
         /** SQL générée à partir du whitelist + champ actuator_info en littéral JSON. */
         $cols = self::$historiqueColumns;
         $colList = implode(', ', $cols) . ', actuator_info, logger_breakdown';
@@ -1017,6 +1048,14 @@ class HistoriqueRepository extends ServiceEntityRepository
         $sql = "INSERT INTO ma_moulinette.historique ($colList) VALUES ($placeholders)";
         try {
             $this->getEntityManager()->getConnection()->beginTransaction();
+            if ($existing !== null) {
+                $deleteStmt = $this->getEntityManager()->getConnection()->prepare(
+                    "DELETE FROM ma_moulinette.historique WHERE maven_key = :maven_key AND version = :version"
+                );
+                $deleteStmt->bindValue('maven_key', $map['maven_key']);
+                $deleteStmt->bindValue('version', $map['version']);
+                $deleteStmt->executeStatement();
+            }
             $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
             $ratingColsSet = array_flip(self::$historiqueRatingColumns);
             foreach ($cols as $col) {
@@ -1048,6 +1087,66 @@ class HistoriqueRepository extends ServiceEntityRepository
         }
         /** on prépare la réponse */
         return ['code' => 200, 'erreur' => ''];
+    }
+
+    /**
+     * [Description for selectLatestDateVersionForVersion]
+     * Retourne la date_version la plus récente déjà enregistrée pour un
+     * couple (maven_key, version), ou null si aucune ligne n'existe.
+     * Utilisé par insertHistoriqueAjoutProjet() pour l'upsert RELEASE/RC
+     * (jamais appelé pour SNAPSHOT).
+     *
+     * @param string $mavenKey
+     * @param string $version
+     *
+     * @return string|null
+     *
+     * Created at: 08/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function selectLatestDateVersionForVersion(string $mavenKey, string $version): ?string
+    {
+        $sql = "SELECT date_version FROM ma_moulinette.historique WHERE maven_key = :maven_key AND version = :version";
+        $stmt = $this->getEntityManager()->getConnection()->prepare($sql);
+        $stmt->bindValue('maven_key', $mavenKey);
+        $stmt->bindValue('version', $version);
+        /** @var array<int, string> $dates */
+        $dates = $stmt->executeQuery()->fetchFirstColumn();
+        if ($dates === []) {
+            return null;
+        }
+        usort($dates, fn (string $a, string $b): int => $this->comparerDateVersion($a, $b));
+
+        return $dates[count($dates) - 1];
+    }
+
+    /**
+     * [Description for comparerDateVersion]
+     * Compare deux chaînes date_version chronologiquement (pas par ordre
+     * lexicographique). Retombe sur strcmp si l'une des deux n'est pas une
+     * date parsable (format exotique) : comportement dégradé mais jamais
+     * d'exception.
+     *
+     * @param string $a
+     * @param string $b
+     *
+     * @return int -1 si $a < $b, 0 si égale, 1 si $a > $b
+     *
+     * Created at: 08/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    private function comparerDateVersion(string $a, string $b): int
+    {
+        try {
+            $dateA = new \DateTimeImmutable($a);
+            $dateB = new \DateTimeImmutable($b);
+
+            return $dateA <=> $dateB;
+        } catch (\Throwable) {
+            return strcmp($a, $b) <=> 0;
+        }
     }
 
     /**
@@ -1276,7 +1375,7 @@ class HistoriqueRepository extends ServiceEntityRepository
         $sql = "SELECT version, project_name AS name,
                         date_version, analyse_key
                 FROM ma_moulinette.historique
-                WHERE maven_key=:maven_key
+                WHERE maven_key = :maven_key
                 ORDER BY date_version DESC LIMIT 1";
         try {
                 $stmt = $this->getEntityManager()->getConnection()->prepare(preg_replace(self::$removeReturnLine, " ", $sql));
