@@ -35,7 +35,7 @@ class GetSonarVersionService extends AbstractController
     /**
      * [Description for getSonarQubeVersion]
      *
-     * @return array|string
+     * @return array<string, int|string>|string
      *
      * Created at: 08/10/2026 16:12:40 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -81,7 +81,7 @@ class GetSonarVersionService extends AbstractController
 
             return [
                 'code' => 500,
-                'erreur' => $e->getMessage() ?? self::$erreurSonarInconnue
+                'erreur' => $e->getMessage()
             ];
         } finally {
             $this->logger->info("[Version Sonar] ✅ Fin de la récupération de la version de l'application SonarQube.");
