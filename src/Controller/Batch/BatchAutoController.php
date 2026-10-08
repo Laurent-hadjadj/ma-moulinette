@@ -206,7 +206,7 @@ class BatchAutoController extends AbstractController
             self::$traitementAutomatique
         );
         } catch (\Throwable $e) {
-            $this->logger->error("[Traitement-Automatique] ❌ Erreur lors de la création de l'exécution du batch.", [
+            $this->logger->error("[Traitement-Automatique] 🔴 Erreur lors de la création de l'exécution du batch.", [
                 'traitement_id' => $data->traitement_id,
                 'error' => $e->getMessage()
             ]);
