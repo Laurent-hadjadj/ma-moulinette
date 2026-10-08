@@ -219,6 +219,40 @@ class ClientTest extends TestCase
         yield '429' => [429, 'erreur429'];
     }
 
+    public function testHandleClientExceptionPassesThroughSonarQubeErrorMessage(): void
+    {
+        $body = '{"errors":[{"msg":"Le paramètre componentKeys est obligatoire."}]}';
+        $exception = new TestClientException(400, $this->mockResponse($body), 'msg');
+
+        $this->logger->expects($this->once())
+            ->method('error')
+            ->with("[handleClientException] ❌ Une erreur de l'API SonarQube a été retournée. ", [
+                'code' => 400,
+                'body' => 'Le paramètre componentKeys est obligatoire.',
+            ]);
+
+        $result = $this->invokePrivateMethod('handleClientException', [$exception]);
+
+        $this->assertSame(400, $result['code']);
+        $this->assertSame('Le paramètre componentKeys est obligatoire.', $result['erreur']);
+    }
+
+    public function testHandleClientExceptionTranslatesUnsupportedFacetError(): void
+    {
+        $body = '{"errors":[{"msg":"Value of parameter \'facets\' (owaspTop10-2021) must be one of: [projects, moduleUuids, files, owaspTop10]"}]}';
+        $exception = new TestClientException(400, $this->mockResponse($body), 'msg');
+
+        $this->logger->expects($this->once())->method('error');
+
+        $result = $this->invokePrivateMethod('handleClientException', [$exception]);
+
+        $this->assertSame(400, $result['code']);
+        $this->assertSame(
+            "Le référentiel « owaspTop10-2021 » n'est pas disponible sur cette version de SonarQube. Vérifiez le paramètre SONAR_VERSION de l'application.",
+            $result['erreur']
+        );
+    }
+
     #[\PHPUnit\Framework\Attributes\DataProvider('serverExceptionCodesProvider')]
     public function testHandleServerException(int $code, string $expectedKey): void
     {

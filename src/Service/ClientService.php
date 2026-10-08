@@ -160,6 +160,16 @@ class ClientService
             'code' => $errorCode,
             'body' => $errorMessage
         ]);
+
+            /* MODIF 2026-10-08 : SonarQube rejette une facette inexistante sur la
+             * version du serveur interrogé (ex. owaspTop10-2021 absent avant la 9.7)
+             * avec un message technique peu lisible pour un utilisateur. On le
+             * remplace par un message explicite qui pointe vers SONAR_VERSION,
+             * cause la plus probable (le reste du message brut reste dans les logs). */
+            if (preg_match("/^Value of parameter 'facets' \(([^)]+)\)/", $errorMessage, $matches)) {
+                $errorMessage = "Le référentiel « {$matches[1]} » n'est pas disponible sur cette version de SonarQube. Vérifiez le paramètre SONAR_VERSION de l'application.";
+            }
+
             return ['code' => $errorCode, 'erreur' => $errorMessage];
         }
 
