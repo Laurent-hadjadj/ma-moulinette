@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create COMMENTS                      ##
-##           V3.3.0 - 06/10/2026                  ##
+##           V3.4.0 - 08/10/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -26,6 +26,7 @@
 --- 2026-07-23 : Renommage actuator_info_value en actuator_info_cle
 --- 2026-09-28 : Ajout des commentaires pour les mesures RCI sur la table Historique. Ajout des commentaires pour la table RCI.
 --- 2026-10-06 : ajout des attributs scope_main, scope_test, bug_scope_main, bug_scope_test, vulnerability_scope_main, vulnerability_scope_test, code_smell_scope_main, code_smell_scope_test
+--- 2026-10-08 : Ajout de la colone sonarqube_server_version pour tracer la version du serveur SonarQube ayant produit cette ligne.
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette postgres;
@@ -314,6 +315,7 @@ COMMENT ON COLUMN ma_moulinette.historique.maven_key IS '[CORE] Clé unique du p
 (fr.monapplication:ma-moulinette).';
 COMMENT ON COLUMN ma_moulinette.historique.version IS '[CORE] Version du projet lors de l''analyse. Permet de suivre l''évolution du projet dans le temps.';
 COMMENT ON COLUMN ma_moulinette.historique.date_version IS '[CORE] Date de l''analyse du projet';
+COMMENT ON COLUMN ma_moulinette.historique.sonarqube_server_version IS '[MA-MOULINETTE] Version du serveur SonarQube ayant produit cette ligne.';
 COMMENT ON COLUMN ma_moulinette.historique.project_name IS '[CORE] Nom du projet i.e. extrait de la maven_key.';
 COMMENT ON COLUMN ma_moulinette.historique.analyse_key IS '[CORE] Identifiant unique d’une analyse SonarQube. Permet de tracer un scan précis.';
 COMMENT ON COLUMN ma_moulinette.historique.version_release IS '[MA-MOULINETTE] Nombre de version de type RELEASE.';

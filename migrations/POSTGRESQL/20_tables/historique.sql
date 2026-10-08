@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.8.0 - 06/10/2026                  ##
+##           V2.9.0 - 08/10/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -16,7 +16,8 @@
 --- 2026-03-30 : Ajout des attributs duplicated_lines_rating.
 --- 2026-04-26 : Ajustement de la taille de analyse_key
 -- 2026-05-15 : breakdown level × framework (cf logger_details)
---- 2026-10-06 : ajout des attributs scope_main, scope_test, bug_scope_main, bug_scope_test, vulnerability_scope_main, vulnerability_scope_test, code_smell_scope_main, code_smell_scope_test
+--- 2026-10-06 : Ajout des attributs scope_main, scope_test, bug_scope_main, bug_scope_test, vulnerability_scope_main, vulnerability_scope_test, code_smell_scope_main, code_smell_scope_test
+--- 2026-10-08 : Ajout de la colone sonarqube_server_version pour tracer la version du serveur SonarQube ayant produit cette ligne.
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette;
@@ -28,6 +29,8 @@ CREATE TABLE ma_moulinette.historique
     maven_key VARCHAR(255) NOT NULL,
     version VARCHAR(32) NOT NULL,
     date_version VARCHAR(128) NOT NULL,
+    /* MODIF 2026-10-08 : version du serveur SonarQube ayant produit cette ligne. */
+    sonarqube_server_version VARCHAR(32) NOT NULL DEFAULT 'inconnu',
 
     analyse_key VARCHAR(64) NOT NULL,
     project_name VARCHAR(128) NOT NULL,
