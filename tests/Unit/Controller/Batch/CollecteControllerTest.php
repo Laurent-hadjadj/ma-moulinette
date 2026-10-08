@@ -18,6 +18,7 @@ namespace App\Tests\Unit\Controller\Batch;
 use App\Controller\Batch\{BatchCollecteActuatorController, BatchCollecteAnomalieController,BatchCollecteAnomalieDetailController, BatchCollecteHotspotController, BatchCollecteHotspotDetailController, BatchCollecteHotspotOwaspController, BatchCollecteInformationProjetController, BatchCollecteLoggerController,BatchCollecteMesureController, BatchCollecteNoSonarController, BatchCollecteOwaspController, BatchCollecteRciController, BatchCollecteTodoController, CollecteController};
 use App\Entity\Historique;
 use App\Repository\HistoriqueRepository;
+use App\Service\GetSonarVersionService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -67,6 +68,8 @@ class CollecteControllerTest extends TestCase
     private MockObject $batchLogger;
     /** @var BatchCollecteRciController&MockObject */
     private MockObject $batchRci;
+    /** @var GetSonarVersionService&MockObject */
+    private MockObject $getSonarVersionService;
 
     private CollecteController $controller;
 
@@ -94,6 +97,8 @@ class CollecteControllerTest extends TestCase
         $this->batchLogger = $this->createMock(BatchCollecteLoggerController::class);
         $this->batchRci = $this->createMock(BatchCollecteRciController::class);
         $this->batchRci->method('buildRciMeasures')->willReturn(['code' => 500, 'erreur' => 'non simulé']);
+        $this->getSonarVersionService = $this->createMock(GetSonarVersionService::class);
+        $this->getSonarVersionService->method('getSonarQubeVersion')->willReturn('10.4.1');
 
         $this->controller = new CollecteController(
             $this->em,
@@ -111,6 +116,7 @@ class CollecteControllerTest extends TestCase
             $this->batchActuator,
             $this->batchLogger,
             $this->batchRci,
+            $this->getSonarVersionService,
         );
     }
 
@@ -120,8 +126,13 @@ class CollecteControllerTest extends TestCase
     {
         $this->stubAllBatchesHappy();
 
+        $capturedMap = [];
         $this->historiqueRepo->expects($this->once())
             ->method('insertHistoriqueAjoutProjet')
+            ->with($this->callback(function (array $map) use (&$capturedMap): bool {
+                $capturedMap = $map;
+                return true;
+            }))
             ->willReturn(['code' => 200]);
 
         // Mode 'collecte' → historique non vide, compte_rendu vide
@@ -131,6 +142,44 @@ class CollecteControllerTest extends TestCase
         $this->assertStringContainsString('collecte et la mise à jour', $result['message']);
         $this->assertIsArray($result['historique']);
         $this->assertSame('', $result['compte_rendu']);
+        // MODIF 2026-10-08 : marqueur version du serveur SonarQube, pas d'UI associée.
+        $this->assertSame('10.4.1', $capturedMap['sonarqube_server_version']);
+    }
+
+    /**
+     * MODIF 2026-10-08 : GetSonarVersionService::getSonarQubeVersion() renvoie
+     * un tableau d'erreur (pas une chaîne) en cas d'échec HTTP — le marqueur
+     * doit retomber sur 'inconnu' plutôt que de propager le tableau brut.
+     */
+    public function testCollecteFallsBackToInconnuWhenSonarVersionLookupFails(): void
+    {
+        $this->stubAllBatchesHappy();
+        $this->getSonarVersionService = $this->createMock(GetSonarVersionService::class);
+        $this->getSonarVersionService->method('getSonarQubeVersion')->willReturn([
+            'code' => 503, 'erreur' => 'Service indisponible',
+        ]);
+        $this->controller = new CollecteController(
+            $this->em, $this->logger, $this->batchInfo, $this->batchMesure,
+            $this->batchOwasp, $this->batchHotspot, $this->batchAnomalie,
+            $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
+            $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
+            $this->batchRci,
+            $this->getSonarVersionService,
+        );
+
+        $capturedMap = [];
+        $this->historiqueRepo->expects($this->once())
+            ->method('insertHistoriqueAjoutProjet')
+            ->with($this->callback(function (array $map) use (&$capturedMap): bool {
+                $capturedMap = $map;
+                return true;
+            }))
+            ->willReturn(['code' => 200]);
+
+        $result = $this->controller->collecte(self::PORTEFEUILLE, self::MAVEN_KEY, 'collecte', self::USER);
+
+        $this->assertSame(200, $result['code']);
+        $this->assertSame('inconnu', $capturedMap['sonarqube_server_version']);
     }
 
     public function testCollecteHappyPathMergesRciMeasuresIntoHistorique(): void
@@ -162,6 +211,7 @@ class CollecteControllerTest extends TestCase
             $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
             $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
             $this->batchRci,
+            $this->getSonarVersionService,
         );
 
         $this->historiqueRepo->expects($this->once())
@@ -200,6 +250,7 @@ class CollecteControllerTest extends TestCase
             $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
             $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
             $this->batchRci,
+            $this->getSonarVersionService,
         );
 
         $this->historiqueRepo->expects($this->once())
@@ -406,6 +457,7 @@ class CollecteControllerTest extends TestCase
             $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
             $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
             $this->batchRci,
+            $this->getSonarVersionService,
         );
 
         $result = $this->controller->collecte(self::PORTEFEUILLE, self::MAVEN_KEY, self::MODE, self::USER);
@@ -427,6 +479,7 @@ class CollecteControllerTest extends TestCase
             $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
             $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
             $this->batchRci,
+            $this->getSonarVersionService,
         );
 
         $result = $this->controller->collecte(self::PORTEFEUILLE, self::MAVEN_KEY, self::MODE, self::USER);
@@ -447,6 +500,7 @@ class CollecteControllerTest extends TestCase
             $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
             $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
             $this->batchRci,
+            $this->getSonarVersionService,
         );
 
         $result = $this->controller->collecte(self::PORTEFEUILLE, self::MAVEN_KEY, self::MODE, self::USER);
@@ -471,6 +525,7 @@ class CollecteControllerTest extends TestCase
             $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
             $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
             $this->batchRci,
+            $this->getSonarVersionService,
         );
 
         $result = $this->controller->collecte(self::PORTEFEUILLE, self::MAVEN_KEY, self::MODE, self::USER);
@@ -503,6 +558,7 @@ class CollecteControllerTest extends TestCase
             $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
             $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
             $this->batchRci,
+            $this->getSonarVersionService,
         );
 
         $result = $this->controller->collecte(self::PORTEFEUILLE, self::MAVEN_KEY, self::MODE, self::USER);
@@ -523,6 +579,7 @@ class CollecteControllerTest extends TestCase
             $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
             $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
             $this->batchRci,
+            $this->getSonarVersionService,
         );
 
         $result = $this->controller->collecte(self::PORTEFEUILLE, self::MAVEN_KEY, self::MODE, self::USER);

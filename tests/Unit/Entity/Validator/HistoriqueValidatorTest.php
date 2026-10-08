@@ -31,6 +31,7 @@ class HistoriqueValidatorTest extends KernelTestCase
             ->setMavenKey('fr.ma-moulinette:ma-moulinette')
             ->setVersion('1.2.0-RELEASE')
             ->setDateVersion('2024-07-12 16:34:46')
+            ->setSonarqubeServerVersion('10.4.1')
             ->setNomProjet('ma-moulinette')
             ->setAnalyseKey('AZCc05qWgfifxdiJPzns')
             ->setInitial(false)
@@ -62,6 +63,7 @@ class HistoriqueValidatorTest extends KernelTestCase
         $this->assertHasErrors($this->getEntity()->setDateVersion(''), 1);
         $this->assertHasErrors($this->getEntity()->setNomProjet(''), 1);
         $this->assertHasErrors($this->getEntity()->setAnalyseKey(''), 1);
+        $this->assertHasErrors($this->getEntity()->setSonarqubeServerVersion(''), 1);
         // modeCollecte / utilisateurCollecte sont nullable et n'ont pas NotBlank.
         $this->assertHasErrors($this->getEntity()->setModeCollecte(''), 0);
         $this->assertHasErrors($this->getEntity()->setUtilisateurCollecte(''), 0);
@@ -74,6 +76,7 @@ class HistoriqueValidatorTest extends KernelTestCase
         $this->assertHasErrors($this->getEntity()->setDateVersion(str_repeat('a', 129)), 1);
         $this->assertHasErrors($this->getEntity()->setNomProjet(str_repeat('a', 129)), 1);
         $this->assertHasErrors($this->getEntity()->setAnalyseKey(str_repeat('a', 65)), 1);
+        $this->assertHasErrors($this->getEntity()->setSonarqubeServerVersion(str_repeat('a', 33)), 1);
         $this->assertHasErrors($this->getEntity()->setModeCollecte(str_repeat('a', 33)), 1);
         $this->assertHasErrors($this->getEntity()->setUtilisateurCollecte(str_repeat('a', 321)), 1);
     }
@@ -330,8 +333,9 @@ class HistoriqueValidatorTest extends KernelTestCase
          * MODIF 2026-09-29 : 163 → 173 (+10 colonnes ncloc/weight brutes,
          * global + par module, en plus de l'indicateur/note RCI déjà présents).
          * MODIF 2026-10-06 : 173 → 181 (+8 colonnes de répartition par portée
-         * SonarQube MAIN/TEST, globale et par catégorie). */
+         * SonarQube MAIN/TEST, globale et par catégorie).
+         * MODIF 2026-10-08 : 181 → 182 (+1 colonne sonarqube_server_version). */
         $reflectionClass = new \ReflectionClass(new Historique());
-        $this->assertEquals(181, count($reflectionClass->getProperties()));
+        $this->assertEquals(182, count($reflectionClass->getProperties()));
     }
 }

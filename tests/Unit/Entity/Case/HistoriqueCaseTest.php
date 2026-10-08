@@ -208,6 +208,9 @@ class HistoriqueCaseTest extends TestCase
         // Mode collecte / utilisateur
         yield 'modeCollecte' => ['ModeCollecte', 'COLLECTE'];
         yield 'utilisateurCollecte' => ['UtilisateurCollecte', 'admin@ma-moulinette.fr'];
+
+        // MODIF 2026-10-08 : marqueur version du serveur SonarQube (traçabilité, pas d'UI).
+        yield 'sonarqubeServerVersion' => ['SonarqubeServerVersion', '10.4.1'];
     }
 
     #[DataProvider('attributesProvider')]
@@ -248,10 +251,12 @@ class HistoriqueCaseTest extends TestCase
      * global + par module, en plus de l'indicateur/note RCI déjà présents).
      * MODIF 2026-10-06 : 173 → 181 (+8 colonnes de répartition par portée
      * SonarQube MAIN/TEST, globale et par catégorie bug/vulnerability/code_smell).
+     * MODIF 2026-10-08 : 181 → 182 (+1 colonne sonarqube_server_version,
+     * simple marqueur de traçabilité, pas d'UI associée).
      */
     public function testCountAttribut(): void
     {
         $reflectionClass = new \ReflectionClass(new Historique());
-        $this->assertEquals(181, count($reflectionClass->getProperties()));
+        $this->assertEquals(182, count($reflectionClass->getProperties()));
     }
 }
