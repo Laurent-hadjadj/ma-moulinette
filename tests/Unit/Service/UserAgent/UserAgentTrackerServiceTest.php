@@ -13,6 +13,7 @@ namespace App\Tests\Unit\Service\UserAgent;
 use App\Entity\Utilisateur;
 use App\Repository\UserAgentEventRepository;
 use App\Service\UserAgent\UserAgentTrackerService;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,8 +27,8 @@ use Symfony\Component\HttpFoundation\Session\SessionInterface;
 class UserAgentTrackerServiceTest extends TestCase
 {
     /* Stubs : pas d'expectations directes sur ces objets */
-    private RequestStack $requestStack;
-    private Security $security;
+    private RequestStack&Stub $requestStack;
+    private Security&Stub $security;
 
     protected function setUp(): void
     {

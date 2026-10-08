@@ -16,6 +16,7 @@ namespace App\Tests\Unit\Service;
 use App\Entity\ActivityBatchReport;
 use App\Service\ActivityReportService;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -23,8 +24,8 @@ use PHPUnit\Framework\TestCase;
  */
 class ActivityReportServiceTest extends TestCase
 {
-    /** @var EntityManagerInterface */
-    private EntityManagerInterface $entityManager;
+    /** @var EntityManagerInterface&MockObject */
+    private EntityManagerInterface&MockObject $entityManager;
 
     /** @var ActivityReportService */
     private ActivityReportService $activityReportService;

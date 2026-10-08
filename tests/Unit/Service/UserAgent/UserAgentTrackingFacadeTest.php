@@ -12,6 +12,7 @@ namespace App\Tests\Unit\Service\UserAgent;
 
 use App\Service\UserAgent\UserAgentTrackingFacade;
 use App\Service\UserAgent\UserAgentTrackerService;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 
@@ -22,7 +23,7 @@ use Psr\Log\LoggerInterface;
 class UserAgentTrackingFacadeTest extends TestCase
 {
     /* logger est toujours un mock car chaque test pose une expectation dessus */
-    private LoggerInterface $logger;
+    private LoggerInterface&MockObject $logger;
 
     protected function setUp(): void
     {

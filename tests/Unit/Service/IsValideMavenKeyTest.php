@@ -19,6 +19,7 @@ use App\Repository\HistoriqueRepository;
 use App\Repository\InformationProjetRepository;
 use App\Service\IsValideMavenKey;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -26,7 +27,7 @@ use PHPUnit\Framework\TestCase;
  */
 class IsValideMavenKeyTest extends TestCase
 {
-    private EntityManagerInterface $entityManager;
+    private EntityManagerInterface&MockObject $entityManager;
     private IsValideMavenKey $service;
 
     private static string $notFound = 'Not Found';
