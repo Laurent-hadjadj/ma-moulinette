@@ -68,7 +68,6 @@ class DcScanRepository extends ServiceEntityRepository
      * @param string $artifact
      * @param string $version
      * @param \DateTimeImmutable $scanDate
-     * @param mixed
      *
      * @return DcScan|null
      *

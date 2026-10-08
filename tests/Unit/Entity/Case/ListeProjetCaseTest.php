@@ -25,7 +25,8 @@ class ListeProjetCaseTest extends TestCase
 
     private static string $mavenKey = 'fr.ma-moulinette:ma-moulinette';
     private static string $name = 'Ma-Moulinette';
-    private static $tags = ['ma-moulinette', '2048'];
+    /** @var array<int, string> */
+    private static array $tags = ['ma-moulinette', '2048'];
     private static string $visibility = 'private';
     private static string $dateEnregistrement = '2024-04-12 16:23:11+01';
 

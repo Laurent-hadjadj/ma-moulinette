@@ -126,6 +126,8 @@ class ProfilesHistorique
      * La colonne SQL est `bytea` (Types::BLOB) — Doctrine retourne une `resource` a la
      * lecture. Avec un type `string`, l'hydratation jetait une TypeError. Sans type,
      * la propriété accepte `string` (écriture) ou `resource` (lecture).
+     *
+     * @var resource|string
      */
     #[Assert\NotNull]
     private $detail;
@@ -233,11 +235,13 @@ class ProfilesHistorique
         return $this;
     }
 
+    /** @return resource|string */
     public function getDetail()
     {
         return $this->detail;
     }
 
+    /** @param resource|string $detail */
     public function setDetail($detail): static
     {
         $this->detail = $detail;

@@ -711,6 +711,9 @@ class StatistiqueControllerTest extends TestCase
         $ctrl->runBatchAnalysis();
     }
 
+    /**
+     * @return array<string, array{int|string|null, int}>
+     */
     public static function batchManuelValuesProvider(): array
     {
             return [

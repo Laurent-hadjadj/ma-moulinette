@@ -225,6 +225,9 @@ class ProjetControllerTest extends TestCase
         return $u;
     }
 
+    /**
+     * @return array<string, array{int|string|null, int}>
+     */
     public static function batchAutomatiqueValuesProvider(): array
     {
         return [
