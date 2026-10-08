@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create COMMENTS                      ##
-##           V3.2.0 - 28/09/2026                  ##
+##           V3.3.0 - 06/10/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -25,6 +25,7 @@
 --- 2026-06-28 : Ajout des commentaires manquant sur les tables
 --- 2026-07-23 : Renommage actuator_info_value en actuator_info_cle
 --- 2026-09-28 : Ajout des commentaires pour les mesures RCI sur la table Historique. Ajout des commentaires pour la table RCI.
+--- 2026-10-06 : ajout des attributs scope_main, scope_test, bug_scope_main, bug_scope_test, vulnerability_scope_main, vulnerability_scope_test, code_smell_scope_main, code_smell_scope_test
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette postgres;
@@ -133,6 +134,14 @@ COMMENT ON COLUMN ma_moulinette.anomalie.minor IS 'Problèmes mineurs';
 COMMENT ON COLUMN ma_moulinette.anomalie.bug IS 'Nombre total de bugs';
 COMMENT ON COLUMN ma_moulinette.anomalie.vulnerability IS 'Nombre total de vulnérabilités';
 COMMENT ON COLUMN ma_moulinette.anomalie.code_smell IS 'Nombre total de mauvaises pratiques';
+COMMENT ON COLUMN ma_moulinette.anomalie.scope_main IS 'Nombre total de problèmes sur le code source (scope MAIN)';
+COMMENT ON COLUMN ma_moulinette.anomalie.scope_test IS 'Nombre total de problèmes sur le code de test (scope TEST)';
+COMMENT ON COLUMN ma_moulinette.anomalie.bug_scope_main IS 'Nombre de bugs sur le code source (scope MAIN)';
+COMMENT ON COLUMN ma_moulinette.anomalie.bug_scope_test IS 'Nombre de bugs sur le code de test (scope TEST)';
+COMMENT ON COLUMN ma_moulinette.anomalie.vulnerability_scope_main IS 'Nombre de vulnérabilités sur le code source (scope MAIN)';
+COMMENT ON COLUMN ma_moulinette.anomalie.vulnerability_scope_test IS 'Nombre de vulnérabilités sur le code de test (scope TEST)';
+COMMENT ON COLUMN ma_moulinette.anomalie.code_smell_scope_main IS 'Nombre de mauvaises pratiques sur le code source (scope MAIN)';
+COMMENT ON COLUMN ma_moulinette.anomalie.code_smell_scope_test IS 'Nombre de mauvaises pratiques sur le code de test (scope TEST)';
 COMMENT ON COLUMN ma_moulinette.anomalie.mode_collecte IS 'Mode de collecte : collecte, traitement manuel ou traitement automatique';
 COMMENT ON COLUMN ma_moulinette.anomalie.utilisateur_collecte IS 'Compte de l’utilisateur qui a réalisé la collecte';
 COMMENT ON COLUMN ma_moulinette.anomalie.date_enregistrement IS 'Date d’enregistrement de l’anomalie';
@@ -374,6 +383,14 @@ COMMENT ON COLUMN ma_moulinette.historique.critical_violations IS '[CORE] Nombre
 COMMENT ON COLUMN ma_moulinette.historique.major_violations IS '[CORE] Nombre d’issues de sévérité majeure détectées. Elles impactent la qualité du code et sa maintenabilité sans être bloquantes. Leur traitement permet d’améliorer la robustesse globale du projet.';
 COMMENT ON COLUMN ma_moulinette.historique.minor_violations IS '[CORE] Nombre d’issues de sévérité mineure présentes dans le code. Ces problèmes ont un impact limité et concernent souvent des améliorations de style ou de bonnes pratiques. Leur correction reste recommandée pour maintenir un code propre.';
 COMMENT ON COLUMN ma_moulinette.historique.info_violations IS '[CORE] Nombre d’issues informatives détectées. Elles n’impactent pas directement la qualité ou le fonctionnement du code. Elles servent principalement à signaler des optimisations ou des bonnes pratiques à suivre.';
+COMMENT ON COLUMN ma_moulinette.historique.scope_main IS '[MA-MOULINETTE] Nombre total de problèmes sur le code source (scope MAIN). Null si non calculé.';
+COMMENT ON COLUMN ma_moulinette.historique.scope_test IS '[MA-MOULINETTE] Nombre total de problèmes sur le code de test (scope TEST). Null si non calculé.';
+COMMENT ON COLUMN ma_moulinette.historique.bug_scope_main IS '[MA-MOULINETTE] Nombre de bugs sur le code source (scope MAIN). Null si non calculé.';
+COMMENT ON COLUMN ma_moulinette.historique.bug_scope_test IS '[MA-MOULINETTE] Nombre de bugs sur le code de test (scope TEST). Null si non calculé.';
+COMMENT ON COLUMN ma_moulinette.historique.vulnerability_scope_main IS '[MA-MOULINETTE] Nombre de vulnérabilités sur le code source (scope MAIN). Null si non calculé.';
+COMMENT ON COLUMN ma_moulinette.historique.vulnerability_scope_test IS '[MA-MOULINETTE] Nombre de vulnérabilités sur le code de test (scope TEST). Null si non calculé.';
+COMMENT ON COLUMN ma_moulinette.historique.code_smell_scope_main IS '[MA-MOULINETTE] Nombre de mauvaises pratiques sur le code source (scope MAIN). Null si non calculé.';
+COMMENT ON COLUMN ma_moulinette.historique.code_smell_scope_test IS '[MA-MOULINETTE] Nombre de mauvaises pratiques sur le code de test (scope TEST). Null si non calculé.';
 COMMENT ON COLUMN ma_moulinette.historique.software_quality_blocker_issues IS '[2024] Nombre d’issues de sévérité bloquante selon le modèle de qualité logiciel récent. Ces problèmes représentent des risques critiques pouvant empêcher le fonctionnement correct ou la mise en production. Ils doivent être corrigés immédiatement.';
 COMMENT ON COLUMN ma_moulinette.historique.software_quality_high_issues IS '[2024] Nombre d’issues de sévérité élevée détectées dans le code. Elles peuvent avoir un impact important sur la qualité, la fiabilité ou la sécurité. Leur correction est fortement prioritaire.';
 COMMENT ON COLUMN ma_moulinette.historique.software_quality_medium_issues IS '[2024] Nombre d’issues de sévérité moyenne identifiées. Ces problèmes ont un impact modéré sur la qualité du code ou sa maintenabilité. Ils doivent être traités pour améliorer progressivement la qualité globale.';

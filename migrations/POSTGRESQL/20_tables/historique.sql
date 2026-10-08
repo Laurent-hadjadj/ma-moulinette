@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.7.0 - 15/05/2026                  ##
+##           V2.8.0 - 06/10/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -16,6 +16,7 @@
 --- 2026-03-30 : Ajout des attributs duplicated_lines_rating.
 --- 2026-04-26 : Ajustement de la taille de analyse_key
 -- 2026-05-15 : breakdown level × framework (cf logger_details)
+--- 2026-10-06 : ajout des attributs scope_main, scope_test, bug_scope_main, bug_scope_test, vulnerability_scope_main, vulnerability_scope_test, code_smell_scope_main, code_smell_scope_test
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette;
@@ -112,6 +113,16 @@ CREATE TABLE ma_moulinette.historique
     major_violations INT,
     minor_violations INT,
     info_violations INT,
+
+    /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST), globale et par catégorie */
+    scope_main INT,
+    scope_test INT,
+    bug_scope_main INT,
+    bug_scope_test INT,
+    vulnerability_scope_main INT,
+    vulnerability_scope_test INT,
+    code_smell_scope_main INT,
+    code_smell_scope_test INT,
 
     software_quality_blocker_issues INT,
     software_quality_high_issues INT,

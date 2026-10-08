@@ -2,13 +2,14 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.0.1 - 28/06/2026                  ##
+##           V2.1.0 - 06/10/2026                  ##
 ##                                                ##
 ####################################################*/
 
 --- 2025-11-30 : Migration postGreSql 18
 --- 2026-06-28 : On passe le script en automatique avec l'utilisateur postgres, puis on applique le script grants.sql.
---- On supprime l'utilisateur db_user pour éviter de passer le mot de passe une seconde fois.
+---              On supprime l'utilisateur db_user pour éviter de passer le mot de passe une seconde fois.
+--- 2026-10-06 : ajout des attributs scope_main, scope_test, bug_scope_main, bug_scope_test, vulnerability_scope_main, vulnerability_scope_test, code_smell_scope_main, code_smell_scope_test
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette;
@@ -41,6 +42,16 @@ CREATE TABLE ma_moulinette.anomalie
   bug INT NOT NULL,
   vulnerability INT NOT NULL,
   code_smell INT NOT NULL,
+  /* MODIF 2026-10-06 : répartition par scope (MAIN = code source, TEST = code
+   * de test), globale et par catégorie (facet 'scopes' de l'API SonarQube). */
+  scope_main INT NOT NULL,
+  scope_test INT NOT NULL,
+  bug_scope_main INT NOT NULL,
+  bug_scope_test INT NOT NULL,
+  vulnerability_scope_main INT NOT NULL,
+  vulnerability_scope_test INT NOT NULL,
+  code_smell_scope_main INT NOT NULL,
+  code_smell_scope_test INT NOT NULL,
   mode_collecte VARCHAR(32),
   utilisateur_collecte VARCHAR(320),
   date_enregistrement TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
