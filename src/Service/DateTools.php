@@ -32,7 +32,7 @@ class DateTools
      * @author    Laurent HADJADJ <laurent_h@me.com>
      * @copyright Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    public function dateToMinute(string $str)
+    public function dateToMinute(string $str): int
     {
         $jour = $heure = $minute = 0;
         //[2d1h1min]-- >[2] [1h1min]
