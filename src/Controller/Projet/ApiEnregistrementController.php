@@ -20,6 +20,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Historique, CleanCode};
+use App\Service\GetSonarVersionService;
 
 /**
  * [Description ApiEnregistrementController]
@@ -43,7 +44,8 @@ class ApiEnregistrementController extends AbstractController
      */
     public function __construct(
         private EntityManagerInterface $em,
-        private LoggerInterface $logger
+        private LoggerInterface $logger,
+        private GetSonarVersionService $getSonarVersionService
     ) {}
 
     /**
@@ -102,6 +104,10 @@ class ApiEnregistrementController extends AbstractController
         /** On contrôle le mode d'utilisation */
         $utilisateur_collecte = $this->appUser()->getCourriel();
 
+        /* MODIF 2026-10-08 : Récupération de la version du serveur sonarqube */
+        $getVersionSonar = $this->getSonarVersionService->getSonarQubeVersion();
+        $sonarqube_server_version = (empty($getVersionSonar) || is_array($getVersionSonar)) ? 'inconnu' : $getVersionSonar;
+
         /* MODIF 2026-05-17 : lecture depuis clean_code pour
          * alimenter les colonnes historique (retro-compatible : null si pas de collecte). */
         $cleanCodeRepos = $this->em->getRepository(CleanCode::class);
@@ -119,10 +125,11 @@ class ApiEnregistrementController extends AbstractController
             } elseif (property_exists($data, 'actuator_info') && is_array($data->actuator_info)) {
                 $json = $data->actuator_info;
             } else {
-                $this->logger->debug('[Enregistrement] 🔍 actuator_info absent ou null (pas de point d\'accès déclaré, ou collecte non lancée).');
+                $this->logger->debug("[Enregistrement] ⚒️ actuator_info absent ou null (pas de point d'accès déclaré, ou collecte non lancée).");
             }
             $map = [
                 'maven_key' => $data->maven_key,
+                'sonarqube_server_version' => $sonarqube_server_version,
                 'analyse_key' => $data->analyse_key,
                 'version' => $data->version,
                 'date_version' => $data->date_version,

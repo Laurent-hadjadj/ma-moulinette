@@ -173,8 +173,8 @@ class CollecteController extends AbstractController
         /** On nettoie les variables du POST */
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
         $mode_collecte = htmlspecialchars($mode_collecte, ENT_QUOTES, 'UTF-8');
-        $getVersionSonar = $this->getSonarVersionService->getSonarVersion();
-        $version_sonar = (empty($getVersionSonar) || is_array($getVersionSonar)) ? 'inconnu' : $getVersionSonar;
+        $getVersionSonar = $this->getSonarVersionService->getSonarQubeVersion();
+        $sonarqube_server_version = (empty($getVersionSonar) || is_array($getVersionSonar)) ? 'inconnu' : $getVersionSonar;
 
         /** On démarre la mesure du traitement */
         $debutTraitement = new \DateTime('now', new \DateTimeZone(self::$europeParis));
@@ -186,7 +186,7 @@ class CollecteController extends AbstractController
                 <div class="callout alert-callout-border secondary">
                     <ul>
                         <li><span>Portefeuille : </span>'. $portefeuille . '</li>
-                        <li><span>Serveur SonarQube : </span>' . $version_sonar . '</li>
+                        <li><span>Serveur SonarQube : </span>' . $sonarqube_server_version . '</li>
                         <li><span>Projet : </span>' . $maven_key . '</li>
                         <li><span>Mode : </span>' . $mode_collecte .'</li>
                         <li><span>Date : </span>' . $debutTraitement->format(self::$dateFormat) .'</li>
@@ -949,7 +949,7 @@ class CollecteController extends AbstractController
         /** Consolidation des données */
         $mergeHistorique = array_merge($mergeHistorique, [
             'maven_key' => $maven_key,
-            'version_sonar' => $version_sonar,
+            'sonarqube_server_version' => $sonarqube_server_version,
             'initial' => false,
             'mode_collecte' => $mode_collecte,
             'utilisateur_collecte' => $utilisateur_collecte,
