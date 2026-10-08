@@ -26,6 +26,7 @@ use App\Service\UserAgent\UserAgentTrackingFacade;
 
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\{AdminDashboard, AdminRoute};
 use EasyCorp\Bundle\EasyAdminBundle\Config\{Crud, Assets, Action, Actions, MenuItem, UserMenu, Dashboard};
+use EasyCorp\Bundle\EasyAdminBundle\Contracts\Menu\MenuItemInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
 
 
@@ -135,7 +136,7 @@ class DashboardController extends AbstractDashboardController
     /**
      * [Description for configureMenuItems]
      *
-     * @return iterable<MenuItem>
+     * @return iterable<MenuItemInterface>
      *
      * Created at: 02/01/2023, 18:34:47 (Europe/Paris)
      * @author    Laurent HADJADJ <laurent_h@me.com>

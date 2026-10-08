@@ -21,6 +21,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Properties, Profiles, ProfilesHistorique};
+use App\Repository\ProfilesHistoriqueRepository;
 use App\Service\{ClientService, UrlBuilderService};
 use App\Service\UserAgent\UserAgentTrackingFacade;
 
@@ -83,7 +84,7 @@ class ApiProfilController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function getCount($repo, string $language, string $action): int
+    private function getCount(ProfilesHistoriqueRepository $repo, string $language, string $action): int
     {
         $result = $repo->selectProfilesHistoriqueAction([
             'language' => $language,
@@ -105,7 +106,7 @@ class ApiProfilController extends AbstractController
      * @author     Laurent HADJADJ <laurent_h@me.com>
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
-    private function getDateTri($repo, string $language, string $tri): ?array
+    private function getDateTri(ProfilesHistoriqueRepository $repo, string $language, string $tri): ?array
     {
         $result = $repo->selectProfilesHistoriqueDateTri([
             'language' => $language,
