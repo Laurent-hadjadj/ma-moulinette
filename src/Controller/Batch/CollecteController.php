@@ -62,6 +62,7 @@ class CollecteController extends AbstractController
         private BatchCollecteActuatorController $batchCollecteActuator,
         private BatchCollecteLoggerController $batchCollecteLogger,
         private BatchCollecteRciController $batchCollecteRci,
+        private BatchCollecteEmpreinteEcologiqueController $batchCollecteEmpreinteEcologique,
         private GetSonarVersionService $getSonarVersionService
     ) {
     }
@@ -992,6 +993,21 @@ class CollecteController extends AbstractController
             $this->logger->warning('[Batch] ⚠️ Échec du calcul RCI, colonnes rci_* laissées à null.', [
                 'maven_key' => $maven_key,
                 'erreur' => $rciMeasures['erreur'] ?? self::$noError,
+            ]);
+        }
+
+        /* MODIF 2026-10-08 : Empreinte Écologique (plugins SonarQube Creedengo).
+         * BatchCollecteEmpreinteEcologique() calcule ET persiste (delete puis
+         * insert) dans la table eco_conception.
+         * code 404 = CREEDENGO_ENABLED=false, non bloquant : colonnes eco_*
+         * laissées à null comme un échec générique. */
+        $empreinteEcologique = $this->batchCollecteEmpreinteEcologique->BatchCollecteEmpreinteEcologique($maven_key, $mode_collecte, $utilisateur_collecte);
+        if (($empreinteEcologique['code'] ?? null) === 200) {
+            $mergeHistorique = array_merge($mergeHistorique, $empreinteEcologique['historique']);
+        } else {
+            $this->logger->info('[Batch] ℹ️ Empreinte Écologique non calculée, colonnes eco_* laissées à null.', [
+                'maven_key' => $maven_key,
+                'erreur' => $empreinteEcologique['erreur'] ?? self::$noError,
             ]);
         }
 
