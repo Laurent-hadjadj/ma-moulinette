@@ -63,6 +63,22 @@
         {% endif %}
       </tr>
 
+      {# MODIF 2026-10-08 : RCI (Risk Criticality Index) global, note A-E. #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">RCI</td>
+        {% if suivi is not empty %}
+        {% for i in 0..suivi|length-1 %}
+        <td class="text-right">
+          {% if suivi[i]['rci_rating'] %}
+          <span class="note note-{{suivi[i]['rci_rating']|lower}}">{{suivi[i]['rci_rating']}}</span>
+          {% else %}
+          <span>&nbsp;-&nbsp;</span>
+          {% endif %}
+        </td>
+        {% endfor %}
+        {% endif %}
+      </tr>
+
       {# Fiabilité (legacy / Sonar 10)
         MODIF 2026-06-11 : si S10 est rempli, le legacy est masqué (–/A).
         Quand SonarSource supprimera les anciennes colonnes, seule la partie droite restera. #}
@@ -184,6 +200,25 @@
           {% if suivi[i]['note_cognitive'] %}
           <span class="note note-{{suivi[i]['note_cognitive']|lower}}">{{suivi[i]['note_cognitive']}}</span>
           {% else %}<span>–</span>{% endif %}
+        </td>
+        {% endfor %}
+        {% endif %}
+      </tr>
+
+      {# MODIF 2026-10-08 : part respective de MAIN et TEST parmi les anomalies. Les deux pourcentages sont affichés côte à côte (comme sur la page Projet) #}
+      <tr class="open-sans">
+        <td class="text-left text-noir">Scope Main/Test</td>
+        {% if suivi is not empty %}
+        {% for i in 0..suivi|length-1 %}
+        {% set scopeTotal = (suivi[i]['scope_main'] ?? 0) + (suivi[i]['scope_test'] ?? 0) %}
+        <td class="text-right">
+          {% if scopeTotal > 0 %}
+          <span>{{(suivi[i]['scope_main'] / scopeTotal * 100)|number_format(1, ',', ' ')}}&nbsp;%</span>
+          <span>/</span>
+          <span>{{(suivi[i]['scope_test'] / scopeTotal * 100)|number_format(1, ',', ' ')}}&nbsp;%</span>
+          {% else %}
+          <span>&nbsp;-&nbsp;</span>
+          {% endif %}
         </td>
         {% endfor %}
         {% endif %}

@@ -1,0 +1,9 @@
+{# MODIF 2026-10-08 : graphique en lignes pleines (RCI global + Scope Main/Test,
+    tous en %), même modèle que _affiche_graphique_anomalie.html.twig mais avec
+    un seul JSON (labels + datasets Chart.js prêts à l'emploi, cf.
+    SuiviController::buildRciScopeChartData). #}
+<div class="float-center pleine-page">
+  <h3 class="h5 claire-hand">RCI et Scope — tendance</h3>
+  <div id="graphique-rci-scope-data" data-chart="{{rciScopeChart}}"></div>
+  <canvas class="show-for-medium" id="graphique-rci-scope"></canvas>
+</div>
