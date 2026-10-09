@@ -131,20 +131,40 @@
   $('#js-duplicated-lines-density').text('').removeAttr('data-duplicated-lines-density');
   $('#js-tests').text('').removeAttr('data-tests');
   $('#js-violations').text('').removeAttr('data-violations');
-  $('#js-dette').text('').removeAttr('data-dette-minute');
+  /* MODIF 2026-10-06 : data-scope-main/test (répartition MAIN/TEST globale) +
+   * data-scope-mesures-json (JSON brut du graphique de la modale Scope) posés
+   * sur ce même élément par peinture.js, à nettoyer comme data-dette-minute. */
+  $('#js-dette').text('').removeAttr('data-dette-minute data-scope-main data-scope-test data-scope-mesures-json');
   $('#js-dette-reliability').text('');
   $('#js-dette-vulnerability').text('');
   $('#js-dette-code-smell').text('');
 
-  $('#js-nombre-bug-total').text('').removeAttr('data-nombre-bug');
+  /* MODIF 2026-10-06 : data-bug/vulnerability/code-smell-scope-main/test
+   * (répartition MAIN/TEST par catégorie) posés sur ces mêmes éléments. */
+  $('#js-nombre-bug-total').text('').removeAttr('data-nombre-bug data-bug-scope-main data-bug-scope-test');
   $('#js-nombre-bug-real').text('');
   $('#js-separator-bug').text('');
-  $('#js-nombre-vulnerability').text('').removeAttr('data-nombre-vulnerability');
+  $('#js-nombre-vulnerability').text('').removeAttr('data-nombre-vulnerability data-vulnerability-scope-main data-vulnerability-scope-test');
   $('#js-nombre-mauvaise-pratique').text('')
     .removeClass('couleur-rouge')
-    .removeAttr('data-nombre-code-smell');
+    .removeAttr('data-nombre-code-smell data-code-smell-scope-main data-code-smell-scope-test');
   $('#js-separator-code-smell').text('');
   $('#js-nombre-mauvaise-pratique-real').text('');
+
+  /* MODIF 2026-10-08 : résumé Scope Main/Test (page Projet) + tableau détaillé
+   * de la modale (#modal-affiche-scope). */
+  $('#js-scope-main-percent').text('');
+  $('#js-scope-separator').text('');
+  $('#js-scope-test-percent').text('');
+  ['global', 'bug', 'vulnerability', 'code-smell'].forEach((suffixe) => {
+    $(`#js-scope-${suffixe}-main`).text('--');
+    $(`#js-scope-${suffixe}-test`).text('--');
+    $(`#js-scope-${suffixe}-test-percent`).text('--');
+  });
+
+  /* MODIF 2026-10-08 : Empreinte Écologique (plugins SonarQube Creedengo). */
+  $('#js-eco-anomalies').text('');
+  $('#js-eco-rating').html('');
 
   $('#js-nombre-frontend').text('').removeAttr('data-nombre-frontend');
   $('#js-nombre-frontend-percent').text('');
