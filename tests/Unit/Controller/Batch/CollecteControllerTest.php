@@ -15,7 +15,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Batch;
 
-use App\Controller\Batch\{BatchCollecteActuatorController, BatchCollecteAnomalieController,BatchCollecteAnomalieDetailController, BatchCollecteHotspotController, BatchCollecteHotspotDetailController, BatchCollecteHotspotOwaspController, BatchCollecteInformationProjetController, BatchCollecteLoggerController,BatchCollecteMesureController, BatchCollecteNoSonarController, BatchCollecteOwaspController, BatchCollecteRciController, BatchCollecteTodoController, CollecteController};
+use App\Controller\Batch\{BatchCollecteActuatorController, BatchCollecteAnomalieController,BatchCollecteAnomalieDetailController, BatchCollecteHotspotController, BatchCollecteHotspotDetailController, BatchCollecteHotspotOwaspController, BatchCollecteInformationProjetController, BatchCollecteLoggerController,BatchCollecteMesureController, BatchCollecteNoSonarController, BatchCollecteOwaspController, BatchCollecteRciController, BatchCollecteEmpreinteEcologiqueController, BatchCollecteTodoController, CollecteController};
 use App\Entity\Historique;
 use App\Repository\HistoriqueRepository;
 use App\Service\GetSonarVersionService;
@@ -68,6 +68,8 @@ class CollecteControllerTest extends TestCase
     private MockObject $batchLogger;
     /** @var BatchCollecteRciController&MockObject */
     private MockObject $batchRci;
+    /** @var BatchCollecteEmpreinteEcologiqueController&MockObject */
+    private MockObject $batchEmpreinteEcologique;
     /** @var GetSonarVersionService&MockObject */
     private MockObject $getSonarVersionService;
 
@@ -97,6 +99,12 @@ class CollecteControllerTest extends TestCase
         $this->batchLogger = $this->createMock(BatchCollecteLoggerController::class);
         $this->batchRci = $this->createMock(BatchCollecteRciController::class);
         $this->batchRci->method('buildRciMeasures')->willReturn(['code' => 500, 'erreur' => 'non simulé']);
+        $this->batchEmpreinteEcologique = $this->createMock(BatchCollecteEmpreinteEcologiqueController::class);
+        $this->batchEmpreinteEcologique->method('BatchCollecteEmpreinteEcologique')->willReturn([
+            'code' => 404,
+            'message' => "La collecte de l'Empreinte Écologique n'a pas été lancée. (CREEDENGO_ENABLED=false).",
+            'historique' => ['eco_anomalies' => null, 'eco_dette_minute' => null],
+        ]);
         $this->getSonarVersionService = $this->createMock(GetSonarVersionService::class);
         $this->getSonarVersionService->method('getSonarQubeVersion')->willReturn('10.4.1');
 
@@ -116,6 +124,7 @@ class CollecteControllerTest extends TestCase
             $this->batchActuator,
             $this->batchLogger,
             $this->batchRci,
+            $this->batchEmpreinteEcologique,
             $this->getSonarVersionService,
         );
     }
@@ -164,6 +173,7 @@ class CollecteControllerTest extends TestCase
             $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
             $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
             $this->batchRci,
+            $this->batchEmpreinteEcologique,
             $this->getSonarVersionService,
         );
 
@@ -211,6 +221,7 @@ class CollecteControllerTest extends TestCase
             $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
             $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
             $this->batchRci,
+            $this->batchEmpreinteEcologique,
             $this->getSonarVersionService,
         );
 
@@ -250,6 +261,7 @@ class CollecteControllerTest extends TestCase
             $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
             $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
             $this->batchRci,
+            $this->batchEmpreinteEcologique,
             $this->getSonarVersionService,
         );
 
@@ -457,6 +469,7 @@ class CollecteControllerTest extends TestCase
             $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
             $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
             $this->batchRci,
+            $this->batchEmpreinteEcologique,
             $this->getSonarVersionService,
         );
 
@@ -479,6 +492,7 @@ class CollecteControllerTest extends TestCase
             $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
             $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
             $this->batchRci,
+            $this->batchEmpreinteEcologique,
             $this->getSonarVersionService,
         );
 
@@ -500,6 +514,7 @@ class CollecteControllerTest extends TestCase
             $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
             $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
             $this->batchRci,
+            $this->batchEmpreinteEcologique,
             $this->getSonarVersionService,
         );
 
@@ -525,6 +540,7 @@ class CollecteControllerTest extends TestCase
             $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
             $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
             $this->batchRci,
+            $this->batchEmpreinteEcologique,
             $this->getSonarVersionService,
         );
 
@@ -558,6 +574,7 @@ class CollecteControllerTest extends TestCase
             $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
             $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
             $this->batchRci,
+            $this->batchEmpreinteEcologique,
             $this->getSonarVersionService,
         );
 
@@ -579,6 +596,7 @@ class CollecteControllerTest extends TestCase
             $this->batchAnomalieDetail, $this->batchHotspotOwasp, $this->batchHotspotDetail,
             $this->batchNoSonar, $this->batchTodo, $this->batchActuator, $this->batchLogger,
             $this->batchRci,
+            $this->batchEmpreinteEcologique,
             $this->getSonarVersionService,
         );
 

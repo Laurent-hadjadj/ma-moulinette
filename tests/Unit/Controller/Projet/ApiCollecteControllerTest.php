@@ -15,7 +15,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Unit\Controller\Projet;
 
-use App\Controller\Batch\{BatchCollecteActuatorController, BatchCollecteAnomalieController, BatchCollecteAnomalieDetailController, BatchCollecteHotspotController, BatchCollecteHotspotDetailController,BatchCollecteHotspotOwaspController, BatchCollecteInformationProjetController, BatchCollecteLoggerController,BatchCollecteMesureController, BatchCollecteNoSonarController, BatchCollecteOwaspController, BatchCollecteTodoController, BatchCollecteCleanCodeController, BatchCollecteRciController};
+use App\Controller\Batch\{BatchCollecteActuatorController, BatchCollecteAnomalieController, BatchCollecteAnomalieDetailController, BatchCollecteHotspotController, BatchCollecteHotspotDetailController,BatchCollecteHotspotOwaspController, BatchCollecteInformationProjetController, BatchCollecteLoggerController,BatchCollecteMesureController, BatchCollecteNoSonarController, BatchCollecteOwaspController, BatchCollecteTodoController, BatchCollecteCleanCodeController, BatchCollecteRciController, BatchCollecteEmpreinteEcologiqueController};
 use App\Controller\Projet\ApiCollecteController;
 use App\Entity\Utilisateur;
 use PHPUnit\Framework\Attributes\{AllowMockObjectsWithoutExpectations, DataProvider};
@@ -49,6 +49,7 @@ class ApiCollecteControllerTest extends TestCase
     /** @var BatchCollecteLoggerController&MockObject */             private MockObject $batchLogger;
     /** @var BatchCollecteCleanCodeController&MockObject */          private MockObject $batchCleanCode;
     /** @var BatchCollecteRciController&MockObject */                private MockObject $batchRci;
+    /** @var BatchCollecteEmpreinteEcologiqueController&MockObject */ private MockObject $batchEmpreinteEcologique;
 
     /** @var Security&MockObject */                                  private MockObject $security;
     /** @var LoggerInterface&MockObject */                           private MockObject $logger;
@@ -76,6 +77,7 @@ class ApiCollecteControllerTest extends TestCase
         $this->batchCleanCode->method('BatchCollecteCleanCode')
             ->willReturn(['code' => 200, 'skipped' => true]);
         $this->batchRci = $this->createMock(BatchCollecteRciController::class);
+        $this->batchEmpreinteEcologique = $this->createMock(BatchCollecteEmpreinteEcologiqueController::class);
 
         $this->security = $this->createMock(Security::class);
         $user = $this->createMock(Utilisateur::class);
@@ -123,6 +125,7 @@ class ApiCollecteControllerTest extends TestCase
             $this->batchLogger,
             $this->batchCleanCode,
             $this->batchRci,
+            $this->batchEmpreinteEcologique,
             $this->security,
             $this->logger,
         );
