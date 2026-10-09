@@ -334,8 +334,12 @@ class HistoriqueValidatorTest extends KernelTestCase
          * global + par module, en plus de l'indicateur/note RCI déjà présents).
          * MODIF 2026-10-06 : 173 → 181 (+8 colonnes de répartition par portée
          * SonarQube MAIN/TEST, globale et par catégorie).
-         * MODIF 2026-10-08 : 181 → 182 (+1 colonne sonarqube_server_version). */
+         * MODIF 2026-10-08 : 181 → 182 (+1 colonne sonarqube_server_version).
+         * MODIF 2026-10-08 : 182 → 184 (+2 colonnes eco_anomalies/eco_dette_minute,
+         * Empreinte Écologique, plugins SonarQube Creedengo).
+         * MODIF 2026-10-09 : 184 → 197 (+13 colonnes : eco_rating global +
+         * détail par langage java/javascript/php/python, 3 colonnes chacun). */
         $reflectionClass = new \ReflectionClass(new Historique());
-        $this->assertEquals(182, count($reflectionClass->getProperties()));
+        $this->assertEquals(197, count($reflectionClass->getProperties()));
     }
 }
