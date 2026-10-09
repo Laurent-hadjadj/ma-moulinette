@@ -21,7 +21,7 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Psr\Log\LoggerInterface;
 
 /** Gestion de accès aux API */
-use App\Controller\Batch\{BatchCollecteInformationProjetController, BatchCollecteMesureController, BatchCollecteOwaspController, BatchCollecteHotspotController,BatchCollecteAnomalieController, BatchCollecteAnomalieDetailController, BatchCollecteHotspotOwaspController,BatchCollecteHotspotDetailController, BatchCollecteNoSonarController, BatchCollecteTodoController,BatchCollecteActuatorController, BatchCollecteLoggerController, BatchCollecteCleanCodeController, BatchCollecteRciController};
+use App\Controller\Batch\{BatchCollecteInformationProjetController, BatchCollecteMesureController, BatchCollecteOwaspController, BatchCollecteHotspotController,BatchCollecteAnomalieController, BatchCollecteAnomalieDetailController, BatchCollecteHotspotOwaspController,BatchCollecteHotspotDetailController, BatchCollecteNoSonarController, BatchCollecteTodoController,BatchCollecteActuatorController, BatchCollecteLoggerController, BatchCollecteCleanCodeController, BatchCollecteRciController, BatchCollecteEmpreinteEcologiqueController};
 
 /**
  * [Description ApiMesureController]
@@ -38,6 +38,7 @@ class ApiCollecteController extends AbstractController
     private static string $loggerE403 = "[Collecte] 🚫 Accès refusé pour l'utilisateur (pas le rôle ROLE_COLLECTE).";
     private static string $noSpecify = 'non spécifiée';
     private static string $noData = 'Pas de données disponible.';
+    private static string $pasDeTrace = 'Pas de trace disponnible.';
 
     public function __construct(
         private BatchCollecteInformationProjetController $batchCollecteInformation,
@@ -56,6 +57,8 @@ class ApiCollecteController extends AbstractController
         private BatchCollecteCleanCodeController $batchCollecteCleanCode,
         /** MODIF 2026-09-27 : Calcul du RCI */
         private BatchCollecteRciController $batchCollecteRci,
+        /** MODIF 2026-10-08 : Empreinte Écologique (plugins SonarQube Creedengo) */
+        private BatchCollecteEmpreinteEcologiqueController $batchCollecteEmpreinteEcologique,
         private Security $security,
         private LoggerInterface $logger,
     ) {}
@@ -128,7 +131,7 @@ class ApiCollecteController extends AbstractController
                 'maven_key' => $data->maven_key,
                 'code' => $information['code'] ?? 'inconnu',
                 'message' => $information['message'] ?? 'absent',
-                'trace' => $information['erreur'] ?? $information['trace'] ?? 'non fournie'
+                'trace' => $information['erreur'] ?? $information['trace'] ?? self::$pasDeTrace
             ]);
 
             $message = 'Collecte des informations du projet.';
@@ -237,7 +240,7 @@ class ApiCollecteController extends AbstractController
                 'maven_key' => $data->maven_key,
                 'code' => $mesure['code'] ?? 'inconnu',
                 'message' => $mesure['message'] ?? 'absent',
-                'trace' => $mesure['erreur'] ?? $mesure['trace'] ?? 'non fournie'
+                'trace' => $mesure['erreur'] ?? $mesure['trace'] ?? self::$pasDeTrace
             ]);
 
             $message = 'Collecte des indicateurs de mesures du projet.';
@@ -335,7 +338,7 @@ class ApiCollecteController extends AbstractController
                 'maven_key' => $data->maven_key,
                 'code' => $rci_measures['code'] ?? 'inconnu',
                 'message' => $rci_measures['message'] ?? 'absent',
-                'trace' => $rci_measures['erreur'] ?? $rci_measures['trace'] ?? 'non fournie'
+                'trace' => $rci_measures['erreur'] ?? $rci_measures['trace'] ?? self::$pasDeTrace
             ]);
 
             $message = 'Collecte des mesures RCI du projet.';
@@ -1310,6 +1313,94 @@ class ApiCollecteController extends AbstractController
             'code' => 200,
             'message' => 'Données enregistrées dans la table logger.',
             'data' => $logger['historique'] ?? null
+        ], Response::HTTP_OK);
+    }
+
+    /**
+     * [Description for apiCollecteEmpreinteEcologique]
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     *
+     * Created at: 08/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    #[Route('/api/secure/collecte/empreinte-ecologique', name: 'api_collecte_empreinte_ecologique', methods: ['POST'])]
+    public function apiCollecteEmpreinteEcologique(Request $request): JsonResponse
+    {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/collecte/empreinte-ecologique");
+
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        /** On teste si la clé est valide */
+        if (!is_object($data) || !property_exists($data, 'maven_key')) {
+            $this->logger->error(self::$loggerE400, [
+                'payload' => $data ?? self::$noData
+            ]);
+
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'error',
+                'message' => self::$erreur400,
+                'trace' => null
+            ], Response::HTTP_OK);
+        }
+
+        /** On vérifie si l'utilisateur à un rôle Collecte ? */
+        if (!$this->isGranted('ROLE_COLLECTE')) {
+            $this->logger->warning(self::$loggerE403, [
+                'maven_key' => $data->maven_key,
+                'utilisateur' => $this->security->getUser()?->getUserIdentifier()
+            ]);
+
+            return new JsonResponse([
+                'code' => 403,
+                'type' => 'warning',
+                'message' => self::$erreur403,
+                'trace' => null
+            ], Response::HTTP_OK);
+        }
+
+        /** On contrôle le mode d'utilisation */
+        $utilisateur_collecte = $this->appUser()->getCourriel() ?? 'null';
+        $this->logger->info('[Collecte] ℹ️ Début de collecte de l\'Empreinte Écologique du projet.', [
+            'maven_key' => $data->maven_key,
+            'utilisateur' => $utilisateur_collecte
+        ]);
+
+        $empreinteEcologique = $this->batchCollecteEmpreinteEcologique->BatchCollecteEmpreinteEcologique(
+            $data->maven_key,
+            'COLLECTE',
+            $utilisateur_collecte
+        );
+
+        if ($empreinteEcologique['code'] !== 200) {
+            $this->logger->error('[Collecte] ❌ Échec de collecte de l\'Empreinte Écologique du projet.', [
+                'code' => $empreinteEcologique['code'],
+                'maven_key' => $data->maven_key,
+                'erreur' => $empreinteEcologique['erreur'] ?? $empreinteEcologique['trace'] ?? self::$noSpecify,
+            ]);
+
+            $message = "Collecte de l'Empreinte Écologique du projet.";
+            return new JsonResponse([
+                'code' => $empreinteEcologique['code'],
+                'type' => 'error',
+                'message' => $empreinteEcologique['message'] ?? $message,
+                'trace' => $empreinteEcologique['erreur'] ?? $empreinteEcologique['trace'] ?? null
+            ], Response::HTTP_OK);
+        }
+
+        $this->logger->info('[Collecte] ℹ️ Empreinte Écologique collectée avec succès.', [
+            'maven_key' => $data->maven_key,
+        ]);
+
+        return new JsonResponse([
+            'code' => 200,
+            'message' => 'Données enregistrées dans la table eco_conception.',
+            'data' => $empreinteEcologique['historique'] ?? null
         ], Response::HTTP_OK);
     }
 }
