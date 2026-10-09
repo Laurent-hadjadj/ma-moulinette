@@ -19,7 +19,7 @@ use Symfony\Component\HttpFoundation\{JsonResponse, Response, Request};
 use \Symfony\Component\Routing\Attribute\Route;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
-use App\Entity\{InformationProjet, Anomalie, AnomalieDetails, Mesures, NoSonar, Hotspots, Todo, Logger, LoggerDetail, Historique, Rci};
+use App\Entity\{InformationProjet, Anomalie, AnomalieDetails, Mesures, NoSonar, Hotspots, Todo, Logger, LoggerDetail, Historique, Rci, EcoConception};
 use App\Service\IsValideMavenKey;
 
 /**
@@ -321,6 +321,109 @@ class ApiPeintureController extends AbstractController
                 'code' => 200,
                 'alert_status' => $l['rating'] ?? '--',
                 'rci_mesures_json' => $rci_mesures_json
+            ],
+            Response::HTTP_OK
+        );
+    }
+
+    /**
+     * [Description for peintureProjetEcoConception]
+     * Récupère l'Empreinte Écologique (plugins SonarQube Creedengo) de la table.
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     *
+     * Created at: 08/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    #[Route('/api/secure/peinture/projet/eco-conception', name: 'peinture_projet_eco_conception', methods: ['POST'])]
+    public function peintureProjetEcoConception(Request $request): JsonResponse
+    {
+        $this->logger->info("[API] 📥 Requête reçue sur /api/peinture/projet/eco-conception");
+
+        /** On instancie l'entityRepository */
+        $ecoConceptionRepos = $this->em->getRepository(EcoConception::class);
+
+        /** On décode le body */
+        $data = json_decode($request->getContent());
+
+        // Vérification de la validité du corps de la requête
+        if ($data === null || !property_exists($data, 'maven_key')) {
+            $this->logger->error(self::$loggerE400, [
+                'payload' => $data ?? self::$noData
+            ]);
+
+            return new JsonResponse([
+                'code' => 400,
+                'type' => 'error',
+                'message' => self::$erreur400,
+                'trace' => null
+            ], Response::HTTP_OK);
+        }
+
+        /** On nettoie la clé */
+        $maven_key = htmlspecialchars($data->maven_key, ENT_QUOTES, 'UTF-8');
+
+        /** On regarde si le projet existe */
+        $isValide = $this->isValideMavenKey->isValideInformation($maven_key);
+        if ($isValide['code'] === 404) {
+            $this->logger->warning(self::$loggerE404, [
+                'maven_key' => $maven_key
+            ]);
+
+            return new JsonResponse([
+                'code' => 404,
+                'type' => 'warning',
+                'message' => self::$erreur404,
+                'trace' => null
+            ], Response::HTTP_OK);
+        }
+
+        /** Empreinte Écologique (null si plugin CREEDENGO_ENABLED désactivé ou jamais collectée) */
+        $map = ['maven_key' => $maven_key];
+        $ecoConception = $ecoConceptionRepos->selectEcoConception($map);
+
+        if ($ecoConception['code'] != 200) {
+            $this->logger->error('[Collecte-Peinture] ❌ Échec de la requête selectEcoConception.', [
+                'code' => $ecoConception['code'],
+                'erreur' => $ecoConception['erreur'] ?? self::$noData,
+                'maven_key' => $maven_key
+            ]);
+
+            return new JsonResponse([
+                'code' => $ecoConception['code'],
+                'type' => 'error',
+                'message' => "La récupération de l'Empreinte Écologique du projet a échouée (Erreur {$ecoConception['code']}).",
+                'trace' => $ecoConception['erreur'] ?? self::$noData
+            ], Response::HTTP_OK);
+        }
+
+        /* selectEcoConception() utilise fetchAssociative() — 'liste' vaut soit
+         * la ligne (array), soit false si le projet n'a jamais eu de collecte
+         * Empreinte Écologique. Même pattern que peintureProjetRci. */
+        $ecoConceptionListe = $ecoConception['liste'] ?? false;
+        $l = is_array($ecoConceptionListe) ? $ecoConceptionListe : [];
+
+        return new JsonResponse(
+            [
+                'code' => 200,
+                'eco_anomalies' => $l['eco_anomalies'] ?? null,
+                'eco_dette_minute' => $l['eco_dette_minute'] ?? null,
+                'eco_rating' => $l['eco_rating'] ?? null,
+                'eco_java_anomalies' => $l['eco_java_anomalies'] ?? null,
+                'eco_java_dette_minute' => $l['eco_java_dette_minute'] ?? null,
+                'eco_java_rating' => $l['eco_java_rating'] ?? null,
+                'eco_javascript_anomalies' => $l['eco_javascript_anomalies'] ?? null,
+                'eco_javascript_dette_minute' => $l['eco_javascript_dette_minute'] ?? null,
+                'eco_javascript_rating' => $l['eco_javascript_rating'] ?? null,
+                'eco_php_anomalies' => $l['eco_php_anomalies'] ?? null,
+                'eco_php_dette_minute' => $l['eco_php_dette_minute'] ?? null,
+                'eco_php_rating' => $l['eco_php_rating'] ?? null,
+                'eco_python_anomalies' => $l['eco_python_anomalies'] ?? null,
+                'eco_python_dette_minute' => $l['eco_python_dette_minute'] ?? null,
+                'eco_python_rating' => $l['eco_python_rating'] ?? null,
             ],
             Response::HTTP_OK
         );
