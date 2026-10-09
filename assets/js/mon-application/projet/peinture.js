@@ -727,6 +727,65 @@ export const remplissage = async function(maven_key) {
   }
 
   /**
+   * On récupère l'Empreinte Écologique (plugins SonarQube Creedengo,
+   * activable via CREEDENGO_ENABLED) : null si désactivé ou jamais
+   * collectée, affiché "-" via displayNumber() (convention standard).
+   */
+  const optionsEcoConception = {
+    url: `${serveur()}/api/secure/peinture/projet/eco-conception`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType: content_type,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
+
+  try {
+    const t = await $.ajax(optionsEcoConception);
+    const errorCodes = [http_400, http_401, http_403, http_404, http_500, http_503, http_504];
+    if (errorCodes.includes(t.code)){
+        const hasTrace = !!t.trace;
+        const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
+        showMessage(t.type, t.message, trace);
+        sessionStorage.setItem('ma_moulinette_peinture', 'Erreur - récupération de l\'Empreinte Écologique.');
+        if (t.code === http_404){
+            log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
+            enableButtonAnalyse();
+        } else {
+            log(' - ❌ [Peinture] Affichage de l\'Empreinte Écologique en échec.');
+        }
+        return;
+      }
+
+      $('#js-eco-anomalies').html(displayNumber(t.eco_anomalies));
+      const colorByRatingEco = {
+        'A': 'note-vert1',
+        'B': 'note-vert2',
+        'C': 'note-jaune',
+        'D': 'note-orange',
+        'E': 'note-rouge'
+      };
+      if (t.eco_rating) {
+        $('#js-eco-rating').html(`<span class="stat-note stat-note-width ${colorByRatingEco[t.eco_rating] ?? ''}">${displayValue(t.eco_rating)}</span>`);
+      } else {
+        $('#js-eco-rating').html('');
+      }
+
+      log(` - 🎨 [Peinture] Affichage de l'Empreinte Écologique.`);
+  } catch(error) {
+      ErrorButtonAffiche();
+      const trace = prepareTechnicalDetails(error);
+      const message = "Une erreur inattendue s'est produite lors l'affichage de l'Empreinte Écologique (Erreur 500).";
+      showMessage('critical', message, trace);
+      sessionStorage.setItem('ma_moulinette_peinture', 'Erreur Bloc Empreinte Écologique.');
+      log(` - 🔴 [Peinture] Affichage de l'Empreinte Écologique en échec.`);
+      return;
+  }
+
+  /**
    * On récupère les mesures :
    * lignes, coverage fonctionnelle, ration de dette technique, duplication, tests unitaires et le nombre de défaut.
    */
@@ -754,7 +813,7 @@ export const remplissage = async function(maven_key) {
             log(` - 💡 [Peinture] Le projet n'existe pas. Lance une collecte avant.`);
             enableButtonAnalyse();
         } else {
-            log(' - ❌ [Peinture] Affichage des informations sur les mesures en échec.');
+            log(` - ❌ [Peinture] Affichage des informations sur les mesures en échec.`);
         }
         return;
       }
