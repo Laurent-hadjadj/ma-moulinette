@@ -65,6 +65,7 @@ parameters:
     nombre.favori: '%env(NOMBRE_FAVORI)%'
     # Configuration diverse
     track.logger.method: '%env(TRACK_LOGGER_METHOD)%'
+    creedengo.enabled: '%env(CREEDENGO_ENABLED)%'
     path.audit: '%env(PATH_AUDIT)%'
     environnement: '%env(ENVIRONNEMENT)%'
 
