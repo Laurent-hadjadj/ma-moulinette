@@ -1323,6 +1323,59 @@ const projetRCI = async function (maven_key) {
 };
 
 /**
+ * [Description for projetEmpreinteEcologique]
+ * Collecte l'Empreinte Écologique (plugins SonarQube Creedengo).
+ * http://{url}/api/secure/collecte/empreinte-ecologique
+ *
+ * Phase 15
+ *
+ * MODIF 2026-10-08 : best effort, même philosophie que projetActuator
+ * ci-dessus — CREEDENGO_ENABLED=false est l'état par défaut (plugins pas
+ * installés sur la plupart des serveurs SonarQube), donc un code 404 ici
+ * est une situation normale, pas une erreur à afficher à l'utilisateur ni
+ * à faire remonter comme un échec de collecte.
+ *
+ * @param string maven_key
+ * @return response
+ *
+ * Created at: 08/10/2026 (Europe/Paris)
+ * @author     Laurent HADJADJ <laurent_h@me.com>
+ */
+const projetEmpreinteEcologique = async function (maven_key) {
+  /** On vérifie s'il n'y a pas d'erreur lors du traitement */
+  const collecte = sessionStorage.getItem('ma_moulinette_collecte');
+  if (!collecte || collecte != 'Tout va bien!') {
+    return;
+  }
+
+  const data = { maven_key };
+  const options = {
+    url: `${serveur()}/api/secure/collecte/empreinte-ecologique`,
+    type: 'POST',
+    dataType: 'json',
+    data: JSON.stringify(data),
+    contentType: content_type,
+    headers: {
+      'X-API-Custom-403': 'true',
+      'X-Internal-Front': 'front-app'
+    },
+  };
+
+  try {
+    const t = await $.ajax(options);
+    if (t.code === http_200) {
+      log(` - ℹ️ (15) Collecte de l'Empreinte Écologique.`);
+    } else if (t.code === http_404) {
+      log(` - 📌 (15) Plugins Creedengo désactivés ou projet non trouvé — Empreinte Écologique non collectée.`);
+    } else {
+      log(` - ⚠️ (15) Collecte de l'Empreinte Écologique en échec (Erreur ${t.code}) — non bloquant.`);
+    }
+  } catch (error) {
+    log(` - ⚠️ (15) Collecte de l'Empreinte Écologique en échec (exception) — non bloquant.`);
+  }
+};
+
+/**
  * [Description for finCollecte]
  * Affiche un message de fin de collecte
  *
@@ -1567,6 +1620,9 @@ $('.js-analyse').on('click', function () {
 
     /* Collecte des mesures RCI pour le projet */
     await projetRCI(idProject);                  /*(14)*/
+
+    /* Collecte de l'Empreinte Écologique (plugins SonarQube Creedengo, best effort). */
+    await projetEmpreinteEcologique(idProject);   /*(15)*/
 
     /* Renvoie le statut de fin */
     finCollecte(idProject);
