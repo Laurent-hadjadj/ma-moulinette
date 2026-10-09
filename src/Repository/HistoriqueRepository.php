@@ -280,6 +280,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         security_review_rating AS note_hotspot,
                         sqale_rating AS maintainability,
                         alert_status,
+                        rci_rating, rci_indicator, rci_ncloc, rci_weight, scope_main, scope_test, eco_anomalies, eco_dette_minute, eco_rating,
                         software_quality_reliability_rating AS s10_reliability,
                         software_quality_security_rating AS s10_security,
                         software_quality_maintainability_rating AS s10_maintainability,
@@ -318,6 +319,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         security_review_rating AS note_hotspot,
                         sqale_rating AS maintainability,
                         alert_status,
+                        rci_rating, rci_indicator, rci_ncloc, rci_weight, scope_main, scope_test, eco_anomalies, eco_dette_minute, eco_rating,
                         software_quality_reliability_rating AS s10_reliability,
                         software_quality_security_rating AS s10_security,
                         software_quality_maintainability_rating AS s10_maintainability,
@@ -397,6 +399,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                         security_review_rating AS note_hotspot,
                         sqale_rating AS maintainability,
                         alert_status,
+                        rci_rating, rci_indicator, rci_ncloc, rci_weight, scope_main, scope_test, eco_anomalies, eco_dette_minute, eco_rating,
                         software_quality_reliability_rating AS s10_reliability,
                         software_quality_security_rating AS s10_security,
                         software_quality_maintainability_rating AS s10_maintainability,
@@ -616,6 +619,7 @@ class HistoriqueRepository extends ServiceEntityRepository
                     reliability_rating AS reliability, security_rating AS security,
                     security_review_rating AS note_hotspot, sqale_rating AS maintainability,
                     alert_status,
+                    rci_rating, rci_indicator, rci_ncloc, rci_weight, scope_main, scope_test, eco_anomalies, eco_dette_minute, eco_rating,
                     software_quality_reliability_rating AS s10_reliability,
                     software_quality_security_rating AS s10_security,
                     software_quality_maintainability_rating AS s10_maintainability,
@@ -953,6 +957,12 @@ class HistoriqueRepository extends ServiceEntityRepository
         'rci_backend_indicator', 'rci_backend_rating', 'rci_backend_ncloc', 'rci_backend_weight',
         'rci_autre_indicator', 'rci_autre_rating', 'rci_autre_ncloc', 'rci_autre_weight',
         'rci_inconnu_indicator', 'rci_inconnu_rating', 'rci_inconnu_ncloc', 'rci_inconnu_weight',
+        // MODIF 2026-10-08 : Empreinte Écologique (plugins SonarQube Creedengo, activable via CREEDENGO_ENABLED)
+        'eco_anomalies', 'eco_dette_minute', 'eco_rating',
+        'eco_java_anomalies', 'eco_java_dette_minute', 'eco_java_rating',
+        'eco_javascript_anomalies', 'eco_javascript_dette_minute', 'eco_javascript_rating',
+        'eco_php_anomalies', 'eco_php_dette_minute', 'eco_php_rating',
+        'eco_python_anomalies', 'eco_python_dette_minute', 'eco_python_rating',
         // Méta enregistrement
         'initial', 'mode_collecte', 'utilisateur_collecte', 'date_enregistrement',
     ];
@@ -971,6 +981,7 @@ class HistoriqueRepository extends ServiceEntityRepository
         'security_review_rating',
         'rci_rating', 'rci_frontend_rating',
         'rci_backend_rating', 'rci_autre_rating', 'rci_inconnu_rating',
+        'eco_rating', 'eco_java_rating', 'eco_javascript_rating', 'eco_php_rating', 'eco_python_rating',
     ];
 
     /**
