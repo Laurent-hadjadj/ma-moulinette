@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.9.0 - 08/10/2026                  ##
+##           V2.10.0 - 08/10/2026                 ##
 ##                                                ##
 ####################################################*/
 
@@ -18,6 +18,8 @@
 -- 2026-05-15 : breakdown level × framework (cf logger_details)
 --- 2026-10-06 : Ajout des attributs scope_main, scope_test, bug_scope_main, bug_scope_test, vulnerability_scope_main, vulnerability_scope_test, code_smell_scope_main, code_smell_scope_test
 --- 2026-10-08 : Ajout de la colone sonarqube_server_version pour tracer la version du serveur SonarQube ayant produit cette ligne.
+--- 2026-10-08 : Ajout des attributs eco_anomalies, eco_dette_minute (Empreinte Écologique, plugins SonarQube Creedengo).
+--- 2026-10-08 : Ajout de eco_rating et du détail par langage java/javascript/php/python (Empreinte Écologique).
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette;
@@ -240,6 +242,22 @@ CREATE TABLE ma_moulinette.historique
     rci_inconnu_rating VARCHAR(4),
     rci_inconnu_ncloc INT,
     rci_inconnu_weight INT,
+
+    eco_anomalies INT,
+    eco_dette_minute INT,
+    eco_rating VARCHAR(4),
+    eco_java_anomalies INT,
+    eco_java_dette_minute INT,
+    eco_java_rating VARCHAR(4),
+    eco_javascript_anomalies INT,
+    eco_javascript_dette_minute INT,
+    eco_javascript_rating VARCHAR(4),
+    eco_php_anomalies INT,
+    eco_php_dette_minute INT,
+    eco_php_rating VARCHAR(4),
+    eco_python_anomalies INT,
+    eco_python_dette_minute INT,
+    eco_python_rating VARCHAR(4),
 
     initial BOOLEAN NOT NULL,
 
