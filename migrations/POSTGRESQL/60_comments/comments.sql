@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create COMMENTS                      ##
-##           V3.4.0 - 08/10/2026                  ##
+##           V3.5.0 - 08/10/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -25,8 +25,9 @@
 --- 2026-06-28 : Ajout des commentaires manquant sur les tables
 --- 2026-07-23 : Renommage actuator_info_value en actuator_info_cle
 --- 2026-09-28 : Ajout des commentaires pour les mesures RCI sur la table Historique. Ajout des commentaires pour la table RCI.
---- 2026-10-06 : ajout des attributs scope_main, scope_test, bug_scope_main, bug_scope_test, vulnerability_scope_main, vulnerability_scope_test, code_smell_scope_main, code_smell_scope_test
---- 2026-10-08 : Ajout de la colone sonarqube_server_version pour tracer la version du serveur SonarQube ayant produit cette ligne.
+--- 2026-10-06 : ajout commentaires pour les attributs scope_main, scope_test, bug_scope_main, bug_scope_test, vulnerability_scope_main, vulnerability_scope_test, code_smell_scope_main, code_smell_scope_test
+--- 2026-10-08 : Ajout du commentaire pour la colone sonarqube_server_version pour tracer la version du serveur SonarQube ayant produit cette ligne.
+-- 2026-10-08 : Ajout des commentaires pour les attributs de la table eco_conception.
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette postgres;
@@ -490,6 +491,21 @@ COMMENT ON COLUMN ma_moulinette.historique.rci_inconnu_indicator IS '[MA-MOULINE
 COMMENT ON COLUMN ma_moulinette.historique.rci_inconnu_rating IS '[MA-MOULINETTE] Note A-E dérivée de rci_inconnu_indicator. Null si non calculé ou aucun fichier non classé.';
 COMMENT ON COLUMN ma_moulinette.historique.rci_inconnu_ncloc IS '[MA-MOULINETTE] Nombre de lignes de code des fichiers non classés. Null si non calculé ou aucun fichier non classé.';
 COMMENT ON COLUMN ma_moulinette.historique.rci_inconnu_weight IS '[MA-MOULINETTE] Poids pondéré des anomalies des fichiers non classés. Null si non calculé ou aucun fichier non classé.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_anomalies IS '[MA-MOULINETTE] Empreinte Écologique : nombre d''anomalies (OPEN) détectées par les règles SonarQube Creedengo (creedengo-java/javascript/php/python). Null si le plugin CREEDENGO_ENABLED est désactivé ou non collecté.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_dette_minute IS '[MA-MOULINETTE] Empreinte Écologique : dette estimée en minutes (effortTotal SonarQube) pour ces mêmes anomalies. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_rating IS '[MA-MOULINETTE] Empreinte Écologique : note A-E dérivée du ratio eco_dette_minute / (ncloc * 30), seuils SQALE 5/10/20/50%. Null si non calculé.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_java_anomalies IS '[MA-MOULINETTE] Empreinte Écologique : nombre d''anomalies (OPEN) pour le langage Java. Null si le langage est absent du projet ou le plugin désactivé.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_java_dette_minute IS '[MA-MOULINETTE] Empreinte Écologique : dette estimée en minutes pour le langage Java. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_java_rating IS '[MA-MOULINETTE] Empreinte Écologique : note A-E pour le langage Java. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_javascript_anomalies IS '[MA-MOULINETTE] Empreinte Écologique : nombre d''anomalies (OPEN) pour le langage JavaScript. Null si le langage est absent du projet ou le plugin désactivé.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_javascript_dette_minute IS '[MA-MOULINETTE] Empreinte Écologique : dette estimée en minutes pour le langage JavaScript. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_javascript_rating IS '[MA-MOULINETTE] Empreinte Écologique : note A-E pour le langage JavaScript. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_php_anomalies IS '[MA-MOULINETTE] Empreinte Écologique : nombre d''anomalies (OPEN) pour le langage PHP. Null si le langage est absent du projet ou le plugin désactivé.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_php_dette_minute IS '[MA-MOULINETTE] Empreinte Écologique : dette estimée en minutes pour le langage PHP. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_php_rating IS '[MA-MOULINETTE] Empreinte Écologique : note A-E pour le langage PHP. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_python_anomalies IS '[MA-MOULINETTE] Empreinte Écologique : nombre d''anomalies (OPEN) pour le langage Python. Null si le langage est absent du projet ou le plugin désactivé.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_python_dette_minute IS '[MA-MOULINETTE] Empreinte Écologique : dette estimée en minutes pour le langage Python. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.historique.eco_python_rating IS '[MA-MOULINETTE] Empreinte Écologique : note A-E pour le langage Python. Null dans les mêmes conditions.';
 COMMENT ON COLUMN ma_moulinette.historique.initial IS '[MA-MOULINETTE] Indique si c’est la version de référence. Permet de suivre l’évolution du projet à partir d’un point de départ.';
 COMMENT ON COLUMN ma_moulinette.historique.mode_collecte IS '[MA-MOULINETTE] Type de collecte : REBUILD | COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE.';
 COMMENT ON COLUMN ma_moulinette.historique.utilisateur_collecte IS '[MA-MOULINETTE] Auteur de la collecte de données.';
@@ -892,6 +908,32 @@ COMMENT ON COLUMN ma_moulinette.rci.inconnu_rating IS 'Note A-E dérivée de inc
 COMMENT ON COLUMN ma_moulinette.rci.mode_collecte IS 'Type de collecte : REBUILD | COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE.';
 COMMENT ON COLUMN ma_moulinette.rci.utilisateur_collecte IS 'Compte de l''utilisateur qui a réalisé la collecte.';
 COMMENT ON COLUMN ma_moulinette.rci.date_enregistrement IS 'Date d''enregistrement de la ligne.';
+
+-- ============================================
+-- TABLE eco_conception
+-- ============================================
+
+COMMENT ON TABLE ma_moulinette.eco_conception IS 'Empreinte Écologique (plugins SonarQube Creedengo creedengo-java/javascript/php/python, activable via CREEDENGO_ENABLED) — snapshot courant, une ligne par maven_key.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.id IS 'Identifiant unique auto-incrémenté.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.maven_key IS 'Clé unique du projet SonarQube.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_anomalies IS 'Nombre d''anomalies éco-conception (OPEN), tous langages Creedengo confondus. Null si le plugin est désactivé ou jamais collecté.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_dette_minute IS 'Dette estimée en minutes (effortTotal SonarQube), tous langages confondus. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_rating IS 'Note A-E dérivée du ratio eco_dette_minute / (ncloc * 30), seuils SQALE 5/10/20/50%. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_java_anomalies IS 'Nombre d''anomalies éco-conception (OPEN) détectées par les règles creedengo-java. Null si le langage est absent du projet ou le plugin désactivé.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_java_dette_minute IS 'Dette estimée en minutes pour le langage Java. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_java_rating IS 'Note A-E pour le langage Java. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_javascript_anomalies IS 'Nombre d''anomalies éco-conception (OPEN) détectées par les règles creedengo-javascript. Null si le langage est absent du projet ou le plugin désactivé.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_javascript_dette_minute IS 'Dette estimée en minutes pour le langage JavaScript. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_javascript_rating IS 'Note A-E pour le langage JavaScript. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_php_anomalies IS 'Nombre d''anomalies éco-conception (OPEN) détectées par les règles creedengo-php. Null si le langage est absent du projet ou le plugin désactivé.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_php_dette_minute IS 'Dette estimée en minutes pour le langage PHP. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_php_rating IS 'Note A-E pour le langage PHP. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_python_anomalies IS 'Nombre d''anomalies éco-conception (OPEN) détectées par les règles creedengo-python. Null si le langage est absent du projet ou le plugin désactivé.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_python_dette_minute IS 'Dette estimée en minutes pour le langage Python. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.eco_python_rating IS 'Note A-E pour le langage Python. Null dans les mêmes conditions.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.mode_collecte IS 'Type de collecte : REBUILD | COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.utilisateur_collecte IS 'Compte de l''utilisateur qui a réalisé la collecte.';
+COMMENT ON COLUMN ma_moulinette.eco_conception.date_enregistrement IS 'Date d''enregistrement de la ligne.';
 
 -- ============================================
 -- TABLE repartition_temp
