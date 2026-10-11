@@ -850,22 +850,27 @@ class ApiPeintureController extends AbstractController
         $severityInfo = $anomalie['liste'][0]['info'];
         $severityMinor = $anomalie['liste'][0]['minor'];
 
+        /* MODIF 2026-10-11 : ?? 0 -> ?? null (frontend/backend/autre/inconnu + scope) —
+         * une mesure jamais collectée (aucune ligne anomalie pour ce projet) doit
+         * déclencher l'affichage "-" côté UI, pas laisser croire à "zéro anomalie
+         * mesurée". Colonnes NOT NULL en base, seule la ligne elle-même peut être
+         * absente (pas de collecte d'anomalies pour ce projet). */
         /** Module */
-        $frontend = $anomalie['liste'][0]['frontend'] ?? 0;
-        $backend = $anomalie['liste'][0]['backend'] ?? 0;
-        $autre = $anomalie['liste'][0]['autre'] ?? 0;
-        $inconnu = $anomalie['liste'][0]['inconnu'] ?? 0;
+        $frontend = $anomalie['liste'][0]['frontend'] ?? null;
+        $backend = $anomalie['liste'][0]['backend'] ?? null;
+        $autre = $anomalie['liste'][0]['autre'] ?? null;
+        $inconnu = $anomalie['liste'][0]['inconnu'] ?? null;
 
         /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST),
          * globale et par catégorie. */
-        $scopeMain = $anomalie['liste'][0]['scope_main'] ?? 0;
-        $scopeTest = $anomalie['liste'][0]['scope_test'] ?? 0;
-        $bugScopeMain = $anomalie['liste'][0]['bug_scope_main'] ?? 0;
-        $bugScopeTest = $anomalie['liste'][0]['bug_scope_test'] ?? 0;
-        $vulnerabilityScopeMain = $anomalie['liste'][0]['vulnerability_scope_main'] ?? 0;
-        $vulnerabilityScopeTest = $anomalie['liste'][0]['vulnerability_scope_test'] ?? 0;
-        $codeSmellScopeMain = $anomalie['liste'][0]['code_smell_scope_main'] ?? 0;
-        $codeSmellScopeTest = $anomalie['liste'][0]['code_smell_scope_test'] ?? 0;
+        $scopeMain = $anomalie['liste'][0]['scope_main'] ?? null;
+        $scopeTest = $anomalie['liste'][0]['scope_test'] ?? null;
+        $bugScopeMain = $anomalie['liste'][0]['bug_scope_main'] ?? null;
+        $bugScopeTest = $anomalie['liste'][0]['bug_scope_test'] ?? null;
+        $vulnerabilityScopeMain = $anomalie['liste'][0]['vulnerability_scope_main'] ?? null;
+        $vulnerabilityScopeTest = $anomalie['liste'][0]['vulnerability_scope_test'] ?? null;
+        $codeSmellScopeMain = $anomalie['liste'][0]['code_smell_scope_main'] ?? null;
+        $codeSmellScopeTest = $anomalie['liste'][0]['code_smell_scope_test'] ?? null;
 
         return new JsonResponse([
             'code' => 200,

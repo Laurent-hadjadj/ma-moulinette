@@ -1013,13 +1013,29 @@ export const remplissage = async function(maven_key) {
       $('#js-dette-vulnerability').html(t.detteVulnerability);
       $('#js-dette-code-smell').html(t.detteCodeSmell);
 
+      /* MODIF 2026-10-11 : pose un data-attribute, ou le SUPPRIME si value est
+       * null/undefined (frontend/backend/autre/inconnu + scope désormais
+       * nullables, cf. ApiPeintureController). Un dataset JS ne peut pas
+       * stocker `null` : `element.dataset.x = null` le convertit en la chaîne
+       * littérale "null", qu'enregistrement.js relirait tel quel et enverrait
+       * au backend — cassant l'INSERT sur une colonne INT. Supprimer
+       * l'attribut fait lire `undefined` par enregistrement.js, omis du JSON
+       * envoyé, donc traité comme absent côté backend (`?? null`). */
+      const setDataOrOmit = (element, key, value) => {
+        if (value === null || value === undefined) {
+          delete element.dataset[key];
+        } else {
+          element.dataset[key] = value;
+        }
+      };
+
       /** Historique */
       const t13 = document.getElementById('js-dette');
       t13.dataset.detteMinute=t.detteMinute;
       /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST) globale,
        * relue par enregistrement.js — même pattern que detteMinute ci-dessus. */
-      t13.dataset.scopeMain = t.scope_main;
-      t13.dataset.scopeTest = t.scope_test;
+      setDataOrOmit(t13, 'scopeMain', t.scope_main);
+      setDataOrOmit(t13, 'scopeTest', t.scope_test);
 
       /* MODIF 2026-10-08 : résumé "Scope Main/Test" affiché sur la page Projet —
        * part respective du code source (MAIN) et du code de test (TEST) parmi
@@ -1076,16 +1092,18 @@ export const remplissage = async function(maven_key) {
       t15.dataset.nombreVulnerability = (t.vulnerability);
       t16.dataset.nombreCodeSmell = (t.code_smell_total);
       /* MODIF 2026-10-06 : répartition par portée SonarQube (MAIN/TEST) par catégorie. */
-      t14.dataset.bugScopeMain = t.bug_scope_main;
-      t14.dataset.bugScopeTest = t.bug_scope_test;
-      t15.dataset.vulnerabilityScopeMain = t.vulnerability_scope_main;
-      t15.dataset.vulnerabilityScopeTest = t.vulnerability_scope_test;
-      t16.dataset.codeSmellScopeMain = t.code_smell_scope_main;
-      t16.dataset.codeSmellScopeTest = t.code_smell_scope_test;
+      setDataOrOmit(t14, 'bugScopeMain', t.bug_scope_main);
+      setDataOrOmit(t14, 'bugScopeTest', t.bug_scope_test);
+      setDataOrOmit(t15, 'vulnerabilityScopeMain', t.vulnerability_scope_main);
+      setDataOrOmit(t15, 'vulnerabilityScopeTest', t.vulnerability_scope_test);
+      setDataOrOmit(t16, 'codeSmellScopeMain', t.code_smell_scope_main);
+      setDataOrOmit(t16, 'codeSmellScopeTest', t.code_smell_scope_test);
 
       /* Répartition modules */
-      const totalModule = Number(t.frontend + t.backend + t.autre + t.inconnu);
-
+      /* MODIF 2026-10-11 : frontend/backend/autre/inconnu peuvent désormais être
+       * null (aucune collecte d'anomalies pour ce projet) — à distinguer de
+       * "collecté, zéro anomalie par module". Les 4 champs viennent de la même
+       * ligne en base, donc soit tous numériques, soit tous null ensemble. */
       const categories = [
         { key: 'frontend', elCount: '#js-nombre-frontend', elPercent: '#js-nombre-frontend-percent', dataAttr: 'nombreFrontend' },
         { key: 'backend',  elCount: '#js-nombre-backend', elPercent: '#js-nombre-backend-percent',  dataAttr: 'nombreBackend'  },
@@ -1093,7 +1111,11 @@ export const remplissage = async function(maven_key) {
         { key: 'inconnu',  elCount: '#js-nombre-inconnu', elPercent: '#js-nombre-inconnu-percent',  dataAttr: 'nombreInconnu'  },
       ];
 
-      const fmtDecimal  = new Intl.NumberFormat('fr-FR', { style: 'decimal' });
+      const modulesCollected = categories.every(({ key }) => t[key] !== null && t[key] !== undefined);
+      const totalModule = modulesCollected
+        ? Number(t.frontend) + Number(t.backend) + Number(t.autre) + Number(t.inconnu)
+        : 0;
+
       const fmtPercent  = new Intl.NumberFormat('fr-FR', { style: 'percent' });
       const htmlPad1    = '<span style="color:#fff;">0</span>';
       const htmlPad2    = '<span style="color:#fff;">00</span>';
@@ -1110,11 +1132,18 @@ export const remplissage = async function(maven_key) {
       }
 
       categories.forEach(({ key, elCount, elPercent, dataAttr }) => {
+        if (!modulesCollected) {
+          $(elCount).html(displayNumber(null));
+          $(elPercent).html(displayPercent(null));
+          setDataOrOmit($(elCount)[0], dataAttr, null);
+          return;
+        }
+
         const value  = Number(t[key]);
         const ratio  = totalModule > 0 ? value / totalModule : 0;
         const pad    = totalModule > 0 ? percentPadding(ratio) : '';
 
-        $(elCount).html(fmtDecimal.format(value));
+        $(elCount).html(displayNumber(value));
         $(elPercent).html(pad + fmtPercent.format(ratio));
 
         // Historique via data-attribute
@@ -1126,10 +1155,10 @@ export const remplissage = async function(maven_key) {
       const t18 = document.getElementById('js-nombre-backend');
       const t19 = document.getElementById('js-nombre-autre');
       const t19a = document.getElementById('js-nombre-inconnu');
-      t17.dataset.nombreFrontend = t.frontend;
-      t18.dataset.nombreBackend = t.backend;
-      t19.dataset.nombreAutre = t.autre;
-      t19a.dataset.nombreInconnu = t.inconnu;
+      setDataOrOmit(t17, 'nombreFrontend', t.frontend);
+      setDataOrOmit(t18, 'nombreBackend', t.backend);
+      setDataOrOmit(t19, 'nombreAutre', t.autre);
+      setDataOrOmit(t19a, 'nombreInconnu', t.inconnu);
 
       /* Répartition des violations par sévérité */
       $('#js-nombre-violation-bloquant').html(displayNumber(t.blocker));

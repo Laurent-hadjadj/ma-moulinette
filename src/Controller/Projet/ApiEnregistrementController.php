@@ -183,10 +183,12 @@ class ApiEnregistrementController extends AbstractController
                 'code_smell_major' => $data->code_smell_major,
                 'code_smell_minor' => $data->code_smell_minor,
                 'code_smell_info' => $data->code_smell_info,
-                'repartition_frontend' => $data->repartition_frontend,
-                'repartition_backend' => $data->repartition_backend,
-                'repartition_autre' => $data->repartition_autre,
-                'repartition_inconnu' => $data->repartition_inconnu,
+                /* MODIF 2026-10-11 : ?? null — la ligne anomalie peut ne jamais avoir
+                 * existé (aucune collecte), pas seulement "module inconnu = 0". */
+                'repartition_frontend' => $data->repartition_frontend ?? null,
+                'repartition_backend' => $data->repartition_backend ?? null,
+                'repartition_autre' => $data->repartition_autre ?? null,
+                'repartition_inconnu' => $data->repartition_inconnu ?? null,
                 'blocker_violations' => $data->blocker_violations,
                 'critical_violations' => $data->critical_violations,
                 'major_violations' => $data->major_violations,
