@@ -179,14 +179,16 @@ class BatchCollecteRepartitionController extends AbstractController
     {
 
          /** Sécurisation de l'URL */
-        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2. */
+        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2 ;
+         * statuses renommée issueStatuses depuis la 10.4 (cf. GetSonarVersionService). */
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
+        $issueStatus = $this->sonarVersion->issueStatusParam();
         $url = $this->urlBuilder->build(
             $this->getParameter(self::$sonarUrl),
             '/api/issues/search',
             [
                 $this->sonarVersion->componentKeyParam() => $maven_key,
-                'statuses' => 'OPEN,CONFIRMED,REOPENED',
+                $issueStatus['param'] => $issueStatus['value'],
                 's' => 'STATUS',
                 'asc' => 'no',
                 'types' => $category,
@@ -233,14 +235,16 @@ class BatchCollecteRepartitionController extends AbstractController
     private function batchCollecteInformation(string $maven_key, string $category): array
     {
         /** Sécurisation de l'URL */
-        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2. */
+        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2 ;
+         * statuses renommée issueStatuses depuis la 10.4 (cf. GetSonarVersionService). */
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
+        $issueStatus = $this->sonarVersion->issueStatusParam();
         $url = $this->urlBuilder->build(
             $this->getParameter(self::$sonarUrl),
             '/api/issues/search',
             [
                 $this->sonarVersion->componentKeyParam() => $maven_key,
-                'statuses' => 'OPEN,CONFIRMED,REOPENED',
+                $issueStatus['param'] => $issueStatus['value'],
                 'types' => $category,
                 'facets' => 'severities,scopes',
                 'p' => 1,

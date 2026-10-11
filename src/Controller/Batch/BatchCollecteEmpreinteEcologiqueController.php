@@ -266,8 +266,10 @@ class BatchCollecteEmpreinteEcologiqueController extends AbstractController
             }
         }
 
-        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2. */
+        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2 ;
+         * statuses renommée issueStatuses depuis la 10.4 (cf. GetSonarVersionService). */
         $componentKeyParam = $this->sonarVersion->componentKeyParam();
+        $issueStatus = $this->sonarVersion->issueStatusParam();
 
         /** 3 - Un appel /api/issues/search par langage ayant des règles Creedengo (total + effortTotal exacts, pas de facette) */
         $parLangue = [];
@@ -279,7 +281,7 @@ class BatchCollecteEmpreinteEcologiqueController extends AbstractController
 
             $issuesResult = self::makeRequest('/api/issues/search', [
                 $componentKeyParam => $maven_key,
-                'statuses' => 'OPEN,REOPENED',
+                $issueStatus['param'] => $issueStatus['value'],
                 'rules' => implode(',', $ruleKeys),
                 'ps' => 1,
             ]);

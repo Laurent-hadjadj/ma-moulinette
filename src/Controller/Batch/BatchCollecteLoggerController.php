@@ -215,17 +215,21 @@ class BatchCollecteLoggerController extends AbstractController
                     'track-error-method',
                     'track-debug-method'
                 ];
-        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2. */
+        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2 ;
+         * statuses renommée issueStatuses depuis la 10.4 (valeur alignée sur
+         * OPEN,CONFIRMED,REOPENED / OPEN,CONFIRMED,ACCEPTED, pas seulement OPEN, cf.
+         * GetSonarVersionService::issueStatusParam() et projet.md pour la règle). */
         $componentKeyParam = $this->sonarVersion->componentKeyParam();
+        $issueStatus = $this->sonarVersion->issueStatusParam();
         $queryParams = [
             $method[0] => [ $componentKeyParam => $maven_key,
-            'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => self::$trackLoggerMethod.$method[0], 'ps' => 500],
+            'facets'  => 'rules', $issueStatus['param'] => $issueStatus['value'], 'rules' => self::$trackLoggerMethod.$method[0], 'ps' => 500],
             $method[1] => [ $componentKeyParam => $maven_key,
-            'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => self::$trackLoggerMethod.$method[1], 'ps' => 500],
+            'facets'  => 'rules', $issueStatus['param'] => $issueStatus['value'], 'rules' => self::$trackLoggerMethod.$method[1], 'ps' => 500],
             $method[2] => [ $componentKeyParam => $maven_key,
-            'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => self::$trackLoggerMethod.$method[2], 'ps' => 500],
+            'facets'  => 'rules', $issueStatus['param'] => $issueStatus['value'], 'rules' => self::$trackLoggerMethod.$method[2], 'ps' => 500],
             $method[3] => [ $componentKeyParam => $maven_key,
-            'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => self::$trackLoggerMethod.$method[3], 'ps' => 500]
+            'facets'  => 'rules', $issueStatus['param'] => $issueStatus['value'], 'rules' => self::$trackLoggerMethod.$method[3], 'ps' => 500]
         ];
 
         /** Appels API et vérification des retours */

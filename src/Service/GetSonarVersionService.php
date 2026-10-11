@@ -32,6 +32,12 @@ class GetSonarVersionService extends AbstractController
     private static string $paramComponentKeys = 'componentKeys';
     private static string $paramComponents = 'components';
 
+    /** Paramètre de filtre par statut sur `/api/issues/search` (déprécié depuis la 10.4). */
+    private static string $paramStatuses = 'statuses';
+    private static string $valueStatusesActives = 'OPEN,CONFIRMED,REOPENED';
+    private static string $paramIssueStatuses = 'issueStatuses';
+    private static string $valueIssueStatusesActives = 'OPEN,CONFIRMED,ACCEPTED';
+
     public function __construct(
         private ClientService $client,
         private UrlBuilderService $urlBuilder,
@@ -130,5 +136,40 @@ class GetSonarVersionService extends AbstractController
         $major = (int) strtok($version, '.');
 
         return ($major >= 1 && $major < 10) ? self::$paramComponentKeys : self::$paramComponents;
+    }
+
+    /**
+     * Détermine le filtre de statut à utiliser sur `/api/issues/search` pour ne compter
+     * que les anomalies encore actives (`statuses` vs `issueStatuses`, paramètre déprécié
+     * depuis la 10.4 — remplacé y compris pour les serveurs encore en version 10, cf.
+     * mkDocs/docs/ma-moulinette/application/projet.md pour la règle complète et sa
+     * vérification en conditions réelles).
+     *
+     * Ancien modèle (8, 9, 10) : `statuses=OPEN,CONFIRMED,REOPENED` (RESOLVED/CLOSED
+     * exclus). Nouveau modèle (2024+) : `issueStatuses=OPEN,CONFIRMED,ACCEPTED`
+     * (FALSE_POSITIVE/FIXED exclus — ACCEPTED est inclus : un défaut « accepté » reste
+     * réel et non corrigé, juste reporté, ce n'est pas une clôture).
+     *
+     * Cas nominal (version non déterminée) : nouveau modèle, mêmes raisons que
+     * componentKeyParam() (les serveurs réellement utilisés aujourd'hui sont ≥ 10).
+     *
+     * @return array{param: string, value: string}
+     *
+     * Created at: 11/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function issueStatusParam(): array
+    {
+        $version = $this->getSonarQubeVersion();
+
+        if (!is_array($version)) {
+            $major = (int) strtok($version, '.');
+            if ($major >= 1 && $major <= 10) {
+                return ['param' => self::$paramStatuses, 'value' => self::$valueStatusesActives];
+            }
+        }
+
+        return ['param' => self::$paramIssueStatuses, 'value' => self::$valueIssueStatusesActives];
     }
 }

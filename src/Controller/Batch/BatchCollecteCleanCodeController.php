@@ -33,7 +33,6 @@ class BatchCollecteCleanCodeController extends AbstractController
 {
     private static string $sonarUrl = "sonar.url";
     private static string $europeParis = "Europe/Paris";
-    private static string $statuses = "OPEN,REOPENED";
 
     public function __construct(
         private EntityManagerInterface $em,
@@ -128,15 +127,17 @@ class BatchCollecteCleanCodeController extends AbstractController
         $date = new \DateTimeImmutable('now', new \DateTimeZone(self::$europeParis));
         $app = $this->serviceExtractName->extractNameFromMavenKey($maven_key);
 
-        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2. */
+        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2 ;
+         * statuses renommée issueStatuses depuis la 10.4 (cf. GetSonarVersionService). */
         $componentKeyParam = $this->sonarVersion->componentKeyParam();
+        $issueStatus = $this->sonarVersion->issueStatusParam();
 
         /* ── Appel principal : nouvelles facettes SonarQube 10+ ─────── */
         $mainResult = $this->makeRequest([
             $componentKeyParam => $maven_key,
             'facets' => 'cleanCodeAttributeCategories,impactSeverities,impactSoftwareQualities',
             'p' => 1, 'ps' => 1,
-            'statuses' => self::$statuses,
+            $issueStatus['param'] => $issueStatus['value'],
         ]);
 
         if (isset($mainResult['code'])) {
@@ -162,7 +163,7 @@ class BatchCollecteCleanCodeController extends AbstractController
             $componentKeyParam => $maven_key,
             'owaspTop10-2021' => 'a1,a2,a3,a4,a5,a6,a7,a8,a9,a10',
             'p' => 1, 'ps' => 1,
-            'statuses' => self::$statuses,
+            $issueStatus['param'] => $issueStatus['value'],
         ]);
         if (!isset($owaspResult['code'])) {
             $owaspTotal = (int) ($owaspResult['paging']['total'] ?? $owaspResult['total'] ?? 0);
@@ -172,7 +173,7 @@ class BatchCollecteCleanCodeController extends AbstractController
             $componentKeyParam => $maven_key,
             'sansTop25' => 'insecure-interaction,risky-resource,porous-defenses',
             'p' => 1, 'ps' => 1,
-            'statuses' => self::$statuses,
+            $issueStatus['param'] => $issueStatus['value'],
         ]);
         if (!isset($sansResult['code'])) {
             $sansTotal = (int) ($sansResult['paging']['total'] ?? $sansResult['total'] ?? 0);
@@ -183,7 +184,7 @@ class BatchCollecteCleanCodeController extends AbstractController
             $componentKeyParam => $maven_key,
             'facets' => 'cwe',
             'p' => 1, 'ps' => 1,
-            'statuses' => self::$statuses,
+            $issueStatus['param'] => $issueStatus['value'],
         ]);
         if (!isset($cweResult['code'])) {
             $cweCounts = $this->extractFacetCounts($cweResult['facets'] ?? [], 'cwe');

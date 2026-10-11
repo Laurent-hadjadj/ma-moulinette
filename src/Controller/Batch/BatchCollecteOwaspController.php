@@ -81,6 +81,18 @@ class BatchCollecteOwaspController extends AbstractController
          * pas de la propriété sonar.version ci-dessus qui reste réservée au choix OWASP. */
         $componentKeyParam = $this->sonarVersion->componentKeyParam();
 
+        /* MODIF 2026-10-11 : ce controller ne passe pas 'statuses'/'issueStatuses' en
+         * paramètre de requête (il filtre côté client sur le statut de chaque issue
+         * retournée, pas via l'API) — mais le champ à lire sur l'issue ('status' vs
+         * 'issueStatus') et les valeurs considérées comme « anomalie active » suivent
+         * la même règle que partout ailleurs (cf. GetSonarVersionService::issueStatusParam()
+         * et projet.md). Les deux champs coexistent sur chaque issue quelle que soit la
+         * version du serveur (vérifié en live sur 26.9.0), donc l'un des deux est toujours
+         * fiable selon le modèle résolu. */
+        $issueStatus = $this->sonarVersion->issueStatusParam();
+        $statusField = $issueStatus['param'] === 'statuses' ? 'status' : 'issueStatus';
+        $allowedStatuses = explode(',', $issueStatus['value']);
+
         /** Tableau des paramètres pour la requête HTTP */
         $queryParamsList = [
             'owasp2017' => [$componentKeyParam => $maven_key, 'facets' => 'owaspTop10', 'owaspTop10' => self::$owaspCategories],
@@ -189,7 +201,9 @@ class BatchCollecteOwaspController extends AbstractController
             $select_information,
             $mode_collecte,
             $utilisateur_collecte,
-            $fetchTagFallback
+            $fetchTagFallback,
+            $statusField,
+            $allowedStatuses
         ) {
             $source = 'facet';
             $nombre = array_fill(1, 10, 0);
@@ -206,7 +220,7 @@ class BatchCollecteOwaspController extends AbstractController
                     $nombre[$index] = $value['count'];
                 }
                 foreach ($referential['issues'] as $issue) {
-                    if (in_array($issue['status'], ['OPEN', 'CONFIRMED', 'REOPENED'])) {
+                    if (in_array($issue[$statusField] ?? null, $allowedStatuses, true)) {
                         foreach ($issue['tags'] as $tag) {
                             if (preg_match("/owasp-a(\d+)/", $tag, $matches)) {
                                 $owaspIndex = (int)$matches[1];
@@ -233,7 +247,7 @@ class BatchCollecteOwaspController extends AbstractController
                 $fallback = $fetchTagFallback();
                 $effort_total = (int) ($fallback['effortTotal'] ?? $effort_total);
                 foreach ($fallback['issues'] ?? [] as $issue) {
-                    if (in_array($issue['status'], ['OPEN', 'CONFIRMED', 'REOPENED'])) {
+                    if (in_array($issue[$statusField] ?? null, $allowedStatuses, true)) {
                         foreach ($issue['tags'] ?? [] as $tag) {
                             if (preg_match("/owasp-a(\d+)/", $tag, $matches)) {
                                 $owaspIndex = (int)$matches[1];

@@ -27,9 +27,6 @@ class BatchCollecteAnomalieController extends AbstractController
     /** Définition des constantes */
     private static string $sonarUrl = "sonar.url";
     private static string $europeParis = "Europe/Paris";
-    private static string $statuses = "OPEN,REOPENED";
-    //'private static $statusesMin = "OPEN,CONFIRMED,REOPENED,RESOLVED";
-    //'private static $statusesAll = "OPEN, CONFIRMED, REOPENED, RESOLVED, CLOSED";
     private static string $beginRegEx = '/\b(?:';
     private static string $endRegEx = ')\b/i';
 
@@ -218,22 +215,26 @@ class BatchCollecteAnomalieController extends AbstractController
         /* Tableau des paramètres pour les requêtes HTTP */
         /* MODIF 2026-10-06 : ajout du facet 'scopes' (MAIN/TEST) sur les 3 appels
          * par catégorie — réutilise les appels déjà existants (aucun appel HTTP
-         * supplémentaire). 'statuses' aligné sur self::$statuses (comme 'general')
-         * pour que les comptages scopes par catégorie correspondent au même
+         * supplémentaire). 'statuses'/'issueStatuses' aligné sur $issueStatus (comme
+         * 'general') pour que les comptages scopes par catégorie correspondent au même
          * périmètre d'issues que le reste de la collecte. */
         /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2
-         * (deprecatedKey, même sémantique). On résout la clé une seule fois via la
-         * version réelle du serveur (mise en cache 5 min côté GetSonarVersionService). */
+         * (deprecatedKey, même sémantique). statuses renommée issueStatuses depuis la
+         * 10.4 (pas un simple renommage, cf. GetSonarVersionService::issueStatusParam()
+         * et mkDocs/docs/ma-moulinette/application/projet.md pour la règle complète).
+         * On résout les deux une seule fois via la version réelle du serveur (mise en
+         * cache 5 min côté GetSonarVersionService). */
         $componentKeyParam = $this->sonarVersion->componentKeyParam();
+        $issueStatus = $this->sonarVersion->issueStatusParam();
         $queryParamsList = [
             'general' => [ $componentKeyParam => $maven_key, 'facets' => 'directories,types,severities',
-                'p' => 1, 'ps' => 1, 'statuses' => self::$statuses ],
+                'p' => 1, 'ps' => 1, $issueStatus['param'] => $issueStatus['value'] ],
             'BUG' => [ $componentKeyParam => $maven_key, 'types' => 'BUG', 'p' => 1, 'ps' => 1,
-                'statuses' => self::$statuses, 'facets' => 'scopes' ],
+                $issueStatus['param'] => $issueStatus['value'], 'facets' => 'scopes' ],
             'VULNERABILITY' => [ $componentKeyParam => $maven_key, 'types' => 'VULNERABILITY',
-                'p' => 1, 'ps' => 1, 'statuses' => self::$statuses, 'facets' => 'scopes' ],
+                'p' => 1, 'ps' => 1, $issueStatus['param'] => $issueStatus['value'], 'facets' => 'scopes' ],
             'CODE_SMELL' => [ $componentKeyParam => $maven_key, 'types' => 'CODE_SMELL',
-                'p' => 1, 'ps' => 1, 'statuses' => self::$statuses, 'facets' => 'scopes' ]
+                'p' => 1, 'ps' => 1, $issueStatus['param'] => $issueStatus['value'], 'facets' => 'scopes' ]
         ];
 
         /**

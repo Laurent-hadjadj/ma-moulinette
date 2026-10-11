@@ -148,12 +148,16 @@ class BatchCollecteAnomalieDetailController extends AbstractController
         ]);
 
         /* Tableau des paramètres pour les requêtes HTTP */
-        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2. */
+        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2 ;
+         * statuses renommée issueStatuses depuis la 10.4 (valeur alignée sur
+         * OPEN,CONFIRMED,REOPENED / OPEN,CONFIRMED,ACCEPTED — pas seulement OPEN, cf.
+         * GetSonarVersionService::issueStatusParam() et projet.md pour la règle). */
         $componentKeyParam = $this->sonarVersion->componentKeyParam();
+        $issueStatus = $this->sonarVersion->issueStatusParam();
         $queryParamsList = [
-            'BUG' => [ $componentKeyParam => $maven_key, 'facets' => 'severities', 'types' => 'BUG', 'statuses' => 'OPEN', 'p' => 1, 'ps' => 1 ],
-            'VULNERABILITY' => [ $componentKeyParam => $maven_key, 'facets' => 'severities', 'types' => 'VULNERABILITY', 'statuses' => 'OPEN', 'p' => 1, 'ps' => 1 ],
-            'CODE_SMELL' => [ $componentKeyParam => $maven_key, 'facets' => 'severities', 'types' => 'CODE_SMELL', 'statuses' => 'OPEN', 'p' => 1, 'ps' => 1 ]
+            'BUG' => [ $componentKeyParam => $maven_key, 'facets' => 'severities', 'types' => 'BUG', $issueStatus['param'] => $issueStatus['value'], 'p' => 1, 'ps' => 1 ],
+            'VULNERABILITY' => [ $componentKeyParam => $maven_key, 'facets' => 'severities', 'types' => 'VULNERABILITY', $issueStatus['param'] => $issueStatus['value'], 'p' => 1, 'ps' => 1 ],
+            'CODE_SMELL' => [ $componentKeyParam => $maven_key, 'facets' => 'severities', 'types' => 'CODE_SMELL', $issueStatus['param'] => $issueStatus['value'], 'p' => 1, 'ps' => 1 ]
         ];
 
         /* On appelle les API en passant les querryParams à la fonction générique */
