@@ -34,6 +34,7 @@ class SonarFixtureClientService extends ClientService
         '#/api/components/search_projects\b#' => 'components/search_projects.json',
         '#/api/components/app\b#'             => 'components/app.json',
         '#/api/measures/component\b#'         => 'measures/component.json',
+        '#/api/measures/component_tree\b#'    => 'measures/component_tree.json',
         '#/api/qualityprofiles/search\b#'     => 'qualityprofiles/search.json',
         '#/api/server/version\b#'             => 'server/version.json',
     ];
