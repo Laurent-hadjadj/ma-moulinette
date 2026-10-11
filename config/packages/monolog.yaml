@@ -65,6 +65,14 @@ when@test:
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: debug
                 channels: ['doctrine']
+            # MODIF 2026-10-11 : handler deprecation manquant en test (present en dev, mais
+            # sous "deprecations.log" sans suffixe — ici "deprecations-test.log" suit la
+            # convention attendue par la page Admin Logs/LogArchiveService pour l'env test).
+            deprecation:
+                type: stream
+                path: "%kernel.logs_dir%/deprecations-test.log"
+                level: info
+                channels: ["deprecation"]
             # MODIF 2026-10-11 : handler manquant par rapport a dev/prod — LogArchiveService
             # classe les fichiers "app-*" comme logs applicatifs (page Admin Logs), et le
             # test e2e spec 19 attend "app-test.log" au meme titre que "app-dev.log"/"app.log".
