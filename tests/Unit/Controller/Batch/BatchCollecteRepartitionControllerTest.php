@@ -18,7 +18,7 @@ namespace App\Tests\Unit\Controller\Batch;
 use App\Controller\Batch\BatchCollecteRepartitionController;
 use App\Entity\{Repartition, RepartitionTemp};
 use App\Repository\{RepartitionRepository, RepartitionTempRepository};
-use App\Service\{ClientService, UrlBuilderService};
+use App\Service\{ClientService, GetSonarVersionService, UrlBuilderService};
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -50,6 +50,9 @@ class BatchCollecteRepartitionControllerTest extends TestCase
     /** @var UrlBuilderService&MockObject */
     private MockObject $urlBuilder;
 
+    /** @var GetSonarVersionService&MockObject */
+    private MockObject $sonarVersion;
+
     /** @var LoggerInterface&MockObject */
     private MockObject $logger;
 
@@ -65,6 +68,7 @@ class BatchCollecteRepartitionControllerTest extends TestCase
         $this->tempRepo = $this->createMock(RepartitionTempRepository::class);
         $this->client = $this->createMock(ClientService::class);
         $this->urlBuilder = $this->createMock(UrlBuilderService::class);
+        $this->sonarVersion = $this->createMock(GetSonarVersionService::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->parameterBag = $this->createMock(ParameterBagInterface::class);
 
@@ -74,6 +78,7 @@ class BatchCollecteRepartitionControllerTest extends TestCase
         ]);
 
         $this->urlBuilder->method('build')->willReturn(self::BUILT_URL);
+        $this->sonarVersion->method('componentKeyParam')->willReturn('components');
 
         // Paramètres standards (sonar.url + mots-clés modules) — utilisés par getParameter
         $this->parameterBag->method('get')->willReturnMap([
@@ -97,6 +102,7 @@ class BatchCollecteRepartitionControllerTest extends TestCase
             $this->em,
             $this->client,
             $this->urlBuilder,
+            $this->sonarVersion,
             $this->logger
         );
         $this->controller->setContainer($container);

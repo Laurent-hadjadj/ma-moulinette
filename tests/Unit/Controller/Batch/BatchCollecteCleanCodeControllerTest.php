@@ -20,7 +20,7 @@ namespace App\Tests\Unit\Controller\Batch;
 
 use App\Controller\Batch\BatchCollecteCleanCodeController;
 use App\Repository\CleanCodeRepository;
-use App\Service\{ClientService, ExtractName, UrlBuilderService};
+use App\Service\{ClientService, ExtractName, GetSonarVersionService, UrlBuilderService};
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -51,6 +51,9 @@ class BatchCollecteCleanCodeControllerTest extends TestCase
     /** @var UrlBuilderService&MockObject */
     private MockObject $urlBuilder;
 
+    /** @var GetSonarVersionService&MockObject */
+    private MockObject $sonarVersion;
+
     /** @var LoggerInterface&MockObject */
     private MockObject $logger;
 
@@ -66,12 +69,14 @@ class BatchCollecteCleanCodeControllerTest extends TestCase
         $this->client        = $this->createMock(ClientService::class);
         $this->extractName   = $this->createMock(ExtractName::class);
         $this->urlBuilder    = $this->createMock(UrlBuilderService::class);
+        $this->sonarVersion  = $this->createMock(GetSonarVersionService::class);
         $this->logger        = $this->createMock(LoggerInterface::class);
         $this->parameterBag  = $this->createMock(ParameterBagInterface::class);
 
         $this->em->method('getRepository')->willReturn($this->cleanCodeRepo);
 
         $this->urlBuilder->method('build')->willReturn(self::BUILT_URL);
+        $this->sonarVersion->method('componentKeyParam')->willReturn('components');
         $this->extractName->method('extractNameFromMavenKey')->willReturn('ma-moulinette');
 
         $this->parameterBag->method('get')->willReturnMap([
@@ -91,6 +96,7 @@ class BatchCollecteCleanCodeControllerTest extends TestCase
             $this->client,
             $this->extractName,
             $this->urlBuilder,
+            $this->sonarVersion,
             $this->logger
         );
         $this->controller->setContainer($container);

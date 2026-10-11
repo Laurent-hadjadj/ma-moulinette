@@ -7,7 +7,7 @@ namespace App\Tests\Unit\Controller\Batch;
 use App\Controller\Batch\BatchCollecteNoSonarController;
 use App\Entity\NoSonar;
 use App\Repository\NoSonarRepository;
-use App\Service\{ClientService, UrlBuilderService};
+use App\Service\{ClientService, GetSonarVersionService, UrlBuilderService};
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -24,6 +24,7 @@ class BatchCollecteNoSonarControllerTest extends TestCase
     /** @var EntityManagerInterface&MockObject */ private MockObject $em;
     /** @var ClientService&MockObject */           private MockObject $client;
     /** @var UrlBuilderService&MockObject */       private MockObject $urlBuilder;
+    /** @var GetSonarVersionService&MockObject */  private MockObject $sonarVersion;
     /** @var LoggerInterface&MockObject */         private MockObject $logger;
     /** @var NoSonarRepository&MockObject */       private MockObject $repo;
     /** @var ParameterBagInterface&MockObject */   private MockObject $parameterBag;
@@ -35,6 +36,7 @@ class BatchCollecteNoSonarControllerTest extends TestCase
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->client = $this->createMock(ClientService::class);
         $this->urlBuilder = $this->createMock(UrlBuilderService::class);
+        $this->sonarVersion = $this->createMock(GetSonarVersionService::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->repo = $this->createMock(NoSonarRepository::class);
         $this->parameterBag = $this->createMock(ParameterBagInterface::class);
@@ -45,6 +47,7 @@ class BatchCollecteNoSonarControllerTest extends TestCase
             ->willReturn($this->repo);
 
         $this->urlBuilder->method('build')->willReturn('https://sonar.example.com/api/issues/search?...');
+        $this->sonarVersion->method('componentKeyParam')->willReturn('components');
         $this->parameterBag->method('get')->willReturn('https://sonar.example.com');
 
         $container = $this->createMock(ContainerInterface::class);
@@ -52,7 +55,7 @@ class BatchCollecteNoSonarControllerTest extends TestCase
         $container->method('get')->willReturnMap([['parameter_bag', 1, $this->parameterBag]]);
 
         $this->controller = new BatchCollecteNoSonarController(
-            $this->em, $this->client, $this->urlBuilder, $this->logger
+            $this->em, $this->client, $this->urlBuilder, $this->sonarVersion, $this->logger
         );
         $this->controller->setContainer($container);
     }

@@ -21,6 +21,7 @@ use App\Repository\AnomalieRepository;
 use App\Service\ClientService;
 use App\Service\DateTools;
 use App\Service\ExtractName;
+use App\Service\GetSonarVersionService;
 use App\Service\UrlBuilderService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
@@ -40,6 +41,7 @@ class BatchCollecteAnomalieControllerTest extends TestCase
     /** @var ExtractName&MockObject */             private MockObject $extractName;
     /** @var DateTools&MockObject */               private MockObject $dateTools;
     /** @var UrlBuilderService&MockObject */       private MockObject $urlBuilder;
+    /** @var GetSonarVersionService&MockObject */  private MockObject $sonarVersion;
     /** @var LoggerInterface&MockObject */         private MockObject $logger;
     /** @var AnomalieRepository&MockObject */      private MockObject $repo;
     /** @var ParameterBagInterface&MockObject */   private MockObject $parameterBag;
@@ -53,6 +55,7 @@ class BatchCollecteAnomalieControllerTest extends TestCase
         $this->extractName = $this->createMock(ExtractName::class);
         $this->dateTools = $this->createMock(DateTools::class);
         $this->urlBuilder = $this->createMock(UrlBuilderService::class);
+        $this->sonarVersion = $this->createMock(GetSonarVersionService::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->repo = $this->createMock(AnomalieRepository::class);
         $this->parameterBag = $this->createMock(ParameterBagInterface::class);
@@ -63,6 +66,7 @@ class BatchCollecteAnomalieControllerTest extends TestCase
             ->willReturn($this->repo);
 
         $this->urlBuilder->method('build')->willReturn('https://sonar/api/...');
+        $this->sonarVersion->method('componentKeyParam')->willReturn('components');
         $this->extractName->method('extractNameFromMavenKey')->willReturn('app');
         $this->dateTools->method('minutesTo')->willReturnCallback(fn ($min) => (string) $min . 'min');
 
@@ -78,7 +82,8 @@ class BatchCollecteAnomalieControllerTest extends TestCase
         $container->method('get')->willReturnMap([['parameter_bag', 1, $this->parameterBag]]);
 
         $this->controller = new BatchCollecteAnomalieController(
-            $this->em, $this->client, $this->extractName, $this->dateTools, $this->urlBuilder, $this->logger
+            $this->em, $this->client, $this->extractName, $this->dateTools, $this->urlBuilder,
+            $this->sonarVersion, $this->logger
         );
         $this->controller->setContainer($container);
     }

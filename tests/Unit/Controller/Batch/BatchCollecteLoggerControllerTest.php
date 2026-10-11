@@ -22,7 +22,7 @@ use App\Entity\LoggerDetail;
 use App\Repository\InformationProjetRepository;
 use App\Repository\LoggerDetailRepository;
 use App\Repository\LoggerRepository;
-use App\Service\{ClientService, UrlBuilderService};
+use App\Service\{ClientService, GetSonarVersionService, UrlBuilderService};
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -39,6 +39,7 @@ class BatchCollecteLoggerControllerTest extends TestCase
     /** @var EntityManagerInterface&MockObject */     private MockObject $em;
     /** @var ClientService&MockObject */               private MockObject $client;
     /** @var UrlBuilderService&MockObject */           private MockObject $urlBuilder;
+    /** @var GetSonarVersionService&MockObject */      private MockObject $sonarVersion;
     /** @var LoggerInterface&MockObject */             private MockObject $logger;
     /** @var LoggerRepository&MockObject */            private MockObject $repo;
     /** @var LoggerDetailRepository&MockObject */      private MockObject $loggerDetailRepo;
@@ -52,6 +53,7 @@ class BatchCollecteLoggerControllerTest extends TestCase
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->client = $this->createMock(ClientService::class);
         $this->urlBuilder = $this->createMock(UrlBuilderService::class);
+        $this->sonarVersion = $this->createMock(GetSonarVersionService::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->repo = $this->createMock(LoggerRepository::class);
         $this->loggerDetailRepo = $this->createMock(LoggerDetailRepository::class);
@@ -70,13 +72,14 @@ class BatchCollecteLoggerControllerTest extends TestCase
             });
 
         $this->urlBuilder->method('build')->willReturn('https://sonar.example.com/api/...');
+        $this->sonarVersion->method('componentKeyParam')->willReturn('components');
 
         $container = $this->createMock(ContainerInterface::class);
         $container->method('has')->willReturnMap([['parameter_bag', true]]);
         $container->method('get')->willReturnMap([['parameter_bag', 1, $this->parameterBag]]);
 
         $this->controller = new BatchCollecteLoggerController(
-            $this->em, $this->client, $this->urlBuilder, $this->logger
+            $this->em, $this->client, $this->urlBuilder, $this->sonarVersion, $this->logger
         );
         $this->controller->setContainer($container);
     }

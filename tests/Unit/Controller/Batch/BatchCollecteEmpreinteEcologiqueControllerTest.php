@@ -17,7 +17,7 @@ namespace App\Tests\Unit\Controller\Batch;
 
 use App\Controller\Batch\BatchCollecteEmpreinteEcologiqueController;
 use App\Repository\EcoConceptionRepository;
-use App\Service\{ClientService, DateTools, LanguageDistributionService, UrlBuilderService};
+use App\Service\{ClientService, DateTools, GetSonarVersionService, LanguageDistributionService, UrlBuilderService};
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -43,6 +43,7 @@ class BatchCollecteEmpreinteEcologiqueControllerTest extends TestCase
      * on utilise une vraie instance plutôt qu'un mock. */
     private LanguageDistributionService $languageDistribution;
     /** @var UrlBuilderService&MockObject */                private MockObject $urlBuilder;
+    /** @var GetSonarVersionService&MockObject */           private MockObject $sonarVersion;
     /** @var LoggerInterface&MockObject */                  private MockObject $logger;
     /** @var EcoConceptionRepository&MockObject */          private MockObject $repo;
     /** @var ParameterBagInterface&MockObject */            private MockObject $parameterBag;
@@ -56,6 +57,7 @@ class BatchCollecteEmpreinteEcologiqueControllerTest extends TestCase
         $this->dateTools = $this->createMock(DateTools::class);
         $this->languageDistribution = new LanguageDistributionService();
         $this->urlBuilder = $this->createMock(UrlBuilderService::class);
+        $this->sonarVersion = $this->createMock(GetSonarVersionService::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->repo = $this->createMock(EcoConceptionRepository::class);
         $this->parameterBag = $this->createMock(ParameterBagInterface::class);
@@ -66,6 +68,7 @@ class BatchCollecteEmpreinteEcologiqueControllerTest extends TestCase
         $this->em->method('getRepository')->willReturn($this->repo);
 
         $this->urlBuilder->method('build')->willReturn('https://sonar.example.com/api/...');
+        $this->sonarVersion->method('componentKeyParam')->willReturn('components');
         $this->dateTools->method('minutesTo')->willReturn('0h:0min');
 
         $container = $this->createMock(ContainerInterface::class);
@@ -73,7 +76,8 @@ class BatchCollecteEmpreinteEcologiqueControllerTest extends TestCase
         $container->method('get')->willReturnMap([['parameter_bag', 1, $this->parameterBag]]);
 
         $this->controller = new BatchCollecteEmpreinteEcologiqueController(
-            $this->em, $this->client, $this->dateTools, $this->languageDistribution, $this->urlBuilder, $this->logger
+            $this->em, $this->client, $this->dateTools, $this->languageDistribution, $this->urlBuilder,
+            $this->sonarVersion, $this->logger
         );
         $this->controller->setContainer($container);
     }

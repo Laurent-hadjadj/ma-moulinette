@@ -18,7 +18,7 @@ namespace App\Tests\Unit\Controller\Batch;
 use App\Controller\Batch\BatchCollecteOwaspController;
 use App\Entity\{InformationProjet, Owasp};
 use App\Repository\{InformationProjetRepository, OwaspRepository};
-use App\Service\{ClientService, UrlBuilderService};
+use App\Service\{ClientService, GetSonarVersionService, UrlBuilderService};
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\{AllowMockObjectsWithoutExpectations, DataProvider};
 use PHPUnit\Framework\MockObject\MockObject;
@@ -51,6 +51,9 @@ class BatchCollecteOwaspControllerTest extends TestCase
     /** @var UrlBuilderService&MockObject */
     private MockObject $urlBuilder;
 
+    /** @var GetSonarVersionService&MockObject */
+    private MockObject $sonarVersion;
+
     /** @var LoggerInterface&MockObject */
     private MockObject $logger;
 
@@ -66,8 +69,11 @@ class BatchCollecteOwaspControllerTest extends TestCase
         $this->owaspRepo = $this->createMock(OwaspRepository::class);
         $this->client = $this->createMock(ClientService::class);
         $this->urlBuilder = $this->createMock(UrlBuilderService::class);
+        $this->sonarVersion = $this->createMock(GetSonarVersionService::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->parameterBag = $this->createMock(ParameterBagInterface::class);
+
+        $this->sonarVersion->method('componentKeyParam')->willReturn('components');
 
         $this->em->method('getRepository')->willReturnMap([
             [InformationProjet::class, $this->infoRepo],
@@ -99,6 +105,7 @@ class BatchCollecteOwaspControllerTest extends TestCase
             $this->em,
             $this->client,
             $this->urlBuilder,
+            $this->sonarVersion,
             $this->logger
         );
         $this->controller->setContainer($container);
