@@ -11,10 +11,17 @@
 #
 # Usage :
 #   docker compose -f docker/e2e/docker-compose.e2e.yml up -d --build
-#   .\bin\e2e\rebuild-database.ps1 -Port 5434          (1ere fois / reset complet)
 #   .\bin\e2e\reset-e2e-data.ps1 -Port 5434            (reset rapide entre runs)
-#   cd tests/e2e && $env:E2E_BASE_URL='http://localhost:8080'; npm test
+#   $env:E2E_BASE_URL='http://localhost:8080'; $env:E2E_DB_PORT='5434'
+#   cd tests/e2e && npm test
 #   docker compose -f docker/e2e/docker-compose.e2e.yml down -v   (arrêt + purge)
+#
+# Reset COMPLET (1ere fois / DB dans un état incertain) : PAS `rebuild-database.ps1`
+# (incompatible — essaie LC_COLLATE='French_France.1252', locale Windows absente
+# du conteneur Linux, cf. init-schema.sh). Reconstruire le conteneur postgres :
+#   docker compose -f docker/e2e/docker-compose.e2e.yml down -v
+#   docker compose -f docker/e2e/docker-compose.e2e.yml up -d
+# (init-schema.sh se rejoue automatiquement sur le volume postgres vide)
 #
 # IMPORTANT : toute modif de src/templates/config/etc. nécessite un rebuild
 # (docker compose up -d --build php-fpm-e2e) pour être prise en compte — ce
@@ -49,7 +56,19 @@ services:
     container_name: php-fpm-ma-moulinette-e2e
     environment:
       - APP_ENV=test
-      - APP_DEBUG=0
+      # APP_DEBUG=1 est OBLIGATOIRE ici, pas juste une question de confort :
+      # le service dynamique d'AssetMapper (toutes les URLs /assets/*.js|css
+      # avec hash) est conditionne par kernel.debug, pas par l'environnement.
+      # En debug=0, TOUS les assets renvoient 404 (page Symfony custom, pas
+      # une erreur nginx) -> page vide, aucun JS ne charge. Mesure en
+      # pratique APRES avoir bake vendor/src dans l'image (plus de
+      # bind-mount Windows) : debug=true ne coûte plus que ~0.05-0.2s/requête
+      # (contre 20-40s avant ce fix) — le coût mesure plus tot venait du
+      # bind-mount, pas de debug=true lui-meme. Alternative plus propre mais
+      # non implémentée : `asset-map:compile` au build pour servir des
+      # fichiers statiques reels (compatible debug=false) — pas nécessaire
+      # vu que la perf est deja bonne avec debug=true.
+      - APP_DEBUG=1
       # Surcharge .env.test.local (qui vise localhost) pour le reseau Docker.
       - DATABASE_URL=postgresql://db_user:db_password@postgres-e2e:5432/ma_moulinette_test?serverVersion=18&charset=utf8
       - DATABASE_SCHEMA=ma_moulinette_test
