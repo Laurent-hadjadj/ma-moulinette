@@ -33,9 +33,13 @@ RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" \
     && apt-get update && apt-get install -y libfreetype-dev libjpeg62-turbo-dev libpng-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) gd \
-    && docker-php-ext-install -j$(nproc) intl zip xsl calendar pdo_sqlite pdo_pgsql fileinfo\
+    # 2026-10-11 : extension ldap requise par CustomAuthenticator (fallback
+    # LDAP).
+    && apt-get install -y libldap2-dev \
+    && docker-php-ext-configure ldap \
+    && docker-php-ext-install -j$(nproc) intl zip xsl calendar pdo_sqlite pdo_pgsql fileinfo ldap\
     && apt autoremove -y \
-    && apt-get purge -y libicu-dev libonig-dev libzip-dev libxslt-dev libfreetype-dev libjpeg62-turbo-dev libpng-dev \
+    && apt-get purge -y libicu-dev libonig-dev libzip-dev libxslt-dev libfreetype-dev libjpeg62-turbo-dev libpng-dev libldap2-dev \
     && apt-get clean \
     && rm -rf /tmp/pear /var/lib/apt/lists/*
 
