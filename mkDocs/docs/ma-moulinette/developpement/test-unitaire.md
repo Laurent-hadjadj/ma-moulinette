@@ -1,12 +1,12 @@
 # 🧪 Tests unitaires et d'intégration
 
-## 📈 État des suites (relevé du 29/09/2026)
+## 📈 État des suites (relevé du 06/10/2026)
 
 | Suite | Tests | Assertions | Nature |
 | --- | ---: | ---: | --- |
-| `unit` (`tests/Unit`) | 3 185 | 8 764 | Unitaires purs (mocks, aucune base réelle) |
-| `integration` (`tests/Integration`) | 606 | 1 388 | `KernelTestCase`/`WebTestCase` sur PostgreSQL de test |
-| **Total** | **3 791** | **10 152** | |
+| `unit` (`tests/Unit`) | 3 186 | 8 780 | Unitaires purs (mocks, aucune base réelle) |
+| `integration` (`tests/Integration`) | 606 | 1 389 | `KernelTestCase`/`WebTestCase` sur PostgreSQL de test |
+| **Total** | **3 792** | **10 169** | |
 | `e2e` (`tests/e2e`) | 22 suites | — | Playwright, hors PHPUnit — voir [Tests End-to-End](test-e2e.md) |
 
 **Couverture de code** (suites `unit` + `integration` cumulées, via pcov) — **non réactualisée depuis le 25/09**, cf. note ci-dessous :
