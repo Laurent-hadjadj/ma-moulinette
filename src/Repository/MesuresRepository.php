@@ -212,6 +212,11 @@ class MesuresRepository extends ServiceEntityRepository
             'security_review_rating',
             'security_hotspots_reviewed',
 
+            /* MODIF 2026-10-11 : métriques "optionnelles", pas encore LTS. */
+            'maintainability_issue_severity',
+            'reliability_issue_severity',
+            'security_issue_severity',
+
             'mode_collecte',
             'utilisateur_collecte',
             'date_enregistrement'

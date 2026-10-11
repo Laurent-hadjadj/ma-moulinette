@@ -132,6 +132,34 @@ class BatchCollecteMesureController extends AbstractController
             $result[$measure['metric']] = $measure['value'] ?? 0;
         }
 
+        /* MODIF 2026-10-11 : métriques "optionnelles" (maintainability/reliability/
+         * security_issue_severity, apparues entre SonarQube 26.3.0 et 26.9.0, pas
+         * encore documentées par SonarSource) — appel SÉPARÉ et non bloquant. Une
+         * seule clé de métrique inconnue fait échouer tout l'appel
+         * /api/measures/component (HTTP 404, vérifié en live), donc on ne les mêle
+         * jamais à l'appel principal : un 404 ici laisse juste ces 3 colonnes à
+         * null, sans jamais impacter la collecte des autres mesures. */
+        $urlOptionnel = $this->urlBuilder->build(
+            $this->getParameter(self::$sonarUrl),
+            '/api/measures/component', [
+                'component' => $maven_key,
+                'metricKeys' => $this->apiBuildRequest->optionalMetricsKey()
+                ]
+        );
+        $this->logger->debug('[Batch Mesure] 🛠️ Appel à SonarQube /measures/component (métriques optionnelles)', ['url' => $urlOptionnel]);
+        $resultsOptionnel = $this->client->httpSonarQube($urlOptionnel);
+
+        if (isset($resultsOptionnel['code']) && in_array($resultsOptionnel['code'], [400, 401, 403, 404, 407, 414, 418, 422, 429, 500, 502, 503, 504, 505])) {
+            $this->logger->info('[Batch Mesure] ℹ️ Métriques optionnelles non disponibles sur ce serveur SonarQube.', [
+                'maven_key' => $maven_key,
+                'code' => $resultsOptionnel['code'],
+            ]);
+        } else {
+            foreach ($resultsOptionnel['json']['component']['measures'] ?? [] as $measure) {
+                $result[$measure['metric']] = $measure['value'] ?? 0;
+            }
+        }
+
         // On récupère le tableau des mesures reconstruites par le service BuildMapHistoryService.
         $rebuild_metrics = $this->apiBuildRequest->metricsRebuild(
             $result,

@@ -184,6 +184,29 @@ class BuildMapHistoryService
         'security_review_rating',
     ];
 
+    /* MODIF 2026-10-11 : métriques "Issue Severity on Overall Code" apparues entre
+     * SonarQube 26.3.0 et 26.9.0 — pas encore documentées par SonarSource (la doc
+     * publique s'arrête à la LTS 2026.5.0), donc pas de seuil de version fiable à
+     * leur associer. Volontairement EXCLUES de metricsKey()/CORE-10-2024 : une seule
+     * clé de métrique inconnue fait échouer tout l'appel /api/measures/component
+     * (HTTP 404, vérifié en live), donc il est hors de question de les mélanger à la
+     * liste principale sur la base d'un seuil deviné. Elles sont demandées dans un
+     * appel /api/measures/component séparé (cf. BatchCollecteMesureController), qui
+     * échoue de façon isolée (404 → valeurs null) sans jamais impacter la collecte
+     * des autres mesures. À basculer dans le mécanisme _CORE/_10/_2024 une fois
+     * qu'elles seront intégrées à une LTS officielle. */
+    private const MAINTAINABILITY_OPTIONAL = [
+        'maintainability_issue_severity',
+    ];
+
+    private const RELIABILITY_OPTIONAL = [
+        'reliability_issue_severity',
+    ];
+
+    private const SECURITY_OPTIONAL = [
+        'security_issue_severity',
+    ];
+
     /**
      * [Description for fetchMetrics]
      *
@@ -245,6 +268,27 @@ class BuildMapHistoryService
             $query = $sonar_core;
         }
         return $query;
+    }
+
+    /**
+     * [Description for optionalMetricsKey]
+     * Liste CSV des métriques "pas encore LTS" à demander dans un appel
+     * `/api/measures/component` séparé de `metricsKey()`, cf. MODIF 2026-10-11
+     * ci-dessus (MAINTAINABILITY_OPTIONAL/RELIABILITY_OPTIONAL/SECURITY_OPTIONAL).
+     *
+     * @return string
+     *
+     * Created at: 11/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function optionalMetricsKey(): string
+    {
+        return implode(',', array_unique(array_merge(
+            self::MAINTAINABILITY_OPTIONAL,
+            self::RELIABILITY_OPTIONAL,
+            self::SECURITY_OPTIONAL,
+        )));
     }
 
     /**
@@ -611,6 +655,15 @@ class BuildMapHistoryService
             'alert_status' => isset($measures['alert_status']) ? $measures['alert_status'] : 'UNKNOWN',
         ];
 
+        /* MODIF 2026-10-11 : métriques "optionnelles" (cf. MAINTAINABILITY_OPTIONAL/
+         * RELIABILITY_OPTIONAL/SECURITY_OPTIONAL) — valeur brute, pas de conversion
+         * en note A-E (sémantique de l'indice pas encore documentée par SonarSource). */
+        $severity_optional = [
+            'maintainability_issue_severity' => isset($measures['maintainability_issue_severity']) ? (int) $measures['maintainability_issue_severity'] : null,
+            'reliability_issue_severity' => isset($measures['reliability_issue_severity']) ? (int) $measures['reliability_issue_severity'] : null,
+            'security_issue_severity' => isset($measures['security_issue_severity']) ? (int) $measures['security_issue_severity'] : null,
+        ];
+
         $array_core = array_merge(
             $quality_gate,
             $size_core,
@@ -632,7 +685,8 @@ class BuildMapHistoryService
             $security_core,
             $security_10,
             $security_2024,
-            $security_review_core
+            $security_review_core,
+            $severity_optional
         );
 
         $array_custom = array_merge(

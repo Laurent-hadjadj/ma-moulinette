@@ -937,6 +937,8 @@ class HistoriqueRepository extends ServiceEntityRepository
         'software_quality_security_remediation_effort',
         // Security review
         'security_hotspots', 'security_review_rating', 'security_hotspots_reviewed',
+        // MODIF 2026-10-11 : métriques "optionnelles", pas encore LTS.
+        'maintainability_issue_severity', 'reliability_issue_severity', 'security_issue_severity',
         // Menace potentielle (custom ma-moulinette)
         'menace_potentielle_to_review_high', 'menace_potentielle_to_review_medium',
         'menace_potentielle_to_review_low',

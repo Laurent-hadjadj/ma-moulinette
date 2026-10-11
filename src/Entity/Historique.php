@@ -1288,6 +1288,37 @@ class Historique
     #[Assert\PositiveOrZero]
     private ?float $securityHotspotsReviewed = null;
 
+    /* MODIF 2026-10-11 : métriques "optionnelles" apparues entre SonarQube 26.3.0
+     * et 26.9.0, pas encore documentées/LTS par SonarSource — valeur brute,
+     * pas de note A-E. Collectées via un appel séparé non bloquant (cf.
+     * BatchCollecteMesureController), donc toujours nullable. */
+    #[ORM\Column(
+        name: 'maintainability_issue_severity',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Pire sévérité des problèmes de maintenabilité (métrique optionnelle, pas encore LTS).']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $maintainabilityIssueSeverity = null;
+
+    #[ORM\Column(
+        name: 'reliability_issue_severity',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Pire sévérité des problèmes de fiabilité (métrique optionnelle, pas encore LTS).']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $reliabilityIssueSeverity = null;
+
+    #[ORM\Column(
+        name: 'security_issue_severity',
+        type: Types::INTEGER,
+        nullable: true,
+        options: ['comment' => 'Pire sévérité des problèmes de sécurité (métrique optionnelle, pas encore LTS).']
+    )]
+    #[Assert\PositiveOrZero]
+    private ?int $securityIssueSeverity = null;
+
     #[ORM\Column(
         name: 'menace_potentielle_to_review_high',
         type: Types::INTEGER,
@@ -3227,6 +3258,39 @@ class Historique
     public function setSecurityHotspotsReviewed(?float $securityHotspotsReviewed): self
     {
         $this->securityHotspotsReviewed = $securityHotspotsReviewed;
+        return $this;
+    }
+
+    public function getMaintainabilityIssueSeverity(): ?int
+    {
+        return $this->maintainabilityIssueSeverity;
+    }
+
+    public function setMaintainabilityIssueSeverity(?int $maintainabilityIssueSeverity): self
+    {
+        $this->maintainabilityIssueSeverity = $maintainabilityIssueSeverity;
+        return $this;
+    }
+
+    public function getReliabilityIssueSeverity(): ?int
+    {
+        return $this->reliabilityIssueSeverity;
+    }
+
+    public function setReliabilityIssueSeverity(?int $reliabilityIssueSeverity): self
+    {
+        $this->reliabilityIssueSeverity = $reliabilityIssueSeverity;
+        return $this;
+    }
+
+    public function getSecurityIssueSeverity(): ?int
+    {
+        return $this->securityIssueSeverity;
+    }
+
+    public function setSecurityIssueSeverity(?int $securityIssueSeverity): self
+    {
+        $this->securityIssueSeverity = $securityIssueSeverity;
         return $this;
     }
 
