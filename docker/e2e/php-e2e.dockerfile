@@ -69,6 +69,12 @@ COPY importmap.php   ./importmap.php
 # found" sur a peu pres toutes les pages qui touchent EasyAdmin/Dashboard.
 # Le reste de tests/ (Unit/Integration/e2e) n'est jamais chargé à l’exécution.
 COPY tests/Support    ./tests/Support
+# Bug latent découvert en construisant cette image : SonarFixtureClientService.php
+# lit en dur dirname(__DIR__) . '/fixtures/sonarqube' (minuscule), alors que le
+# dossier committe s'appelle tests/Fixtures (majuscule) — fonctionne par accident
+# sous Windows (NTFS insensible a la casse), casserait sur tout Linux reel/CI.
+# On copie donc explicitement vers la casse exacte attendue par le code.
+COPY tests/Fixtures   ./tests/fixtures
 COPY .env            ./.env
 COPY .env.test       ./.env.test
 
