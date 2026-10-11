@@ -363,6 +363,42 @@ class ApiPeintureControllerTest extends TestCase
         $this->assertSame(0, $payload['detteMinute']);
     }
 
+    /* MODIF 2026-10-11 : frontend/backend/autre/inconnu + les 8 champs scope
+     * passent en `?? null` (au lieu de `?? 0`) quand la ligne elle-même manque
+     * (aucune collecte d'anomalies pour ce projet) — "pas encore collecté" ne
+     * doit pas se confondre avec "collecté, zéro anomalie par module". */
+    public function testPeintureProjetAnomalieReturnsNullsForModuleAndScopeWhenListIsEmpty(): void
+    {
+        $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
+        $this->anomalieRepo->method('selectAnomalie')->willReturn(['code' => 200, 'liste' => [[
+            'dette' => '0', 'dette_minute' => 0,
+            'dette_reliability' => '0', 'dette_reliability_minute' => 0,
+            'dette_vulnerability' => '0', 'dette_vulnerability_minute' => 0,
+            'dette_code_smell' => '0', 'dette_code_smell_minute' => 0,
+            'bug' => 0, 'vulnerability' => 0, 'code_smell' => 0,
+            'blocker' => 0, 'critical' => 0, 'major' => 0, 'info' => 0, 'minor' => 0,
+            // frontend/backend/autre/inconnu + scope_* absents de la ligne.
+        ]]]);
+
+        $payload = $this->decode($this->controller->peintureProjetAnomalie($this->jsonRequest([
+            'maven_key' => self::MAVEN_KEY,
+        ])));
+
+        $this->assertSame(200, $payload['code']);
+        $this->assertNull($payload['frontend']);
+        $this->assertNull($payload['backend']);
+        $this->assertNull($payload['autre']);
+        $this->assertNull($payload['inconnu']);
+        $this->assertNull($payload['scope_main']);
+        $this->assertNull($payload['scope_test']);
+        $this->assertNull($payload['bug_scope_main']);
+        $this->assertNull($payload['bug_scope_test']);
+        $this->assertNull($payload['vulnerability_scope_main']);
+        $this->assertNull($payload['vulnerability_scope_test']);
+        $this->assertNull($payload['code_smell_scope_main']);
+        $this->assertNull($payload['code_smell_scope_test']);
+    }
+
     public function testPeintureProjetAnomaliePropagatesRepositoryError(): void
     {
         $this->isValide->method('isValideInformation')->willReturn(['code' => 200]);
