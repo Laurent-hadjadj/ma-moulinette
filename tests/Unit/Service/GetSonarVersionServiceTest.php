@@ -155,4 +155,67 @@ class GetSonarVersionServiceTest extends TestCase
 
         $this->assertSame('components', $this->service->componentKeyParam());
     }
+
+    #[DataProvider('provideVersionsUsingLegacyStatuses')]
+    public function testIssueStatusParamReturnsLegacyStatusesForOldServers(string $version): void
+    {
+        $this->client->method('httpSonarQube')->willReturn([
+            'code' => 200,
+            'json' => ['texte' => $version],
+        ]);
+
+        $this->assertSame(
+            ['param' => 'statuses', 'value' => 'OPEN,CONFIRMED,REOPENED'],
+            $this->service->issueStatusParam()
+        );
+    }
+
+    /**
+     * @return iterable<string, array{0: string}>
+     */
+    public static function provideVersionsUsingLegacyStatuses(): iterable
+    {
+        yield 'version 8' => ['8.9.9.44547'];
+        yield 'version 9' => ['9.9.8.12345'];
+        // Contrairement à componentKeyParam(), la version 10 reste sur l'ancien modèle
+        // ici : statuses n'est déprécié que depuis la 10.4, pas dès la 10.0.
+        yield 'version 10' => ['10.4.1.88267'];
+    }
+
+    #[DataProvider('provideVersionsUsingIssueStatuses')]
+    public function testIssueStatusParamReturnsIssueStatusesForRecentServers(string $version): void
+    {
+        $this->client->method('httpSonarQube')->willReturn([
+            'code' => 200,
+            'json' => ['texte' => $version],
+        ]);
+
+        $this->assertSame(
+            ['param' => 'issueStatuses', 'value' => 'OPEN,CONFIRMED,ACCEPTED'],
+            $this->service->issueStatusParam()
+        );
+    }
+
+    /**
+     * @return iterable<string, array{0: string}>
+     */
+    public static function provideVersionsUsingIssueStatuses(): iterable
+    {
+        yield 'version 2024' => ['2024.12.0.1234'];
+        yield 'version 2026 (format court)' => ['26.9.0.129388'];
+    }
+
+    public function testIssueStatusParamDefaultsToIssueStatusesWhenVersionUnknown(): void
+    {
+        // Même politique que componentKeyParam() : cas nominal = modèle récent.
+        $this->client->method('httpSonarQube')->willReturn([
+            'code' => 503,
+            'erreur' => 'Service indisponible',
+        ]);
+
+        $this->assertSame(
+            ['param' => 'issueStatuses', 'value' => 'OPEN,CONFIRMED,ACCEPTED'],
+            $this->service->issueStatusParam()
+        );
+    }
 }

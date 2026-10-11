@@ -79,6 +79,7 @@ class BatchCollecteRepartitionControllerTest extends TestCase
 
         $this->urlBuilder->method('build')->willReturn(self::BUILT_URL);
         $this->sonarVersion->method('componentKeyParam')->willReturn('components');
+        $this->sonarVersion->method('issueStatusParam')->willReturn(['param' => 'issueStatuses', 'value' => 'OPEN,CONFIRMED,ACCEPTED']);
 
         // Paramètres standards (sonar.url + mots-clés modules) — utilisés par getParameter
         $this->parameterBag->method('get')->willReturnMap([

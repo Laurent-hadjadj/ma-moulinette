@@ -74,6 +74,9 @@ class BatchCollecteOwaspControllerTest extends TestCase
         $this->parameterBag = $this->createMock(ParameterBagInterface::class);
 
         $this->sonarVersion->method('componentKeyParam')->willReturn('components');
+        // Les fixtures d'issues de ce test utilisent le champ legacy 'status' (OPEN/CLOSED/...) :
+        // on stub issueStatusParam() sur l'ancien modèle pour que $statusField résolve à 'status'.
+        $this->sonarVersion->method('issueStatusParam')->willReturn(['param' => 'statuses', 'value' => 'OPEN,CONFIRMED,REOPENED']);
 
         $this->em->method('getRepository')->willReturnMap([
             [InformationProjet::class, $this->infoRepo],
@@ -394,6 +397,76 @@ class BatchCollecteOwaspControllerTest extends TestCase
         $this->assertSame(1, $capturedMap['a5_critical']);
     }
 
+    // ─── 9bis. Même filtre côté nouveau modèle (issueStatus, ACCEPTED inclus) — MODIF 2026-10-11 ─
+
+    public function testPersistedMapHasExpectedShapeWithNewIssueStatusModel(): void
+    {
+        // Contrôleur dédié : issueStatusParam() doit résoudre le nouveau modèle ici,
+        // contrairement au défaut legacy stubbé dans setUp() (réutilisé par les
+        // fixtures 'status' des autres tests de cette classe).
+        $sonarVersion = $this->createMock(GetSonarVersionService::class);
+        $sonarVersion->method('componentKeyParam')->willReturn('components');
+        $sonarVersion->method('issueStatusParam')->willReturn([
+            'param' => 'issueStatuses',
+            'value' => 'OPEN,CONFIRMED,ACCEPTED',
+        ]);
+        $controller = new BatchCollecteOwaspController(
+            $this->em,
+            $this->client,
+            $this->urlBuilder,
+            $sonarVersion,
+            $this->logger
+        );
+
+        $this->parameterBag->method('get')->willReturnMap([
+            ['sonar.url', self::SONAR_URL],
+            ['sonar.version', '8'],
+        ]);
+
+        $container = $this->createMock(ContainerInterface::class);
+        $container->method('has')->willReturnMap([['parameter_bag', true], ['serializer', false]]);
+        $container->method('get')->willReturnMap([['parameter_bag', 1, $this->parameterBag]]);
+        $controller->setContainer($container);
+
+        $payload = $this->buildOwaspPayload(
+            total: 3,
+            facets: [
+                ['val' => 'a1', 'count' => 1],
+                ['val' => 'a5', 'count' => 2],
+            ],
+            issues: [
+                ['issueStatus' => 'OPEN', 'severity' => 'BLOCKER', 'tags' => ['owasp-a1']],
+                ['issueStatus' => 'ACCEPTED', 'severity' => 'CRITICAL', 'tags' => ['owasp-a5']], // compté (nouveau modèle)
+                ['issueStatus' => 'FIXED', 'severity' => 'MAJOR', 'tags' => ['owasp-a1']], // ignoré
+            ]
+        );
+
+        $this->client->expects($this->once())->method('httpSonarQube')
+            ->willReturn(['code' => 200, 'json' => $payload]);
+
+        $this->infoRepo->method('selectInformationProjetVersion')
+            ->willReturn(['code' => 200, 'info' => [
+                'date' => '2026-04-22', 'version' => '1.0',
+            ]]);
+
+        $capturedMap = [];
+        $this->owaspRepo->method('deleteOwaspMavenKey')->willReturn(['code' => 200]);
+        $this->owaspRepo->expects($this->once())
+            ->method('insertOwasp')
+            ->with($this->callback(function (array $list) use (&$capturedMap) {
+                $capturedMap = $list[0];
+                return true;
+            }))
+            ->willReturn(['code' => 200]);
+
+        $controller->BatchCollecteOwasp(self::MAVEN_KEY, 'manual', 'admin');
+
+        // 'ACCEPTED' compté (nouveau modèle), 'FIXED' ignoré.
+        $this->assertSame(1, $capturedMap['a1_blocker']);
+        $this->assertSame(0, $capturedMap['a1_major']); // FIXED ignorée
+        $this->assertSame(1, $capturedMap['a5_critical']); // ACCEPTED comptée
+    }
+
     // ─── 10. Secours par tag quand la facette officielle ne classe rien (MODIF 2026-07-18) ─
 
     public function testFallsBackToTagCountWhenFacetTotalIsZero(): void
@@ -645,9 +718,9 @@ class BatchCollecteOwaspControllerTest extends TestCase
      * par le controller.
      *
      * @param array<int, array{val: string, count: int}>                       $facets
-     * @param array<int, array{status: string, severity: string, tags: array<int, string>}> $issues
+     * @param array<int, array{status?: string, issueStatus?: string, severity: string, tags: array<int, string>}> $issues
      *
-     * @return array{total: int, effortTotal: int, facets: array<int, array{values: array<int, array{val: string, count: int}>}>, issues: array<int, array{status: string, severity: string, tags: array<int, string>}>}
+     * @return array{total: int, effortTotal: int, facets: array<int, array{values: array<int, array{val: string, count: int}>}>, issues: array<int, array{status?: string, issueStatus?: string, severity: string, tags: array<int, string>}>}
      */
     private function buildOwaspPayload(int $total = 0, array $facets = [], array $issues = []): array
     {

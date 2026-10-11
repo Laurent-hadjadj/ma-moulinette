@@ -77,6 +77,7 @@ class BatchCollecteCleanCodeControllerTest extends TestCase
 
         $this->urlBuilder->method('build')->willReturn(self::BUILT_URL);
         $this->sonarVersion->method('componentKeyParam')->willReturn('components');
+        $this->sonarVersion->method('issueStatusParam')->willReturn(['param' => 'issueStatuses', 'value' => 'OPEN,CONFIRMED,ACCEPTED']);
         $this->extractName->method('extractNameFromMavenKey')->willReturn('ma-moulinette');
 
         $this->parameterBag->method('get')->willReturnMap([
