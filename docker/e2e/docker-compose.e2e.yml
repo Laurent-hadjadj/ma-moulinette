@@ -38,6 +38,7 @@ services:
     container_name: php-fpm-ma-moulinette-e2e
     environment:
       - APP_ENV=test
+      - APP_DEBUG=0
       # Surcharge .env.test.local (qui vise localhost) pour le reseau Docker.
       - DATABASE_URL=postgresql://db_user:db_password@postgres-e2e:5432/ma_moulinette_test?serverVersion=18&charset=utf8
       - TRACK_LOGGER_METHOD=false
@@ -52,6 +53,7 @@ services:
       # atomiques de repertoire de cache (rename + rmdir) qui échouent
       # dessus ("rmdir: Directory not empty" sur un ".!!xxxx" fantôme).
       - e2e-var:/var/www/var
+      - ./php-e2e.ini:/usr/local/etc/php/conf.d/99-e2e.ini:ro
     # Le volume Docker natif ci-dessus est créé root:root ; les workers
     # php-fpm tournent en www-data (pool www.conf) et ne peuvent pas y
     # créer var/cache/test sans ce chown préalable (sinon "Unable to
