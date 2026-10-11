@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V2.10.0 - 08/10/2026                 ##
+##           V2.11.0 - 11/10/2026                 ##
 ##                                                ##
 ####################################################*/
 
@@ -20,6 +20,7 @@
 --- 2026-10-08 : Ajout de la colone sonarqube_server_version pour tracer la version du serveur SonarQube ayant produit cette ligne.
 --- 2026-10-08 : Ajout des attributs eco_anomalies, eco_dette_minute (Empreinte Écologique, plugins SonarQube Creedengo).
 --- 2026-10-08 : Ajout de eco_rating et du détail par langage java/javascript/php/python (Empreinte Écologique).
+--- 2026-10-11 : Ajout de maintainability_issue_severity, reliability_issue_severity, security_issue_severity (métriques optionnelles, pas encore LTS).
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette;
@@ -187,6 +188,12 @@ CREATE TABLE ma_moulinette.historique
     security_hotspots INT,
     security_review_rating VARCHAR(4),
     security_hotspots_reviewed DOUBLE PRECISION,
+
+    -- MODIF 2026-10-11 : métriques "optionnelles" apparues entre SonarQube 26.3.0
+    -- et 26.9.0, pas encore documentées/LTS — valeur brute, pas de note A-E.
+    maintainability_issue_severity INT,
+    reliability_issue_severity INT,
+    security_issue_severity INT,
 
     menace_potentielle_to_review_high INT,
     menace_potentielle_to_review_medium INT,

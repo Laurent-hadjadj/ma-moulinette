@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create COMMENTS                      ##
-##           V3.5.0 - 08/10/2026                  ##
+##           V3.6.0 - 11/10/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -28,6 +28,7 @@
 --- 2026-10-06 : ajout commentaires pour les attributs scope_main, scope_test, bug_scope_main, bug_scope_test, vulnerability_scope_main, vulnerability_scope_test, code_smell_scope_main, code_smell_scope_test
 --- 2026-10-08 : Ajout du commentaire pour la colone sonarqube_server_version pour tracer la version du serveur SonarQube ayant produit cette ligne.
 -- 2026-10-08 : Ajout des commentaires pour les attributs de la table eco_conception.
+--- 2026-10-11 : Ajout de maintainability_issue_severity, reliability_issue_severity, security_issue_severity (métriques optionnelles, pas encore LTS).
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette postgres;
@@ -442,6 +443,9 @@ COMMENT ON COLUMN ma_moulinette.historique.software_quality_security_remediation
 COMMENT ON COLUMN ma_moulinette.historique.security_hotspots IS '[CORE] Nombre de Security Hotspots identifiés, c’est-à-dire des zones de code sensibles nécessitant une revue manuelle. Ces éléments ne sont pas forcément des vulnérabilités mais peuvent le devenir selon le contexte. Ils doivent être analysés par un développeur ou un expert sécurité.';
 COMMENT ON COLUMN ma_moulinette.historique.security_review_rating IS '[CORE] Note de revue des Security Hotspots, allant de A à E. Elle reflète la qualité et le niveau de complétude des analyses effectuées sur les zones sensibles. Une bonne note indique un processus de revue sécurité maîtrisé.';
 COMMENT ON COLUMN ma_moulinette.historique.security_hotspots_reviewed IS '[CORE] Pourcentage de Security Hotspots ayant été examinés et validés. Indique le niveau de couverture des revues de sécurité manuelles. Un taux élevé signifie que les zones sensibles ont été correctement analysées.';
+COMMENT ON COLUMN ma_moulinette.historique.maintainability_issue_severity IS '[OPTIONNEL] Pire sévérité des problèmes de maintenabilité sur le code global. Métrique apparue entre SonarQube 26.3.0 et 26.9.0, pas encore documentée/LTS par SonarSource — collectée via un appel séparé non bloquant.';
+COMMENT ON COLUMN ma_moulinette.historique.reliability_issue_severity IS '[OPTIONNEL] Pire sévérité des problèmes de fiabilité sur le code global. Métrique apparue entre SonarQube 26.3.0 et 26.9.0, pas encore documentée/LTS par SonarSource — collectée via un appel séparé non bloquant.';
+COMMENT ON COLUMN ma_moulinette.historique.security_issue_severity IS '[OPTIONNEL] Pire sévérité des problèmes de sécurité sur le code global. Métrique apparue entre SonarQube 26.3.0 et 26.9.0, pas encore documentée/LTS par SonarSource — collectée via un appel séparé non bloquant.';
 COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_to_review_high IS '[CORE] Nombre de menaces potentielles de sécurité de niveau élevé à vérifier.';
 COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_to_review_medium IS '[CORE] Nombre de menaces potentielles moyennes à vérifier.';
 COMMENT ON COLUMN ma_moulinette.historique.menace_potentielle_to_review_low IS '[CORE] Nombre de menaces potentielles faibles à vérifier.';
@@ -757,6 +761,10 @@ COMMENT ON COLUMN ma_moulinette.mesures.software_quality_security_remediation_ef
 COMMENT ON COLUMN ma_moulinette.mesures.security_hotspots IS '[CORE] Nombre de Security Hotspots identifiés, c’est-à-dire des zones de code sensibles nécessitant une revue manuelle. Ces éléments ne sont pas forcément des vulnérabilités mais peuvent le devenir selon le contexte. Ils doivent être analysés par un développeur ou un expert sécurité.';
 COMMENT ON COLUMN ma_moulinette.mesures.security_review_rating IS '[CORE] Note de revue des Security Hotspots, allant de A à E. Elle reflète la qualité et le niveau de complétude des analyses effectuées sur les zones sensibles. Une bonne note indique un processus de revue sécurité maîtrisé.';
 COMMENT ON COLUMN ma_moulinette.mesures.security_hotspots_reviewed IS '[CORE] Pourcentage de Security Hotspots ayant été examinés et validés. Indique le niveau de couverture des revues de sécurité manuelles. Un taux élevé signifie que les zones sensibles ont été correctement analysées.';
+
+COMMENT ON COLUMN ma_moulinette.mesures.maintainability_issue_severity IS '[OPTIONNEL] Pire sévérité des problèmes de maintenabilité sur le code global. Métrique apparue entre SonarQube 26.3.0 et 26.9.0, pas encore documentée/LTS par SonarSource — collectée via un appel séparé non bloquant.';
+COMMENT ON COLUMN ma_moulinette.mesures.reliability_issue_severity IS '[OPTIONNEL] Pire sévérité des problèmes de fiabilité sur le code global. Métrique apparue entre SonarQube 26.3.0 et 26.9.0, pas encore documentée/LTS par SonarSource — collectée via un appel séparé non bloquant.';
+COMMENT ON COLUMN ma_moulinette.mesures.security_issue_severity IS '[OPTIONNEL] Pire sévérité des problèmes de sécurité sur le code global. Métrique apparue entre SonarQube 26.3.0 et 26.9.0, pas encore documentée/LTS par SonarSource — collectée via un appel séparé non bloquant.';
 
 COMMENT ON COLUMN ma_moulinette.mesures.mode_collecte IS '[MA-MOULINETTE] Type de collecte : REBUILD | COLLECTE | TRAITEMENT MANUEL | TRAITEMENT AUTOMATIQUE.';
 COMMENT ON COLUMN ma_moulinette.mesures.utilisateur_collecte IS '[MA-MOULINETTE] Auteur de la collecte de données.';
