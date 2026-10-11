@@ -69,6 +69,12 @@ services:
       # fichiers statiques reels (compatible debug=false) — pas nécessaire
       # vu que la perf est deja bonne avec debug=true.
       - APP_DEBUG=1
+      # mock_file (défaut .env.test) n'a pas de verrouillage de fichier entre
+      # read()/write() — cause probable d'un flake CSRF intermittent observe
+      # en e2e (requêtes HTTP réelles concurrentes sur plusieurs workers
+      # php-fpm, contrairement a WebTestCase qui reste mono-process). Natif
+      # = meme mécanisme que dev/prod, avec verrouillage.
+      - APP_TEST_SESSION_STORAGE=session.storage.factory.native
       # Surcharge .env.test.local (qui vise localhost) pour le reseau Docker.
       - DATABASE_URL=postgresql://db_user:db_password@postgres-e2e:5432/ma_moulinette_test?serverVersion=18&charset=utf8
       - DATABASE_SCHEMA=ma_moulinette_test
