@@ -1,7 +1,13 @@
 # Stack Docker dédiée aux tests E2E Playwright — distincte de
 # docker/docker-compose.yml (stack de prod : Traefik, root_volume externe,
 # cron avec vrais tokens). Ici : postgres + php-fpm + nginx, jetables,
-# aucune dépendance à un répertoire hors de ce depot.
+# ENTIÈREMENT autonome : aucune image ne bind-monte de code depuis l'hôte
+# Windows (php-e2e.dockerfile et nginx-e2e.dockerfile COPIENT src/vendor/public
+# à la construction — voir ces fichiers pour le pourquoi). Seuls les fichiers
+# de config texte (migrations SQL, nginx.conf, php-e2e.ini, init-schema.sh)
+# restent montés en lecture seule : zero risque "vendor Windows != Linux",
+# zero coût de performance (ce sont des petits fichiers texte, pas du code
+# execute en boucle).
 #
 # Usage :
 #   docker compose -f docker/e2e/docker-compose.e2e.yml up -d --build
@@ -9,6 +15,11 @@
 #   .\bin\e2e\reset-e2e-data.ps1 -Port 5434            (reset rapide entre runs)
 #   cd tests/e2e && $env:E2E_BASE_URL='http://localhost:8080'; npm test
 #   docker compose -f docker/e2e/docker-compose.e2e.yml down -v   (arrêt + purge)
+#
+# IMPORTANT : toute modif de src/templates/config/etc. nécessite un rebuild
+# (docker compose up -d --build php-fpm-e2e) pour être prise en compte — ce
+# n'est plus du live-reload comme avec le bind-mount. Normal pour une image
+# pensée comme autonome ; c'est le même modèle qu'un vrai déploiement.
 #
 # Le role "postgres" (superuser) et la base de bootstrap sont ceux de
 # l'image officielle ; "db_user" et "ma_moulinette_test" sont crées par
@@ -31,8 +42,8 @@ services:
 
   php-fpm-e2e:
     build:
-      context: ..
-      dockerfile: php-custom.dockerfile
+      context: ../..
+      dockerfile: docker/e2e/php-e2e.dockerfile
       args:
         - php_version=8.5-fpm-bookworm
     container_name: php-fpm-ma-moulinette-e2e
@@ -41,17 +52,68 @@ services:
       - APP_DEBUG=0
       # Surcharge .env.test.local (qui vise localhost) pour le reseau Docker.
       - DATABASE_URL=postgresql://db_user:db_password@postgres-e2e:5432/ma_moulinette_test?serverVersion=18&charset=utf8
+      - DATABASE_SCHEMA=ma_moulinette_test
       - TRACK_LOGGER_METHOD=false
       - CREEDENGO_ENABLED=false
       - ACTUATOR_CIPHER_KEY=ZaMR9NBLPvcMhq/L8kBQC72QkrVImo2GkGM/bY8rmzE=
+      - ACTUATOR_SECRET_KEY=base64:test-actuator-secret-not-for-prod
       - DC_INGEST_TOKEN=test-dc-ingest-token-32chars-aaaa
+      # Pas de .env.test.local dans l'image (cf. commentaire plus haut) : toutes
+      # les variables normalement définies par ce fichier gitignore sont
+      # redéfinies ici avec des valeurs volontairement factices, committables.
+      - SECRET=test-secret-not-for-prod
+      - CIPHERS=DEFAULT:!DH
+      - VERIFY_HOST=0
+      - VERIFY_PEER=0
+      - PROXY=
+      - SONAR_URL=http://sonarqube-indisponible.invalid
+      - SONAR_TOKEN=test-sonar-token
+      - SONAR_USER=
+      - SONAR_PASSWORD=
+      - SONAR_VERSION=8
+      - SONAR_ACTIVITY_TOKEN=
+      - SONAR_ACTIVITY_USER=
+      - SONAR_ACTIVITY_PASSWORD=
+      - SONAR_ORGANIZATION=
+      - TRUSTED_PROXIES=127.0.0.1,::1
+      - NOMBRE_FAVORI=20
+      - TRUST_HOST1=localhost
+      - TRUST_HOST2=127.0.0.1
+      - MAJ_PROJET=1
+      - MAJ_PROFIL=1
+      - SALT=test-salt-not-for-prod
+      - AUDIT=/var/audit
+      - PATH_AUDIT=/var/audit
+      - ENVIRONNEMENT=TEST
+      - MODULE_FRONTEND=presentation,webapp,front,angular,templates,styles,css,js,ts,vue,react,svelte,scss,less,html,xhtml
+      - MODULE_BACKEND=metier,back,controller,api,service,common,dao,dto,sql,liquibase,changelog,middleoffice,rest,soap,entite,entity,repository,interface,converter,serviceweb,serviceweb-client
+      - MODULE_AUTRE=batch,rdd,etl,pipeline,processing
+      - MARQUE_ENTREPRISE_SHORT=E2E
+      - MARQUE_ENTREPRISE_LONG=Ma-Moulinette E2E
+      - LOGO_ENTREPRISE=logo-entreprise.png
+      - RGAA=partiellement
+      - CGU_EDITEUR=Ma Moulinette E2E
+      - CGU_ADRESSE=
+      - CGU_SIRET=false
+      - CGU_SIREN=false
+      - CGU_NUMERO_SIRET=
+      - CGU_NUMERO_SIREN=
+      - CGU_DIRECTEUR_PUBLICATION=
+      - CGU_SOURCE_URL=https://github.com/Laurent-hadjadj/ma-moulinette
+      - CGU_SOURCE_SCM=github
+      - CGU_HEBERGEMENT=
+      - CGU_URL_SITE=http://localhost
+      - APP_CLIENT_TOKEN=test-app-client-token
+      - API_CLIENT_TOKEN=test-api-client-token
+      - APP_ALLOWED_ORIGINS=localhost,127.0.0.1
+      - RAPPORT_PDF_WATERMARK_MODE=confidential
+      - MAMOUL_CLI_CIPHERS=DEFAULT:!DH
+      - MAMOUL_CLI_PROXY_URL=
+      - MAMOUL_CLI_PROXY_USER_PWD=
+      - MAMOUL_CLI_NO_PROXY=localhost,127.0.0.1
     volumes:
-      - ../..:/var/www
-      # var/ (cache/log) sur un volume Docker natif, PAS le bind-mount Windows :
-      # le partage de fichiers Docker Desktop (Windows -> WSL2) émule le
-      # "silly rename" façon SMB sur unlink/rmdir — Symfony fait des swaps
-      # atomiques de repertoire de cache (rename + rmdir) qui échouent
-      # dessus ("rmdir: Directory not empty" sur un ".!!xxxx" fantôme).
+      # var/ (cache/log, en écriture) sur un volume Docker natif — seul état
+      # mutable du conteneur, tout le reste est fige dans l'image.
       - e2e-var:/var/www/var
       - ./php-e2e.ini:/usr/local/etc/php/conf.d/99-e2e.ini:ro
     # Le volume Docker natif ci-dessus est créé root:root ; les workers
@@ -66,13 +128,12 @@ services:
       - e2e-net
 
   nginx-e2e:
-    image: nginx:1.27-alpine
+    build:
+      context: ../..
+      dockerfile: docker/e2e/nginx-e2e.dockerfile
     container_name: nginx-ma-moulinette-e2e
     ports:
       - "8080:80"
-    volumes:
-      - ../..:/var/www:ro
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - php-fpm-e2e
     networks:

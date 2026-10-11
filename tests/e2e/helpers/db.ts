@@ -11,10 +11,16 @@ const seedScript = resolve(projectRoot, 'bin', 'e2e', 'seed-e2e.ps1');
 // Les scripts ps1 refusent ma_moulinette (PROD) sauf -AllowProd explicite.
 const E2E_DB = process.env.E2E_DB_NAME || 'ma_moulinette_test';
 
+// Port Postgres cible. Défaut 5432 (natif Windows) ; la stack Docker e2e
+// (docker/e2e/docker-compose.e2e.yml) expose son postgres sur 5434 pour ne
+// jamais entrer en collision avec un postgres natif local — définir
+// E2E_DB_PORT=5434 avant `npm test` quand on cible Docker.
+const E2E_DB_PORT = process.env.E2E_DB_PORT ? Number(process.env.E2E_DB_PORT) : 5432;
+
 function runPs(scriptPath: string, args: string[] = []): void {
-  // Toujours injecter -DbName (defense in depth : le defaut ps1 est deja test,
-  // mais on rend la cible explicite cote helper pour eviter toute surprise).
-  const fullArgs = ['-DbName', E2E_DB, ...args];
+  // Toujours injecter -DbName (defense in depth : le défaut ps1 est déjà test,
+  // mais on rend la cible explicite cote helper pour éviter toute surprise).
+  const fullArgs = ['-DbName', E2E_DB, '-Port', String(E2E_DB_PORT), ...args];
   execFileSync(
     'powershell.exe',
     ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', scriptPath, ...fullArgs],
@@ -26,7 +32,7 @@ function runPs(scriptPath: string, args: string[] = []): void {
  * Reset rapide de l'état E2E (équivalent du reset entre tests d'intégration
  * Symfony). À appeler dans `test.beforeAll()` des specs qui mutent la DB.
  *
- * Conserve : referentiels OWASP, versions ma_moulinette, admin, groupes défaut.
+ * Conserve : référentiels OWASP, versions ma_moulinette, admin, groupes défaut.
  * Wipe + reload : 5 users E2E, données projet, groupes custom.
  *
  * Avantages :
