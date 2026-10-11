@@ -425,6 +425,38 @@ class ApiEnregistrementControllerTest extends TestCase
         $this->assertNull($capturedMap['bug_scope_main']);
     }
 
+    public function testEnregistrementLeavesRepartitionColumnsNullWhenAbsentFromPayload(): void
+    {
+        $this->authChecker->method('isGranted')->willReturn(true);
+        $this->token->method('getUser')->willReturn($this->makeUser());
+
+        // MODIF 2026-10-11 : repartition_frontend/backend/autre/inconnu absents
+        // du payload (projet jamais collecté côté anomalies) -> null, pas 0.
+        $payload = $this->buildPayload();
+        unset(
+            $payload['repartition_frontend'],
+            $payload['repartition_backend'],
+            $payload['repartition_autre'],
+            $payload['repartition_inconnu']
+        );
+
+        $capturedMap = [];
+        $this->historiqueRepo->expects($this->once())
+            ->method('insertHistoriqueAjoutProjet')
+            ->with($this->callback(function (array $map) use (&$capturedMap): bool {
+                $capturedMap = $map;
+                return true;
+            }))
+            ->willReturn(['code' => 200]);
+
+        $this->controller->enregistrement($this->jsonRequest($payload));
+
+        $this->assertNull($capturedMap['repartition_frontend']);
+        $this->assertNull($capturedMap['repartition_backend']);
+        $this->assertNull($capturedMap['repartition_autre']);
+        $this->assertNull($capturedMap['repartition_inconnu']);
+    }
+
     public function testEnregistrementLeavesRciColumnsNullWhenAbsentFromPayload(): void
     {
         $this->authChecker->method('isGranted')->willReturn(true);
