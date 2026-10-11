@@ -69,7 +69,7 @@ const workInProgress = async function(){
     url: `${serveur()}/api/secure/traitement/pending`,
     type: 'GET',
     dataType: 'json',
-    contentType,
+    contentType: content_type,
     headers: {
       'X-API-Custom-403': 'true',
       'X-Internal-Front': 'front-app'
