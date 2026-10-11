@@ -9,6 +9,10 @@ const processQueueScript = resolve(projectRoot, 'bin', 'e2e', 'process-dc-queue.
 /** Token attendu par DependencyCheckTokenSubscriber en APP_ENV=test (cf. .env.test). */
 export const DC_INGEST_TOKEN = 'test-dc-ingest-token-32chars-aaaa';
 
+// Port Postgres cible — meme convention que E2E_DB_PORT dans helpers/db.ts
+// (défaut 5432 natif ; la stack Docker e2e expose le sien sur 5434).
+const E2E_DB_PORT = process.env.E2E_DB_PORT ? Number(process.env.E2E_DB_PORT) : 5432;
+
 /**
  * Traite la queue d'ingestion DependencyCheck (POST /api/secure/dependency-check/upload
  * ne fait qu'enqueuer — un worker séparé transforme la queue en dc_scan/dc_finding
@@ -20,7 +24,10 @@ export const DC_INGEST_TOKEN = 'test-dc-ingest-token-32chars-aaaa';
 export function processDcQueue(): void {
   execFileSync(
     'powershell.exe',
-    ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', processQueueScript],
+    [
+      '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', processQueueScript,
+      '-DbPort', String(E2E_DB_PORT),
+    ],
     { stdio: ['ignore', 'inherit', 'inherit'] }
   );
 }
