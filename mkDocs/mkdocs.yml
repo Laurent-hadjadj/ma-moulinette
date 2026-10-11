@@ -25,6 +25,7 @@ nav:
         - Travailler à plusieurs: ma-moulinette/developpement/tuto-git.md
         - Automatisation des tâches: ma-moulinette/developpement/gitlab-ci.md
         - Tests End-to-End: ma-moulinette/developpement/test-e2e.md
+        - "Exploration : OWASP API Security": ma-moulinette/developpement/exploration-owasp-api-security.md
     - Commandes:
         - Vue d'ensemble: ma-moulinette/commandes/index.md
         - Commandes Prod: ma-moulinette/commandes/prod.md
