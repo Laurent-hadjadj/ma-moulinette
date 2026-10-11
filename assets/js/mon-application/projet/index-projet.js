@@ -1051,7 +1051,8 @@ const projetTodo = async function (maven_key) {
       const hasTrace = !!t.trace;
       const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
       showMessage(t.type, t.message, trace);
-      sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 12');
+      log(` - ❌ (11) Collecte des commentaires Todo en échec (Erreur ${t.code}).`);
+      sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 11');
       errorButton($boutonCollecteIndicateur, aria_label);
       return;
     }
@@ -1075,9 +1076,9 @@ const projetTodo = async function (maven_key) {
 
   } catch (error) {
     const trace = prepareTechnicalDetails(error);
-    const message = "Une erreur inattendue s'est produite lors de la phase 12.";
+    const message = "Une erreur inattendue s'est produite lors de la phase 11.";
     showMessage('critical', message, trace);
-    sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 12');
+    sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 11');
     log(` - ❌ (11) Collecte des commentaires Todo.`);
     errorButton($boutonCollecteIndicateur, aria_label);
     return;
@@ -1289,7 +1290,8 @@ const projetRCI = async function (maven_key) {
       const hasTrace = !!t.trace;
       const trace = hasTrace ? prepareTechnicalDetails(t.trace) : null;
       showMessage(t.type, t.message, trace);
-      sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 12');
+      log(` - ❌ (14) Collecte des mesures RCI en échec (Erreur ${t.code}).`);
+      sessionStorage.setItem('ma_moulinette_collecte', 'Erreur phase 14');
       errorButton($boutonCollecteIndicateur, aria_label);
       return;
     }
