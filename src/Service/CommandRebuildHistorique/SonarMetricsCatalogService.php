@@ -547,6 +547,30 @@ class SonarMetricsCatalogService
                 'description' => "Note de revue des Security Hotspots, allant de A à E. Elle reflète la qualité et le niveau de complétude des analyses effectuées sur les zones sensibles. Une bonne note indique un processus de revue sécurité maîtrisé."
             ],
 
+            // MODIF 2026-10-11 : métriques "optionnelles" apparues entre SonarQube 26.3.0 et 26.9.0,
+            // pas encore documentées/LTS par SonarSource — version volontairement null (pas de seuil
+            // fiable connu, cf. BuildMapHistoryService::optionalMetricsKey()).
+            'maintainability_issue_severity' => [
+                'domaine' => 'SonarQube',
+                'version' => null,
+                'type' => 'int',
+                'description' => "Pire sévérité des problèmes de maintenabilité sur le code global. Métrique optionnelle apparue entre SonarQube 26.3.0 et 26.9.0, pas encore documentée/LTS — collectée via un appel séparé non bloquant, peut être absente selon le serveur."
+            ],
+
+            'reliability_issue_severity' => [
+                'domaine' => 'SonarQube',
+                'version' => null,
+                'type' => 'int',
+                'description' => "Pire sévérité des problèmes de fiabilité sur le code global. Métrique optionnelle apparue entre SonarQube 26.3.0 et 26.9.0, pas encore documentée/LTS — collectée via un appel séparé non bloquant, peut être absente selon le serveur."
+            ],
+
+            'security_issue_severity' => [
+                'domaine' => 'SonarQube',
+                'version' => null,
+                'type' => 'int',
+                'description' => "Pire sévérité des problèmes de sécurité sur le code global. Métrique optionnelle apparue entre SonarQube 26.3.0 et 26.9.0, pas encore documentée/LTS — collectée via un appel séparé non bloquant, peut être absente selon le serveur."
+            ],
+
             'alert_status' => [
                 'domaine' => 'SonarQube',
                 'version' => 8,
