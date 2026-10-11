@@ -1,5 +1,5 @@
 {
-    "generated_at": "2026-10-11T19:08:18+00:00",
+    "generated_at": "2026-10-11T20:08:57+00:00",
     "cloc": {
         "php": {
             "fichier": 286,
@@ -17,10 +17,10 @@
         },
         "js": {
             "fichier": 92,
-            "code": 10780,
+            "code": 10782,
             "comment": 4328,
             "vide": 1742,
-            "total": 16850
+            "total": 16852
         },
         "css": {
             "fichier": 38,
