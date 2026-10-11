@@ -63,6 +63,12 @@ COPY translations    ./translations
 COPY assets          ./assets
 COPY migrations      ./migrations
 COPY importmap.php   ./importmap.php
+# tests/Support/ (PAS tout tests/) : App\Tests\SonarFixtureClientService est
+# chargée par le container DI même en simple affichage de page (remplace les
+# vrais appels SonarQube en APP_ENV=test) — sans ce dossier, "Class ... not
+# found" sur a peu pres toutes les pages qui touchent EasyAdmin/Dashboard.
+# Le reste de tests/ (Unit/Integration/e2e) n'est jamais chargé à l’exécution.
+COPY tests/Support    ./tests/Support
 COPY .env            ./.env
 COPY .env.test       ./.env.test
 
