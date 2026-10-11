@@ -257,10 +257,12 @@ class HistoriqueCaseTest extends TestCase
      * Empreinte Écologique, plugins SonarQube Creedengo).
      * MODIF 2026-10-09 : 184 → 197 (+13 colonnes : eco_rating global + détail
      * par langage java/javascript/php/python, 3 colonnes chacun).
+     * MODIF 2026-10-11 : 197 → 200 (+3 colonnes maintainability/reliability/
+     * security_issue_severity, métriques optionnelles pas encore LTS).
      */
     public function testCountAttribut(): void
     {
         $reflectionClass = new \ReflectionClass(new Historique());
-        $this->assertEquals(197, count($reflectionClass->getProperties()));
+        $this->assertEquals(200, count($reflectionClass->getProperties()));
     }
 }

@@ -338,8 +338,10 @@ class HistoriqueValidatorTest extends KernelTestCase
          * MODIF 2026-10-08 : 182 → 184 (+2 colonnes eco_anomalies/eco_dette_minute,
          * Empreinte Écologique, plugins SonarQube Creedengo).
          * MODIF 2026-10-09 : 184 → 197 (+13 colonnes : eco_rating global +
-         * détail par langage java/javascript/php/python, 3 colonnes chacun). */
+         * détail par langage java/javascript/php/python, 3 colonnes chacun).
+         * MODIF 2026-10-11 : 197 → 200 (+3 colonnes maintainability/reliability/
+         * security_issue_severity, métriques optionnelles pas encore LTS). */
         $reflectionClass = new \ReflectionClass(new Historique());
-        $this->assertEquals(197, count($reflectionClass->getProperties()));
+        $this->assertEquals(200, count($reflectionClass->getProperties()));
     }
 }

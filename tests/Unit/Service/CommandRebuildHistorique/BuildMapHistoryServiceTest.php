@@ -96,6 +96,32 @@ class BuildMapHistoryServiceTest extends TestCase
         $this->assertSame($query2024, $query2025);
     }
 
+    public function testMetricsKeyNeverContainsOptionalSeverityMetrics(): void
+    {
+        // Les métriques optionnelles (pas encore LTS) ne doivent JAMAIS se
+        // retrouver dans metricsKey(), quel que soit la version : un seul
+        // metricKey inconnu fait échouer tout /api/measures/component (404).
+        // Elles ont leur propre appel séparé, cf. optionalMetricsKey().
+        foreach ([8, 10, 2024, 2025, 2026] as $version) {
+            $query = $this->service->metricsKey($version);
+            $this->assertStringNotContainsString('maintainability_issue_severity', $query);
+            $this->assertStringNotContainsString('reliability_issue_severity', $query);
+            $this->assertStringNotContainsString('security_issue_severity', $query);
+        }
+    }
+
+    // ─────────────────────── optionalMetricsKey() ───────────────────────
+
+    public function testOptionalMetricsKeyReturnsTheThreeSeverityMetrics(): void
+    {
+        $query = $this->service->optionalMetricsKey();
+
+        $this->assertSame(
+            'maintainability_issue_severity,reliability_issue_severity,security_issue_severity',
+            $query
+        );
+    }
+
     // ─────────────────────── metricsRebuild happy paths ───────────────────────
 
     public function testMetricsRebuildDefaultCollectReturnsOnlyCoreMetricsAndSkipsCustomBlock(): void
@@ -178,6 +204,9 @@ class BuildMapHistoryServiceTest extends TestCase
                 'complexity' => '500',
                 'cognitive_complexity' => '100',
                 'tests' => '250',
+                'maintainability_issue_severity' => '25',
+                'reliability_issue_severity' => '15',
+                'security_issue_severity' => '25',
             ],
             ['analysisKey' => 'AY1', 'version' => '1.0', 'date' => '2026-04-22T00:00:00+0000'],
             'fr.ma-moulinette:ma-moulinette'
@@ -190,6 +219,11 @@ class BuildMapHistoryServiceTest extends TestCase
         $this->assertSame(22.5, $result['comment_lines_density']);
         $this->assertSame(3, $result['bugs']);
         $this->assertSame(250, $result['tests']);
+
+        // Métriques optionnelles : passthrough entier brut, pas de conversion en note.
+        $this->assertSame(25, $result['maintainability_issue_severity']);
+        $this->assertSame(15, $result['reliability_issue_severity']);
+        $this->assertSame(25, $result['security_issue_severity']);
 
         // Ratings lettre (via ratingToLetter)
         $this->assertSame('B', $result['sqale_rating']);

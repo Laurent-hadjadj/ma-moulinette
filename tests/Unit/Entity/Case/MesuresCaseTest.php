@@ -185,10 +185,12 @@ class MesuresCaseTest extends TestCase
      * v2.0.0 : l'entite Mesures comporte 106 attributs (id + 105 colonnes).
      * MODIF 2026-05-05 : 86 attributs (id + 85 colonnes) apres
      * suppression de 22 colonnes orphelines + ajout de coverageRating et duplicatedLinesRating.
+     * MODIF 2026-10-11 : 86 → 89 (+3 colonnes maintainability/reliability/
+     * security_issue_severity, métriques optionnelles pas encore LTS).
      */
     public function testCountAttribut(): void
     {
         $reflectionClass = new \ReflectionClass(new Mesures());
-        $this->assertEquals(86, count($reflectionClass->getProperties()));
+        $this->assertEquals(89, count($reflectionClass->getProperties()));
     }
 }

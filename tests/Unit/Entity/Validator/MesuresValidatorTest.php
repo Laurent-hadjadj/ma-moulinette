@@ -261,10 +261,12 @@ class MesuresValidatorTest extends KernelTestCase
     /**
      * v2.0.0 : l'entite Mesures comporte 106 attributs.
      * MODIF 2026-05-05 : 86 attributs apres alignement avec le DDL.
+     * MODIF 2026-10-11 : 86 → 89 (+3 colonnes maintainability/reliability/
+     * security_issue_severity, métriques optionnelles pas encore LTS).
      */
     public function testCountAttribut(): void
     {
         $reflectionClass = new \ReflectionClass(new Mesures());
-        $this->assertEquals(86, count($reflectionClass->getProperties()));
+        $this->assertEquals(89, count($reflectionClass->getProperties()));
     }
 }
