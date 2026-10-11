@@ -130,7 +130,6 @@ Identité SonarQube du projet : nom, clé d'analyse, clé Maven, distribution de
 
 !!! note "✅ 2026-09-29 : note RCI et détail par module"
     Une note A-E **RCI** (Risk Criticality Index, plugin `sonar-rci` porté en PHP) s'affiche désormais à côté de la Quality Gate. Un bouton ouvre une fenêtre modale avec le détail : un tableau (RCI, taux de dette, note) pour le global **et** pour chaque module (frontend/backend/autre/inconnu), plus un graphique en barres empilées RCI/Dette par colonne.
-
     Le détail par module repose sur une classification par mots-clés (chemins de fichiers) — marge d'erreur à prendre en compte, en particulier sur des projets au référentiel de règles ou à l'arborescence atypiques (bandeau d'avertissement affiché dans la modale).
 
 !!! note "✅ Aide branchée sur la complexité"
@@ -151,6 +150,25 @@ Identité SonarQube du projet : nom, clé d'analyse, clé Maven, distribution de
 - Nombre de violations à corriger (bouton vers la répartition par sévérité).
 
 Aucun seuil de couleur n'est codé en dur dans les templates : les badges de notes A-E et les couleurs conditionnelles sont posés dynamiquement en JavaScript après réception des données.
+
+!!! note "📌 Qu'est-ce qu'une anomalie « active » ? (statuses / issueStatuses)"
+    Les comptages bugs/vulnérabilités/mauvaises pratiques interrogent `/api/issues/search` avec un filtre de statut, pour ne compter que les anomalies **encore actives** (pas déjà traitées).<br> Ce filtre change de paramètre et de vocabulaire selon la version du serveur SonarQube — le paramètre `statuses` est marqué déprécié depuis la version 10.4, remplacé par `issueStatuses`.
+
+**Règle retenue** :
+
+| Modèle | Serveur | Paramètre | Valeurs incluses | Valeurs exclues (= plus une anomalie) |
+| --- | --- | --- | --- | --- |
+| Ancien | 8, 9, 10 | `statuses` | `OPEN, CONFIRMED, REOPENED` | `RESOLVED`, `CLOSED` |
+| Nouveau | 2024, 2025, 2026… | `issueStatuses` | `OPEN, CONFIRMED, ACCEPTED` | `FALSE_POSITIVE`, `FIXED` |
+
+`FALSE_POSITIVE` et `FIXED` ne sont pas des anomalies (faux positif écarté, ou déjà corrigé).
+`ACCEPTED` (nouveau modèle) est **inclus** : d'après la documentation SonarQube, *« You can accept an issue to fix it later »* — le défaut est toujours réel et non corrigé, juste reporté. Ce n'est donc pas l'équivalent de l'ancienne résolution « won't fix » (classement définitif) : c'est un report, pas une clôture. Compter `ACCEPTED` comme une anomalie active est donc cohérent avec le reste de la logique (un défaut présent dans le code tant qu'il n'est pas corrigé).
+
+!!! warning "⚠️ Changement de comportement assumé par rapport à l'ancien modèle"
+    En interne, « Accept » reste représenté par `status=RESOLVED` + `resolution=WONTFIX` côté ancien modèle — avec l'**ancien** filtre (`statuses=OPEN,CONFIRMED,REOPENED`), faire « Accept » sur une anomalie la **retire** du compteur (comme un `RESOLVED` classique).<br>
+    Avec la règle retenue ici (`issueStatuses` incluant `ACCEPTED`), faire « Accept » ne fait **plus baisser** le compteur d'anomalies actives. C'est un choix délibéré, cohérent avec la doc SonarQube (le défaut reste réel tant qu'il n'est pas corrigé), mais une équipe habituée à l'ancien comportement (le compteur baissait après un triage « Accept ») verra une différence perceptible après la migration.
+
+**Vérifié en conditions réelles** (comparaison live des deux filtres, serveur SonarQube 26.9.0, projet `monAppliation`) : avant bascule, `statuses=OPEN,CONFIRME REOPENED` et `issueStatuses=OPEN,CONFIRMED` valaient tous les deux 595. Après avoir basculé une issue BUG/BLOCKER en « Accept » dans l'interface SonarQube : `statuses=OPEN,CONFIRMED,REOPENED` et `issueStatuses=OPEN,CONFIRMED` descendent tous les deux à 594 (perdent l'issue), tandis que `issueStatuses=OPEN,CONFIRMED ACCEPTED` reste à 595 (la récupère) — confirmant que la règle retenue reproduit exactement le total de l'ancien modèle **avant** triage, tout en gardant les issues `ACCEPTED` dans le décompte après triage, contrairement à l'ancien modèle.
 
 ## 🔄 Le flux Collecte → Peinture → Sauvegarde
 
