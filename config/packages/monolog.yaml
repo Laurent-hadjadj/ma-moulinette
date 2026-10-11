@@ -65,6 +65,15 @@ when@test:
                 path: "%kernel.logs_dir%/%kernel.environment%.log"
                 level: debug
                 channels: ['doctrine']
+            # MODIF 2026-10-11 : handler manquant par rapport a dev/prod — LogArchiveService
+            # classe les fichiers "app-*" comme logs applicatifs (page Admin Logs), et le
+            # test e2e spec 19 attend "app-test.log" au meme titre que "app-dev.log"/"app.log".
+            application_logs:
+                type: stream
+                path: "%kernel.logs_dir%/app-test.log"
+                level: debug
+                channels: ["!security", "!event", "!doctrine", "!request", "!messenger", "!deprecation", "!profiling"]
+                formatter: monolog.formatter.line
 
 when@prod:
     monolog:
