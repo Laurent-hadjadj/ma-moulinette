@@ -18,7 +18,7 @@ use Exception;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Repartition, RepartitionTemp};
-use App\Service\{ClientService, UrlBuilderService};
+use App\Service\{ClientService, UrlBuilderService, GetSonarVersionService};
 
 /**
  * [Description BatchCollecteNoSonarController]
@@ -46,6 +46,7 @@ class BatchCollecteRepartitionController extends AbstractController
         private EntityManagerInterface $em,
         private ClientService $client,
         private UrlBuilderService $urlBuilder,
+        private GetSonarVersionService $sonarVersion,
         private LoggerInterface $logger
     ) {
     }
@@ -159,7 +160,7 @@ class BatchCollecteRepartitionController extends AbstractController
      * $index = 1 à 20 max ==> 10000 anomalies
      * $category = BUG,VULNERABILITY,CODE_SMELL
      * $severity = INFO,MINOR,MAJOR,CRITICAL,BLOCKER
-     * http://{url}/api/issues/search?componentKeys={key}&statuses=OPEN,CONFIRMED,REOPENED
+     * http://{url}/api/issues/search?components={key}&statuses=OPEN,CONFIRMED,REOPENED
      * &s=STATUS&asc=no&types={type}&severities={severite}=&ps={pageSize}&p=
      *
      * @param string $maven_key
@@ -178,12 +179,13 @@ class BatchCollecteRepartitionController extends AbstractController
     {
 
          /** Sécurisation de l'URL */
+        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2. */
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
         $url = $this->urlBuilder->build(
             $this->getParameter(self::$sonarUrl),
             '/api/issues/search',
             [
-                'componentKeys' => $maven_key,
+                $this->sonarVersion->componentKeyParam() => $maven_key,
                 'statuses' => 'OPEN,CONFIRMED,REOPENED',
                 's' => 'STATUS',
                 'asc' => 'no',
@@ -231,12 +233,13 @@ class BatchCollecteRepartitionController extends AbstractController
     private function batchCollecteInformation(string $maven_key, string $category): array
     {
         /** Sécurisation de l'URL */
+        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2. */
         $maven_key = htmlspecialchars($maven_key, ENT_QUOTES, 'UTF-8');
         $url = $this->urlBuilder->build(
             $this->getParameter(self::$sonarUrl),
             '/api/issues/search',
             [
-                'componentKeys' => $maven_key,
+                $this->sonarVersion->componentKeyParam() => $maven_key,
                 'statuses' => 'OPEN,CONFIRMED,REOPENED',
                 'types' => $category,
                 'facets' => 'severities,scopes',

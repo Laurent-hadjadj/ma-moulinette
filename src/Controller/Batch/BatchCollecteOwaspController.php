@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{Owasp, InformationProjet};
-use App\Service\{ClientService, UrlBuilderService};
+use App\Service\{ClientService, UrlBuilderService, GetSonarVersionService};
 
 /**
  * [Description BatchCollecteOwaspController]
@@ -47,6 +47,7 @@ class BatchCollecteOwaspController extends AbstractController
         private EntityManagerInterface $em,
         private ClientService $client,
         private UrlBuilderService $urlBuilder,
+        private GetSonarVersionService $sonarVersion,
         private LoggerInterface $logger
         ) {
     }
@@ -72,14 +73,19 @@ class BatchCollecteOwaspController extends AbstractController
         $informationProjetRepos = $this->em->getRepository(InformationProjet::class);
         $owaspRepos = $this->em->getRepository(Owasp::class);
 
-        /** On récupère la version du serveur SonarQube */
+        /** On récupère la version du serveur SonarQube (propriété applicative, choix du référentiel OWASP) */
         $sonar_version = $this->getParameter('sonar.version');
+
+        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2 —
+         * résolu séparément, à partir de la vraie version serveur (GetSonarVersionService),
+         * pas de la propriété sonar.version ci-dessus qui reste réservée au choix OWASP. */
+        $componentKeyParam = $this->sonarVersion->componentKeyParam();
 
         /** Tableau des paramètres pour la requête HTTP */
         $queryParamsList = [
-            'owasp2017' => ['componentKeys' => $maven_key, 'facets' => 'owaspTop10', 'owaspTop10' => self::$owaspCategories],
-            'owasp2021' => ['componentKeys' => $maven_key, 'facets' => 'owaspTop10-2021', 'owaspTop10-2021' => self::$owaspCategories],
-            'owasp2025' => ['componentKeys' => $maven_key, 'facets' => 'owaspTop10-2025', 'owaspTop10-2025' => self::$owaspCategories]
+            'owasp2017' => [$componentKeyParam => $maven_key, 'facets' => 'owaspTop10', 'owaspTop10' => self::$owaspCategories],
+            'owasp2021' => [$componentKeyParam => $maven_key, 'facets' => 'owaspTop10-2021', 'owaspTop10-2021' => self::$owaspCategories],
+            'owasp2025' => [$componentKeyParam => $maven_key, 'facets' => 'owaspTop10-2025', 'owaspTop10-2025' => self::$owaspCategories]
         ];
 
         /** Sécurisation de l'URL */
@@ -153,14 +159,14 @@ class BatchCollecteOwaspController extends AbstractController
          * référentiel (contrairement à la facette owaspTop10 vs
          * owaspTop10-2021), le même résultat sert aux deux. */
         $tagFallback = null;
-        $fetchTagFallback = function () use (&$tagFallback, $maven_key) {
+        $fetchTagFallback = function () use (&$tagFallback, $maven_key, $componentKeyParam) {
             if ($tagFallback !== null) {
                 return $tagFallback;
             }
             $url = $this->urlBuilder->build(
                 $this->getParameter(self::$sonarUrl),
                 '/api/issues/search',
-                ['componentKeys' => $maven_key, 'tags' => self::$owaspTagCategories, 'ps' => 500]
+                [$componentKeyParam => $maven_key, 'tags' => self::$owaspTagCategories, 'ps' => 500]
             );
             $this->logger->debug("[Batch OWASP] 🛠️ Appel de secours par tag (owasp-aXX) → {$url}");
             $response = $this->client->httpSonarQube($url);

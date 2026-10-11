@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\EcoConception;
-use App\Service\{ClientService, DateTools, LanguageDistributionService, UrlBuilderService};
+use App\Service\{ClientService, DateTools, LanguageDistributionService, UrlBuilderService, GetSonarVersionService};
 
 /**
  * [Description BatchCollecteEmpreinteEcologiqueController]
@@ -82,6 +82,7 @@ class BatchCollecteEmpreinteEcologiqueController extends AbstractController
         private DateTools $serviceDateTools,
         private LanguageDistributionService $languageDistribution,
         private UrlBuilderService $urlBuilder,
+        private GetSonarVersionService $sonarVersion,
         private LoggerInterface $logger
     ) {
     }
@@ -265,6 +266,9 @@ class BatchCollecteEmpreinteEcologiqueController extends AbstractController
             }
         }
 
+        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2. */
+        $componentKeyParam = $this->sonarVersion->componentKeyParam();
+
         /** 3 - Un appel /api/issues/search par langage ayant des règles Creedengo (total + effortTotal exacts, pas de facette) */
         $parLangue = [];
         $ecoAnomaliesTotal = 0;
@@ -274,7 +278,7 @@ class BatchCollecteEmpreinteEcologiqueController extends AbstractController
             $suffixe = self::$langues[$lang];
 
             $issuesResult = self::makeRequest('/api/issues/search', [
-                'componentKeys' => $maven_key,
+                $componentKeyParam => $maven_key,
                 'statuses' => 'OPEN,REOPENED',
                 'rules' => implode(',', $ruleKeys),
                 'ps' => 1,

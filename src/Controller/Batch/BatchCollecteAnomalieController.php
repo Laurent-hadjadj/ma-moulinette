@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Anomalie;
-use App\Service\{ExtractName, DateTools, ClientService, UrlBuilderService};
+use App\Service\{ExtractName, DateTools, ClientService, UrlBuilderService, GetSonarVersionService};
 
 /**
  * [Description BatchCollecteAnomalieController]
@@ -46,6 +46,7 @@ class BatchCollecteAnomalieController extends AbstractController
         private ExtractName $serviceExtractName,
         private DateTools $serviceDateTools,
         private UrlBuilderService $urlBuilder,
+        private GetSonarVersionService $sonarVersion,
         private LoggerInterface $logger
     ) {
     }
@@ -220,14 +221,18 @@ class BatchCollecteAnomalieController extends AbstractController
          * supplémentaire). 'statuses' aligné sur self::$statuses (comme 'general')
          * pour que les comptages scopes par catégorie correspondent au même
          * périmètre d'issues que le reste de la collecte. */
+        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2
+         * (deprecatedKey, même sémantique). On résout la clé une seule fois via la
+         * version réelle du serveur (mise en cache 5 min côté GetSonarVersionService). */
+        $componentKeyParam = $this->sonarVersion->componentKeyParam();
         $queryParamsList = [
-            'general' => [ 'componentKeys' => $maven_key, 'facets' => 'directories,types,severities',
+            'general' => [ $componentKeyParam => $maven_key, 'facets' => 'directories,types,severities',
                 'p' => 1, 'ps' => 1, 'statuses' => self::$statuses ],
-            'BUG' => [ 'componentKeys' => $maven_key, 'types' => 'BUG', 'p' => 1, 'ps' => 1,
+            'BUG' => [ $componentKeyParam => $maven_key, 'types' => 'BUG', 'p' => 1, 'ps' => 1,
                 'statuses' => self::$statuses, 'facets' => 'scopes' ],
-            'VULNERABILITY' => [ 'componentKeys' => $maven_key, 'types' => 'VULNERABILITY',
+            'VULNERABILITY' => [ $componentKeyParam => $maven_key, 'types' => 'VULNERABILITY',
                 'p' => 1, 'ps' => 1, 'statuses' => self::$statuses, 'facets' => 'scopes' ],
-            'CODE_SMELL' => [ 'componentKeys' => $maven_key, 'types' => 'CODE_SMELL',
+            'CODE_SMELL' => [ $componentKeyParam => $maven_key, 'types' => 'CODE_SMELL',
                 'p' => 1, 'ps' => 1, 'statuses' => self::$statuses, 'facets' => 'scopes' ]
         ];
 

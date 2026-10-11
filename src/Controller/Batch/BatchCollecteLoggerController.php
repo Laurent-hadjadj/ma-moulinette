@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{InformationProjet, Logger, LoggerDetail};
-use App\Service\{ClientService, UrlBuilderService};
+use App\Service\{ClientService, UrlBuilderService, GetSonarVersionService};
 
 /**
  * [Description BatchCollecteLoggerController]
@@ -39,6 +39,7 @@ class BatchCollecteLoggerController extends AbstractController
         private EntityManagerInterface $em,
         private ClientService $client,
         private UrlBuilderService $urlBuilder,
+        private GetSonarVersionService $sonarVersion,
         private LoggerInterface $logger
     ) {
     }
@@ -214,14 +215,16 @@ class BatchCollecteLoggerController extends AbstractController
                     'track-error-method',
                     'track-debug-method'
                 ];
+        /* MODIF 2026-10-11 : componentKeys renommée components depuis SonarQube 10.2. */
+        $componentKeyParam = $this->sonarVersion->componentKeyParam();
         $queryParams = [
-            $method[0] => [ 'componentKeys' => $maven_key,
+            $method[0] => [ $componentKeyParam => $maven_key,
             'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => self::$trackLoggerMethod.$method[0], 'ps' => 500],
-            $method[1] => [ 'componentKeys' => $maven_key,
+            $method[1] => [ $componentKeyParam => $maven_key,
             'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => self::$trackLoggerMethod.$method[1], 'ps' => 500],
-            $method[2] => [ 'componentKeys' => $maven_key,
+            $method[2] => [ $componentKeyParam => $maven_key,
             'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => self::$trackLoggerMethod.$method[2], 'ps' => 500],
-            $method[3] => [ 'componentKeys' => $maven_key,
+            $method[3] => [ $componentKeyParam => $maven_key,
             'facets'  => 'rules', 'statuses' => 'OPEN', 'rules' => self::$trackLoggerMethod.$method[3], 'ps' => 500]
         ];
 
