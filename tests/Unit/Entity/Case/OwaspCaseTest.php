@@ -55,6 +55,9 @@ class OwaspCaseTest extends TestCase
         // Mode de collecte / utilisateur
         yield 'modeCollecte' => ['ModeCollecte', 'COLLECTE'];
         yield 'utilisateurCollecte' => ['UtilisateurCollecte', 'admin@ma-moulinette.fr'];
+
+        // MODIF 2026-07-18 : 'facet' (classification officielle) ou 'tag' (secours owasp-aXX).
+        yield 'source' => ['Source', 'tag'];
     }
 
     #[DataProvider('attributesProvider')]

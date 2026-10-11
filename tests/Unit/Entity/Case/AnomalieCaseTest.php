@@ -46,6 +46,15 @@ class AnomalieCaseTest extends TestCase
     private static int $bug = 0;
     private static int $vulnerability = 0;
     private static int $codeSmell = 801;
+    // MODIF 2026-10-11 : répartition par portée SonarQube (MAIN/TEST).
+    private static int $scopeMain = 1200;
+    private static int $scopeTest = 756;
+    private static int $bugScopeMain = 0;
+    private static int $bugScopeTest = 0;
+    private static int $vulnerabilityScopeMain = 0;
+    private static int $vulnerabilityScopeTest = 0;
+    private static int $codeSmellScopeMain = 801;
+    private static int $codeSmellScopeTest = 220;
     private static string $modeCollecte = 'TRAITEMENT MANUEL';
     private static string $utilisateurCollecte = 'laurent.hadjadj@ma-moulinette.fr';
     private static string $dateEnregistrement = '2024-06-28 17:55:45+02';
@@ -209,6 +218,46 @@ class AnomalieCaseTest extends TestCase
     {
         $this->anomalie->setCodeSmell(self::$codeSmell);
         $this->assertEquals(self::$codeSmell, $this->anomalie->getCodeSmell());
+    }
+    public function testSettingAndGettingScopeMain(): void
+    {
+        $this->anomalie->setScopeMain(self::$scopeMain);
+        $this->assertEquals(self::$scopeMain, $this->anomalie->getScopeMain());
+    }
+    public function testSettingAndGettingScopeTest(): void
+    {
+        $this->anomalie->setScopeTest(self::$scopeTest);
+        $this->assertEquals(self::$scopeTest, $this->anomalie->getScopeTest());
+    }
+    public function testSettingAndGettingBugScopeMain(): void
+    {
+        $this->anomalie->setBugScopeMain(self::$bugScopeMain);
+        $this->assertEquals(self::$bugScopeMain, $this->anomalie->getBugScopeMain());
+    }
+    public function testSettingAndGettingBugScopeTest(): void
+    {
+        $this->anomalie->setBugScopeTest(self::$bugScopeTest);
+        $this->assertEquals(self::$bugScopeTest, $this->anomalie->getBugScopeTest());
+    }
+    public function testSettingAndGettingVulnerabilityScopeMain(): void
+    {
+        $this->anomalie->setVulnerabilityScopeMain(self::$vulnerabilityScopeMain);
+        $this->assertEquals(self::$vulnerabilityScopeMain, $this->anomalie->getVulnerabilityScopeMain());
+    }
+    public function testSettingAndGettingVulnerabilityScopeTest(): void
+    {
+        $this->anomalie->setVulnerabilityScopeTest(self::$vulnerabilityScopeTest);
+        $this->assertEquals(self::$vulnerabilityScopeTest, $this->anomalie->getVulnerabilityScopeTest());
+    }
+    public function testSettingAndGettingCodeSmellScopeMain(): void
+    {
+        $this->anomalie->setCodeSmellScopeMain(self::$codeSmellScopeMain);
+        $this->assertEquals(self::$codeSmellScopeMain, $this->anomalie->getCodeSmellScopeMain());
+    }
+    public function testSettingAndGettingCodeSmellScopeTest(): void
+    {
+        $this->anomalie->setCodeSmellScopeTest(self::$codeSmellScopeTest);
+        $this->assertEquals(self::$codeSmellScopeTest, $this->anomalie->getCodeSmellScopeTest());
     }
     public function testSettingAndGettingModeCollecte(): void
     {

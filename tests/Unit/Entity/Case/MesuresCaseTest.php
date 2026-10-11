@@ -153,6 +153,11 @@ class MesuresCaseTest extends TestCase
         // MODIF 2026-05-05 : menacePotentielle{ToReview*/Reviewed*/Totale}
         // (7 attributs) retires car absents du DDL et non utilises dans le code.
 
+        // MODIF 2026-10-11 : métriques "optionnelles" (pas encore LTS).
+        yield 'maintainabilityIssueSeverity' => ['MaintainabilityIssueSeverity', 25];
+        yield 'reliabilityIssueSeverity' => ['ReliabilityIssueSeverity', 15];
+        yield 'securityIssueSeverity' => ['SecurityIssueSeverity', 25];
+
         // Mode collecte / utilisateur
         yield 'modeCollecte' => ['ModeCollecte', 'TRAITEMENT MANUEL'];
         yield 'utilisateurCollecte' => ['UtilisateurCollecte', 'laurent.hadjadj@ma-moulinette.fr'];
