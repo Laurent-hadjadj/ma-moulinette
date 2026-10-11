@@ -1,23 +1,21 @@
 # 🧪 Tests unitaires et d'intégration
 
-## 📈 État des suites (relevé du 06/10/2026)
+## 📈 État des suites (relevé du 11/10/2026)
 
 | Suite | Tests | Assertions | Nature |
 | --- | ---: | ---: | --- |
-| `unit` (`tests/Unit`) | 3 186 | 8 780 | Unitaires purs (mocks, aucune base réelle) |
+| `unit` (`tests/Unit`) | 3 347 | 9 068 | Unitaires purs (mocks, aucune base réelle) |
 | `integration` (`tests/Integration`) | 606 | 1 389 | `KernelTestCase`/`WebTestCase` sur PostgreSQL de test |
-| **Total** | **3 792** | **10 169** | |
+| **Total** | **3 953** | **10 457** | |
 | `e2e` (`tests/e2e`) | 22 suites | — | Playwright, hors PHPUnit — voir [Tests End-to-End](test-e2e.md) |
 
-**Couverture de code** (suites `unit` + `integration` cumulées, via pcov) — **non réactualisée depuis le 25/09**, cf. note ci-dessous :
+**Couverture de code** (suites `unit` + `integration` cumulées, via pcov) :
 
 | Granularité | Couverture |
 | --- | --- |
-| Lignes | **79,62 %** (20 839 / 26 172) |
-| Méthodes | 83,09 % (2 419 / 2 911) |
-| Classes | 50,21 % (119 / 237) |
+| Lignes | **80,29 %** |
 
-**Analyse statique** : **PHPStan niveau 6**, 153 erreurs résiduelles (voir [Analyse statique](#-analyse-statique-phpstan) plus bas).
+**Analyse statique** : **PHPStan niveau 6**, 68 erreurs résiduelles (voir [Analyse statique](#-analyse-statique-phpstan) plus bas).
 
 !!! note "🔄 Chiffres à réactualiser"
     Ces valeurs sont un relevé manuel, pas une sortie de CI : elles se périment à chaque campagne de tests.
@@ -132,9 +130,11 @@ PHPStan propose 11 niveaux (0 à 10), chacun ajoutant ses vérifications à cell
 Le **niveau 6** est la cible du projet : il exige que tout soit typé, sans imposer la discipline du `mixed` strict — inatteignable à coût raisonnable ici, où les données viennent de requêtes SQL brutes (`array<string, mixed>`) et de payloads JSON.
 
 !!! note "📉 Campagne de réduction en cours"
-    La dette a été ramenée de **4 820 à 150 erreurs** (relevé du 26/07/2026).
-    La quasi-totalité du `missingType.iterableValue` (355 occurrences, des `array` déclarés sans préciser leur contenu) a été résorbée le 26/07/2026 en typant précisément chaque tableau d'après son usage réel.
-    Le reliquat actuel (`method.notFound` sur des mocks, `argument.type`, `missingType.property`…) est plus hétérogène et se traite au cas par cas.
+    La dette a été ramenée de **4 820 à 68 erreurs** en plusieurs campagnes successives (355 occurrences de
+    `missingType.iterableValue` résorbées le 26/07/2026 en typant précisément chaque tableau d'après son
+    usage réel, puis une campagne 153 → 68 (11/10/2026) purement mécanique — PHPDoc et typage des doublures
+    PHPUnit (`&MockObject`/`&Stub`) sur les mocks, sans changement de comportement).
+    Le reliquat actuel est plus hétérogène et se traite au cas par cas.
 
 !!! caution "🚫 Ne pas masquer une erreur"
     Une erreur PHPStan signale presque toujours un vrai problème de type.
