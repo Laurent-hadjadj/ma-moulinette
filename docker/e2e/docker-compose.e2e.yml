@@ -52,6 +52,12 @@ services:
       # atomiques de repertoire de cache (rename + rmdir) qui échouent
       # dessus ("rmdir: Directory not empty" sur un ".!!xxxx" fantôme).
       - e2e-var:/var/www/var
+    # Le volume Docker natif ci-dessus est créé root:root ; les workers
+    # php-fpm tournent en www-data (pool www.conf) et ne peuvent pas y
+    # créer var/cache/test sans ce chown préalable (sinon "Unable to
+    # create the cache directory" dès la 1ère requête HTTP réelle, alors
+    # que `docker exec ... php bin/console` fonctionne car exécuté en root).
+    entrypoint: ["sh", "-c", "mkdir -p /var/www/var/cache /var/www/var/log /var/www/var/sessions /var/www/var/share && chown -R www-data:www-data /var/www/var && exec docker-php-entrypoint php-fpm"]
     depends_on:
       - postgres-e2e
     networks:
