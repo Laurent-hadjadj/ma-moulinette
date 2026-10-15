@@ -23,6 +23,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\{OwaspTop10, Owasp, HotspotOwasp, HotspotDetails, Historique};
 use App\Repository\DcScanRepository;
+use App\Repository\ZapScanRepository;
 use App\Service\{PdfExportService};
 use App\Service\UserAgent\UserAgentTrackingFacade;
 
@@ -60,6 +61,7 @@ class OwaspController extends AbstractController
         private LoggerInterface $logger,
         private PdfExportService $pdfExportService,
         private DcScanRepository $dcScanRepository,
+        private ZapScanRepository $zapScanRepository,
         private UserAgentTrackingFacade $tracking)
     {
         $this->logoEntreprise = $params->get('logo.entreprise');
@@ -192,7 +194,7 @@ class OwaspController extends AbstractController
          * application_version/has_dc_scan sans garde `is defined` (breadcrumb,
          * activation des boutons de référentiel, bouton Dependency-Check). Ces
          * clés n'étaient historiquement affectées qu'en toute fin de chemin
-         * heureux — tout retour anticipé (token, périmètre, échec de lecture
+         * — tout retour anticipé (token, périmètre, échec de lecture
          * d'un référentiel) rendait la page avec un render incomplet et
          * plantait Twig ("Variable ... does not exist"). Valeurs par défaut
          * posées une fois pour toutes, écrasées plus bas si le chemin
@@ -202,6 +204,8 @@ class OwaspController extends AbstractController
         $render['application_group'] = null;
         $render['application_version'] = null;
         $render['has_dc_scan'] = false;
+        $render['has_zap_scan'] = false;
+        $render['zap_link_token'] = null;
 
         $token = $request->query->get('token');
         if (empty($token)) {
@@ -337,6 +341,13 @@ class OwaspController extends AbstractController
             $render['dc_link_artifact'] = $latestDcScan->getProjectArtifact();
             $render['dc_link_version']  = $latestDcScan->getProjectVersion();
         }
+
+        /* MODIF 2026-10-13 : ZapScan n'a qu'un maven_key composé : ZapPageController décode exactement le même format de token. */
+        if ($this->zapScanRepository->findLatestByMavenKey($maven_key) !== null) {
+            $render['has_zap_scan']   = true;
+            $render['zap_link_token'] = $token;
+        }
+
         return $this->render(self::$page, $render);
     }
 
