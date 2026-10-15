@@ -93,6 +93,12 @@ class ApiClientHeaderSubscriber implements EventSubscriberInterface
             return;
         }
 
+        /* MODIF 2026-10-13 : même exclusion pour /api/secure/zap/ (CI,
+         * machine-to-machine, protégé par ZapIngestTokenSubscriber). */
+        if (str_starts_with($request->getPathInfo(), '/api/secure/zap/')) {
+            return;
+        }
+
         $origin         = $request->headers->get('Origin') ?? '';
         $referer        = $request->headers->get('Referer') ?? '';
         $internalHeader = $request->headers->get($this->internalHeaderName);
