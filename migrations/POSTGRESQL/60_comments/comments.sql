@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create COMMENTS                      ##
-##           V3.6.0 - 11/10/2026                  ##
+##           V3.7.0 - 13/10/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -29,6 +29,7 @@
 --- 2026-10-08 : Ajout du commentaire pour la colone sonarqube_server_version pour tracer la version du serveur SonarQube ayant produit cette ligne.
 -- 2026-10-08 : Ajout des commentaires pour les attributs de la table eco_conception.
 --- 2026-10-11 : Ajout de maintainability_issue_severity, reliability_issue_severity, security_issue_severity (métriques optionnelles, pas encore LTS).
+--- 2026-10-13 : Ajout des commentaires pour les tables zap_rule, zap_processing_queue, zap_scan et owasp_dast.
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette postgres;
@@ -1137,6 +1138,43 @@ COMMENT ON COLUMN ma_moulinette.dc_scan.is_latest_overall
   IS 'TRUE si ce scan est la dernière version (toute) pour (project_group, project_artifact). Maintenu par DcLatestVersionUpdater. Vue dev.';
 COMMENT ON COLUMN ma_moulinette.dc_scan.is_latest_release
   IS 'TRUE si ce scan est la dernière version release stable (sans -SNAPSHOT/-RC*/-ALPHA*/-BETA*/-M*) pour (project_group, project_artifact). Maintenu par DcLatestVersionUpdater. Vue prod.';
+
+-- ===============================================
+-- Table zap_rule
+-- ===============================================
+COMMENT ON TABLE  ma_moulinette.zap_rule IS 'Référentiel global des règles ZAP (alertes DAST) - 1 row par pluginid unique.';
+COMMENT ON COLUMN ma_moulinette.zap_rule.pluginid IS 'Cle naturelle (identifiant de règle ZAP).';
+
+-- ===============================================
+-- Table zap_finding
+-- ===============================================
+COMMENT ON TABLE  ma_moulinette.zap_finding IS 'Jointure scan x règle. Snapshot risque/confiance ZAP au moment du scan.';
+COMMENT ON COLUMN ma_moulinette.zap_finding.riskcode_at_scan IS 'Snapshot - 0=Informational 1=Low 2=Medium 3=High.';
+COMMENT ON COLUMN ma_moulinette.zap_finding.tags IS 'Tags bruts de l''alerte (OWASP_2017_AXX, OWASP_2021_AXX, WSTG-*, CWE-*...).';
+
+-- ===============================================
+-- Table zap_processing_queue
+-- ===============================================
+COMMENT ON TABLE ma_moulinette.zap_processing_queue IS 'Queue d''ingestion des rapports ZAP (DAST) postes par la CI.';
+COMMENT ON COLUMN ma_moulinette.zap_processing_queue.ulid IS 'Identifiant public renvoyé au client (ULID Crockford base32).';
+COMMENT ON COLUMN ma_moulinette.zap_processing_queue.payload_gz IS 'JSON ZAP compresse (gzip niveau 6) - TOAST gere par PG.';
+COMMENT ON COLUMN ma_moulinette.zap_processing_queue.payload_sha256 IS 'sha256 du JSON décompressé - cle d''idempotence.';
+COMMENT ON COLUMN ma_moulinette.zap_processing_queue.maven_key IS 'Identification projet fournie par la CI (en-tête X-Maven-Key) - absente du payload ZAP lui-même.';
+COMMENT ON COLUMN ma_moulinette.zap_processing_queue.status IS 'queued | processing | done | failed';
+
+-- ===============================================
+-- Table zap_scan
+-- ===============================================
+COMMENT ON TABLE  ma_moulinette.zap_scan IS '1 scan = 1 rapport ZAP pour (maven_key, project_version, target_url, generated_at). Compteurs pre-calcules par niveau de risque.';
+COMMENT ON COLUMN ma_moulinette.zap_scan.queue_id IS 'Lien vers la row source dans zap_processing_queue (audit/retraitement).';
+COMMENT ON COLUMN ma_moulinette.zap_scan.target_url IS 'URL cible scannée (site[0].@name du rapport, ou en-tête X-Target-Url).';
+
+-- ===============================================
+-- Table owasp_dast
+-- ===============================================
+COMMENT ON TABLE  ma_moulinette.owasp_dast IS 'Agrégation OWASP Top 10 (2017/2021) issue d''un scan DAST ZAP, complément de la table owasp (SAST SonarQube). 1 ligne par (scan, référentiel), historisée nativement par scan (contrairement a owasp qui écrase a chaque collecte).';
+COMMENT ON COLUMN ma_moulinette.owasp_dast.referential_owasp IS '2017 ou 2021 - une ligne par référentiel réellement observé dans les tags du rapport.';
+COMMENT ON COLUMN ma_moulinette.owasp_dast.a1 IS 'Nombre de règles distinctes taguées dans la catégorie A1 (pas le nombre d''instances).';
 
 -- ============================================
 -- VIEW vw_batch_profiling_stats

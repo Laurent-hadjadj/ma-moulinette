@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create INDEXES                       ##
-##           V2.8.0 - 08/10/2026                  ##
+##           V2.9.0 - 13/10/2026                  ##
 ##                                                ##
 ####################################################*/
 
@@ -16,13 +16,15 @@
 --- 2026-04-26 : Suppression des indexes de la tables notes
 --- 2026-04-26 : Ajout des indexes pour user_role_log
 --- 2026-05-03 : Correction du titre d'en-tête (était "Create TABLES").
---- 2026-05-05 : Suppression des index pour user_analysis et user_event (user_agent)
---- 2026-05-08 : Ajout des commentaires (partielles) pour les tables dc_cve, dc_dependency, dc_finding, dc_processing_queue, dc_scan
---- 2026-05-14 : Ajout des indexes pour dc_scan (projet, récents, latest_overall/release)
---- 2026-05-17 : Ajout des indexes pour clean_code
---- 2026-06-09 : Réintégration des indexes user_agent_event et user_agent_analysis (schéma ma_moulinette)
---- 2026-09-25 : Ajout des indexes pour la table RCI
--- 2026-10-08 : Ajout des indexes pour la table eco_conception.
+--- 2026-05-05 : Suppression des index pour user_analysis et user_event (user_agent).
+--- 2026-05-08 : Ajout des commentaires (partielles) pour les tables dc_cve, dc_dependency, dc_finding, dc_processing_queue, dc_scan.
+--- 2026-05-14 : Ajout des indexes pour dc_scan (projet, récents, latest_overall/release).
+--- 2026-05-17 : Ajout des indexes pour clean_code.
+--- 2026-06-09 : Réintégration des indexes user_agent_event et user_agent_analysis (schéma ma_moulinette).
+--- 2026-09-25 : Ajout des indexes pour la table RCI.
+--- 2026-10-08 : Ajout des indexes pour la table eco_conception.
+--- 2026-10-13 : Ajout des indexes pour les tables zap_rule, zap_processing_queue, zap_scan et owasp_dast.
+
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette postgres;
@@ -277,6 +279,32 @@ CREATE INDEX IF NOT EXISTS idx_dc_scan_latest_overall
 CREATE INDEX IF NOT EXISTS idx_dc_scan_latest_release
   ON ma_moulinette.dc_scan (is_latest_release)
   WHERE is_latest_release = TRUE;
+
+-- zap_rule : Index pour vues agrégées
+CREATE INDEX IF NOT EXISTS idx_zap_rule_cweid ON ma_moulinette.zap_rule(cweid);
+
+-- zap_finding : Index pour les vues croisées
+CREATE INDEX IF NOT EXISTS idx_zap_finding_scan ON ma_moulinette.zap_finding(scan_id);
+CREATE INDEX IF NOT EXISTS idx_zap_finding_rule ON ma_moulinette.zap_finding(rule_id);
+CREATE INDEX IF NOT EXISTS idx_zap_finding_risk ON ma_moulinette.zap_finding(riskcode_at_scan);
+
+-- zap_processing_queue :
+-- Index pour le claim FOR UPDATE SKIP LOCKED par le worker
+-- Index pour la recherche par projet
+-- Index pour la purge journalière
+CREATE INDEX IF NOT EXISTS idx_zap_queue_status_created ON ma_moulinette.zap_processing_queue(status, created_at) WHERE status IN ('queued', 'processing');
+CREATE INDEX IF NOT EXISTS idx_zap_queue_project ON ma_moulinette.zap_processing_queue(maven_key, project_version);
+CREATE INDEX IF NOT EXISTS idx_zap_queue_created ON ma_moulinette.zap_processing_queue(created_at);
+
+-- zap_scan :
+-- Index pour recherche par projet (vue projet)
+-- Index pour le dashboard (scans récents)
+CREATE INDEX IF NOT EXISTS idx_zap_scan_maven_key ON ma_moulinette.zap_scan(maven_key, generated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_zap_scan_recent ON ma_moulinette.zap_scan(generated_at DESC);
+
+-- owasp_dast : Index pour recherche par projet et par scan
+CREATE INDEX IF NOT EXISTS idx_owasp_dast_maven_key ON ma_moulinette.owasp_dast(maven_key);
+CREATE INDEX IF NOT EXISTS idx_owasp_dast_scan ON ma_moulinette.owasp_dast(scan_id);
 
 -- ===============================================
 -- INDEXES: ma_moulinette.batch_profiling

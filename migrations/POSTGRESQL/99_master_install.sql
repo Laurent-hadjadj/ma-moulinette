@@ -74,6 +74,7 @@
 \ir 20_tables/mesures.sql
 \ir 20_tables/no_sonar.sql
 \ir 20_tables/owasp.sql
+\ir 20_tables/owasp_dast.sql
 \ir 20_tables/owasp_top10.sql
 \ir 20_tables/portefeuille.sql
 \ir 20_tables/portefeuille_historique.sql
@@ -89,6 +90,10 @@
 \ir 20_tables/user_agent_event.sql
 \ir 20_tables/user_role_log.sql
 \ir 20_tables/utilisateur.sql
+\ir 20_tables/zap_finding.sql
+\ir 20_tables/zap_processing_queue.sql
+\ir 20_tables/zap_rule.sql
+\ir 20_tables/zap_scan.sql
 
 \echo ===== 7. Views =====
 \ir 30_views/01_vw_batch_profiling_weekly.sql
