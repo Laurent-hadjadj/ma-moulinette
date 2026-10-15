@@ -5,6 +5,7 @@ monolog:
         - doctrine
         - messenger
         - profiling
+        - cron
 
 when@dev:
     monolog:
@@ -37,7 +38,7 @@ when@dev:
                 type: stream
                 path: "%kernel.logs_dir%/app-dev.log"
                 level: debug
-                channels: ["!security", "!event", "!doctrine", "!request", "!messenger", "!deprecation", "!profiling"]
+                channels: ["!security", "!event", "!doctrine", "!request", "!messenger", "!deprecation", "!profiling", "!cron"]
                 formatter: monolog.formatter.line
             # Handler dédié au profiling
             profiling:
@@ -45,6 +46,18 @@ when@dev:
                 path: '%kernel.logs_dir%/profiling.log'
                 level: info
                 channels: ['profiling']
+            # MODIF 2026-10-15 : handler dédié aux commandes CLI lancées par la
+            # crontab Docker (Supercronic, cf. docker/etc/cron/ma-moulinette) —
+            # un seul fichier partagé par toutes les commandes app:*, plutôt
+            # que mélangées dans app-dev.log/app.log. Chaque ligne reste
+            # préfixée par le nom du canal (LineFormatter par défaut inclut le
+            # channel), donc une commande reste identifiable dans le fichier
+            # partagé malgré le regroupement.
+            cron:
+                type: stream
+                path: '%kernel.logs_dir%/cron-dev.log'
+                level: debug
+                channels: ['cron']
 
 when@test:
     monolog:
@@ -80,7 +93,7 @@ when@test:
                 type: stream
                 path: "%kernel.logs_dir%/app-test.log"
                 level: debug
-                channels: ["!security", "!event", "!doctrine", "!request", "!messenger", "!deprecation", "!profiling"]
+                channels: ["!security", "!event", "!doctrine", "!request", "!messenger", "!deprecation", "!profiling", "!cron"]
                 formatter: monolog.formatter.line
 
 when@prod:
@@ -96,7 +109,7 @@ when@prod:
                 type: stream
                 path: "%kernel.logs_dir%/app.log"
                 level: info
-                channels: ["!security", "!event", "!doctrine", "!request", "!messenger", "!deprecation", "!profiling"]
+                channels: ["!security", "!event", "!doctrine", "!request", "!messenger", "!deprecation", "!profiling", "!cron"]
                 formatter: monolog.formatter.line
             request:
                 type: stream
@@ -122,3 +135,10 @@ when@prod:
                 path: '%kernel.logs_dir%/profiling.log'
                 level: info
                 channels: ['profiling']
+            # MODIF 2026-10-15 : voir le commentaire équivalent en when@dev —
+            # fichier dédié aux commandes app:* lancées par la crontab Docker.
+            cron:
+                type: stream
+                path: '%kernel.logs_dir%/cron.log'
+                level: info
+                channels: ['cron']
