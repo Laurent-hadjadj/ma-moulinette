@@ -18,7 +18,7 @@ namespace App\Tests\Unit\Controller\Owasp;
 use App\Controller\Owasp\OwaspController;
 use App\Entity\{HotspotDetails, HotspotOwasp, Historique, ListeProjet, Owasp, OwaspTop10, Utilisateur};
 use App\Service\UserAgent\UserAgentTrackingFacade;
-use App\Repository\{DcScanRepository, HistoriqueRepository, HotspotDetailsRepository, HotspotOwaspRepository, ListeProjetRepository, OwaspRepository, OwaspTop10Repository};
+use App\Repository\{DcScanRepository, HistoriqueRepository, HotspotDetailsRepository, HotspotOwaspRepository, ListeProjetRepository, OwaspRepository, OwaspTop10Repository, ZapScanRepository};
 use App\Service\PdfExportService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
@@ -47,6 +47,7 @@ class OwaspControllerTest extends TestCase
     /** @var LoggerInterface&MockObject */         private MockObject $logger;
     /** @var PdfExportService&MockObject */        private MockObject $pdfExport;
     /** @var DcScanRepository&MockObject */        private MockObject $dcScanRepository;
+    /** @var ZapScanRepository&MockObject */       private MockObject $zapScanRepository;
     /** @var OwaspTop10Repository&MockObject */      private MockObject $repoTop10;
     /** @var OwaspRepository&MockObject */           private MockObject $repoOwasp;
     /** @var HotspotOwaspRepository&MockObject */   private MockObject $repoHotspotOwasp;
@@ -72,6 +73,7 @@ class OwaspControllerTest extends TestCase
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->pdfExport = $this->createMock(PdfExportService::class);
         $this->dcScanRepository = $this->createMock(DcScanRepository::class);
+        $this->zapScanRepository = $this->createMock(ZapScanRepository::class);
         $this->repoTop10          = $this->createMock(OwaspTop10Repository::class);
         $this->repoOwasp          = $this->createMock(OwaspRepository::class);
         $this->repoHotspotOwasp   = $this->createMock(HotspotOwaspRepository::class);
@@ -134,6 +136,7 @@ class OwaspControllerTest extends TestCase
             $this->logger,
             $this->pdfExport,
             $this->dcScanRepository,
+            $this->zapScanRepository,
             $this->tracking,
         );
         $this->controller->setContainer($container);
