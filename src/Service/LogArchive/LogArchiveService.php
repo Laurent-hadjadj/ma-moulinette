@@ -232,6 +232,7 @@ class LogArchiveService
             str_starts_with($filename, 'request-'), $filename === 'request.log' => 'request',
             str_starts_with($filename, 'messenger-'), $filename === 'messenger.log' => 'messenger',
             str_starts_with($filename, 'deprecations-'), $filename === 'deprecations.log' => 'deprecation',
+            str_starts_with($filename, 'cron-'), $filename === 'cron.log' => 'cron',
             default => 'main',
         };
     }
