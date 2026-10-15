@@ -14,6 +14,9 @@
 # MODIF 2026-05-21 : renomme dc-ingest → ma-moulinette (jobs SonarQube ajoutés).
 # MODIF 2026-10-15 : journalisation dédiée cron.log pour toutes les commandes.
 # MODIF 2026-05-24 : job collecte Activity (remplace Symfony Scheduler).
+# MODIF 2026-10-15 : jobs ZAP (DAST, worker queue — même pattern que le worker
+# OWASP DependencyCheck) et purge batch_profiling (prévue depuis sa création,
+# jamais ajoutée a la crontab).
 
 
  ── OWASP DependencyCheck ─────────────────────────────────────────────────────
@@ -25,6 +28,15 @@
 # Purge quotidienne a 03h00 (heure container, cf TZ=Europe/Paris dans compose)
 # - --days=30 : retention 30 jours sur les status done|failed
 0 3 * * * php /var/www/bin/console app:dependency-check:purge --days=30 --no-interaction --env=prod
+
+ ── ZAP (DAST) ────────────────────────────────────────────────────────────────
+# Worker : traitement de la queue toutes les minutes — même pattern que le
+# worker OWASP DependencyCheck ci-dessus (queue + ingestion, pas de purge
+# dédiée pour l'instant : la queue ZAP n'a pas encore d'équivalent a
+# app:dependency-check:purge).
+# - --batch=5    : max 5 rapports par execution (plafond mémoire prévisible)
+# - --no-interaction : pas de prompt (mode CLI non interactif)
+* * * * * php /var/www/bin/console app:zap:process --batch=5 --no-interaction --env=prod
 
  ── SONARQUBE Clean & Collecte ─────────────────────────────────────────────────
 ## Mise a jour des tags projets SonarQube chaque nuit a 00h30
@@ -43,3 +55,10 @@
 # Collecte des tâches CE Activity J-1 (quotidien à 22h00)
 # Rattrappe automatiquement les jours manqués en fenêtres de 7 jours.
 0 22 * * * php /var/www/bin/console app:activity:collecte
+
+ ── Maintenance ───────────────────────────────────────────────────────────────
+# Purge quotidienne a 04h00 des mesures de performance des batchs
+# (table batch_profiling) plus vieilles que N jours.
+# - --days=90 : retention 90 jours (valeur par defaut de la commande,
+#   explicite ici par coherence avec dependency-check:purge ci-dessus)
+0 4 * * * php /var/www/bin/console app:batch-profiling:purge --days=90 --no-interaction --env=prod
