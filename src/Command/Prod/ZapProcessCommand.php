@@ -23,6 +23,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\{InputInterface, InputOption};
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * MODIF 2026-10-13 : worker court de traitement de la queue ZAP (DAST), sur
@@ -55,6 +56,9 @@ class ZapProcessCommand extends Command
         private readonly EntityManagerInterface $em,
         private readonly ZapProcessingQueueRepository $queueRepository,
         private readonly ZapIngester $ingester,
+        /* MODIF 2026-10-15 : log dédié aux commandes de la crontab Docker
+         * (cf. config/packages/monolog.yaml, channel "cron"). */
+        #[Autowire(service: 'monolog.logger.cron')]
         private readonly LoggerInterface $logger,
     ) {
         parent::__construct();

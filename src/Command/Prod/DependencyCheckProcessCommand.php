@@ -25,6 +25,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\{InputInterface, InputOption};
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * MODIF 2026-05-08 : worker court de traitement de la queue OWASP DependencyCheck.
@@ -70,6 +71,9 @@ class DependencyCheckProcessCommand extends Command
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly DcProcessingQueueRepository $queueRepository,
+        /* MODIF 2026-10-15 : log dédié aux commandes de la crontab Docker
+         * (cf. config/packages/monolog.yaml, channel "cron"). */
+        #[Autowire(service: 'monolog.logger.cron')]
         private readonly LoggerInterface $logger,
         // MODIF 2026-05-08 : injection de l'Ingester metier.
         // Optionnel : si null (cas tests Unit pre-phase-2), on bascule sur le

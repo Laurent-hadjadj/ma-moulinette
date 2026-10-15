@@ -55,6 +55,9 @@ class UpdateSonarqubeTagsCommand extends Command
      * @param string[] $sonarTagsGroupPermissions
      */
     public function __construct(
+        /* MODIF 2026-10-15 : log dédié aux commandes de la crontab Docker
+         * (cf. config/packages/monolog.yaml, channel "cron"). */
+        #[Autowire(service: 'monolog.logger.cron')]
         private readonly LoggerInterface $logger,
         private readonly int $mamoulCliVerifyPeer,
         private readonly int $mamoulCliVerifyHost,

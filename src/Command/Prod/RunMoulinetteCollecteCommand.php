@@ -24,6 +24,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * MODIF 2026-05-21 : conversion du script CLI
@@ -48,6 +49,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class RunMoulinetteCollecteCommand extends Command
 {
     public function __construct(
+        /* MODIF 2026-10-15 : log dédié aux commandes de la crontab Docker
+         * (cf. config/packages/monolog.yaml, channel "cron"). */
+        #[Autowire(service: 'monolog.logger.cron')]
         private readonly LoggerInterface $logger,
         private readonly int $mamoulCliVerifyPeer,
         private readonly int $mamoulCliVerifyHost,
