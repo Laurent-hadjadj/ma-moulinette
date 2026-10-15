@@ -83,6 +83,7 @@ services:
       - ACTUATOR_CIPHER_KEY=ZaMR9NBLPvcMhq/L8kBQC72QkrVImo2GkGM/bY8rmzE=
       - ACTUATOR_SECRET_KEY=base64:test-actuator-secret-not-for-prod
       - DC_INGEST_TOKEN=test-dc-ingest-token-32chars-aaaa
+      - ZAP_INGEST_TOKEN=test-zap-ingest-token-32chars-aaa
       # Pas de .env.test.local dans l'image (cf. commentaire plus haut) : toutes
       # les variables normalement définies par ce fichier gitignore sont
       # redéfinies ici avec des valeurs volontairement factices, committables.
