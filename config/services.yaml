@@ -22,6 +22,9 @@ parameters:
     # le subscriber renvoie 503 et l'endpoint est désactive (sécurité par défaut).
     dc.ingest.token: '%env(DC_INGEST_TOKEN)%'
 
+    # MODIF 2026-10-13 : token bearer pour /api/secure/zap/* (même principe que DC_INGEST_TOKEN).
+    zap.ingest.token: '%env(ZAP_INGEST_TOKEN)%'
+
     # Configuration SonarQube
     sonar.url: '%env(SONAR_URL)%'
     sonar.version: '%env(SONAR_VERSION)%'
@@ -156,6 +159,11 @@ services:
     App\EventSubscriber\DependencyCheckTokenSubscriber:
         arguments:
             $expectedToken: '%dc.ingest.token%'
+
+    # MODIF 2026-10-13 : auth token bearer pour les endpoints ZAP.
+    App\EventSubscriber\ZapIngestTokenSubscriber:
+        arguments:
+            $expectedToken: '%zap.ingest.token%'
     # Téléchargement des logs
     App\Service\LogArchive\LogArchiveService:
         arguments:
