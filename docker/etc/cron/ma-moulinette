@@ -1,12 +1,18 @@
 # Ma-Moulinette — crontab Supercronic
 # Format : min heure jour mois weekday commande
 # Timezone : Europe/Paris (définie dans php.ini du sidecar)
-# Logs : Supercronic redirige stdout/stderr du process enfant vers ses propres
-# stdout/stderr -> visible via `docker logs cron-ma-moulinette`.
+# Logs : Supercronic redirige toujours stdout/stderr du process enfant vers ses
+# propres stdout/stderr -> visible via `docker logs cron-ma-moulinette` (sortie
+# console brute, utile en cas de crash avant même le démarrage du kernel).
+# En plus de ça, chaque commande app:* journalise désormais sur le channel
+# Monolog "cron" (voir config/packages/monolog.yaml) -> fichier dédié
+# var/log/cron.log, partagé par toutes les commandes, consultable aussi depuis
+# la page d'administration des logs (filtre "Cron").
 #
 # MODIF 2026-05-08 : Jobs d'ingestion OWASP DependencyCheck.
 # MODIF 2026-05-21 : Jobs clean-tags et collecteSonarQube.
 # MODIF 2026-05-21 : renomme dc-ingest → ma-moulinette (jobs SonarQube ajoutés).
+# MODIF 2026-10-15 : journalisation dédiée cron.log pour toutes les commandes.
 # MODIF 2026-05-24 : job collecte Activity (remplace Symfony Scheduler).
 
 
