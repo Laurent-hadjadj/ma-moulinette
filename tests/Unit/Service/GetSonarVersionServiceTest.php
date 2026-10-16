@@ -156,6 +156,51 @@ class GetSonarVersionServiceTest extends TestCase
         $this->assertSame('components', $this->service->componentKeyParam());
     }
 
+    #[DataProvider('provideVersionsUsingLegacyComponentKeys')]
+    public function testHotspotProjectParamReturnsProjectKeyForLegacyServers(string $version): void
+    {
+        $this->client->method('httpSonarQube')->willReturn([
+            'code' => 200,
+            'json' => ['texte' => $version],
+        ]);
+
+        $this->assertSame('projectKey', $this->service->hotspotProjectParam());
+    }
+
+    #[DataProvider('provideVersionsUsingComponents')]
+    public function testHotspotProjectParamReturnsProjectForRecentServers(string $version): void
+    {
+        $this->client->method('httpSonarQube')->willReturn([
+            'code' => 200,
+            'json' => ['texte' => $version],
+        ]);
+
+        $this->assertSame('project', $this->service->hotspotProjectParam());
+    }
+
+    public function testHotspotProjectParamReturnsProjectFor2026Dot10(): void
+    {
+        // MODIF 2026-10-16 : projectKey supprimé (pas juste déprécié) depuis la
+        // 2026.10, confirmé en direct (projectKey => HTTP 400, project => 200).
+        $this->client->method('httpSonarQube')->willReturn([
+            'code' => 200,
+            'json' => ['texte' => '26.10.0.133078'],
+        ]);
+
+        $this->assertSame('project', $this->service->hotspotProjectParam());
+    }
+
+    public function testHotspotProjectParamDefaultsToProjectWhenVersionUnknown(): void
+    {
+        // Même politique que componentKeyParam() : cas nominal = paramètre récent.
+        $this->client->method('httpSonarQube')->willReturn([
+            'code' => 503,
+            'erreur' => 'Service indisponible',
+        ]);
+
+        $this->assertSame('project', $this->service->hotspotProjectParam());
+    }
+
     #[DataProvider('provideVersionsUsingLegacyStatuses')]
     public function testIssueStatusParamReturnsLegacyStatusesForOldServers(string $version): void
     {

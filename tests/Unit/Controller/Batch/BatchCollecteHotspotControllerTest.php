@@ -18,7 +18,7 @@ namespace App\Tests\Unit\Controller\Batch;
 use App\Controller\Batch\BatchCollecteHotspotController;
 use App\Entity\{Hotspots, InformationProjet};
 use App\Repository\{HotspotsRepository, InformationProjetRepository};
-use App\Service\{ClientService, UrlBuilderService};
+use App\Service\{ClientService, GetSonarVersionService, UrlBuilderService};
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -35,6 +35,7 @@ class BatchCollecteHotspotControllerTest extends TestCase
     /** @var EntityManagerInterface&MockObject */          private MockObject $em;
     /** @var ClientService&MockObject */                   private MockObject $client;
     /** @var UrlBuilderService&MockObject */               private MockObject $urlBuilder;
+    /** @var GetSonarVersionService&MockObject */          private MockObject $sonarVersion;
     /** @var LoggerInterface&MockObject */                 private MockObject $logger;
     /** @var HotspotsRepository&MockObject */              private MockObject $hotspotsRepo;
     /** @var InformationProjetRepository&MockObject */     private MockObject $infoRepo;
@@ -47,6 +48,8 @@ class BatchCollecteHotspotControllerTest extends TestCase
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->client = $this->createMock(ClientService::class);
         $this->urlBuilder = $this->createMock(UrlBuilderService::class);
+        $this->sonarVersion = $this->createMock(GetSonarVersionService::class);
+        $this->sonarVersion->method('hotspotProjectParam')->willReturn('project');
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->hotspotsRepo = $this->createMock(HotspotsRepository::class);
         $this->infoRepo = $this->createMock(InformationProjetRepository::class);
@@ -65,7 +68,7 @@ class BatchCollecteHotspotControllerTest extends TestCase
         $container->method('get')->willReturnMap([['parameter_bag', 1, $this->parameterBag]]);
 
         $this->controller = new BatchCollecteHotspotController(
-            $this->em, $this->client, $this->urlBuilder, $this->logger
+            $this->em, $this->client, $this->urlBuilder, $this->sonarVersion, $this->logger
         );
         $this->controller->setContainer($container);
     }

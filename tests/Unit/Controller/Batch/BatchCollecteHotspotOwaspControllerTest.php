@@ -19,6 +19,7 @@ use App\Controller\Batch\BatchCollecteHotspotOwaspController;
 use App\Entity\{HotspotOwasp, InformationProjet};
 use App\Repository\{HotspotOwaspRepository, InformationProjetRepository};
 use App\Service\ClientService;
+use App\Service\GetSonarVersionService;
 use App\Service\UrlBuilderService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
@@ -36,6 +37,7 @@ class BatchCollecteHotspotOwaspControllerTest extends TestCase
     /** @var EntityManagerInterface&MockObject */           private MockObject $em;
     /** @var ClientService&MockObject */                    private MockObject $client;
     /** @var UrlBuilderService&MockObject */                private MockObject $urlBuilder;
+    /** @var GetSonarVersionService&MockObject */           private MockObject $sonarVersion;
     /** @var LoggerInterface&MockObject */                  private MockObject $logger;
     /** @var HotspotOwaspRepository&MockObject */           private MockObject $hotspotRepo;
     /** @var InformationProjetRepository&MockObject */      private MockObject $infoRepo;
@@ -48,6 +50,8 @@ class BatchCollecteHotspotOwaspControllerTest extends TestCase
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->client = $this->createMock(ClientService::class);
         $this->urlBuilder = $this->createMock(UrlBuilderService::class);
+        $this->sonarVersion = $this->createMock(GetSonarVersionService::class);
+        $this->sonarVersion->method('hotspotProjectParam')->willReturn('project');
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->hotspotRepo = $this->createMock(HotspotOwaspRepository::class);
         $this->infoRepo = $this->createMock(InformationProjetRepository::class);
@@ -65,7 +69,7 @@ class BatchCollecteHotspotOwaspControllerTest extends TestCase
         $container->method('get')->willReturnMap([['parameter_bag', 1, $this->parameterBag]]);
 
         $this->controller = new BatchCollecteHotspotOwaspController(
-            $this->em, $this->client, $this->urlBuilder, $this->logger
+            $this->em, $this->client, $this->urlBuilder, $this->sonarVersion, $this->logger
         );
         $this->controller->setContainer($container);
     }
