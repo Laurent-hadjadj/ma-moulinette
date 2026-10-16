@@ -1,5 +1,5 @@
 {% set title = 'ZAP (DAST)' ~ (scan ? ' - ' ~ scan.mavenKey : '') %}
-{% set description = 'Ma Moulinette - Resultats du scan DAST ZAP.' %}
+{% set description = 'Ma Moulinette - Résultats du scan DAST ZAP.' %}
 {% set bottom = 'footer-fixed' %}
 
 <!DOCTYPE html>
@@ -28,7 +28,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
         {{ include('header.html.twig') }}
 
         <header class="grid-container margin-top-1">
-            <nav aria-label="Fil d'Ariane, vous etes ici">
+            <nav aria-label="Fil d'Ariane, vous êtes ici">
                 <ol class="claire-hand breadcrumbs">
                     <li><a href="{{ path('accueil', {}) }}">Accueil</a></li>
                     <li><a href="{{ path('owasp', {}) }}">OWASP</a></li>
@@ -41,7 +41,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
 
         <main class="grid-container margin-bottom-2">
             <h2 class="h4 claire-hand">
-                <span aria-hidden="true">🕷️</span> ZAP (DAST)
+                <span aria-hidden="true">👻</span> ZAP (DAST)
                 {% if scan %}
                     &mdash; <span class="open-sans">{{ scan.mavenKey }}</span>
                 {% endif %}
@@ -50,11 +50,11 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             {% if scan is null %}
                 <div class="callout alert-callout-border info">
                     <p><span aria-hidden="true">ℹ️</span> Aucun scan ZAP disponible pour ce projet.</p>
-                    <p>Les rapports ZAP sont postes par la CI sur <code>POST /api/secure/zap/upload</code>.</p>
+                    <p>Les rapports ZAP sont postés par la CI sur <code>POST /api/secure/zap/upload</code>.</p>
                 </div>
             {% else %}
                 {# Bandeau KPI — scan du jour + cible + total alertes #}
-                <div class="grid-x grid-margin-x margin-bottom-1">
+                <div class="grid-x grid-margin-x zap-kpi-row margin-bottom-1">
                     <div class="cell small-12 medium-4">
                         <div class="callout alert-callout-border secondary">
                             <p class="open-sans"><strong>Scan du</strong></p>
@@ -65,7 +65,7 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                     <div class="cell small-12 medium-4">
                         <div class="callout alert-callout-border info">
                             <p class="open-sans"><strong>Cible scannée</strong></p>
-                            <p class="open-sans" style="word-break: break-all;">{{ scan.targetUrl ?? '---' }}</p>
+                            <p class="open-sans word-break-all">{{ scan.targetUrl ?? '---' }}</p>
                         </div>
                     </div>
                     <div class="cell small-12 medium-4">
@@ -96,6 +96,45 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                     </div>
                 </div>
 
+                {# MODIF 2026-10-16 : liste détaillée des alertes du dernier scan — sans
+                    elle, les compteurs ci-dessus ne disent rien de concret ("9 alertes"
+                    ne dit pas de quoi il s'agit). 1 bouton Détail = 1 modale (rendu
+                    serveur, pas d'AJAX, même principe que le reste de la page). #}
+                <h3 class="h5 claire-hand margin-top-1"><span aria-hidden="true">🗒️</span> Détail des alertes ({{ findings|length }})</h3>
+                {% if findings is empty %}
+                    <p class="open-sans">Aucune alerte sur ce scan.</p>
+                {% else %}
+                    <div class="cell table-scroll">
+                        <table class="open-sans">
+                            <thead>
+                                <tr>
+                                    <th>Risque</th>
+                                    <th>Règle</th>
+                                    <th class="text-right">Instances</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for finding in findings %}
+                                    <tr>
+                                        <td><span class="badge-level {{ finding.riskLabel }}">{{ finding.riskLabel }}</span></td>
+                                        <td class="open-sans">{{ finding.rule.name }}</td>
+                                        <td class="text-right">{{ finding.instanceCount }}</td>
+                                        <td class="text-right">
+                                            <button type="button"
+                                                    class="button bouton-ouvrir-details open-sans focus-dark-light"
+                                                data-open="zap-finding-{{ finding.id }}"
+                                                aria-label="Détail de l'alerte {{ finding.rule.name }}">
+                                                <span aria-hidden="true">🔎</span>Détail
+                                            </button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+
                 {# Graphiques : catégories (dernier scan) + évolution du risque (historique) #}
                 <h3 class="h5 claire-hand"><span aria-hidden="true">📈</span> Alertes par catégorie OWASP</h3>
                 {% if owaspByReferential is empty %}
@@ -106,7 +145,9 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                     <div class="grid-x grid-margin-x margin-bottom-1">
                         {% for owaspDast in owaspByReferential %}
                             <div class="cell small-12 medium-6">
-                                <canvas id="zap-chart-categories-{{ owaspDast.referentialOwasp }}" height="260"></canvas>
+                                <div class="graph-280">
+                                    <canvas id="zap-chart-categories-{{ owaspDast.referentialOwasp }}"></canvas>
+                                </div>
                             </div>
                         {% endfor %}
                     </div>
@@ -136,7 +177,9 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                 {% endif %}
 
                 <h3 class="h5 claire-hand margin-top-1"><span aria-hidden="true">📉</span> Évolution du risque</h3>
-                <canvas id="zap-chart-history" height="260"></canvas>
+                <div class="graph-320">
+                    <canvas id="zap-chart-history"></canvas>
+                </div>
                 {{ _self.info_callout('Chaque point correspond à un <strong>scan ZAP ingéré</strong> (pas un jour calendaire) — l\'historique s\'enrichit à chaque nouveau rapport posté par la CI, sans jamais écraser les scans précédents.') }}
 
                 <h3 class="h5 claire-hand margin-top-1"><span aria-hidden="true">🕒</span> Historique des scans ({{ history|length }})</h3>
@@ -186,11 +229,75 @@ https://github.com/Laurent-hadjadj/ma-moulinette
             {% endif %}
         </main>
 
+        {# MODIF 2026-10-16 : 1 modale par alerte (rendu serveur, ouverture
+            déclarative Foundation via data-open, pas de JS dédié — même
+            principe que templates/auth/register.html.twig). Texte ZAP
+            (description/reference) toujours échappé, jamais |raw : ZAP
+            l'embarque en <p>...</p>, même précaution que les descriptions
+            CVE de Dependency-Check (texte externe, jamais rendu brut). #}
+        {% for finding in findings %}
+        <dialog id="zap-finding-{{ finding.id }}"
+                    class="reveal"
+                    data-reveal
+                    data-close-on-click="true"
+                    data-animation-in="fade-in">
+                <h2 class="h4 claire-hand">{{ finding.rule.name }}</h2>
+                <p>
+                    <span class="badge-level {{ finding.riskLabel }}">{{ finding.riskLabel }}</span>
+                    {% if finding.rule.cweid %}<span class="badge-cve">CWE-{{ finding.rule.cweid }}</span>{% endif %}
+                    {% if finding.rule.wascid %}<span class="badge-cve">WASC-{{ finding.rule.wascid }}</span>{% endif %}
+                </p>
+                {% if finding.rule.description %}
+                    <p class="open-sans"><strong>Description</strong></p>
+                    <p class="open-sans font-size-085">{{ finding.rule.description|raw }}</p>
+                {% endif %}
+                {% if finding.rule.solution %}
+                    <p class="open-sans"><strong>Solution</strong></p>
+                    <p class="open-sans font-size-085">{{ finding.rule.solution|raw }}</p>
+                {% endif %}
+                {% if finding.rule.reference %}
+                    <p class="open-sans"><strong>Référence</strong></p>
+                    <p class="open-sans font-size-085">{{ finding.rule.reference|raw }}</p>
+                {% endif %}
+                {% if finding.instances is not empty %}
+                    <p class="open-sans"><strong>Instances ({{ finding.instances|length }})</strong></p>
+                    <div class="cell table-scroll">
+                        <table class="open-sans">
+                            <thead>
+                                <tr>
+                                    <th>Méthode</th>
+                                    <th>URI</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for instance in finding.instances %}
+                                    <tr>
+                                        <td>{{ instance.method ?? '---' }}</td>
+                                        <td style="word-break: break-all;">{{ instance.uri ?? '---' }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% endif %}
+                <footer class="grid-x grid-margin-x align-right margin-top-2">
+                    <div class="cell shrink">
+                        <button type="button"
+                                class="button bouton-fermer-details open-sans focus-dark-light"
+                                data-close
+                                aria-label="Fermer la fenêtre">
+                                <span aria-hidden="true">❌</span> Fermer
+                        </button>
+                    </div>
+                </footer>
+            </dialog>
+        {% endfor %}
+
         {# MODIF 2026-10-13 : macro réutilisée pour afficher un encadré bleu
             pédagogique expliquant la règle de lecture du tableau/graphique
             qui suit — même pattern que dependency_check/dashboard.html.twig. #}
         {% macro info_callout(text) %}
-        <div class="callout alert-callout-border info margin-bottom-1 clear-both">
+        <div class="callout alert-callout-border info margin-bottom-4 clear-both">
             <p class="open-sans font-size-085 margin-bottom-0">
                 <span aria-hidden="true">ℹ️</span> {{ text|raw }}
             </p>
