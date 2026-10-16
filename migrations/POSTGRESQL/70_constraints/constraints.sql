@@ -12,6 +12,7 @@
 --- 2026-05-11 : Corrections contraintes dc_dependency et dc_processing_queue
 --- 2026-07-19 : Ajout de la contraintes d'unicité sur la table profil_historique.
 --- 2026-10-13 : Ajout des contraintes pour les tables zap_rule, zap_processing_queue, zap_scan et owasp_dast.
+--- 2026-10-15 : Correction clé d'unicité zap_rule (alert_ref au lieu de pluginid).
 
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
@@ -203,8 +204,10 @@ ALTER TABLE ma_moulinette.dc_scan
     ON DELETE SET NULL;
 
 -- zap_rule
+-- MODIF 2026-10-15 : clé d'unicité réelle = alert_ref, pas pluginid (un
+-- pluginid peut regrouper plusieurs alertes distinctes, voir zap_rule.sql).
 ALTER TABLE ma_moulinette.zap_rule
-  ADD CONSTRAINT uq_zap_rule_pluginid UNIQUE (pluginid);
+  ADD CONSTRAINT uq_zap_rule_alert_ref UNIQUE (alert_ref);
 
 -- zap_finding
 -- Pas de doublon : meme règle ne peut apparaitre qu'une fois par scan.

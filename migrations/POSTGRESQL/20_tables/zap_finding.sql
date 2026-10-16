@@ -2,7 +2,7 @@
 ####################################################
 ##                                                ##
 ##           Create TABLES                        ##
-##           V1.0.0 - 2026-10-13                  ##
+##           V1.1.0 - 2026-10-15                  ##
 ##           findings ZAP (DAST)                  ##
 ##                                                ##
 ####################################################*/
@@ -10,11 +10,14 @@
 --- 2026-10-13 : jointure scan x règle. Snapshot risque/confiance au moment
 --- du scan (une règle ZAP peut être requalifiée d'une version a l'autre de
 --- l'outil).
+--- 2026-10-15 : ajout de instances (liste brute uri/methode/evidence) pour
+--- afficher le detail complet sur la page /zap, pas seulement le compteur.
 
 -- riskcode ZAP au moment du scan : 0=Informational 1=Low 2=Medium 3=High
 -- confidence ZAP au moment du scan : 0=Low 1=Medium 2=High 3=Confirmed
 -- Nombre d'instances (occurrences URL) de cette alerte dans le scan
 -- Tags bruts de l'alerte (OWASP_2017_AXX, OWASP_2021_AXX, WSTG-*, CWE-*...)
+-- Liste brute des instances (uri/methode/evidence/otherinfo)
 
 -- ⚠️ Le script doit être lancé avec l'utilisateur propriétaire du schema
 \c ma_moulinette;
@@ -30,5 +33,6 @@ CREATE TABLE ma_moulinette.zap_finding
   confidence_at_scan SMALLINT NOT NULL,
   instance_count INTEGER NOT NULL DEFAULT 0,
   tags JSONB NOT NULL DEFAULT '[]'::jsonb,
+  instances JSONB NOT NULL DEFAULT '[]'::jsonb,
   created_at TIMESTAMP(0) WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP(0)
 );
