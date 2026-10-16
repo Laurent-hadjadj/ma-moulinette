@@ -125,6 +125,10 @@ Génère un rapport PDF côté serveur à partir des mêmes données (aucun appe
 
 Le bouton vers [DependencyCheck](../dependency-check/pages.md) est **indépendant** de l'état des référentiels OWASP : il s'affiche dès qu'un scan DependencyCheck existe pour le projet (peu importe que les référentiels OWASP soient vides), sous réserve du rôle `ROLE_SECURITY`.
 
+## 🔗 ZAP (DAST)
+
+Un second bouton, 👻 **ZAP (DAST)**, suit le même principe que le bouton Dependency-Check : affiché dès qu'un scan ZAP existe pour le projet, sous réserve du rôle `ROLE_SECURITY`, et **repasse le token déjà décodé** (pas de nouvel encodage côté client) vers [la page ZAP](zap.md). Contrairement à Dependency-Check (analyse statique de dépendances), ZAP est un scanner **dynamique** (DAST) — complémentaire, pas redondant, avec l'analyse SAST de cette page.
+
 ## ⚠️ Messages remontés par la page
 
 ### Messages JS (`index-owasp.js` → `showMessage()`)
