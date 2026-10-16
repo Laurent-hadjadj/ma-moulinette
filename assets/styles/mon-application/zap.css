@@ -1,0 +1,302 @@
+/**
+ *  Ma-Moulinette
+ *  --------------
+ *  Copyright (c) 2021-2026.
+ *  Laurent HADJADJ <laurent_h@me.com>.
+ *  Licensed Creative Common  CC-BY-NC-SA 4.0.
+ *  ---
+ *  Vous pouvez obtenir une copie de la licence à l'adresse suivante :
+ *  http://creativecommons.org/licenses/by-nc-sa/4.0/
+ *
+ */
+
+@media (width <= 20em) { /* vide */ }
+
+/* MODIF 2026-10-16 : tailles responsives des badges de risque, copiées
+ * depuis dependency-check.css (mêmes paliers, même usage). */
+@media (20.025em <= width <= 22em) {
+  .badge-level { min-width: 5rem; font-size: 0.8rem; }
+  .severity-cell .severity-count { font-size: 1.3rem; }
+}
+
+@media (22.025em <= width <= 30em) {
+  .badge-level { min-width: 5rem; font-size: 0.8rem; }
+  .severity-cell .severity-count { font-size: 1.3rem; }
+}
+
+@media (30.025em <= width <= 40em) {
+  .badge-level { min-width: 5rem; font-size: 0.8rem; }
+  .severity-cell .severity-count { font-size: 1.3rem; }
+}
+
+@media (40.025em <= width <= 64em) {
+  .badge-level { min-width: 5rem; font-size: 0.8rem; }
+  .severity-cell .severity-count { font-size: 1.6rem; }
+}
+
+@media (64.025em <= width <= 90em) {
+  .badge-level { min-width: 7rem; font-size: 0.85rem; }
+  .severity-cell .severity-count { font-size: 1.8rem; }
+}
+
+@media (90.025em <= width <= 120em) {
+  .badge-level { min-width: 7rem; font-size: 0.85rem; }
+  .severity-cell .severity-count { font-size: 2rem; }
+}
+
+@media (120.025em <= width <= 160em) {
+  .badge-level { min-width: 7rem; font-size: 0.85rem; }
+  .severity-cell .severity-count { font-size: 2rem; }
+}
+
+@media (width >= 160.025em) {
+  .badge-level { min-width: 7rem; font-size: 0.85rem; }
+  .severity-cell .severity-count { font-size: 2rem; }
+}
+
+/*************************          Global     *******************************/
+
+/** Suppression du style in line */
+.owasp-padding-left { padding-left: 2rem; }
+
+.owasp-padding-left-right {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+.container-owasp-description {
+  display: flex;
+  justify-content: space-around;
+}
+
+/* Affiche la version du référentiel owasp disponible. */
+#owasp-version {
+  margin-top: 1rem;
+  margin-bottom: -1rem;
+}
+
+/* Bouton SVG */
+.voir-details-svg {
+  fill: #00445b;
+  cursor: pointer;
+  width: 100%;
+  height: auto;
+  max-width: 32px
+}
+
+.voir-details-svg:hover { fill: #c45d4e; }
+
+/* Information bug, vulnérabilité et code_smell  */
+.stat-list {
+  list-style-type: none;
+  clear: left;
+  margin: 0;
+  padding: 0;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.stat-list-bleu { color: #00445b; }
+
+.stat-list > li {
+  display: inline-block;
+  margin-right: 10px;
+  padding-right: 10px;
+  border-right: 1px solid #cacaca;
+  text-align: center;
+  font-size: 1.1em;
+  font-weight: bold;
+}
+
+.stat-list > li:last-child {
+  border: none;
+  margin: 0;
+  padding: 0;
+}
+
+.stat-list > li .stat-list-label {
+  display: block;
+  margin-top: 2px;
+  font-size: 1.2em;
+  font-weight: normal;
+}
+
+/* Styles pour le diagramme circulaire */
+#owasp-pie-chart-container {
+  width: 100%;
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 10px;
+  border: 1px solid #ddd;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgb(0 0 0 / 10%);
+}
+
+#owasp-pie-chart {
+  width: 100% !important;
+  height: auto !important;
+}
+
+/* Ajuste ka taille des badge */
+.badge { font-size: 1rem; }
+
+/* a supprimer dans la prochaine version */
+.badge-rouge { margin-bottom: -10px; }
+
+/* Liste des hotspot */
+.component { word-break: break-all; }
+
+/* Affiche les statistiques dans les modales */
+.stat-detail {
+  border-radius: 0.3rem;
+  text-align: center;
+  padding-left: 26px;
+  padding-right: 26px;
+  margin-bottom: 0.8rem;
+}
+
+.result {
+  padding-left: 0.5rem;
+  color: #333;
+  flex: 1;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.small { font-size: 1rem; }
+
+.ligne {
+  margin: 0.1rem;
+  display: flex;
+}
+
+.stat {
+  line-height: 0.9;
+  font-size: 2rem;
+}
+
+.stat-note { font-size: 1.5rem; }
+
+.stat-owasp {
+  line-height: 0.9;
+  font-size: 1.5rem;
+}
+
+.strong { font-weight: 700; }
+.light { font-weight: 300; }
+
+.box {
+  color: #fff;
+  border: solid 1px;
+  border-radius: 0.3rem;
+  padding-left: 30px;
+  padding-right: 30px;
+}
+
+.word-break-all { word-break: break-all; }
+
+/* ========= bandeau KPI (3 encarts de hauteur variable) ========= */
+/* MODIF 2026-10-16 : la cible scannée peut passer sur 2-3 lignes selon la
+ * longueur de l'URL — sans ceci, les 3 encarts n'ont pas la même hauteur. */
+.zap-kpi-row { align-items: stretch; }
+.zap-kpi-row > .cell { display: flex; }
+.zap-kpi-row > .cell > .callout { width: 100%; }
+
+/* ========= graphiques (hauteur fixe, requise par Chart.js responsive) ====== */
+/* MODIF 2026-10-16 : sans conteneur à hauteur fixe, un canvas Chart.js en
+ * responsive + maintainAspectRatio:false grandit sans fin (boucle de resize
+ * : le canvas grandit pour remplir son parent, le parent grandit pour
+ * contenir le canvas). Copié depuis dependency-check.css (graph-280/320
+ * y servent au même usage, pour les graphiques du dashboard DC). */
+.graph-280 {
+  position: relative;
+  height: 280px;
+}
+
+.graph-320 {
+  position: relative;
+  height: 320px;
+}
+
+/* ========= badges de risque (copiés depuis dependency-check.css) ========= */
+/* MODIF 2026-10-16 : chaque page a sa propre feuille de style — on ne
+ * référence jamais les classes d'une autre page. Les 4 niveaux de risque ZAP
+ * (high/medium/low/informational) mappent directement sur les classes
+ * high/medium/low/info déjà définies pour Dependency-Check, donc les mêmes
+ * noms et couleurs sont repris ici à l'identique, dans le fichier de ZAP. */
+.badge-level {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  font-weight: 600;
+  border-radius: 0.375rem;
+  text-align: center;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  line-height: 1.4;
+}
+
+.badge-level.high   { background-color: #f08a24; }
+.badge-level.medium { background-color: #ffd200; color: #333; } /* contraste sur jaune */
+.badge-level.low    { background-color: #1779ba; }
+.badge-level.info   { background-color: #9aa3ad; }
+
+.badge-count {
+  display: inline-block;
+  min-width: 1.6rem;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border-radius: 999px;
+  text-align: center;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.badge-count.high   { background-color: #f08a24; }
+.badge-count.medium { background-color: #ffd200; color: #333; }
+.badge-count.low    { background-color: #1779ba; }
+.badge-count.info   { background-color: #9aa3ad; }
+
+.badge-cve {
+  display: inline-block;
+  padding: 0.2rem 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border-radius: 0.375rem;
+  background-color: #e8eaed;
+  color: #333;
+  white-space: nowrap;
+  margin: 0.1rem 0.15rem 0.1rem 0;
+  line-height: 1.4;
+}
+
+/* ========= répartition par risque (4 badges côte à côte) ========= */
+.severity-cell {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0 0.5rem;
+}
+
+.severity-cell .severity-count { color: #333; }
+
+/* ========= gestion des bouton ============ */
+#bouton-ouvrir-rapport-zap,
+.bouton-ouvrir-details,
+.bouton-fermer-details {
+  min-width: 9rem;
+  font-size: 0.95rem;
+  border-radius: 0.375rem;
+  margin: 0 0.25rem 0.5rem 0.25rem;
+  padding: 0.8rem 0.6rem;
+  color: #fff;
+  text-align: center;
+  background-color: #00445b;
+  cursor: pointer;
+}
+
+#bouton-ouvrir-rapport-zap:hover,
+.bouton-ouvrir-details:hover,
+.bouton-fermer-details:hover { background-color: #006182; }
