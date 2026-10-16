@@ -32,6 +32,10 @@ class GetSonarVersionService extends AbstractController
     private static string $paramComponentKeys = 'componentKeys';
     private static string $paramComponents = 'components';
 
+    /** Nom du paramètre de requête SonarQube désignant le projet sur `/api/hotspots/search`. */
+    private static string $paramProjectKey = 'projectKey';
+    private static string $paramProject = 'project';
+
     /** Paramètre de filtre par statut sur `/api/issues/search` (déprécié depuis la 10.4). */
     private static string $paramStatuses = 'statuses';
     private static string $valueStatusesActives = 'OPEN,CONFIRMED,REOPENED';
@@ -136,6 +140,38 @@ class GetSonarVersionService extends AbstractController
         $major = (int) strtok($version, '.');
 
         return ($major >= 1 && $major < 10) ? self::$paramComponentKeys : self::$paramComponents;
+    }
+
+    /**
+     * Détermine la clé de requête SonarQube à utiliser pour cibler un projet dans
+     * `/api/hotspots/search` (`projectKey` vs `project`, même renommage depuis la 10.2
+     * que `componentKeyParam()` sur `/api/issues/search` — confirmé par les messages de
+     * dépréciation du serveur). `projectKey` est **supprimé** (pas juste déprécié) depuis
+     * la 2026.10 : vérifié en direct, `projectKey=...` renvoie HTTP 400 sur cette version,
+     * `project=...` renvoie 200.
+     *
+     * Cas nominal : `project` (les serveurs réellement utilisés aujourd'hui sont en 10 ou
+     * plus). `projectKey` est l'exception, réservée aux serveurs 8/9 — y compris quand la
+     * version n'a pas pu être déterminée (on ne bascule sur l'ancienne clé que sur
+     * confirmation positive), même logique que `componentKeyParam()`.
+     *
+     * @return string
+     *
+     * Created at: 16/10/2026 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function hotspotProjectParam(): string
+    {
+        $version = $this->getSonarQubeVersion();
+
+        if (is_array($version)) {
+            return self::$paramProject;
+        }
+
+        $major = (int) strtok($version, '.');
+
+        return ($major >= 1 && $major < 10) ? self::$paramProjectKey : self::$paramProject;
     }
 
     /**
