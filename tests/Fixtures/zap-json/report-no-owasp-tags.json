@@ -1,0 +1,75 @@
+{
+  "@programName": "ZAP",
+  "@version": "2.17.0",
+  "@generated": "Wed, 14 Oct 2026 18:16:24",
+  "site": [
+    {
+      "@name": "http://exemple-projet.local:3001",
+      "@host": "exemple-projet.local",
+      "@port": "3001",
+      "@ssl": "false",
+      "alerts": [
+        {
+          "pluginid": "90004",
+          "alertRef": "90004-2",
+          "alert": "Cross-Origin-Embedder-Policy Header Missing or Invalid",
+          "name": "Cross-Origin-Embedder-Policy Header Missing or Invalid",
+          "riskcode": "1",
+          "confidence": "2",
+          "riskdesc": "Low (Medium)",
+          "desc": "No Cross-Origin-Embedder-Policy header was found.",
+          "instances": [
+            { "uri": "http://exemple-projet.local:3001/", "method": "GET", "evidence": "" }
+          ],
+          "count": "1",
+          "solution": "Ensure that the application/web server sets the Cross-Origin-Embedder-Policy header.",
+          "otherinfo": "",
+          "reference": "",
+          "cweid": "0",
+          "wascid": "15",
+          "sourceid": "1"
+        },
+        {
+          "pluginid": "90004",
+          "alertRef": "90004-3",
+          "alert": "Cross-Origin-Opener-Policy Header Missing or Invalid",
+          "name": "Cross-Origin-Opener-Policy Header Missing or Invalid",
+          "riskcode": "1",
+          "confidence": "2",
+          "riskdesc": "Low (Medium)",
+          "desc": "No Cross-Origin-Opener-Policy header was found.",
+          "instances": [
+            { "uri": "http://exemple-projet.local:3001/", "method": "GET", "evidence": "" }
+          ],
+          "count": "1",
+          "solution": "Ensure that the application/web server sets the Cross-Origin-Opener-Policy header.",
+          "otherinfo": "",
+          "reference": "",
+          "cweid": "0",
+          "wascid": "15",
+          "sourceid": "1"
+        },
+        {
+          "pluginid": "10104",
+          "alertRef": "10104",
+          "alert": "User Agent Fuzzer",
+          "name": "User Agent Fuzzer",
+          "riskcode": "0",
+          "confidence": "2",
+          "riskdesc": "Informational (Medium)",
+          "desc": "Check for differences in response based on fuzzed User Agent.",
+          "instances": [
+            { "uri": "http://exemple-projet.local:3001/", "method": "GET", "evidence": "" }
+          ],
+          "count": "1",
+          "solution": "This is an optional test.",
+          "otherinfo": "",
+          "reference": "",
+          "cweid": "0",
+          "wascid": "0",
+          "sourceid": "1"
+        }
+      ]
+    }
+  ]
+}
