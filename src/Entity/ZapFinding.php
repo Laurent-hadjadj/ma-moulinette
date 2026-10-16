@@ -85,6 +85,21 @@ class ZapFinding
     )]
     private array $tags = [];
 
+    /**
+     * MODIF 2026-10-16 : liste brute des instances (uri/method/param/evidence)
+     * de l'alerte ZAP — permet d'afficher le détail (page /zap) sans
+     * dépendre d'un nouveau rapport.
+     *
+     * @var array<int, array<string, string>>
+     */
+    #[ORM\Column(
+        name: 'instances',
+        type: Types::JSON,
+        nullable: false,
+        options: ['jsonb' => true]
+    )]
+    private array $instances = [];
+
     #[ORM\Column(
         name: 'created_at',
         type: Types::DATETIMETZ_IMMUTABLE,
@@ -132,6 +147,21 @@ class ZapFinding
         return $this;
     }
 
+    /**
+     * MODIF 2026-10-16 : libellé/classe CSS du riskcode, pour affichage
+     * direct depuis Twig (template zap/index.html.twig) sans dupliquer la
+     * table RISK_LABELS déjà présente dans ZapIngester.
+     */
+    public function getRiskLabel(): string
+    {
+        return match ($this->riskcodeAtScan) {
+            3 => 'high',
+            2 => 'medium',
+            1 => 'low',
+            default => 'info',
+        };
+    }
+
     public function getConfidenceAtScan(): int
     {
         return $this->confidenceAtScan;
@@ -161,6 +191,18 @@ class ZapFinding
     public function setTags(array $tags): self
     {
         $this->tags = $tags;
+        return $this;
+    }
+
+    /** @return array<int, array<string, string>> */
+    public function getInstances(): array
+    {
+        return $this->instances;
+    }
+    /** @param array<int, array<string, string>> $instances */
+    public function setInstances(array $instances): self
+    {
+        $this->instances = $instances;
         return $this;
     }
 

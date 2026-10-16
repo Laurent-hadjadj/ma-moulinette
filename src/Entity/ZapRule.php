@@ -21,7 +21,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * [Description ZapRule]
  * MODIF 2026-10-13 : référentiel global des règles ZAP (alertes).
- * Une row = une règle unique (deduplication par pluginid).
+ * MODIF 2026-10-15 : dédupliquée par alert_ref (pas pluginid) — un rapport
+ * ZAP réel peut regrouper plusieurs alertes distinctes sous le même pluginid
+ * (ex. "90004-2" Cross-Origin-Embedder-Policy et "90004-3"
+ * Cross-Origin-Opener-Policy partagent pluginid=90004) : pluginid identifie
+ * une famille de règles, alert_ref identifie la règle réellement unique.
  */
 #[ORM\Entity(repositoryClass: ZapRuleRepository::class)]
 #[ORM\Table(name: 'zap_rule', schema: 'ma_moulinette')]
@@ -39,11 +43,20 @@ class ZapRule
         name: 'pluginid',
         type: Types::STRING,
         length: 16,
-        unique: true,
         nullable: false
     )]
     #[Assert\NotBlank]
     private string $pluginid;
+
+    #[ORM\Column(
+        name: 'alert_ref',
+        type: Types::STRING,
+        length: 24,
+        unique: true,
+        nullable: false
+    )]
+    #[Assert\NotBlank]
+    private string $alertRef;
 
     #[ORM\Column(
         name: 'name',
@@ -67,6 +80,13 @@ class ZapRule
         nullable: true
     )]
     private ?int $wascid = null;
+
+    #[ORM\Column(
+        name: 'description',
+        type: Types::TEXT,
+        nullable: false
+    )]
+    private string $description = '';
 
     #[ORM\Column(
         name: 'solution',
@@ -118,6 +138,16 @@ class ZapRule
         return $this;
     }
 
+    public function getAlertRef(): string
+    {
+        return $this->alertRef;
+    }
+    public function setAlertRef(string $v): self
+    {
+        $this->alertRef = $v;
+        return $this;
+    }
+
     public function getName(): string
     {
         return $this->name;
@@ -145,6 +175,16 @@ class ZapRule
     public function setWascid(?int $v): self
     {
         $this->wascid = $v;
+        return $this;
+    }
+
+    public function getDescription(): string
+    {
+        return $this->description;
+    }
+    public function setDescription(string $v): self
+    {
+        $this->description = $v;
         return $this;
     }
 

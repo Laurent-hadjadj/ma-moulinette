@@ -76,4 +76,22 @@ class ZapRuleRepository extends ServiceEntityRepository
     {
         return $this->findOneBy(['pluginid' => $pluginid]);
     }
+
+    /**
+     * [Description for findByAlertRef]
+     * MODIF 2026-10-15 : alert_ref est la vraie clé d'unicité d'une règle ZAP
+     * (pluginid ne fait que regrouper une famille de règles, voir ZapRule).
+     *
+     * @param string $alertRef
+     *
+     * @return ZapRule|null
+     *
+     * Created at: 15/10/2026 00:00:00 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function findByAlertRef(string $alertRef): ?ZapRule
+    {
+        return $this->findOneBy(['alertRef' => $alertRef]);
+    }
 }

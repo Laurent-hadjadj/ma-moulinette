@@ -35,7 +35,8 @@ use Psr\Log\LoggerInterface;
  *   3. crée ZapScan (identification projet = maven_key/project_version de
  *      la queue, PAS du payload — contrairement a Dependency-Check)
  *   4. pour chaque alerte :
- *        - findOrCreate ZapRule (cle pluginid)
+ *        - findOrCreate ZapRule (cle alert_ref, pluginid regroupe plusieurs
+ *          alertes distinctes — voir ZapRule)
  *        - crée ZapFinding (snapshot riskcode/confidence)
  *   5. construit owasp_dast (2017 + 2021) en parcourant les tags
  *      OWASP_<année>_AXX de chaque finding
@@ -51,7 +52,7 @@ class ZapIngester
     /**
      * Cache local par ingestion : evite que la meme règle apparaissant N fois
      * dans le meme rapport ne génère plusieurs persist() avec le meme
-     * pluginid -> UniqueViolation au flush.
+     * alert_ref -> UniqueViolation au flush.
      *
      * @var array<string, ZapRule>
      */
@@ -134,7 +135,7 @@ class ZapIngester
                 $confidence = $this->toSmallInt($alertRaw['confidence'] ?? 0);
                 $riskCounts[$riskcode] = ($riskCounts[$riskcode] ?? 0) + 1;
 
-                $instances = $alertRaw['instances'] ?? [];
+                $instances = is_array($alertRaw['instances'] ?? null) ? $alertRaw['instances'] : [];
                 $tags = is_array($alertRaw['tags'] ?? null) ? $alertRaw['tags'] : [];
 
                 $finding = (new ZapFinding())
@@ -142,8 +143,9 @@ class ZapIngester
                     ->setRule($ruleEntity)
                     ->setRiskcodeAtScan($riskcode)
                     ->setConfidenceAtScan($confidence)
-                    ->setInstanceCount(is_array($instances) ? count($instances) : 0)
-                    ->setTags($tags);
+                    ->setInstanceCount(count($instances))
+                    ->setTags($tags)
+                    ->setInstances($instances);
                 $this->em->persist($finding);
 
                 $this->accumulateOwaspTags($owaspAccumulator, $tags, $riskcode);
@@ -283,6 +285,10 @@ class ZapIngester
 
     /**
      * [Description for findOrCreateRule]
+     * MODIF 2026-10-15 : dédupliquée par alert_ref, pas pluginid — un même
+     * pluginid peut regrouper plusieurs alertes réellement différentes (ex.
+     * "90004-2"/"90004-3", cf. ZapRule). alertRef absent (anciens rapports
+     * ZAP ?) retombe sur pluginid, qui reste alors la clé de fait.
      *
      * @param array<string, mixed> $alertRaw
      *
@@ -299,27 +305,34 @@ class ZapIngester
             throw new ZapInvalidStructureException('Alerte sans "pluginid".');
         }
 
-        if (isset($this->ruleCache[$pluginid])) {
-            return $this->ruleCache[$pluginid];
+        $alertRef = trim((string) ($alertRaw['alertRef'] ?? ''));
+        if ($alertRef === '') {
+            $alertRef = $pluginid;
         }
 
-        $existing = $this->ruleRepository->findByPluginid($pluginid);
+        if (isset($this->ruleCache[$alertRef])) {
+            return $this->ruleCache[$alertRef];
+        }
+
+        $existing = $this->ruleRepository->findByAlertRef($alertRef);
         if ($existing !== null) {
             $existing->setLastSeenAt(new \DateTimeImmutable());
-            $this->ruleCache[$pluginid] = $existing;
+            $this->ruleCache[$alertRef] = $existing;
             return $existing;
         }
 
         $entity = (new ZapRule())
             ->setPluginid($pluginid)
+            ->setAlertRef($alertRef)
             ->setName((string) ($alertRaw['name'] ?? $alertRaw['alert'] ?? 'Alerte ZAP sans nom'))
             ->setCweid(isset($alertRaw['cweid']) ? (int) $alertRaw['cweid'] : null)
             ->setWascid(isset($alertRaw['wascid']) ? (int) $alertRaw['wascid'] : null)
+            ->setDescription((string) ($alertRaw['desc'] ?? ''))
             ->setSolution((string) ($alertRaw['solution'] ?? ''))
             ->setReference((string) ($alertRaw['reference'] ?? ''));
 
         $this->em->persist($entity);
-        $this->ruleCache[$pluginid] = $entity;
+        $this->ruleCache[$alertRef] = $entity;
         return $entity;
     }
 
