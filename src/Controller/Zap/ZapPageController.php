@@ -14,7 +14,7 @@
 namespace App\Controller\Zap;
 
 use App\Controller\Traits\{AppUserAware, ProjetPerimetreGuard};
-use App\Entity\{OwaspDast, ZapScan};
+use App\Entity\{OwaspDast, ZapFinding, ZapScan};
 use App\Service\UserAgent\UserAgentTrackingFacade;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
@@ -166,6 +166,7 @@ class ZapPageController extends AbstractController
         $render['scan'] = null;
         $render['history'] = [];
         $render['owaspByReferential'] = [];
+        $render['findings'] = [];
         $render['categoryLabels'] = self::categoryLabels();
         $render['zapChartData'] = ['categories' => [], 'history' => []];
 
@@ -195,10 +196,15 @@ class ZapPageController extends AbstractController
 
         $history = $scanRepository->listHistoryByMavenKey($maven_key);
         $owaspByReferential = $this->em->getRepository(OwaspDast::class)->findBy(['scan' => $scan]);
+        $findings = $this->em->getRepository(ZapFinding::class)->findBy(
+            ['scan' => $scan],
+            ['riskcodeAtScan' => 'DESC']
+        );
 
         $render['scan'] = $scan;
         $render['history'] = $history;
         $render['owaspByReferential'] = $owaspByReferential;
+        $render['findings'] = $findings;
         $render['zapChartData'] = [
             'categories' => $this->buildCategoryChartData($owaspByReferential),
             'history' => $this->buildHistoryChartData($history),
