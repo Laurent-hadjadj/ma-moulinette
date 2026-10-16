@@ -17,7 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Psr\Log\LoggerInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\{HotspotOwasp, InformationProjet};
-use App\Service\{ClientService, UrlBuilderService};
+use App\Service\{ClientService, UrlBuilderService, GetSonarVersionService};
 
 /**
  * [Description BatchCollecteHotspotOwaspController]
@@ -40,6 +40,7 @@ class BatchCollecteHotspotOwaspController extends AbstractController
         private EntityManagerInterface $em,
         private ClientService $client,
         private UrlBuilderService $urlBuilder,
+        private GetSonarVersionService $sonarVersion,
         private LoggerInterface $logger
     ) {
     }
@@ -154,10 +155,14 @@ class BatchCollecteHotspotOwaspController extends AbstractController
 
         /** Tableau des paramètres pour la requête HTTP
          *  SonarQube 26.x accepte a1..a10 pour les DEUX versions OWASP (pas de zero-padding).
+         *  MODIF 2026-10-16 : projectKey supprimé (pas juste déprécié) sur
+         *  /api/hotspots/search depuis SonarQube 2026.10, remplacé par project
+         *  (renommage effectif depuis la 10.2) — voir GetSonarVersionService::hotspotProjectParam().
          */
+        $hotspotProjectParam = $this->sonarVersion->hotspotProjectParam();
         $queryParamsList = [
-            'owasp2017' => ['projectKey' => $maven_key, 'owaspTop10' => $menace,'p' => 1, 'ps' => 500 ],
-            'owasp2021' => ['projectKey' => $maven_key, 'owaspTop10-2021' => $menace,'p' => 1, 'ps' => 500 ]
+            'owasp2017' => [$hotspotProjectParam => $maven_key, 'owaspTop10' => $menace,'p' => 1, 'ps' => 500 ],
+            'owasp2021' => [$hotspotProjectParam => $maven_key, 'owaspTop10-2021' => $menace,'p' => 1, 'ps' => 500 ]
         ];
 
         /** On appelle les requêtes HTTP pour chaque référentiel */
