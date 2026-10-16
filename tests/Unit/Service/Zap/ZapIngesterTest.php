@@ -31,7 +31,8 @@ use Psr\Log\LoggerInterface;
  * Couvre :
  *  - idempotence (scan deja existant)
  *  - happy path (1 site, N alertes -> 1 ZapScan + N ZapRule + N ZapFinding)
- *  - cache local règle (meme pluginid dans N alertes -> 1 seul persist ZapRule)
+ *  - cache local règle (meme alert_ref dans N alertes -> 1 seul persist ZapRule)
+ *  - meme pluginid, alert_ref different -> 2 ZapRule distincts (cas réel ZAP)
  *  - findOrCreate règle deja en BDD (lastSeenAt mis a jour)
  *  - construction owasp_dast (tags OWASP_2017_AXX / OWASP_2021_AXX -> compteurs)
  *  - alerte sans pluginid -> exception
@@ -89,18 +90,20 @@ class ZapIngesterTest extends TestCase
     public function testCreatesScanWithSingleAlert(): void
     {
         $this->scanRepo->method('findByUniqueKey')->willReturn(null);
-        $this->ruleRepo->method('findByPluginid')->willReturn(null);
+        $this->ruleRepo->method('findByAlertRef')->willReturn(null);
 
         $report = $this->minimalReport([
             'site' => [[
                 '@name' => 'http://exemple.local/',
                 'alerts' => [[
                     'pluginid'   => '10038',
+                    'alertRef'   => '10038',
                     'name'       => 'Content Security Policy (CSP) Header Not Set',
                     'riskcode'   => '2',
                     'confidence' => '3',
                     'cweid'      => '693',
                     'wascid'     => '15',
+                    'desc'       => '<p>CSP is an added layer of security.</p>',
                     'solution'   => 'Set the CSP header.',
                     'reference'  => 'https://example.org',
                     'instances'  => [['uri' => 'http://exemple.local/', 'method' => 'GET']],
@@ -131,8 +134,15 @@ class ZapIngesterTest extends TestCase
         /** @var ZapRule $rule */
         $rule = current(array_filter($this->persisted, fn($e) => $e instanceof ZapRule));
         $this->assertSame('10038', $rule->getPluginid());
+        $this->assertSame('10038', $rule->getAlertRef());
         $this->assertSame(693, $rule->getCweid());
         $this->assertSame(15, $rule->getWascid());
+        $this->assertSame('<p>CSP is an added layer of security.</p>', $rule->getDescription());
+
+        /** @var ZapFinding $finding */
+        $finding = current(array_filter($this->persisted, fn($e) => $e instanceof ZapFinding));
+        $this->assertSame([['uri' => 'http://exemple.local/', 'method' => 'GET']], $finding->getInstances());
+        $this->assertSame('medium', $finding->getRiskLabel());
 
         $owaspRows = array_values(array_filter($this->persisted, fn($e) => $e instanceof OwaspDast));
         $referentials = array_map(fn(OwaspDast $o) => $o->getReferentialOwasp(), $owaspRows);
@@ -146,13 +156,13 @@ class ZapIngesterTest extends TestCase
         }
     }
 
-    public function testReusesRuleCacheWhenSamePluginidAppearsTwice(): void
+    public function testReusesRuleCacheWhenSameAlertRefAppearsTwice(): void
     {
         $this->scanRepo->method('findByUniqueKey')->willReturn(null);
-        $this->ruleRepo->method('findByPluginid')->willReturn(null);
+        $this->ruleRepo->method('findByAlertRef')->willReturn(null);
 
         $alert = [
-            'pluginid' => '10063', 'name' => 'Leak', 'riskcode' => '1', 'confidence' => '2',
+            'pluginid' => '10063', 'alertRef' => '10063', 'name' => 'Leak', 'riskcode' => '1', 'confidence' => '2',
             'instances' => [], 'tags' => [],
         ];
         $report = $this->minimalReport([
@@ -162,20 +172,45 @@ class ZapIngesterTest extends TestCase
         $this->ingester->ingest($this->buildQueue($report));
 
         $this->assertCount(1, array_filter($this->persisted, fn($e) => $e instanceof ZapRule),
-            'Meme pluginid dans 2 alertes -> 1 seul persist ZapRule (cache local)');
+            'Meme alert_ref dans 2 alertes -> 1 seul persist ZapRule (cache local)');
         $this->assertCount(2, array_filter($this->persisted, fn($e) => $e instanceof ZapFinding));
+    }
+
+    public function testSamePluginidWithDifferentAlertRefCreatesTwoDistinctRules(): void
+    {
+        $this->scanRepo->method('findByUniqueKey')->willReturn(null);
+        $this->ruleRepo->method('findByAlertRef')->willReturn(null);
+
+        // Cas réel ZAP : pluginid=90004 regroupe 2 alertes distinctes
+        // (Cross-Origin-Embedder-Policy / Cross-Origin-Opener-Policy),
+        // différenciées par alertRef, pas par pluginid.
+        $report = $this->minimalReport([
+            'site' => [['@name' => 'http://exemple.local/', 'alerts' => [
+                ['pluginid' => '90004', 'alertRef' => '90004-2', 'name' => 'COEP Header Missing', 'riskcode' => '1', 'confidence' => '2', 'instances' => [], 'tags' => []],
+                ['pluginid' => '90004', 'alertRef' => '90004-3', 'name' => 'COOP Header Missing', 'riskcode' => '1', 'confidence' => '2', 'instances' => [], 'tags' => []],
+            ]]],
+        ]);
+
+        $this->ingester->ingest($this->buildQueue($report));
+
+        $rules = array_values(array_filter($this->persisted, fn($e) => $e instanceof ZapRule));
+        $this->assertCount(2, $rules, 'Meme pluginid, alert_ref different -> 2 ZapRule distincts');
+        $this->assertCount(2, array_filter($this->persisted, fn($e) => $e instanceof ZapFinding));
+        $alertRefs = array_map(fn(ZapRule $r) => $r->getAlertRef(), $rules);
+        sort($alertRefs);
+        $this->assertSame(['90004-2', '90004-3'], $alertRefs);
     }
 
     public function testUpdatesLastSeenAtWhenRuleAlreadyExists(): void
     {
         $this->scanRepo->method('findByUniqueKey')->willReturn(null);
-        $existingRule = (new ZapRule())->setPluginid('10038')->setName('x');
+        $existingRule = (new ZapRule())->setPluginid('10038')->setAlertRef('10038')->setName('x');
         $oldLastSeen = $existingRule->getLastSeenAt();
-        $this->ruleRepo->method('findByPluginid')->willReturn($existingRule);
+        $this->ruleRepo->method('findByAlertRef')->willReturn($existingRule);
 
         $report = $this->minimalReport([
             'site' => [['@name' => 'http://exemple.local/', 'alerts' => [
-                ['pluginid' => '10038', 'name' => 'x', 'riskcode' => '0', 'confidence' => '0', 'instances' => [], 'tags' => []],
+                ['pluginid' => '10038', 'alertRef' => '10038', 'name' => 'x', 'riskcode' => '0', 'confidence' => '0', 'instances' => [], 'tags' => []],
             ]]],
         ]);
 
@@ -215,11 +250,11 @@ class ZapIngesterTest extends TestCase
     public function testNoOwaspDastPersistedWhenNoOwaspTag(): void
     {
         $this->scanRepo->method('findByUniqueKey')->willReturn(null);
-        $this->ruleRepo->method('findByPluginid')->willReturn(null);
+        $this->ruleRepo->method('findByAlertRef')->willReturn(null);
 
         $report = $this->minimalReport([
             'site' => [['@name' => 'x', 'alerts' => [
-                ['pluginid' => '1', 'name' => 'x', 'riskcode' => '0', 'confidence' => '0', 'instances' => [],
+                ['pluginid' => '1', 'alertRef' => '1', 'name' => 'x', 'riskcode' => '0', 'confidence' => '0', 'instances' => [],
                  'tags' => [['tag' => 'WSTG-v42-INFO-02']]],
             ]]],
         ]);

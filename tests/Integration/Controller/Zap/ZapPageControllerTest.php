@@ -31,6 +31,7 @@ use Symfony\Component\Uid\Ulid;
  *  - token absent -> 200 + message info, état vide
  *  - avec un (ou deux, pour l'historique) scan(s) réellement ingéré(s) via
  *    ZapIngester -> 200, KPI/tableau/dataset JSON corrects.
+ *  - scan sans aucun tag OWASP -> 200, callout dédié, pas de crash Twig.
  */
 class ZapPageControllerTest extends WebTestCase
 {
@@ -115,6 +116,14 @@ class ZapPageControllerTest extends WebTestCase
         $this->assertStringContainsString('OWASP 2021', $body);
         $this->assertStringContainsString('OWASP 2017', $body);
 
+        // MODIF 2026-10-16 : tableau de détail des alertes + 1 modale par alerte
+        // (report-ok.json a 3 alertes distinctes, aucune ne partage d'alertRef).
+        $this->assertStringContainsString('Détail des alertes (3)', $body);
+        $this->assertStringContainsString('SQL Injection', $body);
+        $this->assertStringContainsString('Content Security Policy (CSP) Header Not Set', $body);
+        $this->assertStringContainsString('data-open="zap-finding-', $body);
+        $this->assertStringContainsString('Do not trust client side input', $body); // solution de la règle SQL Injection
+
         // Dataset JSON pour les graphiques : catégories + historique à 2 points.
         preg_match('/<script type="application\/json" id="zap-chart-data">(.*?)<\/script>/s', $body, $matches);
         $this->assertArrayHasKey(1, $matches, 'Le dataset JSON zap-chart-data doit être présent dans la page.');
@@ -122,6 +131,50 @@ class ZapPageControllerTest extends WebTestCase
         $this->assertIsArray($chartData);
         $this->assertCount(2, $chartData['categories']); // 2017 + 2021
         $this->assertCount(2, $chartData['history']); // 2 scans ingérés
+    }
+
+    public function testReturns200WithKpiAndCalloutWhenNoAlertHasOwaspTag(): void
+    {
+        // MODIF 2026-10-15 : cas réel rencontré en ingérant un vrai rapport
+        // ZAP (aucune des alertes ne portait de tag OWASP_<année>_AXX, y
+        // compris 2 alertes distinctes partageant le même pluginid, cf.
+        // ZapIngesterTest::testSamePluginidWithDifferentAlertRefCreatesTwoDistinctRules) —
+        // jamais exercé jusqu'ici par un test, la fixture report-ok.json a
+        // toujours des tags OWASP sur toutes ses alertes.
+        $this->seedListeProjet();
+        $scan = $this->ingestFixture('2026-10-14 18:16:24', 'report-no-owasp-tags.json');
+
+        $this->client->request('GET', '/zap?token=' . $this->buildToken(self::MAVEN_KEY));
+        $this->assertSame(200, $this->client->getResponse()->getStatusCode());
+        $body = $this->client->getResponse()->getContent();
+
+        $this->assertStringContainsString((string) $scan->getAlertCountTotal(), $body);
+        $this->assertStringContainsString('Aucune des alertes de ce scan ne porte de tag OWASP', $body);
+        // Pas de titre de tableau de catégorie (le message ci-dessus contient
+        // lui-même la sous-chaîne "OWASP 2017/2021", donc on vérifie l'absence
+        // du titre de section plutôt qu'une simple absence de sous-chaîne.
+        $this->assertStringNotContainsString('>OWASP 2021<', $body);
+        $this->assertStringNotContainsString('>OWASP 2017<', $body);
+
+        // Les 2 alertes distinctes (même pluginid 90004, alertRef différent)
+        // apparaissent bien comme 2 lignes séparées dans le tableau de détail.
+        $this->assertStringContainsString('Détail des alertes (3)', $body);
+        $this->assertStringContainsString('Cross-Origin-Embedder-Policy Header Missing or Invalid', $body);
+        $this->assertStringContainsString('Cross-Origin-Opener-Policy Header Missing or Invalid', $body);
+
+        // 2 alertes distinctes malgré le même pluginid (90004) -> bien 2 lignes
+        // zap_finding, pas une seule écrasée/ignorée.
+        $findingCount = (int) $this->em->getConnection()->fetchOne(
+            'SELECT COUNT(*) FROM ma_moulinette.zap_finding f JOIN ma_moulinette.zap_scan s ON f.scan_id = s.id WHERE s.id = :id',
+            ['id' => $scan->getId()]
+        );
+        $this->assertSame(3, $findingCount);
+
+        preg_match('/<script type="application\/json" id="zap-chart-data">(.*?)<\/script>/s', $body, $matches);
+        $this->assertArrayHasKey(1, $matches);
+        $chartData = json_decode($matches[1], true);
+        $this->assertSame([], $chartData['categories'], 'Aucun référentiel observé -> tableau de catégories vide');
+        $this->assertCount(1, $chartData['history']);
     }
 
     private function seedListeProjet(): void
@@ -136,9 +189,9 @@ class ZapPageControllerTest extends WebTestCase
         $this->em->flush();
     }
 
-    private function ingestFixture(string $generatedAt): \App\Entity\ZapScan
+    private function ingestFixture(string $generatedAt, string $fixture = 'report-ok.json'): \App\Entity\ZapScan
     {
-        $samplePath = __DIR__ . '/../../../Fixtures/zap-json/report-ok.json';
+        $samplePath = __DIR__ . '/../../../Fixtures/zap-json/' . $fixture;
         $report = json_decode(file_get_contents($samplePath), true);
         $report['@generated'] = $generatedAt;
         $json = json_encode($report);
