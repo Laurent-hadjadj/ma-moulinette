@@ -27,7 +27,7 @@ import 'motion-ui/dist/motion-ui.css';
 
 import '../../../styles/common/common.css';
 import '../../../styles/common/police.css';
-import '../../../styles/mon-application/dependency-check.css';
+import '../../../styles/mon-application/zap.css';
 
 /** Integration de jQuery */
 import $ from 'jquery';
