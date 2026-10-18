@@ -85,7 +85,7 @@ class DcCveRepository extends ServiceEntityRepository
      * @param array<int, string>|null $allowedMavenKeys
      * @param array<int, int>|null    $allowedScanIds
      *
-     * @return array{code: int, liste?: array<int, array{cwe: string, nb_projets: int, projets: array<int, string>}>, erreur?: string}
+     * @return array{code: 200, liste: array<int, array{cwe: string, nb_projets: int, projets: array<int, string>}>, erreur: string}|array{code: int, erreur: string}
      *
      * Created at: 08/05/2026 18:27:49 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -156,7 +156,7 @@ class DcCveRepository extends ServiceEntityRepository
      * @param array<int, string>|null $allowedMavenKeys
      * @param array<int, int>|null    $allowedScanIds
      *
-     * @return array{code: int, liste?: array<int, array<string, mixed>>, erreur?: string}
+     * @return array{code: 200, liste: array<int, array<string, mixed>>, erreur: string}|array{code: int, erreur: string}
      *
      * Created at: 08/05/2026 18:28:31 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -242,7 +242,7 @@ class DcCveRepository extends ServiceEntityRepository
      * @param array<int, string>|null $allowedMavenKeys
      * @param array<int, int>|null    $allowedScanIds
      *
-     * @return array{code: int, liste?: array<int, array<string, mixed>>, erreur?: string}
+     * @return array{code: 200, liste: array<int, array<string, mixed>>, erreur: string}|array{code: int, erreur: string}
      */
     public function listTopCriticalCves(
         int $limit = 10,
@@ -336,7 +336,7 @@ class DcCveRepository extends ServiceEntityRepository
      *
      * @param array<int, string>|null $allowedMavenKeys
      *
-     * @return array{code: int, liste?: array<int, array<string, mixed>>, erreur?: string}
+     * @return array{code: 200, liste: array<int, array<string, mixed>>, erreur: string}|array{code: int, erreur: string}
      */
     public function listNewCriticalSinceLastScan(
         int $hardLimit = 50,
@@ -458,7 +458,7 @@ class DcCveRepository extends ServiceEntityRepository
      * @param int                       $hardLimit         max CVE distinctes retournées
      * @param array<int, string>|null   $allowedMavenKeys  périmètre user
      *
-     * @return array{code: int, liste?: array<int, array<string, mixed>>, erreur?: string}
+     * @return array{code: 200, liste: array<int, array<string, mixed>>, erreur: string}|array{code: int, erreur: string}
      *
      * Created at: 14/05/2026 14:00:00 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -610,7 +610,7 @@ class DcCveRepository extends ServiceEntityRepository
      * identifier rapidement les CVE communes entre 2-4 apps sélectionnées.
      *
      * @param array<int, int> $scanIds liste d'IDs de scans à comparer
-     * @return array{code: int, liste?: array<int, array<string, mixed>>, erreur?: string}
+     * @return array{code: 200, liste: array<int, array<string, mixed>>, erreur: string}|array{code: int, erreur: string}
      */
     public function findCommonCvesForScans(array $scanIds): array
     {
@@ -690,7 +690,7 @@ class DcCveRepository extends ServiceEntityRepository
         }
         // Format simple : valeurs séparées par , avec éventuelles guillemets
         return array_map(
-            static fn(string $v) => trim($v, '"'),
+            static fn(?string $v) => trim($v ?? '', '"'),
             str_getcsv($trimmed, ',', '"', '\\')
         );
     }

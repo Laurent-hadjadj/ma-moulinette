@@ -81,8 +81,8 @@ class MaskSensitiveDataProcessor implements ProcessorInterface
     private function maskSensitiveData(string $data, array $patterns): string
     {
         foreach ($patterns as $pattern) {
-            $data = preg_replace_callback($pattern, function ($matches) {
-                return preg_replace('/=\s*\S+/', ' ***MASKED***', $matches[0]);
+            $data = preg_replace_callback($pattern, function (array $matches): string {
+                return preg_replace('/=\s*\S+/', ' ***MASKED***', $matches[0]) ?? $matches[0];
             }, $data);
         }
         return $data;

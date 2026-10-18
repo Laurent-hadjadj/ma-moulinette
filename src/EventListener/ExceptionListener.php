@@ -78,9 +78,9 @@ class ExceptionListener
         ];
 
         foreach ($patterns as $pattern) {
-            $content = preg_replace_callback($pattern, function ($matches) {
+            $content = preg_replace_callback($pattern, function (array $matches): string {
                 // Remplacer la valeur par "***MASKED***"
-                return preg_replace('/=\s*\S+/', ' ***MASKED***', $matches[0]);
+                return preg_replace('/=\s*\S+/', ' ***MASKED***', $matches[0]) ?? $matches[0];
             }, $content);
         }
 

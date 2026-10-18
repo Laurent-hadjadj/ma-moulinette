@@ -68,7 +68,7 @@ class MaskSensitiveEnvVariablesProcessor implements ProcessorInterface
     {
         foreach ($data as $key => $value) {
             foreach ($sensitivePrefixes as $prefix) {
-                if (strpos($key, $prefix) === 0 && $value) {
+                if (strpos((string) $key, $prefix) === 0 && $value) {
                     $data[$key] = ' ***MASKED***';
                 }
             }
