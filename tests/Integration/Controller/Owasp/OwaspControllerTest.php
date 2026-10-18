@@ -64,7 +64,7 @@ class OwaspControllerTest extends WebTestCase
         $this->client->request('GET', '/owasp');
 
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('Sélectionnez un projet', $this->client->getResponse()->getContent());
+        $this->assertStringContainsString('Sélectionnez un projet', (string) $this->client->getResponse()->getContent());
     }
 
     public function testIndexRendersRealTemplateWithoutCrashingWhenNoGroupeFonctionnel(): void
@@ -78,7 +78,7 @@ class OwaspControllerTest extends WebTestCase
         $this->client->request('GET', '/owasp?token=' . $token);
 
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('rattaché à un groupe fonctionnel', $this->client->getResponse()->getContent());
+        $this->assertStringContainsString('rattaché à un groupe fonctionnel', (string) $this->client->getResponse()->getContent());
     }
 
     public function testIndexRendersRealTemplateWithoutCrashingWhenProjectNotInGroupe(): void

@@ -122,7 +122,7 @@ class AdminLogControllerTest extends TestCase
 
         $response = $this->controller->index();
 
-        $this->assertSame('<html>log</html>', $response->getContent());
+        $this->assertSame('<html>log</html>', (string) $response->getContent());
     }
 
     public function testIndexPassesFilesArrayToTemplate(): void
@@ -155,7 +155,7 @@ class AdminLogControllerTest extends TestCase
 
         $response = $this->controller->list(new Request(['env' => 'prod']));
 
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
         $this->assertSame(200, $data['code']);
         $this->assertSame(1, $data['count']);
         $this->assertCount(1, $data['logs']);
@@ -173,7 +173,7 @@ class AdminLogControllerTest extends TestCase
             new Request(['env' => 'dev', 'types' => ['application', 'request']])
         );
 
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
         $this->assertSame(0, $data['count']);
     }
 
@@ -207,7 +207,7 @@ class AdminLogControllerTest extends TestCase
             ]);
 
         $response = $this->controller->list(new Request(['env' => 'prod']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertMatchesRegularExpression('/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $data['logs'][0]['mtime']);
     }
@@ -221,7 +221,7 @@ class AdminLogControllerTest extends TestCase
         $response = $this->controller->downloadSelection(new Request());
 
         $this->assertInstanceOf(JsonResponse::class, $response);
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
         $this->assertSame(400, $data['code']);
         $this->assertSame('warning', $data['type']);
     }
@@ -233,7 +233,7 @@ class AdminLogControllerTest extends TestCase
         $response = $this->controller->downloadSelection($request);
 
         $this->assertInstanceOf(JsonResponse::class, $response);
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
         $this->assertSame(400, $data['code']);
     }
 
@@ -296,7 +296,7 @@ class AdminLogControllerTest extends TestCase
         );
 
         $this->assertInstanceOf(JsonResponse::class, $response);
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
         $this->assertSame(500, $data['code']);
         $this->assertSame('critical', $data['type']);
     }

@@ -56,7 +56,7 @@ class ApiSecurityHandlerTest extends TestCase
 
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertSame(Response::HTTP_UNAUTHORIZED, $response->getStatusCode());
-        $payload = json_decode($response->getContent(), true);
+        $payload = json_decode((string) $response->getContent(), true);
         $this->assertSame(401, $payload['code']);
         $this->assertSame('unauthorized', $payload['status']);
         $this->assertStringContainsString('authentifié', $payload['message']);
@@ -70,7 +70,7 @@ class ApiSecurityHandlerTest extends TestCase
         $response = $this->handler->start($request);
 
         $this->assertSame(Response::HTTP_OK, $response->getStatusCode());
-        $payload = json_decode($response->getContent(), true);
+        $payload = json_decode((string) $response->getContent(), true);
         $this->assertTrue($payload['X-Api-Custom-401']);
         $this->assertSame(401, $payload['code']);
         $this->assertStringContainsString('session', $payload['message']);
@@ -127,7 +127,7 @@ class ApiSecurityHandlerTest extends TestCase
         $response = $this->handler->handle($request, new AccessDeniedException('Access Denied.'));
 
         $this->assertSame(Response::HTTP_FORBIDDEN, $response->getStatusCode());
-        $payload = json_decode($response->getContent(), true);
+        $payload = json_decode((string) $response->getContent(), true);
         $this->assertTrue($payload['x-api-custom-403']);
         $this->assertSame(403, $payload['code']);
         $this->assertStringContainsString('[API-Credential]', $payload['message']);
@@ -147,7 +147,7 @@ class ApiSecurityHandlerTest extends TestCase
         $response = $this->handler->handle($request, new AccessDeniedException('Access Denied.'));
 
         $this->assertSame(Response::HTTP_OK, $response->getStatusCode());
-        $payload = json_decode($response->getContent(), true);
+        $payload = json_decode((string) $response->getContent(), true);
         $this->assertStringContainsString('ROLE_ADMIN', $payload['message']);
         $this->assertStringContainsString('Erreur 403', $payload['message']);
     }
@@ -164,7 +164,7 @@ class ApiSecurityHandlerTest extends TestCase
 
         $response = $this->handler->handle($request, new AccessDeniedException('denied'));
 
-        $payload = json_decode($response->getContent(), true);
+        $payload = json_decode((string) $response->getContent(), true);
         $this->assertStringContainsString('pas les droits', $payload['message']);
     }
 }

@@ -80,7 +80,7 @@ class ApiAccueilControllerTest extends TestCase
             ->willReturn(['code' => 503, 'erreur' => 'timeout']);
 
         $response = $this->controller->apiSonarStatus(new Request());
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(503, $data['code']);
         $this->assertSame('critical', $data['type']);
@@ -93,7 +93,7 @@ class ApiAccueilControllerTest extends TestCase
             ->willReturn(['code' => 200, 'json' => ['status' => 'UP']]);
 
         $response = $this->controller->apiSonarStatus(new Request());
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
     }
@@ -107,7 +107,7 @@ class ApiAccueilControllerTest extends TestCase
             ->willReturn(['code' => 503, 'erreur' => 'down']);
 
         $response = $this->controller->accueilProjetListe();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(503, $data['code']);
     }
@@ -119,7 +119,7 @@ class ApiAccueilControllerTest extends TestCase
         ]);
 
         $response = $this->controller->accueilProjetListe();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(404, $data['code']);
     }
@@ -137,7 +137,7 @@ class ApiAccueilControllerTest extends TestCase
             ->willReturn(['code' => 500, 'erreur' => 'delete fail']);
 
         $response = $this->controller->accueilProjetListe();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
         $this->assertSame('delete fail', $data['trace']);
@@ -158,7 +158,7 @@ class ApiAccueilControllerTest extends TestCase
         $this->em->expects($this->once())->method('persist');
 
         $response = $this->controller->accueilProjetListe();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertSame(1, $data['nombre']);
@@ -180,7 +180,7 @@ class ApiAccueilControllerTest extends TestCase
             ->willReturn(['code' => 500, 'erreur' => 'update fail']);
 
         $response = $this->controller->accueilProjetListe();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
     }
@@ -194,7 +194,7 @@ class ApiAccueilControllerTest extends TestCase
             ->willReturn(['code' => 500, 'erreur' => 'fail']);
 
         $response = $this->controller->accueilProjetTags();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
     }
@@ -206,7 +206,7 @@ class ApiAccueilControllerTest extends TestCase
         ]);
 
         $response = $this->controller->accueilProjetTags();
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertSame(12, $data['nombre_tag']);

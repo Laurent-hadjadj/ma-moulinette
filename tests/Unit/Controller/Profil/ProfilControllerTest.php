@@ -158,6 +158,6 @@ class ProfilControllerTest extends TestCase
 
         $response = $this->controller->index();
 
-        $this->assertSame('<html>exc</html>', $response->getContent());
+        $this->assertSame('<html>exc</html>', (string) $response->getContent());
     }
 }

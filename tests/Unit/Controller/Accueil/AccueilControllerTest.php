@@ -333,7 +333,7 @@ class AccueilControllerTest extends TestCase
 
         $response = $this->controller->index();
 
-        $this->assertSame('<html>accueil</html>', $response->getContent());
+        $this->assertSame('<html>accueil</html>', (string) $response->getContent());
     }
 
     public function testIndexFlashesWhenFavoriProjetDesynced(): void
@@ -390,7 +390,7 @@ class AccueilControllerTest extends TestCase
         $this->twig->method('render')->willReturn('<html>desync</html>');
 
         $response = $this->controller->index();
-        $this->assertSame('<html>desync</html>', $response->getContent());
+        $this->assertSame('<html>desync</html>', (string) $response->getContent());
     }
 
     public function testIndexFlashesWhenVersionsDiffer(): void
@@ -462,6 +462,6 @@ class AccueilControllerTest extends TestCase
 
         $response = $this->controller->index();
 
-        $this->assertSame('<html>early</html>', $response->getContent());
+        $this->assertSame('<html>early</html>', (string) $response->getContent());
     }
 }

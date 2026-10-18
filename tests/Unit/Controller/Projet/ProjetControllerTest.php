@@ -122,7 +122,7 @@ class ProjetControllerTest extends TestCase
 
         $response = $this->controller->index();
 
-        $this->assertSame('<html>projet</html>', $response->getContent());
+        $this->assertSame('<html>projet</html>', (string) $response->getContent());
     }
 
     public function testMesProjetsFlashesWarningWhenNoGroupes(): void

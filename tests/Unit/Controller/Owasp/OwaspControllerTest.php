@@ -199,7 +199,7 @@ class OwaspControllerTest extends TestCase
 
         $response = $this->controller->index($this->buildRequest(null));
 
-        $this->assertSame('<html>missing-token</html>', $response->getContent());
+        $this->assertSame('<html>missing-token</html>', (string) $response->getContent());
     }
 
     public function testIndexFlashesErrorWhenTokenIsInvalidBase64(): void
@@ -318,7 +318,7 @@ class OwaspControllerTest extends TestCase
 
         $response = $this->controller->index($this->buildRequest($this->buildValidToken()));
 
-        $this->assertSame('<html>err-2017</html>', $response->getContent());
+        $this->assertSame('<html>err-2017</html>', (string) $response->getContent());
     }
 
     public function testIndexFlashesAndRendersWhen2021Fails(): void

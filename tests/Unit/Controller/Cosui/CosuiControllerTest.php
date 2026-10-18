@@ -115,7 +115,7 @@ class CosuiControllerTest extends TestCase
             ->willReturn('<html>no-token</html>');
 
         $response = $this->controller->projetCosui(new Request());
-        $this->assertSame('<html>no-token</html>', $response->getContent());
+        $this->assertSame('<html>no-token</html>', (string) $response->getContent());
         $this->assertSame(200, $response->getStatusCode());
     }
 

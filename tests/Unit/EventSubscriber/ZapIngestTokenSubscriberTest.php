@@ -84,7 +84,7 @@ class ZapIngestTokenSubscriberTest extends TestCase
         $subscriber->onKernelRequest($event);
 
         $this->assertResponseStatus($event, Response::HTTP_SERVICE_UNAVAILABLE, 503);
-        $payload = json_decode($event->getResponse()->getContent(), true);
+        $payload = json_decode((string) $event->getResponse()->getContent(), true);
         $this->assertSame('critical', $payload['type']);
     }
 
@@ -100,7 +100,7 @@ class ZapIngestTokenSubscriberTest extends TestCase
         $subscriber->onKernelRequest($event);
 
         $this->assertResponseStatus($event, Response::HTTP_UNAUTHORIZED, 401);
-        $payload = json_decode($event->getResponse()->getContent(), true);
+        $payload = json_decode((string) $event->getResponse()->getContent(), true);
         $this->assertSame('error', $payload['type']);
         $this->assertStringContainsString('X-Zap-Token', $payload['message']);
     }
@@ -130,7 +130,7 @@ class ZapIngestTokenSubscriberTest extends TestCase
         $subscriber->onKernelRequest($event);
 
         $this->assertResponseStatus($event, Response::HTTP_UNAUTHORIZED, 401);
-        $payload = json_decode($event->getResponse()->getContent(), true);
+        $payload = json_decode((string) $event->getResponse()->getContent(), true);
         $this->assertSame('Token invalide.', $payload['message']);
     }
 
@@ -167,7 +167,7 @@ class ZapIngestTokenSubscriberTest extends TestCase
         $response = $event->getResponse();
         $this->assertInstanceOf(JsonResponse::class, $response);
         $this->assertSame($httpStatus, $response->getStatusCode());
-        $payload = json_decode($response->getContent(), true);
+        $payload = json_decode((string) $response->getContent(), true);
         $this->assertSame($payloadCode, $payload['code']);
     }
 }

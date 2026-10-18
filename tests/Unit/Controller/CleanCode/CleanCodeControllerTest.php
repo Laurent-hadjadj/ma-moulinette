@@ -164,7 +164,7 @@ class CleanCodeControllerTest extends TestCase
 
         $response = $this->controller->index($this->buildRequest(null));
 
-        $this->assertSame('<html>missing-token</html>', $response->getContent());
+        $this->assertSame('<html>missing-token</html>', (string) $response->getContent());
     }
 
     // ─── 2. Token invalide (non base64 après rot13) → flash error ────────────
@@ -353,7 +353,7 @@ class CleanCodeControllerTest extends TestCase
 
         $response = $this->controller->index($this->buildRequest($this->buildValidToken()));
 
-        $this->assertSame('<html>ok</html>', $response->getContent());
+        $this->assertSame('<html>ok</html>', (string) $response->getContent());
 
         $this->assertSame(self::MAVEN_KEY,   $capturedCtx['maven_key']);
         $this->assertSame('ma-moulinette',   $capturedCtx['project_name']);

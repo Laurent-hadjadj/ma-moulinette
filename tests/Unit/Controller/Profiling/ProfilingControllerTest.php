@@ -93,7 +93,7 @@ class ProfilingControllerTest extends TestCase
             ->willReturn('<html>flash</html>');
 
         $response = $this->controller->profiling();
-        $this->assertSame('<html>flash</html>', $response->getContent());
+        $this->assertSame('<html>flash</html>', (string) $response->getContent());
     }
 
     public function testProfilingRendersWithoutFlashWhenRoleGranted(): void

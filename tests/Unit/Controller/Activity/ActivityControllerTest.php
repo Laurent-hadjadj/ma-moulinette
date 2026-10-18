@@ -20,6 +20,7 @@ use App\Entity\{Activity, ActivityHistorique};
 use App\Service\UserAgent\UserAgentTrackingFacade;
 use App\Repository\{ActivityHistoriqueRepository, ActivityRepository};
 use App\Service\ClientService;
+use App\Service\PdfExportService;
 use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -37,6 +38,7 @@ class ActivityControllerTest extends TestCase
 {
     /** @var EntityManagerInterface&MockObject */         private MockObject $em;
     /** @var ClientService&MockObject */                  private MockObject $client;
+    /** @var PdfExportService&MockObject */                private MockObject $pdfExportService;
     /** @var ParameterBagInterface&MockObject */          private MockObject $params;
     /** @var LoggerInterface&MockObject */                private MockObject $logger;
     /** @var ActivityRepository&MockObject */             private MockObject $activityRepo;
@@ -52,6 +54,7 @@ class ActivityControllerTest extends TestCase
     {
         $this->em = $this->createMock(EntityManagerInterface::class);
         $this->client = $this->createMock(ClientService::class);
+        $this->pdfExportService = $this->createMock(PdfExportService::class);
         $this->params = $this->createMock(ParameterBagInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->activityRepo = $this->createMock(ActivityRepository::class);
@@ -95,6 +98,7 @@ class ActivityControllerTest extends TestCase
             $this->em,
             $this->params,
             $this->client,
+            $this->pdfExportService,
             $this->logger,
             $this->tracking
         );
@@ -120,7 +124,7 @@ class ActivityControllerTest extends TestCase
 
         $response = $this->controller->index();
 
-        $this->assertSame('<html>err</html>', $response->getContent());
+        $this->assertSame('<html>err</html>', (string) $response->getContent());
     }
 
     public function testIndexRendersWithWarningWhenAnalysesEmpty(): void
@@ -169,7 +173,7 @@ class ActivityControllerTest extends TestCase
 
         $response = $this->controller->index();
 
-        $this->assertSame('<html>no historique</html>', $response->getContent());
+        $this->assertSame('<html>no historique</html>', (string) $response->getContent());
     }
 
     public function testIndexFlashesUpdateNoticeWhenSonarHasNewerTasks(): void

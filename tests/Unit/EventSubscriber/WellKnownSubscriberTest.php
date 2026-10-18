@@ -54,7 +54,7 @@ class WellKnownSubscriberTest extends TestCase
         $this->assertTrue($event->hasResponse());
         $response = $event->getResponse();
         $this->assertSame(Response::HTTP_NO_CONTENT, $response->getStatusCode());
-        $this->assertSame('', $response->getContent());
+        $this->assertSame('', (string) $response->getContent());
     }
 
     public function testOnKernelRequestIgnoresRootPath(): void

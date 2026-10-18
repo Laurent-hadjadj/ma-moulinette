@@ -153,7 +153,7 @@ class StatistiqueControllerTest extends TestCase
 
         $response = $this->controller->adminDashboard();
 
-        $this->assertSame('<html>dashboard</html>', $response->getContent());
+        $this->assertSame('<html>dashboard</html>', (string) $response->getContent());
     }
 
     public function testAdminDashboardFallsBackWhenPgStatActivityAbsent(): void
@@ -178,7 +178,7 @@ class StatistiqueControllerTest extends TestCase
 
         $response = $this->controller->adminDashboard();
 
-        $this->assertSame('<html>dashboard-fallback</html>', $response->getContent());
+        $this->assertSame('<html>dashboard-fallback</html>', (string) $response->getContent());
     }
 
     public function testAdminDashboardPgStatActivityAndStatementsPresent(): void
@@ -404,7 +404,7 @@ class StatistiqueControllerTest extends TestCase
 
         $response = $this->controller->adminStats();
 
-        $this->assertSame('<html>stats</html>', $response->getContent());
+        $this->assertSame('<html>stats</html>', (string) $response->getContent());
     }
 
     public function testAdminStatsChartDataIsValidJson(): void
@@ -529,7 +529,7 @@ class StatistiqueControllerTest extends TestCase
             ->willReturn('<html>index</html>');
 
         $response = $this->controller->statistique();
-        $this->assertSame('<html>index</html>', $response->getContent());
+        $this->assertSame('<html>index</html>', (string) $response->getContent());
     }
 
     public function testStatistiquePassesGenericRenderVars(): void

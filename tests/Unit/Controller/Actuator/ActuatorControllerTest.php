@@ -139,7 +139,7 @@ class ActuatorControllerTest extends TestCase
 
         $response = $this->controller->actuator(new Request());
 
-        $this->assertSame('<html>403</html>', $response->getContent());
+        $this->assertSame('<html>403</html>', (string) $response->getContent());
     }
 
     public function testActuatorFlashesWarningWhenRepoFails(): void
@@ -225,7 +225,7 @@ class ActuatorControllerTest extends TestCase
 
         $response = $this->controller->actuatorInfo(new Request());
 
-        $this->assertSame('<html>403</html>', $response->getContent());
+        $this->assertSame('<html>403</html>', (string) $response->getContent());
     }
 
     /* ============ actuatorModifier ============ */

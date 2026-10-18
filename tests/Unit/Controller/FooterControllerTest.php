@@ -97,7 +97,7 @@ class FooterControllerTest extends TestCase
 
         $response = $this->controller->{$method}();
 
-        $this->assertSame('<html>' . $template . '</html>', $response->getContent());
+        $this->assertSame('<html>' . $template . '</html>', (string) $response->getContent());
     }
 
     /**
@@ -155,5 +155,11 @@ class FooterControllerTest extends TestCase
         $this->controller->donneesPersonnelles();
 
         $this->assertSame('https://ma-moulinette.example.com', $capturedCtx['urlSite']);
+        $this->assertSame('Editeur SAS', $capturedCtx['editeur']);
+        /* MODIF 2026-10-16 : dpoContact/legalBasis viennent de $_ENV, pas de
+         * getParameter() — pas de valeur par défaut imposée dans .env.local,
+         * donc vide dans ce test (la page affiche un texte générique de repli). */
+        $this->assertArrayHasKey('dpoContact', $capturedCtx);
+        $this->assertArrayHasKey('legalBasis', $capturedCtx);
     }
 }

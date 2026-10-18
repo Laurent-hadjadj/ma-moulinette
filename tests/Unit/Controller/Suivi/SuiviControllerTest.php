@@ -526,7 +526,7 @@ class SuiviControllerTest extends TestCase
 
         $this->assertSame(200, $response->getStatusCode());
         $this->assertSame('application/pdf', $response->headers->get('Content-Type'));
-        $this->assertSame('%PDF-1.4 contenu factice', $response->getContent());
+        $this->assertSame('%PDF-1.4 contenu factice', (string) $response->getContent());
     }
 
     /**

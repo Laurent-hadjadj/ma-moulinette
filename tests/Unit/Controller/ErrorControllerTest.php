@@ -83,7 +83,7 @@ class ErrorControllerTest extends TestCase
 
         $response = $this->controller->show($exception, $this->twig);
 
-        $this->assertSame('<html>404 page</html>', $response->getContent());
+        $this->assertSame('<html>404 page</html>', (string) $response->getContent());
     }
 
     public function testShowFallsBackToGenericTemplateWhenStatusSpecificMissing(): void
@@ -104,6 +104,6 @@ class ErrorControllerTest extends TestCase
 
         $response = $this->controller->show($exception, $this->twig);
 
-        $this->assertSame('<html>Generic error</html>', $response->getContent());
+        $this->assertSame('<html>Generic error</html>', (string) $response->getContent());
     }
 }
