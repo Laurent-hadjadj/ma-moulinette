@@ -101,6 +101,9 @@ class SonarFixtureClientService extends ClientService
             }
 
             $raw = file_get_contents($fixturePath);
+            if ($raw === false) {
+                throw new \RuntimeException("Lecture impossible de la fixture : $fixturePath");
+            }
             // Les fixtures générées via PowerShell 5.1 `Set-Content -Encoding UTF8`
             // portent un BOM UTF-8 (EF BB BF) qui casse json_decode.
             if (str_starts_with($raw, "\xEF\xBB\xBF")) {
