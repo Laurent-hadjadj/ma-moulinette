@@ -1,21 +1,21 @@
 # 🧪 Tests unitaires et d'intégration
 
-## 📈 État des suites (relevé du 11/10/2026)
+## 📈 État des suites (relevé du 18/10/2026)
 
 | Suite | Tests | Assertions | Nature |
 | --- | ---: | ---: | --- |
-| `unit` (`tests/Unit`) | 3 347 | 9 068 | Unitaires purs (mocks, aucune base réelle) |
-| `integration` (`tests/Integration`) | 606 | 1 389 | `KernelTestCase`/`WebTestCase` sur PostgreSQL de test |
-| **Total** | **3 953** | **10 457** | |
+| `unit` (`tests/Unit`) | 3 423 | 9 393 | Unitaires purs (mocks, aucune base réelle) |
+| `integration` (`tests/Integration`) | 674 | 1 625 | `KernelTestCase`/`WebTestCase` sur PostgreSQL de test |
+| **Total** | **4 097** | **11 018** | |
 | `e2e` (`tests/e2e`) | 22 suites | — | Playwright, hors PHPUnit — voir [Tests End-to-End](test-e2e.md) |
 
 **Couverture de code** (suites `unit` + `integration` cumulées, via pcov) :
 
 | Granularité | Couverture |
 | --- | --- |
-| Lignes | **80,29 %** |
+| Lignes | **80,59 %** |
 
-**Analyse statique** : **PHPStan niveau 6**, 68 erreurs résiduelles (voir [Analyse statique](#-analyse-statique-phpstan) plus bas).
+**Analyse statique** : **PHPStan niveau 7**, 0 erreur sur tout le périmètre configuré (`bin/`, `config/`, `public/`, `src/`, `tests/`) — voir [Analyse statique](#-analyse-statique-phpstan) plus bas.
 
 !!! note "🔄 Chiffres à réactualiser"
     Ces valeurs sont un relevé manuel, pas une sortie de CI : elles se périment à chaque campagne de tests.
@@ -113,7 +113,7 @@ vendor/bin/phpstan analyse src/Service/Xxx.php   # un fichier
 vendor/bin/phpstan analyse src/ --level=8        # au-delà du niveau cible
 ```
 
-### 🎚️ Niveau retenu : 6
+### 🎚️ Niveau retenu : 7
 
 PHPStan propose 11 niveaux (0 à 10), chacun ajoutant ses vérifications à celles du précédent :
 
@@ -122,19 +122,27 @@ PHPStan propose 11 niveaux (0 à 10), chacun ajoutant ses vérifications à cell
 | 0–2 | Méthodes et variables inconnues, arguments surnuméraires |
 | 3–4 | Types de retour incohérents, code mort, conditions toujours vraies ou fausses |
 | 5 | Types des arguments passés aux appels |
-| **6** | **Types manquants : tout `array` non détaillé, tout paramètre ou retour non typé** |
-| 7 | Unions traitées partiellement (un `?Foo` utilisé sans vérifier le `null`) |
+| 6 | Types manquants : tout `array` non détaillé, tout paramètre ou retour non typé |
+| **7** | **Unions traitées partiellement (un `?Foo` utilisé sans vérifier le `null`)** |
 | 8 | Appels sur des valeurs potentiellement `null` |
 | 9–10 | `mixed` strict, puis exhaustivité des types de PHP |
 
-Le **niveau 6** est la cible du projet : il exige que tout soit typé, sans imposer la discipline du `mixed` strict — inatteignable à coût raisonnable ici, où les données viennent de requêtes SQL brutes (`array<string, mixed>`) et de payloads JSON.
+Le **niveau 7** est la cible du projet depuis le 18/10/2026 : il exige que toute union de types (`Foo|null`,
+`array{code: 200, ...}|array{code: 500, ...}`) soit effectivement discriminée avant usage, pas seulement
+déclarée — sans imposer la discipline du `mixed` strict (niveaux 9-10), inatteignable à coût raisonnable
+ici, où les données viennent de requêtes SQL brutes (`array<string, mixed>`) et de payloads JSON.
 
-!!! note "📉 Campagne de réduction en cours"
-    La dette a été ramenée de **4 820 à 68 erreurs** en plusieurs campagnes successives (355 occurrences de
-    `missingType.iterableValue` résorbées le 26/07/2026 en typant précisément chaque tableau d'après son
-    usage réel, puis une campagne 153 → 68 (11/10/2026) purement mécanique — PHPDoc et typage des doublures
-    PHPUnit (`&MockObject`/`&Stub`) sur les mocks, sans changement de comportement).
-    Le reliquat actuel est plus hétérogène et se traite au cas par cas.
+!!! note "✅ Campagne de migration niveau 6 → 7 terminée (18/10/2026)"
+    La dette avait déjà été ramenée de **4 820 à 68 erreurs** en niveau 6 par plusieurs campagnes successives
+    (355 occurrences de `missingType.iterableValue` résorbées le 26/07/2026 en typant précisément chaque
+    tableau d'après son usage réel, puis une campagne 153 → 68 le 11/10/2026, purement mécanique). Le reliquat
+    a ensuite été traité au cas par cas jusqu'à 0 erreur en niveau 6, puis le périmètre entier (`bin/`,
+    `config/`, `public/`, `src/`, `tests/`) a été vérifié et corrigé au niveau 7 avant de basculer
+    `phpstan.dist.neon`. Toujours sans baseline ni `@phpstan-ignore` — uniquement des correctifs réels
+    (unions à codes littéraux disjoints sur les retours de repository, `JSON_THROW_ON_ERROR` plutôt que des
+    casts, `assertNotFalse()` pour les narrowings PHPUnit, etc.). Deux bugs réels ont été trouvés et corrigés
+    au passage dans `bin/cli/*.php` (fallbacks `$_ENV[...] === false` toujours faux, affichage `VERIFY_HOST`
+    inversé) — jamais vérifiés individuellement avant cette campagne.
 
 !!! caution "🚫 Ne pas masquer une erreur"
     Une erreur PHPStan signale presque toujours un vrai problème de type.
