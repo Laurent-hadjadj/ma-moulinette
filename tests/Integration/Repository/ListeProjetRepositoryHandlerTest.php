@@ -78,8 +78,7 @@ class ListeProjetRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['visibility' => 'PRIVATE'];
-        $result = $repo->countListeProjetVisibility($map);
+        $result = $repo->countListeProjetVisibility('PRIVATE');
 
         // 9) Vérification
         $this->assertSame($expected, $result);
@@ -226,8 +225,7 @@ class ListeProjetRepositoryHandlerTest extends TestCase
         $repo->method('getEntityManager')->willReturn($emStub);
 
         // 8) Appel de la méthode
-        $map = ['clause_where'=>"tag LIKE 'ma-moulinette%' OR tag LIKE '2048%'" ];
-        $result = $repo->selectListeProjetByGroupe($map);
+        $result = $repo->selectListeProjetByGroupe(['ma-moulinette', '2048']);
 
         // 9) Vérification
         $this->assertSame($expected, $result);
