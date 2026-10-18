@@ -4,10 +4,10 @@
 [![PHP](https://img.shields.io/badge/PHP-%E2%89%A5%208.5-777BB4?logo=php&logoColor=white)](https://www.php.net/)
 [![Symfony](https://img.shields.io/badge/Symfony-8.1.6-000000?logo=symfony&logoColor=white)](https://symfony.com/)
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-18-4169E1?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
-[![Tests](https://img.shields.io/badge/tests-3953%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![Assertions](https://img.shields.io/badge/assertions-10457-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![Coverage](https://img.shields.io/badge/coverage-80.29%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
-[![PHPStan](https://img.shields.io/badge/PHPStan-level%206-blueviolet?logo=php&logoColor=white)](https://phpstan.org/)
+[![Tests](https://img.shields.io/badge/tests-4097%20passed-success?logo=phpunit&logoColor=white)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Assertions](https://img.shields.io/badge/assertions-11018-success)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![Coverage](https://img.shields.io/badge/coverage-80.59%25-brightgreen)](mkDocs/docs/ma-moulinette/developpement/test-unitaire.md)
+[![PHPStan](https://img.shields.io/badge/PHPStan-level%207-blueviolet?logo=php&logoColor=white)](https://phpstan.org/)
 [![Licence](https://img.shields.io/badge/licence-CC%20BY--NC--SA%204.0-lightgrey)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 ┏┓┏┓┏┓━┏━━┓━┏━━━┓\
@@ -87,28 +87,28 @@ Après plusieurs réécritures, le projet a été migré vers **PHP / Symfony**,
 
 ## 🚀 État actuel
 
-> [!NOTE] Information sur le projet (relevé du 11/10/2026)
+> [!NOTE] Information sur le projet (relevé du 18/10/2026)
 >
 
 | Langage   | Fichiers  | Code   | Commentaires | Vides | Total |
 | --------- | --------: | -----: | -----------: | ----: | ----: |
-|  PHP      |  286      | 51690  | 22011        |  9559 | 83260 |
-|  HTML    |  151      | 26883  | 1019         | 1949  | 29851 |
-|  JS      |  92       | 10780  | 4328         | 1742  | 16850 |
-|  CSS     |  38       | 6097   | 1124         | 1300  | 8521 |
-|  SQL     |  77       | 3169   | 1549         | 703   | 5421 |
-|  MIGRATION |  10     | 444    | 145          | 93    | 682 |
+|  PHP      |  315      | 55058  | 24004        | 10126 | 89188 |
+|  HTML    |  154      | 27637  | 1068         | 1992  | 30697 |
+|  JS      |  93       | 10875  | 4394         | 1757  | 17026 |
+|  CSS     |  39       | 6392   | 1166         | 1364  | 8922 |
+|  SQL     |  82       | 3350   | 1694         | 757   | 5801 |
+|  MIGRATION |  12     | 701    | 200          | 139   | 1040 |
 
-### 📊 Qualité du code (relevé du 11/10/2026)
+### 📊 Qualité du code (relevé du 18/10/2026)
 
 | Indicateur | Valeur |
 | --- | --- |
-| Tests unitaires (`tests/Unit`) | **3 347** tests / 9 068 assertions |
-| Tests d'intégration (`tests/Integration`) | **606** tests / 1 389 assertions |
-| **Total** | **3 953** tests / **10 457** assertions |
+| Tests unitaires (`tests/Unit`) | **3 423** tests / 9 393 assertions |
+| Tests d'intégration (`tests/Integration`) | **674** tests / 1 625 assertions |
+| **Total** | **4 097** tests / **11 018** assertions |
 | Tests End-to-End (`tests/e2e`) | **22** suites Playwright |
-| Couverture — lignes | **80,29 %** |
-| Analyse statique | **PHPStan niveau 6** (68 erreurs résiduelles, campagne en cours) |
+| Couverture — lignes | **80,59 %** |
+| Analyse statique | **PHPStan niveau 7** (0 erreur sur tout le périmètre configuré) |
 
 > [!TIP]
 > Le détail des suites, la procédure de relevé et la stratégie d'analyse statique sont décrits dans
@@ -137,8 +137,8 @@ La **version 2.1.0** est publiée et apporte de nombreuses améliorations.
 - [x] Publication de rapports d’analyse au format PDF pour les projets suivis, les portefeuilles et les groupes fonctionnels, les rapports incluent les indicateurs SonarQube et OWASP Dependency-Check ;
 - [x] Amélioration des logs (traces plus détaillé, gestion des erreurs, etc.) et consultation des logs via l’interface web ;
 - [x] Nouveau système de **documentation** avec **MkDocs**.
-- [x] Ajout des tests unitaires et des tests d’intégration pour les composants critiques de l’application (3 953 tests, 10 457 assertions — voir le tableau « Qualité du code » ci-dessus) ;
-- [x] Mise sous contrôle de l’**analyse statique** avec PHPStan (niveau 6).
+- [x] Ajout des tests unitaires et des tests d’intégration pour les composants critiques de l’application (4 097 tests, 11 018 assertions — voir le tableau « Qualité du code » ci-dessus) ;
+- [x] Mise sous contrôle de l’**analyse statique** avec PHPStan (niveau 7, 0 erreur sur tout le périmètre).
 
 ### 🧱 Fonctionnalités en cours de finalisation
 
