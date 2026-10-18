@@ -172,9 +172,11 @@ class DependencyCheckProcessCommandTest extends TestCase
      */
     private function createValidEntry(int $id, int $attempts = 0): DcProcessingQueue
     {
+        $payloadGz = gzencode(self::VALID_JSON, 6);
+        self::assertNotFalse($payloadGz);
         $entry = (new DcProcessingQueue())
             ->setUlid(str_pad((string) $id, 26, '0', STR_PAD_LEFT))
-            ->setPayloadGz(gzencode(self::VALID_JSON, 6))
+            ->setPayloadGz($payloadGz)
             ->setPayloadSha256(str_repeat((string) $id, 64))
             ->setPayloadSize(strlen(self::VALID_JSON))
             ->setContentType(DcProcessingQueue::CONTENT_JSON)

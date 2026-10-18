@@ -123,15 +123,19 @@ class ZapIngesterIntegrationTest extends KernelTestCase
     private function insertQueueFromSample(string $samplePath, bool $distinct = false): ZapProcessingQueue
     {
         $json = file_get_contents($samplePath);
+        self::assertNotFalse($json);
         $sha = hash('sha256', $json);
         if ($distinct) {
             // Pour éviter UniqueViolation sur sha256 quand on en insère 2
             $sha = hash('sha256', $json . microtime());
         }
 
+        $payloadGz = gzencode($json, 6);
+        self::assertNotFalse($payloadGz);
+
         $queue = (new ZapProcessingQueue())
             ->setUlid((new Ulid())->toBase32())
-            ->setPayloadGz(gzencode($json, 6))
+            ->setPayloadGz($payloadGz)
             ->setPayloadSha256($sha)
             ->setPayloadSize(strlen($json))
             ->setContentType(ZapProcessingQueue::CONTENT_JSON)

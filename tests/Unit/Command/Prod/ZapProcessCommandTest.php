@@ -144,9 +144,11 @@ class ZapProcessCommandTest extends TestCase
 
     private function createEntry(int $id, int $attempts = 0): ZapProcessingQueue
     {
+        $payloadGz = gzencode('{}', 6);
+        self::assertNotFalse($payloadGz);
         $entry = (new ZapProcessingQueue())
             ->setUlid(str_pad((string) $id, 26, '0', STR_PAD_LEFT))
-            ->setPayloadGz(gzencode('{}', 6))
+            ->setPayloadGz($payloadGz)
             ->setPayloadSha256(str_repeat((string) $id, 64))
             ->setPayloadSize(2)
             ->setContentType(ZapProcessingQueue::CONTENT_JSON)

@@ -67,7 +67,7 @@ class ApiZapUploadControllerTest extends WebTestCase
         ], self::VALID_JSON);
 
         $this->assertSame(401, $this->client->getResponse()->getStatusCode());
-        $body = json_decode($this->client->getResponse()->getContent(), true);
+        $body = json_decode((string) $this->client->getResponse()->getContent(), true);
         $this->assertSame('error', $body['type']);
         $this->assertStringContainsString('X-Zap-Token', $body['message']);
     }
@@ -82,7 +82,7 @@ class ApiZapUploadControllerTest extends WebTestCase
         ], self::VALID_JSON);
 
         $this->assertSame(401, $this->client->getResponse()->getStatusCode());
-        $body = json_decode($this->client->getResponse()->getContent(), true);
+        $body = json_decode((string) $this->client->getResponse()->getContent(), true);
         $this->assertSame('error', $body['type']);
         $this->assertStringContainsString('invalide', $body['message']);
     }
@@ -98,7 +98,7 @@ class ApiZapUploadControllerTest extends WebTestCase
         ], self::VALID_JSON);
 
         $this->assertSame(400, $this->client->getResponse()->getStatusCode());
-        $payload = json_decode($this->client->getResponse()->getContent(), true);
+        $payload = json_decode((string) $this->client->getResponse()->getContent(), true);
         $this->assertStringContainsString('X-Maven-Key', $payload['message']);
     }
 
@@ -132,7 +132,7 @@ class ApiZapUploadControllerTest extends WebTestCase
         $body = '{"foo":"bar"}';
         $this->postWithToken($body, self::CONTENT_TYPE);
         $this->assertSame(422, $this->client->getResponse()->getStatusCode());
-        $payload = json_decode($this->client->getResponse()->getContent(), true);
+        $payload = json_decode((string) $this->client->getResponse()->getContent(), true);
         $this->assertStringContainsString('@version', $payload['message']);
     }
 
@@ -155,7 +155,7 @@ class ApiZapUploadControllerTest extends WebTestCase
         $this->postWithToken(self::VALID_JSON, self::CONTENT_TYPE);
 
         $this->assertSame(202, $this->client->getResponse()->getStatusCode());
-        $payload = json_decode($this->client->getResponse()->getContent(), true);
+        $payload = json_decode((string) $this->client->getResponse()->getContent(), true);
         $this->assertSame('info', $payload['type']);
         $this->assertSame(ZapProcessingQueue::STATUS_QUEUED, $payload['status']);
         $this->assertNotEmpty($payload['ulid']);
@@ -172,10 +172,11 @@ class ApiZapUploadControllerTest extends WebTestCase
     public function testReturns202OnValidGzip(): void
     {
         $compressed = gzencode(self::VALID_JSON, 6);
+        self::assertNotFalse($compressed);
         $this->postWithToken($compressed, 'application/gzip');
 
         $this->assertSame(202, $this->client->getResponse()->getStatusCode());
-        $payload = json_decode($this->client->getResponse()->getContent(), true);
+        $payload = json_decode((string) $this->client->getResponse()->getContent(), true);
 
         $entity = $this->repo->findByUlid($payload['ulid']);
         $this->assertSame(ZapProcessingQueue::CONTENT_GZIP, $entity->getContentType());
@@ -185,11 +186,11 @@ class ApiZapUploadControllerTest extends WebTestCase
     {
         $this->postWithToken(self::VALID_JSON, self::CONTENT_TYPE);
         $this->assertSame(202, $this->client->getResponse()->getStatusCode());
-        $first = json_decode($this->client->getResponse()->getContent(), true);
+        $first = json_decode((string) $this->client->getResponse()->getContent(), true);
 
         $this->postWithToken(self::VALID_JSON, self::CONTENT_TYPE);
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $second = json_decode($this->client->getResponse()->getContent(), true);
+        $second = json_decode((string) $this->client->getResponse()->getContent(), true);
 
         $this->assertSame('warning', $second['type']);
         $this->assertSame($first['ulid'], $second['ulid']);
@@ -211,7 +212,7 @@ class ApiZapUploadControllerTest extends WebTestCase
             'HTTP_X_ZAP_TOKEN' => self::TOKEN,
         ]);
         $this->assertSame(404, $this->client->getResponse()->getStatusCode());
-        $payload = json_decode($this->client->getResponse()->getContent(), true);
+        $payload = json_decode((string) $this->client->getResponse()->getContent(), true);
         $this->assertSame('warning', $payload['type']);
         $this->assertSame('01ABCDEFGHJKMNPQRSTVWXYZ12', $payload['ulid']);
     }
@@ -219,7 +220,7 @@ class ApiZapUploadControllerTest extends WebTestCase
     public function testStatusReturnsPayloadForKnownUlid(): void
     {
         $this->postWithToken(self::VALID_JSON, self::CONTENT_TYPE);
-        $uploadPayload = json_decode($this->client->getResponse()->getContent(), true);
+        $uploadPayload = json_decode((string) $this->client->getResponse()->getContent(), true);
         $ulid = $uploadPayload['ulid'];
 
         $this->client->request('GET', '/api/secure/zap/status/' . $ulid, [], [], [
@@ -227,7 +228,7 @@ class ApiZapUploadControllerTest extends WebTestCase
         ]);
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
 
-        $payload = json_decode($this->client->getResponse()->getContent(), true);
+        $payload = json_decode((string) $this->client->getResponse()->getContent(), true);
         $this->assertSame($ulid, $payload['ulid']);
         $this->assertSame('queued', $payload['status']);
         $this->assertSame($uploadPayload['sha256'], $payload['sha256']);

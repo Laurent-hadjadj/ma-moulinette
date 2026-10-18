@@ -316,9 +316,11 @@ class DependencyCheckIngesterTest extends TestCase
 
     public function testThrowsOnInvalidJson(): void
     {
+        $payloadGz = gzencode('not json at all', 6);
+        self::assertNotFalse($payloadGz);
         $queue = (new DcProcessingQueue())
             ->setUlid('00000000000000000000000001')
-            ->setPayloadGz(gzencode('not json at all', 6))
+            ->setPayloadGz($payloadGz)
             ->setPayloadSha256(str_repeat('x', 64))
             ->setPayloadSize(15)
             ->setContentType('json')
@@ -393,10 +395,12 @@ class DependencyCheckIngesterTest extends TestCase
      */
     private function buildQueue(array $report): DcProcessingQueue
     {
-        $json = json_encode($report);
+        $json = json_encode($report, JSON_THROW_ON_ERROR);
+        $payloadGz = gzencode($json, 6);
+        self::assertNotFalse($payloadGz);
         return (new DcProcessingQueue())
             ->setUlid('00000000000000000000000001')
-            ->setPayloadGz(gzencode($json, 6))
+            ->setPayloadGz($payloadGz)
             ->setPayloadSha256(hash('sha256', $json))
             ->setPayloadSize(strlen($json))
             ->setContentType('json')

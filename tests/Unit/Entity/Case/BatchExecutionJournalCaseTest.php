@@ -143,7 +143,7 @@ class BatchExecutionJournalCaseTest extends TestCase
     {
         $entity = new BatchExecutionJournal();
         $this->expectException(\Error::class);
-        $entity->getId();
+        $id = $entity->getId();
     }
 
     /* MODIF 2026-06-08 : getCompteRendu retourne '' quand compteRendu vaut null (via Reflection).
@@ -163,7 +163,10 @@ class BatchExecutionJournalCaseTest extends TestCase
         $entity = new BatchExecutionJournal();
         $html = '<p>Rapport via flux</p>';
         $stream = fopen('php://memory', 'r+');
-        fwrite($stream, gzencode($html, 9));
+        self::assertNotFalse($stream);
+        $gzip = gzencode($html, 9);
+        self::assertNotFalse($gzip);
+        fwrite($stream, $gzip);
         rewind($stream);
 
         $ref = new \ReflectionProperty($entity, 'compteRendu');

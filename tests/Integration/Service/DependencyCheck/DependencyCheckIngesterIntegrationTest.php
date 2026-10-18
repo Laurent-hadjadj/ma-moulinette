@@ -127,15 +127,19 @@ class DependencyCheckIngesterIntegrationTest extends KernelTestCase
     private function insertQueueFromSample(string $samplePath, bool $distinct = false): DcProcessingQueue
     {
         $jsonString = file_get_contents($samplePath);
+        self::assertNotFalse($jsonString);
         $sha = hash('sha256', $jsonString);
         if ($distinct) {
             // Pour éviter UniqueViolation sur sha256 quand on en met 2
             $sha = hash('sha256', $jsonString . microtime());
         }
 
+        $payloadGz = gzencode($jsonString, 6);
+        self::assertNotFalse($payloadGz);
+
         $queue = (new DcProcessingQueue())
             ->setUlid((new Ulid())->toBase32())
-            ->setPayloadGz(gzencode($jsonString, 6))
+            ->setPayloadGz($payloadGz)
             ->setPayloadSha256($sha)
             ->setPayloadSize(strlen($jsonString))
             ->setContentType(DcProcessingQueue::CONTENT_JSON)

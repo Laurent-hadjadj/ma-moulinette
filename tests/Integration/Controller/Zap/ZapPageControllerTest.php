@@ -83,7 +83,7 @@ class ZapPageControllerTest extends WebTestCase
     {
         $this->client->request('GET', '/zap');
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('Sélectionnez un projet', $this->client->getResponse()->getContent());
+        $this->assertStringContainsString('Sélectionnez un projet', (string) $this->client->getResponse()->getContent());
     }
 
     public function testReturns200WithEmptyStateWhenNoScan(): void
@@ -92,7 +92,7 @@ class ZapPageControllerTest extends WebTestCase
 
         $this->client->request('GET', '/zap?token=' . $this->buildToken(self::MAVEN_KEY));
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $this->assertStringContainsString('Aucun scan ZAP disponible', $this->client->getResponse()->getContent());
+        $this->assertStringContainsString('Aucun scan ZAP disponible', (string) $this->client->getResponse()->getContent());
     }
 
     public function testReturns200WithKpiTableAndChartDataWhenScansExist(): void
@@ -106,7 +106,7 @@ class ZapPageControllerTest extends WebTestCase
 
         $this->client->request('GET', '/zap?token=' . $this->buildToken(self::MAVEN_KEY));
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
 
         // KPI : 3 alertes au total sur le dernier scan (fixture report-ok.json).
         $this->assertStringContainsString((string) $scan2->getAlertCountTotal(), $body);
@@ -133,6 +133,32 @@ class ZapPageControllerTest extends WebTestCase
         $this->assertCount(2, $chartData['history']); // 2 scans ingérés
     }
 
+    public function testRapportPdfReturnsValidPdfWhenScanExists(): void
+    {
+        // MODIF 2026-10-16 : rapport PDF ZAP (synthèse risque, catégories
+        // OWASP, évolution, détail des alertes) — vérifie l'export réel,
+        // pas seulement le câblage de la route.
+        $this->seedListeProjet();
+        $this->ingestFixture('2026-10-01 10:00:00');
+        $this->ingestFixture('2026-10-13 10:00:00');
+
+        $this->client->request('GET', '/zap/rapport/pdf?token=' . $this->buildToken(self::MAVEN_KEY));
+
+        $response = $this->client->getResponse();
+        $this->assertSame(200, $response->getStatusCode());
+        $this->assertStringContainsString('application/pdf', $response->headers->get('Content-Type'));
+        $this->assertStringStartsWith('%PDF', (string) $response->getContent());
+    }
+
+    public function testRapportPdfReturns404WhenNoScan(): void
+    {
+        $this->seedListeProjet();
+
+        $this->client->request('GET', '/zap/rapport/pdf?token=' . $this->buildToken(self::MAVEN_KEY));
+
+        $this->assertSame(404, $this->client->getResponse()->getStatusCode());
+    }
+
     public function testReturns200WithKpiAndCalloutWhenNoAlertHasOwaspTag(): void
     {
         // MODIF 2026-10-15 : cas réel rencontré en ingérant un vrai rapport
@@ -146,7 +172,7 @@ class ZapPageControllerTest extends WebTestCase
 
         $this->client->request('GET', '/zap?token=' . $this->buildToken(self::MAVEN_KEY));
         $this->assertSame(200, $this->client->getResponse()->getStatusCode());
-        $body = $this->client->getResponse()->getContent();
+        $body = (string) $this->client->getResponse()->getContent();
 
         $this->assertStringContainsString((string) $scan->getAlertCountTotal(), $body);
         $this->assertStringContainsString('Aucune des alertes de ce scan ne porte de tag OWASP', $body);
@@ -192,13 +218,17 @@ class ZapPageControllerTest extends WebTestCase
     private function ingestFixture(string $generatedAt, string $fixture = 'report-ok.json'): \App\Entity\ZapScan
     {
         $samplePath = __DIR__ . '/../../../Fixtures/zap-json/' . $fixture;
-        $report = json_decode(file_get_contents($samplePath), true);
+        $sampleContent = file_get_contents($samplePath);
+        self::assertNotFalse($sampleContent);
+        $report = json_decode($sampleContent, true);
         $report['@generated'] = $generatedAt;
-        $json = json_encode($report);
+        $json = json_encode($report, JSON_THROW_ON_ERROR);
+        $payloadGz = gzencode($json, 6);
+        self::assertNotFalse($payloadGz);
 
         $queue = (new ZapProcessingQueue())
             ->setUlid((new Ulid())->toBase32())
-            ->setPayloadGz(gzencode($json, 6))
+            ->setPayloadGz($payloadGz)
             ->setPayloadSha256(hash('sha256', $json))
             ->setPayloadSize(strlen($json))
             ->setContentType(ZapProcessingQueue::CONTENT_JSON)

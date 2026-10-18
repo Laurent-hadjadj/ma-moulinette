@@ -284,10 +284,12 @@ class ZapIngesterTest extends TestCase
      */
     private function buildQueue(array $report): ZapProcessingQueue
     {
-        $json = json_encode($report);
+        $json = json_encode($report, JSON_THROW_ON_ERROR);
+        $payloadGz = gzencode($json, 6);
+        self::assertNotFalse($payloadGz);
         return (new ZapProcessingQueue())
             ->setUlid('00000000000000000000000001')
-            ->setPayloadGz(gzencode($json, 6))
+            ->setPayloadGz($payloadGz)
             ->setPayloadSha256(hash('sha256', $json))
             ->setPayloadSize(strlen($json))
             ->setContentType('json')

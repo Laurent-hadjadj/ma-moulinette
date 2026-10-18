@@ -128,6 +128,7 @@ class PayloadDecoderTest extends TestCase
     public function testAcceptsValidGzip(): void
     {
         $compressed = gzencode(self::VALID_JSON, 6);
+        self::assertNotFalse($compressed);
         $result = $this->decoder->decode($compressed, 'application/gzip');
         $this->assertSame(DcProcessingQueue::CONTENT_GZIP, $result->contentType);
         $this->assertSame(self::VALID_JSON, $result->jsonString);
@@ -136,6 +137,7 @@ class PayloadDecoderTest extends TestCase
     public function testAcceptsValidGzipXAlias(): void
     {
         $compressed = gzencode(self::VALID_JSON, 6);
+        self::assertNotFalse($compressed);
         $result = $this->decoder->decode($compressed, 'application/x-gzip');
         $this->assertSame(DcProcessingQueue::CONTENT_GZIP, $result->contentType);
     }
@@ -193,6 +195,7 @@ class PayloadDecoderTest extends TestCase
         // JSON valide mais tres long, compresse petit -> zip-bomb-like
         $bigJson = '{"reportSchema":"1.1","projectInfo":{"groupID":"x","artifactID":"y","version":"1"},"dependencies":[],"padding":"' . str_repeat('a', 26 * 1024) . '"}';
         $compressed = gzencode($bigJson, 9);
+        self::assertNotFalse($compressed);
         // Compressed est petit (qq KB), decoded > 25 KB limite
         $this->assertLessThan(5 * 1024, strlen($compressed), 'Pre-condition : compressed sous 5 KB');
         $this->expectException(PayloadDecodeException::class);
@@ -330,6 +333,7 @@ class PayloadDecoderTest extends TestCase
         // entre payload brut et payload gzippe.
         $r1 = $this->decoder->decode(self::VALID_JSON, 'application/json');
         $compressed = gzencode(self::VALID_JSON, 6);
+        self::assertNotFalse($compressed);
         $r2 = $this->decoder->decode($compressed, 'application/gzip');
         $this->assertSame($r1->sha256, $r2->sha256);
     }
@@ -358,6 +362,7 @@ class PayloadDecoderTest extends TestCase
         $zip->close();
         $body = file_get_contents($tmp);
         @unlink($tmp);
+        self::assertNotFalse($body);
         return $body;
     }
 
@@ -371,6 +376,7 @@ class PayloadDecoderTest extends TestCase
         $zip->close();
         $body = file_get_contents($tmp);
         @unlink($tmp);
+        self::assertNotFalse($body);
         return $body;
     }
 }

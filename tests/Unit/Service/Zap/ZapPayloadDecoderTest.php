@@ -109,6 +109,7 @@ class ZapPayloadDecoderTest extends TestCase
     public function testAcceptsValidGzip(): void
     {
         $gz = gzencode(self::VALID_JSON, 6);
+        self::assertNotFalse($gz);
         $result = $this->decoder->decode($gz, 'application/gzip');
         $this->assertSame(ZapProcessingQueue::CONTENT_GZIP, $result->contentType);
         $this->assertSame(self::VALID_JSON, $result->jsonString);
@@ -122,6 +123,7 @@ class ZapPayloadDecoderTest extends TestCase
         // rester proche de la limite pour exercer CE contrôle précis.
         $big = '{"reportSchema":"1.1","padding":"' . str_repeat('a', 26 * 1024) . '"}';
         $compressed = gzencode($big, 9);
+        self::assertNotFalse($compressed);
         $this->assertLessThan(5 * 1024, strlen($compressed), 'Pre-condition : compressed sous 5 KB');
         $this->expectException(ZapPayloadDecodeException::class);
         $this->expectExceptionMessage('trop volumineux');
