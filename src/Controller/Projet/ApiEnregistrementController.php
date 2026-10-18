@@ -121,7 +121,8 @@ class ApiEnregistrementController extends AbstractController
              * colonne). Même pattern de décodage que logger_breakdown ci-dessous. */
             $json = [];
             if (property_exists($data, 'actuator_info') && is_object($data->actuator_info)) {
-                $json = json_decode(json_encode($data->actuator_info), true);
+                $encoded = json_encode($data->actuator_info);
+                $json = $encoded === false ? [] : json_decode($encoded, true);
             } elseif (property_exists($data, 'actuator_info') && is_array($data->actuator_info)) {
                 $json = $data->actuator_info;
             } else {
@@ -368,7 +369,8 @@ class ApiEnregistrementController extends AbstractController
              * ou collecte non lancée. */
             $loggerBreakdown = null;
             if (property_exists($data, 'logger_breakdown') && is_object($data->logger_breakdown)) {
-                $loggerBreakdown = json_decode(json_encode($data->logger_breakdown), true);
+                $encodedBreakdown = json_encode($data->logger_breakdown);
+                $loggerBreakdown = $encodedBreakdown === false ? null : json_decode($encodedBreakdown, true);
             } elseif (property_exists($data, 'logger_breakdown') && is_array($data->logger_breakdown)) {
                 $loggerBreakdown = $data->logger_breakdown;
             // MODIF 2026-05-26 : else terminal requis par S126 (logger_breakdown absent ou null = plugin v1.x).

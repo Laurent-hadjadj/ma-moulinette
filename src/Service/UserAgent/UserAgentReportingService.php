@@ -48,12 +48,10 @@ class UserAgentReportingService
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     private function logger(string $message, string $code, string $error){
-        if ($this->logger) {
-            $this->logger->warning($message, [
-                'code' => $code ?? null,
-                'erreur' => $error ?? null
-            ]);
-        }
+        $this->logger->warning($message, [
+            'code' => $code,
+            'erreur' => $error
+        ]);
     }
     /**
      * [Description for getWeekBounds]
@@ -216,7 +214,7 @@ class UserAgentReportingService
     /**
      * [Description for getEventAggregate]
      *
-     * @return array<string, mixed>
+     * @return array<int|string, mixed>
      *
      * Created at: 28/12/2025 10:33:59 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -249,7 +247,7 @@ class UserAgentReportingService
      * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
      */
     /**
-     * @return array<string, mixed>
+     * @return array<int|string, mixed>
      */
     public function getUtilisateurDisponible(): array
     {
@@ -276,7 +274,7 @@ class UserAgentReportingService
      * @param \DateTimeInterface $end
      * @param string $label
      *
-     * @return array<string, mixed>
+     * @return array<int|string, mixed>
      *
      * Created at: 17/12/2025 14:16:14 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -305,7 +303,7 @@ class UserAgentReportingService
      * @param \DateTimeInterface $end
      * @param string $label
      *
-     * @return array<string, mixed>
+     * @return array<int|string, mixed>
      *
      * Created at: 17/12/2025 14:44:32 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -335,7 +333,7 @@ class UserAgentReportingService
      * @param \DateTimeInterface $end
      * @param string $label
      *
-     * @return array<string, mixed>
+     * @return array<int|string, mixed>
      *
      * Created at: 17/12/2025 14:45:02 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -365,7 +363,7 @@ class UserAgentReportingService
      * @param \DateTimeInterface $end
      * @param string $label
      *
-     * @return array<string, mixed>
+     * @return array<int|string, mixed>
      *
      * Created at: 21/12/2025 12:47:46 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -424,7 +422,7 @@ class UserAgentReportingService
     /**
      * [Description for getAvgSessionDurationReport]
      *
-     * @return array<string, mixed>
+     * @return array<int|string, mixed>
      *
      * Created at: 22/12/2025 08:05:13 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -443,6 +441,7 @@ class UserAgentReportingService
                 // Formatage pour le JS
                 $rows = $result['rows'];
                 if (empty($rows)) { return [ 'code' => 200, 'data' => [] ]; }
+                $data = [];
                 foreach ($rows as $row) {
                     $data[] = [
                         'date' => $row['session_date'],
@@ -463,7 +462,7 @@ class UserAgentReportingService
     /**
      * [Description for getUniqueSessionReport]
      *
-     * @return array<string, mixed>
+     * @return array<int|string, mixed>
      *
      * Created at: 22/12/2025 08:07:36 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -483,6 +482,7 @@ class UserAgentReportingService
                 $rows = $result['rows'];
                 if (empty($rows)) { return [ 'code' => 200, 'data' => [] ];}
 
+                $data = [];
                 foreach ($rows as $row) {
                     $data[] = [
                         'date' => $row['session_date'],
@@ -503,7 +503,7 @@ class UserAgentReportingService
     /**
      * [Description for getUniqueSessionReport]
      *
-     * @return array<string, mixed>
+     * @return array<int|string, mixed>
      *
      * Created at: 22/12/2025 08:07:36 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -556,7 +556,7 @@ class UserAgentReportingService
      * @param \DateTimeInterface $end
      * @param string $label
      *
-     * @return array<string, mixed>
+     * @return array<int|string, mixed>
      *
      * Created at: 22/12/2025 11:32:40 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -606,7 +606,7 @@ class UserAgentReportingService
      * @param \DateTimeInterface $end
      * @param string $label
      *
-     * @return array<string, mixed>
+     * @return array<int|string, mixed>
      *
      * Created at: 22/12/2025 14:46:59 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
