@@ -83,7 +83,7 @@ final class LanguageDistributionService
         }
 
         // Format texte
-        $pairs = preg_split('/[;,]/', $raw, -1, PREG_SPLIT_NO_EMPTY);
+        $pairs = preg_split('/[;,]/', $raw, -1, PREG_SPLIT_NO_EMPTY) ?: [];
         $result = [];
         foreach ($pairs as $pair) {
             if (preg_match('/^\s*([^=:]+)\s*[=:]\s*(\d+)\s*$/', $pair, $m)) {

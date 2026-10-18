@@ -966,7 +966,7 @@ class ApiPeintureController extends AbstractController
                 $this->logger->error('[Collecte-Peinture] ❌ Échec lecture logger_details.', [
                     'maven_key' => $maven_key,
                     'code'      => $r['code'],
-                    'erreur'    => $r['erreur']    ?? self::$noData,
+                    'erreur'    => $r['erreur'],
                 ]);
             }
         }
@@ -1841,7 +1841,7 @@ class ApiPeintureController extends AbstractController
         // Tentative 2 : format texte "lang<SEP>value<SEP>..."
         // Séparateurs entre paires : ; ou ,
         // Séparateurs clef/valeur : = ou :
-        $pairs = preg_split('/[;,]/', $raw, -1, PREG_SPLIT_NO_EMPTY);
+        $pairs = preg_split('/[;,]/', $raw, -1, PREG_SPLIT_NO_EMPTY) ?: [];
         $result = [];
         foreach ($pairs as $pair) {
             if (preg_match('/^\s*([^=:]+)\s*[=:]\s*(\d+)\s*$/', $pair, $m)) {
