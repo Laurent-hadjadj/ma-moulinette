@@ -14,6 +14,7 @@
 namespace App\Controller\Zap;
 
 use App\Entity\ZapProcessingQueue;
+use App\Exception\UnexpectedExecutionPathException;
 use App\Repository\ZapProcessingQueueRepository;
 use App\Service\Zap\{ZapPayloadDecodeException, ZapPayloadDecoder};
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
@@ -134,9 +135,14 @@ class ApiZapUploadController extends AbstractController
         }
 
         // ------- 3. Insertion en queue --------------------------------------
+        $payloadGz = gzencode($decoded->jsonString, 6);
+        if ($payloadGz === false) {
+            throw new UnexpectedExecutionPathException('Échec de la compression gzip du payload.');
+        }
+
         $entry = (new ZapProcessingQueue())
             ->setUlid((new Ulid())->toBase32())
-            ->setPayloadGz(gzencode($decoded->jsonString, 6))
+            ->setPayloadGz($payloadGz)
             ->setPayloadSha256($decoded->sha256)
             ->setPayloadSize($decoded->decodedSize)
             ->setContentType($decoded->contentType)
