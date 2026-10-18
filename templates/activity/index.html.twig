@@ -52,6 +52,16 @@ https://github.com/Laurent-hadjadj/ma-moulinette
 
             <div class="grid-x grid-margin-x align-right margin-top-2">
                 <div class="cell shrink">
+                    <a id="bouton-ouvrir-rapport-activity-pdf"
+                        href="{{ path('activity_rapport_pdf') }}"
+                        target="_blank"
+                        class="button open-sans focus-dark-light"
+                        title="Exporter le rapport Activité au format PDF (90 derniers jours)"
+                        aria-label="Export PDF">
+                        <span aria-hidden="true">📄</span> Export PDF
+                    </a>
+                </div>
+                <div class="cell shrink">
                     <button
                         id="bouton-activity-refresh"
                         class="button open-sans focus-dark-light js-activity-refresh"
@@ -116,54 +126,159 @@ https://github.com/Laurent-hadjadj/ma-moulinette
                 </tbody>
             </table>
 
-            <div class="grid-x grid-margin-x margin-top-2">
-                <div class="cell shrink">
-                    <button
-                        id="bouton-courbe-analyse"
-                        class="button open-sans focus-dark-light js-show-graph"
-                        type="button"
-                        data-type="line"
-                        data-source="analyse"
-                        aria-label="Tracer la courbe des analyses par jour."
-                    >
-                        <span aria-hidden="true">📈</span>
-                        <span class="show-for-medium open-sans color-blanc">&nbsp;Courbes des analyses</span>
-                        <span class="show-for-small-only open-sans color-blanc">&nbsp;Analyses</span>
-                    </button>
+            {# MODIF 2026-10-16 : KPI sur les 90 derniers jours (même période
+                que le rapport PDF) — lecture locale, affiché même si
+                SonarQube est injoignable. #}
+            <h2 class="claire-hand h4 margin-top-2">Indicateurs clés (90 derniers jours)</h2>
+            <ul class="stats-list">
+                <li>
+                    <span class="stats-kpi">{{ kpi_total_analyses|default(0) }}</span>
+                    <span class="stats-list-label">Analyses totales</span>
+                </li>
+                <li>
+                    <span class="stats-kpi">{{ kpi_total_projets|default(0) }}</span>
+                    <span class="stats-list-label">Projets analysés</span>
+                </li>
+                <li>
+                    <span class="stats-kpi">{{ kpi_moyenne_jour|default(0) }}</span>
+                    <span class="stats-list-label">Moyenne / jour</span>
+                </li>
+                <li>
+                    <span class="stats-kpi">{{ kpi_jour_pic.analyse|default(0) }}</span>
+                    <span class="stats-list-label">Jour de pointe ({{ kpi_jour_pic.date|default('—') }})</span>
+                </li>
+            </ul>
+
+            {# MODIF 2026-10-16 : un seul graphique (analyses + projets), plus
+                de boutons redondants pour chaque métrique prise isolément —
+                elles sont toutes les deux déjà dans cette vue combinée.
+                Remplissage d'aire (meme pattern que les 2 graphiques de la
+                page Statistique Utilisateur). Tracé automatiquement au
+                chargement, pas besoin de clic. #}
+            <h2 class="claire-hand h4 margin-top-2">Évolution annuelle</h2>
+            <div class="chart-container-annuelle">
+                <canvas id="graphique-langage" aria-label="Analyses et projets analysés par jour sur l'année."></canvas>
+            </div>
+            <div class="chart-empty-message js-chart-empty-message">Aucune donnée à tracer pour l'année en cours.</div>
+
+            {# MODIF 2026-10-16 : tableaux semaine / mois / top10, même pattern
+                que les tableaux OS/Navigateur/Appareil de la page Statistique
+                Utilisateur (stats-card), rendu serveur, pas d'AJAX. #}
+            <div class="grid-x grid-margin-x margin-bottom-4">
+                <div class="cell small-12 medium-6">
+                    <div class="stats-card">
+                        <h3 class="h5 claire-hand">Cette semaine (lundi → aujourd'hui)</h3>
+                        {% if semaine_table|default([])|length > 0 %}
+                            <table class="stats-table">
+                                <thead>
+                                    <tr><th>Jour</th><th class="text-right">Analyses</th><th class="text-right">Projets</th><th>Part des projets</th></tr>
+                                </thead>
+                                <tbody>
+                                    {% for j in semaine_table %}
+                                        <tr>
+                                            <td>{{ j.jour }}</td>
+                                            <td class="text-right">{{ j.analyse }}</td>
+                                            <td class="text-right">{{ j.projet }}</td>
+                                            <td class="stats-percent-cell">
+                                                <span class="open-sans stats-percent-value">{{ j.percent }}%</span>
+                                                <span class="stats-percent-bar" aria-hidden="true" style="--percent: {{ j.percent }}"></span>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p class="open-sans">Aucune analyse cette semaine.</p>
+                        {% endif %}
+                    </div>
                 </div>
-                <div class="cell shrink">
-                    <button
-                        id="bouton-courbe-projet"
-                        class="button open-sans focus-dark-light js-show-graph"
-                        type="button"
-                        data-type="line"
-                        data-source="projet"
-                        aria-label="Tracer la courbe des projets par jour"
-                    >
-                        <span aria-hidden="true">📊</span>
-                        <span class="show-for-medium open-sans color-blanc">&nbsp;Courbes des projets</span>
-                        <span class="show-for-small-only open-sans color-blanc">&nbsp;Projets</span>
-                    </button>
-                </div>
-                <div class="cell shrink">
-                    <button
-                        id="bouton-courbe-analyse-projet"
-                        class="button open-sans focus-dark-light js-show-graph"
-                        type="button"
-                        data-type="line"
-                        data-source="projet_analyse"
-                        aria-label="Tracer la courbe des analyses et des projets par jour"
-                    >
-                        <span aria-hidden="true">📉</span>
-                        <span class="show-for-medium open-sans color-blanc">&nbsp;Analyses | Projets</span>
-                        <span class="show-for-small-only open-sans color-blanc">&nbsp;Comparaison</span>
-                    </button>
+                <div class="cell small-12 medium-6">
+                    <div class="stats-card">
+                        <h3 class="h5 claire-hand">Ce mois (par semaine)</h3>
+                        {% if mois_table|default([])|length > 0 %}
+                            <table class="stats-table">
+                                <thead>
+                                    <tr><th>Semaine</th><th class="text-right">Analyses</th><th class="text-right">Projets (max/jour)</th><th>Part des projets</th></tr>
+                                </thead>
+                                <tbody>
+                                    {% for s in mois_table %}
+                                        <tr>
+                                            <td>{{ s.semaine }}</td>
+                                            <td class="text-right">{{ s.analyse }}</td>
+                                            <td class="text-right">{{ s.projet_max }}</td>
+                                            <td class="stats-percent-cell">
+                                                <span class="open-sans stats-percent-value">{{ s.percent }}%</span>
+                                                <span class="stats-percent-bar" aria-hidden="true" style="--percent: {{ s.percent }}"></span>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p class="open-sans">Aucune analyse ce mois-ci.</p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
 
-
-            <div class="float-center graphique-langage-container">
-                <canvas id="graphique-langage" aria-label="Graphique des analyses et projets par jour."></canvas>
+            <div class="grid-x grid-margin-x margin-bottom-4">
+                <div class="cell small-12 medium-4">
+                    <div class="stats-card">
+                        <h3 class="h5 claire-hand">Top 10 des pics d'analyse</h3>
+                        {% if top10_pics|default([])|length > 0 %}
+                            <table class="stats-table">
+                                <thead>
+                                    <tr><th>Date</th><th class="text-right">Analyses</th><th class="text-right">Projets</th></tr>
+                                </thead>
+                                <tbody>
+                                    {% for p in top10_pics %}
+                                        <tr><td>{{ p.date }}</td><td class="text-right">{{ p.analyse }}</td><td class="text-right">{{ p.projet }}</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p class="open-sans">Pas assez de données.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="cell small-12 medium-4">
+                    <div class="stats-card">
+                        <h3 class="h5 claire-hand">Top 10 projets — semaine en cours</h3>
+                        {% if top10_projets_semaine|default([])|length > 0 %}
+                            <table class="stats-table">
+                                <thead>
+                                    <tr><th>Projet</th><th class="text-right">Analyses</th></tr>
+                                </thead>
+                                <tbody>
+                                    {% for p in top10_projets_semaine %}
+                                        <tr><td>{{ p.project_name }}</td><td class="text-right">{{ p.analyse }}</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p class="open-sans">Aucune analyse cette semaine.</p>
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="cell small-12 medium-4">
+                    <div class="stats-card">
+                        <h3 class="h5 claire-hand">Top 10 projets — mois en cours</h3>
+                        {% if top10_projets_mois|default([])|length > 0 %}
+                            <table class="stats-table">
+                                <thead>
+                                    <tr><th>Projet</th><th class="text-right">Analyses</th></tr>
+                                </thead>
+                                <tbody>
+                                    {% for p in top10_projets_mois %}
+                                        <tr><td>{{ p.project_name }}</td><td class="text-right">{{ p.analyse }}</td></tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        {% else %}
+                            <p class="open-sans">Aucune analyse ce mois-ci.</p>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
 
         </main>
