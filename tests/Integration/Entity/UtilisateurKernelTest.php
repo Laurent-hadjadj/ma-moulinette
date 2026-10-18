@@ -34,7 +34,7 @@ class UtilisateurKernelTest extends KernelTestCase
   public static string $courriel = 'admin@ma-moulinette.fr';
   public static string $password = '$2y$13$6n72QhYwz.iufebkV.XaAOO4IOm3zOYcfzPUmal.jDTs8/QFq1p4K';
   public static bool $actif = true;
-  /** @var array<int|string, mixed> */
+  /** @var array<int, string> */
   public static array $roles = ["ROLE_GESTIONNAIRE"];
   /** @var array<int, string> */
   public static array $groupe = [];
