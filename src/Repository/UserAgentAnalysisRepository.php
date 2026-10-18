@@ -35,7 +35,7 @@ class UserAgentAnalysisRepository extends ServiceEntityRepository
      *
      * @param \Throwable $e
      *
-     * @return array{code: int, erreur: string}
+     * @return array{code: 500, erreur: string}|array{code: 23505, erreur: string}
      *
      * Created at: 14/12/2025 18:11:47 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -70,8 +70,8 @@ class UserAgentAnalysisRepository extends ServiceEntityRepository
      * @param array{
      *     event_type: string,
      *     url: string,
-     *     session_id: string,
-     *     user_id: string,
+     *     session_id: string|null,
+     *     user_id: int|string|null,
      *     visitor_id: string,
      *     device_type: string|null,
      *     os_name: string|null,
@@ -83,7 +83,7 @@ class UserAgentAnalysisRepository extends ServiceEntityRepository
      *     created_at: \DateTimeInterface,
      * } $map
      *
-     * @return array{code: int, erreur: string}
+     * @return array{code: 200, erreur: string}|array{code: 500, erreur: string}|array{code: 23505, erreur: string}
      *
      * Created at: 14/12/2025 18:12:01 (Europe/Paris)
      * @author     Laurent HADJADJ <laurent_h@me.com>

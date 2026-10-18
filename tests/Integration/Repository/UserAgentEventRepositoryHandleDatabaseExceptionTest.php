@@ -66,8 +66,8 @@ class UserAgentEventRepositoryHandleDatabaseExceptionTest extends TestCase
         $res = $this->repo->handleDatabaseException($ex);
 
         $this->assertSame(500, $res['code']);
-        // Le message est celui de la DBAL exception (chaîne vide si driver stub)
-        $this->assertArrayHasKey('erreur', $res);
+        // Le message est celui de la DBAL exception (message générique du wrapper driver)
+        $this->assertSame('An exception occurred in the driver: ', $res['erreur']);
     }
 
     public function testHandleDatabaseException_UniqueViolation(): void
