@@ -20,7 +20,7 @@ class SonarQualityScorer
 {
     /** @var array<string, int|float|string> */
     private array $metrics;
-    private int $score = 100;
+    private float $score = 100;
 
     /**
      * @param array<string, int|float|string> $metrics
@@ -45,11 +45,11 @@ class SonarQualityScorer
         $this->applyMajorPenalties();
         $this->applyQualityAdjustments();
 
-        $this->score = $this->clamp($this->score, 0, 100);
+        $score = $this->clamp((int) round($this->score), 0, 100);
 
         return [
-            'score' => $this->score,
-            'rating' => $this->getRating($this->score),
+            'score' => $score,
+            'rating' => $this->getRating($score),
         ];
     }
 

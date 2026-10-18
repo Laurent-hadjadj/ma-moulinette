@@ -445,7 +445,7 @@ class BuildMapHistoryService
      * [Description for metricsRebuild]
      *
      * @param array<string, string|int> $measures
-     * @param array{analysisKey: string|null, date: string|null, version: string|null, version_release?: int, version_snapshot?: int, version_autre?: int} $analysis
+     * @param array<string, mixed> $analysis
      *
      * @return array<string, mixed>
      *
@@ -505,7 +505,7 @@ class BuildMapHistoryService
         $comments_core = [
             'comment_lines' => isset($measures['comment_lines']) ? (int) $measures['comment_lines'] : null,
             'comment_lines_density' => isset($measures['comment_lines_density']) ? (float) $measures['comment_lines_density'] : null,
-            'comment_lines_rating' => self::getCommentDensityRating($measures['comment_lines_density'] ?? 0)
+            'comment_lines_rating' => self::getCommentDensityRating((float) ($measures['comment_lines_density'] ?? 0))
         ];
 
         $coverage_core = [
@@ -515,7 +515,7 @@ class BuildMapHistoryService
             'lines_to_cover' => isset($measures['lines_to_cover']) ? (int) $measures['lines_to_cover'] : null,
             'conditions_to_cover' => isset($measures['conditions_to_cover']) ? (int) $measures['conditions_to_cover'] : null,
             'uncovered_conditions' => isset($measures['uncovered_conditions']) ? (int) $measures['uncovered_conditions'] : null,
-            'coverage_rating' => self::getCoverageRating($measures['coverage'] ?? null)
+            'coverage_rating' => self::getCoverageRating(isset($measures['coverage']) ? (float) $measures['coverage'] : null)
         ];
 
         $tests_core = [
@@ -532,7 +532,7 @@ class BuildMapHistoryService
             'duplicated_files' => isset($measures['duplicated_files']) ? (int) $measures['duplicated_files'] : null,
             'duplicated_lines' => isset($measures['duplicated_lines']) ? (int) $measures['duplicated_lines'] : null,
             'duplicated_lines_density' => isset($measures['duplicated_lines_density']) ? (float) $measures['duplicated_lines_density'] : null,
-            'duplicated_lines_rating' => self::getDuplicationRating($measures['duplicated_lines_density'] ?? null)
+            'duplicated_lines_rating' => self::getDuplicationRating(isset($measures['duplicated_lines_density']) ? (float) $measures['duplicated_lines_density'] : null)
         ];
 
         $issues_status_core = [
@@ -593,13 +593,13 @@ class BuildMapHistoryService
         $maintainability_core = [
             'code_smells' => isset($measures['code_smells']) ? (int) $measures['code_smells'] : null,
             'sqale_index' => isset($measures['sqale_index']) ? (int) $measures['sqale_index'] : null,
-            'sqale_rating' => isset($measures['sqale_rating']) ? self::ratingToLetter($measures['sqale_rating']) : null,
+            'sqale_rating' => isset($measures['sqale_rating']) ? self::ratingToLetter((string) $measures['sqale_rating']) : null,
             'sqale_debt_ratio' => isset($measures['sqale_debt_ratio']) ? (float) $measures['sqale_debt_ratio'] : null,
         ];
 
         $maintainability_10 = [
             'maintainability_issues' => isset($measures['maintainability_issues']) ? (string) $measures['maintainability_issues'] : null,
-            'software_quality_maintainability_rating' => isset($measures['software_quality_maintainability_rating']) ? self::ratingToLetter($measures['software_quality_maintainability_rating']) : null,
+            'software_quality_maintainability_rating' => isset($measures['software_quality_maintainability_rating']) ? self::ratingToLetter((string) $measures['software_quality_maintainability_rating']) : null,
 
             'software_quality_maintainability_debt_ratio' => isset($measures['software_quality_maintainability_debt_ratio']) ? (float) $measures['software_quality_maintainability_debt_ratio'] : null,
 
@@ -616,13 +616,13 @@ class BuildMapHistoryService
 
         $reliability_core = [
             'bugs' => isset($measures['bugs']) ? (int) $measures['bugs'] : null,
-            'reliability_rating' => isset($measures['reliability_rating']) ? self::ratingToLetter($measures['reliability_rating']) : null,
+            'reliability_rating' => isset($measures['reliability_rating']) ? self::ratingToLetter((string) $measures['reliability_rating']) : null,
             'reliability_remediation_effort' => isset($measures['reliability_remediation_effort']) ? (int) $measures['reliability_remediation_effort'] : null,
         ];
 
         $reliability_10 = [
             'reliability_issues' => isset($measures['reliability_issues']) ? (string) $measures['reliability_issues'] : null,
-            'software_quality_reliability_rating' => isset($measures['software_quality_reliability_rating']) ? self::ratingToLetter($measures['software_quality_reliability_rating']) : null,
+            'software_quality_reliability_rating' => isset($measures['software_quality_reliability_rating']) ? self::ratingToLetter((string) $measures['software_quality_reliability_rating']) : null,
             'software_quality_reliability_remediation_effort' => isset($measures['software_quality_reliability_remediation_effort']) ? (int) $measures['software_quality_reliability_remediation_effort'] : null,
         ];
 
@@ -632,12 +632,12 @@ class BuildMapHistoryService
 
         $security_core = [
             'vulnerabilities' => isset($measures['vulnerabilities']) ? (int) $measures['vulnerabilities'] : null,
-            'security_rating' => isset($measures['security_rating']) ? self::ratingToLetter($measures['security_rating']) : null,
+            'security_rating' => isset($measures['security_rating']) ? self::ratingToLetter((string) $measures['security_rating']) : null,
             'security_remediation_effort' => isset($measures['security_remediation_effort']) ? (int) $measures['security_remediation_effort'] : null,
         ];
 
         $security_10 = [
-            'software_quality_security_rating' => isset($measures['software_quality_security_rating']) ? self::ratingToLetter($measures['software_quality_security_rating']) : null,
+            'software_quality_security_rating' => isset($measures['software_quality_security_rating']) ? self::ratingToLetter((string) $measures['software_quality_security_rating']) : null,
             'security_issues' => isset($measures['security_issues']) ? (int) $measures['security_issues'] : null,
             'software_quality_security_remediation_effort' => isset($measures['software_quality_security_remediation_effort']) ? (int) $measures['software_quality_security_remediation_effort'] : null,
         ];
@@ -649,7 +649,7 @@ class BuildMapHistoryService
         $security_review_core = [
             'security_hotspots' => isset($measures['security_hotspots']) ? (int) $measures['security_hotspots'] : null,
             'security_hotspots_reviewed' => isset($measures['security_hotspots_reviewed']) ? (float) $measures['security_hotspots_reviewed'] : null,
-            'security_review_rating' => isset($measures['security_review_rating']) ? self::ratingToLetter($measures['security_review_rating']) : null,
+            'security_review_rating' => isset($measures['security_review_rating']) ? self::ratingToLetter((string) $measures['security_review_rating']) : null,
         ];
         $quality_gate = [
             'alert_status' => isset($measures['alert_status']) ? $measures['alert_status'] : 'UNKNOWN',
