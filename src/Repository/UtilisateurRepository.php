@@ -14,6 +14,7 @@
 namespace App\Repository;
 
 use App\Entity\Utilisateur;
+use App\Exception\UnexpectedExecutionPathException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -173,15 +174,17 @@ class UtilisateurRepository extends ServiceEntityRepository
 
     // MODIF 2026-06-11 : préserver la clé suivi_version
     // pour ne pas l'effacer lorsque seul favori_version change.
-    $jsonArray = stripslashes(
-      json_encode([
-        'statut' => $preference['statut'],
-        'suivi_projet' => $preference['suivi_projet'],
-        'favori_projet' => $preference['favori_projet'],
-        'favori_version' => $listeVersion,
-        'suivi_version' => $preference['suivi_version'] ?? [],
-      ])
-    );
+    $encodedPreference = json_encode([
+      'statut' => $preference['statut'],
+      'suivi_projet' => $preference['suivi_projet'],
+      'favori_projet' => $preference['favori_projet'],
+      'favori_version' => $listeVersion,
+      'suivi_version' => $preference['suivi_version'] ?? [],
+    ]);
+    if ($encodedPreference === false) {
+      throw new UnexpectedExecutionPathException('Échec de l\'encodage JSON des préférences.');
+    }
+    $jsonArray = stripslashes($encodedPreference);
 
     $sql = "UPDATE ma_moulinette.utilisateur
             SET preference = :preference,
@@ -207,7 +210,7 @@ class UtilisateurRepository extends ServiceEntityRepository
    * Met à jour pour le projet le statut de favori - true ou false
    * Utilisé par le contrôleur PROJET
    *
-   * @param array<string, mixed> $preference attend `statut`, `suivi_projet`, `favori_projet`,
+   * @param array<int|string, mixed> $preference attend `statut`, `suivi_projet`, `favori_projet`,
    *                                          `favori_version` et `suivi_version` (arrays)
    * @param array<string, mixed> $map        attend `maven_key` et `courriel`
    *
@@ -440,7 +443,7 @@ class UtilisateurRepository extends ServiceEntityRepository
    * [Description for countUtilisateurActif]
    * Compte les utilisateurs avec le flag actif = true.
    *
-   * @return array<string, mixed>
+   * @return array<int|string, mixed>
    *
    * Created at: 09/06/2026 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
@@ -464,7 +467,7 @@ class UtilisateurRepository extends ServiceEntityRepository
    * [Description for countUtilisateurDisponible]
    * Compte tous les utilisateurs enregistrés (sans filtre actif).
    *
-   * @return array<string, mixed>
+   * @return array<int|string, mixed>
    *
    * Created at: 09/06/2026 (Europe/Paris)
    * @author     Laurent HADJADJ <laurent_h@me.com>
