@@ -102,7 +102,7 @@ class ResetPasswordControllerTest extends TestCase
     public function testApiResetMotDePasseReturns400OnInvalidJson(): void
     {
         $response = $this->controller->apiResetMotDePasse($this->jsonRequest('garbage'));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -110,7 +110,7 @@ class ResetPasswordControllerTest extends TestCase
     public function testApiResetMotDePasseReturns400WhenResetPasswordKeyMissing(): void
     {
         $response = $this->controller->apiResetMotDePasse($this->jsonRequest(['other' => 'x']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -125,7 +125,7 @@ class ResetPasswordControllerTest extends TestCase
             ->willReturn(['code' => 500, 'erreur' => 'db fail']);
 
         $response = $this->controller->apiResetMotDePasse($this->jsonRequest(['reset_password' => true]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
         $this->assertSame('db fail', $data['trace']);
@@ -148,7 +148,7 @@ class ResetPasswordControllerTest extends TestCase
             ->willReturn(['code' => 200]);
 
         $response = $this->controller->apiResetMotDePasse($this->jsonRequest(['reset_password' => true]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertTrue($capturedMap['reset_password']);
@@ -193,7 +193,7 @@ class ResetPasswordControllerTest extends TestCase
 
         $response = $this->controller->resetMotDePasse(new Request(), $token);
 
-        $this->assertSame('<html>reset</html>', $response->getContent());
+        $this->assertSame('<html>reset</html>', (string) $response->getContent());
     }
 
     /* ============ helpers ============ */
@@ -208,7 +208,7 @@ class ResetPasswordControllerTest extends TestCase
         } elseif ($body === []) {
             $content = '{}';
         } else {
-            $content = json_encode($body);
+            $content = json_encode($body, JSON_THROW_ON_ERROR);
         }
         return new Request([], [], [], [], [], [], $content);
     }

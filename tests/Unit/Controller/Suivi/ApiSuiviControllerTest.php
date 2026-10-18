@@ -117,7 +117,7 @@ class ApiSuiviControllerTest extends TestCase
     public function testListeVersionV1Returns400WhenMavenKeyMissing(): void
     {
         $response = $this->controller->listeVersionV1($this->jsonRequest([]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -129,7 +129,7 @@ class ApiSuiviControllerTest extends TestCase
             ->willReturn(['code' => 500, 'erreur' => 'db']);
 
         $response = $this->controller->listeVersionV1($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
     }
@@ -145,7 +145,7 @@ class ApiSuiviControllerTest extends TestCase
         ]);
 
         $response = $this->controller->listeVersionV1($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertCount(2, $data['liste']);
@@ -157,7 +157,7 @@ class ApiSuiviControllerTest extends TestCase
     public function testListeVersionV2Returns400WhenMavenKeyMissing(): void
     {
         $response = $this->controller->listeVersionV2($this->jsonRequest([]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -169,7 +169,7 @@ class ApiSuiviControllerTest extends TestCase
             ->willReturn(['code' => 503, 'erreur' => 'down']);
 
         $response = $this->controller->listeVersionV2($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(503, $data['code']);
     }
@@ -186,7 +186,7 @@ class ApiSuiviControllerTest extends TestCase
         ]);
 
         $response = $this->controller->listeVersionV2($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertCount(1, $data['liste']);
@@ -197,7 +197,7 @@ class ApiSuiviControllerTest extends TestCase
     public function testSuiviMiseAJourReturns400WhenMavenKeyMissing(): void
     {
         $response = $this->controller->suiviMiseAJour($this->jsonRequest([]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -213,7 +213,7 @@ class ApiSuiviControllerTest extends TestCase
             ->willReturn(['code' => 500, 'erreur' => 'insert fail']);
 
         $response = $this->controller->suiviMiseAJour($this->jsonRequest($this->buildSuiviPayload()));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
     }
@@ -229,7 +229,7 @@ class ApiSuiviControllerTest extends TestCase
             ->willReturn(['code' => 200]);
 
         $response = $this->controller->suiviMiseAJour($this->jsonRequest($this->buildSuiviPayload()));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
     }
@@ -239,7 +239,7 @@ class ApiSuiviControllerTest extends TestCase
     public function testSuiviVersionListeReturns400WhenMavenKeyMissing(): void
     {
         $response = $this->controller->suiviVersionListe($this->jsonRequest([]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -251,7 +251,7 @@ class ApiSuiviControllerTest extends TestCase
             ->willReturn(['code' => 500, 'erreur' => 'fail']);
 
         $response = $this->controller->suiviVersionListe($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
     }
@@ -272,7 +272,7 @@ class ApiSuiviControllerTest extends TestCase
         ]);
 
         $response = $this->controller->suiviVersionListe($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertCount(2, $data['versions']);
@@ -284,7 +284,7 @@ class ApiSuiviControllerTest extends TestCase
     public function testSuiviVersionFavoriReturns400OnInvalidPayload(): void
     {
         $response = $this->controller->suiviVersionFavori($this->jsonRequest([]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -308,7 +308,7 @@ class ApiSuiviControllerTest extends TestCase
             'version' => '1.0',
             'date_version' => '2026-04-10',
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
     }
@@ -336,7 +336,7 @@ class ApiSuiviControllerTest extends TestCase
             'version' => '1.0',
             'date_version' => '2026-04-10',
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
     }
@@ -346,7 +346,7 @@ class ApiSuiviControllerTest extends TestCase
     public function testSuiviVersionReferenceReturns400OnMissingFields(): void
     {
         $response = $this->controller->suiviVersionReference($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -358,7 +358,7 @@ class ApiSuiviControllerTest extends TestCase
         $response = $this->controller->suiviVersionReference($this->jsonRequest([
             'maven_key' => 'k', 'initial' => 1, 'version' => '1.0', 'date_version' => '2026-04-10',
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(403, $data['code']);
     }
@@ -374,7 +374,7 @@ class ApiSuiviControllerTest extends TestCase
         $response = $this->controller->suiviVersionReference($this->jsonRequest([
             'maven_key' => 'k', 'initial' => 1, 'version' => '1.0', 'date_version' => '2026-04-10',
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
     }
@@ -395,7 +395,7 @@ class ApiSuiviControllerTest extends TestCase
         $response = $this->controller->suiviVersionReference($this->jsonRequest([
             'maven_key' => 'k', 'initial' => 1, 'version' => '1.0', 'date_version' => '2026-04-10',
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code'], 'Le code repo doit remonter (avant le fix : null)');
         $this->assertSame('db down', $data['trace']);
@@ -406,7 +406,7 @@ class ApiSuiviControllerTest extends TestCase
     public function testSuiviVersionPoubelleReturns400OnMissingFields(): void
     {
         $response = $this->controller->suiviVersionPoubelle($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -418,7 +418,7 @@ class ApiSuiviControllerTest extends TestCase
         $response = $this->controller->suiviVersionPoubelle($this->jsonRequest([
             'maven_key' => 'k', 'version' => '1.0', 'date_version' => '2026-04-10',
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(403, $data['code']);
     }
@@ -438,7 +438,7 @@ class ApiSuiviControllerTest extends TestCase
         $response = $this->controller->suiviVersionPoubelle($this->jsonRequest([
             'maven_key' => 'k', 'version' => '1.0', 'date_version' => '2026-04-10',
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
     }
@@ -448,7 +448,7 @@ class ApiSuiviControllerTest extends TestCase
     public function testGetVersionReturns400WhenMavenKeyMissing(): void
     {
         $response = $this->controller->getVersion($this->jsonRequest(['other' => 'x']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -456,7 +456,7 @@ class ApiSuiviControllerTest extends TestCase
     public function testGetVersionReturns400WhenDateMissing(): void
     {
         $response = $this->controller->getVersion($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -464,7 +464,7 @@ class ApiSuiviControllerTest extends TestCase
     public function testGetVersionReturns400OnInvalidJson(): void
     {
         $response = $this->controller->getVersion($this->jsonRequest('garbage'));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -495,7 +495,7 @@ class ApiSuiviControllerTest extends TestCase
             'maven_key' => 'acme:app',
             'date' => '28-06-2024 20:48:20',
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertSame(80.5, $data['data']['coverage']);
@@ -526,7 +526,7 @@ class ApiSuiviControllerTest extends TestCase
             'maven_key' => 'acme:app',
             'date' => '28-06-2024 20:48:20',
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         // Le call ne doit PAS crasher (avant le fix : Warning + 500)
         $this->assertSame(200, $data['code']);
@@ -552,7 +552,7 @@ class ApiSuiviControllerTest extends TestCase
         ]);
 
         $response = $this->controller->listeVersionV2($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertCount(2, $data['liste']);
@@ -572,7 +572,7 @@ class ApiSuiviControllerTest extends TestCase
             'maven_key' => 'acme:app',
             'date' => '28-06-2024 20:48:20',
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(503, $data['code']);
         $this->assertSame('error', $data['type']);
@@ -597,7 +597,7 @@ class ApiSuiviControllerTest extends TestCase
         $payload['bugs']     = 'null';
 
         $response = $this->controller->suiviMiseAJour($this->jsonRequest($payload));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertNull($captured['coverage']);
@@ -612,7 +612,7 @@ class ApiSuiviControllerTest extends TestCase
             ->willReturn(['code' => 23505, 'erreur' => 'dup']);
 
         $response = $this->controller->suiviMiseAJour($this->jsonRequest($this->buildSuiviPayload()));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(23505, $data['code']);
         $this->assertSame('warning', $data['type']);
@@ -635,7 +635,7 @@ class ApiSuiviControllerTest extends TestCase
         ]);
 
         $response = $this->controller->suiviVersionListe($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertTrue($data['versions'][0]['favori']);
@@ -659,7 +659,7 @@ class ApiSuiviControllerTest extends TestCase
             'version' => '1.0',
             'date_version' => '2026-04-10',
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
         $this->assertSame('fail update', $data['trace']);
@@ -679,7 +679,7 @@ class ApiSuiviControllerTest extends TestCase
             'version' => '1.0',
             'date_version' => '2026-04-10',
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
         $this->assertSame('delete fail', $data['trace']);
@@ -705,7 +705,7 @@ class ApiSuiviControllerTest extends TestCase
             'version' => '1.0',
             'date_version' => '2026-04-10',
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertSame('success', $data['type']);
@@ -730,7 +730,7 @@ class ApiSuiviControllerTest extends TestCase
             'version' => '1.0',
             'date_version' => '2026-04-10',
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
         $this->assertSame('favori update fail', $data['trace']);
@@ -742,7 +742,7 @@ class ApiSuiviControllerTest extends TestCase
     {
         // payload sans 'version' ni 'suivi'
         $response = $this->controller->suiviVersionSuivi($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -750,7 +750,7 @@ class ApiSuiviControllerTest extends TestCase
     public function testSuiviVersionSuiviReturns400OnMissingMavenKey(): void
     {
         $response = $this->controller->suiviVersionSuivi($this->jsonRequest([]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -766,7 +766,7 @@ class ApiSuiviControllerTest extends TestCase
             'version'   => '1.0',
             'suivi'     => 1,
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertSame('success', $data['type']);
@@ -784,7 +784,7 @@ class ApiSuiviControllerTest extends TestCase
             'version'   => '99.0',
             'suivi'     => 1,
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
         $this->assertSame('error', $data['type']);
@@ -810,7 +810,7 @@ class ApiSuiviControllerTest extends TestCase
         ]);
 
         $response = $this->controller->suiviVersionListe($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertTrue($data['versions'][0]['suivi'],  '1.0 doit être marquée suivi');
@@ -829,7 +829,7 @@ class ApiSuiviControllerTest extends TestCase
         ]);
 
         $response = $this->controller->suiviVersionListe($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertFalse($data['versions'][0]['suivi']);
@@ -859,7 +859,7 @@ class ApiSuiviControllerTest extends TestCase
             'version'      => '1.0',
             'date_version' => '2026-04-10',
         ]));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertSame('success', $data['type']);
@@ -883,7 +883,7 @@ class ApiSuiviControllerTest extends TestCase
         } elseif ($body === []) {
             $content = '{}';
         } else {
-            $content = json_encode($body);
+            $content = json_encode($body, JSON_THROW_ON_ERROR);
         }
         return new Request([], [], [], [], [], [], $content);
     }

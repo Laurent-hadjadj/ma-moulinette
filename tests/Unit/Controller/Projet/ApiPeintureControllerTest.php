@@ -999,7 +999,7 @@ class ApiPeintureControllerTest extends TestCase
      */
     private function jsonRequest(array $body): Request
     {
-        return new Request([], [], [], [], [], [], json_encode($body, JSON_FORCE_OBJECT));
+        return new Request([], [], [], [], [], [], json_encode($body, JSON_FORCE_OBJECT | JSON_THROW_ON_ERROR));
     }
 
     /**
@@ -1007,7 +1007,7 @@ class ApiPeintureControllerTest extends TestCase
      */
     private function decode(JsonResponse $response): array
     {
-        return json_decode($response->getContent(), true);
+        return json_decode((string) $response->getContent(), true);
     }
 
     private function assertJsonStatus(JsonResponse $response, int $code, ?string $type = null): void

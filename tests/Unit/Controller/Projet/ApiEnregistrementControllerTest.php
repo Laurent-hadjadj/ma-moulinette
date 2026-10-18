@@ -100,7 +100,7 @@ class ApiEnregistrementControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(false);
 
         $response = $this->controller->enregistrement($this->jsonRequest(['maven_key' => 'k']));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(403, $data['code']);
     }
@@ -110,7 +110,7 @@ class ApiEnregistrementControllerTest extends TestCase
         $this->authChecker->method('isGranted')->willReturn(true);
 
         $response = $this->controller->enregistrement($this->jsonRequest('garbage'));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -125,7 +125,7 @@ class ApiEnregistrementControllerTest extends TestCase
             ->willReturn(['code' => 500, 'erreur' => 'db fail']);
 
         $response = $this->controller->enregistrement($this->jsonRequest($this->buildPayload()));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
         $this->assertSame('db fail', $data['trace']);
@@ -141,7 +141,7 @@ class ApiEnregistrementControllerTest extends TestCase
             ->willReturn(['code' => 23505, 'erreur' => 'duplicate key']);
 
         $response = $this->controller->enregistrement($this->jsonRequest($this->buildPayload()));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(23505, $data['code']);
         $this->assertSame('duplicate key', $data['erreur']);
@@ -163,7 +163,7 @@ class ApiEnregistrementControllerTest extends TestCase
             ->willReturn(['code' => 200]);
 
         $response = $this->controller->enregistrement($this->jsonRequest($this->buildPayload()));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         // MODIF 2026-10-08 : marqueur version du serveur SonarQube, pas d'UI associée.
@@ -206,7 +206,7 @@ class ApiEnregistrementControllerTest extends TestCase
             ->willThrowException(new \RuntimeException('boom'));
 
         $response = $this->controller->enregistrement($this->jsonRequest($this->buildPayload()));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(500, $data['code']);
         $this->assertSame('boom', $data['trace']);
@@ -265,7 +265,7 @@ class ApiEnregistrementControllerTest extends TestCase
         } elseif ($body === []) {
             $content = '{}';
         } else {
-            $content = json_encode($body);
+            $content = json_encode($body, JSON_THROW_ON_ERROR);
         }
         return new Request([], [], [], [], [], [], $content);
     }
@@ -297,7 +297,7 @@ class ApiEnregistrementControllerTest extends TestCase
         $payload['actuator_info'] = $expectedActuatorInfo;
 
         $response = $this->controller->enregistrement($this->jsonRequest($payload));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
     }
@@ -490,7 +490,7 @@ class ApiEnregistrementControllerTest extends TestCase
             ->willReturn(['code' => 200]);
 
         $response = $this->controller->enregistrement($this->jsonRequest($this->buildPayload()));
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
     }

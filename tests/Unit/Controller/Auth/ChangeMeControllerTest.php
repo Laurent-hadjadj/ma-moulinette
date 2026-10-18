@@ -38,7 +38,7 @@ class ChangeMeControllerTest extends TestCase
     /** @var LoggerInterface&MockObject */                private MockObject $logger;
     /** @var AuthorizationCheckerInterface&MockObject */  private MockObject $authChecker;
     /** @var TokenStorageInterface&MockObject */          private MockObject $tokenStorage;
-    private TokenInterface|MockObject $token;
+    /** @var TokenInterface&MockObject */                 private MockObject $token;
 
     private ChangeMeController $controller;
 
@@ -77,7 +77,7 @@ class ChangeMeControllerTest extends TestCase
             $this->jsonRequest(['avatar' => 'chiffre/01']),
             $token
         );
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(403, $data['code']);
     }
@@ -92,7 +92,7 @@ class ChangeMeControllerTest extends TestCase
             $this->jsonRequest('garbage'),
             $token
         );
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -107,7 +107,7 @@ class ChangeMeControllerTest extends TestCase
             $this->jsonRequest(['other' => 'x']),
             $token
         );
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(400, $data['code']);
     }
@@ -171,7 +171,7 @@ class ChangeMeControllerTest extends TestCase
             $this->jsonRequest(['avatar' => 'fille-1/15']),
             $token
         );
-        $data = json_decode($response->getContent(), true);
+        $data = json_decode((string) $response->getContent(), true);
 
         $this->assertSame(200, $data['code']);
         $this->assertSame('fille-1/15.png', $user->getAvatar());
@@ -189,7 +189,7 @@ class ChangeMeControllerTest extends TestCase
         } elseif ($body === []) {
             $content = '{}';
         } else {
-            $content = json_encode($body);
+            $content = json_encode($body, JSON_THROW_ON_ERROR);
         }
         return new Request([], [], [], [], [], [], $content);
     }
