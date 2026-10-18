@@ -21,6 +21,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Console\Output\OutputInterface;
 use App\Exception\FileNotFoundException;
+use App\Exception\UnexpectedExecutionPathException;
 
 /**
  * [Description CompareSonarMetricsCommand]
@@ -183,7 +184,6 @@ class CompareSonarMetricsCommand extends Command
                 default:
                     $io->error('Utilise --format=md|html|json avec --summary-only');
                     return Command::FAILURE;
-                    break;
             }
 
             $io->success("Traitement terminée avec succès");
@@ -254,7 +254,12 @@ class CompareSonarMetricsCommand extends Command
      */
     private function loadMetrics(string $file): array
     {
-        $data = json_decode(file_get_contents($file), true);
+        $content = file_get_contents($file);
+        if ($content === false) {
+            throw new FileNotFoundException($file);
+        }
+
+        $data = json_decode($content, true);
 
         $metrics = [];
         foreach ($data['metrics'] as $m) {
@@ -401,7 +406,7 @@ class CompareSonarMetricsCommand extends Command
         // Pondération métier (SQALE-like)
         $impact *= $this->metricWeight($metricKey);
 
-        return $impact;
+        return (int) round($impact);
     }
 
     /**
@@ -593,7 +598,7 @@ class CompareSonarMetricsCommand extends Command
             $keyA = array_search($a, $filtered, true);
             $keyB = array_search($b, $filtered, true);
 
-            return strcmp($keyA, $keyB);
+            return strcmp((string) $keyA, (string) $keyB);
         });
 
         return $filtered;
@@ -730,9 +735,9 @@ class CompareSonarMetricsCommand extends Command
                 $data['impact']
             ));
 
-            if ($key === 'hidden') {
+            if (isset($data['diff']['hidden'])) {
                 $io->writeln(
-                    $vals['v2'] === true
+                    $data['diff']['hidden']['v2'] === true
                     ? "  ⚠️ métrique désormais cachée (API)"
                     : "  ✅ métrique désormais exposée (API)"
                 );
@@ -925,7 +930,12 @@ MD;
             'generated_at' => date('c')
         ];
 
-        return json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        $json = json_encode($data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+        if ($json === false) {
+            throw new UnexpectedExecutionPathException('Échec de l\'encodage JSON du résumé.');
+        }
+
+        return $json;
     }
 
     /**
@@ -1099,7 +1109,7 @@ HTML;
     /**
      * [Description for extractPublicMetricsByDomain]
      *
-     * @param array<string, array<string, mixed>> $metrics
+     * @param array<string, mixed> $metrics Valeurs potentiellement non-array : JSON externe non garanti
      *
      * @return array<string, array<int, string>>
      *
