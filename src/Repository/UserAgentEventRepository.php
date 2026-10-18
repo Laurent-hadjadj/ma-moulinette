@@ -184,4 +184,53 @@ class UserAgentEventRepository extends ServiceEntityRepository
 
         return ['code' => 200, 'erreur' => ''];
     }
+
+    /**
+     * [Description for countOlderThan]
+     * Compte les lignes de user_agent_event plus anciennes que $days jours
+     * (purge RGPD, voir mkDocs/docs/ma-moulinette/conformite/rgpd.md section 13).
+     *
+     * @param int $days
+     *
+     * @return int
+     *
+     * Created at: 18/10/2026 00:00:00 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function countOlderThan(int $days): int
+    {
+        return (int) $this->getEntityManager()
+            ->getConnection()
+            ->executeQuery(
+                'SELECT COUNT(*) FROM ma_moulinette.user_agent_event
+                 WHERE created_at < NOW() - (:days || \' days\')::INTERVAL',
+                ['days' => $days]
+            )
+            ->fetchOne();
+    }
+
+    /**
+     * [Description for purge]
+     * Supprime les lignes de user_agent_event plus anciennes que $days jours
+     * (purge RGPD).
+     *
+     * @param int $days
+     *
+     * @return int nombre de lignes supprimées
+     *
+     * Created at: 18/10/2026 00:00:00 (Europe/Paris)
+     * @author     Laurent HADJADJ <laurent_h@me.com>
+     * @copyright  Licensed Ma-Moulinette - Creative Common CC-BY-NC-SA 4.0.
+     */
+    public function purge(int $days): int
+    {
+        return (int) $this->getEntityManager()
+            ->getConnection()
+            ->executeStatement(
+                'DELETE FROM ma_moulinette.user_agent_event
+                 WHERE created_at < NOW() - (:days || \' days\')::INTERVAL',
+                ['days' => $days]
+            );
+    }
 }
